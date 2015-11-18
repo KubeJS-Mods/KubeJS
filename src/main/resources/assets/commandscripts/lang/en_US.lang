@@ -1,0 +1,2 @@
+command.cmdscripts.failed=Script crashed at line %s!
+command.cmdscripts.not_found=Script '%s' not found!
