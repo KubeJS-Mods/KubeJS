@@ -3,7 +3,7 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.*;
 import ftb.lib.EventBusHelper;
 
-@Mod(modid = CmdScripts.MOD_ID, name = "CommandScripts", version = "@VERSION@", dependencies = "required-after:FTBL")
+@Mod(modid = CmdScripts.MOD_ID, name = "CommandScripts", version = "@VERSION@", dependencies = "required-after:FTBL", acceptableRemoteVersions = "*")
 public class CmdScripts
 {
 	protected static final String MOD_ID = "CommandScripts";
@@ -17,5 +17,8 @@ public class CmdScripts
 	
 	@Mod.EventHandler
 	public void serverStarting(FMLServerStartingEvent e)
-	{ e.registerServerCommand(new CommandRunScript()); }
+	{
+		e.registerServerCommand(new CommandScript());
+		e.registerServerCommand(new CommandFillBlocks());
+	}
 }

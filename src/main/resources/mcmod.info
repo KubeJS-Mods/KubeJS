@@ -1,0 +1,20 @@
+[
+{
+  "modid": "CommandScripts",
+  "name": "CommandScripts",
+  "description": "CommandScripts mod",
+  "version": "${version}",
+  "url": "http://minecraft.curseforge.com/projects/commandscripts",
+  "updateUrl": "",
+  "authorList": [
+    "LatvianModder"
+  ],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [
+  ],
+  "parent":"",
+  "dependencies": [
+  ]
+}
+]
