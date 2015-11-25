@@ -5,9 +5,12 @@ import java.io.File;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
-import ftb.lib.FTBLib;
+import ftb.lib.*;
 import ftb.lib.api.*;
+import ftb.lib.mod.FTBLibMod;
 import latmod.lib.*;
+import net.minecraft.command.*;
+import net.minecraft.util.*;
 
 public class CmdScriptsEventHandler
 {
@@ -35,8 +38,8 @@ public class CmdScriptsEventHandler
 						try
 						{
 							FastList<String> l = LMFileUtils.load(f1);
-							ScriptFile file = new ScriptFile(f1.getName().replace(".script", "").trim());
-							for(int i = 0; i < l.size(); i++) file.commands.add(l.get(i).trim());
+							ScriptFile file = new ScriptFile(LMFileUtils.getRawFileName(f1));
+							file.compile(l);
 							files.put(file.ID, file);
 						}
 						catch(Exception ex)
@@ -49,13 +52,7 @@ public class CmdScriptsEventHandler
 	
 	@SubscribeEvent
 	public void onWorldLoaded(EventFTBWorldServer e)
-	{
-		ScriptFile file = files.get("startup");
-		if(file != null) CmdScriptsEventHandler.runScript(new ScriptInstance(MathHelperLM.rand.nextInt(), file, FTBLib.getServer()));
-	}
-	
-	public static void runScript(ScriptInstance inst)
-	{ pending.add(inst); }
+	{ reload(); }
 	
 	@SubscribeEvent
 	public void onWorldTick(TickEvent.WorldTickEvent e) // FTBLibEventHandler
@@ -75,12 +72,45 @@ public class CmdScriptsEventHandler
 					ScriptInstance inst = running.get(i);
 					while(!inst.stopped())
 					{
-						inst.runCurrentLine();
+						try { inst.runCurrentLine(); }
+						catch(Exception ex)
+						{
+							inst.stop();
+							BroadcastSender.inst.addChatMessage(new ChatComponentText("Script '" + inst.file.ID + "' at " + LMStringUtils.stripI(inst.sender.pos.posX, inst.sender.pos.posY, inst.sender.pos.posZ) + " crashed at line " + (inst.currentLine() + 1) + ":"));
+							
+							if(ex instanceof CommandException)
+							{
+								CommandException cx = (CommandException)ex;
+								BroadcastSender.inst.addChatMessage(new ChatComponentTranslation(cx.getMessage(), cx.getErrorOjbects()));
+							}
+							else
+								BroadcastSender.inst.addChatMessage(new ChatComponentText(ex.toString()));
+							ex.printStackTrace();
+						}
+						
 						if(inst.isSleeping()) break;
 					}
 					if(inst.stopped()) running.remove(i);
 				}
 			}
 		}
+	}
+	
+	public static ScriptInstance runScript(ScriptFile file, ICommandSender sender, String[] args)
+	{
+		ScriptInstance inst = new ScriptInstance(MathHelperLM.rand.nextInt(), file, sender, args);
+		pending.add(inst);
+		return inst;
+	}
+	
+	public static void reload()
+	{
+		pending.clear();
+		running.clear();
+		ScriptInstance.clearGlobalVariables(FTBLib.getServer());
+		FTBLibMod.reload(FTBLib.getServer(), true);
+		ScriptFile.startupFile = files.get("startup");
+		ScriptFile.globalVariablesFile = files.get("global_variables");
+		if(ScriptFile.startupFile != null) runScript(ScriptFile.startupFile, FTBLib.getServer(), new String[0]);
 	}
 }

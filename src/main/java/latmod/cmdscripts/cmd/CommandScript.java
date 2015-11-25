@@ -1,9 +1,13 @@
-package latmod.cmdscripts;
+package latmod.cmdscripts.cmd;
+
+import java.io.File;
+import java.net.URL;
 
 import ftb.lib.cmd.*;
-import latmod.lib.MathHelperLM;
+import latmod.cmdscripts.*;
+import latmod.lib.*;
 import net.minecraft.command.*;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.*;
 
 public class CommandScript extends CommandSubLM
 {
@@ -13,6 +17,9 @@ public class CommandScript extends CommandSubLM
 		add(new CmdRun("run"));
 		//add(new CmdTerminate("terminate"));
 		add(new CmdTerminateAll("terminate_all"));
+		add(new CmdClearGlobal("clear_global_variables"));
+		add(new CmdDownload("download"));
+		add(new CmdReload("reload"));
 	}
 	
 	public static class CmdRun extends CommandLM
@@ -27,8 +34,8 @@ public class CommandScript extends CommandSubLM
 		{
 			checkArgs(args, 1);
 			ScriptFile file = CmdScriptsEventHandler.files.get(args[0]);
-			if(file == null) throw new ExceptionScriptNotFound(args[0]);
-			CmdScriptsEventHandler.runScript(new ScriptInstance(MathHelperLM.rand.nextInt(), file, ics));
+			if(file == null) throw new CommandException("command.cmdscripts.not_found", args[0]);
+			CmdScriptsEventHandler.runScript(file, ics, LMStringUtils.shiftArray(args));
 			return null;
 		}
 	}
@@ -44,8 +51,8 @@ public class CommandScript extends CommandSubLM
 		public IChatComponent onCommand(ICommandSender ics, String[] args) throws CommandException
 		{
 			checkArgs(args, 1);
-			ScriptFile file = CmdScriptsEventHandler.files.get(args[0]);
-			if(file == null) throw new ExceptionScriptNotFound(args[0]);
+			ScriptInstance inst = CmdScriptsEventHandler.running.getObj(args[0]);
+			if(inst != null) inst.stop();
 			return null;
 		}
 	}
@@ -76,5 +83,46 @@ public class CommandScript extends CommandSubLM
 			
 			return null;
 		}
+	}
+	
+	public static class CmdDownload extends CommandLM
+	{
+		public CmdDownload(String s)
+		{ super(s, CommandLevel.OP); }
+		
+		public IChatComponent onCommand(ICommandSender ics, String[] args) throws CommandException
+		{
+			checkArgs(args, 2);
+			
+			try
+			{
+				File f = LMFileUtils.newFile(new File(ics.getEntityWorld().getSaveHandler().getWorldDirectory(), "/latmod/cmd_scripts/" + args[1] + ".script"));
+				FastList<String> list = LMStringUtils.readStringList(new URL(args[0]).openStream());
+				LMFileUtils.save(f, list);
+				return new ChatComponentText("Script downloaded!");
+			}
+			catch(Exception e)
+			{ e.printStackTrace(); }
+			
+			return new ChatComponentText("Download failed!");
+		}
+	}
+	
+	public static class CmdClearGlobal extends CommandLM
+	{
+		public CmdClearGlobal(String s)
+		{ super(s, CommandLevel.OP); }
+		
+		public IChatComponent onCommand(ICommandSender ics, String[] args) throws CommandException
+		{ ScriptInstance.clearGlobalVariables(ics); return null; }
+	}
+	
+	public static class CmdReload extends CommandLM
+	{
+		public CmdReload(String s)
+		{ super(s, CommandLevel.OP); }
+		
+		public IChatComponent onCommand(ICommandSender ics, String[] args) throws CommandException
+		{ CmdScriptsEventHandler.reload(); return null; }
 	}
 }
