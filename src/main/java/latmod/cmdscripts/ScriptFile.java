@@ -11,6 +11,7 @@ public class ScriptFile extends FinalIDObject
 	public final FastList<String> lines;
 	public final IntList ignored;
 	public final FastMap<String, Integer> funcs;
+	private boolean comment = false;
 	
 	public ScriptFile(String ID)
 	{
@@ -27,7 +28,22 @@ public class ScriptFile extends FinalIDObject
 			String s1 = list.get(i).trim();
 			lines.add(s1);
 			
-			if(!s1.isEmpty() && s1.charAt(0) != '#')
+			boolean ignoredLine = false;
+			
+			if(s1.isEmpty()) ignoredLine = true;
+			else
+			{
+				if(s1.charAt(0) == '#')
+				{
+					ignoredLine = true;
+					if(s1.length() > 2 && s1.charAt(1) == '#' && s1.charAt(2) == '#')
+						comment = !comment;
+				}
+			}
+			
+			if(comment) ignoredLine = true;
+			
+			if(ignoredLine) ignored.add(i); else
 			{
 				if(s1.indexOf(' ') != -1)
 				{
@@ -37,7 +53,6 @@ public class ScriptFile extends FinalIDObject
 						funcs.put(cmd[1], Integer.valueOf(i + 1));
 				}
 			}
-			else ignored.add(i);
 		}
 	}
 }

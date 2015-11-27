@@ -107,10 +107,13 @@ public class CmdScriptsEventHandler
 	{
 		pending.clear();
 		running.clear();
+		
 		ScriptInstance.clearGlobalVariables(FTBLib.getServer());
-		FTBLibMod.reload(FTBLib.getServer(), true);
+		FTBLibMod.reload(FTBLib.getServer(), true, false);
+		
 		ScriptFile.startupFile = files.get("startup");
 		ScriptFile.globalVariablesFile = files.get("global_variables");
+		
 		if(ScriptFile.startupFile != null) runScript(ScriptFile.startupFile, FTBLib.getServer(), new String[0]);
 	}
 }

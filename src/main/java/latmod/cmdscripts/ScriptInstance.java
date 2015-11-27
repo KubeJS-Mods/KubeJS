@@ -229,7 +229,7 @@ public class ScriptInstance
 						sender.world.setBlock(x, y, z, block, m, 3);
 				}
 			}
-			else FTBLib.runCommand(sender, "/" + s);
+			else FTBLib.runCommand(sender, '/' + s);
 		}
 		
 		currentLine++;
@@ -274,12 +274,12 @@ public class ScriptInstance
 				inst.gotoFunc("any");
 			}
 			
-			if(ScriptFile.globalVariablesFile.funcs.keys.contains(s + "_*"))
+			if(ScriptFile.globalVariablesFile.funcs.keys.contains(s + "_any"))
 			{
 				ScriptInstance inst = CmdScriptsEventHandler.runScript(ScriptFile.globalVariablesFile, sender, new String[] { s });
 				inst.variables.put("val", Integer.valueOf(i));
 				inst.variables.put("prev", Integer.valueOf(val0));
-				inst.gotoFunc(s + "_*");
+				inst.gotoFunc(s + "_any");
 			}
 			
 			if(ScriptFile.globalVariablesFile.funcs.keys.contains(s + '_' + i))
@@ -294,7 +294,7 @@ public class ScriptInstance
 	
 	public static void clearGlobalVariables(ICommandSender sender)
 	{
-		if(ScriptFile.globalVariablesFile != null)
+		if(ScriptFile.globalVariablesFile != null && ScriptFile.globalVariablesFile.funcs.keys.contains("cleared"))
 		{
 			ScriptInstance inst = CmdScriptsEventHandler.runScript(ScriptFile.globalVariablesFile, sender, new String[0]);
 			inst.gotoFunc("cleared");
