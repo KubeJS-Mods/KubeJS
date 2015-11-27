@@ -97,6 +97,13 @@ public class ScriptInstance
 				CommandLM.checkArgs(cmd, 2);
 				sender.name = LMStringUtils.unsplitSpaceUntilEnd(1, cmd);
 			}
+			else if(cmd[0].equals("setPos"))
+			{
+				CommandLM.checkArgs(cmd, 4);
+				sender.pos.posX = CommandLM.parseRelInt(sender, sender.pos.posX, cmd[1]);
+				sender.pos.posY = CommandLM.parseRelInt(sender, sender.pos.posY, cmd[2]);
+				sender.pos.posZ = CommandLM.parseRelInt(sender, sender.pos.posZ, cmd[3]);
+			}
 			else if(cmd[0].equals("goto"))
 			{
 				CommandLM.checkArgs(cmd, 2);

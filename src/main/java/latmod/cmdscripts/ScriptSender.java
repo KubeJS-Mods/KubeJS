@@ -33,7 +33,7 @@ public final class ScriptSender implements ICommandSender
 		else if(commandBlock != null && commandBlock.isInvalid()) return false;
 		else if(player != null && !FTBLib.getServer().getConfigurationManager().playerEntityList.contains(player)) return false;
 		world = parent.getEntityWorld();
-		pos = parent.getPlayerCoordinates();
+		if(player != null || pos == null) pos = parent.getPlayerCoordinates();
 		return true;
 	}
 	
