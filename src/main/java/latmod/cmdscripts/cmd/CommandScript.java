@@ -123,6 +123,6 @@ public class CommandScript extends CommandSubLM
 		{ super(s, CommandLevel.OP); }
 		
 		public IChatComponent onCommand(ICommandSender ics, String[] args) throws CommandException
-		{ CmdScriptsEventHandler.reload(); return null; }
+		{ CmdScriptsEventHandler.reload(ics.getEntityWorld()); return null; }
 	}
 }

@@ -6,11 +6,11 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
 import ftb.lib.*;
-import ftb.lib.api.*;
-import ftb.lib.mod.FTBLibMod;
+import ftb.lib.api.EventFTBWorldServer;
 import latmod.lib.*;
 import net.minecraft.command.*;
 import net.minecraft.util.*;
+import net.minecraft.world.World;
 
 public class CmdScriptsEventHandler
 {
@@ -19,40 +19,8 @@ public class CmdScriptsEventHandler
 	private static final FastList<ScriptInstance> pending = new FastList<ScriptInstance>();
 	
 	@SubscribeEvent
-	public void onReloaded(EventFTBReload e)
-	{
-		if(e.side.isServer() && e.sender != null)
-		{
-			files.clear();
-			
-			File folder = new File(e.sender.getEntityWorld().getSaveHandler().getWorldDirectory(), "/latmod/cmd_scripts/");
-			if(!folder.exists()) folder.mkdirs();
-			else
-			{
-				File[] f = folder.listFiles();
-				
-				for(File f1 : f)
-				{
-					if(f1.isFile() && f1.canRead() && f1.getName().endsWith(".script"))
-					{
-						try
-						{
-							FastList<String> l = LMFileUtils.load(f1);
-							ScriptFile file = new ScriptFile(LMFileUtils.getRawFileName(f1));
-							file.compile(l);
-							files.put(file.ID, file);
-						}
-						catch(Exception ex)
-						{ ex.printStackTrace(); }
-					}
-				}
-			}
-		}
-	}
-	
-	@SubscribeEvent
 	public void onWorldLoaded(EventFTBWorldServer e)
-	{ reload(); }
+	{ reload(e.worldMC); }
 	
 	@SubscribeEvent
 	public void onWorldTick(TickEvent.WorldTickEvent e) // FTBLibEventHandler
@@ -103,13 +71,37 @@ public class CmdScriptsEventHandler
 		return inst;
 	}
 	
-	public static void reload()
+	public static void reload(World w)
 	{
 		pending.clear();
 		running.clear();
 		
 		ScriptInstance.clearGlobalVariables(FTBLib.getServer());
-		FTBLibMod.reload(FTBLib.getServer(), true, false);
+		
+		files.clear();
+		
+		File folder = new File(w.getSaveHandler().getWorldDirectory(), "/latmod/cmd_scripts/");
+		if(!folder.exists()) folder.mkdirs();
+		else
+		{
+			File[] f = folder.listFiles();
+			
+			for(File f1 : f)
+			{
+				if(f1.isFile() && f1.canRead() && f1.getName().endsWith(".script"))
+				{
+					try
+					{
+						FastList<String> l = LMFileUtils.load(f1);
+						ScriptFile file = new ScriptFile(LMFileUtils.getRawFileName(f1));
+						file.compile(l);
+						files.put(file.ID, file);
+					}
+					catch(Exception ex)
+					{ ex.printStackTrace(); }
+				}
+			}
+		}
 		
 		ScriptFile.startupFile = files.get("startup");
 		ScriptFile.globalVariablesFile = files.get("global_variables");
