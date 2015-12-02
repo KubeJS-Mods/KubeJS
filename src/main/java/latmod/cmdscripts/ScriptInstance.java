@@ -126,13 +126,18 @@ public class ScriptInstance
 				CommandLM.checkArgs(cmd, 2);
 				sleepTimer = CommandLM.parseIntWithMin(sender, cmd[1], 1);
 			}
-			else if(cmd[0].equals("setVar"))
+			else if(cmd.length == 3 && cmd[1].indexOf('=') != -1)
 			{
-				CommandLM.checkArgs(cmd, 3);
+				Integer i0 = variables.get(cmd[0]);
+				int var0 = (i0 == null) ? 0 : i0.intValue();
+				int i = CommandLM.parseInt(sender, cmd[2]);
+				if(cmd[1].equals("=")) var0 = i;
+				else if(cmd[1].equals("+=")) var0 += i;
+				else if(cmd[1].equals("-=")) var0 -= i;
+				else if(cmd[1].equals("*=")) var0 *= i;
+				else if(cmd[1].equals("/=")) var0 /= i;
 				
-				Integer i0 = variables.get(cmd[1]);
-				int i = CommandLM.parseRelInt(sender, (i0 == null) ? 0 : i0.intValue(), cmd[2]);
-				variables.put(cmd[1], Integer.valueOf(i));
+				variables.put(cmd[0], Integer.valueOf(var0));
 			}
 			else if(cmd[0].equals("ifVar"))
 			{
@@ -149,13 +154,19 @@ public class ScriptInstance
 				else if(cmd.length >= 6)
 				{ gotoFunc(cmd[5]); return; }
 			}
-			else if(cmd[0].equals("setGlobalVar"))
+			else if(cmd[0].equals("global"))
 			{
-				CommandLM.checkArgs(cmd, 3);
+				CommandLM.checkArgs(cmd, 4);
 				Integer i0 = globalVariables.get(cmd[1]);
-				int ii0 = (i0 == null) ? 0 : i0.intValue();
-				int i = CommandLM.parseRelInt(sender, ii0, cmd[2]);
-				setGlobalVariable(sender, cmd[1], i);
+				int var0 = (i0 == null) ? 0 : i0.intValue();
+				int i = CommandLM.parseInt(sender, cmd[3]);
+				if(cmd[2].equals("=")) var0 = i;
+				else if(cmd[2].equals("+=")) var0 += i;
+				else if(cmd[2].equals("-=")) var0 -= i;
+				else if(cmd[2].equals("*=")) var0 *= i;
+				else if(cmd[2].equals("/=")) var0 /= i;
+				
+				setGlobalVariable(sender, cmd[1], var0);
 			}
 			else if(cmd[0].equals("ifGlobalVar"))
 			{
