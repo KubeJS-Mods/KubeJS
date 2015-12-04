@@ -10,17 +10,17 @@ import ftb.lib.api.EventFTBWorldServer;
 import latmod.lib.*;
 import net.minecraft.command.*;
 import net.minecraft.util.*;
-import net.minecraft.world.World;
 
 public class CmdScriptsEventHandler
 {
 	public static final FastMap<String, ScriptFile> files = new FastMap<String, ScriptFile>();
 	public static final FastList<ScriptInstance> running = new FastList<ScriptInstance>();
 	private static final FastList<ScriptInstance> pending = new FastList<ScriptInstance>();
+	private static int nextScriptID = 0;
 	
 	@SubscribeEvent
 	public void onWorldLoaded(EventFTBWorldServer e)
-	{ reload(e.worldMC); }
+	{ reload(FTBLib.getServer()); }
 	
 	@SubscribeEvent
 	public void onWorldTick(TickEvent.WorldTickEvent e) // FTBLibEventHandler
@@ -66,12 +66,12 @@ public class CmdScriptsEventHandler
 	
 	public static ScriptInstance runScript(ScriptFile file, ICommandSender sender, String[] args)
 	{
-		ScriptInstance inst = new ScriptInstance(MathHelperLM.rand.nextInt(), file, sender, args);
+		ScriptInstance inst = new ScriptInstance(++nextScriptID, file, sender, args);
 		pending.add(inst);
 		return inst;
 	}
 	
-	public static void reload(World w)
+	public static void reload(ICommandSender sender)
 	{
 		pending.clear();
 		running.clear();
@@ -80,7 +80,7 @@ public class CmdScriptsEventHandler
 		
 		files.clear();
 		
-		File folder = new File(w.getSaveHandler().getWorldDirectory(), "/latmod/cmd_scripts/");
+		File folder = new File(sender.getEntityWorld().getSaveHandler().getWorldDirectory(), "/latmod/cmd_scripts/");
 		if(!folder.exists()) folder.mkdirs();
 		else
 		{
@@ -93,7 +93,7 @@ public class CmdScriptsEventHandler
 					try
 					{
 						FastList<String> l = LMFileUtils.load(f1);
-						ScriptFile file = new ScriptFile(LMFileUtils.getRawFileName(f1));
+						ScriptFile file = new ScriptFile(PreUpdate.getRawFileName(f1));
 						file.compile(l);
 						files.put(file.ID, file);
 					}
@@ -107,5 +107,6 @@ public class CmdScriptsEventHandler
 		ScriptFile.globalVariablesFile = files.get("global_variables");
 		
 		if(ScriptFile.startupFile != null) runScript(ScriptFile.startupFile, FTBLib.getServer(), new String[0]);
+		sender.addChatMessage(new ChatComponentText("CommandScripts reloaded!"));
 	}
 }

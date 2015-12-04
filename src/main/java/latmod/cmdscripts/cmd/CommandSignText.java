@@ -1,6 +1,7 @@
 package latmod.cmdscripts.cmd;
 
 import ftb.lib.cmd.*;
+import latmod.cmdscripts.PreUpdate;
 import latmod.lib.*;
 import net.minecraft.block.Block;
 import net.minecraft.command.*;
@@ -21,9 +22,9 @@ public class CommandSignText extends CommandLM // CommandSetBlock
 		checkArgs(args, 5);
 		
 		ChunkCoordinates pos = ics.getPlayerCoordinates();
-		int x = parseRelInt(ics, pos.posX, args[0]);
-		int y = parseRelInt(ics, pos.posY, args[1]);
-		int z = parseRelInt(ics, pos.posZ, args[2]);
+		int x = PreUpdate.parseRelInt(ics, pos.posX, args[0]);
+		int y = PreUpdate.parseRelInt(ics, pos.posY, args[1]);
+		int z = PreUpdate.parseRelInt(ics, pos.posZ, args[2]);
 		
 		TileEntity te = ics.getEntityWorld().getTileEntity(x, y, z);
 		

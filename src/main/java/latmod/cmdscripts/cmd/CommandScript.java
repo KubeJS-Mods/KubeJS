@@ -19,6 +19,7 @@ public class CommandScript extends CommandSubLM
 		add(new CmdTerminateAll("terminate_all"));
 		add(new CmdClearGlobal("clear_global_variables"));
 		add(new CmdDownload("download"));
+		add(new CmdDelete("delete"));
 		add(new CmdReload("reload"));
 	}
 	
@@ -26,6 +27,9 @@ public class CommandScript extends CommandSubLM
 	{
 		public CmdRun(String s)
 		{ super(s, CommandLevel.OP); }
+		
+		public String getCommandUsage(ICommandSender ics)
+		{ return '/' + commandName + " <ID>"; }
 		
 		public String[] getTabStrings(ICommandSender ics, String[] args, int i) throws CommandException
 		{ return (i == 0) ? CmdScriptsEventHandler.files.keys.toStringArray() : new String[0]; }
@@ -35,7 +39,7 @@ public class CommandScript extends CommandSubLM
 			checkArgs(args, 1);
 			ScriptFile file = CmdScriptsEventHandler.files.get(args[0]);
 			if(file == null) throw new CommandException("command.cmdscripts.not_found", args[0]);
-			CmdScriptsEventHandler.runScript(file, ics, LMStringUtils.shiftArray(args));
+			CmdScriptsEventHandler.runScript(file, ics, PreUpdate.shiftArray(args));
 			return null;
 		}
 	}
@@ -44,6 +48,9 @@ public class CommandScript extends CommandSubLM
 	{
 		public CmdTerminate(String s)
 		{ super(s, CommandLevel.OP); }
+		
+		public String getCommandUsage(ICommandSender ics)
+		{ return '/' + commandName + " <ID>"; }
 		
 		public String[] getTabStrings(ICommandSender ics, String[] args, int i) throws CommandException
 		{ return (i == 0) ? CmdScriptsEventHandler.running.toStringArray() : new String[0]; }
@@ -61,6 +68,9 @@ public class CommandScript extends CommandSubLM
 	{
 		public CmdTerminateAll(String s)
 		{ super(s, CommandLevel.OP); }
+		
+		public String getCommandUsage(ICommandSender ics)
+		{ return '/' + commandName + " [ID]"; }
 		
 		public String[] getTabStrings(ICommandSender ics, String[] args, int i) throws CommandException
 		{ return (i == 0) ? CmdScriptsEventHandler.files.keys.toStringArray() : new String[0]; }
@@ -90,6 +100,9 @@ public class CommandScript extends CommandSubLM
 		public CmdDownload(String s)
 		{ super(s, CommandLevel.OP); }
 		
+		public String getCommandUsage(ICommandSender ics)
+		{ return '/' + commandName + " <raw text link> <ID>"; }
+		
 		public IChatComponent onCommand(ICommandSender ics, String[] args) throws CommandException
 		{
 			checkArgs(args, 2);
@@ -104,7 +117,30 @@ public class CommandScript extends CommandSubLM
 			catch(Exception e)
 			{ e.printStackTrace(); }
 			
-			return new ChatComponentText("Download failed!");
+			return error(new ChatComponentText("Download failed!"));
+		}
+	}
+	
+	public static class CmdDelete extends CommandLM
+	{
+		public CmdDelete(String s)
+		{ super(s, CommandLevel.OP); }
+		
+		public String[] getTabStrings(ICommandSender ics, String[] args, int i) throws CommandException
+		{ return (i == 0) ? CmdScriptsEventHandler.files.keys.toStringArray() : new String[0]; }
+		
+		public String getCommandUsage(ICommandSender ics)
+		{ return '/' + commandName + " <ID>"; }
+		
+		public IChatComponent onCommand(ICommandSender ics, String[] args) throws CommandException
+		{
+			checkArgs(args, 1);
+			
+			File f;
+			if(args[0].equals("*")) f = new File(ics.getEntityWorld().getSaveHandler().getWorldDirectory(), "/latmod/cmd_scripts/");
+			else f = new File(ics.getEntityWorld().getSaveHandler().getWorldDirectory(), "/latmod/cmd_scripts/" + args[0] + ".script");
+			if(LMFileUtils.delete(f)) return new ChatComponentText("Script deleted!");
+			return error(new ChatComponentText("Error!"));
 		}
 	}
 	
@@ -123,6 +159,6 @@ public class CommandScript extends CommandSubLM
 		{ super(s, CommandLevel.OP); }
 		
 		public IChatComponent onCommand(ICommandSender ics, String[] args) throws CommandException
-		{ CmdScriptsEventHandler.reload(ics.getEntityWorld()); return null; }
+		{ CmdScriptsEventHandler.reload(ics); return null; }
 	}
 }
