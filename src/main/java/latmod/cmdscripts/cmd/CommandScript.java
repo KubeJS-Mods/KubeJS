@@ -39,7 +39,7 @@ public class CommandScript extends CommandSubLM
 			checkArgs(args, 1);
 			ScriptFile file = CmdScriptsEventHandler.files.get(args[0]);
 			if(file == null) throw new CommandException("command.cmdscripts.not_found", args[0]);
-			CmdScriptsEventHandler.runScript(file, ics, PreUpdate.shiftArray(args));
+			CmdScriptsEventHandler.runScript(file, ics, LMStringUtils.shiftArray(args));
 			return null;
 		}
 	}

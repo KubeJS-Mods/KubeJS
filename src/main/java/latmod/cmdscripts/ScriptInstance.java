@@ -100,9 +100,9 @@ public class ScriptInstance
 			else if(cmd[0].equals("setPos"))
 			{
 				CommandLM.checkArgs(cmd, 4);
-				sender.pos.posX = PreUpdate.parseRelInt(sender, sender.pos.posX, cmd[1]);
-				sender.pos.posY = PreUpdate.parseRelInt(sender, sender.pos.posY, cmd[2]);
-				sender.pos.posZ = PreUpdate.parseRelInt(sender, sender.pos.posZ, cmd[3]);
+				sender.pos.posX = CommandLM.parseRelInt(sender, sender.pos.posX, cmd[1]);
+				sender.pos.posY = CommandLM.parseRelInt(sender, sender.pos.posY, cmd[2]);
+				sender.pos.posZ = CommandLM.parseRelInt(sender, sender.pos.posZ, cmd[3]);
 			}
 			else if(cmd[0].equals("goto"))
 			{
@@ -187,9 +187,9 @@ public class ScriptInstance
 			{
 				CommandLM.checkArgs(cmd, 7);
 				
-				int x = PreUpdate.parseRelInt(sender, sender.pos.posX, cmd[1]);
-				int y = PreUpdate.parseRelInt(sender, sender.pos.posY, cmd[2]);
-				int z = PreUpdate.parseRelInt(sender, sender.pos.posZ, cmd[3]);
+				int x = CommandLM.parseRelInt(sender, sender.pos.posX, cmd[1]);
+				int y = CommandLM.parseRelInt(sender, sender.pos.posY, cmd[2]);
+				int z = CommandLM.parseRelInt(sender, sender.pos.posZ, cmd[3]);
 				
 				if(sender.world.blockExists(x, y, z))
 				{
@@ -214,9 +214,9 @@ public class ScriptInstance
 				
 				CommandLM.checkArgs(cmd, 7);
 				
-				int x = PreUpdate.parseRelInt(sender, sender.pos.posX, cmd[1]);
-				int y = PreUpdate.parseRelInt(sender, sender.pos.posY, cmd[2]);
-				int z = PreUpdate.parseRelInt(sender, sender.pos.posZ, cmd[3]);
+				int x = CommandLM.parseRelInt(sender, sender.pos.posX, cmd[1]);
+				int y = CommandLM.parseRelInt(sender, sender.pos.posY, cmd[2]);
+				int z = CommandLM.parseRelInt(sender, sender.pos.posZ, cmd[3]);
 				
 				if(sender.world.blockExists(x, y, z))
 				{
@@ -234,9 +234,9 @@ public class ScriptInstance
 			{
 				CommandLM.checkArgs(cmd, 5);
 				
-				int x = PreUpdate.parseRelInt(sender, sender.pos.posX, cmd[1]);
-				int y = PreUpdate.parseRelInt(sender, sender.pos.posY, cmd[2]);
-				int z = PreUpdate.parseRelInt(sender, sender.pos.posZ, cmd[3]);
+				int x = CommandLM.parseRelInt(sender, sender.pos.posX, cmd[1]);
+				int y = CommandLM.parseRelInt(sender, sender.pos.posY, cmd[2]);
+				int z = CommandLM.parseRelInt(sender, sender.pos.posZ, cmd[3]);
 				
 				if(sender.world.blockExists(x, y, z))
 				{

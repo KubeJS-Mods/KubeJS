@@ -93,7 +93,7 @@ public class CmdScriptsEventHandler
 					try
 					{
 						FastList<String> l = LMFileUtils.load(f1);
-						ScriptFile file = new ScriptFile(PreUpdate.getRawFileName(f1));
+						ScriptFile file = new ScriptFile(LMFileUtils.getRawFileName(f1));
 						file.compile(l);
 						files.put(file.ID, file);
 					}

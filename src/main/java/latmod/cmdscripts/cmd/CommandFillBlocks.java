@@ -1,7 +1,6 @@
 package latmod.cmdscripts.cmd;
 
 import ftb.lib.cmd.*;
-import latmod.cmdscripts.PreUpdate;
 import latmod.lib.FastList;
 import net.minecraft.block.Block;
 import net.minecraft.command.*;
@@ -23,13 +22,13 @@ public class CommandFillBlocks extends CommandLM // CommandSetBlock
 		
 		ChunkCoordinates pos = ics.getPlayerCoordinates();
 		
-		int x0 = PreUpdate.parseRelInt(ics, pos.posX, args[0]);
-		int y0 = PreUpdate.parseRelInt(ics, pos.posY, args[1]);
-		int z0 = PreUpdate.parseRelInt(ics, pos.posZ, args[2]);
+		int x0 = CommandLM.parseRelInt(ics, pos.posX, args[0]);
+		int y0 = CommandLM.parseRelInt(ics, pos.posY, args[1]);
+		int z0 = CommandLM.parseRelInt(ics, pos.posZ, args[2]);
 		
-		int x1 = PreUpdate.parseRelInt(ics, pos.posX, args[3]);
-		int y1 = PreUpdate.parseRelInt(ics, pos.posY, args[4]);
-		int z1 = PreUpdate.parseRelInt(ics, pos.posZ, args[5]);
+		int x1 = CommandLM.parseRelInt(ics, pos.posX, args[3]);
+		int y1 = CommandLM.parseRelInt(ics, pos.posY, args[4]);
+		int z1 = CommandLM.parseRelInt(ics, pos.posZ, args[5]);
 		
 		int minX = Math.min(x0, x1);
 		int minY = Math.min(y0, y1);
