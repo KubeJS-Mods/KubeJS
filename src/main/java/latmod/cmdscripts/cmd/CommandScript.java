@@ -32,7 +32,7 @@ public class CommandScript extends CommandSubLM
 		{ return '/' + commandName + " <ID>"; }
 		
 		public String[] getTabStrings(ICommandSender ics, String[] args, int i) throws CommandException
-		{ return (i == 0) ? CmdScriptsEventHandler.files.keys.toStringArray() : new String[0]; }
+		{ return (i == 0) ? LMStringUtils.toStringArray(CmdScriptsEventHandler.files.keys) : new String[0]; }
 		
 		public IChatComponent onCommand(ICommandSender ics, String[] args) throws CommandException
 		{
@@ -73,7 +73,7 @@ public class CommandScript extends CommandSubLM
 		{ return '/' + commandName + " [ID]"; }
 		
 		public String[] getTabStrings(ICommandSender ics, String[] args, int i) throws CommandException
-		{ return (i == 0) ? CmdScriptsEventHandler.files.keys.toStringArray() : new String[0]; }
+		{ return (i == 0) ? LMStringUtils.toStringArray(CmdScriptsEventHandler.files.keys) : new String[0]; }
 		
 		public IChatComponent onCommand(ICommandSender ics, String[] args) throws CommandException
 		{
@@ -127,7 +127,7 @@ public class CommandScript extends CommandSubLM
 		{ super(s, CommandLevel.OP); }
 		
 		public String[] getTabStrings(ICommandSender ics, String[] args, int i) throws CommandException
-		{ return (i == 0) ? CmdScriptsEventHandler.files.keys.toStringArray() : new String[0]; }
+		{ return (i == 0) ? LMStringUtils.toStringArray(CmdScriptsEventHandler.files.keys) : new String[0]; }
 		
 		public String getCommandUsage(ICommandSender ics)
 		{ return '/' + commandName + " <ID>"; }
