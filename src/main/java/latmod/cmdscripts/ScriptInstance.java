@@ -1,5 +1,7 @@
 package latmod.cmdscripts;
 
+import java.util.Map;
+
 import ftb.lib.FTBLib;
 import ftb.lib.cmd.CommandLM;
 import latmod.lib.*;
@@ -84,8 +86,8 @@ public class ScriptInstance
 			if(s == null) { stop(); return; }
 		}
 		
-		for(int i = 0; i < variables.size(); i++)
-			s = s.replace('$' + variables.keys.get(i), Integer.toString(variables.values.get(i)));
+		for(Map.Entry<String, Integer> e : variables.entrySet())
+			s = s.replace('$' + e.getKey(), e.getValue().toString());
 		
 		String[] cmd = (s.indexOf(' ') == -1) ? new String[] { s } : s.split(" ");
 		
@@ -255,7 +257,7 @@ public class ScriptInstance
 	
 	public void gotoFunc(String s)
 	{
-		if(s == null || s.isEmpty() || !file.funcs.keys.contains(s))
+		if(s == null || s.isEmpty() || !file.funcs.containsKey(s))
 			throw new CommandException("command.cmdscripts.unknown_func", String.valueOf(s));
 		lastGotoLine.add(currentLine);
 		currentLine = file.funcs.get(s).intValue();
@@ -284,7 +286,7 @@ public class ScriptInstance
 		
 		if((!hasVal0 || val0 != i) && ScriptFile.globalVariablesFile != null)
 		{
-			if(ScriptFile.globalVariablesFile.funcs.keys.contains("any"))
+			if(ScriptFile.globalVariablesFile.funcs.containsKey("any"))
 			{
 				ScriptInstance inst = CmdScriptsEventHandler.runScript(ScriptFile.globalVariablesFile, sender, new String[] { s });
 				inst.variables.put("val", Integer.valueOf(i));
@@ -292,7 +294,7 @@ public class ScriptInstance
 				inst.gotoFunc("any");
 			}
 			
-			if(ScriptFile.globalVariablesFile.funcs.keys.contains(s + "_any"))
+			if(ScriptFile.globalVariablesFile.funcs.containsKey(s + "_any"))
 			{
 				ScriptInstance inst = CmdScriptsEventHandler.runScript(ScriptFile.globalVariablesFile, sender, new String[] { s });
 				inst.variables.put("val", Integer.valueOf(i));
@@ -300,7 +302,7 @@ public class ScriptInstance
 				inst.gotoFunc(s + "_any");
 			}
 			
-			if(ScriptFile.globalVariablesFile.funcs.keys.contains(s + '_' + i))
+			if(ScriptFile.globalVariablesFile.funcs.containsKey(s + '_' + i))
 			{
 				ScriptInstance inst = CmdScriptsEventHandler.runScript(ScriptFile.globalVariablesFile, sender, new String[] { s });
 				inst.variables.put("val", Integer.valueOf(i));
@@ -312,7 +314,7 @@ public class ScriptInstance
 	
 	public static void clearGlobalVariables(ICommandSender sender)
 	{
-		if(ScriptFile.globalVariablesFile != null && ScriptFile.globalVariablesFile.funcs.keys.contains("cleared"))
+		if(ScriptFile.globalVariablesFile != null && ScriptFile.globalVariablesFile.funcs.containsKey("cleared"))
 		{
 			ScriptInstance inst = CmdScriptsEventHandler.runScript(ScriptFile.globalVariablesFile, sender, new String[0]);
 			inst.gotoFunc("cleared");
