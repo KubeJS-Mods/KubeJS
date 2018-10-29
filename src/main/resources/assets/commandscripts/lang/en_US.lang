@@ -1,5 +1,0 @@
-command.cmdscripts.failed=Script crashed at line %s!
-command.cmdscripts.not_found=Script '%s' not found!
-command.cmdscripts.unknown_var=Unknown variable: %s!
-command.cmdscripts.unknown_func=Unknown function: %s!
-command.cmdscripts.invalid_comp='%s' is not a valid comparator!

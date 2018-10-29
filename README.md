@@ -1,1 +1,1 @@
-# CommandScripts
+# WorldJS [![](http://cf.way2muchnoise.eu/worldjs.svg)](https://minecraft.curseforge.com/projects/worldjs) [![](http://cf.way2muchnoise.eu/versions/worldjs.svg)](https://minecraft.curseforge.com/projects/worldjs)

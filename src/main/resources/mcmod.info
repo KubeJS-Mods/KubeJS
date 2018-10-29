@@ -1,20 +1,17 @@
 [
-{
-  "modid": "CommandScripts",
-  "name": "CommandScripts",
-  "description": "CommandScripts mod",
-  "version": "${version}",
-  "url": "http://minecraft.curseforge.com/projects/commandscripts",
-  "updateUrl": "",
-  "authorList": [
-    "LatvianModder"
-  ],
-  "credits": "",
-  "logoFile": "",
-  "screenshots": [
-  ],
-  "parent":"",
-  "dependencies": [
-  ]
-}
+	{
+		"modid": "worldjs",
+		"name": "WorldJS",
+		"description": "",
+		"version": "${version}",
+		"mcversion": "${mcversion}",
+		"url": "https://minecraft.curseforge.com/projects/worldjs",
+		"updateUrl": "",
+		"authorList": ["LatvianModder"],
+		"credits": "",
+		"logoFile": "assets/worldjs/textures/logo.png",
+		"screenshots": [],
+		"parent": "",
+		"dependencies": []
+	}
 ]
