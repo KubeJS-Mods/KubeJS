@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.latmod.mods.worldjs.item.ItemStackJS;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,8 +19,11 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -28,6 +32,8 @@ import java.util.UUID;
 public enum UtilsJS
 {
 	INSTANCE;
+
+	public final Random random = new Random();
 
 	public ID id(String namespace, String path)
 	{
@@ -45,30 +51,58 @@ public enum UtilsJS
 		return s.isEmpty() ? c.getName().substring(c.getName().lastIndexOf('.') + 1) : s;
 	}
 
-	public List<String> listFieldsAndMethods(Class clazz)
+	public List<String> listFieldsAndMethods(Class clazz, int flags, String... exclude)
 	{
 		List<String> list = new ObjectArrayList<>();
 		StringBuilder builder = new StringBuilder();
+		Set<String> excludeSet = new ObjectOpenHashSet<>(Arrays.asList(exclude));
+		excludeSet.add("equals()");
+		excludeSet.add("toString()");
+		excludeSet.add("hashCode()");
+		excludeSet.add("getClass()");
+		excludeSet.add("wait()");
+		excludeSet.add("notify()");
+		excludeSet.add("notifyAll()");
 
 		for (Field field : clazz.getFields())
 		{
+			if (excludeSet.contains(field.getName()))
+			{
+				continue;
+			}
+
 			if ((field.getModifiers() & Modifier.PUBLIC) != 0)
 			{
-				if (field.isAnnotationPresent(Deprecated.class))
+				if ((flags & 2) == 0)
 				{
-					builder.append("@Deprecated ");
+					if (field.isAnnotationPresent(Deprecated.class))
+					{
+						builder.append("@Deprecated ");
+					}
+
+					if (field.isAnnotationPresent(Nullable.class))
+					{
+						builder.append("@Nullable ");
+					}
 				}
 
-				String m = Modifier.toString(field.getModifiers() & ~Modifier.PUBLIC);
-				builder.append(m);
-
-				if (!m.isEmpty())
+				if ((flags & 1) == 0)
 				{
+					String m = Modifier.toString(field.getModifiers() & ~Modifier.PUBLIC);
+					builder.append(m);
+
+					if (!m.isEmpty())
+					{
+						builder.append(' ');
+					}
+				}
+
+				if ((flags & 4) == 0)
+				{
+					builder.append(simpleClassName(field.getType()));
 					builder.append(' ');
 				}
 
-				builder.append(simpleClassName(field.getType()));
-				builder.append(' ');
 				builder.append(field.getName());
 
 				list.add(builder.toString());
@@ -78,70 +112,76 @@ public enum UtilsJS
 
 		for (Method method : clazz.getMethods())
 		{
-			switch (method.getName())
+			if (excludeSet.contains(method.getName() + "()"))
 			{
-				case "wait":
-				case "equals":
-				case "toString":
-				case "hashCode":
-				case "getClass":
-				case "notify":
-				case "notifyAll":
-					continue;
-				default:
+				continue;
+			}
+
+			if ((method.getModifiers() & Modifier.PUBLIC) != 0)
+			{
+				if ((flags & 2) == 0)
 				{
-					if ((method.getModifiers() & Modifier.PUBLIC) != 0)
+					if (method.isAnnotationPresent(Deprecated.class))
 					{
-						if (method.isAnnotationPresent(Deprecated.class))
-						{
-							builder.append("@Deprecated ");
-						}
+						builder.append("@Deprecated ");
+					}
 
-						String m = Modifier.toString(method.getModifiers() & ~Modifier.PUBLIC);
-						builder.append(m);
-
-						if (!m.isEmpty())
-						{
-							builder.append(' ');
-						}
-
-						builder.append(simpleClassName(method.getReturnType()));
-						builder.append(' ');
-						builder.append(method.getName());
-						builder.append('(');
-
-						boolean first = true;
-
-						for (Class c : method.getParameterTypes())
-						{
-							if (first)
-							{
-								first = false;
-							}
-							else
-							{
-								builder.append(',');
-								builder.append(' ');
-							}
-
-							builder.append(simpleClassName(c));
-						}
-
-						builder.append(')');
-
-						list.add(builder.toString());
-						builder.setLength(0);
+					if (method.isAnnotationPresent(Nullable.class))
+					{
+						builder.append("@Nullable ");
 					}
 				}
+
+				if ((flags & 1) == 0)
+				{
+					String m = Modifier.toString(method.getModifiers() & ~Modifier.PUBLIC);
+					builder.append(m);
+
+					if (!m.isEmpty())
+					{
+						builder.append(' ');
+					}
+				}
+
+				if ((flags & 4) == 0)
+				{
+					builder.append(simpleClassName(method.getReturnType()));
+					builder.append(' ');
+				}
+
+				builder.append(method.getName());
+				builder.append('(');
+
+				boolean first = true;
+
+				for (Class c : method.getParameterTypes())
+				{
+					if (first)
+					{
+						first = false;
+					}
+					else
+					{
+						builder.append(',');
+						builder.append(' ');
+					}
+
+					builder.append(simpleClassName(c));
+				}
+
+				builder.append(')');
+
+				list.add(builder.toString());
+				builder.setLength(0);
 			}
 		}
 
 		return list;
 	}
 
-	public List<String> listFieldsAndMethods(Object object)
+	public List<String> listFieldsAndMethods(Object object, int flags, String... exclude)
 	{
-		return listFieldsAndMethods(object.getClass());
+		return listFieldsAndMethods(object.getClass(), flags, exclude);
 	}
 
 	public JsonElement toJson(@Nullable Object object)

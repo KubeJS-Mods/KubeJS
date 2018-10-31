@@ -1,4 +1,4 @@
-package com.latmod.mods.worldjs;
+package com.latmod.mods.worldjs.mod;
 
 import net.minecraftforge.fml.common.eventhandler.Event;
 

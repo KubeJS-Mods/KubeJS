@@ -1,16 +1,16 @@
 package com.latmod.mods.worldjs.events;
 
-import com.latmod.mods.worldjs.WorldJSEventRegistryEvent;
+import com.latmod.mods.worldjs.mod.WorldJSEventRegistryEvent;
+import com.latmod.mods.worldjs.mod.WorldJSMod;
+import com.latmod.mods.worldjs.util.UtilsJS;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author LatvianModder
@@ -36,7 +36,7 @@ public enum EventsJS
 	}
 
 	private final Map<String, List<IEventHandler>> map = new Object2ObjectOpenHashMap<>();
-	private Set<String> registeredIDs;
+	private Map<String, Class> registeredIDs;
 
 	public void listen(String id, IEventHandler handler)
 	{
@@ -84,15 +84,32 @@ public enum EventsJS
 		registeredIDs = null;
 	}
 
-	public Set<String> list()
+	public Map<String, Class> list()
 	{
 		if (registeredIDs == null)
 		{
-			registeredIDs = new ObjectOpenHashSet<>();
-			MinecraftForge.EVENT_BUS.post(new WorldJSEventRegistryEvent(registeredIDs::add));
-			registeredIDs = Collections.unmodifiableSet(registeredIDs);
+			registeredIDs = new Object2ObjectOpenHashMap<>();
+			MinecraftForge.EVENT_BUS.post(new WorldJSEventRegistryEvent(registeredIDs::put));
+			registeredIDs = Collections.unmodifiableMap(registeredIDs);
 		}
 
 		return registeredIDs;
+	}
+
+	public void printAllEvents()
+	{
+		List<String> list = new ObjectArrayList<>();
+
+		for (Map.Entry<String, Class> entry : list().entrySet())
+		{
+			list.add(entry.getKey() + ": " + UtilsJS.INSTANCE.listFieldsAndMethods(entry.getValue(), 0, "isCancelled()", "cancel()", "canCancel()"));
+		}
+
+		list.sort(null);
+
+		for (String string : list)
+		{
+			WorldJSMod.LOGGER.info(string);
+		}
 	}
 }

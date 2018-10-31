@@ -92,56 +92,56 @@ public abstract class ItemStackJS
 
 	public static class Bound extends ItemStackJS
 	{
-		private final ItemStack bound;
+		private final ItemStack stack;
 
 		public Bound(ItemStack is)
 		{
 			super(is.getItem());
-			bound = is;
+			stack = is;
 		}
 
 		@Override
 		public ItemStackJS copy()
 		{
-			return new Bound(bound.copy());
+			return new Bound(stack.copy());
 		}
 
 		@Override
 		public ItemStackJS count(int c)
 		{
-			bound.setCount(c);
+			stack.setCount(c);
 			return this;
 		}
 
 		@Override
 		public int count()
 		{
-			return bound.getCount();
+			return stack.getCount();
 		}
 
 		@Override
 		public boolean isEmpty()
 		{
-			return bound.isEmpty();
+			return stack.isEmpty();
 		}
 
 		@Override
 		public ItemStackJS data(int d)
 		{
-			bound.setItemDamage(d);
+			stack.setItemDamage(d);
 			return this;
 		}
 
 		@Override
 		public int data()
 		{
-			return bound.getMetadata();
+			return stack.getMetadata();
 		}
 
 		@Override
 		public ItemStackJS nbt(@Nullable Object o)
 		{
-			bound.setTagCompound(UtilsJS.INSTANCE.toNBT(o));
+			stack.setTagCompound(UtilsJS.INSTANCE.toNBT(o));
 			return this;
 		}
 
@@ -149,13 +149,13 @@ public abstract class ItemStackJS
 		@Nullable
 		public NBTTagCompound rawNBT()
 		{
-			return bound.getTagCompound();
+			return stack.getTagCompound();
 		}
 
 		@Override
 		public ItemStackJS caps(@Nullable Object o)
 		{
-			NBTTagCompound n = bound.serializeNBT();
+			NBTTagCompound n = stack.serializeNBT();
 			NBTTagCompound nbt = UtilsJS.INSTANCE.toNBT(o);
 
 			if (nbt == null)
@@ -167,7 +167,7 @@ public abstract class ItemStackJS
 				n.setTag("ForgeCaps", n);
 			}
 
-			bound.deserializeNBT(n);
+			stack.deserializeNBT(n);
 			return this;
 		}
 
@@ -175,13 +175,13 @@ public abstract class ItemStackJS
 		@Nullable
 		public NBTTagCompound rawCaps()
 		{
-			return (NBTTagCompound) bound.serializeNBT().getTag("ForgeCaps");
+			return (NBTTagCompound) stack.serializeNBT().getTag("ForgeCaps");
 		}
 
 		@Override
 		public ItemStack itemStack()
 		{
-			return bound;
+			return stack;
 		}
 	}
 

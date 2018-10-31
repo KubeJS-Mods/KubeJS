@@ -1,14 +1,17 @@
-package com.latmod.mods.worldjs;
+package com.latmod.mods.worldjs.mod;
 
 import com.latmod.mods.worldjs.command.CommandWorldJS;
 import com.latmod.mods.worldjs.events.EventsJS;
 import com.latmod.mods.worldjs.item.ItemStackJS;
 import com.latmod.mods.worldjs.item.OreDictUtils;
+import com.latmod.mods.worldjs.player.PlayerChatEventJS;
+import com.latmod.mods.worldjs.player.PlayerEventJS;
 import com.latmod.mods.worldjs.text.TextColor;
 import com.latmod.mods.worldjs.text.TextUtils;
 import com.latmod.mods.worldjs.util.ScriptFile;
 import com.latmod.mods.worldjs.util.ServerJS;
 import com.latmod.mods.worldjs.util.UtilsJS;
+import com.latmod.mods.worldjs.world.WorldEventJS;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import jdk.nashorn.api.scripting.ClassFilter;
@@ -63,13 +66,13 @@ public class WorldJSMod
 	}
 
 	@SubscribeEvent
-	public void registerWJSEvents(WorldJSEventRegistryEvent event)
+	public static void registerWJSEvents(WorldJSEventRegistryEvent event)
 	{
-		event.register("world.load");
-		event.register("world.unload");
-		event.register("player.logged_in");
-		event.register("player.logged_out");
-		event.register("player.chat");
+		event.register("world.load", WorldEventJS.class);
+		event.register("world.unload", WorldEventJS.class);
+		event.register("player.logged_in", PlayerEventJS.class);
+		event.register("player.logged_out", PlayerEventJS.class);
+		event.register("player.chat", PlayerChatEventJS.class);
 	}
 
 	public static void loadScripts()

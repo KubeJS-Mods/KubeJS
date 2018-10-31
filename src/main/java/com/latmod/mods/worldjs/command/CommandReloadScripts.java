@@ -1,6 +1,6 @@
 package com.latmod.mods.worldjs.command;
 
-import com.latmod.mods.worldjs.WorldJSMod;
+import com.latmod.mods.worldjs.mod.WorldJSMod;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;

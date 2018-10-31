@@ -1,6 +1,6 @@
 package com.latmod.mods.worldjs.player;
 
-import com.latmod.mods.worldjs.WorldJSMod;
+import com.latmod.mods.worldjs.mod.WorldJSMod;
 import com.latmod.mods.worldjs.world.WorldEventJS;
 import net.minecraft.entity.Entity;
 

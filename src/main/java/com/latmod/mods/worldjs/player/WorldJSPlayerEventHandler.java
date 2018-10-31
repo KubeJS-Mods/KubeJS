@@ -1,8 +1,8 @@
 package com.latmod.mods.worldjs.player;
 
-import com.latmod.mods.worldjs.WorldJSMod;
 import com.latmod.mods.worldjs.entity.EntityJS;
 import com.latmod.mods.worldjs.events.EventsJS;
+import com.latmod.mods.worldjs.mod.WorldJSMod;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.event.ServerChatEvent;

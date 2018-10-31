@@ -1,7 +1,7 @@
 package com.latmod.mods.worldjs.world;
 
-import com.latmod.mods.worldjs.WorldJSMod;
 import com.latmod.mods.worldjs.events.EventJS;
+import com.latmod.mods.worldjs.mod.WorldJSMod;
 import net.minecraft.world.World;
 
 /**
