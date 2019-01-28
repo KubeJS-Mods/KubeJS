@@ -32,7 +32,7 @@ minecraft {
 	mappings = "${mappings_version}"
 
 	replace "0.0.0.forge", min_forge_version
-	replace "0.0.0.worldjs", project.version
+	replace "0.0.0.kubejs", project.version
 	replaceIn "${mod_reference}"
 }
 

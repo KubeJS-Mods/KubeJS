@@ -1,1 +1,1 @@
-# WorldJS [![](http://cf.way2muchnoise.eu/worldjs.svg)](https://minecraft.curseforge.com/projects/worldjs) [![](http://cf.way2muchnoise.eu/versions/worldjs.svg)](https://minecraft.curseforge.com/projects/worldjs)
+# KubeJS [![](http://cf.way2muchnoise.eu/kubejs.svg)](https://minecraft.curseforge.com/projects/kubejs) [![](http://cf.way2muchnoise.eu/versions/kubejs.svg)](https://minecraft.curseforge.com/projects/kubejs)

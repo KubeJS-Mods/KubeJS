@@ -1,15 +1,15 @@
 [
 	{
-		"modid": "worldjs",
-		"name": "WorldJS",
+		"modid": "kubejs",
+		"name": "KubeJS",
 		"description": "",
 		"version": "${version}",
 		"mcversion": "${mcversion}",
-		"url": "https://minecraft.curseforge.com/projects/worldjs",
+		"url": "https://minecraft.curseforge.com/projects/kubejs",
 		"updateUrl": "",
 		"authorList": ["LatvianModder"],
 		"credits": "",
-		"logoFile": "assets/worldjs/textures/logo.png",
+		"logoFile": "assets/kubejs/textures/logo.png",
 		"screenshots": [],
 		"parent": "",
 		"dependencies": []
