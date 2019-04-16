@@ -42,6 +42,11 @@ public class KubeJSPlayerEventHandler
 	@SubscribeEvent
 	public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event)
 	{
+		if (!KubeJS.server.playerMap.containsKey(event.player.getUniqueID()))
+		{
+			return;
+		}
+
 		EventsJS.INSTANCE.post(KubeJSEvents.PLAYER_LOGGED_OUT, new PlayerEventJS(event.player));
 		KubeJS.server.playerMap.remove(event.player.getUniqueID());
 		KubeJS.server.players.clear();
