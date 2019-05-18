@@ -1,6 +1,8 @@
 package com.latmod.mods.kubejs;
 
 import com.latmod.mods.kubejs.command.CommandKubeJS;
+import com.latmod.mods.kubejs.crafting.CraftingHandlerRegistryEvent;
+import com.latmod.mods.kubejs.crafting.RecipeHandlerRegistry;
 import com.latmod.mods.kubejs.events.EventsJS;
 import com.latmod.mods.kubejs.item.ItemStackJS;
 import com.latmod.mods.kubejs.item.OreDictUtils;
@@ -93,6 +95,7 @@ public class KubeJS
 		bindings.put("text", TextUtils.INSTANCE);
 		bindings.put("oredict", OreDictUtils.INSTANCE);
 		bindings.put("EMPTY_ITEM", ItemStackJS.EMPTY);
+		bindings.put("crafting_handlers", RecipeHandlerRegistry.INSTANCE);
 
 		for (TextColor color : TextColor.VALUES)
 		{
@@ -103,6 +106,8 @@ public class KubeJS
 		{
 			bindings.put("SLOT_" + slot.getName().toUpperCase(), slot);
 		}
+
+		MinecraftForge.EVENT_BUS.post(new CraftingHandlerRegistryEvent(RecipeHandlerRegistry.INSTANCE));
 
 		for (ScriptFile file : SCRIPTS.values())
 		{

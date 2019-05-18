@@ -8,11 +8,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.MathHelper;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * @author LatvianModder
  */
-public abstract class ItemStackJS
+public abstract class ItemStackJS implements IIngredientJS
 {
 	public static final ItemStackJS EMPTY = new ItemStackJS(ItemStack.EMPTY)
 	{
@@ -87,6 +88,12 @@ public abstract class ItemStackJS
 		public String toString()
 		{
 			return "air";
+		}
+
+		@Override
+		public boolean test(ItemStackJS stack)
+		{
+			return false;
 		}
 	};
 
@@ -421,5 +428,11 @@ public abstract class ItemStackJS
 		}
 
 		return builder.toString();
+	}
+
+	@Override
+	public boolean test(ItemStackJS stack)
+	{
+		return item == stack.item && (data() == 32767 || data() == stack.data()) && Objects.equals(rawNBT(), stack.rawNBT());
 	}
 }

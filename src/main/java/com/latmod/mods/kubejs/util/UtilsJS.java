@@ -8,6 +8,7 @@ import com.google.gson.JsonPrimitive;
 import com.latmod.mods.kubejs.item.ItemStackJS;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -352,9 +353,13 @@ public enum UtilsJS
 		return null;
 	}
 
-	public ItemStackJS item(Object o)
+	public ItemStackJS item(@Nullable Object o)
 	{
-		if (o instanceof ItemStackJS)
+		if (o == null)
+		{
+			return ItemStackJS.EMPTY;
+		}
+		else if (o instanceof ItemStackJS)
 		{
 			return (ItemStackJS) o;
 		}
@@ -416,5 +421,58 @@ public enum UtilsJS
 		}
 
 		return ItemStackJS.EMPTY;
+	}
+
+	public JsonElement toJsonElement(@Nullable Object object)
+	{
+		if (object == null)
+		{
+			return JsonNull.INSTANCE;
+		}
+		else if (object instanceof Number)
+		{
+			return new JsonPrimitive((Number) object);
+		}
+		else if (object instanceof String)
+		{
+			return new JsonPrimitive((String) object);
+		}
+		else if (object instanceof Character)
+		{
+			return new JsonPrimitive((Character) object);
+		}
+		else if (object instanceof Boolean)
+		{
+			return new JsonPrimitive((Boolean) object);
+		}
+		else if (object instanceof JSObject)
+		{
+			JSObject js = (JSObject) object;
+
+			if (js.isArray())
+			{
+				JsonArray a = new JsonArray();
+
+				for (String s : js.keySet())
+				{
+					a.add(toJsonElement(js.getMember(s)));
+				}
+
+				return a;
+			}
+			else
+			{
+				JsonObject o = new JsonObject();
+
+				for (String s : js.keySet())
+				{
+					o.add(s, toJsonElement(js.getMember(s)));
+				}
+
+				return o;
+			}
+		}
+
+		return JsonNull.INSTANCE;
 	}
 }
