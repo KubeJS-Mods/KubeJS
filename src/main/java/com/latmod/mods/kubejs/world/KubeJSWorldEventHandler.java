@@ -9,6 +9,11 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author LatvianModder
@@ -43,6 +48,33 @@ public class KubeJSWorldEventHandler
 				EventsJS.INSTANCE.post(KubeJSEvents.SERVER_UNLOAD, new ServerEventJS(KubeJS.server));
 				KubeJS.server.stop();
 				KubeJS.server = null;
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public static void onServerTick(TickEvent.ServerTickEvent event)
+	{
+		if (event.phase == TickEvent.Phase.END && !KubeJS.server.scheduledEvents.isEmpty())
+		{
+			long now = System.currentTimeMillis();
+			Iterator<ScheduledEvent> eventIterator = KubeJS.server.scheduledEvents.iterator();
+			List<ScheduledEvent> list = new ArrayList<>();
+
+			while (eventIterator.hasNext())
+			{
+				ScheduledEvent e = eventIterator.next();
+
+				if (now >= e.endTime)
+				{
+					list.add(e);
+					eventIterator.remove();
+				}
+			}
+
+			for (ScheduledEvent e : list)
+			{
+				e.function.call(e.function, e);
 			}
 		}
 	}

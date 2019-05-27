@@ -24,6 +24,7 @@ import net.minecraft.util.text.event.HoverEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
@@ -34,6 +35,7 @@ import javax.script.ScriptContext;
 import javax.script.SimpleBindings;
 import java.io.File;
 import java.io.FileReader;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +63,12 @@ public class KubeJS
 	public void onPreInit(FMLPreInitializationEvent event)
 	{
 		loadScripts();
+	}
+
+	@Mod.EventHandler
+	public void onPostInit(FMLPostInitializationEvent event)
+	{
+		EventsJS.INSTANCE.post(KubeJSEvents.POSTINIT, new PostInitEventJS(new HashSet<>(Loader.instance().getIndexedModList().keySet())));
 	}
 
 	@Mod.EventHandler
@@ -96,6 +104,9 @@ public class KubeJS
 		bindings.put("oredict", OreDictUtils.INSTANCE);
 		bindings.put("EMPTY_ITEM", ItemStackJS.EMPTY);
 		bindings.put("crafting_handlers", RecipeHandlerRegistry.INSTANCE);
+		bindings.put("SECOND", 1000L);
+		bindings.put("MINUTE", 60000L);
+		bindings.put("HOUR", 3600000L);
 
 		for (TextColor color : TextColor.VALUES)
 		{

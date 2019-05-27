@@ -2,9 +2,11 @@ package com.latmod.mods.kubejs.util;
 
 import com.latmod.mods.kubejs.player.PlayerJS;
 import com.latmod.mods.kubejs.text.TextUtils;
+import com.latmod.mods.kubejs.world.ScheduledEvent;
 import com.latmod.mods.kubejs.world.WorldJS;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
@@ -24,6 +26,7 @@ public class ServerJS
 	public final Map<UUID, PlayerJS> playerMap;
 	public final List<PlayerJS> players;
 	private boolean running;
+	public final List<ScheduledEvent> scheduledEvents;
 
 	public ServerJS(MinecraftServer ms, WorldServer w)
 	{
@@ -32,6 +35,7 @@ public class ServerJS
 		playerMap = new Object2ObjectOpenHashMap<>();
 		players = new ObjectArrayList<>();
 		running = true;
+		scheduledEvents = new ObjectArrayList<>();
 	}
 
 	public boolean isRunning()
@@ -94,5 +98,10 @@ public class ServerJS
 	public void runCommand(String command)
 	{
 		server.getCommandManager().executeCommand(server, command);
+	}
+
+	public void schedule(long timer, JSObject mirror)
+	{
+		scheduledEvents.add(new ScheduledEvent(this, timer, mirror));
 	}
 }

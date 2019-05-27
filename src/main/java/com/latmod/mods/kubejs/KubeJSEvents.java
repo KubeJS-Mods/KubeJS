@@ -14,6 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 @Mod.EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSEvents
 {
+	public static final String POSTINIT = "postinit";
 	public static final String SERVER_LOAD = "server.load";
 	public static final String SERVER_UNLOAD = "server.unload";
 	public static final String WORLD_LOAD = "world.load";
@@ -26,6 +27,7 @@ public class KubeJSEvents
 	@SubscribeEvent
 	public static void registerWJSEvents(KubeJSEventRegistryEvent event)
 	{
+		event.register(POSTINIT, PostInitEventJS.class);
 		event.register(SERVER_LOAD, ServerEventJS.class);
 		event.register(SERVER_UNLOAD, ServerEventJS.class);
 		event.register(WORLD_LOAD, WorldEventJS.class);

@@ -20,7 +20,10 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -35,6 +38,21 @@ public enum UtilsJS
 	INSTANCE;
 
 	public final Random random = new Random();
+
+	public ArrayList arrayList()
+	{
+		return new ArrayList();
+	}
+
+	public HashSet hashSet()
+	{
+		return new HashSet();
+	}
+
+	public HashMap hashMap()
+	{
+		return new HashMap();
+	}
 
 	public ID id(String namespace, String path)
 	{

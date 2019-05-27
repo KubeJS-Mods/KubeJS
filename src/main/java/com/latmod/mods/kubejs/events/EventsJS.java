@@ -5,7 +5,7 @@ import com.latmod.mods.kubejs.KubeJSEventRegistryEvent;
 import com.latmod.mods.kubejs.util.UtilsJS;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import jdk.nashorn.api.scripting.JSObject;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Collections;
@@ -19,28 +19,12 @@ public enum EventsJS
 {
 	INSTANCE;
 
-	private static class ScriptFunctionHandler implements IEventHandler
-	{
-		private final ScriptObjectMirror function;
-
-		public ScriptFunctionHandler(ScriptObjectMirror f)
-		{
-			function = f;
-		}
-
-		@Override
-		public void onEvent(EventJS event)
-		{
-			function.call(function, event);
-		}
-	}
-
-	private final Map<String, List<IEventHandler>> map = new Object2ObjectOpenHashMap<>();
+	private final Map<String, List<JSObject>> map = new Object2ObjectOpenHashMap<>();
 	private Map<String, Class> registeredIDs;
 
-	public void listen(String id, IEventHandler handler)
+	public void listen(String id, JSObject handler)
 	{
-		List<IEventHandler> list = map.get(id);
+		List<JSObject> list = map.get(id);
 
 		if (list == null)
 		{
@@ -51,22 +35,17 @@ public enum EventsJS
 		list.add(handler);
 	}
 
-	public void listen(String id, ScriptObjectMirror handler)
-	{
-		listen(id, new ScriptFunctionHandler(handler));
-	}
-
 	public boolean post(String id, EventJS event)
 	{
-		List<IEventHandler> list = map.get(id);
+		List<JSObject> list = map.get(id);
 
 		if (list != null)
 		{
 			boolean c = event.canCancel();
 
-			for (IEventHandler handler : list)
+			for (JSObject handler : list)
 			{
-				handler.onEvent(event);
+				handler.call(handler, event);
 
 				if (c && event.isCancelled())
 				{
