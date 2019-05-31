@@ -5,7 +5,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.latmod.mods.kubejs.KubeJS;
+import com.latmod.mods.kubejs.item.IIngredientJS;
+import com.latmod.mods.kubejs.item.IngredientListJS;
 import com.latmod.mods.kubejs.item.ItemStackJS;
+import com.latmod.mods.kubejs.item.OreDictionaryIngredientJS;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import jdk.nashorn.api.scripting.JSObject;
@@ -15,15 +19,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -39,35 +42,50 @@ public enum UtilsJS
 
 	public final Random random = new Random();
 
-	public ArrayList arrayList()
-	{
-		return new ArrayList();
-	}
-
-	public HashSet hashSet()
-	{
-		return new HashSet();
-	}
-
-	public HashMap hashMap()
-	{
-		return new HashMap();
-	}
-
 	public ID id(String namespace, String path)
 	{
 		return new ID(namespace, path);
 	}
 
-	public ID id(String id)
+	public ID id(Object id)
 	{
-		return new ID(id);
+		return id instanceof ID ? (ID) id : new ID(String.valueOf(id));
 	}
 
 	public String simpleClassName(Class c)
 	{
 		String s = c.getSimpleName();
 		return s.isEmpty() ? c.getName().substring(c.getName().lastIndexOf('.') + 1) : s;
+	}
+
+	public int parseInt(String s, int def)
+	{
+		try
+		{
+			return Integer.parseInt(s);
+		}
+		catch (Exception ex)
+		{
+			return def;
+		}
+	}
+
+	public double parseDouble(String s, double def)
+	{
+		try
+		{
+			return Double.parseDouble(s);
+		}
+		catch (Exception ex)
+		{
+			return def;
+		}
+	}
+
+	@Nullable
+	public SoundEvent sound(Object id)
+	{
+		return ForgeRegistries.SOUND_EVENTS.getValue(id(id).getResourceLocation());
 	}
 
 	public List<String> listFieldsAndMethods(Class clazz, int flags, String... exclude)
@@ -439,6 +457,42 @@ public enum UtilsJS
 		}
 
 		return ItemStackJS.EMPTY;
+	}
+
+	public IIngredientJS ingredient(@Nullable Object object)
+	{
+		if (object instanceof String)
+		{
+			if (object.toString().startsWith("ore:"))
+			{
+				return new OreDictionaryIngredientJS(object.toString().substring(4));
+			}
+
+			return item(KubeJS.ID_CONTEXT.appendModId(object.toString()));
+		}
+		else if (object instanceof JSObject)
+		{
+			JSObject js = (JSObject) object;
+
+			if (js.isArray())
+			{
+				IngredientListJS list = new IngredientListJS();
+
+				for (String key : js.keySet())
+				{
+					IIngredientJS ingredient = ingredient(js.getMember(key));
+
+					if (ingredient != ItemStackJS.EMPTY)
+					{
+						list.ingredients.add(ingredient);
+					}
+				}
+
+				return list.ingredients.isEmpty() ? ItemStackJS.EMPTY : list;
+			}
+		}
+
+		return item(object);
 	}
 
 	public JsonElement toJsonElement(@Nullable Object object)

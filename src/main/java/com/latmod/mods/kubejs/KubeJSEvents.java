@@ -1,6 +1,7 @@
 package com.latmod.mods.kubejs;
 
-import com.latmod.mods.kubejs.crafting.RecipeEventJS;
+import com.latmod.mods.kubejs.crafting.handlers.CraftingTableRecipeEventJS;
+import com.latmod.mods.kubejs.crafting.handlers.FurnaceRecipeEventJS;
 import com.latmod.mods.kubejs.player.PlayerChatEventJS;
 import com.latmod.mods.kubejs.player.PlayerEventJS;
 import com.latmod.mods.kubejs.world.ServerEventJS;
@@ -22,7 +23,8 @@ public class KubeJSEvents
 	public static final String PLAYER_LOGGED_IN = "player.logged_in";
 	public static final String PLAYER_LOGGED_OUT = "player.logged_out";
 	public static final String PLAYER_CHAT = "player.chat";
-	public static final String RECIPES = "recipes";
+	public static final String RECIPES_CRAFTING_TABLE = "recipes.crafting_table";
+	public static final String RECIPES_FURNACE = "recipes.furnace";
 
 	@SubscribeEvent
 	public static void registerWJSEvents(KubeJSEventRegistryEvent event)
@@ -35,6 +37,7 @@ public class KubeJSEvents
 		event.register(PLAYER_LOGGED_IN, PlayerEventJS.class);
 		event.register(PLAYER_LOGGED_OUT, PlayerEventJS.class);
 		event.register(PLAYER_CHAT, PlayerChatEventJS.class);
-		event.register(RECIPES, RecipeEventJS.class);
+		event.register(RECIPES_CRAFTING_TABLE, CraftingTableRecipeEventJS.class);
+		event.register(RECIPES_FURNACE, FurnaceRecipeEventJS.class);
 	}
 }

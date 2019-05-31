@@ -1,8 +1,6 @@
 package com.latmod.mods.kubejs;
 
 import com.latmod.mods.kubejs.command.CommandKubeJS;
-import com.latmod.mods.kubejs.crafting.CraftingHandlerRegistryEvent;
-import com.latmod.mods.kubejs.crafting.RecipeHandlerRegistry;
 import com.latmod.mods.kubejs.events.EventsJS;
 import com.latmod.mods.kubejs.item.ItemStackJS;
 import com.latmod.mods.kubejs.item.OreDictUtils;
@@ -22,6 +20,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.HoverEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.crafting.JsonContext;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -57,11 +56,13 @@ public class KubeJS
 	public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
 	public static final Map<String, ScriptFile> SCRIPTS = new Object2ObjectOpenHashMap<>();
 	public static final List<ITextComponent> ERRORS = new ObjectArrayList<>();
+	public static JsonContext ID_CONTEXT;
 	public static ServerJS server;
 
 	@Mod.EventHandler
 	public void onPreInit(FMLPreInitializationEvent event)
 	{
+		ID_CONTEXT = new JsonContext(KubeJS.MOD_ID);
 		loadScripts();
 	}
 
@@ -92,7 +93,7 @@ public class KubeJS
 		loadScripts(new File(Loader.instance().getConfigDir().getParentFile(), "scripts"), "");
 
 		NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
-		ClassFilter classFilter = s -> true;
+		ClassFilter classFilter = s -> true; //TODO: Improve this
 
 		Bindings bindings = new SimpleBindings();
 		MinecraftForge.EVENT_BUS.post(new KubeJSBindingsEvent(bindings::put));
@@ -103,7 +104,6 @@ public class KubeJS
 		bindings.put("text", TextUtils.INSTANCE);
 		bindings.put("oredict", OreDictUtils.INSTANCE);
 		bindings.put("EMPTY_ITEM", ItemStackJS.EMPTY);
-		bindings.put("crafting_handlers", RecipeHandlerRegistry.INSTANCE);
 		bindings.put("SECOND", 1000L);
 		bindings.put("MINUTE", 60000L);
 		bindings.put("HOUR", 3600000L);
@@ -118,8 +118,6 @@ public class KubeJS
 			bindings.put("SLOT_" + slot.getName().toUpperCase(), slot);
 		}
 
-		MinecraftForge.EVENT_BUS.post(new CraftingHandlerRegistryEvent(RecipeHandlerRegistry.INSTANCE));
-
 		for (ScriptFile file : SCRIPTS.values())
 		{
 			file.setScript(null);
@@ -127,6 +125,13 @@ public class KubeJS
 			try (FileReader reader = new FileReader(file.getFile()))
 			{
 				NashornScriptEngine script = (NashornScriptEngine) factory.getScriptEngine(classFilter);
+				Bindings b = script.getBindings(ScriptContext.ENGINE_SCOPE);
+				b.remove("print");
+				b.remove("load");
+				b.remove("loadWithNewGlobal");
+				b.remove("exit");
+				b.remove("quit");
+				script.getContext().setBindings(b, ScriptContext.ENGINE_SCOPE);
 				script.getContext().setBindings(bindings, ScriptContext.GLOBAL_SCOPE);
 				script.eval(reader);
 				file.setScript(script);

@@ -1,3 +1,2 @@
-@javax.annotation.ParametersAreNonnullByDefault
-@mcp.MethodsReturnNonnullByDefault
+@NonnullByDefault
 package com.latmod.mods.kubejs;

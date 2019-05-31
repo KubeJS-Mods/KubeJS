@@ -5,7 +5,6 @@ import com.latmod.mods.kubejs.KubeJSEventRegistryEvent;
 import com.latmod.mods.kubejs.util.UtilsJS;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import jdk.nashorn.api.scripting.JSObject;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Collections;
@@ -19,12 +18,12 @@ public enum EventsJS
 {
 	INSTANCE;
 
-	private final Map<String, List<JSObject>> map = new Object2ObjectOpenHashMap<>();
+	private final Map<String, List<IEventHandler>> map = new Object2ObjectOpenHashMap<>();
 	private Map<String, Class> registeredIDs;
 
-	public void listen(String id, JSObject handler)
+	public void listen(String id, IEventHandler handler)
 	{
-		List<JSObject> list = map.get(id);
+		List<IEventHandler> list = map.get(id);
 
 		if (list == null)
 		{
@@ -37,15 +36,15 @@ public enum EventsJS
 
 	public boolean post(String id, EventJS event)
 	{
-		List<JSObject> list = map.get(id);
+		List<IEventHandler> list = map.get(id);
 
 		if (list != null)
 		{
 			boolean c = event.canCancel();
 
-			for (JSObject handler : list)
+			for (IEventHandler handler : list)
 			{
-				handler.call(handler, event);
+				handler.onEvent(event);
 
 				if (c && event.isCancelled())
 				{

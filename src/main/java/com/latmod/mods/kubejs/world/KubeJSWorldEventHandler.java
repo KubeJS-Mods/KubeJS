@@ -74,7 +74,7 @@ public class KubeJSWorldEventHandler
 
 			for (ScheduledEvent e : list)
 			{
-				e.function.call(e.function, e);
+				e.function.onCallback(e);
 			}
 		}
 	}

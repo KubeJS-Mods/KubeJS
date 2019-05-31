@@ -4,11 +4,14 @@ import com.latmod.mods.kubejs.util.ID;
 import com.latmod.mods.kubejs.util.UtilsJS;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.MathHelper;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author LatvianModder
@@ -94,6 +97,18 @@ public abstract class ItemStackJS implements IIngredientJS
 		public boolean test(ItemStackJS stack)
 		{
 			return false;
+		}
+
+		@Override
+		public Set<ItemStackJS> getStacks()
+		{
+			return Collections.emptySet();
+		}
+
+		@Override
+		public Ingredient createVanillaIngredient()
+		{
+			return Ingredient.EMPTY;
 		}
 	};
 
@@ -434,5 +449,35 @@ public abstract class ItemStackJS implements IIngredientJS
 	public boolean test(ItemStackJS stack)
 	{
 		return item == stack.item && (data() == 32767 || data() == stack.data()) && Objects.equals(rawNBT(), stack.rawNBT());
+	}
+
+	@Override
+	public Set<ItemStackJS> getStacks()
+	{
+		return Collections.singleton(this);
+	}
+
+	@Override
+	public Ingredient createVanillaIngredient()
+	{
+		return Ingredient.fromStacks(itemStack());
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return super.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj instanceof ItemStackJS)
+		{
+			ItemStackJS stack = (ItemStackJS) obj;
+			return item == stack.item && data() == stack.data() && Objects.equals(rawNBT(), stack.rawNBT());
+		}
+
+		return false;
 	}
 }

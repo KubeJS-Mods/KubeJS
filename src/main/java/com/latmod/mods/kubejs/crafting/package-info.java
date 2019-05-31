@@ -1,3 +1,2 @@
-@javax.annotation.ParametersAreNonnullByDefault
-@mcp.MethodsReturnNonnullByDefault
+@com.latmod.mods.kubejs.NonnullByDefault
 package com.latmod.mods.kubejs.crafting;

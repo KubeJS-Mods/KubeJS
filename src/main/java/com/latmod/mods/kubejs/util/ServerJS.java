@@ -2,11 +2,11 @@ package com.latmod.mods.kubejs.util;
 
 import com.latmod.mods.kubejs.player.PlayerJS;
 import com.latmod.mods.kubejs.text.TextUtils;
+import com.latmod.mods.kubejs.world.IScheduledEventCallback;
 import com.latmod.mods.kubejs.world.ScheduledEvent;
 import com.latmod.mods.kubejs.world.WorldJS;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
@@ -100,8 +100,8 @@ public class ServerJS
 		server.getCommandManager().executeCommand(server, command);
 	}
 
-	public void schedule(long timer, JSObject mirror)
+	public void schedule(long timer, IScheduledEventCallback event)
 	{
-		scheduledEvents.add(new ScheduledEvent(this, timer, mirror));
+		scheduledEvents.add(new ScheduledEvent(this, timer, event));
 	}
 }
