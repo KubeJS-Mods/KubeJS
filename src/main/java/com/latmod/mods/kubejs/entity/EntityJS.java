@@ -45,11 +45,46 @@ public class EntityJS
 
 	public boolean equals(Object o)
 	{
-		return o == this || o instanceof EntityJS && getID().equals(((EntityJS) o).getID());
+		if (o == this)
+		{
+			return true;
+		}
+		else if (o instanceof EntityJS)
+		{
+			EntityJS e = (EntityJS) o;
+			return entity == e.entity || entity.getUniqueID().equals(e.entity.getUniqueID());
+		}
+
+		return false;
 	}
 
 	public String toString()
 	{
 		return getName();
+	}
+
+	public double getX()
+	{
+		return entity.posX;
+	}
+
+	public double getY()
+	{
+		return entity.posY;
+	}
+
+	public double getZ()
+	{
+		return entity.posZ;
+	}
+
+	public void setPosition(double x, double y, double z)
+	{
+		setPositionAndRotation(x, y, z, entity.rotationYaw, entity.rotationPitch);
+	}
+
+	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch)
+	{
+		entity.setLocationAndAngles(x, y, z, yaw, pitch);
 	}
 }

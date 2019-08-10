@@ -195,7 +195,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 				r.unfreeze();
 			}
 
-			r.remove(UtilsJS.INSTANCE.id(id).getResourceLocation());
+			r.remove(UtilsJS.INSTANCE.idMC(UtilsJS.INSTANCE.id(id)));
 
 			if (frozen)
 			{
@@ -206,7 +206,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 
 	public void removeGroup(Object id)
 	{
-		ResourceLocation group = UtilsJS.INSTANCE.id(id).getResourceLocation();
+		ResourceLocation group = UtilsJS.INSTANCE.idMC(UtilsJS.INSTANCE.id(id));
 		removeAdvanced(recipe -> new ResourceLocation(recipe.getGroup()).equals(group));
 	}
 

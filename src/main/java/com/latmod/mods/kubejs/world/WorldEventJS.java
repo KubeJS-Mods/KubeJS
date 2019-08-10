@@ -19,6 +19,6 @@ public class WorldEventJS extends ServerEventJS
 	public WorldEventJS(World w)
 	{
 		super(KubeJS.server);
-		world = KubeJS.server.getWorld(w.provider.getDimension());
+		world = KubeJS.server.world(w.provider.getDimension());
 	}
 }

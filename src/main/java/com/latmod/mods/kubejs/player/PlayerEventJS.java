@@ -19,7 +19,7 @@ public class PlayerEventJS extends WorldEventJS
 
 	public PlayerEventJS(Entity p)
 	{
-		super(KubeJS.server.getWorld(p.world.provider.getDimension()));
-		player = KubeJS.server.getPlayer(p.getUniqueID());
+		super(KubeJS.server.world(p.world.provider.getDimension()));
+		player = KubeJS.server.player(p.getUniqueID());
 	}
 }

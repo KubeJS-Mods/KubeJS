@@ -1,8 +1,8 @@
 package com.latmod.mods.kubejs.util;
 
 import net.minecraft.util.ResourceLocation;
-import org.apache.commons.lang3.Validate;
 
+import javax.annotation.Nullable;
 import java.util.Locale;
 
 /**
@@ -13,26 +13,30 @@ public final class ID implements Comparable<ID>
 	public final String namespace;
 	public final String path;
 
-	private ID(int unused, String... resourceName)
-	{
-		namespace = org.apache.commons.lang3.StringUtils.isEmpty(resourceName[0]) ? "minecraft" : resourceName[0].toLowerCase(Locale.ROOT);
-		path = resourceName[1].toLowerCase(Locale.ROOT);
-		Validate.notNull(path);
-	}
-
 	public ID(String resourceName)
 	{
-		this(0, splitObjectName(resourceName));
+		int i = resourceName.indexOf(':');
+
+		if (i == -1)
+		{
+			namespace = "minecraft";
+			path = resourceName.toLowerCase(Locale.ROOT);
+		}
+		else
+		{
+			namespace = resourceName.substring(0, i).toLowerCase(Locale.ROOT);
+			path = resourceName.substring(i + 1).toLowerCase(Locale.ROOT);
+		}
 	}
 
 	public ID(String namespace, String path)
 	{
-		this(0, namespace, path);
+		this(namespace.isEmpty() ? path : (namespace + ':' + path));
 	}
 
-	public ID(ResourceLocation id)
+	public ID(@Nullable ResourceLocation id)
 	{
-		this(0, id.getNamespace(), id.getPath());
+		this(id == null ? "minecraft:null" : id.toString());
 	}
 
 	public static String[] splitObjectName(String toSplit)
@@ -83,10 +87,5 @@ public final class ID implements Comparable<ID>
 	{
 		int i = namespace.compareTo(id.namespace);
 		return i == 0 ? path.compareTo(id.path) : i;
-	}
-
-	public ResourceLocation getResourceLocation()
-	{
-		return new ResourceLocation(namespace, path);
 	}
 }

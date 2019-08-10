@@ -8,6 +8,7 @@ import com.latmod.mods.kubejs.util.UtilsJS;
 import com.latmod.mods.kubejs.world.WorldJS;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.stats.StatBase;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
@@ -23,6 +24,13 @@ public class PlayerJS extends EntityJS
 	{
 		super(w, p);
 		player = p;
+	}
+
+	@Override
+	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch)
+	{
+		super.setPositionAndRotation(x, y, z, yaw, pitch);
+		player.connection.setPlayerLocation(x, y, z, yaw, pitch);
 	}
 
 	public void sendStatusMessage(Object... message)
@@ -58,5 +66,41 @@ public class PlayerJS extends EntityJS
 		}
 
 		return inventory;
+	}
+
+	public boolean isCreativeMode()
+	{
+		return player.capabilities.isCreativeMode;
+	}
+
+	public boolean isSpectator()
+	{
+		return player.isSpectator();
+	}
+
+	public int getStat(Object id)
+	{
+		StatBase stat = UtilsJS.INSTANCE.stat(id);
+		return stat == null ? 0 : player.getStatFile().readStat(stat);
+	}
+
+	public void setStat(Object id, int value)
+	{
+		StatBase stat = UtilsJS.INSTANCE.stat(id);
+
+		if (stat != null)
+		{
+			player.getStatFile().unlockAchievement(player, stat, value);
+		}
+	}
+
+	public void addStat(Object id, int value)
+	{
+		StatBase stat = UtilsJS.INSTANCE.stat(id);
+
+		if (stat != null)
+		{
+			player.getStatFile().increaseStat(player, stat, value);
+		}
 	}
 }

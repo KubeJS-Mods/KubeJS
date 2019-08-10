@@ -12,7 +12,6 @@ import com.latmod.mods.kubejs.util.UtilsJS;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import jdk.nashorn.api.scripting.ClassFilter;
-import jdk.nashorn.api.scripting.NashornScriptEngine;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.util.text.ITextComponent;
@@ -31,9 +30,13 @@ import org.apache.logging.log4j.Logger;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
 import javax.script.SimpleBindings;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +61,11 @@ public class KubeJS
 	public static final List<ITextComponent> ERRORS = new ObjectArrayList<>();
 	public static JsonContext ID_CONTEXT;
 	public static ServerJS server;
+
+	private static final String[] blacklistedClasses = {
+			"java.net.",
+			"java.io."
+	};
 
 	@Mod.EventHandler
 	public void onPreInit(FMLPreInitializationEvent event)
@@ -91,9 +99,20 @@ public class KubeJS
 		EventsJS.INSTANCE.clear();
 
 		loadScripts(new File(Loader.instance().getConfigDir().getParentFile(), "scripts"), "");
+		loadScripts(new File(Loader.instance().getConfigDir().getParentFile(), "kubejs"), "");
+		//loadScripts(new File(Loader.instance().getConfigDir().getParentFile(), "mods"), "");
 
-		NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
-		ClassFilter classFilter = s -> true; //TODO: Improve this
+		ClassFilter classFilter = s -> {
+			for (String s1 : blacklistedClasses)
+			{
+				if (s.startsWith(s1))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		};
 
 		Bindings bindings = new SimpleBindings();
 		MinecraftForge.EVENT_BUS.post(new KubeJSBindingsEvent(bindings::put));
@@ -113,40 +132,45 @@ public class KubeJS
 			bindings.put(color.name(), color);
 		}
 
-		for (EntityEquipmentSlot slot : EntityEquipmentSlot.values())
-		{
-			bindings.put("SLOT_" + slot.getName().toUpperCase(), slot);
-		}
+		bindings.put("SLOT_MAINHAND", EntityEquipmentSlot.MAINHAND);
+		bindings.put("SLOT_OFFHAND", EntityEquipmentSlot.OFFHAND);
+		bindings.put("SLOT_FEET", EntityEquipmentSlot.FEET);
+		bindings.put("SLOT_LEGS", EntityEquipmentSlot.LEGS);
+		bindings.put("SLOT_CHEST", EntityEquipmentSlot.CHEST);
+		bindings.put("SLOT_HEAD", EntityEquipmentSlot.HEAD);
+
+		String[] blockedFunctions = {"print", "load", "loadWithNewGlobal", "exit", "quit"};
 
 		for (ScriptFile file : SCRIPTS.values())
 		{
 			file.setScript(null);
 
-			try (FileReader reader = new FileReader(file.getFile()))
+			try (Reader reader = new InputStreamReader(new FileInputStream(file.getFile()), StandardCharsets.UTF_8))
 			{
-				NashornScriptEngine script = (NashornScriptEngine) factory.getScriptEngine(classFilter);
-				Bindings b = script.getBindings(ScriptContext.ENGINE_SCOPE);
-				b.remove("print");
-				b.remove("load");
-				b.remove("loadWithNewGlobal");
-				b.remove("exit");
-				b.remove("quit");
-				script.getContext().setBindings(b, ScriptContext.ENGINE_SCOPE);
-				script.getContext().setBindings(bindings, ScriptContext.GLOBAL_SCOPE);
+				NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
+				ScriptEngine script = factory.getScriptEngine(classFilter);
+				ScriptContext context = script.getContext();
+
+				for (String s : blockedFunctions)
+				{
+					context.removeAttribute(s, context.getAttributesScope(s));
+				}
+
+				context.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
 				script.eval(reader);
 				file.setScript(script);
 			}
 			catch (Exception ex)
 			{
 				ITextComponent errorc = new TextComponentString("");
-				errorc.appendSibling(new TextComponentString("Error loading WorldJS script "));
+				errorc.appendSibling(new TextComponentString("Error in "));
 				errorc.getStyle().setColor(TextFormatting.RED);
 				errorc.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString(ex.toString())));
 				ITextComponent pathc = new TextComponentString(file.getPath());
 				pathc.getStyle().setColor(TextFormatting.GOLD);
-				pathc.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString(file.getFile().getAbsolutePath())));
+				pathc.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString(file.getFile().getName())));
 				ERRORS.add(new TextComponentString("").appendSibling(errorc).appendSibling(pathc));
-				LOGGER.error("Error loading WorldJS script " + file.getFile().getAbsolutePath() + ": " + ex);
+				LOGGER.error("Error loading KubeJS script " + file.getFile().getName() + ": " + ex);
 			}
 		}
 
@@ -174,11 +198,18 @@ public class KubeJS
 				}
 			}
 		}
-		else if (file.isFile() && file.getName().endsWith(".js"))
+		else if (file.isFile())
 		{
-			ScriptFile scriptFile = new ScriptFile(p, file);
-			LOGGER.info("Found script at " + file.getAbsolutePath());
-			SCRIPTS.put(scriptFile.getPath(), scriptFile);
+			if (file.getName().endsWith(".js"))
+			{
+				ScriptFile scriptFile = new ScriptFile(p, file);
+				LOGGER.info("Found script at " + file.getAbsolutePath());
+				SCRIPTS.put(scriptFile.getPath(), scriptFile);
+			}
+			else if (file.getName().endsWith(".jar") || file.getName().endsWith(".zip"))
+			{
+				//TODO: Implement me - load script bundles from archives, including resources
+			}
 		}
 	}
 }

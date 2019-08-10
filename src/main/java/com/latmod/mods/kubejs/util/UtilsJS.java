@@ -18,6 +18,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.stats.StatBase;
+import net.minecraft.stats.StatList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -27,6 +29,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -40,7 +44,26 @@ public enum UtilsJS
 {
 	INSTANCE;
 
+	private Map<String, StatBase> statMap;
 	public final Random random = new Random();
+	public final List emptyList = Collections.EMPTY_LIST;
+	public final Map emptyMap = Collections.EMPTY_MAP;
+
+	public void init()
+	{
+		statMap = new HashMap<>(StatList.ALL_STATS.size());
+
+		for (StatBase stat : StatList.ALL_STATS)
+		{
+			statMap.put(id(stat.statId).toString(), stat);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T cast(Object o)
+	{
+		return (T) o;
+	}
 
 	public ID id(String namespace, String path)
 	{
@@ -50,6 +73,11 @@ public enum UtilsJS
 	public ID id(Object id)
 	{
 		return id instanceof ID ? (ID) id : new ID(String.valueOf(id));
+	}
+
+	public ResourceLocation idMC(ID id)
+	{
+		return new ResourceLocation(id.namespace, id.path);
 	}
 
 	public String simpleClassName(Class c)
@@ -85,7 +113,7 @@ public enum UtilsJS
 	@Nullable
 	public SoundEvent sound(Object id)
 	{
-		return ForgeRegistries.SOUND_EVENTS.getValue(id(id).getResourceLocation());
+		return ForgeRegistries.SOUND_EVENTS.getValue(idMC(id(id)));
 	}
 
 	public List<String> listFieldsAndMethods(Class clazz, int flags, String... exclude)
@@ -546,5 +574,11 @@ public enum UtilsJS
 		}
 
 		return JsonNull.INSTANCE;
+	}
+
+	@Nullable
+	public StatBase stat(Object id)
+	{
+		return statMap.get(id(id).toString());
 	}
 }

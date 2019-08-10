@@ -2,6 +2,7 @@ package com.latmod.mods.kubejs.util;
 
 import com.latmod.mods.kubejs.player.PlayerJS;
 import com.latmod.mods.kubejs.text.TextUtils;
+import com.latmod.mods.kubejs.world.GameRulesJS;
 import com.latmod.mods.kubejs.world.IScheduledEventCallback;
 import com.latmod.mods.kubejs.world.ScheduledEvent;
 import com.latmod.mods.kubejs.world.WorldJS;
@@ -21,31 +22,46 @@ import java.util.UUID;
  */
 public class ServerJS
 {
-	public final MinecraftServer server;
+	private final MinecraftServer server;
 	public final WorldJS overworld;
+	public final GameRulesJS gameRules;
 	public final Map<UUID, PlayerJS> playerMap;
 	public final List<PlayerJS> players;
-	private boolean running;
 	public final List<ScheduledEvent> scheduledEvents;
 
 	public ServerJS(MinecraftServer ms, WorldServer w)
 	{
 		server = ms;
 		overworld = new WorldJS(this, w);
+		gameRules = new GameRulesJS(w.getGameRules());
 		playerMap = new Object2ObjectOpenHashMap<>();
 		players = new ObjectArrayList<>();
-		running = true;
 		scheduledEvents = new ObjectArrayList<>();
 	}
 
 	public boolean isRunning()
 	{
-		return running;
+		return server.isServerRunning();
+	}
+
+	public boolean isHardcore()
+	{
+		return server.isHardcore();
+	}
+
+	public boolean isSingleplayer()
+	{
+		return server.isSinglePlayer();
+	}
+
+	public boolean isDedicated()
+	{
+		return server.isDedicatedServer();
 	}
 
 	public void stop()
 	{
-		running = false;
+		server.stopServer();
 	}
 
 	public void sendMessage(Object... message)
@@ -68,7 +84,7 @@ public class ServerJS
 		}
 	}
 
-	public WorldJS getWorld(int dimension)
+	public WorldJS world(int dimension)
 	{
 		if (dimension == 0)
 		{
@@ -78,7 +94,7 @@ public class ServerJS
 		return new WorldJS(this, server.getWorld(dimension));
 	}
 
-	public PlayerJS getPlayer(UUID uuid)
+	public PlayerJS player(UUID uuid)
 	{
 		PlayerJS p = playerMap.get(uuid);
 
@@ -90,7 +106,7 @@ public class ServerJS
 		return p;
 	}
 
-	public PlayerJS getPlayer(String name)
+	public PlayerJS player(String name)
 	{
 		throw new NullPointerException("Player from name " + name + " not found!");
 	}

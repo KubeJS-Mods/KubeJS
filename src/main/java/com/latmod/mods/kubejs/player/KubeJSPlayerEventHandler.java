@@ -7,6 +7,7 @@ import com.latmod.mods.kubejs.events.EventsJS;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.event.ServerChatEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -30,7 +31,7 @@ public class KubeJSPlayerEventHandler
 
 		if (event.player instanceof EntityPlayerMP)
 		{
-			PlayerJS p = new PlayerJS(KubeJS.server.getWorld(event.player.world.provider.getDimension()), (EntityPlayerMP) event.player);
+			PlayerJS p = new PlayerJS(KubeJS.server.world(event.player.world.provider.getDimension()), (EntityPlayerMP) event.player);
 			KubeJS.server.playerMap.put(p.getID(), p);
 			KubeJS.server.players.clear();
 			KubeJS.server.players.addAll(KubeJS.server.playerMap.values());
@@ -66,6 +67,15 @@ public class KubeJSPlayerEventHandler
 		}
 
 		if (c)
+		{
+			event.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public static void onPlayerDeath(LivingDeathEvent event)
+	{
+		if (event.getEntity() instanceof EntityPlayerMP && EventsJS.INSTANCE.post(KubeJSEvents.PLAYER_DEATH, new PlayerDeathEventJS(event)))
 		{
 			event.setCanceled(true);
 		}
