@@ -63,19 +63,34 @@ public class EntityJS
 		return getName();
 	}
 
-	public double getX()
+	public boolean isPlayer()
+	{
+		return false;
+	}
+
+	public double x()
 	{
 		return entity.posX;
 	}
 
-	public double getY()
+	public double y()
 	{
 		return entity.posY;
 	}
 
-	public double getZ()
+	public double z()
 	{
 		return entity.posZ;
+	}
+
+	public float yaw()
+	{
+		return entity.rotationYaw;
+	}
+
+	public float pitch()
+	{
+		return entity.rotationPitch;
 	}
 
 	public void setPosition(double x, double y, double z)

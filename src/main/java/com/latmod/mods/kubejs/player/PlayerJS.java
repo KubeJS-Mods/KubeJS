@@ -27,6 +27,12 @@ public class PlayerJS extends EntityJS
 	}
 
 	@Override
+	public boolean isPlayer()
+	{
+		return true;
+	}
+
+	@Override
 	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch)
 	{
 		super.setPositionAndRotation(x, y, z, yaw, pitch);
