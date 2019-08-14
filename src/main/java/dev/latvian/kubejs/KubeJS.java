@@ -88,8 +88,8 @@ public class KubeJS
 	private static ScriptPack newPack(String id)
 	{
 		NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
-		//ScriptEngine engine = factory.getScriptEngine(new String[] {"-doe"}, KubeJS.class.getClassLoader(), ScriptClassFilter.INSTANCE);
-		ScriptEngine engine = factory.getScriptEngine(ScriptClassFilter.INSTANCE);
+		ScriptEngine engine = factory.getScriptEngine(new String[] {"-doe"}, KubeJS.class.getClassLoader(), ScriptClassFilter.INSTANCE);
+		//ScriptEngine engine = factory.getScriptEngine(ScriptClassFilter.INSTANCE);
 		ScriptContext context = engine.getContext();
 
 		for (String s : ScriptClassFilter.BLOCKED_FUNCTIONS)
