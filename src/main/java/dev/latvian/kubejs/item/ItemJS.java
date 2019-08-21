@@ -75,7 +75,7 @@ public class ItemJS
 
 	public static final Map<Item, String> ITEM_MODELS = new HashMap<>();
 
-	public final Item item;
+	public final transient Item item;
 
 	public ItemJS(Item i)
 	{

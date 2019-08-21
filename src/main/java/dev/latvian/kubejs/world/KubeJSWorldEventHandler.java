@@ -59,9 +59,23 @@ public class KubeJSWorldEventHandler
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public static void onWorldTick(TickEvent.WorldTickEvent event)
+	{
+		if (event.phase == TickEvent.Phase.END && !event.world.isRemote)
+		{
+			EventsJS.INSTANCE.post(KubeJSEvents.WORLD_TICK, new WorldEventJS(event.world));
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onServerTick(TickEvent.ServerTickEvent event)
 	{
-		if (event.phase == TickEvent.Phase.END && !ServerJS.instance.scheduledEvents.isEmpty())
+		if (event.phase != TickEvent.Phase.END)
+		{
+			return;
+		}
+
+		if (!ServerJS.instance.scheduledEvents.isEmpty())
 		{
 			long now = System.currentTimeMillis();
 			Iterator<ScheduledEvent> eventIterator = ServerJS.instance.scheduledEvents.iterator();
@@ -80,8 +94,18 @@ public class KubeJSWorldEventHandler
 
 			for (ScheduledEvent e : list)
 			{
-				e.function.onCallback(e);
+				try
+				{
+					e.call();
+				}
+				catch (Exception ex)
+				{
+					KubeJS.LOGGER.error("Error occurred while handling scheduled event callback in " + e.file.path + ": " + ex);
+					ex.printStackTrace();
+				}
 			}
 		}
+
+		EventsJS.INSTANCE.post(KubeJSEvents.SERVER_TICK, new ServerEventJS(ServerJS.instance));
 	}
 }

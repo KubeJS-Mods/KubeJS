@@ -9,7 +9,7 @@ import net.minecraft.entity.EntityLivingBase;
  */
 public class LivingEntityJS extends EntityJS
 {
-	public final EntityLivingBase livingEntity;
+	public final transient EntityLivingBase livingEntity;
 
 	public LivingEntityJS(ServerJS s, EntityLivingBase e)
 	{

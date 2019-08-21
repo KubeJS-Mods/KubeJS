@@ -2,6 +2,7 @@ package dev.latvian.kubejs.events;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEventRegistryEvent;
+import dev.latvian.kubejs.util.ScriptFile;
 import dev.latvian.kubejs.util.UtilsJS;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -18,12 +19,24 @@ public enum EventsJS
 {
 	INSTANCE;
 
-	private final Map<String, List<IEventHandler>> map = new Object2ObjectOpenHashMap<>();
+	private final Map<String, List<ScriptEventHandler>> map = new Object2ObjectOpenHashMap<>();
 	private Map<String, Class> registeredIDs;
+
+	private static class ScriptEventHandler
+	{
+		private final ScriptFile file;
+		private final IEventHandler handler;
+
+		private ScriptEventHandler(ScriptFile f, IEventHandler h)
+		{
+			file = f;
+			handler = h;
+		}
+	}
 
 	public void listen(String id, IEventHandler handler)
 	{
-		List<IEventHandler> list = INSTANCE.map.get(id);
+		List<ScriptEventHandler> list = INSTANCE.map.get(id);
 
 		if (list == null)
 		{
@@ -31,28 +44,40 @@ public enum EventsJS
 			INSTANCE.map.put(id, list);
 		}
 
-		list.add(handler);
+		list.add(new ScriptEventHandler(KubeJS.currentFile, handler));
 	}
 
 	public boolean post(String id, EventJS event)
 	{
-		List<IEventHandler> list = map.get(id);
+		List<ScriptEventHandler> list = map.get(id);
 
 		if (list != null)
 		{
 			boolean c = event.canCancel();
 
-			for (IEventHandler handler : list)
+			for (ScriptEventHandler handler : list)
 			{
-				handler.onEvent(event);
+				KubeJS.currentFile = handler.file;
 
-				if (c && event.isCancelled())
+				try
 				{
-					return true;
+					handler.handler.onEvent(event);
+
+					if (c && event.isCancelled())
+					{
+						KubeJS.currentFile = null;
+						return true;
+					}
+				}
+				catch (Exception ex)
+				{
+					KubeJS.LOGGER.error("Error occurred while firing '" + id + "' event in " + handler.file.path + ": " + ex);
+					ex.printStackTrace();
 				}
 			}
 		}
 
+		KubeJS.currentFile = null;
 		return false;
 	}
 

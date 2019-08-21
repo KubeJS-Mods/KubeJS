@@ -1,10 +1,5 @@
 package dev.latvian.kubejs.util;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.item.IIngredientJS;
 import dev.latvian.kubejs.item.IngredientListJS;
@@ -24,6 +19,7 @@ import net.minecraft.stats.StatList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import org.apache.logging.log4j.LogManager;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
@@ -32,11 +28,11 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * @author LatvianModder
@@ -46,6 +42,7 @@ public enum UtilsJS
 	INSTANCE;
 
 	public final Random random = new Random();
+	public final HashSet<String> internalMethods = new HashSet<>(Arrays.asList("wait", "equals", "toString", "hashCode", "getClass", "notify", "notifyAll"));
 
 	private Map<ID, StatBase> statMap;
 	private EntityEquipmentSlot[] equipmentSlots;
@@ -93,17 +90,27 @@ public enum UtilsJS
 		return new ResourceLocation(id.namespace, id.path);
 	}
 
+	public LoggerWrapperJS createLogger(String name)
+	{
+		return new LoggerWrapperJS(LogManager.getLogger(name));
+	}
+
 	public String simpleClassName(Class c)
 	{
 		String s = c.getSimpleName();
 		return s.isEmpty() ? c.getName().substring(c.getName().lastIndexOf('.') + 1) : s;
 	}
 
-	public int parseInt(String s, int def)
+	public int parseInt(@Nullable Object object, int def)
 	{
+		if (object instanceof Number)
+		{
+			return ((Number) object).intValue();
+		}
+
 		try
 		{
-			return Integer.parseInt(s);
+			return Integer.parseInt(String.valueOf(object));
 		}
 		catch (Exception ex)
 		{
@@ -111,11 +118,16 @@ public enum UtilsJS
 		}
 	}
 
-	public double parseDouble(String s, double def)
+	public double parseDouble(@Nullable Object object, double def)
 	{
+		if (object instanceof Number)
+		{
+			return ((Number) object).doubleValue();
+		}
+
 		try
 		{
-			return Double.parseDouble(s);
+			return Double.parseDouble(String.valueOf(object));
 		}
 		catch (Exception ex)
 		{
@@ -134,13 +146,6 @@ public enum UtilsJS
 		List<String> list = new ObjectArrayList<>();
 		StringBuilder builder = new StringBuilder();
 		Set<String> excludeSet = new ObjectOpenHashSet<>(Arrays.asList(exclude));
-		excludeSet.add("equals()");
-		excludeSet.add("toString()");
-		excludeSet.add("hashCode()");
-		excludeSet.add("getClass()");
-		excludeSet.add("wait()");
-		excludeSet.add("notify()");
-		excludeSet.add("notifyAll()");
 
 		for (Field field : clazz.getFields())
 		{
@@ -190,7 +195,7 @@ public enum UtilsJS
 
 		for (Method method : clazz.getMethods())
 		{
-			if (excludeSet.contains(method.getName() + "()"))
+			if (internalMethods.contains(method.getName()) || excludeSet.contains(method.getName() + "()"))
 			{
 				continue;
 			}
@@ -267,79 +272,8 @@ public enum UtilsJS
 		return listFieldsAndMethods(object.getClass(), flags, exclude);
 	}
 
-	public JsonElement toJson(@Nullable Object object)
-	{
-		if (object == null)
-		{
-			return JsonNull.INSTANCE;
-		}
-		else if (object instanceof JsonElement)
-		{
-			return (JsonElement) object;
-		}
-		else if (object instanceof String)
-		{
-			return new JsonPrimitive((String) object);
-		}
-		else if (object instanceof Boolean)
-		{
-			return new JsonPrimitive((Boolean) object);
-		}
-		else if (object instanceof Number)
-		{
-			return new JsonPrimitive((Number) object);
-		}
-		else if (object instanceof Character)
-		{
-			return new JsonPrimitive((Character) object);
-		}
-		else if (object instanceof Map)
-		{
-			Map<String, Object> map = (Map<String, Object>) object;
-
-			if (map.isEmpty())
-			{
-				return new JsonObject();
-			}
-
-			Object[] array = new Object[map.size()];
-
-			for (int i = 0; i < map.size(); i++)
-			{
-				Object value = map.get(Integer.toString(i));
-
-				if (value != null)
-				{
-					array[i] = value;
-				}
-				else
-				{
-					JsonObject json = new JsonObject();
-
-					for (Map.Entry<String, Object> entry : map.entrySet())
-					{
-						json.add(entry.getKey(), toJson(entry.getValue()));
-					}
-
-					return json;
-				}
-			}
-
-			JsonArray json = new JsonArray();
-
-			for (Object o : array)
-			{
-				json.add(toJson(o));
-			}
-
-			return json;
-		}
-
-		return JsonNull.INSTANCE;
-	}
-
 	@Nullable
-	public NBTTagCompound toNBT(@Nullable Object o)
+	public NBTTagCompound nbt(@Nullable Object o)
 	{
 		if (o == null)
 		{
@@ -353,7 +287,7 @@ public enum UtilsJS
 		{
 			try
 			{
-				return JsonToNBT.getTagFromJson(toJson(o).toString());
+				return JsonToNBT.getTagFromJson(JsonUtilsJS.INSTANCE.from(o).toString());
 			}
 			catch (Exception ex)
 			{
@@ -369,67 +303,6 @@ public enum UtilsJS
 		{
 			return null;
 		}
-	}
-
-	public String toString(@Nullable UUID id)
-	{
-		if (id != null)
-		{
-			long msb = id.getMostSignificantBits();
-			long lsb = id.getLeastSignificantBits();
-			StringBuilder sb = new StringBuilder(32);
-			digitsUUID(sb, msb >> 32, 8);
-			digitsUUID(sb, msb >> 16, 4);
-			digitsUUID(sb, msb, 4);
-			digitsUUID(sb, lsb >> 48, 4);
-			digitsUUID(sb, lsb, 12);
-			return sb.toString();
-		}
-
-		return "";
-	}
-
-	private void digitsUUID(StringBuilder sb, long val, int digits)
-	{
-		long hi = 1L << (digits * 4);
-		String s = Long.toHexString(hi | (val & (hi - 1)));
-		sb.append(s, 1, s.length());
-	}
-
-	@Nullable
-	public UUID toUUID(@Nullable String s)
-	{
-		if (s == null || !(s.length() == 32 || s.length() == 36))
-		{
-			return null;
-		}
-
-		try
-		{
-			if (s.indexOf('-') != -1)
-			{
-				return UUID.fromString(s);
-			}
-
-			int l = s.length();
-			StringBuilder sb = new StringBuilder(36);
-			for (int i = 0; i < l; i++)
-			{
-				sb.append(s.charAt(i));
-				if (i == 7 || i == 11 || i == 15 || i == 19)
-				{
-					sb.append('-');
-				}
-			}
-
-			return UUID.fromString(sb.toString());
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-
-		return null;
 	}
 
 	public ItemStackJS item(@Nullable Object o)
@@ -536,83 +409,6 @@ public enum UtilsJS
 		}
 
 		return item(object);
-	}
-
-	public JsonElement toJsonElement(@Nullable Object object)
-	{
-		if (object == null)
-		{
-			return JsonNull.INSTANCE;
-		}
-		else if (object instanceof Number)
-		{
-			return new JsonPrimitive((Number) object);
-		}
-		else if (object instanceof String)
-		{
-			return new JsonPrimitive((String) object);
-		}
-		else if (object instanceof Character)
-		{
-			return new JsonPrimitive((Character) object);
-		}
-		else if (object instanceof Boolean)
-		{
-			return new JsonPrimitive((Boolean) object);
-		}
-		else if (object instanceof JSObject)
-		{
-			JSObject js = (JSObject) object;
-
-			if (js.isArray())
-			{
-				JsonArray a = new JsonArray();
-
-				for (String s : js.keySet())
-				{
-					a.add(toJsonElement(js.getMember(s)));
-				}
-
-				return a;
-			}
-			else
-			{
-				JsonObject o = new JsonObject();
-
-				for (String s : js.keySet())
-				{
-					o.add(s, toJsonElement(js.getMember(s)));
-				}
-
-				return o;
-			}
-		}
-		else if (object instanceof Map)
-		{
-			Map<?, ?> map = (Map<?, ?>) object;
-
-			JsonObject o = new JsonObject();
-
-			for (Map.Entry<?, ?> entry : map.entrySet())
-			{
-				o.add(String.valueOf(entry.getKey()), toJsonElement(entry.getValue()));
-			}
-
-			return o;
-		}
-		else if (object instanceof Iterable)
-		{
-			JsonArray a = new JsonArray();
-
-			for (Object o : (Iterable) object)
-			{
-				a.add(toJsonElement(o));
-			}
-
-			return a;
-		}
-
-		return JsonNull.INSTANCE;
 	}
 
 	@Nullable

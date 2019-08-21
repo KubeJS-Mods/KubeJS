@@ -16,7 +16,7 @@ public class EntityJS
 	public static final Comparator<? super EntityJS> COMPARATOR = (o1, o2) -> o1.name().compareToIgnoreCase(o2.name());
 
 	public final ServerJS server;
-	public final Entity entity;
+	public final transient Entity entity;
 
 	public EntityJS(ServerJS s, Entity e)
 	{

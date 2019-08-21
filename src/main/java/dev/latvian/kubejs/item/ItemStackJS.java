@@ -163,7 +163,7 @@ public abstract class ItemStackJS implements IIngredientJS
 		@Override
 		public ItemStackJS nbt(@Nullable Object o)
 		{
-			stack.setTagCompound(UtilsJS.INSTANCE.toNBT(o));
+			stack.setTagCompound(UtilsJS.INSTANCE.nbt(o));
 			return this;
 		}
 
@@ -178,7 +178,7 @@ public abstract class ItemStackJS implements IIngredientJS
 		public ItemStackJS caps(@Nullable Object o)
 		{
 			NBTTagCompound n = stack.serializeNBT();
-			NBTTagCompound nbt = UtilsJS.INSTANCE.toNBT(o);
+			NBTTagCompound nbt = UtilsJS.INSTANCE.nbt(o);
 
 			if (nbt == null)
 			{
@@ -277,7 +277,7 @@ public abstract class ItemStackJS implements IIngredientJS
 		@Override
 		public ItemStackJS nbt(@Nullable Object o)
 		{
-			nbt = UtilsJS.INSTANCE.toNBT(o);
+			nbt = UtilsJS.INSTANCE.nbt(o);
 
 			if (cached != null)
 			{
@@ -297,7 +297,7 @@ public abstract class ItemStackJS implements IIngredientJS
 		@Override
 		public ItemStackJS caps(@Nullable Object o)
 		{
-			caps = UtilsJS.INSTANCE.toNBT(o);
+			caps = UtilsJS.INSTANCE.nbt(o);
 			cached = null;
 			return this;
 		}

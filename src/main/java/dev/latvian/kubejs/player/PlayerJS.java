@@ -11,7 +11,7 @@ import net.minecraft.stats.StatBase;
  */
 public class PlayerJS extends LivingEntityJS
 {
-	public final EntityPlayerMP player;
+	public final transient EntityPlayerMP player;
 	private PlayerInventoryJS inventory;
 
 	public PlayerJS(ServerJS s, EntityPlayerMP p)

@@ -11,7 +11,7 @@ import net.minecraftforge.items.wrapper.InvWrapper;
  */
 public class PlayerInventoryJS extends InventoryJS
 {
-	private final PlayerJS player;
+	public final PlayerJS player;
 
 	public PlayerInventoryJS(PlayerJS p)
 	{

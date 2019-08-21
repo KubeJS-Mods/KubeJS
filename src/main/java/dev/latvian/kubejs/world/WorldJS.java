@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
  */
 public class WorldJS
 {
-	public final WorldServer world;
+	public final transient WorldServer world;
 	public final ServerJS server;
 	public final int dimension;
 

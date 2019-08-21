@@ -8,7 +8,7 @@ import net.minecraft.block.material.Material;
 public class MaterialJS
 {
 	public final String id;
-	public final Material material;
+	public final transient Material material;
 
 	public MaterialJS(String i, Material m)
 	{

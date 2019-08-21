@@ -10,8 +10,10 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 /**
  * @author LatvianModder
@@ -55,6 +57,15 @@ public class KubeJSPlayerEventHandler
 		EventsJS.INSTANCE.post(KubeJSEvents.PLAYER_LOGGED_OUT, new PlayerEventJS(event.player));
 		ServerJS.instance.playerMap.remove(event.player.getUniqueID());
 		ServerJS.instance.updatePlayerList();
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public static void onPlayerTick(TickEvent.PlayerTickEvent event)
+	{
+		if (event.phase == TickEvent.Phase.END && event.player instanceof EntityPlayerMP)
+		{
+			EventsJS.INSTANCE.post(KubeJSEvents.PLAYER_TICK, new PlayerEventJS(event.player));
+		}
 	}
 
 	@SubscribeEvent

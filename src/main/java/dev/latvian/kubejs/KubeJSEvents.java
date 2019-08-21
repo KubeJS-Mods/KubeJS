@@ -21,10 +21,13 @@ public class KubeJSEvents
 	public static final String POSTINIT = "postinit";
 	public static final String SERVER_LOAD = "server.load";
 	public static final String SERVER_UNLOAD = "server.unload";
+	public static final String SERVER_TICK = "server.tick";
 	public static final String WORLD_LOAD = "world.load";
 	public static final String WORLD_UNLOAD = "world.unload";
+	public static final String WORLD_TICK = "world.tick";
 	public static final String PLAYER_LOGGED_IN = "player.logged_in";
 	public static final String PLAYER_LOGGED_OUT = "player.logged_out";
+	public static final String PLAYER_TICK = "player.tick";
 	public static final String PLAYER_CHAT = "player.chat";
 	public static final String PLAYER_DEATH = "player.death";
 	public static final String RECIPES_CRAFTING_TABLE = "recipes.crafting_table";
@@ -38,10 +41,13 @@ public class KubeJSEvents
 		event.register(POSTINIT, PostInitEventJS.class);
 		event.register(SERVER_LOAD, ServerEventJS.class);
 		event.register(SERVER_UNLOAD, ServerEventJS.class);
+		event.register(SERVER_TICK, ServerEventJS.class);
 		event.register(WORLD_LOAD, WorldEventJS.class);
 		event.register(WORLD_UNLOAD, WorldEventJS.class);
+		event.register(WORLD_TICK, WorldEventJS.class);
 		event.register(PLAYER_LOGGED_IN, PlayerEventJS.class);
 		event.register(PLAYER_LOGGED_OUT, PlayerEventJS.class);
+		event.register(PLAYER_TICK, PlayerEventJS.class);
 		event.register(PLAYER_CHAT, PlayerChatEventJS.class);
 		event.register(PLAYER_DEATH, PlayerDeathEventJS.class);
 		event.register(RECIPES_CRAFTING_TABLE, CraftingTableRecipeEventJS.class);

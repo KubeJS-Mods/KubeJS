@@ -3,15 +3,16 @@ package dev.latvian.kubejs;
 import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.command.CommandKubeJS;
 import dev.latvian.kubejs.events.EventsJS;
-import dev.latvian.kubejs.function.EventFunction;
-import dev.latvian.kubejs.function.LogFunction;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.OreDictUtils;
 import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.text.TextUtils;
+import dev.latvian.kubejs.util.JsonUtilsJS;
+import dev.latvian.kubejs.util.LoggerWrapperJS;
 import dev.latvian.kubejs.util.ScriptClassFilter;
 import dev.latvian.kubejs.util.ScriptFile;
 import dev.latvian.kubejs.util.ScriptPack;
+import dev.latvian.kubejs.util.UUIDUtilsJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -125,7 +126,11 @@ public class KubeJS
 		Bindings bindings = new SimpleBindings();
 		MinecraftForge.EVENT_BUS.post(new KubeJSBindingsEvent(bindings::put));
 
+		bindings.put("log", new LoggerWrapperJS(LOGGER));
 		bindings.put("utils", UtilsJS.INSTANCE);
+		bindings.put("uuid", UUIDUtilsJS.INSTANCE);
+		bindings.put("json", JsonUtilsJS.INSTANCE);
+
 		bindings.put("events", EventsJS.INSTANCE);
 		bindings.put("text", TextUtils.INSTANCE);
 		bindings.put("oredict", OreDictUtils.INSTANCE);
@@ -147,11 +152,6 @@ public class KubeJS
 		bindings.put("SLOT_LEGS", EntityEquipmentSlot.LEGS.ordinal());
 		bindings.put("SLOT_CHEST", EntityEquipmentSlot.CHEST.ordinal());
 		bindings.put("SLOT_HEAD", EntityEquipmentSlot.HEAD.ordinal());
-
-		bindings.put("onEvent", (EventFunction) EventsJS.INSTANCE::listen);
-		bindings.put("info", (LogFunction) (text, objects) -> {LOGGER.info(objects.length == 0 ? text : String.format(text, objects));});
-		bindings.put("warn", (LogFunction) (text, objects) -> {LOGGER.warn(objects.length == 0 ? text : String.format(text, objects));});
-		bindings.put("error", (LogFunction) (text, objects) -> {LOGGER.error(objects.length == 0 ? text : String.format(text, objects));});
 
 		int i = 0;
 

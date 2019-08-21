@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.RegistryEventJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.ItemStack;
@@ -133,7 +134,7 @@ public class CraftingTableRecipeEventJS extends RegistryEventJS<IRecipe>
 
 	public void add(String recipeID, Object recipe)
 	{
-		JsonElement e = UtilsJS.INSTANCE.toJsonElement(recipe);
+		JsonElement e = JsonUtilsJS.INSTANCE.from(recipe);
 
 		if (!e.isJsonObject())
 		{

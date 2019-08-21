@@ -1,5 +1,7 @@
 package dev.latvian.kubejs.world;
 
+import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.util.ScriptFile;
 import dev.latvian.kubejs.util.ServerJS;
 
 /**
@@ -7,14 +9,16 @@ import dev.latvian.kubejs.util.ServerJS;
  */
 public class ScheduledEvent
 {
-	public final ServerJS serverJS;
+	public final ServerJS server;
+	public final transient ScriptFile file;
 	public final long timer;
 	public final long endTime;
-	public final IScheduledEventCallback function;
+	private final IScheduledEventCallback function;
 
 	public ScheduledEvent(ServerJS s, long t, IScheduledEventCallback c)
 	{
-		serverJS = s;
+		server = s;
+		file = KubeJS.currentFile;
 		timer = t;
 		endTime = System.currentTimeMillis() + timer;
 		function = c;
@@ -25,8 +29,18 @@ public class ScheduledEvent
 		reschedule(timer);
 	}
 
-	public void reschedule(long timer)
+	public ScheduledEvent reschedule(long timer)
 	{
-		serverJS.schedule(timer, function);
+		return server.schedule(timer, function);
+	}
+
+	public void call()
+	{
+		function.onCallback(this);
+	}
+
+	public long remainingTime()
+	{
+		return endTime - System.currentTimeMillis();
 	}
 }

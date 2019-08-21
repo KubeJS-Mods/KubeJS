@@ -56,7 +56,7 @@ public class BlockJS
 		}
 	};
 
-	public final Block block;
+	public final transient Block block;
 
 	public BlockJS(Block b)
 	{

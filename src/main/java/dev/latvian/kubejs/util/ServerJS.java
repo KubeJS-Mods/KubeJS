@@ -27,8 +27,8 @@ public class ServerJS
 {
 	public static ServerJS instance;
 
-	public final MinecraftServer server;
-	public final List<ScheduledEvent> scheduledEvents;
+	public final transient MinecraftServer server;
+	public final transient List<ScheduledEvent> scheduledEvents;
 
 	public final Int2ObjectOpenHashMap<WorldJS> worldMap;
 	public final List<WorldJS> worlds;
@@ -156,8 +156,10 @@ public class ServerJS
 		server.getCommandManager().executeCommand(server, command);
 	}
 
-	public void schedule(long timer, IScheduledEventCallback event)
+	public ScheduledEvent schedule(long timer, IScheduledEventCallback event)
 	{
-		scheduledEvents.add(new ScheduledEvent(this, timer, event));
+		ScheduledEvent e = new ScheduledEvent(this, timer, event);
+		scheduledEvents.add(e);
+		return e;
 	}
 }
