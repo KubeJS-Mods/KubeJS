@@ -15,6 +15,7 @@ import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.crafting.JsonContext;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -37,7 +38,7 @@ public class CraftingTableRecipeEventJS extends RegistryEventJS<IRecipe>
 
 	public void addShaped(String recipeID, String output, String[] pattern, Map<String, Object> ingredients)
 	{
-		String id = KubeJS.ID_CONTEXT.appendModId(recipeID);
+		String id = KubeJS.appendModId(recipeID);
 		ItemStack outputItem = UtilsJS.INSTANCE.item(output).itemStack();
 
 		if (outputItem.isEmpty())
@@ -94,7 +95,7 @@ public class CraftingTableRecipeEventJS extends RegistryEventJS<IRecipe>
 
 	public void addShapeless(String recipeID, String output, Object[] ingredients)
 	{
-		String id = KubeJS.ID_CONTEXT.appendModId(recipeID);
+		String id = KubeJS.appendModId(recipeID);
 		ItemStack outputItem = UtilsJS.INSTANCE.item(output).itemStack();
 
 		if (outputItem.isEmpty())
@@ -171,7 +172,7 @@ public class CraftingTableRecipeEventJS extends RegistryEventJS<IRecipe>
 
 		try
 		{
-			IRecipe r = CraftingHelper.getRecipe(o, KubeJS.ID_CONTEXT);
+			IRecipe r = CraftingHelper.getRecipe(o, new JsonContext(KubeJS.MOD_ID));
 
 			if (r != null)
 			{

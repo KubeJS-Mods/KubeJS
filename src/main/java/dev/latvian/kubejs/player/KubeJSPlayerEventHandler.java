@@ -2,6 +2,7 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.ScriptManager;
 import dev.latvian.kubejs.events.EventsJS;
 import dev.latvian.kubejs.util.ScriptFile;
 import dev.latvian.kubejs.util.ServerJS;
@@ -26,7 +27,7 @@ public class KubeJSPlayerEventHandler
 	{
 		if (event.player instanceof EntityPlayerMP && (((EntityPlayerMP) event.player).server.isSinglePlayer() || event.player.canUseCommand(1, "kubejs.errors")))
 		{
-			for (ScriptFile file : KubeJS.SCRIPTS.values())
+			for (ScriptFile file : ScriptManager.instance.scripts.values())
 			{
 				ITextComponent component = file.getErrorTextComponent();
 

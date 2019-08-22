@@ -19,6 +19,7 @@ import net.minecraft.stats.StatList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.LogManager;
 
 import javax.annotation.Nullable;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
@@ -101,6 +103,18 @@ public enum UtilsJS
 		return s.isEmpty() ? c.getName().substring(c.getName().lastIndexOf('.') + 1) : s;
 	}
 
+	public FieldJS field(String className, String fieldName)
+	{
+		try
+		{
+			return new FieldJS(ReflectionHelper.findField(Class.forName(className), fieldName));
+		}
+		catch (Throwable ex)
+		{
+			return new FieldJS(null);
+		}
+	}
+
 	public int parseInt(@Nullable Object object, int def)
 	{
 		if (object instanceof Number)
@@ -133,6 +147,16 @@ public enum UtilsJS
 		{
 			return def;
 		}
+	}
+
+	public Pattern regex(String pattern)
+	{
+		return Pattern.compile(pattern);
+	}
+
+	public Pattern regex(String pattern, int flags)
+	{
+		return Pattern.compile(pattern, flags);
 	}
 
 	@Nullable
@@ -346,7 +370,7 @@ public enum UtilsJS
 		}
 
 		String[] s = s0.split("\\s", 4);
-		ResourceLocation id = new ResourceLocation(s[0]);
+		ResourceLocation id = new ResourceLocation(KubeJS.appendModId(s[0]));
 
 		Item item = Item.REGISTRY.getObject(id);
 
@@ -384,7 +408,7 @@ public enum UtilsJS
 				return new OreDictionaryIngredientJS(object.toString().substring(4));
 			}
 
-			return item(KubeJS.ID_CONTEXT.appendModId(object.toString()));
+			return item(KubeJS.appendModId(object.toString()));
 		}
 		else if (object instanceof JSObject)
 		{

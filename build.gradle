@@ -17,7 +17,7 @@ apply plugin: 'maven'
 apply from: 'https://raw.githubusercontent.com/MinecraftModDevelopment/Gradle-Collection/master/generic/markdown-git-changelog.gradle'
 
 def ENV = System.getenv()
-version = ENV.BUILD_NUMBER ? "${mod_version}.${ENV.BUILD_NUMBER}" : "${mod_version}.custom"
+version = "forge-1.12.2-" + (ENV.BUILD_NUMBER ? "${mod_version}.${ENV.BUILD_NUMBER}" : "${mod_version}.custom")
 group = package_group
 archivesBaseName = mod_name
 

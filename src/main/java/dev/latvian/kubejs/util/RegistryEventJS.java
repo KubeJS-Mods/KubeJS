@@ -20,7 +20,7 @@ public class RegistryEventJS<T extends IForgeRegistryEntry<T>> extends EventJS
 
 	public T setID(String name, T value)
 	{
-		value.setRegistryName(new ResourceLocation(KubeJS.ID_CONTEXT.appendModId(name)));
+		value.setRegistryName(new ResourceLocation(KubeJS.appendModId(name)));
 		return value;
 	}
 }

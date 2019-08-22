@@ -2,6 +2,7 @@ package dev.latvian.kubejs.events;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEventRegistryEvent;
+import dev.latvian.kubejs.ScriptManager;
 import dev.latvian.kubejs.util.ScriptFile;
 import dev.latvian.kubejs.util.UtilsJS;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -44,7 +45,7 @@ public enum EventsJS
 			INSTANCE.map.put(id, list);
 		}
 
-		list.add(new ScriptEventHandler(KubeJS.currentFile, handler));
+		list.add(new ScriptEventHandler(ScriptManager.instance.currentFile, handler));
 	}
 
 	public boolean post(String id, EventJS event)
@@ -57,7 +58,7 @@ public enum EventsJS
 
 			for (ScriptEventHandler handler : list)
 			{
-				KubeJS.currentFile = handler.file;
+				ScriptManager.instance.currentFile = handler.file;
 
 				try
 				{
@@ -65,7 +66,7 @@ public enum EventsJS
 
 					if (c && event.isCancelled())
 					{
-						KubeJS.currentFile = null;
+						ScriptManager.instance.currentFile = null;
 						return true;
 					}
 				}
@@ -77,7 +78,7 @@ public enum EventsJS
 			}
 		}
 
-		KubeJS.currentFile = null;
+		ScriptManager.instance.currentFile = null;
 		return false;
 	}
 
