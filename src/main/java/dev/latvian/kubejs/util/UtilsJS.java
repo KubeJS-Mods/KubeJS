@@ -180,19 +180,6 @@ public enum UtilsJS
 
 			if ((field.getModifiers() & Modifier.PUBLIC) != 0)
 			{
-				if ((flags & 2) == 0)
-				{
-					if (field.isAnnotationPresent(Deprecated.class))
-					{
-						builder.append("@Deprecated ");
-					}
-
-					if (field.isAnnotationPresent(Nullable.class))
-					{
-						builder.append("@Nullable ");
-					}
-				}
-
 				if ((flags & 1) == 0)
 				{
 					String m = Modifier.toString(field.getModifiers() & ~Modifier.PUBLIC);
@@ -204,7 +191,7 @@ public enum UtilsJS
 					}
 				}
 
-				if ((flags & 4) == 0)
+				if ((flags & 2) == 0)
 				{
 					builder.append(simpleClassName(field.getType()));
 					builder.append(' ');
@@ -226,19 +213,6 @@ public enum UtilsJS
 
 			if ((method.getModifiers() & Modifier.PUBLIC) != 0)
 			{
-				if ((flags & 2) == 0)
-				{
-					if (method.isAnnotationPresent(Deprecated.class))
-					{
-						builder.append("@Deprecated ");
-					}
-
-					if (method.isAnnotationPresent(Nullable.class))
-					{
-						builder.append("@Nullable ");
-					}
-				}
-
 				if ((flags & 1) == 0)
 				{
 					String m = Modifier.toString(method.getModifiers() & ~Modifier.PUBLIC);
@@ -250,7 +224,7 @@ public enum UtilsJS
 					}
 				}
 
-				if ((flags & 4) == 0)
+				if ((flags & 2) == 0)
 				{
 					builder.append(simpleClassName(method.getReturnType()));
 					builder.append(' ');
