@@ -9,6 +9,7 @@ import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.server.ServerJS;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -45,6 +46,7 @@ public class KubeJSPlayerEventHandler
 			p.server.playerMap.put(p.uuid, p);
 			p.server.updatePlayerList();
 			EventsJS.INSTANCE.post(KubeJSEvents.PLAYER_LOGGED_IN, new PlayerEventJS(event.player));
+			MinecraftForge.EVENT_BUS.post(new PlayerDataCreatedEvent(p));
 		}
 	}
 

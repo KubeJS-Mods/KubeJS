@@ -33,7 +33,7 @@ public class CommandSender implements MessageSender
 		return server.world(sender.getEntityWorld());
 	}
 
-	public PlayerJS player() throws PlayerNotFoundException
+	public PlayerJS asPlayer() throws PlayerNotFoundException
 	{
 		return server.player(CommandBase.getCommandSenderAsPlayer(sender).getUniqueID());
 	}
