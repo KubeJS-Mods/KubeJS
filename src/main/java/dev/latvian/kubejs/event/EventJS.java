@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.events;
+package dev.latvian.kubejs.event;
 
 /**
  * @author LatvianModder

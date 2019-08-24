@@ -1,9 +1,6 @@
-package dev.latvian.kubejs.world;
+package dev.latvian.kubejs.server;
 
 import net.minecraft.world.GameRules;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author LatvianModder
@@ -15,16 +12,6 @@ public class GameRulesJS
 	public GameRulesJS(GameRules r)
 	{
 		rules = r;
-	}
-
-	public String[] array()
-	{
-		return rules.getRules();
-	}
-
-	public List<String> list()
-	{
-		return Arrays.asList(array());
 	}
 
 	public String getString(String rule)

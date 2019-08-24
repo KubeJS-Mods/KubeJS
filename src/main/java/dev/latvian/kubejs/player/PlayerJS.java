@@ -1,10 +1,12 @@
 package dev.latvian.kubejs.player;
 
-import dev.latvian.kubejs.text.TextUtils;
-import dev.latvian.kubejs.util.ServerJS;
+import dev.latvian.kubejs.entity.LivingEntityJS;
+import dev.latvian.kubejs.text.TextUtilsJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.stats.StatBase;
+
+import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -12,11 +14,13 @@ import net.minecraft.stats.StatBase;
 public class PlayerJS extends LivingEntityJS
 {
 	public final transient EntityPlayerMP player;
+	public final Map<String, Object> data;
 	private PlayerInventoryJS inventory;
 
-	public PlayerJS(ServerJS s, EntityPlayerMP p)
+	public PlayerJS(PlayerDataJS d, EntityPlayerMP p)
 	{
-		super(s, p);
+		super(d.server, p);
+		data = d.data;
 		player = p;
 	}
 
@@ -33,9 +37,9 @@ public class PlayerJS extends LivingEntityJS
 		player.connection.setPlayerLocation(x, y, z, yaw, pitch);
 	}
 
-	public void sendStatusMessage(Object... message)
+	public void statusMessage(Object... message)
 	{
-		player.sendStatusMessage(TextUtils.INSTANCE.of(message).component(), true);
+		player.sendStatusMessage(TextUtilsJS.INSTANCE.of(message).component(), true);
 	}
 
 	public PlayerInventoryJS inventory()

@@ -1,8 +1,7 @@
-package dev.latvian.kubejs.world;
+package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.ScriptManager;
-import dev.latvian.kubejs.util.ScriptFile;
-import dev.latvian.kubejs.util.ServerJS;
+import dev.latvian.kubejs.script.ScriptFile;
+import dev.latvian.kubejs.script.ScriptManager;
 
 /**
  * @author LatvianModder

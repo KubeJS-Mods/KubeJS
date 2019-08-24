@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
@@ -19,7 +18,6 @@ import net.minecraft.stats.StatList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.LogManager;
 
 import javax.annotation.Nullable;
@@ -47,7 +45,6 @@ public enum UtilsJS
 	public final HashSet<String> internalMethods = new HashSet<>(Arrays.asList("wait", "equals", "toString", "hashCode", "getClass", "notify", "notifyAll"));
 
 	private Map<ID, StatBase> statMap;
-	private EntityEquipmentSlot[] equipmentSlots;
 
 	public void init()
 	{
@@ -57,8 +54,6 @@ public enum UtilsJS
 		{
 			statMap.put(id(stat.statId), stat);
 		}
-
-		equipmentSlots = EntityEquipmentSlot.values();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -103,11 +98,12 @@ public enum UtilsJS
 		return s.isEmpty() ? c.getName().substring(c.getName().lastIndexOf('.') + 1) : s;
 	}
 
+	@SuppressWarnings("deprecation")
 	public FieldJS field(String className, String fieldName)
 	{
 		try
 		{
-			return new FieldJS(ReflectionHelper.findField(Class.forName(className), fieldName));
+			return new FieldJS(net.minecraftforge.fml.relauncher.ReflectionHelper.findField(Class.forName(className), fieldName));
 		}
 		catch (Throwable ex)
 		{
@@ -178,20 +174,9 @@ public enum UtilsJS
 				continue;
 			}
 
-			if ((field.getModifiers() & Modifier.PUBLIC) != 0)
+			if (Modifier.isPublic(field.getModifiers()) && !Modifier.isTransient(field.getModifiers()) && !Modifier.isStatic(field.getModifiers()))
 			{
 				if ((flags & 1) == 0)
-				{
-					String m = Modifier.toString(field.getModifiers() & ~Modifier.PUBLIC);
-					builder.append(m);
-
-					if (!m.isEmpty())
-					{
-						builder.append(' ');
-					}
-				}
-
-				if ((flags & 2) == 0)
 				{
 					builder.append(simpleClassName(field.getType()));
 					builder.append(' ');
@@ -211,20 +196,9 @@ public enum UtilsJS
 				continue;
 			}
 
-			if ((method.getModifiers() & Modifier.PUBLIC) != 0)
+			if (Modifier.isPublic(method.getModifiers()) && !Modifier.isStatic(method.getModifiers()))
 			{
 				if ((flags & 1) == 0)
-				{
-					String m = Modifier.toString(method.getModifiers() & ~Modifier.PUBLIC);
-					builder.append(m);
-
-					if (!m.isEmpty())
-					{
-						builder.append(' ');
-					}
-				}
-
-				if ((flags & 2) == 0)
 				{
 					builder.append(simpleClassName(method.getReturnType()));
 					builder.append(' ');
@@ -424,8 +398,8 @@ public enum UtilsJS
 		return statMap.get(id(id));
 	}
 
-	public EntityEquipmentSlot equipmentSlot(int id)
+	public String toolType(String id)
 	{
-		return equipmentSlots[id];
+		return id;
 	}
 }

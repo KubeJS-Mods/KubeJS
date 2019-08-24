@@ -1,9 +1,9 @@
-package dev.latvian.kubejs.events;
+package dev.latvian.kubejs.event;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEventRegistryEvent;
-import dev.latvian.kubejs.ScriptManager;
-import dev.latvian.kubejs.util.ScriptFile;
+import dev.latvian.kubejs.script.ScriptFile;
+import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.util.UtilsJS;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -50,31 +50,37 @@ public enum EventsJS
 
 	public boolean post(String id, EventJS event)
 	{
+		return postToHandlers(id, handlers(id), event);
+	}
+
+	public List<ScriptEventHandler> handlers(String id)
+	{
 		List<ScriptEventHandler> list = map.get(id);
+		return list == null ? Collections.emptyList() : list;
+	}
 
-		if (list != null)
+	public boolean postToHandlers(String id, List<ScriptEventHandler> list, EventJS event)
+	{
+		boolean c = event.canCancel();
+
+		for (ScriptEventHandler handler : list)
 		{
-			boolean c = event.canCancel();
+			ScriptManager.instance.currentFile = handler.file;
 
-			for (ScriptEventHandler handler : list)
+			try
 			{
-				ScriptManager.instance.currentFile = handler.file;
+				handler.handler.onEvent(event);
 
-				try
+				if (c && event.isCancelled())
 				{
-					handler.handler.onEvent(event);
-
-					if (c && event.isCancelled())
-					{
-						ScriptManager.instance.currentFile = null;
-						return true;
-					}
+					ScriptManager.instance.currentFile = null;
+					return true;
 				}
-				catch (Exception ex)
-				{
-					KubeJS.LOGGER.error("Error occurred while firing '" + id + "' event in " + handler.file.path + ": " + ex);
-					ex.printStackTrace();
-				}
+			}
+			catch (Exception ex)
+			{
+				KubeJS.LOGGER.error("Error occurred while firing '" + id + "' event in " + handler.file.path + ": " + ex);
+				ex.printStackTrace();
 			}
 		}
 

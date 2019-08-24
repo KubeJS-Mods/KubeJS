@@ -1,7 +1,6 @@
-package dev.latvian.kubejs.player;
+package dev.latvian.kubejs.entity;
 
-import dev.latvian.kubejs.entity.EntityJS;
-import dev.latvian.kubejs.util.ServerJS;
+import dev.latvian.kubejs.server.ServerJS;
 import net.minecraft.entity.EntityLivingBase;
 
 /**

@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.world;
 
-import dev.latvian.kubejs.util.ServerJS;
+import dev.latvian.kubejs.server.ServerEventJS;
+import dev.latvian.kubejs.server.ServerJS;
 import net.minecraft.world.World;
 
 /**

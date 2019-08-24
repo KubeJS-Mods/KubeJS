@@ -2,7 +2,7 @@ package dev.latvian.kubejs.block;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.events.EventsJS;
+import dev.latvian.kubejs.event.EventsJS;
 import net.minecraft.block.Block;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;

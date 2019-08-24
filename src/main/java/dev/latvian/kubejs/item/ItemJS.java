@@ -1,160 +1,60 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.block.BlockJS;
-import dev.latvian.kubejs.util.ID;
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.init.Items;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
-import java.util.HashMap;
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
  * @author LatvianModder
  */
-public class ItemJS
+public class ItemJS extends Item
 {
-	public static ItemJS AIR = new ItemJS(Items.AIR)
+	public final ItemProperties properties;
+	private Item containerItem;
+
+	public ItemJS(ItemProperties p)
 	{
-		@Override
-		public boolean isAir()
+		properties = p;
+		setTranslationKey(properties.translationKey);
+		setMaxStackSize(properties.maxStackSize);
+
+		for (Map.Entry<String, Integer> entry : properties.tools.entrySet())
 		{
-			return false;
+			setHarvestLevel(entry.getKey(), entry.getValue());
+		}
+	}
+
+	@Nullable
+	@Override
+	public Item getContainerItem()
+	{
+		if (containerItem == null)
+		{
+			containerItem = REGISTRY.getObject(UtilsJS.INSTANCE.idMC(properties.containerItem));
+
+			if (containerItem == null)
+			{
+				containerItem = Items.AIR;
+			}
 		}
 
-		@Override
-		public ID id()
-		{
-			return new ID(item.getRegistryName());
-		}
-
-		@Override
-		public BlockJS block()
-		{
-			Block block = Block.getBlockFromItem(item);
-			return block == Blocks.AIR ? BlockJS.AIR : new BlockJS(block);
-		}
-
-		@Override
-		public ItemJS setLanguageKey(String key)
-		{
-			return this;
-		}
-
-		@Override
-		public ItemJS setMaxStackSize(int max)
-		{
-			return this;
-		}
-
-		@Override
-		public ItemJS setMaxDamage(int max)
-		{
-			return this;
-		}
-
-		@Override
-		public ItemJS setContainerItem(ItemJS i)
-		{
-			return this;
-		}
-
-		@Override
-		public ItemJS setHarvestLevel(String tool, int level)
-		{
-			return this;
-		}
-
-		@Override
-		public ItemJS setModel(String model)
-		{
-			return this;
-		}
-	};
-
-	public static final Map<Item, String> ITEM_MODELS = new HashMap<>();
-
-	public final transient Item item;
-
-	public ItemJS(Item i)
-	{
-		item = i;
+		return containerItem == Items.AIR ? null : containerItem;
 	}
 
-	public boolean isAir()
+	@Override
+	public EnumRarity getRarity(ItemStack stack)
 	{
-		return false;
+		return properties.rarity;
 	}
 
-	public ID id()
+	@Override
+	public boolean hasEffect(ItemStack stack)
 	{
-		return new ID(item.getRegistryName());
-	}
-
-	public BlockJS block()
-	{
-		Block block = Block.getBlockFromItem(item);
-		return block == Blocks.AIR ? BlockJS.AIR : new BlockJS(block);
-	}
-
-	public int hashCode()
-	{
-		return item.hashCode();
-	}
-
-	public boolean equals(Object obj)
-	{
-		if (obj == this || obj == item)
-		{
-			return true;
-		}
-		else if (obj instanceof ItemJS)
-		{
-			return item == ((ItemJS) obj).item;
-		}
-
-		return false;
-	}
-
-	public String toString()
-	{
-		return item.getRegistryName().toString();
-	}
-
-	public ItemJS setLanguageKey(String key)
-	{
-		item.setTranslationKey(key);
-		return this;
-	}
-
-	public ItemJS setMaxStackSize(int max)
-	{
-		item.setMaxStackSize(max);
-		return this;
-	}
-
-	public ItemJS setMaxDamage(int max)
-	{
-		item.setMaxDamage(max);
-		return this;
-	}
-
-	public ItemJS setContainerItem(ItemJS i)
-	{
-		item.setContainerItem(i.item);
-		return this;
-	}
-
-	public ItemJS setHarvestLevel(String tool, int level)
-	{
-		item.setHarvestLevel(tool, level);
-		return this;
-	}
-
-	public ItemJS setModel(String model)
-	{
-		ITEM_MODELS.put(item, model);
-		return this;
+		return properties.glow || super.hasEffect(stack);
 	}
 }

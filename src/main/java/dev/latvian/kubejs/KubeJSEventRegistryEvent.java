@@ -1,6 +1,6 @@
 package dev.latvian.kubejs;
 
-import dev.latvian.kubejs.events.EventJS;
+import dev.latvian.kubejs.event.EventJS;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
 import java.util.function.BiConsumer;

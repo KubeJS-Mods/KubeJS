@@ -1,12 +1,10 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.util.RegistryEventJS;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 
 /**
@@ -19,26 +17,28 @@ public class ItemRegistryEventJS extends RegistryEventJS<Item>
 		super(r);
 	}
 
-	public ItemJS register(String name)
+	public ItemProperties newItem(String name)
 	{
-		Item item = setID(name, new Item());
-		item.setTranslationKey(KubeJS.MOD_ID + "." + name);
-		registry.register(item);
-		return new ItemJS(item).setModel("kubejs:" + name + "#inventory");
+		return new ItemProperties(name, p -> {
+			ItemJS item = new ItemJS(p);
+			item.setRegistryName(UtilsJS.INSTANCE.idMC(p.id));
+			registry.register(item);
+		});
 	}
 
-	public ItemJS registerBlockItem(String name)
+	public ItemProperties newBlockItem(String name)
 	{
-		Block block = Block.REGISTRY.getObject(new ResourceLocation(KubeJS.MOD_ID, name));
+		return new ItemProperties(name, p -> {
+			Block block = Block.REGISTRY.getObject(UtilsJS.INSTANCE.idMC(p.id));
 
-		if (block == null || block == Blocks.AIR)
-		{
-			throw new IllegalArgumentException("Block with name " + name + " not found!");
-		}
+			if (block == null || block == Blocks.AIR)
+			{
+				throw new IllegalArgumentException("Block with name " + name + " not found!");
+			}
 
-		Item itemBlock = setID(name, new ItemBlock(block));
-		block.setTranslationKey(KubeJS.MOD_ID + "." + name);
-		registry.register(itemBlock);
-		return new ItemJS(itemBlock).setModel("kubejs:" + name + "#inventory");
+			BlockItemJS item = new BlockItemJS(block, p);
+			item.setRegistryName(block.getRegistryName());
+			registry.register(item);
+		});
 	}
 }

@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.util;
+package dev.latvian.kubejs.script;
 
 import jdk.nashorn.api.scripting.ClassFilter;
 

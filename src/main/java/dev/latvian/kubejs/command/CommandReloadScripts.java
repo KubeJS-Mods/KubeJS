@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.command;
 
-import dev.latvian.kubejs.ScriptManager;
-import dev.latvian.kubejs.util.ScriptFile;
+import dev.latvian.kubejs.script.ScriptFile;
+import dev.latvian.kubejs.script.ScriptManager;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;

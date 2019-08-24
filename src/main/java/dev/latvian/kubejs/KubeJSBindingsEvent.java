@@ -2,22 +2,22 @@ package dev.latvian.kubejs;
 
 import net.minecraftforge.fml.common.eventhandler.Event;
 
-import java.util.function.BiConsumer;
+import java.util.Map;
 
 /**
  * @author LatvianModder
  */
 public class KubeJSBindingsEvent extends Event
 {
-	private final BiConsumer<String, Object> callback;
+	private final Map<String, Object> map;
 
-	public KubeJSBindingsEvent(BiConsumer<String, Object> c)
+	public KubeJSBindingsEvent(Map<String, Object> m)
 	{
-		callback = c;
+		map = m;
 	}
 
 	public void add(String name, Object value)
 	{
-		callback.accept(name, value);
+		map.put(name, value);
 	}
 }

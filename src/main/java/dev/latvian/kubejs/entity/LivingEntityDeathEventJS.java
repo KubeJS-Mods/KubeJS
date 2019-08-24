@@ -1,6 +1,5 @@
-package dev.latvian.kubejs.player;
+package dev.latvian.kubejs.entity;
 
-import dev.latvian.kubejs.entity.EntityJS;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 
 import javax.annotation.Nullable;
@@ -8,7 +7,7 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-public class PlayerDeathEventJS extends PlayerEventJS
+public class LivingEntityDeathEventJS extends LivingEntityEventJS
 {
 	public final String type;
 
@@ -18,7 +17,7 @@ public class PlayerDeathEventJS extends PlayerEventJS
 	@Nullable
 	public final EntityJS trueSource;
 
-	public PlayerDeathEventJS(LivingDeathEvent event)
+	public LivingEntityDeathEventJS(LivingDeathEvent event)
 	{
 		super(event.getEntity());
 		type = event.getSource().damageType;

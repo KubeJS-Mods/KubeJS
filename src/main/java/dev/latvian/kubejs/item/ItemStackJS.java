@@ -339,11 +339,6 @@ public abstract class ItemStackJS implements IIngredientJS
 		return new ID(item.getRegistryName());
 	}
 
-	public ItemJS item()
-	{
-		return new ItemJS(item);
-	}
-
 	public abstract ItemStackJS copy();
 
 	public abstract ItemStackJS count(int c);

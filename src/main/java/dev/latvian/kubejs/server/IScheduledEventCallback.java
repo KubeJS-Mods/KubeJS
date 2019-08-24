@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.world;
+package dev.latvian.kubejs.server;
 
 /**
  * @author LatvianModder

@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.block;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.util.RegistryEventJS;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.block.Block;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -15,11 +15,12 @@ public class BlockRegistryEventJS extends RegistryEventJS<Block>
 		super(r);
 	}
 
-	public BlockJS register(String name, MaterialJS material)
+	public BlockProperties newBlock(String name)
 	{
-		Block block = setID(name, new Block(material.material));
-		block.setTranslationKey(KubeJS.MOD_ID + "." + name);
-		registry.register(block);
-		return new BlockJS(block);
+		return new BlockProperties(name, p -> {
+			BlockJS block = new BlockJS(p);
+			block.setRegistryName(UtilsJS.INSTANCE.idMC(p.id));
+			registry.register(block);
+		});
 	}
 }

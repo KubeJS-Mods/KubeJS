@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.util;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.events.EventJS;
+import dev.latvian.kubejs.event.EventJS;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -11,7 +11,7 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
  */
 public class RegistryEventJS<T extends IForgeRegistryEntry<T>> extends EventJS
 {
-	protected final IForgeRegistry<T> registry;
+	public final transient IForgeRegistry<T> registry;
 
 	public RegistryEventJS(IForgeRegistry<T> r)
 	{

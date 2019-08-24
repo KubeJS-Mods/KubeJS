@@ -6,9 +6,9 @@ import java.util.UUID;
 /**
  * @author LatvianModder
  */
-public class UUIDUtilsJS
+public enum UUIDUtilsJS
 {
-	public static final UUIDUtilsJS INSTANCE = new UUIDUtilsJS();
+	INSTANCE;
 
 	public String toString(@Nullable UUID id)
 	{

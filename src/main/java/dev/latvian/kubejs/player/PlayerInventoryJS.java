@@ -3,6 +3,7 @@ package dev.latvian.kubejs.player;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
@@ -29,14 +30,14 @@ public class PlayerInventoryJS extends InventoryJS
 		ItemHandlerHelper.giveItemToPlayer(player.player, UtilsJS.INSTANCE.item(item).itemStack(), selectedSlot());
 	}
 
-	public ItemStackJS getEquipment(int slot)
+	public ItemStackJS getEquipment(EntityEquipmentSlot slot)
 	{
-		return UtilsJS.INSTANCE.item(player.player.getItemStackFromSlot(UtilsJS.INSTANCE.equipmentSlot(slot)));
+		return UtilsJS.INSTANCE.item(player.player.getItemStackFromSlot(slot));
 	}
 
-	public void setEquipment(int slot, Object item)
+	public void setEquipment(EntityEquipmentSlot slot, Object item)
 	{
-		player.player.setItemStackToSlot(UtilsJS.INSTANCE.equipmentSlot(slot), UtilsJS.INSTANCE.item(item).itemStack());
+		player.player.setItemStackToSlot(slot, UtilsJS.INSTANCE.item(item).itemStack());
 	}
 
 	public int selectedSlot()

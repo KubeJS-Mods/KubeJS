@@ -1,20 +1,9 @@
-package dev.latvian.kubejs;
+package dev.latvian.kubejs.script;
 
-import dev.latvian.kubejs.block.MaterialListJS;
-import dev.latvian.kubejs.events.EventsJS;
-import dev.latvian.kubejs.item.ItemStackJS;
-import dev.latvian.kubejs.item.OreDictUtils;
-import dev.latvian.kubejs.text.TextColor;
-import dev.latvian.kubejs.text.TextUtils;
-import dev.latvian.kubejs.util.JsonUtilsJS;
-import dev.latvian.kubejs.util.LoggerWrapperJS;
-import dev.latvian.kubejs.util.ScriptClassFilter;
-import dev.latvian.kubejs.util.ScriptFile;
-import dev.latvian.kubejs.util.ScriptPack;
-import dev.latvian.kubejs.util.UUIDUtilsJS;
-import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.KubeJSBindingsEvent;
+import dev.latvian.kubejs.event.EventsJS;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 
@@ -88,34 +77,9 @@ public class ScriptManager
 		}
 
 		Bindings bindings = new SimpleBindings();
-		MinecraftForge.EVENT_BUS.post(new KubeJSBindingsEvent(bindings::put));
-
-		bindings.put("log", new LoggerWrapperJS(KubeJS.LOGGER));
-		bindings.put("utils", UtilsJS.INSTANCE);
-		bindings.put("uuid", UUIDUtilsJS.INSTANCE);
-		bindings.put("json", JsonUtilsJS.INSTANCE);
-
-		bindings.put("events", EventsJS.INSTANCE);
-		bindings.put("text", TextUtils.INSTANCE);
-		bindings.put("oredict", OreDictUtils.INSTANCE);
-		bindings.put("material", MaterialListJS.INSTANCE);
-
-		bindings.put("EMPTY_ITEM", ItemStackJS.EMPTY);
-		bindings.put("SECOND", 1000L);
-		bindings.put("MINUTE", 60000L);
-		bindings.put("HOUR", 3600000L);
-
-		for (TextColor color : TextColor.VALUES)
-		{
-			bindings.put(color.name(), color);
-		}
-
-		bindings.put("SLOT_MAINHAND", EntityEquipmentSlot.MAINHAND.ordinal());
-		bindings.put("SLOT_OFFHAND", EntityEquipmentSlot.OFFHAND.ordinal());
-		bindings.put("SLOT_FEET", EntityEquipmentSlot.FEET.ordinal());
-		bindings.put("SLOT_LEGS", EntityEquipmentSlot.LEGS.ordinal());
-		bindings.put("SLOT_CHEST", EntityEquipmentSlot.CHEST.ordinal());
-		bindings.put("SLOT_HEAD", EntityEquipmentSlot.HEAD.ordinal());
+		KubeJSBindingsEvent event = new KubeJSBindingsEvent(bindings);
+		MinecraftForge.EVENT_BUS.post(event);
+		DefaultBindings.init(event);
 
 		int i = 0;
 

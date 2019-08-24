@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.util;
+package dev.latvian.kubejs.script;
 
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;

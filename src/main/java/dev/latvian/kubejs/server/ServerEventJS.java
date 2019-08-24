@@ -1,7 +1,6 @@
-package dev.latvian.kubejs.world;
+package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.events.EventJS;
-import dev.latvian.kubejs.util.ServerJS;
+import dev.latvian.kubejs.event.EventJS;
 
 /**
  * @author LatvianModder

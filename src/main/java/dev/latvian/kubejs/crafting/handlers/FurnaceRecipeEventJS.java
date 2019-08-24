@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.crafting.handlers;
 
-import dev.latvian.kubejs.events.EventJS;
+import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.IIngredientJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.item.crafting.FurnaceRecipes;

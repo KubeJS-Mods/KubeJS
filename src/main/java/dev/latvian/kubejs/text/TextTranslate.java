@@ -1,5 +1,8 @@
 package dev.latvian.kubejs.text;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import dev.latvian.kubejs.util.JsonUtilsJS;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
@@ -63,5 +66,26 @@ public class TextTranslate extends Text
 		}
 
 		return new TextTranslate(key, o);
+	}
+
+	@Override
+	public JsonObject toJson()
+	{
+		JsonObject o = getPropertiesAsJson();
+		o.addProperty("translate", key);
+
+		if (objects.length > 0)
+		{
+			JsonArray array = new JsonArray();
+
+			for (Object ob : objects)
+			{
+				array.add(JsonUtilsJS.INSTANCE.from(ob));
+			}
+
+			o.add("with", array);
+		}
+
+		return o;
 	}
 }

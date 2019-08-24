@@ -1,8 +1,9 @@
 package dev.latvian.kubejs.world;
 
 import dev.latvian.kubejs.entity.EntityJS;
-import dev.latvian.kubejs.player.LivingEntityJS;
-import dev.latvian.kubejs.util.ServerJS;
+import dev.latvian.kubejs.entity.LivingEntityJS;
+import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.util.BlockContainerJS;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -61,7 +62,7 @@ public class WorldJS
 		}
 		else if (entity instanceof EntityPlayerMP)
 		{
-			return server.playerMap.get(entity.getUniqueID());
+			return server.player(entity.getUniqueID());
 		}
 		else if (entity instanceof EntityLivingBase)
 		{

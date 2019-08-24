@@ -1,21 +1,23 @@
-package dev.latvian.kubejs.util;
+package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.entity.EntityJS;
+import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
-import dev.latvian.kubejs.text.TextUtils;
-import dev.latvian.kubejs.world.GameRulesJS;
-import dev.latvian.kubejs.world.IScheduledEventCallback;
-import dev.latvian.kubejs.world.ScheduledEvent;
+import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.text.TextUtilsJS;
+import dev.latvian.kubejs.util.MessageSender;
+import dev.latvian.kubejs.util.UUIDUtilsJS;
 import dev.latvian.kubejs.world.WorldJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -23,40 +25,39 @@ import java.util.UUID;
 /**
  * @author LatvianModder
  */
-public class ServerJS
+public class ServerJS implements MessageSender
 {
 	public static ServerJS instance;
 
 	public final transient MinecraftServer server;
 	public final transient List<ScheduledEvent> scheduledEvents;
+	public final transient Int2ObjectOpenHashMap<WorldJS> worldMap;
+	public final transient Map<UUID, PlayerDataJS> playerMap;
 
-	public final Int2ObjectOpenHashMap<WorldJS> worldMap;
 	public final List<WorldJS> worlds;
 	public final WorldJS overworld;
 	public final GameRulesJS gameRules;
-	public final Map<UUID, PlayerJS> playerMap;
-	public final List<PlayerJS> players;
+	public final HashSet<PlayerDataJS> players;
 
 	public ServerJS(MinecraftServer ms, WorldServer w)
 	{
 		server = ms;
-		scheduledEvents = new ObjectArrayList<>();
+		scheduledEvents = new LinkedList<>();
+		worldMap = new Int2ObjectOpenHashMap<>();
+		playerMap = new HashMap<>();
 
 		overworld = new WorldJS(this, w);
-		worldMap = new Int2ObjectOpenHashMap<>();
 		worldMap.put(0, overworld);
-		worlds = new ObjectArrayList<>();
+		worlds = new ArrayList<>();
 		worlds.add(overworld);
 		gameRules = new GameRulesJS(w.getGameRules());
-		playerMap = new Object2ObjectOpenHashMap<>();
-		players = new ObjectArrayList<>();
+		players = new HashSet<>();
 	}
 
 	public void updatePlayerList()
 	{
 		players.clear();
 		players.addAll(playerMap.values());
-		players.sort(EntityJS.COMPARATOR);
 	}
 
 	public void updateWorldList()
@@ -90,9 +91,10 @@ public class ServerJS
 		server.stopServer();
 	}
 
-	public void sendMessage(Object... message)
+	@Override
+	public void tell(Text text)
 	{
-		ITextComponent component = TextUtils.INSTANCE.of(message).component();
+		ITextComponent component = text.component();
 
 		for (EntityPlayerMP player : server.getPlayerList().getPlayers())
 		{
@@ -100,9 +102,9 @@ public class ServerJS
 		}
 	}
 
-	public void sendStatusMessage(Object... message)
+	public void statusMessage(Object... message)
 	{
-		ITextComponent component = TextUtils.INSTANCE.of(message).component();
+		ITextComponent component = TextUtilsJS.INSTANCE.of(message).component();
 
 		for (EntityPlayerMP player : server.getPlayerList().getPlayers())
 		{
@@ -136,24 +138,55 @@ public class ServerJS
 
 	public PlayerJS player(UUID uuid)
 	{
-		PlayerJS p = playerMap.get(uuid);
+		PlayerDataJS p = playerMap.get(uuid);
 
 		if (p == null)
 		{
 			throw new NullPointerException("Player from UUID " + uuid + " not found!");
 		}
 
-		return p;
+		return p.player();
 	}
 
 	public PlayerJS player(String name)
 	{
+		name = name.trim().toLowerCase();
+
+		if (name.isEmpty())
+		{
+			throw new NullPointerException("Player can't have empty name!");
+		}
+
+		UUID uuid = UUIDUtilsJS.INSTANCE.fromString(name);
+
+		if (uuid != null)
+		{
+			return player(uuid);
+		}
+
+		for (PlayerDataJS p : players)
+		{
+			if (p.name.equalsIgnoreCase(name))
+			{
+				return p.player();
+			}
+		}
+
+		for (PlayerDataJS p : players)
+		{
+			if (p.name.toLowerCase().contains(name))
+			{
+				return p.player();
+			}
+		}
+
 		throw new NullPointerException("Player from name " + name + " not found!");
 	}
 
-	public void runCommand(String command)
+	@Override
+	public int runCommand(String command)
 	{
-		server.getCommandManager().executeCommand(server, command);
+		return server.getCommandManager().executeCommand(server, command);
 	}
 
 	public ScheduledEvent schedule(long timer, IScheduledEventCallback event)

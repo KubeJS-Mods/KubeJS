@@ -2,10 +2,11 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.ScriptManager;
-import dev.latvian.kubejs.events.EventsJS;
-import dev.latvian.kubejs.util.ScriptFile;
-import dev.latvian.kubejs.util.ServerJS;
+import dev.latvian.kubejs.entity.LivingEntityDeathEventJS;
+import dev.latvian.kubejs.event.EventsJS;
+import dev.latvian.kubejs.script.ScriptFile;
+import dev.latvian.kubejs.script.ScriptManager;
+import dev.latvian.kubejs.server.ServerJS;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.event.ServerChatEvent;
@@ -40,10 +41,10 @@ public class KubeJSPlayerEventHandler
 
 		if (event.player instanceof EntityPlayerMP)
 		{
-			PlayerJS p = new PlayerJS(ServerJS.instance, (EntityPlayerMP) event.player);
-			p.server.playerMap.put(p.id(), p);
+			PlayerDataJS p = new PlayerDataJS(ServerJS.instance, (EntityPlayerMP) event.player);
+			p.server.playerMap.put(p.uuid, p);
 			p.server.updatePlayerList();
-			EventsJS.INSTANCE.post(KubeJSEvents.PLAYER_LOGGED_IN, new PlayerEventJS(p));
+			EventsJS.INSTANCE.post(KubeJSEvents.PLAYER_LOGGED_IN, new PlayerEventJS(event.player));
 		}
 	}
 
@@ -87,9 +88,9 @@ public class KubeJSPlayerEventHandler
 	}
 
 	@SubscribeEvent
-	public static void onPlayerDeath(LivingDeathEvent event)
+	public static void onLivingDeath(LivingDeathEvent event)
 	{
-		if (event.getEntity() instanceof EntityPlayerMP && EventsJS.INSTANCE.post(KubeJSEvents.PLAYER_DEATH, new PlayerDeathEventJS(event)))
+		if (!event.getEntity().world.isRemote && EventsJS.INSTANCE.post(KubeJSEvents.ENTITY_DEATH, new LivingEntityDeathEventJS(event)))
 		{
 			event.setCanceled(true);
 		}

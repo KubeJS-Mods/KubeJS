@@ -1,20 +1,18 @@
 package dev.latvian.kubejs.entity;
 
-import dev.latvian.kubejs.text.TextUtils;
-import dev.latvian.kubejs.util.ServerJS;
+import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.Entity;
 
-import java.util.Comparator;
 import java.util.UUID;
 
 /**
  * @author LatvianModder
  */
-public class EntityJS
+public class EntityJS implements MessageSender
 {
-	public static final Comparator<? super EntityJS> COMPARATOR = (o1, o2) -> o1.name().compareToIgnoreCase(o2.name());
-
 	public final ServerJS server;
 	public final transient Entity entity;
 
@@ -29,7 +27,7 @@ public class EntityJS
 		return server.world(entity.world);
 	}
 
-	public UUID id()
+	public UUID uuid()
 	{
 		return entity.getUniqueID();
 	}
@@ -39,29 +37,10 @@ public class EntityJS
 		return entity.getName();
 	}
 
-	public void sendMessage(Object... message)
+	@Override
+	public void tell(Text text)
 	{
-		entity.sendMessage(TextUtils.INSTANCE.of(message).component());
-	}
-
-	public int hashCode()
-	{
-		return id().hashCode();
-	}
-
-	public boolean equals(Object o)
-	{
-		if (o == this)
-		{
-			return true;
-		}
-		else if (o instanceof EntityJS)
-		{
-			EntityJS e = (EntityJS) o;
-			return entity == e.entity || entity.getUniqueID().equals(e.entity.getUniqueID());
-		}
-
-		return false;
+		entity.sendMessage(text.component());
 	}
 
 	public String toString()
@@ -131,8 +110,9 @@ public class EntityJS
 	}
 	*/
 
-	public void runCommand(String command)
+	@Override
+	public int runCommand(String command)
 	{
-		server.server.getCommandManager().executeCommand(entity, command);
+		return server.server.getCommandManager().executeCommand(entity, command);
 	}
 }

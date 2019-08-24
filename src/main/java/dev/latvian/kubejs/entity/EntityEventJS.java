@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.entity;
 
-import dev.latvian.kubejs.util.ServerJS;
+import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.world.WorldEventJS;
 import net.minecraft.entity.Entity;
 
@@ -10,12 +10,6 @@ import net.minecraft.entity.Entity;
 public class EntityEventJS extends WorldEventJS
 {
 	public final EntityJS entity;
-
-	public EntityEventJS(EntityJS e)
-	{
-		super(e.world());
-		entity = e;
-	}
 
 	public EntityEventJS(Entity e)
 	{

@@ -10,6 +10,7 @@ import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import dev.latvian.kubejs.text.Text;
 import jdk.nashorn.api.scripting.JSObject;
 
 import javax.annotation.Nullable;
@@ -24,9 +25,41 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class JsonUtilsJS
+public enum JsonUtilsJS
 {
-	public static final JsonUtilsJS INSTANCE = new JsonUtilsJS();
+	INSTANCE;
+
+	public JsonElement copy(@Nullable JsonElement element)
+	{
+		if (element == null || element.isJsonNull())
+		{
+			return JsonNull.INSTANCE;
+		}
+		else if (element instanceof JsonArray)
+		{
+			JsonArray a = new JsonArray();
+
+			for (JsonElement e : (JsonArray) element)
+			{
+				a.add(copy(e));
+			}
+
+			return a;
+		}
+		else if (element instanceof JsonObject)
+		{
+			JsonObject o = new JsonObject();
+
+			for (Map.Entry<String, JsonElement> entry : ((JsonObject) element).entrySet())
+			{
+				o.add(entry.getKey(), copy(entry.getValue()));
+			}
+
+			return o;
+		}
+
+		return element;
+	}
 
 	public JsonObject object()
 	{
@@ -72,6 +105,10 @@ public class JsonUtilsJS
 		else if (object instanceof Character)
 		{
 			return new JsonPrimitive((Character) object);
+		}
+		else if (object instanceof Text)
+		{
+			return ((Text) object).toJson();
 		}
 		else if (object instanceof JSObject)
 		{
@@ -229,5 +266,39 @@ public class JsonUtilsJS
 		}
 
 		return JsonNull.INSTANCE;
+	}
+
+	@Nullable
+	public Object primitiveObject(@Nullable JsonElement element)
+	{
+		if (element == null || element.isJsonNull())
+		{
+			return null;
+		}
+		else if (element.isJsonPrimitive())
+		{
+			JsonPrimitive p = element.getAsJsonPrimitive();
+
+			if (p.isBoolean())
+			{
+				return p.getAsBoolean();
+			}
+			else if (p.isNumber())
+			{
+				return p.getAsNumber();
+			}
+
+			try
+			{
+				Double.parseDouble(p.getAsString());
+				return p.getAsNumber();
+			}
+			catch (Exception ex)
+			{
+				return p.getAsString();
+			}
+		}
+
+		return null;
 	}
 }

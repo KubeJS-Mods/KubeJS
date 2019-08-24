@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.util;
+package dev.latvian.kubejs.script;
 
 import javax.script.ScriptEngine;
 import java.util.ArrayList;

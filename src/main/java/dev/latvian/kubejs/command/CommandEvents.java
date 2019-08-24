@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.command;
 
-import dev.latvian.kubejs.events.EventsJS;
+import dev.latvian.kubejs.event.EventsJS;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;

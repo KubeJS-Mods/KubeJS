@@ -4,7 +4,7 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.crafting.handlers.CraftingTableRecipeEventJS;
 import dev.latvian.kubejs.crafting.handlers.FurnaceRecipeEventJS;
-import dev.latvian.kubejs.events.EventsJS;
+import dev.latvian.kubejs.event.EventsJS;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
