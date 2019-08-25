@@ -11,6 +11,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -20,30 +22,32 @@ public class WorldJS
 	public final transient WorldServer world;
 	public final ServerJS server;
 	public final int dimension;
+	public final Map<String, Object> data;
 
 	public WorldJS(ServerJS s, WorldServer w)
 	{
 		server = s;
 		world = w;
 		dimension = world.provider.getDimension();
+		data = new HashMap<>();
 	}
 
-	public long getLocalTime()
+	public long localTime()
 	{
 		return world.getWorldTime();
 	}
 
-	public long getTotalTime()
+	public long totalTime()
 	{
 		return world.getTotalWorldTime();
 	}
 
-	public boolean isDaytime()
+	public boolean daytime()
 	{
 		return world.isDaytime();
 	}
 
-	public boolean isRaining()
+	public boolean raining()
 	{
 		return world.isRaining();
 	}

@@ -3,9 +3,11 @@ package dev.latvian.kubejs.world;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.event.EventsJS;
+import dev.latvian.kubejs.server.ServerCreatedEvent;
 import dev.latvian.kubejs.server.ServerEventJS;
 import dev.latvian.kubejs.server.ServerJS;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -23,18 +25,24 @@ public class KubeJSWorldEventHandler
 	{
 		if (event.getWorld() instanceof WorldServer)
 		{
+			WorldJS w;
+
 			if (event.getWorld().provider.getDimension() == 0)
 			{
 				ServerJS.instance = new ServerJS(event.getWorld().getMinecraftServer(), (WorldServer) event.getWorld());
+				MinecraftForge.EVENT_BUS.post(new ServerCreatedEvent(ServerJS.instance));
 				EventsJS.INSTANCE.post(KubeJSEvents.SERVER_LOAD, new ServerEventJS(ServerJS.instance));
+				w = ServerJS.instance.overworld;
 			}
 			else
 			{
-				ServerJS.instance.worldMap.put(event.getWorld().provider.getDimension(), new WorldJS(ServerJS.instance, (WorldServer) event.getWorld()));
+				w = new WorldJS(ServerJS.instance, (WorldServer) event.getWorld());
+				ServerJS.instance.worldMap.put(event.getWorld().provider.getDimension(), w);
 				ServerJS.instance.updateWorldList();
 			}
 
-			EventsJS.INSTANCE.post(KubeJSEvents.WORLD_LOAD, new WorldEventJS(event.getWorld()));
+			EventsJS.INSTANCE.post(KubeJSEvents.WORLD_LOAD, new WorldEventJS(w));
+			MinecraftForge.EVENT_BUS.post(new WorldCreatedEvent(w));
 		}
 	}
 

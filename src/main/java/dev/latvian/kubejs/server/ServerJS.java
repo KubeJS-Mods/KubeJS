@@ -6,6 +6,7 @@ import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextUtilsJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UUIDUtilsJS;
+import dev.latvian.kubejs.world.WorldCreatedEvent;
 import dev.latvian.kubejs.world.WorldJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -13,6 +14,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +36,7 @@ public class ServerJS implements MessageSender
 	public final transient Int2ObjectOpenHashMap<WorldJS> worldMap;
 	public final transient Map<UUID, PlayerDataJS> playerMap;
 
+	public final Map<String, Object> data;
 	public final List<WorldJS> worlds;
 	public final WorldJS overworld;
 	public final GameRulesJS gameRules;
@@ -46,6 +49,7 @@ public class ServerJS implements MessageSender
 		worldMap = new Int2ObjectOpenHashMap<>();
 		playerMap = new HashMap<>();
 
+		data = new HashMap<>();
 		overworld = new WorldJS(this, w);
 		worldMap.put(0, overworld);
 		worlds = new ArrayList<>();
@@ -66,22 +70,22 @@ public class ServerJS implements MessageSender
 		worlds.addAll(worldMap.values());
 	}
 
-	public boolean isRunning()
+	public boolean running()
 	{
 		return server.isServerRunning();
 	}
 
-	public boolean isHardcore()
+	public boolean hardcore()
 	{
 		return server.isHardcore();
 	}
 
-	public boolean isSinglePlayer()
+	public boolean singlePlayer()
 	{
 		return server.isSinglePlayer();
 	}
 
-	public boolean isDedicated()
+	public boolean dedicated()
 	{
 		return server.isDedicatedServer();
 	}
@@ -126,6 +130,7 @@ public class ServerJS implements MessageSender
 			world = new WorldJS(this, server.getWorld(dimension));
 			worldMap.put(dimension, world);
 			updateWorldList();
+			MinecraftForge.EVENT_BUS.post(new WorldCreatedEvent(world));
 		}
 
 		return world;
