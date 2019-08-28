@@ -3,7 +3,6 @@ package dev.latvian.kubejs.world;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.server.ServerJS;
-import dev.latvian.kubejs.util.BlockContainerJS;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;

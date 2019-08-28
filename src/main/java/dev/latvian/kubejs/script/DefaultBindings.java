@@ -3,7 +3,7 @@ package dev.latvian.kubejs.script;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSBindingsEvent;
 import dev.latvian.kubejs.block.MaterialListJS;
-import dev.latvian.kubejs.event.EventsJS;
+import dev.latvian.kubejs.event.ScriptEventsWrapper;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.OreDictUtils;
 import dev.latvian.kubejs.text.TextColor;
@@ -29,7 +29,7 @@ public class DefaultBindings
 		event.add("uuid", UUIDUtilsJS.INSTANCE);
 		event.add("json", JsonUtilsJS.INSTANCE);
 
-		event.add("events", EventsJS.INSTANCE);
+		event.add("events", new ScriptEventsWrapper());
 		event.add("text", TextUtilsJS.INSTANCE);
 		event.add("oredict", OreDictUtils.INSTANCE);
 		event.add("materials", MaterialListJS.INSTANCE.map);

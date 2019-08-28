@@ -1,2 +1,2 @@
 @dev.latvian.kubejs.NonnullByDefault
-package dev.latvian.kubejs.script;
+package dev.latvian.kubejs.client;

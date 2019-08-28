@@ -3,6 +3,8 @@ package dev.latvian.kubejs.text;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.kubejs.documentation.DocMethod;
+import dev.latvian.kubejs.documentation.Param;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
@@ -33,7 +35,8 @@ public abstract class Text implements Iterable<Text>
 
 	public abstract Text rawCopy();
 
-	public abstract JsonElement toJson();
+	@DocMethod(value = "Convert text to json")
+	public abstract JsonElement json();
 
 	public final ITextComponent component()
 	{
@@ -53,7 +56,14 @@ public abstract class Text implements Iterable<Text>
 
 		if (click != null)
 		{
-			component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, click));
+			if (click.startsWith("command:"))
+			{
+				component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, click.substring(8)));
+			}
+			else
+			{
+				component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, click));
+			}
 		}
 
 		if (hover != null)
@@ -69,6 +79,7 @@ public abstract class Text implements Iterable<Text>
 		return component;
 	}
 
+	@DocMethod(value = "Create a deep copy of this text")
 	public final Text copy()
 	{
 		Text t = rawCopy();
@@ -136,7 +147,7 @@ public abstract class Text implements Iterable<Text>
 
 		if (hover != null)
 		{
-			json.add("hover", hover.toJson());
+			json.add("hover", hover.json());
 		}
 
 		if (!siblings().isEmpty())
@@ -145,7 +156,7 @@ public abstract class Text implements Iterable<Text>
 
 			for (Text child : siblings())
 			{
-				array.add(child.toJson());
+				array.add(child.json());
 			}
 
 			json.add("extra", array);
@@ -203,97 +214,216 @@ public abstract class Text implements Iterable<Text>
 		return list.iterator();
 	}
 
+	@DocMethod(value = "Set color", params = @Param(value = "value"))
 	public final Text color(TextColor value)
 	{
 		color = value;
 		return this;
 	}
 
+	@DocMethod(value = "Set color to black")
+	public final Text black()
+	{
+		return color(TextColor.BLACK);
+	}
+
+	@DocMethod(value = "Set color to dark blue")
+	public final Text darkBlue()
+	{
+		return color(TextColor.DARK_BLUE);
+	}
+
+	@DocMethod(value = "Set color to dark green")
+	public final Text darkGreen()
+	{
+		return color(TextColor.DARK_GREEN);
+	}
+
+	@DocMethod(value = "Set color to dark aqua")
+	public final Text darkAqua()
+	{
+		return color(TextColor.DARK_AQUA);
+	}
+
+	@DocMethod(value = "Set color to dark red")
+	public final Text darkRed()
+	{
+		return color(TextColor.DARK_RED);
+	}
+
+	@DocMethod(value = "Set color to dark purple")
+	public final Text darkPurple()
+	{
+		return color(TextColor.DARK_PURPLE);
+	}
+
+	@DocMethod(value = "Set color to gold")
+	public final Text gold()
+	{
+		return color(TextColor.GOLD);
+	}
+
+	@DocMethod(value = "Set color to gray")
+	public final Text gray()
+	{
+		return color(TextColor.GRAY);
+	}
+
+	@DocMethod(value = "Set color to dark gray")
+	public final Text darkGray()
+	{
+		return color(TextColor.DARK_GRAY);
+	}
+
+	@DocMethod(value = "Set color to blue")
+	public final Text blue()
+	{
+		return color(TextColor.BLUE);
+	}
+
+	@DocMethod(value = "Set color to green")
+	public final Text green()
+	{
+		return color(TextColor.GREEN);
+	}
+
+	@DocMethod(value = "Set color to aqua")
+	public final Text aqua()
+	{
+		return color(TextColor.AQUA);
+	}
+
+	@DocMethod(value = "Set color to red")
+	public final Text red()
+	{
+		return color(TextColor.RED);
+	}
+
+	@DocMethod(value = "Set color to light purple")
+	public final Text lightPurple()
+	{
+		return color(TextColor.LIGHT_PURPLE);
+	}
+
+	@DocMethod(value = "Set color to yellow")
+	public final Text yellow()
+	{
+		return color(TextColor.YELLOW);
+	}
+
+	@DocMethod(value = "Set color to white")
+	public final Text white()
+	{
+		return color(TextColor.WHITE);
+	}
+
+	@DocMethod(value = "Set bold")
 	public final Text bold(Boolean value)
 	{
 		bold = value;
 		return this;
 	}
 
+	@DocMethod(value = "Set bold")
 	public final Text bold()
 	{
 		return bold(true);
 	}
 
+	@DocMethod(value = "Set italic")
 	public final Text italic(Boolean value)
 	{
 		italic = value;
 		return this;
 	}
 
+	@DocMethod(value = "Set italic")
 	public final Text italic()
 	{
 		return italic(true);
 	}
 
+	@DocMethod(value = "Set underlined")
 	public final Text underlined(Boolean value)
 	{
 		underlined = value;
 		return this;
 	}
 
+	@DocMethod(value = "Set underlined")
 	public final Text underlined()
 	{
 		return underlined(true);
 	}
 
+	@DocMethod(value = "Set strikethrough")
 	public final Text strikethrough(Boolean value)
 	{
 		strikethrough = value;
 		return this;
 	}
 
+	@DocMethod(value = "Set strikethrough")
 	public final Text strikethrough()
 	{
 		return strikethrough(true);
 	}
 
+	@DocMethod(value = "Set obfuscated")
 	public final Text obfuscated(Boolean value)
 	{
 		obfuscated = value;
 		return this;
 	}
 
+	@DocMethod(value = "Set obfuscated")
 	public final Text obfuscated()
 	{
 		return obfuscated(true);
 	}
 
+	@DocMethod(value = "Set insertion text")
 	public final Text insertion(String value)
 	{
 		insertion = value;
 		return this;
 	}
 
+	@DocMethod(value = "Set click URL")
 	public final Text click(String value)
 	{
 		click = value;
 		return this;
 	}
 
+	@DocMethod(value = "Set hover text", params = @Param(type = Text.class))
 	public final Text hover(Object text)
 	{
 		hover = TextUtilsJS.INSTANCE.of(text);
 		return this;
 	}
 
-	public final void append(Text sibling)
+	@DocMethod(value = "Append text and end of this one", params = @Param(type = Text.class))
+	public final Text append(Object sibling)
 	{
 		if (siblings == null)
 		{
 			siblings = new LinkedList<>();
 		}
 
-		siblings.add(sibling);
+		siblings.add(TextUtilsJS.INSTANCE.of(sibling));
+		return this;
 	}
 
+	@DocMethod(value = "List of siblings")
 	public final List<Text> siblings()
 	{
 		return siblings == null ? Collections.emptyList() : siblings;
+	}
+
+	@DocMethod(value = "True if this text component has sibling components")
+	public final boolean hasSiblings()
+	{
+		return siblings != null && !siblings.isEmpty();
 	}
 }

@@ -69,7 +69,7 @@ public class TextTranslate extends Text
 	}
 
 	@Override
-	public JsonObject toJson()
+	public JsonObject json()
 	{
 		JsonObject o = getPropertiesAsJson();
 		o.addProperty("translate", key);

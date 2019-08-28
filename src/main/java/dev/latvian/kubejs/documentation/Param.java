@@ -1,15 +1,21 @@
-package dev.latvian.kubejs;
+package dev.latvian.kubejs.documentation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author LatvianModder
- * This annotation indicates that something is modloader specific, and should not be used in scripts, but more for internal use
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ModLoaderSpecific
+@Target({ })
+public @interface Param
 {
+	String value() default "";
+
+	String info() default "";
+
+	Class type() default Object.class;
 }

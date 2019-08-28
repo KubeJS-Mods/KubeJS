@@ -108,7 +108,7 @@ public enum JsonUtilsJS
 		}
 		else if (object instanceof Text)
 		{
-			return ((Text) object).toJson();
+			return ((Text) object).json();
 		}
 		else if (object instanceof JSObject)
 		{

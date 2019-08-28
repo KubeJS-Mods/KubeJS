@@ -1,9 +1,9 @@
 package dev.latvian.kubejs;
 
 import dev.latvian.kubejs.command.CommandKubeJS;
+import dev.latvian.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.script.ScriptManager;
-import dev.latvian.kubejs.server.CommandRegistryEventJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;

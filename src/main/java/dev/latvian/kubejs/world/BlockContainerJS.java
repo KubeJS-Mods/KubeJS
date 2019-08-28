@@ -1,5 +1,7 @@
-package dev.latvian.kubejs.util;
+package dev.latvian.kubejs.world;
 
+import dev.latvian.kubejs.util.ID;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;

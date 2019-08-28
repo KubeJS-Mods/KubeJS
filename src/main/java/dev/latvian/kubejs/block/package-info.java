@@ -1,8 +1,9 @@
 @dev.latvian.kubejs.NonnullByDefault
 @DocPackage({
-		WorldJS.class,
-		BlockContainerJS.class
+		BlockJS.class,
+		BlockProperties.class,
+		MaterialJS.class
 })
-package dev.latvian.kubejs.world;
+package dev.latvian.kubejs.block;
 
 import dev.latvian.kubejs.documentation.DocPackage;

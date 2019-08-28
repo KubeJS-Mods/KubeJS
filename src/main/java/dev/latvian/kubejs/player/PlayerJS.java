@@ -1,6 +1,9 @@
 package dev.latvian.kubejs.player;
 
+import dev.latvian.kubejs.documentation.DocMethod;
+import dev.latvian.kubejs.documentation.Param;
 import dev.latvian.kubejs.entity.LivingEntityJS;
+import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextUtilsJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -37,7 +40,8 @@ public class PlayerJS extends LivingEntityJS
 		player.connection.setPlayerLocation(x, y, z, yaw, pitch);
 	}
 
-	public void statusMessage(Object... message)
+	@DocMethod(params = @Param(type = Text.class))
+	public void statusMessage(Object message)
 	{
 		player.sendStatusMessage(TextUtilsJS.INSTANCE.of(message).component(), true);
 	}

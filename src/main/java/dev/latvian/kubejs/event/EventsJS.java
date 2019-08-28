@@ -1,13 +1,10 @@
 package dev.latvian.kubejs.event;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.KubeJSEventRegistryEvent;
 import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptManager;
-import dev.latvian.kubejs.util.UtilsJS;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +18,6 @@ public enum EventsJS
 	INSTANCE;
 
 	private final Map<String, List<ScriptEventHandler>> map = new Object2ObjectOpenHashMap<>();
-	private Map<String, Class> registeredIDs;
 
 	private static class ScriptEventHandler
 	{
@@ -91,35 +87,5 @@ public enum EventsJS
 	public void clear()
 	{
 		map.clear();
-		registeredIDs = null;
-	}
-
-	public Map<String, Class> list()
-	{
-		if (registeredIDs == null)
-		{
-			registeredIDs = new Object2ObjectOpenHashMap<>();
-			MinecraftForge.EVENT_BUS.post(new KubeJSEventRegistryEvent(registeredIDs::put));
-			registeredIDs = Collections.unmodifiableMap(registeredIDs);
-		}
-
-		return registeredIDs;
-	}
-
-	public void printAllEvents()
-	{
-		List<String> list = new ObjectArrayList<>();
-
-		for (Map.Entry<String, Class> entry : list().entrySet())
-		{
-			list.add(entry.getKey() + ": " + UtilsJS.INSTANCE.listFieldsAndMethods(entry.getValue(), 0, "isCancelled()", "cancel()", "canCancel()"));
-		}
-
-		list.sort(null);
-
-		for (String string : list)
-		{
-			KubeJS.LOGGER.info(string);
-		}
 	}
 }

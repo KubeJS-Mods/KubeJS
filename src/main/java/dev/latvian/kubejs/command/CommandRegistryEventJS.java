@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.server;
+package dev.latvian.kubejs.command;
 
 import dev.latvian.kubejs.event.EventJS;
 import net.minecraft.command.CommandBase;

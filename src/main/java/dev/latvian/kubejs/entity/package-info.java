@@ -1,4 +1,8 @@
-@NonnullByDefault
+@dev.latvian.kubejs.NonnullByDefault
+@DocPackage({
+		EntityJS.class,
+		LivingEntityJS.class
+})
 package dev.latvian.kubejs.entity;
 
-import dev.latvian.kubejs.NonnullByDefault;
+import dev.latvian.kubejs.documentation.DocPackage;

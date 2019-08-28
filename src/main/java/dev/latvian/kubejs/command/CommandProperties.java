@@ -1,6 +1,6 @@
-package dev.latvian.kubejs.server;
+package dev.latvian.kubejs.command;
 
-import dev.latvian.kubejs.util.CommandSender;
+import dev.latvian.kubejs.server.ServerJS;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandNotFoundException;

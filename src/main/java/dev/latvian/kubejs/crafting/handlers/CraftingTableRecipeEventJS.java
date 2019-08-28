@@ -4,8 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.util.JsonUtilsJS;
-import dev.latvian.kubejs.util.RegistryEventJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -29,11 +29,13 @@ import java.util.function.Predicate;
 /**
  * @author LatvianModder
  */
-public class CraftingTableRecipeEventJS extends RegistryEventJS<IRecipe>
+public class CraftingTableRecipeEventJS extends EventJS
 {
+	private final IForgeRegistry<IRecipe> registry;
+
 	public CraftingTableRecipeEventJS(IForgeRegistry<IRecipe> r)
 	{
-		super(r);
+		registry = r;
 	}
 
 	public void addShaped(String recipeID, String output, String[] pattern, Map<String, Object> ingredients)
@@ -176,7 +178,7 @@ public class CraftingTableRecipeEventJS extends RegistryEventJS<IRecipe>
 
 			if (r != null)
 			{
-				registry.register(setID(recipeID, r));
+				registry.register(r.setRegistryName(new ResourceLocation(KubeJS.appendModId(recipeID))));
 			}
 		}
 		catch (Exception ex)

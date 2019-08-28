@@ -1,5 +1,7 @@
 package dev.latvian.kubejs.server;
 
+import dev.latvian.kubejs.documentation.DocMethod;
+import dev.latvian.kubejs.documentation.Param;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.text.Text;
@@ -106,7 +108,8 @@ public class ServerJS implements MessageSender
 		}
 	}
 
-	public void statusMessage(Object... message)
+	@DocMethod(params = @Param(type = Text.class))
+	public void statusMessage(Object message)
 	{
 		ITextComponent component = TextUtilsJS.INSTANCE.of(message).component();
 

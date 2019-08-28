@@ -2,6 +2,7 @@ package dev.latvian.kubejs.script;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSBindingsEvent;
+import dev.latvian.kubejs.documentation.Documentation;
 import dev.latvian.kubejs.event.EventsJS;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import net.minecraftforge.common.MinecraftForge;
@@ -108,6 +109,7 @@ public class ScriptManager
 			}
 		}
 
+		Documentation.INSTANCE.init();
 		long time = System.currentTimeMillis() - now;
 		KubeJS.LOGGER.info("Loaded " + i + "/" + scripts.size() + " scripts in " + (time / 1000D) + "s");
 		return time;

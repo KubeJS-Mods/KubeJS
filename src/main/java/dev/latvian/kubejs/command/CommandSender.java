@@ -1,8 +1,10 @@
-package dev.latvian.kubejs.util;
+package dev.latvian.kubejs.command;
 
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.util.MessageSender;
+import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
