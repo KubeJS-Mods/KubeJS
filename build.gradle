@@ -7,12 +7,14 @@ buildscript {
 	dependencies {
 		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
 		classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.1.0'
+		classpath 'com.wynprice.cursemaven:CurseMaven:1.2.2'
 	}
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: 'maven'
+apply plugin: 'com.wynprice.cursemaven'
 
 apply from: 'https://raw.githubusercontent.com/MinecraftModDevelopment/Gradle-Collection/master/generic/markdown-git-changelog.gradle'
 
@@ -34,6 +36,20 @@ minecraft {
 	replace "0.0.0.forge", min_forge_version
 	replace "0.0.0.kubejs", project.version
 	replaceIn "${mod_reference}"
+}
+
+configurations.all {
+	transitive = false
+}
+
+repositories {
+	mavenLocal()
+}
+
+dependencies {
+	deobfProvided curse.resolve('jei', project.jei_file)
+	deobfProvided curse.resolve('packmode', project.packmode_file)
+	deobfProvided curse.resolve('game-stages', project.gamestages_file)
 }
 
 processResources {
@@ -71,6 +87,11 @@ if (ENV.CURSEFORGE_KEY) {
 			id = "${curseforge_id}"
 			releaseType = "release"
 			addGameVersion "${mc_version}"
+			relations {
+				optionalDependency 'jei'
+				optionalDependency 'packmode'
+				optionalDependency 'game-stages'
+			}
 			changelog = getGitChangelog
 			changelogType = 'markdown'
 			addArtifact(sourceJar)

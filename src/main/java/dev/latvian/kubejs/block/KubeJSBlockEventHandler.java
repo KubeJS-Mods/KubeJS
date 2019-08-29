@@ -17,6 +17,6 @@ public class KubeJSBlockEventHandler
 	@SubscribeEvent
 	public static void registry(RegistryEvent.Register<Block> event)
 	{
-		EventsJS.INSTANCE.post(KubeJSEvents.BLOCK_REGISTRY, new BlockRegistryEventJS(event.getRegistry()));
+		EventsJS.post(KubeJSEvents.BLOCK_REGISTRY, new BlockRegistryEventJS(event.getRegistry()));
 	}
 }

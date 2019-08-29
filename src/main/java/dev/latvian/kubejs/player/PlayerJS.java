@@ -1,9 +1,7 @@
 package dev.latvian.kubejs.player;
 
-import dev.latvian.kubejs.documentation.DocMethod;
-import dev.latvian.kubejs.documentation.Param;
+import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.entity.LivingEntityJS;
-import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextUtilsJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -17,7 +15,10 @@ import java.util.Map;
 public class PlayerJS extends LivingEntityJS
 {
 	public final transient EntityPlayerMP player;
+
+	@DocField("Temporary data, mods can attach objects to this")
 	public final Map<String, Object> data;
+
 	private PlayerInventoryJS inventory;
 
 	public PlayerJS(PlayerDataJS d, EntityPlayerMP p)
@@ -40,7 +41,7 @@ public class PlayerJS extends LivingEntityJS
 		player.connection.setPlayerLocation(x, y, z, yaw, pitch);
 	}
 
-	@DocMethod(params = @Param(type = Text.class))
+	@Override
 	public void statusMessage(Object message)
 	{
 		player.sendStatusMessage(TextUtilsJS.INSTANCE.of(message).component(), true);

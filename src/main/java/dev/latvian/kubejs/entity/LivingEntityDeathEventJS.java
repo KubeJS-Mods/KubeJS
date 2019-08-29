@@ -21,8 +21,8 @@ public class LivingEntityDeathEventJS extends LivingEntityEventJS
 	{
 		super(event.getEntity());
 		type = event.getSource().damageType;
-		immediateSource = world.entity(event.getSource().getImmediateSource());
-		trueSource = world.entity(event.getSource().getTrueSource());
+		immediateSource = server.entity(event.getSource().getImmediateSource());
+		trueSource = server.entity(event.getSource().getTrueSource());
 	}
 
 	@Override

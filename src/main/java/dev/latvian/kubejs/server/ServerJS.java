@@ -1,16 +1,22 @@
 package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.documentation.DocMethod;
-import dev.latvian.kubejs.documentation.Param;
+import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.documentation.DocField;
+import dev.latvian.kubejs.entity.EntityJS;
+import dev.latvian.kubejs.entity.LivingEntityJS;
+import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
-import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextUtilsJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UUIDUtilsJS;
 import dev.latvian.kubejs.world.WorldCreatedEvent;
 import dev.latvian.kubejs.world.WorldJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.EntitySelector;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
@@ -18,9 +24,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -38,11 +45,14 @@ public class ServerJS implements MessageSender
 	public final transient Int2ObjectOpenHashMap<WorldJS> worldMap;
 	public final transient Map<UUID, PlayerDataJS> playerMap;
 
+	@DocField("Temporary data, mods can attach objects to this")
 	public final Map<String, Object> data;
+
+	@DocField("List of all currently loaded worlds")
 	public final List<WorldJS> worlds;
+
 	public final WorldJS overworld;
 	public final GameRulesJS gameRules;
-	public final HashSet<PlayerDataJS> players;
 
 	public ServerJS(MinecraftServer ms, WorldServer w)
 	{
@@ -57,13 +67,6 @@ public class ServerJS implements MessageSender
 		worlds = new ArrayList<>();
 		worlds.add(overworld);
 		gameRules = new GameRulesJS(w.getGameRules());
-		players = new HashSet<>();
-	}
-
-	public void updatePlayerList()
-	{
-		players.clear();
-		players.addAll(playerMap.values());
 	}
 
 	public void updateWorldList()
@@ -72,22 +75,22 @@ public class ServerJS implements MessageSender
 		worlds.addAll(worldMap.values());
 	}
 
-	public boolean running()
+	public boolean isRunning()
 	{
 		return server.isServerRunning();
 	}
 
-	public boolean hardcore()
+	public boolean isHardcore()
 	{
 		return server.isHardcore();
 	}
 
-	public boolean singlePlayer()
+	public boolean isSinglePlayer()
 	{
 		return server.isSinglePlayer();
 	}
 
-	public boolean dedicated()
+	public boolean isDedicated()
 	{
 		return server.isDedicatedServer();
 	}
@@ -98,9 +101,10 @@ public class ServerJS implements MessageSender
 	}
 
 	@Override
-	public void tell(Text text)
+	public void tell(Object message)
 	{
-		ITextComponent component = text.component();
+		ITextComponent component = TextUtilsJS.INSTANCE.of(message).component();
+		KubeJS.LOGGER.info("Server: " + component.getUnformattedText());
 
 		for (EntityPlayerMP player : server.getPlayerList().getPlayers())
 		{
@@ -108,7 +112,7 @@ public class ServerJS implements MessageSender
 		}
 	}
 
-	@DocMethod(params = @Param(type = Text.class))
+	@Override
 	public void statusMessage(Object message)
 	{
 		ITextComponent component = TextUtilsJS.INSTANCE.of(message).component();
@@ -117,6 +121,12 @@ public class ServerJS implements MessageSender
 		{
 			player.sendStatusMessage(component, true);
 		}
+	}
+
+	@Override
+	public int runCommand(String command)
+	{
+		return server.getCommandManager().executeCommand(server, command);
 	}
 
 	public WorldJS world(int dimension)
@@ -172,7 +182,7 @@ public class ServerJS implements MessageSender
 			return player(uuid);
 		}
 
-		for (PlayerDataJS p : players)
+		for (PlayerDataJS p : playerMap.values())
 		{
 			if (p.name.equalsIgnoreCase(name))
 			{
@@ -180,7 +190,7 @@ public class ServerJS implements MessageSender
 			}
 		}
 
-		for (PlayerDataJS p : players)
+		for (PlayerDataJS p : playerMap.values())
 		{
 			if (p.name.toLowerCase().contains(name))
 			{
@@ -191,10 +201,77 @@ public class ServerJS implements MessageSender
 		throw new NullPointerException("Player from name " + name + " not found!");
 	}
 
-	@Override
-	public int runCommand(String command)
+	@Nullable
+	public EntityJS entity(@Nullable Entity entity)
 	{
-		return server.getCommandManager().executeCommand(server, command);
+		if (entity == null)
+		{
+			return null;
+		}
+		else if (entity instanceof EntityPlayerMP)
+		{
+			PlayerDataJS data = playerMap.get(entity.getUniqueID());
+
+			if (data == null)
+			{
+				throw new NullPointerException("Player from UUID " + entity.getUniqueID() + " not found!");
+			}
+
+			return new PlayerJS(data, (EntityPlayerMP) entity);
+		}
+		else if (entity instanceof EntityLivingBase)
+		{
+			return new LivingEntityJS(this, (EntityLivingBase) entity);
+		}
+
+		return new EntityJS(this, entity);
+	}
+
+	public EntityArrayList entities(Collection<? extends Entity> entities)
+	{
+		return new EntityArrayList(this, entities);
+	}
+
+	public EntityArrayList players()
+	{
+		return entities(server.getPlayerList().getPlayers());
+	}
+
+	public EntityArrayList entities()
+	{
+		EntityArrayList list = new EntityArrayList(this, overworld.world.loadedEntityList.size());
+
+		for (WorldJS world : worlds)
+		{
+			for (Entity entity : world.world.loadedEntityList)
+			{
+				list.add(entity(entity));
+			}
+		}
+
+		return list;
+	}
+
+	public EntityArrayList entities(String filter)
+	{
+		try
+		{
+			EntityArrayList list = new EntityArrayList(this, overworld.world.loadedEntityList.size());
+
+			for (WorldJS world : worlds)
+			{
+				for (Entity entity : EntitySelector.matchEntities(world, filter, Entity.class))
+				{
+					list.add(entity(entity));
+				}
+			}
+
+			return list;
+		}
+		catch (CommandException e)
+		{
+			return new EntityArrayList(this, 0);
+		}
 	}
 
 	public ScheduledEvent schedule(long timer, IScheduledEventCallback event)

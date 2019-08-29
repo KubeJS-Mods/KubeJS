@@ -57,6 +57,6 @@ public class KubeJSServerEventHandler
 			}
 		}
 
-		EventsJS.INSTANCE.post(KubeJSEvents.SERVER_TICK, new ServerEventJS(ServerJS.instance));
+		EventsJS.post(KubeJSEvents.SERVER_TICK, new ServerEventJS(ServerJS.instance));
 	}
 }

@@ -18,7 +18,7 @@ public class KubeJSItemEventHandler
 	@SubscribeEvent
 	public static void registry(RegistryEvent.Register<Item> event)
 	{
-		EventsJS.INSTANCE.post(KubeJSEvents.ITEM_REGISTRY, new ItemRegistryEventJS(event.getRegistry()));
+		EventsJS.post(KubeJSEvents.ITEM_REGISTRY, new ItemRegistryEventJS(event.getRegistry()));
 	}
 
 	@SubscribeEvent

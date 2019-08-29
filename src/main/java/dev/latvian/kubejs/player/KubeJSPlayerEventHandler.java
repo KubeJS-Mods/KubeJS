@@ -44,8 +44,7 @@ public class KubeJSPlayerEventHandler
 		{
 			PlayerDataJS p = new PlayerDataJS(ServerJS.instance, (EntityPlayerMP) event.player);
 			p.server.playerMap.put(p.uuid, p);
-			p.server.updatePlayerList();
-			EventsJS.INSTANCE.post(KubeJSEvents.PLAYER_LOGGED_IN, new PlayerEventJS(event.player));
+			EventsJS.post(KubeJSEvents.PLAYER_LOGGED_IN, new PlayerEventJS(event.player));
 			MinecraftForge.EVENT_BUS.post(new PlayerDataCreatedEvent(p));
 		}
 	}
@@ -58,9 +57,8 @@ public class KubeJSPlayerEventHandler
 			return;
 		}
 
-		EventsJS.INSTANCE.post(KubeJSEvents.PLAYER_LOGGED_OUT, new PlayerEventJS(event.player));
+		EventsJS.post(KubeJSEvents.PLAYER_LOGGED_OUT, new PlayerEventJS(event.player));
 		ServerJS.instance.playerMap.remove(event.player.getUniqueID());
-		ServerJS.instance.updatePlayerList();
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -68,7 +66,7 @@ public class KubeJSPlayerEventHandler
 	{
 		if (event.phase == TickEvent.Phase.END && event.player instanceof EntityPlayerMP)
 		{
-			EventsJS.INSTANCE.post(KubeJSEvents.PLAYER_TICK, new PlayerEventJS(event.player));
+			EventsJS.post(KubeJSEvents.PLAYER_TICK, new PlayerEventJS(event.player));
 		}
 	}
 
@@ -76,7 +74,7 @@ public class KubeJSPlayerEventHandler
 	public static void onPlayerChat(ServerChatEvent event)
 	{
 		PlayerChatEventJS e = new PlayerChatEventJS(event);
-		boolean c = EventsJS.INSTANCE.post(KubeJSEvents.PLAYER_CHAT, e);
+		boolean c = EventsJS.post(KubeJSEvents.PLAYER_CHAT, e);
 
 		if (e.component != null)
 		{
@@ -92,7 +90,7 @@ public class KubeJSPlayerEventHandler
 	@SubscribeEvent
 	public static void onLivingDeath(LivingDeathEvent event)
 	{
-		if (!event.getEntity().world.isRemote && EventsJS.INSTANCE.post(KubeJSEvents.ENTITY_DEATH, new LivingEntityDeathEventJS(event)))
+		if (!event.getEntity().world.isRemote && EventsJS.post(KubeJSEvents.ENTITY_DEATH, new LivingEntityDeathEventJS(event)))
 		{
 			event.setCanceled(true);
 		}

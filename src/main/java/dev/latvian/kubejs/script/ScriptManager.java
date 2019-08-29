@@ -65,7 +65,7 @@ public class ScriptManager
 			scripts.clear();
 		}
 
-		EventsJS.INSTANCE.clear();
+		EventsJS.clear();
 
 		List<ScriptFile> scriptFiles = new ArrayList<>();
 		load(scriptFiles, new File(Loader.instance().getConfigDir().getParentFile(), "kubejs"), "", 0);

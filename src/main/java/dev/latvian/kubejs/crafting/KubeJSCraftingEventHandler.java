@@ -20,7 +20,7 @@ public class KubeJSCraftingEventHandler
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void registerRecipes(RegistryEvent.Register<IRecipe> event)
 	{
-		EventsJS.INSTANCE.post(KubeJSEvents.RECIPES_CRAFTING_TABLE, new CraftingTableRecipeEventJS(event.getRegistry()));
-		EventsJS.INSTANCE.post(KubeJSEvents.RECIPES_FURNACE, new FurnaceRecipeEventJS());
+		EventsJS.post(KubeJSEvents.RECIPES_CRAFTING_TABLE, new CraftingTableRecipeEventJS(event.getRegistry()));
+		EventsJS.post(KubeJSEvents.RECIPES_FURNACE, new FurnaceRecipeEventJS());
 	}
 }

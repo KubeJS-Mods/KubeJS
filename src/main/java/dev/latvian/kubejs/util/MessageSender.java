@@ -1,19 +1,24 @@
 package dev.latvian.kubejs.util;
 
+import dev.latvian.kubejs.documentation.DocClass;
+import dev.latvian.kubejs.documentation.DocMethod;
+import dev.latvian.kubejs.documentation.Param;
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.text.TextUtilsJS;
 
 /**
  * @author LatvianModder
  */
+@DocClass("Anything that can send messages or run commands, usually player or server")
 public interface MessageSender
 {
-	void tell(Text text);
+	@DocMethod(value = "Tell message in chat", params = @Param(value = "text", type = Text.class))
+	void tell(Object message);
 
-	default void tell(Object text)
+	@DocMethod(value = "Set status message", params = @Param(value = "text", type = Text.class))
+	default void statusMessage(Object message)
 	{
-		tell(TextUtilsJS.INSTANCE.of(text));
 	}
 
+	@DocMethod(value = "Runs command as if the sender was running it, ignoring permissions", params = @Param("command"))
 	int runCommand(String command);
 }

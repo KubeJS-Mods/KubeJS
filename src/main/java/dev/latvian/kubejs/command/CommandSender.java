@@ -2,13 +2,14 @@ package dev.latvian.kubejs.command;
 
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.server.ServerJS;
-import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.text.TextUtilsJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.PlayerNotFoundException;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -47,9 +48,18 @@ public class CommandSender implements MessageSender
 	}
 
 	@Override
-	public void tell(Text text)
+	public void tell(Object message)
 	{
-		sender.sendMessage(text.component());
+		sender.sendMessage(TextUtilsJS.INSTANCE.of(message).component());
+	}
+
+	@Override
+	public void statusMessage(Object message)
+	{
+		if (sender instanceof EntityPlayerMP)
+		{
+			((EntityPlayerMP) sender).sendStatusMessage(TextUtilsJS.INSTANCE.of(message).component(), true);
+		}
 	}
 
 	@Override

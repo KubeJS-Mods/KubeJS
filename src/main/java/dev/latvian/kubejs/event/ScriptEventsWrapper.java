@@ -12,6 +12,6 @@ public class ScriptEventsWrapper
 	@DocMethod(value = "This method will register event listener, and callback function will be called when event is fired form mod")
 	public void listen(String id, IEventHandler handler)
 	{
-		EventsJS.INSTANCE.listen(id, handler);
+		EventsJS.listen(id, handler);
 	}
 }

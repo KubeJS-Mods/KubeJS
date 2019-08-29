@@ -83,7 +83,7 @@ public enum Documentation
 
 		DocClass docClass = (DocClass) c.getAnnotation(DocClass.class);
 
-		if (docClass != null)
+		if (docClass != null && !docClass.displayName().isEmpty())
 		{
 			return docClass.displayName();
 		}

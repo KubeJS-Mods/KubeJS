@@ -13,11 +13,12 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public enum EventsJS
+public class EventsJS
 {
-	INSTANCE;
+	@Deprecated
+	public static EventsJS INSTANCE = new EventsJS();
 
-	private final Map<String, List<ScriptEventHandler>> map = new Object2ObjectOpenHashMap<>();
+	private static final Map<String, List<ScriptEventHandler>> map = new Object2ObjectOpenHashMap<>();
 
 	private static class ScriptEventHandler
 	{
@@ -31,31 +32,41 @@ public enum EventsJS
 		}
 	}
 
-	public void listen(String id, IEventHandler handler)
+	public static void listen(String id, IEventHandler handler)
 	{
-		List<ScriptEventHandler> list = INSTANCE.map.get(id);
+		List<ScriptEventHandler> list = map.get(id);
 
 		if (list == null)
 		{
 			list = new ObjectArrayList<>();
-			INSTANCE.map.put(id, list);
+			map.put(id, list);
 		}
 
 		list.add(new ScriptEventHandler(ScriptManager.instance.currentFile, handler));
 	}
 
-	public boolean post(String id, EventJS event)
+	public static boolean post(String id, EventJS event)
 	{
 		return postToHandlers(id, handlers(id), event);
 	}
 
-	public List<ScriptEventHandler> handlers(String id)
+	public static boolean postDouble(String id, String extra, EventJS event)
+	{
+		if (!post(id + "." + extra, event))
+		{
+			return post(id, event);
+		}
+
+		return true;
+	}
+
+	public static List<ScriptEventHandler> handlers(String id)
 	{
 		List<ScriptEventHandler> list = map.get(id);
 		return list == null ? Collections.emptyList() : list;
 	}
 
-	public boolean postToHandlers(String id, List<ScriptEventHandler> list, EventJS event)
+	public static boolean postToHandlers(String id, List<ScriptEventHandler> list, EventJS event)
 	{
 		boolean c = event.canCancel();
 
@@ -84,7 +95,7 @@ public enum EventsJS
 		return false;
 	}
 
-	public void clear()
+	public static void clear()
 	{
 		map.clear();
 	}

@@ -1,12 +1,17 @@
 package dev.latvian.kubejs.world;
 
-import dev.latvian.kubejs.entity.EntityJS;
-import dev.latvian.kubejs.entity.LivingEntityJS;
+import dev.latvian.kubejs.documentation.DocClass;
+import dev.latvian.kubejs.documentation.DocField;
+import dev.latvian.kubejs.documentation.DocMethod;
+import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.server.ServerJS;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.EntitySelector;
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import javax.annotation.Nullable;
@@ -16,11 +21,18 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class WorldJS
+@DocClass("This class represents each dimension on server. You can access weather, blocks, entities, etc.")
+public class WorldJS implements ICommandSender
 {
 	public final transient WorldServer world;
+
+	@DocField
 	public final ServerJS server;
+
+	@DocField
 	public final int dimension;
+
+	@DocField("Temporary data, mods can attach objects to this")
 	public final Map<String, Object> data;
 
 	public WorldJS(ServerJS s, WorldServer w)
@@ -31,6 +43,7 @@ public class WorldJS
 		data = new HashMap<>();
 	}
 
+	@DocMethod
 	public long localTime()
 	{
 		return world.getWorldTime();
@@ -41,12 +54,12 @@ public class WorldJS
 		return world.getTotalWorldTime();
 	}
 
-	public boolean daytime()
+	public boolean isDaytime()
 	{
 		return world.isDaytime();
 	}
 
-	public boolean raining()
+	public boolean isRaining()
 	{
 		return world.isRaining();
 	}
@@ -56,27 +69,55 @@ public class WorldJS
 		return new BlockContainerJS(world, new BlockPos(x, y, z));
 	}
 
-	@Nullable
-	public EntityJS entity(@Nullable Entity entity)
+	public EntityArrayList players()
 	{
-		if (entity == null)
-		{
-			return null;
-		}
-		else if (entity instanceof EntityPlayerMP)
-		{
-			return server.player(entity.getUniqueID());
-		}
-		else if (entity instanceof EntityLivingBase)
-		{
-			return new LivingEntityJS(server, (EntityLivingBase) entity);
-		}
+		return server.entities(world.playerEntities);
+	}
 
-		return new EntityJS(server, entity);
+	public EntityArrayList entities()
+	{
+		return server.entities(world.loadedEntityList);
+	}
+
+	public EntityArrayList entities(String filter)
+	{
+		try
+		{
+			return server.entities(EntitySelector.matchEntities(this, filter, Entity.class));
+		}
+		catch (CommandException e)
+		{
+			return new EntityArrayList(server, 0);
+		}
 	}
 
 	public void explosion(double x, double y, double z, float strength, boolean causesFire, boolean damagesTerrain)
 	{
 		world.newExplosion(null, x, y, z, strength, causesFire, damagesTerrain);
+	}
+
+	@Override
+	public String getName()
+	{
+		return "DIM" + world.provider.getDimension();
+	}
+
+	@Override
+	public boolean canUseCommand(int permLevel, String commandName)
+	{
+		return true;
+	}
+
+	@Override
+	public World getEntityWorld()
+	{
+		return world;
+	}
+
+	@Nullable
+	@Override
+	public MinecraftServer getServer()
+	{
+		return server.server;
 	}
 }

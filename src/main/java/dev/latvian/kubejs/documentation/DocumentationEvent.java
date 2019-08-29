@@ -42,4 +42,10 @@ public class DocumentationEvent extends Event
 	{
 		documentation.registerEvent(id, event);
 	}
+
+	public void registerDoubleEvent(String id, String extra, Class<? extends EventJS> event)
+	{
+		registerEvent(id + ".<" + extra + ">", event);
+		registerEvent(id, event);
+	}
 }

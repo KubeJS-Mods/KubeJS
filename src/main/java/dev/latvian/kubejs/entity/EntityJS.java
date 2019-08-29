@@ -1,11 +1,13 @@
 package dev.latvian.kubejs.entity;
 
+import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextUtilsJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 
 import java.util.UUID;
 
@@ -44,14 +46,24 @@ public class EntityJS implements MessageSender
 	}
 
 	@Override
-	public void tell(Text text)
+	public void tell(Object message)
 	{
-		entity.sendMessage(text.component());
+		entity.sendMessage(TextUtilsJS.INSTANCE.of(message).component());
 	}
 
 	public String toString()
 	{
 		return name();
+	}
+
+	public ItemStackJS asItem()
+	{
+		if (entity instanceof EntityItem)
+		{
+			return new ItemStackJS.Bound(((EntityItem) entity).getItem());
+		}
+
+		return ItemStackJS.EMPTY;
 	}
 
 	public boolean isLiving()
@@ -120,5 +132,10 @@ public class EntityJS implements MessageSender
 	public int runCommand(String command)
 	{
 		return server.server.getCommandManager().executeCommand(entity, command);
+	}
+
+	public void kill()
+	{
+		entity.onKillCommand();
 	}
 }

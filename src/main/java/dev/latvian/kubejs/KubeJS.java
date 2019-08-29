@@ -3,6 +3,7 @@ package dev.latvian.kubejs;
 import dev.latvian.kubejs.command.CommandKubeJS;
 import dev.latvian.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.kubejs.event.EventsJS;
+import dev.latvian.kubejs.integration.IntegrationManager;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.launchwrapper.Launch;
@@ -56,6 +57,7 @@ public class KubeJS
 	public void onPreInit(FMLPreInitializationEvent event)
 	{
 		UtilsJS.INSTANCE.init();
+		IntegrationManager.preInit();
 		ScriptManager.instance = new ScriptManager();
 		ScriptManager.instance.load();
 	}
@@ -63,13 +65,13 @@ public class KubeJS
 	@Mod.EventHandler
 	public void onPostInit(FMLPostInitializationEvent event)
 	{
-		EventsJS.INSTANCE.post(KubeJSEvents.POSTINIT, new PostInitEventJS(new HashSet<>(Loader.instance().getIndexedModList().keySet())));
+		EventsJS.post(KubeJSEvents.POSTINIT, new PostInitEventJS(new HashSet<>(Loader.instance().getIndexedModList().keySet())));
 	}
 
 	@Mod.EventHandler
 	public void onServerStarting(FMLServerStartingEvent event)
 	{
 		event.registerServerCommand(new CommandKubeJS());
-		EventsJS.INSTANCE.post(KubeJSEvents.COMMAND_REGISTRY, new CommandRegistryEventJS(event::registerServerCommand));
+		EventsJS.post(KubeJSEvents.COMMAND_REGISTRY, new CommandRegistryEventJS(event::registerServerCommand));
 	}
 }
