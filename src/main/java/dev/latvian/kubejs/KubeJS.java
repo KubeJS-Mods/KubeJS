@@ -5,14 +5,18 @@ import dev.latvian.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.integration.IntegrationManager;
 import dev.latvian.kubejs.script.ScriptManager;
+import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -69,9 +73,22 @@ public class KubeJS
 	}
 
 	@Mod.EventHandler
+	public void onServerAboutToStart(FMLServerAboutToStartEvent event)
+	{
+		ServerJS.instance = null;
+	}
+
+	@Mod.EventHandler
 	public void onServerStarting(FMLServerStartingEvent event)
 	{
+		KubeJSWorldEventHandler.onServerStarting(event.getServer());
 		event.registerServerCommand(new CommandKubeJS());
 		EventsJS.post(KubeJSEvents.COMMAND_REGISTRY, new CommandRegistryEventJS(event::registerServerCommand));
+	}
+
+	@Mod.EventHandler
+	public void onServerStopping(FMLServerStoppingEvent event)
+	{
+		KubeJSWorldEventHandler.onServerStopping();
 	}
 }

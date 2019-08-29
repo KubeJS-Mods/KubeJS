@@ -95,6 +95,16 @@ public class ServerJS implements MessageSender
 		return server.isDedicatedServer();
 	}
 
+	public String getMOTD()
+	{
+		return server.getMOTD();
+	}
+
+	public void setMOTD(String text)
+	{
+		server.setMOTD(text);
+	}
+
 	public void stop()
 	{
 		server.stopServer();

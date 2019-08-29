@@ -44,8 +44,8 @@ public class KubeJSPlayerEventHandler
 		{
 			PlayerDataJS p = new PlayerDataJS(ServerJS.instance, (EntityPlayerMP) event.player);
 			p.server.playerMap.put(p.uuid, p);
-			EventsJS.post(KubeJSEvents.PLAYER_LOGGED_IN, new PlayerEventJS(event.player));
 			MinecraftForge.EVENT_BUS.post(new PlayerDataCreatedEvent(p));
+			EventsJS.post(KubeJSEvents.PLAYER_LOGGED_IN, new PlayerEventJS(event.player));
 		}
 	}
 
