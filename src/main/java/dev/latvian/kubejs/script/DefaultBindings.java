@@ -24,6 +24,7 @@ public class DefaultBindings
 {
 	public static void init(KubeJSBindingsEvent event)
 	{
+		event.add("mod", new ScriptModData());
 		event.add("log", new LoggerWrapperJS(KubeJS.LOGGER));
 		event.add("utils", UtilsJS.INSTANCE);
 		event.add("uuid", UUIDUtilsJS.INSTANCE);
