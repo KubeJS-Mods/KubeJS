@@ -1,4 +1,4 @@
-package dev.latvian.kubejs;
+package dev.latvian.kubejs.script;
 
 import net.minecraftforge.fml.common.eventhandler.Event;
 
@@ -7,11 +7,11 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class KubeJSBindingsEvent extends Event
+public class BindingsEvent extends Event
 {
 	private final Map<String, Object> map;
 
-	public KubeJSBindingsEvent(Map<String, Object> m)
+	public BindingsEvent(Map<String, Object> m)
 	{
 		map = m;
 	}

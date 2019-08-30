@@ -9,6 +9,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -18,7 +19,7 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public abstract class Text implements Iterable<Text>
+public abstract class Text implements Iterable<Text>, Comparable<Text>
 {
 	private TextColor color;
 	private Boolean bold;
@@ -59,6 +60,10 @@ public abstract class Text implements Iterable<Text>
 			if (click.startsWith("command:"))
 			{
 				component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, click.substring(8)));
+			}
+			else if (click.startsWith("suggest_command:"))
+			{
+				component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, click.substring(16)));
 			}
 			else
 			{
@@ -318,7 +323,7 @@ public abstract class Text implements Iterable<Text>
 	}
 
 	@DocMethod(value = "Set bold")
-	public final Text bold(Boolean value)
+	public final Text bold(@Nullable Boolean value)
 	{
 		bold = value;
 		return this;
@@ -331,7 +336,7 @@ public abstract class Text implements Iterable<Text>
 	}
 
 	@DocMethod(value = "Set italic")
-	public final Text italic(Boolean value)
+	public final Text italic(@Nullable Boolean value)
 	{
 		italic = value;
 		return this;
@@ -344,7 +349,7 @@ public abstract class Text implements Iterable<Text>
 	}
 
 	@DocMethod(value = "Set underlined")
-	public final Text underlined(Boolean value)
+	public final Text underlined(@Nullable Boolean value)
 	{
 		underlined = value;
 		return this;
@@ -357,7 +362,7 @@ public abstract class Text implements Iterable<Text>
 	}
 
 	@DocMethod(value = "Set strikethrough")
-	public final Text strikethrough(Boolean value)
+	public final Text strikethrough(@Nullable Boolean value)
 	{
 		strikethrough = value;
 		return this;
@@ -370,7 +375,7 @@ public abstract class Text implements Iterable<Text>
 	}
 
 	@DocMethod(value = "Set obfuscated")
-	public final Text obfuscated(Boolean value)
+	public final Text obfuscated(@Nullable Boolean value)
 	{
 		obfuscated = value;
 		return this;
@@ -383,21 +388,21 @@ public abstract class Text implements Iterable<Text>
 	}
 
 	@DocMethod(value = "Set insertion text")
-	public final Text insertion(String value)
+	public final Text insertion(@Nullable String value)
 	{
 		insertion = value;
 		return this;
 	}
 
 	@DocMethod(value = "Set click URL")
-	public final Text click(String value)
+	public final Text click(@Nullable String value)
 	{
 		click = value;
 		return this;
 	}
 
 	@DocMethod(value = "Set hover text", params = @Param(type = Text.class))
-	public final Text hover(Object text)
+	public final Text hover(@Nullable Object text)
 	{
 		hover = TextUtilsJS.INSTANCE.of(text);
 		return this;
@@ -425,5 +430,17 @@ public abstract class Text implements Iterable<Text>
 	public final boolean hasSiblings()
 	{
 		return siblings != null && !siblings.isEmpty();
+	}
+
+	@Override
+	public String toString()
+	{
+		return component().getUnformattedText();
+	}
+
+	@Override
+	public int compareTo(Text o)
+	{
+		return toString().compareTo(toString());
 	}
 }

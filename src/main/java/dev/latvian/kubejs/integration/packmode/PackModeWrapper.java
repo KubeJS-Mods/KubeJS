@@ -20,7 +20,7 @@ public class PackModeWrapper
 	}
 
 	@DocMethod
-	public String getNext()
+	public String getActual()
 	{
 		return PackModeAPI.getInstance().getNextRestartPackMode();
 	}

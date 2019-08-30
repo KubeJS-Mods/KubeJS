@@ -1,12 +1,16 @@
 package dev.latvian.kubejs.server;
 
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.documentation.DocField;
+import dev.latvian.kubejs.documentation.DocMethod;
+import dev.latvian.kubejs.documentation.Param;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
+import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextUtilsJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UUIDUtilsJS;
@@ -36,14 +40,15 @@ import java.util.UUID;
 /**
  * @author LatvianModder
  */
+@DocClass("Server instance")
 public class ServerJS implements MessageSender
 {
 	public static ServerJS instance;
 
 	public final transient MinecraftServer server;
-	public final transient List<ScheduledEvent> scheduledEvents;
-	public final transient Int2ObjectOpenHashMap<WorldJS> worldMap;
-	public final transient Map<UUID, PlayerDataJS> playerMap;
+	public final List<ScheduledEvent> scheduledEvents;
+	public final Int2ObjectOpenHashMap<WorldJS> worldMap;
+	public final Map<UUID, PlayerDataJS> playerMap;
 
 	@DocField("Temporary data, mods can attach objects to this")
 	public final Map<String, Object> data;
@@ -51,7 +56,10 @@ public class ServerJS implements MessageSender
 	@DocField("List of all currently loaded worlds")
 	public final List<WorldJS> worlds;
 
+	@DocField
 	public final WorldJS overworld;
+
+	@DocField
 	public final GameRulesJS gameRules;
 
 	public ServerJS(MinecraftServer ms, WorldServer w)
@@ -69,48 +77,71 @@ public class ServerJS implements MessageSender
 		gameRules = new GameRulesJS(w.getGameRules());
 	}
 
+	@DocMethod
 	public void updateWorldList()
 	{
 		worlds.clear();
 		worlds.addAll(worldMap.values());
 	}
 
+	@DocMethod
 	public boolean isRunning()
 	{
 		return server.isServerRunning();
 	}
 
+	@DocMethod
 	public boolean isHardcore()
 	{
 		return server.isHardcore();
 	}
 
+	@DocMethod
 	public boolean isSinglePlayer()
 	{
 		return server.isSinglePlayer();
 	}
 
+	@DocMethod
 	public boolean isDedicated()
 	{
 		return server.isDedicatedServer();
 	}
 
+	@DocMethod
 	public String getMOTD()
 	{
 		return server.getMOTD();
 	}
 
-	public void setMOTD(String text)
+	@DocMethod(params = @Param("text"))
+	public void setMOTD(Object text)
 	{
-		server.setMOTD(text);
+		server.setMOTD(TextUtilsJS.INSTANCE.of(text).component().getFormattedText());
 	}
 
+	@DocMethod
 	public void stop()
 	{
 		server.stopServer();
 	}
 
 	@Override
+	@DocMethod
+	public String name()
+	{
+		return server.getName();
+	}
+
+	@Override
+	@DocMethod
+	public Text displayName()
+	{
+		return TextUtilsJS.INSTANCE.of(server.getDisplayName());
+	}
+
+	@Override
+	@DocMethod
 	public void tell(Object message)
 	{
 		ITextComponent component = TextUtilsJS.INSTANCE.of(message).component();
@@ -123,6 +154,7 @@ public class ServerJS implements MessageSender
 	}
 
 	@Override
+	@DocMethod
 	public void statusMessage(Object message)
 	{
 		ITextComponent component = TextUtilsJS.INSTANCE.of(message).component();
@@ -134,11 +166,13 @@ public class ServerJS implements MessageSender
 	}
 
 	@Override
+	@DocMethod
 	public int runCommand(String command)
 	{
 		return server.getCommandManager().executeCommand(server, command);
 	}
 
+	@DocMethod
 	public WorldJS world(int dimension)
 	{
 		if (dimension == 0)
@@ -159,11 +193,13 @@ public class ServerJS implements MessageSender
 		return world;
 	}
 
+	@DocMethod
 	public WorldJS world(World world)
 	{
 		return world(world.provider.getDimension());
 	}
 
+	@DocMethod
 	public PlayerJS player(UUID uuid)
 	{
 		PlayerDataJS p = playerMap.get(uuid);
@@ -176,6 +212,7 @@ public class ServerJS implements MessageSender
 		return p.player();
 	}
 
+	@DocMethod
 	public PlayerJS player(String name)
 	{
 		name = name.trim().toLowerCase();
@@ -212,6 +249,7 @@ public class ServerJS implements MessageSender
 	}
 
 	@Nullable
+	@DocMethod
 	public EntityJS entity(@Nullable Entity entity)
 	{
 		if (entity == null)
@@ -237,16 +275,19 @@ public class ServerJS implements MessageSender
 		return new EntityJS(this, entity);
 	}
 
+	@DocMethod
 	public EntityArrayList entities(Collection<? extends Entity> entities)
 	{
 		return new EntityArrayList(this, entities);
 	}
 
+	@DocMethod
 	public EntityArrayList players()
 	{
 		return entities(server.getPlayerList().getPlayers());
 	}
 
+	@DocMethod
 	public EntityArrayList entities()
 	{
 		EntityArrayList list = new EntityArrayList(this, overworld.world.loadedEntityList.size());
@@ -262,6 +303,7 @@ public class ServerJS implements MessageSender
 		return list;
 	}
 
+	@DocMethod
 	public EntityArrayList entities(String filter)
 	{
 		try
@@ -284,6 +326,7 @@ public class ServerJS implements MessageSender
 		}
 	}
 
+	@DocMethod
 	public ScheduledEvent schedule(long timer, IScheduledEventCallback event)
 	{
 		ScheduledEvent e = new ScheduledEvent(this, timer, event);

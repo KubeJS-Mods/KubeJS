@@ -35,11 +35,13 @@ public class EntityJS implements MessageSender
 		return entity.getUniqueID();
 	}
 
+	@Override
 	public String name()
 	{
 		return entity.getName();
 	}
 
+	@Override
 	public Text displayName()
 	{
 		return TextUtilsJS.INSTANCE.of(entity.getDisplayName());

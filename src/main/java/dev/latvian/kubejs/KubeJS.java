@@ -83,7 +83,7 @@ public class KubeJS
 	{
 		KubeJSWorldEventHandler.onServerStarting(event.getServer());
 		event.registerServerCommand(new CommandKubeJS());
-		EventsJS.post(KubeJSEvents.COMMAND_REGISTRY, new CommandRegistryEventJS(event::registerServerCommand));
+		EventsJS.post(KubeJSEvents.COMMAND_REGISTRY, new CommandRegistryEventJS(ServerJS.instance, event::registerServerCommand));
 	}
 
 	@Mod.EventHandler

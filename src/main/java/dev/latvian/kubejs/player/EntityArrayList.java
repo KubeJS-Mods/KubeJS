@@ -2,6 +2,8 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.text.TextString;
 import dev.latvian.kubejs.text.TextUtilsJS;
 import dev.latvian.kubejs.util.MessageSender;
 import net.minecraft.entity.Entity;
@@ -33,6 +35,18 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		{
 			add(server.entity(entity));
 		}
+	}
+
+	@Override
+	public String name()
+	{
+		return toString();
+	}
+
+	@Override
+	public Text displayName()
+	{
+		return new TextString(toString()).lightPurple();
 	}
 
 	@Override

@@ -5,19 +5,17 @@ import dev.latvian.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.kubejs.crafting.handlers.CraftingTableRecipeEventJS;
 import dev.latvian.kubejs.crafting.handlers.FurnaceRecipeEventJS;
 import dev.latvian.kubejs.documentation.DocumentationEvent;
-import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.LivingEntityDeathEventJS;
-import dev.latvian.kubejs.entity.LivingEntityJS;
+import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.ItemRegistryEventJS;
 import dev.latvian.kubejs.player.PlayerChatEventJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
-import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.server.ServerEventJS;
-import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.world.WorldEventJS;
-import dev.latvian.kubejs.world.WorldJS;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.util.UUID;
 
 /**
  * @author LatvianModder
@@ -26,6 +24,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class KubeJSEvents
 {
 	public static final String POSTINIT = "postinit";
+	public static final String UNLOADED = "unloaded";
 	public static final String SERVER_LOAD = "server.load";
 	public static final String SERVER_UNLOAD = "server.unload";
 	public static final String SERVER_TICK = "server.tick";
@@ -46,24 +45,20 @@ public class KubeJSEvents
 	@SubscribeEvent
 	public static void registerDocumentation(DocumentationEvent event)
 	{
-		event.registerNative("void", void.class, Void.class);
-		event.registerNative("byte", byte.class, Byte.class);
-		event.registerNative("short", short.class, Short.class);
-		event.registerNative("int", int.class, Integer.class);
-		event.registerNative("long", long.class, Long.class);
-		event.registerNative("float", float.class, Float.class);
-		event.registerNative("double", double.class, Double.class);
-		event.registerNative("char", char.class, Character.class);
-		event.registerNative("string", String.class, CharSequence.class);
-		event.registerNative("object", Object.class);
-
-		event.registerPackage(ServerJS.class.getPackage());
-		event.registerPackage(WorldJS.class.getPackage());
-		event.registerPackage(EntityJS.class.getPackage());
-		event.registerPackage(LivingEntityJS.class.getPackage());
-		event.registerPackage(PlayerJS.class.getPackage());
+		event.registerCustomName("void", void.class, Void.class);
+		event.registerCustomName("byte", byte.class, Byte.class);
+		event.registerCustomName("short", short.class, Short.class);
+		event.registerCustomName("int", int.class, Integer.class);
+		event.registerCustomName("long", long.class, Long.class);
+		event.registerCustomName("float", float.class, Float.class);
+		event.registerCustomName("double", double.class, Double.class);
+		event.registerCustomName("char", char.class, Character.class);
+		event.registerCustomName("string", String.class, CharSequence.class);
+		event.registerCustomName("object", Object.class);
+		event.registerCustomName("uuid", UUID.class);
 
 		event.registerEvent(POSTINIT, PostInitEventJS.class);
+		event.registerEvent(UNLOADED, EventJS.class);
 		event.registerEvent(SERVER_LOAD, ServerEventJS.class);
 		event.registerEvent(SERVER_UNLOAD, ServerEventJS.class);
 		event.registerEvent(SERVER_TICK, ServerEventJS.class);

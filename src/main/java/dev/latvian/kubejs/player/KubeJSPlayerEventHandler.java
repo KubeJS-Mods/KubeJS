@@ -40,7 +40,7 @@ public class KubeJSPlayerEventHandler
 			}
 		}
 
-		if (event.player instanceof EntityPlayerMP)
+		if (ServerJS.instance != null && event.player instanceof EntityPlayerMP)
 		{
 			PlayerDataJS p = new PlayerDataJS(ServerJS.instance, (EntityPlayerMP) event.player);
 			p.server.playerMap.put(p.uuid, p);
@@ -52,7 +52,7 @@ public class KubeJSPlayerEventHandler
 	@SubscribeEvent
 	public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event)
 	{
-		if (!ServerJS.instance.playerMap.containsKey(event.player.getUniqueID()))
+		if (ServerJS.instance == null || !ServerJS.instance.playerMap.containsKey(event.player.getUniqueID()))
 		{
 			return;
 		}
@@ -64,7 +64,7 @@ public class KubeJSPlayerEventHandler
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onPlayerTick(TickEvent.PlayerTickEvent event)
 	{
-		if (event.phase == TickEvent.Phase.END && event.player instanceof EntityPlayerMP)
+		if (ServerJS.instance != null && event.phase == TickEvent.Phase.END && event.player instanceof EntityPlayerMP)
 		{
 			EventsJS.post(KubeJSEvents.PLAYER_TICK, new PlayerEventJS(event.player));
 		}

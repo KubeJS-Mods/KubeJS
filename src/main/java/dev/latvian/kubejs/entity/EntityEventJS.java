@@ -11,6 +11,12 @@ public class EntityEventJS extends WorldEventJS
 {
 	public final EntityJS entity;
 
+	public EntityEventJS(EntityJS e)
+	{
+		super(e.world());
+		entity = e;
+	}
+
 	public EntityEventJS(Entity e)
 	{
 		super(ServerJS.instance.world(e.world));

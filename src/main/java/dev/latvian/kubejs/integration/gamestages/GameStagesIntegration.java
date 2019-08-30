@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.integration.gamestages;
 
+import dev.latvian.kubejs.documentation.AttachedDataType;
 import dev.latvian.kubejs.documentation.DocumentationEvent;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.player.PlayerDataCreatedEvent;
@@ -21,6 +22,8 @@ public class GameStagesIntegration
 	@SubscribeEvent
 	public static void registerDocumentation(DocumentationEvent event)
 	{
+		event.registerAttachedData(AttachedDataType.PLAYER, "gamestages", GameStagesPlayerData.class);
+
 		event.registerDoubleEvent("gamestage.added", "stage", GameStageEventJS.class);
 		event.registerDoubleEvent("gamestage.removed", "stage", GameStageEventJS.class);
 	}

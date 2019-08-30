@@ -9,6 +9,8 @@ import dev.latvian.kubejs.documentation.Param;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.HoverEvent;
 
 import javax.annotation.Nullable;
 
@@ -33,21 +35,54 @@ public enum TextUtilsJS
 		}
 		else if (object instanceof ITextComponent)
 		{
-			Text t;
-			ITextComponent c = (ITextComponent) object;
+			Text t = new TextString("");
 
-			if (c instanceof TextComponentTranslation)
+			for (ITextComponent c : ((ITextComponent) object))
 			{
-				t = new TextTranslate(((TextComponentTranslation) c).getKey(), ((TextComponentTranslation) c).getFormatArgs());
-			}
-			else
-			{
-				t = new TextString(c.getUnformattedText());
-			}
+				Text t1;
 
-			for (ITextComponent component : c.getSiblings())
-			{
-				t.append(of(component));
+				if (c instanceof TextComponentTranslation)
+				{
+					t1 = new TextTranslate(((TextComponentTranslation) c).getKey(), ((TextComponentTranslation) c).getFormatArgs());
+				}
+				else
+				{
+					t1 = new TextString(c.getUnformattedComponentText());
+				}
+
+				t1.bold(c.getStyle().getBold());
+				t1.italic(c.getStyle().getItalic());
+				t1.underlined(c.getStyle().getUnderlined());
+				t1.strikethrough(c.getStyle().getStrikethrough());
+				t1.obfuscated(c.getStyle().getObfuscated());
+				t1.insertion(c.getStyle().getInsertion());
+
+				ClickEvent ce = c.getStyle().getClickEvent();
+
+				if (ce != null)
+				{
+					if (ce.getAction() == ClickEvent.Action.RUN_COMMAND)
+					{
+						t1.click("command:" + ce.getValue());
+					}
+					else if (ce.getAction() == ClickEvent.Action.SUGGEST_COMMAND)
+					{
+						t1.click("suggest_command:" + ce.getValue());
+					}
+					else if (ce.getAction() == ClickEvent.Action.OPEN_URL)
+					{
+						t1.click(ce.getValue());
+					}
+				}
+
+				HoverEvent he = c.getStyle().getHoverEvent();
+
+				if (he != null && he.getAction() == HoverEvent.Action.SHOW_TEXT)
+				{
+					t1.hover(of(he.getValue()));
+				}
+
+				t.append(t1);
 			}
 
 			return t;

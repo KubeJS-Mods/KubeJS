@@ -15,27 +15,14 @@ public class DocumentationEvent extends Event
 		documentation = d;
 	}
 
-	public void register(Class documentedClass)
+	public void registerAttachedData(AttachedDataType type, String name, Class dataClass)
 	{
-		documentation.register(documentedClass);
+		documentation.registerAttachedData(type, name, dataClass);
 	}
 
-	public void registerPackage(Package p)
+	public void registerCustomName(String name, Class... classes)
 	{
-		DocPackage d = p.getAnnotation(DocPackage.class);
-
-		if (d != null)
-		{
-			for (Class c : d.value())
-			{
-				register(c);
-			}
-		}
-	}
-
-	public void registerNative(String name, Class... classes)
-	{
-		documentation.registerNative(name, classes);
+		documentation.registerCustomName(name, classes);
 	}
 
 	public void registerEvent(String id, Class<? extends EventJS> event)

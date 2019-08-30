@@ -2,6 +2,7 @@ package dev.latvian.kubejs.command;
 
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextUtilsJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.world.BlockContainerJS;
@@ -26,9 +27,16 @@ public class CommandSender implements MessageSender
 		sender = s;
 	}
 
+	@Override
 	public String name()
 	{
 		return sender.getName();
+	}
+
+	@Override
+	public Text displayName()
+	{
+		return TextUtilsJS.INSTANCE.of(sender.getDisplayName());
 	}
 
 	public WorldJS world()

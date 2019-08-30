@@ -7,6 +7,11 @@ import net.minecraft.entity.Entity;
  */
 public class LivingEntityEventJS extends EntityEventJS
 {
+	public LivingEntityEventJS(LivingEntityJS e)
+	{
+		super(e);
+	}
+
 	public LivingEntityEventJS(Entity e)
 	{
 		super(e);

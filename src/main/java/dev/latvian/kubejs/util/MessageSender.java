@@ -4,6 +4,7 @@ import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.documentation.Param;
 import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.text.TextString;
 
 /**
  * @author LatvianModder
@@ -11,6 +12,15 @@ import dev.latvian.kubejs.text.Text;
 @DocClass("Anything that can send messages or run commands, usually player or server")
 public interface MessageSender
 {
+	@DocMethod
+	String name();
+
+	@DocMethod
+	default Text displayName()
+	{
+		return new TextString(name());
+	}
+
 	@DocMethod(value = "Tell message in chat", params = @Param(value = "text", type = Text.class))
 	void tell(Object message);
 

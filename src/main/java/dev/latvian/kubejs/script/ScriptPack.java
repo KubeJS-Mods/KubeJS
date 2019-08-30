@@ -9,13 +9,15 @@ import java.util.List;
  */
 public class ScriptPack implements Comparable<ScriptPack>
 {
+	public final ScriptManager manager;
 	public final String id;
 	public final List<ScriptFile> files;
 	public final ScriptEngine engine;
 	public int order;
 
-	public ScriptPack(String i, ScriptEngine e)
+	public ScriptPack(ScriptManager m, String i, ScriptEngine e)
 	{
+		manager = m;
 		id = i;
 		files = new ArrayList<>();
 		engine = e;

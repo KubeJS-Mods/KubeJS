@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.integration.packmode;
 
-import dev.latvian.kubejs.KubeJSBindingsEvent;
-import dev.latvian.kubejs.documentation.DocumentationEvent;
+import dev.latvian.kubejs.script.BindingsEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -16,13 +15,7 @@ public class PackModeIntegration
 	}
 
 	@SubscribeEvent
-	public static void registerDocumentation(DocumentationEvent event)
-	{
-		event.register(PackModeWrapper.class);
-	}
-
-	@SubscribeEvent
-	public static void registerBindings(KubeJSBindingsEvent event)
+	public static void registerBindings(BindingsEvent event)
 	{
 		event.add("packmode", new PackModeWrapper());
 	}

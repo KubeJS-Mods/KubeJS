@@ -10,14 +10,14 @@ import net.minecraft.item.crafting.FurnaceRecipes;
  */
 public class FurnaceRecipeEventJS extends EventJS
 {
-	public void add(String id, ItemStackJS input, ItemStackJS output, float experience)
+	public void add(ItemStackJS input, ItemStackJS output, float experience)
 	{
 		FurnaceRecipes.instance().addSmeltingRecipe(input.itemStack(), output.itemStack(), experience);
 	}
 
-	public void add(String id, ItemStackJS input, ItemStackJS output)
+	public void add(ItemStackJS input, ItemStackJS output)
 	{
-		add(id, input, output, 0F);
+		add(input, output, 0F);
 	}
 
 	public void remove(IIngredientJS output)

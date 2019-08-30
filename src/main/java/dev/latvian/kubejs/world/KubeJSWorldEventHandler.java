@@ -3,6 +3,8 @@ package dev.latvian.kubejs.world;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.event.EventsJS;
+import dev.latvian.kubejs.player.PlayerDataJS;
+import dev.latvian.kubejs.player.PlayerEventJS;
 import dev.latvian.kubejs.server.ServerCreatedEvent;
 import dev.latvian.kubejs.server.ServerEventJS;
 import dev.latvian.kubejs.server.ServerJS;
@@ -14,6 +16,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+
+import java.util.ArrayList;
 
 /**
  * @author LatvianModder
@@ -48,6 +52,14 @@ public class KubeJSWorldEventHandler
 
 	public static void onServerStopping()
 	{
+		for (PlayerDataJS p : new ArrayList<>(ServerJS.instance.playerMap.values()))
+		{
+			EventsJS.post(KubeJSEvents.PLAYER_LOGGED_OUT, new PlayerEventJS(p.player()));
+			ServerJS.instance.playerMap.remove(p.uuid);
+		}
+
+		ServerJS.instance.playerMap.clear();
+
 		for (WorldJS w : ServerJS.instance.worldMap.values())
 		{
 			EventsJS.post(KubeJSEvents.WORLD_UNLOAD, new WorldEventJS(w));

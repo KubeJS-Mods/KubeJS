@@ -11,9 +11,14 @@ public class PlayerEventJS extends LivingEntityEventJS
 {
 	public final PlayerJS player;
 
-	public PlayerEventJS(Entity p)
+	public PlayerEventJS(PlayerJS p)
 	{
 		super(p);
-		player = ServerJS.instance.player(p.getUniqueID());
+		player = p;
+	}
+
+	public PlayerEventJS(Entity p)
+	{
+		this(ServerJS.instance.player(p.getUniqueID()));
 	}
 }

@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.script;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.KubeJSBindingsEvent;
 import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.event.ScriptEventsWrapper;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -22,7 +21,7 @@ import net.minecraft.item.EnumRarity;
  */
 public class DefaultBindings
 {
-	public static void init(KubeJSBindingsEvent event)
+	public static void init(BindingsEvent event)
 	{
 		event.add("mod", new ScriptModData());
 		event.add("log", new LoggerWrapperJS(KubeJS.LOGGER));

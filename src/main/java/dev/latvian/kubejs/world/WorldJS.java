@@ -3,6 +3,7 @@ package dev.latvian.kubejs.world;
 import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.documentation.DocMethod;
+import dev.latvian.kubejs.documentation.Param;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.server.ServerJS;
 import net.minecraft.command.CommandException;
@@ -44,41 +45,54 @@ public class WorldJS implements ICommandSender
 	}
 
 	@DocMethod
+	public long seed()
+	{
+		return world.getSeed();
+	}
+
+	@DocMethod
 	public long localTime()
 	{
 		return world.getWorldTime();
 	}
 
+	@DocMethod
 	public long totalTime()
 	{
 		return world.getTotalWorldTime();
 	}
 
+	@DocMethod
 	public boolean isDaytime()
 	{
 		return world.isDaytime();
 	}
 
+	@DocMethod
 	public boolean isRaining()
 	{
 		return world.isRaining();
 	}
 
+	@DocMethod(params = {@Param("x"), @Param("y"), @Param("z")})
 	public BlockContainerJS block(int x, int y, int z)
 	{
 		return new BlockContainerJS(world, new BlockPos(x, y, z));
 	}
 
+	@DocMethod
 	public EntityArrayList players()
 	{
 		return server.entities(world.playerEntities);
 	}
 
+	@DocMethod
 	public EntityArrayList entities()
 	{
 		return server.entities(world.loadedEntityList);
 	}
 
+	@DocMethod
 	public EntityArrayList entities(String filter)
 	{
 		try
@@ -91,6 +105,7 @@ public class WorldJS implements ICommandSender
 		}
 	}
 
+	@DocMethod(params = {@Param("x"), @Param("y"), @Param("z"), @Param("strength"), @Param("causesFire"), @Param("damagesTerrain")})
 	public void explosion(double x, double y, double z, float strength, boolean causesFire, boolean damagesTerrain)
 	{
 		world.newExplosion(null, x, y, z, strength, causesFire, damagesTerrain);

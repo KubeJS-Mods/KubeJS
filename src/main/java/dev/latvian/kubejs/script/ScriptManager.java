@@ -1,8 +1,9 @@
 package dev.latvian.kubejs.script;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.KubeJSBindingsEvent;
+import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.documentation.Documentation;
+import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.event.EventsJS;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import net.minecraftforge.common.MinecraftForge;
@@ -33,6 +34,7 @@ public class ScriptManager
 	public final Map<String, ScriptFile> scripts;
 	private final Map<String, ScriptPack> packs;
 	public ScriptFile currentFile;
+	public Map<String, Object> bindings;
 
 	public ScriptManager()
 	{
@@ -52,7 +54,7 @@ public class ScriptManager
 			context.removeAttribute(s, context.getAttributesScope(s));
 		}
 
-		return new ScriptPack(id, engine);
+		return new ScriptPack(this, id, engine);
 	}
 
 	public long load()
@@ -61,7 +63,7 @@ public class ScriptManager
 
 		if (!scripts.isEmpty())
 		{
-			//Some kind of unload event?
+			EventsJS.post(KubeJSEvents.UNLOADED, new EventJS());
 			scripts.clear();
 		}
 
@@ -77,10 +79,12 @@ public class ScriptManager
 			scripts.put(file.path, file);
 		}
 
-		Bindings bindings = new SimpleBindings();
-		KubeJSBindingsEvent event = new KubeJSBindingsEvent(bindings);
+		bindings = new LinkedHashMap<>();
+		BindingsEvent event = new BindingsEvent(bindings);
 		MinecraftForge.EVENT_BUS.post(event);
 		DefaultBindings.init(event);
+		Bindings b = new SimpleBindings();
+		b.putAll(bindings);
 
 		int i = 0;
 
@@ -88,7 +92,7 @@ public class ScriptManager
 		{
 			currentFile = file;
 
-			if (file.load(bindings))
+			if (file.load(b))
 			{
 				i++;
 			}

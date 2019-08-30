@@ -37,6 +37,7 @@ public class CommandProperties
 	public final List<String> aliases;
 	public ExecuteFunction execute;
 	public UsernameFunction username;
+	public int requiredPermissionLevel;
 
 	public CommandProperties(Consumer<CommandBase> c, String n)
 	{
@@ -45,6 +46,37 @@ public class CommandProperties
 		aliases = new ArrayList<>();
 		execute = null;
 		username = null;
+		requiredPermissionLevel = 0;
+	}
+
+	public CommandProperties alias(String a)
+	{
+		aliases.add(a);
+		return this;
+	}
+
+	public CommandProperties execute(ExecuteFunction e)
+	{
+		execute = e;
+		return this;
+	}
+
+	public CommandProperties username(UsernameFunction u)
+	{
+		username = u;
+		return this;
+	}
+
+	public CommandProperties username(final int index)
+	{
+		username = (args, i) -> index == i;
+		return this;
+	}
+
+	public CommandProperties op()
+	{
+		requiredPermissionLevel = 2;
+		return this;
 	}
 
 	public void register()
@@ -83,6 +115,18 @@ public class CommandProperties
 		public boolean isUsernameIndex(String[] args, int index)
 		{
 			return properties.username != null && properties.username.isUsername(Arrays.asList(args), index);
+		}
+
+		@Override
+		public int getRequiredPermissionLevel()
+		{
+			return properties.requiredPermissionLevel;
+		}
+
+		@Override
+		public boolean checkPermission(MinecraftServer server, ICommandSender sender)
+		{
+			return properties.requiredPermissionLevel == 0 || super.checkPermission(server, sender);
 		}
 
 		@Override

@@ -2,8 +2,10 @@ package dev.latvian.kubejs.documentation;
 
 import dev.latvian.kubejs.command.CommandSender;
 import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
+import net.minecraft.util.IStringSerializable;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.lang.reflect.Field;
@@ -13,12 +15,9 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author LatvianModder
@@ -27,15 +26,13 @@ public enum Documentation
 {
 	INSTANCE;
 
-	private Map<Class, String> nativeClasses;
-	private Set<Class> registeredClasses;
+	private Map<Class, String> customNames;
 	private Map<String, Class<? extends EventJS>> registeredEvents;
 
 	public void init()
 	{
 		clearCache();
-		nativeClasses = new LinkedHashMap<>();
-		registeredClasses = new LinkedHashSet<>();
+		customNames = new LinkedHashMap<>();
 		registeredEvents = new LinkedHashMap<>();
 		MinecraftForge.EVENT_BUS.post(new DocumentationEvent(this));
 	}
@@ -44,19 +41,17 @@ public enum Documentation
 	{
 	}
 
-	public void registerNative(String name, Class... classes)
+	public void registerAttachedData(AttachedDataType type, String name, Class dataClass)
+	{
+	}
+
+	public void registerCustomName(String name, Class... classes)
 	{
 		for (Class c : classes)
 		{
-			nativeClasses.put(c, name);
+			customNames.put(c, name);
 		}
 
-		clearCache();
-	}
-
-	public void register(Class c)
-	{
-		registeredClasses.add(c);
 		clearCache();
 	}
 
@@ -74,7 +69,12 @@ public enum Documentation
 
 	public String getPrettyName(Class c)
 	{
-		String s = nativeClasses.get(c);
+		if (c.isArray())
+		{
+			return getPrettyName(c.getComponentType()) + "[]";
+		}
+
+		String s = customNames.get(c);
 
 		if (s != null)
 		{
@@ -109,12 +109,15 @@ public enum Documentation
 
 		List<String> list = new ArrayList<>();
 		StringBuilder sb = new StringBuilder();
+		boolean prevUppercase = true;
 
 		for (int i = 0; i < name.length(); i++)
 		{
 			char ch = name.charAt(i);
 
-			if (Character.isUpperCase(ch))
+			boolean uppercase = Character.isUpperCase(ch);
+
+			if (uppercase && !prevUppercase)
 			{
 				if (sb.length() > 0)
 				{
@@ -124,6 +127,7 @@ public enum Documentation
 				sb.setLength(0);
 			}
 
+			prevUppercase = uppercase;
 			sb.append(ch);
 		}
 
@@ -139,7 +143,7 @@ public enum Documentation
 	{
 		Text text = new TextString(getPrettyName(c)).yellow();
 
-		if (nativeClasses.containsKey(c))
+		if (c.isPrimitive() || c == Character.class || Number.class.isAssignableFrom(c))
 		{
 			return text;
 		}
@@ -178,27 +182,29 @@ public enum Documentation
 	public void sendDocs(CommandSender sender)
 	{
 		sender.tell(new TextString("== KubeJS Documentation ==").darkPurple().hover("This is WIP, it will look much better later"));
-		sender.tell(new TextString("[Native Types]").blue());
-		List<String> nativeTypeList = new ArrayList<>(new HashSet<>(nativeClasses.values()));
-		nativeTypeList.sort(null);
+		sender.tell(new TextString("[Global]").blue());
 
-		for (String s : nativeTypeList)
+		for (Map.Entry<String, Object> entry : ScriptManager.instance.bindings.entrySet())
 		{
-			sender.tell(new TextString(s).yellow());
-		}
+			Text name = new TextString(entry.getKey()).green();
 
-		sender.tell(new TextString("[Classes]").blue());
-		HashSet<Class> classSet = new HashSet<>(registeredClasses);
-		classSet.addAll(registeredEvents.values());
-		List<Class> classList = new ArrayList<>(classSet);
-		classList.sort((o1, o2) -> getPrettyName(o1).compareToIgnoreCase(getPrettyName(o2)));
-
-		for (Class c : classList)
-		{
-			//if (c.isAnnotationPresent(DocClass.class))
+			if (entry.getKey().toUpperCase().equals(entry.getKey()))
 			{
-				sender.tell(classText(c, c));
+				if (entry.getValue() instanceof IStringSerializable)
+				{
+					name.hover(((IStringSerializable) entry.getValue()).getName());
+				}
+				else if (entry.getValue() instanceof CharSequence)
+				{
+					name.hover("\"" + entry.getValue() + "\"");
+				}
+				else
+				{
+					name.hover(entry.getValue().toString());
+				}
 			}
+
+			sender.tell((classText(entry.getValue().getClass(), entry.getValue().getClass())).append(" ").append(name));
 		}
 
 		sender.tell(new TextString("[Events]").blue());
@@ -297,6 +303,15 @@ public enum Documentation
 					continue;
 				}
 
+				String mn = method.getName();
+
+				if (docMethod == null && (mn.equals("equals") || mn.equals("hashCode") || mn.equals("toString")))
+				{
+					continue;
+				}
+
+				Parameter[] parameters = method.getParameters();
+
 				Text text = new TextString("").append(classText(method.getReturnType(), method.getGenericReturnType())).append(" ");
 				Text namet = new TextString(method.getName()).green();
 
@@ -307,7 +322,6 @@ public enum Documentation
 
 				text.append(namet).append("(");
 
-				Parameter[] parameters = method.getParameters();
 				Param[] params = docMethod == null ? new Param[0] : docMethod.params();
 
 				for (int i = 0; i < parameters.length; i++)
@@ -332,12 +346,19 @@ public enum Documentation
 
 					if (name.isEmpty())
 					{
-						name = p.getName();
+						if (parameters.length == 1)
+						{
+							name = getPrettyName(type).substring(0, 1).toLowerCase();
+						}
+						else
+						{
+							name = p.getName();
+						}
 					}
 
 					if (i > 0)
 					{
-						text.append("");
+						text.append(", ");
 					}
 
 					Text text1 = new TextString("").append(classText(type, type)).append(" ").append(name);
