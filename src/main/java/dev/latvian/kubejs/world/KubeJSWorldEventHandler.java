@@ -35,8 +35,6 @@ public class KubeJSWorldEventHandler
 
 		for (WorldServer world : server.worlds)
 		{
-			KubeJS.LOGGER.info(world.provider.getDimension() + " ; " + world.provider.getDimensionType());
-
 			if (world != ServerJS.instance.overworld.world)
 			{
 				WorldJS w = new WorldJS(ServerJS.instance, world);
