@@ -7,6 +7,7 @@ import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.OreDictUtils;
 import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.text.TextUtilsJS;
+import dev.latvian.kubejs.util.FluidUtilsJS;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.LoggerWrapperJS;
 import dev.latvian.kubejs.util.UUIDUtilsJS;
@@ -35,6 +36,7 @@ public class DefaultBindings
 		event.add("text", TextUtilsJS.INSTANCE);
 		event.add("oredict", OreDictUtils.INSTANCE);
 		event.add("materials", MaterialListJS.INSTANCE.map);
+		event.add("fluid", FluidUtilsJS.INSTANCE);
 
 		event.add("EMPTY_ITEM", EmptyItemStackJS.INSTANCE);
 		event.add("SECOND", 1000L);

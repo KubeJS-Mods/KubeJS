@@ -137,7 +137,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 
 	public void add(String recipeID, Object recipe)
 	{
-		JsonElement e = JsonUtilsJS.INSTANCE.from(recipe);
+		JsonElement e = JsonUtilsJS.INSTANCE.of(recipe);
 
 		if (!e.isJsonObject())
 		{

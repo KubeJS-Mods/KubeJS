@@ -80,7 +80,7 @@ public class TextTranslate extends Text
 
 			for (Object ob : objects)
 			{
-				array.add(JsonUtilsJS.INSTANCE.from(ob));
+				array.add(JsonUtilsJS.INSTANCE.of(ob));
 			}
 
 			o.add("with", array);

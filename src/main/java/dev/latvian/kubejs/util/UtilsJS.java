@@ -262,7 +262,7 @@ public enum UtilsJS
 		{
 			try
 			{
-				return JsonToNBT.getTagFromJson(JsonUtilsJS.INSTANCE.from(o).toString());
+				return JsonToNBT.getTagFromJson(JsonUtilsJS.INSTANCE.of(o).toString());
 			}
 			catch (Exception ex)
 			{

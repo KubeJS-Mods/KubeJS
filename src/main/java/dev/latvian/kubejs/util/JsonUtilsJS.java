@@ -71,12 +71,12 @@ public enum JsonUtilsJS
 		return new JsonArray();
 	}
 
-	public JsonElement from(@Nullable Object object)
+	public JsonElement of(@Nullable Object object)
 	{
-		return from(object, 0, 5);
+		return of(object, 0, 5);
 	}
 
-	public JsonElement from(@Nullable Object object, int depth, int maxDepth)
+	public JsonElement of(@Nullable Object object, int depth, int maxDepth)
 	{
 		if (maxDepth > 0 && depth > maxDepth)
 		{
@@ -120,7 +120,7 @@ public enum JsonUtilsJS
 
 				for (String s : js.keySet())
 				{
-					a.add(from(js.getMember(s), depth, maxDepth));
+					a.add(of(js.getMember(s), depth, maxDepth));
 				}
 
 				return a;
@@ -131,7 +131,7 @@ public enum JsonUtilsJS
 
 				for (String s : js.keySet())
 				{
-					o.add(s, from(js.getMember(s), depth, maxDepth));
+					o.add(s, of(js.getMember(s), depth, maxDepth));
 				}
 
 				return o;
@@ -145,7 +145,7 @@ public enum JsonUtilsJS
 
 			for (Map.Entry<?, ?> entry : map.entrySet())
 			{
-				o.add(String.valueOf(entry.getKey()), from(entry.getValue(), depth, maxDepth));
+				o.add(String.valueOf(entry.getKey()), of(entry.getValue(), depth, maxDepth));
 			}
 
 			return o;
@@ -156,7 +156,7 @@ public enum JsonUtilsJS
 
 			for (Object o : (Iterable) object)
 			{
-				a.add(from(o, depth, maxDepth));
+				a.add(of(o, depth, maxDepth));
 			}
 
 			return a;
@@ -176,7 +176,7 @@ public enum JsonUtilsJS
 				if (Modifier.isPublic(m) && !Modifier.isStatic(m) && !Modifier.isTransient(m))
 				{
 					field.setAccessible(true);
-					o.add(field.getName(), from(field.get(object), depth + 1, maxDepth));
+					o.add(field.getName(), of(field.get(object), depth + 1, maxDepth));
 				}
 			}
 

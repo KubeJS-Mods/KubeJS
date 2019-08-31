@@ -88,7 +88,7 @@ public enum TextUtilsJS
 			return t;
 		}
 
-		return fromJson(JsonUtilsJS.INSTANCE.from(object));
+		return fromJson(JsonUtilsJS.INSTANCE.of(object));
 	}
 
 	@DocMethod("Creates text component from JSON")
