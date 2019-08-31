@@ -12,7 +12,7 @@ import java.util.function.Predicate;
 @FunctionalInterface
 public interface IIngredientJS extends Predicate<ItemStackJS>
 {
-	default Set<ItemStackJS> getStacks()
+	default Set<ItemStackJS> stacks()
 	{
 		return Collections.emptySet();
 	}

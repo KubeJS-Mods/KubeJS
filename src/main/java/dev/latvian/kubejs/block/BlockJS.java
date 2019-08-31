@@ -7,9 +7,9 @@ import net.minecraft.block.Block;
  */
 public class BlockJS extends Block
 {
-	public final BlockProperties properties;
+	public final BlockBuilder properties;
 
-	public BlockJS(BlockProperties p)
+	public BlockJS(BlockBuilder p)
 	{
 		super(p.material.material);
 		properties = p;

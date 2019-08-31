@@ -1,5 +1,7 @@
 package dev.latvian.kubejs.entity;
 
+import dev.latvian.kubejs.item.BoundItemStackJS;
+import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
@@ -62,10 +64,10 @@ public class EntityJS implements MessageSender
 	{
 		if (entity instanceof EntityItem)
 		{
-			return new ItemStackJS.Bound(((EntityItem) entity).getItem());
+			return new BoundItemStackJS(((EntityItem) entity).getItem());
 		}
 
-		return ItemStackJS.EMPTY;
+		return EmptyItemStackJS.INSTANCE;
 	}
 
 	public boolean isLiving()

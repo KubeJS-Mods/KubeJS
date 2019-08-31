@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.crafting.handlers;
 
 import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.IIngredientJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -22,11 +23,11 @@ public class FurnaceRecipeEventJS extends EventJS
 
 	public void remove(IIngredientJS output)
 	{
-		FurnaceRecipes.instance().getSmeltingList().values().removeIf(stack -> output.test(new ItemStackJS.Bound(stack)));
+		FurnaceRecipes.instance().getSmeltingList().values().removeIf(stack -> output.test(new BoundItemStackJS(stack)));
 	}
 
 	public void removeInput(IIngredientJS input)
 	{
-		FurnaceRecipes.instance().getSmeltingList().keySet().removeIf(stack -> input.test(new ItemStackJS.Bound(stack)));
+		FurnaceRecipes.instance().getSmeltingList().keySet().removeIf(stack -> input.test(new BoundItemStackJS(stack)));
 	}
 }

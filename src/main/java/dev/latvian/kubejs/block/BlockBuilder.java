@@ -8,10 +8,10 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class BlockProperties
+public class BlockBuilder
 {
 	public final ID id;
-	public final transient Consumer<BlockProperties> callback;
+	private final Consumer<BlockBuilder> callback;
 	public MaterialJS material;
 	public String translationKey;
 	public float hardness;
@@ -22,7 +22,7 @@ public class BlockProperties
 	public boolean opaque;
 	public boolean fullBlock;
 
-	public BlockProperties(String i, Consumer<BlockProperties> c)
+	public BlockBuilder(String i, Consumer<BlockBuilder> c)
 	{
 		id = new ID(KubeJS.appendModId(i));
 		callback = c;
@@ -37,63 +37,63 @@ public class BlockProperties
 		fullBlock = false;
 	}
 
-	public BlockProperties material(MaterialJS m)
+	public BlockBuilder material(MaterialJS m)
 	{
 		material = m;
 		return this;
 	}
 
-	public BlockProperties translationKey(String key)
+	public BlockBuilder translationKey(String key)
 	{
 		translationKey = key;
 		return this;
 	}
 
-	public BlockProperties hardness(float h)
+	public BlockBuilder hardness(float h)
 	{
 		hardness = h;
 		return this;
 	}
 
-	public BlockProperties resistance(float r)
+	public BlockBuilder resistance(float r)
 	{
 		resistance = r;
 		return this;
 	}
 
-	public BlockProperties unbreakable()
+	public BlockBuilder unbreakable()
 	{
 		hardness = -1F;
 		resistance = Float.MAX_VALUE;
 		return this;
 	}
 
-	public BlockProperties lightLevel(float light)
+	public BlockBuilder lightLevel(float light)
 	{
 		lightLevel = light;
 		return this;
 	}
 
-	public BlockProperties harvestTool(String tool, int level)
+	public BlockBuilder harvestTool(String tool, int level)
 	{
 		harvestTool = tool;
 		harvestLevel = level;
 		return this;
 	}
 
-	public BlockProperties opaque(boolean o)
+	public BlockBuilder opaque(boolean o)
 	{
 		opaque = o;
 		return this;
 	}
 
-	public BlockProperties fullBlock(boolean f)
+	public BlockBuilder fullBlock(boolean f)
 	{
 		fullBlock = f;
 		return this;
 	}
 
-	public void register()
+	public void add()
 	{
 		callback.accept(this);
 	}

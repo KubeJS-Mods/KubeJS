@@ -19,18 +19,18 @@ public class ItemRegistryEventJS extends EventJS
 		registry = r;
 	}
 
-	public ItemProperties newItem(String name)
+	public ItemBuilder create(String name)
 	{
-		return new ItemProperties(name, p -> {
+		return new ItemBuilder(name, p -> {
 			ItemJS item = new ItemJS(p);
 			item.setRegistryName(UtilsJS.INSTANCE.idMC(p.id));
 			registry.register(item);
 		});
 	}
 
-	public ItemProperties newBlockItem(String name)
+	public ItemBuilder createBlockItem(String name)
 	{
-		return new ItemProperties(name, p -> {
+		return new ItemBuilder(name, p -> {
 			Block block = Block.REGISTRY.getObject(UtilsJS.INSTANCE.idMC(p.id));
 
 			if (block == null || block == Blocks.AIR)

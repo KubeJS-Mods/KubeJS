@@ -14,10 +14,10 @@ import java.util.Map;
  */
 public class ItemJS extends Item
 {
-	public final ItemProperties properties;
+	public final ItemBuilder properties;
 	private Item containerItem;
 
-	public ItemJS(ItemProperties p)
+	public ItemJS(ItemBuilder p)
 	{
 		properties = p;
 		setTranslationKey(properties.translationKey);
@@ -35,7 +35,7 @@ public class ItemJS extends Item
 	{
 		if (containerItem == null)
 		{
-			containerItem = REGISTRY.getObject(UtilsJS.INSTANCE.idMC(properties.containerItem));
+			containerItem = properties.containerItem == null ? null : REGISTRY.getObject(UtilsJS.INSTANCE.idMC(properties.containerItem));
 
 			if (containerItem == null)
 			{

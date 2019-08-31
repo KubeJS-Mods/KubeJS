@@ -51,15 +51,27 @@ public class WorldJS implements ICommandSender
 	}
 
 	@DocMethod
+	public long time()
+	{
+		return world.getTotalWorldTime();
+	}
+
+	@DocMethod
 	public long localTime()
 	{
 		return world.getWorldTime();
 	}
 
 	@DocMethod
-	public long totalTime()
+	public void setTime(long time)
 	{
-		return world.getTotalWorldTime();
+		world.setTotalWorldTime(time);
+	}
+
+	@DocMethod
+	public void setLocalTime(long time)
+	{
+		world.setWorldTime(time);
 	}
 
 	@DocMethod
@@ -74,10 +86,22 @@ public class WorldJS implements ICommandSender
 		return world.isRaining();
 	}
 
+	@DocMethod(params = @Param("strength"))
+	public void setRainStrength(float strength)
+	{
+		world.setRainStrength(strength);
+	}
+
 	@DocMethod(params = {@Param("x"), @Param("y"), @Param("z")})
 	public BlockContainerJS block(int x, int y, int z)
 	{
-		return new BlockContainerJS(world, new BlockPos(x, y, z));
+		return block(new BlockPos(x, y, z));
+	}
+
+	@DocMethod(params = @Param("pos"))
+	public BlockContainerJS block(BlockPos pos)
+	{
+		return new BlockContainerJS(this, pos);
 	}
 
 	@DocMethod

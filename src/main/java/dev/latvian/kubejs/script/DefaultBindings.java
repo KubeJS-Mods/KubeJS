@@ -3,7 +3,7 @@ package dev.latvian.kubejs.script;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.event.ScriptEventsWrapper;
-import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.OreDictUtils;
 import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.text.TextUtilsJS;
@@ -15,16 +15,18 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumRarity;
+import net.minecraftforge.fml.common.Loader;
 
 /**
  * @author LatvianModder
  */
 public class DefaultBindings
 {
-	public static void init(BindingsEvent event)
+	public static void init(ScriptManager manager, BindingsEvent event)
 	{
-		event.add("mod", new ScriptModData());
+		event.add("mod", new ScriptModData("forge", "1.12.2", Loader.instance().getIndexedModList().keySet()));
 		event.add("log", new LoggerWrapperJS(KubeJS.LOGGER));
+		event.add("runtime", manager.runtime);
 		event.add("utils", UtilsJS.INSTANCE);
 		event.add("uuid", UUIDUtilsJS.INSTANCE);
 		event.add("json", JsonUtilsJS.INSTANCE);
@@ -34,7 +36,7 @@ public class DefaultBindings
 		event.add("oredict", OreDictUtils.INSTANCE);
 		event.add("materials", MaterialListJS.INSTANCE.map);
 
-		event.add("EMPTY_ITEM", ItemStackJS.EMPTY);
+		event.add("EMPTY_ITEM", EmptyItemStackJS.INSTANCE);
 		event.add("SECOND", 1000L);
 		event.add("MINUTE", 60000L);
 		event.add("HOUR", 3600000L);

@@ -1,10 +1,13 @@
 package dev.latvian.kubejs.util;
 
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.item.BoundItemStackJS;
+import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.IIngredientJS;
 import dev.latvian.kubejs.item.IngredientListJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.OreDictionaryIngredientJS;
+import dev.latvian.kubejs.item.UnboundItemStackJS;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import jdk.nashorn.api.scripting.JSObject;
@@ -281,7 +284,7 @@ public enum UtilsJS
 	{
 		if (o == null)
 		{
-			return ItemStackJS.EMPTY;
+			return EmptyItemStackJS.INSTANCE;
 		}
 		else if (o instanceof ItemStackJS)
 		{
@@ -290,14 +293,14 @@ public enum UtilsJS
 		else if (o instanceof ItemStack)
 		{
 			ItemStack stack = (ItemStack) o;
-			return stack.isEmpty() ? ItemStackJS.EMPTY : new ItemStackJS.Bound(stack);
+			return stack.isEmpty() ? EmptyItemStackJS.INSTANCE : new BoundItemStackJS(stack);
 		}
 
 		String s0 = String.valueOf(o).trim();
 
 		if (s0.isEmpty() || s0.equals("air"))
 		{
-			return ItemStackJS.EMPTY;
+			return EmptyItemStackJS.INSTANCE;
 		}
 
 		if (s0.startsWith("{") && s0.endsWith("}"))
@@ -308,12 +311,12 @@ public enum UtilsJS
 
 				if (!stack.isEmpty())
 				{
-					return new ItemStackJS.Bound(stack);
+					return new BoundItemStackJS(stack);
 				}
 			}
 			catch (Exception ex)
 			{
-				return ItemStackJS.EMPTY;
+				return EmptyItemStackJS.INSTANCE;
 			}
 		}
 
@@ -324,7 +327,7 @@ public enum UtilsJS
 
 		if (item != null && item != Items.AIR)
 		{
-			ItemStackJS stack = new ItemStackJS.Unbound(item);
+			ItemStackJS stack = new UnboundItemStackJS(item);
 
 			if (s.length >= 2)
 			{
@@ -344,7 +347,7 @@ public enum UtilsJS
 			return stack;
 		}
 
-		return ItemStackJS.EMPTY;
+		return EmptyItemStackJS.INSTANCE;
 	}
 
 	public IIngredientJS ingredient(@Nullable Object object)
@@ -370,13 +373,13 @@ public enum UtilsJS
 				{
 					IIngredientJS ingredient = ingredient(js.getMember(key));
 
-					if (ingredient != ItemStackJS.EMPTY)
+					if (ingredient != EmptyItemStackJS.INSTANCE)
 					{
 						list.ingredients.add(ingredient);
 					}
 				}
 
-				return list.ingredients.isEmpty() ? ItemStackJS.EMPTY : list;
+				return list.ingredients.isEmpty() ? EmptyItemStackJS.INSTANCE : list;
 			}
 		}
 

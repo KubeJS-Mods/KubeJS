@@ -30,7 +30,7 @@ public class CommandDocs extends CommandBase
 		{
 			try
 			{
-				Documentation.INSTANCE.sendDocs(new CommandSender(ServerJS.instance, sender), Class.forName(args[0]));
+				Documentation.get().sendDocs(new CommandSender(ServerJS.instance, sender), Class.forName(args[0]));
 			}
 			catch (Exception ex)
 			{
@@ -39,7 +39,7 @@ public class CommandDocs extends CommandBase
 		}
 		else
 		{
-			Documentation.INSTANCE.sendDocs(new CommandSender(ServerJS.instance, sender));
+			Documentation.get().sendDocs(new CommandSender(ServerJS.instance, sender));
 		}
 	}
 }

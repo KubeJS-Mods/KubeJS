@@ -14,7 +14,7 @@ import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextUtilsJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UUIDUtilsJS;
-import dev.latvian.kubejs.world.WorldCreatedEvent;
+import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.WorldJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.command.CommandException;
@@ -187,7 +187,7 @@ public class ServerJS implements MessageSender
 			world = new WorldJS(this, server.getWorld(dimension));
 			worldMap.put(dimension, world);
 			updateWorldList();
-			MinecraftForge.EVENT_BUS.post(new WorldCreatedEvent(world));
+			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(world, world.data));
 		}
 
 		return world;

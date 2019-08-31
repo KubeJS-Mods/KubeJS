@@ -2,6 +2,7 @@ package dev.latvian.kubejs.documentation;
 
 import dev.latvian.kubejs.command.CommandSender;
 import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.script.DataType;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
@@ -15,6 +16,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,27 +24,41 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public enum Documentation
+public class Documentation
 {
-	INSTANCE;
+	private static Documentation instance;
+
+	public static Documentation get()
+	{
+		if (instance == null)
+		{
+			instance = new Documentation();
+			instance.init();
+		}
+
+		return instance;
+	}
+
+	public static void clearCache()
+	{
+		instance = null;
+	}
 
 	private Map<Class, String> customNames;
-	private Map<String, Class<? extends EventJS>> registeredEvents;
+	private Map<String, Class<? extends EventJS>> events;
+	private Map<Class, Map<String, Class>> attachedData;
 
 	public void init()
 	{
-		clearCache();
 		customNames = new LinkedHashMap<>();
-		registeredEvents = new LinkedHashMap<>();
+		events = new LinkedHashMap<>();
+		attachedData = new HashMap<>();
 		MinecraftForge.EVENT_BUS.post(new DocumentationEvent(this));
 	}
 
-	public void clearCache()
+	public void registerAttachedData(DataType type, String name, Class dataClass)
 	{
-	}
-
-	public void registerAttachedData(AttachedDataType type, String name, Class dataClass)
-	{
+		attachedData.computeIfAbsent(type.actualParent, k -> new LinkedHashMap<>()).put(name, dataClass);
 	}
 
 	public void registerCustomName(String name, Class... classes)
@@ -51,14 +67,11 @@ public enum Documentation
 		{
 			customNames.put(c, name);
 		}
-
-		clearCache();
 	}
 
 	public void registerEvent(String id, Class<? extends EventJS> event)
 	{
-		registeredEvents.put(id, event);
-		clearCache();
+		events.put(id, event);
 	}
 
 	public String getSimpleName(Class c)
@@ -209,12 +222,12 @@ public enum Documentation
 
 		sender.tell(new TextString("[Events]").blue());
 
-		List<String> list = new ArrayList<>(registeredEvents.keySet());
+		List<String> list = new ArrayList<>(events.keySet());
 		list.sort(null);
 
 		for (String s : list)
 		{
-			sender.tell(new TextString(s).yellow().hover("<More Info>").click("command:/kubejs docs " + registeredEvents.get(s).getName()));
+			sender.tell(new TextString(s).yellow().hover("<More Info>").click("command:/kubejs docs " + events.get(s).getName()));
 		}
 	}
 
@@ -379,6 +392,18 @@ public enum Documentation
 		if (!has)
 		{
 			sender.tell("<None>");
+		}
+
+		Map<String, Class> attached = attachedData.get(c);
+
+		if (attached != null && !attached.isEmpty())
+		{
+			sender.tell(new TextString("[Attached]").blue());
+
+			for (Map.Entry<String, Class> entry : attached.entrySet())
+			{
+				sender.tell(new TextString("").append(classText(entry.getValue(), entry.getValue())).append(" ").append(new TextString(entry.getKey()).green()));
+			}
 		}
 	}
 }

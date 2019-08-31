@@ -37,13 +37,13 @@ public class OreDictionaryIngredientJS implements IIngredientJS
 	}
 
 	@Override
-	public Set<ItemStackJS> getStacks()
+	public Set<ItemStackJS> stacks()
 	{
 		Set<ItemStackJS> set = new HashSet<>();
 
 		for (ItemStack stack : OreDictionary.getOres(oreName))
 		{
-			set.add(new ItemStackJS.Bound(stack));
+			set.add(new BoundItemStackJS(stack));
 		}
 
 		return set;

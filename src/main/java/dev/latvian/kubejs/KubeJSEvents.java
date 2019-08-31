@@ -57,7 +57,7 @@ public class KubeJSEvents
 		event.registerCustomName("object", Object.class);
 		event.registerCustomName("uuid", UUID.class);
 
-		event.registerEvent(POSTINIT, PostInitEventJS.class);
+		event.registerEvent(POSTINIT, EventJS.class);
 		event.registerEvent(UNLOADED, EventJS.class);
 		event.registerEvent(SERVER_LOAD, ServerEventJS.class);
 		event.registerEvent(SERVER_UNLOAD, ServerEventJS.class);

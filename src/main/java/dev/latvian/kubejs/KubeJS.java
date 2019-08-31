@@ -2,6 +2,7 @@ package dev.latvian.kubejs;
 
 import dev.latvian.kubejs.command.CommandKubeJS;
 import dev.latvian.kubejs.command.CommandRegistryEventJS;
+import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.integration.IntegrationManager;
 import dev.latvian.kubejs.script.ScriptManager;
@@ -10,7 +11,6 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -19,8 +19,6 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.HashSet;
 
 /**
  * @author LatvianModder
@@ -69,7 +67,7 @@ public class KubeJS
 	@Mod.EventHandler
 	public void onPostInit(FMLPostInitializationEvent event)
 	{
-		EventsJS.post(KubeJSEvents.POSTINIT, new PostInitEventJS(new HashSet<>(Loader.instance().getIndexedModList().keySet())));
+		EventsJS.post(KubeJSEvents.POSTINIT, new EventJS());
 	}
 
 	@Mod.EventHandler

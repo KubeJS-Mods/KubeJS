@@ -10,9 +10,9 @@ import net.minecraft.item.ItemStack;
  */
 public class BlockItemJS extends ItemBlock
 {
-	public final ItemProperties properties;
+	public final ItemBuilder properties;
 
-	public BlockItemJS(Block b, ItemProperties p)
+	public BlockItemJS(Block b, ItemBuilder p)
 	{
 		super(b);
 		properties = p;

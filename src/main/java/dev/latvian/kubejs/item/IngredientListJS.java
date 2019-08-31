@@ -31,13 +31,13 @@ public class IngredientListJS implements IIngredientJS
 	}
 
 	@Override
-	public Set<ItemStackJS> getStacks()
+	public Set<ItemStackJS> stacks()
 	{
 		Set<ItemStackJS> set = new HashSet<>();
 
 		for (IIngredientJS ingredient : ingredients)
 		{
-			set.addAll(ingredient.getStacks());
+			set.addAll(ingredient.stacks());
 		}
 
 		return set;

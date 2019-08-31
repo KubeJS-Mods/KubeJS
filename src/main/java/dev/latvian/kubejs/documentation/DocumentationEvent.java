@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.documentation;
 
 import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.script.DataType;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
 /**
@@ -15,7 +16,7 @@ public class DocumentationEvent extends Event
 		documentation = d;
 	}
 
-	public void registerAttachedData(AttachedDataType type, String name, Class dataClass)
+	public void registerAttachedData(DataType type, String name, Class dataClass)
 	{
 		documentation.registerAttachedData(type, name, dataClass);
 	}

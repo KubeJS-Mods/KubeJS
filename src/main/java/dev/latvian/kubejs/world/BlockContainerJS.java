@@ -8,7 +8,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldServer;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -22,11 +21,11 @@ public class BlockContainerJS
 {
 	private static final ID AIR_ID = new ID("minecraft:air");
 
-	private final WorldServer world;
-	private final BlockPos pos;
+	public final WorldJS world;
+	public final transient BlockPos pos;
 	public final int x, y, z;
 
-	public BlockContainerJS(WorldServer w, BlockPos p)
+	public BlockContainerJS(WorldJS w, BlockPos p)
 	{
 		world = w;
 		pos = p;
@@ -37,7 +36,7 @@ public class BlockContainerJS
 
 	public ID get()
 	{
-		IBlockState state = world.getBlockState(pos);
+		IBlockState state = world.world.getBlockState(pos);
 		return state.getBlock() == Blocks.AIR ? AIR_ID : new ID(state.getBlock().getRegistryName());
 	}
 
@@ -66,7 +65,7 @@ public class BlockContainerJS
 			}
 		}
 
-		world.setBlockState(pos, state, flags);
+		world.world.setBlockState(pos, state, flags);
 	}
 
 	public void set(Object id)
@@ -77,7 +76,7 @@ public class BlockContainerJS
 	public Map<String, String> properties()
 	{
 		Map<String, String> map = new HashMap<>();
-		IBlockState state = world.getBlockState(pos);
+		IBlockState state = world.world.getBlockState(pos);
 
 		for (Map.Entry<IProperty<?>, ?> entry : state.getProperties().entrySet())
 		{
@@ -90,6 +89,21 @@ public class BlockContainerJS
 	@Nullable
 	public TileEntity entity()
 	{
-		return world.getTileEntity(pos);
+		return world.world.getTileEntity(pos);
+	}
+
+	public int light()
+	{
+		return world.world.getLight(pos);
+	}
+
+	public boolean canSeeSky()
+	{
+		return world.world.canSeeSky(pos);
+	}
+
+	public boolean canSnow(boolean checkLight)
+	{
+		return world.world.canSnowAt(pos, checkLight);
 	}
 }

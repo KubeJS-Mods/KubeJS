@@ -1,9 +1,9 @@
 package dev.latvian.kubejs.integration.gamestages;
 
-import dev.latvian.kubejs.documentation.AttachedDataType;
 import dev.latvian.kubejs.documentation.DocumentationEvent;
 import dev.latvian.kubejs.event.EventsJS;
-import dev.latvian.kubejs.player.PlayerDataCreatedEvent;
+import dev.latvian.kubejs.player.AttachPlayerDataEvent;
+import dev.latvian.kubejs.script.DataType;
 import net.darkhax.gamestages.event.GameStageEvent;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.common.MinecraftForge;
@@ -22,16 +22,16 @@ public class GameStagesIntegration
 	@SubscribeEvent
 	public static void registerDocumentation(DocumentationEvent event)
 	{
-		event.registerAttachedData(AttachedDataType.PLAYER, "gamestages", GameStagesPlayerData.class);
+		event.registerAttachedData(DataType.PLAYER, "gamestages", GameStagesPlayerData.class);
 
 		event.registerDoubleEvent("gamestage.added", "stage", GameStageEventJS.class);
 		event.registerDoubleEvent("gamestage.removed", "stage", GameStageEventJS.class);
 	}
 
 	@SubscribeEvent
-	public static void onPlayerDataCreated(PlayerDataCreatedEvent event)
+	public static void attachPlayerData(AttachPlayerDataEvent event)
 	{
-		event.setData("gamestages", new GameStagesPlayerData(event.getPlayerData()));
+		event.add("gamestages", new GameStagesPlayerData(event.getParent()));
 	}
 
 	@SubscribeEvent

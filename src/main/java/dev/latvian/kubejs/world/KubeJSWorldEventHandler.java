@@ -5,7 +5,7 @@ import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
-import dev.latvian.kubejs.server.ServerCreatedEvent;
+import dev.latvian.kubejs.server.AttachServerDataEvent;
 import dev.latvian.kubejs.server.ServerEventJS;
 import dev.latvian.kubejs.server.ServerJS;
 import net.minecraft.server.MinecraftServer;
@@ -28,9 +28,9 @@ public class KubeJSWorldEventHandler
 	public static void onServerStarting(MinecraftServer server)
 	{
 		ServerJS.instance = new ServerJS(server, (WorldServer) server.getEntityWorld());
-		MinecraftForge.EVENT_BUS.post(new ServerCreatedEvent(ServerJS.instance));
+		MinecraftForge.EVENT_BUS.post(new AttachServerDataEvent(ServerJS.instance, ServerJS.instance.data));
 		EventsJS.post(KubeJSEvents.SERVER_LOAD, new ServerEventJS(ServerJS.instance));
-		MinecraftForge.EVENT_BUS.post(new WorldCreatedEvent(ServerJS.instance.overworld));
+		MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(ServerJS.instance.overworld, ServerJS.instance.data));
 		EventsJS.post(KubeJSEvents.WORLD_LOAD, new WorldEventJS(ServerJS.instance.overworld));
 
 		for (WorldServer world : server.worlds)
@@ -42,7 +42,7 @@ public class KubeJSWorldEventHandler
 				WorldJS w = new WorldJS(ServerJS.instance, world);
 				ServerJS.instance.worldMap.put(world.provider.getDimension(), w);
 				ServerJS.instance.updateWorldList();
-				MinecraftForge.EVENT_BUS.post(new WorldCreatedEvent(w));
+				MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(w, w.data));
 				EventsJS.post(KubeJSEvents.WORLD_LOAD, new WorldEventJS(w));
 			}
 		}
@@ -80,7 +80,7 @@ public class KubeJSWorldEventHandler
 			WorldJS w = new WorldJS(ServerJS.instance, (WorldServer) event.getWorld());
 			ServerJS.instance.worldMap.put(event.getWorld().provider.getDimension(), w);
 			ServerJS.instance.updateWorldList();
-			MinecraftForge.EVENT_BUS.post(new WorldCreatedEvent(w));
+			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(w, w.data));
 			EventsJS.post(KubeJSEvents.WORLD_LOAD, new WorldEventJS(w));
 		}
 	}

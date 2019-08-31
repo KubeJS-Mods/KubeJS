@@ -33,6 +33,7 @@ public class ScriptManager
 
 	public final Map<String, ScriptFile> scripts;
 	private final Map<String, ScriptPack> packs;
+	public final Map<String, Object> runtime;
 	public ScriptFile currentFile;
 	public Map<String, Object> bindings;
 
@@ -41,6 +42,7 @@ public class ScriptManager
 		scripts = new LinkedHashMap<>();
 		packs = new HashMap<>();
 		packs.put("modpack", newPack("modpack"));
+		runtime = new HashMap<>();
 	}
 
 	private ScriptPack newPack(String id)
@@ -59,6 +61,13 @@ public class ScriptManager
 
 	public long load()
 	{
+		File folder = new File(Loader.instance().getConfigDir().getParentFile(), "kubejs");
+
+		if (!folder.exists())
+		{
+			folder.mkdirs();
+		}
+
 		long now = System.currentTimeMillis();
 
 		if (!scripts.isEmpty())
@@ -70,7 +79,7 @@ public class ScriptManager
 		EventsJS.clear();
 
 		List<ScriptFile> scriptFiles = new ArrayList<>();
-		load(scriptFiles, new File(Loader.instance().getConfigDir().getParentFile(), "kubejs"), "", 0);
+		load(scriptFiles, folder, "", 0);
 		scriptFiles.sort(null);
 
 		for (ScriptFile file : scriptFiles)
@@ -82,7 +91,7 @@ public class ScriptManager
 		bindings = new LinkedHashMap<>();
 		BindingsEvent event = new BindingsEvent(bindings);
 		MinecraftForge.EVENT_BUS.post(event);
-		DefaultBindings.init(event);
+		DefaultBindings.init(this, event);
 		Bindings b = new SimpleBindings();
 		b.putAll(bindings);
 
@@ -113,7 +122,7 @@ public class ScriptManager
 			}
 		}
 
-		Documentation.INSTANCE.init();
+		Documentation.clearCache();
 		long time = System.currentTimeMillis() - now;
 		KubeJS.LOGGER.info("Loaded " + i + "/" + scripts.size() + " scripts in " + (time / 1000D) + "s");
 		return time;
