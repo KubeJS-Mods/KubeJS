@@ -97,6 +97,12 @@ public class ServerJS implements MessageSender
 	}
 
 	@DocMethod
+	public void setHardcore(boolean hardcore)
+	{
+		overworld.world.getWorldInfo().setHardcore(hardcore);
+	}
+
+	@DocMethod
 	public boolean isSinglePlayer()
 	{
 		return server.isSinglePlayer();
@@ -114,7 +120,7 @@ public class ServerJS implements MessageSender
 		return server.getMOTD();
 	}
 
-	@DocMethod(params = @Param("text"))
+	@DocMethod(params = @Param(value = "text", type = Text.class))
 	public void setMOTD(Object text)
 	{
 		server.setMOTD(TextUtilsJS.INSTANCE.of(text).component().getFormattedText());
@@ -332,5 +338,12 @@ public class ServerJS implements MessageSender
 		ScheduledEvent e = new ScheduledEvent(this, timer, event);
 		scheduledEvents.add(e);
 		return e;
+	}
+
+	//TODO: Implement this better with actual tick checking
+	@DocMethod
+	public ScheduledEvent scheduleInTicks(long ticks, IScheduledEventCallback event)
+	{
+		return schedule(ticks * 50L, event);
 	}
 }

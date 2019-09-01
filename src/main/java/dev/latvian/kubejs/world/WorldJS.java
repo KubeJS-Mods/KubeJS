@@ -74,6 +74,11 @@ public class WorldJS implements ICommandSender
 		world.setWorldTime(time);
 	}
 
+	public boolean isOverworld()
+	{
+		return dimension == 0;
+	}
+
 	@DocMethod
 	public boolean isDaytime()
 	{
