@@ -16,7 +16,7 @@ public class FieldJS
 	}
 
 	@Nullable
-	public Object get(@Nullable Object object)
+	public <T> T get(@Nullable Object object)
 	{
 		if (field == null)
 		{
@@ -30,7 +30,7 @@ public class FieldJS
 				field.setAccessible(true);
 			}
 
-			return field.get(object);
+			return UtilsJS.INSTANCE.cast(field.get(object));
 		}
 		catch (Exception ex)
 		{
@@ -39,7 +39,7 @@ public class FieldJS
 	}
 
 	@Nullable
-	public Object getStatic()
+	public <T> T staticGet()
 	{
 		return get(null);
 	}
@@ -67,7 +67,7 @@ public class FieldJS
 		}
 	}
 
-	public boolean setStatic(@Nullable Object value)
+	public boolean staticSet(@Nullable Object value)
 	{
 		return set(null, value);
 	}
