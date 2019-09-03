@@ -17,6 +17,11 @@ public class MatchAnyIngredientJS implements IngredientJS
 {
 	public final List<IngredientJS> ingredients = new ArrayList<>();
 
+	public void add(IngredientJS ingredient)
+	{
+		ingredients.add(ingredient);
+	}
+
 	@Override
 	public boolean test(ItemStackJS stack)
 	{
@@ -55,6 +60,12 @@ public class MatchAnyIngredientJS implements IngredientJS
 		}
 
 		return new CompoundIngredientWrapper(list);
+	}
+
+	@Override
+	public boolean isEmpty()
+	{
+		return ingredients.isEmpty();
 	}
 
 	private static class CompoundIngredientWrapper extends CompoundIngredient

@@ -55,22 +55,22 @@ public class UtilsWrapper
 		return Pattern.compile(pattern, flags);
 	}
 
-	public static FieldJS field(String className, String fieldName)
+	public FieldJS field(String className, String fieldName)
 	{
 		return UtilsJS.field(className, fieldName);
 	}
 
-	public static FieldJS field(Class className, String fieldName)
+	public FieldJS field(Class className, String fieldName)
 	{
 		return UtilsJS.field(className, fieldName);
 	}
 
-	public static int parseInt(@Nullable Object object, int def)
+	public int parseInt(@Nullable Object object, int def)
 	{
 		return UtilsJS.parseInt(object, def);
 	}
 
-	public static double parseDouble(@Nullable Object object, double def)
+	public double parseDouble(@Nullable Object object, double def)
 	{
 		return UtilsJS.parseDouble(object, def);
 	}
@@ -81,7 +81,7 @@ public class UtilsWrapper
 		return UtilsJS.stat(id);
 	}
 
-	public static String toolType(String id)
+	public String toolType(String id)
 	{
 		return UtilsJS.toolType(id);
 	}

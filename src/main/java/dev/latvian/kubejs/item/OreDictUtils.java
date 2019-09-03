@@ -1,12 +1,16 @@
 package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.util.UtilsJS;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -16,11 +20,44 @@ public class OreDictUtils
 {
 	public static final List<String> DYES = Collections.unmodifiableList(Arrays.asList("Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "LightGray", "Gray", "Pink", "Lime", "Yellow", "LightBlue", "Magenta", "Orange", "White"));
 
-	public static void registerOre(String name, IngredientJS ingredient)
+	private static List<NonNullList<ItemStack>> idToStack = null;
+
+	public static void add(IngredientJS ingredient, String name)
 	{
 		for (ItemStackJS stack : ingredient.stacks())
 		{
-			registerOre(name, ingredient);
+			OreDictionary.registerOre(name, stack.itemStack());
+		}
+	}
+
+	public static void remove(IngredientJS ingredient, String name)
+	{
+		if (idToStack == null)
+		{
+			idToStack = UtilsJS.field(OreDictionary.class, "idToStack").staticGet();
+
+			if (idToStack == null)
+			{
+				idToStack = Collections.emptyList();
+			}
+		}
+
+		int id = OreDictionary.getOreID(name);
+
+		if (id >= 0 && id < idToStack.size())
+		{
+			Iterator<ItemStack> itr = idToStack.get(id).iterator();
+			Ingredient ingredient1 = ingredient.createVanillaIngredient();
+
+			while (itr.hasNext())
+			{
+				ItemStack stack = itr.next();
+
+				if (ingredient1.apply(stack))
+				{
+					itr.remove();
+				}
+			}
 		}
 	}
 

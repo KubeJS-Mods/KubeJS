@@ -19,10 +19,16 @@ public class OreDictWrapper
 	@DocField
 	public final List<String> dyes = OreDictUtils.DYES;
 
-	@DocMethod(params = {@Param("name"), @Param(value = "item", type = ItemStackJS.class)})
-	public void registerOre(String name, Object ingredient)
+	@DocMethod(params = {@Param(value = "ingredient", type = IngredientJS.class), @Param("name")})
+	public void add(Object ingredient, String name)
 	{
-		OreDictUtils.registerOre(name, IngredientJS.of(ingredient));
+		OreDictUtils.add(IngredientJS.of(ingredient), name);
+	}
+
+	@DocMethod(params = {@Param(value = "ingredient", type = IngredientJS.class), @Param("name")})
+	public void remove(Object ingredient, String name)
+	{
+		OreDictUtils.remove(IngredientJS.of(ingredient), name);
 	}
 
 	@DocMethod(params = @Param(value = "item", type = ItemStackJS.class))
