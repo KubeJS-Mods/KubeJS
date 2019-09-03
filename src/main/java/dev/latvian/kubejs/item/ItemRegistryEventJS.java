@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -23,7 +22,7 @@ public class ItemRegistryEventJS extends EventJS
 	{
 		return new ItemBuilder(name, p -> {
 			ItemJS item = new ItemJS(p);
-			item.setRegistryName(UtilsJS.INSTANCE.idMC(p.id));
+			item.setRegistryName(p.id.mc());
 			registry.register(item);
 		});
 	}
@@ -31,7 +30,7 @@ public class ItemRegistryEventJS extends EventJS
 	public ItemBuilder createBlockItem(String name)
 	{
 		return new ItemBuilder(name, p -> {
-			Block block = Block.REGISTRY.getObject(UtilsJS.INSTANCE.idMC(p.id));
+			Block block = Block.REGISTRY.getObject(p.id.mc());
 
 			if (block == null || block == Blocks.AIR)
 			{

@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -12,35 +12,26 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public enum OreDictUtils
+public class OreDictUtils
 {
-	INSTANCE;
+	public static final List<String> DYES = Collections.unmodifiableList(Arrays.asList("Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "LightGray", "Gray", "Pink", "Lime", "Yellow", "LightBlue", "Magenta", "Orange", "White"));
 
-	public final List<String> dyes = Collections.unmodifiableList(Arrays.asList("Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "LightGray", "Gray", "Pink", "Lime", "Yellow", "LightBlue", "Magenta", "Orange", "White"));
-
-	public void registerOre(String name, Object... items)
+	public static void registerOre(String name, IngredientJS ingredient)
 	{
-		for (Object item : items)
+		for (ItemStackJS stack : ingredient.stacks())
 		{
-			ItemStackJS js = UtilsJS.INSTANCE.item(item);
-
-			if (!js.isEmpty())
-			{
-				OreDictionary.registerOre(name, js.itemStack());
-			}
+			registerOre(name, ingredient);
 		}
 	}
 
-	public List<String> getNames(Object item)
+	public static List<String> names(ItemStackJS item)
 	{
-		ItemStackJS itemStackJS = UtilsJS.INSTANCE.item(item);
-
-		if (itemStackJS.isEmpty())
+		if (item.isEmpty())
 		{
 			return Collections.emptyList();
 		}
 
-		int[] ai = OreDictionary.getOreIDs(itemStackJS.itemStack());
+		int[] ai = OreDictionary.getOreIDs(item.itemStack());
 		List<String> list = new ObjectArrayList<>(ai.length);
 
 		for (int i = 0; i < ai.length; i++)
@@ -51,7 +42,7 @@ public enum OreDictUtils
 		return list;
 	}
 
-	public List<ItemStackJS> getItems(String ore)
+	public static List<ItemStackJS> items(String ore)
 	{
 		List<ItemStack> l = OreDictionary.getOres(ore);
 
@@ -64,7 +55,7 @@ public enum OreDictUtils
 
 		for (ItemStack stack : l)
 		{
-			list.add(UtilsJS.INSTANCE.item(stack));
+			list.add(ItemStackJS.of(stack));
 		}
 
 		return list;

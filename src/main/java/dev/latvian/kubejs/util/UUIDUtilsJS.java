@@ -6,11 +6,9 @@ import java.util.UUID;
 /**
  * @author LatvianModder
  */
-public enum UUIDUtilsJS
+public class UUIDUtilsJS
 {
-	INSTANCE;
-
-	public String toString(@Nullable UUID id)
+	public static String toString(@Nullable UUID id)
 	{
 		if (id != null)
 		{
@@ -28,7 +26,7 @@ public enum UUIDUtilsJS
 		return "";
 	}
 
-	private void digits(StringBuilder sb, long val, int digits)
+	private static void digits(StringBuilder sb, long val, int digits)
 	{
 		long hi = 1L << (digits * 4);
 		String s = Long.toHexString(hi | (val & (hi - 1)));
@@ -36,7 +34,7 @@ public enum UUIDUtilsJS
 	}
 
 	@Nullable
-	public UUID fromString(@Nullable String s)
+	public static UUID fromString(@Nullable String s)
 	{
 		if (s == null || !(s.length() == 32 || s.length() == 36))
 		{

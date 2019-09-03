@@ -1,25 +1,26 @@
-package dev.latvian.kubejs.item;
+package dev.latvian.kubejs.item.ingredient;
 
+import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.CompoundIngredient;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
  * @author LatvianModder
  */
-public class IngredientListJS implements IIngredientJS
+public class MatchAnyIngredientJS implements IngredientJS
 {
-	public final List<IIngredientJS> ingredients = new ArrayList<>();
+	public final List<IngredientJS> ingredients = new ArrayList<>();
 
 	@Override
 	public boolean test(ItemStackJS stack)
 	{
-		for (IIngredientJS ingredient : ingredients)
+		for (IngredientJS ingredient : ingredients)
 		{
 			if (ingredient.test(stack))
 			{
@@ -33,9 +34,9 @@ public class IngredientListJS implements IIngredientJS
 	@Override
 	public Set<ItemStackJS> stacks()
 	{
-		Set<ItemStackJS> set = new HashSet<>();
+		Set<ItemStackJS> set = new LinkedHashSet<>();
 
-		for (IIngredientJS ingredient : ingredients)
+		for (IngredientJS ingredient : ingredients)
 		{
 			set.addAll(ingredient.stacks());
 		}
@@ -48,7 +49,7 @@ public class IngredientListJS implements IIngredientJS
 	{
 		List<Ingredient> list = new ArrayList<>(ingredients.size());
 
-		for (IIngredientJS ingredient : ingredients)
+		for (IngredientJS ingredient : ingredients)
 		{
 			list.add(ingredient.createVanillaIngredient());
 		}

@@ -1,21 +1,134 @@
 package dev.latvian.kubejs.item;
 
+import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.util.ID;
+import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
+import jdk.nashorn.api.scripting.JSObject;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 /**
  * @author LatvianModder
  */
-public abstract class ItemStackJS implements IIngredientJS
+public abstract class ItemStackJS implements IngredientJS
 {
+	public static ItemStackJS of(@Nullable Object o)
+	{
+		if (o == null)
+		{
+			return EmptyItemStackJS.INSTANCE;
+		}
+		else if (o instanceof ItemStackJS)
+		{
+			return (ItemStackJS) o;
+		}
+		else if (o instanceof ItemStack)
+		{
+			ItemStack stack = (ItemStack) o;
+			return stack.isEmpty() ? EmptyItemStackJS.INSTANCE : new BoundItemStackJS(stack);
+		}
+		else if (o instanceof JSObject)
+		{
+			JSObject js = (JSObject) o;
+
+			if (js.getMember("item") instanceof CharSequence)
+			{
+				Item item = Item.REGISTRY.getObject(new ResourceLocation(KubeJS.appendModId(js.getMember("item").toString())));
+
+				if (item != null && item != Items.AIR)
+				{
+					ItemStackJS stack = new UnboundItemStackJS(item);
+
+					if (js.getMember("count") instanceof Number)
+					{
+						stack.count(((Number) js.getMember("count")).intValue());
+					}
+
+					if (js.getMember("data") instanceof Number)
+					{
+						stack.data(((Number) js.getMember("data")).intValue());
+					}
+
+					if (js.hasMember("nbt"))
+					{
+						stack.nbt(js.getMember("nbt"));
+					}
+
+					return stack;
+				}
+
+				return EmptyItemStackJS.INSTANCE;
+			}
+		}
+
+		String s0 = String.valueOf(o).trim();
+
+		if (s0.isEmpty() || s0.equals("air"))
+		{
+			return EmptyItemStackJS.INSTANCE;
+		}
+
+		String[] s = s0.split("\\s", 4);
+		Item item = Item.REGISTRY.getObject(new ResourceLocation(KubeJS.appendModId(s[0])));
+
+		if (item != null && item != Items.AIR)
+		{
+			ItemStackJS stack = new UnboundItemStackJS(item);
+
+			if (s.length >= 2)
+			{
+				stack.count(Integer.parseInt(s[1]));
+			}
+
+			if (s.length >= 3)
+			{
+				stack.data(Integer.parseInt(s[2]));
+			}
+
+			if (s.length >= 4)
+			{
+				stack.nbt(s[3]);
+			}
+
+			return stack;
+		}
+
+		return EmptyItemStackJS.INSTANCE;
+	}
+
+	public static List<ItemStackJS> list()
+	{
+		List<ItemStackJS> list = new ArrayList<>();
+		NonNullList<ItemStack> stackList = NonNullList.create();
+
+		for (Item item : Item.REGISTRY)
+		{
+			item.getSubItems(CreativeTabs.SEARCH, stackList);
+
+			for (ItemStack stack : stackList)
+			{
+				list.add(new BoundItemStackJS(stack));
+			}
+
+			stackList.clear();
+		}
+
+		return list;
+	}
+	
 	public abstract Item item();
 
 	public ID id()
@@ -29,6 +142,7 @@ public abstract class ItemStackJS implements IIngredientJS
 
 	public abstract int count();
 
+	@Override
 	public boolean isEmpty()
 	{
 		return count() <= 0;
@@ -40,15 +154,26 @@ public abstract class ItemStackJS implements IIngredientJS
 
 	public abstract ItemStackJS nbt(@Nullable Object o);
 
-	@Nullable
-	public abstract NBTTagCompound rawNBT();
+	public abstract NBTCompoundJS nbt();
 
 	public abstract ItemStackJS caps(@Nullable Object o);
 
-	@Nullable
-	public abstract NBTTagCompound rawCaps();
+	public abstract NBTCompoundJS caps();
 
 	public abstract ItemStack itemStack();
+
+	public NBTCompoundJS nbtOrNew()
+	{
+		NBTCompoundJS nbt = nbt();
+
+		if (nbt.isNull())
+		{
+			nbt = new NBTCompoundJS();
+			nbt(nbt);
+		}
+
+		return nbt;
+	}
 
 	public ItemStackJS grow(int c)
 	{
@@ -60,31 +185,9 @@ public abstract class ItemStackJS implements IIngredientJS
 		return grow(-c);
 	}
 
-	public String nbt()
-	{
-		NBTTagCompound nbt = rawNBT();
-		return nbt == null ? "null" : nbt.toString();
-	}
-
-	public String caps()
-	{
-		NBTTagCompound nbt = rawCaps();
-		return nbt == null ? "null" : nbt.toString();
-	}
-
 	public ItemStackJS name(String displayName)
 	{
-		NBTTagCompound nbt = rawNBT();
-
-		if (nbt == null)
-		{
-			nbt = new NBTTagCompound();
-		}
-
-		NBTTagCompound n = nbt.getCompoundTag("display");
-		n.setString("Name", displayName);
-		nbt.setTag("display", n);
-		return nbt(nbt);
+		return nbt(nbtOrNew().compoundOrNew("display").set("Name", displayName));
 	}
 
 	public String name()
@@ -111,19 +214,19 @@ public abstract class ItemStackJS implements IIngredientJS
 			builder.append(data());
 		}
 
-		NBTTagCompound nbt = rawNBT();
-		NBTTagCompound caps = rawCaps();
+		NBTCompoundJS nbt = nbt();
+		NBTCompoundJS caps = caps();
 
-		if (nbt != null || caps != null)
+		if (!nbt.isNull() || !caps.isNull())
 		{
 			builder.append(' ');
-			builder.append(nbt());
+			builder.append(nbt.getNBTString());
 		}
 
-		if (caps != null)
+		if (!caps.isNull())
 		{
 			builder.append(' ');
-			builder.append(caps());
+			builder.append(caps.getNBTString());
 		}
 
 		return builder.toString();
@@ -132,13 +235,19 @@ public abstract class ItemStackJS implements IIngredientJS
 	@Override
 	public boolean test(ItemStackJS stack)
 	{
-		return item() == stack.item() && (data() == 32767 || data() == stack.data()) && Objects.equals(rawNBT(), stack.rawNBT());
+		return item() == stack.item() && (data() == 32767 || data() == stack.data()) && Objects.equals(nbt(), stack.nbt());
 	}
 
 	@Override
 	public Set<ItemStackJS> stacks()
 	{
 		return Collections.singleton(this);
+	}
+
+	@Override
+	public ItemStackJS firstMatching()
+	{
+		return this;
 	}
 
 	@Override
@@ -159,7 +268,7 @@ public abstract class ItemStackJS implements IIngredientJS
 		if (obj instanceof ItemStackJS)
 		{
 			ItemStackJS stack = (ItemStackJS) obj;
-			return item() == stack.item() && data() == stack.data() && Objects.equals(rawNBT(), stack.rawNBT());
+			return item() == stack.item() && data() == stack.data() && Objects.equals(nbt(), stack.nbt());
 		}
 
 		return false;

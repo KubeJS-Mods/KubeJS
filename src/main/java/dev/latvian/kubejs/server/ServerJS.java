@@ -11,7 +11,6 @@ import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.text.TextUtilsJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UUIDUtilsJS;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
@@ -123,7 +122,7 @@ public class ServerJS implements MessageSender
 	@DocMethod(params = @Param(value = "text", type = Text.class))
 	public void setMOTD(Object text)
 	{
-		server.setMOTD(TextUtilsJS.INSTANCE.of(text).component().getFormattedText());
+		server.setMOTD(Text.of(text).component().getFormattedText());
 	}
 
 	@DocMethod
@@ -143,14 +142,14 @@ public class ServerJS implements MessageSender
 	@DocMethod
 	public Text displayName()
 	{
-		return TextUtilsJS.INSTANCE.of(server.getDisplayName());
+		return Text.of(server.getDisplayName());
 	}
 
 	@Override
 	@DocMethod
 	public void tell(Object message)
 	{
-		ITextComponent component = TextUtilsJS.INSTANCE.of(message).component();
+		ITextComponent component = Text.of(message).component();
 		KubeJS.LOGGER.info("Server: " + component.getUnformattedText());
 
 		for (EntityPlayerMP player : server.getPlayerList().getPlayers())
@@ -163,7 +162,7 @@ public class ServerJS implements MessageSender
 	@DocMethod
 	public void statusMessage(Object message)
 	{
-		ITextComponent component = TextUtilsJS.INSTANCE.of(message).component();
+		ITextComponent component = Text.of(message).component();
 
 		for (EntityPlayerMP player : server.getPlayerList().getPlayers())
 		{
@@ -228,7 +227,7 @@ public class ServerJS implements MessageSender
 			throw new NullPointerException("Player can't have empty name!");
 		}
 
-		UUID uuid = UUIDUtilsJS.INSTANCE.fromString(name);
+		UUID uuid = UUIDUtilsJS.fromString(name);
 
 		if (uuid != null)
 		{

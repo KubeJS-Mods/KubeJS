@@ -19,7 +19,7 @@ public class CommandRegistryEventJS extends ServerEventJS
 		callback = c;
 	}
 
-	public CommandProperties newCommand(String name)
+	public CommandProperties create(String name)
 	{
 		return new CommandProperties(callback, name);
 	}

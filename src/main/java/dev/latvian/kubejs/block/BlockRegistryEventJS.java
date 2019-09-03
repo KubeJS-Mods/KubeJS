@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.block;
 
 import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.block.Block;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -21,7 +20,7 @@ public class BlockRegistryEventJS extends EventJS
 	{
 		return new BlockBuilder(name, p -> {
 			BlockJS block = new BlockJS(p);
-			block.setRegistryName(UtilsJS.INSTANCE.idMC(p.id));
+			block.setRegistryName(p.id.mc());
 			registry.register(block);
 		});
 	}

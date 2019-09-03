@@ -79,7 +79,7 @@ public class CommandProperties
 		return this;
 	}
 
-	public void register()
+	public void add()
 	{
 		callback.accept(new Cmd(this));
 	}

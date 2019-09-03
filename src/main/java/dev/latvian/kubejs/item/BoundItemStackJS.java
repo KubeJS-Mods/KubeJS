@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.nbt.NBTBaseJS;
+import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -66,22 +67,21 @@ public class BoundItemStackJS extends ItemStackJS
 	@Override
 	public ItemStackJS nbt(@Nullable Object o)
 	{
-		stack.setTagCompound(UtilsJS.INSTANCE.nbt(o));
+		stack.setTagCompound(NBTBaseJS.of(o).asCompound().createNBT());
 		return this;
 	}
 
 	@Override
-	@Nullable
-	public NBTTagCompound rawNBT()
+	public NBTCompoundJS nbt()
 	{
-		return stack.getTagCompound();
+		return NBTBaseJS.of(stack.getTagCompound()).asCompound();
 	}
 
 	@Override
 	public ItemStackJS caps(@Nullable Object o)
 	{
 		NBTTagCompound n = stack.serializeNBT();
-		NBTTagCompound nbt = UtilsJS.INSTANCE.nbt(o);
+		NBTTagCompound nbt = NBTBaseJS.of(o).asCompound().createNBT();
 
 		if (nbt == null)
 		{
@@ -97,10 +97,9 @@ public class BoundItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	@Nullable
-	public NBTTagCompound rawCaps()
+	public NBTCompoundJS caps()
 	{
-		return (NBTTagCompound) stack.serializeNBT().getTag("ForgeCaps");
+		return NBTBaseJS.of(stack.serializeNBT().getTag("ForgeCaps")).asCompound();
 	}
 
 	@Override

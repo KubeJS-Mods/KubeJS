@@ -1,6 +1,10 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.documentation.DocClass;
+import dev.latvian.kubejs.documentation.DocMethod;
+import dev.latvian.kubejs.documentation.Param;
+import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -8,34 +12,34 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 /**
  * @author LatvianModder
  */
+@DocClass
 public class InventoryJS
 {
-	public static final int IGNORE_COUNT = 1;
-	public static final int IGNORE_META = 2;
-	public static final int IGNORE_NBT = 4;
-
-	public final IItemHandler _inventory;
+	public final transient IItemHandler inventory;
 
 	public InventoryJS(IItemHandler h)
 	{
-		_inventory = h;
+		inventory = h;
 	}
 
+	@DocMethod
 	public int size()
 	{
-		return _inventory.getSlots();
+		return inventory.getSlots();
 	}
 
+	@DocMethod
 	public ItemStackJS get(int slot)
 	{
-		return UtilsJS.INSTANCE.item(_inventory.getStackInSlot(slot));
+		return ItemStackJS.of(inventory.getStackInSlot(slot));
 	}
 
+	@DocMethod
 	public void set(int slot, Object item)
 	{
-		if (_inventory instanceof IItemHandlerModifiable)
+		if (inventory instanceof IItemHandlerModifiable)
 		{
-			((IItemHandlerModifiable) _inventory).setStackInSlot(slot, UtilsJS.INSTANCE.item(item).itemStack());
+			((IItemHandlerModifiable) inventory).setStackInSlot(slot, ItemStackJS.of(item).itemStack());
 		}
 		else
 		{
@@ -43,70 +47,147 @@ public class InventoryJS
 		}
 	}
 
+	@DocMethod
 	public ItemStackJS insert(int slot, Object item, boolean simulate)
 	{
-		return UtilsJS.INSTANCE.item(_inventory.insertItem(slot, UtilsJS.INSTANCE.item(item).itemStack(), simulate));
+		return ItemStackJS.of(inventory.insertItem(slot, ItemStackJS.of(item).itemStack(), simulate));
 	}
 
+	@DocMethod
 	public ItemStackJS extract(int slot, int amount, boolean simulate)
 	{
-		return UtilsJS.INSTANCE.item(_inventory.extractItem(slot, amount, simulate));
+		return ItemStackJS.of(inventory.extractItem(slot, amount, simulate));
 	}
 
+	@DocMethod
 	public int getSlotLimit(int slot)
 	{
-		return _inventory.getSlotLimit(slot);
+		return inventory.getSlotLimit(slot);
 	}
 
+	@DocMethod
 	public boolean isItemValid(int slot, Object item)
 	{
-		return _inventory.isItemValid(slot, UtilsJS.INSTANCE.item(item).itemStack());
+		return inventory.isItemValid(slot, ItemStackJS.of(item).itemStack());
 	}
 
-	public int find(Object item, int flags)
+	@DocMethod
+	public void clear()
 	{
-		ItemStack stack = UtilsJS.INSTANCE.item(item).itemStack();
+		IItemHandlerModifiable modInv = inventory instanceof IItemHandlerModifiable ? (IItemHandlerModifiable) inventory : null;
 
-		for (int i = 0; i < _inventory.getSlots(); i++)
+		for (int i = inventory.getSlots(); i >= 0; i--)
 		{
-			ItemStack stack1 = _inventory.getStackInSlot(i);
-
-			if (stack.getItem() == stack1.getItem())
+			if (modInv != null)
 			{
-				if ((flags & IGNORE_COUNT) != 0 || stack.getCount() == stack1.getCount())
+				modInv.setStackInSlot(i, ItemStack.EMPTY);
+			}
+			else
+			{
+				inventory.extractItem(i, inventory.getStackInSlot(i).getCount(), false);
+			}
+		}
+	}
+
+	@DocMethod(params = @Param(value = "ingredient", type = IngredientJS.class))
+	public void clear(Object o)
+	{
+		IngredientJS ingredient = IngredientJS.of(o);
+
+		if (ingredient == MatchAllIngredientJS.INSTANCE)
+		{
+			clear();
+		}
+
+		IItemHandlerModifiable modInv = inventory instanceof IItemHandlerModifiable ? (IItemHandlerModifiable) inventory : null;
+
+		for (int i = inventory.getSlots(); i >= 0; i--)
+		{
+			if (ingredient.test(new BoundItemStackJS(inventory.getStackInSlot(i))))
+			{
+				if (modInv != null)
 				{
-					if ((flags & IGNORE_META) != 0 || stack.getMetadata() == stack1.getMetadata())
-					{
-						if ((flags & IGNORE_NBT) != 0 || ItemStack.areItemStackShareTagsEqual(stack, stack1))
-						{
-							return i;
-						}
-					}
+					modInv.setStackInSlot(i, ItemStack.EMPTY);
 				}
+				else
+				{
+					inventory.extractItem(i, inventory.getStackInSlot(i).getCount(), false);
+				}
+			}
+		}
+	}
+
+	@DocMethod
+	public int find()
+	{
+		for (int i = 0; i < inventory.getSlots(); i++)
+		{
+			ItemStack stack1 = inventory.getStackInSlot(i);
+
+			if (!stack1.isEmpty())
+			{
+				return i;
 			}
 		}
 
 		return -1;
 	}
 
-	public int count(Object item, int flags)
+	@DocMethod(params = @Param(value = "ingredient", type = IngredientJS.class))
+	public int find(Object o)
 	{
-		ItemStack stack = UtilsJS.INSTANCE.item(item).itemStack();
+		IngredientJS ingredient = IngredientJS.of(o);
+
+		if (ingredient == MatchAllIngredientJS.INSTANCE)
+		{
+			return find();
+		}
+
+		for (int i = 0; i < inventory.getSlots(); i++)
+		{
+			ItemStack stack1 = inventory.getStackInSlot(i);
+
+			if (ingredient.test(new BoundItemStackJS(stack1)))
+			{
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	@DocMethod
+	public int count()
+	{
 		int count = 0;
 
-		for (int i = 0; i < _inventory.getSlots(); i++)
+		for (int i = 0; i < inventory.getSlots(); i++)
 		{
-			ItemStack stack1 = _inventory.getStackInSlot(i);
+			count += inventory.getStackInSlot(i).getCount();
+		}
 
-			if (stack.getItem() == stack1.getItem())
+		return count;
+	}
+
+	@DocMethod(params = @Param(value = "ingredient", type = IngredientJS.class))
+	public int count(Object o)
+	{
+		IngredientJS ingredient = IngredientJS.of(o);
+
+		if (ingredient == MatchAllIngredientJS.INSTANCE)
+		{
+			return count();
+		}
+
+		int count = 0;
+
+		for (int i = 0; i < inventory.getSlots(); i++)
+		{
+			ItemStack stack1 = inventory.getStackInSlot(i);
+
+			if (ingredient.test(new BoundItemStackJS(stack1)))
 			{
-				if ((flags & IGNORE_META) != 0 || stack.getMetadata() == stack1.getMetadata())
-				{
-					if ((flags & IGNORE_NBT) != 0 || ItemStack.areItemStackShareTagsEqual(stack, stack1))
-					{
-						count += stack1.getCount();
-					}
-				}
+				count += stack1.getCount();
 			}
 		}
 

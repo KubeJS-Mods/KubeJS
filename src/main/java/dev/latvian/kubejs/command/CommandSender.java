@@ -3,7 +3,6 @@ package dev.latvian.kubejs.command;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.text.TextUtilsJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.WorldJS;
@@ -36,7 +35,7 @@ public class CommandSender implements MessageSender
 	@Override
 	public Text displayName()
 	{
-		return TextUtilsJS.INSTANCE.of(sender.getDisplayName());
+		return Text.of(sender.getDisplayName());
 	}
 
 	public WorldJS world()
@@ -58,7 +57,7 @@ public class CommandSender implements MessageSender
 	@Override
 	public void tell(Object message)
 	{
-		sender.sendMessage(TextUtilsJS.INSTANCE.of(message).component());
+		sender.sendMessage(Text.of(message).component());
 	}
 
 	@Override
@@ -66,7 +65,7 @@ public class CommandSender implements MessageSender
 	{
 		if (sender instanceof EntityPlayerMP)
 		{
-			((EntityPlayerMP) sender).sendStatusMessage(TextUtilsJS.INSTANCE.of(message).component(), true);
+			((EntityPlayerMP) sender).sendStatusMessage(Text.of(message).component(), true);
 		}
 	}
 

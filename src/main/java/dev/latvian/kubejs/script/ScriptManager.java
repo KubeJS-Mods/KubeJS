@@ -2,6 +2,7 @@ package dev.latvian.kubejs.script;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.bindings.DefaultBindings;
 import dev.latvian.kubejs.documentation.Documentation;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.event.EventsJS;
@@ -31,6 +32,14 @@ public class ScriptManager
 {
 	public static ScriptManager instance;
 
+	private static final String[] BLOCKED_FUNCTIONS = {
+			"print",
+			"load",
+			"loadWithNewGlobal",
+			"exit",
+			"quit"
+	};
+
 	public final Map<String, ScriptFile> scripts;
 	private final Map<String, ScriptPack> packs;
 	public final Map<String, Object> runtime;
@@ -48,10 +57,10 @@ public class ScriptManager
 	private ScriptPack newPack(String id)
 	{
 		NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
-		ScriptEngine engine = factory.getScriptEngine(ScriptClassFilter.INSTANCE);
+		ScriptEngine engine = factory.getScriptEngine();
 		ScriptContext context = engine.getContext();
 
-		for (String s : ScriptClassFilter.BLOCKED_FUNCTIONS)
+		for (String s : BLOCKED_FUNCTIONS)
 		{
 			context.removeAttribute(s, context.getAttributesScope(s));
 		}

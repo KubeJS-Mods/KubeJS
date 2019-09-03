@@ -4,7 +4,6 @@ import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
-import dev.latvian.kubejs.text.TextUtilsJS;
 import dev.latvian.kubejs.util.MessageSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -12,6 +11,7 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Predicate;
 
 /**
  * @author LatvianModder
@@ -52,7 +52,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 	@Override
 	public void tell(Object message)
 	{
-		ITextComponent component = TextUtilsJS.INSTANCE.of(message).component();
+		ITextComponent component = Text.of(message).component();
 
 		for (EntityJS entity : this)
 		{
@@ -63,7 +63,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 	@Override
 	public void statusMessage(Object message)
 	{
-		ITextComponent component = TextUtilsJS.INSTANCE.of(message).component();
+		ITextComponent component = Text.of(message).component();
 
 		for (EntityJS entity : this)
 		{
@@ -93,5 +93,20 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		{
 			entity.kill();
 		}
+	}
+
+	public EntityArrayList filter(Predicate<EntityJS> filter)
+	{
+		EntityArrayList list = new EntityArrayList(server, size());
+
+		for (EntityJS entity : this)
+		{
+			if (filter.test(entity))
+			{
+				list.add(entity);
+			}
+		}
+
+		return list;
 	}
 }

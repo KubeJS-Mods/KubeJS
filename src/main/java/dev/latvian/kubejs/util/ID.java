@@ -13,48 +13,45 @@ public final class ID implements Comparable<ID>
 	public final String namespace;
 	public final String path;
 
-	public ID(String resourceName)
+	public ID(@Nullable Object id)
 	{
-		int i = resourceName.indexOf(':');
-
-		if (i == -1)
+		if (id == null)
 		{
 			namespace = "minecraft";
-			path = resourceName.toLowerCase(Locale.ROOT);
+			path = "null";
+		}
+		else if (id instanceof ResourceLocation)
+		{
+			namespace = ((ResourceLocation) id).getNamespace();
+			path = ((ResourceLocation) id).getPath();
+		}
+		else if (id instanceof ID)
+		{
+			namespace = ((ID) id).namespace;
+			path = ((ID) id).path;
 		}
 		else
 		{
-			namespace = resourceName.substring(0, i).toLowerCase(Locale.ROOT);
-			path = resourceName.substring(i + 1).toLowerCase(Locale.ROOT);
+			String resourceName = id.toString();
+
+			int i = resourceName.indexOf(':');
+
+			if (i == -1)
+			{
+				namespace = "minecraft";
+				path = resourceName.toLowerCase(Locale.ROOT);
+			}
+			else
+			{
+				namespace = resourceName.substring(0, i).toLowerCase(Locale.ROOT);
+				path = resourceName.substring(i + 1).toLowerCase(Locale.ROOT);
+			}
 		}
 	}
 
 	public ID(String namespace, String path)
 	{
 		this(namespace.isEmpty() ? path : (namespace + ':' + path));
-	}
-
-	public ID(@Nullable ResourceLocation id)
-	{
-		this(id == null ? "minecraft:null" : id.toString());
-	}
-
-	public static String[] splitObjectName(String toSplit)
-	{
-		String[] astring = new String[] {"minecraft", toSplit};
-		int i = toSplit.indexOf(58);
-
-		if (i >= 0)
-		{
-			astring[1] = toSplit.substring(i + 1);
-
-			if (i > 1)
-			{
-				astring[0] = toSplit.substring(0, i);
-			}
-		}
-
-		return astring;
 	}
 
 	public String toString()
@@ -87,5 +84,10 @@ public final class ID implements Comparable<ID>
 	{
 		int i = namespace.compareTo(id.namespace);
 		return i == 0 ? path.compareTo(id.path) : i;
+	}
+
+	public ResourceLocation mc()
+	{
+		return new ResourceLocation(namespace, path);
 	}
 }

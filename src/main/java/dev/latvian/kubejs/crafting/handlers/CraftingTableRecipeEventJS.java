@@ -5,8 +5,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.JsonUtilsJS;
-import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
@@ -41,7 +43,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 	public void addShaped(String recipeID, String output, String[] pattern, Map<String, Object> ingredients)
 	{
 		String id = KubeJS.appendModId(recipeID);
-		ItemStack outputItem = UtilsJS.INSTANCE.item(output).itemStack();
+		ItemStack outputItem = ItemStackJS.of(output).itemStack();
 
 		if (outputItem.isEmpty())
 		{
@@ -57,7 +59,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 
 		for (Map.Entry<String, Object> entry : ingredients.entrySet())
 		{
-			Ingredient i = UtilsJS.INSTANCE.ingredient(entry.getValue()).createVanillaIngredient();
+			Ingredient i = IngredientJS.of(entry.getValue()).createVanillaIngredient();
 
 			if (i != Ingredient.EMPTY && !entry.getKey().isEmpty())
 			{
@@ -98,7 +100,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 	public void addShapeless(String recipeID, String output, Object[] ingredients)
 	{
 		String id = KubeJS.appendModId(recipeID);
-		ItemStack outputItem = UtilsJS.INSTANCE.item(output).itemStack();
+		ItemStack outputItem = ItemStackJS.of(output).itemStack();
 
 		if (outputItem.isEmpty())
 		{
@@ -110,7 +112,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 
 		for (Object ingredient : ingredients)
 		{
-			Ingredient i = UtilsJS.INSTANCE.ingredient(ingredient).createVanillaIngredient();
+			Ingredient i = IngredientJS.of(ingredient).createVanillaIngredient();
 
 			if (i != Ingredient.EMPTY)
 			{
@@ -137,7 +139,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 
 	public void add(String recipeID, Object recipe)
 	{
-		JsonElement e = JsonUtilsJS.INSTANCE.of(recipe);
+		JsonElement e = JsonUtilsJS.of(recipe);
 
 		if (!e.isJsonObject())
 		{
@@ -243,7 +245,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 
 	public void remove(@Nullable Object output)
 	{
-		Ingredient ingredient = UtilsJS.INSTANCE.ingredient(output).createVanillaIngredient();
+		Ingredient ingredient = IngredientJS.of(output).createVanillaIngredient();
 		removeAdvanced(recipe -> ingredient.apply(recipe.getRecipeOutput()));
 	}
 
@@ -259,7 +261,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 				r.unfreeze();
 			}
 
-			r.remove(UtilsJS.INSTANCE.idMC(UtilsJS.INSTANCE.id(id)));
+			r.remove(new ID(id).mc());
 
 			if (frozen)
 			{
@@ -270,7 +272,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 
 	public void removeGroup(Object id)
 	{
-		ResourceLocation group = UtilsJS.INSTANCE.idMC(UtilsJS.INSTANCE.id(id));
+		ResourceLocation group = new ID(id).mc();
 		removeAdvanced(recipe -> new ResourceLocation(recipe.getGroup()).equals(group));
 	}
 

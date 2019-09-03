@@ -5,7 +5,6 @@ import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.text.TextUtilsJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.Entity;
@@ -46,13 +45,13 @@ public class EntityJS implements MessageSender
 	@Override
 	public Text displayName()
 	{
-		return TextUtilsJS.INSTANCE.of(entity.getDisplayName());
+		return Text.of(entity.getDisplayName());
 	}
 
 	@Override
 	public void tell(Object message)
 	{
-		entity.sendMessage(TextUtilsJS.INSTANCE.of(message).component());
+		entity.sendMessage(Text.of(message).component());
 	}
 
 	public String toString()

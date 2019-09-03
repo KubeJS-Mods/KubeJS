@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.util;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import dev.latvian.kubejs.util.nbt.NBTBaseJS;
+import jdk.nashorn.api.scripting.JSObject;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -16,50 +16,61 @@ public enum FluidUtilsJS
 	INSTANCE;
 
 	@Nullable
-	public FluidStack of(@Nullable Object object, int amount)
+	public FluidStack copy(@Nullable Object fluid)
 	{
-		if (object == null)
-		{
-			return null;
-		}
-		else if (object instanceof FluidStack)
-		{
-			FluidStack stack = ((FluidStack) object).copy();
-			stack.amount = amount;
-			return stack;
-		}
-		else if (object instanceof CharSequence)
-		{
-			Fluid fluid = FluidRegistry.getFluid(object.toString());
-			return fluid == null ? null : new FluidStack(fluid, amount);
-		}
-		else if (object instanceof Fluid)
-		{
-			return new FluidStack((Fluid) object, amount);
-		}
-
-		JsonElement e = JsonUtilsJS.INSTANCE.of(object);
-
-		if (e.isJsonObject())
-		{
-			JsonObject o = e.getAsJsonObject();
-			String id = o.has("fluid") ? o.get("fluid").getAsString() : "";
-
-			if (id.isEmpty())
-			{
-				return null;
-			}
-
-			Fluid fluid = FluidRegistry.getFluid(object.toString());
-			return fluid == null ? null : new FluidStack(fluid, o.has("amount") ? o.get("amount").getAsInt() : amount);
-		}
-
-		return null;
+		FluidStack stack = of(fluid);
+		return stack == null ? null : stack.copy();
 	}
 
 	@Nullable
-	public FluidStack of(@Nullable Object object)
+	public FluidStack of(@Nullable Object o)
 	{
-		return of(object, Fluid.BUCKET_VOLUME);
+		if (o == null)
+		{
+			return null;
+		}
+		else if (o instanceof FluidStack)
+		{
+			return (FluidStack) o;
+		}
+		else if (o instanceof CharSequence)
+		{
+			Fluid fluid = FluidRegistry.getFluid(o.toString());
+			return fluid == null ? null : new FluidStack(fluid, Fluid.BUCKET_VOLUME);
+		}
+		else if (o instanceof Fluid)
+		{
+			return new FluidStack((Fluid) o, Fluid.BUCKET_VOLUME);
+		}
+		else if (o instanceof JSObject)
+		{
+			JSObject js = (JSObject) o;
+
+			if (js.hasMember("fluid"))
+			{
+				Fluid fluid = FluidRegistry.getFluid(js.getMember("fluid").toString());
+
+				if (fluid != null)
+				{
+					FluidStack stack = new FluidStack(fluid, Fluid.BUCKET_VOLUME);
+
+					if (js.getMember("amount") instanceof Number)
+					{
+						stack.amount = ((Number) js.getMember("amount")).intValue();
+					}
+
+					if (js.hasMember("nbt"))
+					{
+						stack.tag = NBTBaseJS.of(js.getMember("nbt")).asCompound().createNBT();
+					}
+
+					return stack;
+				}
+
+				return null;
+			}
+		}
+
+		return null;
 	}
 }

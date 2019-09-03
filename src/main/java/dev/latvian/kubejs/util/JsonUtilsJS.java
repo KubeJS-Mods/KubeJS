@@ -10,26 +10,20 @@ import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import dev.latvian.kubejs.text.Text;
 import jdk.nashorn.api.scripting.JSObject;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Map;
 
 /**
  * @author LatvianModder
  */
-public enum JsonUtilsJS
+public class JsonUtilsJS
 {
-	INSTANCE;
-
-	public JsonElement copy(@Nullable JsonElement element)
+	public static JsonElement copy(@Nullable JsonElement element)
 	{
 		if (element == null || element.isJsonNull())
 		{
@@ -61,145 +55,92 @@ public enum JsonUtilsJS
 		return element;
 	}
 
-	public JsonObject object()
+	public static JsonElement of(@Nullable Object o)
 	{
-		return new JsonObject();
-	}
-
-	public JsonArray array()
-	{
-		return new JsonArray();
-	}
-
-	public JsonElement of(@Nullable Object object)
-	{
-		return of(object, 0, 5);
-	}
-
-	public JsonElement of(@Nullable Object object, int depth, int maxDepth)
-	{
-		if (maxDepth > 0 && depth > maxDepth)
-		{
-			return new JsonPrimitive("(depth > " + maxDepth + ")");
-		}
-		else if (object == null)
+		if (o == null)
 		{
 			return JsonNull.INSTANCE;
 		}
-		else if (object instanceof JsonElement)
+		else if (o instanceof JsonElement)
 		{
-			return (JsonElement) object;
+			return (JsonElement) o;
 		}
-		else if (object instanceof String)
+		else if (o instanceof String)
 		{
-			return new JsonPrimitive((String) object);
+			return new JsonPrimitive((String) o);
 		}
-		else if (object instanceof Boolean)
+		else if (o instanceof Boolean)
 		{
-			return new JsonPrimitive((Boolean) object);
+			return new JsonPrimitive((Boolean) o);
 		}
-		else if (object instanceof Number)
+		else if (o instanceof Number)
 		{
-			return new JsonPrimitive((Number) object);
+			return new JsonPrimitive((Number) o);
 		}
-		else if (object instanceof Character)
+		else if (o instanceof Character)
 		{
-			return new JsonPrimitive((Character) object);
+			return new JsonPrimitive((Character) o);
 		}
-		else if (object instanceof Text)
+		else if (o instanceof JsonSerializable)
 		{
-			return ((Text) object).json();
+			return ((JsonSerializable) o).json();
 		}
-		else if (object instanceof JSObject)
+		else if (o instanceof JSObject)
 		{
-			JSObject js = (JSObject) object;
+			JSObject js = (JSObject) o;
 
 			if (js.isArray())
 			{
-				JsonArray a = new JsonArray();
+				JsonArray json = new JsonArray();
 
 				for (String s : js.keySet())
 				{
-					a.add(of(js.getMember(s), depth, maxDepth));
+					json.add(of(js.getMember(s)));
 				}
 
-				return a;
+				return json;
 			}
 			else
 			{
-				JsonObject o = new JsonObject();
+				JsonObject json = new JsonObject();
 
 				for (String s : js.keySet())
 				{
-					o.add(s, of(js.getMember(s), depth, maxDepth));
+					json.add(s, of(js.getMember(s)));
 				}
 
-				return o;
+				return json;
 			}
 		}
-		else if (object instanceof Map)
+		else if (o instanceof Map)
 		{
-			Map<?, ?> map = (Map<?, ?>) object;
+			Map<?, ?> map = (Map<?, ?>) o;
 
-			JsonObject o = new JsonObject();
+			JsonObject json = new JsonObject();
 
 			for (Map.Entry<?, ?> entry : map.entrySet())
 			{
-				o.add(String.valueOf(entry.getKey()), of(entry.getValue(), depth, maxDepth));
+				json.add(String.valueOf(entry.getKey()), of(entry.getValue()));
 			}
 
-			return o;
+			return json;
 		}
-		else if (object instanceof Iterable)
+		else if (o instanceof Iterable)
 		{
 			JsonArray a = new JsonArray();
 
-			for (Object o : (Iterable) object)
+			for (Object o1 : (Iterable) o)
 			{
-				a.add(of(o, depth, maxDepth));
+				a.add(of(o1));
 			}
 
 			return a;
 		}
 
-		JsonObject o = new JsonObject();
-
-		try
-		{
-			Class c = object.getClass();
-			o.addProperty("_", "<" + c.getName() + ">");
-
-			for (Field field : c.getFields())
-			{
-				int m = field.getModifiers();
-
-				if (Modifier.isPublic(m) && !Modifier.isStatic(m) && !Modifier.isTransient(m))
-				{
-					field.setAccessible(true);
-					o.add(field.getName(), of(field.get(object), depth + 1, maxDepth));
-				}
-			}
-
-			for (Method method : c.getMethods())
-			{
-				int m = method.getModifiers();
-
-				if (Modifier.isPublic(m) && !Modifier.isStatic(m) && !UtilsJS.INSTANCE.internalMethods.contains(method.getName()))
-				{
-					method.setAccessible(true);
-					o.addProperty(method.getName() + "()", "<" + method.getReturnType().getName() + ">");
-				}
-			}
-		}
-		catch (Throwable ex)
-		{
-			ex.printStackTrace();
-		}
-
-		return o;
+		return JsonNull.INSTANCE;
 	}
 
-	public String toString(JsonElement json)
+	public static String toString(JsonElement json)
 	{
 		StringWriter writer = new StringWriter();
 
@@ -218,7 +159,7 @@ public enum JsonUtilsJS
 		return writer.toString();
 	}
 
-	public String toPrettyString(JsonElement json)
+	public static String toPrettyString(JsonElement json)
 	{
 		StringWriter writer = new StringWriter();
 
@@ -238,7 +179,7 @@ public enum JsonUtilsJS
 		return writer.toString();
 	}
 
-	public JsonElement fromString(@Nullable String string)
+	public static JsonElement fromString(@Nullable String string)
 	{
 		if (string == null || string.isEmpty() || string.equals("null"))
 		{
@@ -269,7 +210,7 @@ public enum JsonUtilsJS
 	}
 
 	@Nullable
-	public Object primitiveObject(@Nullable JsonElement element)
+	public static Object primitiveObject(@Nullable JsonElement element)
 	{
 		if (element == null || element.isJsonNull())
 		{

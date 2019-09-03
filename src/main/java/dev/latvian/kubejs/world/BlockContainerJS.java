@@ -2,6 +2,8 @@ package dev.latvian.kubejs.world;
 
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.nbt.NBTBaseJS;
+import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -42,7 +44,7 @@ public class BlockContainerJS
 
 	public void set(Object id, Map<?, ?> properties, int flags)
 	{
-		Block block = Block.getBlockFromName(UtilsJS.INSTANCE.id(id).toString());
+		Block block = Block.getBlockFromName(new ID(id).toString());
 		IBlockState state = (block == null ? Blocks.AIR : block).getDefaultState();
 
 		if (!properties.isEmpty() && state.getBlock() != Blocks.AIR)
@@ -60,7 +62,7 @@ public class BlockContainerJS
 
 				if (property != null)
 				{
-					state = state.withProperty(property, UtilsJS.INSTANCE.cast(property.parseValue(String.valueOf(entry.getValue())).get()));
+					state = state.withProperty(property, UtilsJS.cast(property.parseValue(String.valueOf(entry.getValue())).get()));
 				}
 			}
 		}
@@ -68,9 +70,14 @@ public class BlockContainerJS
 		world.world.setBlockState(pos, state, flags);
 	}
 
+	public void set(Object id, Map<?, ?> properties)
+	{
+		set(id, properties, 3);
+	}
+
 	public void set(Object id)
 	{
-		set(id, Collections.emptyMap(), 3);
+		set(id, Collections.emptyMap());
 	}
 
 	public Map<String, String> properties()
@@ -80,7 +87,7 @@ public class BlockContainerJS
 
 		for (Map.Entry<IProperty<?>, ?> entry : state.getProperties().entrySet())
 		{
-			map.put(entry.getKey().getName(), entry.getKey().getName(UtilsJS.INSTANCE.cast(entry.getValue())));
+			map.put(entry.getKey().getName(), entry.getKey().getName(UtilsJS.cast(entry.getValue())));
 		}
 
 		return map;
@@ -90,6 +97,25 @@ public class BlockContainerJS
 	public TileEntity entity()
 	{
 		return world.world.getTileEntity(pos);
+	}
+
+	public NBTCompoundJS entityData()
+	{
+		TileEntity entity = entity();
+		return entity == null ? NBTCompoundJS.NULL : NBTBaseJS.of(entity.serializeNBT()).asCompound();
+	}
+
+	public void entityData(NBTCompoundJS nbt)
+	{
+		if (!nbt.isNull())
+		{
+			TileEntity entity = entity();
+
+			if (entity != null)
+			{
+				entity.deserializeNBT(nbt.createNBT());
+			}
+		}
 	}
 
 	public int light()

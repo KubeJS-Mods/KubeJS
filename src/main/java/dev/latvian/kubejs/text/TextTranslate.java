@@ -18,6 +18,14 @@ public class TextTranslate extends Text
 	{
 		key = k;
 		objects = o;
+
+		for (int i = 0; i < objects.length; i++)
+		{
+			if (objects[i] instanceof ITextComponent || !(objects[i] instanceof Text) && JsonUtilsJS.primitiveObject(JsonUtilsJS.of(objects[i])) == null)
+			{
+				objects[i] = Text.of(objects[i]);
+			}
+		}
 	}
 
 	@Override
@@ -80,7 +88,7 @@ public class TextTranslate extends Text
 
 			for (Object ob : objects)
 			{
-				array.add(JsonUtilsJS.INSTANCE.of(ob));
+				array.add(JsonUtilsJS.of(ob));
 			}
 
 			o.add("with", array);

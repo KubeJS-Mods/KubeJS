@@ -1,9 +1,9 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.nbt.NBTBaseJS;
+import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.MathHelper;
 
 import javax.annotation.Nullable;
@@ -16,8 +16,8 @@ public class UnboundItemStackJS extends ItemStackJS
 	private final Item item;
 	private int count;
 	private int data;
-	private NBTTagCompound nbt;
-	private NBTTagCompound caps;
+	private NBTCompoundJS nbt;
+	private NBTCompoundJS caps;
 	private ItemStack cached;
 
 	public UnboundItemStackJS(Item i)
@@ -25,8 +25,8 @@ public class UnboundItemStackJS extends ItemStackJS
 		item = i;
 		count = 1;
 		data = 0;
-		nbt = null;
-		caps = null;
+		nbt = NBTCompoundJS.NULL;
+		caps = NBTCompoundJS.NULL;
 		cached = null;
 	}
 
@@ -42,8 +42,8 @@ public class UnboundItemStackJS extends ItemStackJS
 		UnboundItemStackJS stack = new UnboundItemStackJS(item);
 		stack.count = count;
 		stack.data = data;
-		stack.nbt = nbt == null ? null : nbt.copy();
-		stack.caps = caps == null ? null : caps.copy();
+		stack.nbt = nbt.copy();
+		stack.caps = caps.copy();
 		return stack;
 	}
 
@@ -88,19 +88,18 @@ public class UnboundItemStackJS extends ItemStackJS
 	@Override
 	public ItemStackJS nbt(@Nullable Object o)
 	{
-		nbt = UtilsJS.INSTANCE.nbt(o);
+		nbt = NBTBaseJS.of(o).asCompound();
 
 		if (cached != null)
 		{
-			cached.setTagCompound(nbt);
+			cached.setTagCompound(nbt.createNBT());
 		}
 
 		return this;
 	}
 
 	@Override
-	@Nullable
-	public NBTTagCompound rawNBT()
+	public NBTCompoundJS nbt()
 	{
 		return nbt;
 	}
@@ -108,14 +107,13 @@ public class UnboundItemStackJS extends ItemStackJS
 	@Override
 	public ItemStackJS caps(@Nullable Object o)
 	{
-		caps = UtilsJS.INSTANCE.nbt(o);
+		caps = NBTBaseJS.of(o).asCompound();
 		cached = null;
 		return this;
 	}
 
 	@Override
-	@Nullable
-	public NBTTagCompound rawCaps()
+	public NBTCompoundJS caps()
 	{
 		return caps;
 	}
@@ -125,8 +123,8 @@ public class UnboundItemStackJS extends ItemStackJS
 	{
 		if (cached == null)
 		{
-			cached = new ItemStack(item, count, data, caps);
-			cached.setTagCompound(nbt);
+			cached = new ItemStack(item, count, data, caps.createNBT());
+			cached.setTagCompound(nbt.createNBT());
 		}
 
 		return cached;

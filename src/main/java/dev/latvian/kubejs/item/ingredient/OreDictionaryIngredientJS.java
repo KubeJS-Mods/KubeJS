@@ -1,17 +1,19 @@
-package dev.latvian.kubejs.item;
+package dev.latvian.kubejs.item.ingredient;
 
+import dev.latvian.kubejs.item.BoundItemStackJS;
+import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.OreIngredient;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
  * @author LatvianModder
  */
-public class OreDictionaryIngredientJS implements IIngredientJS
+public class OreDictionaryIngredientJS implements IngredientJS
 {
 	public final String oreName;
 	public final int oreID;
@@ -39,7 +41,7 @@ public class OreDictionaryIngredientJS implements IIngredientJS
 	@Override
 	public Set<ItemStackJS> stacks()
 	{
-		Set<ItemStackJS> set = new HashSet<>();
+		Set<ItemStackJS> set = new LinkedHashSet<>();
 
 		for (ItemStack stack : OreDictionary.getOres(oreName))
 		{

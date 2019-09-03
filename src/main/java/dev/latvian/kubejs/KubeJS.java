@@ -58,7 +58,7 @@ public class KubeJS
 	@Mod.EventHandler
 	public void onPreInit(FMLPreInitializationEvent event)
 	{
-		UtilsJS.INSTANCE.init();
+		UtilsJS.init();
 		IntegrationManager.preInit();
 		ScriptManager.instance = new ScriptManager();
 		ScriptManager.instance.load();

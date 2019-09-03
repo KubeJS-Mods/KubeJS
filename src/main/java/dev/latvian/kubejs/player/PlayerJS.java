@@ -2,7 +2,7 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.entity.LivingEntityJS;
-import dev.latvian.kubejs.text.TextUtilsJS;
+import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.stats.StatBase;
@@ -19,13 +19,15 @@ public class PlayerJS extends LivingEntityJS
 	@DocField("Temporary data, mods can attach objects to this")
 	public final Map<String, Object> data;
 
-	private PlayerInventoryJS inventory;
+	@DocField
+	public final PlayerInventoryJS inventory;
 
 	public PlayerJS(PlayerDataJS d, EntityPlayerMP p)
 	{
 		super(d.server, p);
 		data = d.data;
 		player = p;
+		inventory = new PlayerInventoryJS(this);
 	}
 
 	@Override
@@ -44,17 +46,7 @@ public class PlayerJS extends LivingEntityJS
 	@Override
 	public void statusMessage(Object message)
 	{
-		player.sendStatusMessage(TextUtilsJS.INSTANCE.of(message).component(), true);
-	}
-
-	public PlayerInventoryJS inventory()
-	{
-		if (inventory == null)
-		{
-			inventory = new PlayerInventoryJS(this);
-		}
-
-		return inventory;
+		player.sendStatusMessage(Text.of(message).component(), true);
 	}
 
 	public boolean isCreativeMode()
@@ -69,13 +61,13 @@ public class PlayerJS extends LivingEntityJS
 
 	public int getStat(Object id)
 	{
-		StatBase stat = UtilsJS.INSTANCE.stat(id);
+		StatBase stat = UtilsJS.stat(id);
 		return stat == null ? 0 : player.getStatFile().readStat(stat);
 	}
 
 	public void setStat(Object id, int value)
 	{
-		StatBase stat = UtilsJS.INSTANCE.stat(id);
+		StatBase stat = UtilsJS.stat(id);
 
 		if (stat != null)
 		{
@@ -85,7 +77,7 @@ public class PlayerJS extends LivingEntityJS
 
 	public void addStat(Object id, int value)
 	{
-		StatBase stat = UtilsJS.INSTANCE.stat(id);
+		StatBase stat = UtilsJS.stat(id);
 
 		if (stat != null)
 		{

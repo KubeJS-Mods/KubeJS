@@ -3,9 +3,13 @@ package dev.latvian.kubejs.text;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.documentation.Param;
+import dev.latvian.kubejs.util.JsonSerializable;
+import dev.latvian.kubejs.util.JsonUtilsJS;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
 
@@ -19,8 +23,152 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public abstract class Text implements Iterable<Text>, Comparable<Text>
+@DocClass
+public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSerializable
 {
+	public static Text of(@Nullable Object o)
+	{
+		if (o == null)
+		{
+			return new TextString("null");
+		}
+		else if (o instanceof CharSequence)
+		{
+			return new TextString(o.toString());
+		}
+		else if (o instanceof Text)
+		{
+			return (Text) o;
+		}
+		else if (o instanceof JsonElement)
+		{
+			return fromJson((JsonElement) o);
+		}
+		else if (o instanceof ITextComponent)
+		{
+			Text t = new TextString("");
+
+			for (ITextComponent c : ((ITextComponent) o))
+			{
+				Text t1;
+
+				if (c instanceof TextComponentTranslation)
+				{
+					t1 = new TextTranslate(((TextComponentTranslation) c).getKey(), ((TextComponentTranslation) c).getFormatArgs());
+				}
+				else
+				{
+					t1 = new TextString(c.getUnformattedComponentText());
+				}
+
+				t1.bold(c.getStyle().getBold());
+				t1.italic(c.getStyle().getItalic());
+				t1.underlined(c.getStyle().getUnderlined());
+				t1.strikethrough(c.getStyle().getStrikethrough());
+				t1.obfuscated(c.getStyle().getObfuscated());
+				t1.insertion(c.getStyle().getInsertion());
+
+				ClickEvent ce = c.getStyle().getClickEvent();
+
+				if (ce != null)
+				{
+					if (ce.getAction() == ClickEvent.Action.RUN_COMMAND)
+					{
+						t1.click("command:" + ce.getValue());
+					}
+					else if (ce.getAction() == ClickEvent.Action.SUGGEST_COMMAND)
+					{
+						t1.click("suggest_command:" + ce.getValue());
+					}
+					else if (ce.getAction() == ClickEvent.Action.OPEN_URL)
+					{
+						t1.click(ce.getValue());
+					}
+				}
+
+				HoverEvent he = c.getStyle().getHoverEvent();
+
+				if (he != null && he.getAction() == HoverEvent.Action.SHOW_TEXT)
+				{
+					t1.hover(of(he.getValue()));
+				}
+
+				t.append(t1);
+			}
+
+			return t;
+		}
+
+		return fromJson(JsonUtilsJS.of(o));
+	}
+
+	public static Text fromJson(JsonElement e)
+	{
+		if (e.isJsonNull())
+		{
+			return new TextString("null");
+		}
+		else if (e.isJsonArray())
+		{
+			Text text = new TextString("");
+
+			for (JsonElement e1 : e.getAsJsonArray())
+			{
+				text.append(fromJson(e1));
+			}
+
+			return text;
+		}
+		else if (e.isJsonObject())
+		{
+			JsonObject o = e.getAsJsonObject();
+
+			if (o.has("text") || o.has("translate"))
+			{
+				Text text;
+
+				if (o.has("text"))
+				{
+					text = new TextString(o.get("text").getAsString());
+				}
+				else
+				{
+					Object[] with;
+
+					if (o.has("with"))
+					{
+						JsonArray a = o.get("with").getAsJsonArray();
+						with = new Object[a.size()];
+						int i = 0;
+
+						for (JsonElement e1 : a)
+						{
+							with[i] = JsonUtilsJS.primitiveObject(e1);
+
+							if (with[i] == null)
+							{
+								with[i] = fromJson(e1);
+							}
+
+							i++;
+						}
+					}
+					else
+					{
+						with = new Object[0];
+					}
+
+					text = new TextTranslate(o.get("translate").getAsString(), with);
+				}
+
+				text.setPropertiesFromJson(o);
+				return text;
+			}
+		}
+
+		return new TextString(e.getAsString());
+	}
+
 	private TextColor color;
 	private Boolean bold;
 	private Boolean italic;
@@ -36,6 +184,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>
 
 	public abstract Text rawCopy();
 
+	@Override
 	@DocMethod(value = "Convert text to json")
 	public abstract JsonElement json();
 
@@ -184,7 +333,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>
 		obfuscated = json.has("obfuscated") ? json.get("obfuscated").getAsBoolean() : null;
 		insertion = json.has("insertion") ? json.get("insertion").getAsString() : null;
 		click = json.has("click") ? json.get("click").getAsString() : null;
-		hover = json.has("hover") ? TextUtilsJS.INSTANCE.fromJson(json.get("hover")) : null;
+		hover = json.has("hover") ? Text.fromJson(json.get("hover")) : null;
 
 		siblings = null;
 
@@ -192,7 +341,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>
 		{
 			for (JsonElement e : json.get("extra").getAsJsonArray())
 			{
-				append(TextUtilsJS.INSTANCE.fromJson(e));
+				append(Text.fromJson(e));
 			}
 		}
 	}
@@ -404,7 +553,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>
 	@DocMethod(value = "Set hover text", params = @Param(type = Text.class))
 	public final Text hover(@Nullable Object text)
 	{
-		hover = TextUtilsJS.INSTANCE.of(text);
+		hover = of(text);
 		return this;
 	}
 
@@ -416,7 +565,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>
 			siblings = new LinkedList<>();
 		}
 
-		siblings.add(TextUtilsJS.INSTANCE.of(sibling));
+		siblings.add(of(sibling));
 		return this;
 	}
 

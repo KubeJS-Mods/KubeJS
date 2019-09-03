@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.ID;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
@@ -35,7 +35,7 @@ public class ItemJS extends Item
 	{
 		if (containerItem == null)
 		{
-			containerItem = properties.containerItem == null ? null : REGISTRY.getObject(UtilsJS.INSTANCE.idMC(properties.containerItem));
+			containerItem = properties.containerItem == null ? null : REGISTRY.getObject(new ID(properties.containerItem).mc());
 
 			if (containerItem == null)
 			{

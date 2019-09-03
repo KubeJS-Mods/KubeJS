@@ -30,7 +30,7 @@ public class FieldJS
 				field.setAccessible(true);
 			}
 
-			return UtilsJS.INSTANCE.cast(field.get(object));
+			return UtilsJS.cast(field.get(object));
 		}
 		catch (Exception ex)
 		{

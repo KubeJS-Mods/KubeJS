@@ -1,10 +1,12 @@
 package dev.latvian.kubejs.item;
 
+import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
+import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -70,10 +72,9 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	@Nullable
-	public NBTTagCompound rawNBT()
+	public NBTCompoundJS nbt()
 	{
-		return null;
+		return NBTCompoundJS.NULL;
 	}
 
 	@Override
@@ -83,10 +84,9 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	@Nullable
-	public NBTTagCompound rawCaps()
+	public NBTCompoundJS caps()
 	{
-		return null;
+		return NBTCompoundJS.NULL;
 	}
 
 	@Override
@@ -116,5 +116,11 @@ public class EmptyItemStackJS extends ItemStackJS
 	public Ingredient createVanillaIngredient()
 	{
 		return Ingredient.EMPTY;
+	}
+
+	@Override
+	public IngredientJS not()
+	{
+		return MatchAllIngredientJS.INSTANCE;
 	}
 }
