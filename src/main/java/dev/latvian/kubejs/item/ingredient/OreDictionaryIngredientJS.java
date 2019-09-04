@@ -27,6 +27,11 @@ public class OreDictionaryIngredientJS implements IngredientJS
 	@Override
 	public boolean test(ItemStackJS stack)
 	{
+		if (stack.isEmpty())
+		{
+			return false;
+		}
+
 		for (int id : OreDictionary.getOreIDs(stack.itemStack()))
 		{
 			if (oreID == id)

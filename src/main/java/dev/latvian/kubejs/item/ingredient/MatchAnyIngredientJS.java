@@ -25,6 +25,11 @@ public class MatchAnyIngredientJS implements IngredientJS
 	@Override
 	public boolean test(ItemStackJS stack)
 	{
+		if (stack.isEmpty())
+		{
+			return false;
+		}
+
 		for (IngredientJS ingredient : ingredients)
 		{
 			if (ingredient.test(stack))
