@@ -1,7 +1,11 @@
 package dev.latvian.kubejs.util;
 
+import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.world.ClientWorldJS;
+import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatList;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -111,5 +115,22 @@ public class UtilsJS
 	public static String toolType(String id)
 	{
 		return id;
+	}
+
+	public static WorldJS world(World world)
+	{
+		if (world.isRemote)
+		{
+			return clientWorld();
+		}
+		else
+		{
+			return ServerJS.instance.world(world);
+		}
+	}
+
+	public static WorldJS clientWorld()
+	{
+		return ClientWorldJS.get();
 	}
 }

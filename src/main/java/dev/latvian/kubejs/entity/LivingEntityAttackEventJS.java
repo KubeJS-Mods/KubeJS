@@ -1,18 +1,20 @@
 package dev.latvian.kubejs.entity;
 
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
 /**
  * @author LatvianModder
  */
-public class LivingEntityDeathEventJS extends LivingEntityEventJS
+public class LivingEntityAttackEventJS extends LivingEntityEventJS
 {
 	public final DamageSourceJS source;
+	public final float amount;
 
-	public LivingEntityDeathEventJS(LivingDeathEvent event)
+	public LivingEntityAttackEventJS(LivingAttackEvent event)
 	{
 		super(event.getEntity());
 		source = new DamageSourceJS(world, event.getSource());
+		amount = event.getAmount();
 	}
 
 	@Override

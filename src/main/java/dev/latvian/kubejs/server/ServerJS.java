@@ -5,21 +5,20 @@ import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.documentation.Param;
-import dev.latvian.kubejs.entity.EntityJS;
-import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
+import dev.latvian.kubejs.player.ServerPlayerDataJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UUIDUtilsJS;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
+import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
@@ -29,7 +28,6 @@ import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,17 +44,17 @@ public class ServerJS implements MessageSender
 
 	public final transient MinecraftServer server;
 	public final List<ScheduledEvent> scheduledEvents;
-	public final Int2ObjectOpenHashMap<WorldJS> worldMap;
-	public final Map<UUID, PlayerDataJS> playerMap;
+	public final Int2ObjectOpenHashMap<ServerWorldJS> worldMap;
+	public final Map<UUID, ServerPlayerDataJS> playerMap;
 
 	@DocField("Temporary data, mods can attach objects to this")
 	public final Map<String, Object> data;
 
 	@DocField("List of all currently loaded worlds")
-	public final List<WorldJS> worlds;
+	public final List<ServerWorldJS> worlds;
 
 	@DocField
-	public final WorldJS overworld;
+	public final ServerWorldJS overworld;
 
 	@DocField
 	public final GameRulesJS gameRules;
@@ -69,7 +67,7 @@ public class ServerJS implements MessageSender
 		playerMap = new HashMap<>();
 
 		data = new HashMap<>();
-		overworld = new WorldJS(this, w);
+		overworld = new ServerWorldJS(this, w);
 		worldMap.put(0, overworld);
 		worlds = new ArrayList<>();
 		worlds.add(overworld);
@@ -185,11 +183,11 @@ public class ServerJS implements MessageSender
 			return overworld;
 		}
 
-		WorldJS world = worldMap.get(dimension);
+		ServerWorldJS world = worldMap.get(dimension);
 
 		if (world == null)
 		{
-			world = new WorldJS(this, server.getWorld(dimension));
+			world = new ServerWorldJS(this, server.getWorld(dimension));
 			worldMap.put(dimension, world);
 			updateWorldList();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(world, world.data));
@@ -207,7 +205,7 @@ public class ServerJS implements MessageSender
 	@DocMethod
 	public PlayerJS player(UUID uuid)
 	{
-		PlayerDataJS p = playerMap.get(uuid);
+		ServerPlayerDataJS p = playerMap.get(uuid);
 
 		if (p == null)
 		{
@@ -253,55 +251,22 @@ public class ServerJS implements MessageSender
 		throw new NullPointerException("Player from name " + name + " not found!");
 	}
 
-	@Nullable
-	@DocMethod
-	public EntityJS entity(@Nullable Entity entity)
-	{
-		if (entity == null)
-		{
-			return null;
-		}
-		else if (entity instanceof EntityPlayerMP)
-		{
-			PlayerDataJS data = playerMap.get(entity.getUniqueID());
-
-			if (data == null)
-			{
-				throw new NullPointerException("Player from UUID " + entity.getUniqueID() + " not found!");
-			}
-
-			return new PlayerJS(data, (EntityPlayerMP) entity);
-		}
-		else if (entity instanceof EntityLivingBase)
-		{
-			return new LivingEntityJS(this, (EntityLivingBase) entity);
-		}
-
-		return new EntityJS(this, entity);
-	}
-
-	@DocMethod
-	public EntityArrayList entities(Collection<? extends Entity> entities)
-	{
-		return new EntityArrayList(this, entities);
-	}
-
 	@DocMethod
 	public EntityArrayList players()
 	{
-		return entities(server.getPlayerList().getPlayers());
+		return new EntityArrayList(overworld, server.getPlayerList().getPlayers());
 	}
 
 	@DocMethod
 	public EntityArrayList entities()
 	{
-		EntityArrayList list = new EntityArrayList(this, overworld.world.loadedEntityList.size());
+		EntityArrayList list = new EntityArrayList(overworld, overworld.world.loadedEntityList.size());
 
 		for (WorldJS world : worlds)
 		{
 			for (Entity entity : world.world.loadedEntityList)
 			{
-				list.add(entity(entity));
+				list.add(world.entity(entity));
 			}
 		}
 
@@ -313,13 +278,13 @@ public class ServerJS implements MessageSender
 	{
 		try
 		{
-			EntityArrayList list = new EntityArrayList(this, overworld.world.loadedEntityList.size());
+			EntityArrayList list = new EntityArrayList(overworld, overworld.world.loadedEntityList.size());
 
 			for (WorldJS world : worlds)
 			{
 				for (Entity entity : EntitySelector.matchEntities(world, filter, Entity.class))
 				{
-					list.add(entity(entity));
+					list.add(world.entity(entity));
 				}
 			}
 
@@ -327,7 +292,7 @@ public class ServerJS implements MessageSender
 		}
 		catch (CommandException e)
 		{
-			return new EntityArrayList(this, 0);
+			return new EntityArrayList(overworld, 0);
 		}
 	}
 

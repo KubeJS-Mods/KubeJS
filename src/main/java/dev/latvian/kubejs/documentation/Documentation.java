@@ -16,7 +16,9 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,8 @@ import java.util.Map;
  */
 public class Documentation
 {
+	public static final HashSet<String> OBJECT_METHODS = new HashSet<>(Arrays.asList("toString", "wait", "equals", "hashCode", "notify", "notifyAll", "getClass"));
+
 	private static Documentation instance;
 
 	public static Documentation get()
@@ -318,7 +322,7 @@ public class Documentation
 
 				String mn = method.getName();
 
-				if (docMethod == null && (mn.equals("equals") || mn.equals("hashCode") || mn.equals("toString")))
+				if (docMethod == null && OBJECT_METHODS.contains(mn))
 				{
 					continue;
 				}

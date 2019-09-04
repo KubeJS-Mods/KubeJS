@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.player;
 
-import dev.latvian.kubejs.server.ServerJS;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -11,36 +10,21 @@ import java.util.UUID;
 /**
  * @author LatvianModder
  */
-public class PlayerDataJS
+public abstract class PlayerDataJS<E extends EntityPlayer, P extends PlayerJS<E>>
 {
-	public final ServerJS server;
 	public final UUID uuid;
 	public final String name;
 	public final Map<String, Object> data;
 
-	public PlayerDataJS(ServerJS s, EntityPlayerMP p)
+	public PlayerDataJS(UUID id, String n)
 	{
-		server = s;
-		uuid = p.getGameProfile().getId();
-		name = p.getGameProfile().getName();
+		uuid = id;
+		name = n;
 		data = new HashMap<>();
 	}
 
 	@Nullable
-	public EntityPlayerMP getPlayerEntity()
-	{
-		return server.server.getPlayerList().getPlayerByUUID(uuid);
-	}
+	public abstract E getPlayerEntity();
 
-	public PlayerJS player()
-	{
-		EntityPlayerMP p = getPlayerEntity();
-
-		if (p == null)
-		{
-			throw new NullPointerException("Player entity for " + name + " not found!");
-		}
-
-		return new PlayerJS(this, p);
-	}
+	public abstract P player();
 }

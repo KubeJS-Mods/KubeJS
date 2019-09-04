@@ -1,10 +1,10 @@
 package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.entity.EntityJS;
-import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
 import dev.latvian.kubejs.util.MessageSender;
+import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.ITextComponent;
@@ -18,22 +18,21 @@ import java.util.function.Predicate;
  */
 public class EntityArrayList extends ArrayList<EntityJS> implements MessageSender
 {
-	public final ServerJS server;
+	public final WorldJS world;
 
-	public EntityArrayList(ServerJS s, int size)
+	public EntityArrayList(WorldJS w, int size)
 	{
 		super(size);
-		server = s;
+		world = w;
 	}
 
-	public EntityArrayList(ServerJS s, Collection<? extends Entity> c)
+	public EntityArrayList(WorldJS w, Collection<? extends Entity> c)
 	{
-		super(c.size());
-		server = s;
+		this(w, c.size());
 
 		for (Entity entity : c)
 		{
-			add(server.entity(entity));
+			add(world.entity(entity));
 		}
 	}
 
@@ -97,7 +96,12 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 	public EntityArrayList filter(Predicate<EntityJS> filter)
 	{
-		EntityArrayList list = new EntityArrayList(server, size());
+		if (isEmpty())
+		{
+			return this;
+		}
+
+		EntityArrayList list = new EntityArrayList(world, size());
 
 		for (EntityJS entity : this)
 		{

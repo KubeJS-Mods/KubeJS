@@ -3,6 +3,7 @@ package dev.latvian.kubejs.player;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
@@ -42,5 +43,10 @@ public class PlayerInventoryJS extends InventoryJS
 	public int selectedSlot()
 	{
 		return player.player.inventory.currentItem;
+	}
+
+	public ItemStackJS getHandItem(boolean mainHand)
+	{
+		return ItemStackJS.of(player.player.getHeldItem(mainHand ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));
 	}
 }

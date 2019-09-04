@@ -3,7 +3,6 @@ package dev.latvian.kubejs.entity;
 import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
-import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.world.WorldJS;
@@ -17,18 +16,18 @@ import java.util.UUID;
  */
 public class EntityJS implements MessageSender
 {
-	public final ServerJS server;
+	public final WorldJS world;
 	public final transient Entity entity;
 
-	public EntityJS(ServerJS s, Entity e)
+	public EntityJS(WorldJS w, Entity e)
 	{
-		server = s;
+		world = w;
 		entity = e;
 	}
 
-	public WorldJS world()
+	public boolean isServer()
 	{
-		return server.world(entity.world);
+		return !entity.world.isRemote;
 	}
 
 	public UUID uuid()
@@ -134,7 +133,12 @@ public class EntityJS implements MessageSender
 	@Override
 	public int runCommand(String command)
 	{
-		return server.server.getCommandManager().executeCommand(entity, command);
+		if (world.getServer() != null)
+		{
+			return world.getServer().getCommandManager().executeCommand(entity, command);
+		}
+
+		return 0;
 	}
 
 	public void kill()

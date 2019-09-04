@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.world;
 
+import dev.latvian.kubejs.util.Facing;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
@@ -34,6 +35,16 @@ public class BlockContainerJS
 		x = pos.getX();
 		y = pos.getY();
 		z = pos.getZ();
+	}
+
+	public BlockContainerJS offset(Facing f, int d)
+	{
+		return world.block(x + f.vanillaFacing.getXOffset() * d, y + f.vanillaFacing.getYOffset() * d, z + f.vanillaFacing.getZOffset() * d);
+	}
+
+	public BlockContainerJS offset(Facing f)
+	{
+		return offset(f, 1);
 	}
 
 	public ID get()

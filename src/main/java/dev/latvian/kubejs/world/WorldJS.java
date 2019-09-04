@@ -4,31 +4,33 @@ import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.documentation.Param;
+import dev.latvian.kubejs.entity.EntityJS;
+import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.player.EntityArrayList;
-import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.player.PlayerDataJS;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author LatvianModder
  */
-@DocClass("This class represents each dimension on server. You can access weather, blocks, entities, etc.")
+@DocClass("This class represents a dimension. You can access weather, blocks, entities, etc. Client and server sides have different worlds")
 public class WorldJS implements ICommandSender
 {
-	public final transient WorldServer world;
-
-	@DocField
-	public final ServerJS server;
+	public final transient World world;
 
 	@DocField
 	public final int dimension;
@@ -36,12 +38,17 @@ public class WorldJS implements ICommandSender
 	@DocField("Temporary data, mods can attach objects to this")
 	public final Map<String, Object> data;
 
-	public WorldJS(ServerJS s, WorldServer w)
+	public WorldJS(World w)
 	{
-		server = s;
 		world = w;
 		dimension = world.provider.getDimension();
 		data = new HashMap<>();
+	}
+
+	@DocMethod
+	public boolean isServer()
+	{
+		return !world.isRemote;
 	}
 
 	@DocMethod
@@ -109,16 +116,55 @@ public class WorldJS implements ICommandSender
 		return new BlockContainerJS(this, pos);
 	}
 
+	@Nullable
+	public PlayerDataJS playerData(UUID id)
+	{
+		return null;
+	}
+
+	@Nullable
+	@DocMethod
+	public EntityJS entity(@Nullable Entity entity)
+	{
+		if (entity == null)
+		{
+			return null;
+		}
+		else if (entity instanceof EntityPlayer)
+		{
+			PlayerDataJS data = playerData(entity.getUniqueID());
+
+			if (data == null)
+			{
+				throw new NullPointerException("Player from UUID " + entity.getUniqueID() + " not found!");
+			}
+
+			return data.player();
+		}
+		else if (entity instanceof EntityLivingBase)
+		{
+			return new LivingEntityJS(this, (EntityLivingBase) entity);
+		}
+
+		return new EntityJS(this, entity);
+	}
+
+	@DocMethod
+	public EntityArrayList entities(Collection<? extends Entity> entities)
+	{
+		return new EntityArrayList(this, entities);
+	}
+
 	@DocMethod
 	public EntityArrayList players()
 	{
-		return server.entities(world.playerEntities);
+		return entities(world.playerEntities);
 	}
 
 	@DocMethod
 	public EntityArrayList entities()
 	{
-		return server.entities(world.loadedEntityList);
+		return entities(world.loadedEntityList);
 	}
 
 	@DocMethod
@@ -126,11 +172,11 @@ public class WorldJS implements ICommandSender
 	{
 		try
 		{
-			return server.entities(EntitySelector.matchEntities(this, filter, Entity.class));
+			return entities(EntitySelector.matchEntities(this, filter, Entity.class));
 		}
 		catch (CommandException e)
 		{
-			return new EntityArrayList(server, 0);
+			return new EntityArrayList(this, 0);
 		}
 	}
 
@@ -162,6 +208,6 @@ public class WorldJS implements ICommandSender
 	@Override
 	public MinecraftServer getServer()
 	{
-		return server.server;
+		return null;
 	}
 }

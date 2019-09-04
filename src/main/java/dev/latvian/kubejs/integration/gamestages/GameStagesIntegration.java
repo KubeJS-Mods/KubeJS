@@ -5,7 +5,6 @@ import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.script.DataType;
 import net.darkhax.gamestages.event.GameStageEvent;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -37,18 +36,12 @@ public class GameStagesIntegration
 	@SubscribeEvent
 	public static void onGameStageAdded(GameStageEvent.Added e)
 	{
-		if (e.getEntityPlayer() instanceof EntityPlayerMP)
-		{
-			EventsJS.postDouble("gamestage.added", e.getStageName(), new GameStageEventJS(e.getEntity(), e.getStageName()));
-		}
+		EventsJS.postDouble("gamestage.added", e.getStageName(), new GameStageEventJS(e.getEntity(), e.getStageName()));
 	}
 
 	@SubscribeEvent
 	public static void onGameStageRemoved(GameStageEvent.Removed e)
 	{
-		if (e.getEntityPlayer() instanceof EntityPlayerMP)
-		{
-			EventsJS.postDouble("gamestage.removed", e.getStageName(), new GameStageEventJS(e.getEntity(), e.getStageName()));
-		}
+		EventsJS.postDouble("gamestage.removed", e.getStageName(), new GameStageEventJS(e.getEntity(), e.getStageName()));
 	}
 }

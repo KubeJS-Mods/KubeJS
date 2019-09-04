@@ -1,6 +1,10 @@
 package dev.latvian.kubejs;
 
+import dev.latvian.kubejs.block.BlockBreakEventJS;
+import dev.latvian.kubejs.block.BlockLeftClickEventJS;
+import dev.latvian.kubejs.block.BlockPlaceEventJS;
 import dev.latvian.kubejs.block.BlockRegistryEventJS;
+import dev.latvian.kubejs.block.BlockRightClickEventJS;
 import dev.latvian.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.kubejs.crafting.handlers.AlloySmelterRecipeEventJS;
 import dev.latvian.kubejs.crafting.handlers.CompressorRecipeEventJS;
@@ -9,9 +13,15 @@ import dev.latvian.kubejs.crafting.handlers.FurnaceRecipeEventJS;
 import dev.latvian.kubejs.crafting.handlers.PulverizerRecipeEventJS;
 import dev.latvian.kubejs.crafting.handlers.RemoveRecipesEventJS;
 import dev.latvian.kubejs.documentation.DocumentationEvent;
+import dev.latvian.kubejs.entity.LivingEntityAttackEventJS;
 import dev.latvian.kubejs.entity.LivingEntityDeathEventJS;
 import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.item.ItemEntityInteractEventJS;
+import dev.latvian.kubejs.item.ItemPickupEventJS;
 import dev.latvian.kubejs.item.ItemRegistryEventJS;
+import dev.latvian.kubejs.item.ItemRightClickEmptyEventJS;
+import dev.latvian.kubejs.item.ItemRightClickEventJS;
+import dev.latvian.kubejs.item.ItemTossEventJS;
 import dev.latvian.kubejs.player.PlayerChatEventJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
 import dev.latvian.kubejs.server.ServerEventJS;
@@ -40,6 +50,7 @@ public class KubeJSEvents
 	public static final String PLAYER_TICK = "player.tick";
 	public static final String PLAYER_CHAT = "player.chat";
 	public static final String ENTITY_DEATH = "entity.death";
+	public static final String ENTITY_ATTACK = "entity.attack";
 	public static final String RECIPES_REMOVE_OUTPUT = "recipes.remove.output";
 	public static final String RECIPES_REMOVE_INPUT = "recipes.remove.input";
 	public static final String RECIPES_CRAFTING_TABLE = "recipes.crafting_table";
@@ -48,7 +59,17 @@ public class KubeJSEvents
 	public static final String RECIPES_COMPRESSOR = "recipes.compressor";
 	public static final String RECIPES_ALLOY_SMELTER = "recipes.alloy_smelter";
 	public static final String BLOCK_REGISTRY = "block.registry";
+	public static final String BLOCK_RIGHT_CLICK = "block.right_click";
+	public static final String BLOCK_LEFT_CLICK = "block.left_click";
+	public static final String BLOCK_PLACE = "block.place";
+	public static final String BLOCK_BREAK = "block.break";
 	public static final String ITEM_REGISTRY = "item.registry";
+	public static final String ITEM_RIGHT_CLICK = "item.right_click";
+	public static final String ITEM_RIGHT_CLICK_EMPTY = "item.right_click_empty";
+	public static final String ITEM_LEFT_CLICK = "item.left_click";
+	public static final String ITEM_ENTITY_INTERACT = "item.entity_interact";
+	public static final String ITEM_PICKUP = "item.pickup";
+	public static final String ITEM_TOSS = "item.toss";
 	public static final String COMMAND_REGISTRY = "command.registry";
 
 	@SubscribeEvent
@@ -79,6 +100,7 @@ public class KubeJSEvents
 		event.registerEvent(PLAYER_TICK, PlayerEventJS.class);
 		event.registerEvent(PLAYER_CHAT, PlayerChatEventJS.class);
 		event.registerEvent(ENTITY_DEATH, LivingEntityDeathEventJS.class);
+		event.registerEvent(ENTITY_ATTACK, LivingEntityAttackEventJS.class);
 		event.registerEvent(RECIPES_REMOVE_OUTPUT, RemoveRecipesEventJS.class);
 		event.registerEvent(RECIPES_REMOVE_INPUT, RemoveRecipesEventJS.class);
 		event.registerEvent(RECIPES_CRAFTING_TABLE, CraftingTableRecipeEventJS.class);
@@ -87,7 +109,17 @@ public class KubeJSEvents
 		event.registerEvent(RECIPES_COMPRESSOR, CompressorRecipeEventJS.class);
 		event.registerEvent(RECIPES_ALLOY_SMELTER, AlloySmelterRecipeEventJS.class);
 		event.registerEvent(BLOCK_REGISTRY, BlockRegistryEventJS.class);
+		event.registerEvent(BLOCK_RIGHT_CLICK, BlockRightClickEventJS.class);
+		event.registerEvent(BLOCK_LEFT_CLICK, BlockLeftClickEventJS.class);
+		event.registerEvent(BLOCK_PLACE, BlockPlaceEventJS.class);
+		event.registerEvent(BLOCK_BREAK, BlockBreakEventJS.class);
 		event.registerEvent(ITEM_REGISTRY, ItemRegistryEventJS.class);
+		event.registerEvent(ITEM_RIGHT_CLICK, ItemRightClickEventJS.class);
+		event.registerEvent(ITEM_RIGHT_CLICK_EMPTY, ItemRightClickEmptyEventJS.class);
+		event.registerEvent(ITEM_LEFT_CLICK, PlayerEventJS.class);
+		event.registerEvent(ITEM_ENTITY_INTERACT, ItemEntityInteractEventJS.class);
+		event.registerEvent(ITEM_PICKUP, ItemPickupEventJS.class);
+		event.registerEvent(ITEM_TOSS, ItemTossEventJS.class);
 		event.registerEvent(COMMAND_REGISTRY, CommandRegistryEventJS.class);
 	}
 }

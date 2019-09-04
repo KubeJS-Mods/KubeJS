@@ -37,7 +37,7 @@ public class KubeJSWorldEventHandler
 		{
 			if (world != ServerJS.instance.overworld.world)
 			{
-				WorldJS w = new WorldJS(ServerJS.instance, world);
+				ServerWorldJS w = new ServerWorldJS(ServerJS.instance, world);
 				ServerJS.instance.worldMap.put(world.provider.getDimension(), w);
 				ServerJS.instance.updateWorldList();
 				MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(w, w.data));
@@ -75,7 +75,7 @@ public class KubeJSWorldEventHandler
 	{
 		if (ServerJS.instance != null && event.getWorld() instanceof WorldServer && !ServerJS.instance.worldMap.containsKey(event.getWorld().provider.getDimension()))
 		{
-			WorldJS w = new WorldJS(ServerJS.instance, (WorldServer) event.getWorld());
+			ServerWorldJS w = new ServerWorldJS(ServerJS.instance, (WorldServer) event.getWorld());
 			ServerJS.instance.worldMap.put(event.getWorld().provider.getDimension(), w);
 			ServerJS.instance.updateWorldList();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(w, w.data));

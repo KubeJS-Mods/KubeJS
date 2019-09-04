@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.entity;
 
-import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.EntityLivingBase;
 
 /**
@@ -10,9 +10,9 @@ public class LivingEntityJS extends EntityJS
 {
 	public final transient EntityLivingBase livingEntity;
 
-	public LivingEntityJS(ServerJS s, EntityLivingBase e)
+	public LivingEntityJS(WorldJS w, EntityLivingBase e)
 	{
-		super(s, e);
+		super(w, e);
 		livingEntity = e;
 	}
 
