@@ -1,9 +1,8 @@
 package dev.latvian.kubejs.block;
 
-import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.world.BlockEvent;
 
 /**
@@ -11,27 +10,37 @@ import net.minecraftforge.event.world.BlockEvent;
  */
 public class BlockBreakEventJS extends PlayerEventJS
 {
-	public final BlockPos pos;
-	public final int x, y, z;
-	public int xp;
+	public final transient BlockEvent.BreakEvent event;
 
-	public BlockBreakEventJS(BlockEvent.BreakEvent event)
+	public BlockBreakEventJS(BlockEvent.BreakEvent e)
 	{
-		super(event.getPlayer());
-		pos = event.getPos();
-		x = pos.getX();
-		y = pos.getY();
-		z = pos.getZ();
-		xp = event.getExpToDrop();
+		event = e;
 	}
 
-	public ItemStackJS item()
+	@Override
+	public boolean canCancel()
 	{
-		return player.inventory().getHandItem(true);
+		return true;
 	}
 
-	public BlockContainerJS block()
+	@Override
+	public EntityJS getEntity()
 	{
-		return player.world.block(pos);
+		return entityOf(event.getPlayer());
+	}
+
+	public BlockContainerJS getBlock()
+	{
+		return new BlockContainerJS(event.getWorld(), event.getPos());
+	}
+
+	public int getXP()
+	{
+		return event.getExpToDrop();
+	}
+
+	public void setXP(int xp)
+	{
+		event.setExpToDrop(xp);
 	}
 }

@@ -45,9 +45,9 @@ public class KubeJSPlayerEventHandler
 		if (ServerJS.instance != null && event.player instanceof EntityPlayerMP)
 		{
 			ServerPlayerDataJS p = new ServerPlayerDataJS(ServerJS.instance, event.player.getUniqueID(), event.player.getName());
-			p.server.playerMap.put(p.uuid, p);
+			p.server.playerMap.put(p.id, p);
 			MinecraftForge.EVENT_BUS.post(new AttachPlayerDataEvent(p, p.data));
-			EventsJS.post(KubeJSEvents.PLAYER_LOGGED_IN, new PlayerEventJS(event.player));
+			EventsJS.post(KubeJSEvents.PLAYER_LOGGED_IN, new SimplePlayerEventJS(event.player));
 		}
 	}
 
@@ -59,7 +59,7 @@ public class KubeJSPlayerEventHandler
 			return;
 		}
 
-		EventsJS.post(KubeJSEvents.PLAYER_LOGGED_OUT, new PlayerEventJS(event.player));
+		EventsJS.post(KubeJSEvents.PLAYER_LOGGED_OUT, new SimplePlayerEventJS(event.player));
 		ServerJS.instance.playerMap.remove(event.player.getUniqueID());
 	}
 
@@ -68,22 +68,14 @@ public class KubeJSPlayerEventHandler
 	{
 		if (ServerJS.instance != null && event.phase == TickEvent.Phase.END)
 		{
-			EventsJS.post(KubeJSEvents.PLAYER_TICK, new PlayerEventJS(event.player));
+			EventsJS.post(KubeJSEvents.PLAYER_TICK, new SimplePlayerEventJS(event.player));
 		}
 	}
 
 	@SubscribeEvent
 	public static void onPlayerChat(ServerChatEvent event)
 	{
-		PlayerChatEventJS e = new PlayerChatEventJS(event);
-		boolean c = EventsJS.post(KubeJSEvents.PLAYER_CHAT, e);
-
-		if (e.component != null)
-		{
-			event.setComponent(e.component.component());
-		}
-
-		if (c)
+		if (EventsJS.post(KubeJSEvents.PLAYER_CHAT, new PlayerChatEventJS(event)))
 		{
 			event.setCanceled(true);
 		}

@@ -97,7 +97,7 @@ public interface NBTBaseJS
 		return false;
 	}
 
-	default byte id()
+	default byte getID()
 	{
 		NBTBase nbt = createNBT();
 		return nbt == null ? 0 : nbt.getId();

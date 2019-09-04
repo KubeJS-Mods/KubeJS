@@ -2,7 +2,6 @@ package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 
 /**
@@ -10,27 +9,32 @@ import net.minecraftforge.event.entity.item.ItemTossEvent;
  */
 public class ItemTossEventJS extends PlayerEventJS
 {
-	public final EntityItem itemEntity;
+	public final transient ItemTossEvent event;
 
-	public ItemTossEventJS(ItemTossEvent event)
+	public ItemTossEventJS(ItemTossEvent e)
 	{
-		super(event.getPlayer());
-		itemEntity = event.getEntityItem();
-	}
-
-	public ItemStackJS item()
-	{
-		return ItemStackJS.of(itemEntity.getItem());
-	}
-
-	public EntityJS entity()
-	{
-		return world.entity(itemEntity);
+		event = e;
 	}
 
 	@Override
 	public boolean canCancel()
 	{
 		return true;
+	}
+
+	@Override
+	public EntityJS getEntity()
+	{
+		return entityOf(event);
+	}
+
+	public EntityJS getItemEntity()
+	{
+		return getWorld().getEntity(event.getEntityItem());
+	}
+
+	public ItemStackJS getItem()
+	{
+		return ItemStackJS.of(event.getEntityItem().getItem());
 	}
 }

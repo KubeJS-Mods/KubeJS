@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class CommandProperties
+public class CommandBuilder
 {
 	@FunctionalInterface
 	public interface ExecuteFunction
@@ -39,7 +39,7 @@ public class CommandProperties
 	public UsernameFunction username;
 	public int requiredPermissionLevel;
 
-	public CommandProperties(Consumer<CommandBase> c, String n)
+	public CommandBuilder(Consumer<CommandBase> c, String n)
 	{
 		callback = c;
 		name = n;
@@ -49,31 +49,31 @@ public class CommandProperties
 		requiredPermissionLevel = 0;
 	}
 
-	public CommandProperties alias(String a)
+	public CommandBuilder alias(String a)
 	{
 		aliases.add(a);
 		return this;
 	}
 
-	public CommandProperties execute(ExecuteFunction e)
+	public CommandBuilder execute(ExecuteFunction e)
 	{
 		execute = e;
 		return this;
 	}
 
-	public CommandProperties username(UsernameFunction u)
+	public CommandBuilder username(UsernameFunction u)
 	{
 		username = u;
 		return this;
 	}
 
-	public CommandProperties username(final int index)
+	public CommandBuilder username(final int index)
 	{
 		username = (args, i) -> index == i;
 		return this;
 	}
 
-	public CommandProperties op()
+	public CommandBuilder op()
 	{
 		requiredPermissionLevel = 2;
 		return this;
@@ -86,9 +86,9 @@ public class CommandProperties
 
 	private static class Cmd extends CommandBase
 	{
-		private final CommandProperties properties;
+		private final CommandBuilder properties;
 
-		private Cmd(CommandProperties p)
+		private Cmd(CommandBuilder p)
 		{
 			properties = p;
 		}

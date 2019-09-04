@@ -11,6 +11,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -24,11 +25,11 @@ public class BlockContainerJS
 {
 	private static final ID AIR_ID = new ID("minecraft:air");
 
-	public final WorldJS world;
+	public final transient World world;
 	public final transient BlockPos pos;
 	public final int x, y, z;
 
-	public BlockContainerJS(WorldJS w, BlockPos p)
+	public BlockContainerJS(World w, BlockPos p)
 	{
 		world = w;
 		pos = p;
@@ -39,7 +40,7 @@ public class BlockContainerJS
 
 	public BlockContainerJS offset(Facing f, int d)
 	{
-		return world.block(x + f.vanillaFacing.getXOffset() * d, y + f.vanillaFacing.getYOffset() * d, z + f.vanillaFacing.getZOffset() * d);
+		return new BlockContainerJS(world, pos.offset(f.vanillaFacing, d));
 	}
 
 	public BlockContainerJS offset(Facing f)
@@ -49,13 +50,13 @@ public class BlockContainerJS
 
 	public ID get()
 	{
-		IBlockState state = world.world.getBlockState(pos);
+		IBlockState state = world.getBlockState(pos);
 		return state.getBlock() == Blocks.AIR ? AIR_ID : new ID(state.getBlock().getRegistryName());
 	}
 
 	public void set(Object id, Map<?, ?> properties, int flags)
 	{
-		Block block = Block.getBlockFromName(new ID(id).toString());
+		Block block = id instanceof Block ? (Block) id : Block.getBlockFromName(new ID(id).toString());
 		IBlockState state = (block == null ? Blocks.AIR : block).getDefaultState();
 
 		if (!properties.isEmpty() && state.getBlock() != Blocks.AIR)
@@ -78,7 +79,7 @@ public class BlockContainerJS
 			}
 		}
 
-		world.world.setBlockState(pos, state, flags);
+		world.setBlockState(pos, state, flags);
 	}
 
 	public void set(Object id, Map<?, ?> properties)
@@ -91,10 +92,10 @@ public class BlockContainerJS
 		set(id, Collections.emptyMap());
 	}
 
-	public Map<String, String> properties()
+	public Map<String, String> getProperties()
 	{
 		Map<String, String> map = new HashMap<>();
-		IBlockState state = world.world.getBlockState(pos);
+		IBlockState state = world.getBlockState(pos);
 
 		for (Map.Entry<IProperty<?>, ?> entry : state.getProperties().entrySet())
 		{
@@ -105,22 +106,22 @@ public class BlockContainerJS
 	}
 
 	@Nullable
-	public TileEntity entity()
+	public TileEntity getEntity()
 	{
-		return world.world.getTileEntity(pos);
+		return world.getTileEntity(pos);
 	}
 
-	public NBTCompoundJS entityData()
+	public NBTCompoundJS getEntityData()
 	{
-		TileEntity entity = entity();
+		TileEntity entity = getEntity();
 		return entity == null ? NBTCompoundJS.NULL : NBTBaseJS.of(entity.serializeNBT()).asCompound();
 	}
 
-	public void entityData(NBTCompoundJS nbt)
+	public void setEntityData(NBTCompoundJS nbt)
 	{
 		if (!nbt.isNull())
 		{
-			TileEntity entity = entity();
+			TileEntity entity = getEntity();
 
 			if (entity != null)
 			{
@@ -129,18 +130,26 @@ public class BlockContainerJS
 		}
 	}
 
-	public int light()
+	public int getLight()
 	{
-		return world.world.getLight(pos);
+		return world.getLight(pos);
 	}
 
 	public boolean canSeeSky()
 	{
-		return world.world.canSeeSky(pos);
+		return world.canSeeSky(pos);
 	}
 
 	public boolean canSnow(boolean checkLight)
 	{
-		return world.world.canSnowAt(pos, checkLight);
+		return world.canSnowAt(pos, checkLight);
+	}
+
+	@Override
+	public String toString()
+	{
+		ID id = get();
+		Map<String, String> properties = getProperties();
+		return properties.isEmpty() ? id.toString() : (id + "+" + properties);
 	}
 }

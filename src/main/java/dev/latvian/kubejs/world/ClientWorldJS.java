@@ -42,8 +42,8 @@ public class ClientWorldJS extends WorldJS
 
 	@Override
 	@Nullable
-	public PlayerDataJS playerData(UUID id)
+	public PlayerDataJS getPlayerData(UUID id)
 	{
-		return id.equals(clientPlayerData.uuid) ? clientPlayerData : null;
+		return id.equals(clientPlayerData.id) ? clientPlayerData : null;
 	}
 }

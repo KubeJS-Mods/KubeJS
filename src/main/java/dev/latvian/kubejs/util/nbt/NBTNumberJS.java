@@ -113,7 +113,7 @@ public class NBTNumberJS implements NBTBaseJS
 	}
 
 	@Override
-	public byte id()
+	public byte getID()
 	{
 		return createNBT().getId();
 	}

@@ -1,11 +1,15 @@
 package dev.latvian.kubejs.bindings;
 
+import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.FieldJS;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.LoggerWrapperJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.world.ClientWorldJS;
+import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.stats.StatBase;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 
@@ -55,14 +59,14 @@ public class UtilsWrapper
 		return Pattern.compile(pattern, flags);
 	}
 
-	public FieldJS field(String className, String fieldName)
+	public FieldJS getField(String className, String fieldName)
 	{
-		return UtilsJS.field(className, fieldName);
+		return UtilsJS.getField(className, fieldName);
 	}
 
-	public FieldJS field(Class className, String fieldName)
+	public FieldJS getField(Class className, String fieldName)
 	{
-		return UtilsJS.field(className, fieldName);
+		return UtilsJS.getField(className, fieldName);
 	}
 
 	public int parseInt(@Nullable Object object, int def)
@@ -76,18 +80,35 @@ public class UtilsWrapper
 	}
 
 	@Nullable
-	public StatBase stat(@Nullable Object id)
+	public StatBase getStat(@Nullable Object id)
 	{
-		return UtilsJS.stat(id);
+		return UtilsJS.getStat(id);
 	}
 
-	public String toolType(String id)
+	public String getToolType(String id)
 	{
-		return UtilsJS.toolType(id);
+		return UtilsJS.getToolType(id);
+	}
+
+	public WorldJS getWorld(World world)
+	{
+		if (world.isRemote)
+		{
+			return getClientWorld();
+		}
+		else
+		{
+			return ServerJS.instance.getWorld(world);
+		}
+	}
+
+	public WorldJS getClientWorld()
+	{
+		return ClientWorldJS.get();
 	}
 
 	@Nullable
-	public SoundEvent sound(Object id)
+	public SoundEvent getSound(Object id)
 	{
 		return ForgeRegistries.SOUND_EVENTS.getValue(new ID(id).mc());
 	}

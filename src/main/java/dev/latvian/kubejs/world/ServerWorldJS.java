@@ -4,7 +4,6 @@ import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.server.ServerJS;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
 
 import javax.annotation.Nullable;
@@ -27,14 +26,8 @@ public class ServerWorldJS extends WorldJS
 
 	@Override
 	@Nullable
-	public PlayerDataJS playerData(UUID id)
+	public PlayerDataJS getPlayerData(UUID id)
 	{
 		return server.playerMap.get(id);
-	}
-
-	@Override
-	public MinecraftServer getServer()
-	{
-		return server.server;
 	}
 }

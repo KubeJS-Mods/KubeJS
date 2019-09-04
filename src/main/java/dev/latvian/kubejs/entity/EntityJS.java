@@ -5,6 +5,7 @@ import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.MessageSender;
+import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -30,19 +31,19 @@ public class EntityJS implements MessageSender
 		return !entity.world.isRemote;
 	}
 
-	public UUID uuid()
+	public UUID getID()
 	{
 		return entity.getUniqueID();
 	}
 
 	@Override
-	public String name()
+	public String getName()
 	{
 		return entity.getName();
 	}
 
 	@Override
-	public Text displayName()
+	public Text getDisplayName()
 	{
 		return Text.of(entity.getDisplayName());
 	}
@@ -55,7 +56,7 @@ public class EntityJS implements MessageSender
 
 	public String toString()
 	{
-		return name();
+		return getName() + "-" + getID();
 	}
 
 	public ItemStackJS asItem()
@@ -98,19 +99,24 @@ public class EntityJS implements MessageSender
 		return entity.posZ;
 	}
 
-	public float yaw()
+	public float getYaw()
 	{
 		return entity.rotationYaw;
 	}
 
-	public float pitch()
+	public float getPitch()
 	{
 		return entity.rotationPitch;
 	}
 
+	public int getTicksExisted()
+	{
+		return entity.ticksExisted;
+	}
+
 	public void setPosition(double x, double y, double z)
 	{
-		setPositionAndRotation(x, y, z, yaw(), pitch());
+		setPositionAndRotation(x, y, z, getYaw(), getPitch());
 	}
 
 	public void setRotation(float yaw, float pitch)
@@ -133,9 +139,9 @@ public class EntityJS implements MessageSender
 	@Override
 	public int runCommand(String command)
 	{
-		if (world.getServer() != null)
+		if (world instanceof ServerWorldJS)
 		{
-			return world.getServer().getCommandManager().executeCommand(entity, command);
+			return ((ServerWorldJS) world).server.server.getCommandManager().executeCommand(entity, command);
 		}
 
 		return 0;

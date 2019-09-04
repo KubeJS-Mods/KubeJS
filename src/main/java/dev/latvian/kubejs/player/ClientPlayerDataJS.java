@@ -30,7 +30,7 @@ public class ClientPlayerDataJS extends PlayerDataJS<EntityPlayerSP, ClientPlaye
 	}
 
 	@Override
-	public ClientPlayerJS player()
+	public ClientPlayerJS getPlayer()
 	{
 		return player;
 	}

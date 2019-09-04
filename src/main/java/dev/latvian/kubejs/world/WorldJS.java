@@ -8,13 +8,12 @@ import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.PlayerDataJS;
+import dev.latvian.kubejs.player.PlayerJS;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.EntitySelector;
-import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -28,7 +27,7 @@ import java.util.UUID;
  * @author LatvianModder
  */
 @DocClass("This class represents a dimension. You can access weather, blocks, entities, etc. Client and server sides have different worlds")
-public class WorldJS implements ICommandSender
+public class WorldJS
 {
 	public final transient World world;
 
@@ -52,19 +51,19 @@ public class WorldJS implements ICommandSender
 	}
 
 	@DocMethod
-	public long seed()
+	public long getSeed()
 	{
 		return world.getSeed();
 	}
 
 	@DocMethod
-	public long time()
+	public long getTime()
 	{
 		return world.getTotalWorldTime();
 	}
 
 	@DocMethod
-	public long localTime()
+	public long getLocalTime()
 	{
 		return world.getWorldTime();
 	}
@@ -81,6 +80,7 @@ public class WorldJS implements ICommandSender
 		world.setWorldTime(time);
 	}
 
+	@DocMethod
 	public boolean isOverworld()
 	{
 		return dimension == 0;
@@ -105,26 +105,26 @@ public class WorldJS implements ICommandSender
 	}
 
 	@DocMethod(params = {@Param("x"), @Param("y"), @Param("z")})
-	public BlockContainerJS block(int x, int y, int z)
+	public BlockContainerJS getBlock(int x, int y, int z)
 	{
-		return block(new BlockPos(x, y, z));
+		return getBlock(new BlockPos(x, y, z));
 	}
 
 	@DocMethod(params = @Param("pos"))
-	public BlockContainerJS block(BlockPos pos)
+	public BlockContainerJS getBlock(BlockPos pos)
 	{
-		return new BlockContainerJS(this, pos);
+		return new BlockContainerJS(world, pos);
 	}
 
 	@Nullable
-	public PlayerDataJS playerData(UUID id)
+	public PlayerDataJS getPlayerData(UUID id)
 	{
 		return null;
 	}
 
 	@Nullable
 	@DocMethod
-	public EntityJS entity(@Nullable Entity entity)
+	public EntityJS getEntity(@Nullable Entity entity)
 	{
 		if (entity == null)
 		{
@@ -132,14 +132,14 @@ public class WorldJS implements ICommandSender
 		}
 		else if (entity instanceof EntityPlayer)
 		{
-			PlayerDataJS data = playerData(entity.getUniqueID());
+			PlayerDataJS data = getPlayerData(entity.getUniqueID());
 
 			if (data == null)
 			{
 				throw new NullPointerException("Player from UUID " + entity.getUniqueID() + " not found!");
 			}
 
-			return data.player();
+			return data.getPlayer();
 		}
 		else if (entity instanceof EntityLivingBase)
 		{
@@ -149,30 +149,46 @@ public class WorldJS implements ICommandSender
 		return new EntityJS(this, entity);
 	}
 
+	@Nullable
 	@DocMethod
-	public EntityArrayList entities(Collection<? extends Entity> entities)
+	public LivingEntityJS getLivingEntity(@Nullable Entity entity)
+	{
+		EntityJS e = getEntity(entity);
+		return e instanceof LivingEntityJS ? (LivingEntityJS) e : null;
+	}
+
+	@Nullable
+	@DocMethod
+	public PlayerJS getPlayer(@Nullable Entity entity)
+	{
+		EntityJS e = getEntity(entity);
+		return e instanceof PlayerJS ? (PlayerJS) e : null;
+	}
+
+	@DocMethod
+	public EntityArrayList createEntityList(Collection<? extends Entity> entities)
 	{
 		return new EntityArrayList(this, entities);
 	}
 
 	@DocMethod
-	public EntityArrayList players()
+	public EntityArrayList getPlayers()
 	{
-		return entities(world.playerEntities);
+		return createEntityList(world.playerEntities);
 	}
 
 	@DocMethod
-	public EntityArrayList entities()
+	public EntityArrayList getEntities()
 	{
-		return entities(world.loadedEntityList);
+		return createEntityList(world.loadedEntityList);
 	}
 
 	@DocMethod
-	public EntityArrayList entities(String filter)
+	public EntityArrayList getEntities(String filter)
 	{
 		try
 		{
-			return entities(EntitySelector.matchEntities(this, filter, Entity.class));
+			return createEntityList(EntitySelector.matchEntities(new WorldCommandSender(this), filter, Entity.class));
 		}
 		catch (CommandException e)
 		{
@@ -180,34 +196,9 @@ public class WorldJS implements ICommandSender
 		}
 	}
 
-	@DocMethod(params = {@Param("x"), @Param("y"), @Param("z"), @Param("strength"), @Param("causesFire"), @Param("damagesTerrain")})
-	public void explosion(double x, double y, double z, float strength, boolean causesFire, boolean damagesTerrain)
+	@DocMethod(params = {@Param("x"), @Param("y"), @Param("z")})
+	public ExplosionJS createExplosion(double x, double y, double z)
 	{
-		world.newExplosion(null, x, y, z, strength, causesFire, damagesTerrain);
-	}
-
-	@Override
-	public String getName()
-	{
-		return "DIM" + world.provider.getDimension();
-	}
-
-	@Override
-	public boolean canUseCommand(int permLevel, String commandName)
-	{
-		return true;
-	}
-
-	@Override
-	public World getEntityWorld()
-	{
-		return world;
-	}
-
-	@Nullable
-	@Override
-	public MinecraftServer getServer()
-	{
-		return null;
+		return new ExplosionJS(this, x, y, z);
 	}
 }

@@ -1,24 +1,22 @@
 package dev.latvian.kubejs.player;
 
+import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.LivingEntityEventJS;
-import dev.latvian.kubejs.util.UtilsJS;
-import net.minecraft.entity.Entity;
 
 /**
  * @author LatvianModder
  */
-public class PlayerEventJS extends LivingEntityEventJS
+public abstract class PlayerEventJS extends LivingEntityEventJS
 {
-	public final PlayerJS player;
-
-	public PlayerEventJS(PlayerJS p)
+	public PlayerJS getPlayer()
 	{
-		super(p);
-		player = p;
-	}
+		EntityJS e = getEntity();
 
-	public PlayerEventJS(Entity p)
-	{
-		this((PlayerJS) UtilsJS.world(p.world).entity(p));
+		if (e instanceof PlayerJS)
+		{
+			return (PlayerJS) e;
+		}
+
+		throw new IllegalStateException("Entity is not a player!");
 	}
 }

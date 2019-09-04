@@ -1,41 +1,51 @@
 package dev.latvian.kubejs.block;
 
+import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
 import dev.latvian.kubejs.util.Facing;
 import dev.latvian.kubejs.world.BlockContainerJS;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+
+import javax.annotation.Nullable;
 
 /**
  * @author LatvianModder
  */
 public class BlockLeftClickEventJS extends PlayerEventJS
 {
-	public final BlockPos pos;
-	public final int x, y, z;
-	public final boolean mainHand;
-	public final Facing facing;
+	public final transient PlayerInteractEvent.LeftClickBlock event;
 
-	public BlockLeftClickEventJS(PlayerInteractEvent.LeftClickBlock event)
+	public BlockLeftClickEventJS(PlayerInteractEvent.LeftClickBlock e)
 	{
-		super(event.getEntityPlayer());
-		pos = event.getPos();
-		x = pos.getX();
-		y = pos.getY();
-		z = pos.getZ();
-		mainHand = event.getHand() == EnumHand.MAIN_HAND;
-		facing = event.getFace() == null ? null : Facing.VALUES[event.getFace().getIndex()];
+		event = e;
 	}
 
-	public ItemStackJS item()
+	@Override
+	public boolean canCancel()
 	{
-		return player.inventory().getHandItem(mainHand);
+		return true;
 	}
 
-	public BlockContainerJS block()
+	@Override
+	public EntityJS getEntity()
 	{
-		return player.world.block(pos);
+		return entityOf(event);
+	}
+
+	public BlockContainerJS getBlock()
+	{
+		return new BlockContainerJS(event.getWorld(), event.getPos());
+	}
+
+	public ItemStackJS getItem()
+	{
+		return ItemStackJS.of(event.getItemStack());
+	}
+
+	@Nullable
+	public Facing getFacing()
+	{
+		return event.getFace() == null ? null : Facing.VALUES[event.getFace().getIndex()];
 	}
 }

@@ -14,11 +14,13 @@ import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UUIDUtilsJS;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.ServerWorldJS;
+import dev.latvian.kubejs.world.WorldCommandSender;
 import dev.latvian.kubejs.world.WorldJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
@@ -74,7 +76,6 @@ public class ServerJS implements MessageSender
 		gameRules = new GameRulesJS(w.getGameRules());
 	}
 
-	@DocMethod
 	public void updateWorldList()
 	{
 		worlds.clear();
@@ -88,7 +89,7 @@ public class ServerJS implements MessageSender
 	}
 
 	@DocMethod
-	public boolean isHardcore()
+	public boolean getHardcore()
 	{
 		return server.isHardcore();
 	}
@@ -131,14 +132,14 @@ public class ServerJS implements MessageSender
 
 	@Override
 	@DocMethod
-	public String name()
+	public String getName()
 	{
 		return server.getName();
 	}
 
 	@Override
 	@DocMethod
-	public Text displayName()
+	public Text getDisplayName()
 	{
 		return Text.of(server.getDisplayName());
 	}
@@ -158,7 +159,7 @@ public class ServerJS implements MessageSender
 
 	@Override
 	@DocMethod
-	public void statusMessage(Object message)
+	public void setStatusMessage(Object message)
 	{
 		ITextComponent component = Text.of(message).component();
 
@@ -176,7 +177,7 @@ public class ServerJS implements MessageSender
 	}
 
 	@DocMethod
-	public WorldJS world(int dimension)
+	public WorldJS getWorld(int dimension)
 	{
 		if (dimension == 0)
 		{
@@ -197,13 +198,13 @@ public class ServerJS implements MessageSender
 	}
 
 	@DocMethod
-	public WorldJS world(World world)
+	public WorldJS getWorld(World world)
 	{
-		return world(world.provider.getDimension());
+		return getWorld(world.provider.getDimension());
 	}
 
 	@DocMethod
-	public PlayerJS player(UUID uuid)
+	public PlayerJS getPlayer(UUID uuid)
 	{
 		ServerPlayerDataJS p = playerMap.get(uuid);
 
@@ -212,11 +213,11 @@ public class ServerJS implements MessageSender
 			throw new NullPointerException("Player from UUID " + uuid + " not found!");
 		}
 
-		return p.player();
+		return p.getPlayer();
 	}
 
 	@DocMethod
-	public PlayerJS player(String name)
+	public PlayerJS getPlayer(String name)
 	{
 		name = name.trim().toLowerCase();
 
@@ -229,14 +230,14 @@ public class ServerJS implements MessageSender
 
 		if (uuid != null)
 		{
-			return player(uuid);
+			return getPlayer(uuid);
 		}
 
 		for (PlayerDataJS p : playerMap.values())
 		{
 			if (p.name.equalsIgnoreCase(name))
 			{
-				return p.player();
+				return p.getPlayer();
 			}
 		}
 
@@ -244,7 +245,7 @@ public class ServerJS implements MessageSender
 		{
 			if (p.name.toLowerCase().contains(name))
 			{
-				return p.player();
+				return p.getPlayer();
 			}
 		}
 
@@ -252,13 +253,19 @@ public class ServerJS implements MessageSender
 	}
 
 	@DocMethod
-	public EntityArrayList players()
+	public PlayerJS getPlayer(EntityPlayer player)
+	{
+		return getPlayer(player.getUniqueID());
+	}
+
+	@DocMethod
+	public EntityArrayList getPlayers()
 	{
 		return new EntityArrayList(overworld, server.getPlayerList().getPlayers());
 	}
 
 	@DocMethod
-	public EntityArrayList entities()
+	public EntityArrayList getEntities()
 	{
 		EntityArrayList list = new EntityArrayList(overworld, overworld.world.loadedEntityList.size());
 
@@ -266,7 +273,7 @@ public class ServerJS implements MessageSender
 		{
 			for (Entity entity : world.world.loadedEntityList)
 			{
-				list.add(world.entity(entity));
+				list.add(world.getEntity(entity));
 			}
 		}
 
@@ -274,7 +281,7 @@ public class ServerJS implements MessageSender
 	}
 
 	@DocMethod
-	public EntityArrayList entities(String filter)
+	public EntityArrayList getEntities(String filter)
 	{
 		try
 		{
@@ -282,9 +289,9 @@ public class ServerJS implements MessageSender
 
 			for (WorldJS world : worlds)
 			{
-				for (Entity entity : EntitySelector.matchEntities(world, filter, Entity.class))
+				for (Entity entity : EntitySelector.matchEntities(new WorldCommandSender(world), filter, Entity.class))
 				{
-					list.add(world.entity(entity));
+					list.add(world.getEntity(entity));
 				}
 			}
 

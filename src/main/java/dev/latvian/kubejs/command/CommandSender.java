@@ -27,31 +27,31 @@ public class CommandSender implements MessageSender
 	}
 
 	@Override
-	public String name()
+	public String getName()
 	{
 		return sender.getName();
 	}
 
 	@Override
-	public Text displayName()
+	public Text getDisplayName()
 	{
 		return Text.of(sender.getDisplayName());
 	}
 
-	public WorldJS world()
+	public WorldJS getWorld()
 	{
-		return server.world(sender.getEntityWorld());
+		return server.getWorld(sender.getEntityWorld());
 	}
 
 	public PlayerJS asPlayer() throws PlayerNotFoundException
 	{
-		return server.player(CommandBase.getCommandSenderAsPlayer(sender).getUniqueID());
+		return server.getPlayer(CommandBase.getCommandSenderAsPlayer(sender).getUniqueID());
 	}
 
-	public BlockContainerJS block()
+	public BlockContainerJS getBlock()
 	{
 		BlockPos p = sender.getPosition();
-		return world().block(p.getX(), p.getY(), p.getZ());
+		return getWorld().getBlock(p.getX(), p.getY(), p.getZ());
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class CommandSender implements MessageSender
 	}
 
 	@Override
-	public void statusMessage(Object message)
+	public void setStatusMessage(Object message)
 	{
 		if (sender instanceof EntityPlayerMP)
 		{

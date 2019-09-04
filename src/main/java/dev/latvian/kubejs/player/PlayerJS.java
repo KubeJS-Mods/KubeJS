@@ -60,7 +60,7 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS
 	}
 
 	@Override
-	public void statusMessage(Object message)
+	public void setStatusMessage(Object message)
 	{
 		player.sendStatusMessage(Text.of(message).component(), true);
 	}

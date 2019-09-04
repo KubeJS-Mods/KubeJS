@@ -20,13 +20,13 @@ public class PlayerStatsJS
 
 	public int get(Object id)
 	{
-		StatBase stat = UtilsJS.stat(id);
+		StatBase stat = UtilsJS.getStat(id);
 		return stat == null ? 0 : statFile.readStat(stat);
 	}
 
 	public void set(Object id, int value)
 	{
-		StatBase stat = UtilsJS.stat(id);
+		StatBase stat = UtilsJS.getStat(id);
 
 		if (stat != null)
 		{
@@ -36,7 +36,7 @@ public class PlayerStatsJS
 
 	public void add(Object id, int value)
 	{
-		StatBase stat = UtilsJS.stat(id);
+		StatBase stat = UtilsJS.getStat(id);
 
 		if (stat != null)
 		{

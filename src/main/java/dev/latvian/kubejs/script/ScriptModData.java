@@ -41,7 +41,7 @@ public class ScriptModData
 		return list.contains(modId);
 	}
 
-	public ModInfo info(String modID)
+	public ModInfo getInfo(String modID)
 	{
 		ModInfo info = new ModInfo(modID);
 

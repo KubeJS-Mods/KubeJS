@@ -3,7 +3,6 @@ package dev.latvian.kubejs.item;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.event.EventsJS;
-import dev.latvian.kubejs.player.PlayerEventJS;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
@@ -42,7 +41,7 @@ public class KubeJSItemEventHandler
 	@SubscribeEvent
 	public static void leftClickEmpty(PlayerInteractEvent.LeftClickEmpty event)
 	{
-		EventsJS.post(KubeJSEvents.ITEM_LEFT_CLICK, new PlayerEventJS(event.getEntityPlayer()));
+		EventsJS.post(KubeJSEvents.ITEM_LEFT_CLICK, new ItemLeftClickEventJS(event));
 	}
 
 	@SubscribeEvent

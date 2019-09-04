@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.world.ServerWorldJS;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 import javax.annotation.Nullable;
@@ -23,11 +24,11 @@ public class ServerPlayerDataJS extends PlayerDataJS<EntityPlayerMP, ServerPlaye
 	@Nullable
 	public EntityPlayerMP getPlayerEntity()
 	{
-		return server.server.getPlayerList().getPlayerByUUID(uuid);
+		return server.server.getPlayerList().getPlayerByUUID(id);
 	}
 
 	@Override
-	public ServerPlayerJS player()
+	public ServerPlayerJS getPlayer()
 	{
 		EntityPlayerMP p = getPlayerEntity();
 
@@ -36,6 +37,6 @@ public class ServerPlayerDataJS extends PlayerDataJS<EntityPlayerMP, ServerPlaye
 			throw new NullPointerException("Player entity for " + name + " not found!");
 		}
 
-		return new ServerPlayerJS(this, server.world(p.world), p);
+		return new ServerPlayerJS(this, (ServerWorldJS) server.getWorld(p.world), p);
 	}
 }

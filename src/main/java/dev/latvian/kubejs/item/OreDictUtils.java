@@ -24,7 +24,7 @@ public class OreDictUtils
 
 	public static void add(IngredientJS ingredient, String name)
 	{
-		for (ItemStackJS stack : ingredient.stacks())
+		for (ItemStackJS stack : ingredient.getStacks())
 		{
 			OreDictionary.registerOre(name, stack.itemStack());
 		}
@@ -34,7 +34,7 @@ public class OreDictUtils
 	{
 		if (idToStack == null)
 		{
-			idToStack = UtilsJS.field(OreDictionary.class, "idToStack").staticGet();
+			idToStack = UtilsJS.getField(OreDictionary.class, "idToStack").staticGet();
 
 			if (idToStack == null)
 			{

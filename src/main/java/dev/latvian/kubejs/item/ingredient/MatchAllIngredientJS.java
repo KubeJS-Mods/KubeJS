@@ -24,7 +24,7 @@ public class MatchAllIngredientJS implements IngredientJS
 	}
 
 	@Override
-	public Set<ItemStackJS> stacks()
+	public Set<ItemStackJS> getStacks()
 	{
 		return new LinkedHashSet<>(ItemStackJS.list());
 	}

@@ -35,8 +35,9 @@ public enum FluidUtilsJS
 		}
 		else if (o instanceof CharSequence)
 		{
-			Fluid fluid = FluidRegistry.getFluid(o.toString());
-			return fluid == null ? null : new FluidStack(fluid, Fluid.BUCKET_VOLUME);
+			String[] s = o.toString().split(" ", 2);
+			Fluid fluid = FluidRegistry.getFluid(s[0]);
+			return fluid == null ? null : new FluidStack(fluid, UtilsJS.parseInt(s.length == 2 ? s[1] : "", Fluid.BUCKET_VOLUME));
 		}
 		else if (o instanceof Fluid)
 		{

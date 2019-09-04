@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.item;
 
+import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -9,11 +10,21 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
  */
 public class ItemRightClickEmptyEventJS extends PlayerEventJS
 {
-	public final boolean mainHand;
+	public final transient PlayerInteractEvent.RightClickEmpty event;
 
-	public ItemRightClickEmptyEventJS(PlayerInteractEvent.RightClickEmpty event)
+	public ItemRightClickEmptyEventJS(PlayerInteractEvent.RightClickEmpty e)
 	{
-		super(event.getEntityPlayer());
-		mainHand = event.getHand() == EnumHand.MAIN_HAND;
+		event = e;
+	}
+
+	@Override
+	public EntityJS getEntity()
+	{
+		return entityOf(event);
+	}
+
+	public boolean isMainHand()
+	{
+		return event.getHand() == EnumHand.MAIN_HAND;
 	}
 }

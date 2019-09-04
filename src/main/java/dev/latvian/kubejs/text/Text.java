@@ -225,7 +225,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 			component.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover.component()));
 		}
 
-		for (Text text : siblings())
+		for (Text text : getSiblings())
 		{
 			component.appendSibling(text.component());
 		}
@@ -247,7 +247,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		t.click = click;
 		t.hover = hover == null ? null : hover.copy();
 
-		for (Text child : siblings())
+		for (Text child : getSiblings())
 		{
 			t.append(child.copy());
 		}
@@ -304,11 +304,11 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 			json.add("hover", hover.json());
 		}
 
-		if (!siblings().isEmpty())
+		if (!getSiblings().isEmpty())
 		{
 			JsonArray array = new JsonArray();
 
-			for (Text child : siblings())
+			for (Text child : getSiblings())
 			{
 				array.add(child.json());
 			}
@@ -349,7 +349,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	@Override
 	public final Iterator<Text> iterator()
 	{
-		if (siblings().isEmpty())
+		if (getSiblings().isEmpty())
 		{
 			return Collections.singleton(this).iterator();
 		}
@@ -357,7 +357,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		List<Text> list = new ArrayList<>();
 		list.add(this);
 
-		for (Text child : siblings())
+		for (Text child : getSiblings())
 		{
 			for (Text part : child)
 			{
@@ -570,7 +570,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	}
 
 	@DocMethod(value = "List of siblings")
-	public final List<Text> siblings()
+	public final List<Text> getSiblings()
 	{
 		return siblings == null ? Collections.emptyList() : siblings;
 	}

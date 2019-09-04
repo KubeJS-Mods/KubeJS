@@ -42,13 +42,13 @@ public class MatchAnyIngredientJS implements IngredientJS
 	}
 
 	@Override
-	public Set<ItemStackJS> stacks()
+	public Set<ItemStackJS> getStacks()
 	{
 		Set<ItemStackJS> set = new LinkedHashSet<>();
 
 		for (IngredientJS ingredient : ingredients)
 		{
-			set.addAll(ingredient.stacks());
+			set.addAll(ingredient.getStacks());
 		}
 
 		return set;

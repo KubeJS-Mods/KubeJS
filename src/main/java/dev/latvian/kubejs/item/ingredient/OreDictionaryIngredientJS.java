@@ -44,7 +44,7 @@ public class OreDictionaryIngredientJS implements IngredientJS
 	}
 
 	@Override
-	public Set<ItemStackJS> stacks()
+	public Set<ItemStackJS> getStacks()
 	{
 		Set<ItemStackJS> set = new LinkedHashSet<>();
 

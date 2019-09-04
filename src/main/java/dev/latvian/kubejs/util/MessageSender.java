@@ -13,19 +13,19 @@ import dev.latvian.kubejs.text.TextString;
 public interface MessageSender
 {
 	@DocMethod
-	String name();
+	String getName();
 
 	@DocMethod
-	default Text displayName()
+	default Text getDisplayName()
 	{
-		return new TextString(name());
+		return new TextString(getName());
 	}
 
 	@DocMethod(value = "Tell message in chat", params = @Param(value = "text", type = Text.class))
 	void tell(Object message);
 
 	@DocMethod(value = "Set status message", params = @Param(value = "text", type = Text.class))
-	default void statusMessage(Object message)
+	default void setStatusMessage(Object message)
 	{
 	}
 

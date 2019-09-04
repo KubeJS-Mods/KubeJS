@@ -7,17 +7,27 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
  */
 public class LivingEntityDeathEventJS extends LivingEntityEventJS
 {
-	public final DamageSourceJS source;
+	public final transient LivingDeathEvent event;
 
-	public LivingEntityDeathEventJS(LivingDeathEvent event)
+	public LivingEntityDeathEventJS(LivingDeathEvent e)
 	{
-		super(event.getEntity());
-		source = new DamageSourceJS(world, event.getSource());
+		event = e;
 	}
 
 	@Override
 	public boolean canCancel()
 	{
 		return true;
+	}
+
+	@Override
+	public EntityJS getEntity()
+	{
+		return entityOf(event);
+	}
+
+	public DamageSourceJS getSource()
+	{
+		return new DamageSourceJS(getWorld(), event.getSource());
 	}
 }

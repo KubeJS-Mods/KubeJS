@@ -5,12 +5,7 @@ import dev.latvian.kubejs.event.EventJS;
 /**
  * @author LatvianModder
  */
-public class ServerEventJS extends EventJS
+public abstract class ServerEventJS extends EventJS
 {
-	public final ServerJS server;
-
-	public ServerEventJS(ServerJS s)
-	{
-		server = s;
-	}
+	public abstract ServerJS getServer();
 }

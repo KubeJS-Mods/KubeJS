@@ -38,7 +38,7 @@ public class UtilsJS
 	}
 
 	@SuppressWarnings("deprecation")
-	public static FieldJS field(String className, String fieldName)
+	public static FieldJS getField(String className, String fieldName)
 	{
 		try
 		{
@@ -51,7 +51,7 @@ public class UtilsJS
 	}
 
 	@SuppressWarnings("deprecation")
-	public static FieldJS field(Class className, String fieldName)
+	public static FieldJS getField(Class className, String fieldName)
 	{
 		try
 		{
@@ -65,14 +65,25 @@ public class UtilsJS
 
 	public static int parseInt(@Nullable Object object, int def)
 	{
-		if (object instanceof Number)
+		if (object == null)
+		{
+			return def;
+		}
+		else if (object instanceof Number)
 		{
 			return ((Number) object).intValue();
 		}
 
 		try
 		{
-			return Integer.parseInt(String.valueOf(object));
+			String s = object.toString();
+
+			if (s.isEmpty())
+			{
+				return def;
+			}
+
+			return Integer.parseInt(s);
 		}
 		catch (Exception ex)
 		{
@@ -82,13 +93,24 @@ public class UtilsJS
 
 	public static double parseDouble(@Nullable Object object, double def)
 	{
-		if (object instanceof Number)
+		if (object == null)
+		{
+			return def;
+		}
+		else if (object instanceof Number)
 		{
 			return ((Number) object).doubleValue();
 		}
 
 		try
 		{
+			String s = object.toString();
+
+			if (s.isEmpty())
+			{
+				return def;
+			}
+
 			return Double.parseDouble(String.valueOf(object));
 		}
 		catch (Exception ex)
@@ -98,7 +120,7 @@ public class UtilsJS
 	}
 
 	@Nullable
-	public static StatBase stat(@Nullable Object id)
+	public static StatBase getStat(@Nullable Object id)
 	{
 		if (id == null)
 		{
@@ -112,24 +134,24 @@ public class UtilsJS
 		return statMap.get(new ID(id));
 	}
 
-	public static String toolType(String id)
+	public static String getToolType(String id)
 	{
 		return id;
 	}
 
-	public static WorldJS world(World world)
+	public static WorldJS getWorld(World world)
 	{
 		if (world.isRemote)
 		{
-			return clientWorld();
+			return getClientWorld();
 		}
 		else
 		{
-			return ServerJS.instance.world(world);
+			return ServerJS.instance.getWorld(world);
 		}
 	}
 
-	public static WorldJS clientWorld()
+	public static WorldJS getClientWorld()
 	{
 		return ClientWorldJS.get();
 	}

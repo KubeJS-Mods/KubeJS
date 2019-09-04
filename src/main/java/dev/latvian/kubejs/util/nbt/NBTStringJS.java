@@ -31,7 +31,7 @@ public class NBTStringJS implements NBTBaseJS
 
 	public int hashCode()
 	{
-		return 0;
+		return string.hashCode();
 	}
 
 	@Nullable

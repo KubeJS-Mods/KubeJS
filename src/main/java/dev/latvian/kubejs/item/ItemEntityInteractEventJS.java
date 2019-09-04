@@ -2,7 +2,6 @@ package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
@@ -11,29 +10,37 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
  */
 public class ItemEntityInteractEventJS extends PlayerEventJS
 {
-	public final transient Entity entity;
-	public final boolean mainHand;
+	public final transient PlayerInteractEvent.EntityInteract event;
 
-	public ItemEntityInteractEventJS(PlayerInteractEvent.EntityInteract event)
+	public ItemEntityInteractEventJS(PlayerInteractEvent.EntityInteract e)
 	{
-		super(event.getEntityPlayer());
-		entity = event.getTarget();
-		mainHand = event.getHand() == EnumHand.MAIN_HAND;
-	}
-
-	public ItemStackJS item()
-	{
-		return player.inventory().getHandItem(mainHand);
-	}
-
-	public EntityJS entity()
-	{
-		return player.world.entity(entity);
+		event = e;
 	}
 
 	@Override
 	public boolean canCancel()
 	{
 		return true;
+	}
+
+	@Override
+	public EntityJS getEntity()
+	{
+		return entityOf(event);
+	}
+
+	public boolean isMainHand()
+	{
+		return event.getHand() == EnumHand.MAIN_HAND;
+	}
+
+	public ItemStackJS getItem()
+	{
+		return ItemStackJS.of(event.getItemStack());
+	}
+
+	public EntityJS getTarget()
+	{
+		return getWorld().getEntity(event.getTarget());
 	}
 }

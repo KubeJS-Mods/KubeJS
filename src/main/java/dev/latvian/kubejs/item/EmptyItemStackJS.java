@@ -107,7 +107,7 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public Set<ItemStackJS> stacks()
+	public Set<ItemStackJS> getStacks()
 	{
 		return Collections.emptySet();
 	}

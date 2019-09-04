@@ -7,19 +7,32 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
  */
 public class LivingEntityAttackEventJS extends LivingEntityEventJS
 {
-	public final DamageSourceJS source;
-	public final float amount;
+	public final transient LivingAttackEvent event;
 
-	public LivingEntityAttackEventJS(LivingAttackEvent event)
+	public LivingEntityAttackEventJS(LivingAttackEvent e)
 	{
-		super(event.getEntity());
-		source = new DamageSourceJS(world, event.getSource());
-		amount = event.getAmount();
+		event = e;
 	}
 
 	@Override
 	public boolean canCancel()
 	{
 		return true;
+	}
+
+	@Override
+	public EntityJS getEntity()
+	{
+		return entityOf(event);
+	}
+
+	public DamageSourceJS getSource()
+	{
+		return new DamageSourceJS(getWorld(), event.getSource());
+	}
+
+	public float getDamage()
+	{
+		return event.getAmount();
 	}
 }

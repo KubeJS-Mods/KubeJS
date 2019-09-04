@@ -63,7 +63,7 @@ public interface IngredientJS
 		return false;
 	}
 
-	default Set<ItemStackJS> stacks()
+	default Set<ItemStackJS> getStacks()
 	{
 		Set<ItemStackJS> set = new LinkedHashSet<>();
 
@@ -93,9 +93,9 @@ public interface IngredientJS
 		return new NotIngredientJS(this);
 	}
 
-	default ItemStackJS firstMatching()
+	default ItemStackJS getFirst()
 	{
-		for (ItemStackJS stack : stacks())
+		for (ItemStackJS stack : getStacks())
 		{
 			if (!stack.isEmpty())
 			{

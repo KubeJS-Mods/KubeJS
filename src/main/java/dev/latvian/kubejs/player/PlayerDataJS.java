@@ -1,5 +1,8 @@
 package dev.latvian.kubejs.player;
 
+import dev.latvian.kubejs.documentation.DocClass;
+import dev.latvian.kubejs.documentation.DocField;
+import dev.latvian.kubejs.documentation.DocMethod;
 import net.minecraft.entity.player.EntityPlayer;
 
 import javax.annotation.Nullable;
@@ -10,15 +13,21 @@ import java.util.UUID;
 /**
  * @author LatvianModder
  */
+@DocClass
 public abstract class PlayerDataJS<E extends EntityPlayer, P extends PlayerJS<E>>
 {
-	public final UUID uuid;
+	@DocField
+	public final UUID id;
+
+	@DocField
 	public final String name;
+
+	@DocField
 	public final Map<String, Object> data;
 
-	public PlayerDataJS(UUID id, String n)
+	public PlayerDataJS(UUID i, String n)
 	{
-		uuid = id;
+		id = i;
 		name = n;
 		data = new HashMap<>();
 	}
@@ -26,5 +35,6 @@ public abstract class PlayerDataJS<E extends EntityPlayer, P extends PlayerJS<E>
 	@Nullable
 	public abstract E getPlayerEntity();
 
-	public abstract P player();
+	@DocMethod
+	public abstract P getPlayer();
 }

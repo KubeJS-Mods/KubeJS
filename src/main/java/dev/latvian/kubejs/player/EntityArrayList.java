@@ -32,18 +32,18 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 		for (Entity entity : c)
 		{
-			add(world.entity(entity));
+			add(world.getEntity(entity));
 		}
 	}
 
 	@Override
-	public String name()
+	public String getName()
 	{
 		return toString();
 	}
 
 	@Override
-	public Text displayName()
+	public Text getDisplayName()
 	{
 		return new TextString(toString()).lightPurple();
 	}
@@ -60,7 +60,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 	}
 
 	@Override
-	public void statusMessage(Object message)
+	public void setStatusMessage(Object message)
 	{
 		ITextComponent component = Text.of(message).component();
 

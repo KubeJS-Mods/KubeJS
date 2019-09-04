@@ -11,16 +11,23 @@ import java.util.function.Consumer;
  */
 public class CommandRegistryEventJS extends ServerEventJS
 {
+	private final ServerJS server;
 	private final Consumer<CommandBase> callback;
 
 	public CommandRegistryEventJS(ServerJS s, Consumer<CommandBase> c)
 	{
-		super(s);
+		server = s;
 		callback = c;
 	}
 
-	public CommandProperties create(String name)
+	@Override
+	public ServerJS getServer()
 	{
-		return new CommandProperties(callback, name);
+		return server;
+	}
+
+	public CommandBuilder create(String name)
+	{
+		return new CommandBuilder(callback, name);
 	}
 }

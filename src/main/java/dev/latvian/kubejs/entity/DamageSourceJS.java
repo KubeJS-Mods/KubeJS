@@ -10,18 +10,29 @@ import javax.annotation.Nullable;
  */
 public class DamageSourceJS
 {
-	public final String type;
+	public final WorldJS world;
+	public final transient DamageSource source;
 
-	@Nullable
-	public final EntityJS immediate;
-
-	@Nullable
-	public final EntityJS actual;
-
-	public DamageSourceJS(WorldJS world, DamageSource damageSource)
+	public DamageSourceJS(WorldJS w, DamageSource s)
 	{
-		type = damageSource.damageType;
-		immediate = world.entity(damageSource.getImmediateSource());
-		actual = world.entity(damageSource.getTrueSource());
+		world = w;
+		source = s;
+	}
+
+	public String getType()
+	{
+		return source.damageType;
+	}
+
+	@Nullable
+	public EntityJS getImmediate()
+	{
+		return world.getEntity(source.getImmediateSource());
+	}
+
+	@Nullable
+	public EntityJS getActual()
+	{
+		return world.getEntity(source.getImmediateSource());
 	}
 }

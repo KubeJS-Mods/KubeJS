@@ -1,8 +1,9 @@
 package dev.latvian.kubejs.player;
 
+import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextTranslate;
-import dev.latvian.kubejs.world.WorldJS;
+import dev.latvian.kubejs.world.ServerWorldJS;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 /**
@@ -10,9 +11,12 @@ import net.minecraft.entity.player.EntityPlayerMP;
  */
 public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 {
-	public ServerPlayerJS(PlayerDataJS d, WorldJS w, EntityPlayerMP p)
+	public final ServerJS server;
+
+	public ServerPlayerJS(ServerPlayerDataJS d, ServerWorldJS w, EntityPlayerMP p)
 	{
 		super(d, w, p);
+		server = w.server;
 	}
 
 	@Override

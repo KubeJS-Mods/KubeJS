@@ -27,7 +27,7 @@ public class PlayerInventoryJS extends InventoryJS
 
 	public void giveInHand(Object item)
 	{
-		ItemHandlerHelper.giveItemToPlayer(player.player, ItemStackJS.of(item).itemStack(), selectedSlot());
+		ItemHandlerHelper.giveItemToPlayer(player.player, ItemStackJS.of(item).itemStack(), getSelectedSlot());
 	}
 
 	public ItemStackJS getEquipment(EntityEquipmentSlot slot)
@@ -40,7 +40,7 @@ public class PlayerInventoryJS extends InventoryJS
 		player.player.setItemStackToSlot(slot, ItemStackJS.of(item).itemStack());
 	}
 
-	public int selectedSlot()
+	public int getSelectedSlot()
 	{
 		return player.player.inventory.currentItem;
 	}

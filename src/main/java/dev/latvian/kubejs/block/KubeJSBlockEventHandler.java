@@ -43,10 +43,7 @@ public class KubeJSBlockEventHandler
 	@SubscribeEvent
 	public static void blockBreak(BlockEvent.BreakEvent event)
 	{
-		BlockBreakEventJS e = new BlockBreakEventJS(event);
-		boolean post = EventsJS.post(KubeJSEvents.BLOCK_BREAK, e);
-		event.setExpToDrop(e.xp);
-		if (post)
+		if (EventsJS.post(KubeJSEvents.BLOCK_BREAK, new BlockBreakEventJS(event)))
 		{
 			event.setCanceled(true);
 		}

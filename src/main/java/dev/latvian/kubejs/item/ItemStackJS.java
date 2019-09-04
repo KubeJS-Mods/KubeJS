@@ -2,6 +2,7 @@ package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.item.ingredient.OreDictionaryIngredientJS;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import jdk.nashorn.api.scripting.JSObject;
@@ -35,6 +36,10 @@ public abstract class ItemStackJS implements IngredientJS
 		{
 			return (ItemStackJS) o;
 		}
+		else if (o instanceof IngredientJS)
+		{
+			return ((IngredientJS) o).getFirst();
+		}
 		else if (o instanceof ItemStack)
 		{
 			ItemStack stack = (ItemStack) o;
@@ -44,7 +49,7 @@ public abstract class ItemStackJS implements IngredientJS
 		{
 			JSObject js = (JSObject) o;
 
-			if (js.getMember("item") instanceof CharSequence)
+			if (js.getMember("item") instanceof String)
 			{
 				Item item = Item.REGISTRY.getObject(new ResourceLocation(KubeJS.appendModId(js.getMember("item").toString())));
 
@@ -72,6 +77,10 @@ public abstract class ItemStackJS implements IngredientJS
 
 				return EmptyItemStackJS.INSTANCE;
 			}
+			else if (js.getMember("ore") instanceof String)
+			{
+				return new OreDictionaryIngredientJS(js.getMember("ore").toString()).getFirst();
+			}
 		}
 
 		String s0 = String.valueOf(o).trim();
@@ -82,7 +91,14 @@ public abstract class ItemStackJS implements IngredientJS
 		}
 
 		String[] s = s0.split("\\s", 4);
-		Item item = Item.REGISTRY.getObject(new ResourceLocation(KubeJS.appendModId(s[0])));
+		ResourceLocation id = new ResourceLocation(KubeJS.appendModId(s[0]));
+
+		if (id.getNamespace().equals("ore"))
+		{
+			return new OreDictionaryIngredientJS(id.getPath()).getFirst();
+		}
+
+		Item item = Item.REGISTRY.getObject(id);
 
 		if (item != null && item != Items.AIR)
 		{
@@ -128,7 +144,7 @@ public abstract class ItemStackJS implements IngredientJS
 
 		return list;
 	}
-	
+
 	public abstract Item item();
 
 	public ID id()
@@ -239,13 +255,13 @@ public abstract class ItemStackJS implements IngredientJS
 	}
 
 	@Override
-	public Set<ItemStackJS> stacks()
+	public Set<ItemStackJS> getStacks()
 	{
 		return Collections.singleton(this);
 	}
 
 	@Override
-	public ItemStackJS firstMatching()
+	public ItemStackJS getFirst()
 	{
 		return this;
 	}
