@@ -332,17 +332,29 @@ public class ServerJS implements MessageSender
 	}
 
 	@DocMethod
-	public ScheduledEvent schedule(long timer, IScheduledEventCallback event)
+	public ScheduledEvent schedule(long timer, @Nullable Object data, IScheduledEventCallback event)
 	{
-		ScheduledEvent e = new ScheduledEvent(this, timer, event);
+		ScheduledEvent e = new ScheduledEvent(this, timer, data, event);
 		scheduledEvents.add(e);
 		return e;
 	}
 
+	@DocMethod
+	public ScheduledEvent schedule(long timer, IScheduledEventCallback event)
+	{
+		return schedule(timer, null, event);
+	}
+
 	//TODO: Implement this better with actual tick checking
+	@DocMethod
+	public ScheduledEvent scheduleInTicks(long ticks, @Nullable Object data, IScheduledEventCallback event)
+	{
+		return schedule(ticks * 50L, data, event);
+	}
+
 	@DocMethod
 	public ScheduledEvent scheduleInTicks(long ticks, IScheduledEventCallback event)
 	{
-		return schedule(ticks * 50L, event);
+		return scheduleInTicks(ticks, null, event);
 	}
 }
