@@ -32,14 +32,8 @@ public class OreDictWrapper
 	}
 
 	@DocMethod(params = @Param(value = "item", type = ItemStackJS.class))
-	public List<String> names(Object item)
+	public List<String> getNames(Object item)
 	{
-		return OreDictUtils.names(ItemStackJS.of(item));
-	}
-
-	@DocMethod
-	public List<ItemStackJS> items(String ore)
-	{
-		return OreDictUtils.items(ore);
+		return OreDictUtils.getNames(ItemStackJS.of(item));
 	}
 }

@@ -5,11 +5,13 @@ import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.documentation.Param;
+import dev.latvian.kubejs.player.AdvancementJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.player.ServerPlayerDataJS;
 import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UUIDUtilsJS;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
@@ -17,6 +19,7 @@ import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldCommandSender;
 import dev.latvian.kubejs.world.WorldJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.entity.Entity;
@@ -46,6 +49,7 @@ public class ServerJS implements MessageSender
 
 	public final transient MinecraftServer server;
 	public final List<ScheduledEvent> scheduledEvents;
+	public final List<ScheduledEvent> scheduledTickEvents;
 	public final Int2ObjectOpenHashMap<ServerWorldJS> worldMap;
 	public final Map<UUID, ServerPlayerDataJS> playerMap;
 
@@ -65,6 +69,7 @@ public class ServerJS implements MessageSender
 	{
 		server = ms;
 		scheduledEvents = new LinkedList<>();
+		scheduledTickEvents = new LinkedList<>();
 		worldMap = new Int2ObjectOpenHashMap<>();
 		playerMap = new HashMap<>();
 
@@ -306,7 +311,7 @@ public class ServerJS implements MessageSender
 	@DocMethod
 	public ScheduledEvent schedule(long timer, @Nullable Object data, IScheduledEventCallback event)
 	{
-		ScheduledEvent e = new ScheduledEvent(this, timer, data, event);
+		ScheduledEvent e = new ScheduledEvent(this, timer, System.currentTimeMillis() + timer, data, event);
 		scheduledEvents.add(e);
 		return e;
 	}
@@ -317,11 +322,12 @@ public class ServerJS implements MessageSender
 		return schedule(timer, null, event);
 	}
 
-	//TODO: Implement this better with actual tick checking
 	@DocMethod
 	public ScheduledEvent scheduleInTicks(long ticks, @Nullable Object data, IScheduledEventCallback event)
 	{
-		return schedule(ticks * 50L, data, event);
+		ScheduledEvent e = new ScheduledEvent(this, ticks, overworld.getTime() + ticks, data, event);
+		scheduledEvents.add(e);
+		return e;
 	}
 
 	@DocMethod
@@ -334,5 +340,12 @@ public class ServerJS implements MessageSender
 	public String toString()
 	{
 		return "Server";
+	}
+
+	@Nullable
+	public AdvancementJS getAdvancement(Object id)
+	{
+		Advancement a = server.getAdvancementManager().getAdvancement(new ID(id).mc());
+		return a == null ? null : new AdvancementJS(a);
 	}
 }

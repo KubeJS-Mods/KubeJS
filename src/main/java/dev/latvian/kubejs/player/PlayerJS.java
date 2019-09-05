@@ -4,10 +4,14 @@ import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.entity.LivingEntityJS;
+import dev.latvian.kubejs.item.InventoryJS;
+import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.wrapper.InvWrapper;
 
 import java.util.Map;
 
@@ -22,7 +26,7 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS
 	@DocField("Temporary data, mods can attach objects to this")
 	public final Map<String, Object> data;
 
-	private PlayerInventoryJS inventory;
+	private InventoryJS inventory;
 
 	public PlayerJS(PlayerDataJS d, WorldJS w, E p)
 	{
@@ -38,14 +42,29 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS
 	}
 
 	@DocMethod
-	public PlayerInventoryJS inventory()
+	public InventoryJS inventory()
 	{
 		if (inventory == null)
 		{
-			inventory = new PlayerInventoryJS(this);
+			inventory = new InventoryJS(new InvWrapper(player.inventory));
 		}
 
 		return inventory;
+	}
+
+	public void give(Object item)
+	{
+		ItemHandlerHelper.giveItemToPlayer(player, ItemStackJS.of(item).itemStack());
+	}
+
+	public void giveInHand(Object item)
+	{
+		ItemHandlerHelper.giveItemToPlayer(player, ItemStackJS.of(item).itemStack(), getSelectedSlot());
+	}
+
+	public int getSelectedSlot()
+	{
+		return player.inventory.currentItem;
 	}
 
 	@Override

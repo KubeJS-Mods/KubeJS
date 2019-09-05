@@ -30,12 +30,12 @@ public class ScheduledEvent
 	public final transient ScriptFile file;
 	private final IScheduledEventCallback callback;
 
-	public ScheduledEvent(ServerJS s, long t, @Nullable Object d, IScheduledEventCallback c)
+	public ScheduledEvent(ServerJS s, long t, long e, @Nullable Object d, IScheduledEventCallback c)
 	{
 		server = s;
 		file = ScriptManager.instance.currentFile;
 		timer = t;
-		endTime = System.currentTimeMillis() + timer;
+		endTime = e;
 		data = d;
 		callback = c;
 	}

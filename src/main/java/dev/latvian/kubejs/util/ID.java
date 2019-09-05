@@ -70,6 +70,10 @@ public final class ID implements Comparable<ID>
 			ID id = (ID) o;
 			return namespace.equals(id.namespace) && path.equals(id.path);
 		}
+		else if (o instanceof CharSequence)
+		{
+			return o.toString().equals(toString());
+		}
 
 		return false;
 	}

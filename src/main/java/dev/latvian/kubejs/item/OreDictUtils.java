@@ -50,7 +50,7 @@ public class OreDictUtils
 		}
 	}
 
-	public static List<String> names(ItemStackJS item)
+	public static List<String> getNames(ItemStackJS item)
 	{
 		if (item.isEmpty())
 		{
@@ -63,25 +63,6 @@ public class OreDictUtils
 		for (int value : ai)
 		{
 			list.add(OreDictionary.getOreName(value));
-		}
-
-		return list;
-	}
-
-	public static List<ItemStackJS> items(String ore)
-	{
-		List<ItemStack> l = OreDictionary.getOres(ore);
-
-		if (l.isEmpty())
-		{
-			return Collections.emptyList();
-		}
-
-		List<ItemStackJS> list = new ObjectArrayList<>(l.size());
-
-		for (ItemStack stack : l)
-		{
-			list.add(ItemStackJS.of(stack));
 		}
 
 		return list;

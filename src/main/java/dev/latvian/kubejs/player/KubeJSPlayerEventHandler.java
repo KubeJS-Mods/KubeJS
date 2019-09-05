@@ -14,6 +14,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -97,5 +98,11 @@ public class KubeJSPlayerEventHandler
 		{
 			event.setCanceled(true);
 		}
+	}
+
+	@SubscribeEvent
+	public static void onAdvancement(AdvancementEvent event)
+	{
+		EventsJS.post(KubeJSEvents.PLAYER_ADVANCEMENT, new PlayerAdvancementEventJS(event));
 	}
 }

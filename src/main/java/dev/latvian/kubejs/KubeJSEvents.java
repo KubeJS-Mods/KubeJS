@@ -24,6 +24,7 @@ import dev.latvian.kubejs.item.ItemRegistryEventJS;
 import dev.latvian.kubejs.item.ItemRightClickEmptyEventJS;
 import dev.latvian.kubejs.item.ItemRightClickEventJS;
 import dev.latvian.kubejs.item.ItemTossEventJS;
+import dev.latvian.kubejs.player.PlayerAdvancementEventJS;
 import dev.latvian.kubejs.player.PlayerChatEventJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
 import dev.latvian.kubejs.server.SimpleServerEventJS;
@@ -52,6 +53,7 @@ public class KubeJSEvents
 	public static final String PLAYER_LOGGED_OUT = "player.logged_out";
 	public static final String PLAYER_TICK = "player.tick";
 	public static final String PLAYER_CHAT = "player.chat";
+	public static final String PLAYER_ADVANCEMENT = "player.advancement";
 	public static final String ENTITY_DEATH = "entity.death";
 	public static final String ENTITY_ATTACK = "entity.attack";
 	public static final String RECIPES_REMOVE_OUTPUT = "recipes.remove.output";
@@ -103,6 +105,7 @@ public class KubeJSEvents
 		event.registerEvent(PLAYER_LOGGED_OUT, SimplePlayerEventJS.class);
 		event.registerEvent(PLAYER_TICK, SimplePlayerEventJS.class);
 		event.registerEvent(PLAYER_CHAT, PlayerChatEventJS.class);
+		event.registerEvent(PLAYER_ADVANCEMENT, PlayerAdvancementEventJS.class);
 		event.registerEvent(ENTITY_DEATH, LivingEntityDeathEventJS.class);
 		event.registerEvent(ENTITY_ATTACK, LivingEntityAttackEventJS.class);
 		event.registerEvent(RECIPES_REMOVE_OUTPUT, RemoveRecipesEventJS.class);

@@ -26,10 +26,12 @@ public class KubeJSServerEventHandler
 			return;
 		}
 
-		if (!ServerJS.instance.scheduledEvents.isEmpty())
+		ServerJS s = ServerJS.instance;
+
+		if (!s.scheduledEvents.isEmpty())
 		{
 			long now = System.currentTimeMillis();
-			Iterator<ScheduledEvent> eventIterator = ServerJS.instance.scheduledEvents.iterator();
+			Iterator<ScheduledEvent> eventIterator = s.scheduledEvents.iterator();
 			List<ScheduledEvent> list = new ArrayList<>();
 
 			while (eventIterator.hasNext())
@@ -57,6 +59,37 @@ public class KubeJSServerEventHandler
 			}
 		}
 
-		EventsJS.post(KubeJSEvents.SERVER_TICK, new SimpleServerEventJS(ServerJS.instance));
+		if (!s.scheduledTickEvents.isEmpty())
+		{
+			long now = s.overworld.getTime();
+			Iterator<ScheduledEvent> eventIterator = s.scheduledTickEvents.iterator();
+			List<ScheduledEvent> list = new ArrayList<>();
+
+			while (eventIterator.hasNext())
+			{
+				ScheduledEvent e = eventIterator.next();
+
+				if (now >= e.endTime)
+				{
+					list.add(e);
+					eventIterator.remove();
+				}
+			}
+
+			for (ScheduledEvent e : list)
+			{
+				try
+				{
+					e.call();
+				}
+				catch (Exception ex)
+				{
+					KubeJS.LOGGER.error("Error occurred while handling scheduled event callback in " + e.file.path + ": " + ex);
+					ex.printStackTrace();
+				}
+			}
+		}
+
+		EventsJS.post(KubeJSEvents.SERVER_TICK, new SimpleServerEventJS(s));
 	}
 }
