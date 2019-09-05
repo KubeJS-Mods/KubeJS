@@ -2,8 +2,10 @@ package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.OreIngredient;
 
@@ -50,7 +52,20 @@ public class OreDictionaryIngredientJS implements IngredientJS
 
 		for (ItemStack stack : OreDictionary.getOres(oreName))
 		{
-			set.add(new BoundItemStackJS(stack));
+			if (stack.getMetadata() == OreDictionary.WILDCARD_VALUE)
+			{
+				NonNullList<ItemStack> list = NonNullList.create();
+				stack.getItem().getSubItems(CreativeTabs.SEARCH, list);
+
+				for (ItemStack stack1 : list)
+				{
+					set.add(new BoundItemStackJS(stack1));
+				}
+			}
+			else
+			{
+				set.add(new BoundItemStackJS(stack.copy()).count(1));
+			}
 		}
 
 		return set;

@@ -10,7 +10,6 @@ import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.ingredient.MatchAnyIngredientJS;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -41,8 +40,6 @@ public class KubeJSCraftingEventHandler
 
 			if (!out.isEmpty())
 			{
-				Ingredient ingredientOut = out.createVanillaIngredient();
-
 				boolean frozen = r.isLocked();
 
 				if (frozen)
@@ -54,7 +51,7 @@ public class KubeJSCraftingEventHandler
 
 				for (IRecipe recipe : recipes)
 				{
-					if (ingredientOut.apply(recipe.getRecipeOutput()))
+					if (out.test(new BoundItemStackJS(recipe.getRecipeOutput())))
 					{
 						r.remove(recipe.getRegistryName());
 					}

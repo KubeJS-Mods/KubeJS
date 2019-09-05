@@ -13,10 +13,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -77,7 +79,7 @@ public abstract class ItemStackJS implements IngredientJS
 
 				return EmptyItemStackJS.INSTANCE;
 			}
-			else if (js.getMember("ore") instanceof String)
+			else if (js.getMember("ore") instanceof CharSequence)
 			{
 				return new OreDictionaryIngredientJS(js.getMember("ore").toString()).getFirst();
 			}
@@ -91,14 +93,14 @@ public abstract class ItemStackJS implements IngredientJS
 		}
 
 		String[] s = s0.split("\\s", 4);
-		ResourceLocation id = new ResourceLocation(KubeJS.appendModId(s[0]));
+		String ids = KubeJS.appendModId(s[0]);
 
-		if (id.getNamespace().equals("ore"))
+		if (ids.startsWith("ore:"))
 		{
-			return new OreDictionaryIngredientJS(id.getPath()).getFirst();
+			return new OreDictionaryIngredientJS(ids.substring(4)).getFirst();
 		}
 
-		Item item = Item.REGISTRY.getObject(id);
+		Item item = Item.REGISTRY.getObject(new ResourceLocation(ids));
 
 		if (item != null && item != Items.AIR)
 		{
@@ -168,6 +170,11 @@ public abstract class ItemStackJS implements IngredientJS
 
 	public abstract int data();
 
+	public ItemStackJS wildcardData()
+	{
+		return data(OreDictionary.WILDCARD_VALUE);
+	}
+
 	public abstract ItemStackJS nbt(@Nullable Object o);
 
 	public abstract NBTCompoundJS nbt();
@@ -214,7 +221,7 @@ public abstract class ItemStackJS implements IngredientJS
 	public String toString()
 	{
 		NBTCompoundJS out = new NBTCompoundJS();
-		out.set("item", id());
+		out.set("item", id().toString());
 
 		if (count() > 1)
 		{
@@ -242,18 +249,49 @@ public abstract class ItemStackJS implements IngredientJS
 	@Override
 	public boolean test(ItemStackJS stack)
 	{
-		return item() == stack.item() && (data() == 32767 || data() == stack.data()) && Objects.equals(nbt(), stack.nbt());
+		if (item() == stack.item())
+		{
+			int d = data();
+
+			if (d == OreDictionary.WILDCARD_VALUE || d == stack.data())
+			{
+				return Objects.equals(nbt(), stack.nbt());
+			}
+		}
+
+		return false;
 	}
 
 	@Override
 	public Set<ItemStackJS> getStacks()
 	{
+		if (data() == OreDictionary.WILDCARD_VALUE)
+		{
+			Set<ItemStackJS> set = new LinkedHashSet<>();
+			NonNullList<ItemStack> list = NonNullList.create();
+			item().getSubItems(CreativeTabs.SEARCH, list);
+
+			for (ItemStack stack1 : list)
+			{
+				set.add(new BoundItemStackJS(stack1));
+			}
+
+			return set;
+		}
+
 		return Collections.singleton(this);
 	}
 
 	@Override
 	public ItemStackJS getFirst()
 	{
+		if (data() == OreDictionary.WILDCARD_VALUE)
+		{
+			NonNullList<ItemStack> list = NonNullList.create();
+			item().getSubItems(CreativeTabs.SEARCH, list);
+			return list.isEmpty() ? EmptyItemStackJS.INSTANCE : new BoundItemStackJS(list.get(0));
+		}
+
 		return this;
 	}
 

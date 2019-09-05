@@ -65,9 +65,9 @@ public class JsonUtilsJS
 		{
 			return (JsonElement) o;
 		}
-		else if (o instanceof String)
+		else if (o instanceof CharSequence)
 		{
-			return new JsonPrimitive((String) o);
+			return new JsonPrimitive(o.toString());
 		}
 		else if (o instanceof Boolean)
 		{
