@@ -2,6 +2,7 @@ package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import net.minecraft.item.ItemStack;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -19,6 +20,12 @@ public class MatchAllIngredientJS implements IngredientJS
 
 	@Override
 	public boolean test(ItemStackJS stack)
+	{
+		return !stack.isEmpty();
+	}
+
+	@Override
+	public boolean test(ItemStack stack)
 	{
 		return !stack.isEmpty();
 	}

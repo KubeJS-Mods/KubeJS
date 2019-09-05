@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.item.ingredient;
 
-import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparators;
@@ -49,7 +48,7 @@ public class VanillaIngredientWrapper extends Ingredient
 	@Override
 	public boolean apply(@Nullable ItemStack stack)
 	{
-		return stack != null && !stack.isEmpty() && ingredientJS.test(new BoundItemStackJS(stack));
+		return stack != null && !stack.isEmpty() && ingredientJS.test(stack);
 	}
 
 	@Override

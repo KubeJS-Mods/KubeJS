@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.item.ItemStackJS;
+import net.minecraft.item.ItemStack;
 
 /**
  * @author LatvianModder
@@ -16,6 +17,12 @@ public final class NotIngredientJS implements IngredientJS
 
 	@Override
 	public boolean test(ItemStackJS stack)
+	{
+		return !ingredientJS.test(stack);
+	}
+
+	@Override
+	public boolean test(ItemStack stack)
 	{
 		return !ingredientJS.test(stack);
 	}

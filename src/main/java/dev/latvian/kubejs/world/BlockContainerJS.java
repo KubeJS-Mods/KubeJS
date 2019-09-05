@@ -23,7 +23,7 @@ import java.util.Map;
  */
 public class BlockContainerJS
 {
-	private static final ID AIR_ID = new ID("minecraft:air");
+	private static final ID AIR_ID = ID.of("minecraft:air");
 
 	public final transient World world;
 	public final transient BlockPos pos;
@@ -51,12 +51,12 @@ public class BlockContainerJS
 	public ID get()
 	{
 		IBlockState state = world.getBlockState(pos);
-		return state.getBlock() == Blocks.AIR ? AIR_ID : new ID(state.getBlock().getRegistryName());
+		return state.getBlock() == Blocks.AIR ? AIR_ID : ID.of(state.getBlock().getRegistryName());
 	}
 
 	public void set(Object id, Map<?, ?> properties, int flags)
 	{
-		Block block = id instanceof Block ? (Block) id : Block.getBlockFromName(new ID(id).toString());
+		Block block = id instanceof Block ? (Block) id : Block.getBlockFromName(ID.of(id).toString());
 		IBlockState state = (block == null ? Blocks.AIR : block).getDefaultState();
 
 		if (!properties.isEmpty() && state.getBlock() != Blocks.AIR)

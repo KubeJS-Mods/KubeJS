@@ -27,7 +27,7 @@ public class ItemBuilder
 
 	public ItemBuilder(String i, Consumer<ItemBuilder> c)
 	{
-		id = new ID(KubeJS.appendModId(i));
+		id = ID.of(KubeJS.appendModId(i));
 		callback = c;
 		translationKey = id.namespace + "." + id.path;
 		maxStackSize = 64;

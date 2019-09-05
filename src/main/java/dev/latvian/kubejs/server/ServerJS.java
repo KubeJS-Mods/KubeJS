@@ -345,7 +345,7 @@ public class ServerJS implements MessageSender
 	@Nullable
 	public AdvancementJS getAdvancement(Object id)
 	{
-		Advancement a = server.getAdvancementManager().getAdvancement(new ID(id).mc());
+		Advancement a = server.getAdvancementManager().getAdvancement(ID.of(id).mc());
 		return a == null ? null : new AdvancementJS(a);
 	}
 }

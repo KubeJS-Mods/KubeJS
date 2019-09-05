@@ -41,7 +41,7 @@ public class UtilsWrapper
 
 	public ID id(Object id)
 	{
-		return id instanceof ID ? (ID) id : new ID(String.valueOf(id));
+		return ID.of(id);
 	}
 
 	public LoggerWrapperJS createLogger(String name)
@@ -110,6 +110,6 @@ public class UtilsWrapper
 	@Nullable
 	public SoundEvent getSound(Object id)
 	{
-		return ForgeRegistries.SOUND_EVENTS.getValue(new ID(id).mc());
+		return ForgeRegistries.SOUND_EVENTS.getValue(ID.of(id).mc());
 	}
 }

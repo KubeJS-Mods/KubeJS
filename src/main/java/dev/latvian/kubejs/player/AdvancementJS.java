@@ -41,7 +41,7 @@ public class AdvancementJS
 
 	public ID id()
 	{
-		return new ID(advancement.getId());
+		return ID.of(advancement.getId());
 	}
 
 	@Nullable

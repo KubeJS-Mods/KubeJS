@@ -13,7 +13,12 @@ public final class ID implements Comparable<ID>
 	public final String namespace;
 	public final String path;
 
-	public ID(@Nullable Object id)
+	public static ID of(@Nullable Object id)
+	{
+		return id instanceof ID ? (ID) id : new ID(id);
+	}
+
+	private ID(@Nullable Object id)
 	{
 		if (id == null)
 		{

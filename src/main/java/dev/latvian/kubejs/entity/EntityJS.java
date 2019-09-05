@@ -6,6 +6,7 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.Facing;
+import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
@@ -17,6 +18,7 @@ import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.util.SoundEvent;
 
 import javax.annotation.Nullable;
 import java.util.Set;
@@ -337,12 +339,12 @@ public class EntityJS implements MessageSender
 		return entity.hasCustomName();
 	}
 
-	public void setAlwaysRenderName(boolean alwaysRenderName)
+	public void setCustomNameAlwaysVisible(boolean b)
 	{
-		entity.setAlwaysRenderNameTag(alwaysRenderName);
+		entity.setAlwaysRenderNameTag(b);
 	}
 
-	public boolean getAlwaysRenderName()
+	public boolean getCustomNameAlwaysVisible()
 	{
 		return entity.getAlwaysRenderNameTag();
 	}
@@ -388,6 +390,16 @@ public class EntityJS implements MessageSender
 		if (n != null)
 		{
 			entity.getEntityData().setTag("KubeJS", n);
+		}
+	}
+
+	public void playSound(Object id, float volume, float pitch)
+	{
+		SoundEvent event = id instanceof SoundEvent ? (SoundEvent) id : SoundEvent.REGISTRY.getObject(ID.of(id).mc());
+
+		if (event != null)
+		{
+			entity.playSound(event, volume, pitch);
 		}
 	}
 }

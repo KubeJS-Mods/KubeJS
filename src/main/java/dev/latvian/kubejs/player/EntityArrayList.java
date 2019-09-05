@@ -3,10 +3,12 @@ package dev.latvian.kubejs.player;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
+import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
@@ -91,6 +93,19 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		for (EntityJS entity : this)
 		{
 			entity.kill();
+		}
+	}
+
+	public void playSound(Object id, float volume, float pitch)
+	{
+		SoundEvent event = id instanceof SoundEvent ? (SoundEvent) id : SoundEvent.REGISTRY.getObject(ID.of(id).mc());
+
+		if (event != null)
+		{
+			for (EntityJS entity : this)
+			{
+				entity.playSound(event, volume, pitch);
+			}
 		}
 	}
 

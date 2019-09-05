@@ -1,19 +1,22 @@
 package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import jdk.nashorn.api.scripting.JSObject;
+import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * @author LatvianModder
  */
 @FunctionalInterface
-public interface IngredientJS
+public interface IngredientJS extends Predicate<ItemStack>
 {
 	static IngredientJS of(@Nullable Object object)
 	{
@@ -56,6 +59,12 @@ public interface IngredientJS
 	}
 
 	boolean test(ItemStackJS stack);
+
+	@Override
+	default boolean test(ItemStack stack)
+	{
+		return test(new BoundItemStackJS(stack));
+	}
 
 	default boolean isEmpty()
 	{

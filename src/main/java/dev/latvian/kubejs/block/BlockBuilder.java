@@ -24,7 +24,7 @@ public class BlockBuilder
 
 	public BlockBuilder(String i, Consumer<BlockBuilder> c)
 	{
-		id = new ID(KubeJS.appendModId(i));
+		id = ID.of(KubeJS.appendModId(i));
 		callback = c;
 		material = MaterialListJS.INSTANCE.map.get("wood");
 		translationKey = id.namespace + "." + id.path;

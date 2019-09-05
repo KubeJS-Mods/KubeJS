@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.VanillaIngredientWrapper;
@@ -248,7 +247,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 	public void remove(@Nullable Object output)
 	{
 		IngredientJS ingredient = IngredientJS.of(output);
-		removeAdvanced(recipe -> ingredient.test(new BoundItemStackJS(recipe.getRecipeOutput())));
+		removeAdvanced(recipe -> ingredient.test(recipe.getRecipeOutput()));
 	}
 
 	public void removeID(Object id)
@@ -263,7 +262,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 				r.unfreeze();
 			}
 
-			r.remove(new ID(id).mc());
+			r.remove(ID.of(id).mc());
 
 			if (frozen)
 			{
@@ -274,7 +273,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 
 	public void removeGroup(Object id)
 	{
-		ResourceLocation group = new ID(id).mc();
+		ResourceLocation group = ID.of(id).mc();
 		removeAdvanced(recipe -> new ResourceLocation(recipe.getGroup()).equals(group));
 	}
 

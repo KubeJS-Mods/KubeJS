@@ -12,6 +12,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.OreDictionary;
@@ -157,7 +158,7 @@ public abstract class ItemStackJS implements IngredientJS
 
 	public ID id()
 	{
-		return new ID(item().getRegistryName());
+		return ID.of(item().getRegistryName());
 	}
 
 	public abstract ItemStackJS copy();
@@ -262,6 +263,24 @@ public abstract class ItemStackJS implements IngredientJS
 			if (d == OreDictionary.WILDCARD_VALUE || d == stack.data())
 			{
 				return Objects.equals(nbt(), stack.nbt());
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean test(ItemStack stack)
+	{
+		if (item() == stack.getItem())
+		{
+			int d = data();
+
+			if (d == OreDictionary.WILDCARD_VALUE || d == stack.getMetadata())
+			{
+				NBTCompoundJS nbt = nbt();
+				NBTTagCompound nbt1 = stack.getTagCompound();
+				return nbt.isNull() == (nbt1 == null) && (nbt1 == null || Objects.equals(nbt1, nbt.createNBT()));
 			}
 		}
 

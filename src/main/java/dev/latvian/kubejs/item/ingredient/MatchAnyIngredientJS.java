@@ -6,11 +6,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
  */
-public class MatchAnyIngredientJS implements IngredientJS
+public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS>
 {
 	public final List<IngredientJS> ingredients = new ArrayList<>();
 
@@ -63,5 +64,11 @@ public class MatchAnyIngredientJS implements IngredientJS
 		}
 
 		return true;
+	}
+
+	@Override
+	public void accept(IngredientJS ingredient)
+	{
+		add(ingredient);
 	}
 }

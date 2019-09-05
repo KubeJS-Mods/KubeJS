@@ -106,6 +106,12 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
+	public boolean test(ItemStack stack)
+	{
+		return false;
+	}
+
+	@Override
 	public Set<ItemStackJS> getStacks()
 	{
 		return Collections.emptySet();

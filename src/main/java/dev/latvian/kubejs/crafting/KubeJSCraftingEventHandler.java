@@ -6,7 +6,6 @@ import dev.latvian.kubejs.crafting.handlers.CraftingTableRecipeEventJS;
 import dev.latvian.kubejs.crafting.handlers.FurnaceRecipeEventJS;
 import dev.latvian.kubejs.crafting.handlers.RemoveRecipesEventJS;
 import dev.latvian.kubejs.event.EventsJS;
-import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.ingredient.MatchAnyIngredientJS;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
@@ -51,7 +50,7 @@ public class KubeJSCraftingEventHandler
 
 				for (IRecipe recipe : recipes)
 				{
-					if (out.test(new BoundItemStackJS(recipe.getRecipeOutput())))
+					if (out.test(recipe.getRecipeOutput()))
 					{
 						r.remove(recipe.getRegistryName());
 					}
@@ -65,19 +64,19 @@ public class KubeJSCraftingEventHandler
 		}
 
 		MatchAnyIngredientJS furnaceOutput = new MatchAnyIngredientJS();
-		EventsJS.post(KubeJSEvents.RECIPES_REMOVE_OUTPUT, new RemoveRecipesEventJS("minecraft", "furnace", furnaceOutput::add));
+		EventsJS.post(KubeJSEvents.RECIPES_REMOVE_OUTPUT, new RemoveRecipesEventJS("minecraft", "furnace", furnaceOutput));
 
 		if (!furnaceOutput.isEmpty())
 		{
-			FurnaceRecipes.instance().getSmeltingList().values().removeIf(stack -> furnaceOutput.test(new BoundItemStackJS(stack)));
+			FurnaceRecipes.instance().getSmeltingList().values().removeIf(furnaceOutput);
 		}
 
 		MatchAnyIngredientJS furnaceInput = new MatchAnyIngredientJS();
-		EventsJS.post(KubeJSEvents.RECIPES_REMOVE_INPUT, new RemoveRecipesEventJS("minecraft", "furnace", furnaceInput::add));
+		EventsJS.post(KubeJSEvents.RECIPES_REMOVE_INPUT, new RemoveRecipesEventJS("minecraft", "furnace", furnaceInput));
 
 		if (!furnaceInput.isEmpty())
 		{
-			FurnaceRecipes.instance().getSmeltingList().keySet().removeIf(stack -> furnaceInput.test(new BoundItemStackJS(stack)));
+			FurnaceRecipes.instance().getSmeltingList().keySet().removeIf(furnaceInput);
 		}
 	}
 }

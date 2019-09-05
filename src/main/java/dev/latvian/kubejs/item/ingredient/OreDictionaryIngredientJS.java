@@ -44,6 +44,25 @@ public class OreDictionaryIngredientJS implements IngredientJS
 	}
 
 	@Override
+	public boolean test(ItemStack stack)
+	{
+		if (stack.isEmpty())
+		{
+			return false;
+		}
+
+		for (int id : OreDictionary.getOreIDs(stack))
+		{
+			if (oreID == id)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	@Override
 	public Set<ItemStackJS> getStacks()
 	{
 		Set<ItemStackJS> set = new LinkedHashSet<>();

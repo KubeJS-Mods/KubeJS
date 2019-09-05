@@ -27,7 +27,7 @@ public class UtilsJS
 
 		for (StatBase stat : StatList.ALL_STATS)
 		{
-			statMap.put(new ID(stat.statId), stat);
+			statMap.put(ID.of(stat.statId), stat);
 		}
 	}
 
@@ -131,7 +131,7 @@ public class UtilsJS
 			return (StatBase) id;
 		}
 
-		return statMap.get(new ID(id));
+		return statMap.get(ID.of(id));
 	}
 
 	public static String getToolType(String id)
