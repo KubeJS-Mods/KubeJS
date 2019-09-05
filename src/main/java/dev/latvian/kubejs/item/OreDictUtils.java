@@ -1,16 +1,15 @@
 package dev.latvian.kubejs.item;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -38,6 +37,7 @@ public class OreDictUtils
 
 			if (idToStack == null)
 			{
+				KubeJS.LOGGER.error("Failed to load OreDictionary map, can't remove names!");
 				idToStack = Collections.emptyList();
 			}
 		}
@@ -46,18 +46,7 @@ public class OreDictUtils
 
 		if (id >= 0 && id < idToStack.size())
 		{
-			Iterator<ItemStack> itr = idToStack.get(id).iterator();
-			Ingredient ingredient1 = ingredient.createVanillaIngredient();
-
-			while (itr.hasNext())
-			{
-				ItemStack stack = itr.next();
-
-				if (ingredient1.apply(stack))
-				{
-					itr.remove();
-				}
-			}
+			idToStack.get(id).removeIf(stack -> ingredient.test(new BoundItemStackJS(stack)));
 		}
 	}
 
@@ -71,9 +60,9 @@ public class OreDictUtils
 		int[] ai = OreDictionary.getOreIDs(item.itemStack());
 		List<String> list = new ObjectArrayList<>(ai.length);
 
-		for (int i = 0; i < ai.length; i++)
+		for (int value : ai)
 		{
-			list.add(OreDictionary.getOreName(ai[i]));
+			list.add(OreDictionary.getOreName(value));
 		}
 
 		return list;
