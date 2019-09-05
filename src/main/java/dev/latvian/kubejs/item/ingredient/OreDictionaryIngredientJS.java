@@ -4,10 +4,8 @@ import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.OreIngredient;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -72,8 +70,8 @@ public class OreDictionaryIngredientJS implements IngredientJS
 	}
 
 	@Override
-	public Ingredient createVanillaIngredient()
+	public boolean isEmpty()
 	{
-		return new OreIngredient(oreName);
+		return OreDictionary.getOres(oreName).isEmpty();
 	}
 }

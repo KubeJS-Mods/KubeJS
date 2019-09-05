@@ -5,8 +5,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.item.ingredient.VanillaIngredientWrapper;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import net.minecraft.item.ItemStack;
@@ -59,11 +61,11 @@ public class CraftingTableRecipeEventJS extends EventJS
 
 		for (Map.Entry<String, Object> entry : ingredients.entrySet())
 		{
-			Ingredient i = IngredientJS.of(entry.getValue()).createVanillaIngredient();
+			IngredientJS i = IngredientJS.of(entry.getValue());
 
-			if (i != Ingredient.EMPTY && !entry.getKey().isEmpty())
+			if (!i.isEmpty() && !entry.getKey().isEmpty())
 			{
-				ingredientMap.put(entry.getKey().charAt(0), i);
+				ingredientMap.put(entry.getKey().charAt(0), new VanillaIngredientWrapper(i));
 			}
 		}
 
@@ -112,11 +114,11 @@ public class CraftingTableRecipeEventJS extends EventJS
 
 		for (Object ingredient : ingredients)
 		{
-			Ingredient i = IngredientJS.of(ingredient).createVanillaIngredient();
+			IngredientJS i = IngredientJS.of(ingredient);
 
-			if (i != Ingredient.EMPTY)
+			if (!i.isEmpty())
 			{
-				ingredientList.add(i);
+				ingredientList.add(new VanillaIngredientWrapper(i));
 			}
 		}
 
@@ -245,8 +247,8 @@ public class CraftingTableRecipeEventJS extends EventJS
 
 	public void remove(@Nullable Object output)
 	{
-		Ingredient ingredient = IngredientJS.of(output).createVanillaIngredient();
-		removeAdvanced(recipe -> ingredient.apply(recipe.getRecipeOutput()));
+		IngredientJS ingredient = IngredientJS.of(output);
+		removeAdvanced(recipe -> ingredient.test(new BoundItemStackJS(recipe.getRecipeOutput())));
 	}
 
 	public void removeID(Object id)

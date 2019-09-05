@@ -5,6 +5,9 @@ import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.management.UserListBansEntry;
+
+import java.util.Date;
 
 /**
  * @author LatvianModder
@@ -25,13 +28,21 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 		return new PlayerStatsJS(this, player.getStatFile());
 	}
 
-	public void kick(Text text)
+	public void kick(Text reason)
 	{
-		player.connection.disconnect(text.component());
+		player.connection.disconnect(reason.component());
 	}
 
 	public void kick()
 	{
-		kick(new TextTranslate("multiplayer.disconnect.kicked", new Object[0]));
+		kick(new TextTranslate("multiplayer.disconnect.kicked"));
+	}
+
+	public void ban(String banner, String reason, long expiresInMillis)
+	{
+		Date date = new Date();
+		UserListBansEntry userlistbansentry = new UserListBansEntry(player.getGameProfile(), date, banner, new Date(date.getTime() + (expiresInMillis <= 0L ? 315569260000L : expiresInMillis)), reason);
+		server.server.getPlayerList().getBannedPlayers().addEntry(userlistbansentry);
+		kick(new TextTranslate("multiplayer.disconnect.banned"));
 	}
 }

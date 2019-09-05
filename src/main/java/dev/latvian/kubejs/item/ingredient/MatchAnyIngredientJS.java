@@ -1,11 +1,8 @@
 package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.item.ItemStackJS;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.CompoundIngredient;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,29 +52,16 @@ public class MatchAnyIngredientJS implements IngredientJS
 	}
 
 	@Override
-	public Ingredient createVanillaIngredient()
-	{
-		List<Ingredient> list = new ArrayList<>(ingredients.size());
-
-		for (IngredientJS ingredient : ingredients)
-		{
-			list.add(ingredient.createVanillaIngredient());
-		}
-
-		return new CompoundIngredientWrapper(list);
-	}
-
-	@Override
 	public boolean isEmpty()
 	{
-		return ingredients.isEmpty();
-	}
-
-	private static class CompoundIngredientWrapper extends CompoundIngredient
-	{
-		private CompoundIngredientWrapper(Collection<Ingredient> children)
+		for (IngredientJS i : ingredients)
 		{
-			super(children);
+			if (!i.isEmpty())
+			{
+				return false;
+			}
 		}
+
+		return true;
 	}
 }

@@ -122,11 +122,22 @@ public abstract class AlloySmelterRecipeEventJS<T extends AlloySmelterRecipeEven
 		recipe.add();
 	}
 
-	public void remove(IngredientJS output)
+	public void remove(Object output)
+	{
+		IngredientJS ingredient = IngredientJS.of(output);
+		removePrimary(ingredient);
+		removeSecondary(ingredient);
+	}
+
+	public void removePrimary(Object output)
 	{
 	}
 
-	public void removeInput(IngredientJS input)
+	public void removeSecondary(Object output)
+	{
+	}
+
+	public void removeInput(Object input)
 	{
 	}
 }

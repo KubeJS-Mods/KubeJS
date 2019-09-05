@@ -13,6 +13,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -200,5 +201,11 @@ public class WorldJS
 	public ExplosionJS createExplosion(double x, double y, double z)
 	{
 		return new ExplosionJS(this, x, y, z);
+	}
+
+	@DocMethod(params = {@Param("x"), @Param("y"), @Param("z"), @Param("effectOnly")})
+	public void spawnLightning(double x, double y, double z, boolean effectOnly)
+	{
+		world.spawnEntity(new EntityLightningBolt(world, x, y, z, effectOnly));
 	}
 }

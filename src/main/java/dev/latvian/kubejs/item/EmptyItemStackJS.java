@@ -6,7 +6,6 @@ import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -110,12 +109,6 @@ public class EmptyItemStackJS extends ItemStackJS
 	public Set<ItemStackJS> getStacks()
 	{
 		return Collections.emptySet();
-	}
-
-	@Override
-	public Ingredient createVanillaIngredient()
-	{
-		return Ingredient.EMPTY;
 	}
 
 	@Override

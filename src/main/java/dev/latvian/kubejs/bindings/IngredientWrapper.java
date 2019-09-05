@@ -26,4 +26,10 @@ public class IngredientWrapper
 	{
 		return IngredientJS.of(object);
 	}
+
+	@DocMethod
+	public IngredientJS custom(IngredientJS ingredient)
+	{
+		return ingredient;
+	}
 }

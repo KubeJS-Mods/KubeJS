@@ -7,10 +7,11 @@ import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.OreDictionary;
@@ -18,8 +19,10 @@ import net.minecraftforge.oredict.OreDictionary;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -138,7 +141,10 @@ public abstract class ItemStackJS implements IngredientJS
 
 			for (ItemStack stack : stackList)
 			{
-				list.add(new BoundItemStackJS(stack));
+				if (!stack.isEmpty())
+				{
+					list.add(new BoundItemStackJS(stack));
+				}
 			}
 
 			stackList.clear();
@@ -296,12 +302,6 @@ public abstract class ItemStackJS implements IngredientJS
 	}
 
 	@Override
-	public Ingredient createVanillaIngredient()
-	{
-		return Ingredient.fromStacks(itemStack());
-	}
-
-	@Override
 	public int hashCode()
 	{
 		return super.hashCode();
@@ -317,5 +317,34 @@ public abstract class ItemStackJS implements IngredientJS
 		}
 
 		return false;
+	}
+
+	public Map<String, Integer> getEnchantments()
+	{
+		Map<String, Integer> map = new LinkedHashMap<>();
+
+		for (Map.Entry<Enchantment, Integer> entry : EnchantmentHelper.getEnchantments(itemStack()).entrySet())
+		{
+			map.put(entry.getKey().getName(), entry.getValue());
+		}
+
+		return map;
+	}
+
+	public void setEnchantments(Map<String, Integer> map)
+	{
+		Map<Enchantment, Integer> emap = new LinkedHashMap<>();
+
+		for (Map.Entry<String, Integer> entry : map.entrySet())
+		{
+
+		}
+
+		EnchantmentHelper.setEnchantments(emap, itemStack());
+	}
+
+	public ItemStackJS enchant(Map<String, Integer> ma)
+	{
+		return this;
 	}
 }

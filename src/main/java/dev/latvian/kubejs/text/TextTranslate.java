@@ -11,6 +11,8 @@ import net.minecraft.util.text.TextComponentTranslation;
  */
 public class TextTranslate extends Text
 {
+	private static final Object[] NO_OBJECTS = { };
+
 	private final String key;
 	private final Object[] objects;
 
@@ -26,6 +28,12 @@ public class TextTranslate extends Text
 				objects[i] = Text.of(objects[i]);
 			}
 		}
+	}
+
+	public TextTranslate(String k)
+	{
+		key = k;
+		objects = NO_OBJECTS;
 	}
 
 	@Override

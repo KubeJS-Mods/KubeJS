@@ -4,7 +4,6 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import jdk.nashorn.api.scripting.JSObject;
-import net.minecraft.item.crafting.Ingredient;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashSet;
@@ -76,11 +75,6 @@ public interface IngredientJS
 		}
 
 		return set;
-	}
-
-	default Ingredient createVanillaIngredient()
-	{
-		return new VanillaIngredient(this);
 	}
 
 	default IngredientJS filter(IngredientJS filter)

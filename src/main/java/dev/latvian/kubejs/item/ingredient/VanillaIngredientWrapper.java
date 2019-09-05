@@ -15,13 +15,13 @@ import java.util.Set;
 /**
  * @author LatvianModder
  */
-public class VanillaIngredient extends Ingredient
+public class VanillaIngredientWrapper extends Ingredient
 {
 	public final IngredientJS ingredientJS;
 	private ItemStack[] matchingStacksCache;
 	private IntList validItemStacksPackedCache;
 
-	public VanillaIngredient(IngredientJS i)
+	public VanillaIngredientWrapper(IngredientJS i)
 	{
 		super(0);
 		ingredientJS = i;

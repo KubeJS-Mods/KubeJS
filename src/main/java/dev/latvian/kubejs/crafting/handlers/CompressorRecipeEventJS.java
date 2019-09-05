@@ -3,7 +3,6 @@ package dev.latvian.kubejs.crafting.handlers;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
-import dev.latvian.kubejs.item.ingredient.IngredientJS;
 
 import java.util.Map;
 
@@ -92,11 +91,11 @@ public abstract class CompressorRecipeEventJS<T extends CompressorRecipeEventJS.
 		recipe.add();
 	}
 
-	public void remove(IngredientJS output)
+	public void remove(Object output)
 	{
 	}
 
-	public void removeInput(IngredientJS input)
+	public void removeInput(Object input)
 	{
 	}
 }
