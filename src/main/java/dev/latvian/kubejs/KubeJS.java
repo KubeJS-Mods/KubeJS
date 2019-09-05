@@ -1,5 +1,6 @@
 package dev.latvian.kubejs;
 
+import dev.latvian.kubejs.client.ClientRuntime;
 import dev.latvian.kubejs.command.CommandKubeJS;
 import dev.latvian.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.kubejs.event.EventJS;
@@ -17,6 +18,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -62,6 +64,16 @@ public class KubeJS
 		IntegrationManager.preInit();
 		ScriptManager.instance = new ScriptManager();
 		ScriptManager.instance.load();
+
+		if (event.getSide() == Side.CLIENT)
+		{
+			addClientRuntime();
+		}
+	}
+
+	private void addClientRuntime()
+	{
+		ScriptManager.instance.runtime.put("client", new ClientRuntime());
 	}
 
 	@Mod.EventHandler

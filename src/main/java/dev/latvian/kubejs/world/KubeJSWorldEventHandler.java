@@ -5,6 +5,7 @@ import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
+import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.server.AttachServerDataEvent;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.server.SimpleServerEventJS;
@@ -46,6 +47,7 @@ public class KubeJSWorldEventHandler
 		}
 
 		ServerJS.instance.updateWorldList();
+		ScriptManager.instance.runtime.put("server", ServerJS.instance);
 	}
 
 	public static void onServerStopping()
@@ -68,6 +70,7 @@ public class KubeJSWorldEventHandler
 
 		EventsJS.post(KubeJSEvents.SERVER_UNLOAD, new SimpleServerEventJS(ServerJS.instance));
 		ServerJS.instance = null;
+		ScriptManager.instance.runtime.remove("server");
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

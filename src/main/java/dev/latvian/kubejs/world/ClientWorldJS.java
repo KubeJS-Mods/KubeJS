@@ -4,6 +4,7 @@ import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.player.ClientPlayerDataJS;
 import dev.latvian.kubejs.player.PlayerDataJS;
+import dev.latvian.kubejs.script.ScriptManager;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -25,6 +26,8 @@ public class ClientWorldJS extends WorldJS
 			inst = new ClientWorldJS();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(inst, inst.data));
 			MinecraftForge.EVENT_BUS.post(new AttachPlayerDataEvent(inst.clientPlayerData, inst.clientPlayerData.data));
+			ScriptManager.instance.runtime.put("clientWorld", inst);
+			ScriptManager.instance.runtime.put("clientPlayer", inst.clientPlayerData.player);
 		}
 
 		return inst;
@@ -45,5 +48,11 @@ public class ClientWorldJS extends WorldJS
 	public PlayerDataJS getPlayerData(UUID id)
 	{
 		return id.equals(clientPlayerData.id) ? clientPlayerData : null;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "ClientWorld" + world.provider.getDimension();
 	}
 }

@@ -6,6 +6,7 @@ import dev.latvian.kubejs.script.ScriptManager;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+import javax.script.ScriptException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +88,11 @@ public class EventsJS
 			catch (Exception ex)
 			{
 				KubeJS.LOGGER.error("Error occurred while firing '" + id + "' event in " + handler.file.path + ": " + ex);
-				ex.printStackTrace();
+
+				if (!(ex instanceof ScriptException))
+				{
+					ex.printStackTrace();
+				}
 			}
 		}
 

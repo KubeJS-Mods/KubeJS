@@ -213,39 +213,30 @@ public abstract class ItemStackJS implements IngredientJS
 
 	public String toString()
 	{
-		StringBuilder builder = new StringBuilder();
+		NBTCompoundJS out = new NBTCompoundJS();
+		out.set("item", id());
 
 		if (count() > 1)
 		{
-			builder.append(count());
-			builder.append('x');
-			builder.append(' ');
+			out.set("count", count());
 		}
-
-		builder.append(item().getRegistryName());
 
 		if (item().getHasSubtypes())
 		{
-			builder.append('@');
-			builder.append(data());
+			out.set("data", data());
 		}
 
-		NBTCompoundJS nbt = nbt();
-		NBTCompoundJS caps = caps();
-
-		if (!nbt.isNull() || !caps.isNull())
+		if (!nbt().isNull())
 		{
-			builder.append(' ');
-			builder.append(nbt.getNBTString());
+			out.set("nbt", nbt());
 		}
 
-		if (!caps.isNull())
+		if (!caps().isNull())
 		{
-			builder.append(' ');
-			builder.append(caps.getNBTString());
+			out.set("caps", caps());
 		}
 
-		return builder.toString();
+		return out.toString();
 	}
 
 	@Override

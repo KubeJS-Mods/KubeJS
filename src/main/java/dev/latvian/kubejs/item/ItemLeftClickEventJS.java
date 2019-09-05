@@ -21,4 +21,9 @@ public class ItemLeftClickEventJS extends PlayerEventJS
 	{
 		return entityOf(event);
 	}
+
+	public ItemStackJS getItem()
+	{
+		return ItemStackJS.of(event.getItemStack());
+	}
 }

@@ -329,4 +329,10 @@ public class ServerJS implements MessageSender
 	{
 		return scheduleInTicks(ticks, null, event);
 	}
+
+	@Override
+	public String toString()
+	{
+		return "Server";
+	}
 }

@@ -30,4 +30,10 @@ public class ServerWorldJS extends WorldJS
 	{
 		return server.playerMap.get(id);
 	}
+
+	@Override
+	public String toString()
+	{
+		return "ServerWorld" + world.provider.getDimension();
+	}
 }
