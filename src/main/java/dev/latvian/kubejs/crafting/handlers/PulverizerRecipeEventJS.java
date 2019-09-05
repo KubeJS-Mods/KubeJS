@@ -47,7 +47,7 @@ public abstract class PulverizerRecipeEventJS<T extends PulverizerRecipeEventJS.
 
 				if (s instanceof Map && ((Map) s).containsKey("chance") && ((Map) s).containsKey("item"))
 				{
-					secondary(((Map) s).containsKey("item"), ((Number) ((Map) s).get("chance")).floatValue());
+					secondary(((Map) s).get("item"), ((Number) ((Map) s).get("chance")).floatValue());
 				}
 				else
 				{
