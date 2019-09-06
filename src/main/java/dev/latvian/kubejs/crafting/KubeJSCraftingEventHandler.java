@@ -28,14 +28,14 @@ public class KubeJSCraftingEventHandler
 	public static void registerRecipes(RegistryEvent.Register<IRecipe> event)
 	{
 		EventsJS.post(KubeJSEvents.RECIPES_CRAFTING_TABLE, new CraftingTableRecipeEventJS(event.getRegistry()));
-		EventsJS.post(KubeJSEvents.RECIPES_FURNACE, new FurnaceRecipeEventJS());
+		EventsJS.post(KubeJSEvents.RECIPES_FURNACE, new FurnaceRecipeEventJS("minecraft"));
 
 		if (event.getRegistry() instanceof ForgeRegistry)
 		{
 			ForgeRegistry<IRecipe> r = (ForgeRegistry<IRecipe>) event.getRegistry();
 
 			MatchAnyIngredientJS out = new MatchAnyIngredientJS();
-			EventsJS.post(KubeJSEvents.RECIPES_REMOVE_OUTPUT, new RemoveRecipesEventJS("minecraft", "crafting_table", out::add));
+			EventsJS.post(KubeJSEvents.RECIPES_REMOVE_OUTPUT, new RemoveRecipesEventJS("minecraft", "crafting_table", out));
 
 			if (!out.isEmpty())
 			{

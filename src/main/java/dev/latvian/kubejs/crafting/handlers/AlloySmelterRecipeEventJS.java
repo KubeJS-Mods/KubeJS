@@ -1,20 +1,23 @@
 package dev.latvian.kubejs.crafting.handlers;
 
-import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.util.UtilsJS;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author LatvianModder
  */
-public abstract class AlloySmelterRecipeEventJS<T extends AlloySmelterRecipeEventJS.AlloySmelterRecipe> extends EventJS
+public abstract class AlloySmelterRecipeEventJS<T extends AlloySmelterRecipeEventJS.AlloySmelterRecipe> extends RecipeEventBaseJS<T>
 {
-	public abstract static class AlloySmelterRecipe
+	public abstract static class AlloySmelterRecipe extends RecipeBaseJS
 	{
-		public ItemStackJS input;
+		public final List<IngredientJS> input;
 		public ItemStackJS output;
 		public ItemStackJS secondaryOutput;
 		public float secondaryOutputChance;
@@ -22,23 +25,29 @@ public abstract class AlloySmelterRecipeEventJS<T extends AlloySmelterRecipeEven
 
 		public AlloySmelterRecipe()
 		{
-			input = EmptyItemStackJS.INSTANCE;
+			input = new ArrayList<>();
 			output = EmptyItemStackJS.INSTANCE;
 			secondaryOutput = EmptyItemStackJS.INSTANCE;
 			secondaryOutputChance = 0.1F;
 			power = 1F;
 		}
 
+		@Override
 		public AlloySmelterRecipe set(Map<String, Object> properties)
 		{
-			if (properties.containsKey("in"))
+			Object in = properties.get("input");
+
+			if (in != null)
 			{
-				in(properties.get("in"));
+				for (Object o : UtilsJS.getList(in))
+				{
+					input(o);
+				}
 			}
 
-			if (properties.containsKey("out"))
+			if (properties.containsKey("output"))
 			{
-				out(properties.get("out"));
+				output(properties.get("output"));
 			}
 
 			if (properties.containsKey("secondary"))
@@ -63,13 +72,19 @@ public abstract class AlloySmelterRecipeEventJS<T extends AlloySmelterRecipeEven
 			return this;
 		}
 
-		public AlloySmelterRecipe in(Object in)
+		public AlloySmelterRecipe input(Object in)
 		{
-			input = ItemStackJS.of(in);
+			IngredientJS ingredient = IngredientJS.of(in);
+
+			if (!ingredient.isEmpty())
+			{
+				input.add(ingredient);
+			}
+
 			return this;
 		}
 
-		public AlloySmelterRecipe out(Object out)
+		public AlloySmelterRecipe output(Object out)
 		{
 			output = ItemStackJS.of(out);
 			return this;
@@ -92,36 +107,36 @@ public abstract class AlloySmelterRecipeEventJS<T extends AlloySmelterRecipeEven
 			power = relativePower;
 			return this;
 		}
-
-		public void add()
-		{
-		}
 	}
-
-	public final String mod;
 
 	public AlloySmelterRecipeEventJS(String m)
 	{
-		mod = m;
+		super(m);
 	}
 
-	protected abstract T createRecipe();
-
-	public final T create(Object in, Object out)
+	public final T create(Object in1, Object in2, Object out)
 	{
 		T recipe = createRecipe();
-		recipe.in(in);
-		recipe.out(out);
+		recipe.input(in1);
+		recipe.input(in2);
+		recipe.output(out);
 		return recipe;
 	}
 
-	public final void add(Map<String, Object> properties)
+	public final T create(Collection<Object> in, Object out)
 	{
 		T recipe = createRecipe();
-		recipe.set(properties);
-		recipe.add();
+
+		for (Object o : in)
+		{
+			recipe.input(o);
+		}
+
+		recipe.output(out);
+		return recipe;
 	}
 
+	@Override
 	public void remove(Object output)
 	{
 		IngredientJS ingredient = IngredientJS.of(output);
@@ -134,10 +149,6 @@ public abstract class AlloySmelterRecipeEventJS<T extends AlloySmelterRecipeEven
 	}
 
 	public void removeSecondary(Object output)
-	{
-	}
-
-	public void removeInput(Object input)
 	{
 	}
 }

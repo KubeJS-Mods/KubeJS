@@ -1,32 +1,110 @@
 package dev.latvian.kubejs.crafting.handlers;
 
-import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
+
+import java.util.Map;
 
 /**
  * @author LatvianModder
  */
-public class FurnaceRecipeEventJS extends EventJS
+public class FurnaceRecipeEventJS extends RecipeEventBaseJS<FurnaceRecipeEventJS.FurnaceRecipe>
 {
-	public void add(ItemStackJS input, ItemStackJS output, float experience)
+	public static class FurnaceRecipe extends RecipeBaseJS
 	{
-		FurnaceRecipes.instance().addSmeltingRecipe(input.itemStack(), output.itemStack(), experience);
+		public IngredientJS input;
+		public ItemStackJS output;
+		public float experience;
+
+		public FurnaceRecipe()
+		{
+			input = EmptyItemStackJS.INSTANCE;
+			output = EmptyItemStackJS.INSTANCE;
+			experience = 0.1F;
+		}
+
+		@Override
+		public FurnaceRecipe set(Map<String, Object> properties)
+		{
+			if (properties.containsKey("input"))
+			{
+				input(properties.get("input"));
+			}
+
+			if (properties.containsKey("output"))
+			{
+				output(properties.get("output"));
+			}
+
+			if (properties.get("xp") instanceof Number)
+			{
+				xp(((Number) properties.get("xp")).floatValue());
+			}
+
+			return this;
+		}
+
+		public FurnaceRecipe input(Object in)
+		{
+			input = IngredientJS.of(in);
+			return this;
+		}
+
+		public FurnaceRecipe output(Object out)
+		{
+			output = ItemStackJS.of(out);
+			return this;
+		}
+
+		public FurnaceRecipe xp(float xp)
+		{
+			experience = xp;
+			return this;
+		}
+
+		@Override
+		public void add()
+		{
+			ItemStack out = output.itemStack();
+
+			for (ItemStackJS in : input.getStacks())
+			{
+				FurnaceRecipes.instance().addSmeltingRecipe(in.itemStack(), out, experience);
+			}
+		}
 	}
 
-	public void add(ItemStackJS input, ItemStackJS output)
+	public FurnaceRecipeEventJS(String m)
 	{
-		add(input, output, 0F);
+		super(m);
 	}
 
-	public void remove(IngredientJS output)
+	@Override
+	protected FurnaceRecipe createRecipe()
 	{
-		FurnaceRecipes.instance().getSmeltingList().values().removeIf(output);
+		return new FurnaceRecipe();
 	}
 
-	public void removeInput(IngredientJS input)
+	public final FurnaceRecipe create(Object in, Object out)
 	{
-		FurnaceRecipes.instance().getSmeltingList().keySet().removeIf(input);
+		FurnaceRecipe recipe = createRecipe();
+		recipe.input(in);
+		recipe.output(out);
+		return recipe;
+	}
+
+	@Override
+	public void remove(Object output)
+	{
+		FurnaceRecipes.instance().getSmeltingList().values().removeIf(IngredientJS.of(output));
+	}
+
+	@Override
+	public void removeInput(Object input)
+	{
+		FurnaceRecipes.instance().getSmeltingList().keySet().removeIf(IngredientJS.of(input));
 	}
 }

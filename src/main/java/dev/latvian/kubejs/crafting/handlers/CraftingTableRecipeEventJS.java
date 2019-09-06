@@ -41,7 +41,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 		registry = r;
 	}
 
-	public void addShaped(String recipeID, String output, String[] pattern, Map<String, Object> ingredients)
+	public void addShaped(String recipeID, Object output, String[] pattern, Map<String, Object> ingredients)
 	{
 		String id = KubeJS.appendModId(recipeID);
 		ItemStack outputItem = ItemStackJS.of(output).itemStack();
@@ -93,12 +93,12 @@ public class CraftingTableRecipeEventJS extends EventJS
 		}
 	}
 
-	public void addShaped(String output, String[] pattern, Map<String, Object> ingredients)
+	public void addShaped(Object output, String[] pattern, Map<String, Object> ingredients)
 	{
-		addShaped(output, output, pattern, ingredients);
+		addShaped(output instanceof String ? output.toString() : String.valueOf(output).replaceAll("\\W", "_"), output, pattern, ingredients);
 	}
 
-	public void addShapeless(String recipeID, String output, Object[] ingredients)
+	public void addShapeless(String recipeID, Object output, Object[] ingredients)
 	{
 		String id = KubeJS.appendModId(recipeID);
 		ItemStack outputItem = ItemStackJS.of(output).itemStack();
@@ -133,17 +133,19 @@ public class CraftingTableRecipeEventJS extends EventJS
 		}
 	}
 
-	public void addShapeless(String output, Object[] ingredients)
+	public void addShapeless(Object output, Object[] ingredients)
 	{
-		addShapeless(output, output, ingredients);
+		addShapeless(output instanceof String ? output.toString() : String.valueOf(output).replaceAll("\\W", "_"), output, ingredients);
 	}
 
 	public void add(String recipeID, Object recipe)
 	{
+		ID id = ID.of(KubeJS.appendModId(recipeID));
 		JsonElement e = JsonUtilsJS.of(recipe);
 
 		if (!e.isJsonObject())
 		{
+			KubeJS.LOGGER.warn("Recipe " + id + " is not an object!");
 			return;
 		}
 
@@ -151,6 +153,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 
 		if (!o.has("type"))
 		{
+			KubeJS.LOGGER.warn("Recipe " + id + " doesn't have type!");
 			return;
 		}
 
@@ -181,7 +184,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 
 			if (r != null)
 			{
-				registry.register(r.setRegistryName(new ResourceLocation(KubeJS.appendModId(recipeID))));
+				registry.register(r.setRegistryName(id.mc()));
 			}
 		}
 		catch (Exception ex)

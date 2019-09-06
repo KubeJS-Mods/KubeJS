@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.crafting.handlers;
 
-import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
@@ -10,11 +9,11 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public abstract class PulverizerRecipeEventJS<T extends PulverizerRecipeEventJS.PulverizerRecipe> extends EventJS
+public abstract class PulverizerRecipeEventJS<T extends PulverizerRecipeEventJS.PulverizerRecipe> extends RecipeEventBaseJS<T>
 {
-	public abstract static class PulverizerRecipe
+	public abstract static class PulverizerRecipe extends RecipeBaseJS
 	{
-		public ItemStackJS input;
+		public IngredientJS input;
 		public ItemStackJS output;
 		public ItemStackJS secondaryOutput;
 		public float secondaryOutputChance;
@@ -29,16 +28,17 @@ public abstract class PulverizerRecipeEventJS<T extends PulverizerRecipeEventJS.
 			power = 1F;
 		}
 
+		@Override
 		public PulverizerRecipe set(Map<String, Object> properties)
 		{
-			if (properties.containsKey("in"))
+			if (properties.containsKey("input"))
 			{
-				in(properties.get("in"));
+				input(properties.get("input"));
 			}
 
-			if (properties.containsKey("out"))
+			if (properties.containsKey("output"))
 			{
-				out(properties.get("out"));
+				output(properties.get("output"));
 			}
 
 			if (properties.containsKey("secondary"))
@@ -63,13 +63,13 @@ public abstract class PulverizerRecipeEventJS<T extends PulverizerRecipeEventJS.
 			return this;
 		}
 
-		public PulverizerRecipe in(Object in)
+		public PulverizerRecipe input(Object in)
 		{
-			input = ItemStackJS.of(in);
+			input = IngredientJS.of(in);
 			return this;
 		}
 
-		public PulverizerRecipe out(Object out)
+		public PulverizerRecipe output(Object out)
 		{
 			output = ItemStackJS.of(out);
 			return this;
@@ -92,36 +92,22 @@ public abstract class PulverizerRecipeEventJS<T extends PulverizerRecipeEventJS.
 			power = relativePower;
 			return this;
 		}
-
-		public void add()
-		{
-		}
 	}
-
-	public final String mod;
 
 	public PulverizerRecipeEventJS(String m)
 	{
-		mod = m;
+		super(m);
 	}
-
-	protected abstract T createRecipe();
 
 	public final T create(Object in, Object out)
 	{
 		T recipe = createRecipe();
-		recipe.in(in);
-		recipe.out(out);
+		recipe.input(in);
+		recipe.output(out);
 		return recipe;
 	}
 
-	public final void add(Map<String, Object> properties)
-	{
-		T recipe = createRecipe();
-		recipe.set(properties);
-		recipe.add();
-	}
-
+	@Override
 	public void remove(Object output)
 	{
 		IngredientJS ingredient = IngredientJS.of(output);
@@ -134,10 +120,6 @@ public abstract class PulverizerRecipeEventJS<T extends PulverizerRecipeEventJS.
 	}
 
 	public void removeSecondary(Object output)
-	{
-	}
-
-	public void removeInput(Object input)
 	{
 	}
 }

@@ -3,12 +3,18 @@ package dev.latvian.kubejs.util;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
+import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatList;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -35,6 +41,36 @@ public class UtilsJS
 	public static <T> T cast(Object o)
 	{
 		return (T) o;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Collection<Object> getList(Object o)
+	{
+		if (o instanceof Collection)
+		{
+			return (Collection) o;
+		}
+		else if (o instanceof Iterable)
+		{
+			List<Object> list = new ArrayList<>();
+
+			for (Object o1 : (Iterable) o)
+			{
+				list.add(o1);
+			}
+
+			return list;
+		}
+		else if (o instanceof JSObject && ((JSObject) o).isArray())
+		{
+			return ((JSObject) o).values();
+		}
+		else if (o instanceof Object[])
+		{
+			return Arrays.asList(((Object[]) o));
+		}
+
+		return Collections.singleton(o);
 	}
 
 	@SuppressWarnings("deprecation")

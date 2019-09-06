@@ -5,6 +5,8 @@ import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.item.BlockItemJS;
 import dev.latvian.kubejs.item.ItemJS;
+import dev.latvian.kubejs.world.ClientWorldJS;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -39,6 +41,10 @@ public class KubeJSClientEventHandler
 	@SubscribeEvent
 	public static void debugInfo(RenderGameOverlayEvent.Text event)
 	{
-		EventsJS.post(KubeJSEvents.CLIENT_DEBUG_INFO, new DebugInfoEventJS(event));
+		if (Minecraft.getMinecraft().player != null)
+		{
+			ClientWorldJS.get();
+			EventsJS.post(KubeJSEvents.CLIENT_DEBUG_INFO, new DebugInfoEventJS(event));
+		}
 	}
 }

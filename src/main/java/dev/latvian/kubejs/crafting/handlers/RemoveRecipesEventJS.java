@@ -10,8 +10,8 @@ import java.util.function.Consumer;
  */
 public class RemoveRecipesEventJS extends EventJS
 {
-	public final String mod;
-	public final String type;
+	private final String mod;
+	private final String type;
 	private final Consumer<IngredientJS> callback;
 
 	public RemoveRecipesEventJS(String m, String t, Consumer<IngredientJS> c)
@@ -19,6 +19,16 @@ public class RemoveRecipesEventJS extends EventJS
 		mod = m;
 		type = t;
 		callback = c;
+	}
+
+	public String getMod()
+	{
+		return mod;
+	}
+
+	public String getType()
+	{
+		return type;
 	}
 
 	public void remove(Object output)
