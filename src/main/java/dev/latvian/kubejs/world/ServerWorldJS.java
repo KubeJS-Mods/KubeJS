@@ -3,18 +3,13 @@ package dev.latvian.kubejs.world;
 import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
+import dev.latvian.kubejs.player.FakeServerPlayerDataJS;
 import dev.latvian.kubejs.player.ServerPlayerDataJS;
-import dev.latvian.kubejs.player.ServerPlayerJS;
 import dev.latvian.kubejs.server.ServerJS;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
-
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author LatvianModder
@@ -25,36 +20,32 @@ public class ServerWorldJS extends WorldJS
 	@DocField
 	public final ServerJS server;
 
-	private final Map<UUID, ServerPlayerDataJS> fakePlayers;
-
 	public ServerWorldJS(ServerJS s, WorldServer w)
 	{
 		super(w);
 		server = s;
-		fakePlayers = new HashMap<>();
 	}
 
 	@Override
-	@Nullable
-	public ServerPlayerDataJS getPlayerData(UUID id)
+	public ServerPlayerDataJS getPlayerData(EntityPlayer player)
 	{
-		return server.playerMap.get(id);
-	}
+		ServerPlayerDataJS data = server.playerMap.get(player.getUniqueID());
 
-	@Nullable
-	@Override
-	public ServerPlayerJS createFakePlayer(EntityPlayer player)
-	{
-		ServerPlayerDataJS p = fakePlayers.get(player.getUniqueID());
-
-		if (p == null)
+		if (data != null)
 		{
-			p = new ServerPlayerDataJS(server, player.getUniqueID(), player.getName());
-			fakePlayers.put(player.getUniqueID(), p);
-			MinecraftForge.EVENT_BUS.post(new AttachPlayerDataEvent(p));
+			return data;
 		}
 
-		return new ServerPlayerJS(p, this, (EntityPlayerMP) player);
+		FakeServerPlayerDataJS fakeData = server.fakePlayerMap.get(player.getUniqueID());
+
+		if (fakeData == null)
+		{
+			fakeData = new FakeServerPlayerDataJS(server, (EntityPlayerMP) player);
+			MinecraftForge.EVENT_BUS.post(new AttachPlayerDataEvent(fakeData));
+		}
+
+		fakeData.player = (EntityPlayerMP) player;
+		return fakeData;
 	}
 
 	@Override

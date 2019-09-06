@@ -39,6 +39,26 @@ public class GameStagesPlayerData
 		GameStageHelper.removeStage(playerData.getPlayerEntity(), stage);
 	}
 
+	@DocMethod(params = {@Param("stage"), @Param("value")})
+	public void set(String stage, boolean value)
+	{
+		if (value)
+		{
+			add(stage);
+		}
+		else
+		{
+			remove(stage);
+		}
+	}
+
+	@DocMethod(params = @Param("stage"))
+	public void toggle(String stage)
+	{
+		set(stage, !has(stage));
+	}
+
+	@DocMethod
 	public Collection<String> list()
 	{
 		return GameStageHelper.getPlayerData(playerData.getPlayerEntity()).getStages();

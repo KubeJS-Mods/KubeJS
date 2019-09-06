@@ -7,6 +7,7 @@ import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.documentation.Param;
 import dev.latvian.kubejs.player.AdvancementJS;
 import dev.latvian.kubejs.player.EntityArrayList;
+import dev.latvian.kubejs.player.FakeServerPlayerDataJS;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.player.ServerPlayerDataJS;
@@ -52,6 +53,7 @@ public class ServerJS implements MessageSender
 	public final List<ScheduledEvent> scheduledTickEvents;
 	public final Int2ObjectOpenHashMap<ServerWorldJS> worldMap;
 	public final Map<UUID, ServerPlayerDataJS> playerMap;
+	public final Map<UUID, FakeServerPlayerDataJS> fakePlayerMap;
 
 	@DocField("Temporary data, mods can attach objects to this")
 	public final Map<String, Object> data;
@@ -72,6 +74,7 @@ public class ServerJS implements MessageSender
 		scheduledTickEvents = new LinkedList<>();
 		worldMap = new Int2ObjectOpenHashMap<>();
 		playerMap = new HashMap<>();
+		fakePlayerMap = new HashMap<>();
 
 		data = new HashMap<>();
 		overworld = new ServerWorldJS(this, w);

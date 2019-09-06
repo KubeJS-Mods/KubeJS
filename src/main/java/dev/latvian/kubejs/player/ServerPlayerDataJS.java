@@ -2,6 +2,7 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
+import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 import javax.annotation.Nullable;
@@ -18,6 +19,12 @@ public class ServerPlayerDataJS extends PlayerDataJS<EntityPlayerMP, ServerPlaye
 	{
 		super(id, n);
 		server = s;
+	}
+
+	@Override
+	public WorldJS getOverworld()
+	{
+		return server.overworld;
 	}
 
 	@Override

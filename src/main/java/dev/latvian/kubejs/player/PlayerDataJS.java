@@ -3,6 +3,7 @@ package dev.latvian.kubejs.player;
 import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.documentation.DocMethod;
+import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.player.EntityPlayer;
 
 import javax.annotation.Nullable;
@@ -31,6 +32,8 @@ public abstract class PlayerDataJS<E extends EntityPlayer, P extends PlayerJS<E>
 		name = n;
 		data = new HashMap<>();
 	}
+
+	public abstract WorldJS getOverworld();
 
 	@Nullable
 	public abstract E getPlayerEntity();

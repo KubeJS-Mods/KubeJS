@@ -3,12 +3,10 @@ package dev.latvian.kubejs.world;
 import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.player.ClientPlayerDataJS;
-import dev.latvian.kubejs.player.ClientPlayerJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -46,26 +44,14 @@ public class ClientWorldJS extends WorldJS
 	}
 
 	@Override
-	@Nullable
-	public ClientPlayerDataJS getPlayerData(UUID id)
+	public ClientPlayerDataJS getPlayerData(EntityPlayer player)
 	{
-		return id.equals(clientPlayerData.id) ? clientPlayerData : null;
-	}
-
-	@Nullable
-	@Override
-	public ClientPlayerJS createFakePlayer(EntityPlayer player)
-	{
-		ClientPlayerDataJS p = fakePlayers.get(player.getUniqueID());
-
-		if (p == null)
+		if (player.getUniqueID().equals(clientPlayerData.id))
 		{
-			p = new ClientPlayerDataJS(this, player.getUniqueID(), player.getName());
-			MinecraftForge.EVENT_BUS.post(new AttachPlayerDataEvent(p));
-			fakePlayers.put(player.getUniqueID(), p);
+			return clientPlayerData;
 		}
 
-		return new ClientPlayerJS(p, player);
+		throw new IllegalStateException("Can't access other client players!");
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.world.ClientWorldJS;
+import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -20,6 +21,12 @@ public class ClientPlayerDataJS extends PlayerDataJS<EntityPlayer, ClientPlayerJ
 		super(id, n);
 		world = w;
 		player = new ClientPlayerJS(this, world.minecraft.player);
+	}
+
+	@Override
+	public WorldJS getOverworld()
+	{
+		return world;
 	}
 
 	@Nullable

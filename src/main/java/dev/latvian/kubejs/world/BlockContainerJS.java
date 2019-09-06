@@ -156,6 +156,6 @@ public class BlockContainerJS
 
 	public void spawnLightning(boolean effectOnly)
 	{
-		world.spawnEntity(new EntityLightningBolt(world, x, y + 1D, z, effectOnly));
+		world.addWeatherEffect(new EntityLightningBolt(world, x, y + 1, z, effectOnly));
 	}
 }

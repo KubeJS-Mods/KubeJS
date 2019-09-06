@@ -22,13 +22,12 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author LatvianModder
  */
 @DocClass("This class represents a dimension. You can access weather, blocks, entities, etc. Client and server sides have different worlds")
-public class WorldJS
+public abstract class WorldJS
 {
 	public final transient World world;
 
@@ -99,6 +98,12 @@ public class WorldJS
 		return world.isRaining();
 	}
 
+	@DocMethod
+	public boolean isThundering()
+	{
+		return world.isThundering();
+	}
+
 	@DocMethod(params = @Param("strength"))
 	public void setRainStrength(float strength)
 	{
@@ -117,17 +122,7 @@ public class WorldJS
 		return new BlockContainerJS(world, pos);
 	}
 
-	@Nullable
-	public PlayerDataJS getPlayerData(UUID id)
-	{
-		return null;
-	}
-
-	@Nullable
-	public PlayerJS createFakePlayer(EntityPlayer player)
-	{
-		return null;
-	}
+	public abstract PlayerDataJS getPlayerData(EntityPlayer player);
 
 	@Nullable
 	@DocMethod
@@ -139,14 +134,7 @@ public class WorldJS
 		}
 		else if (entity instanceof EntityPlayer)
 		{
-			PlayerDataJS data = getPlayerData(entity.getUniqueID());
-
-			if (data == null)
-			{
-				return createFakePlayer((EntityPlayer) entity);
-			}
-
-			return data.getPlayer();
+			return getPlayerData((EntityPlayer) entity).getPlayer();
 		}
 		else if (entity instanceof EntityLivingBase)
 		{
@@ -212,6 +200,6 @@ public class WorldJS
 	@DocMethod(params = {@Param("x"), @Param("y"), @Param("z"), @Param("effectOnly")})
 	public void spawnLightning(double x, double y, double z, boolean effectOnly)
 	{
-		world.spawnEntity(new EntityLightningBolt(world, x, y, z, effectOnly));
+		world.addWeatherEffect(new EntityLightningBolt(world, x, y, z, effectOnly));
 	}
 }
