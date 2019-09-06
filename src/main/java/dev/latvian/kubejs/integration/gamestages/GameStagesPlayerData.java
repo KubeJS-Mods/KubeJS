@@ -40,22 +40,24 @@ public class GameStagesPlayerData
 	}
 
 	@DocMethod(params = {@Param("stage"), @Param("value")})
-	public void set(String stage, boolean value)
+	public boolean set(String stage, boolean value)
 	{
 		if (value)
 		{
 			add(stage);
+			return true;
 		}
 		else
 		{
 			remove(stage);
+			return false;
 		}
 	}
 
 	@DocMethod(params = @Param("stage"))
-	public void toggle(String stage)
+	public boolean toggle(String stage)
 	{
-		set(stage, !has(stage));
+		return set(stage, !has(stage));
 	}
 
 	@DocMethod
