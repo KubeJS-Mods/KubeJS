@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.world.ClientWorldJS;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.entity.player.EntityPlayer;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -10,7 +10,7 @@ import java.util.UUID;
 /**
  * @author LatvianModder
  */
-public class ClientPlayerDataJS extends PlayerDataJS<EntityPlayerSP, ClientPlayerJS>
+public class ClientPlayerDataJS extends PlayerDataJS<EntityPlayer, ClientPlayerJS>
 {
 	public final ClientWorldJS world;
 	public final ClientPlayerJS player;
@@ -19,14 +19,14 @@ public class ClientPlayerDataJS extends PlayerDataJS<EntityPlayerSP, ClientPlaye
 	{
 		super(id, n);
 		world = w;
-		player = new ClientPlayerJS(this);
+		player = new ClientPlayerJS(this, world.minecraft.player);
 	}
 
 	@Nullable
 	@Override
 	public EntityPlayerSP getPlayerEntity()
 	{
-		return Minecraft.getMinecraft().player;
+		return world.minecraft.player;
 	}
 
 	@Override

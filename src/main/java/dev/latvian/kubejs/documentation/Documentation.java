@@ -50,12 +50,14 @@ public class Documentation
 
 	private Map<Class, String> customNames;
 	private Map<String, Class<? extends EventJS>> events;
+	private Map<Class, Boolean> canCancelEvents;
 	private Map<Class, Map<String, Class>> attachedData;
 
 	public void init()
 	{
 		customNames = new LinkedHashMap<>();
 		events = new LinkedHashMap<>();
+		canCancelEvents = new HashMap<>();
 		attachedData = new HashMap<>();
 		MinecraftForge.EVENT_BUS.post(new DocumentationEvent(this));
 	}
@@ -73,9 +75,10 @@ public class Documentation
 		}
 	}
 
-	public void registerEvent(String id, Class<? extends EventJS> event)
+	public void registerEvent(String id, Class<? extends EventJS> event, boolean canCancel)
 	{
 		events.put(id, event);
+		canCancelEvents.put(event, canCancel);
 	}
 
 	public String getSimpleName(Class c)
@@ -269,6 +272,12 @@ public class Documentation
 		if (!has)
 		{
 			sender.tell("<None>");
+		}
+
+		if (canCancelEvents.containsKey(c))
+		{
+			sender.tell(new TextString("[Can Cancel]").blue());
+			sender.tell(canCancelEvents.get(c));
 		}
 
 		sender.tell(new TextString("[Fields]").blue());

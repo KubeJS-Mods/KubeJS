@@ -29,9 +29,9 @@ public class KubeJSWorldEventHandler
 	public static void onServerStarting(MinecraftServer server)
 	{
 		ServerJS.instance = new ServerJS(server, (WorldServer) server.getEntityWorld());
-		MinecraftForge.EVENT_BUS.post(new AttachServerDataEvent(ServerJS.instance, ServerJS.instance.data));
+		MinecraftForge.EVENT_BUS.post(new AttachServerDataEvent(ServerJS.instance));
 		EventsJS.post(KubeJSEvents.SERVER_LOAD, new SimpleServerEventJS(ServerJS.instance));
-		MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(ServerJS.instance.overworld, ServerJS.instance.data));
+		MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(ServerJS.instance.overworld));
 		EventsJS.post(KubeJSEvents.WORLD_LOAD, new SimpleWorldEventJS(ServerJS.instance.overworld));
 
 		for (WorldServer world : server.worlds)
@@ -41,7 +41,7 @@ public class KubeJSWorldEventHandler
 				ServerWorldJS w = new ServerWorldJS(ServerJS.instance, world);
 				ServerJS.instance.worldMap.put(world.provider.getDimension(), w);
 				ServerJS.instance.updateWorldList();
-				MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(w, w.data));
+				MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(w));
 				EventsJS.post(KubeJSEvents.WORLD_LOAD, new SimpleWorldEventJS(w));
 			}
 		}
@@ -81,7 +81,7 @@ public class KubeJSWorldEventHandler
 			ServerWorldJS w = new ServerWorldJS(ServerJS.instance, (WorldServer) event.getWorld());
 			ServerJS.instance.worldMap.put(event.getWorld().provider.getDimension(), w);
 			ServerJS.instance.updateWorldList();
-			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(w, w.data));
+			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(w));
 			EventsJS.post(KubeJSEvents.WORLD_LOAD, new SimpleWorldEventJS(w));
 		}
 	}

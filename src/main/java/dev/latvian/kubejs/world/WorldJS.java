@@ -124,6 +124,12 @@ public class WorldJS
 	}
 
 	@Nullable
+	public PlayerJS createFakePlayer(EntityPlayer player)
+	{
+		return null;
+	}
+
+	@Nullable
 	@DocMethod
 	public EntityJS getEntity(@Nullable Entity entity)
 	{
@@ -137,7 +143,7 @@ public class WorldJS
 
 			if (data == null)
 			{
-				throw new NullPointerException("Player from UUID " + entity.getUniqueID() + " not found!");
+				return createFakePlayer((EntityPlayer) entity);
 			}
 
 			return data.getPlayer();

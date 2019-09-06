@@ -196,7 +196,7 @@ public class ServerJS implements MessageSender
 			world = new ServerWorldJS(this, server.getWorld(dimension));
 			worldMap.put(dimension, world);
 			updateWorldList();
-			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(world, world.data));
+			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(world));
 		}
 
 		return world;

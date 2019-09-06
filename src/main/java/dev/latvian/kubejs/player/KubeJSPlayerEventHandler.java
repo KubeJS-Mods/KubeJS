@@ -2,8 +2,6 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.entity.LivingEntityAttackEventJS;
-import dev.latvian.kubejs.entity.LivingEntityDeathEventJS;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptManager;
@@ -12,8 +10,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -47,7 +43,7 @@ public class KubeJSPlayerEventHandler
 		{
 			ServerPlayerDataJS p = new ServerPlayerDataJS(ServerJS.instance, event.player.getUniqueID(), event.player.getName());
 			p.server.playerMap.put(p.id, p);
-			MinecraftForge.EVENT_BUS.post(new AttachPlayerDataEvent(p, p.data));
+			MinecraftForge.EVENT_BUS.post(new AttachPlayerDataEvent(p));
 			EventsJS.post(KubeJSEvents.PLAYER_LOGGED_IN, new SimplePlayerEventJS(event.player));
 		}
 	}
@@ -77,24 +73,6 @@ public class KubeJSPlayerEventHandler
 	public static void onPlayerChat(ServerChatEvent event)
 	{
 		if (EventsJS.post(KubeJSEvents.PLAYER_CHAT, new PlayerChatEventJS(event)))
-		{
-			event.setCanceled(true);
-		}
-	}
-
-	@SubscribeEvent
-	public static void onLivingDeath(LivingDeathEvent event)
-	{
-		if (EventsJS.post(KubeJSEvents.ENTITY_DEATH, new LivingEntityDeathEventJS(event)))
-		{
-			event.setCanceled(true);
-		}
-	}
-
-	@SubscribeEvent
-	public static void onLivingAttack(LivingAttackEvent event)
-	{
-		if (event.getAmount() > 0F && EventsJS.post(KubeJSEvents.ENTITY_ATTACK, new LivingEntityAttackEventJS(event)))
 		{
 			event.setCanceled(true);
 		}
