@@ -4,17 +4,19 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.OreDictionaryIngredientJS;
 import dev.latvian.kubejs.util.ID;
+import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
+import dev.latvian.kubejs.util.nbt.NBTListJS;
 import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nullable;
@@ -338,32 +340,96 @@ public abstract class ItemStackJS implements IngredientJS
 		return false;
 	}
 
-	public Map<String, Integer> getEnchantments()
+	public Map<ID, Integer> getEnchantments()
 	{
-		Map<String, Integer> map = new LinkedHashMap<>();
+		Map<ID, Integer> map = new LinkedHashMap<>();
 
-		for (Map.Entry<Enchantment, Integer> entry : EnchantmentHelper.getEnchantments(itemStack()).entrySet())
+		for (NBTBaseJS base : nbt().get("ench", Constants.NBT.TAG_COMPOUND).asList())
 		{
-			map.put(entry.getKey().getName(), entry.getValue());
+			NBTCompoundJS ench = base.asCompound();
+			Enchantment enchantment = Enchantment.getEnchantmentByID(ench.get("id").asShort());
+
+			if (enchantment != null)
+			{
+				int level = ench.get("lvl").asInt();
+
+				if (level > 0)
+				{
+					map.put(ID.of(enchantment.getRegistryName()), level);
+				}
+			}
 		}
 
 		return map;
 	}
 
-	public void setEnchantments(Map<String, Integer> map)
+	public void setEnchantments(Map<ID, Integer> map)
 	{
-		Map<Enchantment, Integer> emap = new LinkedHashMap<>();
+		nbt().remove("ench");
 
-		for (Map.Entry<String, Integer> entry : map.entrySet())
+		Map<Integer, Integer> emap = new LinkedHashMap<>();
+
+		for (Map.Entry<ID, Integer> entry : map.entrySet())
 		{
+			Enchantment enchantment = Enchantment.REGISTRY.getObject(entry.getKey().mc());
 
+			if (enchantment != null && entry.getValue() > 0)
+			{
+				emap.put(Enchantment.getEnchantmentID(enchantment), entry.getValue());
+			}
 		}
 
-		EnchantmentHelper.setEnchantments(emap, itemStack());
+		if (!emap.isEmpty())
+		{
+			NBTListJS list = nbtOrNew().listOrNew("ench");
+
+			for (Map.Entry<Integer, Integer> entry : emap.entrySet())
+			{
+				NBTCompoundJS ench = new NBTCompoundJS();
+				ench.set("id", entry.getKey());
+				ench.set("lvl", entry.getValue());
+				list.add(ench);
+			}
+		}
 	}
 
-	public ItemStackJS enchant(Map<String, Integer> ma)
+	public ItemStackJS enchant(Map<Object, Integer> enchantments)
 	{
+		Map<ID, Integer> map = getEnchantments();
+
+		for (Map.Entry<Object, Integer> entry : enchantments.entrySet())
+		{
+			map.put(ID.of(entry.getKey()), entry.getValue());
+		}
+
+		setEnchantments(map);
 		return this;
+	}
+
+	public int getEnchantment(Object id)
+	{
+		Enchantment enchantment = Enchantment.REGISTRY.getObject(ID.of(id).mc());
+
+		if (enchantment != null)
+		{
+			int enchantmentID = Enchantment.getEnchantmentID(enchantment);
+
+			for (NBTBaseJS base : nbt().get("ench", Constants.NBT.TAG_COMPOUND).asList())
+			{
+				NBTCompoundJS ench = base.asCompound();
+
+				if (enchantmentID == ench.get("id").asShort())
+				{
+					return ench.get("lvl").asShort();
+				}
+			}
+		}
+
+		return 0;
+	}
+
+	public String getMod()
+	{
+		return item().getRegistryName().getNamespace();
 	}
 }

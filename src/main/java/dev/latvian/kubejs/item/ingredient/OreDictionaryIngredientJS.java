@@ -93,4 +93,10 @@ public class OreDictionaryIngredientJS implements IngredientJS
 	{
 		return OreDictionary.getOres(oreName).isEmpty();
 	}
+
+	@Override
+	public String toString()
+	{
+		return "ore:" + oreName;
+	}
 }

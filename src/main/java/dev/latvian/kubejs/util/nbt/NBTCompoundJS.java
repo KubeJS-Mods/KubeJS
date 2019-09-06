@@ -207,6 +207,12 @@ public class NBTCompoundJS implements NBTBaseJS
 		return baseJS == null ? NBTNullJS.INSTANCE : baseJS;
 	}
 
+	public NBTBaseJS get(String key, int type)
+	{
+		NBTBaseJS baseJS = get(key);
+		return baseJS.getID() != type ? NBTNullJS.INSTANCE : baseJS;
+	}
+
 	public NBTBaseJS set(String key, Object value)
 	{
 		NBTBaseJS prev = map.put(key, NBTBaseJS.of(value));

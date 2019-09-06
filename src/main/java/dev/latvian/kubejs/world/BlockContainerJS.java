@@ -8,6 +8,7 @@ import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -151,5 +152,10 @@ public class BlockContainerJS
 		ID id = get();
 		Map<String, String> properties = getProperties();
 		return properties.isEmpty() ? id.toString() : (id + "+" + properties);
+	}
+
+	public void spawnLightning(boolean effectOnly)
+	{
+		world.spawnEntity(new EntityLightningBolt(world, x, y + 1D, z, effectOnly));
 	}
 }

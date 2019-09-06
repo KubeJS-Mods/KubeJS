@@ -36,7 +36,7 @@ public class UtilsWrapper
 
 	public ID id(String namespace, String path)
 	{
-		return new ID(namespace, path);
+		return ID.of(namespace, path);
 	}
 
 	public ID id(Object id)

@@ -233,6 +233,16 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return component;
 	}
 
+	public final String getUnformattedString()
+	{
+		return component().getUnformattedText();
+	}
+
+	public final String getFormattedString()
+	{
+		return component().getFormattedText();
+	}
+
 	@DocMethod(value = "Create a deep copy of this text")
 	public final Text copy()
 	{

@@ -2,6 +2,7 @@ package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
+import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -9,6 +10,8 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -121,5 +124,34 @@ public class EmptyItemStackJS extends ItemStackJS
 	public IngredientJS not()
 	{
 		return MatchAllIngredientJS.INSTANCE;
+	}
+
+	@Override
+	public Map<ID, Integer> getEnchantments()
+	{
+		return new LinkedHashMap<>();
+	}
+
+	@Override
+	public void setEnchantments(Map<ID, Integer> map)
+	{
+	}
+
+	@Override
+	public ItemStackJS enchant(Map<Object, Integer> ma)
+	{
+		return this;
+	}
+
+	@Override
+	public int getEnchantment(Object id)
+	{
+		return 0;
+	}
+
+	@Override
+	public String getMod()
+	{
+		return "minecraft";
 	}
 }

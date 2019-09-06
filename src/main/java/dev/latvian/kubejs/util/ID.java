@@ -10,53 +10,48 @@ import java.util.Locale;
  */
 public final class ID implements Comparable<ID>
 {
+	private static final ID NULL_ID = new ID("minecraft", "null");
+
 	public final String namespace;
 	public final String path;
 
 	public static ID of(@Nullable Object id)
 	{
-		return id instanceof ID ? (ID) id : new ID(id);
-	}
-
-	private ID(@Nullable Object id)
-	{
 		if (id == null)
 		{
-			namespace = "minecraft";
-			path = "null";
-		}
-		else if (id instanceof ResourceLocation)
-		{
-			namespace = ((ResourceLocation) id).getNamespace();
-			path = ((ResourceLocation) id).getPath();
+			return NULL_ID;
 		}
 		else if (id instanceof ID)
 		{
-			namespace = ((ID) id).namespace;
-			path = ((ID) id).path;
+			return (ID) id;
 		}
-		else
+		else if (id instanceof ResourceLocation)
 		{
-			String resourceName = id.toString();
-
-			int i = resourceName.indexOf(':');
-
-			if (i == -1)
-			{
-				namespace = "minecraft";
-				path = resourceName.toLowerCase(Locale.ROOT);
-			}
-			else
-			{
-				namespace = resourceName.substring(0, i).toLowerCase(Locale.ROOT);
-				path = resourceName.substring(i + 1).toLowerCase(Locale.ROOT);
-			}
+			ResourceLocation r = (ResourceLocation) id;
+			return new ID(r.getNamespace(), r.getPath());
 		}
+
+		String s = id.toString();
+
+		int i = s.indexOf(':');
+
+		if (i == -1)
+		{
+			return new ID("minecraft", s.toLowerCase(Locale.ROOT));
+		}
+
+		return new ID(s.substring(0, i).toLowerCase(Locale.ROOT), s.substring(i + 1).toLowerCase(Locale.ROOT));
 	}
 
-	public ID(String namespace, String path)
+	public static ID of(String namespace, String path)
 	{
-		this(namespace.isEmpty() ? path : (namespace + ':' + path));
+		return namespace.isEmpty() ? of(path) : of(namespace + ':' + path);
+	}
+
+	private ID(String n, String p)
+	{
+		namespace = n;
+		path = p;
 	}
 
 	public String toString()
