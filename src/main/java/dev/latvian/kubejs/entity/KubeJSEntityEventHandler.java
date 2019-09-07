@@ -3,6 +3,7 @@ package dev.latvian.kubejs.entity;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.event.EventsJS;
+import dev.latvian.kubejs.server.ServerJS;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -38,7 +39,7 @@ public class KubeJSEntityEventHandler
 	@SubscribeEvent
 	public static void checkLivingSpawn(LivingSpawnEvent.CheckSpawn event)
 	{
-		if (EventsJS.post(KubeJSEvents.ENTITY_CHECK_SPAWN, new CheckLivingEntitySpawnEventJS(event)))
+		if ((ServerJS.instance != null || event.getWorld().isRemote) && EventsJS.post(KubeJSEvents.ENTITY_CHECK_SPAWN, new CheckLivingEntitySpawnEventJS(event)))
 		{
 			event.setResult(Event.Result.DENY);
 		}
@@ -47,7 +48,7 @@ public class KubeJSEntityEventHandler
 	@SubscribeEvent
 	public static void onEntitySpawned(EntityJoinWorldEvent event)
 	{
-		if (EventsJS.post(KubeJSEvents.ENTITY_SPAWNED, new EntitySpawnedEventJS(event)))
+		if ((ServerJS.instance != null || event.getWorld().isRemote) && EventsJS.post(KubeJSEvents.ENTITY_SPAWNED, new EntitySpawnedEventJS(event)))
 		{
 			event.setCanceled(true);
 		}

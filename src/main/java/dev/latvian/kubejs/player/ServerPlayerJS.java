@@ -28,6 +28,11 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 		return new PlayerStatsJS(this, player.getStatFile());
 	}
 
+	public boolean isOP()
+	{
+		return server.server.getPlayerList().canSendCommands(player.getGameProfile());
+	}
+
 	public void kick(Text reason)
 	{
 		player.connection.disconnect(reason.component());

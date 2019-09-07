@@ -31,7 +31,7 @@ public class UnboundItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public Item item()
+	public Item getItem()
 	{
 		return item;
 	}

@@ -5,6 +5,7 @@ import dev.latvian.kubejs.block.BlockLeftClickEventJS;
 import dev.latvian.kubejs.block.BlockPlaceEventJS;
 import dev.latvian.kubejs.block.BlockRegistryEventJS;
 import dev.latvian.kubejs.block.BlockRightClickEventJS;
+import dev.latvian.kubejs.client.ClientLoggedInEventJS;
 import dev.latvian.kubejs.client.DebugInfoEventJS;
 import dev.latvian.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.kubejs.crafting.handlers.AlloySmelterRecipeEventJS;
@@ -44,8 +45,9 @@ public class KubeJSEvents
 {
 	public static final String POSTINIT = "postinit";
 	public static final String UNLOADED = "unloaded";
-	public static final String CLIENT_DEBUG_INFO = "client.debug_info";
 	public static final String COMMAND_REGISTRY = "command.registry";
+	public static final String CLIENT_DEBUG_INFO = "client.debug_info";
+	public static final String CLIENT_LOGGED_IN = "client.logged_in";
 
 	public static final String SERVER_LOAD = "server.load";
 	public static final String SERVER_UNLOAD = "server.unload";
@@ -105,8 +107,9 @@ public class KubeJSEvents
 
 		event.registerEvent(POSTINIT, EventJS.class);
 		event.registerEvent(UNLOADED, EventJS.class);
-		event.registerEvent(CLIENT_DEBUG_INFO, DebugInfoEventJS.class);
 		event.registerEvent(COMMAND_REGISTRY, CommandRegistryEventJS.class);
+		event.registerEvent(CLIENT_DEBUG_INFO, DebugInfoEventJS.class);
+		event.registerEvent(CLIENT_LOGGED_IN, ClientLoggedInEventJS.class);
 
 		event.registerEvent(SERVER_LOAD, SimpleServerEventJS.class);
 		event.registerEvent(SERVER_UNLOAD, SimpleServerEventJS.class);

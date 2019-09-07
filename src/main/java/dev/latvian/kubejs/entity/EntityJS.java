@@ -43,7 +43,7 @@ public class EntityJS implements MessageSender
 		return !entity.world.isRemote;
 	}
 
-	public UUID getID()
+	public UUID getId()
 	{
 		return entity.getUniqueID();
 	}
@@ -68,7 +68,7 @@ public class EntityJS implements MessageSender
 
 	public String toString()
 	{
-		return getName() + "-" + getID();
+		return getName() + "-" + getId();
 	}
 
 	public ItemStackJS asItem()
@@ -181,7 +181,7 @@ public class EntityJS implements MessageSender
 		entity.stepHeight = stepHeight;
 	}
 
-	public boolean isNoClip()
+	public boolean getNoClip()
 	{
 		return entity.noClip;
 	}
@@ -191,17 +191,17 @@ public class EntityJS implements MessageSender
 		entity.noClip = noClip;
 	}
 
-	public double x()
+	public double getX()
 	{
 		return entity.posX;
 	}
 
-	public double y()
+	public double getY()
 	{
 		return entity.posY;
 	}
 
-	public double z()
+	public double getZ()
 	{
 		return entity.posZ;
 	}
@@ -228,7 +228,7 @@ public class EntityJS implements MessageSender
 
 	public void setRotation(float yaw, float pitch)
 	{
-		setPositionAndRotation(x(), y(), z(), yaw, pitch);
+		setPositionAndRotation(getX(), getY(), getZ(), yaw, pitch);
 	}
 
 	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch)
@@ -334,7 +334,7 @@ public class EntityJS implements MessageSender
 		return entity.getCustomNameTag();
 	}
 
-	public boolean hasCustomName()
+	public boolean getHasCustomName()
 	{
 		return entity.hasCustomName();
 	}
@@ -369,7 +369,12 @@ public class EntityJS implements MessageSender
 		entity.setFire(seconds);
 	}
 
-	public NBTCompoundJS getNBT()
+	public void extinguish()
+	{
+		entity.extinguish();
+	}
+
+	public NBTCompoundJS getNbt()
 	{
 		NBTTagCompound nbt = entity.getEntityData();
 		NBTTagCompound nbt1 = (NBTTagCompound) nbt.getTag("KubeJS");
@@ -383,7 +388,7 @@ public class EntityJS implements MessageSender
 		return NBTBaseJS.of(nbt1).asCompound();
 	}
 
-	public void setNBT(NBTCompoundJS nbt)
+	public void setNbt(NBTCompoundJS nbt)
 	{
 		NBTTagCompound n = nbt.createNBT();
 

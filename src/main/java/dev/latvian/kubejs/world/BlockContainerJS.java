@@ -49,6 +49,36 @@ public class BlockContainerJS
 		return offset(f, 1);
 	}
 
+	public BlockContainerJS getDown()
+	{
+		return offset(Facing.DOWN);
+	}
+
+	public BlockContainerJS getUp()
+	{
+		return offset(Facing.UP);
+	}
+
+	public BlockContainerJS getNorth()
+	{
+		return offset(Facing.NORTH);
+	}
+
+	public BlockContainerJS getSouth()
+	{
+		return offset(Facing.SOUTH);
+	}
+
+	public BlockContainerJS getWest()
+	{
+		return offset(Facing.WEST);
+	}
+
+	public BlockContainerJS getEast()
+	{
+		return offset(Facing.EAST);
+	}
+
 	public ID get()
 	{
 		IBlockState state = world.getBlockState(pos);
@@ -136,12 +166,12 @@ public class BlockContainerJS
 		return world.getLight(pos);
 	}
 
-	public boolean canSeeSky()
+	public boolean getCanSeeSky()
 	{
 		return world.canSeeSky(pos);
 	}
 
-	public boolean canSnow(boolean checkLight)
+	public boolean getCanSnow(boolean checkLight)
 	{
 		return world.canSnowAt(pos, checkLight);
 	}
@@ -156,6 +186,6 @@ public class BlockContainerJS
 
 	public void spawnLightning(boolean effectOnly)
 	{
-		world.addWeatherEffect(new EntityLightningBolt(world, x, y + 1, z, effectOnly));
+		world.addWeatherEffect(new EntityLightningBolt(world, x, y, z, effectOnly));
 	}
 }

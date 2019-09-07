@@ -156,11 +156,11 @@ public abstract class ItemStackJS implements IngredientJS
 		return list;
 	}
 
-	public abstract Item item();
+	public abstract Item getItem();
 
-	public ID id()
+	public ID getId()
 	{
-		return ID.of(item().getRegistryName());
+		return ID.of(getItem().getRegistryName());
 	}
 
 	public abstract ItemStackJS copy();
@@ -230,14 +230,14 @@ public abstract class ItemStackJS implements IngredientJS
 	public String toString()
 	{
 		NBTCompoundJS out = new NBTCompoundJS();
-		out.set("item", id().toString());
+		out.set("item", getId().toString());
 
 		if (count() > 1)
 		{
 			out.set("count", count());
 		}
 
-		if (item().getHasSubtypes())
+		if (getItem().getHasSubtypes())
 		{
 			out.set("data", data());
 		}
@@ -258,7 +258,7 @@ public abstract class ItemStackJS implements IngredientJS
 	@Override
 	public boolean test(ItemStackJS stack)
 	{
-		if (item() == stack.item())
+		if (getItem() == stack.getItem())
 		{
 			int d = data();
 
@@ -274,7 +274,7 @@ public abstract class ItemStackJS implements IngredientJS
 	@Override
 	public boolean test(ItemStack stack)
 	{
-		if (item() == stack.getItem())
+		if (getItem() == stack.getItem())
 		{
 			int d = data();
 
@@ -296,7 +296,7 @@ public abstract class ItemStackJS implements IngredientJS
 		{
 			Set<ItemStackJS> set = new LinkedHashSet<>();
 			NonNullList<ItemStack> list = NonNullList.create();
-			item().getSubItems(CreativeTabs.SEARCH, list);
+			getItem().getSubItems(CreativeTabs.SEARCH, list);
 
 			for (ItemStack stack1 : list)
 			{
@@ -315,7 +315,7 @@ public abstract class ItemStackJS implements IngredientJS
 		if (data() == OreDictionary.WILDCARD_VALUE)
 		{
 			NonNullList<ItemStack> list = NonNullList.create();
-			item().getSubItems(CreativeTabs.SEARCH, list);
+			getItem().getSubItems(CreativeTabs.SEARCH, list);
 			return list.isEmpty() ? EmptyItemStackJS.INSTANCE : new BoundItemStackJS(list.get(0));
 		}
 
@@ -334,7 +334,7 @@ public abstract class ItemStackJS implements IngredientJS
 		if (obj instanceof ItemStackJS)
 		{
 			ItemStackJS stack = (ItemStackJS) obj;
-			return item() == stack.item() && data() == stack.data() && Objects.equals(nbt(), stack.nbt());
+			return getItem() == stack.getItem() && data() == stack.data() && Objects.equals(nbt(), stack.nbt());
 		}
 
 		return false;
@@ -430,6 +430,6 @@ public abstract class ItemStackJS implements IngredientJS
 
 	public String getMod()
 	{
-		return item().getRegistryName().getNamespace();
+		return getItem().getRegistryName().getNamespace();
 	}
 }

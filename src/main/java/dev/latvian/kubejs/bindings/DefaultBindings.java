@@ -8,6 +8,7 @@ import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.script.ScriptModData;
 import dev.latvian.kubejs.text.TextColor;
+import dev.latvian.kubejs.util.Facing;
 import dev.latvian.kubejs.util.FluidUtilsJS;
 import dev.latvian.kubejs.util.LoggerWrapperJS;
 import net.minecraft.init.Blocks;
@@ -69,5 +70,10 @@ public class DefaultBindings
 		event.add("TOOL_TYPE_AXE", "axe");
 		event.add("TOOL_TYPE_PICKAXE", "pickaxe");
 		event.add("TOOL_TYPE_SHOVEL", "shovel");
+
+		for (Facing facing : Facing.VALUES)
+		{
+			event.add(facing.name.toUpperCase(), facing);
+		}
 	}
 }

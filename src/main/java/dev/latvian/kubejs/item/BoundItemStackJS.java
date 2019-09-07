@@ -21,7 +21,7 @@ public class BoundItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public Item item()
+	public Item getItem()
 	{
 		return stack.getItem();
 	}

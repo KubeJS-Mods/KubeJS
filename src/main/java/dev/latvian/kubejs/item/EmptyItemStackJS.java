@@ -26,7 +26,7 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public Item item()
+	public Item getItem()
 	{
 		return Items.AIR;
 	}

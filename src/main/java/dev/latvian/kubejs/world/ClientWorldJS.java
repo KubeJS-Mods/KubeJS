@@ -1,6 +1,9 @@
 package dev.latvian.kubejs.world;
 
+import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.client.ClientLoggedInEventJS;
 import dev.latvian.kubejs.documentation.DocClass;
+import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.player.ClientPlayerDataJS;
 import net.minecraft.client.Minecraft;
@@ -26,6 +29,7 @@ public class ClientWorldJS extends WorldJS
 			inst = new ClientWorldJS();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(inst));
 			MinecraftForge.EVENT_BUS.post(new AttachPlayerDataEvent(inst.clientPlayerData));
+			EventsJS.post(KubeJSEvents.CLIENT_LOGGED_IN, new ClientLoggedInEventJS(inst.clientPlayerData.player));
 		}
 
 		return inst;
