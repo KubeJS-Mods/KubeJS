@@ -23,8 +23,8 @@ public class ItemRightClickEmptyEventJS extends PlayerEventJS
 		return entityOf(event);
 	}
 
-	public boolean isMainHand()
+	public EnumHand getHand()
 	{
-		return event.getHand() == EnumHand.MAIN_HAND;
+		return event.getHand();
 	}
 }

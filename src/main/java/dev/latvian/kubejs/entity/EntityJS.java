@@ -5,7 +5,6 @@ import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.util.Facing;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
@@ -19,6 +18,7 @@ import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundEvent;
 
 import javax.annotation.Nullable;
@@ -405,9 +405,9 @@ public class EntityJS implements MessageSender
 		return entity.getAlwaysRenderNameTag();
 	}
 
-	public Facing getHorizontalFacing()
+	public EnumFacing getHorizontalFacing()
 	{
-		return Facing.VALUES[entity.getHorizontalFacing().getIndex()];
+		return entity.getHorizontalFacing();
 	}
 
 	public float getEyeHeight()

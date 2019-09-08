@@ -22,6 +22,12 @@ public class TextWrapper
 		return Text.of(object);
 	}
 
+	@DocMethod("Joins text components together")
+	public Text join(Text separator, Iterable<Text> texts)
+	{
+		return Text.join(separator, texts);
+	}
+
 	@DocMethod("Creates text component from JSON")
 	public Text fromJson(JsonElement e)
 	{

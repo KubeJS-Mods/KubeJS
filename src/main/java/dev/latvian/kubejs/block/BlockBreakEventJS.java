@@ -34,12 +34,12 @@ public class BlockBreakEventJS extends PlayerEventJS
 		return new BlockContainerJS(event.getWorld(), event.getPos());
 	}
 
-	public int getXP()
+	public int getXp()
 	{
 		return event.getExpToDrop();
 	}
 
-	public void setXP(int xp)
+	public void setXp(int xp)
 	{
 		event.setExpToDrop(xp);
 	}

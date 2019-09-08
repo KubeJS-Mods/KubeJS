@@ -102,6 +102,28 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return fromJson(JsonUtilsJS.of(o));
 	}
 
+	public static Text join(Text separator, Iterable<Text> texts)
+	{
+		Text text = new TextString("");
+		boolean first = true;
+
+		for (Text t : texts)
+		{
+			if (first)
+			{
+				first = false;
+			}
+			else
+			{
+				text.append(separator);
+			}
+
+			text.append(t);
+		}
+
+		return text;
+	}
+
 	public static Text fromJson(JsonElement e)
 	{
 		if (e.isJsonNull())

@@ -1,12 +1,19 @@
 package dev.latvian.kubejs.entity;
 
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.common.ForgeHooks;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -121,9 +128,9 @@ public class LivingEntityJS extends EntityJS
 		return world.getLivingEntity(livingEntity.getAttackingEntity());
 	}
 
-	public void swingArm(boolean mainHand)
+	public void swingArm(EnumHand hand)
 	{
-		livingEntity.swingArm(mainHand ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
+		livingEntity.swingArm(hand);
 	}
 
 	public ItemStackJS getEquipment(EntityEquipmentSlot slot)
@@ -136,14 +143,29 @@ public class LivingEntityJS extends EntityJS
 		livingEntity.setItemStackToSlot(slot, ItemStackJS.of(item).getItemStack());
 	}
 
-	public ItemStackJS getHandItem(boolean mainHand)
+	public ItemStackJS getHandItem(EnumHand hand)
 	{
-		return ItemStackJS.of(livingEntity.getHeldItem(mainHand ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));
+		return ItemStackJS.of(livingEntity.getHeldItem(hand));
 	}
 
-	public void setHandItem(boolean mainHand, ItemStackJS stack)
+	public void setHandItem(EnumHand hand, ItemStackJS stack)
 	{
-		livingEntity.setHeldItem(mainHand ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND, stack.getItemStack());
+		livingEntity.setHeldItem(hand, stack.getItemStack());
+	}
+
+	public void damageHeldItem(EnumHand hand, int amount)
+	{
+		ItemStack stack = livingEntity.getHeldItem(hand);
+
+		if (!stack.isEmpty())
+		{
+			stack.damageItem(amount, livingEntity);
+
+			if (stack.isEmpty())
+			{
+				livingEntity.setHeldItem(hand, ItemStack.EMPTY);
+			}
+		}
 	}
 
 	public float getMovementSpeed()
@@ -169,5 +191,44 @@ public class LivingEntityJS extends EntityJS
 	public void setAbsorptionAmount(float amount)
 	{
 		livingEntity.setAbsorptionAmount(amount);
+	}
+
+	public double getReachDistance()
+	{
+		return livingEntity.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
+	}
+
+	@Nullable
+	public Map<String, Object> rayTrace(double distance)
+	{
+		Map<String, Object> map = new HashMap<>();
+		RayTraceResult ray = ForgeHooks.rayTraceEyes(livingEntity, distance);
+
+		if (ray != null)
+		{
+			map.put("info", ray.hitInfo);
+			map.put("hitX", ray.hitVec.x);
+			map.put("hitY", ray.hitVec.y);
+			map.put("hitZ", ray.hitVec.z);
+
+			if (ray.typeOfHit == RayTraceResult.Type.BLOCK)
+			{
+				map.put("block", new BlockContainerJS(world.world, ray.getBlockPos()));
+				map.put("facing", ray.sideHit);
+				map.put("subHit", ray.subHit);
+			}
+			else if (ray.typeOfHit == RayTraceResult.Type.ENTITY)
+			{
+				map.put("entity", world.getEntity(ray.entityHit));
+			}
+		}
+
+		return map;
+	}
+
+	@Nullable
+	public Map<String, Object> rayTrace()
+	{
+		return rayTrace(getReachDistance());
 	}
 }

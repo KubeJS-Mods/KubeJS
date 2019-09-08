@@ -36,9 +36,9 @@ public class BlockPlaceEventJS extends PlayerEventJS
 		return new BlockContainerJS(event.getWorld(), event.getPos());
 	}
 
-	public boolean isMainHand()
+	public EnumHand getHand()
 	{
-		return event.getHand() == EnumHand.MAIN_HAND;
+		return event.getHand();
 	}
 
 	public ItemStackJS getItem()

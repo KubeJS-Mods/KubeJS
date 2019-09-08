@@ -20,7 +20,7 @@ public class ClientWorldJS extends WorldJS
 
 	public static ClientWorldJS get()
 	{
-		if (inst == null || inst.world != Minecraft.getMinecraft().world || inst.clientPlayerData.player.entityPlayer != Minecraft.getMinecraft().player)
+		if (inst == null || inst.world != Minecraft.getMinecraft().world || inst.clientPlayerData.player.playerEntity != Minecraft.getMinecraft().player)
 		{
 			inst = new ClientWorldJS();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(inst));

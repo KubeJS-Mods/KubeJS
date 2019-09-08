@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.world;
 
 import dev.latvian.kubejs.entity.EntityJS;
-import dev.latvian.kubejs.util.Facing;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
@@ -12,6 +11,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -61,12 +61,12 @@ public class BlockContainerJS
 		return getPos().getZ();
 	}
 
-	public BlockContainerJS offset(Facing f, int d)
+	public BlockContainerJS offset(EnumFacing f, int d)
 	{
-		return new BlockContainerJS(world, getPos().offset(f.vanillaFacing, d));
+		return new BlockContainerJS(world, getPos().offset(f, d));
 	}
 
-	public BlockContainerJS offset(Facing f)
+	public BlockContainerJS offset(EnumFacing f)
 	{
 		return offset(f, 1);
 	}
@@ -78,32 +78,32 @@ public class BlockContainerJS
 
 	public BlockContainerJS getDown()
 	{
-		return offset(Facing.DOWN);
+		return offset(EnumFacing.DOWN);
 	}
 
 	public BlockContainerJS getUp()
 	{
-		return offset(Facing.UP);
+		return offset(EnumFacing.UP);
 	}
 
 	public BlockContainerJS getNorth()
 	{
-		return offset(Facing.NORTH);
+		return offset(EnumFacing.NORTH);
 	}
 
 	public BlockContainerJS getSouth()
 	{
-		return offset(Facing.SOUTH);
+		return offset(EnumFacing.SOUTH);
 	}
 
 	public BlockContainerJS getWest()
 	{
-		return offset(Facing.WEST);
+		return offset(EnumFacing.WEST);
 	}
 
 	public BlockContainerJS getEast()
 	{
-		return offset(Facing.EAST);
+		return offset(EnumFacing.EAST);
 	}
 
 	public IBlockState getBlockState()

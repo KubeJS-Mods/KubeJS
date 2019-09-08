@@ -17,9 +17,12 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -37,6 +40,21 @@ public class UtilsWrapper
 	public <K, V> Map<K, V> emptyMap()
 	{
 		return Collections.emptyMap();
+	}
+
+	public List newList()
+	{
+		return new ArrayList();
+	}
+
+	public Map newMap()
+	{
+		return new HashMap();
+	}
+
+	public Set setSet()
+	{
+		return new HashSet();
 	}
 
 	public ID id(String namespace, String path)

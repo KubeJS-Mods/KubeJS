@@ -8,14 +8,18 @@ import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.script.ScriptModData;
 import dev.latvian.kubejs.text.TextColor;
-import dev.latvian.kubejs.util.Facing;
 import dev.latvian.kubejs.util.FluidUtilsJS;
 import dev.latvian.kubejs.util.LoggerWrapperJS;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumRarity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.fml.common.Loader;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -71,9 +75,17 @@ public class DefaultBindings
 		event.add("TOOL_TYPE_PICKAXE", "pickaxe");
 		event.add("TOOL_TYPE_SHOVEL", "shovel");
 
-		for (Facing facing : Facing.VALUES)
+		Map<String, EnumFacing> facingMap = new HashMap<>();
+
+		for (EnumFacing facing : EnumFacing.VALUES)
 		{
-			event.add(facing.name.toUpperCase(), facing);
+			event.add(facing.getName().toUpperCase(), facing);
+			facingMap.put(facing.getName(), facing);
 		}
+
+		event.add("FACINGS", facingMap);
+
+		event.add("MAIN_HAND", EnumHand.MAIN_HAND);
+		event.add("OFF_HAND", EnumHand.OFF_HAND);
 	}
 }
