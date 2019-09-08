@@ -14,9 +14,12 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 /**
@@ -24,6 +27,8 @@ import java.util.regex.Pattern;
  */
 public class UtilsWrapper
 {
+	public final Random random = UtilsJS.RANDOM;
+
 	public <T> List<T> emptyList()
 	{
 		return Collections.emptyList();
@@ -111,5 +116,22 @@ public class UtilsWrapper
 	public SoundEvent getSound(Object id)
 	{
 		return ForgeRegistries.SOUND_EVENTS.getValue(ID.of(id).mc());
+	}
+
+	public Object randomOf(Collection<Object> objects)
+	{
+		if (objects.isEmpty())
+		{
+			return null;
+		}
+
+		if (objects instanceof List)
+		{
+			return ((List) objects).get(random.nextInt(objects.size()));
+		}
+		else
+		{
+			return new ArrayList<>(objects).get(random.nextInt(objects.size()));
+		}
 	}
 }

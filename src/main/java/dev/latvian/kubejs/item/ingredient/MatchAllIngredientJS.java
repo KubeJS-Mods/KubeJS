@@ -33,7 +33,7 @@ public class MatchAllIngredientJS implements IngredientJS
 	@Override
 	public Set<ItemStackJS> getStacks()
 	{
-		return new LinkedHashSet<>(ItemStackJS.list());
+		return new LinkedHashSet<>(ItemStackJS.getList());
 	}
 
 	@Override

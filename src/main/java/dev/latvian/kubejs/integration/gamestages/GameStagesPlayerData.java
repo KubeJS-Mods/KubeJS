@@ -61,7 +61,7 @@ public class GameStagesPlayerData
 	}
 
 	@DocMethod
-	public Collection<String> list()
+	public Collection<String> getList()
 	{
 		return GameStageHelper.getPlayerData(playerData.getPlayerEntity()).getStages();
 	}

@@ -10,7 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 public class GameStageEventJS extends PlayerEventJS
 {
 	public final transient EntityPlayer player;
-	public final String stage;
+	private final String stage;
 
 	public GameStageEventJS(EntityPlayer p, String s)
 	{
@@ -22,5 +22,10 @@ public class GameStageEventJS extends PlayerEventJS
 	public EntityJS getEntity()
 	{
 		return entityOf(player);
+	}
+
+	public String getStage()
+	{
+		return stage;
 	}
 }

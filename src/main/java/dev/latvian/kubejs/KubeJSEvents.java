@@ -6,6 +6,7 @@ import dev.latvian.kubejs.block.BlockPlaceEventJS;
 import dev.latvian.kubejs.block.BlockRegistryEventJS;
 import dev.latvian.kubejs.block.BlockRightClickEventJS;
 import dev.latvian.kubejs.client.ClientLoggedInEventJS;
+import dev.latvian.kubejs.client.ClientTickEventJS;
 import dev.latvian.kubejs.client.DebugInfoEventJS;
 import dev.latvian.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.kubejs.crafting.handlers.AlloySmelterRecipeEventJS;
@@ -46,8 +47,10 @@ public class KubeJSEvents
 	public static final String POSTINIT = "postinit";
 	public static final String UNLOADED = "unloaded";
 	public static final String COMMAND_REGISTRY = "command.registry";
+
 	public static final String CLIENT_DEBUG_INFO = "client.debug_info";
 	public static final String CLIENT_LOGGED_IN = "client.logged_in";
+	public static final String CLIENT_TICK = "client.tick";
 
 	public static final String SERVER_LOAD = "server.load";
 	public static final String SERVER_UNLOAD = "server.unload";
@@ -107,28 +110,30 @@ public class KubeJSEvents
 
 		event.registerEvent(POSTINIT, EventJS.class);
 		event.registerEvent(UNLOADED, EventJS.class);
-		event.registerEvent(COMMAND_REGISTRY, CommandRegistryEventJS.class);
-		event.registerEvent(CLIENT_DEBUG_INFO, DebugInfoEventJS.class);
-		event.registerEvent(CLIENT_LOGGED_IN, ClientLoggedInEventJS.class);
+		event.registerEvent(COMMAND_REGISTRY, CommandRegistryEventJS.class).serverOnly();
 
-		event.registerEvent(SERVER_LOAD, SimpleServerEventJS.class);
-		event.registerEvent(SERVER_UNLOAD, SimpleServerEventJS.class);
-		event.registerEvent(SERVER_TICK, SimpleServerEventJS.class);
+		event.registerEvent(CLIENT_DEBUG_INFO, DebugInfoEventJS.class).clientOnly();
+		event.registerEvent(CLIENT_LOGGED_IN, ClientLoggedInEventJS.class).clientOnly();
+		event.registerEvent(CLIENT_TICK, ClientTickEventJS.class).clientOnly();
 
-		event.registerEvent(WORLD_LOAD, SimpleWorldEventJS.class);
-		event.registerEvent(WORLD_UNLOAD, SimpleWorldEventJS.class);
-		event.registerEvent(WORLD_TICK, SimpleWorldEventJS.class);
+		event.registerEvent(SERVER_LOAD, SimpleServerEventJS.class).serverOnly();
+		event.registerEvent(SERVER_UNLOAD, SimpleServerEventJS.class).serverOnly();
+		event.registerEvent(SERVER_TICK, SimpleServerEventJS.class).serverOnly();
 
-		event.registerEvent(PLAYER_LOGGED_IN, SimplePlayerEventJS.class);
-		event.registerEvent(PLAYER_LOGGED_OUT, SimplePlayerEventJS.class);
-		event.registerEvent(PLAYER_TICK, SimplePlayerEventJS.class);
-		event.registerEvent(PLAYER_CHAT, PlayerChatEventJS.class, true);
-		event.registerEvent(PLAYER_ADVANCEMENT, PlayerAdvancementEventJS.class);
+		event.registerEvent(WORLD_LOAD, SimpleWorldEventJS.class).serverOnly();
+		event.registerEvent(WORLD_UNLOAD, SimpleWorldEventJS.class).serverOnly();
+		event.registerEvent(WORLD_TICK, SimpleWorldEventJS.class).serverOnly();
 
-		event.registerEvent(ENTITY_DEATH, LivingEntityDeathEventJS.class, true);
-		event.registerEvent(ENTITY_ATTACK, LivingEntityAttackEventJS.class, true);
-		event.registerEvent(ENTITY_CHECK_SPAWN, CheckLivingEntitySpawnEventJS.class, true);
-		event.registerEvent(ENTITY_SPAWNED, EntitySpawnedEventJS.class, true);
+		event.registerEvent(PLAYER_LOGGED_IN, SimplePlayerEventJS.class).serverOnly();
+		event.registerEvent(PLAYER_LOGGED_OUT, SimplePlayerEventJS.class).serverOnly();
+		event.registerEvent(PLAYER_TICK, SimplePlayerEventJS.class).serverOnly();
+		event.registerEvent(PLAYER_CHAT, PlayerChatEventJS.class).serverOnly().canCancel();
+		event.registerEvent(PLAYER_ADVANCEMENT, PlayerAdvancementEventJS.class).serverOnly();
+
+		event.registerEvent(ENTITY_DEATH, LivingEntityDeathEventJS.class).canCancel();
+		event.registerEvent(ENTITY_ATTACK, LivingEntityAttackEventJS.class).canCancel();
+		event.registerEvent(ENTITY_CHECK_SPAWN, CheckLivingEntitySpawnEventJS.class).canCancel();
+		event.registerEvent(ENTITY_SPAWNED, EntitySpawnedEventJS.class).canCancel();
 
 		event.registerEvent(RECIPES_REMOVE_OUTPUT, RemoveRecipesEventJS.class);
 		event.registerEvent(RECIPES_REMOVE_INPUT, RemoveRecipesEventJS.class);
@@ -139,17 +144,17 @@ public class KubeJSEvents
 		event.registerEvent(RECIPES_ALLOY_SMELTER, AlloySmelterRecipeEventJS.class);
 
 		event.registerEvent(BLOCK_REGISTRY, BlockRegistryEventJS.class);
-		event.registerEvent(BLOCK_RIGHT_CLICK, BlockRightClickEventJS.class, true);
-		event.registerEvent(BLOCK_LEFT_CLICK, BlockLeftClickEventJS.class, true);
-		event.registerEvent(BLOCK_PLACE, BlockPlaceEventJS.class, true);
-		event.registerEvent(BLOCK_BREAK, BlockBreakEventJS.class, true);
+		event.registerEvent(BLOCK_RIGHT_CLICK, BlockRightClickEventJS.class).canCancel();
+		event.registerEvent(BLOCK_LEFT_CLICK, BlockLeftClickEventJS.class).canCancel();
+		event.registerEvent(BLOCK_PLACE, BlockPlaceEventJS.class).serverOnly().canCancel();
+		event.registerEvent(BLOCK_BREAK, BlockBreakEventJS.class).serverOnly().canCancel();
 
 		event.registerEvent(ITEM_REGISTRY, ItemRegistryEventJS.class);
-		event.registerEvent(ITEM_RIGHT_CLICK, ItemRightClickEventJS.class, true);
-		event.registerEvent(ITEM_RIGHT_CLICK_EMPTY, ItemRightClickEmptyEventJS.class);
+		event.registerEvent(ITEM_RIGHT_CLICK, ItemRightClickEventJS.class).canCancel();
+		event.registerEvent(ITEM_RIGHT_CLICK_EMPTY, ItemRightClickEmptyEventJS.class).clientOnly();
 		event.registerEvent(ITEM_LEFT_CLICK, ItemLeftClickEventJS.class);
-		event.registerEvent(ITEM_ENTITY_INTERACT, ItemEntityInteractEventJS.class, true);
-		event.registerEvent(ITEM_PICKUP, ItemPickupEventJS.class, true);
-		event.registerEvent(ITEM_TOSS, ItemTossEventJS.class, true);
+		event.registerEvent(ITEM_ENTITY_INTERACT, ItemEntityInteractEventJS.class).canCancel();
+		event.registerEvent(ITEM_PICKUP, ItemPickupEventJS.class).canCancel();
+		event.registerEvent(ITEM_TOSS, ItemTossEventJS.class).canCancel();
 	}
 }

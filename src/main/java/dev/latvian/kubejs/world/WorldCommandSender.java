@@ -11,11 +11,16 @@ import javax.annotation.Nullable;
  */
 public class WorldCommandSender implements ICommandSender
 {
-	public final WorldJS world;
+	private final WorldJS world;
 
 	public WorldCommandSender(WorldJS w)
 	{
 		world = w;
+	}
+
+	public WorldJS getWorld()
+	{
+		return world;
 	}
 
 	@Override

@@ -14,8 +14,8 @@ public class ClientPlayerJS extends PlayerJS<EntityPlayer>
 	}
 
 	@Override
-	public PlayerStatsJS stats()
+	public PlayerStatsJS getStats()
 	{
-		return new PlayerStatsJS(this, ((EntityPlayerSP) player).getStatFileWriter());
+		return new PlayerStatsJS(this, ((EntityPlayerSP) entityPlayer).getStatFileWriter());
 	}
 }

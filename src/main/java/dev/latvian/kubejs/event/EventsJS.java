@@ -85,9 +85,9 @@ public class EventsJS
 					return true;
 				}
 			}
-			catch (Exception ex)
+			catch (Throwable ex)
 			{
-				KubeJS.LOGGER.error("Error occurred while firing '" + id + "' event in " + handler.file.path + ": " + ex);
+				KubeJS.LOGGER.error("Error occurred while firing '" + id + "' event in " + (handler.file == null ? "Unknown file" : handler.file.path) + ": " + ex);
 
 				if (!(ex instanceof ScriptException))
 				{

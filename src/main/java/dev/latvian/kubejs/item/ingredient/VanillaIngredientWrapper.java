@@ -37,7 +37,7 @@ public class VanillaIngredientWrapper extends Ingredient
 
 			for (ItemStackJS stack : set)
 			{
-				matchingStacksCache[i] = stack.itemStack();
+				matchingStacksCache[i] = stack.getItemStack();
 				i++;
 			}
 		}

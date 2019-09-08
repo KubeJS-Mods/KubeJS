@@ -10,10 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 /**
  * @author LatvianModder
  */
@@ -24,7 +20,7 @@ public class ClientWorldJS extends WorldJS
 
 	public static ClientWorldJS get()
 	{
-		if (inst == null || inst.world != Minecraft.getMinecraft().world || inst.clientPlayerData.player.player != Minecraft.getMinecraft().player)
+		if (inst == null || inst.world != Minecraft.getMinecraft().world || inst.clientPlayerData.player.entityPlayer != Minecraft.getMinecraft().player)
 		{
 			inst = new ClientWorldJS();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(inst));
@@ -37,14 +33,12 @@ public class ClientWorldJS extends WorldJS
 
 	public final Minecraft minecraft;
 	public final ClientPlayerDataJS clientPlayerData;
-	private final Map<UUID, ClientPlayerDataJS> fakePlayers;
 
 	public ClientWorldJS()
 	{
 		super(Minecraft.getMinecraft().world);
 		minecraft = Minecraft.getMinecraft();
 		clientPlayerData = new ClientPlayerDataJS(this, minecraft.player.getUniqueID(), minecraft.player.getName());
-		fakePlayers = new HashMap<>();
 	}
 
 	@Override

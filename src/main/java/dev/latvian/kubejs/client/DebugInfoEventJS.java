@@ -18,7 +18,7 @@ public class DebugInfoEventJS extends EventJS
 		event = e;
 	}
 
-	public boolean showDebug()
+	public boolean getShowDebug()
 	{
 		return Minecraft.getMinecraft().gameSettings.showDebugInfo;
 	}

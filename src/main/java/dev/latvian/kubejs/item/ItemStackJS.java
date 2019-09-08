@@ -34,6 +34,8 @@ import java.util.Set;
  */
 public abstract class ItemStackJS implements IngredientJS
 {
+	private static List<ItemStackJS> cachedItemList;
+
 	public static ItemStackJS of(@Nullable Object o)
 	{
 		if (o == null)
@@ -133,9 +135,14 @@ public abstract class ItemStackJS implements IngredientJS
 		return EmptyItemStackJS.INSTANCE;
 	}
 
-	public static List<ItemStackJS> list()
+	public static List<ItemStackJS> getList()
 	{
-		List<ItemStackJS> list = new ArrayList<>();
+		if (cachedItemList != null)
+		{
+			return cachedItemList;
+		}
+
+		cachedItemList = new ArrayList<>();
 		NonNullList<ItemStack> stackList = NonNullList.create();
 
 		for (Item item : Item.REGISTRY)
@@ -146,85 +153,110 @@ public abstract class ItemStackJS implements IngredientJS
 			{
 				if (!stack.isEmpty())
 				{
-					list.add(new BoundItemStackJS(stack));
+					cachedItemList.add(new BoundItemStackJS(stack));
 				}
 			}
 
 			stackList.clear();
 		}
 
-		return list;
+		cachedItemList = Collections.unmodifiableList(cachedItemList);
+		return cachedItemList;
+	}
+
+	public static void clearListCache()
+	{
+		cachedItemList = null;
 	}
 
 	public abstract Item getItem();
+
+	public abstract ItemStack getItemStack();
 
 	public ID getId()
 	{
 		return ID.of(getItem().getRegistryName());
 	}
 
-	public abstract ItemStackJS copy();
+	public abstract ItemStackJS getCopy();
 
-	public abstract ItemStackJS count(int c);
+	public abstract void setCount(int count);
 
-	public abstract int count();
+	public abstract int getCount();
+
+	public final ItemStackJS count(int c)
+	{
+		setCount(c);
+		return this;
+	}
 
 	@Override
 	public boolean isEmpty()
 	{
-		return count() <= 0;
+		return getCount() <= 0;
 	}
 
-	public abstract ItemStackJS data(int d);
+	public abstract void setData(int data);
 
-	public abstract int data();
+	public abstract int getData();
 
-	public ItemStackJS wildcardData()
+	public final ItemStackJS data(int data)
+	{
+		setData(data);
+		return this;
+	}
+
+	public final ItemStackJS wildcardData()
 	{
 		return data(OreDictionary.WILDCARD_VALUE);
 	}
 
-	public abstract ItemStackJS nbt(@Nullable Object o);
+	public abstract void setNbt(Object nbt);
 
-	public abstract NBTCompoundJS nbt();
+	public abstract NBTCompoundJS getNbt();
 
-	public abstract ItemStackJS caps(@Nullable Object o);
-
-	public abstract NBTCompoundJS caps();
-
-	public abstract ItemStack itemStack();
-
-	public NBTCompoundJS nbtOrNew()
+	public final ItemStackJS nbt(@Nullable Object o)
 	{
-		NBTCompoundJS nbt = nbt();
+		setNbt(NBTBaseJS.of(o).asCompound());
+		return this;
+	}
+
+	public NBTCompoundJS getNbtOrNew()
+	{
+		NBTCompoundJS nbt = getNbt();
 
 		if (nbt.isNull())
 		{
 			nbt = new NBTCompoundJS();
-			nbt(nbt);
+			setNbt(nbt);
 		}
 
 		return nbt;
 	}
 
-	public ItemStackJS grow(int c)
+	public String getName()
 	{
-		return count(count() + c);
+		return getItemStack().getDisplayName();
 	}
 
-	public ItemStackJS shrink(int c)
+	public void setName(String displayName)
 	{
-		return grow(-c);
+		NBTCompoundJS nbt = getNbtOrNew();
+		nbt.compoundOrNew("display").set("Name", displayName);
+		setNbt(nbt);
 	}
 
-	public ItemStackJS name(String displayName)
+	public void setTranslatableName(String translatableName)
 	{
-		return nbt(nbtOrNew().compoundOrNew("display").set("Name", displayName));
+		NBTCompoundJS nbt = getNbtOrNew();
+		nbt.compoundOrNew("display").set("LocName", translatableName);
+		setNbt(nbt);
 	}
 
-	public String name()
+	public final ItemStackJS name(String displayName)
 	{
-		return itemStack().getDisplayName();
+		setName(displayName);
+		return this;
 	}
 
 	public String toString()
@@ -232,24 +264,19 @@ public abstract class ItemStackJS implements IngredientJS
 		NBTCompoundJS out = new NBTCompoundJS();
 		out.set("item", getId().toString());
 
-		if (count() > 1)
+		if (getCount() > 1)
 		{
-			out.set("count", count());
+			out.set("count", getCount());
 		}
 
 		if (getItem().getHasSubtypes())
 		{
-			out.set("data", data());
+			out.set("data", getData());
 		}
 
-		if (!nbt().isNull())
+		if (!getNbt().isNull())
 		{
-			out.set("nbt", nbt());
-		}
-
-		if (!caps().isNull())
-		{
-			out.set("caps", caps());
+			out.set("nbt", getNbt());
 		}
 
 		return out.toString();
@@ -260,11 +287,11 @@ public abstract class ItemStackJS implements IngredientJS
 	{
 		if (getItem() == stack.getItem())
 		{
-			int d = data();
+			int d = getData();
 
-			if (d == OreDictionary.WILDCARD_VALUE || d == stack.data())
+			if (d == OreDictionary.WILDCARD_VALUE || d == stack.getData())
 			{
-				return Objects.equals(nbt(), stack.nbt());
+				return Objects.equals(getNbt(), stack.getNbt());
 			}
 		}
 
@@ -276,11 +303,11 @@ public abstract class ItemStackJS implements IngredientJS
 	{
 		if (getItem() == stack.getItem())
 		{
-			int d = data();
+			int d = getData();
 
 			if (d == OreDictionary.WILDCARD_VALUE || d == stack.getMetadata())
 			{
-				NBTCompoundJS nbt = nbt();
+				NBTCompoundJS nbt = getNbt();
 				NBTTagCompound nbt1 = stack.getTagCompound();
 				return nbt.isNull() == (nbt1 == null) && (nbt1 == null || Objects.equals(nbt1, nbt.createNBT()));
 			}
@@ -292,7 +319,7 @@ public abstract class ItemStackJS implements IngredientJS
 	@Override
 	public Set<ItemStackJS> getStacks()
 	{
-		if (data() == OreDictionary.WILDCARD_VALUE)
+		if (getData() == OreDictionary.WILDCARD_VALUE)
 		{
 			Set<ItemStackJS> set = new LinkedHashSet<>();
 			NonNullList<ItemStack> list = NonNullList.create();
@@ -312,7 +339,7 @@ public abstract class ItemStackJS implements IngredientJS
 	@Override
 	public ItemStackJS getFirst()
 	{
-		if (data() == OreDictionary.WILDCARD_VALUE)
+		if (getData() == OreDictionary.WILDCARD_VALUE)
 		{
 			NonNullList<ItemStack> list = NonNullList.create();
 			getItem().getSubItems(CreativeTabs.SEARCH, list);
@@ -334,7 +361,7 @@ public abstract class ItemStackJS implements IngredientJS
 		if (obj instanceof ItemStackJS)
 		{
 			ItemStackJS stack = (ItemStackJS) obj;
-			return getItem() == stack.getItem() && data() == stack.data() && Objects.equals(nbt(), stack.nbt());
+			return getItem() == stack.getItem() && getData() == stack.getData() && Objects.equals(getNbt(), stack.getNbt());
 		}
 
 		return false;
@@ -344,7 +371,7 @@ public abstract class ItemStackJS implements IngredientJS
 	{
 		Map<ID, Integer> map = new LinkedHashMap<>();
 
-		for (NBTBaseJS base : nbt().get("ench", Constants.NBT.TAG_COMPOUND).asList())
+		for (NBTBaseJS base : getNbt().get("ench", Constants.NBT.TAG_COMPOUND).asList())
 		{
 			NBTCompoundJS ench = base.asCompound();
 			Enchantment enchantment = Enchantment.getEnchantmentByID(ench.get("id").asShort());
@@ -365,7 +392,8 @@ public abstract class ItemStackJS implements IngredientJS
 
 	public void setEnchantments(Map<ID, Integer> map)
 	{
-		nbt().remove("ench");
+		NBTCompoundJS nbt = getNbt();
+		nbt.remove("ench");
 
 		Map<Integer, Integer> emap = new LinkedHashMap<>();
 
@@ -381,7 +409,12 @@ public abstract class ItemStackJS implements IngredientJS
 
 		if (!emap.isEmpty())
 		{
-			NBTListJS list = nbtOrNew().listOrNew("ench");
+			if (nbt.isNull())
+			{
+				nbt = new NBTCompoundJS();
+			}
+
+			NBTListJS list = nbt.listOrNew("ench");
 
 			for (Map.Entry<Integer, Integer> entry : emap.entrySet())
 			{
@@ -391,6 +424,30 @@ public abstract class ItemStackJS implements IngredientJS
 				list.add(ench);
 			}
 		}
+
+		setNbt(nbt);
+	}
+
+	public int getEnchantment(Object id)
+	{
+		Enchantment enchantment = Enchantment.REGISTRY.getObject(ID.of(id).mc());
+
+		if (enchantment != null)
+		{
+			int enchantmentID = Enchantment.getEnchantmentID(enchantment);
+
+			for (NBTBaseJS base : getNbt().get("ench", Constants.NBT.TAG_COMPOUND).asList())
+			{
+				NBTCompoundJS ench = base.asCompound();
+
+				if (enchantmentID == ench.get("id").asShort())
+				{
+					return ench.get("lvl").asShort();
+				}
+			}
+		}
+
+		return 0;
 	}
 
 	public ItemStackJS enchant(Map<Object, Integer> enchantments)
@@ -404,28 +461,6 @@ public abstract class ItemStackJS implements IngredientJS
 
 		setEnchantments(map);
 		return this;
-	}
-
-	public int getEnchantment(Object id)
-	{
-		Enchantment enchantment = Enchantment.REGISTRY.getObject(ID.of(id).mc());
-
-		if (enchantment != null)
-		{
-			int enchantmentID = Enchantment.getEnchantmentID(enchantment);
-
-			for (NBTBaseJS base : nbt().get("ench", Constants.NBT.TAG_COMPOUND).asList())
-			{
-				NBTCompoundJS ench = base.asCompound();
-
-				if (enchantmentID == ench.get("id").asShort())
-				{
-					return ench.get("lvl").asShort();
-				}
-			}
-		}
-
-		return 0;
 	}
 
 	public String getMod()

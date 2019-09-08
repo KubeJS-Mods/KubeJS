@@ -14,6 +14,7 @@ import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.nbt.NBTTagCompound;
@@ -46,6 +47,11 @@ public class EntityJS implements MessageSender
 	public UUID getId()
 	{
 		return entity.getUniqueID();
+	}
+
+	public ID getType()
+	{
+		return ID.of(EntityList.getKey(entity));
 	}
 
 	@Override
@@ -191,9 +197,34 @@ public class EntityJS implements MessageSender
 		entity.noClip = noClip;
 	}
 
+	public boolean isSilent()
+	{
+		return entity.isSilent();
+	}
+
+	public void setSilent(boolean isSilent)
+	{
+		entity.setSilent(isSilent);
+	}
+
+	public boolean getNoGravity()
+	{
+		return entity.hasNoGravity();
+	}
+
+	public void setNoGravity(boolean noGravity)
+	{
+		entity.setNoGravity(noGravity);
+	}
+
 	public double getX()
 	{
 		return entity.posX;
+	}
+
+	public void setX(double x)
+	{
+		entity.posX = x;
 	}
 
 	public double getY()
@@ -201,9 +232,19 @@ public class EntityJS implements MessageSender
 		return entity.posY;
 	}
 
+	public void setY(double y)
+	{
+		entity.posY = y;
+	}
+
 	public double getZ()
 	{
 		return entity.posZ;
+	}
+
+	public void setZ(double z)
+	{
+		entity.posZ = z;
 	}
 
 	public float getYaw()
@@ -211,14 +252,29 @@ public class EntityJS implements MessageSender
 		return entity.rotationYaw;
 	}
 
+	public void setYaw(float yaw)
+	{
+		entity.rotationYaw = yaw;
+	}
+
 	public float getPitch()
 	{
 		return entity.rotationPitch;
 	}
 
+	public void setPitch(float pitch)
+	{
+		entity.rotationPitch = pitch;
+	}
+
 	public int getTicksExisted()
 	{
 		return entity.ticksExisted;
+	}
+
+	public void setPosition(BlockContainerJS block)
+	{
+		setPosition(block.getX() + 0.5D, block.getY() + 0.05D, block.getZ() + 0.5D);
 	}
 
 	public void setPosition(double x, double y, double z)
@@ -398,6 +454,18 @@ public class EntityJS implements MessageSender
 		}
 	}
 
+	public NBTBaseJS getNBTData(String key)
+	{
+		return getNbt().get(key);
+	}
+
+	public void setNBTData(String key, @Nullable Object nbt)
+	{
+		NBTCompoundJS n = getNbt();
+		n.set(key, NBTBaseJS.of(nbt));
+		setNbt(n);
+	}
+
 	public void playSound(Object id, float volume, float pitch)
 	{
 		SoundEvent event = id instanceof SoundEvent ? (SoundEvent) id : SoundEvent.REGISTRY.getObject(ID.of(id).mc());
@@ -406,5 +474,10 @@ public class EntityJS implements MessageSender
 		{
 			entity.playSound(event, volume, pitch);
 		}
+	}
+
+	public void spawn()
+	{
+		world.world.spawnEntity(entity);
 	}
 }

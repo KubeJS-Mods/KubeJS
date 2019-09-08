@@ -30,7 +30,7 @@ public class PlayerStatsJS
 
 		if (stat != null)
 		{
-			statFile.unlockAchievement(player.player, stat, value);
+			statFile.unlockAchievement(player.entityPlayer, stat, value);
 		}
 	}
 
@@ -40,7 +40,7 @@ public class PlayerStatsJS
 
 		if (stat != null)
 		{
-			statFile.increaseStat(player.player, stat, value);
+			statFile.increaseStat(player.entityPlayer, stat, value);
 		}
 	}
 }

@@ -3,6 +3,7 @@ package dev.latvian.kubejs.block;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
+import dev.latvian.kubejs.util.Facing;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -44,5 +45,10 @@ public class BlockRightClickEventJS extends PlayerEventJS
 	public ItemStackJS getItem()
 	{
 		return ItemStackJS.of(event.getItemStack());
+	}
+
+	public Facing getFacing()
+	{
+		return Facing.VALUES[event.getFace().getIndex()];
 	}
 }

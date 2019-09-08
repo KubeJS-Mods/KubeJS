@@ -7,12 +7,18 @@ import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.util.Facing;
+import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
+import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -21,7 +27,7 @@ import java.util.Map;
 @DocClass
 public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS
 {
-	public final transient E player;
+	public final transient E entityPlayer;
 
 	@DocField("Temporary data, mods can attach objects to this")
 	public final Map<String, Object> data;
@@ -32,7 +38,7 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS
 	{
 		super(w, p);
 		data = d.data;
-		player = p;
+		entityPlayer = p;
 	}
 
 	@Override
@@ -42,11 +48,11 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS
 	}
 
 	@DocMethod
-	public InventoryJS inventory()
+	public InventoryJS getInventory()
 	{
 		if (inventory == null)
 		{
-			inventory = new InventoryJS(new InvWrapper(player.inventory));
+			inventory = new InventoryJS(new InvWrapper(entityPlayer.inventory));
 		}
 
 		return inventory;
@@ -54,17 +60,17 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS
 
 	public void give(Object item)
 	{
-		ItemHandlerHelper.giveItemToPlayer(player, ItemStackJS.of(item).itemStack());
+		ItemHandlerHelper.giveItemToPlayer(entityPlayer, ItemStackJS.of(item).getItemStack());
 	}
 
 	public void giveInHand(Object item)
 	{
-		ItemHandlerHelper.giveItemToPlayer(player, ItemStackJS.of(item).itemStack(), getSelectedSlot());
+		ItemHandlerHelper.giveItemToPlayer(entityPlayer, ItemStackJS.of(item).getItemStack(), getSelectedSlot());
 	}
 
 	public int getSelectedSlot()
 	{
-		return player.inventory.currentItem;
+		return entityPlayer.inventory.currentItem;
 	}
 
 	@Override
@@ -72,30 +78,56 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS
 	{
 		super.setPositionAndRotation(x, y, z, yaw, pitch);
 
-		if (player instanceof EntityPlayerMP)
+		if (entityPlayer instanceof EntityPlayerMP)
 		{
-			((EntityPlayerMP) player).connection.setPlayerLocation(x, y, z, yaw, pitch);
+			((EntityPlayerMP) entityPlayer).connection.setPlayerLocation(x, y, z, yaw, pitch);
 		}
 	}
 
 	@Override
 	public void setStatusMessage(Object message)
 	{
-		player.sendStatusMessage(Text.of(message).component(), true);
+		entityPlayer.sendStatusMessage(Text.of(message).component(), true);
 	}
 
 	@DocMethod
 	public boolean isCreativeMode()
 	{
-		return player.capabilities.isCreativeMode;
+		return entityPlayer.capabilities.isCreativeMode;
 	}
 
 	@DocMethod
 	public boolean isSpectator()
 	{
-		return player.isSpectator();
+		return entityPlayer.isSpectator();
 	}
 
 	@DocMethod
-	public abstract PlayerStatsJS stats();
+	public abstract PlayerStatsJS getStats();
+
+	@Override
+	public void spawn()
+	{
+	}
+
+	@Nullable
+	public Map<String, Object> rayTrace(double distance)
+	{
+		Map<String, Object> map = new HashMap<>();
+		RayTraceResult ray = ForgeHooks.rayTraceEyes(entityPlayer, distance);
+
+		if (ray != null && ray.typeOfHit == RayTraceResult.Type.BLOCK)
+		{
+			map.put("block", new BlockContainerJS(world.world, ray.getBlockPos()));
+			map.put("facing", Facing.VALUES[ray.sideHit.getIndex()]);
+		}
+
+		return map;
+	}
+
+	@Nullable
+	public Map<String, Object> rayTrace()
+	{
+		return rayTrace(entityPlayer.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue());
+	}
 }

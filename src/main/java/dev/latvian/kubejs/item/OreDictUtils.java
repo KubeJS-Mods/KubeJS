@@ -25,7 +25,7 @@ public class OreDictUtils
 	{
 		for (ItemStackJS stack : ingredient.getStacks())
 		{
-			OreDictionary.registerOre(name, stack.itemStack());
+			OreDictionary.registerOre(name, stack.getItemStack());
 		}
 	}
 
@@ -57,7 +57,7 @@ public class OreDictUtils
 			return Collections.emptyList();
 		}
 
-		int[] ai = OreDictionary.getOreIDs(item.itemStack());
+		int[] ai = OreDictionary.getOreIDs(item.getItemStack());
 		List<String> list = new ObjectArrayList<>(ai.length);
 
 		for (int value : ai)

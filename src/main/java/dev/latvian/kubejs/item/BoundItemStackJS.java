@@ -5,8 +5,10 @@ import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * @author LatvianModder
@@ -27,20 +29,25 @@ public class BoundItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public ItemStackJS copy()
+	public ItemStack getItemStack()
+	{
+		return stack;
+	}
+
+	@Override
+	public ItemStackJS getCopy()
 	{
 		return new BoundItemStackJS(stack.copy());
 	}
 
 	@Override
-	public ItemStackJS count(int c)
+	public void setCount(int c)
 	{
 		stack.setCount(c);
-		return this;
 	}
 
 	@Override
-	public int count()
+	public int getCount()
 	{
 		return stack.getCount();
 	}
@@ -52,59 +59,62 @@ public class BoundItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public ItemStackJS data(int d)
+	public void setData(int data)
 	{
-		stack.setItemDamage(d);
-		return this;
+		stack.setItemDamage(data);
 	}
 
 	@Override
-	public int data()
+	public int getData()
 	{
 		return stack.getMetadata();
 	}
 
 	@Override
-	public ItemStackJS nbt(@Nullable Object o)
+	public void setNbt(@Nullable Object nbt)
 	{
-		stack.setTagCompound(NBTBaseJS.of(o).asCompound().createNBT());
-		return this;
+		stack.setTagCompound(NBTBaseJS.of(nbt).asCompound().createNBT());
 	}
 
 	@Override
-	public NBTCompoundJS nbt()
+	public NBTCompoundJS getNbt()
 	{
 		return NBTBaseJS.of(stack.getTagCompound()).asCompound();
 	}
 
 	@Override
-	public ItemStackJS caps(@Nullable Object o)
+	public void setName(String displayName)
 	{
-		NBTTagCompound n = stack.serializeNBT();
-		NBTTagCompound nbt = NBTBaseJS.of(o).asCompound().createNBT();
-
-		if (nbt == null)
-		{
-			n.removeTag("ForgeCaps");
-		}
-		else
-		{
-			n.setTag("ForgeCaps", n);
-		}
-
-		stack.deserializeNBT(n);
-		return this;
+		stack.setStackDisplayName(displayName);
 	}
 
 	@Override
-	public NBTCompoundJS caps()
+	public void setTranslatableName(String translatableName)
 	{
-		return NBTBaseJS.of(stack.serializeNBT().getTag("ForgeCaps")).asCompound();
+		stack.setTranslatableName(translatableName);
 	}
 
 	@Override
-	public ItemStack itemStack()
+	public boolean test(ItemStackJS stack)
 	{
-		return stack;
+		return stack instanceof BoundItemStackJS ? test(((BoundItemStackJS) stack).stack) : super.test(stack);
+	}
+
+	@Override
+	public boolean test(ItemStack stack2)
+	{
+		if (stack.getItem() == stack2.getItem())
+		{
+			int d = stack.getMetadata();
+
+			if (d == OreDictionary.WILDCARD_VALUE || d == stack2.getMetadata())
+			{
+				NBTTagCompound nbt = stack.getTagCompound();
+				NBTTagCompound nbt2 = stack2.getTagCompound();
+				return Objects.equals(nbt, nbt2);
+			}
+		}
+
+		return false;
 	}
 }

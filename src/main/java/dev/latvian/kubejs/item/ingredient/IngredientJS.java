@@ -75,7 +75,7 @@ public interface IngredientJS extends Predicate<ItemStack>
 	{
 		Set<ItemStackJS> set = new LinkedHashSet<>();
 
-		for (ItemStackJS stack : ItemStackJS.list())
+		for (ItemStackJS stack : ItemStackJS.getList())
 		{
 			if (test(stack))
 			{

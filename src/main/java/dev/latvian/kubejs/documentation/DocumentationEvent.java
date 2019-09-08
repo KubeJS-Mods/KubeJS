@@ -26,24 +26,10 @@ public class DocumentationEvent extends Event
 		documentation.registerCustomName(name, classes);
 	}
 
-	public void registerEvent(String id, Class<? extends EventJS> event)
+	public DocumentedEvent registerEvent(String id, Class<? extends EventJS> event)
 	{
-		registerEvent(id, event, false);
-	}
-
-	public void registerEvent(String id, Class<? extends EventJS> event, boolean canCancel)
-	{
-		documentation.registerEvent(id, event, canCancel);
-	}
-
-	public void registerDoubleEvent(String id, String extra, Class<? extends EventJS> event)
-	{
-		registerDoubleEvent(id, extra, event, false);
-	}
-
-	public void registerDoubleEvent(String id, String extra, Class<? extends EventJS> event, boolean canCancel)
-	{
-		registerEvent(id + ".<" + extra + ">", event, canCancel);
-		registerEvent(id, event, canCancel);
+		DocumentedEvent e = new DocumentedEvent(id, event);
+		documentation.registerEvent(e);
+		return e;
 	}
 }

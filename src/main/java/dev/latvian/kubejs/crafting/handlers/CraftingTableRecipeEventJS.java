@@ -44,7 +44,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 	public void addShaped(String recipeID, Object output, String[] pattern, Map<String, Object> ingredients)
 	{
 		String id = KubeJS.appendModId(recipeID);
-		ItemStack outputItem = ItemStackJS.of(output).itemStack();
+		ItemStack outputItem = ItemStackJS.of(output).getItemStack();
 
 		if (outputItem.isEmpty())
 		{
@@ -101,7 +101,7 @@ public class CraftingTableRecipeEventJS extends EventJS
 	public void addShapeless(String recipeID, Object output, Object[] ingredients)
 	{
 		String id = KubeJS.appendModId(recipeID);
-		ItemStack outputItem = ItemStackJS.of(output).itemStack();
+		ItemStack outputItem = ItemStackJS.of(output).getItemStack();
 
 		if (outputItem.isEmpty())
 		{

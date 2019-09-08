@@ -39,7 +39,7 @@ public class InventoryJS
 	{
 		if (inventory instanceof IItemHandlerModifiable)
 		{
-			((IItemHandlerModifiable) inventory).setStackInSlot(slot, ItemStackJS.of(item).itemStack());
+			((IItemHandlerModifiable) inventory).setStackInSlot(slot, ItemStackJS.of(item).getItemStack());
 		}
 		else
 		{
@@ -50,7 +50,7 @@ public class InventoryJS
 	@DocMethod
 	public ItemStackJS insert(int slot, Object item, boolean simulate)
 	{
-		return ItemStackJS.of(inventory.insertItem(slot, ItemStackJS.of(item).itemStack(), simulate));
+		return ItemStackJS.of(inventory.insertItem(slot, ItemStackJS.of(item).getItemStack(), simulate));
 	}
 
 	@DocMethod
@@ -68,7 +68,7 @@ public class InventoryJS
 	@DocMethod
 	public boolean isItemValid(int slot, Object item)
 	{
-		return inventory.isItemValid(slot, ItemStackJS.of(item).itemStack());
+		return inventory.isItemValid(slot, ItemStackJS.of(item).getItemStack());
 	}
 
 	@DocMethod

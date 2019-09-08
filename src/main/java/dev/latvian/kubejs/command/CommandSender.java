@@ -43,9 +43,9 @@ public class CommandSender implements MessageSender
 		return server.getWorld(sender.getEntityWorld());
 	}
 
-	public PlayerJS asPlayer() throws PlayerNotFoundException
+	public PlayerJS getPlayer() throws PlayerNotFoundException
 	{
-		return server.getPlayer(CommandBase.getCommandSenderAsPlayer(sender).getUniqueID());
+		return server.getPlayer(CommandBase.getCommandSenderAsPlayer(sender));
 	}
 
 	public BlockContainerJS getBlock()

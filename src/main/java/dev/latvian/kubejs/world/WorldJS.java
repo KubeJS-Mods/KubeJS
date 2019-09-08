@@ -9,9 +9,11 @@ import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
+import dev.latvian.kubejs.util.ID;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
@@ -194,12 +196,24 @@ public abstract class WorldJS
 	@DocMethod(params = {@Param("x"), @Param("y"), @Param("z")})
 	public ExplosionJS createExplosion(double x, double y, double z)
 	{
-		return new ExplosionJS(this, x, y, z);
+		return new ExplosionJS(world, x, y, z);
+	}
+
+	@Nullable
+	public EntityJS createEntity(Object id)
+	{
+		return getEntity(EntityList.createEntityByIDFromName(ID.of(id).mc(), world));
 	}
 
 	@DocMethod(params = {@Param("x"), @Param("y"), @Param("z"), @Param("effectOnly")})
 	public void spawnLightning(double x, double y, double z, boolean effectOnly)
 	{
 		world.addWeatherEffect(new EntityLightningBolt(world, x, y, z, effectOnly));
+	}
+
+	@DocMethod(params = {@Param("x"), @Param("y"), @Param("z"), @Param("properties")})
+	public void spawnFireworks(double x, double y, double z, FireworksJS fireworks)
+	{
+		world.spawnEntity(fireworks.createFireworkRocket(world, x, y, z));
 	}
 }

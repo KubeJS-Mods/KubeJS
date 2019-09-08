@@ -1,13 +1,13 @@
 package dev.latvian.kubejs.documentation;
 
 import dev.latvian.kubejs.command.CommandSender;
-import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.script.DataType;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
 import net.minecraft.util.IStringSerializable;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -49,15 +49,15 @@ public class Documentation
 	}
 
 	private Map<Class, String> customNames;
-	private Map<String, Class<? extends EventJS>> events;
-	private Map<Class, Boolean> canCancelEvents;
+	private Map<String, DocumentedEvent> events;
+	private Map<Class, DocumentedEvent> classToEvent;
 	private Map<Class, Map<String, Class>> attachedData;
 
 	public void init()
 	{
 		customNames = new LinkedHashMap<>();
 		events = new LinkedHashMap<>();
-		canCancelEvents = new HashMap<>();
+		classToEvent = new HashMap<>();
 		attachedData = new HashMap<>();
 		MinecraftForge.EVENT_BUS.post(new DocumentationEvent(this));
 	}
@@ -75,10 +75,15 @@ public class Documentation
 		}
 	}
 
-	public void registerEvent(String id, Class<? extends EventJS> event, boolean canCancel)
+	public void registerEvent(DocumentedEvent e)
 	{
-		events.put(id, event);
-		canCancelEvents.put(event, canCancel);
+		events.put(e.eventID, e);
+		classToEvent.put(e.eventClass, e);
+
+		if (!e.doubleParam.isEmpty())
+		{
+			events.put(e.eventID + ".<" + e.doubleParam + ">", e);
+		}
 	}
 
 	public String getSimpleName(Class c)
@@ -234,7 +239,7 @@ public class Documentation
 
 		for (String s : list)
 		{
-			sender.tell(new TextString(s).yellow().hover("<More Info>").click("command:/kubejs docs " + events.get(s).getName()));
+			sender.tell(new TextString(s).yellow().hover("<More Info>").click("command:/kubejs docs " + events.get(s).eventClass.getName()));
 		}
 	}
 
@@ -274,10 +279,20 @@ public class Documentation
 			sender.tell("<None>");
 		}
 
-		if (canCancelEvents.containsKey(c))
+		DocumentedEvent event = classToEvent.get(c);
+
+		if (event != null)
 		{
-			sender.tell(new TextString("[Can Cancel]").blue());
-			sender.tell(canCancelEvents.get(c));
+			sender.tell(new TextString("[Event]").blue());
+			sender.tell("ID: " + event.eventID);
+
+			if (!event.doubleParam.isEmpty())
+			{
+				sender.tell("Alt ID: " + event.eventID + ".<" + event.doubleParam + ">");
+			}
+
+			sender.tell("Can cancel: " + event.canCancel);
+			sender.tell("Sides: " + (event.sideOnly == null ? "[Server, Client]" : event.sideOnly == Side.CLIENT ? "[Client]" : "[Server]"));
 		}
 
 		sender.tell(new TextString("[Fields]").blue());

@@ -10,13 +10,18 @@ import javax.annotation.Nullable;
  */
 public class DamageSourceJS
 {
-	public final WorldJS world;
+	private final WorldJS world;
 	public final transient DamageSource source;
 
 	public DamageSourceJS(WorldJS w, DamageSource s)
 	{
 		world = w;
 		source = s;
+	}
+
+	public WorldJS getWorld()
+	{
+		return world;
 	}
 
 	public String getType()
@@ -27,12 +32,22 @@ public class DamageSourceJS
 	@Nullable
 	public EntityJS getImmediate()
 	{
-		return world.getEntity(source.getImmediateSource());
+		return getWorld().getEntity(source.getImmediateSource());
+	}
+
+	public boolean hasImmediate()
+	{
+		return source.getImmediateSource() != null;
 	}
 
 	@Nullable
 	public EntityJS getActual()
 	{
-		return world.getEntity(source.getImmediateSource());
+		return getWorld().getEntity(source.getImmediateSource());
+	}
+
+	public boolean hasActual()
+	{
+		return source.getImmediateSource() != null;
 	}
 }

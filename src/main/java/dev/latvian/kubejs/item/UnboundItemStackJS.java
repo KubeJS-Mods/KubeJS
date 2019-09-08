@@ -17,7 +17,6 @@ public class UnboundItemStackJS extends ItemStackJS
 	private int count;
 	private int data;
 	private NBTCompoundJS nbt;
-	private NBTCompoundJS caps;
 	private ItemStack cached;
 
 	public UnboundItemStackJS(Item i)
@@ -26,7 +25,6 @@ public class UnboundItemStackJS extends ItemStackJS
 		count = 1;
 		data = 0;
 		nbt = NBTCompoundJS.NULL;
-		caps = NBTCompoundJS.NULL;
 		cached = null;
 	}
 
@@ -37,96 +35,63 @@ public class UnboundItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public ItemStackJS copy()
+	public ItemStack getItemStack()
+	{
+		if (cached == null)
+		{
+			cached = new ItemStack(item, count, data);
+			cached.setTagCompound(nbt.createNBT());
+		}
+
+		return cached;
+	}
+
+	@Override
+	public ItemStackJS getCopy()
 	{
 		UnboundItemStackJS stack = new UnboundItemStackJS(item);
 		stack.count = count;
 		stack.data = data;
 		stack.nbt = nbt.copy();
-		stack.caps = caps.copy();
 		return stack;
 	}
 
 	@Override
-	public ItemStackJS count(int c)
+	public void setCount(int c)
 	{
 		count = MathHelper.clamp(c, 0, 64);
-
-		if (cached != null)
-		{
-			cached.setCount(count);
-		}
-
-		return this;
+		cached = null;
 	}
 
 	@Override
-	public int count()
+	public int getCount()
 	{
 		return count;
 	}
 
 	@Override
-	public ItemStackJS data(int d)
+	public void setData(int d)
 	{
 		data = MathHelper.clamp(d, 0, 32767);
-
-		if (cached != null)
-		{
-			cached.setItemDamage(data);
-		}
-
-		return this;
+		cached = null;
 	}
 
 	@Override
-	public int data()
+	public int getData()
 	{
 		return data;
 	}
 
 	@Override
-	public ItemStackJS nbt(@Nullable Object o)
+	public void setNbt(@Nullable Object n)
 	{
-		nbt = NBTBaseJS.of(o).asCompound();
-
-		if (cached != null)
-		{
-			cached.setTagCompound(nbt.createNBT());
-		}
-
-		return this;
+		nbt = NBTBaseJS.of(n).asCompound();
+		cached = null;
 	}
 
 	@Override
-	public NBTCompoundJS nbt()
+	public NBTCompoundJS getNbt()
 	{
 		return nbt;
-	}
-
-	@Override
-	public ItemStackJS caps(@Nullable Object o)
-	{
-		caps = NBTBaseJS.of(o).asCompound();
-		cached = null;
-		return this;
-	}
-
-	@Override
-	public NBTCompoundJS caps()
-	{
-		return caps;
-	}
-
-	@Override
-	public ItemStack itemStack()
-	{
-		if (cached == null)
-		{
-			cached = new ItemStack(item, count, data, caps.createNBT());
-			cached.setTagCompound(nbt.createNBT());
-		}
-
-		return cached;
 	}
 }

@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.documentation.DocMethod;
@@ -157,7 +156,7 @@ public class ServerJS implements MessageSender
 	public void tell(Object message)
 	{
 		ITextComponent component = Text.of(message).component();
-		KubeJS.LOGGER.info("Server: " + component.getUnformattedText());
+		server.sendMessage(component);
 
 		for (EntityPlayerMP player : server.getPlayerList().getPlayers())
 		{

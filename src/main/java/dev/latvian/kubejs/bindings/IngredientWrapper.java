@@ -4,10 +4,12 @@ import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
+import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
 
 import javax.annotation.Nullable;
+import java.util.function.Predicate;
 
 /**
  * @author LatvianModder
@@ -28,8 +30,8 @@ public class IngredientWrapper
 	}
 
 	@DocMethod
-	public IngredientJS custom(IngredientJS ingredient)
+	public IngredientJS custom(Predicate<ItemStackJS> predicate)
 	{
-		return ingredient;
+		return predicate::test;
 	}
 }

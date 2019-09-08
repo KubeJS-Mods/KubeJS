@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.world;
 
+import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.util.Facing;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -26,27 +27,53 @@ public class BlockContainerJS
 {
 	private static final ID AIR_ID = ID.of("minecraft:air");
 
-	public final transient World world;
-	public final transient BlockPos pos;
-	public final int x, y, z;
+	private final World world;
+	private final BlockPos pos;
 
 	public BlockContainerJS(World w, BlockPos p)
 	{
 		world = w;
 		pos = p;
-		x = pos.getX();
-		y = pos.getY();
-		z = pos.getZ();
+	}
+
+	public WorldJS getWorld()
+	{
+		return UtilsJS.getWorld(world);
+	}
+
+	public BlockPos getPos()
+	{
+		return pos;
+	}
+
+	public int getX()
+	{
+		return getPos().getX();
+	}
+
+	public int getY()
+	{
+		return getPos().getY();
+	}
+
+	public int getZ()
+	{
+		return getPos().getZ();
 	}
 
 	public BlockContainerJS offset(Facing f, int d)
 	{
-		return new BlockContainerJS(world, pos.offset(f.vanillaFacing, d));
+		return new BlockContainerJS(world, getPos().offset(f.vanillaFacing, d));
 	}
 
 	public BlockContainerJS offset(Facing f)
 	{
 		return offset(f, 1);
+	}
+
+	public BlockContainerJS offset(int x, int y, int z)
+	{
+		return new BlockContainerJS(world, getPos().add(x, y, z));
 	}
 
 	public BlockContainerJS getDown()
@@ -79,9 +106,19 @@ public class BlockContainerJS
 		return offset(Facing.EAST);
 	}
 
-	public ID get()
+	public IBlockState getBlockState()
 	{
-		IBlockState state = world.getBlockState(pos);
+		return world.getBlockState(getPos());
+	}
+
+	public void setBlockState(IBlockState state, int flags)
+	{
+		world.setBlockState(getPos(), state, flags);
+	}
+
+	public ID getId()
+	{
+		IBlockState state = getBlockState();
 		return state.getBlock() == Blocks.AIR ? AIR_ID : ID.of(state.getBlock().getRegistryName());
 	}
 
@@ -110,7 +147,7 @@ public class BlockContainerJS
 			}
 		}
 
-		world.setBlockState(pos, state, flags);
+		setBlockState(state, flags);
 	}
 
 	public void set(Object id, Map<?, ?> properties)
@@ -126,7 +163,7 @@ public class BlockContainerJS
 	public Map<String, String> getProperties()
 	{
 		Map<String, String> map = new HashMap<>();
-		IBlockState state = world.getBlockState(pos);
+		IBlockState state = getBlockState();
 
 		for (Map.Entry<IProperty<?>, ?> entry : state.getProperties().entrySet())
 		{
@@ -148,8 +185,10 @@ public class BlockContainerJS
 		return entity == null ? NBTCompoundJS.NULL : NBTBaseJS.of(entity.serializeNBT()).asCompound();
 	}
 
-	public void setEntityData(NBTCompoundJS nbt)
+	public void setEntityData(Object n)
 	{
+		NBTCompoundJS nbt = NBTBaseJS.of(n).asCompound();
+
 		if (!nbt.isNull())
 		{
 			TileEntity entity = getEntity();
@@ -171,21 +210,49 @@ public class BlockContainerJS
 		return world.canSeeSky(pos);
 	}
 
-	public boolean getCanSnow(boolean checkLight)
+	public boolean getCanSnow()
 	{
-		return world.canSnowAt(pos, checkLight);
+		return world.canSnowAt(pos, false);
+	}
+
+	public boolean getCanSnowCheckingLight()
+	{
+		return world.canSnowAt(pos, true);
 	}
 
 	@Override
 	public String toString()
 	{
-		ID id = get();
+		ID id = getId();
 		Map<String, String> properties = getProperties();
 		return properties.isEmpty() ? id.toString() : (id + "+" + properties);
 	}
 
+	public ExplosionJS createExplosion()
+	{
+		return new ExplosionJS(world, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D);
+	}
+
+	@Nullable
+	public EntityJS createEntity(Object id)
+	{
+		EntityJS entity = getWorld().createEntity(id);
+
+		if (entity != null)
+		{
+			entity.setPosition(this);
+		}
+
+		return entity;
+	}
+
 	public void spawnLightning(boolean effectOnly)
 	{
-		world.addWeatherEffect(new EntityLightningBolt(world, x, y, z, effectOnly));
+		world.addWeatherEffect(new EntityLightningBolt(world, getX(), getY(), getZ(), effectOnly));
+	}
+
+	public void spawnFireworks(FireworksJS fireworks)
+	{
+		world.spawnEntity(fireworks.createFireworkRocket(world, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D));
 	}
 }

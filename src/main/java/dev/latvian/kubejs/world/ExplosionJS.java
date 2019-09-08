@@ -1,20 +1,21 @@
 package dev.latvian.kubejs.world;
 
 import dev.latvian.kubejs.entity.EntityJS;
+import net.minecraft.world.World;
 
 /**
  * @author LatvianModder
  */
 public class ExplosionJS
 {
-	public final WorldJS world;
+	private final World world;
 	public final double x, y, z;
 	public EntityJS exploder;
 	public float strength;
 	public boolean causesFire;
 	public boolean damagesTerrain;
 
-	public ExplosionJS(WorldJS w, double _x, double _y, double _z)
+	public ExplosionJS(World w, double _x, double _y, double _z)
 	{
 		world = w;
 		x = _x;
@@ -52,6 +53,6 @@ public class ExplosionJS
 
 	public void explode()
 	{
-		world.world.newExplosion(exploder == null ? null : exploder.entity, x, y, z, strength, causesFire, damagesTerrain);
+		world.newExplosion(exploder == null ? null : exploder.entity, x, y, z, strength, causesFire, damagesTerrain);
 	}
 }

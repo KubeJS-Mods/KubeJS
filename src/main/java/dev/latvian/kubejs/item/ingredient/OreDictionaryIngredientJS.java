@@ -32,7 +32,7 @@ public class OreDictionaryIngredientJS implements IngredientJS
 			return false;
 		}
 
-		for (int id : OreDictionary.getOreIDs(stack.itemStack()))
+		for (int id : OreDictionary.getOreIDs(stack.getItemStack()))
 		{
 			if (oreID == id)
 			{

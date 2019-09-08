@@ -133,7 +133,7 @@ public class LivingEntityJS extends EntityJS
 
 	public void setEquipment(EntityEquipmentSlot slot, Object item)
 	{
-		livingEntity.setItemStackToSlot(slot, ItemStackJS.of(item).itemStack());
+		livingEntity.setItemStackToSlot(slot, ItemStackJS.of(item).getItemStack());
 	}
 
 	public ItemStackJS getHandItem(boolean mainHand)
@@ -143,7 +143,7 @@ public class LivingEntityJS extends EntityJS
 
 	public void setHandItem(boolean mainHand, ItemStackJS stack)
 	{
-		livingEntity.setHeldItem(mainHand ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND, stack.itemStack());
+		livingEntity.setHeldItem(mainHand ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND, stack.getItemStack());
 	}
 
 	public float getMovementSpeed()

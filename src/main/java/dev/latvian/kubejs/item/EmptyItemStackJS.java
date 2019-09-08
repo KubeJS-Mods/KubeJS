@@ -32,19 +32,24 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public ItemStackJS copy()
+	public ItemStack getItemStack()
+	{
+		return ItemStack.EMPTY;
+	}
+
+	@Override
+	public ItemStackJS getCopy()
 	{
 		return this;
 	}
 
 	@Override
-	public ItemStackJS count(int c)
+	public void setCount(int c)
 	{
-		return this;
 	}
 
 	@Override
-	public int count()
+	public int getCount()
 	{
 		return 0;
 	}
@@ -56,45 +61,25 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public ItemStackJS data(int d)
+	public void setData(int data)
 	{
-		return this;
 	}
 
 	@Override
-	public int data()
+	public int getData()
 	{
 		return 0;
 	}
 
 	@Override
-	public ItemStackJS nbt(@Nullable Object o)
+	public void setNbt(@Nullable Object nbt)
 	{
-		return this;
 	}
 
 	@Override
-	public NBTCompoundJS nbt()
+	public NBTCompoundJS getNbt()
 	{
 		return NBTCompoundJS.NULL;
-	}
-
-	@Override
-	public ItemStackJS caps(@Nullable Object o)
-	{
-		return this;
-	}
-
-	@Override
-	public NBTCompoundJS caps()
-	{
-		return NBTCompoundJS.NULL;
-	}
-
-	@Override
-	public ItemStack itemStack()
-	{
-		return ItemStack.EMPTY;
 	}
 
 	public String toString()
@@ -124,6 +109,16 @@ public class EmptyItemStackJS extends ItemStackJS
 	public IngredientJS not()
 	{
 		return MatchAllIngredientJS.INSTANCE;
+	}
+
+	@Override
+	public void setName(String displayName)
+	{
+	}
+
+	@Override
+	public void setTranslatableName(String translatableName)
+	{
 	}
 
 	@Override

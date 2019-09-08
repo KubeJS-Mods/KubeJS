@@ -23,19 +23,19 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 	}
 
 	@Override
-	public PlayerStatsJS stats()
+	public PlayerStatsJS getStats()
 	{
-		return new PlayerStatsJS(this, player.getStatFile());
+		return new PlayerStatsJS(this, entityPlayer.getStatFile());
 	}
 
 	public boolean isOP()
 	{
-		return server.server.getPlayerList().canSendCommands(player.getGameProfile());
+		return server.server.getPlayerList().canSendCommands(entityPlayer.getGameProfile());
 	}
 
 	public void kick(Text reason)
 	{
-		player.connection.disconnect(reason.component());
+		entityPlayer.connection.disconnect(reason.component());
 	}
 
 	public void kick()
@@ -46,7 +46,7 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 	public void ban(String banner, String reason, long expiresInMillis)
 	{
 		Date date = new Date();
-		UserListBansEntry userlistbansentry = new UserListBansEntry(player.getGameProfile(), date, banner, new Date(date.getTime() + (expiresInMillis <= 0L ? 315569260000L : expiresInMillis)), reason);
+		UserListBansEntry userlistbansentry = new UserListBansEntry(entityPlayer.getGameProfile(), date, banner, new Date(date.getTime() + (expiresInMillis <= 0L ? 315569260000L : expiresInMillis)), reason);
 		server.server.getPlayerList().getBannedPlayers().addEntry(userlistbansentry);
 		kick(new TextTranslate("multiplayer.disconnect.banned"));
 	}

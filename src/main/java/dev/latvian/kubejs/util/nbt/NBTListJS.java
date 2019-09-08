@@ -1,7 +1,11 @@
 package dev.latvian.kubejs.util.nbt;
 
 import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagByteArray;
+import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagLongArray;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -130,9 +134,24 @@ public class NBTListJS implements NBTBaseJS, Iterable<NBTBaseJS>
 
 	@Override
 	@Nullable
-	public NBTTagList createNBT()
+	public NBTBase createNBT()
 	{
 		NBTTagList tagList = new NBTTagList();
+
+		if (isEmpty())
+		{
+			return tagList;
+		}
+
+		switch (get(0).getID())
+		{
+			case Constants.NBT.TAG_BYTE:
+				return new NBTTagByteArray(asByteArray());
+			case Constants.NBT.TAG_INT:
+				return new NBTTagIntArray(asIntArray());
+			case Constants.NBT.TAG_LONG:
+				return new NBTTagLongArray(asLongArray());
+		}
 
 		for (NBTBaseJS nbt : this)
 		{

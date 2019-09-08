@@ -68,11 +68,11 @@ public class FurnaceRecipeEventJS extends RecipeEventBaseJS<FurnaceRecipeEventJS
 		@Override
 		public void add()
 		{
-			ItemStack out = output.itemStack();
+			ItemStack out = output.getItemStack();
 
 			for (ItemStackJS in : input.getStacks())
 			{
-				FurnaceRecipes.instance().addSmeltingRecipe(in.itemStack(), out, experience);
+				FurnaceRecipes.instance().addSmeltingRecipe(in.getItemStack(), out, experience);
 			}
 		}
 	}

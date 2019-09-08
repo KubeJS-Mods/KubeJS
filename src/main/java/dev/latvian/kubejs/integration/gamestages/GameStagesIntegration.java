@@ -23,8 +23,8 @@ public class GameStagesIntegration
 	{
 		event.registerAttachedData(DataType.PLAYER, "gamestages", GameStagesPlayerData.class);
 
-		event.registerDoubleEvent("gamestage.added", "stage", GameStageEventJS.class);
-		event.registerDoubleEvent("gamestage.removed", "stage", GameStageEventJS.class);
+		event.registerEvent("gamestage.added", GameStageEventJS.class).doubleParam("stage");
+		event.registerEvent("gamestage.removed", GameStageEventJS.class).doubleParam("stage");
 	}
 
 	@SubscribeEvent
