@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.player;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.documentation.DocMethod;
@@ -10,9 +11,11 @@ import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -39,6 +42,11 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS
 	public boolean isPlayer()
 	{
 		return true;
+	}
+
+	public boolean isFake()
+	{
+		return playerEntity instanceof FakePlayer;
 	}
 
 	public String toString()
@@ -107,5 +115,10 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS
 	@Override
 	public void spawn()
 	{
+	}
+
+	public void sendData(String channel, @Nullable Object data)
+	{
+		KubeJS.PROXY.sendData(playerEntity, channel, data);
 	}
 }

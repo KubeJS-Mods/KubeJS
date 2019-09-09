@@ -5,6 +5,7 @@ import dev.latvian.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.integration.IntegrationManager;
+import dev.latvian.kubejs.net.KubeJSNetHandler;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -12,6 +13,7 @@ import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
@@ -50,6 +52,9 @@ public class KubeJS
 	public static final String VERSION = "0.0.0.kubejs";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
 
+	@SidedProxy(serverSide = "dev.latvian.kubejs.KubeJSCommon", clientSide = "dev.latvian.kubejs.client.KubeJSClient")
+	public static KubeJSCommon PROXY;
+
 	public static String appendModId(String id)
 	{
 		return id.indexOf(':') == -1 ? (MOD_ID + ":" + id) : id;
@@ -60,6 +65,7 @@ public class KubeJS
 	{
 		UtilsJS.init();
 		IntegrationManager.preInit();
+		KubeJSNetHandler.init();
 		ScriptManager.instance = new ScriptManager();
 		ScriptManager.instance.load();
 	}

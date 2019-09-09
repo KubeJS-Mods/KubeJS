@@ -46,6 +46,11 @@ public class BlockContainerJS
 		return pos;
 	}
 
+	public int getDimension()
+	{
+		return world.provider.getDimension();
+	}
+
 	public int getX()
 	{
 		return getPos().getX();

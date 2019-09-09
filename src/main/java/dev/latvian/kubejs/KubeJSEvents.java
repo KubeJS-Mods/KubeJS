@@ -28,6 +28,7 @@ import dev.latvian.kubejs.item.ItemRegistryEventJS;
 import dev.latvian.kubejs.item.ItemRightClickEmptyEventJS;
 import dev.latvian.kubejs.item.ItemRightClickEventJS;
 import dev.latvian.kubejs.item.ItemTossEventJS;
+import dev.latvian.kubejs.net.NetworkEventJS;
 import dev.latvian.kubejs.player.PlayerAdvancementEventJS;
 import dev.latvian.kubejs.player.PlayerChatEventJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
@@ -63,6 +64,8 @@ public class KubeJSEvents
 	public static final String PLAYER_LOGGED_IN = "player.logged_in";
 	public static final String PLAYER_LOGGED_OUT = "player.logged_out";
 	public static final String PLAYER_TICK = "player.tick";
+	public static final String PLAYER_DATA_FROM_SERVER = "player.data_from_server";
+	public static final String PLAYER_DATA_FROM_CLIENT = "player.data_from_client";
 	public static final String PLAYER_CHAT = "player.chat";
 	public static final String PLAYER_ADVANCEMENT = "player.advancement";
 
@@ -127,6 +130,8 @@ public class KubeJSEvents
 		event.registerEvent(PLAYER_LOGGED_IN, SimplePlayerEventJS.class).serverOnly();
 		event.registerEvent(PLAYER_LOGGED_OUT, SimplePlayerEventJS.class).serverOnly();
 		event.registerEvent(PLAYER_TICK, SimplePlayerEventJS.class).serverOnly();
+		event.registerEvent(PLAYER_DATA_FROM_SERVER, NetworkEventJS.class).doubleParam("channel").clientOnly().canCancel();
+		event.registerEvent(PLAYER_DATA_FROM_CLIENT, NetworkEventJS.class).doubleParam("channel").serverOnly().canCancel();
 		event.registerEvent(PLAYER_CHAT, PlayerChatEventJS.class).serverOnly().canCancel();
 		event.registerEvent(PLAYER_ADVANCEMENT, PlayerAdvancementEventJS.class).serverOnly();
 
