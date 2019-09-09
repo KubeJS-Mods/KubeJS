@@ -52,7 +52,7 @@ public class UtilsWrapper
 		return new HashMap();
 	}
 
-	public Set setSet()
+	public Set newSet()
 	{
 		return new HashSet();
 	}

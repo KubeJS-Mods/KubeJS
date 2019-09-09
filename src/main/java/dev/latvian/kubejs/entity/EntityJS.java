@@ -77,7 +77,7 @@ public class EntityJS implements MessageSender
 		return getName() + "-" + getId();
 	}
 
-	public ItemStackJS asItem()
+	public ItemStackJS getItem()
 	{
 		if (entity instanceof EntityItem)
 		{

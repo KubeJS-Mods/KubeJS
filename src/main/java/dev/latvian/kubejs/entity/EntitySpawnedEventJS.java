@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.entity;
 
+import dev.latvian.kubejs.world.WorldJS;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
 /**
@@ -18,6 +19,12 @@ public class EntitySpawnedEventJS extends EntityEventJS
 	public boolean canCancel()
 	{
 		return true;
+	}
+
+	@Override
+	public WorldJS getWorld()
+	{
+		return worldOf(event.getWorld());
 	}
 
 	@Override

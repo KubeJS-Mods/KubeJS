@@ -41,6 +41,11 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS
 		return true;
 	}
 
+	public String toString()
+	{
+		return getName();
+	}
+
 	@DocMethod
 	public InventoryJS getInventory()
 	{

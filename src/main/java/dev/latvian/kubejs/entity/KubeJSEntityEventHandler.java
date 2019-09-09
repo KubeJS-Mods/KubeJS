@@ -48,7 +48,7 @@ public class KubeJSEntityEventHandler
 	@SubscribeEvent
 	public static void onEntitySpawned(EntityJoinWorldEvent event)
 	{
-		if ((ServerJS.instance != null || event.getWorld().isRemote) && EventsJS.post(KubeJSEvents.ENTITY_SPAWNED, new EntitySpawnedEventJS(event)))
+		if (event.getWorld() != null && (ServerJS.instance != null || event.getWorld().isRemote) && EventsJS.post(KubeJSEvents.ENTITY_SPAWNED, new EntitySpawnedEventJS(event)))
 		{
 			event.setCanceled(true);
 		}
