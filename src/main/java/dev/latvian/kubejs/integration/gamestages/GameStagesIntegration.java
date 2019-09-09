@@ -4,7 +4,9 @@ import dev.latvian.kubejs.documentation.DocumentationEvent;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.script.DataType;
+import net.darkhax.gamestages.GameStageHelper;
 import net.darkhax.gamestages.event.GameStageEvent;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -16,6 +18,23 @@ public class GameStagesIntegration
 	public static void preInit()
 	{
 		MinecraftForge.EVENT_BUS.register(GameStagesIntegration.class);
+	}
+
+	public static boolean hasStage(EntityPlayer player, String stage)
+	{
+		return GameStageHelper.hasStage(player, stage);
+	}
+
+	public static void addStage(EntityPlayer player, String stage)
+	{
+		GameStageHelper.addStage(player, stage);
+		GameStageHelper.syncPlayer(player);
+	}
+
+	public static void removeStage(EntityPlayer player, String stage)
+	{
+		GameStageHelper.removeStage(player, stage);
+		GameStageHelper.syncPlayer(player);
 	}
 
 	@SubscribeEvent
