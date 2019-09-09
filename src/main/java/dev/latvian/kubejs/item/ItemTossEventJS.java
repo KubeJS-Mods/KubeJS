@@ -25,7 +25,7 @@ public class ItemTossEventJS extends PlayerEventJS
 	@Override
 	public EntityJS getEntity()
 	{
-		return entityOf(event);
+		return entityOf(event.getPlayer());
 	}
 
 	public EntityJS getItemEntity()
