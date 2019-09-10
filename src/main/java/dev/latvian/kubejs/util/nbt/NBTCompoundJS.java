@@ -47,7 +47,7 @@ public class NBTCompoundJS implements NBTBaseJS
 		}
 
 		@Override
-		public int size()
+		public int getSize()
 		{
 			return 0;
 		}
@@ -171,7 +171,7 @@ public class NBTCompoundJS implements NBTBaseJS
 		return o == this || o instanceof NBTCompoundJS && map.equals(((NBTCompoundJS) o).map);
 	}
 
-	public int size()
+	public int getSize()
 	{
 		return map.size();
 	}

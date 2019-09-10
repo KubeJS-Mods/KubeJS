@@ -5,8 +5,8 @@ import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptManager;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import jdk.nashorn.api.scripting.NashornException;
 
-import javax.script.ScriptException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -85,14 +85,13 @@ public class EventsJS
 					return true;
 				}
 			}
-			catch (Throwable ex)
+			catch (NashornException ex)
 			{
 				KubeJS.LOGGER.error("Error occurred while firing '" + id + "' event in " + (handler.file == null ? "Unknown file" : handler.file.path) + ": " + ex);
-
-				if (!(ex instanceof ScriptException))
-				{
-					ex.printStackTrace();
-				}
+			}
+			catch (Throwable ex)
+			{
+				ex.printStackTrace();
 			}
 		}
 

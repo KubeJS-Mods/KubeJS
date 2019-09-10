@@ -51,7 +51,7 @@ public class NBTListJS implements NBTBaseJS, Iterable<NBTBaseJS>
 		}
 
 		@Override
-		public int size()
+		public int getSize()
 		{
 			return 0;
 		}
@@ -172,7 +172,7 @@ public class NBTListJS implements NBTBaseJS, Iterable<NBTBaseJS>
 		return list.isEmpty();
 	}
 
-	public int size()
+	public int getSize()
 	{
 		return list.size();
 	}
@@ -246,7 +246,7 @@ public class NBTListJS implements NBTBaseJS, Iterable<NBTBaseJS>
 	@Override
 	public byte[] asByteArray()
 	{
-		byte[] a = new byte[size()];
+		byte[] a = new byte[getSize()];
 
 		for (int i = 0; i < a.length; i++)
 		{
@@ -259,7 +259,7 @@ public class NBTListJS implements NBTBaseJS, Iterable<NBTBaseJS>
 	@Override
 	public int[] asIntArray()
 	{
-		int[] a = new int[size()];
+		int[] a = new int[getSize()];
 
 		for (int i = 0; i < a.length; i++)
 		{
@@ -272,7 +272,7 @@ public class NBTListJS implements NBTBaseJS, Iterable<NBTBaseJS>
 	@Override
 	public long[] asLongArray()
 	{
-		long[] a = new long[size()];
+		long[] a = new long[getSize()];
 
 		for (int i = 0; i < a.length; i++)
 		{

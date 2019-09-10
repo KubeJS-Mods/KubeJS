@@ -3,6 +3,7 @@ package dev.latvian.kubejs.server;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.event.EventsJS;
+import jdk.nashorn.api.scripting.NashornException;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -51,9 +52,12 @@ public class KubeJSServerEventHandler
 				{
 					e.call();
 				}
-				catch (Exception ex)
+				catch (NashornException ex)
 				{
 					KubeJS.LOGGER.error("Error occurred while handling scheduled event callback in " + e.file.path + ": " + ex);
+				}
+				catch (Throwable ex)
+				{
 					ex.printStackTrace();
 				}
 			}
@@ -82,9 +86,12 @@ public class KubeJSServerEventHandler
 				{
 					e.call();
 				}
-				catch (Exception ex)
+				catch (NashornException ex)
 				{
 					KubeJS.LOGGER.error("Error occurred while handling scheduled event callback in " + e.file.path + ": " + ex);
+				}
+				catch (Throwable ex)
+				{
 					ex.printStackTrace();
 				}
 			}
