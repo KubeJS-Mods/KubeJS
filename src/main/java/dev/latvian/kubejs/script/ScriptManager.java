@@ -82,6 +82,7 @@ public class ScriptManager
 		if (!scripts.isEmpty())
 		{
 			EventsJS.post(KubeJSEvents.UNLOADED, new EventJS());
+			MinecraftForge.EVENT_BUS.post(new ScriptsUnloadedEvent());
 			scripts.clear();
 		}
 
@@ -132,6 +133,7 @@ public class ScriptManager
 		}
 
 		Documentation.clearCache();
+		MinecraftForge.EVENT_BUS.post(new ScriptsLoadedEvent());
 		long time = System.currentTimeMillis() - now;
 		KubeJS.LOGGER.info("Loaded " + i + "/" + scripts.size() + " scripts in " + (time / 1000D) + "s");
 		return time;
