@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.util.CountingMap;
 import dev.latvian.kubejs.util.FieldJS;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.LoggerWrapperJS;
@@ -55,6 +56,11 @@ public class UtilsWrapper
 	public Set newSet()
 	{
 		return new HashSet();
+	}
+
+	public CountingMap newCountingMap()
+	{
+		return new CountingMap();
 	}
 
 	public ID id(String namespace, String path)

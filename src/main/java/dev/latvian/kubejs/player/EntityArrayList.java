@@ -1,16 +1,20 @@
 package dev.latvian.kubejs.player;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.MessageSender;
+import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.ITextComponent;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Predicate;
@@ -127,5 +131,18 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		}
 
 		return list;
+	}
+
+	public void sendData(String channel, @Nullable Object data)
+	{
+		NBTTagCompound nbt = NBTBaseJS.of(data).asCompound().createNBT();
+
+		for (EntityJS entity : this)
+		{
+			if (entity instanceof PlayerJS)
+			{
+				KubeJS.PROXY.sendData(((PlayerJS) entity).playerEntity, channel, nbt);
+			}
+		}
 	}
 }

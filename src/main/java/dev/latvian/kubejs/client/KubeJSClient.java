@@ -5,6 +5,7 @@ import dev.latvian.kubejs.net.KubeJSNetHandler;
 import dev.latvian.kubejs.net.MessageSendData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nullable;
 
@@ -14,7 +15,7 @@ import javax.annotation.Nullable;
 public class KubeJSClient extends KubeJSCommon
 {
 	@Override
-	public void sendData(EntityPlayer playerEntity, String channel, @Nullable Object data)
+	public void sendData(EntityPlayer playerEntity, String channel, @Nullable NBTTagCompound data)
 	{
 		if (playerEntity.world.isRemote && !channel.isEmpty())
 		{

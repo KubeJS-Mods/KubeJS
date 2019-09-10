@@ -8,6 +8,7 @@ import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -119,6 +120,6 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS
 
 	public void sendData(String channel, @Nullable Object data)
 	{
-		KubeJS.PROXY.sendData(playerEntity, channel, data);
+		KubeJS.PROXY.sendData(playerEntity, channel, NBTBaseJS.of(data).asCompound().createNBT());
 	}
 }

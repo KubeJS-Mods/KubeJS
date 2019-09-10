@@ -4,6 +4,8 @@ import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.documentation.Param;
+import dev.latvian.kubejs.net.KubeJSNetHandler;
+import dev.latvian.kubejs.net.MessageSendData;
 import dev.latvian.kubejs.player.AdvancementJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.FakeServerPlayerDataJS;
@@ -14,6 +16,7 @@ import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UUIDUtilsJS;
+import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldCommandSender;
@@ -349,5 +352,10 @@ public class ServerJS implements MessageSender
 	{
 		Advancement a = server.getAdvancementManager().getAdvancement(ID.of(id).mc());
 		return a == null ? null : new AdvancementJS(a);
+	}
+
+	public void sendDataToAll(String channel, @Nullable Object data)
+	{
+		KubeJSNetHandler.net.sendToAll(new MessageSendData(channel, NBTBaseJS.of(data).asCompound().createNBT()));
 	}
 }

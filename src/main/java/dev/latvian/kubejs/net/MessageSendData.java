@@ -21,10 +21,10 @@ public class MessageSendData implements IMessage
 	{
 	}
 
-	public MessageSendData(String c, @Nullable Object d)
+	public MessageSendData(String c, @Nullable NBTTagCompound d)
 	{
 		channel = c;
-		data = NBTBaseJS.of(d).asCompound().createNBT();
+		data = d;
 	}
 
 	@Override
