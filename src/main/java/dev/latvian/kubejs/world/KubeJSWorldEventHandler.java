@@ -12,6 +12,7 @@ import dev.latvian.kubejs.server.SimpleServerEventJS;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -106,5 +107,20 @@ public class KubeJSWorldEventHandler
 			WorldJS w = ServerJS.instance.getWorld(event.world);
 			EventsJS.post(KubeJSEvents.WORLD_TICK, new SimpleWorldEventJS(w));
 		}
+	}
+
+	@SubscribeEvent
+	public static void onExplosionPre(ExplosionEvent.Start event)
+	{
+		if (EventsJS.post(KubeJSEvents.WORLD_EXPLOSION_PRE, new ExplosionEventJS.Pre(event)))
+		{
+			event.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public static void onExplosionPre(ExplosionEvent.Detonate event)
+	{
+		EventsJS.post(KubeJSEvents.WORLD_EXPLOSION_POST, new ExplosionEventJS.Post(event));
 	}
 }

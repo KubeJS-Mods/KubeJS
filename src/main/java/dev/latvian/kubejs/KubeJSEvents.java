@@ -33,6 +33,7 @@ import dev.latvian.kubejs.player.PlayerAdvancementEventJS;
 import dev.latvian.kubejs.player.PlayerChatEventJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
 import dev.latvian.kubejs.server.SimpleServerEventJS;
+import dev.latvian.kubejs.world.ExplosionEventJS;
 import dev.latvian.kubejs.world.SimpleWorldEventJS;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -60,6 +61,8 @@ public class KubeJSEvents
 	public static final String WORLD_LOAD = "world.load";
 	public static final String WORLD_UNLOAD = "world.unload";
 	public static final String WORLD_TICK = "world.tick";
+	public static final String WORLD_EXPLOSION_PRE = "world.explosion.pre";
+	public static final String WORLD_EXPLOSION_POST = "world.explosion.post";
 
 	public static final String PLAYER_LOGGED_IN = "player.logged_in";
 	public static final String PLAYER_LOGGED_OUT = "player.logged_out";
@@ -126,6 +129,8 @@ public class KubeJSEvents
 		event.registerEvent(WORLD_LOAD, SimpleWorldEventJS.class).serverOnly();
 		event.registerEvent(WORLD_UNLOAD, SimpleWorldEventJS.class).serverOnly();
 		event.registerEvent(WORLD_TICK, SimpleWorldEventJS.class).serverOnly();
+		event.registerEvent(WORLD_EXPLOSION_PRE, ExplosionEventJS.Pre.class).serverOnly().canCancel();
+		event.registerEvent(WORLD_EXPLOSION_POST, ExplosionEventJS.Post.class).serverOnly();
 
 		event.registerEvent(PLAYER_LOGGED_IN, SimplePlayerEventJS.class).serverOnly();
 		event.registerEvent(PLAYER_LOGGED_OUT, SimplePlayerEventJS.class).serverOnly();
