@@ -73,12 +73,23 @@ public class UtilsJS
 		return Collections.singleton(o);
 	}
 
-	@SuppressWarnings("deprecation")
 	public static FieldJS getField(String className, String fieldName)
 	{
 		try
 		{
-			return new FieldJS(net.minecraftforge.fml.relauncher.ReflectionHelper.findField(Class.forName(className), fieldName));
+			return getField(Class.forName(className), fieldName);
+		}
+		catch (Throwable ex)
+		{
+			return new FieldJS(null);
+		}
+	}
+
+	public static FieldJS getField(String className, String fieldName, String obfFieldName)
+	{
+		try
+		{
+			return getField(Class.forName(className), fieldName, obfFieldName);
 		}
 		catch (Throwable ex)
 		{
@@ -92,6 +103,19 @@ public class UtilsJS
 		try
 		{
 			return new FieldJS(net.minecraftforge.fml.relauncher.ReflectionHelper.findField(className, fieldName));
+		}
+		catch (Throwable ex)
+		{
+			return new FieldJS(null);
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	public static FieldJS getField(Class className, String fieldName, String obfFieldName)
+	{
+		try
+		{
+			return new FieldJS(net.minecraftforge.fml.relauncher.ReflectionHelper.findField(className, fieldName, obfFieldName));
 		}
 		catch (Throwable ex)
 		{

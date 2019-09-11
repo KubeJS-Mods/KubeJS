@@ -8,7 +8,6 @@ import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.event.EventsJS;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Loader;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
@@ -40,14 +39,16 @@ public class ScriptManager
 			"quit"
 	};
 
+	public final File folder;
 	public final Map<String, ScriptFile> scripts;
 	private final Map<String, ScriptPack> packs;
 	public final Map<String, Object> runtime;
 	public ScriptFile currentFile;
 	public Map<String, Object> bindings;
 
-	public ScriptManager()
+	public ScriptManager(File f)
 	{
+		folder = f;
 		scripts = new LinkedHashMap<>();
 		packs = new HashMap<>();
 		packs.put("modpack", newPack("modpack"));
@@ -70,13 +71,6 @@ public class ScriptManager
 
 	public long load()
 	{
-		File folder = new File(Loader.instance().getConfigDir().getParentFile(), "kubejs");
-
-		if (!folder.exists())
-		{
-			folder.mkdirs();
-		}
-
 		long now = System.currentTimeMillis();
 
 		if (!scripts.isEmpty())
@@ -150,6 +144,11 @@ public class ScriptManager
 
 		if (file.isDirectory())
 		{
+			if (file.getName().equals("resources"))
+			{
+				return;
+			}
+
 			File[] files = file.listFiles();
 
 			if (files != null)

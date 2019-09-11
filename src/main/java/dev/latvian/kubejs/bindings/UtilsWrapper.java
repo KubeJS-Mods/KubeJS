@@ -93,9 +93,19 @@ public class UtilsWrapper
 		return UtilsJS.getField(className, fieldName);
 	}
 
+	public FieldJS getField(String className, String fieldName, String obfFieldName)
+	{
+		return UtilsJS.getField(className, fieldName, obfFieldName);
+	}
+
 	public FieldJS getField(Class className, String fieldName)
 	{
 		return UtilsJS.getField(className, fieldName);
+	}
+
+	public FieldJS getField(Class className, String fieldName, String obfFieldName)
+	{
+		return UtilsJS.getField(className, fieldName, obfFieldName);
 	}
 
 	public int parseInt(@Nullable Object object, int def)
