@@ -26,11 +26,14 @@ public abstract class PlayerDataJS<E extends EntityPlayer, P extends PlayerJS<E>
 	@DocField
 	public final Map<String, Object> data;
 
-	public PlayerDataJS(UUID i, String n)
+	public final boolean hasClientMod;
+
+	public PlayerDataJS(UUID i, String n, boolean h)
 	{
 		id = i;
 		name = n;
 		data = new HashMap<>();
+		hasClientMod = h;
 	}
 
 	public abstract WorldJS getOverworld();

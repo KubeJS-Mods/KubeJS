@@ -41,7 +41,8 @@ public class KubeJSPlayerEventHandler
 
 		if (ServerJS.instance != null && event.player instanceof EntityPlayerMP)
 		{
-			ServerPlayerDataJS p = new ServerPlayerDataJS(ServerJS.instance, event.player.getUniqueID(), event.player.getName());
+			ServerPlayerDataJS p = new ServerPlayerDataJS(ServerJS.instance, event.player.getUniqueID(), event.player.getName(), KubeJS.nextClientHasClientMod);
+			KubeJS.nextClientHasClientMod = false;
 			p.server.playerMap.put(p.id, p);
 			MinecraftForge.EVENT_BUS.post(new AttachPlayerDataEvent(p));
 			EventsJS.post(KubeJSEvents.PLAYER_LOGGED_IN, new SimplePlayerEventJS(event.player));

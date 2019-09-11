@@ -22,11 +22,13 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -65,6 +67,8 @@ public class KubeJS
 	{
 		return id.indexOf(':') == -1 ? (MOD_ID + ":" + id) : id;
 	}
+
+	public static boolean nextClientHasClientMod = false;
 
 	public KubeJS()
 	{
@@ -117,5 +121,16 @@ public class KubeJS
 	public void onServerStopping(FMLServerStoppingEvent event)
 	{
 		KubeJSWorldEventHandler.onServerStopping();
+	}
+
+	@NetworkCheckHandler
+	public boolean checkModLists(Map<String, String> map, Side side)
+	{
+		if (side == Side.CLIENT)
+		{
+			nextClientHasClientMod = map.containsKey(MOD_ID);
+		}
+
+		return true;
 	}
 }

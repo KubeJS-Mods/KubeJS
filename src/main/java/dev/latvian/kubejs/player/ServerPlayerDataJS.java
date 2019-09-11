@@ -15,9 +15,9 @@ public class ServerPlayerDataJS extends PlayerDataJS<EntityPlayerMP, ServerPlaye
 {
 	public final ServerJS server;
 
-	public ServerPlayerDataJS(ServerJS s, UUID id, String n)
+	public ServerPlayerDataJS(ServerJS s, UUID id, String n, boolean h)
 	{
-		super(id, n);
+		super(id, n, h);
 		server = s;
 	}
 

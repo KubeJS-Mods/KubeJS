@@ -18,7 +18,7 @@ public class ClientPlayerDataJS extends PlayerDataJS<EntityPlayer, ClientPlayerJ
 
 	public ClientPlayerDataJS(ClientWorldJS w, UUID id, String n)
 	{
-		super(id, n);
+		super(id, n, true);
 		world = w;
 		player = new ClientPlayerJS(this, world.minecraft.player);
 	}

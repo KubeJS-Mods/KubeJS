@@ -15,7 +15,7 @@ public class FakeServerPlayerDataJS extends ServerPlayerDataJS
 
 	public FakeServerPlayerDataJS(ServerJS s, EntityPlayerMP p)
 	{
-		super(s, p.getUniqueID(), p.getName());
+		super(s, p.getUniqueID(), p.getName(), true);
 		player = p;
 	}
 

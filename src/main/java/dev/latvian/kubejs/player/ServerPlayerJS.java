@@ -15,11 +15,13 @@ import java.util.Date;
 public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 {
 	public final ServerJS server;
+	private final boolean hasClientMod;
 
 	public ServerPlayerJS(ServerPlayerDataJS d, ServerWorldJS w, EntityPlayerMP p)
 	{
 		super(d, w, p);
 		server = w.server;
+		hasClientMod = d.hasClientMod;
 	}
 
 	@Override
@@ -49,5 +51,10 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 		UserListBansEntry userlistbansentry = new UserListBansEntry(playerEntity.getGameProfile(), date, banner, new Date(date.getTime() + (expiresInMillis <= 0L ? 315569260000L : expiresInMillis)), reason);
 		server.server.getPlayerList().getBannedPlayers().addEntry(userlistbansentry);
 		kick(new TextTranslate("multiplayer.disconnect.banned"));
+	}
+
+	public boolean hasClientMod()
+	{
+		return hasClientMod;
 	}
 }
