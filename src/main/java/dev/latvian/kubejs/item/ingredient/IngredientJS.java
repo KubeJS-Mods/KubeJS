@@ -4,6 +4,7 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.util.UtilsJS;
 import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.item.ItemStack;
 
@@ -28,7 +29,8 @@ public interface IngredientJS extends Predicate<ItemStack>
 		{
 			if (object.toString().startsWith("ore:"))
 			{
-				return new OreDictionaryIngredientJS(object.toString().substring(4));
+				String[] s = object.toString().substring(4).split(" ", 2);
+				return new OreDictionaryIngredientJS(s[0]).count(s.length == 2 ? UtilsJS.parseInt(s[1], 1) : 1);
 			}
 
 			return ItemStackJS.of(KubeJS.appendModId(object.toString()));
@@ -52,6 +54,17 @@ public interface IngredientJS extends Predicate<ItemStack>
 				}
 
 				return list.ingredients.isEmpty() ? EmptyItemStackJS.INSTANCE : list;
+			}
+			else if (js.hasMember("ore"))
+			{
+				OreDictionaryIngredientJS ingredient = new OreDictionaryIngredientJS(js.getMember("ore").toString());
+
+				if (js.hasMember("count"))
+				{
+					return ingredient.count(UtilsJS.parseInt(js.getMember("count"), 1));
+				}
+
+				return ingredient;
 			}
 		}
 
@@ -107,5 +120,10 @@ public interface IngredientJS extends Predicate<ItemStack>
 		}
 
 		return EmptyItemStackJS.INSTANCE;
+	}
+
+	default IngredientWithCountJS count(int count)
+	{
+		return new IngredientStackJS(this, count);
 	}
 }

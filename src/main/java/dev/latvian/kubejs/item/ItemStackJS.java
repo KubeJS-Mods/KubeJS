@@ -2,8 +2,10 @@ package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.item.ingredient.IngredientWithCountJS;
 import dev.latvian.kubejs.item.ingredient.OreDictionaryIngredientJS;
 import dev.latvian.kubejs.util.ID;
+import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import dev.latvian.kubejs.util.nbt.NBTListJS;
@@ -32,7 +34,7 @@ import java.util.Set;
 /**
  * @author LatvianModder
  */
-public abstract class ItemStackJS implements IngredientJS
+public abstract class ItemStackJS implements IngredientWithCountJS
 {
 	private static List<ItemStackJS> cachedItemList;
 
@@ -89,7 +91,14 @@ public abstract class ItemStackJS implements IngredientJS
 			}
 			else if (js.getMember("ore") instanceof CharSequence)
 			{
-				return new OreDictionaryIngredientJS(js.getMember("ore").toString()).getFirst();
+				ItemStackJS stack = new OreDictionaryIngredientJS(js.getMember("ore").toString()).getFirst();
+
+				if (js.hasMember("count"))
+				{
+					stack.count(UtilsJS.parseInt(js.getMember("count"), 1));
+				}
+
+				return stack;
 			}
 		}
 
@@ -101,12 +110,13 @@ public abstract class ItemStackJS implements IngredientJS
 		}
 
 		String[] s = s0.split("\\s", 4);
-		String ids = KubeJS.appendModId(s[0]);
 
-		if (ids.startsWith("ore:"))
+		if (s[0].startsWith("ore:"))
 		{
-			return new OreDictionaryIngredientJS(ids.substring(4)).getFirst();
+			return new OreDictionaryIngredientJS(s[0].substring(4)).getFirst().count(s.length >= 2 ? UtilsJS.parseInt(s[1], 1) : 1);
 		}
+
+		String ids = KubeJS.appendModId(s[0]);
 
 		Item item = Item.REGISTRY.getObject(new ResourceLocation(ids));
 
@@ -182,8 +192,10 @@ public abstract class ItemStackJS implements IngredientJS
 
 	public abstract void setCount(int count);
 
+	@Override
 	public abstract int getCount();
 
+	@Override
 	public final ItemStackJS count(int c)
 	{
 		setCount(c);

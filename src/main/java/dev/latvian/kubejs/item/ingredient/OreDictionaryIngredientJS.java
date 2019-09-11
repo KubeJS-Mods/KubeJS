@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.item.BoundItemStackJS;
+import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -76,7 +77,10 @@ public class OreDictionaryIngredientJS implements IngredientJS
 
 				for (ItemStack stack1 : list)
 				{
-					set.add(new BoundItemStackJS(stack1));
+					if (!stack1.isEmpty())
+					{
+						set.add(new BoundItemStackJS(stack1));
+					}
 				}
 			}
 			else
@@ -86,6 +90,31 @@ public class OreDictionaryIngredientJS implements IngredientJS
 		}
 
 		return set;
+	}
+
+	@Override
+	public ItemStackJS getFirst()
+	{
+		for (ItemStack stack : OreDictionary.getOres(oreName))
+		{
+			if (stack.getMetadata() == OreDictionary.WILDCARD_VALUE)
+			{
+				NonNullList<ItemStack> list = NonNullList.create();
+				stack.getItem().getSubItems(CreativeTabs.SEARCH, list);
+
+				for (ItemStack stack1 : list)
+				{
+					if (!stack1.isEmpty())
+					{
+						return new BoundItemStackJS(stack1).count(1);
+					}
+				}
+			}
+
+			return new BoundItemStackJS(stack.copy()).count(1);
+		}
+
+		return EmptyItemStackJS.INSTANCE;
 	}
 
 	@Override
