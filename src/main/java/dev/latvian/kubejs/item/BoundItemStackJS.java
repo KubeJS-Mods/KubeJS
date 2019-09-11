@@ -103,7 +103,7 @@ public class BoundItemStackJS extends ItemStackJS
 	@Override
 	public boolean test(ItemStack stack2)
 	{
-		if (stack.getItem() == stack2.getItem())
+		if (stack2.getCount() >= stack.getCount() && stack.getItem() == stack2.getItem())
 		{
 			int d = stack.getMetadata();
 

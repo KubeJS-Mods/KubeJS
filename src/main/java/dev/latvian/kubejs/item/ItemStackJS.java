@@ -297,7 +297,7 @@ public abstract class ItemStackJS implements IngredientWithCountJS
 	@Override
 	public boolean test(ItemStackJS stack)
 	{
-		if (getItem() == stack.getItem())
+		if (stack.getCount() >= getCount() && getItem() == stack.getItem())
 		{
 			int d = getData();
 
@@ -313,7 +313,7 @@ public abstract class ItemStackJS implements IngredientWithCountJS
 	@Override
 	public boolean test(ItemStack stack)
 	{
-		if (getItem() == stack.getItem())
+		if (stack.getCount() >= getCount() && getItem() == stack.getItem())
 		{
 			int d = getData();
 
