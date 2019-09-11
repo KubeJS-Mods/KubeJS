@@ -13,6 +13,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import net.minecraft.util.text.translation.LanguageMap;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -28,6 +29,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Map;
 
 /**
@@ -85,6 +88,19 @@ public class KubeJS
 		if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
 		{
 			KubeJSClientResourceLoader.init(folder, ScriptManager.instance);
+		}
+
+		File langFile = new File(folder, "resources/lang/en_us.lang");
+
+		if (langFile.exists() && langFile.isFile())
+		{
+			try (InputStream stream = new FileInputStream(langFile))
+			{
+				LanguageMap.inject(stream);
+			}
+			catch (Exception ex)
+			{
+			}
 		}
 	}
 
