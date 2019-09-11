@@ -15,12 +15,14 @@ public class UnboundFluidStackJS extends FluidStackJS
 	private final Fluid fluid;
 	private int amount;
 	private NBTCompoundJS nbt;
+	private FluidStack cached;
 
 	public UnboundFluidStackJS(Fluid f)
 	{
 		fluid = f;
 		amount = Fluid.BUCKET_VOLUME;
 		nbt = NBTCompoundJS.NULL;
+		cached = null;
 	}
 
 	@Override
@@ -33,7 +35,12 @@ public class UnboundFluidStackJS extends FluidStackJS
 	@Override
 	public FluidStack getFluidStack()
 	{
-		return new FluidStack(fluid, amount, nbt.createNBT());
+		if (cached == null)
+		{
+			cached = new FluidStack(fluid, amount, nbt.createNBT());
+		}
+
+		return cached;
 	}
 
 	@Override
@@ -46,6 +53,7 @@ public class UnboundFluidStackJS extends FluidStackJS
 	public void setAmount(int a)
 	{
 		amount = a;
+		cached = null;
 	}
 
 	@Override
@@ -58,6 +66,7 @@ public class UnboundFluidStackJS extends FluidStackJS
 	public void setNbt(@Nullable Object n)
 	{
 		nbt = NBTBaseJS.of(n).asCompound();
+		cached = null;
 	}
 
 	@Override

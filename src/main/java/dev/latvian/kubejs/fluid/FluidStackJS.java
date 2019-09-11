@@ -8,6 +8,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * @author LatvianModder
@@ -98,4 +99,61 @@ public abstract class FluidStackJS
 	}
 
 	public abstract FluidStackJS copy();
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getFluid(), getNbt());
+	}
+
+	public boolean equals(Object o)
+	{
+		if (o == this)
+		{
+			return true;
+		}
+		else if (o instanceof FluidStackJS)
+		{
+			FluidStackJS f = (FluidStackJS) o;
+			return getFluid() == f.getFluid() && getNbt().equals(f.getNbt());
+		}
+		else if (o instanceof String && getFluid() != null)
+		{
+			return o.equals(getFluid().getName());
+		}
+
+		return false;
+	}
+
+	public boolean strongEquals(Object o)
+	{
+		FluidStackJS f = of(o);
+		return getAmount() == f.getAmount() && getFluid() == f.getFluid() && getNbt().equals(f.getNbt());
+	}
+
+	public String toString()
+	{
+		NBTCompoundJS out = new NBTCompoundJS();
+
+		if (getFluid() != null)
+		{
+			out.set("fluid", getFluid().getName());
+
+			if (getAmount() != Fluid.BUCKET_VOLUME)
+			{
+				out.set("amount", getAmount());
+			}
+
+			if (!getNbt().isNull())
+			{
+				out.set("nbt", getNbt());
+			}
+		}
+		else
+		{
+			out.set("fluid", "null");
+		}
+
+		return out.toString();
+	}
 }
