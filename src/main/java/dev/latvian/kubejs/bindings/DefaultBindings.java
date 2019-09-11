@@ -3,12 +3,12 @@ package dev.latvian.kubejs.bindings;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.event.ScriptEventsWrapper;
+import dev.latvian.kubejs.fluid.FluidWrapper;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.script.ScriptModData;
 import dev.latvian.kubejs.text.TextColor;
-import dev.latvian.kubejs.util.FluidUtilsJS;
 import dev.latvian.kubejs.util.LoggerWrapperJS;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -42,7 +42,7 @@ public class DefaultBindings
 		event.add("text", new TextWrapper());
 		event.add("oredict", new OreDictWrapper());
 		event.add("materials", MaterialListJS.INSTANCE.map);
-		event.add("fluid", FluidUtilsJS.INSTANCE);
+		event.add("fluid", new FluidWrapper());
 
 		event.add("EMPTY_ITEM", EmptyItemStackJS.INSTANCE);
 		event.add("SECOND", 1000L);
