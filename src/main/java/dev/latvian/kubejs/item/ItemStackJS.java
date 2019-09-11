@@ -364,19 +364,25 @@ public abstract class ItemStackJS implements IngredientWithCountJS
 	@Override
 	public int hashCode()
 	{
-		return super.hashCode();
+		return Objects.hash(getItem(), getData(), getNbt());
 	}
 
 	@Override
-	public boolean equals(Object obj)
+	public boolean equals(Object o)
 	{
-		if (obj instanceof ItemStackJS)
+		if (o instanceof ItemStackJS)
 		{
-			ItemStackJS stack = (ItemStackJS) obj;
-			return getItem() == stack.getItem() && getData() == stack.getData() && Objects.equals(getNbt(), stack.getNbt());
+			ItemStackJS s = (ItemStackJS) o;
+			return getData() == s.getData() && getItem() == s.getItem() && Objects.equals(getNbt(), s.getNbt());
 		}
 
 		return false;
+	}
+
+	public boolean strongEquals(Object o)
+	{
+		ItemStackJS s = of(o);
+		return getCount() == s.getCount() && getData() == s.getData() && getItem() == s.getItem() && Objects.equals(getNbt(), s.getNbt());
 	}
 
 	public Map<ID, Integer> getEnchantments()
