@@ -108,26 +108,25 @@ public abstract class FluidStackJS
 
 	public boolean equals(Object o)
 	{
-		if (o == this)
+		FluidStackJS f = FluidStackJS.of(o);
+
+		if (f.isEmpty())
 		{
-			return true;
-		}
-		else if (o instanceof FluidStackJS)
-		{
-			FluidStackJS f = (FluidStackJS) o;
-			return getFluid() == f.getFluid() && getNbt().equals(f.getNbt());
-		}
-		else if (o instanceof String && getFluid() != null)
-		{
-			return o.equals(getFluid().getName());
+			return false;
 		}
 
-		return false;
+		return getFluid() == f.getFluid() && getNbt().equals(f.getNbt());
 	}
 
 	public boolean strongEquals(Object o)
 	{
 		FluidStackJS f = of(o);
+
+		if (f.isEmpty())
+		{
+			return false;
+		}
+
 		return getAmount() == f.getAmount() && getFluid() == f.getFluid() && getNbt().equals(f.getNbt());
 	}
 

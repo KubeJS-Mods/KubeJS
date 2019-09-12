@@ -149,4 +149,16 @@ public class EmptyItemStackJS extends ItemStackJS
 	{
 		return "minecraft";
 	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		return ItemStackJS.of(o).isEmpty();
+	}
+
+	@Override
+	public boolean strongEquals(Object o)
+	{
+		return ItemStackJS.of(o).isEmpty();
+	}
 }

@@ -368,18 +368,25 @@ public abstract class ItemStackJS implements IngredientWithCountJS
 	@Override
 	public boolean equals(Object o)
 	{
-		if (o instanceof ItemStackJS)
+		ItemStackJS s = of(o);
+
+		if (s.isEmpty())
 		{
-			ItemStackJS s = (ItemStackJS) o;
-			return getData() == s.getData() && getItem() == s.getItem() && Objects.equals(getNbt(), s.getNbt());
+			return false;
 		}
 
-		return false;
+		return getData() == s.getData() && getItem() == s.getItem() && Objects.equals(getNbt(), s.getNbt());
 	}
 
 	public boolean strongEquals(Object o)
 	{
 		ItemStackJS s = of(o);
+
+		if (s.isEmpty())
+		{
+			return false;
+		}
+
 		return getCount() == s.getCount() && getData() == s.getData() && getItem() == s.getItem() && Objects.equals(getNbt(), s.getNbt());
 	}
 

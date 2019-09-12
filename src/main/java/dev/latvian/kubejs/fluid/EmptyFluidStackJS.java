@@ -60,4 +60,16 @@ public class EmptyFluidStackJS extends FluidStackJS
 	{
 		return this;
 	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		return FluidStackJS.of(o).isEmpty();
+	}
+
+	@Override
+	public boolean strongEquals(Object o)
+	{
+		return FluidStackJS.of(o).isEmpty();
+	}
 }
