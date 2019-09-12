@@ -46,6 +46,14 @@ public class EventsJS
 		list.add(new ScriptEventHandler(ScriptManager.instance.currentFile, handler));
 	}
 
+	public static void listenAll(String[] ids, IEventHandler handler)
+	{
+		for (String s : ids)
+		{
+			listen(s, handler);
+		}
+	}
+
 	public static boolean post(String id, EventJS event)
 	{
 		return postToHandlers(id, handlers(id), event);
