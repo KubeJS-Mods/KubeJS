@@ -269,6 +269,11 @@ public abstract class ItemStackJS implements IngredientWithCountJS
 		return this;
 	}
 
+	public boolean hasSubItems()
+	{
+		return getItem().getHasSubtypes();
+	}
+
 	public String toString()
 	{
 		NBTCompoundJS out = new NBTCompoundJS();

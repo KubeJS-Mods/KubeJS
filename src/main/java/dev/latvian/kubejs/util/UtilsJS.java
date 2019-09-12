@@ -1,9 +1,14 @@
 package dev.latvian.kubejs.util;
 
+import com.google.common.base.Optional;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import jdk.nashorn.api.scripting.JSObject;
+import net.minecraft.block.Block;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatList;
 import net.minecraft.world.World;
@@ -214,5 +219,49 @@ public class UtilsJS
 	public static WorldJS getClientWorld()
 	{
 		return ClientWorldJS.get();
+	}
+
+	public static IBlockState getBlockState(Object id, Map<String, String> properties)
+	{
+		Block block = Block.REGISTRY.getObject(ID.of(id).mc());
+
+		if (block == null || block == Blocks.AIR)
+		{
+			return Blocks.AIR.getDefaultState();
+		}
+
+		IBlockState state = block.getDefaultState();
+
+		if (!properties.isEmpty())
+		{
+			Map<String, IProperty> pmap = new HashMap<>();
+
+			for (IProperty property : state.getPropertyKeys())
+			{
+				pmap.put(property.getName(), property);
+			}
+
+			for (Map.Entry<String, String> entry : properties.entrySet())
+			{
+				IProperty<?> property = pmap.get(entry.getKey());
+
+				if (property != null)
+				{
+					Optional optional = property.parseValue(entry.getValue());
+
+					if (optional.isPresent())
+					{
+						state = state.withProperty(property, cast(optional.get()));
+					}
+				}
+			}
+		}
+
+		return state;
+	}
+
+	public static IBlockState getBlockState(Object id)
+	{
+		return getBlockState(id, Collections.emptyMap());
 	}
 }

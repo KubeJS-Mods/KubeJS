@@ -48,6 +48,7 @@ public class KubeJSEvents
 {
 	public static final String POSTINIT = "postinit";
 	public static final String UNLOADED = "unloaded";
+	public static final String LOADED = "loaded";
 	public static final String COMMAND_REGISTRY = "command.registry";
 
 	public static final String CLIENT_DEBUG_INFO = "client.debug_info";
@@ -116,6 +117,7 @@ public class KubeJSEvents
 
 		event.registerEvent(POSTINIT, EventJS.class);
 		event.registerEvent(UNLOADED, EventJS.class);
+		event.registerEvent(LOADED, EventJS.class);
 		event.registerEvent(COMMAND_REGISTRY, CommandRegistryEventJS.class).serverOnly();
 
 		event.registerEvent(CLIENT_DEBUG_INFO, DebugInfoEventJS.class).clientOnly();
