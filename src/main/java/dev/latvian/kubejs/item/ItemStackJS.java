@@ -22,7 +22,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -152,25 +152,23 @@ public abstract class ItemStackJS implements IngredientWithCountJS
 			return cachedItemList;
 		}
 
-		cachedItemList = new ArrayList<>();
+		LinkedHashSet<ItemStackJS> set = new LinkedHashSet<>();
 		NonNullList<ItemStack> stackList = NonNullList.create();
 
 		for (Item item : Item.REGISTRY)
 		{
 			item.getSubItems(CreativeTabs.SEARCH, stackList);
-
-			for (ItemStack stack : stackList)
-			{
-				if (!stack.isEmpty())
-				{
-					cachedItemList.add(new BoundItemStackJS(stack));
-				}
-			}
-
-			stackList.clear();
 		}
 
-		cachedItemList = Collections.unmodifiableList(cachedItemList);
+		for (ItemStack stack : stackList)
+		{
+			if (!stack.isEmpty())
+			{
+				set.add(new BoundItemStackJS(stack).getCopy().count(1));
+			}
+		}
+
+		cachedItemList = Collections.unmodifiableList(Arrays.asList(set.toArray(new ItemStackJS[0])));
 		return cachedItemList;
 	}
 

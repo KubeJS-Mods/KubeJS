@@ -2,6 +2,7 @@ package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.item.ItemStackJS;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -15,9 +16,26 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 {
 	public final List<IngredientJS> ingredients = new ArrayList<>();
 
-	public void add(IngredientJS ingredient)
+	public MatchAnyIngredientJS add(@Nullable Object ingredient)
 	{
-		ingredients.add(ingredient);
+		IngredientJS i = IngredientJS.of(ingredient);
+
+		if (!i.isEmpty())
+		{
+			ingredients.add(i);
+		}
+
+		return this;
+	}
+
+	public MatchAnyIngredientJS addAll(Object[] ingredients)
+	{
+		for (Object o : ingredients)
+		{
+			add(o);
+		}
+
+		return this;
 	}
 
 	@Override
@@ -69,6 +87,6 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	@Override
 	public void accept(IngredientJS ingredient)
 	{
-		add(ingredient);
+		ingredients.add(ingredient);
 	}
 }

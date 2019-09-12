@@ -32,6 +32,10 @@ public interface IngredientJS extends Predicate<ItemStack>
 				String[] s = object.toString().substring(4).split(" ", 2);
 				return new OreDictionaryIngredientJS(s[0]).count(s.length == 2 ? UtilsJS.parseInt(s[1], 1) : 1);
 			}
+			else if (object.toString().startsWith("mod:"))
+			{
+				return new ModIngredientJS(object.toString().substring(4));
+			}
 
 			return ItemStackJS.of(KubeJS.appendModId(object.toString()));
 		}
@@ -65,6 +69,10 @@ public interface IngredientJS extends Predicate<ItemStack>
 				}
 
 				return ingredient;
+			}
+			else if (js.hasMember("mod"))
+			{
+				return new ModIngredientJS(js.getMember("mod").toString());
 			}
 		}
 
@@ -115,7 +123,7 @@ public interface IngredientJS extends Predicate<ItemStack>
 		{
 			if (!stack.isEmpty())
 			{
-				return stack;
+				return stack.getCopy();
 			}
 		}
 
