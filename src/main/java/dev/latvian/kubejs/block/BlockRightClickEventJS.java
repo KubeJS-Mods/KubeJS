@@ -13,7 +13,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
  */
 public class BlockRightClickEventJS extends PlayerEventJS
 {
-	public final transient PlayerInteractEvent.RightClickBlock event;
+	public final PlayerInteractEvent.RightClickBlock event;
 
 	public BlockRightClickEventJS(PlayerInteractEvent.RightClickBlock e)
 	{

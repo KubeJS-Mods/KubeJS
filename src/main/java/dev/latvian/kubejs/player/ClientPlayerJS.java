@@ -10,12 +10,12 @@ public class ClientPlayerJS extends PlayerJS<EntityPlayer>
 {
 	public ClientPlayerJS(ClientPlayerDataJS d, EntityPlayer player)
 	{
-		super(d, d.world, player);
+		super(d, d.getWorld(), player);
 	}
 
 	@Override
 	public PlayerStatsJS getStats()
 	{
-		return new PlayerStatsJS(this, ((EntityPlayerSP) playerEntity).getStatFileWriter());
+		return new PlayerStatsJS(this, ((EntityPlayerSP) getPlayerEntity()).getStatFileWriter());
 	}
 }

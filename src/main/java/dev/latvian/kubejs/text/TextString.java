@@ -13,11 +13,16 @@ import javax.annotation.Nullable;
  */
 public class TextString extends Text
 {
-	public final String string;
+	private final String string;
 
 	public TextString(@Nullable Object text)
 	{
 		string = String.valueOf(text);
+	}
+
+	public String getString()
+	{
+		return string;
 	}
 
 	@Override
@@ -33,7 +38,7 @@ public class TextString extends Text
 	}
 
 	@Override
-	public JsonElement json()
+	public JsonElement getJson()
 	{
 		JsonObject o = getPropertiesAsJson();
 

@@ -7,7 +7,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
  */
 public class LivingEntityDeathEventJS extends LivingEntityEventJS
 {
-	public final transient LivingDeathEvent event;
+	public final LivingDeathEvent event;
 
 	public LivingEntityDeathEventJS(LivingDeathEvent e)
 	{

@@ -1,23 +1,20 @@
 package dev.latvian.kubejs.script;
 
+import dev.latvian.kubejs.util.WithAttachedData;
 import net.minecraftforge.fml.common.eventhandler.Event;
-
-import java.util.Map;
 
 /**
  * @author LatvianModder
  */
-public class AttachDataEvent<T> extends Event
+public class AttachDataEvent<T extends WithAttachedData> extends Event
 {
 	private final DataType<T> type;
 	private final T parent;
-	private final Map<String, Object> data;
 
-	public AttachDataEvent(DataType<T> t, T p, Map<String, Object> d)
+	public AttachDataEvent(DataType<T> t, T p)
 	{
 		type = t;
 		parent = p;
-		data = d;
 	}
 
 	public DataType<T> getType()
@@ -32,6 +29,6 @@ public class AttachDataEvent<T> extends Event
 
 	public void add(String id, Object object)
 	{
-		data.put(id, object);
+		parent.getData().put(id, object);
 	}
 }

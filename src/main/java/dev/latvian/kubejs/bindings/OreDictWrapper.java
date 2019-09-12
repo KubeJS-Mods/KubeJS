@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.documentation.Param;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -16,8 +15,11 @@ import java.util.List;
 @DocClass
 public class OreDictWrapper
 {
-	@DocField
-	public final List<String> dyes = OreDictUtils.DYES;
+	@DocMethod
+	public List<String> getDyes()
+	{
+		return OreDictUtils.DYES;
+	}
 
 	@DocMethod(params = {@Param(value = "ingredient", type = IngredientJS.class), @Param("name")})
 	public void add(Object ingredient, String name)

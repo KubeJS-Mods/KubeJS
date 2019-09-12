@@ -19,7 +19,7 @@ public abstract class WorldEventJS extends EventJS
 
 		if (w instanceof ServerWorldJS)
 		{
-			return ((ServerWorldJS) w).server;
+			return ((ServerWorldJS) w).getServer();
 		}
 
 		throw new IllegalStateException("Can't access server on client side!");

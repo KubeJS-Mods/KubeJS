@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.server;
 
 import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.documentation.Param;
 import dev.latvian.kubejs.net.KubeJSNetHandler;
@@ -13,9 +12,11 @@ import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.player.ServerPlayerDataJS;
 import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.util.AttachedData;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UUIDUtilsJS;
+import dev.latvian.kubejs.util.WithAttachedData;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.ServerWorldJS;
@@ -46,7 +47,7 @@ import java.util.UUID;
  * @author LatvianModder
  */
 @DocClass("Server instance")
-public class ServerJS implements MessageSender
+public class ServerJS implements MessageSender, WithAttachedData
 {
 	public static ServerJS instance;
 
@@ -57,17 +58,9 @@ public class ServerJS implements MessageSender
 	public final Map<UUID, ServerPlayerDataJS> playerMap;
 	public final Map<UUID, FakeServerPlayerDataJS> fakePlayerMap;
 
-	@DocField("Temporary data, mods can attach objects to this")
-	public final Map<String, Object> data;
-
-	@DocField("List of all currently loaded worlds")
-	public final List<ServerWorldJS> worlds;
-
-	@DocField
-	public final ServerWorldJS overworld;
-
-	@DocField
-	public final GameRulesJS gameRules;
+	private AttachedData data;
+	private final List<ServerWorldJS> worlds;
+	private final ServerWorldJS overworld;
 
 	public ServerJS(MinecraftServer ms, WorldServer w)
 	{
@@ -78,18 +71,39 @@ public class ServerJS implements MessageSender
 		playerMap = new HashMap<>();
 		fakePlayerMap = new HashMap<>();
 
-		data = new HashMap<>();
 		overworld = new ServerWorldJS(this, w);
 		worldMap.put(0, overworld);
 		worlds = new ArrayList<>();
 		worlds.add(overworld);
-		gameRules = new GameRulesJS(w.getGameRules());
 	}
 
 	public void updateWorldList()
 	{
 		worlds.clear();
 		worlds.addAll(worldMap.values());
+	}
+
+	@Override
+	public AttachedData getData()
+	{
+		if (data == null)
+		{
+			data = new AttachedData(this);
+		}
+
+		return data;
+	}
+
+	@DocMethod("List of all currently loaded worlds")
+	public List<ServerWorldJS> getWorlds()
+	{
+		return worlds;
+	}
+
+	@DocMethod
+	public ServerWorldJS getOverworld()
+	{
+		return overworld;
 	}
 
 	@DocMethod
@@ -245,7 +259,7 @@ public class ServerJS implements MessageSender
 
 		for (PlayerDataJS p : playerMap.values())
 		{
-			if (p.name.equalsIgnoreCase(name))
+			if (p.getName().equalsIgnoreCase(name))
 			{
 				return p.getPlayer();
 			}
@@ -253,7 +267,7 @@ public class ServerJS implements MessageSender
 
 		for (PlayerDataJS p : playerMap.values())
 		{
-			if (p.name.toLowerCase().contains(name))
+			if (p.getName().toLowerCase().contains(name))
 			{
 				return p.getPlayer();
 			}
@@ -357,5 +371,11 @@ public class ServerJS implements MessageSender
 	public void sendDataToAll(String channel, @Nullable Object data)
 	{
 		KubeJSNetHandler.net.sendToAll(new MessageSendData(channel, NBTBaseJS.of(data).asCompound().createNBT()));
+	}
+
+	@DocMethod
+	public GameRulesJS getGameRules()
+	{
+		return new GameRulesJS(overworld.world.getGameRules());
 	}
 }

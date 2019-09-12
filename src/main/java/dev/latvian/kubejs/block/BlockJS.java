@@ -11,7 +11,7 @@ public class BlockJS extends Block
 
 	public BlockJS(BlockBuilder p)
 	{
-		super(p.material.material);
+		super(p.material.getMaterial());
 		properties = p;
 		setTranslationKey(p.translationKey);
 		setHardness(p.hardness);

@@ -9,7 +9,7 @@ import net.minecraftforge.event.entity.item.ItemTossEvent;
  */
 public class ItemTossEventJS extends PlayerEventJS
 {
-	public final transient ItemTossEvent event;
+	public final ItemTossEvent event;
 
 	public ItemTossEventJS(ItemTossEvent e)
 	{

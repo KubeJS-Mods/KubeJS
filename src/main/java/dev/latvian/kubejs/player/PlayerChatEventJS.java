@@ -9,7 +9,7 @@ import net.minecraftforge.event.ServerChatEvent;
  */
 public class PlayerChatEventJS extends PlayerEventJS
 {
-	public final transient ServerChatEvent event;
+	public final ServerChatEvent event;
 
 	public PlayerChatEventJS(ServerChatEvent e)
 	{

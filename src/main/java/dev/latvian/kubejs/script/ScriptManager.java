@@ -88,8 +88,8 @@ public class ScriptManager
 
 		for (ScriptFile file : scriptFiles)
 		{
-			KubeJS.LOGGER.info("Found script at " + file.path);
-			scripts.put(file.path, file);
+			KubeJS.LOGGER.info("Found script at " + file.getPath());
+			scripts.put(file.getPath(), file);
 		}
 
 		bindings = new LinkedHashMap<>();
@@ -117,7 +117,7 @@ public class ScriptManager
 		{
 			if (file.getError() != null)
 			{
-				KubeJS.LOGGER.error("Error loading KubeJS script " + file.path + ": " + file.getError().toString().replace("javax.script.ScriptException: ", ""));
+				KubeJS.LOGGER.error("Error loading KubeJS script " + file.getPath() + ": " + file.getError().toString().replace("javax.script.ScriptException: ", ""));
 
 				if (!(file.getError() instanceof ScriptException))
 				{

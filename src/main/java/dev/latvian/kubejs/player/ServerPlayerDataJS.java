@@ -13,25 +13,47 @@ import java.util.UUID;
  */
 public class ServerPlayerDataJS extends PlayerDataJS<EntityPlayerMP, ServerPlayerJS>
 {
-	public final ServerJS server;
+	private final ServerJS server;
+	private final UUID id;
+	private final String name;
+	private final boolean hasClientMod;
 
-	public ServerPlayerDataJS(ServerJS s, UUID id, String n, boolean h)
+	public ServerPlayerDataJS(ServerJS s, UUID i, String n, boolean h)
 	{
-		super(id, n, h);
 		server = s;
+		id = i;
+		name = n;
+		hasClientMod = h;
+	}
+
+	public ServerJS getServer()
+	{
+		return server;
+	}
+
+	@Override
+	public UUID getId()
+	{
+		return id;
+	}
+
+	@Override
+	public String getName()
+	{
+		return name;
 	}
 
 	@Override
 	public WorldJS getOverworld()
 	{
-		return server.overworld;
+		return server.getOverworld();
 	}
 
 	@Override
 	@Nullable
 	public EntityPlayerMP getPlayerEntity()
 	{
-		return server.server.getPlayerList().getPlayerByUUID(id);
+		return server.server.getPlayerList().getPlayerByUUID(getId());
 	}
 
 	@Override
@@ -41,9 +63,15 @@ public class ServerPlayerDataJS extends PlayerDataJS<EntityPlayerMP, ServerPlaye
 
 		if (p == null)
 		{
-			throw new NullPointerException("Player entity for " + name + " not found!");
+			throw new NullPointerException("Player entity for " + getName() + " not found!");
 		}
 
 		return new ServerPlayerJS(this, (ServerWorldJS) server.getWorld(p.world), p);
+	}
+
+	@Override
+	public boolean hasClientMod()
+	{
+		return hasClientMod;
 	}
 }

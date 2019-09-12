@@ -24,7 +24,7 @@ import java.util.function.Predicate;
  */
 public class EntityArrayList extends ArrayList<EntityJS> implements MessageSender
 {
-	public final WorldJS world;
+	private final WorldJS world;
 
 	public EntityArrayList(WorldJS w, int size)
 	{
@@ -40,6 +40,11 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		{
 			add(world.getEntity(entity));
 		}
+	}
+
+	public WorldJS getWorld()
+	{
+		return world;
 	}
 
 	@Override
@@ -141,7 +146,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		{
 			if (entity instanceof PlayerJS)
 			{
-				KubeJS.PROXY.sendData(((PlayerJS) entity).playerEntity, channel, nbt);
+				KubeJS.PROXY.sendData(((PlayerJS) entity).getPlayerEntity(), channel, nbt);
 			}
 		}
 	}

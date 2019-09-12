@@ -8,15 +8,15 @@ import java.util.Set;
 /**
  * @author LatvianModder
  */
-public class IngredientStackJS implements IngredientWithCountJS
+public class IngredientStackJS implements IngredientJS
 {
 	private final IngredientJS ingredient;
-	private final int count;
+	private final int countOverride;
 
 	public IngredientStackJS(IngredientJS i, int a)
 	{
 		ingredient = i;
-		count = a;
+		countOverride = a;
 	}
 
 	public IngredientJS getIngredient()
@@ -27,7 +27,7 @@ public class IngredientStackJS implements IngredientWithCountJS
 	@Override
 	public int getCount()
 	{
-		return count;
+		return countOverride;
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class IngredientStackJS implements IngredientWithCountJS
 	@Override
 	public IngredientJS not()
 	{
-		return new IngredientStackJS(ingredient.not(), count);
+		return new IngredientStackJS(ingredient.not(), countOverride);
 	}
 
 	@Override

@@ -39,7 +39,7 @@ public class KubeJSServerEventHandler
 			{
 				ScheduledEvent e = eventIterator.next();
 
-				if (now >= e.endTime)
+				if (now >= e.getEndTime())
 				{
 					list.add(e);
 					eventIterator.remove();
@@ -54,7 +54,7 @@ public class KubeJSServerEventHandler
 				}
 				catch (NashornException ex)
 				{
-					KubeJS.LOGGER.error("Error occurred while handling scheduled event callback in " + e.file.path + ": " + ex);
+					KubeJS.LOGGER.error("Error occurred while handling scheduled event callback in " + e.file.getPath() + ": " + ex);
 				}
 				catch (Throwable ex)
 				{
@@ -65,7 +65,7 @@ public class KubeJSServerEventHandler
 
 		if (!s.scheduledTickEvents.isEmpty())
 		{
-			long now = s.overworld.getTime();
+			long now = s.getOverworld().getTime();
 			Iterator<ScheduledEvent> eventIterator = s.scheduledTickEvents.iterator();
 			List<ScheduledEvent> list = new ArrayList<>();
 
@@ -73,7 +73,7 @@ public class KubeJSServerEventHandler
 			{
 				ScheduledEvent e = eventIterator.next();
 
-				if (now >= e.endTime)
+				if (now >= e.getEndTime())
 				{
 					list.add(e);
 					eventIterator.remove();
@@ -88,7 +88,7 @@ public class KubeJSServerEventHandler
 				}
 				catch (NashornException ex)
 				{
-					KubeJS.LOGGER.error("Error occurred while handling scheduled event callback in " + e.file.path + ": " + ex);
+					KubeJS.LOGGER.error("Error occurred while handling scheduled event callback in " + e.file.getPath() + ": " + ex);
 				}
 				catch (Throwable ex)
 				{

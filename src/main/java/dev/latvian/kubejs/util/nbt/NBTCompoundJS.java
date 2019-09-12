@@ -101,7 +101,7 @@ public class NBTCompoundJS implements NBTBaseJS
 		}
 	};
 
-	public final Map<String, NBTBaseJS> map;
+	private final Map<String, NBTBaseJS> map;
 
 	public NBTCompoundJS(int size)
 	{

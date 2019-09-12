@@ -32,12 +32,12 @@ public class KubeJSWorldEventHandler
 		ServerJS.instance = new ServerJS(server, (WorldServer) server.getEntityWorld());
 		MinecraftForge.EVENT_BUS.post(new AttachServerDataEvent(ServerJS.instance));
 		EventsJS.post(KubeJSEvents.SERVER_LOAD, new SimpleServerEventJS(ServerJS.instance));
-		MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(ServerJS.instance.overworld));
-		EventsJS.post(KubeJSEvents.WORLD_LOAD, new SimpleWorldEventJS(ServerJS.instance.overworld));
+		MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(ServerJS.instance.getOverworld()));
+		EventsJS.post(KubeJSEvents.WORLD_LOAD, new SimpleWorldEventJS(ServerJS.instance.getOverworld()));
 
 		for (WorldServer world : server.worlds)
 		{
-			if (world != ServerJS.instance.overworld.world)
+			if (world != ServerJS.instance.getOverworld().world)
 			{
 				ServerWorldJS w = new ServerWorldJS(ServerJS.instance, world);
 				ServerJS.instance.worldMap.put(world.provider.getDimension(), w);
@@ -56,7 +56,7 @@ public class KubeJSWorldEventHandler
 		for (PlayerDataJS p : new ArrayList<>(ServerJS.instance.playerMap.values()))
 		{
 			EventsJS.post(KubeJSEvents.PLAYER_LOGGED_OUT, new SimplePlayerEventJS(p.getPlayerEntity()));
-			ServerJS.instance.playerMap.remove(p.id);
+			ServerJS.instance.playerMap.remove(p.getId());
 		}
 
 		ServerJS.instance.playerMap.clear();
@@ -64,7 +64,7 @@ public class KubeJSWorldEventHandler
 		for (WorldJS w : ServerJS.instance.worldMap.values())
 		{
 			EventsJS.post(KubeJSEvents.WORLD_UNLOAD, new SimpleWorldEventJS(w));
-			ServerJS.instance.worldMap.remove(w.dimension);
+			ServerJS.instance.worldMap.remove(w.getDimension());
 		}
 
 		ServerJS.instance.updateWorldList();
@@ -94,7 +94,7 @@ public class KubeJSWorldEventHandler
 		{
 			WorldJS w = ServerJS.instance.getWorld(event.getWorld());
 			EventsJS.post(KubeJSEvents.WORLD_UNLOAD, new SimpleWorldEventJS(w));
-			ServerJS.instance.worldMap.remove(w.dimension);
+			ServerJS.instance.worldMap.remove(w.getDimension());
 			ServerJS.instance.updateWorldList();
 		}
 	}

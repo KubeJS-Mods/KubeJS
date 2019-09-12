@@ -14,25 +14,25 @@ import java.util.List;
 public class PackModeWrapper
 {
 	@DocMethod
-	public String get()
+	public String getMode()
 	{
 		return PackModeAPI.getInstance().getCurrentPackMode();
 	}
 
 	@DocMethod
-	public String getActual()
+	public String getActualMode()
 	{
 		return PackModeAPI.getInstance().getNextRestartPackMode();
 	}
 
 	@DocMethod(params = @Param("packmode"))
-	public void setNext(String packmode)
+	public void setMode(String packmode)
 	{
 		PackModeAPI.getInstance().setNextRestartPackMode(packmode);
 	}
 
 	@DocMethod
-	public List<String> list()
+	public List<String> getList()
 	{
 		return PackModeAPI.getInstance().getPackModes();
 	}

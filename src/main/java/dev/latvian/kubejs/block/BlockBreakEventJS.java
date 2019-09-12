@@ -10,7 +10,7 @@ import net.minecraftforge.event.world.BlockEvent;
  */
 public class BlockBreakEventJS extends PlayerEventJS
 {
-	public final transient BlockEvent.BreakEvent event;
+	public final BlockEvent.BreakEvent event;
 
 	public BlockBreakEventJS(BlockEvent.BreakEvent e)
 	{

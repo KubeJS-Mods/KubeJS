@@ -8,7 +8,7 @@ import net.minecraftforge.event.entity.player.AdvancementEvent;
  */
 public class PlayerAdvancementEventJS extends PlayerEventJS
 {
-	public final transient AdvancementEvent event;
+	public final AdvancementEvent event;
 
 	public PlayerAdvancementEventJS(AdvancementEvent e)
 	{

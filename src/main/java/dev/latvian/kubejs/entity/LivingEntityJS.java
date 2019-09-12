@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class LivingEntityJS extends EntityJS
 {
-	public final transient EntityLivingBase livingEntity;
+	public final EntityLivingBase livingEntity;
 
 	public LivingEntityJS(WorldJS w, EntityLivingBase e)
 	{
@@ -82,7 +82,7 @@ public class LivingEntityJS extends EntityJS
 	@Nullable
 	public LivingEntityJS getRevengeTarget()
 	{
-		return world.getLivingEntity(livingEntity.getRevengeTarget());
+		return getWorld().getLivingEntity(livingEntity.getRevengeTarget());
 	}
 
 	public int getRevengeTimer()
@@ -98,7 +98,7 @@ public class LivingEntityJS extends EntityJS
 	@Nullable
 	public LivingEntityJS getLastAttackedEntity()
 	{
-		return world.getLivingEntity(livingEntity.getLastAttackedEntity());
+		return getWorld().getLivingEntity(livingEntity.getLastAttackedEntity());
 	}
 
 	public int getLastAttackedEntityTime()
@@ -119,13 +119,13 @@ public class LivingEntityJS extends EntityJS
 	@Nullable
 	public DamageSourceJS getLastDamageSource()
 	{
-		return livingEntity.getLastDamageSource() == null ? null : new DamageSourceJS(world, livingEntity.getLastDamageSource());
+		return livingEntity.getLastDamageSource() == null ? null : new DamageSourceJS(getWorld(), livingEntity.getLastDamageSource());
 	}
 
 	@Nullable
 	public LivingEntityJS getAttackingEntity()
 	{
-		return world.getLivingEntity(livingEntity.getAttackingEntity());
+		return getWorld().getLivingEntity(livingEntity.getAttackingEntity());
 	}
 
 	public void swingArm(EnumHand hand)
@@ -213,13 +213,13 @@ public class LivingEntityJS extends EntityJS
 
 			if (ray.typeOfHit == RayTraceResult.Type.BLOCK)
 			{
-				map.put("block", new BlockContainerJS(world.world, ray.getBlockPos()));
+				map.put("block", new BlockContainerJS(getWorld().world, ray.getBlockPos()));
 				map.put("facing", ray.sideHit);
 				map.put("subHit", ray.subHit);
 			}
 			else if (ray.typeOfHit == RayTraceResult.Type.ENTITY)
 			{
-				map.put("entity", world.getEntity(ray.entityHit));
+				map.put("entity", getWorld().getEntity(ray.entityHit));
 			}
 		}
 

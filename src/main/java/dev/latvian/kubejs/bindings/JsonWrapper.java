@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 
@@ -17,8 +16,11 @@ import javax.annotation.Nullable;
 @DocClass(displayName = "JSON Utilities")
 public class JsonWrapper
 {
-	@DocField
-	public final JsonNull jsonNull = JsonNull.INSTANCE;
+	@DocMethod
+	public JsonNull getJsonNull()
+	{
+		return JsonNull.INSTANCE;
+	}
 
 	@DocMethod
 	public JsonElement copy(JsonElement element)

@@ -95,7 +95,7 @@ public class EventsJS
 			}
 			catch (NashornException ex)
 			{
-				KubeJS.LOGGER.error("Error occurred while firing '" + id + "' event in " + (handler.file == null ? "Unknown file" : handler.file.path) + ": " + ex);
+				KubeJS.LOGGER.error("Error occurred while firing '" + id + "' event in " + (handler.file == null ? "Unknown file" : handler.file.getPath()) + ": " + ex);
 			}
 			catch (Throwable ex)
 			{

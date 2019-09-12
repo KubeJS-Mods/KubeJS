@@ -104,7 +104,7 @@ public class NBTListJS implements NBTBaseJS, Iterable<NBTBaseJS>
 		}
 	};
 
-	public final List<NBTBaseJS> list;
+	private final List<NBTBaseJS> list;
 
 	public NBTListJS(int size)
 	{

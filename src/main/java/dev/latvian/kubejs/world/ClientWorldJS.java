@@ -20,31 +20,36 @@ public class ClientWorldJS extends WorldJS
 
 	public static ClientWorldJS get()
 	{
-		if (inst == null || inst.world != Minecraft.getMinecraft().world || inst.clientPlayerData.player.playerEntity != Minecraft.getMinecraft().player)
+		if (inst == null || inst.world != Minecraft.getMinecraft().world)
 		{
 			inst = new ClientWorldJS();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(inst));
 			MinecraftForge.EVENT_BUS.post(new AttachPlayerDataEvent(inst.clientPlayerData));
-			EventsJS.post(KubeJSEvents.CLIENT_LOGGED_IN, new ClientLoggedInEventJS(inst.clientPlayerData.player));
+			EventsJS.post(KubeJSEvents.CLIENT_LOGGED_IN, new ClientLoggedInEventJS(inst.clientPlayerData.getPlayer()));
 		}
 
 		return inst;
 	}
 
-	public final Minecraft minecraft;
+	private final Minecraft minecraft;
 	public final ClientPlayerDataJS clientPlayerData;
 
 	public ClientWorldJS()
 	{
 		super(Minecraft.getMinecraft().world);
 		minecraft = Minecraft.getMinecraft();
-		clientPlayerData = new ClientPlayerDataJS(this, minecraft.player.getUniqueID(), minecraft.player.getName());
+		clientPlayerData = new ClientPlayerDataJS(this);
+	}
+
+	public Minecraft getMinecraft()
+	{
+		return minecraft;
 	}
 
 	@Override
 	public ClientPlayerDataJS getPlayerData(EntityPlayer player)
 	{
-		if (player.getUniqueID().equals(clientPlayerData.id))
+		if (player.getUniqueID().equals(clientPlayerData.getId()))
 		{
 			return clientPlayerData;
 		}

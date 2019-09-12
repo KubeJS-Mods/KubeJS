@@ -46,7 +46,7 @@ public class MaterialListJS
 
 	public MaterialJS add(MaterialJS m)
 	{
-		map.put(m.id, m);
+		map.put(m.getId(), m);
 		return m;
 	}
 

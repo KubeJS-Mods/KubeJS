@@ -14,7 +14,7 @@ import java.util.Set;
  */
 public class AdvancementJS
 {
-	public final transient Advancement advancement;
+	public final Advancement advancement;
 
 	public AdvancementJS(Advancement a)
 	{

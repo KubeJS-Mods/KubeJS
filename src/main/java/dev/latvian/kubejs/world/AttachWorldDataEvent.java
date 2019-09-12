@@ -10,6 +10,6 @@ public class AttachWorldDataEvent extends AttachDataEvent<WorldJS>
 {
 	public AttachWorldDataEvent(WorldJS w)
 	{
-		super(DataType.WORLD, w, w.data);
+		super(DataType.WORLD, w);
 	}
 }

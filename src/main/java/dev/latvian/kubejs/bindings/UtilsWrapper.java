@@ -31,7 +31,10 @@ import java.util.regex.Pattern;
  */
 public class UtilsWrapper
 {
-	public final Random random = UtilsJS.RANDOM;
+	public Random getRandom()
+	{
+		return UtilsJS.RANDOM;
+	}
 
 	public <T> List<T> emptyList()
 	{
@@ -152,7 +155,7 @@ public class UtilsWrapper
 		return ForgeRegistries.SOUND_EVENTS.getValue(ID.of(id).mc());
 	}
 
-	public Object randomOf(Collection<Object> objects)
+	public Object randomOf(Random random, Collection<Object> objects)
 	{
 		if (objects.isEmpty())
 		{

@@ -10,6 +10,6 @@ public class AttachServerDataEvent extends AttachDataEvent<ServerJS>
 {
 	public AttachServerDataEvent(ServerJS s)
 	{
-		super(DataType.SERVER, s, s.data);
+		super(DataType.SERVER, s);
 	}
 }

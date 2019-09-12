@@ -13,13 +13,18 @@ import net.minecraftforge.common.util.Constants;
  */
 public class NBTNumberJS implements NBTBaseJS
 {
-	public final Number number;
+	private final Number number;
 	private NBTPrimitive cached;
 
 	public NBTNumberJS(Number n)
 	{
 		number = n;
 		cached = null;
+	}
+
+	public Number getNumber()
+	{
+		return number;
 	}
 
 	public NBTNumberJS(NBTPrimitive p)

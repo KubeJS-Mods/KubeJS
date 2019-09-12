@@ -10,7 +10,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
  */
 public class ItemRightClickEventJS extends PlayerEventJS
 {
-	public final transient PlayerInteractEvent.RightClickItem event;
+	public final PlayerInteractEvent.RightClickItem event;
 
 	public ItemRightClickEventJS(PlayerInteractEvent.RightClickItem e)
 	{

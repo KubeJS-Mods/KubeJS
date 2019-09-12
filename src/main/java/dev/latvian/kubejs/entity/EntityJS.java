@@ -30,13 +30,18 @@ import java.util.UUID;
  */
 public class EntityJS implements MessageSender
 {
-	public final WorldJS world;
-	public final transient Entity entity;
+	private final WorldJS world;
+	public final Entity entity;
 
 	public EntityJS(WorldJS w, Entity e)
 	{
 		world = w;
 		entity = e;
+	}
+
+	public WorldJS getWorld()
+	{
+		return world;
 	}
 
 	public boolean isServer()
@@ -316,7 +321,7 @@ public class EntityJS implements MessageSender
 	{
 		if (world instanceof ServerWorldJS)
 		{
-			return ((ServerWorldJS) world).server.server.getCommandManager().executeCommand(entity, command);
+			return ((ServerWorldJS) world).getServer().server.getCommandManager().executeCommand(entity, command);
 		}
 
 		return 0;

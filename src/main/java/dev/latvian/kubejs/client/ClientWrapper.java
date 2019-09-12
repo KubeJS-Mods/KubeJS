@@ -24,7 +24,7 @@ public class ClientWrapper
 
 	public ClientPlayerJS getPlayer()
 	{
-		return getWorld().clientPlayerData.player;
+		return getWorld().clientPlayerData.getPlayer();
 	}
 
 	@Nullable

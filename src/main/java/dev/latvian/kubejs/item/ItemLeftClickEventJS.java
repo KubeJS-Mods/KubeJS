@@ -9,7 +9,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
  */
 public class ItemLeftClickEventJS extends PlayerEventJS
 {
-	public final transient PlayerInteractEvent.LeftClickEmpty event;
+	public final PlayerInteractEvent.LeftClickEmpty event;
 
 	public ItemLeftClickEventJS(PlayerInteractEvent.LeftClickEmpty e)
 	{

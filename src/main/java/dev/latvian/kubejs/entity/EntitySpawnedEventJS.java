@@ -8,7 +8,7 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
  */
 public class EntitySpawnedEventJS extends EntityEventJS
 {
-	public final transient EntityJoinWorldEvent event;
+	public final EntityJoinWorldEvent event;
 
 	public EntitySpawnedEventJS(EntityJoinWorldEvent e)
 	{

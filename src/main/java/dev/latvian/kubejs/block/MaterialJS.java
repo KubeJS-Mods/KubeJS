@@ -7,12 +7,22 @@ import net.minecraft.block.material.Material;
  */
 public class MaterialJS
 {
-	public final String id;
-	public final transient Material material;
+	private final String id;
+	private final transient Material material;
 
 	public MaterialJS(String i, Material m)
 	{
 		id = i;
 		material = m;
+	}
+
+	public String getId()
+	{
+		return id;
+	}
+
+	public Material getMaterial()
+	{
+		return material;
 	}
 }

@@ -12,7 +12,7 @@ import net.minecraftforge.event.world.BlockEvent;
  */
 public class BlockPlaceEventJS extends PlayerEventJS
 {
-	public final transient BlockEvent.PlaceEvent event;
+	public final BlockEvent.PlaceEvent event;
 
 	public BlockPlaceEventJS(BlockEvent.PlaceEvent e)
 	{

@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.world;
 
 import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.documentation.Param;
 import dev.latvian.kubejs.entity.EntityJS;
@@ -9,7 +8,9 @@ import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
+import dev.latvian.kubejs.util.AttachedData;
 import dev.latvian.kubejs.util.ID;
+import dev.latvian.kubejs.util.WithAttachedData;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.entity.Entity;
@@ -22,28 +23,31 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author LatvianModder
  */
 @DocClass("This class represents a dimension. You can access weather, blocks, entities, etc. Client and server sides have different worlds")
-public abstract class WorldJS
+public abstract class WorldJS implements WithAttachedData
 {
-	public final transient World world;
+	public final World world;
 
-	@DocField
-	public final int dimension;
-
-	@DocField("Temporary data, mods can attach objects to this")
-	public final Map<String, Object> data;
+	private AttachedData data;
 
 	public WorldJS(World w)
 	{
 		world = w;
-		dimension = world.provider.getDimension();
-		data = new HashMap<>();
+	}
+
+	@Override
+	public AttachedData getData()
+	{
+		if (data == null)
+		{
+			data = new AttachedData(this);
+		}
+
+		return data;
 	}
 
 	@DocMethod
@@ -82,10 +86,15 @@ public abstract class WorldJS
 		world.setWorldTime(time);
 	}
 
+	public int getDimension()
+	{
+		return world.provider.getDimension();
+	}
+
 	@DocMethod
 	public boolean isOverworld()
 	{
-		return dimension == 0;
+		return getDimension() == 0;
 	}
 
 	@DocMethod

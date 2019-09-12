@@ -83,7 +83,7 @@ public class JsonUtilsJS
 		}
 		else if (o instanceof JsonSerializable)
 		{
-			return ((JsonSerializable) o).json();
+			return ((JsonSerializable) o).getJson();
 		}
 		else if (o instanceof JSObject)
 		{

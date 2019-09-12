@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.crafting.handlers;
+package dev.latvian.kubejs.crafting;
 
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;

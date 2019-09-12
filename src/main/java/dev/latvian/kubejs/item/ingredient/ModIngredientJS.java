@@ -12,11 +12,16 @@ import java.util.Set;
  */
 public class ModIngredientJS implements IngredientJS
 {
-	public final String mod;
+	private final String mod;
 
 	public ModIngredientJS(String m)
 	{
 		mod = m;
+	}
+
+	public String getMod()
+	{
+		return mod;
 	}
 
 	@Override

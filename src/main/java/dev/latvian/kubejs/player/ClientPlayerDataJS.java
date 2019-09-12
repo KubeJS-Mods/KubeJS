@@ -13,14 +13,30 @@ import java.util.UUID;
  */
 public class ClientPlayerDataJS extends PlayerDataJS<EntityPlayer, ClientPlayerJS>
 {
-	public final ClientWorldJS world;
-	public final ClientPlayerJS player;
+	private final ClientWorldJS world;
+	private final ClientPlayerJS player;
 
-	public ClientPlayerDataJS(ClientWorldJS w, UUID id, String n)
+	public ClientPlayerDataJS(ClientWorldJS w)
 	{
-		super(id, n, true);
 		world = w;
-		player = new ClientPlayerJS(this, world.minecraft.player);
+		player = new ClientPlayerJS(this, world.getMinecraft().player);
+	}
+
+	public ClientWorldJS getWorld()
+	{
+		return world;
+	}
+
+	@Override
+	public UUID getId()
+	{
+		return world.getMinecraft().player.getUniqueID();
+	}
+
+	@Override
+	public String getName()
+	{
+		return world.getMinecraft().player.getName();
 	}
 
 	@Override
@@ -33,7 +49,7 @@ public class ClientPlayerDataJS extends PlayerDataJS<EntityPlayer, ClientPlayerJ
 	@Override
 	public EntityPlayerSP getPlayerEntity()
 	{
-		return world.minecraft.player;
+		return world.getMinecraft().player;
 	}
 
 	@Override

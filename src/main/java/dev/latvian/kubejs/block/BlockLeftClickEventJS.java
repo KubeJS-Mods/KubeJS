@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
  */
 public class BlockLeftClickEventJS extends PlayerEventJS
 {
-	public final transient PlayerInteractEvent.LeftClickBlock event;
+	public final PlayerInteractEvent.LeftClickBlock event;
 
 	public BlockLeftClickEventJS(PlayerInteractEvent.LeftClickBlock e)
 	{

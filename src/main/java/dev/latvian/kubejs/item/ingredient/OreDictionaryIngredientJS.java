@@ -16,13 +16,23 @@ import java.util.Set;
  */
 public class OreDictionaryIngredientJS implements IngredientJS
 {
-	public final String oreName;
-	public final int oreID;
+	private final String oreName;
+	private final int oreID;
 
 	public OreDictionaryIngredientJS(String ore)
 	{
 		oreName = ore;
 		oreID = OreDictionary.getOreID(oreName);
+	}
+
+	public String getOreName()
+	{
+		return oreName;
+	}
+
+	public int getOreID()
+	{
+		return oreID;
 	}
 
 	@Override

@@ -17,8 +17,8 @@ public class ScriptFile implements Comparable<ScriptFile>
 		Reader createReader() throws Throwable;
 	}
 
-	public final ScriptPack pack;
-	public final String path;
+	private final ScriptPack pack;
+	private final String path;
 	private final ScriptSource source;
 	private final int order;
 	private Throwable error;
@@ -30,6 +30,16 @@ public class ScriptFile implements Comparable<ScriptFile>
 		source = s;
 		order = o;
 		error = null;
+	}
+
+	public ScriptPack getPack()
+	{
+		return pack;
+	}
+
+	public String getPath()
+	{
+		return path;
 	}
 
 	@Nullable

@@ -10,6 +10,6 @@ public class AttachPlayerDataEvent extends AttachDataEvent<PlayerDataJS>
 {
 	public AttachPlayerDataEvent(PlayerDataJS p)
 	{
-		super(DataType.PLAYER, p, p.data);
+		super(DataType.PLAYER, p);
 	}
 }

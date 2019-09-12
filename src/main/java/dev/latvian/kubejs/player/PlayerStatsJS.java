@@ -9,13 +9,18 @@ import net.minecraft.stats.StatisticsManager;
  */
 public class PlayerStatsJS
 {
-	public final PlayerJS player;
+	private final PlayerJS player;
 	private final StatisticsManager statFile;
 
 	public PlayerStatsJS(PlayerJS p, StatisticsManager s)
 	{
 		player = p;
 		statFile = s;
+	}
+
+	public PlayerJS getPlayer()
+	{
+		return player;
 	}
 
 	public int get(Object id)
@@ -30,7 +35,7 @@ public class PlayerStatsJS
 
 		if (stat != null)
 		{
-			statFile.unlockAchievement(player.playerEntity, stat, value);
+			statFile.unlockAchievement(player.getPlayerEntity(), stat, value);
 		}
 	}
 
@@ -40,7 +45,7 @@ public class PlayerStatsJS
 
 		if (stat != null)
 		{
-			statFile.increaseStat(player.playerEntity, stat, value);
+			statFile.increaseStat(player.getPlayerEntity(), stat, value);
 		}
 	}
 }

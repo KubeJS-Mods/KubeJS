@@ -10,7 +10,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
  */
 public class ItemEntityInteractEventJS extends PlayerEventJS
 {
-	public final transient PlayerInteractEvent.EntityInteract event;
+	public final PlayerInteractEvent.EntityInteract event;
 
 	public ItemEntityInteractEventJS(PlayerInteractEvent.EntityInteract e)
 	{

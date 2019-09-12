@@ -9,7 +9,6 @@ import net.minecraft.util.IStringSerializable;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
@@ -293,39 +292,6 @@ public class Documentation
 
 			sender.tell("Can cancel: " + event.canCancel);
 			sender.tell("Sides: " + (event.sideOnly == null ? "[Server, Client]" : event.sideOnly == Side.CLIENT ? "[Client]" : "[Server]"));
-		}
-
-		sender.tell(new TextString("[Fields]").blue());
-		has = false;
-
-		for (Field field : c.getDeclaredFields())
-		{
-			int m = field.getModifiers();
-
-			if (Modifier.isPublic(m) && !Modifier.isTransient(m) && !Modifier.isStatic(m))
-			{
-				DocField docField = field.getAnnotation(DocField.class);
-
-				if (docField == null && docClass != null)
-				{
-					continue;
-				}
-
-				Text text = new TextString("").append(classText(field.getType(), field.getGenericType())).append(" ").append(new TextString(field.getName()).green());
-
-				if (docField != null && !docField.value().isEmpty())
-				{
-					text.hover(docField.value());
-				}
-
-				sender.tell(text);
-				has = true;
-			}
-		}
-
-		if (!has)
-		{
-			sender.tell("<None>");
 		}
 
 		sender.tell(new TextString("[Methods]").blue());

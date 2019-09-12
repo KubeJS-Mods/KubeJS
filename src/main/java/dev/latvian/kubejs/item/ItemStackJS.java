@@ -2,7 +2,6 @@ package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.kubejs.item.ingredient.IngredientWithCountJS;
 import dev.latvian.kubejs.item.ingredient.OreDictionaryIngredientJS;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -34,7 +33,7 @@ import java.util.Set;
 /**
  * @author LatvianModder
  */
-public abstract class ItemStackJS implements IngredientWithCountJS
+public abstract class ItemStackJS implements IngredientJS
 {
 	private static List<ItemStackJS> cachedItemList;
 

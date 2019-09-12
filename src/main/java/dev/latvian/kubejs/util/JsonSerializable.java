@@ -8,5 +8,5 @@ import com.google.gson.JsonElement;
 @FunctionalInterface
 public interface JsonSerializable
 {
-	JsonElement json();
+	JsonElement getJson();
 }

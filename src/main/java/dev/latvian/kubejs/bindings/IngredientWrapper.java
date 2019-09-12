@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -20,11 +19,17 @@ import java.util.function.Predicate;
 @DocClass(displayName = "Ingredient Utilities")
 public class IngredientWrapper
 {
-	@DocField
-	public final IngredientJS none = EmptyItemStackJS.INSTANCE;
+	@DocMethod
+	public IngredientJS getNone()
+	{
+		return EmptyItemStackJS.INSTANCE;
+	}
 
-	@DocField
-	public final IngredientJS all = MatchAllIngredientJS.INSTANCE;
+	@DocMethod
+	public IngredientJS getAll()
+	{
+		return MatchAllIngredientJS.INSTANCE;
+	}
 
 	@DocMethod
 	public IngredientJS of(@Nullable Object object)

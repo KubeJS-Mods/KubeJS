@@ -9,7 +9,7 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
  */
 public class ItemPickupEventJS extends PlayerEventJS
 {
-	public final transient EntityItemPickupEvent event;
+	public final EntityItemPickupEvent event;
 
 	public ItemPickupEventJS(EntityItemPickupEvent e)
 	{

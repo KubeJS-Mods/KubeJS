@@ -15,7 +15,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 @DocClass
 public class InventoryJS
 {
-	public final transient IItemHandler inventory;
+	public final IItemHandler inventory;
 
 	public InventoryJS(IItemHandler h)
 	{

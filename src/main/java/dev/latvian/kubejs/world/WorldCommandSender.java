@@ -47,7 +47,7 @@ public class WorldCommandSender implements ICommandSender
 	{
 		if (world instanceof ServerWorldJS)
 		{
-			return ((ServerWorldJS) world).server.server;
+			return ((ServerWorldJS) world).getServer().server;
 		}
 
 		return null;

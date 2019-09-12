@@ -2,12 +2,13 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.util.AttachedData;
+import dev.latvian.kubejs.util.WithAttachedData;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,32 +18,40 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nullable;
-import java.util.Map;
 
 /**
  * @author LatvianModder
  */
 @DocClass
-public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS
+public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS implements WithAttachedData
 {
-	public final transient E playerEntity;
+	private final E playerEntity;
 
-	@DocField("Temporary data, mods can attach objects to this")
-	public final Map<String, Object> data;
-
+	private final PlayerDataJS playerData;
 	private InventoryJS inventory;
 
 	public PlayerJS(PlayerDataJS d, WorldJS w, E p)
 	{
 		super(w, p);
-		data = d.data;
+		playerData = d;
 		playerEntity = p;
+	}
+
+	@Override
+	public AttachedData getData()
+	{
+		return playerData.getData();
 	}
 
 	@Override
 	public boolean isPlayer()
 	{
 		return true;
+	}
+
+	public E getPlayerEntity()
+	{
+		return playerEntity;
 	}
 
 	public boolean isFake()

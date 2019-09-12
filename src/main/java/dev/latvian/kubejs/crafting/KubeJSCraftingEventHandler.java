@@ -2,9 +2,6 @@ package dev.latvian.kubejs.crafting;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.crafting.handlers.CraftingTableRecipeEventJS;
-import dev.latvian.kubejs.crafting.handlers.FurnaceRecipeEventJS;
-import dev.latvian.kubejs.crafting.handlers.RemoveRecipesEventJS;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.item.ingredient.MatchAnyIngredientJS;
 import net.minecraft.item.crafting.FurnaceRecipes;

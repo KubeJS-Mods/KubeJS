@@ -36,6 +36,16 @@ public class TextTranslate extends Text
 		objects = NO_OBJECTS;
 	}
 
+	public String getKey()
+	{
+		return key;
+	}
+
+	public Object[] getObjects()
+	{
+		return objects;
+	}
+
 	@Override
 	public ITextComponent rawComponent()
 	{
@@ -85,7 +95,7 @@ public class TextTranslate extends Text
 	}
 
 	@Override
-	public JsonObject json()
+	public JsonObject getJson()
 	{
 		JsonObject o = getPropertiesAsJson();
 		o.addProperty("translate", key);

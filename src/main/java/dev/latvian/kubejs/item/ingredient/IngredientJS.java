@@ -130,8 +130,13 @@ public interface IngredientJS extends Predicate<ItemStack>
 		return EmptyItemStackJS.INSTANCE;
 	}
 
-	default IngredientWithCountJS count(int count)
+	default IngredientJS count(int count)
 	{
 		return new IngredientStackJS(this, count);
+	}
+
+	default int getCount()
+	{
+		return 1;
 	}
 }

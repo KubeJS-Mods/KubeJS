@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.crafting.handlers;
+package dev.latvian.kubejs.crafting;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

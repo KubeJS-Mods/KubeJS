@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.server;
 
 import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocField;
 import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.documentation.Param;
 import dev.latvian.kubejs.script.ScriptFile;
@@ -15,17 +14,10 @@ import javax.annotation.Nullable;
 @DocClass
 public class ScheduledEvent
 {
-	@DocField
-	public final ServerJS server;
-
-	@DocField
-	public final long timer;
-
-	@DocField
-	public final long endTime;
-
-	@DocField
-	public final Object data;
+	private final ServerJS server;
+	private final long timer;
+	private final long endTime;
+	private final Object data;
 
 	public final transient ScriptFile file;
 	private final IScheduledEventCallback callback;
@@ -38,6 +30,27 @@ public class ScheduledEvent
 		endTime = e;
 		data = d;
 		callback = c;
+	}
+
+	public ServerJS getServer()
+	{
+		return server;
+	}
+
+	public long getTimer()
+	{
+		return timer;
+	}
+
+	public long getEndTime()
+	{
+		return endTime;
+	}
+
+	@Nullable
+	public Object getData()
+	{
+		return data;
 	}
 
 	@DocMethod

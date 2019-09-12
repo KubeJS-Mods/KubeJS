@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
  */
 public class FakeServerPlayerDataJS extends ServerPlayerDataJS
 {
-	public transient EntityPlayerMP player;
+	public EntityPlayerMP player;
 
 	public FakeServerPlayerDataJS(ServerJS s, EntityPlayerMP p)
 	{
@@ -22,7 +22,7 @@ public class FakeServerPlayerDataJS extends ServerPlayerDataJS
 	@Override
 	public WorldJS getOverworld()
 	{
-		return server.overworld;
+		return getServer().getOverworld();
 	}
 
 	@Override

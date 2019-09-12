@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 public class DamageSourceJS
 {
 	private final WorldJS world;
-	public final transient DamageSource source;
+	public final DamageSource source;
 
 	public DamageSourceJS(WorldJS w, DamageSource s)
 	{

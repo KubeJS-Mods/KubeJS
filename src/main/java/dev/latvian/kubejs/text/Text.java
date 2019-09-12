@@ -208,7 +208,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 
 	@Override
 	@DocMethod(value = "Convert text to json")
-	public abstract JsonElement json();
+	public abstract JsonElement getJson();
 
 	public final ITextComponent component()
 	{
@@ -333,7 +333,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 
 		if (hover != null)
 		{
-			json.add("hover", hover.json());
+			json.add("hover", hover.getJson());
 		}
 
 		if (!getSiblings().isEmpty())
@@ -342,7 +342,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 
 			for (Text child : getSiblings())
 			{
-				array.add(child.json());
+				array.add(child.getJson());
 			}
 
 			json.add("extra", array);

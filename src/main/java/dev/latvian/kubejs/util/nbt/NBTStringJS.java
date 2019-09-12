@@ -12,11 +12,16 @@ public class NBTStringJS implements NBTBaseJS
 {
 	public static final NBTStringJS EMPTY_STRING = new NBTStringJS("");
 
-	public final String string;
+	private final String string;
 
 	public NBTStringJS(String s)
 	{
 		string = s;
+	}
+
+	public String getString()
+	{
+		return string;
 	}
 
 	public boolean equals(Object o)
