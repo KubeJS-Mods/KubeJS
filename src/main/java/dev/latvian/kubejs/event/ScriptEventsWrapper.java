@@ -14,4 +14,13 @@ public class ScriptEventsWrapper
 	{
 		EventsJS.listen(id, handler);
 	}
+
+	@DocMethod(value = "This method will register one event listener for multiple events")
+	public void listenAll(String[] ids, IEventHandler handler)
+	{
+		for (String s : ids)
+		{
+			listen(s, handler);
+		}
+	}
 }
