@@ -6,6 +6,7 @@ import dev.latvian.kubejs.documentation.Param;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import net.darkhax.gamestages.GameStageHelper;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -64,6 +65,15 @@ public class GameStagesPlayerData
 	public Collection<String> getList()
 	{
 		return GameStageHelper.getPlayerData(playerData.getPlayerEntity()).getStages();
+	}
+
+	@DocMethod
+	public void clear()
+	{
+		for (String s : new ArrayList<>(getList()))
+		{
+			remove(s);
+		}
 	}
 
 	@DocMethod("Sends all stages from server to client")
