@@ -477,8 +477,13 @@ public class EntityJS implements MessageSender
 
 		if (event != null)
 		{
-			entity.playSound(event, volume, pitch);
+			entity.world.playSound(null, getX(), getY(), getZ(), event, entity.getSoundCategory(), volume, pitch);
 		}
+	}
+
+	public void playSound(Object id)
+	{
+		playSound(id, 1F, 1F);
 	}
 
 	public void spawn()

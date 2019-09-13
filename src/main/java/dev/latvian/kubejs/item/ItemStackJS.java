@@ -3,6 +3,7 @@ package dev.latvian.kubejs.item;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.OreDictionaryIngredientJS;
+import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
@@ -493,5 +494,12 @@ public abstract class ItemStackJS implements IngredientJS
 	public String getMod()
 	{
 		return getItem().getRegistryName().getNamespace();
+	}
+
+	public void addLore(Object text)
+	{
+		NBTCompoundJS nbt = getNbtOrNew();
+		nbt.compoundOrNew("display").listOrNew("Lore").add(Text.of(text).getFormattedString());
+		setNbt(nbt);
 	}
 }

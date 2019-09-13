@@ -118,6 +118,11 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		}
 	}
 
+	public void playSound(Object id)
+	{
+		playSound(id, 1F, 1F);
+	}
+
 	public EntityArrayList filter(Predicate<EntityJS> filter)
 	{
 		if (isEmpty())
@@ -149,5 +154,10 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 				KubeJS.PROXY.sendData(((PlayerJS) entity).getPlayerEntity(), channel, nbt);
 			}
 		}
+	}
+
+	public EntityJS getFirst()
+	{
+		return get(0);
 	}
 }
