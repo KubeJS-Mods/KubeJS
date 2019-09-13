@@ -16,6 +16,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 /**
@@ -63,5 +64,11 @@ public class KubeJSClientEventHandler
 		{
 			EventsJS.post(KubeJSEvents.CLIENT_TICK, new ClientTickEventJS(ClientWorldJS.get().clientPlayerData.getPlayer()));
 		}
+	}
+
+	@SubscribeEvent
+	public static void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event)
+	{
+		ClientWorldJS.invalidate();
 	}
 }

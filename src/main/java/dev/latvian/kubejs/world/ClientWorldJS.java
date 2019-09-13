@@ -31,6 +31,11 @@ public class ClientWorldJS extends WorldJS
 		return inst;
 	}
 
+	public static void invalidate()
+	{
+		inst = null;
+	}
+
 	private final Minecraft minecraft;
 	public final ClientPlayerDataJS clientPlayerData;
 
