@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.world;
 
+import dev.latvian.kubejs.documentation.DisplayName;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -23,6 +24,7 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
+@DisplayName("Block")
 public class BlockContainerJS
 {
 	private static final ID AIR_ID = ID.of("minecraft:air");
@@ -30,10 +32,19 @@ public class BlockContainerJS
 	private final World world;
 	private final BlockPos pos;
 
+	private IBlockState cachedState;
+	private TileEntity cachedEntity;
+
 	public BlockContainerJS(World w, BlockPos p)
 	{
 		world = w;
 		pos = p;
+	}
+
+	public void clearCache()
+	{
+		cachedState = null;
+		cachedEntity = null;
 	}
 
 	public WorldJS getWorld()
@@ -113,12 +124,18 @@ public class BlockContainerJS
 
 	public IBlockState getBlockState()
 	{
-		return world.getBlockState(getPos());
+		if (cachedState == null)
+		{
+			cachedState = world.getBlockState(getPos());
+		}
+
+		return cachedState;
 	}
 
 	public void setBlockState(IBlockState state, int flags)
 	{
 		world.setBlockState(getPos(), state, flags);
+		clearCache();
 	}
 
 	public ID getId()
@@ -181,7 +198,12 @@ public class BlockContainerJS
 	@Nullable
 	public TileEntity getEntity()
 	{
-		return world.getTileEntity(pos);
+		if (cachedEntity == null)
+		{
+			cachedEntity = world.getTileEntity(pos);
+		}
+
+		return cachedEntity;
 	}
 
 	public NBTCompoundJS getEntityData()

@@ -65,4 +65,10 @@ public class IngredientStackJS implements IngredientJS
 	{
 		return ingredient.getFirst().count(getCount());
 	}
+
+	@Override
+	public String toString()
+	{
+		return getCount() == 1 ? ingredient.toString() : (getCount() + "x " + ingredient);
+	}
 }

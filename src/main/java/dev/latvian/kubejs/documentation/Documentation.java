@@ -4,6 +4,7 @@ import dev.latvian.kubejs.documentation.tags.PairedTag;
 import dev.latvian.kubejs.documentation.tags.Tag;
 import dev.latvian.kubejs.script.DataType;
 import dev.latvian.kubejs.script.ScriptManager;
+import dev.latvian.kubejs.script.ScriptModData;
 import io.netty.handler.codec.http.FullHttpRequest;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -195,6 +196,9 @@ public class Documentation
 
 		body.br();
 		body.p().paired("i", "Hosted from '" + FMLCommonHandler.instance().getMinecraftServerInstance().getMOTD() + "'");
+		body.p().paired("i", "Mod version: " + ScriptModData.getInstance().getModVersion());
+		body.p().paired("i", "Mod loader: " + ScriptModData.getInstance().getType());
+		body.p().paired("i", "Minecraft version: " + ScriptModData.getInstance().getMcVersion());
 		body.p().paired("i").a("Visit kubejs.latvian.dev for more info about the mod", "https://kubejs.latvian.dev");
 
 		StringBuilder builder = new StringBuilder("<!DOCTYPE html>");
@@ -310,7 +314,7 @@ public class Documentation
 		globalList.sort(null);
 		constantList.sort(null);
 
-		body.h2("Global");
+		body.h2("Global").id("global");
 		Tag globalTable = body.table().addClass("doc");
 		Tag gtTopRow = globalTable.tr();
 		gtTopRow.th().text("Name");
@@ -323,7 +327,7 @@ public class Documentation
 			classText(row.td(), object.type);
 		}
 
-		body.h2("Constants");
+		body.h2("Constants").id("constants");
 		Tag constantTable = body.table().addClass("doc");
 		Tag ctTopRow = constantTable.tr();
 		ctTopRow.th().text("Name");
@@ -338,7 +342,7 @@ public class Documentation
 			row.td().text(object.value);
 		}
 
-		body.h2("Events");
+		body.h2("Events").id("events");
 
 		List<DocumentedEvent> list = new ArrayList<>(events.values());
 		list.sort(null);
@@ -452,7 +456,7 @@ public class Documentation
 			}
 		}
 
-		body.h3("Fields");
+		body.h3("Fields").id("fields");
 
 		if (!fieldList.isEmpty())
 		{
@@ -479,7 +483,7 @@ public class Documentation
 			body.p("<None>");
 		}
 
-		body.h3("Methods");
+		body.h3("Methods").id("methods");
 
 		List<DocumentedMethod> methodList = new ArrayList<>();
 
@@ -490,87 +494,10 @@ public class Documentation
 
 			if (Modifier.isPublic(m) && !Modifier.isStatic(m) && !method.isAnnotationPresent(Ignore.class))
 			{
-				Info info = method.getAnnotation(Info.class);
-				String mn = method.getName();
-
-				if (OBJECT_METHODS.contains(mn))
+				if (!OBJECT_METHODS.contains(method.getName()))
 				{
-					continue;
+					methodList.add(new DocumentedMethod(this, method));
 				}
-
-				methodList.add(new DocumentedMethod(this, method));
-
-				/*
-				Tag line = body.p();
-				classText(line, method.getReturnType(), method.getGenericReturnType());
-				line.text(" ");
-
-				Parameter[] parameters = method.getParameters();
-
-				if (docMethod != null && !docMethod.value().isEmpty())
-				{
-					line.text(method.getName()).title(docMethod.value());
-				}
-				else
-				{
-					line.text(method.getName());
-				}
-
-				line.text("(");
-
-				Param[] params = docMethod == null ? new Param[0] : docMethod.params();
-
-				for (int i = 0; i < parameters.length; i++)
-				{
-					Parameter p = parameters[i];
-
-					String info = "";
-					String name = "";
-					Class type = Object.class;
-
-					if (params.length == parameters.length)
-					{
-						type = params[i].type();
-						info = params[i].info();
-						name = params[i].value();
-					}
-
-					if (type == Object.class)
-					{
-						type = p.getType();
-					}
-
-					if (name.isEmpty())
-					{
-						if (parameters.length == 1)
-						{
-							name = getPrettyName(type).substring(0, 1).toLowerCase();
-						}
-						else
-						{
-							name = p.getName();
-						}
-					}
-
-					if (i > 0)
-					{
-						line.text(", ");
-					}
-
-					Tag s = line.span("", "");
-					classText(s, type);
-					s.text(" ");
-					s.text(name);
-
-					if (!info.isEmpty())
-					{
-						s.title(info);
-					}
-				}
-
-				line.text(")");
-				has = true;
-				 */
 			}
 		}
 

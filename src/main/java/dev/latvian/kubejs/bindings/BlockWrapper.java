@@ -1,18 +1,12 @@
 package dev.latvian.kubejs.bindings;
 
-import com.google.common.base.Optional;
 import dev.latvian.kubejs.block.MaterialJS;
 import dev.latvian.kubejs.block.MaterialListJS;
+import dev.latvian.kubejs.block.predicate.BlockEntityPredicate;
+import dev.latvian.kubejs.block.predicate.BlockIDPredicate;
+import dev.latvian.kubejs.block.predicate.BlockPredicate;
 import dev.latvian.kubejs.documentation.DisplayName;
-import dev.latvian.kubejs.util.ID;
-import dev.latvian.kubejs.util.UtilsJS;
-import net.minecraft.block.Block;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -26,47 +20,30 @@ public class BlockWrapper
 		return MaterialListJS.INSTANCE.map;
 	}
 
-	public IBlockState state(Object id, Map<String, String> properties)
+	public BlockIDPredicate id(Object id)
 	{
-		Block block = Block.REGISTRY.getObject(ID.of(id).mc());
-
-		if (block == null || block == Blocks.AIR)
-		{
-			return Blocks.AIR.getDefaultState();
-		}
-
-		IBlockState state = block.getDefaultState();
-
-		if (!properties.isEmpty())
-		{
-			Map<String, IProperty> pmap = new HashMap<>();
-
-			for (IProperty property : state.getPropertyKeys())
-			{
-				pmap.put(property.getName(), property);
-			}
-
-			for (Map.Entry<String, String> entry : properties.entrySet())
-			{
-				IProperty<?> property = pmap.get(entry.getKey());
-
-				if (property != null)
-				{
-					Optional optional = property.parseValue(entry.getValue());
-
-					if (optional.isPresent())
-					{
-						state = state.withProperty(property, UtilsJS.cast(optional.get()));
-					}
-				}
-			}
-		}
-
-		return state;
+		return new BlockIDPredicate(id);
 	}
 
-	public IBlockState state(Object id)
+	public BlockIDPredicate id(Object id, Map<String, Object> properties)
 	{
-		return state(id, Collections.emptyMap());
+		BlockIDPredicate b = id(id);
+
+		for (Map.Entry<String, Object> entry : properties.entrySet())
+		{
+			b.with(entry.getKey(), entry.getValue().toString());
+		}
+
+		return b;
+	}
+
+	public BlockEntityPredicate entity(Object id)
+	{
+		return new BlockEntityPredicate(id);
+	}
+
+	public BlockPredicate custom(BlockPredicate predicate)
+	{
+		return predicate;
 	}
 }

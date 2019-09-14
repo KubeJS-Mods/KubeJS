@@ -44,6 +44,11 @@ public abstract class Tag extends TagBase
 		return this;
 	}
 
+	public Tag id(String id)
+	{
+		return attr("id", id);
+	}
+
 	public Tag addClass(String c)
 	{
 		if (c.isEmpty())

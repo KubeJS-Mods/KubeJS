@@ -15,7 +15,6 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraftforge.fml.common.Loader;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +26,7 @@ public class DefaultBindings
 {
 	public static void init(ScriptManager manager, BindingsEvent event)
 	{
-		event.add("mod", new ScriptModData("forge", "1.12.2", Loader.instance().getIndexedModList().keySet()));
+		event.add("mod", ScriptModData.getInstance());
 		event.add("log", new LoggerWrapperJS(KubeJS.LOGGER));
 		event.add("runtime", manager.runtime);
 		event.add("documentation", DocumentationServer.INSTANCE);

@@ -14,6 +14,8 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 public class BlockRightClickEventJS extends PlayerEventJS
 {
 	public final PlayerInteractEvent.RightClickBlock event;
+	private BlockContainerJS block;
+	private ItemStackJS item;
 
 	public BlockRightClickEventJS(PlayerInteractEvent.RightClickBlock e)
 	{
@@ -34,7 +36,12 @@ public class BlockRightClickEventJS extends PlayerEventJS
 
 	public BlockContainerJS getBlock()
 	{
-		return new BlockContainerJS(event.getWorld(), event.getPos());
+		if (block == null)
+		{
+			block = new BlockContainerJS(event.getWorld(), event.getPos());
+		}
+
+		return block;
 	}
 
 	public EnumHand getHand()
@@ -44,7 +51,12 @@ public class BlockRightClickEventJS extends PlayerEventJS
 
 	public ItemStackJS getItem()
 	{
-		return ItemStackJS.of(event.getItemStack());
+		if (item == null)
+		{
+			item = ItemStackJS.of(event.getItemStack());
+		}
+
+		return item;
 	}
 
 	public EnumFacing getFacing()

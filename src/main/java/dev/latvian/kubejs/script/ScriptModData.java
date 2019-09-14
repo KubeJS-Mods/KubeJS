@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.script;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.documentation.P;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
@@ -13,6 +14,18 @@ import java.util.Set;
  */
 public class ScriptModData
 {
+	private static ScriptModData instance;
+
+	public static ScriptModData getInstance()
+	{
+		if (instance == null)
+		{
+			instance = new ScriptModData("forge", "1.12.2", Loader.instance().getIndexedModList().keySet());
+		}
+
+		return instance;
+	}
+
 	public static class ModInfo
 	{
 		private final String id;
@@ -66,6 +79,11 @@ public class ScriptModData
 	public Set<String> getList()
 	{
 		return list;
+	}
+
+	public String getModVersion()
+	{
+		return KubeJS.VERSION;
 	}
 
 	public boolean isLoaded(@P("modID") String modId)
