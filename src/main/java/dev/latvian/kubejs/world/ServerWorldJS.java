@@ -1,7 +1,5 @@
 package dev.latvian.kubejs.world;
 
-import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.player.FakeServerPlayerDataJS;
 import dev.latvian.kubejs.player.ServerPlayerDataJS;
@@ -14,7 +12,6 @@ import net.minecraftforge.common.MinecraftForge;
 /**
  * @author LatvianModder
  */
-@DocClass("Server side dimension")
 public class ServerWorldJS extends WorldJS
 {
 	private final ServerJS server;
@@ -25,7 +22,6 @@ public class ServerWorldJS extends WorldJS
 		server = s;
 	}
 
-	@DocMethod
 	public ServerJS getServer()
 	{
 		return server;

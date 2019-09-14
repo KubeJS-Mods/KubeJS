@@ -1,8 +1,7 @@
 package dev.latvian.kubejs.event;
 
-import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.documentation.Documentation;
+import dev.latvian.kubejs.documentation.Ignore;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -12,22 +11,22 @@ import java.util.HashSet;
 /**
  * @author LatvianModder
  */
-@DocClass
 public class EventJS
 {
 	private boolean cancelled = false;
 
+	@Ignore
 	public boolean canCancel()
 	{
 		return false;
 	}
 
-	@DocMethod
 	public final void cancel()
 	{
 		cancelled = true;
 	}
 
+	@Ignore
 	public final boolean isCancelled()
 	{
 		return cancelled;

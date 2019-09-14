@@ -38,8 +38,6 @@ import dev.latvian.kubejs.world.SimpleWorldEventJS;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.UUID;
-
 /**
  * @author LatvianModder
  */
@@ -111,9 +109,6 @@ public class KubeJSEvents
 		event.registerCustomName("float", float.class, Float.class);
 		event.registerCustomName("double", double.class, Double.class);
 		event.registerCustomName("char", char.class, Character.class);
-		event.registerCustomName("string", String.class, CharSequence.class);
-		event.registerCustomName("object", Object.class);
-		event.registerCustomName("uuid", UUID.class);
 
 		event.registerEvent(POSTINIT, EventJS.class);
 		event.registerEvent(UNLOADED, EventJS.class);

@@ -1,5 +1,7 @@
 package dev.latvian.kubejs.entity;
 
+import dev.latvian.kubejs.documentation.P;
+import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.WorldJS;
@@ -44,12 +46,12 @@ public class LivingEntityJS extends EntityJS
 		return livingEntity.getHealth();
 	}
 
-	public void setHealth(float hp)
+	public void setHealth(@P("hp") float hp)
 	{
 		livingEntity.setHealth(hp);
 	}
 
-	public void heal(float hp)
+	public void heal(@P("hp") float hp)
 	{
 		livingEntity.heal(hp);
 	}
@@ -90,7 +92,7 @@ public class LivingEntityJS extends EntityJS
 		return livingEntity.getRevengeTimer();
 	}
 
-	public void setRevengeTarget(@Nullable LivingEntityJS target)
+	public void setRevengeTarget(@Nullable @P("target") LivingEntityJS target)
 	{
 		livingEntity.setRevengeTarget(target == null ? null : target.livingEntity);
 	}
@@ -128,32 +130,32 @@ public class LivingEntityJS extends EntityJS
 		return getWorld().getLivingEntity(livingEntity.getAttackingEntity());
 	}
 
-	public void swingArm(EnumHand hand)
+	public void swingArm(@P("hand") EnumHand hand)
 	{
 		livingEntity.swingArm(hand);
 	}
 
-	public ItemStackJS getEquipment(EntityEquipmentSlot slot)
+	public ItemStackJS getEquipment(@P("slot") EntityEquipmentSlot slot)
 	{
 		return ItemStackJS.of(livingEntity.getItemStackFromSlot(slot));
 	}
 
-	public void setEquipment(EntityEquipmentSlot slot, Object item)
+	public void setEquipment(@P("slot") EntityEquipmentSlot slot, @P("item") @T(ItemStackJS.class) Object item)
 	{
 		livingEntity.setItemStackToSlot(slot, ItemStackJS.of(item).getItemStack());
 	}
 
-	public ItemStackJS getHandItem(EnumHand hand)
+	public ItemStackJS getHandItem(@P("hand") EnumHand hand)
 	{
 		return ItemStackJS.of(livingEntity.getHeldItem(hand));
 	}
 
-	public void setHandItem(EnumHand hand, ItemStackJS stack)
+	public void setHandItem(@P("hand") EnumHand hand, @P("item") @T(ItemStackJS.class) ItemStackJS item)
 	{
-		livingEntity.setHeldItem(hand, stack.getItemStack());
+		livingEntity.setHeldItem(hand, item.getItemStack());
 	}
 
-	public void damageHeldItem(EnumHand hand, int amount)
+	public void damageHeldItem(@P("hand") EnumHand hand, @P("amount") int amount)
 	{
 		ItemStack stack = livingEntity.getHeldItem(hand);
 
@@ -173,12 +175,12 @@ public class LivingEntityJS extends EntityJS
 		return livingEntity.getAIMoveSpeed();
 	}
 
-	public void setMovementSpeed(float speed)
+	public void setMovementSpeed(@P("speed") float speed)
 	{
 		livingEntity.setAIMoveSpeed(speed);
 	}
 
-	public boolean canEntityBeSeen(EntityJS entity)
+	public boolean canEntityBeSeen(@P("entity") EntityJS entity)
 	{
 		return livingEntity.canEntityBeSeen(entity.entity);
 	}
@@ -188,7 +190,7 @@ public class LivingEntityJS extends EntityJS
 		return livingEntity.getAbsorptionAmount();
 	}
 
-	public void setAbsorptionAmount(float amount)
+	public void setAbsorptionAmount(@P("amount") float amount)
 	{
 		livingEntity.setAbsorptionAmount(amount);
 	}
@@ -199,7 +201,7 @@ public class LivingEntityJS extends EntityJS
 	}
 
 	@Nullable
-	public Map<String, Object> rayTrace(double distance)
+	public Map<String, Object> rayTrace(@P("distance") double distance)
 	{
 		Map<String, Object> map = new HashMap<>();
 		RayTraceResult ray = ForgeHooks.rayTraceEyes(livingEntity, distance);

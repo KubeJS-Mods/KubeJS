@@ -1,149 +1,148 @@
 package dev.latvian.kubejs.bindings;
 
 import com.google.gson.JsonElement;
-import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocMethod;
-import dev.latvian.kubejs.documentation.Param;
+import dev.latvian.kubejs.documentation.DisplayName;
+import dev.latvian.kubejs.documentation.Info;
+import dev.latvian.kubejs.documentation.P;
+import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
 import dev.latvian.kubejs.text.TextTranslate;
 
-import javax.annotation.Nullable;
-
 /**
  * @author LatvianModder
  */
-@DocClass("Text Utilities")
+@DisplayName("Text Utilities")
 public class TextWrapper
 {
-	@DocMethod("Creates text component from any object")
-	public Text of(@Nullable Object object)
+	@Info("Creates text component from any object")
+	public Text of(Object object)
 	{
 		return Text.of(object);
 	}
 
-	@DocMethod("Joins text components together")
+	@Info("Joins text components together")
 	public Text join(Text separator, Iterable<Text> texts)
 	{
 		return Text.join(separator, texts);
 	}
 
-	@DocMethod("Creates text component from JSON")
+	@Info("Creates text component from JSON")
 	public Text fromJson(JsonElement e)
 	{
 		return Text.fromJson(e);
 	}
 
-	@DocMethod(value = "Creates text component from string", params = @Param(type = String.class))
-	public Text string(@Nullable Object text)
+	@Info("Creates text component from string")
+	public Text string(@P("text") @T(String.class) Object text)
 	{
 		return new TextString(text);
 	}
 
-	@DocMethod("Creates text component from language key")
-	public Text translate(String key)
+	@Info("Creates text component from language key")
+	public Text translate(@P("key") String key)
 	{
 		return new TextTranslate(key, new Object[0]);
 	}
 
-	@DocMethod("Creates text component from language key and extra objects")
-	public Text translate(String key, Object... objects)
+	@Info("Creates text component from language key and extra objects")
+	public Text translate(@P("key") String key, @P("objects") Object... objects)
 	{
 		return new TextTranslate(key, objects);
 	}
 
-	@DocMethod(value = "Black text", params = @Param(type = Text.class))
-	public Text black(@Nullable Object text)
+	@Info("Black text")
+	public Text black(@P("text") @T(Text.class) Object text)
 	{
 		return of(text).black();
 	}
 
-	@DocMethod(value = "Dark blue text", params = @Param(type = Text.class))
-	public Text darkBlue(@Nullable Object text)
+	@Info("Dark blue text")
+	public Text darkBlue(@P("text") @T(Text.class) Object text)
 	{
 		return of(text).darkBlue();
 	}
 
-	@DocMethod(value = "Dark green text", params = @Param(type = Text.class))
-	public Text darkGreen(@Nullable Object text)
+	@Info("Dark green text")
+	public Text darkGreen(@P("text") @T(Text.class) Object text)
 	{
 		return of(text).darkGreen();
 	}
 
-	@DocMethod(value = "Dark aqua text", params = @Param(type = Text.class))
-	public Text darkAqua(@Nullable Object text)
+	@Info("Dark aqua text")
+	public Text darkAqua(@P("text") @T(Text.class) Object text)
 	{
 		return of(text).darkAqua();
 	}
 
-	@DocMethod(value = "Dark red text", params = @Param(type = Text.class))
-	public Text darkRed(@Nullable Object text)
+	@Info("Dark red text")
+	public Text darkRed(@P("text") @T(Text.class) Object text)
 	{
 		return of(text).darkRed();
 	}
 
-	@DocMethod(value = "Dark purple text", params = @Param(type = Text.class))
-	public Text darkPurple(@Nullable Object text)
+	@Info("Dark purple text")
+	public Text darkPurple(@P("text") @T(Text.class) Object text)
 	{
 		return of(text).darkPurple();
 	}
 
-	@DocMethod(value = "Gold text", params = @Param(type = Text.class))
-	public Text gold(@Nullable Object text)
+	@Info("Gold text")
+	public Text gold(@P("text") @T(Text.class) Object text)
 	{
 		return of(text).gold();
 	}
 
-	@DocMethod(value = "Gray text", params = @Param(type = Text.class))
-	public Text gray(@Nullable Object text)
+	@Info("Gray text")
+	public Text gray(@P("text") @T(Text.class) Object text)
 	{
 		return of(text).gray();
 	}
 
-	@DocMethod(value = "Dark gray text", params = @Param(type = Text.class))
-	public Text darkGray(@Nullable Object text)
+	@Info("Dark gray text")
+	public Text darkGray(@P("text") @T(Text.class) Object text)
 	{
 		return of(text).darkGray();
 	}
 
-	@DocMethod(value = "Blue text", params = @Param(type = Text.class))
-	public Text blue(@Nullable Object text)
+	@Info("Blue text")
+	public Text blue(@P("text") @T(Text.class) Object text)
 	{
 		return of(text).blue();
 	}
 
-	@DocMethod(value = "Green text", params = @Param(type = Text.class))
-	public Text green(@Nullable Object text)
+	@Info("Green text")
+	public Text green(@P("text") @T(Text.class) Object text)
 	{
 		return of(text).green();
 	}
 
-	@DocMethod(value = "Aqua text", params = @Param(type = Text.class))
-	public Text aqua(@Nullable Object text)
+	@Info("Aqua text")
+	public Text aqua(@P("text") @T(Text.class) Object text)
 	{
 		return of(text).aqua();
 	}
 
-	@DocMethod(value = "Red text", params = @Param(type = Text.class))
-	public Text red(@Nullable Object text)
+	@Info("Red text")
+	public Text red(@P("text") @T(Text.class) Object text)
 	{
 		return of(text).red();
 	}
 
-	@DocMethod(value = "Light purple text", params = @Param(type = Text.class))
-	public Text lightPurple(@Nullable Object text)
+	@Info("Light purple text")
+	public Text lightPurple(@P("text") @T(Text.class) Object text)
 	{
 		return of(text).lightPurple();
 	}
 
-	@DocMethod(value = "Yellow text", params = @Param(type = Text.class))
-	public Text yellow(@Nullable Object text)
+	@Info("Yellow text")
+	public Text yellow(@P("text") @T(Text.class) Object text)
 	{
 		return of(text).yellow();
 	}
 
-	@DocMethod(value = "White text", params = @Param(type = Text.class))
-	public Text white(@Nullable Object text)
+	@Info("White text")
+	public Text white(@P("text") @T(Text.class) Object text)
 	{
 		return of(text).white();
 	}

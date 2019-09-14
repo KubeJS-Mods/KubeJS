@@ -45,6 +45,7 @@ public class ScriptManager
 	public final Map<String, Object> runtime;
 	public ScriptFile currentFile;
 	public Map<String, Object> bindings;
+	public Map<String, Object> constants;
 
 	public ScriptManager(File f)
 	{
@@ -92,11 +93,13 @@ public class ScriptManager
 			scripts.put(file.getPath(), file);
 		}
 
-		bindings = new LinkedHashMap<>();
-		BindingsEvent event = new BindingsEvent(bindings);
+		bindings = new HashMap<>();
+		constants = new HashMap<>();
+		BindingsEvent event = new BindingsEvent(bindings, constants);
 		MinecraftForge.EVENT_BUS.post(event);
 		DefaultBindings.init(this, event);
 		Bindings b = new SimpleBindings();
+		b.putAll(constants);
 		b.putAll(bindings);
 
 		int i = 0;

@@ -1,8 +1,6 @@
 package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocMethod;
-import dev.latvian.kubejs.documentation.Param;
+import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptManager;
 
@@ -11,7 +9,6 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-@DocClass
 public class ScheduledEvent
 {
 	private final ServerJS server;
@@ -53,14 +50,12 @@ public class ScheduledEvent
 		return data;
 	}
 
-	@DocMethod
 	public void reschedule()
 	{
 		reschedule(timer);
 	}
 
-	@DocMethod(params = @Param("timer"))
-	public ScheduledEvent reschedule(long timer)
+	public ScheduledEvent reschedule(@P("timer") long timer)
 	{
 		return server.schedule(timer, data, callback);
 	}
@@ -68,11 +63,5 @@ public class ScheduledEvent
 	void call()
 	{
 		callback.onCallback(this);
-	}
-
-	@DocMethod
-	public long remainingTime()
-	{
-		return endTime - System.currentTimeMillis();
 	}
 }

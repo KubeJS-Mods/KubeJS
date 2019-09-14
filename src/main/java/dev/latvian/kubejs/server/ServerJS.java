@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocMethod;
-import dev.latvian.kubejs.documentation.Param;
+import dev.latvian.kubejs.documentation.Info;
+import dev.latvian.kubejs.documentation.P;
+import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.net.KubeJSNetHandler;
 import dev.latvian.kubejs.net.MessageSendData;
 import dev.latvian.kubejs.player.AdvancementJS;
@@ -46,7 +46,6 @@ import java.util.UUID;
 /**
  * @author LatvianModder
  */
-@DocClass("Server instance")
 public class ServerJS implements MessageSender, WithAttachedData
 {
 	public static ServerJS instance;
@@ -94,82 +93,70 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return data;
 	}
 
-	@DocMethod("List of all currently loaded worlds")
+	@Info("List of all currently loaded worlds")
 	public List<ServerWorldJS> getWorlds()
 	{
 		return worlds;
 	}
 
-	@DocMethod
 	public ServerWorldJS getOverworld()
 	{
 		return overworld;
 	}
 
-	@DocMethod
 	public boolean isRunning()
 	{
 		return server.isServerRunning();
 	}
 
-	@DocMethod
 	public boolean getHardcore()
 	{
 		return server.isHardcore();
 	}
 
-	@DocMethod
 	public void setHardcore(boolean hardcore)
 	{
 		overworld.world.getWorldInfo().setHardcore(hardcore);
 	}
 
-	@DocMethod
 	public boolean isSinglePlayer()
 	{
 		return server.isSinglePlayer();
 	}
 
-	@DocMethod
 	public boolean isDedicated()
 	{
 		return server.isDedicatedServer();
 	}
 
-	@DocMethod
-	public String getMOTD()
+	public String getMotd()
 	{
 		return server.getMOTD();
 	}
 
-	@DocMethod(params = @Param(value = "text", type = Text.class))
-	public void setMOTD(Object text)
+	public void setMotd(@P("text") @T(Text.class) Object text)
 	{
 		server.setMOTD(Text.of(text).component().getFormattedText());
 	}
 
-	@DocMethod
 	public void stop()
 	{
 		server.stopServer();
 	}
 
 	@Override
-	@DocMethod
 	public String getName()
 	{
 		return server.getName();
 	}
 
 	@Override
-	@DocMethod
 	public Text getDisplayName()
 	{
 		return Text.of(server.getDisplayName());
 	}
 
 	@Override
-	@DocMethod
 	public void tell(Object message)
 	{
 		ITextComponent component = Text.of(message).component();
@@ -182,7 +169,6 @@ public class ServerJS implements MessageSender, WithAttachedData
 	}
 
 	@Override
-	@DocMethod
 	public void setStatusMessage(Object message)
 	{
 		ITextComponent component = Text.of(message).component();
@@ -194,13 +180,11 @@ public class ServerJS implements MessageSender, WithAttachedData
 	}
 
 	@Override
-	@DocMethod
 	public int runCommand(String command)
 	{
 		return server.getCommandManager().executeCommand(server, command);
 	}
 
-	@DocMethod
 	public WorldJS getWorld(int dimension)
 	{
 		if (dimension == 0)
@@ -221,13 +205,11 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return world;
 	}
 
-	@DocMethod
 	public WorldJS getWorld(World world)
 	{
 		return getWorld(world.provider.getDimension());
 	}
 
-	@DocMethod
 	public PlayerJS getPlayer(UUID uuid)
 	{
 		ServerPlayerDataJS p = playerMap.get(uuid);
@@ -240,7 +222,6 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return p.getPlayer();
 	}
 
-	@DocMethod
 	public PlayerJS getPlayer(String name)
 	{
 		name = name.trim().toLowerCase();
@@ -276,19 +257,16 @@ public class ServerJS implements MessageSender, WithAttachedData
 		throw new NullPointerException("Player from name " + name + " not found!");
 	}
 
-	@DocMethod
 	public PlayerJS getPlayer(EntityPlayer player)
 	{
 		return getPlayer(player.getUniqueID());
 	}
 
-	@DocMethod
 	public EntityArrayList getPlayers()
 	{
 		return new EntityArrayList(overworld, server.getPlayerList().getPlayers());
 	}
 
-	@DocMethod
 	public EntityArrayList getEntities()
 	{
 		EntityArrayList list = new EntityArrayList(overworld, overworld.world.loadedEntityList.size());
@@ -304,7 +282,6 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return list;
 	}
 
-	@DocMethod
 	public EntityArrayList getEntities(String filter)
 	{
 		try
@@ -327,7 +304,6 @@ public class ServerJS implements MessageSender, WithAttachedData
 		}
 	}
 
-	@DocMethod
 	public ScheduledEvent schedule(long timer, @Nullable Object data, IScheduledEventCallback event)
 	{
 		ScheduledEvent e = new ScheduledEvent(this, timer, System.currentTimeMillis() + timer, data, event);
@@ -335,13 +311,11 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return e;
 	}
 
-	@DocMethod
 	public ScheduledEvent schedule(long timer, IScheduledEventCallback event)
 	{
 		return schedule(timer, null, event);
 	}
 
-	@DocMethod
 	public ScheduledEvent scheduleInTicks(long ticks, @Nullable Object data, IScheduledEventCallback event)
 	{
 		ScheduledEvent e = new ScheduledEvent(this, ticks, overworld.getTime() + ticks, data, event);
@@ -349,7 +323,6 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return e;
 	}
 
-	@DocMethod
 	public ScheduledEvent scheduleInTicks(long ticks, IScheduledEventCallback event)
 	{
 		return scheduleInTicks(ticks, null, event);
@@ -371,11 +344,5 @@ public class ServerJS implements MessageSender, WithAttachedData
 	public void sendDataToAll(String channel, @Nullable Object data)
 	{
 		KubeJSNetHandler.net.sendToAll(new MessageSendData(channel, NBTBaseJS.of(data).asCompound().createNBT()));
-	}
-
-	@DocMethod
-	public GameRulesJS getGameRules()
-	{
-		return new GameRulesJS(overworld.world.getGameRules());
 	}
 }

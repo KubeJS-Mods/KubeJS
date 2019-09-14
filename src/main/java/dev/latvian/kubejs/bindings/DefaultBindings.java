@@ -2,7 +2,7 @@ package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.block.MaterialListJS;
-import dev.latvian.kubejs.event.ScriptEventsWrapper;
+import dev.latvian.kubejs.documentation.DocumentationServer;
 import dev.latvian.kubejs.fluid.FluidWrapper;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.script.BindingsEvent;
@@ -31,6 +31,7 @@ public class DefaultBindings
 		event.add("mod", new ScriptModData("forge", "1.12.2", Loader.instance().getIndexedModList().keySet()));
 		event.add("log", new LoggerWrapperJS(KubeJS.LOGGER));
 		event.add("runtime", manager.runtime);
+		event.add("documentation", DocumentationServer.INSTANCE);
 		event.add("utils", new UtilsWrapper());
 		event.add("uuid", new UUIDWrapper());
 		event.add("json", new JsonWrapper());
@@ -44,48 +45,48 @@ public class DefaultBindings
 		event.add("materials", MaterialListJS.INSTANCE.map);
 		event.add("fluid", new FluidWrapper());
 
-		event.add("EMPTY_ITEM", EmptyItemStackJS.INSTANCE);
-		event.add("SECOND", 1000L);
-		event.add("MINUTE", 60000L);
-		event.add("HOUR", 3600000L);
+		event.addConstant("EMPTY_ITEM", EmptyItemStackJS.INSTANCE);
+		event.addConstant("SECOND", 1000L);
+		event.addConstant("MINUTE", 60000L);
+		event.addConstant("HOUR", 3600000L);
 
-		event.add("textColors", TextColor.MAP);
+		event.addConstant("textColors", TextColor.MAP);
 
 		for (TextColor color : TextColor.MAP.values())
 		{
-			event.add(color.name(), color);
+			event.addConstant(color.name(), color);
 		}
 
-		event.add("SLOT_MAINHAND", EntityEquipmentSlot.MAINHAND);
-		event.add("SLOT_OFFHAND", EntityEquipmentSlot.OFFHAND);
-		event.add("SLOT_FEET", EntityEquipmentSlot.FEET);
-		event.add("SLOT_LEGS", EntityEquipmentSlot.LEGS);
-		event.add("SLOT_CHEST", EntityEquipmentSlot.CHEST);
-		event.add("SLOT_HEAD", EntityEquipmentSlot.HEAD);
+		event.addConstant("SLOT_MAINHAND", EntityEquipmentSlot.MAINHAND);
+		event.addConstant("SLOT_OFFHAND", EntityEquipmentSlot.OFFHAND);
+		event.addConstant("SLOT_FEET", EntityEquipmentSlot.FEET);
+		event.addConstant("SLOT_LEGS", EntityEquipmentSlot.LEGS);
+		event.addConstant("SLOT_CHEST", EntityEquipmentSlot.CHEST);
+		event.addConstant("SLOT_HEAD", EntityEquipmentSlot.HEAD);
 
-		event.add("RARITY_COMMON", EnumRarity.COMMON);
-		event.add("RARITY_UNCOMMON", EnumRarity.UNCOMMON);
-		event.add("RARITY_RARE", EnumRarity.RARE);
-		event.add("RARITY_EPIC", EnumRarity.EPIC);
+		event.addConstant("RARITY_COMMON", EnumRarity.COMMON);
+		event.addConstant("RARITY_UNCOMMON", EnumRarity.UNCOMMON);
+		event.addConstant("RARITY_RARE", EnumRarity.RARE);
+		event.addConstant("RARITY_EPIC", EnumRarity.EPIC);
 
-		event.add("AIR_ITEM", Items.AIR);
-		event.add("AIR_BLOCK", Blocks.AIR);
+		event.addConstant("AIR_ITEM", Items.AIR);
+		event.addConstant("AIR_BLOCK", Blocks.AIR);
 
-		event.add("TOOL_TYPE_AXE", "axe");
-		event.add("TOOL_TYPE_PICKAXE", "pickaxe");
-		event.add("TOOL_TYPE_SHOVEL", "shovel");
+		event.addConstant("TOOL_TYPE_AXE", "axe");
+		event.addConstant("TOOL_TYPE_PICKAXE", "pickaxe");
+		event.addConstant("TOOL_TYPE_SHOVEL", "shovel");
 
 		Map<String, EnumFacing> facingMap = new HashMap<>();
 
 		for (EnumFacing facing : EnumFacing.VALUES)
 		{
-			event.add(facing.getName().toUpperCase(), facing);
+			event.addConstant(facing.getName().toUpperCase(), facing);
 			facingMap.put(facing.getName(), facing);
 		}
 
-		event.add("FACINGS", facingMap);
+		event.addConstant("FACINGS", facingMap);
 
-		event.add("MAIN_HAND", EnumHand.MAIN_HAND);
-		event.add("OFF_HAND", EnumHand.OFF_HAND);
+		event.addConstant("MAIN_HAND", EnumHand.MAIN_HAND);
+		event.addConstant("OFF_HAND", EnumHand.OFF_HAND);
 	}
 }

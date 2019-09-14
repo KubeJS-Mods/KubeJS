@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocMethod;
+import dev.latvian.kubejs.documentation.P;
+import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -22,7 +22,6 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-@DocClass
 public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS implements WithAttachedData
 {
 	private final E playerEntity;
@@ -64,7 +63,6 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 		return getName();
 	}
 
-	@DocMethod
 	public InventoryJS getInventory()
 	{
 		if (inventory == null)
@@ -75,12 +73,12 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 		return inventory;
 	}
 
-	public void give(Object item)
+	public void give(@P("item") @T(ItemStackJS.class) Object item)
 	{
 		ItemHandlerHelper.giveItemToPlayer(playerEntity, ItemStackJS.of(item).getItemStack());
 	}
 
-	public void giveInHand(Object item)
+	public void giveInHand(@P("item") @T(ItemStackJS.class) Object item)
 	{
 		ItemHandlerHelper.giveItemToPlayer(playerEntity, ItemStackJS.of(item).getItemStack(), getSelectedSlot());
 	}
@@ -91,7 +89,7 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 	}
 
 	@Override
-	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch)
+	public void setPositionAndRotation(@P("x") double x, @P("y") double y, @P("z") double z, @P("yaw") float yaw, @P("pitch") float pitch)
 	{
 		super.setPositionAndRotation(x, y, z, yaw, pitch);
 
@@ -102,24 +100,21 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 	}
 
 	@Override
-	public void setStatusMessage(Object message)
+	public void setStatusMessage(@P("message") Object message)
 	{
 		playerEntity.sendStatusMessage(Text.of(message).component(), true);
 	}
 
-	@DocMethod
 	public boolean isCreativeMode()
 	{
 		return playerEntity.capabilities.isCreativeMode;
 	}
 
-	@DocMethod
 	public boolean isSpectator()
 	{
 		return playerEntity.isSpectator();
 	}
 
-	@DocMethod
 	public abstract PlayerStatsJS getStats();
 
 	@Override
@@ -127,7 +122,7 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 	{
 	}
 
-	public void sendData(String channel, @Nullable Object data)
+	public void sendData(@P("channel") String channel, @Nullable @P("data") Object data)
 	{
 		KubeJS.PROXY.sendData(playerEntity, channel, NBTBaseJS.of(data).asCompound().createNBT());
 	}

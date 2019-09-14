@@ -4,8 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocMethod;
+import dev.latvian.kubejs.documentation.DisplayName;
+import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 
 import javax.annotation.Nullable;
@@ -13,61 +13,52 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-@DocClass(displayName = "JSON Utilities")
+@DisplayName("JSON Utilities")
 public class JsonWrapper
 {
-	@DocMethod
 	public JsonNull getJsonNull()
 	{
 		return JsonNull.INSTANCE;
 	}
 
-	@DocMethod
-	public JsonElement copy(JsonElement element)
+	public JsonElement copy(@P("json") JsonElement json)
 	{
-		return JsonUtilsJS.copy(element);
+		return JsonUtilsJS.copy(json);
 	}
 
-	@DocMethod
 	public JsonObject object()
 	{
 		return new JsonObject();
 	}
 
-	@DocMethod
 	public JsonArray array()
 	{
 		return new JsonArray();
 	}
 
-	@DocMethod
-	public JsonElement of(Object object)
+	public JsonElement of(@P("json") Object object)
 	{
 		return JsonUtilsJS.of(object);
 	}
 
-	@DocMethod
-	public String toString(JsonElement json)
+	public String toString(@P("json") JsonElement json)
 	{
 		return JsonUtilsJS.toString(json);
 	}
 
-	@DocMethod
-	public String toPrettyString(JsonElement json)
+	public String toPrettyString(@P("json") JsonElement json)
 	{
 		return JsonUtilsJS.toPrettyString(json);
 	}
 
-	@DocMethod
-	public JsonElement fromString(String string)
+	public JsonElement fromString(@P("json") String json)
 	{
-		return JsonUtilsJS.fromString(string);
+		return JsonUtilsJS.fromString(json);
 	}
 
 	@Nullable
-	@DocMethod
-	public Object primitiveObject(JsonElement element)
+	public Object primitiveObject(@P("json") JsonElement json)
 	{
-		return JsonUtilsJS.primitiveObject(element);
+		return JsonUtilsJS.primitiveObject(json);
 	}
 }

@@ -12,12 +12,8 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@DocClass("Annotation you put on documented classes")
-public @interface DocClass
+public @interface Example
 {
-	@DocMethod("Information")
-	String value() default "";
-
-	@DocMethod("Custom display name")
-	String displayName() default "";
+	@Info("URL to example script. For gists use gist:<user id>:<gist id>:<filename.js>, e.g. gist:LatvianModder:9f5f8cb4121fda4141dbd2cfd5b3d5c9:clearlag.js")
+	String value();
 }

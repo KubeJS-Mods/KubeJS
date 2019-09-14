@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.entity;
 
+import dev.latvian.kubejs.documentation.P;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -35,23 +36,23 @@ public class EntityPotionEffectsJS
 		return entity.getActivePotionMap();
 	}
 
-	public boolean isActive(Potion potion)
+	public boolean isActive(@P("potion") Potion potion)
 	{
 		return entity.isPotionActive(potion);
 	}
 
 	@Nullable
-	public PotionEffect getActive(Potion potion)
+	public PotionEffect getActive(@P("potion") Potion potion)
 	{
 		return entity.getActivePotionEffect(potion);
 	}
 
-	public void add(PotionEffect effect)
+	public void add(@P("effect") PotionEffect effect)
 	{
 		entity.addPotionEffect(effect);
 	}
 
-	public boolean isApplicable(PotionEffect effect)
+	public boolean isApplicable(@P("effect") PotionEffect effect)
 	{
 		return entity.isPotionApplicable(effect);
 	}

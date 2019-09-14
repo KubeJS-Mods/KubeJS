@@ -143,7 +143,7 @@ public class NBTListJS implements NBTBaseJS, Iterable<NBTBaseJS>
 			return tagList;
 		}
 
-		switch (get(0).getID())
+		switch (get(0).getId())
 		{
 			case Constants.NBT.TAG_BYTE:
 				return new NBTTagByteArray(asByteArray());

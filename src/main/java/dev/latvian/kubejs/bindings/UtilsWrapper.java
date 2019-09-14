@@ -171,4 +171,9 @@ public class UtilsWrapper
 			return new ArrayList<>(objects).get(random.nextInt(objects.size()));
 		}
 	}
+
+	public long getSystemTime()
+	{
+		return System.currentTimeMillis();
+	}
 }

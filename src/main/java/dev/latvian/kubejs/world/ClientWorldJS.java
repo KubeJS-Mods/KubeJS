@@ -2,7 +2,6 @@ package dev.latvian.kubejs.world;
 
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.client.ClientLoggedInEventJS;
-import dev.latvian.kubejs.documentation.DocClass;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.player.ClientPlayerDataJS;
@@ -13,7 +12,6 @@ import net.minecraftforge.common.MinecraftForge;
 /**
  * @author LatvianModder
  */
-@DocClass("Client side dimension")
 public class ClientWorldJS extends WorldJS
 {
 	private static ClientWorldJS inst;

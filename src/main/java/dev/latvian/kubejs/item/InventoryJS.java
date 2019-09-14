@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocMethod;
-import dev.latvian.kubejs.documentation.Param;
+import dev.latvian.kubejs.documentation.Ignore;
+import dev.latvian.kubejs.documentation.P;
+import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
 import net.minecraft.item.ItemStack;
@@ -12,9 +12,9 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 /**
  * @author LatvianModder
  */
-@DocClass
 public class InventoryJS
 {
+	@Ignore
 	public final IItemHandler inventory;
 
 	public InventoryJS(IItemHandler h)
@@ -22,19 +22,16 @@ public class InventoryJS
 		inventory = h;
 	}
 
-	@DocMethod
 	public int size()
 	{
 		return inventory.getSlots();
 	}
 
-	@DocMethod
 	public ItemStackJS get(int slot)
 	{
 		return ItemStackJS.of(inventory.getStackInSlot(slot));
 	}
 
-	@DocMethod
 	public void set(int slot, Object item)
 	{
 		if (inventory instanceof IItemHandlerModifiable)
@@ -47,31 +44,26 @@ public class InventoryJS
 		}
 	}
 
-	@DocMethod
 	public ItemStackJS insert(int slot, Object item, boolean simulate)
 	{
 		return ItemStackJS.of(inventory.insertItem(slot, ItemStackJS.of(item).getItemStack(), simulate));
 	}
 
-	@DocMethod
 	public ItemStackJS extract(int slot, int amount, boolean simulate)
 	{
 		return ItemStackJS.of(inventory.extractItem(slot, amount, simulate));
 	}
 
-	@DocMethod
 	public int getSlotLimit(int slot)
 	{
 		return inventory.getSlotLimit(slot);
 	}
 
-	@DocMethod
 	public boolean isItemValid(int slot, Object item)
 	{
 		return inventory.isItemValid(slot, ItemStackJS.of(item).getItemStack());
 	}
 
-	@DocMethod
 	public void clear()
 	{
 		IItemHandlerModifiable modInv = inventory instanceof IItemHandlerModifiable ? (IItemHandlerModifiable) inventory : null;
@@ -89,8 +81,7 @@ public class InventoryJS
 		}
 	}
 
-	@DocMethod(params = @Param(value = "ingredient", type = IngredientJS.class))
-	public void clear(Object o)
+	public void clear(@P("ingredient") @T(IngredientJS.class) Object o)
 	{
 		IngredientJS ingredient = IngredientJS.of(o);
 
@@ -117,7 +108,6 @@ public class InventoryJS
 		}
 	}
 
-	@DocMethod
 	public int find()
 	{
 		for (int i = 0; i < inventory.getSlots(); i++)
@@ -133,8 +123,7 @@ public class InventoryJS
 		return -1;
 	}
 
-	@DocMethod(params = @Param(value = "ingredient", type = IngredientJS.class))
-	public int find(Object o)
+	public int find(@P("ingredient") @T(IngredientJS.class) Object o)
 	{
 		IngredientJS ingredient = IngredientJS.of(o);
 
@@ -156,7 +145,6 @@ public class InventoryJS
 		return -1;
 	}
 
-	@DocMethod
 	public int count()
 	{
 		int count = 0;
@@ -169,8 +157,7 @@ public class InventoryJS
 		return count;
 	}
 
-	@DocMethod(params = @Param(value = "ingredient", type = IngredientJS.class))
-	public int count(Object o)
+	public int count(@P("ingredient") @T(IngredientJS.class) Object o)
 	{
 		IngredientJS ingredient = IngredientJS.of(o);
 

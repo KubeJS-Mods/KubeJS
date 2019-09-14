@@ -183,7 +183,7 @@ public class NBTCompoundJS implements NBTBaseJS
 	}
 
 	@Override
-	public byte getID()
+	public byte getId()
 	{
 		return Constants.NBT.TAG_COMPOUND;
 	}
@@ -210,7 +210,7 @@ public class NBTCompoundJS implements NBTBaseJS
 	public NBTBaseJS get(String key, int type)
 	{
 		NBTBaseJS baseJS = get(key);
-		return baseJS.getID() != type ? NBTNullJS.INSTANCE : baseJS;
+		return baseJS.getId() != type ? NBTNullJS.INSTANCE : baseJS;
 	}
 
 	public NBTBaseJS set(String key, Object value)

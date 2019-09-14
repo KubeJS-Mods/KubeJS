@@ -1,12 +1,12 @@
 package dev.latvian.kubejs.util;
 
-import dev.latvian.kubejs.documentation.DocMethod;
+import dev.latvian.kubejs.documentation.Info;
 
 /**
  * @author LatvianModder
  */
 public interface WithAttachedData
 {
-	@DocMethod("Temporary data, mods can attach objects to this")
+	@Info("Temporary data, mods can attach objects to this")
 	AttachedData getData();
 }

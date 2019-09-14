@@ -1,7 +1,8 @@
 package dev.latvian.kubejs.bindings;
 
-import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocMethod;
+import dev.latvian.kubejs.documentation.DisplayName;
+import dev.latvian.kubejs.documentation.Info;
+import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
@@ -10,40 +11,39 @@ import dev.latvian.kubejs.item.ingredient.MatchAnyIngredientJS;
 import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
 import dev.latvian.kubejs.item.ingredient.OreDictionaryIngredientJS;
 
-import javax.annotation.Nullable;
 import java.util.function.Predicate;
 
 /**
  * @author LatvianModder
  */
-@DocClass(displayName = "Ingredient Utilities")
+@DisplayName("Ingredient Utilities")
 public class IngredientWrapper
 {
-	@DocMethod
+	@Info("Return ingredient that doesn't match any item")
 	public IngredientJS getNone()
 	{
 		return EmptyItemStackJS.INSTANCE;
 	}
 
-	@DocMethod
+	@Info("Return ingredient that matches any item")
 	public IngredientJS getAll()
 	{
 		return MatchAllIngredientJS.INSTANCE;
 	}
 
-	@DocMethod
-	public IngredientJS of(@Nullable Object object)
+	@Info("Returns ingredient from input")
+	public IngredientJS of(@P("object") Object object)
 	{
 		return IngredientJS.of(object);
 	}
 
-	@DocMethod
-	public IngredientJS custom(Predicate<ItemStackJS> predicate)
+	@Info("Returns a custom ingredient using function(item){return [true/false based on item];}")
+	public IngredientJS custom(@P("predicate") Predicate<ItemStackJS> predicate)
 	{
 		return predicate::test;
 	}
 
-	@DocMethod
+	@Info("Returns ingredient that matches any of other ingredients")
 	public IngredientJS matchAny(Object[] objects)
 	{
 		MatchAnyIngredientJS ingredient = new MatchAnyIngredientJS();
@@ -51,14 +51,14 @@ public class IngredientWrapper
 		return ingredient;
 	}
 
-	@DocMethod
-	public IngredientJS ore(String oreName)
+	@Info("Returns Ore Dictionary ingredient")
+	public IngredientJS ore(@P("oreName") String oreName)
 	{
 		return new OreDictionaryIngredientJS(oreName);
 	}
 
-	@DocMethod
-	public IngredientJS mod(String modId)
+	@Info("Returns mod ingredient, matches all items from mod ID")
+	public IngredientJS mod(@P("modID") String modId)
 	{
 		return new ModIngredientJS(modId);
 	}

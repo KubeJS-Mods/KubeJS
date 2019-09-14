@@ -2,6 +2,7 @@ package dev.latvian.kubejs.world;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.documentation.DocumentationServer;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
@@ -72,6 +73,7 @@ public class KubeJSWorldEventHandler
 		EventsJS.post(KubeJSEvents.SERVER_UNLOAD, new SimpleServerEventJS(ServerJS.instance));
 		ServerJS.instance = null;
 		ScriptManager.instance.runtime.remove("server");
+		DocumentationServer.INSTANCE.stopServer();
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

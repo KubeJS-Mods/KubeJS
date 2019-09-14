@@ -118,7 +118,7 @@ public class NBTNumberJS implements NBTBaseJS
 	}
 
 	@Override
-	public byte getID()
+	public byte getId()
 	{
 		return createNBT().getId();
 	}

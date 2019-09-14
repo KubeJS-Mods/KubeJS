@@ -11,10 +11,7 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface DocMethod
+@Target({ElementType.METHOD, ElementType.FIELD})
+public @interface Ignore
 {
-	String value() default "";
-
-	Param[] params() default { };
 }

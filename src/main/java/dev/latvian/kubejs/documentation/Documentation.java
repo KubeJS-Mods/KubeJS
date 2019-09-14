@@ -1,21 +1,23 @@
 package dev.latvian.kubejs.documentation;
 
-import dev.latvian.kubejs.command.CommandSender;
+import dev.latvian.kubejs.documentation.tags.PairedTag;
+import dev.latvian.kubejs.documentation.tags.Tag;
 import dev.latvian.kubejs.script.DataType;
 import dev.latvian.kubejs.script.ScriptManager;
-import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.text.TextString;
-import net.minecraft.util.IStringSerializable;
+import io.netty.handler.codec.http.FullHttpRequest;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -85,12 +87,6 @@ public class Documentation
 		}
 	}
 
-	public String getSimpleName(Class c)
-	{
-		String[] s = c.getName().split("\\.");
-		return s[s.length - 1];
-	}
-
 	public String getPrettyName(Class c)
 	{
 		if (c.isArray())
@@ -105,11 +101,11 @@ public class Documentation
 			return s;
 		}
 
-		DocClass docClass = (DocClass) c.getAnnotation(DocClass.class);
+		DisplayName displayName = (DisplayName) c.getAnnotation(DisplayName.class);
 
-		if (docClass != null && !docClass.displayName().isEmpty())
+		if (displayName != null && !displayName.value().isEmpty())
 		{
-			return docClass.displayName();
+			return displayName.value();
 		}
 
 		String[] s1 = c.getName().split("\\.");
@@ -163,20 +159,75 @@ public class Documentation
 		return String.join(" ", list);
 	}
 
-	public Text classText(Class c, Type t)
+	public String handleHTTP(FullHttpRequest request)
 	{
-		Text text = new TextString(getPrettyName(c)).yellow();
+		Tag html = new PairedTag("body", "");
 
-		if (c.isPrimitive() || c == Character.class || Number.class.isAssignableFrom(c))
+		Tag head = html.paired("head", "");
+		head.paired("title", "KubeJS Documentation");
+		head.unpaired("link").attr("rel", "stylesheet").attr("type", "text/css").attr("href", "https://kubejs.latvian.dev/style.css");
+		head.unpaired("link").attr("rel", "icon").attr("href", "https://kubejs.latvian.dev/logo_48.png");
+
+		Tag body = html.paired("body", "");
+		body.img("https://kubejs.latvian.dev/logo_title.png").style("height", "7em");
+		body.br();
+		body.h1("").a("KubeJS Documentation", "/");
+
+		if (request.uri().equals("/"))
 		{
-			return text;
+			showHome(body);
+		}
+		else
+		{
+			try
+			{
+				showClass(body, Class.forName(request.uri().substring(1)));
+			}
+			catch (Exception ex)
+			{
+				body.h1("Error!");
+				Tag t = body.p();
+				t.text("Class ");
+				t.span(request.uri().substring(1), "type");
+				t.text(" not found!");
+			}
 		}
 
-		text.hover("<More Info>").click("command:/kubejs docs " + c.getName());
+		body.br();
+		body.p().paired("i", "Hosted from '" + FMLCommonHandler.instance().getMinecraftServerInstance().getMOTD() + "'");
+		body.p().paired("i").a("Visit kubejs.latvian.dev for more info about the mod", "https://kubejs.latvian.dev");
+
+		StringBuilder builder = new StringBuilder("<!DOCTYPE html>");
+		html.build(builder);
+		return builder.toString();
+	}
+
+	private Class getActualType(Class c)
+	{
+		if (c.isArray())
+		{
+			return getActualType(c.getComponentType());
+		}
+
+		return c;
+	}
+
+	public void classText(Tag parent, Class c, Type t)
+	{
+		Class ac = getActualType(c);
+
+		if (ac.isPrimitive() || ac == Character.class || Number.class.isAssignableFrom(ac))
+		{
+			parent.span(getPrettyName(c), "type");
+			return;
+		}
+
+		Tag tag = parent.span("", "");
+		tag.a(getPrettyName(c), "/" + ac.getName()).addClass("type").title("More Info");
 
 		if (t instanceof ParameterizedType)
 		{
-			text.append("<");
+			tag.text("<");
 
 			Type[] at = ((ParameterizedType) t).getActualTypeArguments();
 
@@ -184,150 +235,288 @@ public class Documentation
 			{
 				if (i > 0)
 				{
-					text.append(", ");
+					tag.text(", ");
 				}
 
 				if (at[i] instanceof Class)
 				{
-					text.append(classText((Class) at[i], at[i]));
+					classText(tag, (Class) at[i], at[i]);
 				}
 				else
 				{
-					text.append("?");
+					tag.span(at[i].getTypeName(), "type");
 				}
 			}
 
-			text.append(">");
+			tag.text(">");
 		}
-
-		return text;
 	}
 
-	public void sendDocs(CommandSender sender)
+	public void classText(Tag parent, Class c)
 	{
-		sender.tell(new TextString("== KubeJS Documentation ==").darkPurple().hover("This is WIP, it will look much better later"));
-		sender.tell(new TextString("[Global]").blue());
+		classText(parent, c, c);
+	}
+
+	public void yesNoSpan(Tag parent, boolean value)
+	{
+		parent.span(value ? "Yes" : "No", value ? "yes" : "no");
+	}
+
+	private void showHome(Tag body)
+	{
+		List<DocumentedBinding> globalList = new ArrayList<>();
+		List<DocumentedBinding> constantList = new ArrayList<>();
 
 		for (Map.Entry<String, Object> entry : ScriptManager.instance.bindings.entrySet())
 		{
-			Text name = new TextString(entry.getKey()).green();
-
-			if (entry.getKey().toUpperCase().equals(entry.getKey()))
-			{
-				if (entry.getValue() instanceof IStringSerializable)
-				{
-					name.hover(((IStringSerializable) entry.getValue()).getName());
-				}
-				else if (entry.getValue() instanceof CharSequence)
-				{
-					name.hover("\"" + entry.getValue() + "\"");
-				}
-				else
-				{
-					name.hover(entry.getValue().toString());
-				}
-			}
-
-			sender.tell((classText(entry.getValue().getClass(), entry.getValue().getClass())).append(" ").append(name));
+			globalList.add(new DocumentedBinding(entry.getKey(), entry.getValue().getClass(), ""));
 		}
 
-		sender.tell(new TextString("[Events]").blue());
+		for (Map.Entry<String, Object> entry : ScriptManager.instance.constants.entrySet())
+		{
+			String value;
 
-		List<String> list = new ArrayList<>(events.keySet());
+			if (entry.getValue() instanceof Enum)
+			{
+				value = "Enum Constant";
+			}
+			else if (entry.getValue() instanceof CharSequence)
+			{
+				value = "\"" + entry.getValue() + "\"";
+			}
+			else if (entry.getValue() instanceof Number)
+			{
+				value = entry.getValue().toString();
+			}
+			else if (entry.getValue() instanceof IForgeRegistryEntry)
+			{
+				value = ((IForgeRegistryEntry) entry.getValue()).getRegistryName().toString();
+			}
+			else
+			{
+				value = "Object Constant";
+			}
+
+			if (value.isEmpty())
+			{
+				globalList.add(new DocumentedBinding(entry.getKey(), entry.getValue().getClass(), ""));
+			}
+			else
+			{
+				constantList.add(new DocumentedBinding(entry.getKey(), entry.getValue().getClass(), value));
+			}
+		}
+
+		globalList.sort(null);
+		constantList.sort(null);
+
+		body.h2("Global");
+		Tag globalTable = body.table().addClass("doc");
+		Tag gtTopRow = globalTable.tr();
+		gtTopRow.th().text("Name");
+		gtTopRow.th().text("Type");
+
+		for (DocumentedBinding object : globalList)
+		{
+			Tag row = globalTable.tr();
+			row.td().text(object.name);
+			classText(row.td(), object.type);
+		}
+
+		body.h2("Constants");
+		Tag constantTable = body.table().addClass("doc");
+		Tag ctTopRow = constantTable.tr();
+		ctTopRow.th().text("Name");
+		ctTopRow.th().text("Type");
+		ctTopRow.th().text("Value");
+
+		for (DocumentedBinding object : constantList)
+		{
+			Tag row = constantTable.tr();
+			row.td().text(object.name);
+			classText(row.td(), object.type);
+			row.td().text(object.value);
+		}
+
+		body.h2("Events");
+
+		List<DocumentedEvent> list = new ArrayList<>(events.values());
 		list.sort(null);
 
-		for (String s : list)
+		Tag eventTable = body.paired("table", "").addClass("doc");
+		Tag topRow = eventTable.tr();
+		topRow.th().text("ID").title("ID of this event. For double events, alternate ID will be provided");
+		topRow.th().text("Type");
+		topRow.th().text("Can cancel").title("True if event can be cancelled");
+		topRow.th().text("Client").title("True if event is fired on client side");
+		topRow.th().text("Server").title("True if event is fired on server side");
+
+		for (DocumentedEvent event : list)
 		{
-			sender.tell(new TextString(s).yellow().hover("<More Info>").click("command:/kubejs docs " + events.get(s).eventClass.getName()));
+			Tag row = eventTable.tr();
+			row.td().text(event.eventID);
+			classText(row.td(), event.eventClass);
+			yesNoSpan(row.td(), event.canCancel);
+			yesNoSpan(row.td(), event.sideOnly == null || event.sideOnly == Side.CLIENT);
+			yesNoSpan(row.td(), event.sideOnly == null || event.sideOnly == Side.SERVER);
 		}
 	}
 
-	public void sendDocs(CommandSender sender, Class c)
+	private void showClass(Tag body, Class c)
 	{
-		DocClass docClass = (DocClass) c.getAnnotation(DocClass.class);
+		body.h2(getPrettyName(c));
 
-		sender.tell(new TextString("").append("== ").append(new TextString(getPrettyName(c)).lightPurple()).append(" ==").darkPurple().hover("This is WIP, it will look much better later"));
+		DisplayName docClass = (DisplayName) c.getAnnotation(DisplayName.class);
 
 		if (docClass != null && !docClass.value().isEmpty())
 		{
-			sender.tell(new TextString(docClass.value()).italic().gray());
+			body.p(docClass.value());
 		}
 
-		sender.tell(new TextString("[Class]").blue());
-		sender.tell(new TextString(c.getName()).yellow());
+		body.h3(c.isInterface() ? "Interface" : "Class");
+		body.p(c.getName()).addClass("type");
 
 		Class sc = c.getSuperclass();
 
-		sender.tell(new TextString("[Extends]").blue());
+		body.h3("Extends");
+
 		boolean has = false;
 
 		if (sc != null && sc != Object.class)
 		{
-			sender.tell(classText(sc, sc));
+			classText(body.p(), sc);
 			has = true;
 		}
 
 		for (Class c1 : c.getInterfaces())
 		{
-			sender.tell(classText(c1, c1));
+			classText(body.p(), c1);
 			has = true;
 		}
 
 		if (!has)
 		{
-			sender.tell("<None>");
+			body.text("<None>");
 		}
 
 		DocumentedEvent event = classToEvent.get(c);
 
 		if (event != null)
 		{
-			sender.tell(new TextString("[Event]").blue());
-			sender.tell("ID: " + event.eventID);
-
-			if (!event.doubleParam.isEmpty())
-			{
-				sender.tell("Alt ID: " + event.eventID + ".<" + event.doubleParam + ">");
-			}
-
-			sender.tell("Can cancel: " + event.canCancel);
-			sender.tell("Sides: " + (event.sideOnly == null ? "[Server, Client]" : event.sideOnly == Side.CLIENT ? "[Client]" : "[Server]"));
+			body.h3("Event");
+			Tag table = body.paired("table", "").addClass("doc");
+			Tag topRow = table.tr();
+			topRow.th().text("ID").title("ID of this event. For double events, alternate ID will be provided");
+			topRow.th().text("Can cancel").title("True if event can be cancelled");
+			topRow.th().text("Client").title("True if event is fired on client side");
+			topRow.th().text("Server").title("True if event is fired on server side");
+			Tag row = table.tr();
+			row.td().text(event.eventID);
+			yesNoSpan(row.td(), event.canCancel);
+			yesNoSpan(row.td(), event.sideOnly == null || event.sideOnly == Side.CLIENT);
+			yesNoSpan(row.td(), event.sideOnly == null || event.sideOnly == Side.SERVER);
 		}
 
-		sender.tell(new TextString("[Methods]").blue());
-		has = false;
+		Map<String, Class> attached = attachedData.get(c);
 
-		for (Method method : c.getDeclaredMethods())
+		if (attached != null && !attached.isEmpty())
+		{
+			body.h3("Attached");
+
+			Tag attachedTable = body.table().addClass("doc");
+			Tag atTopRow = attachedTable.tr();
+			atTopRow.th().text("Name");
+			atTopRow.th().text("Type");
+
+			List<Map.Entry<String, Class>> list = new ArrayList<>(attached.entrySet());
+			list.sort(Comparator.comparing(Map.Entry::getKey));
+
+			for (Map.Entry<String, Class> entry : list)
+			{
+				Tag row = attachedTable.tr();
+				row.td().text(entry.getKey());
+				classText(row.td(), entry.getValue());
+			}
+		}
+
+		List<DocumentedField> fieldList = new ArrayList<>();
+
+		for (Field field : c.getFields())
+		//for (Field field : c.getDeclaredFields())
+		{
+			int m = field.getModifiers();
+
+			if (Modifier.isPublic(m) && !Modifier.isStatic(m) && !field.isAnnotationPresent(Ignore.class))
+			{
+				fieldList.add(new DocumentedField(this, field));
+			}
+		}
+
+		body.h3("Fields");
+
+		if (!fieldList.isEmpty())
+		{
+			fieldList.sort(null);
+
+			Tag methodTable = body.table().addClass("doc");
+			Tag mtTopRow = methodTable.tr();
+			mtTopRow.th().text("Name");
+			mtTopRow.th().text("Return Type");
+			mtTopRow.th().text("Info");
+
+			for (DocumentedField field : fieldList)
+			{
+				Tag row = methodTable.tr();
+
+				Tag n = row.td().span("", "");
+				n.text(field.name);
+				classText(row.td(), field.type, field.actualType);
+				row.td().text(field.info);
+			}
+		}
+		else
+		{
+			body.p("<None>");
+		}
+
+		body.h3("Methods");
+
+		List<DocumentedMethod> methodList = new ArrayList<>();
+
+		for (Method method : c.getMethods())
+		//for (Method method : c.getDeclaredMethods())
 		{
 			int m = method.getModifiers();
 
-			if (Modifier.isPublic(m) && !Modifier.isStatic(m))
+			if (Modifier.isPublic(m) && !Modifier.isStatic(m) && !method.isAnnotationPresent(Ignore.class))
 			{
-				DocMethod docMethod = method.getAnnotation(DocMethod.class);
-
-				if (docMethod == null && docClass != null)
-				{
-					continue;
-				}
-
+				Info info = method.getAnnotation(Info.class);
 				String mn = method.getName();
 
-				if (docMethod == null && OBJECT_METHODS.contains(mn))
+				if (OBJECT_METHODS.contains(mn))
 				{
 					continue;
 				}
+
+				methodList.add(new DocumentedMethod(this, method));
+
+				/*
+				Tag line = body.p();
+				classText(line, method.getReturnType(), method.getGenericReturnType());
+				line.text(" ");
 
 				Parameter[] parameters = method.getParameters();
 
-				Text text = new TextString("").append(classText(method.getReturnType(), method.getGenericReturnType())).append(" ");
-				Text namet = new TextString(method.getName()).green();
-
 				if (docMethod != null && !docMethod.value().isEmpty())
 				{
-					namet.hover(docMethod.value());
+					line.text(method.getName()).title(docMethod.value());
+				}
+				else
+				{
+					line.text(method.getName());
 				}
 
-				text.append(namet).append("(");
+				line.text("(");
 
 				Param[] params = docMethod == null ? new Param[0] : docMethod.params();
 
@@ -365,39 +554,84 @@ public class Documentation
 
 					if (i > 0)
 					{
-						text.append(", ");
+						line.text(", ");
 					}
 
-					Text text1 = new TextString("").append(classText(type, type)).append(" ").append(name);
+					Tag s = line.span("", "");
+					classText(s, type);
+					s.text(" ");
+					s.text(name);
 
 					if (!info.isEmpty())
 					{
-						text1.hover(info);
+						s.title(info);
 					}
-
-					text.append(text1);
 				}
 
-				sender.tell(text.append(")"));
+				line.text(")");
 				has = true;
+				 */
 			}
 		}
 
-		if (!has)
+		if (!methodList.isEmpty())
 		{
-			sender.tell("<None>");
-		}
+			methodList.sort(null);
 
-		Map<String, Class> attached = attachedData.get(c);
+			Tag methodTable = body.table().addClass("doc");
+			Tag mtTopRow = methodTable.tr();
+			mtTopRow.th().text("Name");
+			mtTopRow.th().text("Return Type");
+			mtTopRow.th().text("Bean");
+			mtTopRow.th().text("Info");
 
-		if (attached != null && !attached.isEmpty())
-		{
-			sender.tell(new TextString("[Attached]").blue());
-
-			for (Map.Entry<String, Class> entry : attached.entrySet())
+			for (DocumentedMethod method : methodList)
 			{
-				sender.tell(new TextString("").append(classText(entry.getValue(), entry.getValue())).append(" ").append(new TextString(entry.getKey()).green()));
+				Tag row = methodTable.tr();
+
+				Tag n = row.td().span("", "");
+				n.text(method.name);
+				n.text("(");
+
+				for (int i = 0; i < method.paramNames.length; i++)
+				{
+					if (i > 0)
+					{
+						n.text(", ");
+					}
+
+					classText(n, method.paramTypes[i], method.actualParamTypes[i]);
+					n.text(" ");
+					n.text(method.paramNames[i]);
+				}
+
+				n.text(")");
+
+				classText(row.td(), method.returnType, method.actualReturnType);
+
+				if (method.paramNames.length == 0 && method.name.length() > 3 && method.name.startsWith("get"))
+				{
+					row.td().text(method.name.substring(3, 4).toLowerCase() + method.name.substring(4));
+				}
+				else if (method.paramNames.length == 0 && method.name.length() > 2 && method.name.startsWith("is"))
+				{
+					row.td().text(method.name.substring(2, 3).toLowerCase() + method.name.substring(3));
+				}
+				else if (method.paramNames.length == 1 && method.name.length() > 3 && method.name.startsWith("set"))
+				{
+					row.td().text(method.name.substring(3, 4).toLowerCase() + method.name.substring(4));
+				}
+				else
+				{
+					row.td().text("-");
+				}
+
+				row.td().text(method.info);
 			}
+		}
+		else
+		{
+			body.p("<None>");
 		}
 	}
 }

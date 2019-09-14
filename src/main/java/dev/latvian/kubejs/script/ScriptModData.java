@@ -1,10 +1,12 @@
 package dev.latvian.kubejs.script;
 
+import dev.latvian.kubejs.documentation.P;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author LatvianModder
@@ -13,9 +15,9 @@ public class ScriptModData
 {
 	public static class ModInfo
 	{
-		public final String id;
-		public String name;
-		public String version;
+		private final String id;
+		private String name;
+		private String version;
 
 		public ModInfo(String i)
 		{
@@ -23,11 +25,26 @@ public class ScriptModData
 			name = id;
 			version = "0.0.0";
 		}
+
+		public String getId()
+		{
+			return id;
+		}
+
+		public String getName()
+		{
+			return name;
+		}
+
+		public String getVersion()
+		{
+			return version;
+		}
 	}
 
-	public final String type;
-	public final String mcVersion;
-	public final HashSet<String> list;
+	private final String type;
+	private final String mcVersion;
+	private final HashSet<String> list;
 
 	public ScriptModData(String t, String mc, Collection<String> modList)
 	{
@@ -36,12 +53,27 @@ public class ScriptModData
 		list = new HashSet<>(modList);
 	}
 
-	public boolean isLoaded(String modId)
+	public String getType()
+	{
+		return type;
+	}
+
+	public String getMcVersion()
+	{
+		return mcVersion;
+	}
+
+	public Set<String> getList()
+	{
+		return list;
+	}
+
+	public boolean isLoaded(@P("modID") String modId)
 	{
 		return list.contains(modId);
 	}
 
-	public ModInfo getInfo(String modID)
+	public ModInfo getInfo(@P("modID") String modID)
 	{
 		ModInfo info = new ModInfo(modID);
 

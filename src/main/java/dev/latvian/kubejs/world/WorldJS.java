@@ -1,13 +1,14 @@
 package dev.latvian.kubejs.world;
 
-import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocMethod;
-import dev.latvian.kubejs.documentation.Param;
+import dev.latvian.kubejs.documentation.Ignore;
+import dev.latvian.kubejs.documentation.Info;
+import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
+import dev.latvian.kubejs.server.GameRulesJS;
 import dev.latvian.kubejs.util.AttachedData;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.WithAttachedData;
@@ -27,7 +28,7 @@ import java.util.Collection;
 /**
  * @author LatvianModder
  */
-@DocClass("This class represents a dimension. You can access weather, blocks, entities, etc. Client and server sides have different worlds")
+@Info("This class represents a dimension. You can access weather, blocks, entities, etc. Client and server sides have different worlds")
 public abstract class WorldJS implements WithAttachedData
 {
 	public final World world;
@@ -50,37 +51,36 @@ public abstract class WorldJS implements WithAttachedData
 		return data;
 	}
 
-	@DocMethod
+	public GameRulesJS getGameRules()
+	{
+		return new GameRulesJS(world.getGameRules());
+	}
+
 	public boolean isServer()
 	{
 		return !world.isRemote;
 	}
 
-	@DocMethod
 	public long getSeed()
 	{
 		return world.getSeed();
 	}
 
-	@DocMethod
 	public long getTime()
 	{
 		return world.getTotalWorldTime();
 	}
 
-	@DocMethod
 	public long getLocalTime()
 	{
 		return world.getWorldTime();
 	}
 
-	@DocMethod
 	public void setTime(long time)
 	{
 		world.setTotalWorldTime(time);
 	}
 
-	@DocMethod
 	public void setLocalTime(long time)
 	{
 		world.setWorldTime(time);
@@ -91,52 +91,45 @@ public abstract class WorldJS implements WithAttachedData
 		return world.provider.getDimension();
 	}
 
-	@DocMethod
 	public boolean isOverworld()
 	{
 		return getDimension() == 0;
 	}
 
-	@DocMethod
 	public boolean isDaytime()
 	{
 		return world.isDaytime();
 	}
 
-	@DocMethod
 	public boolean isRaining()
 	{
 		return world.isRaining();
 	}
 
-	@DocMethod
 	public boolean isThundering()
 	{
 		return world.isThundering();
 	}
 
-	@DocMethod(params = @Param("strength"))
-	public void setRainStrength(float strength)
+	public void setRainStrength(@P("strength") float strength)
 	{
 		world.setRainStrength(strength);
 	}
 
-	@DocMethod(params = {@Param("x"), @Param("y"), @Param("z")})
-	public BlockContainerJS getBlock(int x, int y, int z)
+	public BlockContainerJS getBlock(@P("x") int x, @P("y") int y, @P("z") int z)
 	{
 		return getBlock(new BlockPos(x, y, z));
 	}
 
-	@DocMethod(params = @Param("pos"))
-	public BlockContainerJS getBlock(BlockPos pos)
+	public BlockContainerJS getBlock(@P("pos") BlockPos pos)
 	{
 		return new BlockContainerJS(world, pos);
 	}
 
+	@Ignore
 	public abstract PlayerDataJS getPlayerData(EntityPlayer player);
 
 	@Nullable
-	@DocMethod
 	public EntityJS getEntity(@Nullable Entity entity)
 	{
 		if (entity == null)
@@ -156,7 +149,6 @@ public abstract class WorldJS implements WithAttachedData
 	}
 
 	@Nullable
-	@DocMethod
 	public LivingEntityJS getLivingEntity(@Nullable Entity entity)
 	{
 		EntityJS e = getEntity(entity);
@@ -164,33 +156,28 @@ public abstract class WorldJS implements WithAttachedData
 	}
 
 	@Nullable
-	@DocMethod
 	public PlayerJS getPlayer(@Nullable Entity entity)
 	{
 		EntityJS e = getEntity(entity);
 		return e instanceof PlayerJS ? (PlayerJS) e : null;
 	}
 
-	@DocMethod
 	public EntityArrayList createEntityList(Collection<? extends Entity> entities)
 	{
 		return new EntityArrayList(this, entities);
 	}
 
-	@DocMethod
 	public EntityArrayList getPlayers()
 	{
 		return createEntityList(world.playerEntities);
 	}
 
-	@DocMethod
 	public EntityArrayList getEntities()
 	{
 		return createEntityList(world.loadedEntityList);
 	}
 
-	@DocMethod
-	public EntityArrayList getEntities(String filter)
+	public EntityArrayList getEntities(@P("filter") String filter)
 	{
 		try
 		{
@@ -202,8 +189,7 @@ public abstract class WorldJS implements WithAttachedData
 		}
 	}
 
-	@DocMethod(params = {@Param("x"), @Param("y"), @Param("z")})
-	public ExplosionJS createExplosion(double x, double y, double z)
+	public ExplosionJS createExplosion(@P("x") double x, @P("y") double y, @P("z") double z)
 	{
 		return new ExplosionJS(world, x, y, z);
 	}
@@ -214,15 +200,13 @@ public abstract class WorldJS implements WithAttachedData
 		return getEntity(EntityList.createEntityByIDFromName(ID.of(id).mc(), world));
 	}
 
-	@DocMethod(params = {@Param("x"), @Param("y"), @Param("z"), @Param("effectOnly")})
-	public void spawnLightning(double x, double y, double z, boolean effectOnly)
+	public void spawnLightning(@P("x") double x, @P("y") double y, @P("z") double z, @P("effectOnly") boolean effectOnly)
 	{
 		world.addWeatherEffect(new EntityLightningBolt(world, x, y, z, effectOnly));
 	}
 
-	@DocMethod(params = {@Param("x"), @Param("y"), @Param("z"), @Param("properties")})
-	public void spawnFireworks(double x, double y, double z, FireworksJS fireworks)
+	public void spawnFireworks(@P("x") double x, @P("y") double y, @P("z") double z, @P("properties") FireworksJS f)
 	{
-		world.spawnEntity(fireworks.createFireworkRocket(world, x, y, z));
+		world.spawnEntity(f.createFireworkRocket(world, x, y, z));
 	}
 }

@@ -81,7 +81,7 @@ public interface NBTBaseJS
 	@Nullable
 	NBTBase createNBT();
 
-	default String getNBTString()
+	default String getNbtString()
 	{
 		NBTBase nbt = createNBT();
 		return nbt == null ? "null" : nbt.toString();
@@ -97,7 +97,7 @@ public interface NBTBaseJS
 		return false;
 	}
 
-	default byte getID()
+	default byte getId()
 	{
 		NBTBase nbt = createNBT();
 		return nbt == null ? 0 : nbt.getId();

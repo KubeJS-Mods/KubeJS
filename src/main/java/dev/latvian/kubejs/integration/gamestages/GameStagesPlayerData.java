@@ -1,8 +1,7 @@
 package dev.latvian.kubejs.integration.gamestages;
 
-import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocMethod;
-import dev.latvian.kubejs.documentation.Param;
+import dev.latvian.kubejs.documentation.Info;
+import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import net.darkhax.gamestages.GameStageHelper;
 
@@ -12,7 +11,6 @@ import java.util.Collection;
 /**
  * @author LatvianModder
  */
-@DocClass(value = "Wrapper class for Game Stages mod")
 public class GameStagesPlayerData
 {
 	private final PlayerDataJS playerData;
@@ -22,26 +20,22 @@ public class GameStagesPlayerData
 		playerData = d;
 	}
 
-	@DocMethod(params = @Param("stage"))
-	public boolean has(String stage)
+	public boolean has(@P("stage") String stage)
 	{
 		return GameStageHelper.hasStage(playerData.getPlayerEntity(), stage);
 	}
 
-	@DocMethod(params = @Param("stage"))
-	public void add(String stage)
+	public void add(@P("stage") String stage)
 	{
 		GameStageHelper.addStage(playerData.getPlayerEntity(), stage);
 	}
 
-	@DocMethod(params = @Param("stage"))
-	public void remove(String stage)
+	public void remove(@P("stage") String stage)
 	{
 		GameStageHelper.removeStage(playerData.getPlayerEntity(), stage);
 	}
 
-	@DocMethod(params = {@Param("stage"), @Param("value")})
-	public boolean set(String stage, boolean value)
+	public boolean set(@P("stage") String stage, @P("value") boolean value)
 	{
 		if (value)
 		{
@@ -55,19 +49,16 @@ public class GameStagesPlayerData
 		}
 	}
 
-	@DocMethod(params = @Param("stage"))
-	public boolean toggle(String stage)
+	public boolean toggle(@P("stage") String stage)
 	{
 		return set(stage, !has(stage));
 	}
 
-	@DocMethod
 	public Collection<String> getList()
 	{
 		return GameStageHelper.getPlayerData(playerData.getPlayerEntity()).getStages();
 	}
 
-	@DocMethod
 	public void clear()
 	{
 		for (String s : new ArrayList<>(getList()))
@@ -76,7 +67,7 @@ public class GameStagesPlayerData
 		}
 	}
 
-	@DocMethod("Sends all stages from server to client")
+	@Info("Sends all stages from server to client")
 	public void sync()
 	{
 		GameStageHelper.syncPlayer(playerData.getPlayerEntity());

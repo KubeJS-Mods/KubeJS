@@ -1,5 +1,7 @@
 package dev.latvian.kubejs.entity;
 
+import dev.latvian.kubejs.documentation.P;
+import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -72,7 +74,7 @@ public class EntityJS implements MessageSender
 	}
 
 	@Override
-	public void tell(Object message)
+	public void tell(@P("message") @T(Text.class) Object message)
 	{
 		entity.sendMessage(Text.of(message).component());
 	}
@@ -177,7 +179,7 @@ public class EntityJS implements MessageSender
 		return entity.fallDistance;
 	}
 
-	public void setFallDistance(float fallDistance)
+	public void setFallDistance(@P("fallDistance") float fallDistance)
 	{
 		entity.fallDistance = fallDistance;
 	}
@@ -187,7 +189,7 @@ public class EntityJS implements MessageSender
 		return entity.stepHeight;
 	}
 
-	public void setStepHeight(float stepHeight)
+	public void setStepHeight(@P("stepHeight") float stepHeight)
 	{
 		entity.stepHeight = stepHeight;
 	}
@@ -197,7 +199,7 @@ public class EntityJS implements MessageSender
 		return entity.noClip;
 	}
 
-	public void setNoClip(boolean noClip)
+	public void setNoClip(@P("noClip") boolean noClip)
 	{
 		entity.noClip = noClip;
 	}
@@ -207,7 +209,7 @@ public class EntityJS implements MessageSender
 		return entity.isSilent();
 	}
 
-	public void setSilent(boolean isSilent)
+	public void setSilent(@P("isSilent") boolean isSilent)
 	{
 		entity.setSilent(isSilent);
 	}
@@ -217,7 +219,7 @@ public class EntityJS implements MessageSender
 		return entity.hasNoGravity();
 	}
 
-	public void setNoGravity(boolean noGravity)
+	public void setNoGravity(@P("noGravity") boolean noGravity)
 	{
 		entity.setNoGravity(noGravity);
 	}
@@ -227,7 +229,7 @@ public class EntityJS implements MessageSender
 		return entity.posX;
 	}
 
-	public void setX(double x)
+	public void setX(@P("x") double x)
 	{
 		entity.posX = x;
 	}
@@ -237,7 +239,7 @@ public class EntityJS implements MessageSender
 		return entity.posY;
 	}
 
-	public void setY(double y)
+	public void setY(@P("y") double y)
 	{
 		entity.posY = y;
 	}
@@ -247,7 +249,7 @@ public class EntityJS implements MessageSender
 		return entity.posZ;
 	}
 
-	public void setZ(double z)
+	public void setZ(@P("z") double z)
 	{
 		entity.posZ = z;
 	}
@@ -257,7 +259,7 @@ public class EntityJS implements MessageSender
 		return entity.rotationYaw;
 	}
 
-	public void setYaw(float yaw)
+	public void setYaw(@P("yaw") float yaw)
 	{
 		entity.rotationYaw = yaw;
 	}
@@ -267,7 +269,7 @@ public class EntityJS implements MessageSender
 		return entity.rotationPitch;
 	}
 
-	public void setPitch(float pitch)
+	public void setPitch(@P("pitch") float pitch)
 	{
 		entity.rotationPitch = pitch;
 	}
@@ -277,22 +279,22 @@ public class EntityJS implements MessageSender
 		return entity.ticksExisted;
 	}
 
-	public void setPosition(BlockContainerJS block)
+	public void setPosition(@P("block") BlockContainerJS block)
 	{
 		setPosition(block.getX() + 0.5D, block.getY() + 0.05D, block.getZ() + 0.5D);
 	}
 
-	public void setPosition(double x, double y, double z)
+	public void setPosition(@P("x") double x, @P("y") double y, @P("z") double z)
 	{
 		setPositionAndRotation(x, y, z, getYaw(), getPitch());
 	}
 
-	public void setRotation(float yaw, float pitch)
+	public void setRotation(@P("yaw") float yaw, @P("pitch") float pitch)
 	{
 		setPositionAndRotation(getX(), getY(), getZ(), yaw, pitch);
 	}
 
-	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch)
+	public void setPositionAndRotation(@P("x") double x, @P("y") double y, @P("z") double z, @P("yaw") float yaw, @P("pitch") float pitch)
 	{
 		entity.setLocationAndAngles(x, y, z, yaw, pitch);
 	}
@@ -304,20 +306,20 @@ public class EntityJS implements MessageSender
 	}
 	*/
 
-	public void setMotion(double x, double y, double z)
+	public void setMotion(@P("x") double x, @P("y") double y, @P("z") double z)
 	{
 		entity.motionX = x;
 		entity.motionY = y;
 		entity.motionZ = z;
 	}
 
-	public void addMotion(double x, double y, double z)
+	public void addMotion(@P("x") double x, @P("y") double y, @P("z") double z)
 	{
 		setMotion(entity.motionX + x, entity.motionY + y, entity.motionZ + z);
 	}
 
 	@Override
-	public int runCommand(String command)
+	public int runCommand(@P("command") String command)
 	{
 		if (world instanceof ServerWorldJS)
 		{
@@ -332,9 +334,9 @@ public class EntityJS implements MessageSender
 		entity.onKillCommand();
 	}
 
-	public boolean startRiding(EntityJS entity, boolean force)
+	public boolean startRiding(@P("entity") EntityJS e, @P("force") boolean force)
 	{
-		return entity.startRiding(entity, force);
+		return entity.startRiding(e.entity, force);
 	}
 
 	public void removePassengers()
@@ -352,7 +354,7 @@ public class EntityJS implements MessageSender
 		return new EntityArrayList(world, entity.getPassengers());
 	}
 
-	public boolean isPassenger(EntityJS e)
+	public boolean isPassenger(@P("entity") EntityJS e)
 	{
 		return entity.isPassenger(e.entity);
 	}
@@ -374,12 +376,12 @@ public class EntityJS implements MessageSender
 		return team == null ? "" : team.getName();
 	}
 
-	public boolean isOnSameTeam(EntityJS e)
+	public boolean isOnSameTeam(@P("entity") EntityJS e)
 	{
 		return entity.isOnSameTeam(e.entity);
 	}
 
-	public boolean isOnScoreboardTeam(String teamID)
+	public boolean isOnScoreboardTeam(@P("teamID") String teamID)
 	{
 		Team team = entity.getEntityWorld().getScoreboard().getTeam(teamID);
 		return team != null && entity.isOnScoreboardTeam(team);
@@ -400,7 +402,7 @@ public class EntityJS implements MessageSender
 		return entity.hasCustomName();
 	}
 
-	public void setCustomNameAlwaysVisible(boolean b)
+	public void setCustomNameAlwaysVisible(@P("flag") boolean b)
 	{
 		entity.setAlwaysRenderNameTag(b);
 	}
@@ -425,7 +427,7 @@ public class EntityJS implements MessageSender
 		return new BlockContainerJS(entity.world, entity.getPosition());
 	}
 
-	public void setOnFire(int seconds)
+	public void setOnFire(@P("seconds") int seconds)
 	{
 		entity.setFire(seconds);
 	}
@@ -449,7 +451,7 @@ public class EntityJS implements MessageSender
 		return NBTBaseJS.of(nbt1).asCompound();
 	}
 
-	public void setNbt(NBTCompoundJS nbt)
+	public void setNbt(@P("nbt") NBTCompoundJS nbt)
 	{
 		NBTTagCompound n = nbt.createNBT();
 
@@ -459,19 +461,19 @@ public class EntityJS implements MessageSender
 		}
 	}
 
-	public NBTBaseJS getNBTData(String key)
+	public NBTBaseJS getNBTData(@P("key") String key)
 	{
 		return getNbt().get(key);
 	}
 
-	public void setNBTData(String key, @Nullable Object nbt)
+	public void setNBTData(@P("key") String key, @P("nbt") @Nullable Object nbt)
 	{
 		NBTCompoundJS n = getNbt();
 		n.set(key, NBTBaseJS.of(nbt));
 		setNbt(n);
 	}
 
-	public void playSound(Object id, float volume, float pitch)
+	public void playSound(@P("id") Object id, @P("volume") float volume, @P("pitch") float pitch)
 	{
 		SoundEvent event = id instanceof SoundEvent ? (SoundEvent) id : SoundEvent.REGISTRY.getObject(ID.of(id).mc());
 
@@ -481,7 +483,7 @@ public class EntityJS implements MessageSender
 		}
 	}
 
-	public void playSound(Object id)
+	public void playSound(@P("id") Object id)
 	{
 		playSound(id, 1F, 1F);
 	}

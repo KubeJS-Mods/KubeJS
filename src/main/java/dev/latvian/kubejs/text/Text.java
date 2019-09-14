@@ -3,9 +3,10 @@ package dev.latvian.kubejs.text;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocMethod;
-import dev.latvian.kubejs.documentation.Param;
+import dev.latvian.kubejs.documentation.Ignore;
+import dev.latvian.kubejs.documentation.Info;
+import dev.latvian.kubejs.documentation.P;
+import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import net.minecraft.util.text.ITextComponent;
@@ -23,7 +24,6 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-@DocClass
 public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSerializable
 {
 	public static Text of(@Nullable Object o)
@@ -202,12 +202,14 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	private Text hover;
 	private List<Text> siblings;
 
+	@Ignore
 	public abstract ITextComponent rawComponent();
 
+	@Ignore
 	public abstract Text rawCopy();
 
 	@Override
-	@DocMethod(value = "Convert text to json")
+	@Info("Convert text to json")
 	public abstract JsonElement getJson();
 
 	public final ITextComponent component()
@@ -265,7 +267,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return component().getFormattedText();
 	}
 
-	@DocMethod(value = "Create a deep copy of this text")
+	@Info("Create a deep copy of this text")
 	public final Text copy()
 	{
 		Text t = rawCopy();
@@ -400,197 +402,197 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return list.iterator();
 	}
 
-	@DocMethod(value = "Set color", params = @Param(value = "value"))
-	public final Text color(TextColor value)
+	@Info("Set color")
+	public final Text color(@P("value") TextColor value)
 	{
 		color = value;
 		return this;
 	}
 
-	@DocMethod(value = "Set color to black")
+	@Info("Set color to black")
 	public final Text black()
 	{
 		return color(TextColor.BLACK);
 	}
 
-	@DocMethod(value = "Set color to dark blue")
+	@Info("Set color to dark blue")
 	public final Text darkBlue()
 	{
 		return color(TextColor.DARK_BLUE);
 	}
 
-	@DocMethod(value = "Set color to dark green")
+	@Info("Set color to dark green")
 	public final Text darkGreen()
 	{
 		return color(TextColor.DARK_GREEN);
 	}
 
-	@DocMethod(value = "Set color to dark aqua")
+	@Info("Set color to dark aqua")
 	public final Text darkAqua()
 	{
 		return color(TextColor.DARK_AQUA);
 	}
 
-	@DocMethod(value = "Set color to dark red")
+	@Info("Set color to dark red")
 	public final Text darkRed()
 	{
 		return color(TextColor.DARK_RED);
 	}
 
-	@DocMethod(value = "Set color to dark purple")
+	@Info("Set color to dark purple")
 	public final Text darkPurple()
 	{
 		return color(TextColor.DARK_PURPLE);
 	}
 
-	@DocMethod(value = "Set color to gold")
+	@Info("Set color to gold")
 	public final Text gold()
 	{
 		return color(TextColor.GOLD);
 	}
 
-	@DocMethod(value = "Set color to gray")
+	@Info("Set color to gray")
 	public final Text gray()
 	{
 		return color(TextColor.GRAY);
 	}
 
-	@DocMethod(value = "Set color to dark gray")
+	@Info("Set color to dark gray")
 	public final Text darkGray()
 	{
 		return color(TextColor.DARK_GRAY);
 	}
 
-	@DocMethod(value = "Set color to blue")
+	@Info("Set color to blue")
 	public final Text blue()
 	{
 		return color(TextColor.BLUE);
 	}
 
-	@DocMethod(value = "Set color to green")
+	@Info("Set color to green")
 	public final Text green()
 	{
 		return color(TextColor.GREEN);
 	}
 
-	@DocMethod(value = "Set color to aqua")
+	@Info("Set color to aqua")
 	public final Text aqua()
 	{
 		return color(TextColor.AQUA);
 	}
 
-	@DocMethod(value = "Set color to red")
+	@Info("Set color to red")
 	public final Text red()
 	{
 		return color(TextColor.RED);
 	}
 
-	@DocMethod(value = "Set color to light purple")
+	@Info("Set color to light purple")
 	public final Text lightPurple()
 	{
 		return color(TextColor.LIGHT_PURPLE);
 	}
 
-	@DocMethod(value = "Set color to yellow")
+	@Info("Set color to yellow")
 	public final Text yellow()
 	{
 		return color(TextColor.YELLOW);
 	}
 
-	@DocMethod(value = "Set color to white")
+	@Info("Set color to white")
 	public final Text white()
 	{
 		return color(TextColor.WHITE);
 	}
 
-	@DocMethod(value = "Set bold")
+	@Info("Set bold")
 	public final Text bold(@Nullable Boolean value)
 	{
 		bold = value;
 		return this;
 	}
 
-	@DocMethod(value = "Set bold")
+	@Info("Set bold")
 	public final Text bold()
 	{
 		return bold(true);
 	}
 
-	@DocMethod(value = "Set italic")
+	@Info("Set italic")
 	public final Text italic(@Nullable Boolean value)
 	{
 		italic = value;
 		return this;
 	}
 
-	@DocMethod(value = "Set italic")
+	@Info("Set italic")
 	public final Text italic()
 	{
 		return italic(true);
 	}
 
-	@DocMethod(value = "Set underlined")
+	@Info("Set underlined")
 	public final Text underlined(@Nullable Boolean value)
 	{
 		underlined = value;
 		return this;
 	}
 
-	@DocMethod(value = "Set underlined")
+	@Info("Set underlined")
 	public final Text underlined()
 	{
 		return underlined(true);
 	}
 
-	@DocMethod(value = "Set strikethrough")
+	@Info("Set strikethrough")
 	public final Text strikethrough(@Nullable Boolean value)
 	{
 		strikethrough = value;
 		return this;
 	}
 
-	@DocMethod(value = "Set strikethrough")
+	@Info("Set strikethrough")
 	public final Text strikethrough()
 	{
 		return strikethrough(true);
 	}
 
-	@DocMethod(value = "Set obfuscated")
+	@Info("Set obfuscated")
 	public final Text obfuscated(@Nullable Boolean value)
 	{
 		obfuscated = value;
 		return this;
 	}
 
-	@DocMethod(value = "Set obfuscated")
+	@Info("Set obfuscated")
 	public final Text obfuscated()
 	{
 		return obfuscated(true);
 	}
 
-	@DocMethod(value = "Set insertion text")
+	@Info("Set insertion text")
 	public final Text insertion(@Nullable String value)
 	{
 		insertion = value;
 		return this;
 	}
 
-	@DocMethod(value = "Set click URL")
+	@Info("Set click URL")
 	public final Text click(@Nullable String value)
 	{
 		click = value;
 		return this;
 	}
 
-	@DocMethod(value = "Set hover text", params = @Param(type = Text.class))
-	public final Text hover(@Nullable Object text)
+	@Info("Set hover text")
+	public final Text hover(@P("text") @T(Text.class) Object text)
 	{
 		hover = of(text);
 		return this;
 	}
 
-	@DocMethod(value = "Append text and end of this one", params = @Param(type = Text.class))
-	public final Text append(Object sibling)
+	@Info("Append text and end of this one")
+	public final Text append(@P("sibling") @T(Text.class) Object sibling)
 	{
 		if (siblings == null)
 		{
@@ -601,13 +603,13 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return this;
 	}
 
-	@DocMethod(value = "List of siblings")
+	@Info("List of siblings")
 	public final List<Text> getSiblings()
 	{
 		return siblings == null ? Collections.emptyList() : siblings;
 	}
 
-	@DocMethod(value = "True if this text component has sibling components")
+	@Info("True if this text component has sibling components")
 	public final boolean hasSiblings()
 	{
 		return siblings != null && !siblings.isEmpty();

@@ -5,7 +5,7 @@ import net.minecraftforge.fml.relauncher.Side;
 /**
  * @author LatvianModder
  */
-public class DocumentedEvent
+public class DocumentedEvent implements Comparable<DocumentedEvent>
 {
 	public final String eventID;
 	public final Class eventClass;
@@ -45,5 +45,11 @@ public class DocumentedEvent
 	public DocumentedEvent serverOnly()
 	{
 		return sideOnly(Side.SERVER);
+	}
+
+	@Override
+	public int compareTo(DocumentedEvent o)
+	{
+		return eventID.compareToIgnoreCase(o.eventID);
 	}
 }

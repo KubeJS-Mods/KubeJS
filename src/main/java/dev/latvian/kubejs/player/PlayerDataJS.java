@@ -1,7 +1,5 @@
 package dev.latvian.kubejs.player;
 
-import dev.latvian.kubejs.documentation.DocClass;
-import dev.latvian.kubejs.documentation.DocMethod;
 import dev.latvian.kubejs.util.AttachedData;
 import dev.latvian.kubejs.util.WithAttachedData;
 import dev.latvian.kubejs.world.WorldJS;
@@ -13,7 +11,6 @@ import java.util.UUID;
 /**
  * @author LatvianModder
  */
-@DocClass
 public abstract class PlayerDataJS<E extends EntityPlayer, P extends PlayerJS<E>> implements WithAttachedData
 {
 	private AttachedData data;
@@ -43,6 +40,5 @@ public abstract class PlayerDataJS<E extends EntityPlayer, P extends PlayerJS<E>
 	@Nullable
 	public abstract E getPlayerEntity();
 
-	@DocMethod
 	public abstract P getPlayer();
 }
