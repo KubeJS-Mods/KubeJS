@@ -63,6 +63,6 @@ public class IngredientStackJS implements IngredientJS
 	@Override
 	public ItemStackJS getFirst()
 	{
-		return ingredient.getFirst();
+		return ingredient.getFirst().count(getCount());
 	}
 }

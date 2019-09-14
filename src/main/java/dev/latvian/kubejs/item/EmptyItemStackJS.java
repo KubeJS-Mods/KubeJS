@@ -106,6 +106,12 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
+	public ItemStackJS getFirst()
+	{
+		return this;
+	}
+
+	@Override
 	public IngredientJS not()
 	{
 		return MatchAllIngredientJS.INSTANCE;

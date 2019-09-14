@@ -5,6 +5,7 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.item.ItemStack;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -33,7 +34,21 @@ public class MatchAllIngredientJS implements IngredientJS
 	@Override
 	public Set<ItemStackJS> getStacks()
 	{
-		return new LinkedHashSet<>(ItemStackJS.getList());
+		Set<ItemStackJS> set = new LinkedHashSet<>();
+
+		for (ItemStackJS stack : ItemStackJS.getList())
+		{
+			set.add(stack.getCopy());
+		}
+
+		return set;
+	}
+
+	@Override
+	public ItemStackJS getFirst()
+	{
+		List<ItemStackJS> list = ItemStackJS.getList();
+		return list.isEmpty() ? EmptyItemStackJS.INSTANCE : list.get(0).getCopy();
 	}
 
 	@Override

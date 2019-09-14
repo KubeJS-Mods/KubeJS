@@ -358,10 +358,10 @@ public abstract class ItemStackJS implements IngredientJS
 		{
 			NonNullList<ItemStack> list = NonNullList.create();
 			getItem().getSubItems(CreativeTabs.SEARCH, list);
-			return list.isEmpty() ? EmptyItemStackJS.INSTANCE : new BoundItemStackJS(list.get(0));
+			return list.isEmpty() ? EmptyItemStackJS.INSTANCE : new BoundItemStackJS(list.get(0)).count(getCount());
 		}
 
-		return this;
+		return getCopy();
 	}
 
 	@Override

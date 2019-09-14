@@ -100,7 +100,7 @@ public interface IngredientJS extends Predicate<ItemStack>
 		{
 			if (test(stack))
 			{
-				set.add(stack);
+				set.add(stack.getCopy());
 			}
 		}
 
@@ -123,7 +123,7 @@ public interface IngredientJS extends Predicate<ItemStack>
 		{
 			if (!stack.isEmpty())
 			{
-				return stack.getCopy();
+				return stack.count(getCount());
 			}
 		}
 
