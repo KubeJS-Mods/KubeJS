@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.documentation.DocumentationServer;
 import dev.latvian.kubejs.fluid.FluidWrapper;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
@@ -35,6 +34,7 @@ public class DefaultBindings
 		event.add("utils", new UtilsWrapper());
 		event.add("uuid", new UUIDWrapper());
 		event.add("json", new JsonWrapper());
+		event.add("block", new BlockWrapper());
 		event.add("item", new ItemWrapper());
 		event.add("ingredient", new IngredientWrapper());
 		event.add("nbt", new NBTWrapper());
@@ -42,7 +42,6 @@ public class DefaultBindings
 		event.add("events", new ScriptEventsWrapper());
 		event.add("text", new TextWrapper());
 		event.add("oredict", new OreDictWrapper());
-		event.add("materials", MaterialListJS.INSTANCE.map);
 		event.add("fluid", new FluidWrapper());
 
 		event.addConstant("EMPTY_ITEM", EmptyItemStackJS.INSTANCE);

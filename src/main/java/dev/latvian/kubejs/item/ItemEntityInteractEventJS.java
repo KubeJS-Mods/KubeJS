@@ -29,9 +29,9 @@ public class ItemEntityInteractEventJS extends PlayerEventJS
 		return entityOf(event);
 	}
 
-	public boolean isMainHand()
+	public EnumHand getHand()
 	{
-		return event.getHand() == EnumHand.MAIN_HAND;
+		return event.getHand();
 	}
 
 	public ItemStackJS getItem()
