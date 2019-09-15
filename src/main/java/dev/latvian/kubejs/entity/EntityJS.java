@@ -6,6 +6,7 @@ import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.EntityArrayList;
+import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.MessageSender;
@@ -46,9 +47,10 @@ public class EntityJS implements MessageSender
 		return world;
 	}
 
-	public boolean isServer()
+	@Nullable
+	public ServerJS getServer()
 	{
-		return !entity.world.isRemote;
+		return getWorld().getServer();
 	}
 
 	public UUID getId()
@@ -323,7 +325,7 @@ public class EntityJS implements MessageSender
 	{
 		if (world instanceof ServerWorldJS)
 		{
-			return ((ServerWorldJS) world).getServer().server.getCommandManager().executeCommand(entity, command);
+			return world.getServer().server.getCommandManager().executeCommand(entity, command);
 		}
 
 		return 0;

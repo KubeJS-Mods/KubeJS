@@ -6,11 +6,12 @@ import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.WorldJS;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.command.PlayerNotFoundException;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
+
+import javax.annotation.Nullable;
 
 /**
  * @author LatvianModder
@@ -43,9 +44,15 @@ public class CommandSender implements MessageSender
 		return server.getWorld(sender.getEntityWorld());
 	}
 
-	public PlayerJS getPlayer() throws PlayerNotFoundException
+	@Nullable
+	public PlayerJS getPlayer()
 	{
-		return server.getPlayer(CommandBase.getCommandSenderAsPlayer(sender));
+		if (sender instanceof EntityPlayer)
+		{
+			return server.getPlayer((EntityPlayer) sender);
+		}
+
+		return null;
 	}
 
 	public BlockContainerJS getBlock()

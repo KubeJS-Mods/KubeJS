@@ -9,6 +9,7 @@ import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.server.GameRulesJS;
+import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.AttachedData;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.WithAttachedData;
@@ -56,9 +57,10 @@ public abstract class WorldJS implements WithAttachedData
 		return new GameRulesJS(world.getGameRules());
 	}
 
-	public boolean isServer()
+	@Nullable
+	public ServerJS getServer()
 	{
-		return !world.isRemote;
+		return null;
 	}
 
 	public long getSeed()

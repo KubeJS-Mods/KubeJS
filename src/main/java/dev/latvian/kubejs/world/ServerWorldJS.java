@@ -22,6 +22,7 @@ public class ServerWorldJS extends WorldJS
 		server = s;
 	}
 
+	@Override
 	public ServerJS getServer()
 	{
 		return server;
