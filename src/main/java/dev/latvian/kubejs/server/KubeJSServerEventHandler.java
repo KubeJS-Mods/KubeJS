@@ -104,6 +104,9 @@ public class KubeJSServerEventHandler
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void onCommand(CommandEvent event)
 	{
-		EventsJS.post(KubeJSEvents.COMMAND_RUN, new CommandEventJS(ServerJS.instance, event));
+		if (EventsJS.post(KubeJSEvents.COMMAND_RUN, new CommandEventJS(ServerJS.instance, event)))
+		{
+			event.setCanceled(true);
+		}
 	}
 }
