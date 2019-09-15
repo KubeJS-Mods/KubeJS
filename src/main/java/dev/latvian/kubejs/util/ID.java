@@ -10,10 +10,10 @@ import java.util.Locale;
  */
 public final class ID implements Comparable<ID>
 {
-	private static final ID NULL_ID = new ID("minecraft", "null");
+	public static final ID NULL_ID = new ID("minecraft", "null");
 
-	public final String namespace;
-	public final String path;
+	private final String namespace;
+	private final String path;
 
 	public static ID of(@Nullable Object id)
 	{
@@ -90,8 +90,23 @@ public final class ID implements Comparable<ID>
 		return i == 0 ? path.compareTo(id.path) : i;
 	}
 
+	public String getNamespace()
+	{
+		return namespace;
+	}
+
+	public String getPath()
+	{
+		return path;
+	}
+
 	public ResourceLocation mc()
 	{
 		return new ResourceLocation(namespace, path);
+	}
+
+	public boolean isNull()
+	{
+		return path.equals("null") && namespace.equals("minecraft");
 	}
 }

@@ -4,6 +4,7 @@ import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.world.ServerWorldJS;
+import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.management.UserListBansEntry;
 
@@ -56,5 +57,38 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 	public boolean hasClientMod()
 	{
 		return hasClientMod;
+	}
+
+	public void unlockAdvancement(Object id)
+	{
+		AdvancementJS a = ServerJS.instance.getAdvancement(id);
+
+		if (a != null)
+		{
+			AdvancementProgress advancementprogress = getPlayerEntity().getAdvancements().getProgress(a.advancement);
+
+			for (String s : advancementprogress.getRemaningCriteria())
+			{
+				getPlayerEntity().getAdvancements().grantCriterion(a.advancement, s);
+			}
+		}
+	}
+
+	public void revokeAdvancement(Object id)
+	{
+		AdvancementJS a = ServerJS.instance.getAdvancement(id);
+
+		if (a != null)
+		{
+			AdvancementProgress advancementprogress = getPlayerEntity().getAdvancements().getProgress(a.advancement);
+
+			if (advancementprogress.hasProgress())
+			{
+				for (String s : advancementprogress.getCompletedCriteria())
+				{
+					getPlayerEntity().getAdvancements().revokeCriterion(a.advancement, s);
+				}
+			}
+		}
 	}
 }

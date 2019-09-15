@@ -4,6 +4,7 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.event.EventsJS;
 import jdk.nashorn.api.scripting.NashornException;
+import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -98,5 +99,11 @@ public class KubeJSServerEventHandler
 		}
 
 		EventsJS.post(KubeJSEvents.SERVER_TICK, new SimpleServerEventJS(s));
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOW)
+	public static void onCommand(CommandEvent event)
+	{
+		EventsJS.post(KubeJSEvents.COMMAND_RUN, new CommandEventJS(ServerJS.instance, event));
 	}
 }

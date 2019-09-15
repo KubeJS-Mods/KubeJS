@@ -6,7 +6,9 @@ import dev.latvian.kubejs.block.predicate.BlockEntityPredicate;
 import dev.latvian.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.kubejs.block.predicate.BlockPredicate;
 import dev.latvian.kubejs.documentation.DisplayName;
+import net.minecraft.util.EnumFacing;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -45,5 +47,22 @@ public class BlockWrapper
 	public BlockPredicate custom(BlockPredicate predicate)
 	{
 		return predicate;
+	}
+
+	private Map<String, EnumFacing> facingMap;
+
+	public Map<String, EnumFacing> getFacing()
+	{
+		if (facingMap == null)
+		{
+			facingMap = new HashMap<>(6);
+
+			for (EnumFacing facing : EnumFacing.VALUES)
+			{
+				facingMap.put(facing.getName(), facing);
+			}
+		}
+
+		return facingMap;
 	}
 }

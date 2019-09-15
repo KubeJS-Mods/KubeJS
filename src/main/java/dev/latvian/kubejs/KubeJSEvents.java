@@ -32,6 +32,7 @@ import dev.latvian.kubejs.net.NetworkEventJS;
 import dev.latvian.kubejs.player.PlayerAdvancementEventJS;
 import dev.latvian.kubejs.player.PlayerChatEventJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
+import dev.latvian.kubejs.server.CommandEventJS;
 import dev.latvian.kubejs.server.SimpleServerEventJS;
 import dev.latvian.kubejs.world.ExplosionEventJS;
 import dev.latvian.kubejs.world.SimpleWorldEventJS;
@@ -48,6 +49,7 @@ public class KubeJSEvents
 	public static final String UNLOADED = "unloaded";
 	public static final String LOADED = "loaded";
 	public static final String COMMAND_REGISTRY = "command.registry";
+	public static final String COMMAND_RUN = "command.run";
 
 	public static final String CLIENT_DEBUG_INFO = "client.debug_info";
 	public static final String CLIENT_LOGGED_IN = "client.logged_in";
@@ -114,6 +116,7 @@ public class KubeJSEvents
 		event.registerEvent(UNLOADED, EventJS.class);
 		event.registerEvent(LOADED, EventJS.class);
 		event.registerEvent(COMMAND_REGISTRY, CommandRegistryEventJS.class).serverOnly();
+		event.registerEvent(COMMAND_RUN, CommandEventJS.class).serverOnly();
 
 		event.registerEvent(CLIENT_DEBUG_INFO, DebugInfoEventJS.class).clientOnly();
 		event.registerEvent(CLIENT_LOGGED_IN, ClientLoggedInEventJS.class).clientOnly();

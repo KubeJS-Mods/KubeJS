@@ -27,7 +27,7 @@ public class BlockBuilder
 		id = ID.of(KubeJS.appendModId(i));
 		callback = c;
 		material = MaterialListJS.INSTANCE.map.get("wood");
-		translationKey = id.namespace + "." + id.path;
+		translationKey = id.getNamespace() + "." + id.getPath();
 		hardness = 0.5F;
 		resistance = -1F;
 		lightLevel = 0F;

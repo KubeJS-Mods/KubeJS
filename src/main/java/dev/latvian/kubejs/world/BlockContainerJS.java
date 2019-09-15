@@ -206,6 +206,12 @@ public class BlockContainerJS
 		return cachedEntity;
 	}
 
+	public ID getEntityID()
+	{
+		TileEntity entity = getEntity();
+		return entity == null ? ID.NULL_ID : ID.of(TileEntity.getKey(entity.getClass()));
+	}
+
 	public NBTCompoundJS getEntityData()
 	{
 		TileEntity entity = getEntity();

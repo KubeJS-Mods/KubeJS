@@ -3,7 +3,6 @@ package dev.latvian.kubejs.bindings;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.documentation.DocumentationServer;
 import dev.latvian.kubejs.fluid.FluidWrapper;
-import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.script.ScriptModData;
@@ -15,9 +14,6 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -43,16 +39,13 @@ public class DefaultBindings
 		event.add("oredict", new OreDictWrapper());
 		event.add("fluid", new FluidWrapper());
 
-		event.addConstant("EMPTY_ITEM", EmptyItemStackJS.INSTANCE);
 		event.addConstant("SECOND", 1000L);
 		event.addConstant("MINUTE", 60000L);
 		event.addConstant("HOUR", 3600000L);
 
-		event.addConstant("textColors", TextColor.MAP);
-
 		for (TextColor color : TextColor.MAP.values())
 		{
-			event.addConstant(color.name(), color);
+			event.addConstant(color.name.toUpperCase(), color);
 		}
 
 		event.addConstant("SLOT_MAINHAND", EntityEquipmentSlot.MAINHAND);
@@ -74,15 +67,10 @@ public class DefaultBindings
 		event.addConstant("TOOL_TYPE_PICKAXE", "pickaxe");
 		event.addConstant("TOOL_TYPE_SHOVEL", "shovel");
 
-		Map<String, EnumFacing> facingMap = new HashMap<>();
-
 		for (EnumFacing facing : EnumFacing.VALUES)
 		{
 			event.addConstant(facing.getName().toUpperCase(), facing);
-			facingMap.put(facing.getName(), facing);
 		}
-
-		event.addConstant("FACINGS", facingMap);
 
 		event.addConstant("MAIN_HAND", EnumHand.MAIN_HAND);
 		event.addConstant("OFF_HAND", EnumHand.OFF_HAND);

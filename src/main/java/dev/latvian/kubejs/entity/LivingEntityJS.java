@@ -3,6 +3,7 @@ package dev.latvian.kubejs.entity;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.EntityLivingBase;
@@ -145,14 +146,14 @@ public class LivingEntityJS extends EntityJS
 		livingEntity.setItemStackToSlot(slot, ItemStackJS.of(item).getItemStack());
 	}
 
-	public ItemStackJS getHandItem(@P("hand") EnumHand hand)
+	public ItemStackJS getHeldItem(@P("hand") EnumHand hand)
 	{
 		return ItemStackJS.of(livingEntity.getHeldItem(hand));
 	}
 
-	public void setHandItem(@P("hand") EnumHand hand, @P("item") @T(ItemStackJS.class) ItemStackJS item)
+	public void setHeldItem(@P("hand") EnumHand hand, @P("item") @T(ItemStackJS.class) Object item)
 	{
-		livingEntity.setHeldItem(hand, item.getItemStack());
+		livingEntity.setHeldItem(hand, ItemStackJS.of(item).getItemStack());
 	}
 
 	public void damageHeldItem(@P("hand") EnumHand hand, @P("amount") int amount)
@@ -168,6 +169,12 @@ public class LivingEntityJS extends EntityJS
 				livingEntity.setHeldItem(hand, ItemStack.EMPTY);
 			}
 		}
+	}
+
+	public boolean isHoldingInAnyHand(@P("ingredient") @T(IngredientJS.class) Object ingredient)
+	{
+		IngredientJS i = IngredientJS.of(ingredient);
+		return i.test(livingEntity.getHeldItem(EnumHand.MAIN_HAND)) || i.test(livingEntity.getHeldItem(EnumHand.OFF_HAND));
 	}
 
 	public float getMovementSpeed()

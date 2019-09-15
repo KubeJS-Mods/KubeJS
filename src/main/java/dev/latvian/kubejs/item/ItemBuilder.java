@@ -29,12 +29,12 @@ public class ItemBuilder
 	{
 		id = ID.of(KubeJS.appendModId(i));
 		callback = c;
-		translationKey = id.namespace + "." + id.path;
+		translationKey = id.getNamespace() + "." + id.getPath();
 		maxStackSize = 64;
 		maxDamage = 0;
 		containerItem = null;
 		tools = new HashMap<>();
-		model = id.namespace + ":" + id.path + "#inventory";
+		model = id.getNamespace() + ":" + id.getPath() + "#inventory";
 		rarity = EnumRarity.COMMON;
 		glow = false;
 	}

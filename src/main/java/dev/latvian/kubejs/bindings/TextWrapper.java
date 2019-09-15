@@ -6,8 +6,11 @@ import dev.latvian.kubejs.documentation.Info;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.text.TextString;
 import dev.latvian.kubejs.text.TextTranslate;
+
+import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -145,5 +148,10 @@ public class TextWrapper
 	public Text white(@P("text") @T(Text.class) Object text)
 	{
 		return of(text).white();
+	}
+
+	public Map<String, TextColor> getColors()
+	{
+		return TextColor.MAP;
 	}
 }
