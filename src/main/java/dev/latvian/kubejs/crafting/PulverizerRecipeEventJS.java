@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public abstract class PulverizerRecipeEventJS<T extends PulverizerRecipeEventJS.PulverizerRecipe> extends RecipeEventBaseJS<T>
 {
-	public abstract static class PulverizerRecipe extends RecipeBaseJS
+	public abstract static class PulverizerRecipe implements RecipeJS
 	{
 		public IngredientJS input;
 		public ItemStackJS output;

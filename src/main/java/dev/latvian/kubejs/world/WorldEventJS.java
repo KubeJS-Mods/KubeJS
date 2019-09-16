@@ -6,6 +6,8 @@ import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 /**
  * @author LatvianModder
  */
@@ -13,16 +15,10 @@ public abstract class WorldEventJS extends EventJS
 {
 	public abstract WorldJS getWorld();
 
+	@Nullable
 	public ServerJS getServer()
 	{
-		WorldJS w = getWorld();
-
-		if (w instanceof ServerWorldJS)
-		{
-			return ((ServerWorldJS) w).getServer();
-		}
-
-		throw new IllegalStateException("Can't access server on client side!");
+		return getWorld().getServer();
 	}
 
 	protected WorldJS worldOf(World world)

@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class FurnaceRecipeEventJS extends RecipeEventBaseJS<FurnaceRecipeEventJS.FurnaceRecipe>
 {
-	public static class FurnaceRecipe extends RecipeBaseJS
+	public static class FurnaceRecipe implements RecipeJS
 	{
 		public IngredientJS input;
 		public ItemStackJS output;

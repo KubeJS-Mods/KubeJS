@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public abstract class AlloySmelterRecipeEventJS<T extends AlloySmelterRecipeEventJS.AlloySmelterRecipe> extends RecipeEventBaseJS<T>
 {
-	public abstract static class AlloySmelterRecipe extends RecipeBaseJS
+	public abstract static class AlloySmelterRecipe implements RecipeJS
 	{
 		public final List<IngredientJS> input;
 		public ItemStackJS output;

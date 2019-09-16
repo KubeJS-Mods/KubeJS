@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public abstract class RecipeEventBaseJS<T extends RecipeBaseJS> extends EventJS
+public abstract class RecipeEventBaseJS<T extends RecipeJS> extends EventJS
 {
 	private final String mod;
 

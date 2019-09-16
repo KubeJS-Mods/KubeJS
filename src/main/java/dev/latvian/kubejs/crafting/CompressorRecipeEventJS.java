@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public abstract class CompressorRecipeEventJS<T extends CompressorRecipeEventJS.CompressorRecipe> extends RecipeEventBaseJS<T>
 {
-	public abstract static class CompressorRecipe extends RecipeBaseJS
+	public abstract static class CompressorRecipe implements RecipeJS
 	{
 		public IngredientJS input;
 		public ItemStackJS output;

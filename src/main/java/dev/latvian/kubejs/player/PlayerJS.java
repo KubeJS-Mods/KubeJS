@@ -127,8 +127,18 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 		KubeJS.PROXY.sendData(playerEntity, channel, NBTBaseJS.of(data).asCompound().createNBT());
 	}
 
-	public void addFood(int food, float modifier)
+	public void addFood(@P("food") int f, @P("modifier") float m)
 	{
-		playerEntity.getFoodStats().addStats(food, modifier);
+		playerEntity.getFoodStats().addStats(f, m);
+	}
+
+	public void addXP(@P("xp") int xp)
+	{
+		playerEntity.addExperience(xp);
+	}
+
+	public void addXPLevels(@P("levels") int l)
+	{
+		playerEntity.addExperienceLevel(l);
 	}
 }
