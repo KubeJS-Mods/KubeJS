@@ -44,9 +44,11 @@ configurations.all {
 
 repositories {
 	mavenLocal()
+	maven { url "https://maven.latmod.com/" } //Aurora
 }
 
 dependencies {
+	deobfCompile "dev.latvian.mods:Aurora:1.+"
 	deobfProvided curse.resolve('jei', project.jei_file)
 	deobfProvided curse.resolve('packmode', project.packmode_file)
 	deobfProvided curse.resolve('game-stages', project.gamestages_file)
