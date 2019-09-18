@@ -11,7 +11,6 @@ public class CommandKubeJS extends CommandTreeBase
 	public CommandKubeJS()
 	{
 		addSubcommand(new CommandReloadScripts());
-		addSubcommand(new CommandDocs());
 	}
 
 	@Override

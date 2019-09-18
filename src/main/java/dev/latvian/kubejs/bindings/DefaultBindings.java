@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.documentation.DocumentationServer;
 import dev.latvian.kubejs.fluid.FluidWrapper;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptManager;
@@ -25,7 +24,6 @@ public class DefaultBindings
 		event.add("mod", ScriptModData.getInstance());
 		event.add("log", new LoggerWrapperJS(KubeJS.LOGGER));
 		event.add("runtime", manager.runtime);
-		event.add("documentation", DocumentationServer.INSTANCE);
 		event.add("utils", new UtilsWrapper());
 		event.add("uuid", new UUIDWrapper());
 		event.add("json", new JsonWrapper());

@@ -85,7 +85,7 @@ public class KubeJSResourcePack implements IResourcePack
 		JsonObject json = new JsonObject();
 		JsonObject pack = new JsonObject();
 		pack.addProperty("description", "KubeJS Resources");
-		pack.addProperty("pack_format", 4);
+		pack.addProperty("pack_format", 3);
 		json.add("pack", pack);
 		return serializer.parseMetadataSection(section, json);
 	}
