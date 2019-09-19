@@ -1,8 +1,12 @@
 package dev.latvian.kubejs.player;
 
+import dev.latvian.kubejs.net.KubeJSNetHandler;
+import dev.latvian.kubejs.net.MessageCloseOverlay;
+import dev.latvian.kubejs.net.MessageOpenOverlay;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextTranslate;
+import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -29,6 +33,18 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 	public PlayerStatsJS getStats()
 	{
 		return new PlayerStatsJS(this, getPlayerEntity().getStatFile());
+	}
+
+	@Override
+	public void openOverlay(Overlay overlay)
+	{
+		KubeJSNetHandler.net.sendTo(new MessageOpenOverlay(overlay), getPlayerEntity());
+	}
+
+	@Override
+	public void closeOverlay(String overlay)
+	{
+		KubeJSNetHandler.net.sendTo(new MessageCloseOverlay(overlay), getPlayerEntity());
 	}
 
 	public boolean isOP()

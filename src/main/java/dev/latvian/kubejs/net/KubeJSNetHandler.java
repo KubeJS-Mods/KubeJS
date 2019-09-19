@@ -16,5 +16,7 @@ public class KubeJSNetHandler
 		net = new SimpleNetworkWrapper(KubeJS.MOD_ID);
 		net.registerMessage(new DataToClientHandler(), MessageSendData.class, 1, Side.CLIENT);
 		net.registerMessage(new DataToServerHandler(), MessageSendData.class, 2, Side.SERVER);
+		net.registerMessage(new OpenOverlayHandler(), MessageOpenOverlay.class, 3, Side.CLIENT);
+		net.registerMessage(new CloseOverlayHandler(), MessageCloseOverlay.class, 4, Side.CLIENT);
 	}
 }

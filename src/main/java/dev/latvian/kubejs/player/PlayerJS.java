@@ -8,6 +8,7 @@ import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.AttachedData;
+import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.WithAttachedData;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.world.WorldJS;
@@ -140,5 +141,14 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 	public void addXPLevels(@P("levels") int l)
 	{
 		playerEntity.addExperienceLevel(l);
+	}
+
+	public abstract void openOverlay(Overlay overlay);
+
+	public abstract void closeOverlay(String overlay);
+
+	public void closeOverlay(Overlay overlay)
+	{
+		closeOverlay(overlay.id);
 	}
 }

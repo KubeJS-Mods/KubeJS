@@ -1,5 +1,7 @@
 package dev.latvian.kubejs.player;
 
+import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.util.Overlay;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -17,5 +19,17 @@ public class ClientPlayerJS extends PlayerJS<EntityPlayer>
 	public PlayerStatsJS getStats()
 	{
 		return new PlayerStatsJS(this, ((EntityPlayerSP) getPlayerEntity()).getStatFileWriter());
+	}
+
+	@Override
+	public void openOverlay(Overlay overlay)
+	{
+		KubeJS.PROXY.openOverlay(overlay);
+	}
+
+	@Override
+	public void closeOverlay(String overlay)
+	{
+		KubeJS.PROXY.closeOverlay(overlay);
 	}
 }
