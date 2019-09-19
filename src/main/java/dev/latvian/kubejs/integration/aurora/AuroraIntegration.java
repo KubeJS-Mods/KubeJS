@@ -1,18 +1,21 @@
 package dev.latvian.kubejs.integration.aurora;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.documentation.Documentation;
 import dev.latvian.mods.aurora.AuroraHomePageEvent;
 import dev.latvian.mods.aurora.AuroraPageEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * @author LatvianModder
  */
-@Mod.EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class AuroraIntegration
 {
+	public static void init()
+	{
+		MinecraftForge.EVENT_BUS.register(AuroraIntegration.class);
+	}
+
 	@SubscribeEvent
 	public static void onAuroraHomePageEvent(AuroraHomePageEvent event)
 	{

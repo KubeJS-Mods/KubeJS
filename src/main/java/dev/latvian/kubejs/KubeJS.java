@@ -6,11 +6,13 @@ import dev.latvian.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.integration.IntegrationManager;
+import dev.latvian.kubejs.integration.aurora.AuroraIntegration;
 import dev.latvian.kubejs.net.KubeJSNetHandler;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
+import dev.latvian.mods.aurora.Aurora;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraft.util.text.translation.LanguageMap;
@@ -111,6 +113,11 @@ public class KubeJS
 		IntegrationManager.preInit();
 		KubeJSNetHandler.init();
 		ScriptManager.instance.load();
+
+		if (Loader.isModLoaded(Aurora.MOD_ID))
+		{
+			AuroraIntegration.init();
+		}
 	}
 
 	@Mod.EventHandler
