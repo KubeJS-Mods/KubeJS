@@ -2,7 +2,6 @@ package dev.latvian.kubejs.block.predicate;
 
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
-import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -12,21 +11,15 @@ import net.minecraft.util.ResourceLocation;
  */
 public class BlockEntityPredicate implements BlockPredicate
 {
-	@FunctionalInterface
-	public interface CheckData
-	{
-		boolean checkData(NBTCompoundJS data);
-	}
-
 	private final ResourceLocation id;
-	private CheckData checkData;
+	private BlockEntityPredicateDataCheck checkData;
 
 	public BlockEntityPredicate(Object i)
 	{
 		id = ID.of(i).mc();
 	}
 
-	public BlockEntityPredicate data(CheckData cd)
+	public BlockEntityPredicate data(BlockEntityPredicateDataCheck cd)
 	{
 		checkData = cd;
 		return this;

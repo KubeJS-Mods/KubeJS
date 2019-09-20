@@ -30,6 +30,7 @@ import dev.latvian.kubejs.item.ItemRightClickEmptyEventJS;
 import dev.latvian.kubejs.item.ItemRightClickEventJS;
 import dev.latvian.kubejs.item.ItemTossEventJS;
 import dev.latvian.kubejs.net.NetworkEventJS;
+import dev.latvian.kubejs.player.ChestEventJS;
 import dev.latvian.kubejs.player.PlayerAdvancementEventJS;
 import dev.latvian.kubejs.player.PlayerChatEventJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
@@ -74,6 +75,8 @@ public class KubeJSEvents
 	public static final String PLAYER_DATA_FROM_CLIENT = "player.data_from_client";
 	public static final String PLAYER_CHAT = "player.chat";
 	public static final String PLAYER_ADVANCEMENT = "player.advancement";
+	public static final String PLAYER_CHEST_OPENED = "player.chest.opened";
+	public static final String PLAYER_CHEST_CLOSED = "player.chest.closed";
 
 	public static final String ENTITY_DEATH = "entity.death";
 	public static final String ENTITY_ATTACK = "entity.attack";
@@ -142,6 +145,8 @@ public class KubeJSEvents
 		event.registerEvent(PLAYER_DATA_FROM_CLIENT, NetworkEventJS.class).doubleParam("channel").serverOnly().canCancel();
 		event.registerEvent(PLAYER_CHAT, PlayerChatEventJS.class).serverOnly().canCancel();
 		event.registerEvent(PLAYER_ADVANCEMENT, PlayerAdvancementEventJS.class).serverOnly();
+		event.registerEvent(PLAYER_CHEST_OPENED, ChestEventJS.class);
+		event.registerEvent(PLAYER_CHEST_CLOSED, ChestEventJS.class);
 
 		event.registerEvent(ENTITY_DEATH, LivingEntityDeathEventJS.class).canCancel();
 		event.registerEvent(ENTITY_ATTACK, LivingEntityAttackEventJS.class).canCancel();

@@ -7,10 +7,12 @@ import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.server.ServerJS;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.ContainerChest;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -83,5 +85,23 @@ public class KubeJSPlayerEventHandler
 	public static void onAdvancement(AdvancementEvent event)
 	{
 		EventsJS.post(KubeJSEvents.PLAYER_ADVANCEMENT, new PlayerAdvancementEventJS(event));
+	}
+
+	@SubscribeEvent
+	public static void onChestOpened(PlayerContainerEvent.Open event)
+	{
+		if (event.getContainer() instanceof ContainerChest)
+		{
+			EventsJS.post(KubeJSEvents.PLAYER_CHEST_OPENED, new ChestEventJS(event.getEntityPlayer(), ((ContainerChest) event.getContainer()).getLowerChestInventory()));
+		}
+	}
+
+	@SubscribeEvent
+	public static void onChestClosed(PlayerContainerEvent.Close event)
+	{
+		if (event.getContainer() instanceof ContainerChest)
+		{
+			EventsJS.post(KubeJSEvents.PLAYER_CHEST_CLOSED, new ChestEventJS(event.getEntityPlayer(), ((ContainerChest) event.getContainer()).getLowerChestInventory()));
+		}
 	}
 }
