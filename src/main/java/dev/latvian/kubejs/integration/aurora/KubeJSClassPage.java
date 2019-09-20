@@ -6,6 +6,7 @@ import dev.latvian.kubejs.documentation.DocumentedEvent;
 import dev.latvian.kubejs.documentation.DocumentedField;
 import dev.latvian.kubejs.documentation.DocumentedMethod;
 import dev.latvian.kubejs.documentation.Ignore;
+import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.script.ScriptModData;
 import dev.latvian.mods.aurora.page.HTTPWebPage;
 import dev.latvian.mods.aurora.tag.Tag;
@@ -26,12 +27,12 @@ import java.util.Map;
 public class KubeJSClassPage extends HTTPWebPage
 {
 	private final Documentation documentation;
-	private final Class c;
+	private final Class documentedClass;
 
-	public KubeJSClassPage(Documentation d, Class _c)
+	public KubeJSClassPage(Documentation d, Class c)
 	{
 		documentation = d;
-		c = _c;
+		documentedClass = c;
 	}
 
 	@Override
@@ -47,8 +48,9 @@ public class KubeJSClassPage extends HTTPWebPage
 	{
 		body.img("https://kubejs.latvian.dev/logo_title.png").style("height", "7em");
 		body.br();
-		body.h1("").a("KubeJS Documentation", "/");
+		body.h1("").a("KubeJS Documentation", "/kubejs");
 
+		Class c = documentedClass;
 		body.h2(documentation.getPrettyName(c));
 
 		DisplayName docClass = (DisplayName) c.getAnnotation(DisplayName.class);
@@ -137,31 +139,34 @@ public class KubeJSClassPage extends HTTPWebPage
 			}
 		}
 
-		body.h3("Fields").id("fields");
-
-		if (!fieldList.isEmpty())
+		if (EventsJS.class.isAssignableFrom(c))
 		{
-			fieldList.sort(null);
+			body.h3("Fields").id("fields");
 
-			Tag methodTable = body.table().addClass("doc");
-			Tag mtTopRow = methodTable.tr();
-			mtTopRow.th().text("Name");
-			mtTopRow.th().text("Return Type");
-			mtTopRow.th().text("Info");
-
-			for (DocumentedField field : fieldList)
+			if (!fieldList.isEmpty())
 			{
-				Tag row = methodTable.tr();
+				fieldList.sort(null);
 
-				Tag n = row.td().span("", "");
-				n.text(field.name);
-				KubeJSHomePage.classText(documentation, row.td(), field.type, field.actualType);
-				row.td().text(field.info);
+				Tag methodTable = body.table().addClass("doc");
+				Tag mtTopRow = methodTable.tr();
+				mtTopRow.th().text("Name");
+				mtTopRow.th().text("Return Type");
+				mtTopRow.th().text("Info");
+
+				for (DocumentedField field : fieldList)
+				{
+					Tag row = methodTable.tr();
+
+					Tag n = row.td().span("", "");
+					n.text(field.name);
+					KubeJSHomePage.classText(documentation, row.td(), field.type, field.actualType);
+					row.td().text(field.info);
+				}
 			}
-		}
-		else
-		{
-			body.p("<None>");
+			else
+			{
+				body.p("<None>");
+			}
 		}
 
 		body.h3("Methods").id("methods");

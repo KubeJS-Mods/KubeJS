@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.item.ingredient;
 
+import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 
 import javax.annotation.Nullable;
@@ -20,7 +21,7 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	{
 		IngredientJS i = IngredientJS.of(ingredient);
 
-		if (!i.isEmpty())
+		if (i != EmptyItemStackJS.INSTANCE)
 		{
 			ingredients.add(i);
 		}

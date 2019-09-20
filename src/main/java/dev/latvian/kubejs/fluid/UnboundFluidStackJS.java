@@ -12,12 +12,12 @@ import javax.annotation.Nullable;
  */
 public class UnboundFluidStackJS extends FluidStackJS
 {
-	private final Fluid fluid;
+	private final String fluid;
 	private int amount;
 	private NBTCompoundJS nbt;
 	private FluidStack cached;
 
-	public UnboundFluidStackJS(Fluid f)
+	public UnboundFluidStackJS(String f)
 	{
 		fluid = f;
 		amount = Fluid.BUCKET_VOLUME;
@@ -26,9 +26,15 @@ public class UnboundFluidStackJS extends FluidStackJS
 	}
 
 	@Override
-	public Fluid getFluid()
+	public String getFluidName()
 	{
 		return fluid;
+	}
+
+	@Override
+	public boolean isEmpty()
+	{
+		return super.isEmpty() || getFluid() == null;
 	}
 
 	@Nullable
@@ -37,7 +43,14 @@ public class UnboundFluidStackJS extends FluidStackJS
 	{
 		if (cached == null)
 		{
-			cached = new FluidStack(fluid, amount, nbt.createNBT());
+			Fluid f = getFluid();
+
+			if (f == null)
+			{
+				return null;
+			}
+
+			cached = new FluidStack(f, amount, nbt.createNBT());
 		}
 
 		return cached;

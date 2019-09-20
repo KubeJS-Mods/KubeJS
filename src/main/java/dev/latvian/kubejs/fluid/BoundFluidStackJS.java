@@ -20,6 +20,12 @@ public class BoundFluidStackJS extends FluidStackJS
 	}
 
 	@Override
+	public String getFluidName()
+	{
+		return fluidStack.getFluid().getName();
+	}
+
+	@Override
 	public Fluid getFluid()
 	{
 		return fluidStack.getFluid();

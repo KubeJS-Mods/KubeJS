@@ -31,7 +31,7 @@ public abstract class FluidStackJS
 		}
 		else if (o instanceof Fluid)
 		{
-			return new UnboundFluidStackJS((Fluid) o);
+			return new UnboundFluidStackJS(((Fluid) o).getName());
 		}
 		else if (o instanceof JSObject)
 		{
@@ -39,36 +39,33 @@ public abstract class FluidStackJS
 
 			if (js.hasMember("fluid"))
 			{
-				Fluid fluid = FluidRegistry.getFluid(js.getMember("fluid").toString());
+				FluidStackJS stack = new UnboundFluidStackJS(js.getMember("fluid").toString());
 
-				if (fluid != null)
+				if (js.getMember("amount") instanceof Number)
 				{
-					FluidStackJS stack = new UnboundFluidStackJS(fluid);
-
-					if (js.getMember("amount") instanceof Number)
-					{
-						stack.setAmount(((Number) js.getMember("amount")).intValue());
-					}
-
-					if (js.hasMember("nbt"))
-					{
-						stack.setNbt(js.getMember("nbt"));
-					}
-
-					return stack;
+					stack.setAmount(((Number) js.getMember("amount")).intValue());
 				}
 
-				return EmptyFluidStackJS.INSTANCE;
+				if (js.hasMember("nbt"))
+				{
+					stack.setNbt(js.getMember("nbt"));
+				}
+
+				return stack;
 			}
 		}
 
 		String[] s = o.toString().split(" ", 2);
-		Fluid fluid = FluidRegistry.getFluid(s[0]);
-		return fluid == null ? EmptyFluidStackJS.INSTANCE : new UnboundFluidStackJS(fluid).amount(UtilsJS.parseInt(s.length == 2 ? s[1] : "", Fluid.BUCKET_VOLUME));
+		return new UnboundFluidStackJS(s[0]).amount(UtilsJS.parseInt(s.length == 2 ? s[1] : "", Fluid.BUCKET_VOLUME));
 	}
 
+	public abstract String getFluidName();
+
 	@Nullable
-	public abstract Fluid getFluid();
+	public Fluid getFluid()
+	{
+		return FluidRegistry.getFluid(getFluidName());
+	}
 
 	@Nullable
 	public abstract FluidStack getFluidStack();

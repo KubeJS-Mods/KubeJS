@@ -20,6 +20,12 @@ public class EmptyFluidStackJS extends FluidStackJS
 	}
 
 	@Override
+	public String getFluidName()
+	{
+		return "";
+	}
+
+	@Override
 	@Nullable
 	public Fluid getFluid()
 	{

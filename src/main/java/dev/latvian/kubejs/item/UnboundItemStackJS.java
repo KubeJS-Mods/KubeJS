@@ -1,9 +1,12 @@
 package dev.latvian.kubejs.item;
 
+import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 
 import javax.annotation.Nullable;
@@ -13,13 +16,13 @@ import javax.annotation.Nullable;
  */
 public class UnboundItemStackJS extends ItemStackJS
 {
-	private final Item item;
+	private final ResourceLocation item;
 	private int count;
 	private int data;
 	private NBTCompoundJS nbt;
 	private ItemStack cached;
 
-	public UnboundItemStackJS(Item i)
+	public UnboundItemStackJS(ResourceLocation i)
 	{
 		item = i;
 		count = 1;
@@ -31,7 +34,14 @@ public class UnboundItemStackJS extends ItemStackJS
 	@Override
 	public Item getItem()
 	{
-		return item;
+		Item i = Item.REGISTRY.getObject(item);
+
+		if (i != null)
+		{
+			return i;
+		}
+
+		return Items.AIR;
 	}
 
 	@Override
@@ -39,11 +49,30 @@ public class UnboundItemStackJS extends ItemStackJS
 	{
 		if (cached == null)
 		{
-			cached = new ItemStack(item, count, data);
+			Item i = getItem();
+
+			if (i == Items.AIR)
+			{
+				return ItemStack.EMPTY;
+			}
+
+			cached = new ItemStack(i, count, data);
 			cached.setTagCompound(nbt.createNBT());
 		}
 
 		return cached;
+	}
+
+	@Override
+	public ID getId()
+	{
+		return ID.of(item);
+	}
+
+	@Override
+	public boolean isEmpty()
+	{
+		return super.isEmpty() || getItem() == Items.AIR;
 	}
 
 	@Override
@@ -93,5 +122,22 @@ public class UnboundItemStackJS extends ItemStackJS
 	public NBTCompoundJS getNbt()
 	{
 		return nbt;
+	}
+
+	@Override
+	public boolean areItemsEqual(ItemStackJS stack)
+	{
+		if (stack instanceof UnboundItemStackJS)
+		{
+			return item.equals(((UnboundItemStackJS) stack).item);
+		}
+
+		return getItem() == stack.getItem();
+	}
+
+	@Override
+	public boolean areItemsEqual(ItemStack stack)
+	{
+		return item.equals(stack.getItem().getRegistryName());
 	}
 }
