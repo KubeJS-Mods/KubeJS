@@ -167,6 +167,24 @@ public class NBTListJS implements NBTBaseJS, Iterable<NBTBaseJS>
 	}
 
 	@Override
+	public int hashCode()
+	{
+		return list.hashCode();
+	}
+
+	@Override
+	public String toString()
+	{
+		return list.toString();
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		return o == this || o instanceof NBTListJS && list.equals(((NBTListJS) o).list);
+	}
+
+	@Override
 	public boolean isEmpty()
 	{
 		return list.isEmpty();

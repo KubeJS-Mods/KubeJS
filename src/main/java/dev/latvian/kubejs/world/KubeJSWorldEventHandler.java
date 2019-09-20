@@ -2,6 +2,7 @@ package dev.latvian.kubejs.world;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.block.MissingMappingEventJS;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
@@ -12,6 +13,7 @@ import dev.latvian.kubejs.server.SimpleServerEventJS;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -122,5 +124,11 @@ public class KubeJSWorldEventHandler
 	public static void onExplosionPre(ExplosionEvent.Detonate event)
 	{
 		EventsJS.post(KubeJSEvents.WORLD_EXPLOSION_POST, new ExplosionEventJS.Post(event));
+	}
+
+	@SubscribeEvent
+	public static void onMissingMappings(RegistryEvent.MissingMappings event)
+	{
+		EventsJS.post(KubeJSEvents.WORLD_MISSING_MAPPINGS, new MissingMappingEventJS(event));
 	}
 }

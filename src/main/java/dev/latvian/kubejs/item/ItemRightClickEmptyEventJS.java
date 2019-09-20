@@ -27,4 +27,9 @@ public class ItemRightClickEmptyEventJS extends PlayerEventJS
 	{
 		return event.getHand();
 	}
+
+	public ItemStackJS getItem()
+	{
+		return EmptyItemStackJS.INSTANCE;
+	}
 }

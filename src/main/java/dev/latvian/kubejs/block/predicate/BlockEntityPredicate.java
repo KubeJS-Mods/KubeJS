@@ -38,4 +38,10 @@ public class BlockEntityPredicate implements BlockPredicate
 		TileEntity tileEntity = block.getEntity();
 		return tileEntity != null && id.equals(TileEntity.getKey(tileEntity.getClass())) && (checkData == null || checkData.checkData(NBTBaseJS.of(tileEntity.serializeNBT()).asCompound()));
 	}
+
+	@Override
+	public String toString()
+	{
+		return "{entity=" + id + "}";
+	}
 }

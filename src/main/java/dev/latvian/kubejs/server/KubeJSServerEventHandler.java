@@ -55,7 +55,7 @@ public class KubeJSServerEventHandler
 				}
 				catch (NashornException ex)
 				{
-					KubeJS.LOGGER.error("Error occurred while handling scheduled event callback in " + e.file.getPath() + ": " + ex);
+					KubeJS.LOGGER.error("Error occurred while handling scheduled event callback in " + (e.file == null ? "Unknown file" : e.file.getPath()) + ": " + ex);
 				}
 				catch (Throwable ex)
 				{
@@ -89,7 +89,7 @@ public class KubeJSServerEventHandler
 				}
 				catch (NashornException ex)
 				{
-					KubeJS.LOGGER.error("Error occurred while handling scheduled event callback in " + e.file.getPath() + ": " + ex);
+					KubeJS.LOGGER.error("Error occurred while handling scheduled event callback in " + (e.file == null ? "Unknown file" : e.file.getPath()) + ": " + ex);
 				}
 				catch (Throwable ex)
 				{

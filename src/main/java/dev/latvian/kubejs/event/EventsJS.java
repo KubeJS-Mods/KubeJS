@@ -69,6 +69,11 @@ public class EventsJS
 
 	public static boolean postToHandlers(String id, List<ScriptEventHandler> list, EventJS event)
 	{
+		if (list.isEmpty())
+		{
+			return false;
+		}
+
 		boolean c = event.canCancel();
 
 		for (ScriptEventHandler handler : list)

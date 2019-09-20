@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.server;
 
+import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptManager;
@@ -11,18 +12,19 @@ import javax.annotation.Nullable;
  */
 public class ScheduledEvent
 {
+	@Ignore
+	public final ScriptFile file;
+
 	private final ServerJS server;
 	private final long timer;
 	private final long endTime;
 	private final Object data;
-
-	public final transient ScriptFile file;
 	private final IScheduledEventCallback callback;
 
 	public ScheduledEvent(ServerJS s, long t, long e, @Nullable Object d, IScheduledEventCallback c)
 	{
-		server = s;
 		file = ScriptManager.instance.currentFile;
+		server = s;
 		timer = t;
 		endTime = e;
 		data = d;

@@ -36,6 +36,12 @@ public class BlockIDPredicate implements BlockPredicate
 		id = ID.of(i).mc();
 	}
 
+	@Override
+	public String toString()
+	{
+		return id + (properties == null || properties.isEmpty() ? "" : ("+" + properties));
+	}
+
 	public BlockIDPredicate with(String key, String value)
 	{
 		if (properties == null)

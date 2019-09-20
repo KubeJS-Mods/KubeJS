@@ -5,6 +5,7 @@ import dev.latvian.kubejs.block.BlockLeftClickEventJS;
 import dev.latvian.kubejs.block.BlockPlaceEventJS;
 import dev.latvian.kubejs.block.BlockRegistryEventJS;
 import dev.latvian.kubejs.block.BlockRightClickEventJS;
+import dev.latvian.kubejs.block.MissingMappingEventJS;
 import dev.latvian.kubejs.client.ClientLoggedInEventJS;
 import dev.latvian.kubejs.client.ClientTickEventJS;
 import dev.latvian.kubejs.client.DebugInfoEventJS;
@@ -64,6 +65,7 @@ public class KubeJSEvents
 	public static final String WORLD_TICK = "world.tick";
 	public static final String WORLD_EXPLOSION_PRE = "world.explosion.pre";
 	public static final String WORLD_EXPLOSION_POST = "world.explosion.post";
+	public static final String WORLD_MISSING_MAPPINGS = "world.missing_mappings";
 
 	public static final String PLAYER_LOGGED_IN = "player.logged_in";
 	public static final String PLAYER_LOGGED_OUT = "player.logged_out";
@@ -131,6 +133,7 @@ public class KubeJSEvents
 		event.registerEvent(WORLD_TICK, SimpleWorldEventJS.class).serverOnly();
 		event.registerEvent(WORLD_EXPLOSION_PRE, ExplosionEventJS.Pre.class).serverOnly().canCancel();
 		event.registerEvent(WORLD_EXPLOSION_POST, ExplosionEventJS.Post.class).serverOnly();
+		event.registerEvent(WORLD_MISSING_MAPPINGS, MissingMappingEventJS.class);
 
 		event.registerEvent(PLAYER_LOGGED_IN, SimplePlayerEventJS.class).serverOnly();
 		event.registerEvent(PLAYER_LOGGED_OUT, SimplePlayerEventJS.class).serverOnly();

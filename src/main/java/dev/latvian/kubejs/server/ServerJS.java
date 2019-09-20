@@ -1,6 +1,8 @@
 package dev.latvian.kubejs.server;
 
+import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.Info;
+import dev.latvian.kubejs.documentation.O;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.net.KubeJSNetHandler;
@@ -267,6 +269,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return new EntityArrayList(overworld, server.getPlayerList().getPlayers());
 	}
 
+	@Ignore
 	public EntityArrayList getEntities()
 	{
 		EntityArrayList list = new EntityArrayList(overworld, overworld.world.loadedEntityList.size());
@@ -282,7 +285,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return list;
 	}
 
-	public EntityArrayList getEntities(String filter)
+	public EntityArrayList getEntities(@O @P("filter") String filter)
 	{
 		try
 		{
@@ -304,25 +307,27 @@ public class ServerJS implements MessageSender, WithAttachedData
 		}
 	}
 
-	public ScheduledEvent schedule(long timer, @Nullable Object data, IScheduledEventCallback event)
+	public ScheduledEvent schedule(@P("timer") long timer, @O @P("data") @Nullable Object data, @P("callback") IScheduledEventCallback event)
 	{
 		ScheduledEvent e = new ScheduledEvent(this, timer, System.currentTimeMillis() + timer, data, event);
 		scheduledEvents.add(e);
 		return e;
 	}
 
+	@Ignore
 	public ScheduledEvent schedule(long timer, IScheduledEventCallback event)
 	{
 		return schedule(timer, null, event);
 	}
 
-	public ScheduledEvent scheduleInTicks(long ticks, @Nullable Object data, IScheduledEventCallback event)
+	public ScheduledEvent scheduleInTicks(@P("ticks") long ticks, @O @P("data") @Nullable Object data, @P("callback") IScheduledEventCallback event)
 	{
 		ScheduledEvent e = new ScheduledEvent(this, ticks, overworld.getTime() + ticks, data, event);
 		scheduledEvents.add(e);
 		return e;
 	}
 
+	@Ignore
 	public ScheduledEvent scheduleInTicks(long ticks, IScheduledEventCallback event)
 	{
 		return scheduleInTicks(ticks, null, event);
@@ -335,13 +340,13 @@ public class ServerJS implements MessageSender, WithAttachedData
 	}
 
 	@Nullable
-	public AdvancementJS getAdvancement(Object id)
+	public AdvancementJS getAdvancement(@P("id") Object id)
 	{
 		Advancement a = server.getAdvancementManager().getAdvancement(ID.of(id).mc());
 		return a == null ? null : new AdvancementJS(a);
 	}
 
-	public void sendDataToAll(String channel, @Nullable Object data)
+	public void sendDataToAll(@P("channel") String channel, @P("data") @Nullable Object data)
 	{
 		KubeJSNetHandler.net.sendToAll(new MessageSendData(channel, NBTBaseJS.of(data).asCompound().createNBT()));
 	}
