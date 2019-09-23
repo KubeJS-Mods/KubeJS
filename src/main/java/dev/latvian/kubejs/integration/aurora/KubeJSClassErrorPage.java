@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.integration.aurora;
 
-import dev.latvian.kubejs.documentation.Documentation;
 import dev.latvian.kubejs.script.ScriptModData;
 import dev.latvian.mods.aurora.page.HTTPWebPage;
 import dev.latvian.mods.aurora.tag.Tag;
@@ -11,21 +10,35 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
  */
 public class KubeJSClassErrorPage extends HTTPWebPage
 {
-	private final Documentation documentation;
 	private final String className;
 
-	public KubeJSClassErrorPage(Documentation d, String c)
+	public KubeJSClassErrorPage(String c)
 	{
-		documentation = d;
 		className = c;
 	}
 
 	@Override
-	public void head(Tag head)
+	public String getTitle()
 	{
-		head.paired("title", "KubeJS Documentation");
-		head.unpaired("link").attr("rel", "stylesheet").attr("type", "text/css").attr("href", "https://kubejs.latvian.dev/style.css");
-		head.unpaired("link").attr("rel", "icon").attr("href", "https://kubejs.latvian.dev/logo_48.png");
+		return "KubeJS Documentation";
+	}
+
+	@Override
+	public String getDescription()
+	{
+		return className;
+	}
+
+	@Override
+	public String getIcon()
+	{
+		return "https://kubejs.latvian.dev/logo_48.png";
+	}
+
+	@Override
+	public String getStylesheet()
+	{
+		return "https://kubejs.latvian.dev/style.css";
 	}
 
 	@Override

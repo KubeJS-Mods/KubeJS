@@ -36,11 +36,27 @@ public class KubeJSClassPage extends HTTPWebPage
 	}
 
 	@Override
-	public void head(Tag head)
+	public String getTitle()
 	{
-		head.paired("title", "KubeJS Documentation");
-		head.unpaired("link").attr("rel", "stylesheet").attr("type", "text/css").attr("href", "https://kubejs.latvian.dev/style.css");
-		head.unpaired("link").attr("rel", "icon").attr("href", "https://kubejs.latvian.dev/logo_48.png");
+		return "KubeJS Documentation";
+	}
+
+	@Override
+	public String getDescription()
+	{
+		return documentedClass.getName();
+	}
+
+	@Override
+	public String getIcon()
+	{
+		return "https://kubejs.latvian.dev/logo_48.png";
+	}
+
+	@Override
+	public String getStylesheet()
+	{
+		return "https://kubejs.latvian.dev/style.css";
 	}
 
 	@Override
@@ -147,11 +163,26 @@ public class KubeJSClassPage extends HTTPWebPage
 			{
 				fieldList.sort(null);
 
+				boolean info = false;
+
+				for (DocumentedField field : fieldList)
+				{
+					if (!field.info.isEmpty())
+					{
+						info = true;
+						break;
+					}
+				}
+
 				Tag methodTable = body.table().addClass("doc");
 				Tag mtTopRow = methodTable.tr();
 				mtTopRow.th().text("Name");
 				mtTopRow.th().text("Return Type");
-				mtTopRow.th().text("Info");
+
+				if (info)
+				{
+					mtTopRow.th().text("Info");
+				}
 
 				for (DocumentedField field : fieldList)
 				{
@@ -160,7 +191,11 @@ public class KubeJSClassPage extends HTTPWebPage
 					Tag n = row.td().span("", "");
 					n.text(field.name);
 					KubeJSHomePage.classText(documentation, row.td(), field.type, field.actualType);
-					row.td().text(field.info);
+
+					if (info)
+					{
+						row.td().text(field.info);
+					}
 				}
 			}
 			else
@@ -191,12 +226,27 @@ public class KubeJSClassPage extends HTTPWebPage
 		{
 			methodList.sort(null);
 
+			boolean info = false;
+
+			for (DocumentedMethod method : methodList)
+			{
+				if (!method.info.isEmpty())
+				{
+					info = true;
+					break;
+				}
+			}
+
 			Tag methodTable = body.table().addClass("doc");
 			Tag mtTopRow = methodTable.tr();
 			mtTopRow.th().text("Name");
 			mtTopRow.th().text("Return Type");
 			mtTopRow.th().text("Bean");
-			mtTopRow.th().text("Info");
+
+			if (info)
+			{
+				mtTopRow.th().text("Info");
+			}
 
 			for (DocumentedMethod method : methodList)
 			{
@@ -239,7 +289,10 @@ public class KubeJSClassPage extends HTTPWebPage
 					row.td().text("-");
 				}
 
-				row.td().text(method.info);
+				if (info)
+				{
+					row.td().text(method.info);
+				}
 			}
 		}
 		else

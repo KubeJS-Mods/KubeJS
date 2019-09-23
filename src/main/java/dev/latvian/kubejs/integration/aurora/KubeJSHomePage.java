@@ -30,11 +30,27 @@ public class KubeJSHomePage extends HTTPWebPage
 	}
 
 	@Override
-	public void head(Tag head)
+	public String getTitle()
 	{
-		head.paired("title", "KubeJS Documentation");
-		head.unpaired("link").attr("rel", "stylesheet").attr("type", "text/css").attr("href", "https://kubejs.latvian.dev/style.css");
-		head.unpaired("link").attr("rel", "icon").attr("href", "https://kubejs.latvian.dev/logo_48.png");
+		return "KubeJS Documentation";
+	}
+
+	@Override
+	public String getDescription()
+	{
+		return "Index";
+	}
+
+	@Override
+	public String getIcon()
+	{
+		return "https://kubejs.latvian.dev/logo_48.png";
+	}
+
+	@Override
+	public String getStylesheet()
+	{
+		return "https://kubejs.latvian.dev/style.css";
 	}
 
 	@Override

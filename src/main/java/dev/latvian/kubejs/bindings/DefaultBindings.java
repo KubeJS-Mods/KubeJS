@@ -11,7 +11,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumRarity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 
 /**
@@ -24,16 +23,17 @@ public class DefaultBindings
 		event.add("mod", ScriptModData.getInstance());
 		event.add("log", new LoggerWrapperJS(KubeJS.LOGGER));
 		event.add("runtime", manager.runtime);
+		event.add("events", new ScriptEventsWrapper());
 		event.add("utils", new UtilsWrapper());
+		event.add("text", new TextWrapper());
 		event.add("uuid", new UUIDWrapper());
 		event.add("json", new JsonWrapper());
 		event.add("block", new BlockWrapper());
 		event.add("item", new ItemWrapper());
 		event.add("ingredient", new IngredientWrapper());
 		event.add("nbt", new NBTWrapper());
+		event.add("facing", new FacingWrapper());
 
-		event.add("events", new ScriptEventsWrapper());
-		event.add("text", new TextWrapper());
 		event.add("oredict", new OreDictWrapper());
 		event.add("fluid", new FluidWrapper());
 
@@ -64,11 +64,6 @@ public class DefaultBindings
 		event.addConstant("TOOL_TYPE_AXE", "axe");
 		event.addConstant("TOOL_TYPE_PICKAXE", "pickaxe");
 		event.addConstant("TOOL_TYPE_SHOVEL", "shovel");
-
-		for (EnumFacing facing : EnumFacing.VALUES)
-		{
-			event.addConstant(facing.getName().toUpperCase(), facing);
-		}
 
 		event.addConstant("MAIN_HAND", EnumHand.MAIN_HAND);
 		event.addConstant("OFF_HAND", EnumHand.OFF_HAND);

@@ -14,6 +14,7 @@ import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.InvWrapper;
@@ -87,6 +88,21 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 	public int getSelectedSlot()
 	{
 		return playerEntity.inventory.currentItem;
+	}
+
+	public void setSelectedSlot(@P("index") int index)
+	{
+		playerEntity.inventory.currentItem = MathHelper.clamp(index, 0, 8);
+	}
+
+	public ItemStackJS getMouseItem()
+	{
+		return ItemStackJS.of(playerEntity.inventory.getItemStack());
+	}
+
+	public void setMouseItem(@P("item") @T(ItemStackJS.class) Object item)
+	{
+		playerEntity.inventory.setItemStack(ItemStackJS.of(item).getItemStack());
 	}
 
 	@Override

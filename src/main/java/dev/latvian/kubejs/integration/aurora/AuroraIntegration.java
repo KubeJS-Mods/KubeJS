@@ -42,7 +42,7 @@ public class AuroraIntegration
 				}
 				catch (Exception ex)
 				{
-					event.setPage(new KubeJSClassErrorPage(Documentation.get(), s.substring(1)));
+					event.setPage(new KubeJSClassErrorPage(s.substring(1)));
 				}
 			}
 

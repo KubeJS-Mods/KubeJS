@@ -2,6 +2,7 @@ package dev.latvian.kubejs.world;
 
 import dev.latvian.kubejs.documentation.DisplayName;
 import dev.latvian.kubejs.entity.EntityJS;
+import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
@@ -15,6 +16,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -287,5 +290,23 @@ public class BlockContainerJS
 	public void spawnFireworks(FireworksJS fireworks)
 	{
 		world.spawnEntity(fireworks.createFireworkRocket(world, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D));
+	}
+
+	@Nullable
+	public InventoryJS getInventory(EnumFacing facing)
+	{
+		TileEntity tileEntity = getEntity();
+
+		if (tileEntity != null)
+		{
+			IItemHandler handler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing);
+
+			if (handler != null)
+			{
+				return new InventoryJS(handler);
+			}
+		}
+
+		return null;
 	}
 }

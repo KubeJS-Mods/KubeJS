@@ -10,6 +10,7 @@ import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.play.server.SPacketHeldItemChange;
 import net.minecraft.server.management.UserListBansEntry;
 
 import java.util.Date;
@@ -105,6 +106,30 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 					getPlayerEntity().getAdvancements().revokeCriterion(a.advancement, s);
 				}
 			}
+		}
+	}
+
+	@Override
+	public void setSelectedSlot(int index)
+	{
+		int p = getSelectedSlot();
+		super.setSelectedSlot(index);
+		int n = getSelectedSlot();
+
+		if (p != n && getPlayerEntity().connection != null)
+		{
+			getPlayerEntity().connection.sendPacket(new SPacketHeldItemChange(n));
+		}
+	}
+
+	@Override
+	public void setMouseItem(Object item)
+	{
+		super.setMouseItem(item);
+
+		if (getPlayerEntity().connection != null)
+		{
+			getPlayerEntity().updateHeldItem();
 		}
 	}
 }

@@ -20,6 +20,7 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -126,6 +127,11 @@ public abstract class WorldJS implements WithAttachedData
 	public BlockContainerJS getBlock(@P("pos") BlockPos pos)
 	{
 		return new BlockContainerJS(world, pos);
+	}
+
+	public BlockContainerJS getBlock(@P("blockEntity") TileEntity blockEntity)
+	{
+		return getBlock(blockEntity.getPos());
 	}
 
 	@Ignore
