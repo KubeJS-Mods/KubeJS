@@ -1,6 +1,7 @@
 package dev.latvian.kubejs;
 
 import dev.latvian.kubejs.block.BlockBreakEventJS;
+import dev.latvian.kubejs.block.BlockDropsEventJS;
 import dev.latvian.kubejs.block.BlockLeftClickEventJS;
 import dev.latvian.kubejs.block.BlockPlaceEventJS;
 import dev.latvian.kubejs.block.BlockRegistryEventJS;
@@ -96,6 +97,7 @@ public class KubeJSEvents
 	public static final String BLOCK_LEFT_CLICK = "block.left_click";
 	public static final String BLOCK_PLACE = "block.place";
 	public static final String BLOCK_BREAK = "block.break";
+	public static final String BLOCK_DROPS = "block.drops";
 
 	public static final String ITEM_REGISTRY = "item.registry";
 	public static final String ITEM_RIGHT_CLICK = "item.right_click";
@@ -166,6 +168,7 @@ public class KubeJSEvents
 		event.registerEvent(BLOCK_LEFT_CLICK, BlockLeftClickEventJS.class).canCancel();
 		event.registerEvent(BLOCK_PLACE, BlockPlaceEventJS.class).serverOnly().canCancel();
 		event.registerEvent(BLOCK_BREAK, BlockBreakEventJS.class).serverOnly().canCancel();
+		event.registerEvent(BLOCK_DROPS, BlockDropsEventJS.class).serverOnly();
 
 		event.registerEvent(ITEM_REGISTRY, ItemRegistryEventJS.class);
 		event.registerEvent(ITEM_RIGHT_CLICK, ItemRightClickEventJS.class).canCancel();

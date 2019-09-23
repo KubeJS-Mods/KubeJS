@@ -261,7 +261,35 @@ public class BlockContainerJS
 	{
 		ID id = getId();
 		Map<String, String> properties = getProperties();
-		return properties.isEmpty() ? id.toString() : (id + "+" + properties);
+
+		if (properties.isEmpty())
+		{
+			return id.toString();
+		}
+
+		StringBuilder builder = new StringBuilder(id.toString());
+		builder.append('[');
+
+		boolean first = true;
+
+		for (Map.Entry<String, String> entry : properties.entrySet())
+		{
+			if (first)
+			{
+				first = false;
+			}
+			else
+			{
+				builder.append(',');
+			}
+
+			builder.append(entry.getKey());
+			builder.append('=');
+			builder.append(entry.getValue());
+		}
+
+		builder.append(']');
+		return builder.toString();
 	}
 
 	public ExplosionJS createExplosion()

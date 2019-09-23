@@ -3,6 +3,7 @@ package dev.latvian.kubejs.block;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.event.EventsJS;
+import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.block.Block;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -55,6 +56,23 @@ public class KubeJSBlockEventHandler
 		if (EventsJS.post(KubeJSEvents.BLOCK_PLACE, new BlockPlaceEventJS(event)))
 		{
 			event.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public static void blockDrops(BlockEvent.HarvestDropsEvent event)
+	{
+		BlockDropsEventJS e = new BlockDropsEventJS(event);
+		EventsJS.post(KubeJSEvents.BLOCK_DROPS, e);
+
+		if (e.dropList != null)
+		{
+			event.getDrops().clear();
+
+			for (ItemStackJS stack : e.dropList)
+			{
+				event.getDrops().add(stack.getItemStack());
+			}
 		}
 	}
 }

@@ -6,11 +6,14 @@ import dev.latvian.kubejs.entity.LivingEntityEventJS;
 import dev.latvian.kubejs.integration.gamestages.GameStagesIntegration;
 import net.minecraftforge.fml.common.Loader;
 
+import javax.annotation.Nullable;
+
 /**
  * @author LatvianModder
  */
 public abstract class PlayerEventJS extends LivingEntityEventJS
 {
+	@Nullable
 	public PlayerJS getPlayer()
 	{
 		EntityJS e = getEntity();
@@ -20,14 +23,14 @@ public abstract class PlayerEventJS extends LivingEntityEventJS
 			return (PlayerJS) e;
 		}
 
-		throw new IllegalStateException("Entity is not a player!");
+		return null;
 	}
 
 	// Helper methods for Game Stages
 
 	public boolean hasGameStage(String stage)
 	{
-		if (Loader.isModLoaded("gamestages"))
+		if (getPlayer() != null && Loader.isModLoaded("gamestages"))
 		{
 			return GameStagesIntegration.hasStage(getPlayer().getPlayerEntity(), stage);
 		}
@@ -39,7 +42,10 @@ public abstract class PlayerEventJS extends LivingEntityEventJS
 	{
 		if (Loader.isModLoaded("gamestages"))
 		{
-			GameStagesIntegration.addStage(getPlayer().getPlayerEntity(), stage);
+			if (getPlayer() != null)
+			{
+				GameStagesIntegration.addStage(getPlayer().getPlayerEntity(), stage);
+			}
 		}
 		else
 		{
@@ -51,7 +57,10 @@ public abstract class PlayerEventJS extends LivingEntityEventJS
 	{
 		if (Loader.isModLoaded("gamestages"))
 		{
-			GameStagesIntegration.removeStage(getPlayer().getPlayerEntity(), stage);
+			if (getPlayer() != null)
+			{
+				GameStagesIntegration.removeStage(getPlayer().getPlayerEntity(), stage);
+			}
 		}
 		else
 		{
