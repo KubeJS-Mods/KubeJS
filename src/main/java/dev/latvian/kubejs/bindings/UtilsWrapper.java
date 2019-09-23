@@ -32,6 +32,11 @@ import java.util.regex.Pattern;
  */
 public class UtilsWrapper
 {
+	public ServerJS getServer()
+	{
+		return ServerJS.instance;
+	}
+
 	public Random getRandom()
 	{
 		return UtilsJS.RANDOM;
