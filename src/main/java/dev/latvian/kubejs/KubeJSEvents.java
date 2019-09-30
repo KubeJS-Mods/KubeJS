@@ -22,6 +22,7 @@ import dev.latvian.kubejs.entity.CheckLivingEntitySpawnEventJS;
 import dev.latvian.kubejs.entity.EntitySpawnedEventJS;
 import dev.latvian.kubejs.entity.LivingEntityAttackEventJS;
 import dev.latvian.kubejs.entity.LivingEntityDeathEventJS;
+import dev.latvian.kubejs.entity.LivingEntityDropsEventJS;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.ItemEntityInteractEventJS;
 import dev.latvian.kubejs.item.ItemLeftClickEventJS;
@@ -81,6 +82,7 @@ public class KubeJSEvents
 
 	public static final String ENTITY_DEATH = "entity.death";
 	public static final String ENTITY_ATTACK = "entity.attack";
+	public static final String ENTITY_DROPS = "entity.drops";
 	public static final String ENTITY_CHECK_SPAWN = "entity.check_spawn";
 	public static final String ENTITY_SPAWNED = "entity.spawned";
 
@@ -152,6 +154,7 @@ public class KubeJSEvents
 
 		event.registerEvent(ENTITY_DEATH, LivingEntityDeathEventJS.class).canCancel();
 		event.registerEvent(ENTITY_ATTACK, LivingEntityAttackEventJS.class).canCancel();
+		event.registerEvent(ENTITY_DROPS, LivingEntityDropsEventJS.class).canCancel();
 		event.registerEvent(ENTITY_CHECK_SPAWN, CheckLivingEntitySpawnEventJS.class).canCancel();
 		event.registerEvent(ENTITY_SPAWNED, EntitySpawnedEventJS.class).canCancel();
 

@@ -4,9 +4,11 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.server.ServerJS;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -33,6 +35,26 @@ public class KubeJSEntityEventHandler
 		if (event.getAmount() > 0F && EventsJS.post(KubeJSEvents.ENTITY_ATTACK, new LivingEntityAttackEventJS(event)))
 		{
 			event.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public static void onLivingDrops(LivingDropsEvent event)
+	{
+		LivingEntityDropsEventJS e = new LivingEntityDropsEventJS(event);
+
+		if (EventsJS.post(KubeJSEvents.ENTITY_DROPS, e))
+		{
+			event.setCanceled(true);
+		}
+		else if (e.drops != null)
+		{
+			event.getDrops().clear();
+
+			for (ItemEntityJS ie : e.drops)
+			{
+				event.getDrops().add((EntityItem) ie.entity);
+			}
 		}
 	}
 
