@@ -50,4 +50,25 @@ public class TextString extends Text
 		o.addProperty("text", string);
 		return o;
 	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == this)
+		{
+			return true;
+		}
+		else if (!(obj instanceof TextString) || !string.equals(((TextString) obj).string))
+		{
+			return false;
+		}
+
+		return super.equals(obj);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return string.hashCode() * 31 + super.hashCode();
+	}
 }

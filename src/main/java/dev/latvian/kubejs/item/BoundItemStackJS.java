@@ -1,5 +1,7 @@
 package dev.latvian.kubejs.item;
 
+import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import net.minecraft.item.Item;
@@ -83,15 +85,21 @@ public class BoundItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public void setName(String displayName)
+	public void setName(Object displayName)
 	{
-		stack.setStackDisplayName(displayName);
-	}
+		Text t = Text.of(displayName);
+		NBTCompoundJS nbt = getNbtOrNew();
 
-	@Override
-	public void setTranslatableName(String translatableName)
-	{
-		stack.setTranslatableName(translatableName);
+		if (t instanceof TextTranslate)
+		{
+			stack.setTranslatableName(((TextTranslate) t).getKey());
+		}
+		else
+		{
+			stack.setStackDisplayName(t.getFormattedString());
+		}
+
+		setNbt(nbt);
 	}
 
 	@Override

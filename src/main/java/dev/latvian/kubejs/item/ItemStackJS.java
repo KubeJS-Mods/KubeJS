@@ -5,6 +5,7 @@ import dev.latvian.kubejs.item.ingredient.IgnoreNBTIngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.OreDictionaryIngredientJS;
 import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
@@ -229,22 +230,25 @@ public abstract class ItemStackJS implements IngredientJS
 		return nbt;
 	}
 
-	public String getName()
+	public Text getName()
 	{
-		return getItemStack().getDisplayName();
+		return Text.of(getItemStack().getDisplayName());
 	}
 
-	public void setName(String displayName)
+	public void setName(Object displayName)
 	{
+		Text t = Text.of(displayName);
 		NBTCompoundJS nbt = getNbtOrNew();
-		nbt.compoundOrNew("display").set("Name", displayName);
-		setNbt(nbt);
-	}
 
-	public void setTranslatableName(String translatableName)
-	{
-		NBTCompoundJS nbt = getNbtOrNew();
-		nbt.compoundOrNew("display").set("LocName", translatableName);
+		if (t instanceof TextTranslate)
+		{
+			nbt.compoundOrNew("display").set("LocName", ((TextTranslate) t).getKey());
+		}
+		else
+		{
+			nbt.compoundOrNew("display").set("Name", t.getFormattedString());
+		}
+
 		setNbt(nbt);
 	}
 

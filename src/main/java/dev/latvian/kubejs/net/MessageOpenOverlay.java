@@ -33,7 +33,7 @@ public class MessageOpenOverlay implements IMessage
 
 		for (int i = 0; i < s; i++)
 		{
-			overlay.text.add(Text.fromJson(JsonUtilsJS.fromString(ByteBufUtils.readUTF8String(buf))));
+			overlay.add(Text.fromJson(JsonUtilsJS.fromString(ByteBufUtils.readUTF8String(buf))));
 		}
 	}
 

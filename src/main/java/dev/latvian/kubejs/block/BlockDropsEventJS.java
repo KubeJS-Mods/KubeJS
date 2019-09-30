@@ -1,5 +1,9 @@
 package dev.latvian.kubejs.block;
 
+import dev.latvian.kubejs.documentation.Ignore;
+import dev.latvian.kubejs.documentation.O;
+import dev.latvian.kubejs.documentation.P;
+import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
@@ -82,5 +86,24 @@ public class BlockDropsEventJS extends PlayerEventJS
 	public void setDropChance(float dropChance)
 	{
 		event.setDropChance(dropChance);
+	}
+
+	@Ignore
+	public void addDrop(Object item)
+	{
+		ItemStackJS i = ItemStackJS.of(item);
+
+		if (!i.isEmpty())
+		{
+			getDrops().add(i);
+		}
+	}
+
+	public void addDrop(@P("item") @T(ItemStackJS.class) Object item, @O @P("chance") float chance)
+	{
+		if (chance >= 1F || event.getWorld().rand.nextFloat() <= chance)
+		{
+			addDrop(item);
+		}
 	}
 }

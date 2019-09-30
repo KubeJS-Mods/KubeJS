@@ -9,6 +9,7 @@ import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.JsonUtilsJS;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.event.ClickEvent;
@@ -20,6 +21,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author LatvianModder
@@ -32,9 +34,13 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		{
 			return new TextString("null");
 		}
-		else if (o instanceof CharSequence)
+		else if (o instanceof CharSequence || o instanceof Number || o instanceof Character)
 		{
 			return new TextString(o.toString());
+		}
+		else if (o instanceof Enum)
+		{
+			return new TextString(((Enum) o).name());
 		}
 		else if (o instanceof Text)
 		{
@@ -189,6 +195,16 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		}
 
 		return new TextString(e.getAsString());
+	}
+
+	public static void write(ByteBuf buf, @Nullable Text text)
+	{
+	}
+
+	@Nullable
+	public static Text read(ByteBuf buf)
+	{
+		return null;
 	}
 
 	private TextColor color;
@@ -613,6 +629,32 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	public final boolean hasSiblings()
 	{
 		return siblings != null && !siblings.isEmpty();
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == this)
+		{
+			return true;
+		}
+		else if (obj instanceof Text)
+		{
+			Text t = (Text) obj;
+
+			if (color == t.color && bold == t.bold && italic == t.italic && underlined == t.underlined && strikethrough == t.strikethrough && obfuscated == t.obfuscated)
+			{
+				return Objects.equals(insertion, t.insertion) && Objects.equals(click, t.click) && Objects.equals(hover, t.hover) && Objects.equals(siblings, t.siblings);
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(color, bold, italic, underlined, strikethrough, obfuscated, insertion, click, hover, siblings);
 	}
 
 	@Override

@@ -118,12 +118,7 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public void setName(String displayName)
-	{
-	}
-
-	@Override
-	public void setTranslatableName(String translatableName)
+	public void setName(Object displayName)
 	{
 	}
 

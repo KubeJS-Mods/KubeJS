@@ -4,6 +4,7 @@ import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.world.BlockEvent;
 
@@ -33,7 +34,14 @@ public class BlockPlaceEventJS extends PlayerEventJS
 
 	public BlockContainerJS getBlock()
 	{
-		return new BlockContainerJS(event.getWorld(), event.getPos());
+		return new BlockContainerJS(event.getWorld(), event.getPos())
+		{
+			@Override
+			public IBlockState getBlockState()
+			{
+				return event.getState();
+			}
+		};
 	}
 
 	public EnumHand getHand()

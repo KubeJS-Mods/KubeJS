@@ -2,8 +2,6 @@ package dev.latvian.kubejs.entity;
 
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
-import dev.latvian.kubejs.item.BoundItemStackJS;
-import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.server.ServerJS;
@@ -18,7 +16,6 @@ import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.util.EnumFacing;
@@ -86,14 +83,15 @@ public class EntityJS implements MessageSender
 		return getName() + "-" + getId();
 	}
 
+	@Nullable
 	public ItemStackJS getItem()
 	{
-		if (entity instanceof EntityItem)
-		{
-			return new BoundItemStackJS(((EntityItem) entity).getItem());
-		}
+		return null;
+	}
 
-		return EmptyItemStackJS.INSTANCE;
+	public boolean isFrame()
+	{
+		return false;
 	}
 
 	public Set<String> getTags()
@@ -437,6 +435,18 @@ public class EntityJS implements MessageSender
 	public void extinguish()
 	{
 		entity.extinguish();
+	}
+
+	public NBTCompoundJS getFullNBT()
+	{
+		NBTTagCompound nbt = new NBTTagCompound();
+		entity.writeToNBT(nbt);
+		return NBTBaseJS.of(nbt).asCompound();
+	}
+
+	public void setFullNBT(@P("nbt") @T(NBTCompoundJS.class) Object n)
+	{
+		entity.readFromNBT(NBTBaseJS.of(n).asCompound().createNBT());
 	}
 
 	public NBTCompoundJS getNbt()

@@ -6,6 +6,8 @@ import dev.latvian.kubejs.util.JsonUtilsJS;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
+import java.util.Objects;
+
 /**
  * @author LatvianModder
  */
@@ -113,5 +115,41 @@ public class TextTranslate extends Text
 		}
 
 		return o;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == this)
+		{
+			return true;
+		}
+		else if (!(obj instanceof TextTranslate) || !key.equals(((TextTranslate) obj).key))
+		{
+			return false;
+		}
+
+		Object[] o = ((TextTranslate) obj).objects;
+
+		if (objects.length == o.length)
+		{
+			for (int i = 0; i < objects.length; i++)
+			{
+				if (!Objects.equals(objects[i], o[i]))
+				{
+					return false;
+				}
+			}
+
+			return super.equals(obj);
+		}
+
+		return false;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return (key.hashCode() * 31 + Objects.hash(objects)) * 31 + super.hashCode();
 	}
 }

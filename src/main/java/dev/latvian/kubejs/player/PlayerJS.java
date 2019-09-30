@@ -75,6 +75,12 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 		return inventory;
 	}
 
+	public void sendInventoryUpdate()
+	{
+		playerEntity.inventory.markDirty();
+		playerEntity.inventoryContainer.detectAndSendChanges();
+	}
+
 	public void give(@P("item") @T(ItemStackJS.class) Object item)
 	{
 		ItemHandlerHelper.giveItemToPlayer(playerEntity, ItemStackJS.of(item).getItemStack());

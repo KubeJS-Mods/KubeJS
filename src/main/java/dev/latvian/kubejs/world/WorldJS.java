@@ -4,6 +4,8 @@ import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.Info;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.entity.EntityJS;
+import dev.latvian.kubejs.entity.ItemEntityJS;
+import dev.latvian.kubejs.entity.ItemFrameEntityJS;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.PlayerDataJS;
@@ -19,6 +21,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.effect.EntityLightningBolt;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -138,22 +142,30 @@ public abstract class WorldJS implements WithAttachedData
 	public abstract PlayerDataJS getPlayerData(EntityPlayer player);
 
 	@Nullable
-	public EntityJS getEntity(@Nullable Entity entity)
+	public EntityJS getEntity(@Nullable Entity e)
 	{
-		if (entity == null)
+		if (e == null)
 		{
 			return null;
 		}
-		else if (entity instanceof EntityPlayer)
+		else if (e instanceof EntityPlayer)
 		{
-			return getPlayerData((EntityPlayer) entity).getPlayer();
+			return getPlayerData((EntityPlayer) e).getPlayer();
 		}
-		else if (entity instanceof EntityLivingBase)
+		else if (e instanceof EntityLivingBase)
 		{
-			return new LivingEntityJS(this, (EntityLivingBase) entity);
+			return new LivingEntityJS(this, (EntityLivingBase) e);
+		}
+		else if (e instanceof EntityItem)
+		{
+			return new ItemEntityJS(this, (EntityItem) e);
+		}
+		else if (e instanceof EntityItemFrame)
+		{
+			return new ItemFrameEntityJS(this, (EntityItemFrame) e);
 		}
 
-		return new EntityJS(this, entity);
+		return new EntityJS(this, e);
 	}
 
 	@Nullable

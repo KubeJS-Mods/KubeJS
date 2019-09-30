@@ -35,19 +35,9 @@ public class DamageSourceJS
 		return getWorld().getEntity(source.getImmediateSource());
 	}
 
-	public boolean hasImmediate()
-	{
-		return source.getImmediateSource() != null;
-	}
-
 	@Nullable
 	public EntityJS getActual()
 	{
 		return getWorld().getEntity(source.getImmediateSource());
-	}
-
-	public boolean hasActual()
-	{
-		return source.getImmediateSource() != null;
 	}
 }
