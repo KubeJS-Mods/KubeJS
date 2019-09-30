@@ -3,6 +3,7 @@ package dev.latvian.kubejs.integration.aurora;
 import dev.latvian.kubejs.documentation.Documentation;
 import dev.latvian.mods.aurora.AuroraHomePageEvent;
 import dev.latvian.mods.aurora.AuroraPageEvent;
+import dev.latvian.mods.aurora.page.HomePageEntry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -19,17 +20,15 @@ public class AuroraIntegration
 	@SubscribeEvent
 	public static void onAuroraHomePageEvent(AuroraHomePageEvent event)
 	{
-		event.add("KubeJS Documentation", "kubejs");
+		event.add(new HomePageEntry("KubeJS Documentation", "kubejs", "https://kubejs.latvian.dev/logo_48.png"));
 	}
 
 	@SubscribeEvent
 	public static void onAuroraEvent(AuroraPageEvent event)
 	{
-		if (event.getUri().startsWith("kubejs"))
+		if (event.getSplitUri()[0].equals("kubejs"))
 		{
-			String s = event.getUri().substring(6);
-
-			if (s.isEmpty())
+			if (event.getSplitUri().length == 1)
 			{
 				event.setPage(new KubeJSHomePage(Documentation.get()));
 			}
@@ -37,12 +36,12 @@ public class AuroraIntegration
 			{
 				try
 				{
-					Class c = Class.forName(s.substring(1));
+					Class c = Class.forName(event.getSplitUri()[1]);
 					event.setPage(new KubeJSClassPage(Documentation.get(), c));
 				}
 				catch (Exception ex)
 				{
-					event.setPage(new KubeJSClassErrorPage(s.substring(1)));
+					event.setPage(new KubeJSClassErrorPage(event.getSplitUri()[1]));
 				}
 			}
 
