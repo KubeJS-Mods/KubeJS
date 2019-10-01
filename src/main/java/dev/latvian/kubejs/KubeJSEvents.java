@@ -24,12 +24,14 @@ import dev.latvian.kubejs.entity.LivingEntityAttackEventJS;
 import dev.latvian.kubejs.entity.LivingEntityDeathEventJS;
 import dev.latvian.kubejs.entity.LivingEntityDropsEventJS;
 import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.item.ItemCraftedEventJS;
 import dev.latvian.kubejs.item.ItemEntityInteractEventJS;
 import dev.latvian.kubejs.item.ItemLeftClickEventJS;
 import dev.latvian.kubejs.item.ItemPickupEventJS;
 import dev.latvian.kubejs.item.ItemRegistryEventJS;
 import dev.latvian.kubejs.item.ItemRightClickEmptyEventJS;
 import dev.latvian.kubejs.item.ItemRightClickEventJS;
+import dev.latvian.kubejs.item.ItemSmeltedEventJS;
 import dev.latvian.kubejs.item.ItemTossEventJS;
 import dev.latvian.kubejs.net.NetworkEventJS;
 import dev.latvian.kubejs.player.ChestEventJS;
@@ -108,6 +110,8 @@ public class KubeJSEvents
 	public static final String ITEM_ENTITY_INTERACT = "item.entity_interact";
 	public static final String ITEM_PICKUP = "item.pickup";
 	public static final String ITEM_TOSS = "item.toss";
+	public static final String ITEM_CRAFTED = "item.crafted";
+	public static final String ITEM_SMELTED = "item.smelted";
 
 	@SubscribeEvent
 	public static void registerDocumentation(DocumentationEvent event)
@@ -180,5 +184,7 @@ public class KubeJSEvents
 		event.registerEvent(ITEM_ENTITY_INTERACT, ItemEntityInteractEventJS.class).canCancel();
 		event.registerEvent(ITEM_PICKUP, ItemPickupEventJS.class).canCancel();
 		event.registerEvent(ITEM_TOSS, ItemTossEventJS.class).canCancel();
+		event.registerEvent(ITEM_CRAFTED, ItemCraftedEventJS.class).serverOnly();
+		event.registerEvent(ITEM_SMELTED, ItemSmeltedEventJS.class).serverOnly();
 	}
 }

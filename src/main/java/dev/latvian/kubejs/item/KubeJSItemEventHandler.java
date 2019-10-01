@@ -10,6 +10,7 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
 /**
  * @author LatvianModder
@@ -68,6 +69,24 @@ public class KubeJSItemEventHandler
 		if (EventsJS.post(KubeJSEvents.ITEM_ENTITY_INTERACT, new ItemEntityInteractEventJS(event)))
 		{
 			event.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public static void crafted(PlayerEvent.ItemCraftedEvent event)
+	{
+		if (!event.player.world.isRemote)
+		{
+			EventsJS.post(KubeJSEvents.ITEM_CRAFTED, new ItemCraftedEventJS(event));
+		}
+	}
+
+	@SubscribeEvent
+	public static void smelted(PlayerEvent.ItemSmeltedEvent event)
+	{
+		if (!event.player.world.isRemote)
+		{
+			EventsJS.post(KubeJSEvents.ITEM_SMELTED, new ItemSmeltedEventJS(event));
 		}
 	}
 }

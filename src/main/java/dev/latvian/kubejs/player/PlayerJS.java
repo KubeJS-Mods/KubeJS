@@ -69,7 +69,14 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 	{
 		if (inventory == null)
 		{
-			inventory = new InventoryJS(new InvWrapper(playerEntity.inventory));
+			inventory = new InventoryJS(new InvWrapper(playerEntity.inventory))
+			{
+				@Override
+				public void markDirty()
+				{
+					sendInventoryUpdate();
+				}
+			};
 		}
 
 		return inventory;

@@ -8,6 +8,9 @@ import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.InvWrapper;
+
+import java.util.LinkedList;
 
 /**
  * @author LatvianModder
@@ -22,7 +25,7 @@ public class InventoryJS
 		inventory = h;
 	}
 
-	public int size()
+	public int getSize()
 	{
 		return inventory.getSlots();
 	}
@@ -192,5 +195,26 @@ public class InventoryJS
 		}
 
 		return true;
+	}
+
+	@Override
+	public String toString()
+	{
+		LinkedList<String> list = new LinkedList<>();
+
+		for (int i = 0; i < getSize(); i++)
+		{
+			list.add(get(i).toString());
+		}
+
+		return list.toString();
+	}
+
+	public void markDirty()
+	{
+		if (inventory instanceof InvWrapper)
+		{
+			((InvWrapper) inventory).getInv().markDirty();
+		}
 	}
 }
