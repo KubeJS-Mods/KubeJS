@@ -55,7 +55,7 @@ public class OreDictionaryIngredientJS implements IngredientJS
 	}
 
 	@Override
-	public boolean test(ItemStack stack)
+	public boolean testVanilla(ItemStack stack)
 	{
 		if (stack.isEmpty())
 		{

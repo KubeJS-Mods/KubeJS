@@ -17,7 +17,7 @@ import java.util.function.Predicate;
  * @author LatvianModder
  */
 @FunctionalInterface
-public interface IngredientJS extends Predicate<ItemStack>
+public interface IngredientJS
 {
 	static IngredientJS of(@Nullable Object object)
 	{
@@ -81,10 +81,14 @@ public interface IngredientJS extends Predicate<ItemStack>
 
 	boolean test(ItemStackJS stack);
 
-	@Override
-	default boolean test(ItemStack stack)
+	default boolean testVanilla(ItemStack stack)
 	{
 		return test(new BoundItemStackJS(stack));
+	}
+
+	default Predicate<ItemStack> getVanillaPredicate()
+	{
+		return new VanillaPredicate(this);
 	}
 
 	default boolean isEmpty()

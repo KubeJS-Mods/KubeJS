@@ -37,9 +37,9 @@ public class IngredientStackJS implements IngredientJS
 	}
 
 	@Override
-	public boolean test(ItemStack stack)
+	public boolean testVanilla(ItemStack stack)
 	{
-		return ingredient.test(stack);
+		return ingredient.testVanilla(stack);
 	}
 
 	@Override

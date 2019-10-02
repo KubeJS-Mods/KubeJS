@@ -26,7 +26,7 @@ public class MatchAllIngredientJS implements IngredientJS
 	}
 
 	@Override
-	public boolean test(ItemStack stack)
+	public boolean testVanilla(ItemStack stack)
 	{
 		return !stack.isEmpty();
 	}

@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-@DisplayName("Ore Dictionary Utilities")
+@DisplayName("OreDictionaryUtilities")
 public class OreDictWrapper
 {
 	public List<String> getDyes()

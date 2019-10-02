@@ -249,8 +249,8 @@ public class CraftingTableRecipeEventJS extends EventJS
 
 	public void remove(@Nullable Object output)
 	{
-		IngredientJS ingredient = IngredientJS.of(output);
-		removeAdvanced(recipe -> ingredient.test(recipe.getRecipeOutput()));
+		Predicate<ItemStack> predicate = IngredientJS.of(output).getVanillaPredicate();
+		removeAdvanced(recipe -> predicate.test(recipe.getRecipeOutput()));
 	}
 
 	public void removeID(Object id)

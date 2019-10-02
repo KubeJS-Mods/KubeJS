@@ -13,12 +13,15 @@ import java.util.List;
 public class DocumentedMethod implements Comparable<DocumentedMethod>
 {
 	public final String name;
+	public final String id;
 	public final Class returnType;
 	public final Type actualReturnType;
 	public final String[] paramNames;
 	public final Class[] paramTypes;
 	public final Type[] actualParamTypes;
 	public final String info;
+	public final int beanType;
+	public final String beanName;
 
 	public DocumentedMethod(Documentation documentation, Method method)
 	{
@@ -59,6 +62,41 @@ public class DocumentedMethod implements Comparable<DocumentedMethod>
 
 		Info infoAnnotation = findInfo(method);
 		info = infoAnnotation == null ? "" : infoAnnotation.value();
+
+		StringBuilder idBuilder = new StringBuilder();
+
+		idBuilder.append(name);
+
+		for (int i = 0; i < parameters.length; i++)
+		{
+			idBuilder.append('_');
+			idBuilder.append(documentation.getPrettyName(paramTypes[i]));
+			idBuilder.append('_');
+			idBuilder.append(paramNames[i]);
+		}
+
+		id = idBuilder.toString();
+
+		if (paramNames.length == 0 && name.length() > 3 && name.startsWith("get"))
+		{
+			beanType = 0;
+			beanName = name.substring(3, 4).toLowerCase() + name.substring(4);
+		}
+		else if (paramNames.length == 0 && name.length() > 2 && name.startsWith("is"))
+		{
+			beanType = 1;
+			beanName = name.substring(2, 3).toLowerCase() + name.substring(3);
+		}
+		else if (paramNames.length == 1 && name.length() > 3 && name.startsWith("set"))
+		{
+			beanType = 2;
+			beanName = name.substring(3, 4).toLowerCase() + name.substring(4);
+		}
+		else
+		{
+			beanType = -1;
+			beanName = "";
+		}
 	}
 
 	@Nullable

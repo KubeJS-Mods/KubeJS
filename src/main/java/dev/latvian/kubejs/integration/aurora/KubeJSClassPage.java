@@ -6,7 +6,7 @@ import dev.latvian.kubejs.documentation.DocumentedEvent;
 import dev.latvian.kubejs.documentation.DocumentedField;
 import dev.latvian.kubejs.documentation.DocumentedMethod;
 import dev.latvian.kubejs.documentation.Ignore;
-import dev.latvian.kubejs.event.EventsJS;
+import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.script.ScriptModData;
 import dev.latvian.mods.aurora.page.HTTPWebPage;
 import dev.latvian.mods.aurora.tag.Tag;
@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,144 +77,90 @@ public class KubeJSClassPage extends HTTPWebPage
 			body.p(docClass.value());
 		}
 
-		body.h3(c.isInterface() ? "Interface" : "Class");
-		body.p(c.getName()).addClass("type");
+		Tag classTable = body.table().id("classname").addClass("doc");
+		classTable.tr().th().a(c.isInterface() ? "Interface" : "Class", "#classname");
+		classTable.tr().td().span(c.getName(), "type");
+		body.br();
 
 		Class sc = c.getSuperclass();
 
-		body.h3("Extends");
-
-		boolean has = false;
+		Tag extendsTable = body.table().id("extends").addClass("doc");
+		extendsTable.tr().th().a("Extends", "#extends");
 
 		if (sc != null && sc != Object.class)
 		{
-			KubeJSHomePage.classText(documentation, body.p(), sc);
-			has = true;
+			KubeJSHomePage.classText(documentation, extendsTable.tr().td(), sc);
 		}
 
 		for (Class c1 : c.getInterfaces())
 		{
-			KubeJSHomePage.classText(documentation, body.p(), c1);
-			has = true;
+			KubeJSHomePage.classText(documentation, extendsTable.tr().td(), c1);
 		}
 
-		if (!has)
-		{
-			body.text("<None>");
-		}
+		body.br();
 
 		DocumentedEvent event = documentation.classToEvent.get(c);
 
 		if (event != null)
 		{
-			body.h3("Event");
 			Tag table = body.paired("table", "").addClass("doc");
 			Tag topRow = table.tr();
-			topRow.th().text("ID").title("ID of this event. For double events, alternate ID will be provided");
-			topRow.th().text("Can cancel").title("True if event can be cancelled");
-			topRow.th().text("Client").title("True if event is fired on client side");
-			topRow.th().text("Server").title("True if event is fired on server side");
+			KubeJSHomePage.hover(topRow.th().a("Event", "#event"), "ID of this event. For double events, alternate ID will be provided");
+			KubeJSHomePage.hover(topRow.th().text("Can cancel"), "True if event can be cancelled");
+			KubeJSHomePage.hover(topRow.th().text("Client"), "True if event is fired on client side");
+			KubeJSHomePage.hover(topRow.th().text("Server"), "True if event is fired on server side");
 			Tag row = table.tr();
 			row.td().text(event.eventID);
 			KubeJSHomePage.yesNoSpan(row.td(), event.canCancel);
 			KubeJSHomePage.yesNoSpan(row.td(), event.sideOnly == null || event.sideOnly == Side.CLIENT);
 			KubeJSHomePage.yesNoSpan(row.td(), event.sideOnly == null || event.sideOnly == Side.SERVER);
+			body.br();
 		}
 
 		Map<String, Class> attached = documentation.attachedData.get(c);
 
 		if (attached != null && !attached.isEmpty())
 		{
-			body.h3("Attached");
-
 			Tag attachedTable = body.table().addClass("doc");
-			Tag atTopRow = attachedTable.tr();
-			atTopRow.th().text("Name");
-			atTopRow.th().text("Type");
+			attachedTable.tr().th().a("Attached", "#attached").id("attached");
 
 			List<Map.Entry<String, Class>> list = new ArrayList<>(attached.entrySet());
 			list.sort(Comparator.comparing(Map.Entry::getKey));
 
 			for (Map.Entry<String, Class> entry : list)
 			{
-				Tag row = attachedTable.tr();
-				row.td().text(entry.getKey());
-				KubeJSHomePage.classText(documentation, row.td(), entry.getValue());
+				Tag row = attachedTable.tr().td();
+				KubeJSHomePage.classText(documentation, row, entry.getValue());
+				row.text(" ");
+				row.text(entry.getKey());
 			}
+
+			body.br();
 		}
 
-		List<DocumentedField> fieldList = new ArrayList<>();
+		Map<String, DocumentedField> fieldMap = new LinkedHashMap<>();
 
-		for (Field field : c.getFields())
-		//for (Field field : c.getDeclaredFields())
+		if (!EventJS.class.isAssignableFrom(c))
 		{
-			int m = field.getModifiers();
-
-			if (Modifier.isPublic(m) && !Modifier.isStatic(m) && !field.isAnnotationPresent(Ignore.class))
+			for (Field field : c.getFields())
 			{
-				fieldList.add(new DocumentedField(documentation, field));
+				int m = field.getModifiers();
+
+				if (Modifier.isPublic(m) && !Modifier.isStatic(m) && !field.isAnnotationPresent(Ignore.class))
+				{
+					DocumentedField f = new DocumentedField(documentation, field);
+					fieldMap.put(f.name, f);
+				}
 			}
 		}
-
-		if (EventsJS.class.isAssignableFrom(c))
-		{
-			body.h3("Fields").id("fields");
-
-			if (!fieldList.isEmpty())
-			{
-				fieldList.sort(null);
-
-				boolean info = false;
-
-				for (DocumentedField field : fieldList)
-				{
-					if (!field.info.isEmpty())
-					{
-						info = true;
-						break;
-					}
-				}
-
-				Tag methodTable = body.table().addClass("doc");
-				Tag mtTopRow = methodTable.tr();
-				mtTopRow.th().text("Name");
-				mtTopRow.th().text("Return Type");
-
-				if (info)
-				{
-					mtTopRow.th().text("Info");
-				}
-
-				for (DocumentedField field : fieldList)
-				{
-					Tag row = methodTable.tr();
-
-					Tag n = row.td().span("", "");
-					n.text(field.name);
-					KubeJSHomePage.classText(documentation, row.td(), field.type, field.actualType);
-
-					if (info)
-					{
-						row.td().text(field.info);
-					}
-				}
-			}
-			else
-			{
-				body.p("<None>");
-			}
-		}
-
-		body.h3("Methods").id("methods");
 
 		List<DocumentedMethod> methodList = new ArrayList<>();
 
 		for (Method method : c.getMethods())
-		//for (Method method : c.getDeclaredMethods())
 		{
-			int m = method.getModifiers();
+			int mo = method.getModifiers();
 
-			if (Modifier.isPublic(m) && !Modifier.isStatic(m) && !method.isAnnotationPresent(Ignore.class))
+			if (Modifier.isPublic(mo) && !Modifier.isStatic(mo) && !method.isAnnotationPresent(Ignore.class))
 			{
 				if (!Documentation.OBJECT_METHODS.contains(method.getName()))
 				{
@@ -222,37 +169,83 @@ public class KubeJSClassPage extends HTTPWebPage
 			}
 		}
 
+		Map<String, MethodBean> beanMap = new LinkedHashMap<>();
+
+		for (DocumentedMethod m : methodList)
+		{
+			if (m.beanType != -1 && !m.beanName.isEmpty())
+			{
+				MethodBean bean = beanMap.get(m.beanName);
+
+				if (bean == null)
+				{
+					bean = new MethodBean(m.beanName);
+					beanMap.put(m.beanName, bean);
+				}
+
+				bean.methods[m.beanType] = m;
+			}
+		}
+
+		for (MethodBean bean : beanMap.values())
+		{
+			DocumentedField field = new DocumentedField(documentation, bean);
+
+			if (field.type != null && field.actualType != null)
+			{
+				fieldMap.put(field.name, field);
+			}
+		}
+
+		if (!fieldMap.isEmpty())
+		{
+			List<DocumentedField> fieldList = new ArrayList<>(fieldMap.values());
+			fieldList.sort(null);
+
+			Tag methodTable = body.table().addClass("doc").id("fields");
+			Tag firstRow = methodTable.tr();
+			firstRow.th().a("Fields", "#fields");
+			firstRow.th().text("Getter");
+			firstRow.th().text("Setter");
+
+			for (DocumentedField field : fieldList)
+			{
+				Tag row = methodTable.tr();
+				Tag n = row.td().span("", "");
+				KubeJSHomePage.classText(documentation, n, field.type, field.actualType);
+				n.text(" ");
+				n.text(field.name);
+
+				if (!field.info.isEmpty())
+				{
+					n.text(" ");
+					KubeJSHomePage.emoji(n, "x1F4A1", field.info);
+				}
+
+				KubeJSHomePage.yesNoSpan(row.td(), field.getter);
+				KubeJSHomePage.yesNoSpan(row.td(), field.setter);
+			}
+
+			body.br();
+		}
+
 		if (!methodList.isEmpty())
 		{
 			methodList.sort(null);
 
-			boolean info = false;
+			Tag methodTable = body.table().addClass("doc").id("methods");
+			methodTable.tr().th().a("Methods", "#methods");
 
 			for (DocumentedMethod method : methodList)
 			{
-				if (!method.info.isEmpty())
+				if (method.beanType != -1 && !method.beanName.isEmpty())
 				{
-					info = true;
-					break;
+					continue;
 				}
-			}
 
-			Tag methodTable = body.table().addClass("doc");
-			Tag mtTopRow = methodTable.tr();
-			mtTopRow.th().text("Name");
-			mtTopRow.th().text("Return Type");
-			mtTopRow.th().text("Bean");
-
-			if (info)
-			{
-				mtTopRow.th().text("Info");
-			}
-
-			for (DocumentedMethod method : methodList)
-			{
-				Tag row = methodTable.tr();
-
-				Tag n = row.td().span("", "");
+				Tag n = methodTable.tr().td().id(method.id);
+				KubeJSHomePage.classText(documentation, n, method.returnType, method.actualReturnType);
+				n.text(" ");
 				n.text(method.name);
 				n.text("(");
 
@@ -270,34 +263,12 @@ public class KubeJSClassPage extends HTTPWebPage
 
 				n.text(")");
 
-				KubeJSHomePage.classText(documentation, row.td(), method.returnType, method.actualReturnType);
-
-				if (method.paramNames.length == 0 && method.name.length() > 3 && method.name.startsWith("get"))
+				if (!method.info.isEmpty())
 				{
-					row.td().text(method.name.substring(3, 4).toLowerCase() + method.name.substring(4));
-				}
-				else if (method.paramNames.length == 0 && method.name.length() > 2 && method.name.startsWith("is"))
-				{
-					row.td().text(method.name.substring(2, 3).toLowerCase() + method.name.substring(3));
-				}
-				else if (method.paramNames.length == 1 && method.name.length() > 3 && method.name.startsWith("set"))
-				{
-					row.td().text(method.name.substring(3, 4).toLowerCase() + method.name.substring(4));
-				}
-				else
-				{
-					row.td().text("-");
-				}
-
-				if (info)
-				{
-					row.td().text(method.info);
+					n.text(" ");
+					KubeJSHomePage.emoji(n, "x1F4A1", method.info);
 				}
 			}
-		}
-		else
-		{
-			body.p("<None>");
 		}
 
 		body.br();

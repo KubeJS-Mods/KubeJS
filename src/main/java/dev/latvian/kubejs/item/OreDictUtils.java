@@ -46,7 +46,7 @@ public class OreDictUtils
 
 		if (id >= 0 && id < idToStack.size())
 		{
-			idToStack.get(id).removeIf(ingredient);
+			idToStack.get(id).removeIf(ingredient.getVanillaPredicate());
 		}
 	}
 

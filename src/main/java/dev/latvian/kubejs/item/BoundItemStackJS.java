@@ -105,11 +105,11 @@ public class BoundItemStackJS extends ItemStackJS
 	@Override
 	public boolean test(ItemStackJS stack)
 	{
-		return stack instanceof BoundItemStackJS ? test(((BoundItemStackJS) stack).stack) : super.test(stack);
+		return stack instanceof BoundItemStackJS ? testVanilla(((BoundItemStackJS) stack).stack) : super.test(stack);
 	}
 
 	@Override
-	public boolean test(ItemStack stack2)
+	public boolean testVanilla(ItemStack stack2)
 	{
 		if (stack2.getCount() >= stack.getCount() && stack.getItem() == stack2.getItem())
 		{

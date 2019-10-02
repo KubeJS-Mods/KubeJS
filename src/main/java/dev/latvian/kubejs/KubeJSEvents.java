@@ -180,7 +180,7 @@ public class KubeJSEvents
 		event.registerEvent(ITEM_REGISTRY, ItemRegistryEventJS.class);
 		event.registerEvent(ITEM_RIGHT_CLICK, ItemRightClickEventJS.class).canCancel();
 		event.registerEvent(ITEM_RIGHT_CLICK_EMPTY, ItemRightClickEmptyEventJS.class).clientOnly();
-		event.registerEvent(ITEM_LEFT_CLICK, ItemLeftClickEventJS.class);
+		event.registerEvent(ITEM_LEFT_CLICK, ItemLeftClickEventJS.class).clientOnly();
 		event.registerEvent(ITEM_ENTITY_INTERACT, ItemEntityInteractEventJS.class).canCancel();
 		event.registerEvent(ITEM_PICKUP, ItemPickupEventJS.class).canCancel();
 		event.registerEvent(ITEM_TOSS, ItemTossEventJS.class).canCancel();

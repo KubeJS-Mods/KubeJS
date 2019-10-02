@@ -22,9 +22,9 @@ public final class NotIngredientJS implements IngredientJS
 	}
 
 	@Override
-	public boolean test(ItemStack stack)
+	public boolean testVanilla(ItemStack stack)
 	{
-		return !ingredientJS.test(stack);
+		return !ingredientJS.testVanilla(stack);
 	}
 
 	@Override

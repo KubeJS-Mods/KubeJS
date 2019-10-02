@@ -99,12 +99,12 @@ public class FurnaceRecipeEventJS extends RecipeEventBaseJS<FurnaceRecipeEventJS
 	@Override
 	public void remove(Object output)
 	{
-		FurnaceRecipes.instance().getSmeltingList().values().removeIf(IngredientJS.of(output));
+		FurnaceRecipes.instance().getSmeltingList().values().removeIf(IngredientJS.of(output).getVanillaPredicate());
 	}
 
 	@Override
 	public void removeInput(Object input)
 	{
-		FurnaceRecipes.instance().getSmeltingList().keySet().removeIf(IngredientJS.of(input));
+		FurnaceRecipes.instance().getSmeltingList().keySet().removeIf(IngredientJS.of(input).getVanillaPredicate());
 	}
 }

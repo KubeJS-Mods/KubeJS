@@ -94,7 +94,7 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public boolean test(ItemStack stack)
+	public boolean testVanilla(ItemStack stack)
 	{
 		return false;
 	}

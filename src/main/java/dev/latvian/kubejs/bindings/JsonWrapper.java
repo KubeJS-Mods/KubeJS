@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-@DisplayName("JSON Utilities")
+@DisplayName("JSONUtilities")
 public class JsonWrapper
 {
 	public JsonNull getJsonNull()

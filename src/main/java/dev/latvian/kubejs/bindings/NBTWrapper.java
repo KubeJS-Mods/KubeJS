@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-@DisplayName("NBT Utilities")
+@DisplayName("NBTUtilities")
 public class NBTWrapper
 {
 	public NBTNullJS getNullTag()

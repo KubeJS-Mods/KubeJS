@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -141,11 +142,11 @@ public class KubeJSHomePage extends HTTPWebPage
 
 		Tag eventTable = body.paired("table", "").addClass("doc");
 		Tag topRow = eventTable.tr();
-		topRow.th().text("ID").title("ID of this event. For double events, alternate ID will be provided");
+		hover(topRow.th().text("ID"), "ID of this event. For double events, alternate ID will be provided");
 		topRow.th().text("Type");
-		topRow.th().text("Can cancel").title("True if event can be cancelled");
-		topRow.th().text("Client").title("True if event is fired on client side");
-		topRow.th().text("Server").title("True if event is fired on server side");
+		hover(topRow.th().text("Can cancel"), "True if event can be cancelled");
+		hover(topRow.th().text("Client"), "True if event is fired on client side");
+		hover(topRow.th().text("Server"), "True if event is fired on server side");
 
 		for (DocumentedEvent event : list)
 		{
@@ -163,11 +164,17 @@ public class KubeJSHomePage extends HTTPWebPage
 		body.p().paired("i", "Mod loader: " + ScriptModData.getInstance().getType());
 		body.p().paired("i", "Minecraft version: " + ScriptModData.getInstance().getMcVersion());
 		body.p().paired("i").a("Visit kubejs.latvian.dev for more info about the mod", "https://kubejs.latvian.dev");
+		body.h3("").a("< Back to Aurora", "/");
 	}
 
-	public static void classText(Documentation d, Tag parent, Class c, Type t)
+	public static void classText(Documentation d, Tag parent, @Nullable Class c, @Nullable Type t)
 	{
 		Class ac = d.getActualType(c);
+
+		if (ac == null || t == null)
+		{
+			return;
+		}
 
 		if (ac.isPrimitive() || ac == Character.class || Number.class.isAssignableFrom(ac))
 		{
@@ -176,7 +183,7 @@ public class KubeJSHomePage extends HTTPWebPage
 		}
 
 		Tag tag = parent.span("", "");
-		tag.a(d.getPrettyName(c), "/kubejs/" + ac.getName()).addClass("type").title("More Info");
+		tag.a(d.getPrettyName(c), "/kubejs/" + ac.getName()).addClass("type");
 
 		if (t instanceof ParameterizedType)
 		{
@@ -210,8 +217,29 @@ public class KubeJSHomePage extends HTTPWebPage
 		classText(d, parent, c, c);
 	}
 
-	public static void yesNoSpan(Tag parent, boolean value)
+	public static Tag yesNoSpan(Tag parent, boolean value)
 	{
-		parent.span(value ? "Yes" : "No", value ? "yes" : "no");
+		return parent.span(value ? "Yes" : "No", value ? "yes" : "no");
+	}
+
+	public static Tag hover(Tag element, String text)
+	{
+		if (text.isEmpty())
+		{
+			return element;
+		}
+
+		element.addClass("tooltip");
+		element.span(text, "tooltiptext");
+		return element;
+	}
+
+	public static void emoji(Tag parent, String emoji, String hoverText)
+	{
+		//x1F537 - blue
+		//x1F536 - orange
+		//x1F4A1 - lamp
+
+		hover(parent.span(" &#" + emoji + ";", "").style("cursor", "default"), hoverText);
 	}
 }

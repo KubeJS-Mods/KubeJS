@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-@DisplayName("Text Utilities")
+@DisplayName("TextUtilities")
 public class TextWrapper
 {
 	@Info("Creates text component from any object")

@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-@DisplayName("Item Utilities")
+@DisplayName("ItemUtilities")
 public class ItemWrapper
 {
 	public ItemStackJS of(Object object)

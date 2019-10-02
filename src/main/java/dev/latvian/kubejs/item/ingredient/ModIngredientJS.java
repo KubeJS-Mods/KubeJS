@@ -31,7 +31,7 @@ public class ModIngredientJS implements IngredientJS
 	}
 
 	@Override
-	public boolean test(ItemStack stack)
+	public boolean testVanilla(ItemStack stack)
 	{
 		return !stack.isEmpty() && mod.equals(stack.getItem().getRegistryName().getNamespace());
 	}

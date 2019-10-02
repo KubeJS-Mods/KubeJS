@@ -97,7 +97,7 @@ public class InventoryJS
 
 		for (int i = inventory.getSlots(); i >= 0; i--)
 		{
-			if (ingredient.test(inventory.getStackInSlot(i)))
+			if (ingredient.testVanilla(inventory.getStackInSlot(i)))
 			{
 				if (modInv != null)
 				{
@@ -139,7 +139,7 @@ public class InventoryJS
 		{
 			ItemStack stack1 = inventory.getStackInSlot(i);
 
-			if (ingredient.test(stack1))
+			if (ingredient.testVanilla(stack1))
 			{
 				return i;
 			}
@@ -175,7 +175,7 @@ public class InventoryJS
 		{
 			ItemStack stack1 = inventory.getStackInSlot(i);
 
-			if (ingredient.test(stack1))
+			if (ingredient.testVanilla(stack1))
 			{
 				count += stack1.getCount();
 			}

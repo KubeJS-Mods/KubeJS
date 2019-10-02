@@ -47,7 +47,7 @@ public class KubeJSCraftingEventHandler
 
 				for (IRecipe recipe : recipes)
 				{
-					if (out.test(recipe.getRecipeOutput()))
+					if (out.testVanilla(recipe.getRecipeOutput()))
 					{
 						r.remove(recipe.getRegistryName());
 					}
@@ -65,7 +65,7 @@ public class KubeJSCraftingEventHandler
 
 		if (!furnaceOutput.isEmpty())
 		{
-			FurnaceRecipes.instance().getSmeltingList().values().removeIf(furnaceOutput);
+			FurnaceRecipes.instance().getSmeltingList().values().removeIf(furnaceOutput.getVanillaPredicate());
 		}
 
 		MatchAnyIngredientJS furnaceInput = new MatchAnyIngredientJS();
@@ -73,7 +73,7 @@ public class KubeJSCraftingEventHandler
 
 		if (!furnaceInput.isEmpty())
 		{
-			FurnaceRecipes.instance().getSmeltingList().keySet().removeIf(furnaceInput);
+			FurnaceRecipes.instance().getSmeltingList().keySet().removeIf(furnaceInput.getVanillaPredicate());
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.entity;
 
+import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -7,6 +8,7 @@ import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -23,6 +25,7 @@ import java.util.Map;
  */
 public class LivingEntityJS extends EntityJS
 {
+	@Ignore
 	public final EntityLivingBase livingEntity;
 
 	public LivingEntityJS(WorldJS w, EntityLivingBase e)
@@ -60,6 +63,11 @@ public class LivingEntityJS extends EntityJS
 	public float getMaxHealth()
 	{
 		return livingEntity.getMaxHealth();
+	}
+
+	public void setMaxHealth(@P("hp") float hp)
+	{
+		livingEntity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(hp);
 	}
 
 	public boolean isUndead()
@@ -156,6 +164,26 @@ public class LivingEntityJS extends EntityJS
 		livingEntity.setHeldItem(hand, ItemStackJS.of(item).getItemStack());
 	}
 
+	public ItemStackJS getMainHandItem()
+	{
+		return getHeldItem(EnumHand.MAIN_HAND);
+	}
+
+	public void setMainHandItem(@P("item") @T(ItemStackJS.class) Object item)
+	{
+		setHeldItem(EnumHand.MAIN_HAND, item);
+	}
+
+	public ItemStackJS getOffHandItem()
+	{
+		return getHeldItem(EnumHand.OFF_HAND);
+	}
+
+	public void setOffHandItem(@P("item") @T(ItemStackJS.class) Object item)
+	{
+		setHeldItem(EnumHand.OFF_HAND, item);
+	}
+
 	public void damageHeldItem(@P("hand") EnumHand hand, @P("amount") int amount)
 	{
 		ItemStack stack = livingEntity.getHeldItem(hand);
@@ -174,7 +202,7 @@ public class LivingEntityJS extends EntityJS
 	public boolean isHoldingInAnyHand(@P("ingredient") @T(IngredientJS.class) Object ingredient)
 	{
 		IngredientJS i = IngredientJS.of(ingredient);
-		return i.test(livingEntity.getHeldItem(EnumHand.MAIN_HAND)) || i.test(livingEntity.getHeldItem(EnumHand.OFF_HAND));
+		return i.testVanilla(livingEntity.getHeldItem(EnumHand.MAIN_HAND)) || i.testVanilla(livingEntity.getHeldItem(EnumHand.OFF_HAND));
 	}
 
 	public float getMovementSpeed()

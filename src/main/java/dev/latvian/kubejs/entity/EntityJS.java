@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.entity;
 
+import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -31,6 +32,8 @@ import java.util.UUID;
 public class EntityJS implements MessageSender
 {
 	private final WorldJS world;
+
+	@Ignore
 	public final Entity entity;
 
 	public EntityJS(WorldJS w, Entity e)

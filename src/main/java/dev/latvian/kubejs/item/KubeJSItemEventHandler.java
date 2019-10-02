@@ -75,7 +75,7 @@ public class KubeJSItemEventHandler
 	@SubscribeEvent
 	public static void crafted(PlayerEvent.ItemCraftedEvent event)
 	{
-		if (!event.player.world.isRemote)
+		if (!event.player.world.isRemote && !event.crafting.isEmpty())
 		{
 			EventsJS.post(KubeJSEvents.ITEM_CRAFTED, new ItemCraftedEventJS(event));
 		}
@@ -84,7 +84,7 @@ public class KubeJSItemEventHandler
 	@SubscribeEvent
 	public static void smelted(PlayerEvent.ItemSmeltedEvent event)
 	{
-		if (!event.player.world.isRemote)
+		if (!event.player.world.isRemote && !event.smelting.isEmpty())
 		{
 			EventsJS.post(KubeJSEvents.ITEM_SMELTED, new ItemSmeltedEventJS(event));
 		}

@@ -48,7 +48,7 @@ public class VanillaIngredientWrapper extends Ingredient
 	@Override
 	public boolean apply(@Nullable ItemStack stack)
 	{
-		return stack != null && !stack.isEmpty() && ingredientJS.test(stack);
+		return stack != null && !stack.isEmpty() && ingredientJS.testVanilla(stack);
 	}
 
 	@Override

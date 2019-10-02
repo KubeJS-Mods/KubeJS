@@ -172,6 +172,32 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 		playerEntity.addExperienceLevel(l);
 	}
 
+	public void setXp(@P("xp") int xp)
+	{
+		playerEntity.experienceTotal = 0;
+		playerEntity.experience = 0F;
+		playerEntity.experienceLevel = 0;
+		playerEntity.addExperience(xp);
+	}
+
+	public int getXp()
+	{
+		return playerEntity.experienceTotal;
+	}
+
+	public void setXpLevel(@P("level") int l)
+	{
+		playerEntity.experienceTotal = 0;
+		playerEntity.experience = 0F;
+		playerEntity.experienceLevel = 0;
+		playerEntity.addExperienceLevel(l);
+	}
+
+	public int getXpLevel()
+	{
+		return playerEntity.experienceLevel;
+	}
+
 	public abstract void openOverlay(Overlay overlay);
 
 	public abstract void closeOverlay(String overlay);

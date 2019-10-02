@@ -11,7 +11,7 @@ import java.util.UUID;
 /**
  * @author LatvianModder
  */
-@DisplayName("UUID Utilities")
+@DisplayName("UUIDUtilities")
 public class UUIDWrapper
 {
 	public String toString(@P("id") UUID id)

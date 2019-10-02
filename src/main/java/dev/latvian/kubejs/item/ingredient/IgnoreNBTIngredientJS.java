@@ -26,7 +26,7 @@ public final class IgnoreNBTIngredientJS implements IngredientJS
 	}
 
 	@Override
-	public boolean test(ItemStack stack)
+	public boolean testVanilla(ItemStack stack)
 	{
 		int d = item.getData();
 		return (d == OreDictionary.WILDCARD_VALUE || d == stack.getMetadata()) && item.getItem() == stack.getItem();

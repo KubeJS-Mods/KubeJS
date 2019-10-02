@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-@DisplayName("Block Utilities")
+@DisplayName("BlockUtilities")
 public class BlockWrapper
 {
 	public Map<String, MaterialJS> getMaterial()

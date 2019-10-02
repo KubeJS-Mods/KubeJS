@@ -3,12 +3,11 @@ package dev.latvian.kubejs.documentation;
 import dev.latvian.kubejs.script.DataType;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.util.ArrayList;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -114,40 +113,17 @@ public class Documentation
 			name = name.substring(0, name.length() - 2);
 		}
 
-		List<String> list = new ArrayList<>();
-		StringBuilder sb = new StringBuilder();
-		boolean prevUppercase = true;
-
-		for (int i = 0; i < name.length(); i++)
-		{
-			char ch = name.charAt(i);
-
-			boolean uppercase = Character.isUpperCase(ch);
-
-			if (uppercase && !prevUppercase)
-			{
-				if (sb.length() > 0)
-				{
-					list.add(sb.toString());
-				}
-
-				sb.setLength(0);
-			}
-
-			prevUppercase = uppercase;
-			sb.append(ch);
-		}
-
-		if (sb.length() > 0)
-		{
-			list.add(sb.toString());
-		}
-
-		return String.join(" ", list);
+		return name;
 	}
 
-	public Class getActualType(Class c)
+	@Nullable
+	public Class getActualType(@Nullable Class c)
 	{
+		if (c == null)
+		{
+			return null;
+		}
+
 		if (c.isArray())
 		{
 			return getActualType(c.getComponentType());
