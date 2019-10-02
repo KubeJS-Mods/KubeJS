@@ -7,9 +7,13 @@ import dev.latvian.kubejs.item.BlockItemJS;
 import dev.latvian.kubejs.item.ItemJS;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.util.FieldJS;
 import dev.latvian.kubejs.util.Overlay;
+import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -37,6 +41,8 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = KubeJS.MOD_ID, value = Side.CLIENT)
 public class KubeJSClientEventHandler
 {
+	private static final FieldJS buttonList = UtilsJS.getField(GuiScreen.class, "buttonList", "field_146292_n");
+
 	@SubscribeEvent
 	public static void onBindings(BindingsEvent event)
 	{
@@ -210,6 +216,13 @@ public class KubeJSClientEventHandler
 		int spx = p;
 		int spy = p;
 
+		List<GuiButton> list = buttonList.get(event.getGui());
+
+		while (isOver(list, spx, spy))
+		{
+			spy += 16;
+		}
+
 		for (Overlay o : KubeJSClient.activeOverlays.values())
 		{
 			if (o.alwaysOnTop)
@@ -219,5 +232,18 @@ public class KubeJSClientEventHandler
 		}
 
 		GlStateManager.popMatrix();
+	}
+
+	private static boolean isOver(List<GuiButton> list, int x, int y)
+	{
+		for (GuiButton button : list)
+		{
+			if (button.enabled && button.visible && x >= button.x && y >= button.y && x < button.x + button.width && y < button.y + button.height)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
