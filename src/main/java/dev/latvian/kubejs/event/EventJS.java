@@ -15,7 +15,6 @@ public class EventJS
 {
 	private boolean cancelled = false;
 
-	@Ignore
 	public boolean canCancel()
 	{
 		return false;

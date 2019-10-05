@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.entity;
 
 import dev.latvian.kubejs.documentation.Ignore;
+import dev.latvian.kubejs.documentation.Info;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -277,6 +278,36 @@ public class EntityJS implements MessageSender
 		entity.rotationPitch = pitch;
 	}
 
+	public double getMotionX()
+	{
+		return entity.motionX;
+	}
+
+	public void setMotionX(@P("x") double x)
+	{
+		entity.motionX = x;
+	}
+
+	public double getMotionY()
+	{
+		return entity.motionY;
+	}
+
+	public void setMotionY(@P("y") double y)
+	{
+		entity.motionY = y;
+	}
+
+	public double getMotionZ()
+	{
+		return entity.motionZ;
+	}
+
+	public void setMotionZ(@P("z") double z)
+	{
+		entity.motionZ = z;
+	}
+
 	public int getTicksExisted()
 	{
 		return entity.ticksExisted;
@@ -301,13 +332,6 @@ public class EntityJS implements MessageSender
 	{
 		entity.setLocationAndAngles(x, y, z, yaw, pitch);
 	}
-
-	/*
-	public void setDimensionPositionAndRotation(int dimension, double x, double y, double z, float yaw, float pitch)
-	{
-		setPositionAndRotation(x, y, z, yaw, pitch);
-	}
-	*/
 
 	public void setMotion(@P("x") double x, @P("y") double y, @P("z") double z)
 	{
@@ -373,17 +397,20 @@ public class EntityJS implements MessageSender
 		return world.getEntity(entity.getRidingEntity());
 	}
 
+	@Info("Scoreboard team ID")
 	public String getTeamID()
 	{
 		Team team = entity.getTeam();
 		return team == null ? "" : team.getName();
 	}
 
+	@Info("Checks if this entity is on the same scoreboard team as another entity")
 	public boolean isOnSameTeam(@P("entity") EntityJS e)
 	{
 		return entity.isOnSameTeam(e.entity);
 	}
 
+	@Info("Checks if this entity is on scoreboard team")
 	public boolean isOnScoreboardTeam(@P("teamID") String teamID)
 	{
 		Team team = entity.getEntityWorld().getScoreboard().getTeam(teamID);
@@ -395,21 +422,24 @@ public class EntityJS implements MessageSender
 		entity.setCustomNameTag(name);
 	}
 
+	@Info("Custom display name")
 	public String getCustomName()
 	{
 		return entity.getCustomNameTag();
 	}
 
+	@Info("Checks if custom display name is set")
 	public boolean getHasCustomName()
 	{
 		return entity.hasCustomName();
 	}
 
-	public void setCustomNameAlwaysVisible(@P("flag") boolean b)
+	public void setCustomNameAlwaysVisible(@P("alwaysVisible") boolean b)
 	{
 		entity.setAlwaysRenderNameTag(b);
 	}
 
+	@Info("Custom display name will always be visible above head")
 	public boolean getCustomNameAlwaysVisible()
 	{
 		return entity.getAlwaysRenderNameTag();
@@ -420,16 +450,32 @@ public class EntityJS implements MessageSender
 		return entity.getHorizontalFacing();
 	}
 
+	public EnumFacing getFacing()
+	{
+		if (getPitch() > 45F)
+		{
+			return EnumFacing.DOWN;
+		}
+		else if (getPitch() < -45F)
+		{
+			return EnumFacing.UP;
+		}
+
+		return getHorizontalFacing();
+	}
+
 	public float getEyeHeight()
 	{
 		return entity.getEyeHeight();
 	}
 
+	@Info("Block position of the entity")
 	public BlockContainerJS getBlock()
 	{
 		return new BlockContainerJS(entity.world, entity.getPosition());
 	}
 
+	@Info("Sets entity on fire for x seconds")
 	public void setOnFire(@P("seconds") int seconds)
 	{
 		entity.setFire(seconds);
@@ -440,6 +486,7 @@ public class EntityJS implements MessageSender
 		entity.extinguish();
 	}
 
+	@Info("Entity NBT")
 	public NBTCompoundJS getFullNBT()
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
@@ -452,6 +499,7 @@ public class EntityJS implements MessageSender
 		entity.readFromNBT(NBTBaseJS.of(n).asCompound().createNBT());
 	}
 
+	@Info("Custom NBT you can use for saving custom data")
 	public NBTCompoundJS getNbt()
 	{
 		NBTTagCompound nbt = entity.getEntityData();
@@ -476,11 +524,13 @@ public class EntityJS implements MessageSender
 		}
 	}
 
+	@Info("Get specific value from custom NBT")
 	public NBTBaseJS getNBTData(@P("key") String key)
 	{
 		return getNbt().get(key);
 	}
 
+	@Info("Set specific value in custom NBT")
 	public void setNBTData(@P("key") String key, @P("nbt") @Nullable Object nbt)
 	{
 		NBTCompoundJS n = getNbt();
@@ -488,6 +538,7 @@ public class EntityJS implements MessageSender
 		setNbt(n);
 	}
 
+	@Info("Play sound at entity. Must be played from server side")
 	public void playSound(@P("id") Object id, @P("volume") float volume, @P("pitch") float pitch)
 	{
 		SoundEvent event = id instanceof SoundEvent ? (SoundEvent) id : SoundEvent.REGISTRY.getObject(ID.of(id).mc());
@@ -498,11 +549,13 @@ public class EntityJS implements MessageSender
 		}
 	}
 
+	@Info("Play sound at entity. Must be played from server side")
 	public void playSound(@P("id") Object id)
 	{
 		playSound(id, 1F, 1F);
 	}
 
+	@Info("Spawn entity in world")
 	public void spawn()
 	{
 		world.world.spawnEntity(entity);

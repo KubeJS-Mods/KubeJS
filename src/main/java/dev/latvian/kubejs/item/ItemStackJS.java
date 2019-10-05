@@ -246,7 +246,14 @@ public abstract class ItemStackJS implements IngredientJS
 		}
 		else
 		{
-			nbt.compoundOrNew("display").set("Name", t.getFormattedString());
+			String s = t.getFormattedString();
+
+			if (s.endsWith("\u00a7r"))
+			{
+				s = s.substring(0, s.length() - 2);
+			}
+
+			nbt.compoundOrNew("display").set("Name", s);
 		}
 
 		setNbt(nbt);

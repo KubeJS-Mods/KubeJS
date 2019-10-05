@@ -11,9 +11,11 @@ import dev.latvian.kubejs.util.AttachedData;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.WithAttachedData;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
+import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -150,6 +152,42 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 	@Override
 	public void spawn()
 	{
+	}
+
+	@Override
+	public NBTCompoundJS getNbt()
+	{
+		NBTTagCompound nbt = entity.getEntityData();
+		NBTTagCompound nbt1 = (NBTTagCompound) nbt.getTag(EntityPlayer.PERSISTED_NBT_TAG);
+
+		if (nbt1 == null)
+		{
+			nbt1 = new NBTTagCompound();
+			nbt.setTag(EntityPlayer.PERSISTED_NBT_TAG, nbt1);
+		}
+
+		NBTTagCompound nbt2 = (NBTTagCompound) nbt1.getTag("KubeJS");
+
+		if (nbt2 == null)
+		{
+			nbt2 = new NBTTagCompound();
+			nbt1.setTag("KubeJS", nbt2);
+		}
+
+		return NBTBaseJS.of(nbt2).asCompound();
+	}
+
+	@Override
+	public void setNbt(@P("nbt") NBTCompoundJS nbt)
+	{
+		NBTTagCompound n = nbt.createNBT();
+
+		if (n != null)
+		{
+			NBTTagCompound n1 = entity.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
+			n1.setTag("KubeJS", n);
+			entity.getEntityData().setTag(EntityPlayer.PERSISTED_NBT_TAG, n1);
+		}
 	}
 
 	public void sendData(@P("channel") String channel, @Nullable @P("data") Object data)
