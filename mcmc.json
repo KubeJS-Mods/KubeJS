@@ -1,0 +1,35 @@
+{
+	"type": "mod",
+	"id": "kubejs",
+	"name": "KubeJS",
+	"version": "1.1.0",
+	"add_build_number": true,
+	"group": "dev.latvian.kubejs",
+	"minecraft": "1.12.2",
+	"forge": "14.23.5.2784",
+	"mappings": "snapshot_20180814",
+	"required_dependencies": [
+	],
+	"optional_dependencies": [
+		{
+			"type": "mod",
+			"id": "aurora",
+			"version": "latest"
+		},
+		{
+			"type": "curseforge",
+			"id": "jei",
+			"file": "2682936"
+		},
+		{
+			"type": "curseforge",
+			"id": "packmode",
+			"file": "2567799"
+		},
+		{
+			"type": "curseforge",
+			"id": "gamestages",
+			"file": "2758688"
+		}
+	]
+}
