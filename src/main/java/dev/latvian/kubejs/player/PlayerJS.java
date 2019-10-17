@@ -20,7 +20,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nullable;
 
@@ -68,7 +67,7 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 	{
 		if (inventory == null)
 		{
-			inventory = new InventoryJS(new InvWrapper(minecraftPlayer.inventory))
+			inventory = new InventoryJS(minecraftPlayer.inventory)
 			{
 				@Override
 				public void markDirty()

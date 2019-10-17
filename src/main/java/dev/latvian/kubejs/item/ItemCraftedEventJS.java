@@ -8,7 +8,6 @@ import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.inventory.ContainerWorkbench;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
-import net.minecraftforge.items.wrapper.InvWrapper;
 
 import javax.annotation.Nullable;
 
@@ -38,7 +37,7 @@ public class ItemCraftedEventJS extends PlayerEventJS
 
 	public InventoryJS getMatrix()
 	{
-		return new InventoryJS(new InvWrapper(event.craftMatrix));
+		return new InventoryJS(event.craftMatrix);
 	}
 
 	@Nullable

@@ -35,6 +35,7 @@ import dev.latvian.kubejs.item.ItemSmeltedEventJS;
 import dev.latvian.kubejs.item.ItemTossEventJS;
 import dev.latvian.kubejs.net.NetworkEventJS;
 import dev.latvian.kubejs.player.ChestEventJS;
+import dev.latvian.kubejs.player.InventoryEventJS;
 import dev.latvian.kubejs.player.PlayerAdvancementEventJS;
 import dev.latvian.kubejs.player.PlayerChatEventJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
@@ -79,6 +80,8 @@ public class KubeJSEvents
 	public static final String PLAYER_DATA_FROM_CLIENT = "player.data_from_client";
 	public static final String PLAYER_CHAT = "player.chat";
 	public static final String PLAYER_ADVANCEMENT = "player.advancement";
+	public static final String PLAYER_INVENTORY_OPENED = "player.inventory.opened";
+	public static final String PLAYER_INVENTORY_CLOSED = "player.inventory.closed";
 	public static final String PLAYER_CHEST_OPENED = "player.chest.opened";
 	public static final String PLAYER_CHEST_CLOSED = "player.chest.closed";
 
@@ -153,6 +156,8 @@ public class KubeJSEvents
 		event.registerEvent(PLAYER_DATA_FROM_CLIENT, NetworkEventJS.class).doubleParam("channel").serverOnly().canCancel();
 		event.registerEvent(PLAYER_CHAT, PlayerChatEventJS.class).serverOnly().canCancel();
 		event.registerEvent(PLAYER_ADVANCEMENT, PlayerAdvancementEventJS.class).serverOnly();
+		event.registerEvent(PLAYER_INVENTORY_OPENED, InventoryEventJS.class);
+		event.registerEvent(PLAYER_INVENTORY_CLOSED, InventoryEventJS.class);
 		event.registerEvent(PLAYER_CHEST_OPENED, ChestEventJS.class);
 		event.registerEvent(PLAYER_CHEST_CLOSED, ChestEventJS.class);
 

@@ -36,6 +36,12 @@ public class KubeJSClassErrorPage extends HTTPWebPage
 	}
 
 	@Override
+	public boolean addBackButton()
+	{
+		return false;
+	}
+
+	@Override
 	public void body(Tag body)
 	{
 		body.img("https://kubejs.latvian.dev/logo_title.png").style("height", "7em");

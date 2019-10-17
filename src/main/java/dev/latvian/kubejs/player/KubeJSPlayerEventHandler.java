@@ -90,18 +90,22 @@ public class KubeJSPlayerEventHandler
 	@SubscribeEvent
 	public static void onChestOpened(PlayerContainerEvent.Open event)
 	{
+		EventsJS.post(KubeJSEvents.PLAYER_INVENTORY_OPENED, new InventoryEventJS(event));
+
 		if (event.getContainer() instanceof ContainerChest)
 		{
-			EventsJS.post(KubeJSEvents.PLAYER_CHEST_OPENED, new ChestEventJS(event.getEntityPlayer(), ((ContainerChest) event.getContainer()).getLowerChestInventory()));
+			EventsJS.post(KubeJSEvents.PLAYER_CHEST_OPENED, new ChestEventJS(event));
 		}
 	}
 
 	@SubscribeEvent
 	public static void onChestClosed(PlayerContainerEvent.Close event)
 	{
+		EventsJS.post(KubeJSEvents.PLAYER_INVENTORY_CLOSED, new InventoryEventJS(event));
+
 		if (event.getContainer() instanceof ContainerChest)
 		{
-			EventsJS.post(KubeJSEvents.PLAYER_CHEST_CLOSED, new ChestEventJS(event.getEntityPlayer(), ((ContainerChest) event.getContainer()).getLowerChestInventory()));
+			EventsJS.post(KubeJSEvents.PLAYER_CHEST_CLOSED, new ChestEventJS(event));
 		}
 	}
 }

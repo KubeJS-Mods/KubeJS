@@ -1,47 +1,38 @@
 package dev.latvian.kubejs.player;
 
-import dev.latvian.kubejs.entity.EntityJS;
+import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 
 import javax.annotation.Nullable;
 
 /**
  * @author LatvianModder
  */
-public class ChestEventJS extends PlayerEventJS
+public class ChestEventJS extends InventoryEventJS
 {
-	private final EntityPlayer player;
-	public final IInventory wrappedInventory;
 	private InventoryJS inventory;
 
-	public ChestEventJS(EntityPlayer p, IInventory inv)
+	public ChestEventJS(PlayerContainerEvent e)
 	{
-		player = p;
-		wrappedInventory = inv;
+		super(e);
 	}
 
-	@Override
-	public boolean canCancel()
+	@MinecraftClass
+	public IInventory getWrappedInventory()
 	{
-		return true;
-	}
-
-	@Override
-	public EntityJS getEntity()
-	{
-		return entityOf(player);
+		return ((ContainerChest) getInventoryContainer()).getLowerChestInventory();
 	}
 
 	public InventoryJS getInventory()
 	{
 		if (inventory == null)
 		{
-			inventory = new InventoryJS(new InvWrapper(wrappedInventory));
+			inventory = new InventoryJS(getWrappedInventory());
 		}
 
 		return inventory;
@@ -50,9 +41,9 @@ public class ChestEventJS extends PlayerEventJS
 	@Nullable
 	public BlockContainerJS getBlock()
 	{
-		if (wrappedInventory instanceof TileEntity)
+		if (getWrappedInventory() instanceof TileEntity)
 		{
-			return getWorld().getBlock((TileEntity) wrappedInventory);
+			return getWorld().getBlock((TileEntity) getWrappedInventory());
 		}
 
 		return null;

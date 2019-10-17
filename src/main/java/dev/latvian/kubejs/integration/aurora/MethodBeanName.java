@@ -48,9 +48,12 @@ public class MethodBeanName implements Comparable<MethodBeanName>
 		JAVA_KEYWORDS.add("try");
 		JAVA_KEYWORDS.add("catch");
 		JAVA_KEYWORDS.add("extends");
+		JAVA_KEYWORDS.add("class");
 		JAVA_KEYWORDS.add("interface");
 		JAVA_KEYWORDS.add("new");
 		JAVA_KEYWORDS.add("instanceof");
+		JAVA_KEYWORDS.add("enum");
+		JAVA_KEYWORDS.add("this");
 	}
 
 	@Nullable

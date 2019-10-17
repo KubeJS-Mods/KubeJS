@@ -170,7 +170,6 @@ public class KubeJSHomePage extends HTTPWebPage
 		body.p().paired("i", "Mod loader: " + ScriptModData.getInstance().getType());
 		body.p().paired("i", "Minecraft version: " + ScriptModData.getInstance().getMcVersion());
 		body.p().paired("i").a("Visit kubejs.latvian.dev for more info about the mod", "https://kubejs.latvian.dev");
-		body.h3("").a("< Back to Aurora", "/");
 	}
 
 	public static String classText(Documentation d, Tag parent, @Nullable Class c, @Nullable Type t)

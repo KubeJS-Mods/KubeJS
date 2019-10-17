@@ -6,11 +6,16 @@ import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
+import dev.latvian.kubejs.world.BlockContainerJS;
+import dev.latvian.kubejs.world.WorldJS;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
+import javax.annotation.Nullable;
 import java.util.LinkedList;
 
 /**
@@ -27,17 +32,22 @@ public class InventoryJS
 		minecraftInventory = h;
 	}
 
+	public InventoryJS(IInventory h)
+	{
+		minecraftInventory = new InvWrapper(h);
+	}
+
 	public int getSize()
 	{
 		return minecraftInventory.getSlots();
 	}
 
-	public ItemStackJS get(int slot)
+	public ItemStackJS get(@P("slot") int slot)
 	{
 		return ItemStackJS.of(minecraftInventory.getStackInSlot(slot));
 	}
 
-	public void set(int slot, Object item)
+	public void set(@P("slot") int slot, @P("item") @T(ItemStackJS.class) Object item)
 	{
 		if (minecraftInventory instanceof IItemHandlerModifiable)
 		{
@@ -49,22 +59,22 @@ public class InventoryJS
 		}
 	}
 
-	public ItemStackJS insert(int slot, Object item, boolean simulate)
+	public ItemStackJS insert(@P("slot") int slot, @T(ItemStackJS.class) Object item, @P("simulate") boolean simulate)
 	{
 		return ItemStackJS.of(minecraftInventory.insertItem(slot, ItemStackJS.of(item).getItemStack(), simulate));
 	}
 
-	public ItemStackJS extract(int slot, int amount, boolean simulate)
+	public ItemStackJS extract(@P("slot") int slot, @P("amount") int amount, @P("simulate") boolean simulate)
 	{
 		return ItemStackJS.of(minecraftInventory.extractItem(slot, amount, simulate));
 	}
 
-	public int getSlotLimit(int slot)
+	public int getSlotLimit(@P("slot") int slot)
 	{
 		return minecraftInventory.getSlotLimit(slot);
 	}
 
-	public boolean isItemValid(int slot, Object item)
+	public boolean isItemValid(@P("slot") int slot, @T(ItemStackJS.class) Object item)
 	{
 		return minecraftInventory.isItemValid(slot, ItemStackJS.of(item).getItemStack());
 	}
@@ -218,5 +228,21 @@ public class InventoryJS
 		{
 			((InvWrapper) minecraftInventory).getInv().markDirty();
 		}
+	}
+
+	@Nullable
+	public BlockContainerJS getBlock(WorldJS world)
+	{
+		if (minecraftInventory instanceof InvWrapper)
+		{
+			IInventory inv = ((InvWrapper) minecraftInventory).getInv();
+
+			if (inv instanceof TileEntity)
+			{
+				return world.getBlock((TileEntity) inv);
+			}
+		}
+
+		return null;
 	}
 }
