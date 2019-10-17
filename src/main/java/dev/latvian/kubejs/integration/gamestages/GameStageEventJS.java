@@ -2,30 +2,28 @@ package dev.latvian.kubejs.integration.gamestages;
 
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
-import net.minecraft.entity.player.EntityPlayer;
+import net.darkhax.gamestages.event.GameStageEvent;
 
 /**
  * @author LatvianModder
  */
 public class GameStageEventJS extends PlayerEventJS
 {
-	private final EntityPlayer player;
-	private final String stage;
+	private final GameStageEvent event;
 
-	public GameStageEventJS(EntityPlayer p, String s)
+	public GameStageEventJS(GameStageEvent e)
 	{
-		player = p;
-		stage = s;
+		event = e;
 	}
 
 	@Override
 	public EntityJS getEntity()
 	{
-		return entityOf(player);
+		return entityOf(event);
 	}
 
 	public String getStage()
 	{
-		return stage;
+		return event.getStageName();
 	}
 }

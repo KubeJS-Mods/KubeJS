@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.entity;
 
-import dev.latvian.kubejs.documentation.Ignore;
+import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -25,13 +25,13 @@ import java.util.Map;
  */
 public class LivingEntityJS extends EntityJS
 {
-	@Ignore
-	public final EntityLivingBase livingEntity;
+	@MinecraftClass
+	public final EntityLivingBase minecraftLivingEntity;
 
 	public LivingEntityJS(WorldJS w, EntityLivingBase e)
 	{
 		super(w, e);
-		livingEntity = e;
+		minecraftLivingEntity = e;
 	}
 
 	@Override
@@ -42,126 +42,126 @@ public class LivingEntityJS extends EntityJS
 
 	public boolean isChild()
 	{
-		return livingEntity.isChild();
+		return minecraftLivingEntity.isChild();
 	}
 
 	public float getHealth()
 	{
-		return livingEntity.getHealth();
+		return minecraftLivingEntity.getHealth();
 	}
 
 	public void setHealth(@P("hp") float hp)
 	{
-		livingEntity.setHealth(hp);
+		minecraftLivingEntity.setHealth(hp);
 	}
 
 	public void heal(@P("hp") float hp)
 	{
-		livingEntity.heal(hp);
+		minecraftLivingEntity.heal(hp);
 	}
 
 	public float getMaxHealth()
 	{
-		return livingEntity.getMaxHealth();
+		return minecraftLivingEntity.getMaxHealth();
 	}
 
 	public void setMaxHealth(@P("hp") float hp)
 	{
-		livingEntity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(hp);
+		minecraftLivingEntity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(hp);
 	}
 
 	public boolean isUndead()
 	{
-		return livingEntity.isEntityUndead();
+		return minecraftLivingEntity.isEntityUndead();
 	}
 
 	public boolean isOnLadder()
 	{
-		return livingEntity.isOnLadder();
+		return minecraftLivingEntity.isOnLadder();
 	}
 
 	public boolean isSleeping()
 	{
-		return livingEntity.isPlayerSleeping();
+		return minecraftLivingEntity.isPlayerSleeping();
 	}
 
 	public boolean isElytraFlying()
 	{
-		return livingEntity.isElytraFlying();
+		return minecraftLivingEntity.isElytraFlying();
 	}
 
 	@Nullable
 	public LivingEntityJS getRevengeTarget()
 	{
-		return getWorld().getLivingEntity(livingEntity.getRevengeTarget());
+		return getWorld().getLivingEntity(minecraftLivingEntity.getRevengeTarget());
 	}
 
 	public int getRevengeTimer()
 	{
-		return livingEntity.getRevengeTimer();
+		return minecraftLivingEntity.getRevengeTimer();
 	}
 
 	public void setRevengeTarget(@Nullable @P("target") LivingEntityJS target)
 	{
-		livingEntity.setRevengeTarget(target == null ? null : target.livingEntity);
+		minecraftLivingEntity.setRevengeTarget(target == null ? null : target.minecraftLivingEntity);
 	}
 
 	@Nullable
 	public LivingEntityJS getLastAttackedEntity()
 	{
-		return getWorld().getLivingEntity(livingEntity.getLastAttackedEntity());
+		return getWorld().getLivingEntity(minecraftLivingEntity.getLastAttackedEntity());
 	}
 
 	public int getLastAttackedEntityTime()
 	{
-		return livingEntity.getLastAttackedEntityTime();
+		return minecraftLivingEntity.getLastAttackedEntityTime();
 	}
 
 	public int getIdleTime()
 	{
-		return livingEntity.getIdleTime();
+		return minecraftLivingEntity.getIdleTime();
 	}
 
 	public EntityPotionEffectsJS getPotionEffects()
 	{
-		return new EntityPotionEffectsJS(livingEntity);
+		return new EntityPotionEffectsJS(minecraftLivingEntity);
 	}
 
 	@Nullable
 	public DamageSourceJS getLastDamageSource()
 	{
-		return livingEntity.getLastDamageSource() == null ? null : new DamageSourceJS(getWorld(), livingEntity.getLastDamageSource());
+		return minecraftLivingEntity.getLastDamageSource() == null ? null : new DamageSourceJS(getWorld(), minecraftLivingEntity.getLastDamageSource());
 	}
 
 	@Nullable
 	public LivingEntityJS getAttackingEntity()
 	{
-		return getWorld().getLivingEntity(livingEntity.getAttackingEntity());
+		return getWorld().getLivingEntity(minecraftLivingEntity.getAttackingEntity());
 	}
 
 	public void swingArm(@P("hand") EnumHand hand)
 	{
-		livingEntity.swingArm(hand);
+		minecraftLivingEntity.swingArm(hand);
 	}
 
 	public ItemStackJS getEquipment(@P("slot") EntityEquipmentSlot slot)
 	{
-		return ItemStackJS.of(livingEntity.getItemStackFromSlot(slot));
+		return ItemStackJS.of(minecraftLivingEntity.getItemStackFromSlot(slot));
 	}
 
 	public void setEquipment(@P("slot") EntityEquipmentSlot slot, @P("item") @T(ItemStackJS.class) Object item)
 	{
-		livingEntity.setItemStackToSlot(slot, ItemStackJS.of(item).getItemStack());
+		minecraftLivingEntity.setItemStackToSlot(slot, ItemStackJS.of(item).getItemStack());
 	}
 
 	public ItemStackJS getHeldItem(@P("hand") EnumHand hand)
 	{
-		return ItemStackJS.of(livingEntity.getHeldItem(hand));
+		return ItemStackJS.of(minecraftLivingEntity.getHeldItem(hand));
 	}
 
 	public void setHeldItem(@P("hand") EnumHand hand, @P("item") @T(ItemStackJS.class) Object item)
 	{
-		livingEntity.setHeldItem(hand, ItemStackJS.of(item).getItemStack());
+		minecraftLivingEntity.setHeldItem(hand, ItemStackJS.of(item).getItemStack());
 	}
 
 	public ItemStackJS getMainHandItem()
@@ -186,15 +186,15 @@ public class LivingEntityJS extends EntityJS
 
 	public void damageHeldItem(@P("hand") EnumHand hand, @P("amount") int amount)
 	{
-		ItemStack stack = livingEntity.getHeldItem(hand);
+		ItemStack stack = minecraftLivingEntity.getHeldItem(hand);
 
 		if (!stack.isEmpty())
 		{
-			stack.damageItem(amount, livingEntity);
+			stack.damageItem(amount, minecraftLivingEntity);
 
 			if (stack.isEmpty())
 			{
-				livingEntity.setHeldItem(hand, ItemStack.EMPTY);
+				minecraftLivingEntity.setHeldItem(hand, ItemStack.EMPTY);
 			}
 		}
 	}
@@ -202,44 +202,44 @@ public class LivingEntityJS extends EntityJS
 	public boolean isHoldingInAnyHand(@P("ingredient") @T(IngredientJS.class) Object ingredient)
 	{
 		IngredientJS i = IngredientJS.of(ingredient);
-		return i.testVanilla(livingEntity.getHeldItem(EnumHand.MAIN_HAND)) || i.testVanilla(livingEntity.getHeldItem(EnumHand.OFF_HAND));
+		return i.testVanilla(minecraftLivingEntity.getHeldItem(EnumHand.MAIN_HAND)) || i.testVanilla(minecraftLivingEntity.getHeldItem(EnumHand.OFF_HAND));
 	}
 
 	public float getMovementSpeed()
 	{
-		return livingEntity.getAIMoveSpeed();
+		return minecraftLivingEntity.getAIMoveSpeed();
 	}
 
 	public void setMovementSpeed(@P("speed") float speed)
 	{
-		livingEntity.setAIMoveSpeed(speed);
+		minecraftLivingEntity.setAIMoveSpeed(speed);
 	}
 
 	public boolean canEntityBeSeen(@P("entity") EntityJS entity)
 	{
-		return livingEntity.canEntityBeSeen(entity.entity);
+		return minecraftLivingEntity.canEntityBeSeen(entity.minecraftEntity);
 	}
 
 	public float getAbsorptionAmount()
 	{
-		return livingEntity.getAbsorptionAmount();
+		return minecraftLivingEntity.getAbsorptionAmount();
 	}
 
 	public void setAbsorptionAmount(@P("amount") float amount)
 	{
-		livingEntity.setAbsorptionAmount(amount);
+		minecraftLivingEntity.setAbsorptionAmount(amount);
 	}
 
 	public double getReachDistance()
 	{
-		return livingEntity.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
+		return minecraftLivingEntity.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
 	}
 
 	@Nullable
 	public Map<String, Object> rayTrace(@P("distance") double distance)
 	{
 		Map<String, Object> map = new HashMap<>();
-		RayTraceResult ray = ForgeHooks.rayTraceEyes(livingEntity, distance);
+		RayTraceResult ray = ForgeHooks.rayTraceEyes(minecraftLivingEntity, distance);
 
 		if (ray != null)
 		{
@@ -250,7 +250,7 @@ public class LivingEntityJS extends EntityJS
 
 			if (ray.typeOfHit == RayTraceResult.Type.BLOCK)
 			{
-				map.put("block", new BlockContainerJS(getWorld().world, ray.getBlockPos()));
+				map.put("block", new BlockContainerJS(getWorld().minecraftWorld, ray.getBlockPos()));
 				map.put("facing", ray.sideHit);
 				map.put("subHit", ray.subHit);
 			}

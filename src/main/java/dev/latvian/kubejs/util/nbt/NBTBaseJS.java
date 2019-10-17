@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.util.nbt;
 
+import dev.latvian.kubejs.MinecraftClass;
 import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTPrimitive;
@@ -79,6 +80,7 @@ public interface NBTBaseJS
 	}
 
 	@Nullable
+	@MinecraftClass
 	NBTBase createNBT();
 
 	default String getNbtString()

@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.server;
 
+import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.Info;
 import dev.latvian.kubejs.documentation.O;
@@ -52,11 +53,22 @@ public class ServerJS implements MessageSender, WithAttachedData
 {
 	public static ServerJS instance;
 
-	public final transient MinecraftServer server;
+	@MinecraftClass
+	public final MinecraftServer minecraftServer;
+
+	@Ignore
 	public final List<ScheduledEvent> scheduledEvents;
+
+	@Ignore
 	public final List<ScheduledEvent> scheduledTickEvents;
+
+	@Ignore
 	public final Int2ObjectOpenHashMap<ServerWorldJS> worldMap;
+
+	@Ignore
 	public final Map<UUID, ServerPlayerDataJS> playerMap;
+
+	@Ignore
 	public final Map<UUID, FakeServerPlayerDataJS> fakePlayerMap;
 
 	private AttachedData data;
@@ -65,7 +77,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 	public ServerJS(MinecraftServer ms, WorldServer w)
 	{
-		server = ms;
+		minecraftServer = ms;
 		scheduledEvents = new LinkedList<>();
 		scheduledTickEvents = new LinkedList<>();
 		worldMap = new Int2ObjectOpenHashMap<>();
@@ -108,63 +120,63 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 	public boolean isRunning()
 	{
-		return server.isServerRunning();
+		return minecraftServer.isServerRunning();
 	}
 
 	public boolean getHardcore()
 	{
-		return server.isHardcore();
+		return minecraftServer.isHardcore();
 	}
 
 	public void setHardcore(boolean hardcore)
 	{
-		overworld.world.getWorldInfo().setHardcore(hardcore);
+		overworld.minecraftWorld.getWorldInfo().setHardcore(hardcore);
 	}
 
 	public boolean isSinglePlayer()
 	{
-		return server.isSinglePlayer();
+		return minecraftServer.isSinglePlayer();
 	}
 
 	public boolean isDedicated()
 	{
-		return server.isDedicatedServer();
+		return minecraftServer.isDedicatedServer();
 	}
 
 	public String getMotd()
 	{
-		return server.getMOTD();
+		return minecraftServer.getMOTD();
 	}
 
 	public void setMotd(@P("text") @T(Text.class) Object text)
 	{
-		server.setMOTD(Text.of(text).component().getFormattedText());
+		minecraftServer.setMOTD(Text.of(text).component().getFormattedText());
 	}
 
 	public void stop()
 	{
-		server.stopServer();
+		minecraftServer.stopServer();
 	}
 
 	@Override
 	public String getName()
 	{
-		return server.getName();
+		return minecraftServer.getName();
 	}
 
 	@Override
 	public Text getDisplayName()
 	{
-		return Text.of(server.getDisplayName());
+		return Text.of(minecraftServer.getDisplayName());
 	}
 
 	@Override
 	public void tell(Object message)
 	{
 		ITextComponent component = Text.of(message).component();
-		server.sendMessage(component);
+		minecraftServer.sendMessage(component);
 
-		for (EntityPlayerMP player : server.getPlayerList().getPlayers())
+		for (EntityPlayerMP player : minecraftServer.getPlayerList().getPlayers())
 		{
 			player.sendMessage(component);
 		}
@@ -175,7 +187,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 	{
 		ITextComponent component = Text.of(message).component();
 
-		for (EntityPlayerMP player : server.getPlayerList().getPlayers())
+		for (EntityPlayerMP player : minecraftServer.getPlayerList().getPlayers())
 		{
 			player.sendStatusMessage(component, true);
 		}
@@ -184,10 +196,10 @@ public class ServerJS implements MessageSender, WithAttachedData
 	@Override
 	public int runCommand(String command)
 	{
-		return server.getCommandManager().executeCommand(server, command);
+		return minecraftServer.getCommandManager().executeCommand(minecraftServer, command);
 	}
 
-	public WorldJS getWorld(int dimension)
+	public WorldJS getWorld(@P("dimension") int dimension)
 	{
 		if (dimension == 0)
 		{
@@ -198,7 +210,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 		if (world == null)
 		{
-			world = new ServerWorldJS(this, server.getWorld(dimension));
+			world = new ServerWorldJS(this, minecraftServer.getWorld(dimension));
 			worldMap.put(dimension, world);
 			updateWorldList();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(world));
@@ -207,30 +219,32 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return world;
 	}
 
-	public WorldJS getWorld(World world)
+	public WorldJS getWorld(@P("minecraftWorld") World minecraftWorld)
 	{
-		return getWorld(world.provider.getDimension());
+		return getWorld(minecraftWorld.provider.getDimension());
 	}
 
-	public PlayerJS getPlayer(UUID uuid)
+	@Nullable
+	public PlayerJS getPlayer(@P("uuid") UUID uuid)
 	{
 		ServerPlayerDataJS p = playerMap.get(uuid);
 
 		if (p == null)
 		{
-			throw new NullPointerException("Player from UUID " + uuid + " not found!");
+			return null;
 		}
 
 		return p.getPlayer();
 	}
 
-	public PlayerJS getPlayer(String name)
+	@Nullable
+	public PlayerJS getPlayer(@P("name") String name)
 	{
 		name = name.trim().toLowerCase();
 
 		if (name.isEmpty())
 		{
-			throw new NullPointerException("Player can't have empty name!");
+			return null;
 		}
 
 		UUID uuid = UUIDUtilsJS.fromString(name);
@@ -256,27 +270,28 @@ public class ServerJS implements MessageSender, WithAttachedData
 			}
 		}
 
-		throw new NullPointerException("Player from name " + name + " not found!");
+		return null;
 	}
 
-	public PlayerJS getPlayer(EntityPlayer player)
+	@Nullable
+	public PlayerJS getPlayer(@P("minecraftPlayer") EntityPlayer minecraftPlayer)
 	{
-		return getPlayer(player.getUniqueID());
+		return getPlayer(minecraftPlayer.getUniqueID());
 	}
 
 	public EntityArrayList getPlayers()
 	{
-		return new EntityArrayList(overworld, server.getPlayerList().getPlayers());
+		return new EntityArrayList(overworld, minecraftServer.getPlayerList().getPlayers());
 	}
 
 	@Ignore
 	public EntityArrayList getEntities()
 	{
-		EntityArrayList list = new EntityArrayList(overworld, overworld.world.loadedEntityList.size());
+		EntityArrayList list = new EntityArrayList(overworld, overworld.minecraftWorld.loadedEntityList.size());
 
 		for (WorldJS world : worlds)
 		{
-			for (Entity entity : world.world.loadedEntityList)
+			for (Entity entity : world.minecraftWorld.loadedEntityList)
 			{
 				list.add(world.getEntity(entity));
 			}
@@ -289,7 +304,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 	{
 		try
 		{
-			EntityArrayList list = new EntityArrayList(overworld, overworld.world.loadedEntityList.size());
+			EntityArrayList list = new EntityArrayList(overworld, overworld.minecraftWorld.loadedEntityList.size());
 
 			for (WorldJS world : worlds)
 			{
@@ -309,7 +324,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 	public ScheduledEvent schedule(@P("timer") long timer, @O @P("data") @Nullable Object data, @P("callback") IScheduledEventCallback event)
 	{
-		ScheduledEvent e = new ScheduledEvent(this, timer, System.currentTimeMillis() + timer, data, event);
+		ScheduledEvent e = new ScheduledEvent(this, false, timer, System.currentTimeMillis() + timer, data, event);
 		scheduledEvents.add(e);
 		return e;
 	}
@@ -322,7 +337,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 	public ScheduledEvent scheduleInTicks(@P("ticks") long ticks, @O @P("data") @Nullable Object data, @P("callback") IScheduledEventCallback event)
 	{
-		ScheduledEvent e = new ScheduledEvent(this, ticks, overworld.getTime() + ticks, data, event);
+		ScheduledEvent e = new ScheduledEvent(this, true, ticks, overworld.getTime() + ticks, data, event);
 		scheduledEvents.add(e);
 		return e;
 	}
@@ -342,7 +357,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 	@Nullable
 	public AdvancementJS getAdvancement(@P("id") Object id)
 	{
-		Advancement a = server.getAdvancementManager().getAdvancement(ID.of(id).mc());
+		Advancement a = minecraftServer.getAdvancementManager().getAdvancement(ID.of(id).mc());
 		return a == null ? null : new AdvancementJS(a);
 	}
 

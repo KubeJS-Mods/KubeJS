@@ -1,6 +1,9 @@
 package dev.latvian.kubejs.world;
 
+import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.documentation.DisplayName;
+import dev.latvian.kubejs.documentation.P;
+import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.util.ID;
@@ -32,7 +35,7 @@ public class BlockContainerJS
 {
 	private static final ID AIR_ID = ID.of("minecraft:air");
 
-	private final World world;
+	public final World minecraftWorld;
 	private final BlockPos pos;
 
 	private IBlockState cachedState;
@@ -40,7 +43,7 @@ public class BlockContainerJS
 
 	public BlockContainerJS(World w, BlockPos p)
 	{
-		world = w;
+		minecraftWorld = w;
 		pos = p;
 	}
 
@@ -52,7 +55,7 @@ public class BlockContainerJS
 
 	public WorldJS getWorld()
 	{
-		return UtilsJS.getWorld(world);
+		return UtilsJS.getWorld(minecraftWorld);
 	}
 
 	public BlockPos getPos()
@@ -62,7 +65,7 @@ public class BlockContainerJS
 
 	public int getDimension()
 	{
-		return world.provider.getDimension();
+		return minecraftWorld.provider.getDimension();
 	}
 
 	public int getX()
@@ -82,7 +85,7 @@ public class BlockContainerJS
 
 	public BlockContainerJS offset(EnumFacing f, int d)
 	{
-		return new BlockContainerJS(world, getPos().offset(f, d));
+		return new BlockContainerJS(minecraftWorld, getPos().offset(f, d));
 	}
 
 	public BlockContainerJS offset(EnumFacing f)
@@ -92,7 +95,7 @@ public class BlockContainerJS
 
 	public BlockContainerJS offset(int x, int y, int z)
 	{
-		return new BlockContainerJS(world, getPos().add(x, y, z));
+		return new BlockContainerJS(minecraftWorld, getPos().add(x, y, z));
 	}
 
 	public BlockContainerJS getDown()
@@ -125,19 +128,21 @@ public class BlockContainerJS
 		return offset(EnumFacing.EAST);
 	}
 
+	@MinecraftClass
 	public IBlockState getBlockState()
 	{
 		if (cachedState == null)
 		{
-			cachedState = world.getBlockState(getPos());
+			cachedState = minecraftWorld.getBlockState(getPos());
 		}
 
 		return cachedState;
 	}
 
+	@MinecraftClass
 	public void setBlockState(IBlockState state, int flags)
 	{
-		world.setBlockState(getPos(), state, flags);
+		minecraftWorld.setBlockState(getPos(), state, flags);
 		clearCache();
 	}
 
@@ -199,11 +204,12 @@ public class BlockContainerJS
 	}
 
 	@Nullable
+	@MinecraftClass
 	public TileEntity getEntity()
 	{
-		if (cachedEntity == null)
+		if (cachedEntity == null || cachedEntity.isInvalid())
 		{
-			cachedEntity = world.getTileEntity(pos);
+			cachedEntity = minecraftWorld.getTileEntity(pos);
 		}
 
 		return cachedEntity;
@@ -221,7 +227,7 @@ public class BlockContainerJS
 		return entity == null ? NBTCompoundJS.NULL : NBTBaseJS.of(entity.serializeNBT()).asCompound();
 	}
 
-	public void setEntityData(Object n)
+	public void setEntityData(@P("nbt") @T(NBTCompoundJS.class) Object n)
 	{
 		NBTCompoundJS nbt = NBTBaseJS.of(n).asCompound();
 
@@ -238,22 +244,22 @@ public class BlockContainerJS
 
 	public int getLight()
 	{
-		return world.getLight(pos);
+		return minecraftWorld.getLight(pos);
 	}
 
 	public boolean getCanSeeSky()
 	{
-		return world.canSeeSky(pos);
+		return minecraftWorld.canSeeSky(pos);
 	}
 
 	public boolean getCanSnow()
 	{
-		return world.canSnowAt(pos, false);
+		return minecraftWorld.canSnowAt(pos, false);
 	}
 
 	public boolean getCanSnowCheckingLight()
 	{
-		return world.canSnowAt(pos, true);
+		return minecraftWorld.canSnowAt(pos, true);
 	}
 
 	@Override
@@ -294,7 +300,7 @@ public class BlockContainerJS
 
 	public ExplosionJS createExplosion()
 	{
-		return new ExplosionJS(world, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D);
+		return new ExplosionJS(minecraftWorld, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D);
 	}
 
 	@Nullable
@@ -312,12 +318,12 @@ public class BlockContainerJS
 
 	public void spawnLightning(boolean effectOnly)
 	{
-		world.addWeatherEffect(new EntityLightningBolt(world, getX(), getY(), getZ(), effectOnly));
+		minecraftWorld.addWeatherEffect(new EntityLightningBolt(minecraftWorld, getX(), getY(), getZ(), effectOnly));
 	}
 
 	public void spawnFireworks(FireworksJS fireworks)
 	{
-		world.spawnEntity(fireworks.createFireworkRocket(world, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D));
+		minecraftWorld.spawnEntity(fireworks.createFireworkRocket(minecraftWorld, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D));
 	}
 
 	@Nullable

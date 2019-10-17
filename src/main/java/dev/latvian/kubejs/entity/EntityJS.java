@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.entity;
 
-import dev.latvian.kubejs.documentation.Ignore;
+import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.documentation.Info;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
@@ -34,13 +34,13 @@ public class EntityJS implements MessageSender
 {
 	private final WorldJS world;
 
-	@Ignore
-	public final Entity entity;
+	@MinecraftClass
+	public final Entity minecraftEntity;
 
 	public EntityJS(WorldJS w, Entity e)
 	{
 		world = w;
-		entity = e;
+		minecraftEntity = e;
 	}
 
 	public WorldJS getWorld()
@@ -56,30 +56,30 @@ public class EntityJS implements MessageSender
 
 	public UUID getId()
 	{
-		return entity.getUniqueID();
+		return minecraftEntity.getUniqueID();
 	}
 
 	public ID getType()
 	{
-		return ID.of(EntityList.getKey(entity));
+		return ID.of(EntityList.getKey(minecraftEntity));
 	}
 
 	@Override
 	public String getName()
 	{
-		return entity.getName();
+		return minecraftEntity.getName();
 	}
 
 	@Override
 	public Text getDisplayName()
 	{
-		return Text.of(entity.getDisplayName());
+		return Text.of(minecraftEntity.getDisplayName());
 	}
 
 	@Override
 	public void tell(@P("message") @T(Text.class) Object message)
 	{
-		entity.sendMessage(Text.of(message).component());
+		minecraftEntity.sendMessage(Text.of(message).component());
 	}
 
 	public String toString()
@@ -100,12 +100,12 @@ public class EntityJS implements MessageSender
 
 	public Set<String> getTags()
 	{
-		return entity.getTags();
+		return minecraftEntity.getTags();
 	}
 
 	public boolean isAlive()
 	{
-		return entity.isEntityAlive();
+		return minecraftEntity.isEntityAlive();
 	}
 
 	public boolean isLiving()
@@ -120,197 +120,197 @@ public class EntityJS implements MessageSender
 
 	public boolean isSneaking()
 	{
-		return entity.isSneaking();
+		return minecraftEntity.isSneaking();
 	}
 
 	public boolean isSprinting()
 	{
-		return entity.isSprinting();
+		return minecraftEntity.isSprinting();
 	}
 
 	public boolean isGlowing()
 	{
-		return entity.isGlowing();
+		return minecraftEntity.isGlowing();
 	}
 
 	public void setGlowing(boolean glowing)
 	{
-		entity.setGlowing(glowing);
+		minecraftEntity.setGlowing(glowing);
 	}
 
 	public boolean isInvisible()
 	{
-		return entity.isInvisible();
+		return minecraftEntity.isInvisible();
 	}
 
 	public void setInvisible(boolean invisible)
 	{
-		entity.setInvisible(invisible);
+		minecraftEntity.setInvisible(invisible);
 	}
 
 	public boolean isBoss()
 	{
-		return !entity.isNonBoss();
+		return !minecraftEntity.isNonBoss();
 	}
 
 	public boolean isMonster()
 	{
-		return entity.isCreatureType(EnumCreatureType.MONSTER, false);
+		return minecraftEntity.isCreatureType(EnumCreatureType.MONSTER, false);
 	}
 
 	public boolean isAnimal()
 	{
-		return entity.isCreatureType(EnumCreatureType.CREATURE, false);
+		return minecraftEntity.isCreatureType(EnumCreatureType.CREATURE, false);
 	}
 
 	public boolean isAmbientCreature()
 	{
-		return entity.isCreatureType(EnumCreatureType.AMBIENT, false);
+		return minecraftEntity.isCreatureType(EnumCreatureType.AMBIENT, false);
 	}
 
 	public boolean isWaterCreature()
 	{
-		return entity.isCreatureType(EnumCreatureType.WATER_CREATURE, false);
+		return minecraftEntity.isCreatureType(EnumCreatureType.WATER_CREATURE, false);
 	}
 
 	public boolean isOnGround()
 	{
-		return entity.onGround;
+		return minecraftEntity.onGround;
 	}
 
 	public float getFallDistance()
 	{
-		return entity.fallDistance;
+		return minecraftEntity.fallDistance;
 	}
 
 	public void setFallDistance(@P("fallDistance") float fallDistance)
 	{
-		entity.fallDistance = fallDistance;
+		minecraftEntity.fallDistance = fallDistance;
 	}
 
 	public float getStepHeight()
 	{
-		return entity.stepHeight;
+		return minecraftEntity.stepHeight;
 	}
 
 	public void setStepHeight(@P("stepHeight") float stepHeight)
 	{
-		entity.stepHeight = stepHeight;
+		minecraftEntity.stepHeight = stepHeight;
 	}
 
 	public boolean getNoClip()
 	{
-		return entity.noClip;
+		return minecraftEntity.noClip;
 	}
 
 	public void setNoClip(@P("noClip") boolean noClip)
 	{
-		entity.noClip = noClip;
+		minecraftEntity.noClip = noClip;
 	}
 
 	public boolean isSilent()
 	{
-		return entity.isSilent();
+		return minecraftEntity.isSilent();
 	}
 
 	public void setSilent(@P("isSilent") boolean isSilent)
 	{
-		entity.setSilent(isSilent);
+		minecraftEntity.setSilent(isSilent);
 	}
 
 	public boolean getNoGravity()
 	{
-		return entity.hasNoGravity();
+		return minecraftEntity.hasNoGravity();
 	}
 
 	public void setNoGravity(@P("noGravity") boolean noGravity)
 	{
-		entity.setNoGravity(noGravity);
+		minecraftEntity.setNoGravity(noGravity);
 	}
 
 	public double getX()
 	{
-		return entity.posX;
+		return minecraftEntity.posX;
 	}
 
 	public void setX(@P("x") double x)
 	{
-		entity.posX = x;
+		minecraftEntity.posX = x;
 	}
 
 	public double getY()
 	{
-		return entity.posY;
+		return minecraftEntity.posY;
 	}
 
 	public void setY(@P("y") double y)
 	{
-		entity.posY = y;
+		minecraftEntity.posY = y;
 	}
 
 	public double getZ()
 	{
-		return entity.posZ;
+		return minecraftEntity.posZ;
 	}
 
 	public void setZ(@P("z") double z)
 	{
-		entity.posZ = z;
+		minecraftEntity.posZ = z;
 	}
 
 	public float getYaw()
 	{
-		return entity.rotationYaw;
+		return minecraftEntity.rotationYaw;
 	}
 
 	public void setYaw(@P("yaw") float yaw)
 	{
-		entity.rotationYaw = yaw;
+		minecraftEntity.rotationYaw = yaw;
 	}
 
 	public float getPitch()
 	{
-		return entity.rotationPitch;
+		return minecraftEntity.rotationPitch;
 	}
 
 	public void setPitch(@P("pitch") float pitch)
 	{
-		entity.rotationPitch = pitch;
+		minecraftEntity.rotationPitch = pitch;
 	}
 
 	public double getMotionX()
 	{
-		return entity.motionX;
+		return minecraftEntity.motionX;
 	}
 
 	public void setMotionX(@P("x") double x)
 	{
-		entity.motionX = x;
+		minecraftEntity.motionX = x;
 	}
 
 	public double getMotionY()
 	{
-		return entity.motionY;
+		return minecraftEntity.motionY;
 	}
 
 	public void setMotionY(@P("y") double y)
 	{
-		entity.motionY = y;
+		minecraftEntity.motionY = y;
 	}
 
 	public double getMotionZ()
 	{
-		return entity.motionZ;
+		return minecraftEntity.motionZ;
 	}
 
 	public void setMotionZ(@P("z") double z)
 	{
-		entity.motionZ = z;
+		minecraftEntity.motionZ = z;
 	}
 
 	public int getTicksExisted()
 	{
-		return entity.ticksExisted;
+		return minecraftEntity.ticksExisted;
 	}
 
 	public void setPosition(@P("block") BlockContainerJS block)
@@ -330,19 +330,19 @@ public class EntityJS implements MessageSender
 
 	public void setPositionAndRotation(@P("x") double x, @P("y") double y, @P("z") double z, @P("yaw") float yaw, @P("pitch") float pitch)
 	{
-		entity.setLocationAndAngles(x, y, z, yaw, pitch);
+		minecraftEntity.setLocationAndAngles(x, y, z, yaw, pitch);
 	}
 
 	public void setMotion(@P("x") double x, @P("y") double y, @P("z") double z)
 	{
-		entity.motionX = x;
-		entity.motionY = y;
-		entity.motionZ = z;
+		minecraftEntity.motionX = x;
+		minecraftEntity.motionY = y;
+		minecraftEntity.motionZ = z;
 	}
 
 	public void addMotion(@P("x") double x, @P("y") double y, @P("z") double z)
 	{
-		setMotion(entity.motionX + x, entity.motionY + y, entity.motionZ + z);
+		setMotion(minecraftEntity.motionX + x, minecraftEntity.motionY + y, minecraftEntity.motionZ + z);
 	}
 
 	@Override
@@ -350,7 +350,7 @@ public class EntityJS implements MessageSender
 	{
 		if (world instanceof ServerWorldJS)
 		{
-			return world.getServer().server.getCommandManager().executeCommand(entity, command);
+			return world.getServer().minecraftServer.getCommandManager().executeCommand(minecraftEntity, command);
 		}
 
 		return 0;
@@ -358,96 +358,96 @@ public class EntityJS implements MessageSender
 
 	public void kill()
 	{
-		entity.onKillCommand();
+		minecraftEntity.onKillCommand();
 	}
 
 	public boolean startRiding(@P("entity") EntityJS e, @P("force") boolean force)
 	{
-		return entity.startRiding(e.entity, force);
+		return minecraftEntity.startRiding(e.minecraftEntity, force);
 	}
 
 	public void removePassengers()
 	{
-		entity.removePassengers();
+		minecraftEntity.removePassengers();
 	}
 
 	public void dismountRidingEntity()
 	{
-		entity.dismountRidingEntity();
+		minecraftEntity.dismountRidingEntity();
 	}
 
 	public EntityArrayList getPassengers()
 	{
-		return new EntityArrayList(world, entity.getPassengers());
+		return new EntityArrayList(world, minecraftEntity.getPassengers());
 	}
 
 	public boolean isPassenger(@P("entity") EntityJS e)
 	{
-		return entity.isPassenger(e.entity);
+		return minecraftEntity.isPassenger(e.minecraftEntity);
 	}
 
 	public EntityArrayList getRecursivePassengers()
 	{
-		return new EntityArrayList(world, entity.getRecursivePassengers());
+		return new EntityArrayList(world, minecraftEntity.getRecursivePassengers());
 	}
 
 	@Nullable
 	public EntityJS getRidingEntity()
 	{
-		return world.getEntity(entity.getRidingEntity());
+		return world.getEntity(minecraftEntity.getRidingEntity());
 	}
 
 	@Info("Scoreboard team ID")
 	public String getTeamID()
 	{
-		Team team = entity.getTeam();
+		Team team = minecraftEntity.getTeam();
 		return team == null ? "" : team.getName();
 	}
 
 	@Info("Checks if this entity is on the same scoreboard team as another entity")
 	public boolean isOnSameTeam(@P("entity") EntityJS e)
 	{
-		return entity.isOnSameTeam(e.entity);
+		return minecraftEntity.isOnSameTeam(e.minecraftEntity);
 	}
 
 	@Info("Checks if this entity is on scoreboard team")
 	public boolean isOnScoreboardTeam(@P("teamID") String teamID)
 	{
-		Team team = entity.getEntityWorld().getScoreboard().getTeam(teamID);
-		return team != null && entity.isOnScoreboardTeam(team);
+		Team team = minecraftEntity.getEntityWorld().getScoreboard().getTeam(teamID);
+		return team != null && minecraftEntity.isOnScoreboardTeam(team);
 	}
 
 	public void setCustomName(String name)
 	{
-		entity.setCustomNameTag(name);
+		minecraftEntity.setCustomNameTag(name);
 	}
 
 	@Info("Custom display name")
 	public String getCustomName()
 	{
-		return entity.getCustomNameTag();
+		return minecraftEntity.getCustomNameTag();
 	}
 
 	@Info("Checks if custom display name is set")
 	public boolean getHasCustomName()
 	{
-		return entity.hasCustomName();
+		return minecraftEntity.hasCustomName();
 	}
 
 	public void setCustomNameAlwaysVisible(@P("alwaysVisible") boolean b)
 	{
-		entity.setAlwaysRenderNameTag(b);
+		minecraftEntity.setAlwaysRenderNameTag(b);
 	}
 
 	@Info("Custom display name will always be visible above head")
 	public boolean getCustomNameAlwaysVisible()
 	{
-		return entity.getAlwaysRenderNameTag();
+		return minecraftEntity.getAlwaysRenderNameTag();
 	}
 
 	public EnumFacing getHorizontalFacing()
 	{
-		return entity.getHorizontalFacing();
+		return minecraftEntity.getHorizontalFacing();
 	}
 
 	public EnumFacing getFacing()
@@ -466,43 +466,43 @@ public class EntityJS implements MessageSender
 
 	public float getEyeHeight()
 	{
-		return entity.getEyeHeight();
+		return minecraftEntity.getEyeHeight();
 	}
 
 	@Info("Block position of the entity")
 	public BlockContainerJS getBlock()
 	{
-		return new BlockContainerJS(entity.world, entity.getPosition());
+		return new BlockContainerJS(minecraftEntity.world, minecraftEntity.getPosition());
 	}
 
 	@Info("Sets entity on fire for x seconds")
 	public void setOnFire(@P("seconds") int seconds)
 	{
-		entity.setFire(seconds);
+		minecraftEntity.setFire(seconds);
 	}
 
 	public void extinguish()
 	{
-		entity.extinguish();
+		minecraftEntity.extinguish();
 	}
 
 	@Info("Entity NBT")
 	public NBTCompoundJS getFullNBT()
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
-		entity.writeToNBT(nbt);
+		minecraftEntity.writeToNBT(nbt);
 		return NBTBaseJS.of(nbt).asCompound();
 	}
 
 	public void setFullNBT(@P("nbt") @T(NBTCompoundJS.class) Object n)
 	{
-		entity.readFromNBT(NBTBaseJS.of(n).asCompound().createNBT());
+		minecraftEntity.readFromNBT(NBTBaseJS.of(n).asCompound().createNBT());
 	}
 
 	@Info("Custom NBT you can use for saving custom data")
 	public NBTCompoundJS getNbt()
 	{
-		NBTTagCompound nbt = entity.getEntityData();
+		NBTTagCompound nbt = minecraftEntity.getEntityData();
 		NBTTagCompound nbt1 = (NBTTagCompound) nbt.getTag("KubeJS");
 
 		if (nbt1 == null)
@@ -520,7 +520,7 @@ public class EntityJS implements MessageSender
 
 		if (n != null)
 		{
-			entity.getEntityData().setTag("KubeJS", n);
+			minecraftEntity.getEntityData().setTag("KubeJS", n);
 		}
 	}
 
@@ -545,7 +545,7 @@ public class EntityJS implements MessageSender
 
 		if (event != null)
 		{
-			entity.world.playSound(null, getX(), getY(), getZ(), event, entity.getSoundCategory(), volume, pitch);
+			minecraftEntity.world.playSound(null, getX(), getY(), getZ(), event, minecraftEntity.getSoundCategory(), volume, pitch);
 		}
 	}
 
@@ -558,6 +558,6 @@ public class EntityJS implements MessageSender
 	@Info("Spawn entity in world")
 	public void spawn()
 	{
-		world.world.spawnEntity(entity);
+		world.minecraftWorld.spawnEntity(minecraftEntity);
 	}
 }

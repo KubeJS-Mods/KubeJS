@@ -94,7 +94,7 @@ public abstract class ExplosionEventJS extends WorldEventJS
 
 		public void removeAffectedEntity(EntityJS entity)
 		{
-			event.getAffectedEntities().remove(entity.entity);
+			event.getAffectedEntities().remove(entity.minecraftEntity);
 		}
 
 		public void removeAllAffectedEntities()

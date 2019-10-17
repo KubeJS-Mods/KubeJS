@@ -35,7 +35,7 @@ public class PlayerStatsJS
 
 		if (stat != null)
 		{
-			statFile.unlockAchievement(player.getPlayerEntity(), stat, value);
+			statFile.unlockAchievement(player.minecraftPlayer, stat, value);
 		}
 	}
 
@@ -45,7 +45,7 @@ public class PlayerStatsJS
 
 		if (stat != null)
 		{
-			statFile.increaseStat(player.getPlayerEntity(), stat, value);
+			statFile.increaseStat(player.minecraftPlayer, stat, value);
 		}
 	}
 }

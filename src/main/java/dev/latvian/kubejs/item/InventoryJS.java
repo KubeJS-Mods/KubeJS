@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.item;
 
+import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
@@ -18,28 +19,29 @@ import java.util.LinkedList;
 public class InventoryJS
 {
 	@Ignore
-	public final IItemHandler inventory;
+	@MinecraftClass
+	public final IItemHandler minecraftInventory;
 
 	public InventoryJS(IItemHandler h)
 	{
-		inventory = h;
+		minecraftInventory = h;
 	}
 
 	public int getSize()
 	{
-		return inventory.getSlots();
+		return minecraftInventory.getSlots();
 	}
 
 	public ItemStackJS get(int slot)
 	{
-		return ItemStackJS.of(inventory.getStackInSlot(slot));
+		return ItemStackJS.of(minecraftInventory.getStackInSlot(slot));
 	}
 
 	public void set(int slot, Object item)
 	{
-		if (inventory instanceof IItemHandlerModifiable)
+		if (minecraftInventory instanceof IItemHandlerModifiable)
 		{
-			((IItemHandlerModifiable) inventory).setStackInSlot(slot, ItemStackJS.of(item).getItemStack());
+			((IItemHandlerModifiable) minecraftInventory).setStackInSlot(slot, ItemStackJS.of(item).getItemStack());
 		}
 		else
 		{
@@ -49,29 +51,29 @@ public class InventoryJS
 
 	public ItemStackJS insert(int slot, Object item, boolean simulate)
 	{
-		return ItemStackJS.of(inventory.insertItem(slot, ItemStackJS.of(item).getItemStack(), simulate));
+		return ItemStackJS.of(minecraftInventory.insertItem(slot, ItemStackJS.of(item).getItemStack(), simulate));
 	}
 
 	public ItemStackJS extract(int slot, int amount, boolean simulate)
 	{
-		return ItemStackJS.of(inventory.extractItem(slot, amount, simulate));
+		return ItemStackJS.of(minecraftInventory.extractItem(slot, amount, simulate));
 	}
 
 	public int getSlotLimit(int slot)
 	{
-		return inventory.getSlotLimit(slot);
+		return minecraftInventory.getSlotLimit(slot);
 	}
 
 	public boolean isItemValid(int slot, Object item)
 	{
-		return inventory.isItemValid(slot, ItemStackJS.of(item).getItemStack());
+		return minecraftInventory.isItemValid(slot, ItemStackJS.of(item).getItemStack());
 	}
 
 	public void clear()
 	{
-		IItemHandlerModifiable modInv = inventory instanceof IItemHandlerModifiable ? (IItemHandlerModifiable) inventory : null;
+		IItemHandlerModifiable modInv = minecraftInventory instanceof IItemHandlerModifiable ? (IItemHandlerModifiable) minecraftInventory : null;
 
-		for (int i = inventory.getSlots(); i >= 0; i--)
+		for (int i = minecraftInventory.getSlots(); i >= 0; i--)
 		{
 			if (modInv != null)
 			{
@@ -79,7 +81,7 @@ public class InventoryJS
 			}
 			else
 			{
-				inventory.extractItem(i, inventory.getStackInSlot(i).getCount(), false);
+				minecraftInventory.extractItem(i, minecraftInventory.getStackInSlot(i).getCount(), false);
 			}
 		}
 	}
@@ -93,11 +95,11 @@ public class InventoryJS
 			clear();
 		}
 
-		IItemHandlerModifiable modInv = inventory instanceof IItemHandlerModifiable ? (IItemHandlerModifiable) inventory : null;
+		IItemHandlerModifiable modInv = minecraftInventory instanceof IItemHandlerModifiable ? (IItemHandlerModifiable) minecraftInventory : null;
 
-		for (int i = inventory.getSlots(); i >= 0; i--)
+		for (int i = minecraftInventory.getSlots(); i >= 0; i--)
 		{
-			if (ingredient.testVanilla(inventory.getStackInSlot(i)))
+			if (ingredient.testVanilla(minecraftInventory.getStackInSlot(i)))
 			{
 				if (modInv != null)
 				{
@@ -105,7 +107,7 @@ public class InventoryJS
 				}
 				else
 				{
-					inventory.extractItem(i, inventory.getStackInSlot(i).getCount(), false);
+					minecraftInventory.extractItem(i, minecraftInventory.getStackInSlot(i).getCount(), false);
 				}
 			}
 		}
@@ -113,9 +115,9 @@ public class InventoryJS
 
 	public int find()
 	{
-		for (int i = 0; i < inventory.getSlots(); i++)
+		for (int i = 0; i < minecraftInventory.getSlots(); i++)
 		{
-			ItemStack stack1 = inventory.getStackInSlot(i);
+			ItemStack stack1 = minecraftInventory.getStackInSlot(i);
 
 			if (!stack1.isEmpty())
 			{
@@ -135,9 +137,9 @@ public class InventoryJS
 			return find();
 		}
 
-		for (int i = 0; i < inventory.getSlots(); i++)
+		for (int i = 0; i < minecraftInventory.getSlots(); i++)
 		{
-			ItemStack stack1 = inventory.getStackInSlot(i);
+			ItemStack stack1 = minecraftInventory.getStackInSlot(i);
 
 			if (ingredient.testVanilla(stack1))
 			{
@@ -152,9 +154,9 @@ public class InventoryJS
 	{
 		int count = 0;
 
-		for (int i = 0; i < inventory.getSlots(); i++)
+		for (int i = 0; i < minecraftInventory.getSlots(); i++)
 		{
-			count += inventory.getStackInSlot(i).getCount();
+			count += minecraftInventory.getStackInSlot(i).getCount();
 		}
 
 		return count;
@@ -171,9 +173,9 @@ public class InventoryJS
 
 		int count = 0;
 
-		for (int i = 0; i < inventory.getSlots(); i++)
+		for (int i = 0; i < minecraftInventory.getSlots(); i++)
 		{
-			ItemStack stack1 = inventory.getStackInSlot(i);
+			ItemStack stack1 = minecraftInventory.getStackInSlot(i);
 
 			if (ingredient.testVanilla(stack1))
 			{
@@ -186,9 +188,9 @@ public class InventoryJS
 
 	public boolean isEmpty()
 	{
-		for (int i = 0; i < inventory.getSlots(); i++)
+		for (int i = 0; i < minecraftInventory.getSlots(); i++)
 		{
-			if (!inventory.getStackInSlot(i).isEmpty())
+			if (!minecraftInventory.getStackInSlot(i).isEmpty())
 			{
 				return false;
 			}
@@ -212,9 +214,9 @@ public class InventoryJS
 
 	public void markDirty()
 	{
-		if (inventory instanceof InvWrapper)
+		if (minecraftInventory instanceof InvWrapper)
 		{
-			((InvWrapper) inventory).getInv().markDirty();
+			((InvWrapper) minecraftInventory).getInv().markDirty();
 		}
 	}
 }

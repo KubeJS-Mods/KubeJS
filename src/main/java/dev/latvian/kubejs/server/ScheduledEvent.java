@@ -16,19 +16,26 @@ public class ScheduledEvent
 	public final ScriptFile file;
 
 	private final ServerJS server;
+	private final boolean usingTicks;
 	private final long timer;
 	private final long endTime;
 	private final Object data;
 	private final IScheduledEventCallback callback;
 
-	public ScheduledEvent(ServerJS s, long t, long e, @Nullable Object d, IScheduledEventCallback c)
+	ScheduledEvent(ServerJS s, boolean ut, long t, long e, @Nullable Object d, IScheduledEventCallback c)
 	{
 		file = ScriptManager.instance.currentFile;
+		usingTicks = ut;
 		server = s;
 		timer = t;
 		endTime = e;
 		data = d;
 		callback = c;
+	}
+
+	public boolean isUsingTicks()
+	{
+		return usingTicks;
 	}
 
 	public ServerJS getServer()
@@ -57,9 +64,21 @@ public class ScheduledEvent
 		reschedule(timer);
 	}
 
+	public long getTimerDuration()
+	{
+		return endTime - timer;
+	}
+
 	public ScheduledEvent reschedule(@P("timer") long timer)
 	{
-		return server.schedule(timer, data, callback);
+		if (isUsingTicks())
+		{
+			return server.scheduleInTicks(timer, data, callback);
+		}
+		else
+		{
+			return server.schedule(timer, data, callback);
+		}
 	}
 
 	void call()

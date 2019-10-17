@@ -18,7 +18,7 @@ public class ClientPlayerJS extends PlayerJS<EntityPlayer>
 	@Override
 	public PlayerStatsJS getStats()
 	{
-		return new PlayerStatsJS(this, ((EntityPlayerSP) getPlayerEntity()).getStatFileWriter());
+		return new PlayerStatsJS(this, ((EntityPlayerSP) minecraftPlayer).getStatFileWriter());
 	}
 
 	@Override

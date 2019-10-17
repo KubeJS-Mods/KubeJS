@@ -3,8 +3,12 @@ package dev.latvian.kubejs.integration.aurora;
 import dev.latvian.kubejs.documentation.Documentation;
 import dev.latvian.kubejs.documentation.DocumentedBinding;
 import dev.latvian.kubejs.documentation.DocumentedEvent;
+import dev.latvian.kubejs.fluid.FluidStackJS;
+import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.script.ScriptModData;
+import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.mods.aurora.page.HTTPWebPage;
 import dev.latvian.mods.aurora.tag.Tag;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -46,12 +50,6 @@ public class KubeJSHomePage extends HTTPWebPage
 	public String getIcon()
 	{
 		return "https://kubejs.latvian.dev/logo_48.png";
-	}
-
-	@Override
-	public String getStylesheet()
-	{
-		return "https://kubejs.latvian.dev/style.css";
 	}
 
 	@Override
@@ -116,7 +114,11 @@ public class KubeJSHomePage extends HTTPWebPage
 		for (DocumentedBinding object : globalList)
 		{
 			Tag row = globalTable.tr();
-			row.td().text(object.name);
+			Tag n = row.td();
+			Tag typeIcon = n.icon(KubeJSHomePage.getIconType(object.type));
+			typeIcon.title(documentation.getPrettyName(object.type));
+			n.text(" ");
+			n.text(object.name);
 			classText(documentation, row.td(), object.type);
 		}
 
@@ -130,7 +132,11 @@ public class KubeJSHomePage extends HTTPWebPage
 		for (DocumentedBinding object : constantList)
 		{
 			Tag row = constantTable.tr();
-			row.td().text(object.name);
+			Tag n = row.td();
+			Tag typeIcon = n.icon(KubeJSHomePage.getIconType(object.type));
+			typeIcon.title(documentation.getPrettyName(object.type));
+			n.text(" ");
+			n.text(object.name);
 			classText(documentation, row.td(), object.type);
 			row.td().text(object.value);
 		}
@@ -142,20 +148,20 @@ public class KubeJSHomePage extends HTTPWebPage
 
 		Tag eventTable = body.paired("table", "").addClass("doc");
 		Tag topRow = eventTable.tr();
-		hover(topRow.th().text("ID"), "ID of this event. For double events, alternate ID will be provided");
-		topRow.th().text("Type");
-		hover(topRow.th().text("Can cancel"), "True if event can be cancelled");
-		hover(topRow.th().text("Client"), "True if event is fired on client side");
-		hover(topRow.th().text("Server"), "True if event is fired on server side");
+		topRow.th().text("ID").tooltip("ID of this event. For double events, alternate ID will be provided");
+		topRow.th().text("Type").tooltip("Class of this event");
+		topRow.th().text("Can cancel").tooltip("True if event can be cancelled");
+		topRow.th().text("Client").tooltip("True if event is fired on client side");
+		topRow.th().text("Server").tooltip("True if event is fired on server side");
 
 		for (DocumentedEvent event : list)
 		{
 			Tag row = eventTable.tr();
 			row.td().text(event.eventID);
 			classText(documentation, row.td(), event.eventClass);
-			yesNoSpan(row.td(), event.canCancel);
-			yesNoSpan(row.td(), event.sideOnly == null || event.sideOnly == Side.CLIENT);
-			yesNoSpan(row.td(), event.sideOnly == null || event.sideOnly == Side.SERVER);
+			row.td().yesNoSpan(event.canCancel);
+			row.td().yesNoSpan(event.sideOnly == null || event.sideOnly == Side.CLIENT);
+			row.td().yesNoSpan(event.sideOnly == null || event.sideOnly == Side.SERVER);
 		}
 
 		body.br();
@@ -167,23 +173,24 @@ public class KubeJSHomePage extends HTTPWebPage
 		body.h3("").a("< Back to Aurora", "/");
 	}
 
-	public static void classText(Documentation d, Tag parent, @Nullable Class c, @Nullable Type t)
+	public static String classText(Documentation d, Tag parent, @Nullable Class c, @Nullable Type t)
 	{
 		Class ac = d.getActualType(c);
 
 		if (ac == null || t == null)
 		{
-			return;
+			return "";
 		}
 
 		if (ac.isPrimitive() || ac == Character.class || Number.class.isAssignableFrom(ac))
 		{
 			parent.span(d.getPrettyName(c), "type");
-			return;
+			return "";
 		}
 
 		Tag tag = parent.span("", "");
-		tag.a(d.getPrettyName(c), "/kubejs/" + ac.getName()).addClass("type");
+		String url = "/kubejs/" + ac.getName();
+		tag.a(d.getPrettyName(c), url).addClass("type");
 
 		if (t instanceof ParameterizedType)
 		{
@@ -210,6 +217,8 @@ public class KubeJSHomePage extends HTTPWebPage
 
 			tag.text(">");
 		}
+
+		return url;
 	}
 
 	public static void classText(Documentation d, Tag parent, Class c)
@@ -217,29 +226,61 @@ public class KubeJSHomePage extends HTTPWebPage
 		classText(d, parent, c, c);
 	}
 
-	public static Tag yesNoSpan(Tag parent, boolean value)
+	public static String getIconType(Class c)
 	{
-		return parent.span(value ? "Yes" : "No", value ? "yes" : "no");
-	}
-
-	public static Tag hover(Tag element, String text)
-	{
-		if (text.isEmpty())
+		if (c == void.class || c == Void.class)
 		{
-			return element;
+			return "void";
+		}
+		else if (c == char.class || c == Character.class || CharSequence.class.isAssignableFrom(c))
+		{
+			return "text";
+		}
+		else if (c == boolean.class || c == Boolean.class)
+		{
+			return "boolean";
+		}
+		else if (c == byte.class || c == Byte.class)
+		{
+			return "byte";
+		}
+		else if (c == short.class || c == Short.class)
+		{
+			return "short";
+		}
+		else if (c == int.class || c == Integer.class)
+		{
+			return "int";
+		}
+		else if (c == long.class || c == Long.class)
+		{
+			return "long";
+		}
+		else if (c == float.class || c == Float.class)
+		{
+			return "float";
+		}
+		else if (c == double.class || c == Double.class)
+		{
+			return "double";
+		}
+		else if (ItemStackJS.class.isAssignableFrom(c))
+		{
+			return "item";
+		}
+		else if (FluidStackJS.class.isAssignableFrom(c))
+		{
+			return "fluid";
+		}
+		else if (IngredientJS.class.isAssignableFrom(c))
+		{
+			return "ingredient";
+		}
+		else if (NBTBaseJS.class.isAssignableFrom(c))
+		{
+			return "nbt";
 		}
 
-		element.addClass("tooltip");
-		element.span(text, "tooltiptext");
-		return element;
-	}
-
-	public static void emoji(Tag parent, String emoji, String hoverText)
-	{
-		//x1F537 - blue
-		//x1F536 - orange
-		//x1F4A1 - lamp
-
-		hover(parent.span(" &#" + emoji + ";", "").style("cursor", "default"), hoverText);
+		return "object";
 	}
 }

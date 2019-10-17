@@ -53,6 +53,6 @@ public class ExplosionJS
 
 	public void explode()
 	{
-		world.newExplosion(exploder == null ? null : exploder.entity, x, y, z, strength, causesFire, damagesTerrain);
+		world.newExplosion(exploder == null ? null : exploder.minecraftEntity, x, y, z, strength, causesFire, damagesTerrain);
 	}
 }

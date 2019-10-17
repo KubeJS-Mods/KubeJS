@@ -33,29 +33,29 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 	@Override
 	public PlayerStatsJS getStats()
 	{
-		return new PlayerStatsJS(this, getPlayerEntity().getStatFile());
+		return new PlayerStatsJS(this, minecraftPlayer.getStatFile());
 	}
 
 	@Override
 	public void openOverlay(Overlay overlay)
 	{
-		KubeJSNetHandler.net.sendTo(new MessageOpenOverlay(overlay), getPlayerEntity());
+		KubeJSNetHandler.net.sendTo(new MessageOpenOverlay(overlay), minecraftPlayer);
 	}
 
 	@Override
 	public void closeOverlay(String overlay)
 	{
-		KubeJSNetHandler.net.sendTo(new MessageCloseOverlay(overlay), getPlayerEntity());
+		KubeJSNetHandler.net.sendTo(new MessageCloseOverlay(overlay), minecraftPlayer);
 	}
 
 	public boolean isOP()
 	{
-		return server.server.getPlayerList().canSendCommands(getPlayerEntity().getGameProfile());
+		return server.minecraftServer.getPlayerList().canSendCommands(minecraftPlayer.getGameProfile());
 	}
 
 	public void kick(Text reason)
 	{
-		getPlayerEntity().connection.disconnect(reason.component());
+		minecraftPlayer.connection.disconnect(reason.component());
 	}
 
 	public void kick()
@@ -66,8 +66,8 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 	public void ban(String banner, String reason, long expiresInMillis)
 	{
 		Date date = new Date();
-		UserListBansEntry userlistbansentry = new UserListBansEntry(getPlayerEntity().getGameProfile(), date, banner, new Date(date.getTime() + (expiresInMillis <= 0L ? 315569260000L : expiresInMillis)), reason);
-		server.server.getPlayerList().getBannedPlayers().addEntry(userlistbansentry);
+		UserListBansEntry userlistbansentry = new UserListBansEntry(minecraftPlayer.getGameProfile(), date, banner, new Date(date.getTime() + (expiresInMillis <= 0L ? 315569260000L : expiresInMillis)), reason);
+		server.minecraftServer.getPlayerList().getBannedPlayers().addEntry(userlistbansentry);
 		kick(new TextTranslate("multiplayer.disconnect.banned"));
 	}
 
@@ -82,11 +82,11 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 
 		if (a != null)
 		{
-			AdvancementProgress advancementprogress = getPlayerEntity().getAdvancements().getProgress(a.advancement);
+			AdvancementProgress advancementprogress = minecraftPlayer.getAdvancements().getProgress(a.advancement);
 
 			for (String s : advancementprogress.getRemaningCriteria())
 			{
-				getPlayerEntity().getAdvancements().grantCriterion(a.advancement, s);
+				minecraftPlayer.getAdvancements().grantCriterion(a.advancement, s);
 			}
 		}
 	}
@@ -97,13 +97,13 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 
 		if (a != null)
 		{
-			AdvancementProgress advancementprogress = getPlayerEntity().getAdvancements().getProgress(a.advancement);
+			AdvancementProgress advancementprogress = minecraftPlayer.getAdvancements().getProgress(a.advancement);
 
 			if (advancementprogress.hasProgress())
 			{
 				for (String s : advancementprogress.getCompletedCriteria())
 				{
-					getPlayerEntity().getAdvancements().revokeCriterion(a.advancement, s);
+					minecraftPlayer.getAdvancements().revokeCriterion(a.advancement, s);
 				}
 			}
 		}
@@ -116,9 +116,9 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 		super.setSelectedSlot(index);
 		int n = getSelectedSlot();
 
-		if (p != n && getPlayerEntity().connection != null)
+		if (p != n && minecraftPlayer.connection != null)
 		{
-			getPlayerEntity().connection.sendPacket(new SPacketHeldItemChange(n));
+			minecraftPlayer.connection.sendPacket(new SPacketHeldItemChange(n));
 		}
 	}
 
@@ -127,9 +127,9 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 	{
 		super.setMouseItem(item);
 
-		if (getPlayerEntity().connection != null)
+		if (minecraftPlayer.connection != null)
 		{
-			getPlayerEntity().updateHeldItem();
+			minecraftPlayer.updateHeldItem();
 		}
 	}
 }

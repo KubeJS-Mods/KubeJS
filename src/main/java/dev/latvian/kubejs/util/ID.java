@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.util;
 
+import dev.latvian.kubejs.MinecraftClass;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
@@ -92,6 +93,7 @@ public final class ID implements Comparable<ID>
 		return path;
 	}
 
+	@MinecraftClass
 	public ResourceLocation mc()
 	{
 		return new ResourceLocation(namespace, path);

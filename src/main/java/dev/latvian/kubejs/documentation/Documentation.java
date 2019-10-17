@@ -5,6 +5,7 @@ import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -15,7 +16,22 @@ import java.util.Map;
  */
 public class Documentation
 {
-	public static final HashSet<String> OBJECT_METHODS = new HashSet<>(Arrays.asList("toString", "wait", "equals", "hashCode", "notify", "notifyAll", "getClass"));
+	private static final HashSet<String> OBJECT_METHODS_0P = new HashSet<>(Arrays.asList("toString", "wait", "equals", "hashCode", "notify", "notifyAll", "getClass"));
+	private static final HashSet<String> OBJECT_METHODS_1P = new HashSet<>(Collections.singletonList("equals"));
+
+	public static boolean isObjectMethod(String n, int p)
+	{
+		if (p == 0)
+		{
+			return OBJECT_METHODS_0P.contains(n);
+		}
+		else if (p == 1)
+		{
+			return OBJECT_METHODS_1P.contains(n);
+		}
+
+		return false;
+	}
 
 	private static Documentation instance;
 

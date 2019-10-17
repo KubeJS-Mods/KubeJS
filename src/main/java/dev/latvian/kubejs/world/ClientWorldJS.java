@@ -18,7 +18,7 @@ public class ClientWorldJS extends WorldJS
 
 	public static ClientWorldJS get()
 	{
-		if (inst == null || inst.world != Minecraft.getMinecraft().world)
+		if (inst == null || inst.minecraftWorld != Minecraft.getMinecraft().world)
 		{
 			inst = new ClientWorldJS();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(inst));
@@ -63,6 +63,6 @@ public class ClientWorldJS extends WorldJS
 	@Override
 	public String toString()
 	{
-		return "ClientWorld" + world.provider.getDimension();
+		return "ClientWorld" + minecraftWorld.provider.getDimension();
 	}
 }

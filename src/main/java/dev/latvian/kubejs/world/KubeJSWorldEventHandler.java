@@ -39,7 +39,7 @@ public class KubeJSWorldEventHandler
 
 		for (WorldServer world : server.worlds)
 		{
-			if (world != ServerJS.instance.getOverworld().world)
+			if (world != ServerJS.instance.getOverworld().minecraftWorld)
 			{
 				ServerWorldJS w = new ServerWorldJS(ServerJS.instance, world);
 				ServerJS.instance.worldMap.put(world.provider.getDimension(), w);

@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.world;
 
+import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.Info;
 import dev.latvian.kubejs.documentation.P;
@@ -37,13 +38,14 @@ import java.util.Collection;
 @Info("This class represents a dimension. You can access weather, blocks, entities, etc. Client and server sides have different worlds")
 public abstract class WorldJS implements WithAttachedData
 {
-	public final World world;
+	@MinecraftClass
+	public final World minecraftWorld;
 
 	private AttachedData data;
 
 	public WorldJS(World w)
 	{
-		world = w;
+		minecraftWorld = w;
 	}
 
 	@Override
@@ -59,7 +61,7 @@ public abstract class WorldJS implements WithAttachedData
 
 	public GameRulesJS getGameRules()
 	{
-		return new GameRulesJS(world.getGameRules());
+		return new GameRulesJS(minecraftWorld.getGameRules());
 	}
 
 	@Nullable
@@ -70,32 +72,32 @@ public abstract class WorldJS implements WithAttachedData
 
 	public long getSeed()
 	{
-		return world.getSeed();
+		return minecraftWorld.getSeed();
 	}
 
 	public long getTime()
 	{
-		return world.getTotalWorldTime();
+		return minecraftWorld.getTotalWorldTime();
 	}
 
 	public long getLocalTime()
 	{
-		return world.getWorldTime();
+		return minecraftWorld.getWorldTime();
 	}
 
 	public void setTime(long time)
 	{
-		world.setTotalWorldTime(time);
+		minecraftWorld.setTotalWorldTime(time);
 	}
 
 	public void setLocalTime(long time)
 	{
-		world.setWorldTime(time);
+		minecraftWorld.setWorldTime(time);
 	}
 
 	public int getDimension()
 	{
-		return world.provider.getDimension();
+		return minecraftWorld.provider.getDimension();
 	}
 
 	public boolean isOverworld()
@@ -105,22 +107,22 @@ public abstract class WorldJS implements WithAttachedData
 
 	public boolean isDaytime()
 	{
-		return world.isDaytime();
+		return minecraftWorld.isDaytime();
 	}
 
 	public boolean isRaining()
 	{
-		return world.isRaining();
+		return minecraftWorld.isRaining();
 	}
 
 	public boolean isThundering()
 	{
-		return world.isThundering();
+		return minecraftWorld.isThundering();
 	}
 
 	public void setRainStrength(@P("strength") float strength)
 	{
-		world.setRainStrength(strength);
+		minecraftWorld.setRainStrength(strength);
 	}
 
 	public BlockContainerJS getBlock(@P("x") int x, @P("y") int y, @P("z") int z)
@@ -130,7 +132,7 @@ public abstract class WorldJS implements WithAttachedData
 
 	public BlockContainerJS getBlock(@P("pos") BlockPos pos)
 	{
-		return new BlockContainerJS(world, pos);
+		return new BlockContainerJS(minecraftWorld, pos);
 	}
 
 	public BlockContainerJS getBlock(@P("blockEntity") TileEntity blockEntity)
@@ -189,12 +191,12 @@ public abstract class WorldJS implements WithAttachedData
 
 	public EntityArrayList getPlayers()
 	{
-		return createEntityList(world.playerEntities);
+		return createEntityList(minecraftWorld.playerEntities);
 	}
 
 	public EntityArrayList getEntities()
 	{
-		return createEntityList(world.loadedEntityList);
+		return createEntityList(minecraftWorld.loadedEntityList);
 	}
 
 	public EntityArrayList getEntities(@P("filter") String filter)
@@ -211,22 +213,22 @@ public abstract class WorldJS implements WithAttachedData
 
 	public ExplosionJS createExplosion(@P("x") double x, @P("y") double y, @P("z") double z)
 	{
-		return new ExplosionJS(world, x, y, z);
+		return new ExplosionJS(minecraftWorld, x, y, z);
 	}
 
 	@Nullable
 	public EntityJS createEntity(Object id)
 	{
-		return getEntity(EntityList.createEntityByIDFromName(ID.of(id).mc(), world));
+		return getEntity(EntityList.createEntityByIDFromName(ID.of(id).mc(), minecraftWorld));
 	}
 
 	public void spawnLightning(@P("x") double x, @P("y") double y, @P("z") double z, @P("effectOnly") boolean effectOnly)
 	{
-		world.addWeatherEffect(new EntityLightningBolt(world, x, y, z, effectOnly));
+		minecraftWorld.addWeatherEffect(new EntityLightningBolt(minecraftWorld, x, y, z, effectOnly));
 	}
 
 	public void spawnFireworks(@P("x") double x, @P("y") double y, @P("z") double z, @P("properties") FireworksJS f)
 	{
-		world.spawnEntity(f.createFireworkRocket(world, x, y, z));
+		minecraftWorld.spawnEntity(f.createFireworkRocket(minecraftWorld, x, y, z));
 	}
 }

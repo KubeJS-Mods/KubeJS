@@ -9,6 +9,7 @@ import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.script.ScriptModData;
 import dev.latvian.mods.aurora.page.HTTPWebPage;
+import dev.latvian.mods.aurora.tag.PairedTag;
 import dev.latvian.mods.aurora.tag.Tag;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -52,12 +53,6 @@ public class KubeJSClassPage extends HTTPWebPage
 	public String getIcon()
 	{
 		return "https://kubejs.latvian.dev/logo_48.png";
-	}
-
-	@Override
-	public String getStylesheet()
-	{
-		return "https://kubejs.latvian.dev/style.css";
 	}
 
 	@Override
@@ -105,15 +100,15 @@ public class KubeJSClassPage extends HTTPWebPage
 		{
 			Tag table = body.paired("table", "").addClass("doc");
 			Tag topRow = table.tr();
-			KubeJSHomePage.hover(topRow.th().a("Event", "#event"), "ID of this event. For double events, alternate ID will be provided");
-			KubeJSHomePage.hover(topRow.th().text("Can cancel"), "True if event can be cancelled");
-			KubeJSHomePage.hover(topRow.th().text("Client"), "True if event is fired on client side");
-			KubeJSHomePage.hover(topRow.th().text("Server"), "True if event is fired on server side");
+			topRow.th().a("Event", "#event").tooltip("ID of this event. For double events, alternate ID will be provided");
+			topRow.th().text("Can cancel").tooltip("True if event can be cancelled");
+			topRow.th().text("Client").tooltip("True if event is fired on client side");
+			topRow.th().text("Server").tooltip("True if event is fired on server side");
 			Tag row = table.tr();
 			row.td().text(event.eventID);
-			KubeJSHomePage.yesNoSpan(row.td(), event.canCancel);
-			KubeJSHomePage.yesNoSpan(row.td(), event.sideOnly == null || event.sideOnly == Side.CLIENT);
-			KubeJSHomePage.yesNoSpan(row.td(), event.sideOnly == null || event.sideOnly == Side.SERVER);
+			row.td().yesNoSpan(event.canCancel);
+			row.td().yesNoSpan(event.sideOnly == null || event.sideOnly == Side.CLIENT);
+			row.td().yesNoSpan(event.sideOnly == null || event.sideOnly == Side.SERVER);
 			body.br();
 		}
 
@@ -162,33 +157,38 @@ public class KubeJSClassPage extends HTTPWebPage
 
 			if (Modifier.isPublic(mo) && !Modifier.isStatic(mo) && !method.isAnnotationPresent(Ignore.class))
 			{
-				if (!Documentation.OBJECT_METHODS.contains(method.getName()))
+				if (!Documentation.isObjectMethod(method.getName(), method.getParameterCount()))
 				{
 					methodList.add(new DocumentedMethod(documentation, method));
 				}
 			}
 		}
 
-		Map<String, MethodBean> beanMap = new LinkedHashMap<>();
+		Map<MethodBeanName, MethodBean> beanMap = new LinkedHashMap<>();
 
 		for (DocumentedMethod m : methodList)
 		{
-			if (m.beanType != -1 && !m.beanName.isEmpty())
+			if (m.bean != null && m.bean.type.isValid(m.paramNames.length))
 			{
-				MethodBean bean = beanMap.get(m.beanName);
+				MethodBean bean = beanMap.get(m.bean);
 
 				if (bean == null)
 				{
-					bean = new MethodBean(m.beanName);
-					beanMap.put(m.beanName, bean);
+					bean = new MethodBean(m.bean);
+					beanMap.put(m.bean, bean);
 				}
 
-				bean.methods[m.beanType] = m;
+				bean.methods.put(m.bean.type, m);
 			}
 		}
 
 		for (MethodBean bean : beanMap.values())
 		{
+			if (!bean.methods.containsKey(MethodBeanName.Type.GET) && !bean.methods.containsKey(MethodBeanName.Type.IS))
+			{
+				continue;
+			}
+
 			DocumentedField field = new DocumentedField(documentation, bean);
 
 			if (field.type != null && field.actualType != null)
@@ -205,25 +205,34 @@ public class KubeJSClassPage extends HTTPWebPage
 			Tag methodTable = body.table().addClass("doc").id("fields");
 			Tag firstRow = methodTable.tr();
 			firstRow.th().a("Fields", "#fields");
-			firstRow.th().text("Getter");
-			firstRow.th().text("Setter");
+			firstRow.th().text("Type");
 
 			for (DocumentedField field : fieldList)
 			{
 				Tag row = methodTable.tr();
-				Tag n = row.td().span("", "");
-				KubeJSHomePage.classText(documentation, n, field.type, field.actualType);
+				Tag n = row.td();
+
+				n.icon(field.canSet ? "mutable" : "immutable").title(field.canSet ? "Field can be modified" : "Field can't be modified");
 				n.text(" ");
+
+				if (field.type != null)
+				{
+					Tag typeIcon = n.icon(KubeJSHomePage.getIconType(field.type));
+					typeIcon.title(documentation.getPrettyName(field.type));
+					n.text(" ");
+				}
+
+				//KubeJSHomePage.classText(documentation, n, field.type, field.actualType);
+				//n.text(" ");
 				n.text(field.name);
 
 				if (!field.info.isEmpty())
 				{
 					n.text(" ");
-					KubeJSHomePage.emoji(n, "x1F4A1", field.info);
+					n.icon("info").tooltip(field.info);
 				}
 
-				KubeJSHomePage.yesNoSpan(row.td(), field.getter);
-				KubeJSHomePage.yesNoSpan(row.td(), field.setter);
+				KubeJSHomePage.classText(documentation, row.td(), field.type, field.actualType);
 			}
 
 			body.br();
@@ -234,18 +243,45 @@ public class KubeJSClassPage extends HTTPWebPage
 			methodList.sort(null);
 
 			Tag methodTable = body.table().addClass("doc").id("methods");
-			methodTable.tr().th().a("Methods", "#methods");
+			Tag firstRow = methodTable.tr();
+			firstRow.th().a("Methods", "#methods");
+			firstRow.th().text("Return Type");
+
+			boolean isEvent = EventJS.class.isAssignableFrom(c);
 
 			for (DocumentedMethod method : methodList)
 			{
-				if (method.beanType != -1 && !method.beanName.isEmpty())
+				if (isEvent && method.paramNames.length == 0)
+				{
+					if (method.name.equals("canCancel"))
+					{
+						continue;
+					}
+					else if ((event == null || !event.canCancel) && method.name.equals("cancel"))
+					{
+						continue;
+					}
+				}
+
+				MethodBean bean = method.bean != null ? beanMap.get(method.bean) : null;
+
+				if (bean != null && (bean.methods.containsKey(MethodBeanName.Type.GET) || bean.methods.containsKey(MethodBeanName.Type.IS)))
 				{
 					continue;
 				}
 
-				Tag n = methodTable.tr().td().id(method.id);
-				KubeJSHomePage.classText(documentation, n, method.returnType, method.actualReturnType);
-				n.text(" ");
+				Tag row = methodTable.tr();
+				Tag n = row.td().id(method.id);
+
+				Tag classSpan = new PairedTag("span");
+
+				if (method.returnType != null)
+				{
+					Tag typeIcon = n.icon(KubeJSHomePage.getIconType(method.returnType));
+					typeIcon.title(documentation.getPrettyName(method.returnType));
+					n.text(" ");
+				}
+
 				n.text(method.name);
 				n.text("(");
 
@@ -266,8 +302,10 @@ public class KubeJSClassPage extends HTTPWebPage
 				if (!method.info.isEmpty())
 				{
 					n.text(" ");
-					KubeJSHomePage.emoji(n, "x1F4A1", method.info);
+					n.icon("info").tooltip(method.info);
 				}
+
+				KubeJSHomePage.classText(documentation, row.td(), method.returnType, method.actualReturnType);
 			}
 		}
 

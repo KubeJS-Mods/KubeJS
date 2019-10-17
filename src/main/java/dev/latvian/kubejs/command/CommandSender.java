@@ -79,6 +79,6 @@ public class CommandSender implements MessageSender
 	@Override
 	public int runCommand(String command)
 	{
-		return server.server.getCommandManager().executeCommand(sender, command);
+		return server.minecraftServer.getCommandManager().executeCommand(sender, command);
 	}
 }

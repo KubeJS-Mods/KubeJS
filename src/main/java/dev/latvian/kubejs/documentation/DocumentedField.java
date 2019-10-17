@@ -1,6 +1,8 @@
 package dev.latvian.kubejs.documentation;
 
+import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.integration.aurora.MethodBean;
+import dev.latvian.kubejs.integration.aurora.MethodBeanName;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -15,8 +17,8 @@ public class DocumentedField implements Comparable<DocumentedField>
 	public final Class type;
 	public final Type actualType;
 	public final String info;
-	public final boolean getter;
-	public final boolean setter;
+	public final boolean canSet;
+	public final boolean isMinecraftClass;
 
 	public DocumentedField(Documentation documentation, Field field)
 	{
@@ -27,18 +29,18 @@ public class DocumentedField implements Comparable<DocumentedField>
 		Info infoAnnotation = field.getAnnotation(Info.class);
 		info = infoAnnotation == null ? "" : infoAnnotation.value();
 
-		getter = true;
-		setter = !Modifier.isFinal(field.getModifiers());
+		canSet = !Modifier.isFinal(field.getModifiers());
+		isMinecraftClass = field.isAnnotationPresent(MinecraftClass.class);
 	}
 
 	public DocumentedField(Documentation documentation, MethodBean bean)
 	{
-		name = bean.name;
+		name = bean.name.name;
 		type = bean.getType();
 		actualType = bean.getActualType();
 		info = bean.getInfo();
-		getter = bean.methods[0] != null || bean.methods[1] != null;
-		setter = bean.methods[2] != null;
+		canSet = bean.methods.containsKey(MethodBeanName.Type.SET);
+		isMinecraftClass = bean.isMinecraftClass();
 	}
 
 	@Override

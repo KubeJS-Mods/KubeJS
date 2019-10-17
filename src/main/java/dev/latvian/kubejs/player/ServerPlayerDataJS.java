@@ -53,7 +53,7 @@ public class ServerPlayerDataJS extends PlayerDataJS<EntityPlayerMP, ServerPlaye
 	@Nullable
 	public EntityPlayerMP getPlayerEntity()
 	{
-		return server.server.getPlayerList().getPlayerByUUID(getId());
+		return server.minecraftServer.getPlayerList().getPlayerByUUID(getId());
 	}
 
 	@Override

@@ -43,7 +43,7 @@ import java.util.Map;
 		name = KubeJS.MOD_NAME,
 		version = KubeJS.VERSION,
 		acceptableRemoteVersions = "*",
-		dependencies = "required-after:forge@[0.0.0.forge,);after:aurora"
+		dependencies = "required-after:forge@[0.0.0.forge,);after:" + Aurora.MOD_ID
 )
 public class KubeJS
 {

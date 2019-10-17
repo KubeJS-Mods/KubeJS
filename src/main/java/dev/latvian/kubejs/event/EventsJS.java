@@ -86,7 +86,7 @@ public class EventsJS
 
 				if (c && event.isCancelled())
 				{
-					ScriptManager.instance.currentFile = null;
+					//ScriptManager.instance.currentFile = null;
 					return true;
 				}
 			}
@@ -100,7 +100,7 @@ public class EventsJS
 			}
 		}
 
-		ScriptManager.instance.currentFile = null;
+		//ScriptManager.instance.currentFile = null;
 		return false;
 	}
 

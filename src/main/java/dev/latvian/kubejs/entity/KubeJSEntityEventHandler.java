@@ -53,7 +53,7 @@ public class KubeJSEntityEventHandler
 
 			for (ItemEntityJS ie : e.drops)
 			{
-				event.getDrops().add((EntityItem) ie.entity);
+				event.getDrops().add((EntityItem) ie.minecraftEntity);
 			}
 		}
 	}

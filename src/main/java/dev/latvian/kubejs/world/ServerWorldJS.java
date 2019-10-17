@@ -53,6 +53,6 @@ public class ServerWorldJS extends WorldJS
 	@Override
 	public String toString()
 	{
-		return "ServerWorld" + world.provider.getDimension();
+		return "ServerWorld" + minecraftWorld.provider.getDimension();
 	}
 }

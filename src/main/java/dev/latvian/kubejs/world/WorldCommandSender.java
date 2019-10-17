@@ -26,7 +26,7 @@ public class WorldCommandSender implements ICommandSender
 	@Override
 	public String getName()
 	{
-		return "DIM" + world.world.provider.getDimension();
+		return "DIM" + world.minecraftWorld.provider.getDimension();
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class WorldCommandSender implements ICommandSender
 	@Override
 	public World getEntityWorld()
 	{
-		return world.world;
+		return world.minecraftWorld;
 	}
 
 	@Nullable
@@ -47,7 +47,7 @@ public class WorldCommandSender implements ICommandSender
 	{
 		if (world instanceof ServerWorldJS)
 		{
-			return ((ServerWorldJS) world).getServer().server;
+			return world.getServer().minecraftServer;
 		}
 
 		return null;

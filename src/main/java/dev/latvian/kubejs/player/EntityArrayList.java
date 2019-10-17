@@ -68,7 +68,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 		for (EntityJS entity : this)
 		{
-			entity.entity.sendMessage(component);
+			entity.minecraftEntity.sendMessage(component);
 		}
 	}
 
@@ -79,9 +79,9 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 		for (EntityJS entity : this)
 		{
-			if (entity.entity instanceof EntityPlayerMP)
+			if (entity.minecraftEntity instanceof EntityPlayerMP)
 			{
-				((EntityPlayerMP) entity.entity).sendStatusMessage(component, true);
+				((EntityPlayerMP) entity.minecraftEntity).sendStatusMessage(component, true);
 			}
 		}
 	}
@@ -153,7 +153,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		{
 			if (entity instanceof PlayerJS)
 			{
-				KubeJS.PROXY.sendData(((PlayerJS) entity).getPlayerEntity(), channel, nbt);
+				KubeJS.PROXY.sendData(((PlayerJS) entity).minecraftPlayer, channel, nbt);
 			}
 		}
 	}

@@ -32,7 +32,7 @@ public abstract class PlayerEventJS extends LivingEntityEventJS
 	{
 		if (getPlayer() != null && Loader.isModLoaded("gamestages"))
 		{
-			return GameStagesIntegration.hasStage(getPlayer().getPlayerEntity(), stage);
+			return GameStagesIntegration.hasStage(getPlayer().minecraftPlayer, stage);
 		}
 
 		return false;
@@ -44,7 +44,7 @@ public abstract class PlayerEventJS extends LivingEntityEventJS
 		{
 			if (getPlayer() != null)
 			{
-				GameStagesIntegration.addStage(getPlayer().getPlayerEntity(), stage);
+				GameStagesIntegration.addStage(getPlayer().minecraftPlayer, stage);
 			}
 		}
 		else
@@ -59,7 +59,7 @@ public abstract class PlayerEventJS extends LivingEntityEventJS
 		{
 			if (getPlayer() != null)
 			{
-				GameStagesIntegration.removeStage(getPlayer().getPlayerEntity(), stage);
+				GameStagesIntegration.removeStage(getPlayer().minecraftPlayer, stage);
 			}
 		}
 		else

@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.item.ingredient.IgnoreNBTIngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.OreDictionaryIngredientJS;
@@ -165,6 +166,7 @@ public abstract class ItemStackJS implements IngredientJS
 
 	public abstract Item getItem();
 
+	@MinecraftClass
 	public abstract ItemStack getItemStack();
 
 	public ID getId()

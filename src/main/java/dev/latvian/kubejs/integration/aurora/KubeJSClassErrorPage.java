@@ -36,12 +36,6 @@ public class KubeJSClassErrorPage extends HTTPWebPage
 	}
 
 	@Override
-	public String getStylesheet()
-	{
-		return "https://kubejs.latvian.dev/style.css";
-	}
-
-	@Override
 	public void body(Tag body)
 	{
 		body.img("https://kubejs.latvian.dev/logo_title.png").style("height", "7em");

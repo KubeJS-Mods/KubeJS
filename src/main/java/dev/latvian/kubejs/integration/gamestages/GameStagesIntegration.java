@@ -55,12 +55,12 @@ public class GameStagesIntegration
 	@SubscribeEvent
 	public static void onGameStageAdded(GameStageEvent.Added e)
 	{
-		EventsJS.postDouble("gamestage.added", e.getStageName(), new GameStageEventJS(e.getEntityPlayer(), e.getStageName()));
+		EventsJS.postDouble("gamestage.added", e.getStageName(), new GameStageEventJS(e));
 	}
 
 	@SubscribeEvent
 	public static void onGameStageRemoved(GameStageEvent.Removed e)
 	{
-		EventsJS.postDouble("gamestage.removed", e.getStageName(), new GameStageEventJS(e.getEntityPlayer(), e.getStageName()));
+		EventsJS.postDouble("gamestage.removed", e.getStageName(), new GameStageEventJS(e));
 	}
 }

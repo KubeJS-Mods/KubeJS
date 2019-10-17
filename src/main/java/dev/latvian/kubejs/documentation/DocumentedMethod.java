@@ -1,6 +1,10 @@
 package dev.latvian.kubejs.documentation;
 
+import dev.latvian.kubejs.MinecraftClass;
+import dev.latvian.kubejs.integration.aurora.MethodBeanName;
+
 import javax.annotation.Nullable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
@@ -13,15 +17,15 @@ import java.util.List;
 public class DocumentedMethod implements Comparable<DocumentedMethod>
 {
 	public final String name;
-	public final String id;
 	public final Class returnType;
 	public final Type actualReturnType;
 	public final String[] paramNames;
 	public final Class[] paramTypes;
 	public final Type[] actualParamTypes;
 	public final String info;
-	public final int beanType;
-	public final String beanName;
+	public final String id;
+	public final MethodBeanName bean;
+	public final boolean isMinecraftClass;
 
 	public DocumentedMethod(Documentation documentation, Method method)
 	{
@@ -60,7 +64,7 @@ public class DocumentedMethod implements Comparable<DocumentedMethod>
 			paramNames[0] = documentation.getPrettyName(paramTypes[0]).substring(0, 1).toLowerCase();
 		}
 
-		Info infoAnnotation = findInfo(method);
+		Info infoAnnotation = lookForAnnotation(method, Info.class);
 		info = infoAnnotation == null ? "" : infoAnnotation.value();
 
 		StringBuilder idBuilder = new StringBuilder();
@@ -76,37 +80,18 @@ public class DocumentedMethod implements Comparable<DocumentedMethod>
 		}
 
 		id = idBuilder.toString();
-
-		if (paramNames.length == 0 && name.length() > 3 && name.startsWith("get"))
-		{
-			beanType = 0;
-			beanName = name.substring(3, 4).toLowerCase() + name.substring(4);
-		}
-		else if (paramNames.length == 0 && name.length() > 2 && name.startsWith("is"))
-		{
-			beanType = 1;
-			beanName = name.substring(2, 3).toLowerCase() + name.substring(3);
-		}
-		else if (paramNames.length == 1 && name.length() > 3 && name.startsWith("set"))
-		{
-			beanType = 2;
-			beanName = name.substring(3, 4).toLowerCase() + name.substring(4);
-		}
-		else
-		{
-			beanType = -1;
-			beanName = "";
-		}
+		bean = MethodBeanName.get(name);
+		isMinecraftClass = lookForAnnotation(method, MinecraftClass.class) != null;
 	}
 
 	@Nullable
-	private static Info findInfo(Method method)
+	private static <T extends Annotation> T lookForAnnotation(Method method, Class<T> aclass)
 	{
-		Info infoAnnotation = method.getAnnotation(Info.class);
+		T a = method.getAnnotation(aclass);
 
-		if (infoAnnotation != null)
+		if (a != null)
 		{
-			return infoAnnotation;
+			return a;
 		}
 
 		List<Class> list = new ArrayList<>();
@@ -131,15 +116,13 @@ public class DocumentedMethod implements Comparable<DocumentedMethod>
 
 				if (m != null)
 				{
-					Info i = findInfo(m);
+					T i = lookForAnnotation(m, aclass);
 
 					if (i != null)
 					{
 						return i;
 					}
 				}
-
-
 			}
 			catch (Exception ex)
 			{
