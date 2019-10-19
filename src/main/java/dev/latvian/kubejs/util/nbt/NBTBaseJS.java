@@ -105,7 +105,7 @@ public interface NBTBaseJS
 		return nbt == null ? 0 : nbt.getId();
 	}
 
-	default NBTBaseJS copy()
+	default NBTBaseJS getCopy()
 	{
 		return this;
 	}

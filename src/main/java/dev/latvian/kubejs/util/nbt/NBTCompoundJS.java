@@ -1,10 +1,16 @@
 package dev.latvian.kubejs.util.nbt;
 
+import dev.latvian.kubejs.KubeJS;
+import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -59,7 +65,7 @@ public class NBTCompoundJS implements NBTBaseJS
 		}
 
 		@Override
-		public NBTCompoundJS copy()
+		public NBTCompoundJS getCopy()
 		{
 			return this;
 		}
@@ -100,6 +106,35 @@ public class NBTCompoundJS implements NBTBaseJS
 			return this;
 		}
 	};
+
+	public static NBTCompoundJS read(File file) throws IOException
+	{
+		KubeJS.verifyFilePath(file);
+		return NBTBaseJS.of(CompressedStreamTools.readCompressed(new FileInputStream(file))).asCompound();
+	}
+
+	public static void write(File file, Object nbt) throws IOException
+	{
+		KubeJS.verifyFilePath(file);
+		NBTTagCompound n = NBTBaseJS.of(nbt).asCompound().createNBT();
+
+		if (n == null)
+		{
+			n = new NBTTagCompound();
+		}
+
+		CompressedStreamTools.writeCompressed(n, new FileOutputStream(file));
+	}
+
+	public static Object read(String file) throws IOException
+	{
+		return read(new File(KubeJS.getGameDirectory(), file));
+	}
+
+	public static void write(String file, Object json) throws IOException
+	{
+		write(new File(KubeJS.getGameDirectory(), file), json);
+	}
 
 	private final Map<String, NBTBaseJS> map;
 
@@ -189,13 +224,13 @@ public class NBTCompoundJS implements NBTBaseJS
 	}
 
 	@Override
-	public NBTCompoundJS copy()
+	public NBTCompoundJS getCopy()
 	{
 		NBTCompoundJS nbt = new NBTCompoundJS(map.size());
 
 		for (Map.Entry<String, NBTBaseJS> entry : map.entrySet())
 		{
-			nbt.set(entry.getKey(), entry.getValue().copy());
+			nbt.set(entry.getKey(), entry.getValue().getCopy());
 		}
 
 		return nbt;

@@ -63,7 +63,7 @@ public class NBTListJS implements NBTBaseJS, Iterable<NBTBaseJS>
 		}
 
 		@Override
-		public NBTListJS copy()
+		public NBTListJS getCopy()
 		{
 			return this;
 		}

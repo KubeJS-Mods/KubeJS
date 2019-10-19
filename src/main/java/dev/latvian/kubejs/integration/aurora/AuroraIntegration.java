@@ -30,22 +30,20 @@ public class AuroraIntegration
 		{
 			if (event.getSplitUri().length == 1)
 			{
-				event.setPage(new KubeJSHomePage(Documentation.get()));
+				event.returnPage(new KubeJSHomePage(Documentation.get()));
 			}
 			else
 			{
 				try
 				{
 					Class c = Class.forName(event.getSplitUri()[1]);
-					event.setPage(new KubeJSClassPage(Documentation.get(), c));
+					event.returnPage(new KubeJSClassPage(Documentation.get(), c));
 				}
 				catch (Exception ex)
 				{
-					event.setPage(new KubeJSClassErrorPage(event.getSplitUri()[1]));
+					event.returnPage(new KubeJSClassErrorPage(event.getSplitUri()[1]));
 				}
 			}
-
-			event.setCanceled(true);
 		}
 	}
 }

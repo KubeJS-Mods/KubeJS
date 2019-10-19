@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.util;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
@@ -7,8 +8,11 @@ import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatList;
 import net.minecraft.world.World;
+import net.minecraft.world.storage.ThreadedFileIOBase;
 
 import javax.annotation.Nullable;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,6 +45,30 @@ public class UtilsJS
 	public static <T> T cast(Object o)
 	{
 		return (T) o;
+	}
+
+	public static void queueIO(Runnable runnable)
+	{
+		ThreadedFileIOBase.getThreadedIOInstance().queueIO(() -> {
+
+			try
+			{
+				runnable.run();
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+			}
+
+			return false;
+		});
+	}
+
+	public static File getFile(String path) throws IOException
+	{
+		File file = new File(KubeJS.getGameDirectory(), path);
+		KubeJS.verifyFilePath(file);
+		return file;
 	}
 
 	@SuppressWarnings("unchecked")

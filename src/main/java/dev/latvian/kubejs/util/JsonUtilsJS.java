@@ -10,12 +10,20 @@ import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.documentation.P;
 import jdk.nashorn.api.scripting.JSObject;
 
 import javax.annotation.Nullable;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -140,6 +148,41 @@ public class JsonUtilsJS
 		return JsonNull.INSTANCE;
 	}
 
+	@Nullable
+	public static Object toObject(@Nullable JsonElement json)
+	{
+		if (json == null || json.isJsonNull())
+		{
+			return null;
+		}
+		else if (json.isJsonObject())
+		{
+			LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+			JsonObject o = json.getAsJsonObject();
+
+			for (Map.Entry<String, JsonElement> entry : o.entrySet())
+			{
+				map.put(entry.getKey(), toObject(entry.getValue()));
+			}
+
+			return map;
+		}
+		else if (json.isJsonArray())
+		{
+			JsonArray a = json.getAsJsonArray();
+			Object[] objects = new Object[a.size()];
+
+			for (int i = 0; i < objects.length; i++)
+			{
+				objects[i] = toObject(a.get(i));
+			}
+
+			return objects;
+		}
+
+		return primitiveObject(json);
+	}
+
 	public static String toString(JsonElement json)
 	{
 		StringWriter writer = new StringWriter();
@@ -241,5 +284,54 @@ public class JsonUtilsJS
 		}
 
 		return null;
+	}
+
+	@Nullable
+	public static Object read(@P("file") File file) throws IOException
+	{
+		KubeJS.verifyFilePath(file);
+
+		try (FileReader fileReader = new FileReader(file);
+			 JsonReader jsonReader = new JsonReader(fileReader))
+		{
+			JsonElement element;
+			boolean lenient = jsonReader.isLenient();
+			jsonReader.setLenient(true);
+			element = Streams.parse(jsonReader);
+
+			if (!element.isJsonNull() && jsonReader.peek() != JsonToken.END_DOCUMENT)
+			{
+				throw new JsonSyntaxException("Did not consume the entire document.");
+			}
+
+			return toObject(element);
+		}
+	}
+
+	public static void write(@P("file") File file, @P("json") Object json) throws IOException
+	{
+		KubeJS.verifyFilePath(file);
+
+		String string = JsonUtilsJS.toPrettyString(JsonUtilsJS.of(json));
+
+		try (Writer fileWriter = new FileWriter(file);
+			 JsonWriter jsonWriter = new JsonWriter(new BufferedWriter(fileWriter)))
+		{
+			jsonWriter.setIndent("\t");
+			jsonWriter.setSerializeNulls(true);
+			jsonWriter.setLenient(true);
+			Streams.write(of(json), jsonWriter);
+		}
+	}
+
+	@Nullable
+	public static Object read(@P("file") String file) throws IOException
+	{
+		return read(new File(KubeJS.getGameDirectory(), file));
+	}
+
+	public static void write(@P("file") String file, @P("json") Object json) throws IOException
+	{
+		write(new File(KubeJS.getGameDirectory(), file), json);
 	}
 }

@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -75,10 +76,23 @@ public class KubeJS
 
 	public static boolean nextClientHasClientMod = false;
 
+	public static File getGameDirectory()
+	{
+		return Loader.instance().getConfigDir().getParentFile();
+	}
+
+	public static void verifyFilePath(File file) throws IOException
+	{
+		if (!file.getCanonicalFile().getAbsolutePath().startsWith(getGameDirectory().getCanonicalFile().getAbsolutePath()))
+		{
+			throw new IOException("You can't access files outside Minecraft directory!");
+		}
+	}
+
 	public KubeJS()
 	{
 		//Is there a better way than this? I sure hope so
-		File folder = new File(Loader.instance().getConfigDir().getParentFile(), "kubejs");
+		File folder = new File(getGameDirectory(), "kubejs");
 
 		if (!folder.exists())
 		{

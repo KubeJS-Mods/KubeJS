@@ -37,6 +37,11 @@ public class UtilsWrapper
 		return ServerJS.instance;
 	}
 
+	public void queueIO(Runnable runnable)
+	{
+		UtilsJS.queueIO(runnable);
+	}
+
 	public Random getRandom()
 	{
 		return UtilsJS.RANDOM;

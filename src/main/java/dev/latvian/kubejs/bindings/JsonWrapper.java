@@ -9,6 +9,8 @@ import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 
 import javax.annotation.Nullable;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author LatvianModder
@@ -60,5 +62,27 @@ public class JsonWrapper
 	public Object primitiveObject(@P("json") JsonElement json)
 	{
 		return JsonUtilsJS.primitiveObject(json);
+	}
+
+	@Nullable
+	public Object read(File file) throws IOException
+	{
+		return JsonUtilsJS.read(file);
+	}
+
+	public void write(File file, Object json) throws IOException
+	{
+		JsonUtilsJS.write(file, json);
+	}
+
+	@Nullable
+	public Object read(String file) throws IOException
+	{
+		return JsonUtilsJS.read(file);
+	}
+
+	public void write(String file, Object json) throws IOException
+	{
+		JsonUtilsJS.write(file, json);
 	}
 }
