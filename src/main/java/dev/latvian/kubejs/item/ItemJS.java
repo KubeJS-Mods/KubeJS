@@ -1,11 +1,15 @@
 package dev.latvian.kubejs.item;
 
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,12 +17,11 @@ import java.util.Map;
  */
 public class ItemJS extends Item
 {
-	public final ItemBuilder properties;
+	public final ItemBuilder properties = ItemBuilder.current;
 	private Item containerItem;
 
-	public ItemJS(ItemBuilder p)
+	public ItemJS()
 	{
-		properties = p;
 		setTranslationKey(properties.translationKey);
 		setMaxStackSize(properties.maxStackSize);
 
@@ -55,5 +58,16 @@ public class ItemJS extends Item
 	public boolean hasEffect(ItemStack stack)
 	{
 		return properties.glow || super.hasEffect(stack);
+	}
+
+	@Override
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
+	{
+		super.addInformation(stack, worldIn, tooltip, flagIn);
+
+		for (ITextComponent component : properties.tooltip)
+		{
+			tooltip.add(component.getFormattedText());
+		}
 	}
 }

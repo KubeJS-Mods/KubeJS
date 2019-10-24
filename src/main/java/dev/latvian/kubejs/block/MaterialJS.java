@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.block;
 
+import dev.latvian.kubejs.MinecraftClass;
 import net.minecraft.block.material.Material;
 
 /**
@@ -8,12 +9,12 @@ import net.minecraft.block.material.Material;
 public class MaterialJS
 {
 	private final String id;
-	private final transient Material material;
+	private final Material minecraftMaterial;
 
 	public MaterialJS(String i, Material m)
 	{
 		id = i;
-		material = m;
+		minecraftMaterial = m;
 	}
 
 	public String getId()
@@ -21,8 +22,9 @@ public class MaterialJS
 		return id;
 	}
 
-	public Material getMaterial()
+	@MinecraftClass
+	public Material getMinecraftMaterial()
 	{
-		return material;
+		return minecraftMaterial;
 	}
 }

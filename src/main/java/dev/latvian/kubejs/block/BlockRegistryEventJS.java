@@ -21,9 +21,8 @@ public class BlockRegistryEventJS extends EventJS
 	public BlockBuilder create(String name)
 	{
 		return new BlockBuilder(name, p -> {
-			BlockJS block = new BlockJS(p);
-			block.setRegistryName(p.id.mc());
-			registry.register(block);
+			BlockBuilder.current = p;
+			registry.register(new BlockJS().setRegistryName(p.id.mc()));
 		});
 	}
 }

@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.item;
 
-import net.minecraft.block.Block;
+import dev.latvian.kubejs.block.BlockJS;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -12,7 +12,7 @@ public class BlockItemJS extends ItemBlock
 {
 	public final ItemBuilder properties;
 
-	public BlockItemJS(Block b, ItemBuilder p)
+	public BlockItemJS(BlockJS b, ItemBuilder p)
 	{
 		super(b);
 		properties = p;

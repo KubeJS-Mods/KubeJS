@@ -1,6 +1,8 @@
 package dev.latvian.kubejs.world;
 
 import dev.latvian.kubejs.MinecraftClass;
+import dev.latvian.kubejs.block.MaterialJS;
+import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.documentation.DisplayName;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
@@ -342,5 +344,10 @@ public class BlockContainerJS
 		}
 
 		return null;
+	}
+
+	public MaterialJS getMaterial()
+	{
+		return MaterialListJS.INSTANCE.get(getBlockState().getMaterial());
 	}
 }

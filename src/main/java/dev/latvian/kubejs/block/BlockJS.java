@@ -1,31 +1,55 @@
 package dev.latvian.kubejs.block;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * @author LatvianModder
  */
 public class BlockJS extends Block
 {
-	public final BlockBuilder properties;
+	public final BlockBuilder properties = BlockBuilder.current;
 
-	public BlockJS(BlockBuilder p)
+	public BlockJS()
 	{
-		super(p.material.getMaterial());
-		properties = p;
-		setTranslationKey(p.translationKey);
-		setHardness(p.hardness);
+		super(BlockBuilder.current.material.getMinecraftMaterial());
+		setTranslationKey(properties.translationKey);
+		setHardness(properties.hardness);
 
-		if (p.resistance >= 0F)
+		if (properties.resistance >= 0F)
 		{
-			setResistance(p.resistance);
+			setResistance(properties.resistance);
 		}
 
-		setLightLevel(p.lightLevel);
+		setLightLevel(properties.lightLevel);
 
-		if (p.harvestTool != null)
+		if (properties.harvestTool != null)
 		{
-			setHarvestLevel(p.harvestTool, p.harvestLevel);
+			setHarvestLevel(properties.harvestTool, properties.harvestLevel);
 		}
+	}
+
+	@Override
+	@Deprecated
+	public boolean isOpaqueCube(IBlockState state)
+	{
+		return (properties == null ? BlockBuilder.current : properties).opaque;
+	}
+
+	@Override
+	@Deprecated
+	public boolean isFullBlock(IBlockState state)
+	{
+		return (properties == null ? BlockBuilder.current : properties).fullBlock;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public BlockRenderLayer getRenderLayer()
+	{
+		return properties.layer;
 	}
 }

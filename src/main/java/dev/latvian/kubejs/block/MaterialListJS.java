@@ -60,4 +60,17 @@ public class MaterialListJS
 		MaterialJS m = map.get(id);
 		return m == null ? air : m;
 	}
+
+	public MaterialJS get(Material minecraftMaterial)
+	{
+		for (MaterialJS materialJS : map.values())
+		{
+			if (materialJS.getMinecraftMaterial() == minecraftMaterial)
+			{
+				return materialJS;
+			}
+		}
+
+		return air;
+	}
 }
