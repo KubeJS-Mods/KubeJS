@@ -18,6 +18,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -254,5 +255,16 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 	public void closeOverlay(Overlay overlay)
 	{
 		closeOverlay(overlay.id);
+	}
+
+	public void boostElytraFlight()
+	{
+		if (minecraftPlayer.isElytraFlying())
+		{
+			Vec3d v = minecraftPlayer.getLookVec();
+			minecraftPlayer.motionX += v.x * 0.1D + (v.x * 1.5D - minecraftPlayer.motionX) * 0.5D;
+			minecraftPlayer.motionY += v.y * 0.1D + (v.y * 1.5D - minecraftPlayer.motionY) * 0.5D;
+			minecraftPlayer.motionZ += v.z * 0.1D + (v.z * 1.5D - minecraftPlayer.motionZ) * 0.5D;
+		}
 	}
 }
