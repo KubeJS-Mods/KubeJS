@@ -138,7 +138,7 @@ public class InventoryJS
 		return -1;
 	}
 
-	public int find(@P("ingredient") @T(IngredientJS.class) Object o)
+	public int find(@P("filter") @T(IngredientJS.class) Object o)
 	{
 		IngredientJS ingredient = IngredientJS.of(o);
 
@@ -172,7 +172,7 @@ public class InventoryJS
 		return count;
 	}
 
-	public int count(@P("ingredient") @T(IngredientJS.class) Object o)
+	public int count(@P("filter") @T(IngredientJS.class) Object o)
 	{
 		IngredientJS ingredient = IngredientJS.of(o);
 
@@ -190,6 +190,45 @@ public class InventoryJS
 			if (ingredient.testVanilla(stack1))
 			{
 				count += stack1.getCount();
+			}
+		}
+
+		return count;
+	}
+
+	public int countNonEmpty()
+	{
+		int count = 0;
+
+		for (int i = 0; i < minecraftInventory.getSlots(); i++)
+		{
+			if (!minecraftInventory.getStackInSlot(i).isEmpty())
+			{
+				count++;
+			}
+		}
+
+		return count;
+	}
+
+	public int countNonEmpty(@P("filter") @T(IngredientJS.class) Object o)
+	{
+		IngredientJS ingredient = IngredientJS.of(o);
+
+		if (ingredient == MatchAllIngredientJS.INSTANCE)
+		{
+			return countNonEmpty();
+		}
+
+		int count = 0;
+
+		for (int i = 0; i < minecraftInventory.getSlots(); i++)
+		{
+			ItemStack stack1 = minecraftInventory.getStackInSlot(i);
+
+			if (ingredient.testVanilla(stack1))
+			{
+				count++;
 			}
 		}
 
