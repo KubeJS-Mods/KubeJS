@@ -8,6 +8,7 @@ import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
+import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
@@ -349,5 +350,12 @@ public class BlockContainerJS
 	public MaterialJS getMaterial()
 	{
 		return MaterialListJS.INSTANCE.get(getBlockState().getMaterial());
+	}
+
+	@SuppressWarnings("deprecation")
+	public ItemStackJS getItem()
+	{
+		IBlockState state = getBlockState();
+		return ItemStackJS.of(state.getBlock().getItem(minecraftWorld, pos, state));
 	}
 }

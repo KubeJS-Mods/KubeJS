@@ -16,6 +16,7 @@ import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
@@ -192,6 +193,11 @@ public abstract class ItemStackJS implements IngredientJS
 	public boolean isEmpty()
 	{
 		return getCount() <= 0;
+	}
+
+	public boolean isBlock()
+	{
+		return getItem() instanceof ItemBlock;
 	}
 
 	public abstract void setData(int data);
