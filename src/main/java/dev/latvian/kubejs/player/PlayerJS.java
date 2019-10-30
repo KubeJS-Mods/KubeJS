@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.player;
 
+import com.mojang.authlib.GameProfile;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.documentation.P;
@@ -16,6 +17,7 @@ import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -62,6 +64,12 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 	public String toString()
 	{
 		return getName();
+	}
+
+	@Override
+	public GameProfile getProfile()
+	{
+		return minecraftPlayer.getGameProfile();
 	}
 
 	public InventoryJS getInventory()
@@ -266,5 +274,16 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 			minecraftPlayer.motionY += v.y * 0.1D + (v.y * 1.5D - minecraftPlayer.motionY) * 0.5D;
 			minecraftPlayer.motionZ += v.z * 0.1D + (v.z * 1.5D - minecraftPlayer.motionZ) * 0.5D;
 		}
+	}
+
+	public void closeInventory()
+	{
+		minecraftPlayer.closeScreen();
+	}
+
+	@MinecraftClass
+	public Container getOpenInventory()
+	{
+		return minecraftPlayer.openContainer;
 	}
 }

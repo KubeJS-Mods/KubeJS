@@ -3,6 +3,8 @@ package dev.latvian.kubejs.item;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.event.EventsJS;
+import dev.latvian.kubejs.player.InventoryChangedEventJS;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
@@ -75,18 +77,20 @@ public class KubeJSItemEventHandler
 	@SubscribeEvent
 	public static void crafted(PlayerEvent.ItemCraftedEvent event)
 	{
-		if (!event.player.world.isRemote && !event.crafting.isEmpty())
+		if (event.player instanceof EntityPlayerMP && !event.crafting.isEmpty())
 		{
 			EventsJS.post(KubeJSEvents.ITEM_CRAFTED, new ItemCraftedEventJS(event));
+			EventsJS.post(KubeJSEvents.PLAYER_INVENTORY_CHANGED, new InventoryChangedEventJS((EntityPlayerMP) event.player, event.crafting, -1));
 		}
 	}
 
 	@SubscribeEvent
 	public static void smelted(PlayerEvent.ItemSmeltedEvent event)
 	{
-		if (!event.player.world.isRemote && !event.smelting.isEmpty())
+		if (event.player instanceof EntityPlayerMP && !event.smelting.isEmpty())
 		{
 			EventsJS.post(KubeJSEvents.ITEM_SMELTED, new ItemSmeltedEventJS(event));
+			EventsJS.post(KubeJSEvents.PLAYER_INVENTORY_CHANGED, new InventoryChangedEventJS((EntityPlayerMP) event.player, event.smelting, -1));
 		}
 	}
 }

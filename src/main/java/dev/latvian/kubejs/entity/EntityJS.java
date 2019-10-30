@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.entity;
 
+import com.mojang.authlib.GameProfile;
 import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.documentation.Info;
 import dev.latvian.kubejs.documentation.P;
@@ -68,6 +69,12 @@ public class EntityJS implements MessageSender
 	public String getName()
 	{
 		return minecraftEntity.getName();
+	}
+
+	@MinecraftClass
+	public GameProfile getProfile()
+	{
+		return new GameProfile(getId(), getName());
 	}
 
 	@Override

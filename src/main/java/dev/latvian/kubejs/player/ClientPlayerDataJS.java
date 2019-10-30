@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.player;
 
+import com.mojang.authlib.GameProfile;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -37,6 +38,12 @@ public class ClientPlayerDataJS extends PlayerDataJS<EntityPlayer, ClientPlayerJ
 	public String getName()
 	{
 		return world.getMinecraft().player.getName();
+	}
+
+	@Override
+	public GameProfile getProfile()
+	{
+		return world.getMinecraft().player.getGameProfile();
 	}
 
 	@Override

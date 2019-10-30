@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.player;
 
+import com.mojang.authlib.GameProfile;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
@@ -16,6 +17,7 @@ public class ServerPlayerDataJS extends PlayerDataJS<EntityPlayerMP, ServerPlaye
 	private final ServerJS server;
 	private final UUID id;
 	private final String name;
+	private final GameProfile profile;
 	private final boolean hasClientMod;
 
 	public ServerPlayerDataJS(ServerJS s, UUID i, String n, boolean h)
@@ -23,6 +25,7 @@ public class ServerPlayerDataJS extends PlayerDataJS<EntityPlayerMP, ServerPlaye
 		server = s;
 		id = i;
 		name = n;
+		profile = new GameProfile(id, name);
 		hasClientMod = h;
 	}
 
@@ -41,6 +44,12 @@ public class ServerPlayerDataJS extends PlayerDataJS<EntityPlayerMP, ServerPlaye
 	public String getName()
 	{
 		return name;
+	}
+
+	@Override
+	public GameProfile getProfile()
+	{
+		return profile;
 	}
 
 	@Override
