@@ -134,7 +134,7 @@ public class KubeJSEvents
 		event.registerEvent(UNLOADED, EventJS.class);
 		event.registerEvent(LOADED, EventJS.class);
 		event.registerEvent(COMMAND_REGISTRY, CommandRegistryEventJS.class).serverOnly();
-		event.registerEvent(COMMAND_RUN, CommandEventJS.class).serverOnly();
+		event.registerEvent(COMMAND_RUN, CommandEventJS.class).serverOnly().canCancel();
 
 		event.registerEvent(CLIENT_DEBUG_INFO, DebugInfoEventJS.class).clientOnly();
 		event.registerEvent(CLIENT_LOGGED_IN, ClientLoggedInEventJS.class).clientOnly();
