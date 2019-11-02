@@ -21,10 +21,15 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundEvent;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -33,6 +38,8 @@ import java.util.UUID;
  */
 public class EntityJS implements MessageSender
 {
+	private static Map<String, DamageSource> damageSourceMap;
+
 	private final WorldJS world;
 
 	@MinecraftClass
@@ -566,5 +573,38 @@ public class EntityJS implements MessageSender
 	public void spawn()
 	{
 		world.minecraftWorld.spawnEntity(minecraftEntity);
+	}
+
+	public void attack(@P("source") String source, @P("hp") float hp)
+	{
+		if (damageSourceMap == null)
+		{
+			damageSourceMap = new HashMap<>();
+
+			try
+			{
+				for (Field field : DamageSource.class.getDeclaredFields())
+				{
+					field.setAccessible(true);
+
+					if (Modifier.isStatic(field.getModifiers()) && field.getType() == DamageSource.class)
+					{
+						DamageSource s = (DamageSource) field.get(null);
+						damageSourceMap.put(s.getDamageType(), s);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+			}
+		}
+
+		DamageSource s = damageSourceMap.getOrDefault(source, DamageSource.GENERIC);
+		minecraftEntity.attackEntityFrom(s, hp);
+	}
+
+	public void attack(@P("hp") float hp)
+	{
+		minecraftEntity.attackEntityFrom(DamageSource.GENERIC, hp);
 	}
 }
