@@ -5,6 +5,7 @@ import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import jdk.nashorn.api.scripting.JSObject;
+import net.minecraft.potion.Potion;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatList;
 import net.minecraft.world.World;
@@ -242,5 +243,20 @@ public class UtilsJS
 	public static WorldJS getClientWorld()
 	{
 		return ClientWorldJS.get();
+	}
+
+	@Nullable
+	public static Potion getPotion(@Nullable Object id)
+	{
+		if (id == null)
+		{
+			return null;
+		}
+		else if (id instanceof Potion)
+		{
+			return (Potion) id;
+		}
+
+		return Potion.REGISTRY.getObject(ID.of(id).mc());
 	}
 }

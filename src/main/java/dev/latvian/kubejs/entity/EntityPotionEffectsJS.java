@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.entity;
 
 import dev.latvian.kubejs.documentation.P;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -36,20 +37,42 @@ public class EntityPotionEffectsJS
 		return entity.getActivePotionMap();
 	}
 
-	public boolean isActive(@P("potion") Potion potion)
+	public boolean isActive(@P("potion") Object potion)
 	{
-		return entity.isPotionActive(potion);
+		Potion p = UtilsJS.getPotion(potion);
+		return p != null && entity.isPotionActive(p);
 	}
 
 	@Nullable
-	public PotionEffect getActive(@P("potion") Potion potion)
+	public PotionEffect getActive(@P("potion") Object potion)
 	{
-		return entity.getActivePotionEffect(potion);
+		Potion p = UtilsJS.getPotion(potion);
+		return p == null ? null : entity.getActivePotionEffect(p);
 	}
 
-	public void add(@P("effect") PotionEffect effect)
+	public void add(@P("potion") Object potion)
 	{
-		entity.addPotionEffect(effect);
+		add(potion, 0, 0);
+	}
+
+	public void add(@P("potion") Object potion, @P("duration") int duration)
+	{
+		add(potion, duration, 0);
+	}
+
+	public void add(@P("potion") Object potion, @P("duration") int duration, @P("amplifier") int amplifier)
+	{
+		add(potion, duration, amplifier, false, true);
+	}
+
+	public void add(@P("potion") Object potion, @P("duration") int duration, @P("amplifier") int amplifier, @P("ambient") boolean ambient, @P("showParticles") boolean showParticles)
+	{
+		Potion p = UtilsJS.getPotion(potion);
+
+		if (p != null)
+		{
+			entity.addPotionEffect(new PotionEffect(p, duration, amplifier, ambient, showParticles));
+		}
 	}
 
 	public boolean isApplicable(@P("effect") PotionEffect effect)

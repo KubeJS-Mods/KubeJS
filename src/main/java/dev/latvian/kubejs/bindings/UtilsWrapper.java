@@ -9,6 +9,7 @@ import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
+import net.minecraft.potion.Potion;
 import net.minecraft.stats.StatBase;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
@@ -198,5 +199,11 @@ public class UtilsWrapper
 		}
 
 		return o;
+	}
+
+	@Nullable
+	public Potion getPotion(@Nullable Object id)
+	{
+		return UtilsJS.getPotion(id);
 	}
 }
