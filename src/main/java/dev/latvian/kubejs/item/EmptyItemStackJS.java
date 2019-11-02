@@ -2,8 +2,10 @@ package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
+import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
+import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -161,5 +163,11 @@ public class EmptyItemStackJS extends ItemStackJS
 	public boolean strongEquals(Object o)
 	{
 		return ItemStackJS.of(o).isEmpty();
+	}
+
+	@Override
+	public int getHarvestLevel(String tool, @Nullable PlayerJS player, @Nullable BlockContainerJS block)
+	{
+		return -1;
 	}
 }

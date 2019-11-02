@@ -286,4 +286,6 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 	{
 		return minecraftPlayer.openContainer;
 	}
+
+	public abstract boolean isMiningBlock();
 }

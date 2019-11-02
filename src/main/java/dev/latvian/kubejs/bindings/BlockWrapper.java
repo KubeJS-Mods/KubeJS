@@ -33,7 +33,7 @@ public class BlockWrapper
 
 		for (Map.Entry<String, Object> entry : properties.entrySet())
 		{
-			b.with(entry.getKey(), entry.getValue().toString());
+			b = b.with(entry.getKey(), entry.getValue().toString());
 		}
 
 		return b;

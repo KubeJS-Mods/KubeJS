@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.block.predicate;
 
 import com.google.common.base.Optional;
+import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
@@ -42,7 +43,7 @@ public class BlockIDPredicate implements BlockPredicate
 		return id + (properties == null || properties.isEmpty() ? "" : ("+" + properties));
 	}
 
-	public BlockIDPredicate with(String key, String value)
+	public BlockIDPredicate with(@P("key") String key, @P("value") String value)
 	{
 		if (properties == null)
 		{
@@ -146,5 +147,52 @@ public class BlockIDPredicate implements BlockPredicate
 		}
 
 		return true;
+	}
+
+	public void setHardness(float hardness)
+	{
+		Block block = getBlock();
+
+		if (block != Blocks.AIR)
+		{
+			block.setHardness(hardness);
+		}
+	}
+
+	public void setResistance(float resistance)
+	{
+		Block block = getBlock();
+
+		if (block != Blocks.AIR)
+		{
+			block.setResistance(resistance);
+		}
+	}
+
+	public void setLightLevel(float lightLevel)
+	{
+		Block block = getBlock();
+
+		if (block != Blocks.AIR)
+		{
+			block.setLightLevel(lightLevel);
+		}
+	}
+
+	public void setHarvestLevel(String tool, int level)
+	{
+		Block block = getBlock();
+
+		if (block != Blocks.AIR)
+		{
+			if (properties == null || properties.isEmpty())
+			{
+				block.setHarvestLevel(tool, level);
+			}
+			else
+			{
+				block.setHarvestLevel(tool, level, getBlockState());
+			}
+		}
 	}
 }

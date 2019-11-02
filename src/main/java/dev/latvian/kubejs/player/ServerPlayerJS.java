@@ -6,11 +6,14 @@ import dev.latvian.kubejs.net.MessageOpenOverlay;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextTranslate;
+import dev.latvian.kubejs.util.FieldJS;
 import dev.latvian.kubejs.util.Overlay;
+import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketHeldItemChange;
+import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.server.management.UserListBansEntry;
 
 import java.util.Date;
@@ -20,6 +23,8 @@ import java.util.Date;
  */
 public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 {
+	private static FieldJS isDestroyingBlockField;
+
 	public final ServerJS server;
 	private final boolean hasClientMod;
 
@@ -46,6 +51,18 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 	public void closeOverlay(String overlay)
 	{
 		KubeJSNetHandler.net.sendTo(new MessageCloseOverlay(overlay), minecraftPlayer);
+	}
+
+	@Override
+	public boolean isMiningBlock()
+	{
+		if (isDestroyingBlockField == null)
+		{
+			isDestroyingBlockField = UtilsJS.getField(PlayerInteractionManager.class, "isDestroyingBlock", "field_73088_d");
+		}
+
+		Object obj = isDestroyingBlockField.get(minecraftPlayer.interactionManager);
+		return obj instanceof Boolean && (Boolean) obj;
 	}
 
 	public boolean isOP()

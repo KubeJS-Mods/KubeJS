@@ -199,6 +199,11 @@ public class LivingEntityJS extends EntityJS
 		}
 	}
 
+	public void damageHeldItem()
+	{
+		damageHeldItem(EnumHand.MAIN_HAND, 1);
+	}
+
 	public boolean isHoldingInAnyHand(@P("ingredient") @T(IngredientJS.class) Object ingredient)
 	{
 		IngredientJS i = IngredientJS.of(ingredient);
