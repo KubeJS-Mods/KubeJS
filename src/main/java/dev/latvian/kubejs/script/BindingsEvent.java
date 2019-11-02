@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.script;
 
+import dev.latvian.kubejs.util.FunctionBinding;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
 import java.util.Map;
@@ -21,6 +22,11 @@ public class BindingsEvent extends Event
 	public void add(String name, Object value)
 	{
 		map.put(name, value);
+	}
+
+	public void addFunction(String name, FunctionBinding.Handler handler)
+	{
+		add(name, new FunctionBinding(handler));
 	}
 
 	public void addConstant(String name, Object value)
