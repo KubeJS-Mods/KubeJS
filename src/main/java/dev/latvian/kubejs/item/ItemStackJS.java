@@ -5,6 +5,7 @@ import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.item.ingredient.IgnoreNBTIngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.OreDictionaryIngredientJS;
+import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.util.ID;
@@ -12,6 +13,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import dev.latvian.kubejs.util.nbt.NBTListJS;
+import dev.latvian.kubejs.world.BlockContainerJS;
 import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
@@ -538,5 +540,16 @@ public abstract class ItemStackJS implements IngredientJS
 	public boolean areItemsEqual(ItemStack stack)
 	{
 		return getItem() == stack.getItem();
+	}
+
+	public int getHarvestLevel(String tool, @Nullable PlayerJS player, @Nullable BlockContainerJS block)
+	{
+		ItemStack stack = getItemStack();
+		return stack.getItem().getHarvestLevel(stack, tool, player == null ? null : player.minecraftPlayer, block == null ? null : block.getBlockState());
+	}
+
+	public int getHarvestLevel(String tool)
+	{
+		return getHarvestLevel(tool, null, null);
 	}
 }

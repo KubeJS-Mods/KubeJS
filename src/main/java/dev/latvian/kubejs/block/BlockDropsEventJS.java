@@ -11,6 +11,7 @@ import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.world.BlockEvent;
 
 import java.util.ArrayList;
@@ -105,5 +106,31 @@ public class BlockDropsEventJS extends PlayerEventJS
 		{
 			addDrop(item);
 		}
+	}
+
+	public ItemStackJS getItem()
+	{
+		return ItemStackJS.of(event.getHarvester().getHeldItem(EnumHand.MAIN_HAND));
+	}
+
+	public int getItemHarvestLevel(String tool)
+	{
+		ItemStack stack = event.getHarvester().getHeldItem(EnumHand.MAIN_HAND);
+		return stack.getItem().getHarvestLevel(stack, tool, event.getHarvester(), event.getState());
+	}
+
+	public int getPickaxeLevel()
+	{
+		return getItemHarvestLevel("pickaxe");
+	}
+
+	public int getAxeLevel()
+	{
+		return getItemHarvestLevel("axe");
+	}
+
+	public int getShovelLevel()
+	{
+		return getItemHarvestLevel("shovel");
 	}
 }
