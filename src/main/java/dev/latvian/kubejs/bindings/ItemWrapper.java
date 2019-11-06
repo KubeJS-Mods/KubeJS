@@ -1,10 +1,15 @@
 package dev.latvian.kubejs.bindings;
 
+import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.documentation.DisplayName;
 import dev.latvian.kubejs.documentation.P;
+import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.world.FireworksJS;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +30,11 @@ public class ItemWrapper
 		return ItemStackJS.getList();
 	}
 
+	public List<ID> getTypeList()
+	{
+		return ItemStackJS.getTypeList();
+	}
+
 	public ItemStackJS getEmpty()
 	{
 		return EmptyItemStackJS.INSTANCE;
@@ -38,5 +48,12 @@ public class ItemWrapper
 	public FireworksJS fireworks(@P("properties") Map<String, Object> properties)
 	{
 		return FireworksJS.of(properties);
+	}
+
+	@MinecraftClass
+	public Item getItem(@P("id") @T(ID.class) Object id)
+	{
+		Item i = Item.REGISTRY.getObject(ID.of(id).mc());
+		return i == null ? Items.AIR : i;
 	}
 }

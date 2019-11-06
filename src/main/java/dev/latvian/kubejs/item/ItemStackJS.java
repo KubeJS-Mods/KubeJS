@@ -27,6 +27,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -165,6 +166,18 @@ public abstract class ItemStackJS implements IngredientJS
 	public static void clearListCache()
 	{
 		cachedItemList = null;
+	}
+
+	public static List<ID> getTypeList()
+	{
+		List<ID> list = new ArrayList<>();
+
+		for (Item item : Item.REGISTRY)
+		{
+			list.add(ID.of(item.getRegistryName()));
+		}
+
+		return list;
 	}
 
 	public abstract Item getItem();

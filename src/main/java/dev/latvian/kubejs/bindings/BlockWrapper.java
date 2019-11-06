@@ -1,14 +1,22 @@
 package dev.latvian.kubejs.bindings;
 
+import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.block.MaterialJS;
 import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.block.predicate.BlockEntityPredicate;
 import dev.latvian.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.kubejs.block.predicate.BlockPredicate;
 import dev.latvian.kubejs.documentation.DisplayName;
+import dev.latvian.kubejs.documentation.P;
+import dev.latvian.kubejs.documentation.T;
+import dev.latvian.kubejs.util.ID;
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -64,5 +72,24 @@ public class BlockWrapper
 		}
 
 		return facingMap;
+	}
+
+	@MinecraftClass
+	public Block getBlock(@P("id") @T(ID.class) Object id)
+	{
+		Block b = Block.REGISTRY.getObject(ID.of(id).mc());
+		return b == null ? Blocks.AIR : b;
+	}
+
+	public List<ID> getTypeList()
+	{
+		List<ID> list = new ArrayList<>();
+
+		for (Block block : Block.REGISTRY)
+		{
+			list.add(ID.of(block.getRegistryName()));
+		}
+
+		return list;
 	}
 }
