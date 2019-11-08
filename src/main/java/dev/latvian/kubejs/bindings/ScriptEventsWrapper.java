@@ -3,8 +3,11 @@ package dev.latvian.kubejs.bindings;
 import dev.latvian.kubejs.documentation.DisplayName;
 import dev.latvian.kubejs.documentation.Info;
 import dev.latvian.kubejs.documentation.P;
+import dev.latvian.kubejs.event.DataEvent;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.event.IEventHandler;
+
+import javax.annotation.Nullable;
 
 /**
  * @author LatvianModder
@@ -26,5 +29,25 @@ public class ScriptEventsWrapper
 		{
 			listen(s, handler);
 		}
+	}
+
+	public void post(@P("eventID") String id, @P("data") @Nullable Object data)
+	{
+		EventsJS.post(id, new DataEvent(false, data));
+	}
+
+	public void post(@P("eventID") String id)
+	{
+		post(id, null);
+	}
+
+	public boolean postCancellable(@P("eventID") String id, @P("data") @Nullable Object data)
+	{
+		return EventsJS.post(id, new DataEvent(true, data));
+	}
+
+	public boolean postCancellable(@P("eventID") String id)
+	{
+		return postCancellable(id, null);
 	}
 }
