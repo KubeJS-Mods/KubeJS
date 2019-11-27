@@ -1,49 +1,57 @@
 package dev.latvian.kubejs.entity;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.event.EventsJS;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.Event;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.Event;
 
 /**
  * @author LatvianModder
  */
-@Mod.EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSEntityEventHandler
 {
-	@SubscribeEvent
-	public static void onLivingDeath(LivingDeathEvent event)
+	public void init()
 	{
-		if (EventsJS.post(KubeJSEvents.ENTITY_DEATH, new LivingEntityDeathEventJS(event)))
+		MinecraftForge.EVENT_BUS.addListener(this::livingDeath);
+		MinecraftForge.EVENT_BUS.addListener(this::livingAttack);
+		MinecraftForge.EVENT_BUS.addListener(this::livingDrops);
+		MinecraftForge.EVENT_BUS.addListener(this::checkLivingSpawn);
+		MinecraftForge.EVENT_BUS.addListener(this::entitySpawned);
+	}
+
+	private void livingDeath(LivingDeathEvent event)
+	{
+		if (new LivingEntityDeathEventJS(event).post(KubeJSEvents.ENTITY_DEATH))
 		{
 			event.setCanceled(true);
 		}
 	}
 
-	@SubscribeEvent
-	public static void onLivingAttack(LivingAttackEvent event)
+	private void livingAttack(LivingAttackEvent event)
 	{
-		if (event.getAmount() > 0F && EventsJS.post(KubeJSEvents.ENTITY_ATTACK, new LivingEntityAttackEventJS(event)))
+		if (event.getAmount() > 0F && new LivingEntityAttackEventJS(event).post(KubeJSEvents.ENTITY_ATTACK))
 		{
 			event.setCanceled(true);
 		}
 	}
 
-	@SubscribeEvent
-	public static void onLivingDrops(LivingDropsEvent event)
+	private void livingDrops(LivingDropsEvent event)
 	{
+		if (event.getEntity().world.isRemote())
+		{
+			return;
+		}
+
 		LivingEntityDropsEventJS e = new LivingEntityDropsEventJS(event);
 
-		if (EventsJS.post(KubeJSEvents.ENTITY_DROPS, e))
+		if (e.post(KubeJSEvents.ENTITY_DROPS))
 		{
 			event.setCanceled(true);
 		}
@@ -53,24 +61,22 @@ public class KubeJSEntityEventHandler
 
 			for (ItemEntityJS ie : e.drops)
 			{
-				event.getDrops().add((EntityItem) ie.minecraftEntity);
+				event.getDrops().add((ItemEntity) ie.minecraftEntity);
 			}
 		}
 	}
 
-	@SubscribeEvent
-	public static void checkLivingSpawn(LivingSpawnEvent.CheckSpawn event)
+	private void checkLivingSpawn(LivingSpawnEvent.CheckSpawn event)
 	{
-		if ((ServerJS.instance != null || event.getWorld().isRemote) && EventsJS.post(KubeJSEvents.ENTITY_CHECK_SPAWN, new CheckLivingEntitySpawnEventJS(event)))
+		if (ServerJS.instance != null && ServerJS.instance.overworld != null && !event.getWorld().isRemote() && new CheckLivingEntitySpawnEventJS(event).post(ScriptType.SERVER, KubeJSEvents.ENTITY_CHECK_SPAWN))
 		{
 			event.setResult(Event.Result.DENY);
 		}
 	}
 
-	@SubscribeEvent
-	public static void onEntitySpawned(EntityJoinWorldEvent event)
+	private void entitySpawned(EntityJoinWorldEvent event)
 	{
-		if (event.getWorld() != null && (ServerJS.instance != null || event.getWorld().isRemote) && EventsJS.post(KubeJSEvents.ENTITY_SPAWNED, new EntitySpawnedEventJS(event)))
+		if (ServerJS.instance != null && ServerJS.instance.overworld != null && !event.getWorld().isRemote() && new EntitySpawnedEventJS(event).post(ScriptType.SERVER, KubeJSEvents.ENTITY_SPAWNED))
 		{
 			event.setCanceled(true);
 		}

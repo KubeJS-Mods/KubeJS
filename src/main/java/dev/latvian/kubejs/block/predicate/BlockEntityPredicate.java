@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.block.predicate;
 
-import dev.latvian.kubejs.util.ID;
+import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.tileentity.TileEntity;
@@ -16,7 +16,7 @@ public class BlockEntityPredicate implements BlockPredicate
 
 	public BlockEntityPredicate(Object i)
 	{
-		id = ID.of(i).mc();
+		id = UtilsJS.getID(i);
 	}
 
 	public BlockEntityPredicate data(BlockEntityPredicateDataCheck cd)
@@ -29,7 +29,7 @@ public class BlockEntityPredicate implements BlockPredicate
 	public boolean check(BlockContainerJS block)
 	{
 		TileEntity tileEntity = block.getEntity();
-		return tileEntity != null && id.equals(TileEntity.getKey(tileEntity.getClass())) && (checkData == null || checkData.checkData(NBTBaseJS.of(tileEntity.serializeNBT()).asCompound()));
+		return tileEntity != null && id.equals(tileEntity.getType().getRegistryName()) && (checkData == null || checkData.checkData(NBTBaseJS.of(tileEntity.serializeNBT()).asCompound()));
 	}
 
 	@Override

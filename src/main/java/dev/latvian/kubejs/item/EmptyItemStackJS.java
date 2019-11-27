@@ -3,12 +3,13 @@ package dev.latvian.kubejs.item;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
 import dev.latvian.kubejs.player.PlayerJS;
-import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -63,12 +64,12 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public void setData(int data)
+	public void setDamage(int damage)
 	{
 	}
 
 	@Override
-	public int getData()
+	public int getDamage()
 	{
 		return 0;
 	}
@@ -125,13 +126,13 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public Map<ID, Integer> getEnchantments()
+	public Map<ResourceLocation, Integer> getEnchantments()
 	{
 		return new LinkedHashMap<>();
 	}
 
 	@Override
-	public void setEnchantments(Map<ID, Integer> map)
+	public void setEnchantments(Map<ResourceLocation, Integer> map)
 	{
 	}
 
@@ -166,7 +167,7 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public int getHarvestLevel(String tool, @Nullable PlayerJS player, @Nullable BlockContainerJS block)
+	public int getHarvestLevel(ToolType tool, @Nullable PlayerJS player, @Nullable BlockContainerJS block)
 	{
 		return -1;
 	}

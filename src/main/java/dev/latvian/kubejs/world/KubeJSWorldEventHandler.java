@@ -1,134 +1,79 @@
 package dev.latvian.kubejs.world;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.block.MissingMappingEventJS;
-import dev.latvian.kubejs.event.EventsJS;
-import dev.latvian.kubejs.player.PlayerDataJS;
-import dev.latvian.kubejs.player.SimplePlayerEventJS;
-import dev.latvian.kubejs.script.ScriptManager;
-import dev.latvian.kubejs.server.AttachServerDataEvent;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
-import dev.latvian.kubejs.server.SimpleServerEventJS;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-
-import java.util.ArrayList;
+import net.minecraftforge.eventbus.api.EventPriority;
 
 /**
  * @author LatvianModder
  */
-@Mod.EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSWorldEventHandler
 {
-	public static void onServerStarting(MinecraftServer server)
+	public void init()
 	{
-		ServerJS.instance = new ServerJS(server, (WorldServer) server.getEntityWorld());
-		MinecraftForge.EVENT_BUS.post(new AttachServerDataEvent(ServerJS.instance));
-		EventsJS.post(KubeJSEvents.SERVER_LOAD, new SimpleServerEventJS(ServerJS.instance));
-		MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(ServerJS.instance.getOverworld()));
-		EventsJS.post(KubeJSEvents.WORLD_LOAD, new SimpleWorldEventJS(ServerJS.instance.getOverworld()));
-
-		for (WorldServer world : server.worlds)
-		{
-			if (world != ServerJS.instance.getOverworld().minecraftWorld)
-			{
-				ServerWorldJS w = new ServerWorldJS(ServerJS.instance, world);
-				ServerJS.instance.worldMap.put(world.provider.getDimension(), w);
-				ServerJS.instance.updateWorldList();
-				MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(w));
-				EventsJS.post(KubeJSEvents.WORLD_LOAD, new SimpleWorldEventJS(w));
-			}
-		}
-
-		ServerJS.instance.updateWorldList();
-		ScriptManager.instance.runtime.put("server", ServerJS.instance);
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::worldLoaded);
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::worldUnloaded);
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::worldTick);
+		MinecraftForge.EVENT_BUS.addListener(this::explosionStart);
+		MinecraftForge.EVENT_BUS.addListener(this::explosionDetonate);
+		MinecraftForge.EVENT_BUS.addListener(this::missingMappings);
 	}
 
-	public static void onServerStopping()
+	private void worldLoaded(WorldEvent.Load event)
 	{
-		for (PlayerDataJS p : new ArrayList<>(ServerJS.instance.playerMap.values()))
+		if (ServerJS.instance != null && ServerJS.instance.overworld != null && event.getWorld() instanceof ServerWorld && !ServerJS.instance.worldMap.containsKey(event.getWorld().getDimension().getType()))
 		{
-			EventsJS.post(KubeJSEvents.PLAYER_LOGGED_OUT, new SimplePlayerEventJS(p.getPlayerEntity()));
-			ServerJS.instance.playerMap.remove(p.getId());
-		}
-
-		ServerJS.instance.playerMap.clear();
-
-		for (WorldJS w : ServerJS.instance.worldMap.values())
-		{
-			EventsJS.post(KubeJSEvents.WORLD_UNLOAD, new SimpleWorldEventJS(w));
-			ServerJS.instance.worldMap.remove(w.getDimension());
-		}
-
-		ServerJS.instance.updateWorldList();
-
-		EventsJS.post(KubeJSEvents.SERVER_UNLOAD, new SimpleServerEventJS(ServerJS.instance));
-		ServerJS.instance = null;
-		ScriptManager.instance.runtime.remove("server");
-	}
-
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public static void onWorldLoaded(WorldEvent.Load event)
-	{
-		if (ServerJS.instance != null && event.getWorld() instanceof WorldServer && !ServerJS.instance.worldMap.containsKey(event.getWorld().provider.getDimension()))
-		{
-			ServerWorldJS w = new ServerWorldJS(ServerJS.instance, (WorldServer) event.getWorld());
-			ServerJS.instance.worldMap.put(event.getWorld().provider.getDimension(), w);
+			ServerWorldJS w = new ServerWorldJS(ServerJS.instance, (ServerWorld) event.getWorld());
+			ServerJS.instance.worldMap.put(event.getWorld().getDimension().getType(), w);
 			ServerJS.instance.updateWorldList();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(w));
-			EventsJS.post(KubeJSEvents.WORLD_LOAD, new SimpleWorldEventJS(w));
+			new SimpleWorldEventJS(w).post(KubeJSEvents.WORLD_LOAD);
 		}
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public static void onWorldUnloaded(WorldEvent.Unload event)
+	private void worldUnloaded(WorldEvent.Unload event)
 	{
-		if (ServerJS.instance != null && event.getWorld() instanceof WorldServer && ServerJS.instance.worldMap.containsKey(event.getWorld().provider.getDimension()))
+		if (ServerJS.instance != null && ServerJS.instance.overworld != null && event.getWorld() instanceof ServerWorld && ServerJS.instance.worldMap.containsKey(event.getWorld().getDimension().getType()))
 		{
 			WorldJS w = ServerJS.instance.getWorld(event.getWorld());
-			EventsJS.post(KubeJSEvents.WORLD_UNLOAD, new SimpleWorldEventJS(w));
+			new SimpleWorldEventJS(w).post(KubeJSEvents.WORLD_UNLOAD);
 			ServerJS.instance.worldMap.remove(w.getDimension());
 			ServerJS.instance.updateWorldList();
 		}
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public static void onWorldTick(TickEvent.WorldTickEvent event)
+	private void worldTick(TickEvent.WorldTickEvent event)
 	{
 		if (event.phase == TickEvent.Phase.END && !event.world.isRemote)
 		{
 			WorldJS w = ServerJS.instance.getWorld(event.world);
-			EventsJS.post(KubeJSEvents.WORLD_TICK, new SimpleWorldEventJS(w));
+			new SimpleWorldEventJS(w).post(KubeJSEvents.WORLD_TICK);
 		}
 	}
 
-	@SubscribeEvent
-	public static void onExplosionPre(ExplosionEvent.Start event)
+	private void explosionStart(ExplosionEvent.Start event)
 	{
-		if (EventsJS.post(KubeJSEvents.WORLD_EXPLOSION_PRE, new ExplosionEventJS.Pre(event)))
+		if (new ExplosionEventJS.Pre(event).post(KubeJSEvents.WORLD_EXPLOSION_PRE))
 		{
 			event.setCanceled(true);
 		}
 	}
 
-	@SubscribeEvent
-	public static void onExplosionPre(ExplosionEvent.Detonate event)
+	private void explosionDetonate(ExplosionEvent.Detonate event)
 	{
-		EventsJS.post(KubeJSEvents.WORLD_EXPLOSION_POST, new ExplosionEventJS.Post(event));
+		new ExplosionEventJS.Post(event).post(KubeJSEvents.WORLD_EXPLOSION_POST);
 	}
 
-	@SubscribeEvent
-	public static void onMissingMappings(RegistryEvent.MissingMappings event)
+	private void missingMappings(RegistryEvent.MissingMappings event)
 	{
-		EventsJS.post(KubeJSEvents.WORLD_MISSING_MAPPINGS, new MissingMappingEventJS(event));
+		new MissingMappingEventJS(event).post(ScriptType.STARTUP, KubeJSEvents.WORLD_MISSING_MAPPINGS);
 	}
 }

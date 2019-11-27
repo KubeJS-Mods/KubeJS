@@ -9,7 +9,8 @@ import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAnyIngredientJS;
 import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
-import dev.latvian.kubejs.item.ingredient.OreDictionaryIngredientJS;
+import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
+import dev.latvian.kubejs.util.UtilsJS;
 
 import java.util.function.Predicate;
 
@@ -51,10 +52,10 @@ public class IngredientWrapper
 		return ingredient;
 	}
 
-	@Info("Returns Ore Dictionary ingredient")
-	public IngredientJS ore(@P("oreName") String oreName)
+	@Info("Returns Tag ingredient")
+	public IngredientJS tag(@P("tag") Object tag)
 	{
-		return new OreDictionaryIngredientJS(oreName);
+		return new TagIngredientJS(UtilsJS.getID(tag));
 	}
 
 	@Info("Returns mod ingredient, matches all items from mod ID")

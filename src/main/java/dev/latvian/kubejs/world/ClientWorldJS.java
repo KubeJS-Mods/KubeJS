@@ -2,11 +2,13 @@ package dev.latvian.kubejs.world;
 
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.client.ClientLoggedInEventJS;
-import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.player.ClientPlayerDataJS;
+import dev.latvian.kubejs.player.EntityArrayList;
+import dev.latvian.kubejs.script.ScriptType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.common.MinecraftForge;
 
 /**
@@ -18,12 +20,12 @@ public class ClientWorldJS extends WorldJS
 
 	public static ClientWorldJS get()
 	{
-		if (inst == null || inst.minecraftWorld != Minecraft.getMinecraft().world)
+		if (inst == null || inst.minecraftWorld != Minecraft.getInstance().world)
 		{
 			inst = new ClientWorldJS();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(inst));
 			MinecraftForge.EVENT_BUS.post(new AttachPlayerDataEvent(inst.clientPlayerData));
-			EventsJS.post(KubeJSEvents.CLIENT_LOGGED_IN, new ClientLoggedInEventJS(inst.clientPlayerData.getPlayer()));
+			new ClientLoggedInEventJS(inst.clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_LOGGED_IN);
 		}
 
 		return inst;
@@ -39,8 +41,8 @@ public class ClientWorldJS extends WorldJS
 
 	public ClientWorldJS()
 	{
-		super(Minecraft.getMinecraft().world);
-		minecraft = Minecraft.getMinecraft();
+		super(Minecraft.getInstance().world);
+		minecraft = Minecraft.getInstance();
 		clientPlayerData = new ClientPlayerDataJS(this);
 	}
 
@@ -50,7 +52,13 @@ public class ClientWorldJS extends WorldJS
 	}
 
 	@Override
-	public ClientPlayerDataJS getPlayerData(EntityPlayer player)
+	public ScriptType getSide()
+	{
+		return ScriptType.CLIENT;
+	}
+
+	@Override
+	public ClientPlayerDataJS getPlayerData(PlayerEntity player)
 	{
 		if (player.getUniqueID().equals(clientPlayerData.getId()))
 		{
@@ -63,6 +71,12 @@ public class ClientWorldJS extends WorldJS
 	@Override
 	public String toString()
 	{
-		return "ClientWorld" + minecraftWorld.provider.getDimension();
+		return "ClientWorld:" + minecraftWorld.getDimension().getType().getRegistryName();
+	}
+
+	@Override
+	public EntityArrayList getEntities()
+	{
+		return new EntityArrayList(this, ((ClientWorld) minecraftWorld).getAllEntities());
 	}
 }

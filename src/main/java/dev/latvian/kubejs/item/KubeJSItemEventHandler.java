@@ -1,96 +1,98 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.player.InventoryChangedEventJS;
-import net.minecraft.entity.player.EntityPlayerMP;
+import dev.latvian.kubejs.script.ScriptType;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 /**
  * @author LatvianModder
  */
-@Mod.EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSItemEventHandler
 {
-	@SubscribeEvent
-	public static void registry(RegistryEvent.Register<Item> event)
+	public void init()
 	{
-		EventsJS.post(KubeJSEvents.ITEM_REGISTRY, new ItemRegistryEventJS(event.getRegistry()));
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registry);
+		MinecraftForge.EVENT_BUS.addListener(this::rightClick);
+		MinecraftForge.EVENT_BUS.addListener(this::rightClickEmpty);
+		MinecraftForge.EVENT_BUS.addListener(this::leftClickEmpty);
+		MinecraftForge.EVENT_BUS.addListener(this::pickup);
+		MinecraftForge.EVENT_BUS.addListener(this::toss);
+		MinecraftForge.EVENT_BUS.addListener(this::entityInteract);
+		MinecraftForge.EVENT_BUS.addListener(this::crafted);
+		MinecraftForge.EVENT_BUS.addListener(this::smelted);
 	}
 
-	@SubscribeEvent
-	public static void rightClick(PlayerInteractEvent.RightClickItem event)
+	private void registry(RegistryEvent.Register<Item> event)
 	{
-		if (EventsJS.post(KubeJSEvents.ITEM_RIGHT_CLICK, new ItemRightClickEventJS(event)))
+		new ItemRegistryEventJS(event.getRegistry()).post(ScriptType.STARTUP, KubeJSEvents.ITEM_REGISTRY);
+	}
+
+	private void rightClick(PlayerInteractEvent.RightClickItem event)
+	{
+		if (new ItemRightClickEventJS(event).post(KubeJSEvents.ITEM_RIGHT_CLICK))
 		{
 			event.setCanceled(true);
 		}
 	}
 
-	@SubscribeEvent
-	public static void rightClickEmpty(PlayerInteractEvent.RightClickEmpty event)
+	private void rightClickEmpty(PlayerInteractEvent.RightClickEmpty event)
 	{
-		EventsJS.post(KubeJSEvents.ITEM_RIGHT_CLICK_EMPTY, new ItemRightClickEmptyEventJS(event));
+		new ItemRightClickEmptyEventJS(event).post(KubeJSEvents.ITEM_RIGHT_CLICK_EMPTY);
 	}
 
-	@SubscribeEvent
-	public static void leftClickEmpty(PlayerInteractEvent.LeftClickEmpty event)
+	private void leftClickEmpty(PlayerInteractEvent.LeftClickEmpty event)
 	{
-		EventsJS.post(KubeJSEvents.ITEM_LEFT_CLICK, new ItemLeftClickEventJS(event));
+		new ItemLeftClickEventJS(event).post(KubeJSEvents.ITEM_LEFT_CLICK);
 	}
 
-	@SubscribeEvent
-	public static void pickup(EntityItemPickupEvent event)
+	private void pickup(EntityItemPickupEvent event)
 	{
-		if (EventsJS.post(KubeJSEvents.ITEM_PICKUP, new ItemPickupEventJS(event)))
+		if (new ItemPickupEventJS(event).post(KubeJSEvents.ITEM_PICKUP))
 		{
 			event.setCanceled(true);
 		}
 	}
 
-	@SubscribeEvent
-	public static void toss(ItemTossEvent event)
+	private void toss(ItemTossEvent event)
 	{
-		if (EventsJS.post(KubeJSEvents.ITEM_TOSS, new ItemTossEventJS(event)))
+		if (new ItemTossEventJS(event).post(KubeJSEvents.ITEM_TOSS))
 		{
 			event.setCanceled(true);
 		}
 	}
 
-	@SubscribeEvent
-	public static void entityInteract(PlayerInteractEvent.EntityInteract event)
+	private void entityInteract(PlayerInteractEvent.EntityInteract event)
 	{
-		if (EventsJS.post(KubeJSEvents.ITEM_ENTITY_INTERACT, new ItemEntityInteractEventJS(event)))
+		if (new ItemEntityInteractEventJS(event).post(KubeJSEvents.ITEM_ENTITY_INTERACT))
 		{
 			event.setCanceled(true);
 		}
 	}
 
-	@SubscribeEvent
-	public static void crafted(PlayerEvent.ItemCraftedEvent event)
+	private void crafted(PlayerEvent.ItemCraftedEvent event)
 	{
-		if (event.player instanceof EntityPlayerMP && !event.crafting.isEmpty())
+		if (event.getPlayer() instanceof ServerPlayerEntity && !event.getCrafting().isEmpty())
 		{
-			EventsJS.post(KubeJSEvents.ITEM_CRAFTED, new ItemCraftedEventJS(event));
-			EventsJS.post(KubeJSEvents.PLAYER_INVENTORY_CHANGED, new InventoryChangedEventJS((EntityPlayerMP) event.player, event.crafting, -1));
+			new ItemCraftedEventJS(event).post(KubeJSEvents.ITEM_CRAFTED);
+			new InventoryChangedEventJS((ServerPlayerEntity) event.getPlayer(), event.getCrafting(), -1).post(KubeJSEvents.PLAYER_INVENTORY_CHANGED);
 		}
 	}
 
-	@SubscribeEvent
-	public static void smelted(PlayerEvent.ItemSmeltedEvent event)
+	private void smelted(PlayerEvent.ItemSmeltedEvent event)
 	{
-		if (event.player instanceof EntityPlayerMP && !event.smelting.isEmpty())
+		if (event.getPlayer() instanceof ServerPlayerEntity && !event.getSmelting().isEmpty())
 		{
-			EventsJS.post(KubeJSEvents.ITEM_SMELTED, new ItemSmeltedEventJS(event));
-			EventsJS.post(KubeJSEvents.PLAYER_INVENTORY_CHANGED, new InventoryChangedEventJS((EntityPlayerMP) event.player, event.smelting, -1));
+			new ItemSmeltedEventJS(event).post(KubeJSEvents.ITEM_SMELTED);
+			new InventoryChangedEventJS((ServerPlayerEntity) event.getPlayer(), event.getSmelting(), -1).post(KubeJSEvents.PLAYER_INVENTORY_CHANGED);
 		}
 	}
 }

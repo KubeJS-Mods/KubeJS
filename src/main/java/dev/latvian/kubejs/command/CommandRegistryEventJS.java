@@ -1,33 +1,30 @@
 package dev.latvian.kubejs.command;
 
+import com.mojang.brigadier.CommandDispatcher;
 import dev.latvian.kubejs.server.ServerEventJS;
-import dev.latvian.kubejs.server.ServerJS;
-import net.minecraft.command.CommandBase;
-
-import java.util.function.Consumer;
+import net.minecraft.command.CommandSource;
 
 /**
  * @author LatvianModder
  */
 public class CommandRegistryEventJS extends ServerEventJS
 {
-	private final ServerJS server;
-	private final Consumer<CommandBase> callback;
+	private final boolean singlePlayer;
+	private final CommandDispatcher<CommandSource> dispatcher;
 
-	public CommandRegistryEventJS(ServerJS s, Consumer<CommandBase> c)
+	public CommandRegistryEventJS(boolean s, CommandDispatcher<CommandSource> c)
 	{
-		server = s;
-		callback = c;
+		singlePlayer = s;
+		dispatcher = c;
 	}
 
-	@Override
-	public ServerJS getServer()
+	public boolean isSinglePlayer()
 	{
-		return server;
+		return singlePlayer;
 	}
 
-	public CommandBuilder create(String name)
+	public CommandDispatcher<CommandSource> getDispatcher()
 	{
-		return new CommandBuilder(callback, name);
+		return dispatcher;
 	}
 }

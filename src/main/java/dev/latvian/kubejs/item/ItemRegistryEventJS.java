@@ -3,9 +3,10 @@ package dev.latvian.kubejs.item;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.block.BlockJS;
 import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.util.ID;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 
 /**
@@ -22,21 +23,21 @@ public class ItemRegistryEventJS extends EventJS
 
 	public void register(String id, Item item)
 	{
-		registry.register(item.setRegistryName(ID.of(KubeJS.appendModId(id)).mc()));
+		registry.register(item.setRegistryName(UtilsJS.getID(KubeJS.appendModId(id))));
 	}
 
 	public ItemBuilder create(String name)
 	{
 		return new ItemBuilder(name, p -> {
 			ItemBuilder.current = p;
-			registry.register(new ItemJS().setRegistryName(p.id.mc()));
+			registry.register(new ItemJS(p).setRegistryName(p.id));
 		});
 	}
 
 	public ItemBuilder createBlockItem(String name)
 	{
 		return new ItemBuilder(name, p -> {
-			Block block = Block.REGISTRY.getObject(p.id.mc());
+			Block block = ForgeRegistries.BLOCKS.getValue(p.id);
 
 			if (!(block instanceof BlockJS))
 			{

@@ -3,12 +3,12 @@ package dev.latvian.kubejs.world;
 import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.util.UtilsJS;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import net.minecraft.entity.item.EntityFireworkRocket;
-import net.minecraft.init.Items;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.entity.item.FireworkRocketEntity;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -20,8 +20,6 @@ import java.util.Map;
  */
 public class FireworksJS
 {
-	private static final int[] DYE_COLORS = {16383998, 16351261, 13061821, 3847130, 16701501, 8439583, 15961002, 4673362, 10329495, 1481884, 8991416, 3949738, 8606770, 6192150, 11546150, 1908001};
-
 	public static FireworksJS of(Map<String, Object> properties)
 	{
 		FireworksJS fireworks = new FireworksJS();
@@ -74,7 +72,7 @@ public class FireworksJS
 							}
 							else if (o1 instanceof String)
 							{
-								e.colors.add(DYE_COLORS[EnumDyeColor.valueOf(o1.toString()).getMetadata()]);
+								e.colors.add(DyeColor.valueOf(o1.toString()).getColorValue());
 							}
 						}
 					}
@@ -93,7 +91,7 @@ public class FireworksJS
 							}
 							else if (o1 instanceof String)
 							{
-								e.fadeColors.add(DYE_COLORS[EnumDyeColor.valueOf(o1.toString()).getMetadata()]);
+								e.fadeColors.add(DyeColor.valueOf(o1.toString()).getColorValue());
 							}
 						}
 					}
@@ -164,36 +162,36 @@ public class FireworksJS
 	public int lifeTime = -1;
 	public final List<Explosion> explosions = new ArrayList<>();
 
-	public EntityFireworkRocket createFireworkRocket(World w, double x, double y, double z)
+	public FireworkRocketEntity createFireworkRocket(World w, double x, double y, double z)
 	{
-		ItemStack stack = new ItemStack(Items.FIREWORKS);
+		ItemStack stack = new ItemStack(Items.FIREWORK_ROCKET);
 
-		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setInteger("Flight", flight);
-		NBTTagList list = new NBTTagList();
+		CompoundNBT nbt = new CompoundNBT();
+		nbt.putInt("Flight", flight);
+		ListNBT list = new ListNBT();
 
 		for (Explosion e : explosions)
 		{
-			NBTTagCompound nbt1 = new NBTTagCompound();
-			nbt1.setInteger("Type", e.shape.type);
-			nbt1.setBoolean("Flicker", e.flicker);
-			nbt1.setBoolean("Trail", e.trail);
-			nbt1.setIntArray("Colors", e.colors.toIntArray());
-			nbt1.setIntArray("FadeColors", e.fadeColors.toIntArray());
-			list.appendTag(nbt1);
+			CompoundNBT nbt1 = new CompoundNBT();
+			nbt1.putInt("Type", e.shape.type);
+			nbt1.putBoolean("Flicker", e.flicker);
+			nbt1.putBoolean("Trail", e.trail);
+			nbt1.putIntArray("Colors", e.colors.toIntArray());
+			nbt1.putIntArray("FadeColors", e.fadeColors.toIntArray());
+			list.add(nbt1);
 		}
 
-		nbt.setTag("Explosions", list);
+		nbt.put("Explosions", list);
 		stack.setTagInfo("Fireworks", nbt);
 
-		EntityFireworkRocket rocket = new EntityFireworkRocket(w, x, y, z, stack);
+		FireworkRocketEntity rocket = new FireworkRocketEntity(w, x, y, z, stack);
 
 		if (lifeTime != -1)
 		{
-			NBTTagCompound entityNbt = new NBTTagCompound();
-			rocket.writeEntityToNBT(entityNbt);
-			entityNbt.setInteger("LifeTime", lifeTime);
-			rocket.readEntityFromNBT(entityNbt);
+			CompoundNBT entityNbt = new CompoundNBT();
+			rocket.writeWithoutTypeId(entityNbt);
+			entityNbt.putInt("LifeTime", lifeTime);
+			rocket.read(entityNbt);
 		}
 
 		rocket.setInvisible(true);

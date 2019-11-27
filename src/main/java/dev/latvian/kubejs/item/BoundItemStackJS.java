@@ -1,13 +1,11 @@
 package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.oredict.OreDictionary;
+import net.minecraft.nbt.CompoundNBT;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -61,45 +59,33 @@ public class BoundItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public void setData(int data)
+	public void setDamage(int damage)
 	{
-		stack.setItemDamage(data);
+		stack.setDamage(damage);
 	}
 
 	@Override
-	public int getData()
+	public int getDamage()
 	{
-		return stack.getMetadata();
+		return stack.getDamage();
 	}
 
 	@Override
 	public void setNbt(@Nullable Object nbt)
 	{
-		stack.setTagCompound(NBTBaseJS.of(nbt).asCompound().createNBT());
+		stack.setTag(NBTBaseJS.of(nbt).asCompound().createNBT());
 	}
 
 	@Override
 	public NBTCompoundJS getNbt()
 	{
-		return NBTBaseJS.of(stack.getTagCompound()).asCompound();
+		return NBTBaseJS.of(stack.getTag()).asCompound();
 	}
 
 	@Override
 	public void setName(Object displayName)
 	{
-		Text t = Text.of(displayName);
-		NBTCompoundJS nbt = getNbtOrNew();
-
-		if (t instanceof TextTranslate)
-		{
-			stack.setTranslatableName(((TextTranslate) t).getKey());
-		}
-		else
-		{
-			stack.setStackDisplayName(t.getFormattedString());
-		}
-
-		setNbt(nbt);
+		stack.setDisplayName(Text.of(displayName).component());
 	}
 
 	@Override
@@ -113,14 +99,9 @@ public class BoundItemStackJS extends ItemStackJS
 	{
 		if (stack2.getCount() >= stack.getCount() && stack.getItem() == stack2.getItem())
 		{
-			int d = stack.getMetadata();
-
-			if (d == OreDictionary.WILDCARD_VALUE || d == stack2.getMetadata())
-			{
-				NBTTagCompound nbt = stack.getTagCompound();
-				NBTTagCompound nbt2 = stack2.getTagCompound();
-				return Objects.equals(nbt, nbt2);
-			}
+			CompoundNBT nbt = stack.getTag();
+			CompoundNBT nbt2 = stack2.getTag();
+			return Objects.equals(nbt, nbt2);
 		}
 
 		return false;

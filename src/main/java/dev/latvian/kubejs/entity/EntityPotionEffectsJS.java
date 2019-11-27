@@ -2,9 +2,9 @@ package dev.latvian.kubejs.entity;
 
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.util.UtilsJS;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.EffectInstance;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -15,9 +15,9 @@ import java.util.Map;
  */
 public class EntityPotionEffectsJS
 {
-	private final EntityLivingBase entity;
+	private final LivingEntity entity;
 
-	public EntityPotionEffectsJS(EntityLivingBase e)
+	public EntityPotionEffectsJS(LivingEntity e)
 	{
 		entity = e;
 	}
@@ -27,26 +27,26 @@ public class EntityPotionEffectsJS
 		entity.clearActivePotions();
 	}
 
-	public Collection<PotionEffect> getActive()
+	public Collection<EffectInstance> getActive()
 	{
 		return entity.getActivePotionEffects();
 	}
 
-	public Map<Potion, PotionEffect> getMap()
+	public Map<Effect, EffectInstance> getMap()
 	{
 		return entity.getActivePotionMap();
 	}
 
 	public boolean isActive(@P("potion") Object potion)
 	{
-		Potion p = UtilsJS.getPotion(potion);
+		Effect p = UtilsJS.getPotion(potion);
 		return p != null && entity.isPotionActive(p);
 	}
 
 	@Nullable
-	public PotionEffect getActive(@P("potion") Object potion)
+	public EffectInstance getActive(@P("potion") Object potion)
 	{
-		Potion p = UtilsJS.getPotion(potion);
+		Effect p = UtilsJS.getPotion(potion);
 		return p == null ? null : entity.getActivePotionEffect(p);
 	}
 
@@ -67,15 +67,15 @@ public class EntityPotionEffectsJS
 
 	public void add(@P("potion") Object potion, @P("duration") int duration, @P("amplifier") int amplifier, @P("ambient") boolean ambient, @P("showParticles") boolean showParticles)
 	{
-		Potion p = UtilsJS.getPotion(potion);
+		Effect p = UtilsJS.getPotion(potion);
 
 		if (p != null)
 		{
-			entity.addPotionEffect(new PotionEffect(p, duration, amplifier, ambient, showParticles));
+			entity.addPotionEffect(new EffectInstance(p, duration, amplifier, ambient, showParticles));
 		}
 	}
 
-	public boolean isApplicable(@P("effect") PotionEffect effect)
+	public boolean isApplicable(@P("effect") EffectInstance effect)
 	{
 		return entity.isPotionApplicable(effect);
 	}

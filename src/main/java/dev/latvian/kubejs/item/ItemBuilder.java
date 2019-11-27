@@ -5,9 +5,13 @@ import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.util.ID;
-import net.minecraft.item.EnumRarity;
-import net.minecraft.util.text.ITextComponent;
+import dev.latvian.kubejs.util.UtilsJS;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
+import net.minecraft.item.Rarity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.ToolType;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,46 +26,34 @@ public class ItemBuilder
 {
 	public static ItemBuilder current;
 
-	public final ID id;
+	public final ResourceLocation id;
 	private final Consumer<ItemBuilder> callback;
-	@Ignore
-	public String translationKey;
 	@Ignore
 	public int maxStackSize;
 	@Ignore
 	public int maxDamage;
 	@Ignore
-	public ID containerItem;
+	public ResourceLocation containerItem;
 	@Ignore
-	public Map<String, Integer> tools;
+	public Map<ToolType, Integer> tools;
 	@Ignore
-	public String model;
-	@Ignore
-	public EnumRarity rarity;
+	public Rarity rarity;
 	@Ignore
 	public boolean glow;
 	@Ignore
-	public final List<ITextComponent> tooltip;
+	public final List<Text> tooltip;
 
 	public ItemBuilder(String i, Consumer<ItemBuilder> c)
 	{
-		id = ID.of(KubeJS.appendModId(i));
+		id = UtilsJS.getID(KubeJS.appendModId(i));
 		callback = c;
-		translationKey = id.getNamespace() + "." + id.getPath();
 		maxStackSize = 64;
 		maxDamage = 0;
 		containerItem = null;
 		tools = new HashMap<>();
-		model = id.getNamespace() + ":" + id.getPath() + "#inventory";
-		rarity = EnumRarity.COMMON;
+		rarity = Rarity.COMMON;
 		glow = false;
 		tooltip = new ArrayList<>();
-	}
-
-	public ItemBuilder translationKey(@P("translationKey") String v)
-	{
-		translationKey = v;
-		return this;
 	}
 
 	public ItemBuilder maxStackSize(@P("size") int v)
@@ -81,25 +73,19 @@ public class ItemBuilder
 		return this;
 	}
 
-	public ItemBuilder containerItem(@P("id") ID id)
+	public ItemBuilder containerItem(@P("id") ResourceLocation id)
 	{
 		containerItem = id;
 		return this;
 	}
 
-	public ItemBuilder tool(@P("type") String type, @P("level") int level)
+	public ItemBuilder tool(@P("type") ToolType type, @P("level") int level)
 	{
 		tools.put(type, level);
 		return this;
 	}
 
-	public ItemBuilder model(@P("model") String v)
-	{
-		model = v;
-		return this;
-	}
-
-	public ItemBuilder rarity(@P("rarity") EnumRarity v)
+	public ItemBuilder rarity(@P("rarity") Rarity v)
 	{
 		rarity = v;
 		return this;
@@ -113,12 +99,35 @@ public class ItemBuilder
 
 	public ItemBuilder tooltip(@P("text") @T(Text.class) Object text)
 	{
-		tooltip.add(Text.of(text).component());
+		tooltip.add(Text.of(text));
 		return this;
 	}
 
 	public void add()
 	{
 		callback.accept(this);
+	}
+
+	public Item.Properties createItemProperties()
+	{
+		Item.Properties properties = new Item.Properties();
+
+		properties.maxStackSize(maxStackSize);
+		properties.maxDamage(maxDamage);
+		properties.rarity(rarity);
+
+		for (Map.Entry<ToolType, Integer> entry : tools.entrySet())
+		{
+			properties.addToolType(entry.getKey(), entry.getValue());
+		}
+
+		Item item = containerItem == null ? null : ForgeRegistries.ITEMS.getValue(containerItem);
+
+		if (item != null && item != Items.AIR)
+		{
+			properties.containerItem(item);
+		}
+
+		return properties;
 	}
 }

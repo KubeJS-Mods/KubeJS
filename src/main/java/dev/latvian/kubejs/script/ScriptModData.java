@@ -2,11 +2,13 @@ package dev.latvian.kubejs.script;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.documentation.P;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.forgespi.language.IModInfo;
 
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -20,7 +22,7 @@ public class ScriptModData
 	{
 		if (instance == null)
 		{
-			instance = new ScriptModData("forge", "1.12.2", Loader.instance().getIndexedModList().keySet());
+			instance = new ScriptModData("forge", "1.14.4", ModList.get().getMods());
 		}
 
 		return instance;
@@ -59,11 +61,16 @@ public class ScriptModData
 	private final String mcVersion;
 	private final HashSet<String> list;
 
-	public ScriptModData(String t, String mc, Collection<String> modList)
+	public ScriptModData(String t, String mc, List<net.minecraftforge.fml.loading.moddiscovery.ModInfo> modList)
 	{
 		type = t;
 		mcVersion = mc;
-		list = new HashSet<>(modList);
+		list = new HashSet<>(modList.size());
+
+		for (net.minecraftforge.fml.loading.moddiscovery.ModInfo info : modList)
+		{
+			list.add(info.getModId());
+		}
 	}
 
 	public String getType()
@@ -83,7 +90,7 @@ public class ScriptModData
 
 	public String getModVersion()
 	{
-		return KubeJS.VERSION;
+		return ModList.get().getModContainerById(KubeJS.MOD_ID).get().getModInfo().getVersion().toString();
 	}
 
 	public boolean isLoaded(@P("modID") String modId)
@@ -95,12 +102,13 @@ public class ScriptModData
 	{
 		ModInfo info = new ModInfo(modID);
 
-		ModContainer modContainer = Loader.instance().getIndexedModList().get(modID);
+		Optional<? extends ModContainer> modContainer = ModList.get().getModContainerById(modID);
 
-		if (modContainer != null)
+		if (modContainer.isPresent())
 		{
-			info.name = modContainer.getName();
-			info.version = modContainer.getVersion();
+			IModInfo i = modContainer.get().getModInfo();
+			info.name = i.getDisplayName();
+			info.version = i.getVersion().toString();
 		}
 
 		return info;

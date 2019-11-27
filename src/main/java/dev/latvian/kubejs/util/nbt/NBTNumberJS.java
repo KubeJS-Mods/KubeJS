@@ -1,11 +1,11 @@
 package dev.latvian.kubejs.util.nbt;
 
-import net.minecraft.nbt.NBTPrimitive;
-import net.minecraft.nbt.NBTTagByte;
-import net.minecraft.nbt.NBTTagDouble;
-import net.minecraft.nbt.NBTTagFloat;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.nbt.NBTTagShort;
+import net.minecraft.nbt.ByteNBT;
+import net.minecraft.nbt.DoubleNBT;
+import net.minecraft.nbt.FloatNBT;
+import net.minecraft.nbt.IntNBT;
+import net.minecraft.nbt.NumberNBT;
+import net.minecraft.nbt.ShortNBT;
 import net.minecraftforge.common.util.Constants;
 
 /**
@@ -14,7 +14,7 @@ import net.minecraftforge.common.util.Constants;
 public class NBTNumberJS implements NBTBaseJS
 {
 	private final Number number;
-	private NBTPrimitive cached;
+	private NumberNBT cached;
 
 	public NBTNumberJS(Number n)
 	{
@@ -27,7 +27,7 @@ public class NBTNumberJS implements NBTBaseJS
 		return number;
 	}
 
-	public NBTNumberJS(NBTPrimitive p)
+	public NBTNumberJS(NumberNBT p)
 	{
 		cached = p;
 
@@ -58,29 +58,29 @@ public class NBTNumberJS implements NBTBaseJS
 	}
 
 	@Override
-	public NBTPrimitive createNBT()
+	public NumberNBT createNBT()
 	{
 		if (cached == null)
 		{
 			if (number instanceof Byte)
 			{
-				cached = new NBTTagByte(number.byteValue());
+				cached = new ByteNBT(number.byteValue());
 			}
 			else if (number instanceof Short)
 			{
-				cached = new NBTTagShort(number.shortValue());
+				cached = new ShortNBT(number.shortValue());
 			}
 			else if (number instanceof Integer)
 			{
-				cached = new NBTTagInt(number.intValue());
+				cached = new IntNBT(number.intValue());
 			}
 			else if (number instanceof Float)
 			{
-				cached = new NBTTagFloat(number.floatValue());
+				cached = new FloatNBT(number.floatValue());
 			}
 			else
 			{
-				cached = new NBTTagDouble(number.doubleValue());
+				cached = new DoubleNBT(number.doubleValue());
 			}
 		}
 

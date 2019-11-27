@@ -2,7 +2,7 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.entity.EntityJS;
-import net.minecraft.inventory.Container;
+import net.minecraft.inventory.container.Container;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 
 /**

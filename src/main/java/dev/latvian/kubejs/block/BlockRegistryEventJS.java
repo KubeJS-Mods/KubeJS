@@ -3,7 +3,7 @@ package dev.latvian.kubejs.block;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.util.ID;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.block.Block;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -22,14 +22,11 @@ public class BlockRegistryEventJS extends EventJS
 
 	public void register(String id, Block block)
 	{
-		registry.register(block.setRegistryName(ID.of(KubeJS.appendModId(id)).mc()));
+		registry.register(block.setRegistryName(UtilsJS.getID(KubeJS.appendModId(id))));
 	}
 
 	public BlockBuilder create(String name)
 	{
-		return new BlockBuilder(name, p -> {
-			BlockBuilder.current = p;
-			registry.register(new BlockJS().setRegistryName(p.id.mc()));
-		});
+		return new BlockBuilder(name, p -> registry.register(new BlockJS(p).setRegistryName(p.id)));
 	}
 }

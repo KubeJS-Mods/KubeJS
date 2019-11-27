@@ -11,12 +11,6 @@ import dev.latvian.kubejs.client.ClientLoggedInEventJS;
 import dev.latvian.kubejs.client.ClientTickEventJS;
 import dev.latvian.kubejs.client.DebugInfoEventJS;
 import dev.latvian.kubejs.command.CommandRegistryEventJS;
-import dev.latvian.kubejs.crafting.AlloySmelterRecipeEventJS;
-import dev.latvian.kubejs.crafting.CompressorRecipeEventJS;
-import dev.latvian.kubejs.crafting.CraftingTableRecipeEventJS;
-import dev.latvian.kubejs.crafting.FurnaceRecipeEventJS;
-import dev.latvian.kubejs.crafting.PulverizerRecipeEventJS;
-import dev.latvian.kubejs.crafting.RemoveRecipesEventJS;
 import dev.latvian.kubejs.documentation.DocumentationEvent;
 import dev.latvian.kubejs.entity.CheckLivingEntitySpawnEventJS;
 import dev.latvian.kubejs.entity.EntitySpawnedEventJS;
@@ -41,20 +35,17 @@ import dev.latvian.kubejs.player.PlayerAdvancementEventJS;
 import dev.latvian.kubejs.player.PlayerChatEventJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
 import dev.latvian.kubejs.server.CommandEventJS;
-import dev.latvian.kubejs.server.SimpleServerEventJS;
+import dev.latvian.kubejs.server.ServerEventJS;
 import dev.latvian.kubejs.world.ExplosionEventJS;
 import dev.latvian.kubejs.world.SimpleWorldEventJS;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * @author LatvianModder
  */
-@Mod.EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSEvents
 {
+	public static final String INIT = "init";
 	public static final String POSTINIT = "postinit";
-	public static final String UNLOADED = "unloaded";
 	public static final String LOADED = "loaded";
 	public static final String COMMAND_REGISTRY = "command.registry";
 	public static final String COMMAND_RUN = "command.run";
@@ -118,7 +109,6 @@ public class KubeJSEvents
 	public static final String ITEM_CRAFTED = "item.crafted";
 	public static final String ITEM_SMELTED = "item.smelted";
 
-	@SubscribeEvent
 	public static void registerDocumentation(DocumentationEvent event)
 	{
 		event.registerCustomName("void", void.class, Void.class);
@@ -130,8 +120,8 @@ public class KubeJSEvents
 		event.registerCustomName("double", double.class, Double.class);
 		event.registerCustomName("char", char.class, Character.class);
 
-		event.registerEvent(POSTINIT, EventJS.class);
-		event.registerEvent(UNLOADED, EventJS.class);
+		event.registerEvent(INIT, EventJS.class).startup();
+		event.registerEvent(POSTINIT, EventJS.class).startup();
 		event.registerEvent(LOADED, EventJS.class);
 		event.registerEvent(COMMAND_REGISTRY, CommandRegistryEventJS.class).serverOnly();
 		event.registerEvent(COMMAND_RUN, CommandEventJS.class).serverOnly().canCancel();
@@ -140,16 +130,16 @@ public class KubeJSEvents
 		event.registerEvent(CLIENT_LOGGED_IN, ClientLoggedInEventJS.class).clientOnly();
 		event.registerEvent(CLIENT_TICK, ClientTickEventJS.class).clientOnly();
 
-		event.registerEvent(SERVER_LOAD, SimpleServerEventJS.class).serverOnly();
-		event.registerEvent(SERVER_UNLOAD, SimpleServerEventJS.class).serverOnly();
-		event.registerEvent(SERVER_TICK, SimpleServerEventJS.class).serverOnly();
+		event.registerEvent(SERVER_LOAD, ServerEventJS.class).serverOnly();
+		event.registerEvent(SERVER_UNLOAD, ServerEventJS.class).serverOnly();
+		event.registerEvent(SERVER_TICK, ServerEventJS.class).serverOnly();
 
 		event.registerEvent(WORLD_LOAD, SimpleWorldEventJS.class).serverOnly();
 		event.registerEvent(WORLD_UNLOAD, SimpleWorldEventJS.class).serverOnly();
 		event.registerEvent(WORLD_TICK, SimpleWorldEventJS.class).serverOnly();
 		event.registerEvent(WORLD_EXPLOSION_PRE, ExplosionEventJS.Pre.class).serverOnly().canCancel();
 		event.registerEvent(WORLD_EXPLOSION_POST, ExplosionEventJS.Post.class).serverOnly();
-		event.registerEvent(WORLD_MISSING_MAPPINGS, MissingMappingEventJS.class);
+		event.registerEvent(WORLD_MISSING_MAPPINGS, MissingMappingEventJS.class).startup();
 
 		event.registerEvent(PLAYER_LOGGED_IN, SimplePlayerEventJS.class).serverOnly();
 		event.registerEvent(PLAYER_LOGGED_OUT, SimplePlayerEventJS.class).serverOnly();
@@ -166,26 +156,26 @@ public class KubeJSEvents
 
 		event.registerEvent(ENTITY_DEATH, LivingEntityDeathEventJS.class).canCancel();
 		event.registerEvent(ENTITY_ATTACK, LivingEntityAttackEventJS.class).canCancel();
-		event.registerEvent(ENTITY_DROPS, LivingEntityDropsEventJS.class).canCancel();
-		event.registerEvent(ENTITY_CHECK_SPAWN, CheckLivingEntitySpawnEventJS.class).canCancel();
-		event.registerEvent(ENTITY_SPAWNED, EntitySpawnedEventJS.class).canCancel();
+		event.registerEvent(ENTITY_DROPS, LivingEntityDropsEventJS.class).serverOnly().canCancel();
+		event.registerEvent(ENTITY_CHECK_SPAWN, CheckLivingEntitySpawnEventJS.class).serverOnly().canCancel();
+		event.registerEvent(ENTITY_SPAWNED, EntitySpawnedEventJS.class).serverOnly().canCancel();
 
-		event.registerEvent(RECIPES_REMOVE_OUTPUT, RemoveRecipesEventJS.class);
-		event.registerEvent(RECIPES_REMOVE_INPUT, RemoveRecipesEventJS.class);
-		event.registerEvent(RECIPES_CRAFTING_TABLE, CraftingTableRecipeEventJS.class);
-		event.registerEvent(RECIPES_FURNACE, FurnaceRecipeEventJS.class);
-		event.registerEvent(RECIPES_PULVERIZER, PulverizerRecipeEventJS.class);
-		event.registerEvent(RECIPES_COMPRESSOR, CompressorRecipeEventJS.class);
-		event.registerEvent(RECIPES_ALLOY_SMELTER, AlloySmelterRecipeEventJS.class);
+		//event.registerEvent(RECIPES_REMOVE_OUTPUT, RemoveRecipesEventJS.class);
+		//event.registerEvent(RECIPES_REMOVE_INPUT, RemoveRecipesEventJS.class);
+		//event.registerEvent(RECIPES_CRAFTING_TABLE, CraftingTableRecipeEventJS.class);
+		//event.registerEvent(RECIPES_FURNACE, FurnaceRecipeEventJS.class);
+		//event.registerEvent(RECIPES_PULVERIZER, PulverizerRecipeEventJS.class);
+		//event.registerEvent(RECIPES_COMPRESSOR, CompressorRecipeEventJS.class);
+		//event.registerEvent(RECIPES_ALLOY_SMELTER, AlloySmelterRecipeEventJS.class);
 
-		event.registerEvent(BLOCK_REGISTRY, BlockRegistryEventJS.class);
+		event.registerEvent(BLOCK_REGISTRY, BlockRegistryEventJS.class).startup();
 		event.registerEvent(BLOCK_RIGHT_CLICK, BlockRightClickEventJS.class).canCancel();
 		event.registerEvent(BLOCK_LEFT_CLICK, BlockLeftClickEventJS.class).canCancel();
 		event.registerEvent(BLOCK_PLACE, BlockPlaceEventJS.class).serverOnly().canCancel();
 		event.registerEvent(BLOCK_BREAK, BlockBreakEventJS.class).serverOnly().canCancel();
 		event.registerEvent(BLOCK_DROPS, BlockDropsEventJS.class).serverOnly();
 
-		event.registerEvent(ITEM_REGISTRY, ItemRegistryEventJS.class);
+		event.registerEvent(ITEM_REGISTRY, ItemRegistryEventJS.class).startup();
 		event.registerEvent(ITEM_RIGHT_CLICK, ItemRightClickEventJS.class).canCancel();
 		event.registerEvent(ITEM_RIGHT_CLICK_EMPTY, ItemRightClickEmptyEventJS.class).clientOnly();
 		event.registerEvent(ITEM_LEFT_CLICK, ItemLeftClickEventJS.class).clientOnly();

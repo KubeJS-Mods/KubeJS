@@ -6,37 +6,35 @@ import dev.latvian.kubejs.documentation.Info;
 import dev.latvian.kubejs.documentation.O;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
-import dev.latvian.kubejs.net.KubeJSNetHandler;
-import dev.latvian.kubejs.net.MessageSendData;
+import dev.latvian.kubejs.net.KubeJSNet;
+import dev.latvian.kubejs.net.MessageSendDataFromClient;
 import dev.latvian.kubejs.player.AdvancementJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.FakeServerPlayerDataJS;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.player.ServerPlayerDataJS;
+import dev.latvian.kubejs.script.ScriptManager;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.AttachedData;
-import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UUIDUtilsJS;
+import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WithAttachedData;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.ServerWorldJS;
-import dev.latvian.kubejs.world.WorldCommandSender;
 import dev.latvian.kubejs.world.WorldJS;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.EntitySelector;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -57,13 +55,16 @@ public class ServerJS implements MessageSender, WithAttachedData
 	public final MinecraftServer minecraftServer;
 
 	@Ignore
+	public final ScriptManager scriptManager;
+
+	@Ignore
 	public final List<ScheduledEvent> scheduledEvents;
 
 	@Ignore
 	public final List<ScheduledEvent> scheduledTickEvents;
 
 	@Ignore
-	public final Int2ObjectOpenHashMap<ServerWorldJS> worldMap;
+	public final Map<DimensionType, ServerWorldJS> worldMap;
 
 	@Ignore
 	public final Map<UUID, ServerPlayerDataJS> playerMap;
@@ -71,23 +72,22 @@ public class ServerJS implements MessageSender, WithAttachedData
 	@Ignore
 	public final Map<UUID, FakeServerPlayerDataJS> fakePlayerMap;
 
-	private AttachedData data;
-	private final List<ServerWorldJS> worlds;
-	private final ServerWorldJS overworld;
+	@Ignore
+	public final List<ServerWorldJS> worlds;
 
-	public ServerJS(MinecraftServer ms, WorldServer w)
+	public ServerWorldJS overworld;
+	private AttachedData data;
+
+	public ServerJS(MinecraftServer ms)
 	{
 		minecraftServer = ms;
+		scriptManager = new ScriptManager(ScriptType.SERVER);
 		scheduledEvents = new LinkedList<>();
 		scheduledTickEvents = new LinkedList<>();
-		worldMap = new Int2ObjectOpenHashMap<>();
+		worldMap = new HashMap<>();
 		playerMap = new HashMap<>();
 		fakePlayerMap = new HashMap<>();
-
-		overworld = new ServerWorldJS(this, w);
-		worldMap.put(0, overworld);
 		worlds = new ArrayList<>();
-		worlds.add(overworld);
 	}
 
 	public void updateWorldList()
@@ -155,19 +155,19 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 	public void stop()
 	{
-		minecraftServer.stopServer();
+		minecraftServer.close();
 	}
 
 	@Override
-	public String getName()
+	public Text getName()
 	{
-		return minecraftServer.getName();
+		return Text.of(minecraftServer.getName());
 	}
 
 	@Override
 	public Text getDisplayName()
 	{
-		return Text.of(minecraftServer.getDisplayName());
+		return Text.of(minecraftServer.getCommandSource().getDisplayName());
 	}
 
 	@Override
@@ -176,7 +176,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 		ITextComponent component = Text.of(message).component();
 		minecraftServer.sendMessage(component);
 
-		for (EntityPlayerMP player : minecraftServer.getPlayerList().getPlayers())
+		for (ServerPlayerEntity player : minecraftServer.getPlayerList().getPlayers())
 		{
 			player.sendMessage(component);
 		}
@@ -187,7 +187,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 	{
 		ITextComponent component = Text.of(message).component();
 
-		for (EntityPlayerMP player : minecraftServer.getPlayerList().getPlayers())
+		for (ServerPlayerEntity player : minecraftServer.getPlayerList().getPlayers())
 		{
 			player.sendStatusMessage(component, true);
 		}
@@ -196,12 +196,12 @@ public class ServerJS implements MessageSender, WithAttachedData
 	@Override
 	public int runCommand(String command)
 	{
-		return minecraftServer.getCommandManager().executeCommand(minecraftServer, command);
+		return minecraftServer.getCommandManager().handleCommand(minecraftServer.getCommandSource(), command);
 	}
 
-	public WorldJS getWorld(@P("dimension") int dimension)
+	public WorldJS getWorld(@P("dimension") DimensionType dimension)
 	{
-		if (dimension == 0)
+		if (dimension == DimensionType.OVERWORLD)
 		{
 			return overworld;
 		}
@@ -219,9 +219,9 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return world;
 	}
 
-	public WorldJS getWorld(@P("minecraftWorld") World minecraftWorld)
+	public WorldJS getWorld(@P("minecraftWorld") IWorld minecraftWorld)
 	{
-		return getWorld(minecraftWorld.provider.getDimension());
+		return getWorld(minecraftWorld.getDimension().getType());
 	}
 
 	@Nullable
@@ -274,7 +274,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 	}
 
 	@Nullable
-	public PlayerJS getPlayer(@P("minecraftPlayer") EntityPlayer minecraftPlayer)
+	public PlayerJS getPlayer(@P("minecraftPlayer") PlayerEntity minecraftPlayer)
 	{
 		return getPlayer(minecraftPlayer.getUniqueID());
 	}
@@ -287,14 +287,11 @@ public class ServerJS implements MessageSender, WithAttachedData
 	@Ignore
 	public EntityArrayList getEntities()
 	{
-		EntityArrayList list = new EntityArrayList(overworld, overworld.minecraftWorld.loadedEntityList.size());
+		EntityArrayList list = new EntityArrayList(overworld, 10);
 
-		for (WorldJS world : worlds)
+		for (ServerWorldJS world : worlds)
 		{
-			for (Entity entity : world.minecraftWorld.loadedEntityList)
-			{
-				list.add(world.getEntity(entity));
-			}
+			list.addAll(world.getEntities());
 		}
 
 		return list;
@@ -302,24 +299,14 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 	public EntityArrayList getEntities(@O @P("filter") String filter)
 	{
-		try
-		{
-			EntityArrayList list = new EntityArrayList(overworld, overworld.minecraftWorld.loadedEntityList.size());
+		EntityArrayList list = new EntityArrayList(overworld, 10);
 
-			for (WorldJS world : worlds)
-			{
-				for (Entity entity : EntitySelector.matchEntities(new WorldCommandSender(world), filter, Entity.class))
-				{
-					list.add(world.getEntity(entity));
-				}
-			}
-
-			return list;
-		}
-		catch (CommandException e)
+		for (ServerWorldJS world : worlds)
 		{
-			return new EntityArrayList(overworld, 0);
+			list.addAll(world.getEntities(filter));
 		}
+
+		return list;
 	}
 
 	public ScheduledEvent schedule(@P("timer") long timer, @O @P("data") @Nullable Object data, @P("callback") IScheduledEventCallback event)
@@ -357,12 +344,12 @@ public class ServerJS implements MessageSender, WithAttachedData
 	@Nullable
 	public AdvancementJS getAdvancement(@P("id") Object id)
 	{
-		Advancement a = minecraftServer.getAdvancementManager().getAdvancement(ID.of(id).mc());
+		Advancement a = minecraftServer.getAdvancementManager().getAdvancement(UtilsJS.getID(id));
 		return a == null ? null : new AdvancementJS(a);
 	}
 
 	public void sendDataToAll(@P("channel") String channel, @P("data") @Nullable Object data)
 	{
-		KubeJSNetHandler.net.sendToAll(new MessageSendData(channel, NBTBaseJS.of(data).asCompound().createNBT()));
+		KubeJSNet.MAIN.send(PacketDistributor.ALL.noArg(), new MessageSendDataFromClient(channel, NBTBaseJS.of(data).asCompound().createNBT()));
 	}
 }

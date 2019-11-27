@@ -5,7 +5,7 @@ import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.util.AttachedData;
 import dev.latvian.kubejs.util.WithAttachedData;
 import dev.latvian.kubejs.world.WorldJS;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -13,7 +13,7 @@ import java.util.UUID;
 /**
  * @author LatvianModder
  */
-public abstract class PlayerDataJS<E extends EntityPlayer, P extends PlayerJS<E>> implements WithAttachedData
+public abstract class PlayerDataJS<E extends PlayerEntity, P extends PlayerJS<E>> implements WithAttachedData
 {
 	private AttachedData data;
 
@@ -46,7 +46,8 @@ public abstract class PlayerDataJS<E extends EntityPlayer, P extends PlayerJS<E>
 	public abstract WorldJS getOverworld();
 
 	@Nullable
-	public abstract E getPlayerEntity();
+	@MinecraftClass
+	public abstract E getMinecraftPlayer();
 
 	public abstract P getPlayer();
 }

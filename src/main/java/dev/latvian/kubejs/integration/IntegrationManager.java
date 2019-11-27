@@ -2,23 +2,23 @@ package dev.latvian.kubejs.integration;
 
 import dev.latvian.kubejs.integration.gamestages.GameStagesIntegration;
 import dev.latvian.kubejs.integration.packmode.PackModeIntegration;
-import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.ModList;
 
 /**
  * @author LatvianModder
  */
 public class IntegrationManager
 {
-	public static void preInit()
+	public static void init()
 	{
-		if (Loader.isModLoaded("gamestages"))
+		if (ModList.get().isLoaded("gamestages"))
 		{
-			GameStagesIntegration.preInit();
+			new GameStagesIntegration().init();
 		}
 
-		if (Loader.isModLoaded("packmode"))
+		if (ModList.get().isLoaded("packmode"))
 		{
-			PackModeIntegration.preInit();
+			new PackModeIntegration().init();
 		}
 	}
 }

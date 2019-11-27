@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.script;
 
-import net.minecraftforge.fml.common.eventhandler.Event;
+
+import net.minecraftforge.eventbus.api.Event;
 
 /**
  * @author LatvianModder

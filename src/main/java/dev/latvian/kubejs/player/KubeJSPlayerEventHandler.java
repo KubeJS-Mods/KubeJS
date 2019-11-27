@@ -2,126 +2,110 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.event.EventsJS;
-import dev.latvian.kubejs.script.ScriptFile;
-import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.server.ServerJS;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.ContainerChest;
-import net.minecraft.inventory.ContainerPlayer;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.ChestContainer;
+import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 
 /**
  * @author LatvianModder
  */
-@Mod.EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSPlayerEventHandler
 {
-	@SubscribeEvent
-	public static void loggedIn(PlayerEvent.PlayerLoggedInEvent event)
+	public void init()
 	{
-		if (event.player instanceof EntityPlayerMP && (((EntityPlayerMP) event.player).server.isSinglePlayer() || event.player.canUseCommand(1, "kubejs.errors")))
-		{
-			for (ScriptFile file : ScriptManager.instance.scripts.values())
-			{
-				ITextComponent component = file.getErrorTextComponent();
+		MinecraftForge.EVENT_BUS.addListener(this::loggedIn);
+		MinecraftForge.EVENT_BUS.addListener(this::loggedOut);
+		MinecraftForge.EVENT_BUS.addListener(this::cloned);
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::tick);
+		MinecraftForge.EVENT_BUS.addListener(this::chat);
+		MinecraftForge.EVENT_BUS.addListener(this::advancement);
+		MinecraftForge.EVENT_BUS.addListener(this::inventoryOpened);
+		MinecraftForge.EVENT_BUS.addListener(this::inventoryClosed);
+	}
 
-				if (component != null)
-				{
-					event.player.sendMessage(component);
-				}
-			}
-		}
-
-		if (ServerJS.instance != null && event.player instanceof EntityPlayerMP)
+	public void loggedIn(PlayerEvent.PlayerLoggedInEvent event)
+	{
+		if (ServerJS.instance != null && event.getPlayer() instanceof ServerPlayerEntity)
 		{
-			ServerPlayerDataJS p = new ServerPlayerDataJS(ServerJS.instance, event.player.getUniqueID(), event.player.getName(), KubeJS.nextClientHasClientMod);
+			ServerPlayerDataJS p = new ServerPlayerDataJS(ServerJS.instance, event.getPlayer().getUniqueID(), event.getPlayer().getGameProfile().getName(), KubeJS.nextClientHasClientMod);
 			KubeJS.nextClientHasClientMod = false;
 			p.getServer().playerMap.put(p.getId(), p);
 			MinecraftForge.EVENT_BUS.post(new AttachPlayerDataEvent(p));
-			EventsJS.post(KubeJSEvents.PLAYER_LOGGED_IN, new SimplePlayerEventJS(event.player));
-			event.player.inventoryContainer.addListener(new InventoryListener((EntityPlayerMP) event.player));
+			new SimplePlayerEventJS(event.getPlayer()).post(KubeJSEvents.PLAYER_LOGGED_IN);
+			event.getPlayer().container.addListener(new InventoryListener((ServerPlayerEntity) event.getPlayer()));
 		}
 	}
 
-	@SubscribeEvent
-	public static void loggedOut(PlayerEvent.PlayerLoggedOutEvent event)
+	public void loggedOut(PlayerEvent.PlayerLoggedOutEvent event)
 	{
-		if (ServerJS.instance == null || !ServerJS.instance.playerMap.containsKey(event.player.getUniqueID()))
+		if (ServerJS.instance == null || !ServerJS.instance.playerMap.containsKey(event.getPlayer().getUniqueID()))
 		{
 			return;
 		}
 
-		EventsJS.post(KubeJSEvents.PLAYER_LOGGED_OUT, new SimplePlayerEventJS(event.player));
-		ServerJS.instance.playerMap.remove(event.player.getUniqueID());
+		new SimplePlayerEventJS(event.getPlayer()).post(KubeJSEvents.PLAYER_LOGGED_OUT);
+		ServerJS.instance.playerMap.remove(event.getPlayer().getUniqueID());
 	}
 
-	@SubscribeEvent
-	public static void clone(net.minecraftforge.event.entity.player.PlayerEvent.Clone event)
+	public void cloned(net.minecraftforge.event.entity.player.PlayerEvent.Clone event)
 	{
-		if (event.getEntityPlayer() instanceof EntityPlayerMP)
+		if (event.getPlayer() instanceof ServerPlayerEntity)
 		{
-			event.getEntityPlayer().inventoryContainer.addListener(new InventoryListener((EntityPlayerMP) event.getEntityPlayer()));
+			event.getPlayer().container.addListener(new InventoryListener((ServerPlayerEntity) event.getPlayer()));
 		}
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public static void tick(TickEvent.PlayerTickEvent event)
+	public void tick(TickEvent.PlayerTickEvent event)
 	{
 		if (ServerJS.instance != null && event.phase == TickEvent.Phase.END)
 		{
-			EventsJS.post(KubeJSEvents.PLAYER_TICK, new SimplePlayerEventJS(event.player));
+			new SimplePlayerEventJS(event.player).post(KubeJSEvents.PLAYER_TICK);
 		}
 	}
 
-	@SubscribeEvent
-	public static void chat(ServerChatEvent event)
+	public void chat(ServerChatEvent event)
 	{
-		if (EventsJS.post(KubeJSEvents.PLAYER_CHAT, new PlayerChatEventJS(event)))
+		if (new PlayerChatEventJS(event).post(KubeJSEvents.PLAYER_CHAT))
 		{
 			event.setCanceled(true);
 		}
 	}
 
-	@SubscribeEvent
-	public static void advancement(AdvancementEvent event)
+	public void advancement(AdvancementEvent event)
 	{
-		EventsJS.post(KubeJSEvents.PLAYER_ADVANCEMENT, new PlayerAdvancementEventJS(event));
+		new PlayerAdvancementEventJS(event).post(KubeJSEvents.PLAYER_ADVANCEMENT);
 	}
 
-	@SubscribeEvent
-	public static void inventoryOpened(PlayerContainerEvent.Open event)
+	public void inventoryOpened(PlayerContainerEvent.Open event)
 	{
-		if (event.getEntityPlayer() instanceof EntityPlayerMP && !(event.getContainer() instanceof ContainerPlayer))
+		if (event.getPlayer() instanceof ServerPlayerEntity && !(event.getContainer() instanceof PlayerContainer))
 		{
-			event.getContainer().addListener(new InventoryListener((EntityPlayerMP) event.getEntityPlayer()));
+			event.getContainer().addListener(new InventoryListener((ServerPlayerEntity) event.getPlayer()));
 		}
 
-		EventsJS.post(KubeJSEvents.PLAYER_INVENTORY_OPENED, new InventoryEventJS(event));
+		new InventoryEventJS(event).post(KubeJSEvents.PLAYER_INVENTORY_OPENED);
 
-		if (event.getContainer() instanceof ContainerChest)
+		if (event.getContainer() instanceof ChestContainer)
 		{
-			EventsJS.post(KubeJSEvents.PLAYER_CHEST_OPENED, new ChestEventJS(event));
+			new ChestEventJS(event).post(KubeJSEvents.PLAYER_CHEST_OPENED);
 		}
 	}
 
-	@SubscribeEvent
-	public static void inventoryClosed(PlayerContainerEvent.Close event)
+	public void inventoryClosed(PlayerContainerEvent.Close event)
 	{
-		EventsJS.post(KubeJSEvents.PLAYER_INVENTORY_CLOSED, new InventoryEventJS(event));
+		new InventoryEventJS(event).post(KubeJSEvents.PLAYER_INVENTORY_CLOSED);
 
-		if (event.getContainer() instanceof ContainerChest)
+		if (event.getContainer() instanceof ChestContainer)
 		{
-			EventsJS.post(KubeJSEvents.PLAYER_CHEST_CLOSED, new ChestEventJS(event));
+			new ChestEventJS(event).post(KubeJSEvents.PLAYER_CHEST_CLOSED);
 		}
 	}
 }

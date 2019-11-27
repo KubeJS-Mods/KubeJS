@@ -1,33 +1,11 @@
 package dev.latvian.kubejs.integration.aurora;
 
-import dev.latvian.kubejs.documentation.DisplayName;
-import dev.latvian.kubejs.documentation.Documentation;
-import dev.latvian.kubejs.documentation.DocumentedEvent;
-import dev.latvian.kubejs.documentation.DocumentedField;
-import dev.latvian.kubejs.documentation.DocumentedMethod;
-import dev.latvian.kubejs.documentation.Ignore;
-import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.script.ScriptModData;
-import dev.latvian.mods.aurora.page.HTTPWebPage;
-import dev.latvian.mods.aurora.tag.PairedTag;
-import dev.latvian.mods.aurora.tag.Tag;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * @author LatvianModder
  */
-public class KubeJSClassPage extends HTTPWebPage
+public class KubeJSClassPage// extends HTTPWebPage
 {
+	/*
 	private final Documentation documentation;
 	private final Class documentedClass;
 
@@ -113,8 +91,8 @@ public class KubeJSClassPage extends HTTPWebPage
 			Tag row = table.tr();
 			row.td().text(event.eventID);
 			row.td().yesNoSpan(event.canCancel);
-			row.td().yesNoSpan(event.sideOnly == null || event.sideOnly == Side.CLIENT);
-			row.td().yesNoSpan(event.sideOnly == null || event.sideOnly == Side.SERVER);
+			row.td().yesNoSpan(event.sideOnly == null || event.sideOnly == Dist.CLIENT);
+			row.td().yesNoSpan(event.sideOnly == null || event.sideOnly == Dist.DEDICATED_SERVER);
 			body.br();
 		}
 
@@ -316,10 +294,11 @@ public class KubeJSClassPage extends HTTPWebPage
 		}
 
 		body.br();
-		body.p().paired("i", "Hosted from '" + FMLCommonHandler.instance().getMinecraftServerInstance().getMOTD() + "'");
+		//FIXME: body.p().paired("i", "Hosted from '" + FMLCommonHandler.instance().getMinecraftServerInstance().getMOTD() + "'");
 		body.p().paired("i", "Mod version: " + ScriptModData.getInstance().getModVersion());
 		body.p().paired("i", "Mod loader: " + ScriptModData.getInstance().getType());
 		body.p().paired("i", "Minecraft version: " + ScriptModData.getInstance().getMcVersion());
 		body.p().paired("i").a("Visit kubejs.latvian.dev for more info about the mod", "https://kubejs.latvian.dev");
 	}
+	*/
 }

@@ -1,10 +1,10 @@
 package dev.latvian.kubejs.util.nbt;
 
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagByteArray;
-import net.minecraft.nbt.NBTTagIntArray;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagLongArray;
+import net.minecraft.nbt.ByteArrayNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.IntArrayNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.LongArrayNBT;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
@@ -45,7 +45,7 @@ public class NBTListJS implements NBTBaseJS, Iterable<NBTBaseJS>
 
 		@Nullable
 		@Override
-		public NBTTagList createNBT()
+		public ListNBT createNBT()
 		{
 			return null;
 		}
@@ -116,11 +116,11 @@ public class NBTListJS implements NBTBaseJS, Iterable<NBTBaseJS>
 		this(3);
 	}
 
-	public NBTListJS(NBTTagList p)
+	public NBTListJS(ListNBT p)
 	{
-		this(p.tagCount());
+		this(p.size());
 
-		for (NBTBase nbt : p)
+		for (INBT nbt : p)
 		{
 			add(NBTBaseJS.of(nbt));
 		}
@@ -134,9 +134,9 @@ public class NBTListJS implements NBTBaseJS, Iterable<NBTBaseJS>
 
 	@Override
 	@Nullable
-	public NBTBase createNBT()
+	public INBT createNBT()
 	{
-		NBTTagList tagList = new NBTTagList();
+		ListNBT tagList = new ListNBT();
 
 		if (isEmpty())
 		{
@@ -146,20 +146,20 @@ public class NBTListJS implements NBTBaseJS, Iterable<NBTBaseJS>
 		switch (get(0).getId())
 		{
 			case Constants.NBT.TAG_BYTE:
-				return new NBTTagByteArray(asByteArray());
+				return new ByteArrayNBT(asByteArray());
 			case Constants.NBT.TAG_INT:
-				return new NBTTagIntArray(asIntArray());
+				return new IntArrayNBT(asIntArray());
 			case Constants.NBT.TAG_LONG:
-				return new NBTTagLongArray(asLongArray());
+				return new LongArrayNBT(asLongArray());
 		}
 
 		for (NBTBaseJS nbt : this)
 		{
-			NBTBase base = nbt.createNBT();
+			INBT base = nbt.createNBT();
 
 			if (base != null)
 			{
-				tagList.appendTag(base);
+				tagList.add(base);
 			}
 		}
 

@@ -1,30 +1,22 @@
 package dev.latvian.kubejs.integration.aurora;
 
-import dev.latvian.kubejs.documentation.Documentation;
-import dev.latvian.mods.aurora.AuroraHomePageEvent;
-import dev.latvian.mods.aurora.AuroraPageEvent;
-import dev.latvian.mods.aurora.page.HomePageEntry;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
 /**
  * @author LatvianModder
  */
 public class AuroraIntegration
 {
-	public static void init()
+	public void init()
 	{
-		MinecraftForge.EVENT_BUS.register(AuroraIntegration.class);
+		//MinecraftForge.EVENT_BUS.addListener(this::auroraHomePageEvent);
+		//MinecraftForge.EVENT_BUS.addListener(this::auroraEvent);
 	}
-
-	@SubscribeEvent
-	public static void onAuroraHomePageEvent(AuroraHomePageEvent event)
+/*
+	private void auroraHomePageEvent(AuroraHomePageEvent event)
 	{
 		event.add(new HomePageEntry("KubeJS Documentation", "kubejs", "https://kubejs.latvian.dev/logo_48.png"));
 	}
 
-	@SubscribeEvent
-	public static void onAuroraEvent(AuroraPageEvent event)
+	private void auroraEvent(AuroraPageEvent event)
 	{
 		if (event.getSplitUri()[0].equals("kubejs"))
 		{
@@ -46,4 +38,5 @@ public class AuroraIntegration
 			}
 		}
 	}
+ */
 }

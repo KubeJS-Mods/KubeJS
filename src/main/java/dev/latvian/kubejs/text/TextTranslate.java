@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Objects;
 
@@ -61,7 +61,7 @@ public class TextTranslate extends Text
 			}
 			else if (objects[i] instanceof ITextComponent)
 			{
-				o[i] = ((ITextComponent) objects[i]).createCopy();
+				o[i] = ((ITextComponent) objects[i]).deepCopy();
 			}
 			else
 			{
@@ -69,7 +69,7 @@ public class TextTranslate extends Text
 			}
 		}
 
-		return new TextComponentTranslation(key, o);
+		return new TranslationTextComponent(key, o);
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class TextTranslate extends Text
 			}
 			else if (objects[i] instanceof ITextComponent)
 			{
-				o[i] = ((ITextComponent) objects[i]).createCopy();
+				o[i] = ((ITextComponent) objects[i]).deepCopy();
 			}
 			else
 			{

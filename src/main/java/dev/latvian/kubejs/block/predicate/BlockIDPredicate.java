@@ -1,20 +1,20 @@
 package dev.latvian.kubejs.block.predicate;
 
-import com.google.common.base.Optional;
 import dev.latvian.kubejs.documentation.P;
-import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.block.Block;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.state.IProperty;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author LatvianModder
@@ -34,7 +34,7 @@ public class BlockIDPredicate implements BlockPredicate
 
 	public BlockIDPredicate(Object i)
 	{
-		id = ID.of(i).mc();
+		id = UtilsJS.getID(i);
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class BlockIDPredicate implements BlockPredicate
 	{
 		if (cachedBlock == null)
 		{
-			cachedBlock = Block.REGISTRY.getObject(id);
+			cachedBlock = ForgeRegistries.BLOCKS.getValue(id);
 
 			if (cachedBlock == null)
 			{
@@ -79,7 +79,7 @@ public class BlockIDPredicate implements BlockPredicate
 
 			Map<String, IProperty<?>> map = new HashMap<>();
 
-			for (IProperty<?> property : getBlock().getDefaultState().getPropertyKeys())
+			for (IProperty<?> property : getBlock().getDefaultState().getProperties())
 			{
 				map.put(property.getName(), property);
 			}
@@ -106,13 +106,13 @@ public class BlockIDPredicate implements BlockPredicate
 		return cachedProperties;
 	}
 
-	public IBlockState getBlockState()
+	public BlockState getBlockState()
 	{
-		IBlockState state = getBlock().getDefaultState();
+		BlockState state = getBlock().getDefaultState();
 
 		for (PropertyObject object : getBlockProperties())
 		{
-			state = state.withProperty(object.property, UtilsJS.cast(object.value));
+			state = state.with(object.property, UtilsJS.cast(object.value));
 		}
 
 		return state;
@@ -126,7 +126,7 @@ public class BlockIDPredicate implements BlockPredicate
 			return false;
 		}
 
-		IBlockState state = b.getBlockState();
+		BlockState state = b.getBlockState();
 
 		if (state.getBlock() != getBlock())
 		{
@@ -140,7 +140,7 @@ public class BlockIDPredicate implements BlockPredicate
 
 		for (PropertyObject object : getBlockProperties())
 		{
-			if (!state.getValue(object.property).equals(object.value))
+			if (!state.get(object.property).equals(object.value))
 			{
 				return false;
 			}
@@ -155,7 +155,7 @@ public class BlockIDPredicate implements BlockPredicate
 
 		if (block != Blocks.AIR)
 		{
-			block.setHardness(hardness);
+			//block.setHardness(hardness);
 		}
 	}
 
@@ -165,7 +165,7 @@ public class BlockIDPredicate implements BlockPredicate
 
 		if (block != Blocks.AIR)
 		{
-			block.setResistance(resistance);
+			//FIXME: block.setResistance(resistance);
 		}
 	}
 
@@ -175,7 +175,7 @@ public class BlockIDPredicate implements BlockPredicate
 
 		if (block != Blocks.AIR)
 		{
-			block.setLightLevel(lightLevel);
+			//FIXME: block.setLightLevel(lightLevel);
 		}
 	}
 
@@ -187,11 +187,11 @@ public class BlockIDPredicate implements BlockPredicate
 		{
 			if (properties == null || properties.isEmpty())
 			{
-				block.setHarvestLevel(tool, level);
+				//FIXME: block.setHarvestLevel(tool, level);
 			}
 			else
 			{
-				block.setHarvestLevel(tool, level, getBlockState());
+				//FIXME: block.setHarvestLevel(tool, level, getBlockState());
 			}
 		}
 	}

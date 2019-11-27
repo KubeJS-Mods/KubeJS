@@ -1,11 +1,9 @@
 package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.event.EventsJS;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.IContainerListener;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
@@ -14,9 +12,9 @@ import net.minecraft.util.NonNullList;
  */
 public class InventoryListener implements IContainerListener
 {
-	public final EntityPlayerMP player;
+	public final ServerPlayerEntity player;
 
-	public InventoryListener(EntityPlayerMP p)
+	public InventoryListener(ServerPlayerEntity p)
 	{
 		player = p;
 	}
@@ -24,7 +22,7 @@ public class InventoryListener implements IContainerListener
 	@Override
 	public void sendAllContents(Container container, NonNullList<ItemStack> itemsList)
 	{
-		EventsJS.post(KubeJSEvents.PLAYER_INVENTORY_CHANGED, new InventoryChangedEventJS(player, ItemStack.EMPTY, -1));
+		new InventoryChangedEventJS(player, ItemStack.EMPTY, -1).post(KubeJSEvents.PLAYER_INVENTORY_CHANGED);
 	}
 
 	@Override
@@ -32,17 +30,12 @@ public class InventoryListener implements IContainerListener
 	{
 		if (!stack.isEmpty() && container.getSlot(index).inventory == player.inventory)
 		{
-			EventsJS.post(KubeJSEvents.PLAYER_INVENTORY_CHANGED, new InventoryChangedEventJS(player, stack, index));
+			new InventoryChangedEventJS(player, stack, index).post(KubeJSEvents.PLAYER_INVENTORY_CHANGED);
 		}
 	}
 
 	@Override
 	public void sendWindowProperty(Container container, int id, int value)
-	{
-	}
-
-	@Override
-	public void sendAllWindowProperties(Container container, IInventory inventory)
 	{
 	}
 }

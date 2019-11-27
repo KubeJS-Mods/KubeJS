@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.documentation;
 
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.api.distmarker.Dist;
 
 /**
  * @author LatvianModder
@@ -10,8 +10,9 @@ public class DocumentedEvent implements Comparable<DocumentedEvent>
 	public final String eventID;
 	public final Class eventClass;
 	public String doubleParam = "";
-	public Side sideOnly = null;
+	public Dist sideOnly = null;
 	public boolean canCancel = false;
+	public boolean startup = false;
 
 	public DocumentedEvent(String s, Class c)
 	{
@@ -31,7 +32,7 @@ public class DocumentedEvent implements Comparable<DocumentedEvent>
 		return this;
 	}
 
-	public DocumentedEvent sideOnly(Side s)
+	public DocumentedEvent sideOnly(Dist s)
 	{
 		sideOnly = s;
 		return this;
@@ -39,12 +40,18 @@ public class DocumentedEvent implements Comparable<DocumentedEvent>
 
 	public DocumentedEvent clientOnly()
 	{
-		return sideOnly(Side.CLIENT);
+		return sideOnly(Dist.CLIENT);
 	}
 
 	public DocumentedEvent serverOnly()
 	{
-		return sideOnly(Side.SERVER);
+		return sideOnly(Dist.DEDICATED_SERVER);
+	}
+
+	public DocumentedEvent startup()
+	{
+		startup = true;
+		return this;
 	}
 
 	@Override

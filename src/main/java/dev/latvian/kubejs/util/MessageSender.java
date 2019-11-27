@@ -4,7 +4,6 @@ import dev.latvian.kubejs.documentation.Info;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.text.TextString;
 
 /**
  * @author LatvianModder
@@ -12,11 +11,11 @@ import dev.latvian.kubejs.text.TextString;
 @Info("Anything that can send messages or run commands, usually player or server")
 public interface MessageSender
 {
-	String getName();
+	Text getName();
 
 	default Text getDisplayName()
 	{
-		return new TextString(getName());
+		return getName();
 	}
 
 	@Info("Tell message in chat")

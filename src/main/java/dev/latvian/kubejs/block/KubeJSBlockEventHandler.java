@@ -1,69 +1,76 @@
 package dev.latvian.kubejs.block;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.script.ScriptType;
 import net.minecraft.block.Block;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 /**
  * @author LatvianModder
  */
-@Mod.EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSBlockEventHandler
 {
-	@SubscribeEvent
-	public static void registry(RegistryEvent.Register<Block> event)
+	public void init()
 	{
-		EventsJS.post(KubeJSEvents.BLOCK_REGISTRY, new BlockRegistryEventJS(event.getRegistry()));
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registry);
+		MinecraftForge.EVENT_BUS.addListener(this::rightClick);
+		MinecraftForge.EVENT_BUS.addListener(this::leftClick);
+		MinecraftForge.EVENT_BUS.addListener(this::blockBreak);
+		MinecraftForge.EVENT_BUS.addListener(this::blockPlace);
+		MinecraftForge.EVENT_BUS.addListener(this::blockDrops);
 	}
 
-	@SubscribeEvent
-	public static void rightClick(PlayerInteractEvent.RightClickBlock event)
+	private void registry(RegistryEvent.Register<Block> event)
 	{
-		if (EventsJS.post(KubeJSEvents.BLOCK_RIGHT_CLICK, new BlockRightClickEventJS(event)))
+		new BlockRegistryEventJS(event.getRegistry()).post(ScriptType.STARTUP, KubeJSEvents.BLOCK_REGISTRY);
+	}
+
+	private void rightClick(PlayerInteractEvent.RightClickBlock event)
+	{
+		if (new BlockRightClickEventJS(event).post(KubeJSEvents.BLOCK_RIGHT_CLICK))
 		{
 			event.setCanceled(true);
 		}
 	}
 
-	@SubscribeEvent
-	public static void leftClick(PlayerInteractEvent.LeftClickBlock event)
+	private void leftClick(PlayerInteractEvent.LeftClickBlock event)
 	{
-		if (EventsJS.post(KubeJSEvents.BLOCK_LEFT_CLICK, new BlockLeftClickEventJS(event)))
+		if (new BlockLeftClickEventJS(event).post(KubeJSEvents.BLOCK_LEFT_CLICK))
 		{
 			event.setCanceled(true);
 		}
 	}
 
-	@SubscribeEvent
-	public static void blockBreak(BlockEvent.BreakEvent event)
+	private void blockBreak(BlockEvent.BreakEvent event)
 	{
-		if (EventsJS.post(KubeJSEvents.BLOCK_BREAK, new BlockBreakEventJS(event)))
+		if (new BlockBreakEventJS(event).post(KubeJSEvents.BLOCK_BREAK))
 		{
 			event.setCanceled(true);
 		}
 	}
 
-	@SubscribeEvent
-	public static void blockPlace(BlockEvent.PlaceEvent event)
+	private void blockPlace(BlockEvent.EntityPlaceEvent event)
 	{
-		if (EventsJS.post(KubeJSEvents.BLOCK_PLACE, new BlockPlaceEventJS(event)))
+		if (new BlockPlaceEventJS(event).post(KubeJSEvents.BLOCK_PLACE))
 		{
 			event.setCanceled(true);
 		}
 	}
 
-	@SubscribeEvent
-	public static void blockDrops(BlockEvent.HarvestDropsEvent event)
+	private void blockDrops(BlockEvent.HarvestDropsEvent event)
 	{
+		if (event.getWorld().isRemote())
+		{
+			return;
+		}
+
 		BlockDropsEventJS e = new BlockDropsEventJS(event);
-		EventsJS.post(KubeJSEvents.BLOCK_DROPS, e);
+		e.post(KubeJSEvents.BLOCK_DROPS);
 
 		if (e.dropList != null)
 		{

@@ -15,10 +15,10 @@ import dev.latvian.kubejs.util.WithAttachedData;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import dev.latvian.kubejs.world.WorldJS;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Container;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.util.FakePlayer;
@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS implements WithAttachedData
+public abstract class PlayerJS<E extends PlayerEntity> extends LivingEntityJS implements WithAttachedData
 {
 	@MinecraftClass
 	public final E minecraftPlayer;
@@ -63,7 +63,7 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 
 	public String toString()
 	{
-		return getName();
+		return minecraftPlayer.getGameProfile().getName();
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 	public void sendInventoryUpdate()
 	{
 		minecraftPlayer.inventory.markDirty();
-		minecraftPlayer.inventoryContainer.detectAndSendChanges();
+		minecraftPlayer.container.detectAndSendChanges();
 	}
 
 	public void give(@P("item") @T(ItemStackJS.class) Object item)
@@ -130,9 +130,9 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 	{
 		super.setPositionAndRotation(x, y, z, yaw, pitch);
 
-		if (minecraftPlayer instanceof EntityPlayerMP)
+		if (minecraftPlayer instanceof ServerPlayerEntity)
 		{
-			((EntityPlayerMP) minecraftPlayer).connection.setPlayerLocation(x, y, z, yaw, pitch);
+			((ServerPlayerEntity) minecraftPlayer).connection.setPlayerLocation(x, y, z, yaw, pitch);
 		}
 	}
 
@@ -144,7 +144,7 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 
 	public boolean isCreativeMode()
 	{
-		return minecraftPlayer.capabilities.isCreativeMode;
+		return minecraftPlayer.isCreative();
 	}
 
 	public boolean isSpectator()
@@ -162,21 +162,21 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 	@Override
 	public NBTCompoundJS getNbt()
 	{
-		NBTTagCompound nbt = minecraftEntity.getEntityData();
-		NBTTagCompound nbt1 = (NBTTagCompound) nbt.getTag(EntityPlayer.PERSISTED_NBT_TAG);
+		CompoundNBT nbt = minecraftEntity.getPersistentData();
+		CompoundNBT nbt1 = (CompoundNBT) nbt.get(PlayerEntity.PERSISTED_NBT_TAG);
 
 		if (nbt1 == null)
 		{
-			nbt1 = new NBTTagCompound();
-			nbt.setTag(EntityPlayer.PERSISTED_NBT_TAG, nbt1);
+			nbt1 = new CompoundNBT();
+			nbt.put(PlayerEntity.PERSISTED_NBT_TAG, nbt1);
 		}
 
-		NBTTagCompound nbt2 = (NBTTagCompound) nbt1.getTag("KubeJS");
+		CompoundNBT nbt2 = (CompoundNBT) nbt1.get("KubeJS");
 
 		if (nbt2 == null)
 		{
-			nbt2 = new NBTTagCompound();
-			nbt1.setTag("KubeJS", nbt2);
+			nbt2 = new CompoundNBT();
+			nbt1.put("KubeJS", nbt2);
 		}
 
 		return NBTBaseJS.of(nbt2).asCompound();
@@ -185,19 +185,19 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 	@Override
 	public void setNbt(@P("nbt") NBTCompoundJS nbt)
 	{
-		NBTTagCompound n = nbt.createNBT();
+		CompoundNBT n = nbt.createNBT();
 
 		if (n != null)
 		{
-			NBTTagCompound n1 = minecraftEntity.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
-			n1.setTag("KubeJS", n);
-			minecraftEntity.getEntityData().setTag(EntityPlayer.PERSISTED_NBT_TAG, n1);
+			CompoundNBT n1 = minecraftEntity.getPersistentData().getCompound(PlayerEntity.PERSISTED_NBT_TAG);
+			n1.put("KubeJS", n);
+			minecraftEntity.getPersistentData().put(PlayerEntity.PERSISTED_NBT_TAG, n1);
 		}
 	}
 
 	public void sendData(@P("channel") String channel, @Nullable @P("data") Object data)
 	{
-		KubeJS.PROXY.sendData(minecraftPlayer, channel, NBTBaseJS.of(data).asCompound().createNBT());
+		KubeJS.instance.proxy.sendData(minecraftPlayer, channel, NBTBaseJS.of(data).asCompound().createNBT());
 	}
 
 	public void addFood(@P("food") int f, @P("modifier") float m)
@@ -222,7 +222,7 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 
 	public void addXP(@P("xp") int xp)
 	{
-		minecraftPlayer.addExperience(xp);
+		//FIXME: minecraftPlayer.addExperience(xp);
 	}
 
 	public void addXPLevels(@P("levels") int l)
@@ -232,10 +232,10 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 
 	public void setXp(@P("xp") int xp)
 	{
-		minecraftPlayer.experienceTotal = 0;
-		minecraftPlayer.experience = 0F;
-		minecraftPlayer.experienceLevel = 0;
-		minecraftPlayer.addExperience(xp);
+		//minecraftPlayer.experienceTotal = 0;
+		//minecraftPlayer.experience = 0F;
+		//minecraftPlayer.experienceLevel = 0;
+		//FIXME: minecraftPlayer.addExperience(xp);
 	}
 
 	public int getXp()
@@ -270,9 +270,10 @@ public abstract class PlayerJS<E extends EntityPlayer> extends LivingEntityJS im
 		if (minecraftPlayer.isElytraFlying())
 		{
 			Vec3d v = minecraftPlayer.getLookVec();
-			minecraftPlayer.motionX += v.x * 0.1D + (v.x * 1.5D - minecraftPlayer.motionX) * 0.5D;
-			minecraftPlayer.motionY += v.y * 0.1D + (v.y * 1.5D - minecraftPlayer.motionY) * 0.5D;
-			minecraftPlayer.motionZ += v.z * 0.1D + (v.z * 1.5D - minecraftPlayer.motionZ) * 0.5D;
+			double d0 = 1.5D;
+			double d1 = 0.1D;
+			Vec3d m = minecraftPlayer.getMotion();
+			minecraftPlayer.setMotion(m.add(v.x * 0.1D + (v.x * 1.5D - m.x) * 0.5D, v.y * 0.1D + (v.y * 1.5D - m.y) * 0.5D, v.z * 0.1D + (v.z * 1.5D - m.z) * 0.5D));
 		}
 	}
 

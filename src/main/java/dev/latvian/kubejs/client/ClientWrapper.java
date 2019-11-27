@@ -3,7 +3,7 @@ package dev.latvian.kubejs.client;
 import dev.latvian.kubejs.player.ClientPlayerJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 
 import javax.annotation.Nullable;
 
@@ -14,7 +14,7 @@ public class ClientWrapper
 {
 	public Minecraft getMinecraft()
 	{
-		return Minecraft.getMinecraft();
+		return Minecraft.getInstance();
 	}
 
 	public ClientWorldJS getWorld()
@@ -28,12 +28,12 @@ public class ClientWrapper
 	}
 
 	@Nullable
-	public GuiScreen getCurrentGui()
+	public Screen getCurrentGui()
 	{
 		return getMinecraft().currentScreen;
 	}
 
-	public void setCurrentGui(GuiScreen gui)
+	public void setCurrentGui(Screen gui)
 	{
 		getMinecraft().displayGuiScreen(gui);
 	}

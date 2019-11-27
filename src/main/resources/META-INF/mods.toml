@@ -1,0 +1,54 @@
+modLoader="javafml"
+loaderVersion="[28,)"
+issueTrackerURL="https://github.com/KubeJS-Mods/KubeJS/issues"
+
+[[mods]]
+modId="kubejs"
+version="${file.jarVersion}"
+displayName="KubeJS"
+authors="LatvianModder"
+description='''
+Allows you to tweak and customize modpack with JavaScript
+'''
+
+[[dependencies.kubejs]]
+    modId="forge"
+    mandatory=true
+    versionRange="[28,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.kubejs]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.14.4]"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.kubejs]]
+    modId="aurora"
+    mandatory=false
+    versionRange="[1.0.0,)"
+    ordering="BEFORE"
+    side="BOTH"
+
+[[dependencies.kubejs]]
+    modId="gamestages"
+    mandatory=false
+    versionRange="[1.0.0,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.kubejs]]
+    modId="jei"
+    mandatory=false
+    versionRange="[1.0.0,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.kubejs]]
+    modId="packmode"
+    mandatory=false
+    versionRange="[1.0.0,)"
+    ordering="AFTER"
+    side="BOTH"

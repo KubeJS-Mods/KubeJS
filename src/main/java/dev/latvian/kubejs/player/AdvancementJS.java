@@ -2,8 +2,8 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
-import dev.latvian.kubejs.util.ID;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashSet;
@@ -39,9 +39,9 @@ public class AdvancementJS
 		return advancement.getId().toString();
 	}
 
-	public ID id()
+	public ResourceLocation id()
 	{
-		return ID.of(advancement.getId());
+		return advancement.getId();
 	}
 
 	@Nullable

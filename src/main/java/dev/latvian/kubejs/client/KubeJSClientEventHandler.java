@@ -1,97 +1,77 @@
 package dev.latvian.kubejs.client;
 
-import dev.latvian.kubejs.KubeJS;
+import com.mojang.blaze3d.platform.GlStateManager;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.event.EventsJS;
-import dev.latvian.kubejs.item.BlockItemJS;
-import dev.latvian.kubejs.item.ItemJS;
 import dev.latvian.kubejs.script.BindingsEvent;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.FieldJS;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.item.Item;
 import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * @author LatvianModder
  */
-@Mod.EventBusSubscriber(modid = KubeJS.MOD_ID, value = Side.CLIENT)
 public class KubeJSClientEventHandler
 {
-	private static final FieldJS buttonList = UtilsJS.getField(GuiScreen.class, "buttonList", "field_146292_n");
+	private static FieldJS<List<Widget>> buttons;
 
-	@SubscribeEvent
-	public static void onBindings(BindingsEvent event)
+	public void init()
+	{
+		MinecraftForge.EVENT_BUS.addListener(this::bindings);
+		MinecraftForge.EVENT_BUS.addListener(this::debugInfo);
+		MinecraftForge.EVENT_BUS.addListener(this::clientTick);
+		MinecraftForge.EVENT_BUS.addListener(this::inGameScreenDraw);
+		MinecraftForge.EVENT_BUS.addListener(this::guiScreenDraw);
+	}
+
+	private void bindings(BindingsEvent event)
 	{
 		event.add("client", new ClientWrapper());
 	}
 
-	@SubscribeEvent
-	public static void registerModels(ModelRegistryEvent event)
+	private void debugInfo(RenderGameOverlayEvent.Text event)
 	{
-		for (Item item : Item.REGISTRY)
-		{
-			if (item instanceof ItemJS)
-			{
-				ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(((ItemJS) item).properties.model));
-			}
-			else if (item instanceof BlockItemJS)
-			{
-				ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(((BlockItemJS) item).properties.model));
-			}
-		}
-	}
-
-	@SubscribeEvent
-	public static void debugInfo(RenderGameOverlayEvent.Text event)
-	{
-		if (Minecraft.getMinecraft().player != null)
+		if (Minecraft.getInstance().player != null)
 		{
 			ClientWorldJS.get();
-			EventsJS.post(KubeJSEvents.CLIENT_DEBUG_INFO, new DebugInfoEventJS(event));
+			new DebugInfoEventJS(event).post(ScriptType.CLIENT, KubeJSEvents.CLIENT_DEBUG_INFO);
 		}
 	}
 
-	@SubscribeEvent
-	public static void clientTick(TickEvent.ClientTickEvent event)
+	private void clientTick(TickEvent.ClientTickEvent event)
 	{
-		if (Minecraft.getMinecraft().player != null)
+		if (Minecraft.getInstance().player != null)
 		{
-			EventsJS.post(KubeJSEvents.CLIENT_TICK, new ClientTickEventJS(ClientWorldJS.get().clientPlayerData.getPlayer()));
+			new ClientTickEventJS(ClientWorldJS.get().clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_TICK);
 		}
 	}
 
-	@SubscribeEvent
-	public static void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event)
+	/*
+	private void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event)
 	{
 		ClientWorldJS.invalidate();
 		KubeJSClient.activeOverlays.clear();
 	}
+   */
 
-	private static int drawOverlay(Minecraft mc, int maxWidth, int x, int y, int p, Overlay o, boolean inv)
+	private int drawOverlay(Minecraft mc, int maxWidth, int x, int y, int p, Overlay o, boolean inv)
 	{
 		List<String> list = new ArrayList<>();
 		int l = 10;
@@ -120,7 +100,7 @@ public class KubeJSClientEventHandler
 		int g = (col >> 8) & 0xFF;
 		int b = col & 0xFF;
 
-		GlStateManager.disableTexture2D();
+		GlStateManager.disableTexture();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder buffer = tessellator.getBuffer();
 		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
@@ -145,7 +125,7 @@ public class KubeJSClientEventHandler
 		}
 
 		tessellator.draw();
-		GlStateManager.enableTexture2D();
+		GlStateManager.enableTexture();
 
 		for (int i = 0; i < list.size(); i++)
 		{
@@ -155,7 +135,7 @@ public class KubeJSClientEventHandler
 		return list.size() * l + p * 2 + (p - 2);
 	}
 
-	public static void addRectToBuffer(BufferBuilder buffer, int x, int y, int w, int h, int r, int g, int b, int a)
+	private void addRectToBuffer(BufferBuilder buffer, int x, int y, int w, int h, int r, int g, int b, int a)
 	{
 		buffer.pos(x, y + h, 0D).color(r, g, b, a).endVertex();
 		buffer.pos(x + w, y + h, 0D).color(r, g, b, a).endVertex();
@@ -163,15 +143,14 @@ public class KubeJSClientEventHandler
 		buffer.pos(x, y, 0D).color(r, g, b, a).endVertex();
 	}
 
-	@SubscribeEvent
-	public static void onInGameScreenDraw(RenderGameOverlayEvent.Post event)
+	private void inGameScreenDraw(RenderGameOverlayEvent.Post event)
 	{
 		if (KubeJSClient.activeOverlays.isEmpty() || event.getType() != RenderGameOverlayEvent.ElementType.ALL)
 		{
 			return;
 		}
 
-		Minecraft mc = Minecraft.getMinecraft();
+		Minecraft mc = Minecraft.getInstance();
 
 		if (mc.gameSettings.showDebugInfo || mc.currentScreen != null)
 		{
@@ -179,11 +158,11 @@ public class KubeJSClientEventHandler
 		}
 
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(0, 0, 800D);
+		GlStateManager.translatef(0, 0, 800);
 		GlStateManager.enableBlend();
 		GlStateManager.disableLighting();
 
-		int maxWidth = event.getResolution().getScaledWidth() / 4;
+		int maxWidth = mc.mainWindow.getScaledWidth() / 4;
 		int p = 4;
 		int spx = p;
 		int spy = p;
@@ -196,29 +175,31 @@ public class KubeJSClientEventHandler
 		GlStateManager.popMatrix();
 	}
 
-	@SubscribeEvent
-	public static void onGuiScreenDraw(GuiScreenEvent.DrawScreenEvent.Post event)
+	private void guiScreenDraw(GuiScreenEvent.DrawScreenEvent.Post event)
 	{
 		if (KubeJSClient.activeOverlays.isEmpty())
 		{
 			return;
 		}
 
-		Minecraft mc = Minecraft.getMinecraft();
+		Minecraft mc = Minecraft.getInstance();
 
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(0, 0, 800D);
+		GlStateManager.translatef(0, 0, 800);
 		GlStateManager.enableBlend();
 		GlStateManager.disableLighting();
 
-		int maxWidth = new ScaledResolution(mc).getScaledWidth() / 4;
+		int maxWidth = mc.mainWindow.getScaledWidth() / 4;
 		int p = 4;
 		int spx = p;
 		int spy = p;
 
-		List<GuiButton> list = buttonList.get(event.getGui());
+		if (buttons == null)
+		{
+			buttons = UtilsJS.getField(Screen.class, "buttons");
+		}
 
-		while (isOver(list, spx, spy))
+		while (isOver(buttons.get(event.getGui()).orElse(Collections.emptyList()), spx, spy))
 		{
 			spy += 16;
 		}
@@ -234,11 +215,11 @@ public class KubeJSClientEventHandler
 		GlStateManager.popMatrix();
 	}
 
-	private static boolean isOver(List<GuiButton> list, int x, int y)
+	private boolean isOver(List<Widget> list, int x, int y)
 	{
-		for (GuiButton button : list)
+		for (Widget w : list)
 		{
-			if (button.enabled && button.visible && x >= button.x && y >= button.y && x < button.x + button.width && y < button.y + button.height)
+			if (w.visible && x >= w.x && y >= w.y && x < w.x + w.getWidth() && y < w.y + w.getHeight())
 			{
 				return true;
 			}

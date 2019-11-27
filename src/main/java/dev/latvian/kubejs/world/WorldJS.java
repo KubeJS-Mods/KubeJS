@@ -11,23 +11,25 @@ import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.GameRulesJS;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.AttachedData;
-import dev.latvian.kubejs.util.ID;
+import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WithAttachedData;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.EntitySelector;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.effect.EntityLightningBolt;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityItemFrame;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.LightningBoltEntity;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.item.ItemFrameEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -47,6 +49,8 @@ public abstract class WorldJS implements WithAttachedData
 	{
 		minecraftWorld = w;
 	}
+
+	public abstract ScriptType getSide();
 
 	@Override
 	public AttachedData getData()
@@ -77,32 +81,32 @@ public abstract class WorldJS implements WithAttachedData
 
 	public long getTime()
 	{
-		return minecraftWorld.getTotalWorldTime();
+		return minecraftWorld.getGameTime();
 	}
 
 	public long getLocalTime()
 	{
-		return minecraftWorld.getWorldTime();
+		return minecraftWorld.getDayTime();
 	}
 
 	public void setTime(long time)
 	{
-		minecraftWorld.setTotalWorldTime(time);
+		minecraftWorld.setGameTime(time);
 	}
 
 	public void setLocalTime(long time)
 	{
-		minecraftWorld.setWorldTime(time);
+		minecraftWorld.setDayTime(time);
 	}
 
-	public int getDimension()
+	public DimensionType getDimension()
 	{
-		return minecraftWorld.provider.getDimension();
+		return minecraftWorld.getDimension().getType();
 	}
 
 	public boolean isOverworld()
 	{
-		return getDimension() == 0;
+		return getDimension() == DimensionType.OVERWORLD;
 	}
 
 	public boolean isDaytime()
@@ -141,7 +145,7 @@ public abstract class WorldJS implements WithAttachedData
 	}
 
 	@Ignore
-	public abstract PlayerDataJS getPlayerData(EntityPlayer player);
+	public abstract PlayerDataJS getPlayerData(PlayerEntity player);
 
 	@Nullable
 	public EntityJS getEntity(@Nullable Entity e)
@@ -150,21 +154,21 @@ public abstract class WorldJS implements WithAttachedData
 		{
 			return null;
 		}
-		else if (e instanceof EntityPlayer)
+		else if (e instanceof PlayerEntity)
 		{
-			return getPlayerData((EntityPlayer) e).getPlayer();
+			return getPlayerData((PlayerEntity) e).getPlayer();
 		}
-		else if (e instanceof EntityLivingBase)
+		else if (e instanceof LivingEntity)
 		{
-			return new LivingEntityJS(this, (EntityLivingBase) e);
+			return new LivingEntityJS(this, (LivingEntity) e);
 		}
-		else if (e instanceof EntityItem)
+		else if (e instanceof ItemEntity)
 		{
-			return new ItemEntityJS(this, (EntityItem) e);
+			return new ItemEntityJS(this, (ItemEntity) e);
 		}
-		else if (e instanceof EntityItemFrame)
+		else if (e instanceof ItemFrameEntity)
 		{
-			return new ItemFrameEntityJS(this, (EntityItemFrame) e);
+			return new ItemFrameEntityJS(this, (ItemFrameEntity) e);
 		}
 
 		return new EntityJS(this, e);
@@ -191,24 +195,12 @@ public abstract class WorldJS implements WithAttachedData
 
 	public EntityArrayList getPlayers()
 	{
-		return createEntityList(minecraftWorld.playerEntities);
+		return createEntityList(minecraftWorld.getPlayers());
 	}
 
 	public EntityArrayList getEntities()
 	{
-		return createEntityList(minecraftWorld.loadedEntityList);
-	}
-
-	public EntityArrayList getEntities(@P("filter") String filter)
-	{
-		try
-		{
-			return createEntityList(EntitySelector.matchEntities(new WorldCommandSender(this), filter, Entity.class));
-		}
-		catch (CommandException e)
-		{
-			return new EntityArrayList(this, 0);
-		}
+		return new EntityArrayList(this, 0);
 	}
 
 	public ExplosionJS createExplosion(@P("x") double x, @P("y") double y, @P("z") double z)
@@ -219,16 +211,26 @@ public abstract class WorldJS implements WithAttachedData
 	@Nullable
 	public EntityJS createEntity(Object id)
 	{
-		return getEntity(EntityList.createEntityByIDFromName(ID.of(id).mc(), minecraftWorld));
+		EntityType type = ForgeRegistries.ENTITIES.getValue(UtilsJS.getID(id));
+
+		if (type == null)
+		{
+			return null;
+		}
+
+		return getEntity(type.create(minecraftWorld));
 	}
 
 	public void spawnLightning(@P("x") double x, @P("y") double y, @P("z") double z, @P("effectOnly") boolean effectOnly)
 	{
-		minecraftWorld.addWeatherEffect(new EntityLightningBolt(minecraftWorld, x, y, z, effectOnly));
+		if (minecraftWorld instanceof ServerWorld)
+		{
+			((ServerWorld) minecraftWorld).addLightningBolt(new LightningBoltEntity(minecraftWorld, x, y, z, effectOnly));
+		}
 	}
 
 	public void spawnFireworks(@P("x") double x, @P("y") double y, @P("z") double z, @P("properties") FireworksJS f)
 	{
-		minecraftWorld.spawnEntity(f.createFireworkRocket(minecraftWorld, x, y, z));
+		minecraftWorld.addEntity(f.createFireworkRocket(minecraftWorld, x, y, z));
 	}
 }

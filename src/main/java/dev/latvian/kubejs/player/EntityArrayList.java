@@ -6,15 +6,16 @@ import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
-import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.MessageSender;
+import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -34,9 +35,9 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		world = w;
 	}
 
-	public EntityArrayList(WorldJS w, Collection<? extends Entity> c)
+	public EntityArrayList(WorldJS w, Iterable<? extends Entity> c)
 	{
-		this(w, c.size());
+		this(w, c instanceof Collection ? ((Collection) c).size() : 10);
 
 		for (Entity entity : c)
 		{
@@ -50,9 +51,9 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 	}
 
 	@Override
-	public String getName()
+	public Text getName()
 	{
-		return toString();
+		return new TextString("EntityList");
 	}
 
 	@Override
@@ -79,9 +80,9 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 		for (EntityJS entity : this)
 		{
-			if (entity.minecraftEntity instanceof EntityPlayerMP)
+			if (entity.minecraftEntity instanceof ServerPlayerEntity)
 			{
-				((EntityPlayerMP) entity.minecraftEntity).sendStatusMessage(component, true);
+				((ServerPlayerEntity) entity.minecraftEntity).sendStatusMessage(component, true);
 			}
 		}
 	}
@@ -109,7 +110,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 	public void playSound(@P("id") Object id, @P("volume") float volume, @P("pitch") float pitch)
 	{
-		SoundEvent event = id instanceof SoundEvent ? (SoundEvent) id : SoundEvent.REGISTRY.getObject(ID.of(id).mc());
+		SoundEvent event = id instanceof SoundEvent ? (SoundEvent) id : ForgeRegistries.SOUND_EVENTS.getValue(UtilsJS.getID(id));
 
 		if (event != null)
 		{
@@ -147,13 +148,13 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 	public void sendData(@P("channel") String channel, @Nullable @P("data") Object data)
 	{
-		NBTTagCompound nbt = NBTBaseJS.of(data).asCompound().createNBT();
+		CompoundNBT nbt = NBTBaseJS.of(data).asCompound().createNBT();
 
 		for (EntityJS entity : this)
 		{
 			if (entity instanceof PlayerJS)
 			{
-				KubeJS.PROXY.sendData(((PlayerJS) entity).minecraftPlayer, channel, nbt);
+				KubeJS.instance.proxy.sendData(((PlayerJS) entity).minecraftPlayer, channel, nbt);
 			}
 		}
 	}

@@ -4,27 +4,27 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.item.ingredient.IgnoreNBTIngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.kubejs.item.ingredient.OreDictionaryIngredientJS;
+import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextTranslate;
-import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import dev.latvian.kubejs.util.nbt.NBTListJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import jdk.nashorn.api.scripting.JSObject;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -78,7 +78,7 @@ public abstract class ItemStackJS implements IngredientJS
 
 				if (js.getMember("data") instanceof Number)
 				{
-					stack.data(((Number) js.getMember("data")).intValue());
+					stack.damage(((Number) js.getMember("data")).intValue());
 				}
 
 				if (js.hasMember("nbt"))
@@ -88,9 +88,9 @@ public abstract class ItemStackJS implements IngredientJS
 
 				return stack;
 			}
-			else if (js.getMember("ore") instanceof CharSequence)
+			else if (js.getMember("tag") instanceof CharSequence)
 			{
-				ItemStackJS stack = new OreDictionaryIngredientJS(js.getMember("ore").toString()).getFirst();
+				ItemStackJS stack = new TagIngredientJS(new ResourceLocation(js.getMember("tag").toString())).getFirst();
 
 				if (js.hasMember("count"))
 				{
@@ -110,9 +110,9 @@ public abstract class ItemStackJS implements IngredientJS
 
 		String[] s = s0.split("\\s", 4);
 
-		if (s[0].startsWith("ore:"))
+		if (s[0].startsWith("tag:"))
 		{
-			return new OreDictionaryIngredientJS(s[0].substring(4)).getFirst().count(s.length >= 2 ? UtilsJS.parseInt(s[1], 1) : 1);
+			return new TagIngredientJS(new ResourceLocation(s[0].substring(4))).getFirst().count(s.length >= 2 ? UtilsJS.parseInt(s[1], 1) : 1);
 		}
 
 		String ids = KubeJS.appendModId(s[0]);
@@ -125,7 +125,7 @@ public abstract class ItemStackJS implements IngredientJS
 
 		if (s.length >= 3)
 		{
-			stack.data(Integer.parseInt(s[2]));
+			stack.damage(Integer.parseInt(s[2]));
 		}
 
 		if (s.length >= 4)
@@ -146,9 +146,9 @@ public abstract class ItemStackJS implements IngredientJS
 		LinkedHashSet<ItemStackJS> set = new LinkedHashSet<>();
 		NonNullList<ItemStack> stackList = NonNullList.create();
 
-		for (Item item : Item.REGISTRY)
+		for (Item item : ForgeRegistries.ITEMS)
 		{
-			item.getSubItems(CreativeTabs.SEARCH, stackList);
+			item.fillItemGroup(ItemGroup.SEARCH, stackList);
 		}
 
 		for (ItemStack stack : stackList)
@@ -168,13 +168,13 @@ public abstract class ItemStackJS implements IngredientJS
 		cachedItemList = null;
 	}
 
-	public static List<ID> getTypeList()
+	public static List<ResourceLocation> getTypeList()
 	{
-		List<ID> list = new ArrayList<>();
+		List<ResourceLocation> list = new ArrayList<>();
 
-		for (Item item : Item.REGISTRY)
+		for (Item item : ForgeRegistries.ITEMS)
 		{
-			list.add(ID.of(item.getRegistryName()));
+			list.add(item.getRegistryName());
 		}
 
 		return list;
@@ -185,9 +185,9 @@ public abstract class ItemStackJS implements IngredientJS
 	@MinecraftClass
 	public abstract ItemStack getItemStack();
 
-	public ID getId()
+	public ResourceLocation getId()
 	{
-		return ID.of(getItem().getRegistryName());
+		return getItem().getRegistryName();
 	}
 
 	public abstract ItemStackJS getCopy();
@@ -212,22 +212,17 @@ public abstract class ItemStackJS implements IngredientJS
 
 	public boolean isBlock()
 	{
-		return getItem() instanceof ItemBlock;
+		return getItem() instanceof BlockItem;
 	}
 
-	public abstract void setData(int data);
+	public abstract void setDamage(int damage);
 
-	public abstract int getData();
+	public abstract int getDamage();
 
-	public final ItemStackJS data(int data)
+	public final ItemStackJS damage(int damage)
 	{
-		setData(data);
+		setDamage(damage);
 		return this;
-	}
-
-	public final ItemStackJS wildcardData()
-	{
-		return data(OreDictionary.WILDCARD_VALUE);
 	}
 
 	public abstract void setNbt(Object nbt);
@@ -288,15 +283,10 @@ public abstract class ItemStackJS implements IngredientJS
 		return this;
 	}
 
-	public boolean hasSubItems()
-	{
-		return getItem().getHasSubtypes();
-	}
-
 	public String toString()
 	{
 		boolean hasCount = getCount() > 1;
-		boolean hasSubtype = getItem().getHasSubtypes();
+		boolean hasSubtype = getItem().isDamageable() && getDamage() > 0;
 		boolean hasNBT = !getNbt().isNull();
 
 		if (hasCount || hasSubtype || hasNBT)
@@ -315,7 +305,7 @@ public abstract class ItemStackJS implements IngredientJS
 			if (hasSubtype)
 			{
 				builder.append('/');
-				builder.append(getData());
+				builder.append(getDamage());
 			}
 
 			if (hasNBT)
@@ -336,12 +326,7 @@ public abstract class ItemStackJS implements IngredientJS
 	{
 		if (stack.getCount() >= getCount() && areItemsEqual(stack))
 		{
-			int d = getData();
-
-			if (d == OreDictionary.WILDCARD_VALUE || d == stack.getData())
-			{
-				return Objects.equals(getNbt(), stack.getNbt());
-			}
+			return Objects.equals(getNbt(), stack.getNbt());
 		}
 
 		return false;
@@ -352,16 +337,11 @@ public abstract class ItemStackJS implements IngredientJS
 	{
 		if (stack.getCount() >= getCount())
 		{
-			int d = getData();
-
-			if (d == OreDictionary.WILDCARD_VALUE || d == stack.getMetadata())
+			if (areItemsEqual(stack))
 			{
-				if (areItemsEqual(stack))
-				{
-					NBTCompoundJS nbt = getNbt();
-					NBTTagCompound nbt1 = stack.getTagCompound();
-					return nbt.isNull() == (nbt1 == null) && (nbt1 == null || Objects.equals(nbt1, nbt.createNBT()));
-				}
+				NBTCompoundJS nbt = getNbt();
+				CompoundNBT nbt1 = stack.getTag();
+				return nbt.isNull() == (nbt1 == null) && (nbt1 == null || Objects.equals(nbt1, nbt.createNBT()));
 			}
 		}
 
@@ -371,40 +351,19 @@ public abstract class ItemStackJS implements IngredientJS
 	@Override
 	public Set<ItemStackJS> getStacks()
 	{
-		if (getData() == OreDictionary.WILDCARD_VALUE)
-		{
-			Set<ItemStackJS> set = new LinkedHashSet<>();
-			NonNullList<ItemStack> list = NonNullList.create();
-			getItem().getSubItems(CreativeTabs.SEARCH, list);
-
-			for (ItemStack stack1 : list)
-			{
-				set.add(new BoundItemStackJS(stack1));
-			}
-
-			return set;
-		}
-
 		return Collections.singleton(this);
 	}
 
 	@Override
 	public ItemStackJS getFirst()
 	{
-		if (getData() == OreDictionary.WILDCARD_VALUE)
-		{
-			NonNullList<ItemStack> list = NonNullList.create();
-			getItem().getSubItems(CreativeTabs.SEARCH, list);
-			return list.isEmpty() ? EmptyItemStackJS.INSTANCE : new BoundItemStackJS(list.get(0)).count(getCount());
-		}
-
 		return getCopy();
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(getItem(), getData(), getNbt());
+		return Objects.hash(getItem(), getDamage(), getNbt());
 	}
 
 	@Override
@@ -417,7 +376,7 @@ public abstract class ItemStackJS implements IngredientJS
 			return false;
 		}
 
-		return getData() == s.getData() && areItemsEqual(s) && Objects.equals(getNbt(), s.getNbt());
+		return getDamage() == s.getDamage() && areItemsEqual(s) && Objects.equals(getNbt(), s.getNbt());
 	}
 
 	public boolean strongEquals(Object o)
@@ -429,12 +388,12 @@ public abstract class ItemStackJS implements IngredientJS
 			return false;
 		}
 
-		return getCount() == s.getCount() && getData() == s.getData() && areItemsEqual(s) && Objects.equals(getNbt(), s.getNbt());
+		return getCount() == s.getCount() && getDamage() == s.getDamage() && areItemsEqual(s) && Objects.equals(getNbt(), s.getNbt());
 	}
 
-	public Map<ID, Integer> getEnchantments()
+	public Map<ResourceLocation, Integer> getEnchantments()
 	{
-		Map<ID, Integer> map = new LinkedHashMap<>();
+		Map<ResourceLocation, Integer> map = new LinkedHashMap<>();
 
 		for (NBTBaseJS base : getNbt().get("ench", Constants.NBT.TAG_COMPOUND).asList())
 		{
@@ -447,7 +406,7 @@ public abstract class ItemStackJS implements IngredientJS
 
 				if (level > 0)
 				{
-					map.put(ID.of(enchantment.getRegistryName()), level);
+					map.put(enchantment.getRegistryName(), level);
 				}
 			}
 		}
@@ -455,24 +414,12 @@ public abstract class ItemStackJS implements IngredientJS
 		return map;
 	}
 
-	public void setEnchantments(Map<ID, Integer> map)
+	public void setEnchantments(Map<ResourceLocation, Integer> map)
 	{
 		NBTCompoundJS nbt = getNbt();
 		nbt.remove("ench");
 
-		Map<Integer, Integer> emap = new LinkedHashMap<>();
-
-		for (Map.Entry<ID, Integer> entry : map.entrySet())
-		{
-			Enchantment enchantment = Enchantment.REGISTRY.getObject(entry.getKey().mc());
-
-			if (enchantment != null && entry.getValue() > 0)
-			{
-				emap.put(Enchantment.getEnchantmentID(enchantment), entry.getValue());
-			}
-		}
-
-		if (!emap.isEmpty())
+		if (!map.isEmpty())
 		{
 			if (nbt.isNull())
 			{
@@ -481,10 +428,10 @@ public abstract class ItemStackJS implements IngredientJS
 
 			NBTListJS list = nbt.listOrNew("ench");
 
-			for (Map.Entry<Integer, Integer> entry : emap.entrySet())
+			for (Map.Entry<ResourceLocation, Integer> entry : map.entrySet())
 			{
 				NBTCompoundJS ench = new NBTCompoundJS();
-				ench.set("id", entry.getKey());
+				ench.set("id", entry.getKey().toString());
 				ench.set("lvl", entry.getValue());
 				list.add(ench);
 			}
@@ -495,17 +442,17 @@ public abstract class ItemStackJS implements IngredientJS
 
 	public int getEnchantment(Object id)
 	{
-		Enchantment enchantment = Enchantment.REGISTRY.getObject(ID.of(id).mc());
+		Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(UtilsJS.getID(id));
 
 		if (enchantment != null)
 		{
-			int enchantmentID = Enchantment.getEnchantmentID(enchantment);
+			String enchantmentID = enchantment.getName();
 
 			for (NBTBaseJS base : getNbt().get("ench", Constants.NBT.TAG_COMPOUND).asList())
 			{
 				NBTCompoundJS ench = base.asCompound();
 
-				if (enchantmentID == ench.get("id").asShort())
+				if (enchantmentID.equals(ench.get("id").asString()))
 				{
 					return ench.get("lvl").asShort();
 				}
@@ -517,11 +464,11 @@ public abstract class ItemStackJS implements IngredientJS
 
 	public ItemStackJS enchant(Map<Object, Integer> enchantments)
 	{
-		Map<ID, Integer> map = getEnchantments();
+		Map<ResourceLocation, Integer> map = getEnchantments();
 
 		for (Map.Entry<Object, Integer> entry : enchantments.entrySet())
 		{
-			map.put(ID.of(entry.getKey()), entry.getValue());
+			map.put(UtilsJS.getID(entry.getKey()), entry.getValue());
 		}
 
 		setEnchantments(map);
@@ -555,13 +502,13 @@ public abstract class ItemStackJS implements IngredientJS
 		return getItem() == stack.getItem();
 	}
 
-	public int getHarvestLevel(String tool, @Nullable PlayerJS player, @Nullable BlockContainerJS block)
+	public int getHarvestLevel(ToolType tool, @Nullable PlayerJS player, @Nullable BlockContainerJS block)
 	{
 		ItemStack stack = getItemStack();
 		return stack.getItem().getHarvestLevel(stack, tool, player == null ? null : player.minecraftPlayer, block == null ? null : block.getBlockState());
 	}
 
-	public int getHarvestLevel(String tool)
+	public int getHarvestLevel(ToolType tool)
 	{
 		return getHarvestLevel(tool, null, null);
 	}

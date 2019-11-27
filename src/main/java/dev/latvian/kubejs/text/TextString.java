@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 
 import javax.annotation.Nullable;
 
@@ -28,7 +28,7 @@ public class TextString extends Text
 	@Override
 	public ITextComponent rawComponent()
 	{
-		return new TextComponentString(string);
+		return new StringTextComponent(string);
 	}
 
 	@Override

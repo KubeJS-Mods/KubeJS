@@ -2,7 +2,7 @@ package dev.latvian.kubejs.documentation;
 
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.script.DataType;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.eventbus.api.Event;
 
 /**
  * @author LatvianModder

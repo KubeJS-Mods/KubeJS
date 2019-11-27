@@ -7,31 +7,18 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public class ScriptPack implements Comparable<ScriptPack>
+public class ScriptPack
 {
 	public final ScriptManager manager;
-	public final String id;
-	public final List<ScriptFile> files;
-	public final ScriptEngine engine;
-	public int order;
+	public final ScriptPackInfo info;
+	public final List<ScriptFile> scripts;
 
-	public ScriptPack(ScriptManager m, String i, ScriptEngine e)
+	public ScriptEngine engine;
+
+	public ScriptPack(ScriptManager m, ScriptPackInfo i)
 	{
 		manager = m;
-		id = i;
-		files = new ArrayList<>();
-		engine = e;
-		order = 0;
-	}
-
-	@Override
-	public int compareTo(ScriptPack o)
-	{
-		if (order != o.order)
-		{
-			return Integer.compare(order, o.order);
-		}
-
-		return id.compareToIgnoreCase(o.id);
+		info = i;
+		scripts = new ArrayList<>();
 	}
 }

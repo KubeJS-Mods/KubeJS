@@ -5,20 +5,17 @@ import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.WorldJS;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.common.ForgeHooks;
+import net.minecraft.util.Hand;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
@@ -26,9 +23,9 @@ import java.util.Map;
 public class LivingEntityJS extends EntityJS
 {
 	@MinecraftClass
-	public final EntityLivingBase minecraftLivingEntity;
+	public final LivingEntity minecraftLivingEntity;
 
-	public LivingEntityJS(WorldJS w, EntityLivingBase e)
+	public LivingEntityJS(WorldJS w, LivingEntity e)
 	{
 		super(w, e);
 		minecraftLivingEntity = e;
@@ -67,7 +64,7 @@ public class LivingEntityJS extends EntityJS
 
 	public void setMaxHealth(@P("hp") float hp)
 	{
-		minecraftLivingEntity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(hp);
+		minecraftLivingEntity.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(hp);
 	}
 
 	public boolean isUndead()
@@ -82,7 +79,7 @@ public class LivingEntityJS extends EntityJS
 
 	public boolean isSleeping()
 	{
-		return minecraftLivingEntity.isPlayerSleeping();
+		return minecraftLivingEntity.isSleeping();
 	}
 
 	public boolean isElytraFlying()
@@ -139,58 +136,58 @@ public class LivingEntityJS extends EntityJS
 		return getWorld().getLivingEntity(minecraftLivingEntity.getAttackingEntity());
 	}
 
-	public void swingArm(@P("hand") EnumHand hand)
+	public void swingArm(@P("hand") Hand hand)
 	{
 		minecraftLivingEntity.swingArm(hand);
 	}
 
-	public ItemStackJS getEquipment(@P("slot") EntityEquipmentSlot slot)
+	public ItemStackJS getEquipment(@P("slot") EquipmentSlotType slot)
 	{
 		return ItemStackJS.of(minecraftLivingEntity.getItemStackFromSlot(slot));
 	}
 
-	public void setEquipment(@P("slot") EntityEquipmentSlot slot, @P("item") @T(ItemStackJS.class) Object item)
+	public void setEquipment(@P("slot") EquipmentSlotType slot, @P("item") @T(ItemStackJS.class) Object item)
 	{
 		minecraftLivingEntity.setItemStackToSlot(slot, ItemStackJS.of(item).getItemStack());
 	}
 
-	public ItemStackJS getHeldItem(@P("hand") EnumHand hand)
+	public ItemStackJS getHeldItem(@P("hand") Hand hand)
 	{
 		return ItemStackJS.of(minecraftLivingEntity.getHeldItem(hand));
 	}
 
-	public void setHeldItem(@P("hand") EnumHand hand, @P("item") @T(ItemStackJS.class) Object item)
+	public void setHeldItem(@P("hand") Hand hand, @P("item") @T(ItemStackJS.class) Object item)
 	{
 		minecraftLivingEntity.setHeldItem(hand, ItemStackJS.of(item).getItemStack());
 	}
 
 	public ItemStackJS getMainHandItem()
 	{
-		return getHeldItem(EnumHand.MAIN_HAND);
+		return getHeldItem(Hand.MAIN_HAND);
 	}
 
 	public void setMainHandItem(@P("item") @T(ItemStackJS.class) Object item)
 	{
-		setHeldItem(EnumHand.MAIN_HAND, item);
+		setHeldItem(Hand.MAIN_HAND, item);
 	}
 
 	public ItemStackJS getOffHandItem()
 	{
-		return getHeldItem(EnumHand.OFF_HAND);
+		return getHeldItem(Hand.OFF_HAND);
 	}
 
 	public void setOffHandItem(@P("item") @T(ItemStackJS.class) Object item)
 	{
-		setHeldItem(EnumHand.OFF_HAND, item);
+		setHeldItem(Hand.OFF_HAND, item);
 	}
 
-	public void damageHeldItem(@P("hand") EnumHand hand, @P("amount") int amount)
+	public void damageHeldItem(@P("hand") Hand hand, @P("amount") int amount, @P("onBroken") Consumer<ItemStackJS> onBroken)
 	{
 		ItemStack stack = minecraftLivingEntity.getHeldItem(hand);
 
 		if (!stack.isEmpty())
 		{
-			stack.damageItem(amount, minecraftLivingEntity);
+			stack.damageItem(amount, minecraftLivingEntity, livingEntity -> onBroken.accept(ItemStackJS.of(stack)));
 
 			if (stack.isEmpty())
 			{
@@ -199,15 +196,20 @@ public class LivingEntityJS extends EntityJS
 		}
 	}
 
+	public void damageHeldItem(@P("hand") Hand hand, @P("amount") int amount)
+	{
+		damageHeldItem(hand, amount, stack -> {});
+	}
+
 	public void damageHeldItem()
 	{
-		damageHeldItem(EnumHand.MAIN_HAND, 1);
+		damageHeldItem(Hand.MAIN_HAND, 1);
 	}
 
 	public boolean isHoldingInAnyHand(@P("ingredient") @T(IngredientJS.class) Object ingredient)
 	{
 		IngredientJS i = IngredientJS.of(ingredient);
-		return i.testVanilla(minecraftLivingEntity.getHeldItem(EnumHand.MAIN_HAND)) || i.testVanilla(minecraftLivingEntity.getHeldItem(EnumHand.OFF_HAND));
+		return i.testVanilla(minecraftLivingEntity.getHeldItem(Hand.MAIN_HAND)) || i.testVanilla(minecraftLivingEntity.getHeldItem(Hand.OFF_HAND));
 	}
 
 	public float getMovementSpeed()
@@ -237,35 +239,7 @@ public class LivingEntityJS extends EntityJS
 
 	public double getReachDistance()
 	{
-		return minecraftLivingEntity.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
-	}
-
-	@Nullable
-	public Map<String, Object> rayTrace(@P("distance") double distance)
-	{
-		Map<String, Object> map = new HashMap<>();
-		RayTraceResult ray = ForgeHooks.rayTraceEyes(minecraftLivingEntity, distance);
-
-		if (ray != null)
-		{
-			map.put("info", ray.hitInfo);
-			map.put("hitX", ray.hitVec.x);
-			map.put("hitY", ray.hitVec.y);
-			map.put("hitZ", ray.hitVec.z);
-
-			if (ray.typeOfHit == RayTraceResult.Type.BLOCK)
-			{
-				map.put("block", new BlockContainerJS(getWorld().minecraftWorld, ray.getBlockPos()));
-				map.put("facing", ray.sideHit);
-				map.put("subHit", ray.subHit);
-			}
-			else if (ray.typeOfHit == RayTraceResult.Type.ENTITY)
-			{
-				map.put("entity", getWorld().getEntity(ray.entityHit));
-			}
-		}
-
-		return map;
+		return minecraftLivingEntity.getAttribute(PlayerEntity.REACH_DISTANCE).getValue();
 	}
 
 	@Nullable

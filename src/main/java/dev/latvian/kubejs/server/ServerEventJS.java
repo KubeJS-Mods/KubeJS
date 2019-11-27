@@ -2,10 +2,16 @@ package dev.latvian.kubejs.server;
 
 import dev.latvian.kubejs.event.EventJS;
 
+import javax.annotation.Nullable;
+
 /**
  * @author LatvianModder
  */
-public abstract class ServerEventJS extends EventJS
+public class ServerEventJS extends EventJS
 {
-	public abstract ServerJS getServer();
+	@Nullable
+	public ServerJS getServer()
+	{
+		return ServerJS.instance;
+	}
 }

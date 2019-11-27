@@ -3,9 +3,12 @@ package dev.latvian.kubejs.fluid;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import jdk.nashorn.api.scripting.JSObject;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -31,7 +34,7 @@ public abstract class FluidStackJS
 		}
 		else if (o instanceof Fluid)
 		{
-			return new UnboundFluidStackJS(((Fluid) o).getName());
+			return new UnboundFluidStackJS(((Fluid) o).getRegistryName());
 		}
 		else if (o instanceof JSObject)
 		{
@@ -39,7 +42,7 @@ public abstract class FluidStackJS
 
 			if (js.hasMember("fluid"))
 			{
-				FluidStackJS stack = new UnboundFluidStackJS(js.getMember("fluid").toString());
+				FluidStackJS stack = new UnboundFluidStackJS(new ResourceLocation(js.getMember("fluid").toString()));
 
 				if (js.getMember("amount") instanceof Number)
 				{
@@ -56,15 +59,15 @@ public abstract class FluidStackJS
 		}
 
 		String[] s = o.toString().split(" ", 2);
-		return new UnboundFluidStackJS(s[0]).amount(UtilsJS.parseInt(s.length == 2 ? s[1] : "", Fluid.BUCKET_VOLUME));
+		return new UnboundFluidStackJS(new ResourceLocation(s[0])).amount(UtilsJS.parseInt(s.length == 2 ? s[1] : "", FluidAttributes.BUCKET_VOLUME));
 	}
 
-	public abstract String getFluidName();
+	public abstract ResourceLocation getFluidID();
 
-	@Nullable
 	public Fluid getFluid()
 	{
-		return FluidRegistry.getFluid(getFluidName());
+		Fluid f = ForgeRegistries.FLUIDS.getValue(getFluidID());
+		return f == null ? Fluids.EMPTY : f;
 	}
 
 	@Nullable
@@ -133,9 +136,9 @@ public abstract class FluidStackJS
 
 		if (getFluid() != null)
 		{
-			out.set("fluid", getFluid().getName());
+			out.set("fluid", getFluid().getRegistryName().toString());
 
-			if (getAmount() != Fluid.BUCKET_VOLUME)
+			if (getAmount() != FluidAttributes.BUCKET_VOLUME)
 			{
 				out.set("amount", getAmount());
 			}

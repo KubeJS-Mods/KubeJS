@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.command.CommandSender;
+import com.mojang.brigadier.ParseResults;
+import net.minecraft.command.CommandSource;
 import net.minecraftforge.event.CommandEvent;
 
 /**
@@ -8,12 +9,10 @@ import net.minecraftforge.event.CommandEvent;
  */
 public class CommandEventJS extends ServerEventJS
 {
-	private final ServerJS server;
 	public final CommandEvent event;
 
-	public CommandEventJS(ServerJS s, CommandEvent e)
+	public CommandEventJS(CommandEvent e)
 	{
-		server = s;
 		event = e;
 	}
 
@@ -23,29 +22,23 @@ public class CommandEventJS extends ServerEventJS
 		return true;
 	}
 
-	@Override
-	public ServerJS getServer()
+	public ParseResults<CommandSource> getParseResults()
 	{
-		return server;
+		return event.getParseResults();
 	}
 
-	public String getCommand()
+	public void setParseResults(ParseResults<CommandSource> parse)
 	{
-		return event.getCommand().getName();
+		event.setParseResults(parse);
 	}
 
-	public CommandSender getSender()
+	public Throwable getException()
 	{
-		return new CommandSender(server, event.getSender());
+		return event.getException();
 	}
 
-	public String[] getParameters()
+	public void setException(Throwable exception)
 	{
-		return event.getParameters();
-	}
-
-	public void setParameters(String[] parameters)
-	{
-		event.setParameters(parameters);
+		event.setException(exception);
 	}
 }

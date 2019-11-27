@@ -1,13 +1,13 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 
@@ -18,7 +18,7 @@ public class UnboundItemStackJS extends ItemStackJS
 {
 	private final ResourceLocation item;
 	private int count;
-	private int data;
+	private int damage;
 	private NBTCompoundJS nbt;
 	private ItemStack cached;
 
@@ -26,7 +26,7 @@ public class UnboundItemStackJS extends ItemStackJS
 	{
 		item = i;
 		count = 1;
-		data = 0;
+		damage = 0;
 		nbt = NBTCompoundJS.NULL;
 		cached = null;
 	}
@@ -34,7 +34,7 @@ public class UnboundItemStackJS extends ItemStackJS
 	@Override
 	public Item getItem()
 	{
-		Item i = Item.REGISTRY.getObject(item);
+		Item i = ForgeRegistries.ITEMS.getValue(item);
 
 		if (i != null)
 		{
@@ -56,17 +56,26 @@ public class UnboundItemStackJS extends ItemStackJS
 				return ItemStack.EMPTY;
 			}
 
-			cached = new ItemStack(i, count, data);
-			cached.setTagCompound(nbt.createNBT());
+			cached = new ItemStack(i, count);
+
+			if (!nbt.isNull())
+			{
+				cached.setTag(nbt.createNBT());
+			}
+
+			if (damage > 0)
+			{
+				cached.setDamage(damage);
+			}
 		}
 
 		return cached;
 	}
 
 	@Override
-	public ID getId()
+	public ResourceLocation getId()
 	{
-		return ID.of(item);
+		return item;
 	}
 
 	@Override
@@ -80,7 +89,7 @@ public class UnboundItemStackJS extends ItemStackJS
 	{
 		UnboundItemStackJS stack = new UnboundItemStackJS(item);
 		stack.count = count;
-		stack.data = data;
+		stack.damage = damage;
 		stack.nbt = nbt.getCopy();
 		return stack;
 	}
@@ -99,16 +108,16 @@ public class UnboundItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public void setData(int d)
+	public void setDamage(int d)
 	{
-		data = MathHelper.clamp(d, 0, 32767);
+		damage = Math.max(0, d);
 		cached = null;
 	}
 
 	@Override
-	public int getData()
+	public int getDamage()
 	{
-		return data;
+		return damage;
 	}
 
 	@Override

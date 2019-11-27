@@ -2,12 +2,12 @@ package dev.latvian.kubejs.util.nbt;
 
 import dev.latvian.kubejs.MinecraftClass;
 import jdk.nashorn.api.scripting.JSObject;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTPrimitive;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagEnd;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.EndNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.NumberNBT;
+import net.minecraft.nbt.StringNBT;
 
 import javax.annotation.Nullable;
 
@@ -18,7 +18,7 @@ public interface NBTBaseJS
 {
 	static NBTBaseJS of(@Nullable Object o)
 	{
-		if (o == null || o instanceof NBTTagEnd)
+		if (o == null || o instanceof EndNBT)
 		{
 			return NBTNullJS.INSTANCE;
 		}
@@ -34,21 +34,21 @@ public interface NBTBaseJS
 		{
 			return new NBTNumberJS((Number) o);
 		}
-		else if (o instanceof NBTPrimitive)
+		else if (o instanceof NumberNBT)
 		{
-			return new NBTNumberJS((NBTPrimitive) o);
+			return new NBTNumberJS((NumberNBT) o);
 		}
-		else if (o instanceof NBTTagCompound)
+		else if (o instanceof CompoundNBT)
 		{
-			return new NBTCompoundJS((NBTTagCompound) o);
+			return new NBTCompoundJS((CompoundNBT) o);
 		}
-		else if (o instanceof NBTTagList)
+		else if (o instanceof ListNBT)
 		{
-			return new NBTListJS((NBTTagList) o);
+			return new NBTListJS((ListNBT) o);
 		}
-		else if (o instanceof NBTTagString)
+		else if (o instanceof StringNBT)
 		{
-			return new NBTStringJS(((NBTTagString) o).getString());
+			return new NBTStringJS(((StringNBT) o).getString());
 		}
 		else if (o instanceof JSObject)
 		{
@@ -81,11 +81,11 @@ public interface NBTBaseJS
 
 	@Nullable
 	@MinecraftClass
-	NBTBase createNBT();
+	INBT createNBT();
 
 	default String getNbtString()
 	{
-		NBTBase nbt = createNBT();
+		INBT nbt = createNBT();
 		return nbt == null ? "null" : nbt.toString();
 	}
 
@@ -101,7 +101,7 @@ public interface NBTBaseJS
 
 	default byte getId()
 	{
-		NBTBase nbt = createNBT();
+		INBT nbt = createNBT();
 		return nbt == null ? 0 : nbt.getId();
 	}
 
@@ -112,19 +112,19 @@ public interface NBTBaseJS
 
 	default NBTCompoundJS asCompound()
 	{
-		return new NBTCompoundJS(new NBTTagCompound());
+		return new NBTCompoundJS(new CompoundNBT());
 	}
 
 	default NBTListJS asList()
 	{
-		NBTListJS list = new NBTListJS(new NBTTagList());
+		NBTListJS list = new NBTListJS(new ListNBT());
 		list.add(this);
 		return list;
 	}
 
 	default String asString()
 	{
-		NBTBase nbt = createNBT();
+		INBT nbt = createNBT();
 		return nbt == null ? "" : nbt.toString();
 	}
 

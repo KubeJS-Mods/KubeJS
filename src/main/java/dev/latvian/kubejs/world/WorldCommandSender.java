@@ -1,55 +1,20 @@
 package dev.latvian.kubejs.world;
 
-import net.minecraft.command.ICommandSender;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.World;
-
-import javax.annotation.Nullable;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.ICommandSource;
+import net.minecraft.command.arguments.EntityAnchorArgument;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.server.ServerWorld;
 
 /**
  * @author LatvianModder
  */
-public class WorldCommandSender implements ICommandSender
+public class WorldCommandSender extends CommandSource
 {
-	private final WorldJS world;
-
-	public WorldCommandSender(WorldJS w)
+	public WorldCommandSender(ServerWorldJS w)
 	{
-		world = w;
-	}
-
-	public WorldJS getWorld()
-	{
-		return world;
-	}
-
-	@Override
-	public String getName()
-	{
-		return "DIM" + world.minecraftWorld.provider.getDimension();
-	}
-
-	@Override
-	public boolean canUseCommand(int permLevel, String commandName)
-	{
-		return true;
-	}
-
-	@Override
-	public World getEntityWorld()
-	{
-		return world.minecraftWorld;
-	}
-
-	@Nullable
-	@Override
-	public MinecraftServer getServer()
-	{
-		if (world instanceof ServerWorldJS)
-		{
-			return world.getServer().minecraftServer;
-		}
-
-		return null;
+		super(ICommandSource.field_213139_a_, Vec3d.ZERO, Vec2f.ZERO, (ServerWorld) w.minecraftWorld, 4, "World", new StringTextComponent("World"), w.getServer().minecraftServer, null, true, (context, success, result) -> {}, EntityAnchorArgument.Type.FEET);
 	}
 }

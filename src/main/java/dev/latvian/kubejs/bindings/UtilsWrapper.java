@@ -1,19 +1,20 @@
 package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.CountingMap;
 import dev.latvian.kubejs.util.FieldJS;
-import dev.latvian.kubejs.util.ID;
-import dev.latvian.kubejs.util.LoggerWrapperJS;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
-import net.minecraft.potion.Potion;
-import net.minecraft.stats.StatBase;
+import net.minecraft.potion.Effect;
+import net.minecraft.stats.Stat;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraft.world.IWorld;
+import net.minecraftforge.common.ToolType;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 
 import javax.annotation.Nullable;
@@ -78,19 +79,19 @@ public class UtilsWrapper
 		return new CountingMap();
 	}
 
-	public ID id(String namespace, String path)
+	public ResourceLocation id(String namespace, String path)
 	{
-		return ID.of(namespace, path);
+		return new ResourceLocation(namespace, path);
 	}
 
-	public ID id(Object id)
+	public ResourceLocation id(Object id)
 	{
-		return ID.of(id);
+		return UtilsJS.getID(id);
 	}
 
-	public LoggerWrapperJS createLogger(String name)
+	public ConsoleJS createConsole(String name)
 	{
-		return new LoggerWrapperJS(LogManager.getLogger(name));
+		return new ConsoleJS(LogManager.getLogger(name));
 	}
 
 	public Pattern regex(String pattern)
@@ -103,24 +104,14 @@ public class UtilsWrapper
 		return Pattern.compile(pattern, flags);
 	}
 
-	public FieldJS getField(String className, String fieldName)
+	public <T> FieldJS<T> getField(String className, String fieldName)
 	{
 		return UtilsJS.getField(className, fieldName);
 	}
 
-	public FieldJS getField(String className, String fieldName, String obfFieldName)
-	{
-		return UtilsJS.getField(className, fieldName, obfFieldName);
-	}
-
-	public FieldJS getField(Class className, String fieldName)
+	public <T> FieldJS<T> getField(Class className, String fieldName)
 	{
 		return UtilsJS.getField(className, fieldName);
-	}
-
-	public FieldJS getField(Class className, String fieldName, String obfFieldName)
-	{
-		return UtilsJS.getField(className, fieldName, obfFieldName);
 	}
 
 	public int parseInt(@Nullable Object object, int def)
@@ -134,19 +125,19 @@ public class UtilsWrapper
 	}
 
 	@Nullable
-	public StatBase getStat(@Nullable Object id)
+	public Stat<ResourceLocation> getStat(@Nullable Object id)
 	{
 		return UtilsJS.getStat(id);
 	}
 
-	public String getToolType(String id)
+	public ToolType getToolType(String id)
 	{
 		return UtilsJS.getToolType(id);
 	}
 
-	public WorldJS getWorld(World world)
+	public WorldJS getWorld(IWorld world)
 	{
-		if (world.isRemote)
+		if (world.isRemote())
 		{
 			return getClientWorld();
 		}
@@ -164,7 +155,7 @@ public class UtilsWrapper
 	@Nullable
 	public SoundEvent getSound(Object id)
 	{
-		return ForgeRegistries.SOUND_EVENTS.getValue(ID.of(id).mc());
+		return ForgeRegistries.SOUND_EVENTS.getValue(UtilsJS.getID(id));
 	}
 
 	public Object randomOf(Random random, Collection<Object> objects)
@@ -202,7 +193,7 @@ public class UtilsWrapper
 	}
 
 	@Nullable
-	public Potion getPotion(@Nullable Object id)
+	public Effect getPotion(@Nullable Object id)
 	{
 		return UtilsJS.getPotion(id);
 	}

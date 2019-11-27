@@ -4,7 +4,7 @@ import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.world.WorldJS;
-import net.minecraft.entity.item.EntityItemFrame;
+import net.minecraft.entity.item.ItemFrameEntity;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  */
 public class ItemFrameEntityJS extends EntityJS
 {
-	private final EntityItemFrame itemFrameEntity;
+	private final ItemFrameEntity itemFrameEntity;
 
-	public ItemFrameEntityJS(WorldJS w, EntityItemFrame e)
+	public ItemFrameEntityJS(WorldJS w, ItemFrameEntity e)
 	{
 		super(w, e);
 		itemFrameEntity = e;

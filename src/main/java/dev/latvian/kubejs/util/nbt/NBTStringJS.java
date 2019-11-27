@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.util.nbt;
 
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagString;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.StringNBT;
 
 import javax.annotation.Nullable;
 
@@ -41,8 +41,8 @@ public class NBTStringJS implements NBTBaseJS
 
 	@Nullable
 	@Override
-	public NBTBase createNBT()
+	public INBT createNBT()
 	{
-		return new NBTTagString(string);
+		return new StringNBT(string);
 	}
 }

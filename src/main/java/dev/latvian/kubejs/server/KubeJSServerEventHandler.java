@@ -2,13 +2,27 @@ package dev.latvian.kubejs.server;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.event.EventsJS;
+import dev.latvian.kubejs.command.CommandRegistryEventJS;
+import dev.latvian.kubejs.player.PlayerDataJS;
+import dev.latvian.kubejs.player.SimplePlayerEventJS;
+import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.script.data.DataPackScriptLoader;
+import dev.latvian.kubejs.script.data.KubeJSDataPackFinder;
+import dev.latvian.kubejs.world.AttachWorldDataEvent;
+import dev.latvian.kubejs.world.ServerWorldJS;
+import dev.latvian.kubejs.world.SimpleWorldEventJS;
+import dev.latvian.kubejs.world.WorldJS;
 import jdk.nashorn.api.scripting.NashornException;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,11 +31,91 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-@Mod.EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSServerEventHandler
 {
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public static void onServerTick(TickEvent.ServerTickEvent event)
+	public void init()
+	{
+		MinecraftForge.EVENT_BUS.addListener(this::serverAboutToStart);
+		MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
+		MinecraftForge.EVENT_BUS.addListener(this::serverStarted);
+		MinecraftForge.EVENT_BUS.addListener(this::serverStopping);
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::serverTick);
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOW, this::command);
+	}
+
+	private void serverAboutToStart(FMLServerAboutToStartEvent event)
+	{
+		if (ServerJS.instance != null)
+		{
+			destroyServer();
+		}
+
+		ServerJS.instance = new ServerJS(event.getServer());
+
+		event.getServer().getResourcePacks().addPackFinder(new KubeJSDataPackFinder(KubeJS.getGameDirectory().resolve("kubejs").toFile()));
+		event.getServer().getResourceManager().addReloadListener(new DataPackScriptLoader(ServerJS.instance.scriptManager));
+	}
+
+	private void serverStarting(FMLServerStartingEvent event)
+	{
+		new CommandRegistryEventJS(event.getServer().isSinglePlayer(), event.getCommandDispatcher()).post(ScriptType.SERVER, KubeJSEvents.COMMAND_REGISTRY);
+	}
+
+	private void serverStarted(FMLServerStartedEvent event)
+	{
+		ServerJS.instance.overworld = new ServerWorldJS(ServerJS.instance, event.getServer().getWorld(DimensionType.OVERWORLD));
+		ServerJS.instance.worldMap.put(DimensionType.OVERWORLD, ServerJS.instance.overworld);
+		ServerJS.instance.worlds.add(ServerJS.instance.overworld);
+
+		for (ServerWorld world : event.getServer().getWorlds())
+		{
+			if (world != ServerJS.instance.overworld.minecraftWorld)
+			{
+				ServerWorldJS w = new ServerWorldJS(ServerJS.instance, world);
+				ServerJS.instance.worldMap.put(world.getDimension().getType(), w);
+			}
+		}
+
+		ServerJS.instance.updateWorldList();
+
+		MinecraftForge.EVENT_BUS.post(new AttachServerDataEvent(ServerJS.instance));
+		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_LOAD);
+
+		for (ServerWorldJS world : ServerJS.instance.worlds)
+		{
+			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(ServerJS.instance.getOverworld()));
+			new SimpleWorldEventJS(ServerJS.instance.getOverworld()).post(KubeJSEvents.WORLD_LOAD);
+		}
+	}
+
+	private void serverStopping(FMLServerStoppingEvent event)
+	{
+		destroyServer();
+	}
+
+	private void destroyServer()
+	{
+		for (PlayerDataJS p : new ArrayList<>(ServerJS.instance.playerMap.values()))
+		{
+			new SimplePlayerEventJS(p.getMinecraftPlayer()).post(KubeJSEvents.PLAYER_LOGGED_OUT);
+			ServerJS.instance.playerMap.remove(p.getId());
+		}
+
+		ServerJS.instance.playerMap.clear();
+
+		for (WorldJS w : ServerJS.instance.worldMap.values())
+		{
+			new SimpleWorldEventJS(w).post(KubeJSEvents.WORLD_UNLOAD);
+			ServerJS.instance.worldMap.remove(w.getDimension());
+		}
+
+		ServerJS.instance.updateWorldList();
+
+		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_UNLOAD);
+		ServerJS.instance = null;
+	}
+
+	private void serverTick(TickEvent.ServerTickEvent event)
 	{
 		if (event.phase != TickEvent.Phase.END)
 		{
@@ -55,7 +149,7 @@ public class KubeJSServerEventHandler
 				}
 				catch (NashornException ex)
 				{
-					KubeJS.LOGGER.error("Error occurred while handling scheduled event callback in " + (e.file == null ? "Unknown file" : e.file.getPath()) + ": " + ex);
+					e.file.pack.manager.type.console.error("Error occurred while handling scheduled event callback in " + e.file.info.location + ": " + ex);
 				}
 				catch (Throwable ex)
 				{
@@ -89,7 +183,7 @@ public class KubeJSServerEventHandler
 				}
 				catch (NashornException ex)
 				{
-					KubeJS.LOGGER.error("Error occurred while handling scheduled event callback in " + (e.file == null ? "Unknown file" : e.file.getPath()) + ": " + ex);
+					e.file.pack.manager.type.console.error("Error occurred while handling scheduled event callback in " + e.file.info.location + ": " + ex);
 				}
 				catch (Throwable ex)
 				{
@@ -98,13 +192,12 @@ public class KubeJSServerEventHandler
 			}
 		}
 
-		EventsJS.post(KubeJSEvents.SERVER_TICK, new SimpleServerEventJS(s));
+		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_TICK);
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOW)
-	public static void onCommand(CommandEvent event)
+	private void command(CommandEvent event)
 	{
-		if (EventsJS.post(KubeJSEvents.COMMAND_RUN, new CommandEventJS(ServerJS.instance, event)))
+		if (new CommandEventJS(event).post(ScriptType.SERVER, KubeJSEvents.COMMAND_RUN))
 		{
 			event.setCanceled(true);
 		}

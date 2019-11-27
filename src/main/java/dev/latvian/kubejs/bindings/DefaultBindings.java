@@ -1,17 +1,18 @@
 package dev.latvian.kubejs.bindings;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.fluid.FluidWrapper;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.script.ScriptModData;
+import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.TextColor;
-import dev.latvian.kubejs.util.LoggerWrapperJS;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.EnumRarity;
-import net.minecraft.util.EnumHand;
+import net.minecraft.block.Blocks;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.Items;
+import net.minecraft.item.Rarity;
+import net.minecraft.util.Hand;
+import net.minecraftforge.common.ToolType;
 
 /**
  * @author LatvianModder
@@ -20,10 +21,14 @@ public class DefaultBindings
 {
 	public static void init(ScriptManager manager, BindingsEvent event)
 	{
+		if (event.type == ScriptType.SERVER)
+		{
+			event.add("server", ServerJS.instance);
+		}
+
 		event.add("mod", ScriptModData.getInstance());
-		event.add("log", new LoggerWrapperJS(KubeJS.LOGGER));
-		event.add("runtime", manager.runtime);
-		event.add("events", new ScriptEventsWrapper());
+		event.add("console", manager.type.console);
+		event.add("events", new ScriptEventsWrapper(event.type.manager.get().events));
 		event.add("utils", new UtilsWrapper());
 		event.add("text", new TextWrapper());
 		event.add("uuid", new UUIDWrapper());
@@ -34,7 +39,6 @@ public class DefaultBindings
 		event.add("nbt", new NBTWrapper());
 		event.add("facing", new FacingWrapper());
 
-		event.add("oredict", new OreDictWrapper());
 		event.add("fluid", new FluidWrapper());
 
 		event.addConstant("SECOND", 1000L);
@@ -46,26 +50,26 @@ public class DefaultBindings
 			event.addConstant(color.name.toUpperCase(), color);
 		}
 
-		event.addConstant("SLOT_MAINHAND", EntityEquipmentSlot.MAINHAND);
-		event.addConstant("SLOT_OFFHAND", EntityEquipmentSlot.OFFHAND);
-		event.addConstant("SLOT_FEET", EntityEquipmentSlot.FEET);
-		event.addConstant("SLOT_LEGS", EntityEquipmentSlot.LEGS);
-		event.addConstant("SLOT_CHEST", EntityEquipmentSlot.CHEST);
-		event.addConstant("SLOT_HEAD", EntityEquipmentSlot.HEAD);
+		event.addConstant("SLOT_MAINHAND", EquipmentSlotType.MAINHAND);
+		event.addConstant("SLOT_OFFHAND", EquipmentSlotType.OFFHAND);
+		event.addConstant("SLOT_FEET", EquipmentSlotType.FEET);
+		event.addConstant("SLOT_LEGS", EquipmentSlotType.LEGS);
+		event.addConstant("SLOT_CHEST", EquipmentSlotType.CHEST);
+		event.addConstant("SLOT_HEAD", EquipmentSlotType.HEAD);
 
-		event.addConstant("RARITY_COMMON", EnumRarity.COMMON);
-		event.addConstant("RARITY_UNCOMMON", EnumRarity.UNCOMMON);
-		event.addConstant("RARITY_RARE", EnumRarity.RARE);
-		event.addConstant("RARITY_EPIC", EnumRarity.EPIC);
+		event.addConstant("RARITY_COMMON", Rarity.COMMON);
+		event.addConstant("RARITY_UNCOMMON", Rarity.UNCOMMON);
+		event.addConstant("RARITY_RARE", Rarity.RARE);
+		event.addConstant("RARITY_EPIC", Rarity.EPIC);
 
 		event.addConstant("AIR_ITEM", Items.AIR);
 		event.addConstant("AIR_BLOCK", Blocks.AIR);
 
-		event.addConstant("TOOL_TYPE_AXE", "axe");
-		event.addConstant("TOOL_TYPE_PICKAXE", "pickaxe");
-		event.addConstant("TOOL_TYPE_SHOVEL", "shovel");
+		event.addConstant("TOOL_TYPE_AXE", ToolType.AXE);
+		event.addConstant("TOOL_TYPE_PICKAXE", ToolType.PICKAXE);
+		event.addConstant("TOOL_TYPE_SHOVEL", ToolType.SHOVEL);
 
-		event.addConstant("MAIN_HAND", EnumHand.MAIN_HAND);
-		event.addConstant("OFF_HAND", EnumHand.OFF_HAND);
+		event.addConstant("MAIN_HAND", Hand.MAIN_HAND);
+		event.addConstant("OFF_HAND", Hand.OFF_HAND);
 	}
 }

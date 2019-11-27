@@ -11,7 +11,7 @@ import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
 
@@ -58,9 +58,9 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 			{
 				Text t1;
 
-				if (c instanceof TextComponentTranslation)
+				if (c instanceof TranslationTextComponent)
 				{
-					t1 = new TextTranslate(((TextComponentTranslation) c).getKey(), ((TextComponentTranslation) c).getFormatArgs());
+					t1 = new TextTranslate(((TranslationTextComponent) c).getKey(), ((TranslationTextComponent) c).getFormatArgs());
 				}
 				else
 				{
@@ -275,7 +275,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 
 	public final String getUnformattedString()
 	{
-		return component().getUnformattedText();
+		return component().getString();
 	}
 
 	public final String getFormattedString()
@@ -660,7 +660,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	@Override
 	public String toString()
 	{
-		return component().getUnformattedText();
+		return component().getString();
 	}
 
 	@Override

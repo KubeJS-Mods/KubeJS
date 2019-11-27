@@ -1,14 +1,18 @@
 package dev.latvian.kubejs.client;
 
 import dev.latvian.kubejs.KubeJSCommon;
-import dev.latvian.kubejs.net.KubeJSNetHandler;
-import dev.latvian.kubejs.net.MessageSendData;
+import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.net.KubeJSNet;
+import dev.latvian.kubejs.net.MessageSendDataFromClient;
+import dev.latvian.kubejs.net.NetworkEventJS;
 import dev.latvian.kubejs.util.Overlay;
+import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -20,11 +24,18 @@ public class KubeJSClient extends KubeJSCommon
 	public static final Map<String, Overlay> activeOverlays = new LinkedHashMap<>();
 
 	@Override
-	public void sendData(EntityPlayer playerEntity, String channel, @Nullable NBTTagCompound data)
+	public void init(File folder)
+	{
+		new KubeJSClientEventHandler().init();
+		Minecraft.getInstance().getResourcePackList().addPackFinder(new KubeJSResourcePackFinder(folder));
+	}
+
+	@Override
+	public void sendData(PlayerEntity playerEntity, String channel, @Nullable CompoundNBT data)
 	{
 		if (playerEntity.world.isRemote && !channel.isEmpty())
 		{
-			KubeJSNetHandler.net.sendToServer(new MessageSendData(channel, data));
+			KubeJSNet.MAIN.sendToServer(new MessageSendDataFromClient(channel, data));
 		}
 		else
 		{
@@ -33,10 +44,16 @@ public class KubeJSClient extends KubeJSCommon
 	}
 
 	@Override
-	@Nullable
-	public EntityPlayer getClientPlayer()
+	public void handleDataToClientPacket(String channel, @Nullable CompoundNBT data)
 	{
-		return Minecraft.getMinecraft().player;
+		new NetworkEventJS(Minecraft.getInstance().player, channel, NBTBaseJS.of(data).asCompound()).post(KubeJSEvents.PLAYER_DATA_FROM_SERVER, channel);
+	}
+
+	@Override
+	@Nullable
+	public PlayerEntity getClientPlayer()
+	{
+		return Minecraft.getInstance().player;
 	}
 
 	@Override

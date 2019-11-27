@@ -1,32 +1,11 @@
 package dev.latvian.kubejs.integration.aurora;
 
-import dev.latvian.kubejs.documentation.Documentation;
-import dev.latvian.kubejs.documentation.DocumentedBinding;
-import dev.latvian.kubejs.documentation.DocumentedEvent;
-import dev.latvian.kubejs.fluid.FluidStackJS;
-import dev.latvian.kubejs.item.ItemStackJS;
-import dev.latvian.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.kubejs.script.ScriptManager;
-import dev.latvian.kubejs.script.ScriptModData;
-import dev.latvian.kubejs.util.nbt.NBTBaseJS;
-import dev.latvian.mods.aurora.page.HTTPWebPage;
-import dev.latvian.mods.aurora.tag.Tag;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-
-import javax.annotation.Nullable;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 /**
  * @author LatvianModder
  */
-public class KubeJSHomePage extends HTTPWebPage
+public class KubeJSHomePage// extends HTTPWebPage
 {
+	/*
 	private final Documentation documentation;
 
 	public KubeJSHomePage(Documentation d)
@@ -160,12 +139,12 @@ public class KubeJSHomePage extends HTTPWebPage
 			row.td().text(event.eventID);
 			classText(documentation, row.td(), event.eventClass);
 			row.td().yesNoSpan(event.canCancel);
-			row.td().yesNoSpan(event.sideOnly == null || event.sideOnly == Side.CLIENT);
-			row.td().yesNoSpan(event.sideOnly == null || event.sideOnly == Side.SERVER);
+			row.td().yesNoSpan(event.sideOnly == null || event.sideOnly == Dist.CLIENT);
+			row.td().yesNoSpan(event.sideOnly == null || event.sideOnly == Dist.DEDICATED_SERVER);
 		}
 
 		body.br();
-		body.p().paired("i", "Hosted from '" + FMLCommonHandler.instance().getMinecraftServerInstance().getMOTD() + "'");
+		//FIXME: body.p().paired("i", "Hosted from '" + FMLCommonHandler.instance().getMinecraftServerInstance().getMOTD() + "'");
 		body.p().paired("i", "Mod version: " + ScriptModData.getInstance().getModVersion());
 		body.p().paired("i", "Mod loader: " + ScriptModData.getInstance().getType());
 		body.p().paired("i", "Minecraft version: " + ScriptModData.getInstance().getMcVersion());
@@ -282,4 +261,5 @@ public class KubeJSHomePage extends HTTPWebPage
 
 		return "object";
 	}
+	 */
 }

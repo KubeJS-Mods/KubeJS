@@ -5,22 +5,24 @@ import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import jdk.nashorn.api.scripting.JSObject;
-import net.minecraft.potion.Potion;
-import net.minecraft.stats.StatBase;
-import net.minecraft.stats.StatList;
-import net.minecraft.world.World;
-import net.minecraft.world.storage.ThreadedFileIOBase;
+import net.minecraft.potion.Effect;
+import net.minecraft.stats.Stat;
+import net.minecraft.stats.Stats;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.IWorld;
+import net.minecraftforge.common.ToolType;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -28,18 +30,11 @@ import java.util.Random;
  */
 public class UtilsJS
 {
+	public static final ResourceLocation NULL_ID = new ResourceLocation("minecraft", "null");
 	public static final Random RANDOM = new Random();
-
-	private static Map<ID, StatBase> statMap;
 
 	public static void init()
 	{
-		statMap = new HashMap<>(StatList.ALL_STATS.size());
-
-		for (StatBase stat : StatList.ALL_STATS)
-		{
-			statMap.put(ID.of(stat.statId), stat);
-		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -50,7 +45,7 @@ public class UtilsJS
 
 	public static void queueIO(Runnable runnable)
 	{
-		ThreadedFileIOBase.getThreadedIOInstance().queueIO(() -> {
+		/*FIXME: ThreadedFileIOBase.getThreadedIOInstance().queueIO(() -> {
 
 			try
 			{
@@ -63,13 +58,23 @@ public class UtilsJS
 
 			return false;
 		});
+		 */
+
+		try
+		{
+			runnable.run();
+		}
+		catch (Exception ex)
+		{
+			ex.printStackTrace();
+		}
 	}
 
 	public static File getFile(String path) throws IOException
 	{
-		File file = new File(KubeJS.getGameDirectory(), path);
-		KubeJS.verifyFilePath(file);
-		return file;
+		Path path1 = KubeJS.getGameDirectory().resolve(path);
+		KubeJS.verifyFilePath(path1);
+		return path1.toFile();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -102,7 +107,7 @@ public class UtilsJS
 		return Collections.singleton(o);
 	}
 
-	public static FieldJS getField(String className, String fieldName)
+	public static <T> FieldJS<T> getField(String className, String fieldName)
 	{
 		try
 		{
@@ -110,45 +115,19 @@ public class UtilsJS
 		}
 		catch (Throwable ex)
 		{
-			return new FieldJS(null);
+			return new FieldJS<>(null);
 		}
 	}
 
-	public static FieldJS getField(String className, String fieldName, String obfFieldName)
+	public static <T> FieldJS<T> getField(Class className, String fieldName)
 	{
 		try
 		{
-			return getField(Class.forName(className), fieldName, obfFieldName);
+			return new FieldJS<>(ObfuscationReflectionHelper.findField(className, fieldName));
 		}
 		catch (Throwable ex)
 		{
-			return new FieldJS(null);
-		}
-	}
-
-	@SuppressWarnings("deprecation")
-	public static FieldJS getField(Class className, String fieldName)
-	{
-		try
-		{
-			return new FieldJS(net.minecraftforge.fml.relauncher.ReflectionHelper.findField(className, fieldName));
-		}
-		catch (Throwable ex)
-		{
-			return new FieldJS(null);
-		}
-	}
-
-	@SuppressWarnings("deprecation")
-	public static FieldJS getField(Class className, String fieldName, String obfFieldName)
-	{
-		try
-		{
-			return new FieldJS(net.minecraftforge.fml.relauncher.ReflectionHelper.findField(className, fieldName, obfFieldName));
-		}
-		catch (Throwable ex)
-		{
-			return new FieldJS(null);
+			return new FieldJS<>(null);
 		}
 	}
 
@@ -209,28 +188,28 @@ public class UtilsJS
 	}
 
 	@Nullable
-	public static StatBase getStat(@Nullable Object id)
+	public static Stat<ResourceLocation> getStat(@Nullable Object id)
 	{
 		if (id == null)
 		{
 			return null;
 		}
-		else if (id instanceof StatBase)
+		else if (id instanceof Stat)
 		{
-			return (StatBase) id;
+			return (Stat) id;
 		}
 
-		return statMap.get(ID.of(id));
+		return Stats.CUSTOM.get(getID(id));
 	}
 
-	public static String getToolType(String id)
+	public static ToolType getToolType(String id)
 	{
-		return id;
+		return ToolType.get(id);
 	}
 
-	public static WorldJS getWorld(World world)
+	public static WorldJS getWorld(IWorld world)
 	{
-		if (world.isRemote)
+		if (world.isRemote())
 		{
 			return getClientWorld();
 		}
@@ -246,17 +225,41 @@ public class UtilsJS
 	}
 
 	@Nullable
-	public static Potion getPotion(@Nullable Object id)
+	public static Effect getPotion(@Nullable Object id)
 	{
 		if (id == null)
 		{
 			return null;
 		}
-		else if (id instanceof Potion)
+		else if (id instanceof Effect)
 		{
-			return (Potion) id;
+			return (Effect) id;
 		}
 
-		return Potion.REGISTRY.getObject(ID.of(id).mc());
+		return ForgeRegistries.POTIONS.getValue(getID(id));
+	}
+
+	public static ResourceLocation getID(@Nullable Object o)
+	{
+		if (o == null)
+		{
+			return NULL_ID;
+		}
+		else if (o instanceof ResourceLocation)
+		{
+			return (ResourceLocation) o;
+		}
+
+		return new ResourceLocation(o.toString());
+	}
+
+	public static String getNamespace(Object o)
+	{
+		return getID(o).getNamespace();
+	}
+
+	public static String getPath(Object o)
+	{
+		return getID(o).getPath();
 	}
 }

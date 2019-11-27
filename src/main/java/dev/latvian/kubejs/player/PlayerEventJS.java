@@ -1,10 +1,9 @@
 package dev.latvian.kubejs.player;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.LivingEntityEventJS;
-import dev.latvian.kubejs.integration.gamestages.GameStagesIntegration;
-import net.minecraftforge.fml.common.Loader;
+import dev.latvian.kubejs.integration.gamestages.GameStageKJSHelper;
+import net.minecraftforge.fml.ModList;
 
 import javax.annotation.Nullable;
 
@@ -30,9 +29,9 @@ public abstract class PlayerEventJS extends LivingEntityEventJS
 
 	public boolean hasGameStage(String stage)
 	{
-		if (getPlayer() != null && Loader.isModLoaded("gamestages"))
+		if (getPlayer() != null && ModList.get().isLoaded("gamestages"))
 		{
-			return GameStagesIntegration.hasStage(getPlayer().minecraftPlayer, stage);
+			return GameStageKJSHelper.hasStage(getPlayer().minecraftPlayer, stage);
 		}
 
 		return false;
@@ -40,31 +39,31 @@ public abstract class PlayerEventJS extends LivingEntityEventJS
 
 	public void addGameStage(String stage)
 	{
-		if (Loader.isModLoaded("gamestages"))
+		if (ModList.get().isLoaded("gamestages"))
 		{
 			if (getPlayer() != null)
 			{
-				GameStagesIntegration.addStage(getPlayer().minecraftPlayer, stage);
+				GameStageKJSHelper.addStage(getPlayer().minecraftPlayer, stage);
 			}
 		}
 		else
 		{
-			KubeJS.LOGGER.error("Can't add gamestage " + stage + ", GameStages mod isn't loaded!");
+			getWorld().getSide().console.error("Can't add gamestage " + stage + ", GameStages mod isn't loaded!");
 		}
 	}
 
 	public void removeGameStage(String stage)
 	{
-		if (Loader.isModLoaded("gamestages"))
+		if (ModList.get().isLoaded("gamestages"))
 		{
 			if (getPlayer() != null)
 			{
-				GameStagesIntegration.removeStage(getPlayer().minecraftPlayer, stage);
+				GameStageKJSHelper.removeStage(getPlayer().minecraftPlayer, stage);
 			}
 		}
 		else
 		{
-			KubeJS.LOGGER.error("Can't remove gamestage " + stage + ", GameStages mod isn't loaded!");
+			getWorld().getSide().console.error("Can't remove gamestage " + stage + ", GameStages mod isn't loaded!");
 		}
 	}
 }

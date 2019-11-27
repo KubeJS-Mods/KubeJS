@@ -2,11 +2,12 @@ package dev.latvian.kubejs.util;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
+import java.util.Optional;
 
 /**
  * @author LatvianModder
  */
-public class FieldJS
+public class FieldJS<T>
 {
 	private final Field field;
 
@@ -15,12 +16,11 @@ public class FieldJS
 		field = f;
 	}
 
-	@Nullable
-	public <T> T get(@Nullable Object object)
+	public Optional<T> get(@Nullable Object object)
 	{
 		if (field == null)
 		{
-			return null;
+			return Optional.empty();
 		}
 
 		try
@@ -30,16 +30,16 @@ public class FieldJS
 				field.setAccessible(true);
 			}
 
-			return UtilsJS.cast(field.get(object));
+			return Optional.ofNullable(UtilsJS.cast(field.get(object)));
 		}
 		catch (Exception ex)
 		{
-			return null;
+			return Optional.empty();
 		}
 	}
 
 	@Nullable
-	public <T> T staticGet()
+	public Optional<T> staticGet()
 	{
 		return get(null);
 	}

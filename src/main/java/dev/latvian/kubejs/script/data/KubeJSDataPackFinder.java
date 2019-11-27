@@ -1,0 +1,64 @@
+package dev.latvian.kubejs.script.data;
+
+import net.minecraft.resources.IPackFinder;
+import net.minecraft.resources.ResourcePackInfo;
+import net.minecraft.resources.ResourcePackType;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.util.Map;
+
+/**
+ * @author LatvianModder
+ */
+public class KubeJSDataPackFinder implements IPackFinder
+{
+	private final File folder;
+
+	public KubeJSDataPackFinder(File f)
+	{
+		folder = f;
+	}
+
+	@Override
+	public <T extends ResourcePackInfo> void addPackInfosToMap(Map<String, T> nameToPackMap, ResourcePackInfo.IFactory<T> packInfoFactory)
+	{
+		File dataFolder = new File(folder, "data");
+
+		if (!dataFolder.exists())
+		{
+			File scriptsFolder = new File(new File(dataFolder, "modpack"), "scripts");
+			scriptsFolder.mkdirs();
+
+			try
+			{
+				try (PrintWriter scriptsJsonWriter = new PrintWriter(new FileWriter(new File(scriptsFolder, "scripts.json"))))
+				{
+					scriptsJsonWriter.println("{");
+					scriptsJsonWriter.println("	\"scripts\": [");
+					scriptsJsonWriter.println("		{\"file\": \"example.js\"}");
+					scriptsJsonWriter.println("	]");
+					scriptsJsonWriter.println("}");
+				}
+
+				try (PrintWriter exampleJsWriter = new PrintWriter(new FileWriter(new File(scriptsFolder, "example.js"))))
+				{
+					exampleJsWriter.println("console.info('Hello, World! (You will see this line every time you start server or run /reload)')");
+				}
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+			}
+		}
+
+		String s = "kubejs:data_pack";
+		T t = ResourcePackInfo.createResourcePack(s, false, () -> new KubeJSResourcePack(folder, ResourcePackType.SERVER_DATA), packInfoFactory, ResourcePackInfo.Priority.BOTTOM);
+
+		if (t != null)
+		{
+			nameToPackMap.put(s, t);
+		}
+	}
+}

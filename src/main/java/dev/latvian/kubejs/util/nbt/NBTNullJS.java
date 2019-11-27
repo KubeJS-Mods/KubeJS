@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.util.nbt;
 
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.INBT;
 
 import javax.annotation.Nullable;
 
@@ -17,7 +17,7 @@ public class NBTNullJS implements NBTBaseJS
 
 	@Override
 	@Nullable
-	public NBTBase createNBT()
+	public INBT createNBT()
 	{
 		return null;
 	}

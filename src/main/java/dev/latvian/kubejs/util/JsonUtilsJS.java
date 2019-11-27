@@ -327,11 +327,11 @@ public class JsonUtilsJS
 	@Nullable
 	public static Object read(@P("file") String file) throws IOException
 	{
-		return read(new File(KubeJS.getGameDirectory(), file));
+		return read(KubeJS.getGameDirectory().resolve(file).toFile());
 	}
 
 	public static void write(@P("file") String file, @P("json") Object json) throws IOException
 	{
-		write(new File(KubeJS.getGameDirectory(), file), json);
+		write(KubeJS.getGameDirectory().resolve(file).toFile(), json);
 	}
 }

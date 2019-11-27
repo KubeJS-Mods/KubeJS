@@ -22,14 +22,14 @@ public class MaterialListJS
 		add("wood", Material.WOOD);
 		add("rock", Material.ROCK);
 		add("iron", Material.IRON);
-		add("organic", Material.GRASS);
-		add("earth", Material.GROUND);
+		add("organic", Material.ORGANIC);
+		add("earth", Material.EARTH);
 		add("water", Material.WATER);
 		add("lava", Material.LAVA);
 		add("leaves", Material.LEAVES);
 		add("plants", Material.PLANTS);
 		add("sponge", Material.SPONGE);
-		add("wool", Material.CLOTH);
+		add("wool", Material.WOOL);
 		add("sand", Material.SAND);
 		add("glass", Material.GLASS);
 		add("tnt", Material.TNT);

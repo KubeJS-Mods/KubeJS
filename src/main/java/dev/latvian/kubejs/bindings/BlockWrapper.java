@@ -9,10 +9,12 @@ import dev.latvian.kubejs.block.predicate.BlockPredicate;
 import dev.latvian.kubejs.documentation.DisplayName;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
-import dev.latvian.kubejs.util.ID;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.Blocks;
+import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,15 +59,15 @@ public class BlockWrapper
 		return predicate;
 	}
 
-	private Map<String, EnumFacing> facingMap;
+	private Map<String, Direction> facingMap;
 
-	public Map<String, EnumFacing> getFacing()
+	public Map<String, Direction> getFacing()
 	{
 		if (facingMap == null)
 		{
 			facingMap = new HashMap<>(6);
 
-			for (EnumFacing facing : EnumFacing.VALUES)
+			for (Direction facing : Direction.values())
 			{
 				facingMap.put(facing.getName(), facing);
 			}
@@ -75,19 +77,19 @@ public class BlockWrapper
 	}
 
 	@MinecraftClass
-	public Block getBlock(@P("id") @T(ID.class) Object id)
+	public Block getBlock(@P("id") @T(ResourceLocation.class) Object id)
 	{
-		Block b = Block.REGISTRY.getObject(ID.of(id).mc());
+		Block b = ForgeRegistries.BLOCKS.getValue(UtilsJS.getID(id));
 		return b == null ? Blocks.AIR : b;
 	}
 
-	public List<ID> getTypeList()
+	public List<ResourceLocation> getTypeList()
 	{
-		List<ID> list = new ArrayList<>();
+		List<ResourceLocation> list = new ArrayList<>();
 
-		for (Block block : Block.REGISTRY)
+		for (Block block : ForgeRegistries.BLOCKS)
 		{
-			list.add(ID.of(block.getRegistryName()));
+			list.add(block.getRegistryName());
 		}
 
 		return list;

@@ -22,17 +22,17 @@ public class GameStagesPlayerData
 
 	public boolean has(@P("stage") String stage)
 	{
-		return GameStageHelper.hasStage(playerData.getPlayerEntity(), stage);
+		return GameStageHelper.hasStage(playerData.getMinecraftPlayer(), stage);
 	}
 
 	public void add(@P("stage") String stage)
 	{
-		GameStageHelper.addStage(playerData.getPlayerEntity(), stage);
+		GameStageHelper.addStage(playerData.getMinecraftPlayer(), stage);
 	}
 
 	public void remove(@P("stage") String stage)
 	{
-		GameStageHelper.removeStage(playerData.getPlayerEntity(), stage);
+		GameStageHelper.removeStage(playerData.getMinecraftPlayer(), stage);
 	}
 
 	public boolean set(@P("stage") String stage, @P("value") boolean value)
@@ -56,7 +56,7 @@ public class GameStagesPlayerData
 
 	public Collection<String> getList()
 	{
-		return GameStageHelper.getPlayerData(playerData.getPlayerEntity()).getStages();
+		return GameStageHelper.getPlayerData(playerData.getMinecraftPlayer()).getStages();
 	}
 
 	public void clear()
@@ -70,6 +70,6 @@ public class GameStagesPlayerData
 	@Info("Sends all stages from server to client")
 	public void sync()
 	{
-		GameStageHelper.syncPlayer(playerData.getPlayerEntity());
+		GameStageHelper.syncPlayer(playerData.getMinecraftPlayer());
 	}
 }

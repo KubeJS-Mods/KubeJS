@@ -1,34 +1,35 @@
 package dev.latvian.kubejs.net;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import dev.latvian.kubejs.KubeJS;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
  */
-public class MessageCloseOverlay implements IMessage
+public class MessageCloseOverlay
 {
-	public String overlay;
-
-	public MessageCloseOverlay()
-	{
-	}
+	private final String overlay;
 
 	public MessageCloseOverlay(String o)
 	{
 		overlay = o;
 	}
 
-	@Override
-	public void fromBytes(ByteBuf buf)
+	MessageCloseOverlay(PacketBuffer buf)
 	{
-		overlay = ByteBufUtils.readUTF8String(buf);
+		overlay = buf.readString(5000);
 	}
 
-	@Override
-	public void toBytes(ByteBuf buf)
+	void write(PacketBuffer buf)
 	{
-		ByteBufUtils.writeUTF8String(buf, overlay);
+		buf.writeString(overlay, 5000);
+	}
+
+	void handle(Supplier<NetworkEvent.Context> context)
+	{
+		context.get().enqueueWork(() -> KubeJS.instance.proxy.closeOverlay(overlay));
 	}
 }

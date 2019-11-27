@@ -9,9 +9,10 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.WorldJS;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
+import net.minecraftforge.common.ToolType;
 import net.minecraftforge.event.world.BlockEvent;
 
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class BlockDropsEventJS extends PlayerEventJS
 		return new BlockContainerJS(event.getWorld(), event.getPos())
 		{
 			@Override
-			public IBlockState getBlockState()
+			public BlockState getBlockState()
 			{
 				return event.getState();
 			}
@@ -102,7 +103,7 @@ public class BlockDropsEventJS extends PlayerEventJS
 
 	public void addDrop(@P("item") @T(ItemStackJS.class) Object item, @O @P("chance") float chance)
 	{
-		if (chance >= 1F || event.getWorld().rand.nextFloat() <= chance)
+		if (chance >= 1F || event.getWorld().getRandom().nextFloat() <= chance)
 		{
 			addDrop(item);
 		}
@@ -110,27 +111,27 @@ public class BlockDropsEventJS extends PlayerEventJS
 
 	public ItemStackJS getItem()
 	{
-		return ItemStackJS.of(event.getHarvester().getHeldItem(EnumHand.MAIN_HAND));
+		return ItemStackJS.of(event.getHarvester().getHeldItem(Hand.MAIN_HAND));
 	}
 
-	public int getItemHarvestLevel(String tool)
+	public int getItemHarvestLevel(ToolType tool)
 	{
-		ItemStack stack = event.getHarvester().getHeldItem(EnumHand.MAIN_HAND);
+		ItemStack stack = event.getHarvester().getHeldItem(Hand.MAIN_HAND);
 		return stack.getItem().getHarvestLevel(stack, tool, event.getHarvester(), event.getState());
 	}
 
 	public int getPickaxeLevel()
 	{
-		return getItemHarvestLevel("pickaxe");
+		return getItemHarvestLevel(ToolType.PICKAXE);
 	}
 
 	public int getAxeLevel()
 	{
-		return getItemHarvestLevel("axe");
+		return getItemHarvestLevel(ToolType.AXE);
 	}
 
 	public int getShovelLevel()
 	{
-		return getItemHarvestLevel("shovel");
+		return getItemHarvestLevel(ToolType.SHOVEL);
 	}
 }

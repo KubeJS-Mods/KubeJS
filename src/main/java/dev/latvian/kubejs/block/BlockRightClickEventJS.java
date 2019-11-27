@@ -4,8 +4,8 @@ import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 /**
@@ -44,7 +44,7 @@ public class BlockRightClickEventJS extends PlayerEventJS
 		return block;
 	}
 
-	public EnumHand getHand()
+	public Hand getHand()
 	{
 		return event.getHand();
 	}
@@ -59,7 +59,7 @@ public class BlockRightClickEventJS extends PlayerEventJS
 		return item;
 	}
 
-	public EnumFacing getFacing()
+	public Direction getFacing()
 	{
 		return event.getFace();
 	}

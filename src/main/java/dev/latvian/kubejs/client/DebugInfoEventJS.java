@@ -20,7 +20,7 @@ public class DebugInfoEventJS extends EventJS
 
 	public boolean getShowDebug()
 	{
-		return Minecraft.getMinecraft().gameSettings.showDebugInfo;
+		return Minecraft.getInstance().gameSettings.showDebugInfo;
 	}
 
 	public List<String> getLeft()

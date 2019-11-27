@@ -2,14 +2,7 @@ package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
-import dev.latvian.kubejs.util.FieldJS;
-import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.kubejs.world.BlockContainerJS;
-import net.minecraft.inventory.ContainerWorkbench;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
-
-import javax.annotation.Nullable;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 
 /**
  * @author LatvianModder
@@ -17,7 +10,6 @@ import javax.annotation.Nullable;
 public class ItemCraftedEventJS extends PlayerEventJS
 {
 	public final PlayerEvent.ItemCraftedEvent event;
-	private static final FieldJS posField = UtilsJS.getField(ContainerWorkbench.class, "pos", "field_178145_h");
 
 	public ItemCraftedEventJS(PlayerEvent.ItemCraftedEvent e)
 	{
@@ -27,32 +19,16 @@ public class ItemCraftedEventJS extends PlayerEventJS
 	@Override
 	public EntityJS getEntity()
 	{
-		return entityOf(event.player);
+		return entityOf(event.getPlayer());
 	}
 
 	public ItemStackJS getItem()
 	{
-		return ItemStackJS.of(event.crafting);
+		return ItemStackJS.of(event.getCrafting());
 	}
 
-	public InventoryJS getMatrix()
+	public InventoryJS getInventory()
 	{
-		return new InventoryJS(event.craftMatrix);
-	}
-
-	@Nullable
-	public BlockContainerJS getBlock()
-	{
-		if (event.player.openContainer instanceof ContainerWorkbench)
-		{
-			BlockPos pos = posField.get(event.player.openContainer);
-
-			if (pos != null)
-			{
-				return new BlockContainerJS(event.player.world, pos);
-			}
-		}
-
-		return null;
+		return new InventoryJS(event.getInventory());
 	}
 }

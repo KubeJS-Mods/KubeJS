@@ -16,10 +16,17 @@ import javax.annotation.Nullable;
 @Info("This class registers event listeners")
 public class ScriptEventsWrapper
 {
+	private final EventsJS events;
+
+	public ScriptEventsWrapper(EventsJS e)
+	{
+		events = e;
+	}
+
 	@Info("This method will register event listener, and callback function will be called when event is fired form mod")
 	public void listen(@P("eventID") String id, @P("handler") IEventHandler handler)
 	{
-		EventsJS.listen(id, handler);
+		events.listen(id, handler);
 	}
 
 	@Info("This method will register one event listener for multiple events")
@@ -33,7 +40,7 @@ public class ScriptEventsWrapper
 
 	public void post(@P("eventID") String id, @P("data") @Nullable Object data)
 	{
-		EventsJS.post(id, new DataEvent(false, data));
+		events.postToHandlers(id, events.handlers(id), new DataEvent(false, data));
 	}
 
 	public void post(@P("eventID") String id)
@@ -43,7 +50,7 @@ public class ScriptEventsWrapper
 
 	public boolean postCancellable(@P("eventID") String id, @P("data") @Nullable Object data)
 	{
-		return EventsJS.post(id, new DataEvent(true, data));
+		return events.postToHandlers(id, events.handlers(id), new DataEvent(true, data));
 	}
 
 	public boolean postCancellable(@P("eventID") String id)

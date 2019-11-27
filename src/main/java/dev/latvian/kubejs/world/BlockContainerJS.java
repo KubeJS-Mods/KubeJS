@@ -9,21 +9,24 @@ import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemStackJS;
-import dev.latvian.kubejs.util.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import net.minecraft.block.Block;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.effect.EntityLightningBolt;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.effect.LightningBoltEntity;
+import net.minecraft.state.IProperty;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -36,15 +39,15 @@ import java.util.Map;
 @DisplayName("Block")
 public class BlockContainerJS
 {
-	private static final ID AIR_ID = ID.of("minecraft:air");
+	private static final ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
 
-	public final World minecraftWorld;
+	public final IWorld minecraftWorld;
 	private final BlockPos pos;
 
-	private IBlockState cachedState;
+	private BlockState cachedState;
 	private TileEntity cachedEntity;
 
-	public BlockContainerJS(World w, BlockPos p)
+	public BlockContainerJS(IWorld w, BlockPos p)
 	{
 		minecraftWorld = w;
 		pos = p;
@@ -68,7 +71,7 @@ public class BlockContainerJS
 
 	public int getDimension()
 	{
-		return minecraftWorld.provider.getDimension();
+		return minecraftWorld.getDimension().getType().getId();
 	}
 
 	public int getX()
@@ -86,12 +89,12 @@ public class BlockContainerJS
 		return getPos().getZ();
 	}
 
-	public BlockContainerJS offset(EnumFacing f, int d)
+	public BlockContainerJS offset(Direction f, int d)
 	{
 		return new BlockContainerJS(minecraftWorld, getPos().offset(f, d));
 	}
 
-	public BlockContainerJS offset(EnumFacing f)
+	public BlockContainerJS offset(Direction f)
 	{
 		return offset(f, 1);
 	}
@@ -103,36 +106,36 @@ public class BlockContainerJS
 
 	public BlockContainerJS getDown()
 	{
-		return offset(EnumFacing.DOWN);
+		return offset(Direction.DOWN);
 	}
 
 	public BlockContainerJS getUp()
 	{
-		return offset(EnumFacing.UP);
+		return offset(Direction.UP);
 	}
 
 	public BlockContainerJS getNorth()
 	{
-		return offset(EnumFacing.NORTH);
+		return offset(Direction.NORTH);
 	}
 
 	public BlockContainerJS getSouth()
 	{
-		return offset(EnumFacing.SOUTH);
+		return offset(Direction.SOUTH);
 	}
 
 	public BlockContainerJS getWest()
 	{
-		return offset(EnumFacing.WEST);
+		return offset(Direction.WEST);
 	}
 
 	public BlockContainerJS getEast()
 	{
-		return offset(EnumFacing.EAST);
+		return offset(Direction.EAST);
 	}
 
 	@MinecraftClass
-	public IBlockState getBlockState()
+	public BlockState getBlockState()
 	{
 		if (cachedState == null)
 		{
@@ -143,28 +146,27 @@ public class BlockContainerJS
 	}
 
 	@MinecraftClass
-	public void setBlockState(IBlockState state, int flags)
+	public void setBlockState(BlockState state, int flags)
 	{
 		minecraftWorld.setBlockState(getPos(), state, flags);
 		clearCache();
 	}
 
-	public ID getId()
+	public ResourceLocation getId()
 	{
-		IBlockState state = getBlockState();
-		return state.getBlock() == Blocks.AIR ? AIR_ID : ID.of(state.getBlock().getRegistryName());
+		return getBlockState().getBlock().getRegistryName();
 	}
 
 	public void set(Object id, Map<?, ?> properties, int flags)
 	{
-		Block block = id instanceof Block ? (Block) id : Block.getBlockFromName(ID.of(id).toString());
-		IBlockState state = (block == null ? Blocks.AIR : block).getDefaultState();
+		Block block = id instanceof Block ? (Block) id : ForgeRegistries.BLOCKS.getValue(UtilsJS.getID(id));
+		BlockState state = (block == null ? Blocks.AIR : block).getDefaultState();
 
 		if (!properties.isEmpty() && state.getBlock() != Blocks.AIR)
 		{
 			Map<String, IProperty> pmap = new HashMap<>();
 
-			for (IProperty property : state.getPropertyKeys())
+			for (IProperty property : state.getProperties())
 			{
 				pmap.put(property.getName(), property);
 			}
@@ -175,7 +177,7 @@ public class BlockContainerJS
 
 				if (property != null)
 				{
-					state = state.withProperty(property, UtilsJS.cast(property.parseValue(String.valueOf(entry.getValue())).get()));
+					state = state.with(property, UtilsJS.cast(property.parseValue(String.valueOf(entry.getValue())).get()));
 				}
 			}
 		}
@@ -196,11 +198,11 @@ public class BlockContainerJS
 	public Map<String, String> getProperties()
 	{
 		Map<String, String> map = new HashMap<>();
-		IBlockState state = getBlockState();
+		BlockState state = getBlockState();
 
-		for (Map.Entry<IProperty<?>, ?> entry : state.getProperties().entrySet())
+		for (IProperty property : state.getProperties())
 		{
-			map.put(entry.getKey().getName(), entry.getKey().getName(UtilsJS.cast(entry.getValue())));
+			map.put(property.getName(), property.getName(state.get(property)));
 		}
 
 		return map;
@@ -210,7 +212,7 @@ public class BlockContainerJS
 	@MinecraftClass
 	public TileEntity getEntity()
 	{
-		if (cachedEntity == null || cachedEntity.isInvalid())
+		if (cachedEntity == null || cachedEntity.isRemoved())
 		{
 			cachedEntity = minecraftWorld.getTileEntity(pos);
 		}
@@ -218,10 +220,10 @@ public class BlockContainerJS
 		return cachedEntity;
 	}
 
-	public ID getEntityID()
+	public ResourceLocation getEntityID()
 	{
 		TileEntity entity = getEntity();
-		return entity == null ? ID.NULL_ID : ID.of(TileEntity.getKey(entity.getClass()));
+		return entity == null ? UtilsJS.NULL_ID : entity.getType().getRegistryName();
 	}
 
 	public NBTCompoundJS getEntityData()
@@ -252,23 +254,13 @@ public class BlockContainerJS
 
 	public boolean getCanSeeSky()
 	{
-		return minecraftWorld.canSeeSky(pos);
-	}
-
-	public boolean getCanSnow()
-	{
-		return minecraftWorld.canSnowAt(pos, false);
-	}
-
-	public boolean getCanSnowCheckingLight()
-	{
-		return minecraftWorld.canSnowAt(pos, true);
+		return minecraftWorld.canBlockSeeSky(pos);
 	}
 
 	@Override
 	public String toString()
 	{
-		ID id = getId();
+		ResourceLocation id = getId();
 		Map<String, String> properties = getProperties();
 
 		if (properties.isEmpty())
@@ -321,22 +313,28 @@ public class BlockContainerJS
 
 	public void spawnLightning(boolean effectOnly)
 	{
-		minecraftWorld.addWeatherEffect(new EntityLightningBolt(minecraftWorld, getX(), getY(), getZ(), effectOnly));
+		if (minecraftWorld instanceof ServerWorld)
+		{
+			((ServerWorld) minecraftWorld).addLightningBolt(new LightningBoltEntity((ServerWorld) minecraftWorld, getX(), getY(), getZ(), effectOnly));
+		}
 	}
 
 	public void spawnFireworks(FireworksJS fireworks)
 	{
-		minecraftWorld.spawnEntity(fireworks.createFireworkRocket(minecraftWorld, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D));
+		if (minecraftWorld instanceof World)
+		{
+			minecraftWorld.addEntity(fireworks.createFireworkRocket((World) minecraftWorld, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D));
+		}
 	}
 
 	@Nullable
-	public InventoryJS getInventory(EnumFacing facing)
+	public InventoryJS getInventory(Direction facing)
 	{
 		TileEntity tileEntity = getEntity();
 
 		if (tileEntity != null)
 		{
-			IItemHandler handler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing);
+			IItemHandler handler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).orElse(null);
 
 			if (handler != null)
 			{
@@ -355,7 +353,7 @@ public class BlockContainerJS
 	@SuppressWarnings("deprecation")
 	public ItemStackJS getItem()
 	{
-		IBlockState state = getBlockState();
+		BlockState state = getBlockState();
 		return ItemStackJS.of(state.getBlock().getItem(minecraftWorld, pos, state));
 	}
 }

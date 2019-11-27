@@ -6,7 +6,7 @@ import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 
@@ -60,7 +60,7 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS
 		{
 			drops = new ArrayList<>();
 
-			for (EntityItem entity : event.getDrops())
+			for (ItemEntity entity : event.getDrops())
 			{
 				drops.add(new ItemEntityJS(getWorld(), entity));
 			}
@@ -78,7 +78,7 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS
 		if (!i.isEmpty())
 		{
 			Entity e = event.getEntity();
-			EntityItem ei = new EntityItem(e.world, e.posX, e.posY, e.posZ, i);
+			ItemEntity ei = new ItemEntity(e.world, e.posX, e.posY, e.posZ, i);
 			ei.setPickupDelay(10);
 			ItemEntityJS ie = new ItemEntityJS(getWorld(), ei);
 			getDrops().add(ie);

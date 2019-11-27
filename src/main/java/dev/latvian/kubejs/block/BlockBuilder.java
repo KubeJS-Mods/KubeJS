@@ -3,8 +3,11 @@ package dev.latvian.kubejs.block;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.P;
-import dev.latvian.kubejs.util.ID;
+import dev.latvian.kubejs.util.UtilsJS;
+import net.minecraft.block.Block;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.ToolType;
 
 import java.util.function.Consumer;
 
@@ -13,14 +16,10 @@ import java.util.function.Consumer;
  */
 public class BlockBuilder
 {
-	public static BlockBuilder current;
-
-	public final ID id;
+	public final ResourceLocation id;
 	private final Consumer<BlockBuilder> callback;
 	@Ignore
 	public MaterialJS material;
-	@Ignore
-	public String translationKey;
 	@Ignore
 	public float hardness;
 	@Ignore
@@ -28,7 +27,7 @@ public class BlockBuilder
 	@Ignore
 	public float lightLevel;
 	@Ignore
-	public String harvestTool;
+	public ToolType harvestTool;
 	@Ignore
 	public int harvestLevel;
 	@Ignore
@@ -40,15 +39,14 @@ public class BlockBuilder
 
 	public BlockBuilder(String i, Consumer<BlockBuilder> c)
 	{
-		id = ID.of(KubeJS.appendModId(i));
+		id = UtilsJS.getID(KubeJS.appendModId(i));
 		callback = c;
 		material = MaterialListJS.INSTANCE.map.get("wood");
-		translationKey = id.getNamespace() + "." + id.getPath();
 		hardness = 0.5F;
 		resistance = -1F;
 		lightLevel = 0F;
-		harvestTool = "";
-		harvestLevel = 0;
+		harvestTool = null;
+		harvestLevel = -1;
 		opaque = true;
 		fullBlock = false;
 		layer = BlockRenderLayer.SOLID;
@@ -57,12 +55,6 @@ public class BlockBuilder
 	public BlockBuilder material(@P("material") MaterialJS m)
 	{
 		material = m;
-		return this;
-	}
-
-	public BlockBuilder translationKey(@P("translationKey") String key)
-	{
-		translationKey = key;
 		return this;
 	}
 
@@ -91,7 +83,7 @@ public class BlockBuilder
 		return this;
 	}
 
-	public BlockBuilder harvestTool(@P("tool") String tool, @P("level") int level)
+	public BlockBuilder harvestTool(@P("tool") ToolType tool, @P("level") int level)
 	{
 		harvestTool = tool;
 		harvestLevel = level;
@@ -133,5 +125,33 @@ public class BlockBuilder
 	public void add()
 	{
 		callback.accept(this);
+	}
+
+	public Block.Properties createProperties()
+	{
+		Block.Properties properties = Block.Properties.create(material.getMinecraftMaterial());
+
+		if (resistance >= 0F)
+		{
+			properties.hardnessAndResistance(hardness, resistance);
+		}
+		else
+		{
+			properties.hardnessAndResistance(hardness);
+		}
+
+		properties.lightValue((int) (lightLevel * 15F));
+
+		if (harvestTool != null)
+		{
+			properties.harvestTool(harvestTool);
+		}
+
+		if (harvestLevel >= 0)
+		{
+			properties.harvestLevel(harvestLevel);
+		}
+
+		return properties;
 	}
 }

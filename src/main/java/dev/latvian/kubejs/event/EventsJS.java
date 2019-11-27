@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.event;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptManager;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -16,11 +15,6 @@ import java.util.Map;
  */
 public class EventsJS
 {
-	@Deprecated
-	public static EventsJS INSTANCE = new EventsJS();
-
-	private static final Map<String, List<ScriptEventHandler>> map = new Object2ObjectOpenHashMap<>();
-
 	private static class ScriptEventHandler
 	{
 		private final ScriptFile file;
@@ -33,7 +27,16 @@ public class EventsJS
 		}
 	}
 
-	public static void listen(String id, IEventHandler handler)
+	public final ScriptManager scriptManager;
+	private final Map<String, List<ScriptEventHandler>> map;
+
+	public EventsJS(ScriptManager t)
+	{
+		scriptManager = t;
+		map = new Object2ObjectOpenHashMap<>();
+	}
+
+	public void listen(String id, IEventHandler handler)
 	{
 		List<ScriptEventHandler> list = map.get(id);
 
@@ -43,31 +46,16 @@ public class EventsJS
 			map.put(id, list);
 		}
 
-		list.add(new ScriptEventHandler(ScriptManager.instance.currentFile, handler));
+		list.add(new ScriptEventHandler(scriptManager.currentFile, handler));
 	}
 
-	public static boolean post(String id, EventJS event)
-	{
-		return postToHandlers(id, handlers(id), event);
-	}
-
-	public static boolean postDouble(String id, String extra, EventJS event)
-	{
-		if (!post(id + "." + extra, event))
-		{
-			return post(id, event);
-		}
-
-		return true;
-	}
-
-	public static List<ScriptEventHandler> handlers(String id)
+	public List<ScriptEventHandler> handlers(String id)
 	{
 		List<ScriptEventHandler> list = map.get(id);
 		return list == null ? Collections.emptyList() : list;
 	}
 
-	public static boolean postToHandlers(String id, List<ScriptEventHandler> list, EventJS event)
+	public boolean postToHandlers(String id, List<ScriptEventHandler> list, EventJS event)
 	{
 		if (list.isEmpty())
 		{
@@ -78,7 +66,7 @@ public class EventsJS
 
 		for (ScriptEventHandler handler : list)
 		{
-			ScriptManager.instance.currentFile = handler.file;
+			scriptManager.currentFile = handler.file;
 
 			try
 			{
@@ -92,7 +80,7 @@ public class EventsJS
 			}
 			catch (NashornException ex)
 			{
-				KubeJS.LOGGER.error("Error occurred while firing '" + id + "' event in " + (handler.file == null ? "Unknown file" : handler.file.getPath()) + ": " + ex);
+				handler.file.pack.manager.type.console.error("Error occurred while firing '" + id + "' event in " + handler.file.info.location + ": " + ex);
 			}
 			catch (Throwable ex)
 			{
@@ -104,7 +92,7 @@ public class EventsJS
 		return false;
 	}
 
-	public static void clear()
+	public void clear()
 	{
 		map.clear();
 	}

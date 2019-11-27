@@ -1,7 +1,9 @@
 package dev.latvian.kubejs.fluid;
 
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
-import net.minecraftforge.fluids.Fluid;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
@@ -20,16 +22,15 @@ public class EmptyFluidStackJS extends FluidStackJS
 	}
 
 	@Override
-	public String getFluidName()
+	public ResourceLocation getFluidID()
 	{
-		return "";
+		return Fluids.EMPTY.getRegistryName();
 	}
 
 	@Override
-	@Nullable
 	public Fluid getFluid()
 	{
-		return null;
+		return Fluids.EMPTY;
 	}
 
 	@Nullable

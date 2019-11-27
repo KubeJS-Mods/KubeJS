@@ -1,12 +1,12 @@
 package dev.latvian.kubejs.fluid;
 
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
+import dev.latvian.kubejs.util.UtilsJS;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 /**
  * @author LatvianModder
@@ -18,19 +18,14 @@ public class FluidWrapper
 		return FluidStackJS.of(o);
 	}
 
-	@Nullable
 	public Fluid getType(Object id)
 	{
-		return FluidRegistry.getFluid(String.valueOf(id));
+		Fluid f = ForgeRegistries.FLUIDS.getValue(UtilsJS.getID(id));
+		return f == null ? Fluids.EMPTY : f;
 	}
 
-	public List<String> getList()
+	public Set<ResourceLocation> getTypes()
 	{
-		return new ArrayList<>(FluidRegistry.getRegisteredFluids().keySet());
-	}
-
-	public Map<String, Fluid> getTypeMap()
-	{
-		return FluidRegistry.getRegisteredFluids();
+		return ForgeRegistries.FLUIDS.getKeys();
 	}
 }

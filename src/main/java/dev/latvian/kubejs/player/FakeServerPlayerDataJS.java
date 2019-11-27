@@ -2,7 +2,7 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.world.WorldJS;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 
 import javax.annotation.Nullable;
 
@@ -11,11 +11,11 @@ import javax.annotation.Nullable;
  */
 public class FakeServerPlayerDataJS extends ServerPlayerDataJS
 {
-	public EntityPlayerMP player;
+	public ServerPlayerEntity player;
 
-	public FakeServerPlayerDataJS(ServerJS s, EntityPlayerMP p)
+	public FakeServerPlayerDataJS(ServerJS s, ServerPlayerEntity p)
 	{
-		super(s, p.getUniqueID(), p.getName(), true);
+		super(s, p.getUniqueID(), p.getGameProfile().getName(), true);
 		player = p;
 	}
 
@@ -27,7 +27,7 @@ public class FakeServerPlayerDataJS extends ServerPlayerDataJS
 
 	@Override
 	@Nullable
-	public EntityPlayerMP getPlayerEntity()
+	public ServerPlayerEntity getMinecraftPlayer()
 	{
 		return player;
 	}

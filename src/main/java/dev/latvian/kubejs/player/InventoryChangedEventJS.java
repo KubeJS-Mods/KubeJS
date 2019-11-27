@@ -3,7 +3,7 @@ package dev.latvian.kubejs.player;
 import dev.latvian.kubejs.documentation.Info;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.ItemStackJS;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 
 /**
@@ -11,11 +11,11 @@ import net.minecraft.item.ItemStack;
  */
 public class InventoryChangedEventJS extends PlayerEventJS
 {
-	private final EntityPlayerMP player;
+	private final ServerPlayerEntity player;
 	private final ItemStack item;
 	private final int slot;
 
-	public InventoryChangedEventJS(EntityPlayerMP p, ItemStack is, int s)
+	public InventoryChangedEventJS(ServerPlayerEntity p, ItemStack is, int s)
 	{
 		player = p;
 		item = is;

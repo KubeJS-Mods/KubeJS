@@ -3,15 +3,15 @@ package dev.latvian.kubejs.player;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.util.Overlay;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.entity.player.PlayerEntity;
 
 /**
  * @author LatvianModder
  */
-public class ClientPlayerJS extends PlayerJS<EntityPlayer>
+public class ClientPlayerJS extends PlayerJS<PlayerEntity>
 {
-	public ClientPlayerJS(ClientPlayerDataJS d, EntityPlayer player)
+	public ClientPlayerJS(ClientPlayerDataJS d, PlayerEntity player)
 	{
 		super(d, d.getWorld(), player);
 	}
@@ -19,24 +19,24 @@ public class ClientPlayerJS extends PlayerJS<EntityPlayer>
 	@Override
 	public PlayerStatsJS getStats()
 	{
-		return new PlayerStatsJS(this, ((EntityPlayerSP) minecraftPlayer).getStatFileWriter());
+		return new PlayerStatsJS(this, ((ClientPlayerEntity) minecraftPlayer).getStats());
 	}
 
 	@Override
 	public void openOverlay(Overlay overlay)
 	{
-		KubeJS.PROXY.openOverlay(overlay);
+		KubeJS.instance.proxy.openOverlay(overlay);
 	}
 
 	@Override
 	public void closeOverlay(String overlay)
 	{
-		KubeJS.PROXY.closeOverlay(overlay);
+		KubeJS.instance.proxy.closeOverlay(overlay);
 	}
 
 	@Override
 	public boolean isMiningBlock()
 	{
-		return Minecraft.getMinecraft().playerController.getIsHittingBlock();
+		return Minecraft.getInstance().playerController.getIsHittingBlock();
 	}
 }

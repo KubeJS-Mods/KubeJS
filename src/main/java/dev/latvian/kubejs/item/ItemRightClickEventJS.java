@@ -2,7 +2,7 @@ package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 /**
@@ -29,7 +29,7 @@ public class ItemRightClickEventJS extends PlayerEventJS
 		return entityOf(event);
 	}
 
-	public EnumHand getHand()
+	public Hand getHand()
 	{
 		return event.getHand();
 	}

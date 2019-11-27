@@ -1,9 +1,9 @@
 package dev.latvian.kubejs.util.nbt;
 
 import dev.latvian.kubejs.KubeJS;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.INBT;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
@@ -47,7 +47,7 @@ public class NBTCompoundJS implements NBTBaseJS
 
 		@Nullable
 		@Override
-		public NBTTagCompound createNBT()
+		public CompoundNBT createNBT()
 		{
 			return null;
 		}
@@ -116,11 +116,11 @@ public class NBTCompoundJS implements NBTBaseJS
 	public static void write(File file, Object nbt) throws IOException
 	{
 		KubeJS.verifyFilePath(file);
-		NBTTagCompound n = NBTBaseJS.of(nbt).asCompound().createNBT();
+		CompoundNBT n = NBTBaseJS.of(nbt).asCompound().createNBT();
 
 		if (n == null)
 		{
-			n = new NBTTagCompound();
+			n = new CompoundNBT();
 		}
 
 		CompressedStreamTools.writeCompressed(n, new FileOutputStream(file));
@@ -128,12 +128,12 @@ public class NBTCompoundJS implements NBTBaseJS
 
 	public static Object read(String file) throws IOException
 	{
-		return read(new File(KubeJS.getGameDirectory(), file));
+		return read(KubeJS.getGameDirectory().resolve(file).toFile());
 	}
 
 	public static void write(String file, Object json) throws IOException
 	{
-		write(new File(KubeJS.getGameDirectory(), file), json);
+		write(KubeJS.getGameDirectory().resolve(file).toFile(), json);
 	}
 
 	private final Map<String, NBTBaseJS> map;
@@ -148,13 +148,13 @@ public class NBTCompoundJS implements NBTBaseJS
 		this(3);
 	}
 
-	public NBTCompoundJS(NBTTagCompound c)
+	public NBTCompoundJS(CompoundNBT c)
 	{
-		this(c.getSize());
+		this(c.size());
 
-		for (String s : c.getKeySet())
+		for (String s : c.keySet())
 		{
-			NBTBaseJS nbt = NBTBaseJS.of(c.getTag(s));
+			NBTBaseJS nbt = NBTBaseJS.of(c.get(s));
 
 			if (!nbt.isNull())
 			{
@@ -171,17 +171,17 @@ public class NBTCompoundJS implements NBTBaseJS
 
 	@Override
 	@Nullable
-	public NBTTagCompound createNBT()
+	public CompoundNBT createNBT()
 	{
-		NBTTagCompound tagCompound = new NBTTagCompound();
+		CompoundNBT tagCompound = new CompoundNBT();
 
 		for (Map.Entry<String, NBTBaseJS> entry : map.entrySet())
 		{
-			NBTBase base = entry.getValue().createNBT();
+			INBT base = entry.getValue().createNBT();
 
 			if (base != null)
 			{
-				tagCompound.setTag(entry.getKey(), base);
+				tagCompound.put(entry.getKey(), base);
 			}
 		}
 

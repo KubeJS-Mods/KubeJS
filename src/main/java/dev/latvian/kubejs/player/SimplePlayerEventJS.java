@@ -1,16 +1,16 @@
 package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.entity.EntityJS;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 
 /**
  * @author LatvianModder
  */
 public class SimplePlayerEventJS extends PlayerEventJS
 {
-	private final EntityPlayer player;
+	private final PlayerEntity player;
 
-	public SimplePlayerEventJS(EntityPlayer p)
+	public SimplePlayerEventJS(PlayerEntity p)
 	{
 		player = p;
 	}

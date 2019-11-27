@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.player;
 
-import dev.latvian.kubejs.net.KubeJSNetHandler;
+import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageCloseOverlay;
 import dev.latvian.kubejs.net.MessageOpenOverlay;
 import dev.latvian.kubejs.server.ServerJS;
@@ -11,24 +11,25 @@ import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import net.minecraft.advancements.AdvancementProgress;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.play.server.SPacketHeldItemChange;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.play.server.SHeldItemChangePacket;
 import net.minecraft.server.management.PlayerInteractionManager;
-import net.minecraft.server.management.UserListBansEntry;
+import net.minecraft.server.management.ProfileBanEntry;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.Date;
 
 /**
  * @author LatvianModder
  */
-public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
+public class ServerPlayerJS extends PlayerJS<ServerPlayerEntity>
 {
-	private static FieldJS isDestroyingBlockField;
+	private static FieldJS<Boolean> isDestroyingBlockField;
 
 	public final ServerJS server;
 	private final boolean hasClientMod;
 
-	public ServerPlayerJS(ServerPlayerDataJS d, ServerWorldJS w, EntityPlayerMP p)
+	public ServerPlayerJS(ServerPlayerDataJS d, ServerWorldJS w, ServerPlayerEntity p)
 	{
 		super(d, w, p);
 		server = w.getServer();
@@ -38,19 +39,19 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 	@Override
 	public PlayerStatsJS getStats()
 	{
-		return new PlayerStatsJS(this, minecraftPlayer.getStatFile());
+		return new PlayerStatsJS(this, minecraftPlayer.getStats());
 	}
 
 	@Override
 	public void openOverlay(Overlay overlay)
 	{
-		KubeJSNetHandler.net.sendTo(new MessageOpenOverlay(overlay), minecraftPlayer);
+		KubeJSNet.MAIN.send(PacketDistributor.PLAYER.with(() -> minecraftPlayer), new MessageOpenOverlay(overlay));
 	}
 
 	@Override
 	public void closeOverlay(String overlay)
 	{
-		KubeJSNetHandler.net.sendTo(new MessageCloseOverlay(overlay), minecraftPlayer);
+		KubeJSNet.MAIN.send(PacketDistributor.PLAYER.with(() -> minecraftPlayer), new MessageCloseOverlay(overlay));
 	}
 
 	@Override
@@ -58,11 +59,10 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 	{
 		if (isDestroyingBlockField == null)
 		{
-			isDestroyingBlockField = UtilsJS.getField(PlayerInteractionManager.class, "isDestroyingBlock", "field_73088_d");
+			isDestroyingBlockField = UtilsJS.getField(PlayerInteractionManager.class, "field_73088_d");
 		}
 
-		Object obj = isDestroyingBlockField.get(minecraftPlayer.interactionManager);
-		return obj instanceof Boolean && (Boolean) obj;
+		return isDestroyingBlockField.get(minecraftPlayer.interactionManager).orElse(false);
 	}
 
 	public boolean isOP()
@@ -83,7 +83,7 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 	public void ban(String banner, String reason, long expiresInMillis)
 	{
 		Date date = new Date();
-		UserListBansEntry userlistbansentry = new UserListBansEntry(minecraftPlayer.getGameProfile(), date, banner, new Date(date.getTime() + (expiresInMillis <= 0L ? 315569260000L : expiresInMillis)), reason);
+		ProfileBanEntry userlistbansentry = new ProfileBanEntry(minecraftPlayer.getGameProfile(), date, banner, new Date(date.getTime() + (expiresInMillis <= 0L ? 315569260000L : expiresInMillis)), reason);
 		server.minecraftServer.getPlayerList().getBannedPlayers().addEntry(userlistbansentry);
 		kick(new TextTranslate("multiplayer.disconnect.banned"));
 	}
@@ -135,7 +135,7 @@ public class ServerPlayerJS extends PlayerJS<EntityPlayerMP>
 
 		if (p != n && minecraftPlayer.connection != null)
 		{
-			minecraftPlayer.connection.sendPacket(new SPacketHeldItemChange(n));
+			minecraftPlayer.connection.sendPacket(new SHeldItemChangePacket(n));
 		}
 	}
 

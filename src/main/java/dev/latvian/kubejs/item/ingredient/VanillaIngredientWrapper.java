@@ -4,12 +4,13 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparators;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.client.util.RecipeItemHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.RecipeItemHelper;
 
 import javax.annotation.Nullable;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * @author LatvianModder
@@ -22,7 +23,7 @@ public class VanillaIngredientWrapper extends Ingredient
 
 	public VanillaIngredientWrapper(IngredientJS i)
 	{
-		super(0);
+		super(Stream.of());
 		ingredientJS = i;
 	}
 
@@ -46,7 +47,7 @@ public class VanillaIngredientWrapper extends Ingredient
 	}
 
 	@Override
-	public boolean apply(@Nullable ItemStack stack)
+	public boolean test(@Nullable ItemStack stack)
 	{
 		return stack != null && !stack.isEmpty() && ingredientJS.testVanilla(stack);
 	}

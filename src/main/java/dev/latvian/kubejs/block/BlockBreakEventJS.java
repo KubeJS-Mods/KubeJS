@@ -3,7 +3,7 @@ package dev.latvian.kubejs.block;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraftforge.event.world.BlockEvent;
 
 /**
@@ -35,7 +35,7 @@ public class BlockBreakEventJS extends PlayerEventJS
 		return new BlockContainerJS(event.getWorld(), event.getPos())
 		{
 			@Override
-			public IBlockState getBlockState()
+			public BlockState getBlockState()
 			{
 				return event.getState();
 			}

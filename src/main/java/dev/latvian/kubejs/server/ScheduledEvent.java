@@ -3,7 +3,6 @@ package dev.latvian.kubejs.server;
 import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.script.ScriptFile;
-import dev.latvian.kubejs.script.ScriptManager;
 
 import javax.annotation.Nullable;
 
@@ -24,7 +23,7 @@ public class ScheduledEvent
 
 	ScheduledEvent(ServerJS s, boolean ut, long t, long e, @Nullable Object d, IScheduledEventCallback c)
 	{
-		file = ScriptManager.instance.currentFile;
+		file = s.scriptManager.currentFile;
 		usingTicks = ut;
 		server = s;
 		timer = t;

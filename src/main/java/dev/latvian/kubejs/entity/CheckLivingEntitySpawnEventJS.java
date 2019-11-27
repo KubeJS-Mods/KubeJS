@@ -35,17 +35,17 @@ public class CheckLivingEntitySpawnEventJS extends LivingEntityEventJS
 		return entityOf(event);
 	}
 
-	public float getX()
+	public double getX()
 	{
 		return event.getX();
 	}
 
-	public float getY()
+	public double getY()
 	{
 		return event.getY();
 	}
 
-	public float getZ()
+	public double getZ()
 	{
 		return event.getZ();
 	}

@@ -3,8 +3,8 @@ package dev.latvian.kubejs.player;
 import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
-import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.container.ChestContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 
@@ -25,7 +25,7 @@ public class ChestEventJS extends InventoryEventJS
 	@MinecraftClass
 	public IInventory getWrappedInventory()
 	{
-		return ((ContainerChest) getInventoryContainer()).getLowerChestInventory();
+		return ((ChestContainer) getInventoryContainer()).getLowerChestInventory();
 	}
 
 	public InventoryJS getInventory()

@@ -7,6 +7,7 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashSet;
@@ -27,10 +28,10 @@ public interface IngredientJS
 		}
 		else if (object instanceof String)
 		{
-			if (object.toString().startsWith("ore:"))
+			if (object.toString().startsWith("tag:"))
 			{
 				String[] s = object.toString().substring(4).split(" ", 2);
-				return new OreDictionaryIngredientJS(s[0]).count(s.length == 2 ? UtilsJS.parseInt(s[1], 1) : 1);
+				return new TagIngredientJS(new ResourceLocation(s[0])).count(s.length == 2 ? UtilsJS.parseInt(s[1], 1) : 1);
 			}
 			else if (object.toString().startsWith("mod:"))
 			{
@@ -59,9 +60,9 @@ public interface IngredientJS
 
 				return list.ingredients.isEmpty() ? EmptyItemStackJS.INSTANCE : list;
 			}
-			else if (js.hasMember("ore"))
+			else if (js.hasMember("tag"))
 			{
-				OreDictionaryIngredientJS ingredient = new OreDictionaryIngredientJS(js.getMember("ore").toString());
+				TagIngredientJS ingredient = new TagIngredientJS(new ResourceLocation(js.getMember("tag").toString()));
 
 				if (js.hasMember("count"))
 				{
