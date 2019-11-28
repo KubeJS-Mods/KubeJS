@@ -85,7 +85,6 @@ public class RecipeEventJS extends ServerEventJS
 							originalRecipes.add(r);
 							r.id = new ResourceLocation(location.getNamespace(), location.getPath().substring(8, location.getPath().length() - 5));
 							r.group = json.has("group") ? json.get("group").getAsString() : "";
-							System.out.println(r);
 						}
 					}
 					catch (Exception ex)
