@@ -173,6 +173,7 @@ public class KubeJSResourcePack implements IResourcePack
 		JsonObject json = new JsonObject();
 		json.addProperty("description", "Magic");
 		json.addProperty("pack_format", 4);
+		json.addProperty("language", "en_us");
 		return serializer.deserialize(json);
 	}
 

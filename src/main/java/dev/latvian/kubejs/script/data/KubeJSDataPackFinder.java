@@ -3,6 +3,8 @@ package dev.latvian.kubejs.script.data;
 import net.minecraft.resources.IPackFinder;
 import net.minecraft.resources.ResourcePackInfo;
 import net.minecraft.resources.ResourcePackType;
+import net.minecraft.resources.data.PackMetadataSection;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -53,12 +55,9 @@ public class KubeJSDataPackFinder implements IPackFinder
 			}
 		}
 
-		String s = "kubejs:data_pack";
-		T t = ResourcePackInfo.createResourcePack(s, false, () -> new KubeJSResourcePack(folder, ResourcePackType.SERVER_DATA), packInfoFactory, ResourcePackInfo.Priority.BOTTOM);
-
-		if (t != null)
-		{
-			nameToPackMap.put(s, t);
-		}
+		KubeJSResourcePack dataPack = new KubeJSResourcePack(folder, ResourcePackType.SERVER_DATA);
+		PackMetadataSection dataPackMetadata = new PackMetadataSection(new StringTextComponent("./kubejs/data/"), 4);
+		ResourcePackInfo dataPackInfo = new ResourcePackInfo("kubejs:data_pack", true, () -> dataPack, dataPack, dataPackMetadata, ResourcePackInfo.Priority.TOP, true);
+		nameToPackMap.put(dataPackInfo.getName(), (T) dataPackInfo);
 	}
 }

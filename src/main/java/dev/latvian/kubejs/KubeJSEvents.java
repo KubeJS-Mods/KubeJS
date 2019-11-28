@@ -34,6 +34,7 @@ import dev.latvian.kubejs.player.InventoryEventJS;
 import dev.latvian.kubejs.player.PlayerAdvancementEventJS;
 import dev.latvian.kubejs.player.PlayerChatEventJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
+import dev.latvian.kubejs.script.data.DataPackEventJS;
 import dev.latvian.kubejs.server.CommandEventJS;
 import dev.latvian.kubejs.server.ServerEventJS;
 import dev.latvian.kubejs.world.ExplosionEventJS;
@@ -57,6 +58,7 @@ public class KubeJSEvents
 	public static final String SERVER_LOAD = "server.load";
 	public static final String SERVER_UNLOAD = "server.unload";
 	public static final String SERVER_TICK = "server.tick";
+	public static final String SERVER_DATAPACK = "server.datapack";
 
 	public static final String WORLD_LOAD = "world.load";
 	public static final String WORLD_UNLOAD = "world.unload";
@@ -133,6 +135,7 @@ public class KubeJSEvents
 		event.registerEvent(SERVER_LOAD, ServerEventJS.class).serverOnly();
 		event.registerEvent(SERVER_UNLOAD, ServerEventJS.class).serverOnly();
 		event.registerEvent(SERVER_TICK, ServerEventJS.class).serverOnly();
+		event.registerEvent(SERVER_DATAPACK, DataPackEventJS.class).serverOnly();
 
 		event.registerEvent(WORLD_LOAD, SimpleWorldEventJS.class).serverOnly();
 		event.registerEvent(WORLD_UNLOAD, SimpleWorldEventJS.class).serverOnly();

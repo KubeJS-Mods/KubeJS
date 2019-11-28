@@ -1,13 +1,10 @@
 package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
 import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.script.data.DataPackScriptLoader;
-import dev.latvian.kubejs.script.data.KubeJSDataPackFinder;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.SimpleWorldEventJS;
@@ -51,9 +48,7 @@ public class KubeJSServerEventHandler
 		}
 
 		ServerJS.instance = new ServerJS(event.getServer());
-
-		event.getServer().getResourcePacks().addPackFinder(new KubeJSDataPackFinder(KubeJS.getGameDirectory().resolve("kubejs").toFile()));
-		event.getServer().getResourceManager().addReloadListener(new DataPackScriptLoader(ServerJS.instance.scriptManager));
+		ServerJS.instance.registerPacks();
 	}
 
 	private void serverStarting(FMLServerStartingEvent event)
