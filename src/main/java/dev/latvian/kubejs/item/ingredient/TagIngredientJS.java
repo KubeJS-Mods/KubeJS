@@ -1,5 +1,7 @@
 package dev.latvian.kubejs.item.ingredient;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -113,5 +115,13 @@ public class TagIngredientJS implements IngredientJS
 	public String toString()
 	{
 		return "tag:" + tag;
+	}
+
+	@Override
+	public JsonElement toIngredientJson()
+	{
+		JsonObject json = new JsonObject();
+		json.addProperty("tag", tag.toString());
+		return json;
 	}
 }

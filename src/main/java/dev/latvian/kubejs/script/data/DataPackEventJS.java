@@ -9,16 +9,16 @@ import dev.latvian.kubejs.util.UtilsJS;
  */
 public class DataPackEventJS extends ServerEventJS
 {
-	private final VirtualKubeJSDataPack virtualData;
+	private final VirtualKubeJSDataPack virtualDataPack;
 
 	public DataPackEventJS(VirtualKubeJSDataPack d)
 	{
-		virtualData = d;
+		virtualDataPack = d;
 	}
 
 	public void add(Object id, String content)
 	{
-		virtualData.addData(UtilsJS.getID(id), content);
+		virtualDataPack.addData(UtilsJS.getID(id), content);
 	}
 
 	public void addJson(Object id, Object json)

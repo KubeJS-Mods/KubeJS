@@ -1,5 +1,7 @@
 package dev.latvian.kubejs.item;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.item.ingredient.IgnoreNBTIngredientJS;
@@ -73,17 +75,12 @@ public abstract class ItemStackJS implements IngredientJS
 
 				if (js.getMember("count") instanceof Number)
 				{
-					stack.count(((Number) js.getMember("count")).intValue());
-				}
-
-				if (js.getMember("data") instanceof Number)
-				{
-					stack.damage(((Number) js.getMember("data")).intValue());
+					stack.setCount(((Number) js.getMember("count")).intValue());
 				}
 
 				if (js.hasMember("nbt"))
 				{
-					stack.nbt(js.getMember("nbt"));
+					stack.setNbt(js.getMember("nbt"));
 				}
 
 				return stack;
@@ -94,7 +91,7 @@ public abstract class ItemStackJS implements IngredientJS
 
 				if (js.hasMember("count"))
 				{
-					stack.count(UtilsJS.parseInt(js.getMember("count"), 1));
+					stack.setCount(UtilsJS.parseInt(js.getMember("count"), 1));
 				}
 
 				return stack;
@@ -108,11 +105,11 @@ public abstract class ItemStackJS implements IngredientJS
 			return EmptyItemStackJS.INSTANCE;
 		}
 
-		String[] s = s0.split("\\s", 4);
+		String[] s = s0.split("\\s", 3);
 
-		if (s[0].startsWith("tag:"))
+		if (s[0].startsWith("#"))
 		{
-			return new TagIngredientJS(new ResourceLocation(s[0].substring(4))).getFirst().count(s.length >= 2 ? UtilsJS.parseInt(s[1], 1) : 1);
+			return new TagIngredientJS(new ResourceLocation(s[0].substring(1))).getFirst().count(s.length >= 2 ? UtilsJS.parseInt(s[1], 1) : 1);
 		}
 
 		String ids = KubeJS.appendModId(s[0]);
@@ -120,20 +117,46 @@ public abstract class ItemStackJS implements IngredientJS
 
 		if (s.length >= 2)
 		{
-			stack.count(Integer.parseInt(s[1]));
+			stack.setCount(Integer.parseInt(s[1]));
 		}
 
 		if (s.length >= 3)
 		{
-			stack.damage(Integer.parseInt(s[2]));
-		}
-
-		if (s.length >= 4)
-		{
-			stack.nbt(s[3]);
+			stack.setNbt(s[2]);
 		}
 
 		return stack;
+	}
+
+	public static ItemStackJS fromRecipeJson(JsonElement json)
+	{
+		if (json.isJsonPrimitive())
+		{
+			return of(json.getAsString());
+		}
+		else if (json.isJsonObject())
+		{
+			JsonObject o = json.getAsJsonObject();
+
+			if (o.has("item"))
+			{
+				ItemStackJS stack = ItemStackJS.of(o.get("item").getAsString());
+
+				if (o.has("count"))
+				{
+					stack.setCount(o.get("count").getAsInt());
+				}
+
+				if (o.has("nbt"))
+				{
+					//stack.setNbt(JsonToNBT.getTagFromJson(o.get("nbt")));
+				}
+
+				return stack;
+			}
+		}
+
+		return EmptyItemStackJS.INSTANCE;
 	}
 
 	public static List<ItemStackJS> getList()
@@ -511,5 +534,35 @@ public abstract class ItemStackJS implements IngredientJS
 	public int getHarvestLevel(ToolType tool)
 	{
 		return getHarvestLevel(tool, null, null);
+	}
+
+	@Override
+	public JsonElement toIngredientJson()
+	{
+		JsonObject json = new JsonObject();
+		json.addProperty("item", getId().toString());
+		return json;
+	}
+
+	public JsonElement toRecipeResultJson()
+	{
+		JsonObject json = new JsonObject();
+		json.addProperty("item", getId().toString());
+
+		int c = getCount();
+
+		if (c > 1)
+		{
+			json.addProperty("count", c);
+		}
+
+		CompoundNBT nbt = getNbt().createNBT();
+
+		if (nbt != null && !nbt.isEmpty())
+		{
+			json.addProperty("nbt", nbt.toString());
+		}
+
+		return json;
 	}
 }

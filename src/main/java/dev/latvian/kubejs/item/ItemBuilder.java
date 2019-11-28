@@ -7,6 +7,7 @@ import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
 import net.minecraft.item.Rarity;
 import net.minecraft.util.ResourceLocation;
@@ -24,8 +25,6 @@ import java.util.function.Consumer;
  */
 public class ItemBuilder
 {
-	public static ItemBuilder current;
-
 	public final ResourceLocation id;
 	private final Consumer<ItemBuilder> callback;
 	@Ignore
@@ -42,6 +41,8 @@ public class ItemBuilder
 	public boolean glow;
 	@Ignore
 	public final List<Text> tooltip;
+	@Ignore
+	public ItemGroup group;
 
 	public ItemBuilder(String i, Consumer<ItemBuilder> c)
 	{
@@ -54,6 +55,7 @@ public class ItemBuilder
 		rarity = Rarity.COMMON;
 		glow = false;
 		tooltip = new ArrayList<>();
+		group = ItemGroup.MISC;
 	}
 
 	public ItemBuilder maxStackSize(@P("size") int v)
@@ -103,6 +105,20 @@ public class ItemBuilder
 		return this;
 	}
 
+	public ItemBuilder group(String g)
+	{
+		for (ItemGroup ig : ItemGroup.GROUPS)
+		{
+			if (ig.getPath().equals(g))
+			{
+				group = ig;
+				return this;
+			}
+		}
+
+		return this;
+	}
+
 	public void add()
 	{
 		callback.accept(this);
@@ -112,6 +128,7 @@ public class ItemBuilder
 	{
 		Item.Properties properties = new Item.Properties();
 
+		properties.group(group);
 		properties.maxStackSize(maxStackSize);
 		properties.maxDamage(maxDamage);
 		properties.rarity(rarity);

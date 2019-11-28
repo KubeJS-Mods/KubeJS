@@ -24,6 +24,7 @@ public class FunctionBinding extends AbstractJSObject
 	}
 
 	@Override
+	@Nullable
 	public Object call(Object thiz, Object... args)
 	{
 		return handler.call(args);

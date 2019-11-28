@@ -17,7 +17,7 @@ public class KubeJSBlockEventHandler
 {
 	public void init()
 	{
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registry);
+		FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Block.class, this::registry);
 		MinecraftForge.EVENT_BUS.addListener(this::rightClick);
 		MinecraftForge.EVENT_BUS.addListener(this::leftClick);
 		MinecraftForge.EVENT_BUS.addListener(this::blockBreak);

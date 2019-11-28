@@ -1,5 +1,8 @@
 package dev.latvian.kubejs.item.ingredient;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
@@ -28,9 +31,9 @@ public interface IngredientJS
 		}
 		else if (object instanceof String)
 		{
-			if (object.toString().startsWith("tag:"))
+			if (object.toString().startsWith("#"))
 			{
-				String[] s = object.toString().substring(4).split(" ", 2);
+				String[] s = object.toString().substring(1).split(" ", 2);
 				return new TagIngredientJS(new ResourceLocation(s[0])).count(s.length == 2 ? UtilsJS.parseInt(s[1], 1) : 1);
 			}
 			else if (object.toString().startsWith("mod:"))
@@ -78,6 +81,47 @@ public interface IngredientJS
 		}
 
 		return ItemStackJS.of(object);
+	}
+
+	static IngredientJS fromRecipeJson(JsonElement json)
+	{
+		if (json.isJsonArray())
+		{
+			MatchAnyIngredientJS any = new MatchAnyIngredientJS();
+
+			for (JsonElement e : json.getAsJsonArray())
+			{
+				any.ingredients.add(fromRecipeJson(e));
+			}
+
+			return any;
+		}
+		else if (json.isJsonPrimitive())
+		{
+			return of(json.getAsString());
+		}
+		else if (json.isJsonObject())
+		{
+			JsonObject o = json.getAsJsonObject();
+
+			if (o.has("tag"))
+			{
+				return new TagIngredientJS(new ResourceLocation(o.get("tag").getAsString()));
+			}
+			else if (o.has("item"))
+			{
+				ItemStackJS stack = ItemStackJS.of(o.get("item").getAsString());
+
+				if (o.has("count"))
+				{
+					stack.setCount(o.get("count").getAsInt());
+				}
+
+				return stack;
+			}
+		}
+
+		return EmptyItemStackJS.INSTANCE;
 	}
 
 	boolean test(ItemStackJS stack);
@@ -143,5 +187,30 @@ public interface IngredientJS
 	default int getCount()
 	{
 		return 1;
+	}
+
+	default JsonElement toIngredientJson()
+	{
+		JsonArray array = new JsonArray();
+
+		for (ItemStackJS stackJS : getStacks())
+		{
+			array.add(stackJS.toIngredientJson());
+		}
+
+		return array;
+	}
+
+	default boolean anyStackMatches(IngredientJS ingredient)
+	{
+		for (ItemStackJS stack : getStacks())
+		{
+			if (ingredient.test(stack))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

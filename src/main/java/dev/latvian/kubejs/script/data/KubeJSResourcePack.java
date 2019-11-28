@@ -2,6 +2,7 @@ package dev.latvian.kubejs.script.data;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.script.ScriptType;
 import net.minecraft.resources.IResourcePack;
 import net.minecraft.resources.ResourcePackFileNotFoundException;
@@ -14,10 +15,12 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -72,6 +75,19 @@ public class KubeJSResourcePack implements IResourcePack
 		{
 			return new BufferedInputStream(new FileInputStream(file));
 		}
+		else if (packType == ResourcePackType.CLIENT_RESOURCES && location.getNamespace().equals(KubeJS.MOD_ID))
+		{
+			if (location.getPath().startsWith("models/item/") && location.getPath().endsWith(".json"))
+			{
+				JsonObject model = new JsonObject();
+				model.addProperty("parent", "item/generated");
+				JsonObject textures = new JsonObject();
+				textures.addProperty("layer0", "kubejs:item/" + location.getPath().substring(12, location.getPath().length() - 5));
+				model.add("textures", textures);
+
+				return new ByteArrayInputStream(model.toString().getBytes(StandardCharsets.UTF_8));
+			}
+		}
 
 		throw new ResourcePackFileNotFoundException(folder, resourcePath);
 	}
@@ -79,6 +95,14 @@ public class KubeJSResourcePack implements IResourcePack
 	@Override
 	public boolean resourceExists(ResourcePackType type, ResourceLocation location)
 	{
+		if (packType == ResourcePackType.CLIENT_RESOURCES && location.getNamespace().equals(KubeJS.MOD_ID))
+		{
+			if (location.getPath().startsWith("models/item/") && location.getPath().endsWith(".json"))
+			{
+				return true;
+			}
+		}
+
 		return type == packType && new File(folder, getFullPath(type, location)).exists();
 	}
 

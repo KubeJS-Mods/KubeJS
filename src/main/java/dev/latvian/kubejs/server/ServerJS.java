@@ -16,6 +16,11 @@ import dev.latvian.kubejs.player.FakeServerPlayerDataJS;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.player.ServerPlayerDataJS;
+import dev.latvian.kubejs.recipe.RecipeDeserializerJS;
+import dev.latvian.kubejs.recipe.RecipeEventJS;
+import dev.latvian.kubejs.recipe.RecipeFunction;
+import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
+import dev.latvian.kubejs.recipe.type.RecipeJS;
 import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptFileInfo;
 import dev.latvian.kubejs.script.ScriptManager;
@@ -38,6 +43,7 @@ import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IFutureReloadListener;
 import net.minecraft.resources.IResourceManager;
@@ -55,6 +61,7 @@ import javax.annotation.Nullable;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -422,6 +429,25 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 		virtualDataPack.resetData();
 		scriptManager.load();
 		new DataPackEventJS(virtualDataPack).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK);
+
+		List<RecipeJS> recipes = new ArrayList<>();
+		Set<ResourceLocation> deletedRecipes = new HashSet<>();
+
+		Map<String, RecipeFunction> recipeFunctions = new HashMap<>();
+		Map<IRecipeSerializer, RecipeDeserializerJS> deserializerMap = new HashMap<>();
+		MinecraftForge.EVENT_BUS.post(new RegisterRecipeHandlersEvent(recipes, recipeFunctions, deserializerMap));
+		new RecipeEventJS(resourceManager, recipeFunctions, deletedRecipes, deserializerMap).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_RECRIPES);
+
+		for (ResourceLocation deletedRecipe : deletedRecipes)
+		{
+			virtualDataPack.addData(new ResourceLocation(deletedRecipe.getNamespace(), "recipes/" + deletedRecipe.getPath() + ".json"), "{\"type\":\"kubejs:deleted\"}");
+		}
+
+		for (RecipeJS recipe : recipes)
+		{
+			recipe.addToDataPack(virtualDataPack);
+		}
+
 		resourceManager.addResourcePack(virtualDataPack);
 		ScriptType.SERVER.console.info("Scripts loaded");
 	}

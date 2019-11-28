@@ -28,10 +28,7 @@ public class ItemRegistryEventJS extends EventJS
 
 	public ItemBuilder create(String name)
 	{
-		return new ItemBuilder(name, p -> {
-			ItemBuilder.current = p;
-			registry.register(new ItemJS(p).setRegistryName(p.id));
-		});
+		return new ItemBuilder(name, p -> registry.register(new ItemJS(p).setRegistryName(p.id)));
 	}
 
 	public ItemBuilder createBlockItem(String name)

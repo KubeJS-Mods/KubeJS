@@ -15,12 +15,13 @@ import java.util.List;
  */
 public class ItemJS extends Item
 {
-	public final ItemBuilder properties = ItemBuilder.current;
+	public final ItemBuilder properties;
 	private ItemStack containerItem;
 
 	public ItemJS(ItemBuilder p)
 	{
 		super(p.createItemProperties());
+		properties = p;
 	}
 
 	@Override

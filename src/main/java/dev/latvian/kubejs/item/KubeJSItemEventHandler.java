@@ -20,7 +20,7 @@ public class KubeJSItemEventHandler
 {
 	public void init()
 	{
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registry);
+		FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Item.class, this::registry);
 		MinecraftForge.EVENT_BUS.addListener(this::rightClick);
 		MinecraftForge.EVENT_BUS.addListener(this::rightClickEmpty);
 		MinecraftForge.EVENT_BUS.addListener(this::leftClickEmpty);
