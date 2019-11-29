@@ -15,7 +15,6 @@ import dev.latvian.kubejs.player.FakeServerPlayerDataJS;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.player.ServerPlayerDataJS;
-import dev.latvian.kubejs.recipe.RecipeDeserializerJS;
 import dev.latvian.kubejs.recipe.RecipeEventJS;
 import dev.latvian.kubejs.recipe.RecipeFunction;
 import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
@@ -41,7 +40,6 @@ import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IFutureReloadListener;
 import net.minecraft.resources.IResourceManager;
@@ -413,10 +411,9 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 		List<RecipeJS> recipes = new ArrayList<>();
 		Set<ResourceLocation> deletedRecipes = new HashSet<>();
 
-		Map<String, RecipeFunction> recipeFunctions = new HashMap<>();
-		Map<IRecipeSerializer, RecipeDeserializerJS> deserializerMap = new HashMap<>();
-		MinecraftForge.EVENT_BUS.post(new RegisterRecipeHandlersEvent(recipes, recipeFunctions, deserializerMap));
-		new RecipeEventJS(resourceManager, recipeFunctions, deletedRecipes, deserializerMap).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_RECRIPES);
+		Map<ResourceLocation, RecipeFunction> recipeFunctions = new HashMap<>();
+		MinecraftForge.EVENT_BUS.post(new RegisterRecipeHandlersEvent(recipes, recipeFunctions));
+		new RecipeEventJS(resourceManager, recipes, recipeFunctions, deletedRecipes).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_RECRIPES);
 
 		for (ResourceLocation deletedRecipe : deletedRecipes)
 		{

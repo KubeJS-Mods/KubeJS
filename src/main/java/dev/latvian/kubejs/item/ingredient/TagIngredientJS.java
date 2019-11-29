@@ -118,7 +118,7 @@ public class TagIngredientJS implements IngredientJS
 	}
 
 	@Override
-	public JsonElement toIngredientJson()
+	public JsonElement getJson()
 	{
 		JsonObject json = new JsonObject();
 		json.addProperty("tag", tag.toString());

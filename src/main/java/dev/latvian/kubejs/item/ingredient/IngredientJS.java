@@ -189,13 +189,13 @@ public interface IngredientJS
 		return 1;
 	}
 
-	default JsonElement toIngredientJson()
+	default JsonElement getJson()
 	{
 		JsonArray array = new JsonArray();
 
 		for (ItemStackJS stackJS : getStacks())
 		{
-			array.add(stackJS.toIngredientJson());
+			array.add(stackJS.getJson());
 		}
 
 		return array;

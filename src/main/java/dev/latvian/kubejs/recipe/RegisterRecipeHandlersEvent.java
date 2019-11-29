@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.recipe;
 
 import dev.latvian.kubejs.recipe.type.RecipeJS;
-import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.eventbus.api.Event;
 
 import java.util.List;
@@ -13,23 +13,16 @@ import java.util.Map;
 public class RegisterRecipeHandlersEvent extends Event
 {
 	private final List<RecipeJS> recipes;
-	private final Map<String, RecipeFunction> map;
-	private final Map<IRecipeSerializer, RecipeDeserializerJS> deserializerMap;
+	private final Map<ResourceLocation, RecipeFunction> map;
 
-	public RegisterRecipeHandlersEvent(List<RecipeJS> r, Map<String, RecipeFunction> m, Map<IRecipeSerializer, RecipeDeserializerJS> dm)
+	public RegisterRecipeHandlersEvent(List<RecipeJS> r, Map<ResourceLocation, RecipeFunction> m)
 	{
 		recipes = r;
 		map = m;
-		deserializerMap = dm;
 	}
 
-	public void registerProvider(String id, RecipeProviderJS handler)
+	public void register(RecipeTypeJS type)
 	{
-		map.put(id, new RecipeFunction(id, recipes, handler));
-	}
-
-	public void registerDeserializer(IRecipeSerializer type, RecipeDeserializerJS deserializer)
-	{
-		deserializerMap.put(type, deserializer);
+		map.put(type.id, new RecipeFunction(type, recipes));
 	}
 }

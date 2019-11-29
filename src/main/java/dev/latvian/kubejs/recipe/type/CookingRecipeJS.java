@@ -4,9 +4,10 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.kubejs.recipe.RecipeDeserializerJS;
-import dev.latvian.kubejs.recipe.RecipeProviderJS;
+import dev.latvian.kubejs.recipe.RecipeTypeJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
+
+import javax.annotation.Nullable;
 
 /**
  * @author LatvianModder
@@ -15,41 +16,45 @@ public class CookingRecipeJS extends RecipeJS
 {
 	public enum Type
 	{
-		SMELTING("smelting", IRecipeSerializer.SMELTING),
-		BLASTING("blasting", IRecipeSerializer.BLASTING),
-		SMOKING("smoking", IRecipeSerializer.SMOKING),
-		CAMPFIRE("campfire", IRecipeSerializer.CAMPFIRE_COOKING);
+		SMELTING(IRecipeSerializer.SMELTING),
+		BLASTING(IRecipeSerializer.BLASTING),
+		SMOKING(IRecipeSerializer.SMOKING),
+		CAMPFIRE(IRecipeSerializer.CAMPFIRE_COOKING);
 
-		public final String name;
-		public final IRecipeSerializer serializer;
-		public final RecipeProviderJS provider;
-		public final RecipeDeserializerJS deserializer;
+		public final RecipeTypeJS type;
 
-		Type(String n, IRecipeSerializer s)
+		Type(IRecipeSerializer s)
 		{
-			name = n;
-			serializer = s;
-			provider = args -> {
-				if (args.length == 2)
+			type = new RecipeTypeJS(s)
+			{
+				@Nullable
+				@Override
+				public RecipeJS create(Object[] args)
 				{
-					CookingRecipeJS recipe = new CookingRecipeJS(Type.this);
-					recipe.result = ItemStackJS.of(args[0]);
-					recipe.ingredient = IngredientJS.of(args[1]);
-
-					if (!recipe.result.isEmpty() && !recipe.ingredient.isEmpty())
+					if (args.length == 2)
 					{
-						return recipe;
+						CookingRecipeJS recipe = new CookingRecipeJS(Type.this);
+						recipe.result = ItemStackJS.of(args[0]);
+						recipe.ingredient = IngredientJS.of(args[1]);
+
+						if (!recipe.result.isEmpty() && !recipe.ingredient.isEmpty())
+						{
+							return recipe;
+						}
 					}
+
+					return null;
 				}
 
-				return null;
-			};
-
-			deserializer = json -> {
-				CookingRecipeJS recipe = new CookingRecipeJS(Type.this);
-				recipe.result = ItemStackJS.fromRecipeJson(json.get("result"));
-				recipe.ingredient = IngredientJS.fromRecipeJson(json.get("ingredient"));
-				return recipe.result.isEmpty() || recipe.ingredient.isEmpty() ? null : recipe;
+				@Nullable
+				@Override
+				public RecipeJS create(JsonObject json)
+				{
+					CookingRecipeJS recipe = new CookingRecipeJS(Type.this);
+					recipe.result = ItemStackJS.fromRecipeJson(json.get("result"));
+					recipe.ingredient = IngredientJS.fromRecipeJson(json.get("ingredient"));
+					return recipe.result.isEmpty() || recipe.ingredient.isEmpty() ? null : recipe;
+				}
 			};
 		}
 	}
@@ -65,17 +70,17 @@ public class CookingRecipeJS extends RecipeJS
 	}
 
 	@Override
-	public IRecipeSerializer getSerializer()
+	public RecipeTypeJS getType()
 	{
-		return cookingType.serializer;
+		return cookingType.type;
 	}
 
 	@Override
 	public JsonObject toJson()
 	{
 		JsonObject json = create();
-		json.add("ingredient", ingredient.toIngredientJson());
-		json.add("result", result.toRecipeResultJson());
+		json.add("ingredient", ingredient.getJson());
+		json.add("result", result.getResultJson());
 		json.addProperty("experience", experience);
 		return json;
 	}

@@ -6,11 +6,11 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.kubejs.recipe.RecipeDeserializerJS;
-import dev.latvian.kubejs.recipe.RecipeProviderJS;
+import dev.latvian.kubejs.recipe.RecipeTypeJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,60 +20,68 @@ import java.util.List;
  */
 public class ShapelessRecipeJS extends RecipeJS
 {
-	public static final RecipeProviderJS PROVIDER = args -> {
-		if (args.length == 2)
+	public static final RecipeTypeJS TYPE = new RecipeTypeJS(IRecipeSerializer.CRAFTING_SHAPELESS)
+	{
+		@Nullable
+		@Override
+		public RecipeJS create(Object[] args)
 		{
-			Collection<Object> ingredients = UtilsJS.getList(args[1]);
-
-			if (!ingredients.isEmpty())
+			if (args.length == 2)
 			{
-				ShapelessRecipeJS recipe = new ShapelessRecipeJS();
-				recipe.result = ItemStackJS.of(args[0]);
+				Collection<Object> ingredients = UtilsJS.getList(args[1]);
 
-				for (Object o : ingredients)
+				if (!ingredients.isEmpty())
 				{
-					IngredientJS in = IngredientJS.of(o);
+					ShapelessRecipeJS recipe = new ShapelessRecipeJS();
+					recipe.result = ItemStackJS.of(args[0]);
 
-					if (!in.isEmpty())
+					for (Object o : ingredients)
 					{
-						recipe.ingredients.add(in);
+						IngredientJS in = IngredientJS.of(o);
+
+						if (!in.isEmpty())
+						{
+							recipe.ingredients.add(in);
+						}
+					}
+
+					if (!recipe.result.isEmpty() && !recipe.ingredients.isEmpty())
+					{
+						return recipe;
 					}
 				}
+			}
+			return null;
+		}
 
-				if (!recipe.result.isEmpty() && !recipe.ingredients.isEmpty())
+		@Nullable
+		@Override
+		public RecipeJS create(JsonObject json)
+		{
+			ShapelessRecipeJS recipe = new ShapelessRecipeJS();
+
+			for (JsonElement e : json.get("ingredients").getAsJsonArray())
+			{
+				IngredientJS i = IngredientJS.fromRecipeJson(e);
+
+				if (!i.isEmpty())
 				{
-					return recipe;
+					recipe.ingredients.add(i);
 				}
 			}
+
+			recipe.result = ItemStackJS.fromRecipeJson(json.get("result"));
+			return recipe.result.isEmpty() || recipe.ingredients.isEmpty() ? null : recipe;
 		}
-
-		return null;
-	};
-
-	public static final RecipeDeserializerJS DESERIALIZER = json -> {
-		ShapelessRecipeJS recipe = new ShapelessRecipeJS();
-
-		for (JsonElement e : json.get("ingredients").getAsJsonArray())
-		{
-			IngredientJS i = IngredientJS.fromRecipeJson(e);
-
-			if (!i.isEmpty())
-			{
-				recipe.ingredients.add(i);
-			}
-		}
-
-		recipe.result = ItemStackJS.fromRecipeJson(json.get("result"));
-		return recipe.result.isEmpty() || recipe.ingredients.isEmpty() ? null : recipe;
 	};
 
 	public final List<IngredientJS> ingredients = new ArrayList<>();
 	public ItemStackJS result = EmptyItemStackJS.INSTANCE;
 
 	@Override
-	public IRecipeSerializer getSerializer()
+	public RecipeTypeJS getType()
 	{
-		return IRecipeSerializer.CRAFTING_SHAPELESS;
+		return TYPE;
 	}
 
 	@Override
@@ -85,11 +93,11 @@ public class ShapelessRecipeJS extends RecipeJS
 
 		for (IngredientJS in : ingredients)
 		{
-			ingredientsJson.add(in.toIngredientJson());
+			ingredientsJson.add(in.getJson());
 		}
 
 		json.add("ingredients", ingredientsJson);
-		json.add("result", result.toRecipeResultJson());
+		json.add("result", result.getResultJson());
 		return json;
 	}
 

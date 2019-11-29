@@ -1,69 +1,58 @@
 package dev.latvian.kubejs.recipe.type;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.recipe.RecipeDeserializerJS;
-import dev.latvian.kubejs.recipe.RecipeProviderJS;
+import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.recipe.RecipeTypeJS;
 import dev.latvian.kubejs.util.JsonUtilsJS;
-import dev.latvian.kubejs.util.UtilsJS;
-import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
+
+import javax.annotation.Nullable;
 
 /**
  * @author LatvianModder
  */
 public class CustomRecipeJS extends RecipeJS
 {
-	public static final RecipeProviderJS PROVIDER = args -> {
-		if (args.length == 2)
+	public static class CustomType extends RecipeTypeJS
+	{
+		public CustomType(ResourceLocation id)
 		{
-			IRecipeSerializer serializer = ForgeRegistries.RECIPE_SERIALIZERS.getValue(UtilsJS.getID(args[0]));
-			JsonElement data = JsonUtilsJS.of(args[1]);
-
-			if (serializer != null && data.isJsonObject())
-			{
-				CustomRecipeJS recipe = new CustomRecipeJS();
-				recipe.type = serializer;
-				recipe.data = data.getAsJsonObject();
-				return recipe;
-			}
+			super(id);
 		}
 
-		return null;
-	};
-
-	public static final RecipeDeserializerJS DESERIALIZER = json -> {
-		if (json.has("type"))
+		@Nullable
+		@Override
+		public RecipeJS create(Object[] args)
 		{
-			IRecipeSerializer serializer = ForgeRegistries.RECIPE_SERIALIZERS.getValue(new ResourceLocation(json.get("type").getAsString()));
-
-			if (serializer != null)
-			{
-				CustomRecipeJS recipe = new CustomRecipeJS();
-				recipe.type = serializer;
-				recipe.data = json;
-				return recipe;
-			}
+			return null;
 		}
 
-		return null;
-	};
+		@Override
+		public RecipeJS create(JsonObject json)
+		{
+			CustomRecipeJS recipe = new CustomRecipeJS();
+			recipe.typeId = new ResourceLocation(json.get("type").getAsString());
+			recipe.data = json;
+			return recipe;
+		}
+	}
 
-	public IRecipeSerializer type;
+	public static final CustomType TYPE = new CustomType(new ResourceLocation(KubeJS.MOD_ID, "custom"));
+
+	public ResourceLocation typeId;
 	public JsonObject data;
 
 	@Override
-	public IRecipeSerializer getSerializer()
+	public RecipeTypeJS getType()
 	{
-		return type;
+		return TYPE;
 	}
 
 	@Override
 	public JsonObject toJson()
 	{
 		JsonObject json = JsonUtilsJS.copy(data).getAsJsonObject();
-		json.addProperty("type", type.getRegistryName().toString());
+		json.addProperty("type", typeId.toString());
 
 		if (!group.isEmpty())
 		{

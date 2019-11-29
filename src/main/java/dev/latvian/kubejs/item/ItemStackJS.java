@@ -537,14 +537,14 @@ public abstract class ItemStackJS implements IngredientJS
 	}
 
 	@Override
-	public JsonElement toIngredientJson()
+	public JsonElement getJson()
 	{
 		JsonObject json = new JsonObject();
 		json.addProperty("item", getId().toString());
 		return json;
 	}
 
-	public JsonElement toRecipeResultJson()
+	public JsonElement getResultJson()
 	{
 		JsonObject json = new JsonObject();
 		json.addProperty("item", getId().toString());

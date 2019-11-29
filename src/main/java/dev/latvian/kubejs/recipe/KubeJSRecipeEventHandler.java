@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.recipe;
 
 import dev.latvian.kubejs.recipe.type.CookingRecipeJS;
-import dev.latvian.kubejs.recipe.type.CustomRecipeJS;
 import dev.latvian.kubejs.recipe.type.ShapedRecipeJS;
 import dev.latvian.kubejs.recipe.type.ShapelessRecipeJS;
 import dev.latvian.kubejs.recipe.type.StonecuttingRecipeJS;
@@ -28,23 +27,13 @@ public class KubeJSRecipeEventHandler
 
 	private void registerRecipeHandlers(RegisterRecipeHandlersEvent event)
 	{
-		event.registerProvider("custom", CustomRecipeJS.PROVIDER);
-		event.registerProvider("shaped", ShapedRecipeJS.PROVIDER);
-		event.registerProvider("shapeless", ShapelessRecipeJS.PROVIDER);
-		event.registerProvider("stonecutting", StonecuttingRecipeJS.PROVIDER);
+		event.register(ShapedRecipeJS.TYPE);
+		event.register(ShapelessRecipeJS.TYPE);
+		event.register(StonecuttingRecipeJS.TYPE);
 
 		for (CookingRecipeJS.Type type : CookingRecipeJS.Type.values())
 		{
-			event.registerProvider(type.name, type.provider);
-		}
-
-		event.registerDeserializer(IRecipeSerializer.CRAFTING_SHAPED, ShapedRecipeJS.DESERIALIZER);
-		event.registerDeserializer(IRecipeSerializer.CRAFTING_SHAPELESS, ShapelessRecipeJS.DESERIALIZER);
-		event.registerDeserializer(IRecipeSerializer.STONECUTTING, StonecuttingRecipeJS.DESERIALIZER);
-
-		for (CookingRecipeJS.Type type : CookingRecipeJS.Type.values())
-		{
-			event.registerDeserializer(type.serializer, type.deserializer);
+			event.register(type.type);
 		}
 	}
 }

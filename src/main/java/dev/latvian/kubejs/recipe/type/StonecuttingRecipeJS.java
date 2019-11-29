@@ -4,52 +4,62 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.kubejs.recipe.RecipeDeserializerJS;
-import dev.latvian.kubejs.recipe.RecipeProviderJS;
+import dev.latvian.kubejs.recipe.RecipeTypeJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
+
+import javax.annotation.Nullable;
 
 /**
  * @author LatvianModder
  */
 public class StonecuttingRecipeJS extends RecipeJS
 {
-	public static final RecipeProviderJS PROVIDER = args -> {
-		if (args.length == 2)
+	public static final RecipeTypeJS TYPE = new RecipeTypeJS(IRecipeSerializer.STONECUTTING)
+	{
+		@Nullable
+		@Override
+		public RecipeJS create(Object[] args)
 		{
-			StonecuttingRecipeJS recipe = new StonecuttingRecipeJS();
-			recipe.result = ItemStackJS.of(args[0]);
-			recipe.ingredient = IngredientJS.of(args[1]);
-
-			if (!recipe.result.isEmpty() && !recipe.ingredient.isEmpty())
+			if (args.length == 2)
 			{
-				return recipe;
+				StonecuttingRecipeJS recipe = new StonecuttingRecipeJS();
+				recipe.result = ItemStackJS.of(args[0]);
+				recipe.ingredient = IngredientJS.of(args[1]);
+
+				if (!recipe.result.isEmpty() && !recipe.ingredient.isEmpty())
+				{
+					return recipe;
+				}
 			}
+
+			return null;
 		}
 
-		return null;
-	};
-
-	public static final RecipeDeserializerJS DESERIALIZER = json -> {
-		StonecuttingRecipeJS recipe = new StonecuttingRecipeJS();
-		recipe.result = ItemStackJS.fromRecipeJson(json.get("result"));
-		recipe.ingredient = IngredientJS.fromRecipeJson(json.get("ingredient"));
-		return recipe.result.isEmpty() || recipe.ingredient.isEmpty() ? null : recipe;
+		@Nullable
+		@Override
+		public RecipeJS create(JsonObject json)
+		{
+			StonecuttingRecipeJS recipe = new StonecuttingRecipeJS();
+			recipe.result = ItemStackJS.fromRecipeJson(json.get("result"));
+			recipe.ingredient = IngredientJS.fromRecipeJson(json.get("ingredient"));
+			return recipe.result.isEmpty() || recipe.ingredient.isEmpty() ? null : recipe;
+		}
 	};
 
 	public IngredientJS ingredient = EmptyItemStackJS.INSTANCE;
 	public ItemStackJS result = EmptyItemStackJS.INSTANCE;
 
 	@Override
-	public IRecipeSerializer getSerializer()
+	public RecipeTypeJS getType()
 	{
-		return IRecipeSerializer.STONECUTTING;
+		return TYPE;
 	}
 
 	@Override
 	public JsonObject toJson()
 	{
 		JsonObject json = create();
-		json.add("ingredient", ingredient.toIngredientJson());
+		json.add("ingredient", ingredient.getJson());
 		json.addProperty("result", result.getId().toString());
 		json.addProperty("count", result.getCount());
 		return json;

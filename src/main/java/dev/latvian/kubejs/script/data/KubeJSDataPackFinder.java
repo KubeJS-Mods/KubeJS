@@ -30,7 +30,7 @@ public class KubeJSDataPackFinder implements IPackFinder
 
 		if (!dataFolder.exists())
 		{
-			File scriptsFolder = new File(new File(dataFolder, "modpack"), "scripts");
+			File scriptsFolder = new File(new File(dataFolder, "modpack"), "kubejs");
 			scriptsFolder.mkdirs();
 
 			try

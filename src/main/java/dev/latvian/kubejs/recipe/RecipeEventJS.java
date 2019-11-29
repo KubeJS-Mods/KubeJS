@@ -14,10 +14,10 @@ import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,41 +29,75 @@ import java.util.function.Predicate;
 public class RecipeEventJS extends ServerEventJS
 {
 	private final IResourceManager resourceManager;
-	private final Map<String, RecipeFunction> recipes;
-	private final Map<IRecipeSerializer, RecipeDeserializerJS> deserializerMap;
+	private final Map<ResourceLocation, RecipeFunction> deserializerMap;
+	private final Map<String, Map<String, RecipeFunction>> recipeFunctions;
 	private final Set<ResourceLocation> deletedRecipes;
 
 	private List<RecipeJS> originalRecipes;
 
-	public RecipeEventJS(IResourceManager m, Map<String, RecipeFunction> r, Set<ResourceLocation> d, Map<IRecipeSerializer, RecipeDeserializerJS> dm)
+	public RecipeEventJS(IResourceManager m, List<RecipeJS> recipes, Map<ResourceLocation, RecipeFunction> r, Set<ResourceLocation> d)
 	{
 		resourceManager = m;
-		recipes = r;
-		deletedRecipes = d;
-		deserializerMap = dm;
-	}
-
-	public Map<String, RecipeFunction> getRecipes()
-	{
-		return recipes;
-	}
-
-	private RecipeJS parse(CustomRecipeJS custom)
-	{
-		try
+		deserializerMap = r;
+		recipeFunctions = new HashMap<String, Map<String, RecipeFunction>>()
 		{
-			RecipeJS r = deserializerMap.get(custom.type).create(custom.data);
-
-			if (r != null)
+			@Override
+			public Map<String, RecipeFunction> get(Object namespace)
 			{
-				return r;
-			}
-		}
-		catch (Exception ex)
-		{
-		}
+				Map<String, RecipeFunction> map = super.get(namespace);
 
-		return custom;
+				if (map == null)
+				{
+					map = new HashMap<String, RecipeFunction>()
+					{
+						@Override
+						public RecipeFunction get(Object type)
+						{
+							RecipeFunction function = super.get(type);
+
+							if (function == null)
+							{
+								ResourceLocation id = new ResourceLocation(namespace.toString(), type.toString());
+
+								function = deserializerMap.get(id);
+
+								if (function == null)
+								{
+									function = new RecipeFunction(new CustomRecipeJS.CustomType(id), recipes);
+								}
+
+								put(type.toString(), function);
+							}
+
+							return function;
+						}
+
+						@Override
+						public boolean containsKey(Object key)
+						{
+							return true;
+						}
+					};
+
+					put(namespace.toString(), map);
+				}
+
+				return map;
+			}
+
+			@Override
+			public boolean containsKey(Object key)
+			{
+				return true;
+			}
+		};
+
+		deletedRecipes = d;
+	}
+
+	public Map<String, Map<String, RecipeFunction>> getRecipes()
+	{
+		return recipeFunctions;
 	}
 
 	private List<RecipeJS> getOriginalRecipes()
@@ -79,11 +113,12 @@ public class RecipeEventJS extends ServerEventJS
 					try (InputStreamReader reader = new InputStreamReader(resourceManager.getResource(location).getInputStream()))
 					{
 						JsonObject json = new JsonParser().parse(reader).getAsJsonObject();
-						CustomRecipeJS custom = (CustomRecipeJS) CustomRecipeJS.DESERIALIZER.create(json);
+						ResourceLocation type = new ResourceLocation(json.get("type").getAsString());
+						RecipeFunction function = getRecipes().get(type.getNamespace()).get(type.getPath());
+						RecipeJS r = function.type.create(json);
 
-						if (custom != null)
+						if (r != null)
 						{
-							RecipeJS r = parse(custom);
 							originalRecipes.add(r);
 							r.id = new ResourceLocation(location.getNamespace(), location.getPath().substring(8, location.getPath().length() - 5));
 							r.group = json.has("group") ? json.get("group").getAsString() : "";
@@ -104,10 +139,10 @@ public class RecipeEventJS extends ServerEventJS
 
 	public void nuke()
 	{
-		delete(recipe -> true);
+		remove(recipe -> true);
 	}
 
-	public void delete(Predicate<RecipeJS> recipePredicate)
+	public void remove(Predicate<RecipeJS> recipePredicate)
 	{
 		for (RecipeJS recipe : new ArrayList<>(getOriginalRecipes()))
 		{
@@ -126,37 +161,52 @@ public class RecipeEventJS extends ServerEventJS
 		}
 	}
 
-	public void deleteId(@P("id") @T(ResourceLocation.class) Object id)
+	public void removeId(@P("id") @T(ResourceLocation.class) Object id)
 	{
 		ResourceLocation location = UtilsJS.getID(id);
-		delete(recipe -> recipe.id.equals(location));
+		remove(recipe -> recipe.id.equals(location));
 	}
 
-	public void deleteType(@P("type") @T(ResourceLocation.class) Object type)
+	public void removeType(@P("type") @T(ResourceLocation.class) Object type)
 	{
-		IRecipeSerializer serializer = ForgeRegistries.RECIPE_SERIALIZERS.getValue(UtilsJS.getID(type));
-		delete(recipe -> recipe.getSerializer() == serializer);
+		ResourceLocation location = UtilsJS.getID(type);
+		remove(recipe -> recipe.getType().id.equals(location));
 	}
 
-	public void deleteGroup(@P("group") String group)
+	public void removeGroup(@P("group") String group)
 	{
-		delete(recipe -> recipe.group.equals(group));
+		remove(recipe -> recipe.group.equals(group));
 	}
 
-	public void deleteMod(@P("mod") String mod)
+	public void removeMod(@P("mod") String mod)
 	{
-		delete(recipe -> recipe.id.getNamespace().equals(mod));
+		remove(recipe -> recipe.id.getNamespace().equals(mod));
 	}
 
-	public void deleteInput(@P("ingredient") @T(IngredientJS.class) Object ingredient)
-	{
-		IngredientJS in = IngredientJS.of(ingredient);
-		delete(recipe -> recipe.hasInput(in));
-	}
-
-	public void deleteOutput(@P("ingredient") @T(IngredientJS.class) Object ingredient)
+	public void removeInput(@P("ingredient") @T(IngredientJS.class) Object ingredient)
 	{
 		IngredientJS in = IngredientJS.of(ingredient);
-		delete(recipe -> recipe.hasOutput(in));
+		remove(recipe -> recipe.hasInput(in));
+	}
+
+	public void removeOutput(@P("ingredient") @T(IngredientJS.class) Object ingredient)
+	{
+		IngredientJS in = IngredientJS.of(ingredient);
+		remove(recipe -> recipe.hasOutput(in));
+	}
+
+	public RecipeFunction getShaped()
+	{
+		return deserializerMap.get(IRecipeSerializer.CRAFTING_SHAPED.getRegistryName());
+	}
+
+	public RecipeFunction getShapeless()
+	{
+		return deserializerMap.get(IRecipeSerializer.CRAFTING_SHAPELESS.getRegistryName());
+	}
+
+	public RecipeFunction getSmelting()
+	{
+		return deserializerMap.get(IRecipeSerializer.SMELTING.getRegistryName());
 	}
 }

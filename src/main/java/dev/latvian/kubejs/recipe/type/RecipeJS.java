@@ -1,14 +1,13 @@
 package dev.latvian.kubejs.recipe.type;
 
 import com.google.gson.JsonObject;
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.recipe.RecipeTypeJS;
 import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.kubejs.util.UtilsJS;
-import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.ResourceLocation;
-
-import javax.annotation.Nullable;
 
 /**
  * @author LatvianModder
@@ -17,11 +16,25 @@ public abstract class RecipeJS
 {
 	public static final RecipeJS ERROR = new RecipeJS()
 	{
-		@Nullable
-		@Override
-		public IRecipeSerializer getSerializer()
+		public RecipeTypeJS type = new RecipeTypeJS(new ResourceLocation(KubeJS.MOD_ID, "error"))
 		{
-			return null;
+			@Override
+			public RecipeJS create(Object[] args)
+			{
+				return ERROR;
+			}
+
+			@Override
+			public RecipeJS create(JsonObject json)
+			{
+				return ERROR;
+			}
+		};
+
+		@Override
+		public RecipeTypeJS getType()
+		{
+			return type;
 		}
 
 		@Override
@@ -36,8 +49,7 @@ public abstract class RecipeJS
 	public ResourceLocation id;
 	public String group;
 
-	@Nullable
-	public abstract IRecipeSerializer getSerializer();
+	public abstract RecipeTypeJS getType();
 
 	public abstract JsonObject toJson();
 
@@ -61,7 +73,7 @@ public abstract class RecipeJS
 	protected JsonObject create()
 	{
 		JsonObject json = new JsonObject();
-		json.addProperty("type", getSerializer().getRegistryName().toString());
+		json.addProperty("type", getType().id.toString());
 
 		if (!group.isEmpty())
 		{
@@ -84,7 +96,6 @@ public abstract class RecipeJS
 	@Override
 	public String toString()
 	{
-		IRecipeSerializer s = getSerializer();
-		return s == null ? id.toString() : (id + "[" + s.getRegistryName() + "]");
+		return id + "[" + getType().id + "]";
 	}
 }
