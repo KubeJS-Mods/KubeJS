@@ -55,7 +55,6 @@ import javax.annotation.Nullable;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -409,21 +408,15 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 		new DataPackEventJS(virtualDataPack).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK);
 
 		List<RecipeJS> recipes = new ArrayList<>();
-		Set<ResourceLocation> deletedRecipes = new HashSet<>();
-
 		Map<ResourceLocation, RecipeFunction> recipeFunctions = new HashMap<>();
 		MinecraftForge.EVENT_BUS.post(new RegisterRecipeHandlersEvent(recipes, recipeFunctions));
-		new RecipeEventJS(resourceManager, recipes, recipeFunctions, deletedRecipes).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_RECRIPES);
+		RecipeEventJS recipeEvent = new RecipeEventJS(resourceManager, recipes, recipeFunctions);
+		recipeEvent.post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_RECIPES);
+		recipeEvent.addDataToPack(virtualDataPack);
 
-		for (ResourceLocation deletedRecipe : deletedRecipes)
-		{
-			virtualDataPack.addData(new ResourceLocation(deletedRecipe.getNamespace(), "recipes/" + deletedRecipe.getPath() + ".json"), "{\"type\":\"kubejs:deleted\"}");
-		}
-
-		for (RecipeJS recipe : recipes)
-		{
-			recipe.addToDataPack(virtualDataPack);
-		}
+		TagEventJS tagEvent = new TagEventJS(resourceManager);
+		tagEvent.post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_TAGS);
+		tagEvent.addDataToPack(virtualDataPack);
 
 		if (debugLog)
 		{

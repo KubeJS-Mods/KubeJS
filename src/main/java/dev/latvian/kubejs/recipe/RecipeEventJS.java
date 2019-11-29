@@ -2,12 +2,14 @@ package dev.latvian.kubejs.recipe;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.type.CustomRecipeJS;
 import dev.latvian.kubejs.recipe.type.RecipeJS;
 import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.kubejs.server.ServerEventJS;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -18,6 +20,7 @@ import net.minecraft.util.ResourceLocation;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,16 +32,18 @@ import java.util.function.Predicate;
 public class RecipeEventJS extends ServerEventJS
 {
 	private final IResourceManager resourceManager;
+	private final List<RecipeJS> recipes;
 	private final Map<ResourceLocation, RecipeFunction> deserializerMap;
 	private final Map<String, Map<String, RecipeFunction>> recipeFunctions;
 	private final Set<ResourceLocation> deletedRecipes;
 
 	private List<RecipeJS> originalRecipes;
 
-	public RecipeEventJS(IResourceManager m, List<RecipeJS> recipes, Map<ResourceLocation, RecipeFunction> r, Set<ResourceLocation> d)
+	public RecipeEventJS(IResourceManager m, List<RecipeJS> r, Map<ResourceLocation, RecipeFunction> rf)
 	{
 		resourceManager = m;
-		deserializerMap = r;
+		recipes = r;
+		deserializerMap = rf;
 		recipeFunctions = new HashMap<String, Map<String, RecipeFunction>>()
 		{
 			@Override
@@ -92,7 +97,7 @@ public class RecipeEventJS extends ServerEventJS
 			}
 		};
 
-		deletedRecipes = d;
+		deletedRecipes = new HashSet<>();
 	}
 
 	public Map<String, Map<String, RecipeFunction>> getRecipes()
@@ -208,5 +213,19 @@ public class RecipeEventJS extends ServerEventJS
 	public RecipeFunction getSmelting()
 	{
 		return deserializerMap.get(IRecipeSerializer.SMELTING.getRegistryName());
+	}
+
+	@Ignore
+	public void addDataToPack(VirtualKubeJSDataPack pack)
+	{
+		for (ResourceLocation deletedRecipe : deletedRecipes)
+		{
+			pack.addData(new ResourceLocation(deletedRecipe.getNamespace(), "recipes/" + deletedRecipe.getPath() + ".json"), "{\"type\":\"kubejs:deleted\"}");
+		}
+
+		for (RecipeJS recipe : recipes)
+		{
+			recipe.addToDataPack(pack);
+		}
 	}
 }
