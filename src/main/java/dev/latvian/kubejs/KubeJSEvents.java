@@ -7,6 +7,7 @@ import dev.latvian.kubejs.block.BlockPlaceEventJS;
 import dev.latvian.kubejs.block.BlockRegistryEventJS;
 import dev.latvian.kubejs.block.BlockRightClickEventJS;
 import dev.latvian.kubejs.block.MissingMappingEventJS;
+import dev.latvian.kubejs.client.ClientItemTooltipEventJS;
 import dev.latvian.kubejs.client.ClientLoggedInEventJS;
 import dev.latvian.kubejs.client.ClientTickEventJS;
 import dev.latvian.kubejs.client.DebugInfoEventJS;
@@ -55,6 +56,7 @@ public class KubeJSEvents
 	public static final String CLIENT_DEBUG_INFO = "client.debug_info";
 	public static final String CLIENT_LOGGED_IN = "client.logged_in";
 	public static final String CLIENT_TICK = "client.tick";
+	public static final String CLIENT_ITEM_TOOLTIP = "client.item_tooltip";
 
 	public static final String SERVER_LOAD = "server.load";
 	public static final String SERVER_UNLOAD = "server.unload";
@@ -135,6 +137,7 @@ public class KubeJSEvents
 		event.registerEvent(CLIENT_DEBUG_INFO, DebugInfoEventJS.class).clientOnly();
 		event.registerEvent(CLIENT_LOGGED_IN, ClientLoggedInEventJS.class).clientOnly();
 		event.registerEvent(CLIENT_TICK, ClientTickEventJS.class).clientOnly();
+		event.registerEvent(CLIENT_ITEM_TOOLTIP, ClientItemTooltipEventJS.class).clientOnly();
 
 		event.registerEvent(SERVER_LOAD, ServerEventJS.class).serverOnly();
 		event.registerEvent(SERVER_UNLOAD, ServerEventJS.class).serverOnly();

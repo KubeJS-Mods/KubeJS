@@ -25,7 +25,7 @@ public class RegisterRecipeHandlersEvent extends Event
 
 	public void registerProvider(String id, RecipeProviderJS handler)
 	{
-		map.put(id, new RecipeFunction(recipes, handler));
+		map.put(id, new RecipeFunction(id, recipes, handler));
 	}
 
 	public void registerDeserializer(IRecipeSerializer type, RecipeDeserializerJS deserializer)

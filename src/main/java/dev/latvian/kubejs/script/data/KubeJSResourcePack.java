@@ -194,11 +194,7 @@ public class KubeJSResourcePack implements IResourcePack
 	@Override
 	public <T> T getMetadata(IMetadataSectionSerializer<T> serializer)
 	{
-		JsonObject json = new JsonObject();
-		json.addProperty("description", "Magic");
-		json.addProperty("pack_format", 4);
-		json.addProperty("language", "en_us");
-		return serializer.deserialize(json);
+		return null;
 	}
 
 	@Override

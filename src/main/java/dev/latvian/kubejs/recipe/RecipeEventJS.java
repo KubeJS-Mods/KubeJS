@@ -7,7 +7,9 @@ import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.type.CustomRecipeJS;
 import dev.latvian.kubejs.recipe.type.RecipeJS;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerEventJS;
+import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.resources.IResourceManager;
@@ -100,48 +102,61 @@ public class RecipeEventJS extends ServerEventJS
 		return originalRecipes;
 	}
 
-	public void deleteId(@P("id") @T(ResourceLocation.class) Object id)
+	public void nuke()
 	{
-		deletedRecipes.add(UtilsJS.getID(id));
+		delete(recipe -> true);
 	}
 
-	public void deletePredicate(Predicate<RecipeJS> recipePredicate)
+	public void delete(Predicate<RecipeJS> recipePredicate)
 	{
 		for (RecipeJS recipe : new ArrayList<>(getOriginalRecipes()))
 		{
 			if (recipePredicate.test(recipe))
 			{
-				deletedRecipes.add(recipe.id);
-				originalRecipes.remove(recipe);
+				if (deletedRecipes.add(recipe.id))
+				{
+					originalRecipes.remove(recipe);
+
+					if (ServerJS.instance.debugLog)
+					{
+						ScriptType.SERVER.console.info("Deleted recipe " + recipe.id);
+					}
+				}
 			}
 		}
+	}
+
+	public void deleteId(@P("id") @T(ResourceLocation.class) Object id)
+	{
+		ResourceLocation location = UtilsJS.getID(id);
+		delete(recipe -> recipe.id.equals(location));
 	}
 
 	public void deleteType(@P("type") @T(ResourceLocation.class) Object type)
 	{
 		IRecipeSerializer serializer = ForgeRegistries.RECIPE_SERIALIZERS.getValue(UtilsJS.getID(type));
-		deletePredicate(recipe -> recipe.getSerializer() == serializer);
+		delete(recipe -> recipe.getSerializer() == serializer);
 	}
 
 	public void deleteGroup(@P("group") String group)
 	{
-		deletePredicate(recipe -> recipe.group.equals(group));
+		delete(recipe -> recipe.group.equals(group));
 	}
 
 	public void deleteMod(@P("mod") String mod)
 	{
-		deletePredicate(recipe -> recipe.id.getNamespace().equals(mod));
+		delete(recipe -> recipe.id.getNamespace().equals(mod));
 	}
 
 	public void deleteInput(@P("ingredient") @T(IngredientJS.class) Object ingredient)
 	{
 		IngredientJS in = IngredientJS.of(ingredient);
-		deletePredicate(recipe -> recipe.hasInput(in));
+		delete(recipe -> recipe.hasInput(in));
 	}
 
 	public void deleteOutput(@P("ingredient") @T(IngredientJS.class) Object ingredient)
 	{
 		IngredientJS in = IngredientJS.of(ingredient);
-		deletePredicate(recipe -> recipe.hasOutput(in));
+		delete(recipe -> recipe.hasOutput(in));
 	}
 }

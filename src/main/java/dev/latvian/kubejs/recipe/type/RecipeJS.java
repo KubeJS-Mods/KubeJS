@@ -62,7 +62,12 @@ public abstract class RecipeJS
 	{
 		JsonObject json = new JsonObject();
 		json.addProperty("type", getSerializer().getRegistryName().toString());
-		json.addProperty("group", group);
+
+		if (!group.isEmpty())
+		{
+			json.addProperty("group", group);
+		}
+
 		return json;
 	}
 

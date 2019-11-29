@@ -35,7 +35,7 @@ public class KubeJSWorldEventHandler
 			ServerJS.instance.worldMap.put(event.getWorld().getDimension().getType(), w);
 			ServerJS.instance.updateWorldList();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(w));
-			new SimpleWorldEventJS(w).post(KubeJSEvents.WORLD_LOAD);
+			new SimpleWorldEventJS(w).post(ScriptType.SERVER, KubeJSEvents.WORLD_LOAD);
 		}
 	}
 
@@ -44,7 +44,7 @@ public class KubeJSWorldEventHandler
 		if (ServerJS.instance != null && ServerJS.instance.overworld != null && event.getWorld() instanceof ServerWorld && ServerJS.instance.worldMap.containsKey(event.getWorld().getDimension().getType()))
 		{
 			WorldJS w = ServerJS.instance.getWorld(event.getWorld());
-			new SimpleWorldEventJS(w).post(KubeJSEvents.WORLD_UNLOAD);
+			new SimpleWorldEventJS(w).post(ScriptType.SERVER, KubeJSEvents.WORLD_UNLOAD);
 			ServerJS.instance.worldMap.remove(w.getDimension());
 			ServerJS.instance.updateWorldList();
 		}
@@ -55,7 +55,7 @@ public class KubeJSWorldEventHandler
 		if (event.phase == TickEvent.Phase.END && !event.world.isRemote)
 		{
 			WorldJS w = ServerJS.instance.getWorld(event.world);
-			new SimpleWorldEventJS(w).post(KubeJSEvents.WORLD_TICK);
+			new SimpleWorldEventJS(w).post(ScriptType.SERVER, KubeJSEvents.WORLD_TICK);
 		}
 	}
 

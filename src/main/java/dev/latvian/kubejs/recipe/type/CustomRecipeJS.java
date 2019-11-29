@@ -64,7 +64,12 @@ public class CustomRecipeJS extends RecipeJS
 	{
 		JsonObject json = JsonUtilsJS.copy(data).getAsJsonObject();
 		json.addProperty("type", type.getRegistryName().toString());
-		json.addProperty("group", group);
+
+		if (!group.isEmpty())
+		{
+			json.addProperty("group", group);
+		}
+
 		return json;
 	}
 }

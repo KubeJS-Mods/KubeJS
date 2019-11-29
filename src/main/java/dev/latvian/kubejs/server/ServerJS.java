@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.documentation.Ignore;
@@ -28,7 +27,6 @@ import dev.latvian.kubejs.script.ScriptPack;
 import dev.latvian.kubejs.script.ScriptPackInfo;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.data.DataPackEventJS;
-import dev.latvian.kubejs.script.data.KubeJSDataPackFinder;
 import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.AttachedData;
@@ -47,14 +45,12 @@ import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IFutureReloadListener;
 import net.minecraft.resources.IResourceManager;
-import net.minecraft.resources.SimpleReloadableResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
@@ -105,6 +101,7 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 	public ServerWorldJS overworld;
 	private AttachedData data;
 	private final VirtualKubeJSDataPack virtualDataPack;
+	public boolean debugLog;
 
 	public ServerJS(MinecraftServer ms)
 	{
@@ -117,6 +114,7 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 		fakePlayerMap = new HashMap<>();
 		worlds = new ArrayList<>();
 		virtualDataPack = new VirtualKubeJSDataPack();
+		debugLog = false;
 	}
 
 	public void updateWorldList()
@@ -382,24 +380,6 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 		KubeJSNet.MAIN.send(PacketDistributor.ALL.noArg(), new MessageSendDataFromClient(channel, NBTBaseJS.of(data).asCompound().createNBT()));
 	}
 
-	public void registerPacks()
-	{
-		minecraftServer.getResourcePacks().addPackFinder(new KubeJSDataPackFinder(KubeJS.getGameDirectory().resolve("kubejs").toFile()));
-
-		try
-		{
-			SimpleReloadableResourceManager manager = (SimpleReloadableResourceManager) minecraftServer.getResourceManager();
-			List<IFutureReloadListener> reloadListeners = ObfuscationReflectionHelper.getPrivateValue(SimpleReloadableResourceManager.class, manager, "field_199015_d");
-			List<IFutureReloadListener> initTaskQueue = ObfuscationReflectionHelper.getPrivateValue(SimpleReloadableResourceManager.class, manager, "field_219539_d");
-			reloadListeners.add(0, this);
-			initTaskQueue.add(0, this);
-		}
-		catch (Exception ex)
-		{
-			throw new RuntimeException("KubeJS failed to register it's script loader!");
-		}
-	}
-
 	@Ignore
 	public void reloadScripts(IResourceManager resourceManager)
 	{
@@ -446,6 +426,11 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 		for (RecipeJS recipe : recipes)
 		{
 			recipe.addToDataPack(virtualDataPack);
+		}
+
+		if (debugLog)
+		{
+			ScriptType.SERVER.console.info("Added " + recipes.size() + " recipes");
 		}
 
 		resourceManager.addResourcePack(virtualDataPack);

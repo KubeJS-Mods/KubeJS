@@ -10,6 +10,7 @@ import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.resources.ResourcePackList;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -27,7 +28,8 @@ public class KubeJSClient extends KubeJSCommon
 	public void init(File folder)
 	{
 		new KubeJSClientEventHandler().init();
-		Minecraft.getInstance().getResourcePackList().addPackFinder(new KubeJSResourcePackFinder(folder));
+		ResourcePackList list = Minecraft.getInstance().getResourcePackList();
+		list.addPackFinder(new KubeJSResourcePackFinder(folder));
 	}
 
 	@Override

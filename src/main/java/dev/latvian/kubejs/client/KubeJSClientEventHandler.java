@@ -19,6 +19,7 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class KubeJSClientEventHandler
 	{
 		MinecraftForge.EVENT_BUS.addListener(this::bindings);
 		MinecraftForge.EVENT_BUS.addListener(this::debugInfo);
+		MinecraftForge.EVENT_BUS.addListener(this::itemTooltip);
 		MinecraftForge.EVENT_BUS.addListener(this::clientTick);
 		MinecraftForge.EVENT_BUS.addListener(this::inGameScreenDraw);
 		MinecraftForge.EVENT_BUS.addListener(this::guiScreenDraw);
@@ -53,6 +55,11 @@ public class KubeJSClientEventHandler
 			ClientWorldJS.get();
 			new DebugInfoEventJS(event).post(ScriptType.CLIENT, KubeJSEvents.CLIENT_DEBUG_INFO);
 		}
+	}
+
+	private void itemTooltip(ItemTooltipEvent event)
+	{
+		new ClientItemTooltipEventJS(event).post(ScriptType.CLIENT, KubeJSEvents.CLIENT_ITEM_TOOLTIP);
 	}
 
 	private void clientTick(TickEvent.ClientTickEvent event)
