@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -133,11 +134,14 @@ public class JsonUtilsJS
 
 			return json;
 		}
-		else if (o instanceof Iterable)
+
+		Collection<Object> c = UtilsJS.getList(o);
+
+		if (o instanceof Iterable || c.size() != 1)
 		{
 			JsonArray a = new JsonArray();
 
-			for (Object o1 : (Iterable) o)
+			for (Object o1 : c)
 			{
 				a.add(of(o1));
 			}
@@ -145,7 +149,8 @@ public class JsonUtilsJS
 			return a;
 		}
 
-		return JsonNull.INSTANCE;
+		Object o1 = c.iterator().next();
+		return new JsonPrimitive("<" + o1.getClass().getName() + ":" + o1 + ">");
 	}
 
 	@Nullable

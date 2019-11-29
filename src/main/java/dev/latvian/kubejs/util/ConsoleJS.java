@@ -1,5 +1,8 @@
 package dev.latvian.kubejs.util;
 
+import dev.latvian.kubejs.script.ScriptFile;
+import dev.latvian.kubejs.script.ScriptType;
+import jdk.nashorn.internal.runtime.ECMAErrors;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
@@ -9,13 +12,25 @@ import java.util.Map;
  */
 public class ConsoleJS
 {
+	private final ScriptType type;
 	public final Logger logger;
 	private String group;
 
-	public ConsoleJS(Logger log)
+	public ConsoleJS(ScriptType m, Logger log)
 	{
+		type = m;
 		logger = log;
 		group = "";
+	}
+
+	protected boolean shouldPrint()
+	{
+		return true;
+	}
+
+	public boolean isDebug()
+	{
+		return false;
 	}
 
 	private String string(Object object)
@@ -31,12 +46,32 @@ public class ConsoleJS
 			s = String.valueOf(object);
 		}
 
-		if (group.isEmpty())
+		boolean debug = isDebug();
+
+		if (!debug && group.isEmpty())
 		{
 			return s;
 		}
 
-		return group + s;
+		StringBuilder builder = new StringBuilder();
+
+		if (debug)
+		{
+			ScriptFile f = type.manager.get().currentFile;
+
+			if (f != null)
+			{
+				builder.append(f.info.location);
+			}
+
+			builder.append(':');
+			builder.append(getScriptLine());
+			builder.append(": ");
+		}
+
+		builder.append(group);
+		builder.append(s);
+		return builder.toString();
 	}
 
 	private String string(Object object, Object... args)
@@ -46,32 +81,50 @@ public class ConsoleJS
 
 	public void info(Object message)
 	{
-		logger.info(string(message));
+		if (shouldPrint())
+		{
+			logger.info(string(message));
+		}
 	}
 
 	public void infof(String message, Object... args)
 	{
-		logger.info(string(message, args));
+		if (shouldPrint())
+		{
+			logger.info(string(message, args));
+		}
 	}
 
 	public void warn(Object message)
 	{
-		logger.warn(string(message));
+		if (shouldPrint())
+		{
+			logger.warn(string(message));
+		}
 	}
 
 	public void warnf(String message, Object... args)
 	{
-		logger.warn(string(message, args));
+		if (shouldPrint())
+		{
+			logger.warn(string(message, args));
+		}
 	}
 
 	public void error(Object message)
 	{
-		logger.error(string(message));
+		if (shouldPrint())
+		{
+			logger.error(string(message));
+		}
 	}
 
 	public void errorf(String message, Object... args)
 	{
-		logger.error(string(message, args));
+		if (shouldPrint())
+		{
+			logger.error(string(message, args));
+		}
 	}
 
 	public void group()
@@ -96,5 +149,18 @@ public class ConsoleJS
 		{
 			info("=\t" + element);
 		}
+	}
+
+	public int getScriptLine()
+	{
+		for (StackTraceElement element : Thread.currentThread().getStackTrace())
+		{
+			if (ECMAErrors.isScriptFrame(element))
+			{
+				return element.getLineNumber();
+			}
+		}
+
+		return -1;
 	}
 }

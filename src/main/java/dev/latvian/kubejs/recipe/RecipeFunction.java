@@ -8,7 +8,6 @@ import dev.latvian.kubejs.util.JsonUtilsJS;
 import jdk.nashorn.api.scripting.AbstractJSObject;
 import net.minecraft.util.ResourceLocation;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,12 +36,7 @@ public class RecipeFunction extends AbstractJSObject
 			recipe.group = "";
 			recipe.data = JsonUtilsJS.of(args[0]).getAsJsonObject();
 			recipe.typeId = type.id;
-
-			if (ServerJS.instance.debugLog)
-			{
-				ScriptType.SERVER.console.info("Added custom recipe: " + recipe.toJson());
-			}
-
+			ScriptType.SERVER.debugConsole.info("Added custom recipe: " + recipe.toJson());
 			return recipe;
 		}
 
@@ -61,14 +55,7 @@ public class RecipeFunction extends AbstractJSObject
 		{
 			if (ServerJS.instance.debugLog)
 			{
-				List<Object> list = new ArrayList<>();
-
-				for (Object o : args)
-				{
-					list.add(String.valueOf(list));
-				}
-
-				ScriptType.SERVER.console.error("Failed to create recipe with type '" + type.id + "' from args " + list);
+				ScriptType.SERVER.debugConsole.error("Failed to create recipe with type '" + type.id + "' from args " + JsonUtilsJS.of(args));
 			}
 
 			return RecipeJS.ERROR;
@@ -77,12 +64,7 @@ public class RecipeFunction extends AbstractJSObject
 		recipes.add(recipe);
 		recipe.id = new ResourceLocation("kubejs", "generated_" + recipes.size());
 		recipe.group = "";
-
-		if (ServerJS.instance.debugLog)
-		{
-			ScriptType.SERVER.console.info("Added '" + recipe.getType().id + "' recipe: " + recipe.toJson());
-		}
-
+		ScriptType.SERVER.debugConsole.info("Added '" + recipe.getType().id + "' recipe: " + recipe.toJson());
 		return recipe;
 	}
 

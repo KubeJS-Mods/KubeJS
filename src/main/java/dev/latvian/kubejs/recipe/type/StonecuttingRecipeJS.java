@@ -5,6 +5,8 @@ import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
+import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.util.JsonUtilsJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 
 import javax.annotation.Nullable;
@@ -20,19 +22,30 @@ public class StonecuttingRecipeJS extends RecipeJS
 		@Override
 		public RecipeJS create(Object[] args)
 		{
-			if (args.length == 2)
+			if (args.length != 2)
 			{
-				StonecuttingRecipeJS recipe = new StonecuttingRecipeJS();
-				recipe.result = ItemStackJS.of(args[0]);
-				recipe.ingredient = IngredientJS.of(args[1]);
-
-				if (!recipe.result.isEmpty() && !recipe.ingredient.isEmpty())
-				{
-					return recipe;
-				}
+				ScriptType.SERVER.debugConsole.error("Stonecutting recipe requires 2 arguments - result and ingredient!");
+				return null;
 			}
 
-			return null;
+			StonecuttingRecipeJS recipe = new StonecuttingRecipeJS();
+			recipe.result = ItemStackJS.of(args[0]);
+
+			if (recipe.result.isEmpty())
+			{
+				ScriptType.SERVER.debugConsole.error("Stonecutting recipe result " + JsonUtilsJS.of(args[0]) + " is not a valid item!");
+				return null;
+			}
+
+			recipe.ingredient = IngredientJS.of(args[1]);
+
+			if (recipe.ingredient.isEmpty())
+			{
+				ScriptType.SERVER.debugConsole.error("Stonecutting recipe ingredient " + JsonUtilsJS.of(args[1]) + " is not a valid ingredient!");
+				return null;
+			}
+
+			return recipe;
 		}
 
 		@Nullable

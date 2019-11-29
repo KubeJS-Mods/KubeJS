@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.bindings;
 
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.CountingMap;
@@ -91,7 +92,7 @@ public class UtilsWrapper
 
 	public ConsoleJS createConsole(String name)
 	{
-		return new ConsoleJS(LogManager.getLogger(name));
+		return new ConsoleJS(ScriptType.STARTUP, LogManager.getLogger(name));
 	}
 
 	public Pattern regex(String pattern)

@@ -7,11 +7,14 @@ import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
-import jdk.nashorn.api.scripting.JSObject;
+import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.util.JsonUtilsJS;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,34 +30,58 @@ public class ShapedRecipeJS extends RecipeJS
 		@Override
 		public RecipeJS create(Object[] args)
 		{
-			if (args.length == 3 && args[1] instanceof JSObject && args[2] instanceof JSObject)
+			if (args.length != 3)
 			{
-				JSObject pattern = (JSObject) args[1];
-				JSObject key = (JSObject) args[2];
+				ScriptType.SERVER.debugConsole.error("Shaped recipe requires 3 arguments - result, pattern and keys!");
+				return null;
+			}
 
-				if (pattern.isArray() && !key.isArray())
+			if (!(args[2] instanceof Map))
+			{
+				ScriptType.SERVER.debugConsole.error("Shaped recipe pattern is empty!");
+				return null;
+			}
+
+			ShapedRecipeJS recipe = new ShapedRecipeJS();
+			recipe.result = ItemStackJS.of(args[0]);
+
+			if (recipe.result.isEmpty())
+			{
+				ScriptType.SERVER.debugConsole.error("Shaped recipe result " + JsonUtilsJS.of(args[0]) + " is not a valid item!");
+				return null;
+			}
+
+			Collection<Object> pattern = UtilsJS.getList(args[1]);
+
+			if (pattern.isEmpty())
+			{
+				ScriptType.SERVER.debugConsole.error("Shaped recipe pattern is empty!");
+				return null;
+			}
+
+			for (Object p : pattern)
+			{
+				recipe.pattern.add(String.valueOf(p));
+			}
+
+			Map key = (Map) args[2];
+
+			for (Object k : key.keySet())
+			{
+				IngredientJS i = IngredientJS.of(key.get(k));
+
+				if (!i.isEmpty())
 				{
-					ShapedRecipeJS recipe = new ShapedRecipeJS();
-					recipe.result = ItemStackJS.of(args[0]);
-
-					for (Object p : pattern.values())
-					{
-						recipe.pattern.add(String.valueOf(p));
-					}
-
-					for (String k : key.keySet())
-					{
-						recipe.key.put(k, IngredientJS.of(key.getMember(k)));
-					}
-
-					if (!recipe.result.isEmpty() && !recipe.pattern.isEmpty() && !recipe.key.isEmpty())
-					{
-						return recipe;
-					}
+					recipe.key.put(k.toString(), i);
+				}
+				else
+				{
+					ScriptType.SERVER.debugConsole.error("Shaped recipe ingredient " + JsonUtilsJS.of(key.get(k)) + " with key '" + k + "' is not a valid ingredient!");
+					return null;
 				}
 			}
 
-			return null;
+			return recipe;
 		}
 
 		@Nullable

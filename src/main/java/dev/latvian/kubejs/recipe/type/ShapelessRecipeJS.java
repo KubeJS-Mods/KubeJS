@@ -7,6 +7,8 @@ import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
+import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 
@@ -26,32 +28,45 @@ public class ShapelessRecipeJS extends RecipeJS
 		@Override
 		public RecipeJS create(Object[] args)
 		{
-			if (args.length == 2)
+			if (args.length != 2)
 			{
-				Collection<Object> ingredients = UtilsJS.getList(args[1]);
+				ScriptType.SERVER.debugConsole.error("Shapeless recipe requires 2 arguments - result and ingredients!");
+				return null;
+			}
 
-				if (!ingredients.isEmpty())
+			ShapelessRecipeJS recipe = new ShapelessRecipeJS();
+			recipe.result = ItemStackJS.of(args[0]);
+
+			if (recipe.result.isEmpty())
+			{
+				ScriptType.SERVER.debugConsole.error("Shapeless recipe result " + JsonUtilsJS.of(args[0]) + " is not a valid item!");
+				return null;
+			}
+
+			Collection<Object> ingredients = UtilsJS.getList(args[1]);
+
+			if (ingredients.isEmpty())
+			{
+				ScriptType.SERVER.debugConsole.error("Shapeless recipe requires 2 arguments - result and ingredients!");
+				return null;
+			}
+
+			for (Object o : ingredients)
+			{
+				IngredientJS in = IngredientJS.of(o);
+
+				if (!in.isEmpty())
 				{
-					ShapelessRecipeJS recipe = new ShapelessRecipeJS();
-					recipe.result = ItemStackJS.of(args[0]);
-
-					for (Object o : ingredients)
-					{
-						IngredientJS in = IngredientJS.of(o);
-
-						if (!in.isEmpty())
-						{
-							recipe.ingredients.add(in);
-						}
-					}
-
-					if (!recipe.result.isEmpty() && !recipe.ingredients.isEmpty())
-					{
-						return recipe;
-					}
+					recipe.ingredients.add(in);
+				}
+				else
+				{
+					ScriptType.SERVER.debugConsole.error("Shapeless recipe ingredient " + JsonUtilsJS.of(o) + " is not a valid ingredient!");
+					return null;
 				}
 			}
-			return null;
+
+			return recipe;
 		}
 
 		@Nullable

@@ -77,7 +77,7 @@ public class UtilsJS
 		return path1.toFile();
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "ConstantConditions"})
 	public static Collection<Object> getList(Object o)
 	{
 		if (o instanceof Collection)
@@ -102,6 +102,68 @@ public class UtilsJS
 		else if (o instanceof Object[])
 		{
 			return Arrays.asList(((Object[]) o));
+		}
+		else if (o.getClass().isArray())
+		{
+			Class c = o.getClass().getComponentType();
+
+			if (c.isPrimitive())
+			{
+				if (c == byte.class)
+				{
+					List<Object> l = new ArrayList<>();
+					for (byte v : (byte[]) o)
+					{
+						l.add(v);
+					}
+					return l;
+				}
+				else if (c == short.class)
+				{
+					List<Object> l = new ArrayList<>();
+					for (short v : (short[]) o)
+					{
+						l.add(v);
+					}
+					return l;
+				}
+				else if (c == int.class)
+				{
+					List<Object> l = new ArrayList<>();
+					for (int v : (int[]) o)
+					{
+						l.add(v);
+					}
+					return l;
+				}
+				else if (c == long.class)
+				{
+					List<Object> l = new ArrayList<>();
+					for (long v : (long[]) o)
+					{
+						l.add(v);
+					}
+					return l;
+				}
+				else if (c == float.class)
+				{
+					List<Object> l = new ArrayList<>();
+					for (float v : (float[]) o)
+					{
+						l.add(v);
+					}
+					return l;
+				}
+				else if (c == double.class)
+				{
+					List<Object> l = new ArrayList<>();
+					for (double v : (double[]) o)
+					{
+						l.add(v);
+					}
+					return l;
+				}
+			}
 		}
 
 		return Collections.singleton(o);

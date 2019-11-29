@@ -11,7 +11,6 @@ import dev.latvian.kubejs.recipe.type.RecipeJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.kubejs.server.ServerEventJS;
-import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.resources.IResourceManager;
@@ -156,11 +155,7 @@ public class RecipeEventJS extends ServerEventJS
 				if (deletedRecipes.add(recipe.id))
 				{
 					originalRecipes.remove(recipe);
-
-					if (ServerJS.instance.debugLog)
-					{
-						ScriptType.SERVER.console.info("Deleted recipe " + recipe.id);
-					}
+					ScriptType.SERVER.debugConsole.info("Deleted recipe " + recipe.id);
 				}
 			}
 		}

@@ -69,6 +69,14 @@ import java.util.concurrent.Executor;
  */
 public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadListener
 {
+	public static void debugInfo(String message)
+	{
+	}
+
+	public static void debugError(String message)
+	{
+	}
+
 	public static ServerJS instance;
 
 	@MinecraftClass
@@ -420,7 +428,7 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 
 		if (debugLog)
 		{
-			ScriptType.SERVER.console.info("Added " + recipes.size() + " recipes");
+			ScriptType.SERVER.debugConsole.info("Added " + recipes.size() + " recipes");
 		}
 
 		resourceManager.addResourcePack(virtualDataPack);

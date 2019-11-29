@@ -4,7 +4,6 @@ import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptManager;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import jdk.nashorn.api.scripting.NashornException;
 
 import java.util.Collections;
 import java.util.List;
@@ -78,13 +77,16 @@ public class EventsJS
 					return true;
 				}
 			}
-			catch (NashornException ex)
-			{
-				handler.file.pack.manager.type.console.error("Error occurred while firing '" + id + "' event in " + handler.file.info.location + ": " + ex);
-			}
 			catch (Throwable ex)
 			{
-				ex.printStackTrace();
+				if (ex.getClass().getName().equals("jdk.nashorn.api.scripting.NashornException"))
+				{
+					handler.file.pack.manager.type.console.error("Error occurred while firing '" + id + "' event in " + handler.file.info.location + ": " + ex);
+				}
+				else
+				{
+					ex.printStackTrace();
+				}
 			}
 		}
 

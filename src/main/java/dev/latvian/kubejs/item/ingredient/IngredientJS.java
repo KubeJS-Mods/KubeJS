@@ -7,6 +7,7 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.UtilsJS;
 import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.item.ItemStack;
@@ -21,7 +22,7 @@ import java.util.function.Predicate;
  * @author LatvianModder
  */
 @FunctionalInterface
-public interface IngredientJS
+public interface IngredientJS extends JsonSerializable
 {
 	static IngredientJS of(@Nullable Object object)
 	{
@@ -189,6 +190,7 @@ public interface IngredientJS
 		return 1;
 	}
 
+	@Override
 	default JsonElement getJson()
 	{
 		JsonArray array = new JsonArray();

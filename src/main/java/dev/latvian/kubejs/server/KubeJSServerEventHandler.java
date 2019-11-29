@@ -11,7 +11,6 @@ import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.SimpleWorldEventJS;
 import dev.latvian.kubejs.world.WorldJS;
-import jdk.nashorn.api.scripting.NashornException;
 import net.minecraft.resources.IFutureReloadListener;
 import net.minecraft.resources.SimpleReloadableResourceManager;
 import net.minecraft.world.dimension.DimensionType;
@@ -164,13 +163,16 @@ public class KubeJSServerEventHandler
 				{
 					e.call();
 				}
-				catch (NashornException ex)
-				{
-					e.file.pack.manager.type.console.error("Error occurred while handling scheduled event callback in " + e.file.info.location + ": " + ex);
-				}
 				catch (Throwable ex)
 				{
-					ex.printStackTrace();
+					if (ex.getClass().getName().equals("jdk.nashorn.api.scripting.NashornException"))
+					{
+						e.file.pack.manager.type.console.error("Error occurred while handling scheduled event callback in " + e.file.info.location + ": " + ex);
+					}
+					else
+					{
+						ex.printStackTrace();
+					}
 				}
 			}
 		}
@@ -198,13 +200,16 @@ public class KubeJSServerEventHandler
 				{
 					e.call();
 				}
-				catch (NashornException ex)
-				{
-					e.file.pack.manager.type.console.error("Error occurred while handling scheduled event callback in " + e.file.info.location + ": " + ex);
-				}
 				catch (Throwable ex)
 				{
-					ex.printStackTrace();
+					if (ex.getClass().getName().equals("jdk.nashorn.api.scripting.NashornException"))
+					{
+						e.file.pack.manager.type.console.error("Error occurred while handling scheduled event callback in " + e.file.info.location + ": " + ex);
+					}
+					else
+					{
+						ex.printStackTrace();
+					}
 				}
 			}
 		}
