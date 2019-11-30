@@ -1,8 +1,9 @@
 package dev.latvian.kubejs.recipe;
 
-import dev.latvian.kubejs.recipe.type.CustomRecipeJS;
+import com.google.gson.JsonObject;
 import dev.latvian.kubejs.recipe.type.RecipeJS;
 import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import jdk.nashorn.api.scripting.AbstractJSObject;
@@ -39,28 +40,24 @@ public class RecipeFunction extends AbstractJSObject
 
 		if (args.length == 1 && args[0] instanceof Map)
 		{
-			CustomRecipeJS recipe = new CustomRecipeJS();
-			recipes.add(recipe);
-			recipe.id = new ResourceLocation("kubejs", "generated_" + recipes.size());
-			recipe.group = "";
-			recipe.data = JsonUtilsJS.of(args[0]).getAsJsonObject();
-			recipe.typeId = type.id;
-			ScriptType.SERVER.console.info("Added '" + type.id + "' recipe: " + recipe.toJson());
-			return recipe;
+			JsonObject json = JsonUtilsJS.of(args[0]).getAsJsonObject();
+			json.addProperty("type", type.id.toString());
+			return add(type.create(json), args1);
 		}
-
-		RecipeJS recipe;
 
 		try
 		{
-			recipe = type.create(args);
+			return add(type.create(args), args1);
 		}
 		catch (Exception ex)
 		{
 			ex.printStackTrace();
-			recipe = new RecipeErrorJS(ex.toString());
+			return add(new RecipeErrorJS(ex.toString()), args1);
 		}
+	}
 
+	private RecipeJS add(RecipeJS recipe, List args1)
+	{
 		if (recipe instanceof RecipeErrorJS)
 		{
 			ScriptType.SERVER.console.error("Error creating '" + type.id + "' recipe: " + ((RecipeErrorJS) recipe).message);
@@ -69,10 +66,15 @@ public class RecipeFunction extends AbstractJSObject
 			return recipe;
 		}
 
-		recipes.add(recipe);
-		recipe.id = new ResourceLocation("kubejs", "generated_" + recipes.size());
+		recipe.id = new ResourceLocation(type.id.getNamespace(), "kubejs_generated_" + recipes.size());
 		recipe.group = "";
-		ScriptType.SERVER.console.info("Added '" + recipe.getType().id + "' recipe: " + recipe.toJson());
+
+		if (ServerJS.instance.logAddedRecipes)
+		{
+			ScriptType.SERVER.console.info("Added '" + type.id + "' recipe: " + recipe.toJson());
+		}
+
+		recipes.add(recipe);
 		return recipe;
 	}
 

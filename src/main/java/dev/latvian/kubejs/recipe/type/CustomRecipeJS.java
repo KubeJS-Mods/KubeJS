@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.recipe.type;
 
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.recipe.RecipeErrorJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
 import dev.latvian.kubejs.util.JsonUtilsJS;
@@ -28,29 +27,44 @@ public class CustomRecipeJS extends RecipeJS
 		@Override
 		public RecipeJS create(JsonObject json)
 		{
-			CustomRecipeJS recipe = new CustomRecipeJS();
-			recipe.typeId = new ResourceLocation(json.get("type").getAsString());
-			recipe.data = json;
-			return recipe;
+			if (serializer == null)
+			{
+				return new RecipeErrorJS("Recipe type '" + id + "' is not registered!");
+			}
+
+			try
+			{
+				CustomRecipeJS recipe = new CustomRecipeJS(this);
+				recipe.data = json;
+				serializer.read(new ResourceLocation("dummy"), recipe.data);
+				return recipe;
+			}
+			catch (Exception ex)
+			{
+				return new RecipeErrorJS(ex.toString());
+			}
 		}
 	}
 
-	public static final CustomType TYPE = new CustomType(new ResourceLocation(KubeJS.MOD_ID, "custom"));
-
-	public ResourceLocation typeId;
+	public final CustomType type;
 	public JsonObject data;
+
+	public CustomRecipeJS(CustomType t)
+	{
+		type = t;
+	}
 
 	@Override
 	public RecipeTypeJS getType()
 	{
-		return TYPE;
+		return type;
 	}
 
 	@Override
 	public JsonObject toJson()
 	{
 		JsonObject json = JsonUtilsJS.copy(data).getAsJsonObject();
-		json.addProperty("type", typeId.toString());
+		json.addProperty("type", type.id.toString());
 
 		if (!group.isEmpty())
 		{

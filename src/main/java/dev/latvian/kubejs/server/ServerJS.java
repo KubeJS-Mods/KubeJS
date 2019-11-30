@@ -106,8 +106,9 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 	public ServerWorldJS overworld;
 	private AttachedData data;
 	private final VirtualKubeJSDataPack virtualDataPack;
-	public boolean debugLog;
 	public boolean dataPackOutput;
+	public boolean logAddedRecipes;
+	public boolean logRemovedRecipes;
 
 	public ServerJS(MinecraftServer ms)
 	{
@@ -120,8 +121,9 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 		fakePlayerMap = new HashMap<>();
 		worlds = new ArrayList<>();
 		virtualDataPack = new VirtualKubeJSDataPack();
-		debugLog = false;
 		dataPackOutput = false;
+		logAddedRecipes = false;
+		logRemovedRecipes = false;
 	}
 
 	public void updateWorldList()

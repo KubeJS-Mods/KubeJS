@@ -16,6 +16,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -36,6 +37,8 @@ public class RecipeEventJS extends ServerEventJS
 	private final Map<ResourceLocation, RecipeFunction> deserializerMap;
 	private final Map<String, Map<String, RecipeFunction>> recipeFunctions;
 	private final Set<ResourceLocation> removedRecipes;
+	private final Set<ResourceLocation> brokenRecipes;
+	public boolean removeBrokenRecipes;
 
 	private List<RecipeJS> originalRecipes;
 
@@ -98,6 +101,8 @@ public class RecipeEventJS extends ServerEventJS
 		};
 
 		removedRecipes = new HashSet<>();
+		brokenRecipes = new HashSet<>();
+		removeBrokenRecipes = true;
 	}
 
 	public Map<String, Map<String, RecipeFunction>> getRecipes()
@@ -119,14 +124,44 @@ public class RecipeEventJS extends ServerEventJS
 					{
 						JsonObject json = new JsonParser().parse(reader).getAsJsonObject();
 						ResourceLocation type = new ResourceLocation(json.get("type").getAsString());
-						RecipeFunction function = getRecipes().get(type.getNamespace()).get(type.getPath());
-						RecipeJS r = function.type.create(json);
+						ResourceLocation recipeId = new ResourceLocation(location.getNamespace(), location.getPath().substring(8, location.getPath().length() - 5));
 
-						if (r != null)
+						IRecipeSerializer serializer = ForgeRegistries.RECIPE_SERIALIZERS.getValue(type);
+						RecipeJS r;
+
+						if (serializer == null)
+						{
+							r = new RecipeErrorJS("Recipe type '" + type + "' is not registered!");
+						}
+						else
+						{
+							try
+							{
+								serializer.read(recipeId, json);
+								RecipeFunction function = getRecipes().get(type.getNamespace()).get(type.getPath());
+								r = function.type.create(json);
+							}
+							catch (Exception ex)
+							{
+								r = new RecipeErrorJS(ex.toString());
+							}
+						}
+
+						r.id = recipeId;
+
+						if (!(r instanceof RecipeErrorJS))
 						{
 							originalRecipes.add(r);
-							r.id = new ResourceLocation(location.getNamespace(), location.getPath().substring(8, location.getPath().length() - 5));
 							r.group = json.has("group") ? json.get("group").getAsString() : "";
+						}
+						else if (removeBrokenRecipes)
+						{
+							brokenRecipes.add(r.id);
+
+							if (ServerJS.instance.logRemovedRecipes)
+							{
+								ScriptType.SERVER.console.info("Removed broken recipe " + r.id + ": " + ((RecipeErrorJS) r).message);
+							}
 						}
 					}
 					catch (Exception ex)
@@ -157,9 +192,9 @@ public class RecipeEventJS extends ServerEventJS
 				{
 					originalRecipes.remove(recipe);
 
-					if (ServerJS.instance.debugLog)
+					if (ServerJS.instance.logRemovedRecipes)
 					{
-						ScriptType.SERVER.console.info("Deleted recipe " + recipe.id);
+						ScriptType.SERVER.console.info("Removed recipe " + recipe.id);
 					}
 				}
 			}
@@ -223,11 +258,16 @@ public class RecipeEventJS extends ServerEventJS
 			pack.addData(new ResourceLocation(r.getNamespace(), "recipes/" + r.getPath() + ".json"), "{\"type\":\"kubejs:deleted\"}");
 		}
 
+		for (ResourceLocation r : brokenRecipes)
+		{
+			pack.addData(new ResourceLocation(r.getNamespace(), "recipes/" + r.getPath() + ".json"), "{\"type\":\"kubejs:deleted\"}");
+		}
+
 		for (RecipeJS r : recipes)
 		{
 			r.addToDataPack(pack);
 		}
 
-		ScriptType.SERVER.console.info("Added " + recipes.size() + " recipes, removed " + removedRecipes.size() + " recipes");
+		ScriptType.SERVER.console.info("Added " + recipes.size() + " recipes, removed " + removedRecipes.size() + " recipes, removed " + brokenRecipes.size() + " erroring recipes");
 	}
 }
