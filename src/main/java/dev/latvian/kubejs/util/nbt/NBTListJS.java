@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public class NBTListJS implements NBTBaseJS, Iterable<NBTBaseJS>
+public class NBTListJS extends NBTBaseJS implements Iterable<NBTBaseJS>
 {
 	public static final NBTListJS NULL = new NBTListJS(0)
 	{

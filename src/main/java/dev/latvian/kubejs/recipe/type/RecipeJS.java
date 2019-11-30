@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.recipe.type;
 
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
@@ -14,38 +13,6 @@ import net.minecraft.util.ResourceLocation;
  */
 public abstract class RecipeJS
 {
-	public static final RecipeJS ERROR = new RecipeJS()
-	{
-		public RecipeTypeJS type = new RecipeTypeJS(new ResourceLocation(KubeJS.MOD_ID, "error"))
-		{
-			@Override
-			public RecipeJS create(Object[] args)
-			{
-				return ERROR;
-			}
-
-			@Override
-			public RecipeJS create(JsonObject json)
-			{
-				return ERROR;
-			}
-		};
-
-		@Override
-		public RecipeTypeJS getType()
-		{
-			return type;
-		}
-
-		@Override
-		public JsonObject toJson()
-		{
-			JsonObject json = new JsonObject();
-			json.addProperty("type", "kubejs:error");
-			return json;
-		}
-	};
-
 	public ResourceLocation id;
 	public String group;
 

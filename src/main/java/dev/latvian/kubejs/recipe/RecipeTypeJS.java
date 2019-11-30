@@ -6,7 +6,6 @@ import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -29,9 +28,7 @@ public abstract class RecipeTypeJS
 		serializer = s;
 	}
 
-	@Nullable
 	public abstract RecipeJS create(Object[] args);
 
-	@Nullable
 	public abstract RecipeJS create(JsonObject json);
 }

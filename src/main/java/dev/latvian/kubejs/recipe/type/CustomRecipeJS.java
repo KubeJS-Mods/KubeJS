@@ -2,11 +2,10 @@ package dev.latvian.kubejs.recipe.type;
 
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.recipe.RecipeErrorJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import net.minecraft.util.ResourceLocation;
-
-import javax.annotation.Nullable;
 
 /**
  * @author LatvianModder
@@ -20,11 +19,10 @@ public class CustomRecipeJS extends RecipeJS
 			super(id);
 		}
 
-		@Nullable
 		@Override
 		public RecipeJS create(Object[] args)
 		{
-			return null;
+			return new RecipeErrorJS("Can't create custom recipe!");
 		}
 
 		@Override

@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.util.nbt;
 
 import dev.latvian.kubejs.MinecraftClass;
-import jdk.nashorn.api.scripting.JSObject;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.EndNBT;
 import net.minecraft.nbt.INBT;
@@ -10,15 +10,26 @@ import net.minecraft.nbt.NumberNBT;
 import net.minecraft.nbt.StringNBT;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 
 /**
  * @author LatvianModder
  */
-public interface NBTBaseJS
+public abstract class NBTBaseJS
 {
-	static NBTBaseJS of(@Nullable Object o)
+	public static NBTBaseJS of(@Nullable Object o)
 	{
 		if (o == null || o instanceof EndNBT)
+		{
+			return NBTNullJS.INSTANCE;
+		}
+
+		return ofNormalized(UtilsJS.normalize(o));
+	}
+
+	private static NBTBaseJS ofNormalized(@Nullable Object o)
+	{
+		if (o == null)
 		{
 			return NBTNullJS.INSTANCE;
 		}
@@ -40,40 +51,51 @@ public interface NBTBaseJS
 		}
 		else if (o instanceof CompoundNBT)
 		{
+			NBTCompoundJS map = new NBTCompoundJS();
+
+			for (String s : ((CompoundNBT) o).keySet())
+			{
+				map.set(s, ofNormalized(((CompoundNBT) o).get(s)));
+			}
+
 			return new NBTCompoundJS((CompoundNBT) o);
 		}
 		else if (o instanceof ListNBT)
 		{
-			return new NBTListJS((ListNBT) o);
+			NBTListJS list = new NBTListJS();
+
+			for (INBT nbt : (ListNBT) o)
+			{
+				list.add(ofNormalized(nbt));
+			}
+
+			return list;
 		}
 		else if (o instanceof StringNBT)
 		{
 			return new NBTStringJS(((StringNBT) o).getString());
 		}
-		else if (o instanceof JSObject)
+		else if (o instanceof Map)
 		{
-			JSObject js = (JSObject) o;
-
-			if (js.isArray())
-			{
-				NBTListJS list = new NBTListJS();
-
-				for (Object o1 : js.values())
-				{
-					list.add(of(o1));
-				}
-
-				return list;
-			}
-
 			NBTCompoundJS compound = new NBTCompoundJS();
 
-			for (String key : js.keySet())
+			for (Map.Entry entry : ((Map<?, ?>) o).entrySet())
 			{
-				compound.set(key, of(js.getMember(key)));
+				compound.set(entry.getKey().toString(), ofNormalized(entry.getValue()));
 			}
 
 			return compound;
+		}
+		else if (o instanceof Iterable)
+		{
+			NBTListJS list = new NBTListJS();
+
+			for (Object o1 : (Iterable) o)
+			{
+				list.add(ofNormalized(o1));
+			}
+
+			return list;
 		}
 
 		return NBTNullJS.INSTANCE;
@@ -81,99 +103,99 @@ public interface NBTBaseJS
 
 	@Nullable
 	@MinecraftClass
-	INBT createNBT();
+	public abstract INBT createNBT();
 
-	default String getNbtString()
+	public String getNbtString()
 	{
 		INBT nbt = createNBT();
 		return nbt == null ? "null" : nbt.toString();
 	}
 
-	default boolean isEmpty()
+	public boolean isEmpty()
 	{
 		return false;
 	}
 
-	default boolean isNull()
+	public boolean isNull()
 	{
 		return false;
 	}
 
-	default byte getId()
+	public byte getId()
 	{
 		INBT nbt = createNBT();
 		return nbt == null ? 0 : nbt.getId();
 	}
 
-	default NBTBaseJS getCopy()
+	public NBTBaseJS getCopy()
 	{
 		return this;
 	}
 
-	default NBTCompoundJS asCompound()
+	public NBTCompoundJS asCompound()
 	{
 		return new NBTCompoundJS(new CompoundNBT());
 	}
 
-	default NBTListJS asList()
+	public NBTListJS asList()
 	{
 		NBTListJS list = new NBTListJS(new ListNBT());
 		list.add(this);
 		return list;
 	}
 
-	default String asString()
+	public String asString()
 	{
 		INBT nbt = createNBT();
 		return nbt == null ? "" : nbt.toString();
 	}
 
-	default Number asNumber()
+	public Number asNumber()
 	{
 		return 0;
 	}
 
-	default byte asByte()
+	public byte asByte()
 	{
 		return asNumber().byteValue();
 	}
 
-	default int asInt()
+	public int asInt()
 	{
 		return asNumber().intValue();
 	}
 
-	default short asShort()
+	public short asShort()
 	{
 		return asNumber().shortValue();
 	}
 
-	default long asLong()
+	public long asLong()
 	{
 		return asNumber().longValue();
 	}
 
-	default float asFloat()
+	public float asFloat()
 	{
 		return asNumber().floatValue();
 	}
 
-	default double asDouble()
+	public double asDouble()
 	{
 		return asNumber().doubleValue();
 	}
 
-	default byte[] asByteArray()
+	public byte[] asByteArray()
 	{
 		return new byte[0];
 	}
 
-	default int[] asIntArray()
+	public int[] asIntArray()
 	{
 		return new int[0];
 	}
 
-	default long[] asLongArray()
+	public long[] asLongArray()
 	{
 		return new long[0];
 	}

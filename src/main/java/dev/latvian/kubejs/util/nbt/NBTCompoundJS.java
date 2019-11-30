@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class NBTCompoundJS implements NBTBaseJS
+public class NBTCompoundJS extends NBTBaseJS
 {
 	public static final NBTCompoundJS NULL = new NBTCompoundJS(0)
 	{

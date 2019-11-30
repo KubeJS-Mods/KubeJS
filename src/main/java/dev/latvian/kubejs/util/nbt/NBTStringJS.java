@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-public class NBTStringJS implements NBTBaseJS
+public class NBTStringJS extends NBTBaseJS
 {
 	public static final NBTStringJS EMPTY_STRING = new NBTStringJS("");
 

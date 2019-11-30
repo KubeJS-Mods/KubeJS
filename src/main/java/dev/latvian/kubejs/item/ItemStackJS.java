@@ -15,7 +15,6 @@ import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import dev.latvian.kubejs.util.nbt.NBTListJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
-import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -65,33 +64,34 @@ public abstract class ItemStackJS implements IngredientJS
 			ItemStack stack = (ItemStack) o;
 			return stack.isEmpty() ? EmptyItemStackJS.INSTANCE : new BoundItemStackJS(stack);
 		}
-		else if (o instanceof JSObject)
+
+		Map<String, Object> map = UtilsJS.getNormalizedMap(o);
+
+		if (map != null)
 		{
-			JSObject js = (JSObject) o;
-
-			if (js.getMember("item") instanceof String)
+			if (map.containsKey("item"))
 			{
-				ItemStackJS stack = new UnboundItemStackJS(new ResourceLocation(KubeJS.appendModId(js.getMember("item").toString())));
+				ItemStackJS stack = new UnboundItemStackJS(new ResourceLocation(KubeJS.appendModId(map.get("item").toString())));
 
-				if (js.getMember("count") instanceof Number)
+				if (map.get("count") instanceof Number)
 				{
-					stack.setCount(((Number) js.getMember("count")).intValue());
+					stack.setCount(((Number) map.get("count")).intValue());
 				}
 
-				if (js.hasMember("nbt"))
+				if (map.containsKey("nbt"))
 				{
-					stack.setNbt(js.getMember("nbt"));
+					stack.setNbt(map.get("nbt"));
 				}
 
 				return stack;
 			}
-			else if (js.getMember("tag") instanceof CharSequence)
+			else if (map.get("tag") instanceof CharSequence)
 			{
-				ItemStackJS stack = new TagIngredientJS(new ResourceLocation(js.getMember("tag").toString())).getFirst();
+				ItemStackJS stack = new TagIngredientJS(new ResourceLocation(map.get("tag").toString())).getFirst();
 
-				if (js.hasMember("count"))
+				if (map.containsKey("count"))
 				{
-					stack.setCount(UtilsJS.parseInt(js.getMember("count"), 1));
+					stack.setCount(UtilsJS.parseInt(map.get("count"), 1));
 				}
 
 				return stack;

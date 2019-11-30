@@ -2,7 +2,6 @@ package dev.latvian.kubejs.fluid;
 
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
-import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.ResourceLocation;
@@ -11,6 +10,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -36,26 +36,24 @@ public abstract class FluidStackJS
 		{
 			return new UnboundFluidStackJS(((Fluid) o).getRegistryName());
 		}
-		else if (o instanceof JSObject)
+
+		Map<String, Object> map = UtilsJS.getNormalizedMap(o);
+
+		if (map != null && map.containsKey("fluid"))
 		{
-			JSObject js = (JSObject) o;
+			FluidStackJS stack = new UnboundFluidStackJS(new ResourceLocation(map.get("fluid").toString()));
 
-			if (js.hasMember("fluid"))
+			if (map.get("amount") instanceof Number)
 			{
-				FluidStackJS stack = new UnboundFluidStackJS(new ResourceLocation(js.getMember("fluid").toString()));
-
-				if (js.getMember("amount") instanceof Number)
-				{
-					stack.setAmount(((Number) js.getMember("amount")).intValue());
-				}
-
-				if (js.hasMember("nbt"))
-				{
-					stack.setNbt(js.getMember("nbt"));
-				}
-
-				return stack;
+				stack.setAmount(((Number) map.get("amount")).intValue());
 			}
+
+			if (map.containsKey("nbt"))
+			{
+				stack.setNbt(map.get("nbt"));
+			}
+
+			return stack;
 		}
 
 		String[] s = o.toString().split(" ", 2);

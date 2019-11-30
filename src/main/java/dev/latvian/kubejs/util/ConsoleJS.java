@@ -15,12 +15,14 @@ public class ConsoleJS
 	private final ScriptType type;
 	public final Logger logger;
 	private String group;
+	private int lineNumber;
 
 	public ConsoleJS(ScriptType m, Logger log)
 	{
 		type = m;
 		logger = log;
 		group = "";
+		lineNumber = 0;
 	}
 
 	protected boolean shouldPrint()
@@ -28,9 +30,9 @@ public class ConsoleJS
 		return true;
 	}
 
-	public boolean isDebug()
+	public void setLineNumber(boolean b)
 	{
-		return false;
+		lineNumber = Math.max(0, lineNumber + (b ? 1 : -1));
 	}
 
 	private String string(Object object)
@@ -46,27 +48,30 @@ public class ConsoleJS
 			s = String.valueOf(object);
 		}
 
-		boolean debug = isDebug();
-
-		if (!debug && group.isEmpty())
+		if (lineNumber == 0 && group.isEmpty())
 		{
 			return s;
 		}
 
 		StringBuilder builder = new StringBuilder();
 
-		if (debug)
+		if (lineNumber > 0)
 		{
-			ScriptFile f = type.manager.get().currentFile;
+			int ln = getScriptLine();
 
-			if (f != null)
+			if (ln != -1)
 			{
-				builder.append(f.info.location);
-			}
+				ScriptFile f = type.manager.get().currentFile;
 
-			builder.append(':');
-			builder.append(getScriptLine());
-			builder.append(": ");
+				if (f != null)
+				{
+					builder.append(f.info.location);
+				}
+
+				builder.append(':');
+				builder.append(getScriptLine());
+				builder.append(": ");
+			}
 		}
 
 		builder.append(group);

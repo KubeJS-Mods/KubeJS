@@ -5,6 +5,7 @@ import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import jdk.nashorn.api.scripting.JSObject;
+import jdk.nashorn.internal.runtime.ScriptObject;
 import net.minecraft.potion.Effect;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
@@ -18,11 +19,9 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -77,96 +76,212 @@ public class UtilsJS
 		return path1.toFile();
 	}
 
-	@SuppressWarnings({"unchecked", "ConstantConditions"})
-	public static Collection<Object> getList(Object o)
+	@Nullable
+	public static List getNormalizedList(@Nullable Object o)
 	{
-		if (o instanceof Collection)
+		Object o1 = normalize(o);
+		return o1 instanceof List ? (List) o1 : null;
+	}
+
+	public static List getNormalizedListOrSelf(@Nullable Object o)
+	{
+		List l = getNormalizedList(o);
+		return l == null ? Collections.singletonList(o) : l;
+	}
+
+	@Nullable
+	public static Map getNormalizedMap(@Nullable Object o)
+	{
+		Object o1 = normalize(o);
+		return o1 instanceof Map ? (Map) o1 : null;
+	}
+
+	public static boolean isNormalized(@Nullable Object o)
+	{
+		if (o == null)
 		{
-			return (Collection) o;
+			return true;
+		}
+		else if (o instanceof ScriptObject || o instanceof JSObject || o.getClass().isArray())
+		{
+			return false;
 		}
 		else if (o instanceof Iterable)
 		{
-			List<Object> list = new ArrayList<>();
+			for (Object o1 : (Iterable) o)
+			{
+				if (!isNormalized(o1))
+				{
+					return false;
+				}
+			}
+		}
+		else if (o instanceof Map)
+		{
+			for (Map.Entry entry : ((Map<?, ?>) o).entrySet())
+			{
+				if (!isNormalized(entry.getValue()))
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	@Nullable
+	public static Object normalize(@Nullable Object o)
+	{
+		if (o == null)
+		{
+			return null;
+		}
+		else if (isNormalized(o))
+		{
+			return o;
+		}
+		else if (o instanceof JSObject)
+		{
+			JSObject js = (JSObject) o;
+
+			if (js.isArray())
+			{
+				JsonStyleList list = new JsonStyleList();
+
+				for (Object o1 : js.values())
+				{
+					list.add(normalize(o1));
+				}
+
+				return list;
+			}
+			else
+			{
+				JsonStyleMap map = new JsonStyleMap();
+
+				for (String k : ((JSObject) o).keySet())
+				{
+					map.put(k, normalize(((JSObject) o).getMember(k)));
+				}
+
+				return map;
+			}
+		}
+		else if (o instanceof ScriptObject)
+		{
+			ScriptObject js = (ScriptObject) o;
+
+			if (js.isArray())
+			{
+				JsonStyleList list = new JsonStyleList();
+
+				for (Object o1 : js.values())
+				{
+					list.add(normalize(o1));
+				}
+
+				return list;
+			}
+			else
+			{
+				JsonStyleMap map = new JsonStyleMap();
+
+				for (Object k : ((ScriptObject) o).keySet())
+				{
+					map.put(k.toString(), normalize(((ScriptObject) o).get(k)));
+				}
+
+				return map;
+			}
+		}
+		else if (o instanceof Map)
+		{
+			JsonStyleMap map = new JsonStyleMap();
+
+			for (Map.Entry entry : ((Map<?, ?>) o).entrySet())
+			{
+				map.put(entry.getKey().toString(), normalize(entry.getValue()));
+			}
+
+			return map;
+		}
+		else if (o instanceof Iterable)
+		{
+			JsonStyleList list = new JsonStyleList();
 
 			for (Object o1 : (Iterable) o)
 			{
-				list.add(o1);
+				list.add(normalize(o1));
 			}
 
 			return list;
 		}
-		else if (o instanceof JSObject && ((JSObject) o).isArray())
-		{
-			return ((JSObject) o).values();
-		}
-		else if (o instanceof Object[])
-		{
-			return Arrays.asList(((Object[]) o));
-		}
 		else if (o.getClass().isArray())
 		{
-			Class c = o.getClass().getComponentType();
+			JsonStyleList list = new JsonStyleList();
 
-			if (c.isPrimitive())
+			if (o instanceof Object[])
 			{
-				if (c == byte.class)
+				for (Object o1 : (Object[]) o)
 				{
-					List<Object> l = new ArrayList<>();
-					for (byte v : (byte[]) o)
-					{
-						l.add(v);
-					}
-					return l;
-				}
-				else if (c == short.class)
-				{
-					List<Object> l = new ArrayList<>();
-					for (short v : (short[]) o)
-					{
-						l.add(v);
-					}
-					return l;
-				}
-				else if (c == int.class)
-				{
-					List<Object> l = new ArrayList<>();
-					for (int v : (int[]) o)
-					{
-						l.add(v);
-					}
-					return l;
-				}
-				else if (c == long.class)
-				{
-					List<Object> l = new ArrayList<>();
-					for (long v : (long[]) o)
-					{
-						l.add(v);
-					}
-					return l;
-				}
-				else if (c == float.class)
-				{
-					List<Object> l = new ArrayList<>();
-					for (float v : (float[]) o)
-					{
-						l.add(v);
-					}
-					return l;
-				}
-				else if (c == double.class)
-				{
-					List<Object> l = new ArrayList<>();
-					for (double v : (double[]) o)
-					{
-						l.add(v);
-					}
-					return l;
+					list.add(normalize(o1));
 				}
 			}
+			else if (o instanceof int[])
+			{
+				for (int v : (int[]) o)
+				{
+					list.add(v);
+				}
+			}
+			else if (o instanceof byte[])
+			{
+				for (byte v : (byte[]) o)
+				{
+					list.add(v);
+				}
+			}
+			else if (o instanceof short[])
+			{
+				for (short v : (short[]) o)
+				{
+					list.add(v);
+				}
+			}
+			else if (o instanceof long[])
+			{
+				for (long v : (long[]) o)
+				{
+					list.add(v);
+				}
+			}
+			else if (o instanceof float[])
+			{
+				for (float v : (float[]) o)
+				{
+					list.add(v);
+				}
+			}
+			else if (o instanceof double[])
+			{
+				for (double v : (double[]) o)
+				{
+					list.add(v);
+				}
+			}
+			else if (o instanceof char[])
+			{
+				for (char v : (char[]) o)
+				{
+					list.add(v);
+				}
+			}
+
+			return list;
 		}
 
-		return Collections.singleton(o);
+		return o;
 	}
 
 	public static <T> FieldJS<T> getField(String className, String fieldName)

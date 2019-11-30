@@ -107,6 +107,7 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 	private AttachedData data;
 	private final VirtualKubeJSDataPack virtualDataPack;
 	public boolean debugLog;
+	public boolean dataPackOutput;
 
 	public ServerJS(MinecraftServer ms)
 	{
@@ -120,6 +121,7 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 		worlds = new ArrayList<>();
 		virtualDataPack = new VirtualKubeJSDataPack();
 		debugLog = false;
+		dataPackOutput = false;
 	}
 
 	public void updateWorldList()
@@ -412,6 +414,7 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 
 		//Loading is required in prepare stage to allow virtual data pack overrides
 		virtualDataPack.resetData();
+		ScriptType.SERVER.console.setLineNumber(true);
 		scriptManager.load();
 		new DataPackEventJS(virtualDataPack).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK);
 
@@ -426,12 +429,8 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 		tagEvent.post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_TAGS);
 		tagEvent.addDataToPack(virtualDataPack);
 
-		if (debugLog)
-		{
-			ScriptType.SERVER.debugConsole.info("Added " + recipes.size() + " recipes");
-		}
-
 		resourceManager.addResourcePack(virtualDataPack);
+		ScriptType.SERVER.console.setLineNumber(false);
 		ScriptType.SERVER.console.info("Scripts loaded");
 	}
 

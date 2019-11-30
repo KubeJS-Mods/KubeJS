@@ -61,7 +61,7 @@ public class VirtualKubeJSDataPack extends DelegatableResourcePack
 
 		if (s != null)
 		{
-			if (ServerJS.instance.debugLog)
+			if (ServerJS.instance.dataPackOutput)
 			{
 				ScriptType.SERVER.console.info("Served virtual file '" + location + "': " + s);
 			}

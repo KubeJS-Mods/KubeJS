@@ -3,8 +3,8 @@ package dev.latvian.kubejs.recipe;
 import dev.latvian.kubejs.recipe.type.CustomRecipeJS;
 import dev.latvian.kubejs.recipe.type.RecipeJS;
 import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.JsonUtilsJS;
+import dev.latvian.kubejs.util.UtilsJS;
 import jdk.nashorn.api.scripting.AbstractJSObject;
 import net.minecraft.util.ResourceLocation;
 
@@ -26,8 +26,17 @@ public class RecipeFunction extends AbstractJSObject
 	}
 
 	@Override
-	public RecipeJS call(Object thiz, Object... args)
+	public RecipeJS call(Object thiz, Object... args0)
 	{
+		List args1 = UtilsJS.getNormalizedList(args0);
+
+		if (args1 == null || args1.isEmpty())
+		{
+			return new RecipeErrorJS("Recipe requires at least one argument!");
+		}
+
+		Object[] args = args1.toArray();
+
 		if (args.length == 1 && args[0] instanceof Map)
 		{
 			CustomRecipeJS recipe = new CustomRecipeJS();
@@ -36,11 +45,11 @@ public class RecipeFunction extends AbstractJSObject
 			recipe.group = "";
 			recipe.data = JsonUtilsJS.of(args[0]).getAsJsonObject();
 			recipe.typeId = type.id;
-			ScriptType.SERVER.debugConsole.info("Added custom recipe: " + recipe.toJson());
+			ScriptType.SERVER.console.info("Added '" + type.id + "' recipe: " + recipe.toJson());
 			return recipe;
 		}
 
-		RecipeJS recipe = null;
+		RecipeJS recipe;
 
 		try
 		{
@@ -49,22 +58,21 @@ public class RecipeFunction extends AbstractJSObject
 		catch (Exception ex)
 		{
 			ex.printStackTrace();
+			recipe = new RecipeErrorJS(ex.toString());
 		}
 
-		if (recipe == null)
+		if (recipe instanceof RecipeErrorJS)
 		{
-			if (ServerJS.instance.debugLog)
-			{
-				ScriptType.SERVER.debugConsole.error("Failed to create recipe with type '" + type.id + "' from args " + JsonUtilsJS.of(args));
-			}
-
-			return RecipeJS.ERROR;
+			ScriptType.SERVER.console.error("Error creating '" + type.id + "' recipe: " + ((RecipeErrorJS) recipe).message);
+			ScriptType.SERVER.console.error(args1);
+			ScriptType.SERVER.console.error("");
+			return recipe;
 		}
 
 		recipes.add(recipe);
 		recipe.id = new ResourceLocation("kubejs", "generated_" + recipes.size());
 		recipe.group = "";
-		ScriptType.SERVER.debugConsole.info("Added '" + recipe.getType().id + "' recipe: " + recipe.toJson());
+		ScriptType.SERVER.console.info("Added '" + recipe.getType().id + "' recipe: " + recipe.toJson());
 		return recipe;
 	}
 

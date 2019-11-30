@@ -11,7 +11,7 @@ import net.minecraftforge.common.util.Constants;
 /**
  * @author LatvianModder
  */
-public class NBTNumberJS implements NBTBaseJS
+public class NBTNumberJS extends NBTBaseJS
 {
 	private final Number number;
 	private NumberNBT cached;

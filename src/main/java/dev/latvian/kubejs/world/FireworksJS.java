@@ -36,7 +36,7 @@ public class FireworksJS
 
 		if (properties.containsKey("explosions"))
 		{
-			for (Object o : UtilsJS.getList(properties.get("explosions")))
+			for (Object o : UtilsJS.getNormalizedListOrSelf(properties.get("explosions")))
 			{
 				if (o instanceof Map)
 				{
@@ -60,7 +60,7 @@ public class FireworksJS
 
 					if (m.containsKey("colors"))
 					{
-						for (Object o1 : UtilsJS.getList(m.get("colors")))
+						for (Object o1 : UtilsJS.getNormalizedListOrSelf(m.get("colors")))
 						{
 							if (o1 instanceof Number)
 							{
@@ -79,7 +79,7 @@ public class FireworksJS
 
 					if (m.containsKey("fadeColors"))
 					{
-						for (Object o1 : UtilsJS.getList(m.get("fadeColors")))
+						for (Object o1 : UtilsJS.getNormalizedListOrSelf(m.get("fadeColors")))
 						{
 							if (o1 instanceof Number)
 							{

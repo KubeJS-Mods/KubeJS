@@ -6,13 +6,11 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.recipe.RecipeErrorJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
-import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,14 +22,12 @@ public class ShapelessRecipeJS extends RecipeJS
 {
 	public static final RecipeTypeJS TYPE = new RecipeTypeJS(IRecipeSerializer.CRAFTING_SHAPELESS)
 	{
-		@Nullable
 		@Override
 		public RecipeJS create(Object[] args)
 		{
 			if (args.length != 2)
 			{
-				ScriptType.SERVER.debugConsole.error("Shapeless recipe requires 2 arguments - result and ingredients!");
-				return null;
+				return new RecipeErrorJS("Shapeless recipe requires 2 arguments - result and ingredients!");
 			}
 
 			ShapelessRecipeJS recipe = new ShapelessRecipeJS();
@@ -39,19 +35,17 @@ public class ShapelessRecipeJS extends RecipeJS
 
 			if (recipe.result.isEmpty())
 			{
-				ScriptType.SERVER.debugConsole.error("Shapeless recipe result " + JsonUtilsJS.of(args[0]) + " is not a valid item!");
-				return null;
+				return new RecipeErrorJS("Shapeless recipe result " + args[0] + " is not a valid item!");
 			}
 
-			Collection<Object> ingredients = UtilsJS.getList(args[1]);
+			List ingredients = UtilsJS.getNormalizedListOrSelf(args[1]);
 
-			if (ingredients.isEmpty())
+			if (!(args[1] instanceof Collection) || ((Collection) args[1]).isEmpty())
 			{
-				ScriptType.SERVER.debugConsole.error("Shapeless recipe requires 2 arguments - result and ingredients!");
-				return null;
+				return new RecipeErrorJS("Shapeless recipe ingredient list is empty!");
 			}
 
-			for (Object o : ingredients)
+			for (Object o : (Collection) args[1])
 			{
 				IngredientJS in = IngredientJS.of(o);
 
@@ -61,32 +55,45 @@ public class ShapelessRecipeJS extends RecipeJS
 				}
 				else
 				{
-					ScriptType.SERVER.debugConsole.error("Shapeless recipe ingredient " + JsonUtilsJS.of(o) + " is not a valid ingredient!");
-					return null;
+					return new RecipeErrorJS("Shapeless recipe ingredient " + o + " is not a valid ingredient!");
 				}
 			}
 
 			return recipe;
 		}
 
-		@Nullable
 		@Override
 		public RecipeJS create(JsonObject json)
 		{
 			ShapelessRecipeJS recipe = new ShapelessRecipeJS();
 
+			recipe.result = ItemStackJS.fromRecipeJson(json.get("result"));
+
+			if (recipe.result.isEmpty())
+			{
+				return new RecipeErrorJS("Shapeless recipe result " + json.get("result") + " is not a valid item!");
+			}
+
 			for (JsonElement e : json.get("ingredients").getAsJsonArray())
 			{
-				IngredientJS i = IngredientJS.fromRecipeJson(e);
+				IngredientJS in = IngredientJS.fromRecipeJson(e);
 
-				if (!i.isEmpty())
+				if (!in.isEmpty())
 				{
-					recipe.ingredients.add(i);
+					recipe.ingredients.add(in);
+				}
+				else
+				{
+					return new RecipeErrorJS("Shapeless recipe ingredient " + e + " is not a valid ingredient!");
 				}
 			}
 
-			recipe.result = ItemStackJS.fromRecipeJson(json.get("result"));
-			return recipe.result.isEmpty() || recipe.ingredients.isEmpty() ? null : recipe;
+			if (recipe.ingredients.isEmpty())
+			{
+				return new RecipeErrorJS("Shapeless recipe ingredient list is empty!");
+			}
+
+			return recipe;
 		}
 	};
 

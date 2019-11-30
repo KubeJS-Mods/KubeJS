@@ -6,15 +6,12 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.recipe.RecipeErrorJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
-import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,20 +23,17 @@ public class ShapedRecipeJS extends RecipeJS
 {
 	public static final RecipeTypeJS TYPE = new RecipeTypeJS(IRecipeSerializer.CRAFTING_SHAPED)
 	{
-		@Nullable
 		@Override
 		public RecipeJS create(Object[] args)
 		{
 			if (args.length != 3)
 			{
-				ScriptType.SERVER.debugConsole.error("Shaped recipe requires 3 arguments - result, pattern and keys!");
-				return null;
+				return new RecipeErrorJS("Shaped recipe requires 3 arguments - result, pattern and keys!");
 			}
 
 			if (!(args[2] instanceof Map))
 			{
-				ScriptType.SERVER.debugConsole.error("Shaped recipe pattern is empty!");
-				return null;
+				return new RecipeErrorJS("Shaped recipe pattern is empty!");
 			}
 
 			ShapedRecipeJS recipe = new ShapedRecipeJS();
@@ -47,16 +41,14 @@ public class ShapedRecipeJS extends RecipeJS
 
 			if (recipe.result.isEmpty())
 			{
-				ScriptType.SERVER.debugConsole.error("Shaped recipe result " + JsonUtilsJS.of(args[0]) + " is not a valid item!");
-				return null;
+				return new RecipeErrorJS("Shaped recipe result " + args[0] + " is not a valid item!");
 			}
 
-			Collection<Object> pattern = UtilsJS.getList(args[1]);
+			List pattern = UtilsJS.getNormalizedListOrSelf(args[1]);
 
 			if (pattern.isEmpty())
 			{
-				ScriptType.SERVER.debugConsole.error("Shaped recipe pattern is empty!");
-				return null;
+				return new RecipeErrorJS("Shaped recipe pattern is empty!");
 			}
 
 			for (Object p : pattern)
@@ -65,6 +57,11 @@ public class ShapedRecipeJS extends RecipeJS
 			}
 
 			Map key = (Map) args[2];
+
+			if (key.isEmpty())
+			{
+				return new RecipeErrorJS("Shaped recipe key map is empty!");
+			}
 
 			for (Object k : key.keySet())
 			{
@@ -76,23 +73,33 @@ public class ShapedRecipeJS extends RecipeJS
 				}
 				else
 				{
-					ScriptType.SERVER.debugConsole.error("Shaped recipe ingredient " + JsonUtilsJS.of(key.get(k)) + " with key '" + k + "' is not a valid ingredient!");
-					return null;
+					return new RecipeErrorJS("Shaped recipe ingredient " + key.get(k) + " with key '" + k + "' is not a valid ingredient!");
 				}
 			}
 
 			return recipe;
 		}
 
-		@Nullable
 		@Override
 		public RecipeJS create(JsonObject json)
 		{
 			ShapedRecipeJS recipe = new ShapedRecipeJS();
 
+			recipe.result = ItemStackJS.fromRecipeJson(json.get("result"));
+
+			if (recipe.result.isEmpty())
+			{
+				return new RecipeErrorJS("Shaped recipe result " + json.get("result") + " is not a valid item!");
+			}
+
 			for (JsonElement e : json.get("pattern").getAsJsonArray())
 			{
 				recipe.pattern.add(e.getAsString());
+			}
+
+			if (recipe.pattern.isEmpty())
+			{
+				return new RecipeErrorJS("Shaped recipe pattern is empty!");
 			}
 
 			for (Map.Entry<String, JsonElement> entry : json.get("key").getAsJsonObject().entrySet())
@@ -103,10 +110,18 @@ public class ShapedRecipeJS extends RecipeJS
 				{
 					recipe.key.put(entry.getKey(), i);
 				}
+				else
+				{
+					return new RecipeErrorJS("Shaped recipe ingredient " + entry.getValue() + " with key '" + entry.getKey() + "' is not a valid ingredient!");
+				}
 			}
 
-			recipe.result = ItemStackJS.fromRecipeJson(json.get("result"));
-			return recipe.result.isEmpty() || recipe.pattern.isEmpty() || recipe.key.isEmpty() ? null : recipe;
+			if (recipe.key.isEmpty())
+			{
+				return new RecipeErrorJS("Shaped recipe key map is empty!");
+			}
+
+			return recipe;
 		}
 	};
 

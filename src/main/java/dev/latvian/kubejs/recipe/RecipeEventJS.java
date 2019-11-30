@@ -11,6 +11,7 @@ import dev.latvian.kubejs.recipe.type.RecipeJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.kubejs.server.ServerEventJS;
+import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.resources.IResourceManager;
@@ -34,7 +35,7 @@ public class RecipeEventJS extends ServerEventJS
 	private final List<RecipeJS> recipes;
 	private final Map<ResourceLocation, RecipeFunction> deserializerMap;
 	private final Map<String, Map<String, RecipeFunction>> recipeFunctions;
-	private final Set<ResourceLocation> deletedRecipes;
+	private final Set<ResourceLocation> removedRecipes;
 
 	private List<RecipeJS> originalRecipes;
 
@@ -96,7 +97,7 @@ public class RecipeEventJS extends ServerEventJS
 			}
 		};
 
-		deletedRecipes = new HashSet<>();
+		removedRecipes = new HashSet<>();
 	}
 
 	public Map<String, Map<String, RecipeFunction>> getRecipes()
@@ -152,10 +153,14 @@ public class RecipeEventJS extends ServerEventJS
 		{
 			if (recipePredicate.test(recipe))
 			{
-				if (deletedRecipes.add(recipe.id))
+				if (removedRecipes.add(recipe.id))
 				{
 					originalRecipes.remove(recipe);
-					ScriptType.SERVER.debugConsole.info("Deleted recipe " + recipe.id);
+
+					if (ServerJS.instance.debugLog)
+					{
+						ScriptType.SERVER.console.info("Deleted recipe " + recipe.id);
+					}
 				}
 			}
 		}
@@ -213,14 +218,16 @@ public class RecipeEventJS extends ServerEventJS
 	@Ignore
 	public void addDataToPack(VirtualKubeJSDataPack pack)
 	{
-		for (ResourceLocation deletedRecipe : deletedRecipes)
+		for (ResourceLocation r : removedRecipes)
 		{
-			pack.addData(new ResourceLocation(deletedRecipe.getNamespace(), "recipes/" + deletedRecipe.getPath() + ".json"), "{\"type\":\"kubejs:deleted\"}");
+			pack.addData(new ResourceLocation(r.getNamespace(), "recipes/" + r.getPath() + ".json"), "{\"type\":\"kubejs:deleted\"}");
 		}
 
-		for (RecipeJS recipe : recipes)
+		for (RecipeJS r : recipes)
 		{
-			recipe.addToDataPack(pack);
+			r.addToDataPack(pack);
 		}
+
+		ScriptType.SERVER.console.info("Added " + recipes.size() + " recipes, removed " + removedRecipes.size() + " recipes");
 	}
 }

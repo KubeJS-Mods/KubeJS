@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-public class NBTNullJS implements NBTBaseJS
+public class NBTNullJS extends NBTBaseJS
 {
 	public static final NBTNullJS INSTANCE = new NBTNullJS();
 

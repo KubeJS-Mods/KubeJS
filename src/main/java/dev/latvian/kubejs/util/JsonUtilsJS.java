@@ -12,7 +12,6 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.documentation.P;
-import jdk.nashorn.api.scripting.JSObject;
 
 import javax.annotation.Nullable;
 import java.io.BufferedWriter;
@@ -23,8 +22,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,6 +70,20 @@ public class JsonUtilsJS
 		{
 			return JsonNull.INSTANCE;
 		}
+		else if (o instanceof JsonSerializable)
+		{
+			return ((JsonSerializable) o).getJson();
+		}
+
+		return ofNormalized(UtilsJS.normalize(o));
+	}
+
+	private static JsonElement ofNormalized(@Nullable Object o)
+	{
+		if (o == null)
+		{
+			return JsonNull.INSTANCE;
+		}
 		else if (o instanceof JsonElement)
 		{
 			return (JsonElement) o;
@@ -90,67 +104,30 @@ public class JsonUtilsJS
 		{
 			return new JsonPrimitive((Character) o);
 		}
-		else if (o instanceof JsonSerializable)
-		{
-			return ((JsonSerializable) o).getJson();
-		}
-		else if (o instanceof JSObject)
-		{
-			JSObject js = (JSObject) o;
-
-			if (js.isArray())
-			{
-				JsonArray json = new JsonArray();
-
-				for (String s : js.keySet())
-				{
-					json.add(of(js.getMember(s)));
-				}
-
-				return json;
-			}
-			else
-			{
-				JsonObject json = new JsonObject();
-
-				for (String s : js.keySet())
-				{
-					json.add(s, of(js.getMember(s)));
-				}
-
-				return json;
-			}
-		}
 		else if (o instanceof Map)
 		{
-			Map<?, ?> map = (Map<?, ?>) o;
-
 			JsonObject json = new JsonObject();
 
-			for (Map.Entry<?, ?> entry : map.entrySet())
+			for (Map.Entry entry : ((Map<?, ?>) o).entrySet())
 			{
-				json.add(String.valueOf(entry.getKey()), of(entry.getValue()));
+				json.add(entry.getKey().toString(), ofNormalized(entry.getValue()));
+			}
+
+			return json;
+		}
+		else if (o instanceof Iterable)
+		{
+			JsonArray json = new JsonArray();
+
+			for (Object o1 : (Iterable) o)
+			{
+				json.add(ofNormalized(o1));
 			}
 
 			return json;
 		}
 
-		Collection<Object> c = UtilsJS.getList(o);
-
-		if (o instanceof Iterable || c.size() != 1)
-		{
-			JsonArray a = new JsonArray();
-
-			for (Object o1 : c)
-			{
-				a.add(of(o1));
-			}
-
-			return a;
-		}
-
-		Object o1 = c.iterator().next();
-		return new JsonPrimitive("<" + o1.getClass().getName() + ":" + o1 + ">");
+		return new JsonPrimitive("<" + o.getClass().getName() + ":" + o + ">");
 	}
 
 	@Nullable
@@ -175,11 +152,11 @@ public class JsonUtilsJS
 		else if (json.isJsonArray())
 		{
 			JsonArray a = json.getAsJsonArray();
-			Object[] objects = new Object[a.size()];
+			List<Object> objects = new ArrayList<>(a.size());
 
-			for (int i = 0; i < objects.length; i++)
+			for (JsonElement e : a)
 			{
-				objects[i] = toObject(a.get(i));
+				objects.add(toObject(e));
 			}
 
 			return objects;

@@ -9,12 +9,13 @@ import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.UtilsJS;
-import jdk.nashorn.api.scripting.JSObject;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -24,64 +25,72 @@ import java.util.function.Predicate;
 @FunctionalInterface
 public interface IngredientJS extends JsonSerializable
 {
-	static IngredientJS of(@Nullable Object object)
+	static IngredientJS of(@Nullable Object o)
 	{
-		if (object instanceof IngredientJS)
+		if (o == null)
 		{
-			return (IngredientJS) object;
+			return EmptyItemStackJS.INSTANCE;
 		}
-		else if (object instanceof String)
+		else if (o instanceof IngredientJS)
 		{
-			if (object.toString().startsWith("#"))
+			return (IngredientJS) o;
+		}
+		else if (o instanceof String)
+		{
+			if (o.toString().startsWith("#"))
 			{
-				String[] s = object.toString().substring(1).split(" ", 2);
+				String[] s = o.toString().substring(1).split(" ", 2);
 				return new TagIngredientJS(new ResourceLocation(s[0])).count(s.length == 2 ? UtilsJS.parseInt(s[1], 1) : 1);
 			}
-			else if (object.toString().startsWith("mod:"))
+			else if (o.toString().startsWith("mod:"))
 			{
-				return new ModIngredientJS(object.toString().substring(4));
+				return new ModIngredientJS(o.toString().substring(4));
 			}
 
-			return ItemStackJS.of(KubeJS.appendModId(object.toString()));
+			return ItemStackJS.of(KubeJS.appendModId(o.toString()));
 		}
-		else if (object instanceof JSObject)
+
+		List<Object> list = UtilsJS.getNormalizedList(o);
+
+		if (list != null)
 		{
-			JSObject js = (JSObject) object;
+			MatchAnyIngredientJS l = new MatchAnyIngredientJS();
 
-			if (js.isArray())
+			for (Object o1 : list)
 			{
-				MatchAnyIngredientJS list = new MatchAnyIngredientJS();
+				IngredientJS ingredient = of(o1);
 
-				for (String key : js.keySet())
+				if (ingredient != EmptyItemStackJS.INSTANCE)
 				{
-					IngredientJS ingredient = of(js.getMember(key));
-
-					if (ingredient != EmptyItemStackJS.INSTANCE)
-					{
-						list.ingredients.add(ingredient);
-					}
+					l.ingredients.add(ingredient);
 				}
-
-				return list.ingredients.isEmpty() ? EmptyItemStackJS.INSTANCE : list;
 			}
-			else if (js.hasMember("tag"))
-			{
-				TagIngredientJS ingredient = new TagIngredientJS(new ResourceLocation(js.getMember("tag").toString()));
 
-				if (js.hasMember("count"))
+			return l.ingredients.isEmpty() ? EmptyItemStackJS.INSTANCE : l;
+		}
+
+		Map<String, Object> map = UtilsJS.getNormalizedMap(o);
+
+		if (map != null)
+		{
+			if (map.containsKey("tag"))
+			{
+				TagIngredientJS ingredient = new TagIngredientJS(new ResourceLocation(map.get("tag").toString()));
+
+				if (map.containsKey("count"))
 				{
-					return ingredient.count(UtilsJS.parseInt(js.getMember("count"), 1));
+					return ingredient.count(UtilsJS.parseInt(map.get("count"), 1));
 				}
 
 				return ingredient;
 			}
-			else if (js.hasMember("mod"))
+			else if (map.containsKey("mod"))
 			{
-				return new ModIngredientJS(js.getMember("mod").toString());
+				return new ModIngredientJS(map.get("mod").toString());
 			}
 		}
 
-		return ItemStackJS.of(object);
+		return ItemStackJS.of(o);
 	}
 
 	static IngredientJS fromRecipeJson(JsonElement json)
