@@ -18,7 +18,6 @@ public class UnboundItemStackJS extends ItemStackJS
 {
 	private final ResourceLocation item;
 	private int count;
-	private int damage;
 	private NBTCompoundJS nbt;
 	private ItemStack cached;
 
@@ -26,7 +25,6 @@ public class UnboundItemStackJS extends ItemStackJS
 	{
 		item = i;
 		count = 1;
-		damage = 0;
 		nbt = NBTCompoundJS.NULL;
 		cached = null;
 	}
@@ -62,11 +60,6 @@ public class UnboundItemStackJS extends ItemStackJS
 			{
 				cached.setTag(nbt.createNBT());
 			}
-
-			if (damage > 0)
-			{
-				cached.setDamage(damage);
-			}
 		}
 
 		return cached;
@@ -89,7 +82,6 @@ public class UnboundItemStackJS extends ItemStackJS
 	{
 		UnboundItemStackJS stack = new UnboundItemStackJS(item);
 		stack.count = count;
-		stack.damage = damage;
 		stack.nbt = nbt.getCopy();
 		return stack;
 	}
@@ -105,19 +97,6 @@ public class UnboundItemStackJS extends ItemStackJS
 	public int getCount()
 	{
 		return count;
-	}
-
-	@Override
-	public void setDamage(int d)
-	{
-		damage = Math.max(0, d);
-		cached = null;
-	}
-
-	@Override
-	public int getDamage()
-	{
-		return damage;
 	}
 
 	@Override

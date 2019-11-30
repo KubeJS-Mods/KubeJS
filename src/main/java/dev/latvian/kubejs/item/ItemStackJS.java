@@ -238,16 +238,6 @@ public abstract class ItemStackJS implements IngredientJS
 		return getItem() instanceof BlockItem;
 	}
 
-	public abstract void setDamage(int damage);
-
-	public abstract int getDamage();
-
-	public final ItemStackJS damage(int damage)
-	{
-		setDamage(damage);
-		return this;
-	}
-
 	public abstract void setNbt(Object nbt);
 
 	public abstract NBTCompoundJS getNbt();
@@ -309,10 +299,9 @@ public abstract class ItemStackJS implements IngredientJS
 	public String toString()
 	{
 		boolean hasCount = getCount() > 1;
-		boolean hasSubtype = getItem().isDamageable() && getDamage() > 0;
 		boolean hasNBT = !getNbt().isNull();
 
-		if (hasCount || hasSubtype || hasNBT)
+		if (hasCount || hasNBT)
 		{
 			StringBuilder builder = new StringBuilder("{");
 
@@ -324,12 +313,6 @@ public abstract class ItemStackJS implements IngredientJS
 			}
 
 			builder.append(getId());
-
-			if (hasSubtype)
-			{
-				builder.append('/');
-				builder.append(getDamage());
-			}
 
 			if (hasNBT)
 			{
@@ -386,7 +369,7 @@ public abstract class ItemStackJS implements IngredientJS
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(getItem(), getDamage(), getNbt());
+		return Objects.hash(getItem(), getNbt());
 	}
 
 	@Override
@@ -399,7 +382,7 @@ public abstract class ItemStackJS implements IngredientJS
 			return false;
 		}
 
-		return getDamage() == s.getDamage() && areItemsEqual(s) && Objects.equals(getNbt(), s.getNbt());
+		return areItemsEqual(s) && Objects.equals(getNbt(), s.getNbt());
 	}
 
 	public boolean strongEquals(Object o)
@@ -411,7 +394,7 @@ public abstract class ItemStackJS implements IngredientJS
 			return false;
 		}
 
-		return getCount() == s.getCount() && getDamage() == s.getDamage() && areItemsEqual(s) && Objects.equals(getNbt(), s.getNbt());
+		return getCount() == s.getCount() && areItemsEqual(s) && Objects.equals(getNbt(), s.getNbt());
 	}
 
 	public Map<ResourceLocation, Integer> getEnchantments()

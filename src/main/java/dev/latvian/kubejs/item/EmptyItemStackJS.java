@@ -64,17 +64,6 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public void setDamage(int damage)
-	{
-	}
-
-	@Override
-	public int getDamage()
-	{
-		return 0;
-	}
-
-	@Override
 	public void setNbt(@Nullable Object nbt)
 	{
 	}

@@ -59,18 +59,6 @@ public class BoundItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public void setDamage(int damage)
-	{
-		stack.setDamage(damage);
-	}
-
-	@Override
-	public int getDamage()
-	{
-		return stack.getDamage();
-	}
-
-	@Override
 	public void setNbt(@Nullable Object nbt)
 	{
 		stack.setTag(NBTBaseJS.of(nbt).asCompound().createNBT());
