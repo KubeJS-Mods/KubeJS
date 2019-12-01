@@ -5,6 +5,7 @@ import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.CountingMap;
 import dev.latvian.kubejs.util.FieldJS;
+import dev.latvian.kubejs.util.NormalizedList;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
@@ -197,5 +198,34 @@ public class UtilsWrapper
 	public Effect getPotion(@Nullable Object id)
 	{
 		return UtilsJS.getPotion(id);
+	}
+
+	@Nullable
+	public static NormalizedList getNormalizedList(@Nullable Object o)
+	{
+		return UtilsJS.getNormalizedList(o);
+	}
+
+	public static NormalizedList getNormalizedListOrSelf(@Nullable Object o)
+	{
+		return UtilsJS.getNormalizedListOrSelf(o);
+	}
+
+	@Nullable
+	public static Map getNormalizedMap(@Nullable Object o)
+	{
+		return UtilsJS.getNormalizedMap(o);
+	}
+
+	@Nullable
+	public Object copy(@Nullable Object o)
+	{
+		return UtilsJS.copy(o);
+	}
+
+	@Nullable
+	public Object normalize(@Nullable Object o)
+	{
+		return UtilsJS.normalize(o);
 	}
 }

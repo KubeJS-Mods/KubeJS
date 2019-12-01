@@ -1,5 +1,7 @@
 package dev.latvian.kubejs.util;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -32,6 +34,8 @@ import java.util.Map;
  */
 public class JsonUtilsJS
 {
+	public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setLenient().create();
+
 	public static JsonElement copy(@Nullable JsonElement element)
 	{
 		if (element == null || element.isJsonNull())
@@ -174,6 +178,7 @@ public class JsonUtilsJS
 			JsonWriter jsonWriter = new JsonWriter(writer);
 			jsonWriter.setSerializeNulls(true);
 			jsonWriter.setLenient(true);
+			jsonWriter.setHtmlSafe(false);
 			Streams.write(json, jsonWriter);
 		}
 		catch (IOException ex)
@@ -194,6 +199,7 @@ public class JsonUtilsJS
 			jsonWriter.setIndent("\t");
 			jsonWriter.setSerializeNulls(true);
 			jsonWriter.setLenient(true);
+			jsonWriter.setHtmlSafe(false);
 			Streams.write(json, jsonWriter);
 		}
 		catch (IOException ex)

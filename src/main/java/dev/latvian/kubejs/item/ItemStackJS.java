@@ -2,6 +2,7 @@ package dev.latvian.kubejs.item;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.item.ingredient.IgnoreNBTIngredientJS;
@@ -14,6 +15,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import dev.latvian.kubejs.util.nbt.NBTListJS;
+import dev.latvian.kubejs.util.nbt.NBTNullJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.BlockItem;
@@ -21,6 +23,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -150,7 +154,31 @@ public abstract class ItemStackJS implements IngredientJS
 
 				if (o.has("nbt"))
 				{
-					//stack.setNbt(JsonToNBT.getTagFromJson(o.get("nbt")));
+					JsonElement element = o.get("nbt");
+					NBTCompoundJS nbt;
+					if (element.isJsonObject())
+					{
+						nbt = NBTBaseJS.of(element).asCompound();
+					}
+					else
+					{
+						try
+						{
+							nbt = NBTBaseJS.of(JsonToNBT.getTagFromJson(JSONUtils.getString(element, "nbt"))).asCompound();
+						}
+						catch (CommandSyntaxException ex)
+						{
+							ex.printStackTrace();
+							nbt = NBTNullJS.INSTANCE.asCompound();
+						}
+					}
+
+					stack.setNbt(nbt);
+				}
+
+				if (o.has("chance"))
+				{
+					stack.setChance(o.get("chance").getAsDouble());
 				}
 
 				return stack;
@@ -228,6 +256,11 @@ public abstract class ItemStackJS implements IngredientJS
 	{
 		setCount(c);
 		return this;
+	}
+
+	public final ItemStackJS x(int c)
+	{
+		return count(c);
 	}
 
 	@Override

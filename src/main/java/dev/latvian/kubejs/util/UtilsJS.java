@@ -1,5 +1,9 @@
 package dev.latvian.kubejs.util;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
@@ -19,8 +23,6 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -77,16 +79,29 @@ public class UtilsJS
 	}
 
 	@Nullable
-	public static List getNormalizedList(@Nullable Object o)
+	public static NormalizedList getNormalizedList(@Nullable Object o)
 	{
 		Object o1 = normalize(o);
-		return o1 instanceof List ? (List) o1 : null;
+		return o1 instanceof NormalizedList ? (NormalizedList) o1 : null;
 	}
 
-	public static List getNormalizedListOrSelf(@Nullable Object o)
+	public static NormalizedList getNormalizedListOrSelf(@Nullable Object o)
 	{
-		List l = getNormalizedList(o);
-		return l == null ? Collections.singletonList(o) : l;
+		NormalizedList l = getNormalizedList(o);
+
+		if (l != null)
+		{
+			return l;
+		}
+
+		NormalizedList list = new NormalizedList();
+
+		if (o != null)
+		{
+			list.add(o);
+		}
+
+		return list;
 	}
 
 	@Nullable
@@ -96,38 +111,19 @@ public class UtilsJS
 		return o1 instanceof Map ? (Map) o1 : null;
 	}
 
-	public static boolean isNormalized(@Nullable Object o)
+	@Nullable
+	public static Object copy(@Nullable Object o)
 	{
-		if (o == null)
+		if (o instanceof JsonElement)
 		{
-			return true;
+			return JsonUtilsJS.copy((JsonElement) o);
 		}
-		else if (o instanceof ScriptObject || o instanceof JSObject || o.getClass().isArray())
+		else if (o instanceof Copyable)
 		{
-			return false;
-		}
-		else if (o instanceof Iterable)
-		{
-			for (Object o1 : (Iterable) o)
-			{
-				if (!isNormalized(o1))
-				{
-					return false;
-				}
-			}
-		}
-		else if (o instanceof Map)
-		{
-			for (Map.Entry entry : ((Map<?, ?>) o).entrySet())
-			{
-				if (!isNormalized(entry.getValue()))
-				{
-					return false;
-				}
-			}
+			return ((Copyable) o).copy();
 		}
 
-		return true;
+		return o;
 	}
 
 	@Nullable
@@ -137,7 +133,7 @@ public class UtilsJS
 		{
 			return null;
 		}
-		else if (isNormalized(o))
+		else if (o instanceof Normalized || o.getClass().isPrimitive() && !o.getClass().isArray())
 		{
 			return o;
 		}
@@ -147,7 +143,7 @@ public class UtilsJS
 
 			if (js.isArray())
 			{
-				JsonStyleList list = new JsonStyleList();
+				NormalizedList list = new NormalizedList();
 
 				for (Object o1 : js.values())
 				{
@@ -158,7 +154,7 @@ public class UtilsJS
 			}
 			else
 			{
-				JsonStyleMap map = new JsonStyleMap();
+				NormalizedMap map = new NormalizedMap();
 
 				for (String k : ((JSObject) o).keySet())
 				{
@@ -174,7 +170,7 @@ public class UtilsJS
 
 			if (js.isArray())
 			{
-				JsonStyleList list = new JsonStyleList();
+				NormalizedList list = new NormalizedList();
 
 				for (Object o1 : js.values())
 				{
@@ -185,7 +181,7 @@ public class UtilsJS
 			}
 			else
 			{
-				JsonStyleMap map = new JsonStyleMap();
+				NormalizedMap map = new NormalizedMap();
 
 				for (Object k : ((ScriptObject) o).keySet())
 				{
@@ -197,7 +193,7 @@ public class UtilsJS
 		}
 		else if (o instanceof Map)
 		{
-			JsonStyleMap map = new JsonStyleMap();
+			NormalizedMap map = new NormalizedMap();
 
 			for (Map.Entry entry : ((Map<?, ?>) o).entrySet())
 			{
@@ -208,7 +204,7 @@ public class UtilsJS
 		}
 		else if (o instanceof Iterable)
 		{
-			JsonStyleList list = new JsonStyleList();
+			NormalizedList list = new NormalizedList();
 
 			for (Object o1 : (Iterable) o)
 			{
@@ -219,7 +215,7 @@ public class UtilsJS
 		}
 		else if (o.getClass().isArray())
 		{
-			JsonStyleList list = new JsonStyleList();
+			NormalizedList list = new NormalizedList();
 
 			if (o instanceof Object[])
 			{
@@ -279,6 +275,36 @@ public class UtilsJS
 			}
 
 			return list;
+		}
+		else if (o instanceof JsonPrimitive)
+		{
+			JsonPrimitive p = (JsonPrimitive) o;
+
+			if (p.isBoolean())
+			{
+				return p.getAsBoolean();
+			}
+			else if (p.isNumber())
+			{
+				return ((JsonPrimitive) o).getAsNumber();
+			}
+
+			return p.getAsString();
+		}
+		else if (o instanceof JsonNull)
+		{
+			return null;
+		}
+		else if (o instanceof JsonObject)
+		{
+			NormalizedMap map = new NormalizedMap();
+
+			for (Map.Entry<String, JsonElement> entry : ((JsonObject) o).entrySet())
+			{
+				map.put(entry.getKey(), normalize(entry.getValue()));
+			}
+
+			return map;
 		}
 
 		return o;
