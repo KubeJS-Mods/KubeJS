@@ -14,13 +14,20 @@ import net.minecraft.item.Rarity;
 import net.minecraft.util.Hand;
 import net.minecraftforge.common.ToolType;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author LatvianModder
  */
 public class DefaultBindings
 {
+	public static final Map<String, Object> GLOBAL = new HashMap<>();
+
 	public static void init(ScriptManager manager, BindingsEvent event)
 	{
+		event.add("global", GLOBAL);
+
 		if (event.type == ScriptType.SERVER)
 		{
 			event.add("server", ServerJS.instance);
