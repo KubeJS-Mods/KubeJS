@@ -125,9 +125,9 @@ public class ShapedRecipeJS extends RecipeJS
 		}
 	};
 
-	public final List<String> pattern = new ArrayList<>();
-	public final Map<String, IngredientJS> key = new HashMap<>();
-	public ItemStackJS result = EmptyItemStackJS.INSTANCE;
+	private final List<String> pattern = new ArrayList<>();
+	private final Map<String, IngredientJS> key = new HashMap<>();
+	private ItemStackJS result = EmptyItemStackJS.INSTANCE;
 
 	@Override
 	public RecipeTypeJS getType()

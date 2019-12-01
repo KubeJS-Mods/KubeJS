@@ -8,7 +8,7 @@ import net.minecraftforge.common.MinecraftForge;
  */
 public class JEIIntegration
 {
-	public static final String JEI_REGISTER_ITEM_SUBTYPES = "jei.register.item_subtypes";
+	public static final String JEI_SUBTYPES = "jei.subtypes";
 
 	public void init()
 	{
@@ -17,6 +17,6 @@ public class JEIIntegration
 
 	private void registerDocumentation(DocumentationEvent event)
 	{
-		event.registerEvent(JEI_REGISTER_ITEM_SUBTYPES, AddJEISubtypesEventJS.class).startup();
+		event.registerEvent(JEI_SUBTYPES, AddJEISubtypesEventJS.class).startup();
 	}
 }

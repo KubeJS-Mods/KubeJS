@@ -550,13 +550,7 @@ public abstract class ItemStackJS implements IngredientJS
 	{
 		JsonObject json = new JsonObject();
 		json.addProperty("item", getId().toString());
-
-		int c = getCount();
-
-		if (c > 1)
-		{
-			json.addProperty("count", c);
-		}
+		json.addProperty("count", getCount());
 
 		CompoundNBT nbt = getNbt().createNBT();
 

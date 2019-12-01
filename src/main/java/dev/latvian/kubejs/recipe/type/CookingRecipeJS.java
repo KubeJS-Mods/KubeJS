@@ -76,10 +76,10 @@ public class CookingRecipeJS extends RecipeJS
 		}
 	}
 
-	public final Type cookingType;
-	public IngredientJS ingredient = EmptyItemStackJS.INSTANCE;
-	public ItemStackJS result = EmptyItemStackJS.INSTANCE;
-	public float experience = 0.1F;
+	private final Type cookingType;
+	private IngredientJS ingredient = EmptyItemStackJS.INSTANCE;
+	private ItemStackJS result = EmptyItemStackJS.INSTANCE;
+	private float experience = 0.1F;
 
 	public CookingRecipeJS(Type c)
 	{

@@ -8,8 +8,10 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.event.ClickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +44,9 @@ public class KubeJSCommands
 
 		for (ResourceLocation id : tags)
 		{
-			player.sendMessage(new StringTextComponent("- " + id));
+			ITextComponent component = new StringTextComponent("- " + id);
+			component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, id.toString()));
+			player.sendMessage(component);
 		}
 
 		return Command.SINGLE_SUCCESS;

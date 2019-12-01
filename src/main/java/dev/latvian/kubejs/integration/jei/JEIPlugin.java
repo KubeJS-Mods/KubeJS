@@ -33,6 +33,6 @@ public class JEIPlugin implements IModPlugin
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistration registration)
 	{
-		new AddJEISubtypesEventJS(registration).post(ScriptType.STARTUP, JEIIntegration.JEI_REGISTER_ITEM_SUBTYPES);
+		new AddJEISubtypesEventJS(registration).post(ScriptType.SERVER, JEIIntegration.JEI_SUBTYPES);
 	}
 }

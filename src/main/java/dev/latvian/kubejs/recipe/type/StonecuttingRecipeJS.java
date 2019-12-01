@@ -63,8 +63,8 @@ public class StonecuttingRecipeJS extends RecipeJS
 		}
 	};
 
-	public IngredientJS ingredient = EmptyItemStackJS.INSTANCE;
-	public ItemStackJS result = EmptyItemStackJS.INSTANCE;
+	private IngredientJS ingredient = EmptyItemStackJS.INSTANCE;
+	private ItemStackJS result = EmptyItemStackJS.INSTANCE;
 
 	@Override
 	public RecipeTypeJS getType()

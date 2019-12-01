@@ -60,7 +60,7 @@ public class RecipeFunction extends AbstractJSObject
 	{
 		if (recipe instanceof RecipeErrorJS)
 		{
-			ScriptType.SERVER.console.error("Error creating '" + type.id + "' recipe: " + ((RecipeErrorJS) recipe).message);
+			ScriptType.SERVER.console.error("Broken '" + type.id + "' recipe: " + ((RecipeErrorJS) recipe).message);
 			ScriptType.SERVER.console.error(args1);
 			ScriptType.SERVER.console.error("");
 			return recipe;

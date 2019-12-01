@@ -97,8 +97,8 @@ public class ShapelessRecipeJS extends RecipeJS
 		}
 	};
 
-	public final List<IngredientJS> ingredients = new ArrayList<>();
-	public ItemStackJS result = EmptyItemStackJS.INSTANCE;
+	private final List<IngredientJS> ingredients = new ArrayList<>();
+	private ItemStackJS result = EmptyItemStackJS.INSTANCE;
 
 	@Override
 	public RecipeTypeJS getType()

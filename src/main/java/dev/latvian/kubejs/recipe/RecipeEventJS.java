@@ -268,6 +268,6 @@ public class RecipeEventJS extends ServerEventJS
 			r.addToDataPack(pack);
 		}
 
-		ScriptType.SERVER.console.info("Added " + recipes.size() + " recipes, removed " + removedRecipes.size() + " recipes, removed " + brokenRecipes.size() + " erroring recipes");
+		ScriptType.SERVER.console.info("Added " + recipes.size() + " recipes, removed " + removedRecipes.size() + " recipes, removed " + brokenRecipes.size() + " broken recipes");
 	}
 }
