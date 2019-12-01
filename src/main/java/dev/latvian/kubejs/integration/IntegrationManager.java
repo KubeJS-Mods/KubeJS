@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.integration;
 
 import dev.latvian.kubejs.integration.gamestages.GameStagesIntegration;
+import dev.latvian.kubejs.integration.jei.JEIIntegration;
 import dev.latvian.kubejs.integration.packmode.PackModeIntegration;
 import net.minecraftforge.fml.ModList;
 
@@ -19,6 +20,11 @@ public class IntegrationManager
 		if (ModList.get().isLoaded("packmode"))
 		{
 			new PackModeIntegration().init();
+		}
+
+		if (ModList.get().isLoaded("jei"))
+		{
+			new JEIIntegration().init();
 		}
 	}
 }
