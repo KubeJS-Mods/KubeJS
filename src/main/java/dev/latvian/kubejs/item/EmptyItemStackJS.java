@@ -74,6 +74,17 @@ public class EmptyItemStackJS extends ItemStackJS
 		return NBTCompoundJS.NULL;
 	}
 
+	@Override
+	public void setChance(double c)
+	{
+	}
+
+	@Override
+	public double getChance()
+	{
+		return 1D;
+	}
+
 	public String toString()
 	{
 		return "air";

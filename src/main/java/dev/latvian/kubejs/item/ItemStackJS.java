@@ -23,6 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -203,6 +204,8 @@ public abstract class ItemStackJS implements IngredientJS
 		return list;
 	}
 
+	private double chance = 1D;
+
 	public abstract Item getItem();
 
 	@MinecraftClass
@@ -259,6 +262,22 @@ public abstract class ItemStackJS implements IngredientJS
 		}
 
 		return nbt;
+	}
+
+	public void setChance(double c)
+	{
+		chance = MathHelper.clamp(c, 0F, 1F);
+	}
+
+	public double getChance()
+	{
+		return chance;
+	}
+
+	public final ItemStackJS chance(double c)
+	{
+		setChance(c);
+		return this;
 	}
 
 	public Text getName()
@@ -544,6 +563,11 @@ public abstract class ItemStackJS implements IngredientJS
 		if (nbt != null && !nbt.isEmpty())
 		{
 			json.addProperty("nbt", nbt.toString());
+		}
+
+		if (getChance() < 1D)
+		{
+			json.addProperty("chance", getChance());
 		}
 
 		return json;
