@@ -69,14 +69,6 @@ import java.util.concurrent.Executor;
  */
 public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadListener
 {
-	public static void debugInfo(String message)
-	{
-	}
-
-	public static void debugError(String message)
-	{
-	}
-
 	public static ServerJS instance;
 
 	@MinecraftClass

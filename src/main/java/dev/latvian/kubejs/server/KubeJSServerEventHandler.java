@@ -3,6 +3,7 @@ package dev.latvian.kubejs.server;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.command.CommandRegistryEventJS;
+import dev.latvian.kubejs.command.KubeJSCommands;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
 import dev.latvian.kubejs.script.ScriptType;
@@ -74,6 +75,7 @@ public class KubeJSServerEventHandler
 
 	private void serverStarting(FMLServerStartingEvent event)
 	{
+		KubeJSCommands.register(event.getCommandDispatcher());
 		new CommandRegistryEventJS(event.getServer().isSinglePlayer(), event.getCommandDispatcher()).post(ScriptType.SERVER, KubeJSEvents.COMMAND_REGISTRY);
 	}
 
