@@ -102,7 +102,7 @@ public class RecipeEventJS extends ServerEventJS
 
 		removedRecipes = new HashSet<>();
 		brokenRecipes = new HashSet<>();
-		removeBrokenRecipes = true;
+		removeBrokenRecipes = false;
 	}
 
 	public Map<String, Map<String, RecipeFunction>> getRecipes()

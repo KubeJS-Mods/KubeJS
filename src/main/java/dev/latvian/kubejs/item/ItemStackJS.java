@@ -427,6 +427,11 @@ public abstract class ItemStackJS implements IngredientJS
 	@Override
 	public boolean equals(Object o)
 	{
+		if (o instanceof CharSequence)
+		{
+			return getId().equals(UtilsJS.getID(o));
+		}
+
 		ItemStackJS s = of(o);
 
 		if (s.isEmpty())
