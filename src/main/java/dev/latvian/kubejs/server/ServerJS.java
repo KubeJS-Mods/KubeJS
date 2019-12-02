@@ -8,7 +8,7 @@ import dev.latvian.kubejs.documentation.O;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.net.KubeJSNet;
-import dev.latvian.kubejs.net.MessageSendDataFromClient;
+import dev.latvian.kubejs.net.MessageSendDataFromServer;
 import dev.latvian.kubejs.player.AdvancementJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.FakeServerPlayerDataJS;
@@ -29,11 +29,11 @@ import dev.latvian.kubejs.script.data.DataPackEventJS;
 import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.AttachedData;
+import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UUIDUtilsJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WithAttachedData;
-import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
@@ -378,7 +378,7 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 
 	public void sendDataToAll(@P("channel") String channel, @P("data") @Nullable Object data)
 	{
-		KubeJSNet.MAIN.send(PacketDistributor.ALL.noArg(), new MessageSendDataFromClient(channel, NBTBaseJS.of(data).asCompound().createNBT()));
+		KubeJSNet.MAIN.send(PacketDistributor.ALL.noArg(), new MessageSendDataFromServer(channel, MapJS.nbt(data)));
 	}
 
 	@Ignore

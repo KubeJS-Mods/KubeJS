@@ -9,10 +9,9 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.kubejs.util.nbt.NBTBaseJS;
-import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
@@ -513,55 +512,44 @@ public class EntityJS implements MessageSender
 	}
 
 	@Info("Entity NBT")
-	public NBTCompoundJS getFullNBT()
+	public MapJS getFullNBT()
 	{
 		CompoundNBT nbt = new CompoundNBT();
 		minecraftEntity.writeWithoutTypeId(nbt);
-		return NBTBaseJS.of(nbt).asCompound();
+		return MapJS.of(nbt);
 	}
 
-	public void setFullNBT(@P("nbt") @T(NBTCompoundJS.class) Object n)
+	public void setFullNBT(@P("nbt") @T(MapJS.class) Object n)
 	{
-		minecraftEntity.read(NBTBaseJS.of(n).asCompound().createNBT());
+		CompoundNBT nbt = MapJS.nbt(n);
+
+		if (nbt != null)
+		{
+			minecraftEntity.read(nbt);
+		}
 	}
 
 	@Info("Custom NBT you can use for saving custom data")
-	public NBTCompoundJS getNbt()
+	public MapJS getNbt()
 	{
 		CompoundNBT nbt = minecraftEntity.getPersistentData();
-		CompoundNBT nbt1 = (CompoundNBT) nbt.get("KubeJS");
+		MapJS map = MapJS.of(nbt.get("KubeJS"));
 
-		if (nbt1 == null)
+		if (map == null)
 		{
-			nbt1 = new CompoundNBT();
-			nbt.put("KubeJS", nbt1);
+			map = new MapJS();
 		}
 
-		return NBTBaseJS.of(nbt1).asCompound();
-	}
+		map.changeListener = o -> {
+			CompoundNBT n = MapJS.nbt(o);
 
-	public void setNbt(@P("nbt") NBTCompoundJS nbt)
-	{
-		CompoundNBT n = nbt.createNBT();
+			if (n != null)
+			{
+				minecraftEntity.getPersistentData().put("KubeJS", n);
+			}
+		};
 
-		if (n != null)
-		{
-			minecraftEntity.getPersistentData().put("KubeJS", n);
-		}
-	}
-
-	@Info("Get specific value from custom NBT")
-	public NBTBaseJS getNBTData(@P("key") String key)
-	{
-		return getNbt().get(key);
-	}
-
-	@Info("Set specific value in custom NBT")
-	public void setNBTData(@P("key") String key, @P("nbt") @Nullable Object nbt)
-	{
-		NBTCompoundJS n = getNbt();
-		n.set(key, NBTBaseJS.of(nbt));
-		setNbt(n);
+		return map;
 	}
 
 	@Info("Play sound at entity. Must be played from server side")

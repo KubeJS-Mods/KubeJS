@@ -2,6 +2,7 @@ package dev.latvian.kubejs.recipe;
 
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.recipe.type.RecipeJS;
+import dev.latvian.kubejs.util.ListJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -28,7 +29,7 @@ public abstract class RecipeTypeJS
 		serializer = s;
 	}
 
-	public abstract RecipeJS create(Object[] args);
+	public abstract RecipeJS create(ListJS args);
 
 	public abstract RecipeJS create(JsonObject json);
 }

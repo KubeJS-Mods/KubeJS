@@ -3,6 +3,7 @@ package dev.latvian.kubejs.fluid;
 import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.ResourceLocation;
@@ -16,7 +17,7 @@ import java.util.Objects;
 /**
  * @author LatvianModder
  */
-public abstract class FluidStackJS
+public abstract class FluidStackJS implements WrappedJSObjectChangeListener<MapJS>
 {
 	public static FluidStackJS of(@Nullable Object o)
 	{
@@ -188,5 +189,10 @@ public abstract class FluidStackJS
 		}
 
 		return builder.toString();
+	}
+
+	@Override
+	public void onChanged(MapJS o)
+	{
 	}
 }

@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.fluid;
 
 import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidAttributes;
@@ -12,7 +11,7 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-public class UnboundFluidStackJS extends FluidStackJS implements WrappedJSObjectChangeListener
+public class UnboundFluidStackJS extends FluidStackJS
 {
 	private final ResourceLocation fluid;
 	private int amount;
@@ -90,7 +89,7 @@ public class UnboundFluidStackJS extends FluidStackJS implements WrappedJSObject
 	}
 
 	@Override
-	public void onChanged(@Nullable Object o)
+	public void onChanged(@Nullable MapJS o)
 	{
 		cached = null;
 	}

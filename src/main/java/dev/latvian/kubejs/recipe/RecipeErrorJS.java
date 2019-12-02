@@ -3,6 +3,7 @@ package dev.latvian.kubejs.recipe;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.recipe.type.RecipeJS;
+import dev.latvian.kubejs.util.ListJS;
 import net.minecraft.util.ResourceLocation;
 
 /**
@@ -13,7 +14,7 @@ public class RecipeErrorJS extends RecipeJS
 	public static final RecipeTypeJS TYPE = new RecipeTypeJS(new ResourceLocation(KubeJS.MOD_ID, "error"))
 	{
 		@Override
-		public RecipeJS create(Object[] args)
+		public RecipeJS create(ListJS args)
 		{
 			return new RecipeErrorJS("Unknown");
 		}

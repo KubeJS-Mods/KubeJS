@@ -9,6 +9,7 @@ import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeErrorJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
 import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.MapJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 
 import java.util.ArrayList;
@@ -24,27 +25,27 @@ public class ShapedRecipeJS extends RecipeJS
 	public static final RecipeTypeJS TYPE = new RecipeTypeJS(IRecipeSerializer.CRAFTING_SHAPED)
 	{
 		@Override
-		public RecipeJS create(Object[] args)
+		public RecipeJS create(ListJS args)
 		{
-			if (args.length != 3)
+			if (args.size() != 3)
 			{
 				return new RecipeErrorJS("Shaped recipe requires 3 arguments - result, pattern and keys!");
 			}
 
-			if (!(args[2] instanceof Map))
+			if (!(args.get(2) instanceof Map))
 			{
 				return new RecipeErrorJS("Shaped recipe pattern is empty!");
 			}
 
 			ShapedRecipeJS recipe = new ShapedRecipeJS();
-			recipe.result = ItemStackJS.of(args[0]);
+			recipe.result = ItemStackJS.of(args.get(0));
 
 			if (recipe.result.isEmpty())
 			{
-				return new RecipeErrorJS("Shaped recipe result " + args[0] + " is not a valid item!");
+				return new RecipeErrorJS("Shaped recipe result " + args.get(0) + " is not a valid item!");
 			}
 
-			ListJS pattern = ListJS.orSelf(args[1]);
+			ListJS pattern = ListJS.orSelf(args.get(1));
 
 			if (pattern.isEmpty())
 			{
@@ -56,20 +57,20 @@ public class ShapedRecipeJS extends RecipeJS
 				recipe.pattern.add(String.valueOf(p));
 			}
 
-			Map key = (Map) args[2];
+			MapJS key = MapJS.of(args.get(2));
 
-			if (key.isEmpty())
+			if (key == null || key.isEmpty())
 			{
 				return new RecipeErrorJS("Shaped recipe key map is empty!");
 			}
 
-			for (Object k : key.keySet())
+			for (String k : key.keySet())
 			{
 				IngredientJS i = IngredientJS.of(key.get(k));
 
 				if (!i.isEmpty())
 				{
-					recipe.key.put(k.toString(), i);
+					recipe.key.put(k, i);
 				}
 				else
 				{

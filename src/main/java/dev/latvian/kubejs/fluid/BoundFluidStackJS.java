@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.fluid;
 
 import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
@@ -11,7 +10,7 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-public class BoundFluidStackJS extends FluidStackJS implements WrappedJSObjectChangeListener
+public class BoundFluidStackJS extends FluidStackJS
 {
 	private final FluidStack fluidStack;
 
@@ -60,7 +59,7 @@ public class BoundFluidStackJS extends FluidStackJS implements WrappedJSObjectCh
 	@Override
 	public void setNbt(@Nullable Object nbt)
 	{
-		fluidStack.setTag(MapJS.nbt(MapJS.of(nbt)));
+		fluidStack.setTag(MapJS.nbt(nbt));
 	}
 
 	@Override
@@ -70,7 +69,7 @@ public class BoundFluidStackJS extends FluidStackJS implements WrappedJSObjectCh
 	}
 
 	@Override
-	public void onChanged(@Nullable Object o)
+	public void onChanged(@Nullable MapJS o)
 	{
 		setNbt(o);
 	}

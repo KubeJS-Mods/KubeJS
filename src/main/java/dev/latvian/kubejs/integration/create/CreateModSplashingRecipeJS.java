@@ -23,16 +23,16 @@ public class CreateModSplashingRecipeJS extends RecipeJS
 	public static final RecipeTypeJS TYPE = new RecipeTypeJS(new ResourceLocation("create:splashing"))
 	{
 		@Override
-		public RecipeJS create(Object[] args)
+		public RecipeJS create(ListJS args)
 		{
-			if (args.length < 2)
+			if (args.size() < 2)
 			{
 				return new RecipeErrorJS("Create splashing recipe requires at least 2 arguments - result array and ingredient!");
 			}
 
 			CreateModSplashingRecipeJS recipe = new CreateModSplashingRecipeJS();
 
-			ListJS results = ListJS.orSelf(args[0]);
+			ListJS results = ListJS.orSelf(args.get(0));
 
 			if (results.isEmpty())
 			{
@@ -53,16 +53,16 @@ public class CreateModSplashingRecipeJS extends RecipeJS
 				}
 			}
 
-			recipe.ingredient = IngredientJS.of(args[1]);
+			recipe.ingredient = IngredientJS.of(args.get(1));
 
 			if (recipe.ingredient.isEmpty())
 			{
-				return new RecipeErrorJS("Create splashing recipe ingredient " + args[1] + " is not a valid ingredient!");
+				return new RecipeErrorJS("Create splashing recipe ingredient " + args.get(1) + " is not a valid ingredient!");
 			}
 
-			if (args.length >= 3)
+			if (args.size() >= 3)
 			{
-				recipe.processingTime = ((Number) args[2]).intValue();
+				recipe.processingTime = ((Number) args.get(2)).intValue();
 			}
 
 			return recipe;

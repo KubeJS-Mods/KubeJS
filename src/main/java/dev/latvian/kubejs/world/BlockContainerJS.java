@@ -4,14 +4,11 @@ import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.block.MaterialJS;
 import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.documentation.DisplayName;
-import dev.latvian.kubejs.documentation.P;
-import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.kubejs.util.nbt.NBTBaseJS;
-import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -226,25 +223,23 @@ public class BlockContainerJS
 		return entity == null ? UtilsJS.NULL_ID : entity.getType().getRegistryName();
 	}
 
-	public NBTCompoundJS getEntityData()
+	@Nullable
+	public MapJS getEntityData()
 	{
-		TileEntity entity = getEntity();
-		return entity == null ? NBTCompoundJS.NULL : NBTBaseJS.of(entity.serializeNBT()).asCompound();
-	}
+		final TileEntity entity = getEntity();
 
-	public void setEntityData(@P("nbt") @T(NBTCompoundJS.class) Object n)
-	{
-		NBTCompoundJS nbt = NBTBaseJS.of(n).asCompound();
-
-		if (!nbt.isNull())
+		if (entity != null)
 		{
-			TileEntity entity = getEntity();
+			MapJS entityData = MapJS.of(entity.serializeNBT());
 
-			if (entity != null)
+			if (entityData != null)
 			{
-				entity.deserializeNBT(nbt.createNBT());
+				entityData.changeListener = o -> entity.deserializeNBT(MapJS.nbt(o));
+				return entityData;
 			}
 		}
+
+		return null;
 	}
 
 	public int getLight()

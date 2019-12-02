@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObject, WrappedJSObjectChangeListener, Copyable, JsonSerializable, NBTSerializable
+public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObject, WrappedJSObjectChangeListener<Object>, Copyable, JsonSerializable, NBTSerializable
 {
 	@Nullable
 	public static MapJS of(@Nullable Object o)
@@ -22,15 +22,22 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 	}
 
 	@Nullable
-	public static CompoundNBT nbt(@Nullable MapJS map)
+	public static CompoundNBT nbt(@Nullable Object map)
 	{
-		return map == null ? null : map.toNBT();
+		if (map instanceof CompoundNBT)
+		{
+			return (CompoundNBT) map;
+		}
+
+		MapJS m = of(map);
+		return m == null ? null : m.toNBT();
 	}
 
-	public WrappedJSObjectChangeListener changeListener;
+	public WrappedJSObjectChangeListener<MapJS> changeListener;
 
 	public MapJS()
 	{
+		this(0);
 	}
 
 	public MapJS(int s)
@@ -114,6 +121,24 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 		return map;
 	}
 
+	protected boolean setChangeListener(@Nullable Object v)
+	{
+		if (v == null)
+		{
+			return false;
+		}
+		else if (v instanceof MapJS)
+		{
+			((MapJS) v).changeListener = this::onChanged;
+		}
+		else if (v instanceof ListJS)
+		{
+			((ListJS) v).changeListener = this::onChanged;
+		}
+
+		return true;
+	}
+
 	@Override
 	public void onChanged(@Nullable Object o)
 	{
@@ -128,25 +153,53 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 	{
 		Object v = UtilsJS.wrap(value, JSObjectType.ANY);
 
-		if (v instanceof MapJS)
+		if (setChangeListener(v))
 		{
-			((MapJS) v).changeListener = this;
-		}
-		else if (v instanceof ListJS)
-		{
-			((ListJS) v).changeListener = this;
+			Object o = super.put(key, v);
+			onChanged(null);
+			return o;
 		}
 
-		return super.put(key, v);
+		return null;
 	}
 
 	@Override
 	public void putAll(Map<? extends String, ?> m)
 	{
+		if (m == null || m.isEmpty())
+		{
+			return;
+		}
+
 		for (Map.Entry<?, ?> entry : m.entrySet())
 		{
-			put(entry.getKey().toString(), entry.getValue());
+			if (setChangeListener(entry.getValue()))
+			{
+				super.put(entry.getKey().toString(), entry.getValue());
+			}
 		}
+
+		onChanged(null);
+	}
+
+	@Override
+	public void clear()
+	{
+		super.clear();
+		onChanged(null);
+	}
+
+	@Override
+	public Object remove(Object key)
+	{
+		Object o = super.remove(key);
+
+		if (o != null)
+		{
+			onChanged(null);
+		}
+
+		return o;
 	}
 
 	@Override
@@ -183,5 +236,31 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 		}
 
 		return nbt;
+	}
+
+	public MapJS getOrNewMap(String id)
+	{
+		MapJS map = of(get(id));
+
+		if (map == null)
+		{
+			map = new MapJS();
+			put(id, map);
+		}
+
+		return map;
+	}
+
+	public ListJS getOrNewList(String id)
+	{
+		ListJS list = ListJS.of(get(id));
+
+		if (list == null)
+		{
+			list = new ListJS();
+			put(id, list);
+		}
+
+		return list;
 	}
 }

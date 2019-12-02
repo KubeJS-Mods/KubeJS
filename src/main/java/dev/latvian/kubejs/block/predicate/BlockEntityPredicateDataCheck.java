@@ -1,6 +1,8 @@
 package dev.latvian.kubejs.block.predicate;
 
-import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
+import dev.latvian.kubejs.util.MapJS;
+
+import javax.annotation.Nullable;
 
 /**
  * @author LatvianModder
@@ -8,5 +10,5 @@ import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 @FunctionalInterface
 public interface BlockEntityPredicateDataCheck
 {
-	boolean checkData(NBTCompoundJS data);
+	boolean checkData(@Nullable MapJS data);
 }

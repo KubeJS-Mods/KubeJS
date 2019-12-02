@@ -28,24 +28,22 @@ public class RecipeFunction extends AbstractJSObject
 	@Override
 	public RecipeJS call(Object thiz, Object... args0)
 	{
-		List args1 = ListJS.of(args0);
+		ListJS args = ListJS.of(args0);
 
-		if (args1 == null || args1.isEmpty())
+		if (args == null || args.isEmpty())
 		{
 			return new RecipeErrorJS("Recipe requires at least one argument!");
 		}
 
-		Object[] args = args1.toArray();
-
-		if (args.length == 1)
+		if (args.size() == 1)
 		{
-			MapJS map = MapJS.of(args[0]);
+			MapJS map = MapJS.of(args.get(0));
 
 			if (map != null)
 			{
 				JsonObject json = map.toJson();
 				json.addProperty("type", type.id.toString());
-				return add(type.create(json), args1);
+				return add(type.create(json), args);
 			}
 			else
 			{
@@ -55,12 +53,12 @@ public class RecipeFunction extends AbstractJSObject
 
 		try
 		{
-			return add(type.create(args), args1);
+			return add(type.create(args), args);
 		}
 		catch (Exception ex)
 		{
 			ex.printStackTrace();
-			return add(new RecipeErrorJS(ex.toString()), args1);
+			return add(new RecipeErrorJS(ex.toString()), args);
 		}
 	}
 

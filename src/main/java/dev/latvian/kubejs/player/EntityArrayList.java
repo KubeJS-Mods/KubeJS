@@ -1,14 +1,13 @@
 package dev.latvian.kubejs.player;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
+import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -148,13 +147,13 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 	public void sendData(@P("channel") String channel, @Nullable @P("data") Object data)
 	{
-		CompoundNBT nbt = NBTBaseJS.of(data).asCompound().createNBT();
+		CompoundNBT nbt = MapJS.nbt(data);
 
 		for (EntityJS entity : this)
 		{
 			if (entity instanceof PlayerJS)
 			{
-				KubeJS.instance.proxy.sendData(((PlayerJS) entity).minecraftPlayer, channel, nbt);
+				((PlayerJS) entity).sendData(channel, nbt);
 			}
 		}
 	}

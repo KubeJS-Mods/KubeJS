@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.script;
 
 import dev.latvian.kubejs.util.FunctionBinding;
+import jdk.nashorn.api.scripting.JSObject;
 import net.minecraftforge.eventbus.api.Event;
 
 import java.util.Map;
@@ -34,6 +35,11 @@ public class BindingsEvent extends Event
 	public void addFunction(String name, FunctionBinding.Handler handler)
 	{
 		add(name, new FunctionBinding(handler));
+	}
+
+	public void addFunction(String name, JSObject function)
+	{
+		add(name, function);
 	}
 
 	public void addConstant(String name, Object value)

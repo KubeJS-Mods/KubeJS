@@ -3,18 +3,16 @@ package dev.latvian.kubejs.item;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
 import dev.latvian.kubejs.player.PlayerJS;
-import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
+import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -64,14 +62,16 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public void setNbt(@Nullable Object nbt)
+	public MapJS getNbt()
 	{
-	}
-
-	@Override
-	public NBTCompoundJS getNbt()
-	{
-		return NBTCompoundJS.NULL;
+		return new MapJS()
+		{
+			@Override
+			protected boolean setChangeListener(@Nullable Object v)
+			{
+				return false;
+			}
+		};
 	}
 
 	@Override
@@ -121,37 +121,46 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public void setName(Object displayName)
+	public void setName(@Nullable Object displayName)
 	{
 	}
 
 	@Override
-	public Map<ResourceLocation, Integer> getEnchantments()
+	public MapJS getEnchantments()
 	{
-		return new LinkedHashMap<>();
+		return new MapJS()
+		{
+			@Override
+			protected boolean setChangeListener(@Nullable Object v)
+			{
+				return false;
+			}
+		};
 	}
 
 	@Override
-	public void setEnchantments(Map<ResourceLocation, Integer> map)
-	{
-	}
-
-	@Override
-	public ItemStackJS enchant(Map<Object, Integer> ma)
+	public ItemStackJS enchant(Object map)
 	{
 		return this;
-	}
-
-	@Override
-	public int getEnchantment(Object id)
-	{
-		return 0;
 	}
 
 	@Override
 	public String getMod()
 	{
 		return "minecraft";
+	}
+
+	@Override
+	public ListJS getLore()
+	{
+		return new ListJS()
+		{
+			@Override
+			protected boolean setChangeListener(@Nullable Object v)
+			{
+				return false;
+			}
+		};
 	}
 
 	@Override
@@ -169,7 +178,7 @@ public class EmptyItemStackJS extends ItemStackJS
 	@Override
 	public boolean isNBTEqual(ItemStackJS stack)
 	{
-		return stack.getNbt().isNull();
+		return stack.getNbt().isEmpty();
 	}
 
 	@Override

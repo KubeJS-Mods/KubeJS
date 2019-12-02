@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.recipe.RecipeErrorJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
 import dev.latvian.kubejs.util.JsonUtilsJS;
+import dev.latvian.kubejs.util.ListJS;
 import net.minecraft.util.ResourceLocation;
 
 /**
@@ -19,7 +20,7 @@ public class CustomRecipeJS extends RecipeJS
 		}
 
 		@Override
-		public RecipeJS create(Object[] args)
+		public RecipeJS create(ListJS args)
 		{
 			return new RecipeErrorJS("Can't create custom recipe!");
 		}

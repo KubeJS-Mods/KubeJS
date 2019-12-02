@@ -12,7 +12,6 @@ import dev.latvian.kubejs.util.ListJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -23,29 +22,29 @@ public class ShapelessRecipeJS extends RecipeJS
 	public static final RecipeTypeJS TYPE = new RecipeTypeJS(IRecipeSerializer.CRAFTING_SHAPELESS)
 	{
 		@Override
-		public RecipeJS create(Object[] args)
+		public RecipeJS create(ListJS args)
 		{
-			if (args.length != 2)
+			if (args.size() != 2)
 			{
 				return new RecipeErrorJS("Shapeless recipe requires 2 arguments - result and ingredients!");
 			}
 
 			ShapelessRecipeJS recipe = new ShapelessRecipeJS();
-			recipe.result = ItemStackJS.of(args[0]);
+			recipe.result = ItemStackJS.of(args.get(0));
 
 			if (recipe.result.isEmpty())
 			{
-				return new RecipeErrorJS("Shapeless recipe result " + args[0] + " is not a valid item!");
+				return new RecipeErrorJS("Shapeless recipe result " + args.get(0) + " is not a valid item!");
 			}
 
-			ListJS ingredients = ListJS.orSelf(args[1]);
+			ListJS ingredients = ListJS.orSelf(args.get(1));
 
-			if (!(args[1] instanceof Collection) || ((Collection) args[1]).isEmpty())
+			if (ingredients.isEmpty())
 			{
 				return new RecipeErrorJS("Shapeless recipe ingredient list is empty!");
 			}
 
-			for (Object o : (Collection) args[1])
+			for (Object o : ingredients)
 			{
 				IngredientJS in = IngredientJS.of(o);
 

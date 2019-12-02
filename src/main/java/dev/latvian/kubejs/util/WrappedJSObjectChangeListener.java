@@ -2,13 +2,12 @@ package dev.latvian.kubejs.util;
 
 import dev.latvian.kubejs.documentation.Ignore;
 
-import javax.annotation.Nullable;
-
 /**
  * @author LatvianModder
  */
-public interface WrappedJSObjectChangeListener
+@FunctionalInterface
+public interface WrappedJSObjectChangeListener<T>
 {
 	@Ignore
-	void onChanged(@Nullable Object o);
+	void onChanged(T o);
 }

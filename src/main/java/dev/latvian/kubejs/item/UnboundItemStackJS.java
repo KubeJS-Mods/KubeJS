@@ -1,8 +1,6 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
-import dev.latvian.kubejs.util.nbt.NBTBaseJS;
-import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
+import dev.latvian.kubejs.util.MapJS;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -15,18 +13,18 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-public class UnboundItemStackJS extends ItemStackJS implements WrappedJSObjectChangeListener
+public class UnboundItemStackJS extends ItemStackJS
 {
 	private final ResourceLocation item;
 	private int count;
-	private NBTCompoundJS nbt;
+	private MapJS nbt;
 	private ItemStack cached;
 
 	public UnboundItemStackJS(ResourceLocation i)
 	{
 		item = i;
 		count = 1;
-		nbt = NBTCompoundJS.NULL;
+		nbt = null;
 		cached = null;
 	}
 
@@ -57,9 +55,9 @@ public class UnboundItemStackJS extends ItemStackJS implements WrappedJSObjectCh
 
 			cached = new ItemStack(i, count);
 
-			if (!nbt.isNull())
+			if (nbt != null)
 			{
-				cached.setTag(nbt.createNBT());
+				cached.setTag(MapJS.nbt(nbt));
 			}
 		}
 
@@ -83,7 +81,8 @@ public class UnboundItemStackJS extends ItemStackJS implements WrappedJSObjectCh
 	{
 		UnboundItemStackJS stack = new UnboundItemStackJS(item);
 		stack.count = count;
-		stack.nbt = nbt.getCopy();
+		stack.nbt = nbt == null ? null : nbt.copy();
+		stack.setChance(getChance());
 		return stack;
 	}
 
@@ -101,15 +100,14 @@ public class UnboundItemStackJS extends ItemStackJS implements WrappedJSObjectCh
 	}
 
 	@Override
-	public void setNbt(@Nullable Object n)
+	public MapJS getNbt()
 	{
-		nbt = NBTBaseJS.of(n).asCompound();
-		cached = null;
-	}
+		if (nbt == null)
+		{
+			nbt = new MapJS();
+			nbt.changeListener = this;
+		}
 
-	@Override
-	public NBTCompoundJS getNbt()
-	{
 		return nbt;
 	}
 
@@ -131,7 +129,7 @@ public class UnboundItemStackJS extends ItemStackJS implements WrappedJSObjectCh
 	}
 
 	@Override
-	public void onChanged(@Nullable Object o)
+	public void onChanged(@Nullable MapJS o)
 	{
 		cached = null;
 	}

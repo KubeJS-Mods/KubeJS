@@ -3,10 +3,12 @@ package dev.latvian.kubejs.player;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageCloseOverlay;
 import dev.latvian.kubejs.net.MessageOpenOverlay;
+import dev.latvian.kubejs.net.MessageSendDataFromServer;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.util.FieldJS;
+import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
@@ -17,6 +19,7 @@ import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.server.management.ProfileBanEntry;
 import net.minecraftforge.fml.network.PacketDistributor;
 
+import javax.annotation.Nullable;
 import java.util.Date;
 
 /**
@@ -147,6 +150,15 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayerEntity>
 		if (minecraftPlayer.connection != null)
 		{
 			minecraftPlayer.updateHeldItem();
+		}
+	}
+
+	@Override
+	public void sendData(String channel, @Nullable Object data)
+	{
+		if (!channel.isEmpty())
+		{
+			KubeJSNet.MAIN.send(PacketDistributor.PLAYER.with(() -> minecraftPlayer), new MessageSendDataFromServer(channel, MapJS.nbt(data)));
 		}
 	}
 }

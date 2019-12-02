@@ -5,7 +5,6 @@ import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.NBTUtilsJS;
-import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -17,11 +16,6 @@ import java.io.IOException;
 @DisplayName("NBTUtilities")
 public class NBTWrapper
 {
-	public NBTBaseJS of(@Nullable Object o)
-	{
-		return NBTBaseJS.of(o);
-	}
-
 	@Nullable
 	public MapJS read(@P("file") File file) throws IOException
 	{

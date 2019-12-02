@@ -6,6 +6,7 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeErrorJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
+import dev.latvian.kubejs.util.ListJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 
 /**
@@ -27,26 +28,26 @@ public class CookingRecipeJS extends RecipeJS
 			type = new RecipeTypeJS(s)
 			{
 				@Override
-				public RecipeJS create(Object[] args)
+				public RecipeJS create(ListJS args)
 				{
-					if (args.length != 2)
+					if (args.size() != 2)
 					{
 						return new RecipeErrorJS("Cooking recipe requires 2 arguments - result and ingredient!");
 					}
 
 					CookingRecipeJS recipe = new CookingRecipeJS(Type.this);
-					recipe.result = ItemStackJS.of(args[0]);
+					recipe.result = ItemStackJS.of(args.get(0));
 
 					if (recipe.result.isEmpty())
 					{
-						return new RecipeErrorJS("Cooking recipe result " + args[0] + " is not a valid item!");
+						return new RecipeErrorJS("Cooking recipe result " + args.get(0) + " is not a valid item!");
 					}
 
-					recipe.ingredient = IngredientJS.of(args[1]);
+					recipe.ingredient = IngredientJS.of(args.get(1));
 
 					if (recipe.ingredient.isEmpty())
 					{
-						return new RecipeErrorJS("Cooking recipe ingredient " + args[1] + " is not a valid ingredient!");
+						return new RecipeErrorJS("Cooking recipe ingredient " + args.get(1) + " is not a valid ingredient!");
 					}
 
 					return recipe;

@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.player;
 
 import com.mojang.authlib.GameProfile;
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
@@ -10,10 +9,9 @@ import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.AttachedData;
+import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.WithAttachedData;
-import dev.latvian.kubejs.util.nbt.NBTBaseJS;
-import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -160,44 +158,33 @@ public abstract class PlayerJS<E extends PlayerEntity> extends LivingEntityJS im
 	}
 
 	@Override
-	public NBTCompoundJS getNbt()
+	public MapJS getNbt()
 	{
 		CompoundNBT nbt = minecraftEntity.getPersistentData();
 		CompoundNBT nbt1 = (CompoundNBT) nbt.get(PlayerEntity.PERSISTED_NBT_TAG);
+		MapJS map = MapJS.of(nbt1 == null ? null : nbt1.get("KubeJS"));
 
-		if (nbt1 == null)
+		if (map == null)
 		{
-			nbt1 = new CompoundNBT();
-			nbt.put(PlayerEntity.PERSISTED_NBT_TAG, nbt1);
+			map = new MapJS();
 		}
 
-		CompoundNBT nbt2 = (CompoundNBT) nbt1.get("KubeJS");
+		map.changeListener = m -> {
+			CompoundNBT n = MapJS.nbt(m);
 
-		if (nbt2 == null)
-		{
-			nbt2 = new CompoundNBT();
-			nbt1.put("KubeJS", nbt2);
-		}
+			if (n != null)
+			{
+				CompoundNBT n1 = minecraftEntity.getPersistentData().getCompound(PlayerEntity.PERSISTED_NBT_TAG);
+				n1.put("KubeJS", n);
+				minecraftEntity.getPersistentData().put(PlayerEntity.PERSISTED_NBT_TAG, n1);
+			}
+		};
 
-		return NBTBaseJS.of(nbt2).asCompound();
-	}
-
-	@Override
-	public void setNbt(@P("nbt") NBTCompoundJS nbt)
-	{
-		CompoundNBT n = nbt.createNBT();
-
-		if (n != null)
-		{
-			CompoundNBT n1 = minecraftEntity.getPersistentData().getCompound(PlayerEntity.PERSISTED_NBT_TAG);
-			n1.put("KubeJS", n);
-			minecraftEntity.getPersistentData().put(PlayerEntity.PERSISTED_NBT_TAG, n1);
-		}
+		return map;
 	}
 
 	public void sendData(@P("channel") String channel, @Nullable @P("data") Object data)
 	{
-		KubeJS.instance.proxy.sendData(minecraftPlayer, channel, NBTBaseJS.of(data).asCompound().createNBT());
 	}
 
 	public void addFood(@P("food") int f, @P("modifier") float m)

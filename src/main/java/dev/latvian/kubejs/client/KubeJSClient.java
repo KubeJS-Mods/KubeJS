@@ -2,11 +2,9 @@ package dev.latvian.kubejs.client;
 
 import dev.latvian.kubejs.KubeJSCommon;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.net.KubeJSNet;
-import dev.latvian.kubejs.net.MessageSendDataFromClient;
 import dev.latvian.kubejs.net.NetworkEventJS;
+import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Overlay;
-import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -33,22 +31,9 @@ public class KubeJSClient extends KubeJSCommon
 	}
 
 	@Override
-	public void sendData(PlayerEntity playerEntity, String channel, @Nullable CompoundNBT data)
-	{
-		if (playerEntity.world.isRemote && !channel.isEmpty())
-		{
-			KubeJSNet.MAIN.sendToServer(new MessageSendDataFromClient(channel, data));
-		}
-		else
-		{
-			super.sendData(playerEntity, channel, data);
-		}
-	}
-
-	@Override
 	public void handleDataToClientPacket(String channel, @Nullable CompoundNBT data)
 	{
-		new NetworkEventJS(Minecraft.getInstance().player, channel, NBTBaseJS.of(data).asCompound()).post(KubeJSEvents.PLAYER_DATA_FROM_SERVER, channel);
+		new NetworkEventJS(Minecraft.getInstance().player, channel, MapJS.of(data)).post(KubeJSEvents.PLAYER_DATA_FROM_SERVER, channel);
 	}
 
 	@Override

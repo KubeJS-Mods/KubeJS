@@ -19,7 +19,7 @@ import java.util.Collections;
 /**
  * @author LatvianModder
  */
-public class ListJS extends ArrayList<Object> implements WrappedJSObject, WrappedJSObjectChangeListener, Copyable, JsonSerializable, NBTSerializable
+public class ListJS extends ArrayList<Object> implements WrappedJSObject, WrappedJSObjectChangeListener<Object>, Copyable, JsonSerializable, NBTSerializable
 {
 	@Nullable
 	public static ListJS of(@Nullable Object o)
@@ -171,10 +171,11 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 		return list;
 	}
 
-	public WrappedJSObjectChangeListener changeListener;
+	public WrappedJSObjectChangeListener<ListJS> changeListener;
 
 	public ListJS()
 	{
+		this(0);
 	}
 
 	public ListJS(int s)
@@ -241,7 +242,7 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 		return list;
 	}
 
-	private boolean setChangeListener(@Nullable Object v)
+	protected boolean setChangeListener(@Nullable Object v)
 	{
 		if (v == null)
 		{
@@ -249,11 +250,11 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 		}
 		else if (v instanceof MapJS)
 		{
-			((MapJS) v).changeListener = this;
+			((MapJS) v).changeListener = this::onChanged;
 		}
 		else if (v instanceof ListJS)
 		{
-			((ListJS) v).changeListener = this;
+			((ListJS) v).changeListener = this::onChanged;
 		}
 
 		return true;
@@ -374,8 +375,6 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 
 			if (values[s] != null)
 			{
-				s++;
-
 				if (commmonId == -1)
 				{
 					commmonId = values[s].getId();
@@ -384,6 +383,8 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 				{
 					commmonId = 0;
 				}
+
+				s++;
 			}
 		}
 

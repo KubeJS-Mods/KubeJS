@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.net;
 
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.util.nbt.NBTBaseJS;
+import dev.latvian.kubejs.util.MapJS;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -44,7 +44,7 @@ public class MessageSendDataFromClient
 
 			if (player != null)
 			{
-				context.get().enqueueWork(() -> new NetworkEventJS(player, channel, NBTBaseJS.of(data).asCompound()).post(KubeJSEvents.PLAYER_DATA_FROM_CLIENT, channel));
+				context.get().enqueueWork(() -> new NetworkEventJS(player, channel, MapJS.of(data)).post(KubeJSEvents.PLAYER_DATA_FROM_CLIENT, channel));
 			}
 		}
 	}

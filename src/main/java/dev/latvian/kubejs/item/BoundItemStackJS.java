@@ -1,9 +1,7 @@
 package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
-import dev.latvian.kubejs.util.nbt.NBTBaseJS;
-import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
+import dev.latvian.kubejs.util.MapJS;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -14,7 +12,7 @@ import java.util.Objects;
 /**
  * @author LatvianModder
  */
-public class BoundItemStackJS extends ItemStackJS implements WrappedJSObjectChangeListener
+public class BoundItemStackJS extends ItemStackJS
 {
 	private final ItemStack stack;
 
@@ -38,7 +36,7 @@ public class BoundItemStackJS extends ItemStackJS implements WrappedJSObjectChan
 	@Override
 	public ItemStackJS getCopy()
 	{
-		return new BoundItemStackJS(stack.copy());
+		return new BoundItemStackJS(stack.copy()).chance(getChance());
 	}
 
 	@Override
@@ -60,19 +58,21 @@ public class BoundItemStackJS extends ItemStackJS implements WrappedJSObjectChan
 	}
 
 	@Override
-	public void setNbt(@Nullable Object nbt)
+	public MapJS getNbt()
 	{
-		stack.setTag(NBTBaseJS.of(nbt).asCompound().createNBT());
+		MapJS nbt = MapJS.of(stack.getTag());
+
+		if (nbt == null)
+		{
+			nbt = new MapJS();
+		}
+
+		nbt.changeListener = this;
+		return nbt;
 	}
 
 	@Override
-	public NBTCompoundJS getNbt()
-	{
-		return NBTBaseJS.of(stack.getTag()).asCompound();
-	}
-
-	@Override
-	public void setName(Object displayName)
+	public void setName(@Nullable Object displayName)
 	{
 		stack.setDisplayName(Text.of(displayName).component());
 	}
@@ -100,7 +100,7 @@ public class BoundItemStackJS extends ItemStackJS implements WrappedJSObjectChan
 	public boolean isNBTEqual(ItemStackJS stack2)
 	{
 		CompoundNBT nbt = stack.getTag();
-		CompoundNBT nbt2 = stack2.getNbt().createNBT();
+		CompoundNBT nbt2 = MapJS.nbt(stack2.getNbt());
 		return Objects.equals(nbt, nbt2);
 	}
 
@@ -113,8 +113,8 @@ public class BoundItemStackJS extends ItemStackJS implements WrappedJSObjectChan
 	}
 
 	@Override
-	public void onChanged(@Nullable Object o)
+	public void onChanged(@Nullable MapJS o)
 	{
-		setNbt(o);
+		stack.setTag(MapJS.nbt(o));
 	}
 }
