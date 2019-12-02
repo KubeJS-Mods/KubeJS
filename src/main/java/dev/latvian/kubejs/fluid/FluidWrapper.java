@@ -18,6 +18,16 @@ public class FluidWrapper
 		return FluidStackJS.of(o);
 	}
 
+	public FluidStackJS of(Object o, Object amountOrNBT)
+	{
+		return FluidStackJS.of(o, amountOrNBT);
+	}
+
+	public FluidStackJS of(Object o, int amount, Object nbt)
+	{
+		return FluidStackJS.of(o, amount, nbt);
+	}
+
 	public Fluid getType(Object id)
 	{
 		Fluid f = ForgeRegistries.FLUIDS.getValue(UtilsJS.getID(id));

@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.fluid;
 
-import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
+import dev.latvian.kubejs.util.MapJS;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.ResourceLocation;
@@ -52,9 +52,10 @@ public class EmptyFluidStackJS extends FluidStackJS
 	}
 
 	@Override
-	public NBTCompoundJS getNbt()
+	@Nullable
+	public MapJS getNbt()
 	{
-		return NBTCompoundJS.NULL;
+		return null;
 	}
 
 	@Override

@@ -115,7 +115,7 @@ public class ShapelessRecipeJS extends RecipeJS
 
 		for (IngredientJS in : ingredients)
 		{
-			ingredientsJson.add(in.getJson());
+			ingredientsJson.add(in.toJson());
 		}
 
 		json.add("ingredients", ingredientsJson);

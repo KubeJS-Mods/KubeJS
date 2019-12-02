@@ -11,7 +11,9 @@ import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextTranslate;
+import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.NBTSerializable;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
@@ -47,7 +49,7 @@ import java.util.Set;
 /**
  * @author LatvianModder
  */
-public abstract class ItemStackJS implements IngredientJS
+public abstract class ItemStackJS implements IngredientJS, NBTSerializable
 {
 	private static List<ItemStackJS> cachedItemList;
 
@@ -139,6 +141,31 @@ public abstract class ItemStackJS implements IngredientJS
 			stack.setNbt(s[2]);
 		}
 
+		return stack;
+	}
+
+	public static ItemStackJS of(@Nullable Object o, @Nullable Object countOrNBT)
+	{
+		ItemStackJS stack = of(o);
+		Object n = UtilsJS.wrap(countOrNBT, JSObjectType.ANY);
+
+		if (n instanceof Number)
+		{
+			stack.setCount(((Number) n).intValue());
+		}
+		else if (n instanceof MapJS)
+		{
+			stack.setNbt(n);
+		}
+
+		return stack;
+	}
+
+	public static ItemStackJS of(@Nullable Object o, int count, @Nullable Object nbt)
+	{
+		ItemStackJS stack = of(o);
+		stack.setCount(count);
+		stack.setNbt(nbt);
 		return stack;
 	}
 
@@ -283,7 +310,7 @@ public abstract class ItemStackJS implements IngredientJS
 		return getItem() instanceof BlockItem;
 	}
 
-	public abstract void setNbt(Object nbt);
+	public abstract void setNbt(@Nullable Object nbt);
 
 	public abstract NBTCompoundJS getNbt();
 
@@ -606,7 +633,7 @@ public abstract class ItemStackJS implements IngredientJS
 	}
 
 	@Override
-	public JsonElement getJson()
+	public JsonElement toJson()
 	{
 		JsonObject json = new JsonObject();
 		json.addProperty("item", getId().toString());
@@ -632,5 +659,11 @@ public abstract class ItemStackJS implements IngredientJS
 		}
 
 		return json;
+	}
+
+	@Override
+	public CompoundNBT toNBT()
+	{
+		return getItemStack().serializeNBT();
 	}
 }

@@ -28,7 +28,7 @@ public class DataPackEventJS extends ServerEventJS
 
 		if (map != null)
 		{
-			add(id, JsonUtilsJS.toString(map.getJson()));
+			add(id, JsonUtilsJS.toString(map.toJson()));
 		}
 	}
 }

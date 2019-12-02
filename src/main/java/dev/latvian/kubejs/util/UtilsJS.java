@@ -108,7 +108,7 @@ public class UtilsJS
 	public static Object wrap(@Nullable Object o, JSObjectType type)
 	{
 		//Primitives and already normalized objects
-		if (o == null || o instanceof WrappedJS || o instanceof Number || o instanceof Character || o instanceof String || o.getClass().isPrimitive() && !o.getClass().isArray())
+		if (o == null || o instanceof WrappedJS || o instanceof Number || o instanceof Character || o instanceof String || o instanceof Enum || o.getClass().isPrimitive() && !o.getClass().isArray())
 		{
 			return o;
 		}

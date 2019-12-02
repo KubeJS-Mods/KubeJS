@@ -153,7 +153,7 @@ public class ShapedRecipeJS extends RecipeJS
 
 		for (Map.Entry<String, IngredientJS> entry : key.entrySet())
 		{
-			keyJson.add(entry.getKey(), entry.getValue().getJson());
+			keyJson.add(entry.getKey(), entry.getValue().toJson());
 		}
 
 		json.add("key", keyJson);

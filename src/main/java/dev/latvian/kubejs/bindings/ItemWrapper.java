@@ -27,6 +27,16 @@ public class ItemWrapper
 		return ItemStackJS.of(object);
 	}
 
+	public ItemStackJS of(Object object, Object countOrNBT)
+	{
+		return ItemStackJS.of(object, countOrNBT);
+	}
+
+	public ItemStackJS of(Object object, int count, Object nbt)
+	{
+		return ItemStackJS.of(object, count, nbt);
+	}
+
 	public List<ItemStackJS> getList()
 	{
 		return ItemStackJS.getList();

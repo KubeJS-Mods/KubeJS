@@ -38,7 +38,7 @@ public class TextString extends Text
 	}
 
 	@Override
-	public JsonElement getJson()
+	public JsonElement toJson()
 	{
 		JsonObject o = getPropertiesAsJson();
 

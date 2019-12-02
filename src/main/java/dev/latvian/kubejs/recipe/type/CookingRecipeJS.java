@@ -96,7 +96,7 @@ public class CookingRecipeJS extends RecipeJS
 	public JsonObject toJson()
 	{
 		JsonObject json = create();
-		json.add("ingredient", ingredient.getJson());
+		json.add("ingredient", ingredient.toJson());
 		json.add("result", result.getResultJson());
 		json.addProperty("experience", experience);
 		return json;

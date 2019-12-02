@@ -40,8 +40,7 @@ public interface IngredientJS extends JsonSerializable
 		{
 			if (o.toString().startsWith("#"))
 			{
-				String[] s = o.toString().substring(1).split(" ", 2);
-				return new TagIngredientJS(new ResourceLocation(s[0])).count(s.length == 2 ? UtilsJS.parseInt(s[1], 1) : 1);
+				return new TagIngredientJS(new ResourceLocation(o.toString().substring(1)));
 			}
 			else if (o.toString().startsWith("mod:"))
 			{
@@ -192,6 +191,11 @@ public interface IngredientJS extends JsonSerializable
 
 	default IngredientJS count(int count)
 	{
+		if (count == getCount())
+		{
+			return this;
+		}
+
 		return new IngredientStackJS(this, count);
 	}
 
@@ -201,13 +205,13 @@ public interface IngredientJS extends JsonSerializable
 	}
 
 	@Override
-	default JsonElement getJson()
+	default JsonElement toJson()
 	{
 		JsonArray array = new JsonArray();
 
 		for (ItemStackJS stackJS : getStacks())
 		{
-			array.add(stackJS.getJson());
+			array.add(stackJS.toJson());
 		}
 
 		return array;

@@ -2,6 +2,8 @@ package dev.latvian.kubejs.util;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
@@ -10,7 +12,7 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObject, Copyable, JSObjectChangeListener, JsonSerializable
+public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObject, WrappedJSObjectChangeListener, Copyable, JsonSerializable, NBTSerializable
 {
 	@Nullable
 	public static MapJS of(@Nullable Object o)
@@ -19,7 +21,13 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 		return o1 instanceof MapJS ? (MapJS) o1 : null;
 	}
 
-	public JSObjectChangeListener changeListener;
+	@Nullable
+	public static CompoundNBT nbt(@Nullable MapJS map)
+	{
+		return map == null ? null : map.toNBT();
+	}
+
+	public WrappedJSObjectChangeListener changeListener;
 
 	public MapJS()
 	{
@@ -107,7 +115,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 	}
 
 	@Override
-	public void onChanged(Object o)
+	public void onChanged(@Nullable Object o)
 	{
 		if (changeListener != null)
 		{
@@ -142,7 +150,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 	}
 
 	@Override
-	public JsonObject getJson()
+	public JsonObject toJson()
 	{
 		JsonObject json = new JsonObject();
 
@@ -157,5 +165,23 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 		}
 
 		return json;
+	}
+
+	@Override
+	public CompoundNBT toNBT()
+	{
+		CompoundNBT nbt = new CompoundNBT();
+
+		for (Map.Entry<String, Object> entry : entrySet())
+		{
+			INBT nbt1 = NBTUtilsJS.toNBT(entry.getValue());
+
+			if (nbt1 != null)
+			{
+				nbt.put(entry.getKey(), nbt1);
+			}
+		}
+
+		return nbt;
 	}
 }

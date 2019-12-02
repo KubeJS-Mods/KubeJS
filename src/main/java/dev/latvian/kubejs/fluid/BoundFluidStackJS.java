@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.fluid;
 
-import dev.latvian.kubejs.util.nbt.NBTBaseJS;
-import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
+import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-public class BoundFluidStackJS extends FluidStackJS
+public class BoundFluidStackJS extends FluidStackJS implements WrappedJSObjectChangeListener
 {
 	private final FluidStack fluidStack;
 
@@ -32,7 +32,6 @@ public class BoundFluidStackJS extends FluidStackJS
 		return fluidStack.getFluid();
 	}
 
-	@Nullable
 	@Override
 	public FluidStack getFluidStack()
 	{
@@ -52,20 +51,27 @@ public class BoundFluidStackJS extends FluidStackJS
 	}
 
 	@Override
-	public NBTCompoundJS getNbt()
+	@Nullable
+	public MapJS getNbt()
 	{
-		return NBTBaseJS.of(fluidStack.getTag()).asCompound();
+		return MapJS.of(fluidStack.getTag());
 	}
 
 	@Override
 	public void setNbt(@Nullable Object nbt)
 	{
-		fluidStack.setTag(NBTBaseJS.of(nbt).asCompound().createNBT());
+		fluidStack.setTag(MapJS.nbt(MapJS.of(nbt)));
 	}
 
 	@Override
 	public FluidStackJS copy()
 	{
 		return new BoundFluidStackJS(fluidStack.copy());
+	}
+
+	@Override
+	public void onChanged(@Nullable Object o)
+	{
+		setNbt(o);
 	}
 }

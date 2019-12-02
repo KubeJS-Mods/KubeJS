@@ -76,7 +76,7 @@ public class JsonUtilsJS
 		}
 		else if (o instanceof JsonSerializable)
 		{
-			return ((JsonSerializable) o).getJson();
+			return ((JsonSerializable) o).toJson();
 		}
 		else if (o instanceof JsonElement)
 		{
@@ -243,9 +243,14 @@ public class JsonUtilsJS
 	}
 
 	@Nullable
-	public static Object read(@P("file") File file) throws IOException
+	public static MapJS read(File file) throws IOException
 	{
 		KubeJS.verifyFilePath(file);
+
+		if (!file.exists())
+		{
+			return null;
+		}
 
 		try (FileReader fileReader = new FileReader(file);
 			 JsonReader jsonReader = new JsonReader(fileReader))
@@ -260,14 +265,21 @@ public class JsonUtilsJS
 				throw new JsonSyntaxException("Did not consume the entire document.");
 			}
 
-			return UtilsJS.wrap(element, JSObjectType.MAP);
+			return MapJS.of(element);
 		}
 	}
 
-	public static void write(@P("file") File file, @P("json") Object o) throws IOException
+	public static void write(File file, @Nullable MapJS o) throws IOException
 	{
 		KubeJS.verifyFilePath(file);
-		JsonObject json = MapJS.of(o).getJson();
+
+		if (o == null)
+		{
+			file.delete();
+			return;
+		}
+
+		JsonObject json = o.toJson();
 
 		try (Writer fileWriter = new FileWriter(file);
 			 JsonWriter jsonWriter = new JsonWriter(new BufferedWriter(fileWriter)))
@@ -280,12 +292,12 @@ public class JsonUtilsJS
 	}
 
 	@Nullable
-	public static Object read(@P("file") String file) throws IOException
+	public static MapJS read(@P("file") String file) throws IOException
 	{
 		return read(KubeJS.getGameDirectory().resolve(file).toFile());
 	}
 
-	public static void write(@P("file") String file, @P("json") Object json) throws IOException
+	public static void write(@P("file") String file, @Nullable MapJS json) throws IOException
 	{
 		write(KubeJS.getGameDirectory().resolve(file).toFile(), json);
 	}

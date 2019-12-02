@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.item.ingredient;
 
+import com.google.gson.JsonElement;
 import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.item.ItemStack;
 
@@ -70,5 +71,11 @@ public class IngredientStackJS implements IngredientJS
 	public String toString()
 	{
 		return getCount() == 1 ? ingredient.toString() : (getCount() + "x " + ingredient);
+	}
+
+	@Override
+	public JsonElement toJson()
+	{
+		return ingredient.toJson();
 	}
 }

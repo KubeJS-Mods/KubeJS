@@ -121,7 +121,7 @@ public class CreateModPressingRecipeJS extends RecipeJS
 		JsonObject json = create();
 
 		JsonArray ingredientsJson = new JsonArray();
-		ingredientsJson.add(ingredient.getJson());
+		ingredientsJson.add(ingredient.toJson());
 		json.add("ingredients", ingredientsJson);
 
 		JsonArray resultsJson = new JsonArray();

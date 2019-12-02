@@ -1,8 +1,7 @@
 package dev.latvian.kubejs.fluid;
 
-import dev.latvian.kubejs.util.nbt.NBTBaseJS;
-import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
-import net.minecraft.fluid.Fluid;
+import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidAttributes;
@@ -13,18 +12,18 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-public class UnboundFluidStackJS extends FluidStackJS
+public class UnboundFluidStackJS extends FluidStackJS implements WrappedJSObjectChangeListener
 {
 	private final ResourceLocation fluid;
 	private int amount;
-	private NBTCompoundJS nbt;
+	private MapJS nbt;
 	private FluidStack cached;
 
 	public UnboundFluidStackJS(ResourceLocation f)
 	{
 		fluid = f;
 		amount = FluidAttributes.BUCKET_VOLUME;
-		nbt = NBTCompoundJS.NULL;
+		nbt = null;
 		cached = null;
 	}
 
@@ -40,20 +39,12 @@ public class UnboundFluidStackJS extends FluidStackJS
 		return super.isEmpty() || getFluid() == Fluids.EMPTY;
 	}
 
-	@Nullable
 	@Override
 	public FluidStack getFluidStack()
 	{
 		if (cached == null)
 		{
-			Fluid f = getFluid();
-
-			if (f == null)
-			{
-				return null;
-			}
-
-			cached = new FluidStack(f, amount, nbt.createNBT());
+			cached = new FluidStack(getFluid(), amount, MapJS.nbt(nbt));
 		}
 
 		return cached;
@@ -73,7 +64,8 @@ public class UnboundFluidStackJS extends FluidStackJS
 	}
 
 	@Override
-	public NBTCompoundJS getNbt()
+	@Nullable
+	public MapJS getNbt()
 	{
 		return nbt;
 	}
@@ -81,13 +73,25 @@ public class UnboundFluidStackJS extends FluidStackJS
 	@Override
 	public void setNbt(@Nullable Object n)
 	{
-		nbt = NBTBaseJS.of(n).asCompound();
+		nbt = MapJS.of(n);
+
+		if (nbt != null)
+		{
+			nbt.changeListener = this;
+		}
+
 		cached = null;
 	}
 
 	@Override
 	public FluidStackJS copy()
 	{
-		return new UnboundFluidStackJS(fluid).amount(amount).nbt(nbt.getCopy());
+		return new UnboundFluidStackJS(fluid).amount(amount).nbt(nbt);
+	}
+
+	@Override
+	public void onChanged(@Nullable Object o)
+	{
+		cached = null;
 	}
 }

@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.util.JSObjectChangeListener;
+import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import net.minecraft.item.Item;
@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * @author LatvianModder
  */
-public class BoundItemStackJS extends ItemStackJS implements JSObjectChangeListener
+public class BoundItemStackJS extends ItemStackJS implements WrappedJSObjectChangeListener
 {
 	private final ItemStack stack;
 
@@ -113,7 +113,8 @@ public class BoundItemStackJS extends ItemStackJS implements JSObjectChangeListe
 	}
 
 	@Override
-	public void onChanged(Object o)
+	public void onChanged(@Nullable Object o)
 	{
+		setNbt(o);
 	}
 }

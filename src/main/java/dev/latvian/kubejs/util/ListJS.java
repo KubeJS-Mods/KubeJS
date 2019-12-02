@@ -2,6 +2,14 @@ package dev.latvian.kubejs.util;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import net.minecraft.nbt.ByteArrayNBT;
+import net.minecraft.nbt.CollectionNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.IntArrayNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.LongArrayNBT;
+import net.minecraft.nbt.NumberNBT;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -11,7 +19,7 @@ import java.util.Collections;
 /**
  * @author LatvianModder
  */
-public class ListJS extends ArrayList<Object> implements WrappedJSObject, Copyable, JSObjectChangeListener, JsonSerializable
+public class ListJS extends ArrayList<Object> implements WrappedJSObject, WrappedJSObjectChangeListener, Copyable, JsonSerializable, NBTSerializable
 {
 	@Nullable
 	public static ListJS of(@Nullable Object o)
@@ -163,7 +171,7 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Copyab
 		return list;
 	}
 
-	public JSObjectChangeListener changeListener;
+	public WrappedJSObjectChangeListener changeListener;
 
 	public ListJS()
 	{
@@ -233,20 +241,8 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Copyab
 		return list;
 	}
 
-	@Override
-	public void onChanged(Object o)
+	private boolean setChangeListener(@Nullable Object v)
 	{
-		if (changeListener != null)
-		{
-			changeListener.onChanged(this);
-		}
-	}
-
-	@Override
-	public boolean add(Object value)
-	{
-		Object v = UtilsJS.wrap(value, JSObjectType.ANY);
-
 		if (v == null)
 		{
 			return false;
@@ -260,7 +256,29 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Copyab
 			((ListJS) v).changeListener = this;
 		}
 
-		return super.add(v);
+		return true;
+	}
+
+	@Override
+	public void onChanged(@Nullable Object o)
+	{
+		if (changeListener != null)
+		{
+			changeListener.onChanged(this);
+		}
+	}
+
+	@Override
+	public boolean add(Object value)
+	{
+		Object v = UtilsJS.wrap(value, JSObjectType.ANY);
+
+		if (setChangeListener(v))
+		{
+			return super.add(v);
+		}
+
+		return false;
 	}
 
 	@Override
@@ -268,35 +286,60 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Copyab
 	{
 		Object v = UtilsJS.wrap(value, JSObjectType.ANY);
 
-		if (v == null)
+		if (setChangeListener(v))
 		{
-			return;
+			super.add(index, v);
 		}
-		else if (v instanceof MapJS)
-		{
-			((MapJS) v).changeListener = this;
-		}
-		else if (v instanceof ListJS)
-		{
-			((ListJS) v).changeListener = this;
-		}
-
-		super.add(index, v);
 	}
 
 	@Override
 	public boolean addAll(Collection c)
 	{
-		for (Object o : c)
+		boolean b = super.addAll(c);
+
+		if (b)
 		{
-			add(o);
+			for (Object v : this)
+			{
+				setChangeListener(v);
+			}
+
+			onChanged(null);
 		}
 
 		return true;
 	}
 
 	@Override
-	public JsonArray getJson()
+	public Object remove(int index)
+	{
+		Object o = super.remove(index);
+		onChanged(null);
+		return o;
+	}
+
+	@Override
+	public boolean remove(Object o)
+	{
+		boolean b = super.remove(o);
+
+		if (b)
+		{
+			onChanged(null);
+		}
+
+		return b;
+	}
+
+	@Override
+	public void clear()
+	{
+		super.clear();
+		onChanged(null);
+	}
+
+	@Override
+	public JsonArray toJson()
 	{
 		JsonArray json = new JsonArray();
 
@@ -311,5 +354,89 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Copyab
 		}
 
 		return json;
+	}
+
+	@Override
+	public CollectionNBT<?> toNBT()
+	{
+		if (isEmpty())
+		{
+			return new ListNBT();
+		}
+
+		INBT[] values = new INBT[size()];
+		int s = 0;
+		byte commmonId = -1;
+
+		for (Object o : this)
+		{
+			values[s] = NBTUtilsJS.toNBT(o);
+
+			if (values[s] != null)
+			{
+				s++;
+
+				if (commmonId == -1)
+				{
+					commmonId = values[s].getId();
+				}
+				else if (commmonId != values[s].getId())
+				{
+					commmonId = 0;
+				}
+			}
+		}
+
+		if (commmonId == Constants.NBT.TAG_INT)
+		{
+			int[] array = new int[s];
+
+			for (int i = 0; i < s; i++)
+			{
+				array[i] = ((NumberNBT) values[i]).getInt();
+			}
+
+			return new IntArrayNBT(array);
+		}
+		else if (commmonId == Constants.NBT.TAG_BYTE)
+		{
+			byte[] array = new byte[s];
+
+			for (int i = 0; i < s; i++)
+			{
+				array[i] = ((NumberNBT) values[i]).getByte();
+			}
+
+			return new ByteArrayNBT(array);
+		}
+		else if (commmonId == Constants.NBT.TAG_LONG)
+		{
+			long[] array = new long[s];
+
+			for (int i = 0; i < s; i++)
+			{
+				array[i] = ((NumberNBT) values[i]).getLong();
+			}
+
+			return new LongArrayNBT(array);
+		}
+		else if (commmonId == 0 || commmonId == -1)
+		{
+			return new ListNBT();
+		}
+
+		ListNBT nbt = new ListNBT();
+
+		for (INBT nbt1 : values)
+		{
+			if (nbt1 == null)
+			{
+				return nbt;
+			}
+
+			nbt.add(nbt1);
+		}
+
+		return nbt;
 	}
 }

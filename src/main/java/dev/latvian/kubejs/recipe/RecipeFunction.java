@@ -43,7 +43,7 @@ public class RecipeFunction extends AbstractJSObject
 
 			if (map != null)
 			{
-				JsonObject json = map.getJson();
+				JsonObject json = map.toJson();
 				json.addProperty("type", type.id.toString());
 				return add(type.create(json), args1);
 			}

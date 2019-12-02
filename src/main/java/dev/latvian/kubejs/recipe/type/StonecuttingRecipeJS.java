@@ -76,7 +76,7 @@ public class StonecuttingRecipeJS extends RecipeJS
 	public JsonObject toJson()
 	{
 		JsonObject json = create();
-		json.add("ingredient", ingredient.getJson());
+		json.add("ingredient", ingredient.toJson());
 		json.addProperty("result", result.getId().toString());
 		json.addProperty("count", result.getCount());
 		return json;

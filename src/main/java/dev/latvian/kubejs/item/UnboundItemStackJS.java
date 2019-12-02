@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.util.JSObjectChangeListener;
+import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import net.minecraft.item.Item;
@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-public class UnboundItemStackJS extends ItemStackJS implements JSObjectChangeListener
+public class UnboundItemStackJS extends ItemStackJS implements WrappedJSObjectChangeListener
 {
 	private final ResourceLocation item;
 	private int count;
@@ -131,7 +131,7 @@ public class UnboundItemStackJS extends ItemStackJS implements JSObjectChangeLis
 	}
 
 	@Override
-	public void onChanged(Object o)
+	public void onChanged(@Nullable Object o)
 	{
 		cached = null;
 	}

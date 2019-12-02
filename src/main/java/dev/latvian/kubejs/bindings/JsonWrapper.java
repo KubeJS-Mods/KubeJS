@@ -3,7 +3,9 @@ package dev.latvian.kubejs.bindings;
 import com.google.gson.JsonElement;
 import dev.latvian.kubejs.documentation.DisplayName;
 import dev.latvian.kubejs.documentation.P;
+import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.util.JsonUtilsJS;
+import dev.latvian.kubejs.util.MapJS;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -31,24 +33,24 @@ public class JsonWrapper
 	}
 
 	@Nullable
-	public Object read(File file) throws IOException
+	public MapJS read(@P("file") File file) throws IOException
 	{
 		return JsonUtilsJS.read(file);
 	}
 
-	public void write(File file, Object json) throws IOException
+	public void write(@P("file") File file, @P("json") @T(MapJS.class) Object json) throws IOException
 	{
-		JsonUtilsJS.write(file, json);
+		JsonUtilsJS.write(file, MapJS.of(json));
 	}
 
 	@Nullable
-	public Object read(String file) throws IOException
+	public MapJS read(@P("file") String file) throws IOException
 	{
 		return JsonUtilsJS.read(file);
 	}
 
-	public void write(String file, Object json) throws IOException
+	public void write(@P("file") String file, @P("json") @T(MapJS.class) Object json) throws IOException
 	{
-		JsonUtilsJS.write(file, json);
+		JsonUtilsJS.write(file, MapJS.of(json));
 	}
 }

@@ -3,11 +3,9 @@ package dev.latvian.kubejs.bindings;
 import dev.latvian.kubejs.documentation.DisplayName;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
+import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.NBTUtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
-import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
-import dev.latvian.kubejs.util.nbt.NBTListJS;
-import dev.latvian.kubejs.util.nbt.NBTNullJS;
-import dev.latvian.kubejs.util.nbt.NBTStringJS;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -19,58 +17,30 @@ import java.io.IOException;
 @DisplayName("NBTUtilities")
 public class NBTWrapper
 {
-	public NBTNullJS getNullTag()
-	{
-		return NBTNullJS.INSTANCE;
-	}
-
-	public NBTCompoundJS getNullCompound()
-	{
-		return NBTNullJS.INSTANCE.asCompound();
-	}
-
-	public NBTListJS getNullList()
-	{
-		return NBTNullJS.INSTANCE.asList();
-	}
-
-	public NBTStringJS getEmptyString()
-	{
-		return NBTStringJS.EMPTY_STRING;
-	}
-
 	public NBTBaseJS of(@Nullable Object o)
 	{
 		return NBTBaseJS.of(o);
 	}
 
-	public NBTCompoundJS newCompound()
+	@Nullable
+	public MapJS read(@P("file") File file) throws IOException
 	{
-		return new NBTCompoundJS();
+		return NBTUtilsJS.read(file);
 	}
 
-	public NBTListJS newList()
+	public void write(@P("file") File file, @P("nbt") @T(MapJS.class) Object nbt) throws IOException
 	{
-		return new NBTListJS();
+		NBTUtilsJS.write(file, MapJS.of(nbt));
 	}
 
-	public Object read(@P("file") File file) throws IOException
-	{
-		return NBTCompoundJS.read(file);
-	}
-
-	public void write(@P("file") File file, @P("nbt") @T(NBTCompoundJS.class) Object nbt) throws IOException
-	{
-		NBTCompoundJS.write(file, nbt);
-	}
-
+	@Nullable
 	public Object read(@P("file") String file) throws IOException
 	{
-		return NBTCompoundJS.read(file);
+		return NBTUtilsJS.read(file);
 	}
 
-	public void write(@P("file") String file, @P("nbt") @T(NBTCompoundJS.class) Object nbt) throws IOException
+	public void write(@P("file") String file, @P("nbt") @T(MapJS.class) Object nbt) throws IOException
 	{
-		NBTCompoundJS.write(file, nbt);
+		NBTUtilsJS.write(file, MapJS.of(nbt));
 	}
 }

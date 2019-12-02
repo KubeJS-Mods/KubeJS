@@ -53,7 +53,7 @@ public class KubeJSResourcePack implements IResourcePack
 	{
 		if (fileName.equals("pack.png"))
 		{
-			return KubeJSResourcePack.class.getResourceAsStream("/assets/kubejs/textures/logo.png");
+			return KubeJSResourcePack.class.getResourceAsStream("/logo.png");
 		}
 
 		throw new ResourcePackFileNotFoundException(folder, fileName);

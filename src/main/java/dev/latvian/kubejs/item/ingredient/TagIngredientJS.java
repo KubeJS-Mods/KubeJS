@@ -107,6 +107,11 @@ public class TagIngredientJS implements IngredientJS
 	@Override
 	public boolean isEmpty()
 	{
+		if (ItemTags.getCollection().getTagMap().isEmpty())
+		{
+			return false;
+		}
+
 		Tag<Item> t = ItemTags.getCollection().get(tag);
 		return t != null && t.getAllElements().isEmpty();
 	}
@@ -118,7 +123,7 @@ public class TagIngredientJS implements IngredientJS
 	}
 
 	@Override
-	public JsonElement getJson()
+	public JsonElement toJson()
 	{
 		JsonObject json = new JsonObject();
 		json.addProperty("tag", tag.toString());
