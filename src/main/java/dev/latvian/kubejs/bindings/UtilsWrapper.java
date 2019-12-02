@@ -24,7 +24,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -62,14 +61,14 @@ public class UtilsWrapper
 		return Collections.emptyMap();
 	}
 
-	public List newList()
+	public ListJS newList()
 	{
-		return new ArrayList();
+		return new ListJS();
 	}
 
 	public Map newMap()
 	{
-		return new HashMap();
+		return new MapJS();
 	}
 
 	public Set newSet()
@@ -202,18 +201,18 @@ public class UtilsWrapper
 	}
 
 	@Nullable
-	public static ListJS getList(@Nullable Object o)
+	public ListJS listOf(@Nullable Object o)
 	{
 		return ListJS.of(o);
 	}
 
-	public static ListJS getListOrSelf(@Nullable Object o)
+	public ListJS listOrSelf(@Nullable Object o)
 	{
 		return ListJS.orSelf(o);
 	}
 
 	@Nullable
-	public static MapJS getMap(@Nullable Object o)
+	public MapJS mapOf(@Nullable Object o)
 	{
 		return MapJS.of(o);
 	}
@@ -222,11 +221,5 @@ public class UtilsWrapper
 	public Object copy(@Nullable Object o)
 	{
 		return UtilsJS.copy(o);
-	}
-
-	@Nullable
-	public Object normalize(@Nullable Object o)
-	{
-		return UtilsJS.normalize(o);
 	}
 }

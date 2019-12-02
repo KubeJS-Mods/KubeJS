@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import jdk.nashorn.api.scripting.JSObject;
@@ -19,6 +20,7 @@ import net.minecraft.potion.Effect;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IWorld;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
@@ -28,7 +30,6 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 
@@ -104,16 +105,21 @@ public class UtilsJS
 	}
 
 	@Nullable
-	public static Object normalize(@Nullable Object o)
+	public static Object wrap(@Nullable Object o, JSObjectType type)
 	{
 		//Primitives and already normalized objects
-		if (o == null || o instanceof Normalized || o instanceof Number || o instanceof Character || o instanceof String || o.getClass().isPrimitive() && !o.getClass().isArray())
+		if (o == null || o instanceof WrappedJS || o instanceof Number || o instanceof Character || o instanceof String || o.getClass().isPrimitive() && !o.getClass().isArray())
 		{
 			return o;
 		}
 		else if (o instanceof CharSequence)
 		{
 			return o.toString();
+		}
+		// Vanilla text component
+		else if (o instanceof ITextComponent)
+		{
+			return Text.of(o);
 		}
 		// New Nashorn JS Object
 		else if (o instanceof JSObject)
@@ -122,11 +128,16 @@ public class UtilsJS
 
 			if (js.isArray())
 			{
+				if (!type.checkList())
+				{
+					return null;
+				}
+
 				ListJS list = new ListJS(js.values().size());
 				list.addAll(js.values());
 				return list;
 			}
-			else
+			else if (type.checkMap())
 			{
 				MapJS map = new MapJS();
 
@@ -137,6 +148,10 @@ public class UtilsJS
 
 				return map;
 			}
+			else
+			{
+				return null;
+			}
 		}
 		// Old Nashorn JS Object
 		else if (o instanceof ScriptObject)
@@ -145,11 +160,16 @@ public class UtilsJS
 
 			if (js.isArray())
 			{
+				if (!type.checkList())
+				{
+					return null;
+				}
+
 				ListJS list = new ListJS(js.size());
 				list.addAll(js.values());
 				return list;
 			}
-			else
+			else if (type.checkMap())
 			{
 				MapJS map = new MapJS(js.size());
 
@@ -160,10 +180,19 @@ public class UtilsJS
 
 				return map;
 			}
+			else
+			{
+				return null;
+			}
 		}
 		// Maps
 		else if (o instanceof Map)
 		{
+			if (!type.checkMap())
+			{
+				return null;
+			}
+
 			MapJS map = new MapJS(((Map) o).size());
 			map.putAll((Map) o);
 			return map;
@@ -171,6 +200,11 @@ public class UtilsJS
 		// Lists, Collections, Iterables, GSON Arrays
 		else if (o instanceof Iterable)
 		{
+			if (!type.checkList())
+			{
+				return null;
+			}
+
 			ListJS list = new ListJS();
 
 			for (Object o1 : (Iterable) o)
@@ -183,83 +217,28 @@ public class UtilsJS
 		// Arrays (and primitive arrays are a pain)
 		else if (o.getClass().isArray())
 		{
-			ListJS list = new ListJS();
-
-			if (o instanceof Object[])
+			if (type.checkList())
 			{
-				list.addAll(Arrays.asList((Object[]) o));
+				return ListJS.ofArray(o);
 			}
-			else if (o instanceof int[])
+			else
 			{
-				for (int v : (int[]) o)
-				{
-					list.add(v);
-				}
+				return null;
 			}
-			else if (o instanceof byte[])
-			{
-				for (byte v : (byte[]) o)
-				{
-					list.add(v);
-				}
-			}
-			else if (o instanceof short[])
-			{
-				for (short v : (short[]) o)
-				{
-					list.add(v);
-				}
-			}
-			else if (o instanceof long[])
-			{
-				for (long v : (long[]) o)
-				{
-					list.add(v);
-				}
-			}
-			else if (o instanceof float[])
-			{
-				for (float v : (float[]) o)
-				{
-					list.add(v);
-				}
-			}
-			else if (o instanceof double[])
-			{
-				for (double v : (double[]) o)
-				{
-					list.add(v);
-				}
-			}
-			else if (o instanceof char[])
-			{
-				for (char v : (char[]) o)
-				{
-					list.add(v);
-				}
-			}
-
-			return list;
 		}
 		// GSON Primitives
 		else if (o instanceof JsonPrimitive)
 		{
-			JsonPrimitive p = (JsonPrimitive) o;
-
-			if (p.isBoolean())
-			{
-				return p.getAsBoolean();
-			}
-			else if (p.isNumber())
-			{
-				return ((JsonPrimitive) o).getAsNumber();
-			}
-
-			return p.getAsString();
+			return JsonUtilsJS.toPrimitive((JsonPrimitive) o);
 		}
 		// GSON Objects
 		else if (o instanceof JsonObject)
 		{
+			if (!type.checkMap())
+			{
+				return null;
+			}
+
 			MapJS map = new MapJS(((JsonObject) o).size());
 
 			for (Map.Entry<String, JsonElement> entry : ((JsonObject) o).entrySet())
@@ -277,6 +256,11 @@ public class UtilsJS
 		// NBT
 		else if (o instanceof CompoundNBT)
 		{
+			if (!type.checkMap())
+			{
+				return null;
+			}
+
 			CompoundNBT nbt = (CompoundNBT) o;
 
 			MapJS map = new MapJS(nbt.size());

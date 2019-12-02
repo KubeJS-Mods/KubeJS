@@ -25,7 +25,7 @@ public class TextTranslate extends Text
 
 		for (int i = 0; i < objects.length; i++)
 		{
-			if (objects[i] instanceof ITextComponent || !(objects[i] instanceof Text) && JsonUtilsJS.primitiveObject(JsonUtilsJS.of(objects[i])) == null)
+			if (objects[i] instanceof ITextComponent || !(objects[i] instanceof Text) && JsonUtilsJS.toPrimitive(JsonUtilsJS.of(objects[i])) == null)
 			{
 				objects[i] = Text.of(objects[i]);
 			}

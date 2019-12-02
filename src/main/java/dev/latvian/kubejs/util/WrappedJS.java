@@ -3,7 +3,6 @@ package dev.latvian.kubejs.util;
 /**
  * @author LatvianModder
  */
-interface Normalized
+public interface WrappedJS
 {
-	void toString(StringBuilder builder);
 }

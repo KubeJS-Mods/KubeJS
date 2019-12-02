@@ -1,18 +1,22 @@
 package dev.latvian.kubejs.util;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author LatvianModder
  */
-public class ListJS extends ArrayList<Object> implements Normalized, Copyable, JSObjectChangeListener
+public class ListJS extends ArrayList<Object> implements WrappedJSObject, Copyable, JSObjectChangeListener, JsonSerializable
 {
 	@Nullable
 	public static ListJS of(@Nullable Object o)
 	{
-		Object o1 = UtilsJS.normalize(o);
+		Object o1 = UtilsJS.wrap(o, JSObjectType.LIST);
 		return o1 instanceof ListJS ? (ListJS) o1 : null;
 	}
 
@@ -35,13 +39,137 @@ public class ListJS extends ArrayList<Object> implements Normalized, Copyable, J
 		return list;
 	}
 
+	public static ListJS ofArray(Object array)
+	{
+		if (array instanceof Object[])
+		{
+			ListJS list = new ListJS();
+			Collections.addAll(list, (Object[]) array);
+			return list;
+		}
+		else if (array instanceof int[])
+		{
+			return ListJS.of((int[]) array);
+		}
+		else if (array instanceof byte[])
+		{
+			return ListJS.of((byte[]) array);
+		}
+		else if (array instanceof short[])
+		{
+			return ListJS.of((short[]) array);
+		}
+		else if (array instanceof long[])
+		{
+			return ListJS.of((long[]) array);
+		}
+		else if (array instanceof float[])
+		{
+			return ListJS.of((float[]) array);
+		}
+		else if (array instanceof double[])
+		{
+			return ListJS.of((double[]) array);
+		}
+		else if (array instanceof char[])
+		{
+			return ListJS.of((char[]) array);
+		}
+
+		return new ListJS(0);
+	}
+
+	public static ListJS of(byte[] array)
+	{
+		ListJS list = new ListJS(array.length);
+
+		for (byte v : array)
+		{
+			list.add(v);
+		}
+
+		return list;
+	}
+
+	public static ListJS of(short[] array)
+	{
+		ListJS list = new ListJS(array.length);
+
+		for (short v : array)
+		{
+			list.add(v);
+		}
+
+		return list;
+	}
+
+	public static ListJS of(int[] array)
+	{
+		ListJS list = new ListJS(array.length);
+
+		for (int v : array)
+		{
+			list.add(v);
+		}
+
+		return list;
+	}
+
+	public static ListJS of(long[] array)
+	{
+		ListJS list = new ListJS(array.length);
+
+		for (long v : array)
+		{
+			list.add(v);
+		}
+
+		return list;
+	}
+
+	public static ListJS of(float[] array)
+	{
+		ListJS list = new ListJS(array.length);
+
+		for (float v : array)
+		{
+			list.add(v);
+		}
+
+		return list;
+	}
+
+	public static ListJS of(double[] array)
+	{
+		ListJS list = new ListJS(array.length);
+
+		for (double v : array)
+		{
+			list.add(v);
+		}
+
+		return list;
+	}
+
+	public static ListJS of(char[] array)
+	{
+		ListJS list = new ListJS(array.length);
+
+		for (char v : array)
+		{
+			list.add(v);
+		}
+
+		return list;
+	}
+
 	public JSObjectChangeListener changeListener;
 
-	ListJS()
+	public ListJS()
 	{
 	}
 
-	ListJS(int s)
+	public ListJS(int s)
 	{
 		super(s);
 	}
@@ -79,9 +207,9 @@ public class ListJS extends ArrayList<Object> implements Normalized, Copyable, J
 
 			Object o = get(i);
 
-			if (o instanceof Normalized)
+			if (o instanceof WrappedJSObject)
 			{
-				((Normalized) o).toString(builder);
+				((WrappedJSObject) o).toString(builder);
 			}
 			else
 			{
@@ -117,7 +245,7 @@ public class ListJS extends ArrayList<Object> implements Normalized, Copyable, J
 	@Override
 	public boolean add(Object value)
 	{
-		Object v = UtilsJS.normalize(value);
+		Object v = UtilsJS.wrap(value, JSObjectType.ANY);
 
 		if (v == null)
 		{
@@ -138,7 +266,7 @@ public class ListJS extends ArrayList<Object> implements Normalized, Copyable, J
 	@Override
 	public void add(int index, Object value)
 	{
-		Object v = UtilsJS.normalize(value);
+		Object v = UtilsJS.wrap(value, JSObjectType.ANY);
 
 		if (v == null)
 		{
@@ -165,5 +293,23 @@ public class ListJS extends ArrayList<Object> implements Normalized, Copyable, J
 		}
 
 		return true;
+	}
+
+	@Override
+	public JsonArray getJson()
+	{
+		JsonArray json = new JsonArray();
+
+		for (Object o : this)
+		{
+			JsonElement e = JsonUtilsJS.of(o);
+
+			if (!e.isJsonNull())
+			{
+				json.add(e);
+			}
+		}
+
+		return json;
 	}
 }

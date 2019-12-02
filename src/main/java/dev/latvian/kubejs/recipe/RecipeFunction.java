@@ -4,13 +4,12 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.recipe.type.RecipeJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
-import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.MapJS;
 import jdk.nashorn.api.scripting.AbstractJSObject;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -38,11 +37,20 @@ public class RecipeFunction extends AbstractJSObject
 
 		Object[] args = args1.toArray();
 
-		if (args.length == 1 && args[0] instanceof Map)
+		if (args.length == 1)
 		{
-			JsonObject json = JsonUtilsJS.of(args[0]).getAsJsonObject();
-			json.addProperty("type", type.id.toString());
-			return add(type.create(json), args1);
+			MapJS map = MapJS.of(args[0]);
+
+			if (map != null)
+			{
+				JsonObject json = map.getJson();
+				json.addProperty("type", type.id.toString());
+				return add(type.create(json), args1);
+			}
+			else
+			{
+				return new RecipeErrorJS("One argument recipes have to be a JSON object!");
+			}
 		}
 
 		try

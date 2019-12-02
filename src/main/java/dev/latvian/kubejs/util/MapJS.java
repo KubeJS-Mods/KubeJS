@@ -1,5 +1,8 @@
 package dev.latvian.kubejs.util;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -7,22 +10,22 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class MapJS extends LinkedHashMap<String, Object> implements Normalized, Copyable, JSObjectChangeListener
+public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObject, Copyable, JSObjectChangeListener, JsonSerializable
 {
 	@Nullable
 	public static MapJS of(@Nullable Object o)
 	{
-		Object o1 = UtilsJS.normalize(o);
+		Object o1 = UtilsJS.wrap(o, JSObjectType.MAP);
 		return o1 instanceof MapJS ? (MapJS) o1 : null;
 	}
 
 	public JSObjectChangeListener changeListener;
 
-	MapJS()
+	public MapJS()
 	{
 	}
 
-	MapJS(int s)
+	public MapJS(int s)
 	{
 		super(s);
 	}
@@ -76,9 +79,9 @@ public class MapJS extends LinkedHashMap<String, Object> implements Normalized, 
 			{
 				Object o = entry.getValue();
 
-				if (o instanceof Normalized)
+				if (o instanceof WrappedJSObject)
 				{
-					((Normalized) o).toString(builder);
+					((WrappedJSObject) o).toString(builder);
 				}
 				else
 				{
@@ -115,7 +118,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements Normalized, 
 	@Override
 	public Object put(String key, Object value)
 	{
-		Object v = UtilsJS.normalize(value);
+		Object v = UtilsJS.wrap(value, JSObjectType.ANY);
 
 		if (v instanceof MapJS)
 		{
@@ -136,5 +139,23 @@ public class MapJS extends LinkedHashMap<String, Object> implements Normalized, 
 		{
 			put(entry.getKey().toString(), entry.getValue());
 		}
+	}
+
+	@Override
+	public JsonObject getJson()
+	{
+		JsonObject json = new JsonObject();
+
+		for (Map.Entry<String, Object> entry : entrySet())
+		{
+			JsonElement e = JsonUtilsJS.of(entry.getValue());
+
+			if (!e.isJsonNull())
+			{
+				json.add(entry.getKey(), e);
+			}
+		}
+
+		return json;
 	}
 }

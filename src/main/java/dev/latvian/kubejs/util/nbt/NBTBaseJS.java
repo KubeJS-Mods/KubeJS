@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.util.nbt;
 
 import dev.latvian.kubejs.MinecraftClass;
+import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.EndNBT;
@@ -24,7 +25,7 @@ public abstract class NBTBaseJS
 			return NBTNullJS.INSTANCE;
 		}
 
-		return ofNormalized(UtilsJS.normalize(o));
+		return ofNormalized(UtilsJS.wrap(o, JSObjectType.ANY));
 	}
 
 	private static NBTBaseJS ofNormalized(@Nullable Object o)

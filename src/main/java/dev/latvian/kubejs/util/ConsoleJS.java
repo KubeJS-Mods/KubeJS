@@ -5,8 +5,6 @@ import dev.latvian.kubejs.script.ScriptType;
 import jdk.nashorn.internal.runtime.ECMAErrors;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Map;
-
 /**
  * @author LatvianModder
  */
@@ -37,16 +35,7 @@ public class ConsoleJS
 
 	private String string(Object object)
 	{
-		String s;
-
-		if (object instanceof Map)
-		{
-			s = JsonUtilsJS.toString(JsonUtilsJS.of(object));
-		}
-		else
-		{
-			s = String.valueOf(object);
-		}
+		String s = String.valueOf(UtilsJS.wrap(object, JSObjectType.ANY));
 
 		if (lineNumber == 0 && group.isEmpty())
 		{

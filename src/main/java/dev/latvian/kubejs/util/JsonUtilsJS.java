@@ -78,16 +78,6 @@ public class JsonUtilsJS
 		{
 			return ((JsonSerializable) o).getJson();
 		}
-
-		return ofNormalized(UtilsJS.normalize(o));
-	}
-
-	private static JsonElement ofNormalized(@Nullable Object o)
-	{
-		if (o == null)
-		{
-			return JsonNull.INSTANCE;
-		}
 		else if (o instanceof JsonElement)
 		{
 			return (JsonElement) o;
@@ -108,30 +98,8 @@ public class JsonUtilsJS
 		{
 			return new JsonPrimitive((Character) o);
 		}
-		else if (o instanceof Map)
-		{
-			JsonObject json = new JsonObject();
 
-			for (Map.Entry entry : ((Map<?, ?>) o).entrySet())
-			{
-				json.add(entry.getKey().toString(), ofNormalized(entry.getValue()));
-			}
-
-			return json;
-		}
-		else if (o instanceof Iterable)
-		{
-			JsonArray json = new JsonArray();
-
-			for (Object o1 : (Iterable) o)
-			{
-				json.add(ofNormalized(o1));
-			}
-
-			return json;
-		}
-
-		return new JsonPrimitive("<" + o.getClass().getName() + ":" + o + ">");
+		return JsonNull.INSTANCE;
 	}
 
 	@Nullable
@@ -166,7 +134,7 @@ public class JsonUtilsJS
 			return objects;
 		}
 
-		return primitiveObject(json);
+		return toPrimitive(json);
 	}
 
 	public static String toString(JsonElement json)
@@ -241,7 +209,7 @@ public class JsonUtilsJS
 	}
 
 	@Nullable
-	public static Object primitiveObject(@Nullable JsonElement element)
+	public static Object toPrimitive(@Nullable JsonElement element)
 	{
 		if (element == null || element.isJsonNull())
 		{
@@ -292,15 +260,14 @@ public class JsonUtilsJS
 				throw new JsonSyntaxException("Did not consume the entire document.");
 			}
 
-			return toObject(element);
+			return UtilsJS.wrap(element, JSObjectType.MAP);
 		}
 	}
 
-	public static void write(@P("file") File file, @P("json") Object json) throws IOException
+	public static void write(@P("file") File file, @P("json") Object o) throws IOException
 	{
 		KubeJS.verifyFilePath(file);
-
-		String string = JsonUtilsJS.toPrettyString(JsonUtilsJS.of(json));
+		JsonObject json = MapJS.of(o).getJson();
 
 		try (Writer fileWriter = new FileWriter(file);
 			 JsonWriter jsonWriter = new JsonWriter(new BufferedWriter(fileWriter)))
@@ -308,7 +275,7 @@ public class JsonUtilsJS
 			jsonWriter.setIndent("\t");
 			jsonWriter.setSerializeNulls(true);
 			jsonWriter.setLenient(true);
-			Streams.write(of(json), jsonWriter);
+			Streams.write(json, jsonWriter);
 		}
 	}
 

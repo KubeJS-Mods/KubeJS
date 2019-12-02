@@ -9,6 +9,7 @@ import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.JsonUtilsJS;
+import dev.latvian.kubejs.util.WrappedJS;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -26,7 +27,7 @@ import java.util.Objects;
 /**
  * @author LatvianModder
  */
-public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSerializable
+public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSerializable, WrappedJS
 {
 	public static Text of(@Nullable Object o)
 	{
@@ -171,7 +172,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 
 						for (JsonElement e1 : a)
 						{
-							with[i] = JsonUtilsJS.primitiveObject(e1);
+							with[i] = JsonUtilsJS.toPrimitive(e1);
 
 							if (with[i] == null)
 							{
