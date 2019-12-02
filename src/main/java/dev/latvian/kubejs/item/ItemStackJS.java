@@ -474,7 +474,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 				if (entry.getValue() instanceof Number && ((Number) entry.getValue()).intValue() > 0)
 				{
 					MapJS ench = new MapJS(2);
-					ench.put("id", entry.getKey());
+					ench.put("id", new ResourceLocation(entry.getKey()).toString());
 					ench.put("lvl", entry.getValue());
 					list.add(ench);
 				}

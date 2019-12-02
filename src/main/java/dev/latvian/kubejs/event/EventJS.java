@@ -26,6 +26,10 @@ public class EventJS
 		return cancelled;
 	}
 
+	protected void afterPosted(boolean result)
+	{
+	}
+
 	@Ignore
 	public final boolean post(ScriptType t, String id)
 	{
@@ -35,19 +39,29 @@ public class EventJS
 		}
 
 		EventsJS e = t.manager.get().events;
-		return e.postToHandlers(id, e.handlers(id), this);
+		boolean b = e.postToHandlers(id, e.handlers(id), this);
+		afterPosted(b);
+		return b;
 	}
 
 	@Ignore
 	public final boolean post(ScriptType t, String id, String sub)
 	{
-		if (t != ScriptType.STARTUP && post(ScriptType.STARTUP, id, sub) && canCancel())
+		String id1 = id + '.' + sub;
+
+		if (t != ScriptType.STARTUP)
 		{
-			return true;
+			EventsJS e = ScriptType.STARTUP.manager.get().events;
+			if ((e.postToHandlers(id1, e.handlers(id1), this) || e.postToHandlers(id, e.handlers(id), this)) && canCancel())
+			{
+				afterPosted(true);
+				return true;
+			}
 		}
 
 		EventsJS e = t.manager.get().events;
-		String id1 = id + '.' + sub;
-		return e.postToHandlers(id1, e.handlers(id1), this) || e.postToHandlers(id, e.handlers(id), this);
+		boolean b = e.postToHandlers(id1, e.handlers(id1), this) || e.postToHandlers(id, e.handlers(id), this);
+		afterPosted(b);
+		return b;
 	}
 }
