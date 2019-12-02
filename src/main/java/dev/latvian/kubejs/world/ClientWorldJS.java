@@ -1,51 +1,35 @@
 package dev.latvian.kubejs.world;
 
-import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.client.ClientLoggedInEventJS;
-import dev.latvian.kubejs.player.AttachPlayerDataEvent;
+import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.player.ClientPlayerDataJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.script.ScriptType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraftforge.common.MinecraftForge;
 
 /**
  * @author LatvianModder
  */
 public class ClientWorldJS extends WorldJS
 {
-	private static ClientWorldJS inst;
-
-	public static ClientWorldJS get()
-	{
-		if (inst == null || inst.minecraftWorld != Minecraft.getInstance().world)
-		{
-			inst = new ClientWorldJS();
-			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(inst));
-			MinecraftForge.EVENT_BUS.post(new AttachPlayerDataEvent(inst.clientPlayerData));
-			new ClientLoggedInEventJS(inst.clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_LOGGED_IN);
-		}
-
-		return inst;
-	}
-
-	public static void invalidate()
-	{
-		inst = null;
-	}
+	public static ClientWorldJS instance;
 
 	private final Minecraft minecraft;
+	@MinecraftClass
+	public final ClientPlayerEntity minecraftPlayer;
 	public final ClientPlayerDataJS clientPlayerData;
 
-	public ClientWorldJS()
+	public ClientWorldJS(Minecraft mc, ClientPlayerEntity e)
 	{
-		super(Minecraft.getInstance().world);
-		minecraft = Minecraft.getInstance();
+		super(e.world);
+		minecraft = mc;
+		minecraftPlayer = e;
 		clientPlayerData = new ClientPlayerDataJS(this);
 	}
 
+	@MinecraftClass
 	public Minecraft getMinecraft()
 	{
 		return minecraft;

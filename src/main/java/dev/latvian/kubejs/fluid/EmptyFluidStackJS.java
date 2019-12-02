@@ -22,7 +22,7 @@ public class EmptyFluidStackJS extends FluidStackJS
 	}
 
 	@Override
-	public ResourceLocation getFluidID()
+	public ResourceLocation getId()
 	{
 		return Fluids.EMPTY.getRegistryName();
 	}

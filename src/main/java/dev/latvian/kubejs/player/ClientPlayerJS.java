@@ -11,9 +11,9 @@ import net.minecraft.entity.player.PlayerEntity;
  */
 public class ClientPlayerJS extends PlayerJS<PlayerEntity>
 {
-	public ClientPlayerJS(ClientPlayerDataJS d, PlayerEntity player)
+	public ClientPlayerJS(ClientPlayerDataJS d)
 	{
-		super(d, d.getWorld(), player);
+		super(d, d.getWorld(), d.getWorld().minecraftPlayer);
 	}
 
 	@Override

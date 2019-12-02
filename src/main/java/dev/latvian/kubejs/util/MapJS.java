@@ -1,17 +1,30 @@
 package dev.latvian.kubejs.util;
 
+import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * @author LatvianModder
  */
-public class NormalizedMap extends LinkedHashMap<String, Object> implements Normalized, Copyable, NormalizedObjectChangeListener
+public class MapJS extends LinkedHashMap<String, Object> implements Normalized, Copyable, JSObjectChangeListener
 {
-	public NormalizedObjectChangeListener changeListener;
-
-	NormalizedMap()
+	@Nullable
+	public static MapJS of(@Nullable Object o)
 	{
+		Object o1 = UtilsJS.normalize(o);
+		return o1 instanceof MapJS ? (MapJS) o1 : null;
+	}
+
+	public JSObjectChangeListener changeListener;
+
+	MapJS()
+	{
+	}
+
+	MapJS(int s)
+	{
+		super(s);
 	}
 
 	@Override
@@ -78,9 +91,9 @@ public class NormalizedMap extends LinkedHashMap<String, Object> implements Norm
 	}
 
 	@Override
-	public NormalizedMap copy()
+	public MapJS copy()
 	{
-		NormalizedMap map = new NormalizedMap();
+		MapJS map = new MapJS(size());
 
 		for (Map.Entry<String, Object> entry : entrySet())
 		{
@@ -91,26 +104,37 @@ public class NormalizedMap extends LinkedHashMap<String, Object> implements Norm
 	}
 
 	@Override
-	public void onChanged()
+	public void onChanged(Object o)
 	{
 		if (changeListener != null)
 		{
-			changeListener.onChanged();
+			changeListener.onChanged(this);
 		}
 	}
 
 	@Override
 	public Object put(String key, Object value)
 	{
-		if (value instanceof NormalizedMap)
+		Object v = UtilsJS.normalize(value);
+
+		if (v instanceof MapJS)
 		{
-			((NormalizedMap) value).changeListener = this;
+			((MapJS) v).changeListener = this;
 		}
-		else if (value instanceof NormalizedList)
+		else if (v instanceof ListJS)
 		{
-			((NormalizedList) value).changeListener = this;
+			((ListJS) v).changeListener = this;
 		}
 
-		return super.put(key, value);
+		return super.put(key, v);
+	}
+
+	@Override
+	public void putAll(Map<? extends String, ?> m)
+	{
+		for (Map.Entry<?, ?> entry : m.entrySet())
+		{
+			put(entry.getKey().toString(), entry.getValue());
+		}
 	}
 }

@@ -10,6 +10,11 @@ import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import jdk.nashorn.api.scripting.JSObject;
 import jdk.nashorn.internal.runtime.ScriptObject;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.EndNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.NumberNBT;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.potion.Effect;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
@@ -23,6 +28,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 
@@ -79,48 +85,19 @@ public class UtilsJS
 	}
 
 	@Nullable
-	public static NormalizedList getNormalizedList(@Nullable Object o)
-	{
-		Object o1 = normalize(o);
-		return o1 instanceof NormalizedList ? (NormalizedList) o1 : null;
-	}
-
-	public static NormalizedList getNormalizedListOrSelf(@Nullable Object o)
-	{
-		NormalizedList l = getNormalizedList(o);
-
-		if (l != null)
-		{
-			return l;
-		}
-
-		NormalizedList list = new NormalizedList();
-
-		if (o != null)
-		{
-			list.add(o);
-		}
-
-		return list;
-	}
-
-	@Nullable
-	public static Map getNormalizedMap(@Nullable Object o)
-	{
-		Object o1 = normalize(o);
-		return o1 instanceof Map ? (Map) o1 : null;
-	}
-
-	@Nullable
 	public static Object copy(@Nullable Object o)
 	{
-		if (o instanceof JsonElement)
+		if (o instanceof Copyable)
+		{
+			return ((Copyable) o).copy();
+		}
+		else if (o instanceof JsonElement)
 		{
 			return JsonUtilsJS.copy((JsonElement) o);
 		}
-		else if (o instanceof Copyable)
+		else if (o instanceof INBT)
 		{
-			return ((Copyable) o).copy();
+			return ((INBT) o).copy();
 		}
 
 		return o;
@@ -129,100 +106,88 @@ public class UtilsJS
 	@Nullable
 	public static Object normalize(@Nullable Object o)
 	{
-		if (o == null)
-		{
-			return null;
-		}
-		else if (o instanceof Normalized || o.getClass().isPrimitive() && !o.getClass().isArray())
+		//Primitives and already normalized objects
+		if (o == null || o instanceof Normalized || o instanceof Number || o instanceof Character || o instanceof String || o.getClass().isPrimitive() && !o.getClass().isArray())
 		{
 			return o;
 		}
+		else if (o instanceof CharSequence)
+		{
+			return o.toString();
+		}
+		// New Nashorn JS Object
 		else if (o instanceof JSObject)
 		{
 			JSObject js = (JSObject) o;
 
 			if (js.isArray())
 			{
-				NormalizedList list = new NormalizedList();
-
-				for (Object o1 : js.values())
-				{
-					list.add(normalize(o1));
-				}
-
+				ListJS list = new ListJS(js.values().size());
+				list.addAll(js.values());
 				return list;
 			}
 			else
 			{
-				NormalizedMap map = new NormalizedMap();
+				MapJS map = new MapJS();
 
 				for (String k : ((JSObject) o).keySet())
 				{
-					map.put(k, normalize(((JSObject) o).getMember(k)));
+					map.put(k, ((JSObject) o).getMember(k));
 				}
 
 				return map;
 			}
 		}
+		// Old Nashorn JS Object
 		else if (o instanceof ScriptObject)
 		{
 			ScriptObject js = (ScriptObject) o;
 
 			if (js.isArray())
 			{
-				NormalizedList list = new NormalizedList();
-
-				for (Object o1 : js.values())
-				{
-					list.add(normalize(o1));
-				}
-
+				ListJS list = new ListJS(js.size());
+				list.addAll(js.values());
 				return list;
 			}
 			else
 			{
-				NormalizedMap map = new NormalizedMap();
+				MapJS map = new MapJS(js.size());
 
-				for (Object k : ((ScriptObject) o).keySet())
+				for (Object k : js.keySet())
 				{
-					map.put(k.toString(), normalize(((ScriptObject) o).get(k)));
+					map.put(k.toString(), js.get(k));
 				}
 
 				return map;
 			}
 		}
+		// Maps
 		else if (o instanceof Map)
 		{
-			NormalizedMap map = new NormalizedMap();
-
-			for (Map.Entry entry : ((Map<?, ?>) o).entrySet())
-			{
-				map.put(entry.getKey().toString(), normalize(entry.getValue()));
-			}
-
+			MapJS map = new MapJS(((Map) o).size());
+			map.putAll((Map) o);
 			return map;
 		}
+		// Lists, Collections, Iterables, GSON Arrays
 		else if (o instanceof Iterable)
 		{
-			NormalizedList list = new NormalizedList();
+			ListJS list = new ListJS();
 
 			for (Object o1 : (Iterable) o)
 			{
-				list.add(normalize(o1));
+				list.add(o1);
 			}
 
 			return list;
 		}
+		// Arrays (and primitive arrays are a pain)
 		else if (o.getClass().isArray())
 		{
-			NormalizedList list = new NormalizedList();
+			ListJS list = new ListJS();
 
 			if (o instanceof Object[])
 			{
-				for (Object o1 : (Object[]) o)
-				{
-					list.add(normalize(o1));
-				}
+				list.addAll(Arrays.asList((Object[]) o));
 			}
 			else if (o instanceof int[])
 			{
@@ -276,6 +241,7 @@ public class UtilsJS
 
 			return list;
 		}
+		// GSON Primitives
 		else if (o instanceof JsonPrimitive)
 		{
 			JsonPrimitive p = (JsonPrimitive) o;
@@ -291,20 +257,44 @@ public class UtilsJS
 
 			return p.getAsString();
 		}
-		else if (o instanceof JsonNull)
-		{
-			return null;
-		}
+		// GSON Objects
 		else if (o instanceof JsonObject)
 		{
-			NormalizedMap map = new NormalizedMap();
+			MapJS map = new MapJS(((JsonObject) o).size());
 
 			for (Map.Entry<String, JsonElement> entry : ((JsonObject) o).entrySet())
 			{
-				map.put(entry.getKey(), normalize(entry.getValue()));
+				map.put(entry.getKey(), entry.getValue());
 			}
 
 			return map;
+		}
+		// GSON and NBT Null
+		else if (o instanceof JsonNull || o instanceof EndNBT)
+		{
+			return null;
+		}
+		// NBT
+		else if (o instanceof CompoundNBT)
+		{
+			CompoundNBT nbt = (CompoundNBT) o;
+
+			MapJS map = new MapJS(nbt.size());
+
+			for (String s : nbt.keySet())
+			{
+				map.put(s, nbt.get(s));
+			}
+
+			return map;
+		}
+		else if (o instanceof NumberNBT)
+		{
+			return ((NumberNBT) o).getAsNumber();
+		}
+		else if (o instanceof StringNBT)
+		{
+			return ((StringNBT) o).getString();
 		}
 
 		return o;
@@ -424,7 +414,7 @@ public class UtilsJS
 
 	public static WorldJS getClientWorld()
 	{
-		return ClientWorldJS.get();
+		return ClientWorldJS.instance;
 	}
 
 	@Nullable

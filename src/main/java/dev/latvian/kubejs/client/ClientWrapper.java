@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.client;
 
+import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.player.ClientPlayerJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import net.minecraft.client.Minecraft;
@@ -12,19 +13,27 @@ import javax.annotation.Nullable;
  */
 public class ClientWrapper
 {
+	@MinecraftClass
 	public Minecraft getMinecraft()
 	{
 		return Minecraft.getInstance();
 	}
 
+	@Nullable
 	public ClientWorldJS getWorld()
 	{
-		return ClientWorldJS.get();
+		return ClientWorldJS.instance;
 	}
 
+	@Nullable
 	public ClientPlayerJS getPlayer()
 	{
-		return getWorld().clientPlayerData.getPlayer();
+		if (ClientWorldJS.instance == null)
+		{
+			return null;
+		}
+
+		return ClientWorldJS.instance.clientPlayerData.getPlayer();
 	}
 
 	@Nullable

@@ -29,7 +29,7 @@ public class UnboundFluidStackJS extends FluidStackJS
 	}
 
 	@Override
-	public ResourceLocation getFluidID()
+	public ResourceLocation getId()
 	{
 		return fluid;
 	}

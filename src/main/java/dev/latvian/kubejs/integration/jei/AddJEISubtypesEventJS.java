@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.integration.jei;
 
+import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.ItemStackJS;
-import dev.latvian.kubejs.server.ServerEventJS;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.item.ItemStack;
@@ -12,7 +12,7 @@ import java.util.function.Function;
 /**
  * @author LatvianModder
  */
-public class AddJEISubtypesEventJS extends ServerEventJS
+public class AddJEISubtypesEventJS extends EventJS
 {
 	@FunctionalInterface
 	public interface Interpreter extends Function<ItemStackJS, Object>

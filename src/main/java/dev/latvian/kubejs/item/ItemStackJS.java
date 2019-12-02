@@ -11,6 +11,7 @@ import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextTranslate;
+import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
@@ -69,8 +70,16 @@ public abstract class ItemStackJS implements IngredientJS
 			ItemStack stack = (ItemStack) o;
 			return stack.isEmpty() ? EmptyItemStackJS.INSTANCE : new BoundItemStackJS(stack);
 		}
+		else if (o instanceof ResourceLocation)
+		{
+			return new UnboundItemStackJS((ResourceLocation) o);
+		}
+		else if (o instanceof Item)
+		{
+			return new UnboundItemStackJS(((Item) o).getRegistryName());
+		}
 
-		Map<String, Object> map = UtilsJS.getNormalizedMap(o);
+		MapJS map = MapJS.of(o);
 
 		if (map != null)
 		{
@@ -350,60 +359,59 @@ public abstract class ItemStackJS implements IngredientJS
 
 	public String toString()
 	{
-		boolean hasCount = getCount() > 1;
-		boolean hasNBT = !getNbt().isNull();
+		StringBuilder builder = new StringBuilder();
 
-		if (hasCount || hasNBT)
+		int count = getCount();
+		double chance = getChance();
+		NBTCompoundJS nbt = getNbt();
+
+		if (count > 1 || chance < 1D || !nbt.isNull())
 		{
-			StringBuilder builder = new StringBuilder("{");
-
-			if (hasCount)
-			{
-				builder.append(getCount());
-				builder.append('x');
-				builder.append(' ');
-			}
-
+			builder.append("item.of('");
 			builder.append(getId());
+			builder.append("')");
 
-			if (hasNBT)
+			if (count > 1)
 			{
-				builder.append(' ');
-				builder.append(getNbt());
+				builder.append(".count(");
+				builder.append(count);
+				builder.append(')');
 			}
 
-			builder.append('}');
-			return builder.toString();
+			if (chance < 1D)
+			{
+				builder.append(".chance(");
+				builder.append(chance);
+				builder.append(')');
+			}
+
+			if (!nbt.isNull())
+			{
+				builder.append(".nbt(");
+				builder.append(nbt);
+				builder.append(')');
+			}
+		}
+		else
+		{
+			builder.append('\'');
+			builder.append(getId());
+			builder.append('\'');
 		}
 
-		return getId().toString();
+		return builder.toString();
 	}
 
 	@Override
 	public boolean test(ItemStackJS stack)
 	{
-		if (stack.getCount() >= getCount() && areItemsEqual(stack))
-		{
-			return Objects.equals(getNbt(), stack.getNbt());
-		}
-
-		return false;
+		return stack.getCount() >= getCount() && areItemsEqual(stack) && isNBTEqual(stack);
 	}
 
 	@Override
 	public boolean testVanilla(ItemStack stack)
 	{
-		if (stack.getCount() >= getCount())
-		{
-			if (areItemsEqual(stack))
-			{
-				NBTCompoundJS nbt = getNbt();
-				CompoundNBT nbt1 = stack.getTag();
-				return nbt.isNull() == (nbt1 == null) && (nbt1 == null || Objects.equals(nbt1, nbt.createNBT()));
-			}
-		}
-
-		return false;
+		return stack.getCount() >= getCount() && areItemsEqual(stack) && isNBTEqual(stack);
 	}
 
 	@Override
@@ -431,27 +439,30 @@ public abstract class ItemStackJS implements IngredientJS
 		{
 			return getId().equals(UtilsJS.getID(o));
 		}
-
-		ItemStackJS s = of(o);
-
-		if (s.isEmpty())
+		else if (o instanceof ItemStack)
 		{
-			return false;
+			ItemStack s = (ItemStack) o;
+			return !s.isEmpty() && areItemsEqual(s) && isNBTEqual(s);
 		}
 
-		return areItemsEqual(s) && Objects.equals(getNbt(), s.getNbt());
+		ItemStackJS s = of(o);
+		return !s.isEmpty() && areItemsEqual(s) && isNBTEqual(s);
 	}
 
 	public boolean strongEquals(Object o)
 	{
-		ItemStackJS s = of(o);
-
-		if (s.isEmpty())
+		if (o instanceof CharSequence)
 		{
-			return false;
+			return getId().equals(UtilsJS.getID(o)) && getCount() == 1 && getNbt().isNull();
+		}
+		else if (o instanceof ItemStack)
+		{
+			ItemStack s = (ItemStack) o;
+			return getCount() == s.getCount() && areItemsEqual(s) && isNBTEqual(s);
 		}
 
-		return getCount() == s.getCount() && areItemsEqual(s) && Objects.equals(getNbt(), s.getNbt());
+		ItemStackJS s = of(o);
+		return getCount() == s.getCount() && areItemsEqual(s) && isNBTEqual(s);
 	}
 
 	public Map<ResourceLocation, Integer> getEnchantments()
@@ -505,7 +516,7 @@ public abstract class ItemStackJS implements IngredientJS
 
 	public int getEnchantment(Object id)
 	{
-		Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(UtilsJS.getID(id));
+		Enchantment enchantment = id instanceof Enchantment ? (Enchantment) id : ForgeRegistries.ENCHANTMENTS.getValue(UtilsJS.getID(id));
 
 		if (enchantment != null)
 		{
@@ -563,6 +574,24 @@ public abstract class ItemStackJS implements IngredientJS
 	public boolean areItemsEqual(ItemStack stack)
 	{
 		return getItem() == stack.getItem();
+	}
+
+	public boolean isNBTEqual(ItemStackJS stack)
+	{
+		return Objects.equals(getNbt(), stack.getNbt());
+	}
+
+	public boolean isNBTEqual(ItemStack stack)
+	{
+		NBTCompoundJS nbt = getNbt();
+		CompoundNBT nbt1 = stack.getTag();
+
+		if (nbt1 == null)
+		{
+			return nbt.isNull();
+		}
+
+		return Objects.equals(nbt.createNBT(), nbt1);
 	}
 
 	public int getHarvestLevel(ToolType tool, @Nullable PlayerJS player, @Nullable BlockContainerJS block)

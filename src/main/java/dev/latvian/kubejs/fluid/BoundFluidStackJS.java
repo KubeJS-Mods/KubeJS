@@ -21,7 +21,7 @@ public class BoundFluidStackJS extends FluidStackJS
 	}
 
 	@Override
-	public ResourceLocation getFluidID()
+	public ResourceLocation getId()
 	{
 		return fluidStack.getFluid().getRegistryName();
 	}

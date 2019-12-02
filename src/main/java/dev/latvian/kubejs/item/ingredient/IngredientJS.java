@@ -8,6 +8,8 @@ import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.util.JsonSerializable;
+import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -15,7 +17,6 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nullable;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -50,7 +51,7 @@ public interface IngredientJS extends JsonSerializable
 			return ItemStackJS.of(KubeJS.appendModId(o.toString()));
 		}
 
-		List<Object> list = UtilsJS.getNormalizedList(o);
+		List<Object> list = ListJS.of(o);
 
 		if (list != null)
 		{
@@ -69,7 +70,7 @@ public interface IngredientJS extends JsonSerializable
 			return l.ingredients.isEmpty() ? EmptyItemStackJS.INSTANCE : l;
 		}
 
-		Map<String, Object> map = UtilsJS.getNormalizedMap(o);
+		MapJS map = MapJS.of(o);
 
 		if (map != null)
 		{

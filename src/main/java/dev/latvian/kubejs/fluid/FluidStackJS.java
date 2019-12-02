@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.fluid;
 
+import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import net.minecraft.fluid.Fluid;
@@ -10,7 +11,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -37,7 +37,7 @@ public abstract class FluidStackJS
 			return new UnboundFluidStackJS(((Fluid) o).getRegistryName());
 		}
 
-		Map<String, Object> map = UtilsJS.getNormalizedMap(o);
+		MapJS map = MapJS.of(o);
 
 		if (map != null && map.containsKey("fluid"))
 		{
@@ -60,11 +60,11 @@ public abstract class FluidStackJS
 		return new UnboundFluidStackJS(new ResourceLocation(s[0])).amount(UtilsJS.parseInt(s.length == 2 ? s[1] : "", FluidAttributes.BUCKET_VOLUME));
 	}
 
-	public abstract ResourceLocation getFluidID();
+	public abstract ResourceLocation getId();
 
 	public Fluid getFluid()
 	{
-		Fluid f = ForgeRegistries.FLUIDS.getValue(getFluidID());
+		Fluid f = ForgeRegistries.FLUIDS.getValue(getId());
 		return f == null ? Fluids.EMPTY : f;
 	}
 
@@ -130,27 +130,38 @@ public abstract class FluidStackJS
 
 	public String toString()
 	{
-		NBTCompoundJS out = new NBTCompoundJS();
+		StringBuilder builder = new StringBuilder();
 
-		if (getFluid() != null)
+		int amount = getAmount();
+		NBTCompoundJS nbt = getNbt();
+
+		if (amount != FluidAttributes.BUCKET_VOLUME || !nbt.isNull())
 		{
-			out.set("fluid", getFluid().getRegistryName().toString());
+			builder.append("fluid.of('");
+			builder.append(getId());
+			builder.append("')");
 
-			if (getAmount() != FluidAttributes.BUCKET_VOLUME)
+			if (amount != FluidAttributes.BUCKET_VOLUME)
 			{
-				out.set("amount", getAmount());
+				builder.append(".amount(");
+				builder.append(amount);
+				builder.append(')');
 			}
 
-			if (!getNbt().isNull())
+			if (!nbt.isNull())
 			{
-				out.set("nbt", getNbt());
+				builder.append(".nbt(");
+				builder.append(nbt);
+				builder.append(')');
 			}
 		}
 		else
 		{
-			out.set("fluid", "null");
+			builder.append('\'');
+			builder.append(getId());
+			builder.append('\'');
 		}
 
-		return out.toString();
+		return builder.toString();
 	}
 }

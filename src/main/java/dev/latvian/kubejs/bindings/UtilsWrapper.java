@@ -5,7 +5,8 @@ import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.CountingMap;
 import dev.latvian.kubejs.util.FieldJS;
-import dev.latvian.kubejs.util.NormalizedList;
+import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
@@ -151,7 +152,7 @@ public class UtilsWrapper
 
 	public WorldJS getClientWorld()
 	{
-		return ClientWorldJS.get();
+		return ClientWorldJS.instance;
 	}
 
 	@Nullable
@@ -201,20 +202,20 @@ public class UtilsWrapper
 	}
 
 	@Nullable
-	public static NormalizedList getNormalizedList(@Nullable Object o)
+	public static ListJS getList(@Nullable Object o)
 	{
-		return UtilsJS.getNormalizedList(o);
+		return ListJS.of(o);
 	}
 
-	public static NormalizedList getNormalizedListOrSelf(@Nullable Object o)
+	public static ListJS getListOrSelf(@Nullable Object o)
 	{
-		return UtilsJS.getNormalizedListOrSelf(o);
+		return ListJS.orSelf(o);
 	}
 
 	@Nullable
-	public static Map getNormalizedMap(@Nullable Object o)
+	public static MapJS getMap(@Nullable Object o)
 	{
-		return UtilsJS.getNormalizedMap(o);
+		return MapJS.of(o);
 	}
 
 	@Nullable

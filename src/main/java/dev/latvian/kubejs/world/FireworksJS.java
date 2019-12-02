@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.world;
 
 import dev.latvian.kubejs.text.TextColor;
-import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.ListJS;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.entity.item.FireworkRocketEntity;
 import net.minecraft.item.DyeColor;
@@ -36,7 +36,7 @@ public class FireworksJS
 
 		if (properties.containsKey("explosions"))
 		{
-			for (Object o : UtilsJS.getNormalizedListOrSelf(properties.get("explosions")))
+			for (Object o : ListJS.orSelf(properties.get("explosions")))
 			{
 				if (o instanceof Map)
 				{
@@ -60,7 +60,7 @@ public class FireworksJS
 
 					if (m.containsKey("colors"))
 					{
-						for (Object o1 : UtilsJS.getNormalizedListOrSelf(m.get("colors")))
+						for (Object o1 : ListJS.orSelf(m.get("colors")))
 						{
 							if (o1 instanceof Number)
 							{
@@ -79,7 +79,7 @@ public class FireworksJS
 
 					if (m.containsKey("fadeColors"))
 					{
-						for (Object o1 : UtilsJS.getNormalizedListOrSelf(m.get("fadeColors")))
+						for (Object o1 : ListJS.orSelf(m.get("fadeColors")))
 						{
 							if (o1 instanceof Number)
 							{

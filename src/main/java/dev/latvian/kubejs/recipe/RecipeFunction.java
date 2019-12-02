@@ -5,7 +5,7 @@ import dev.latvian.kubejs.recipe.type.RecipeJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.JsonUtilsJS;
-import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.ListJS;
 import jdk.nashorn.api.scripting.AbstractJSObject;
 import net.minecraft.util.ResourceLocation;
 
@@ -29,7 +29,7 @@ public class RecipeFunction extends AbstractJSObject
 	@Override
 	public RecipeJS call(Object thiz, Object... args0)
 	{
-		List args1 = UtilsJS.getNormalizedList(args0);
+		List args1 = ListJS.of(args0);
 
 		if (args1 == null || args1.isEmpty())
 		{

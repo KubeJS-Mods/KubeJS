@@ -2,12 +2,14 @@ package dev.latvian.kubejs.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.FieldJS;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -15,6 +17,7 @@ import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -39,6 +42,9 @@ public class KubeJSClientEventHandler
 		MinecraftForge.EVENT_BUS.addListener(this::debugInfo);
 		MinecraftForge.EVENT_BUS.addListener(this::itemTooltip);
 		MinecraftForge.EVENT_BUS.addListener(this::clientTick);
+		MinecraftForge.EVENT_BUS.addListener(this::loggedIn);
+		MinecraftForge.EVENT_BUS.addListener(this::loggedOut);
+		MinecraftForge.EVENT_BUS.addListener(this::respawn);
 		MinecraftForge.EVENT_BUS.addListener(this::inGameScreenDraw);
 		MinecraftForge.EVENT_BUS.addListener(this::guiScreenDraw);
 	}
@@ -52,7 +58,6 @@ public class KubeJSClientEventHandler
 	{
 		if (Minecraft.getInstance().player != null)
 		{
-			ClientWorldJS.get();
 			new DebugInfoEventJS(event).post(ScriptType.CLIENT, KubeJSEvents.CLIENT_DEBUG_INFO);
 		}
 	}
@@ -66,17 +71,30 @@ public class KubeJSClientEventHandler
 	{
 		if (Minecraft.getInstance().player != null)
 		{
-			new ClientTickEventJS(ClientWorldJS.get().clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_TICK);
+			new ClientTickEventJS(ClientWorldJS.instance.clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_TICK);
 		}
 	}
 
-	/*
-	private void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event)
+	private void loggedIn(ClientPlayerNetworkEvent.LoggedInEvent event)
 	{
-		ClientWorldJS.invalidate();
+		ClientWorldJS.instance = new ClientWorldJS(Minecraft.getInstance(), event.getPlayer());
+		MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(ClientWorldJS.instance));
+		MinecraftForge.EVENT_BUS.post(new AttachPlayerDataEvent(ClientWorldJS.instance.clientPlayerData));
+		new ClientLoggedInEventJS(ClientWorldJS.instance.clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_LOGGED_IN);
+	}
+
+	private void loggedOut(ClientPlayerNetworkEvent.LoggedOutEvent event)
+	{
+		ClientWorldJS.instance = null;
 		KubeJSClient.activeOverlays.clear();
 	}
-   */
+
+	private void respawn(ClientPlayerNetworkEvent.RespawnEvent event)
+	{
+		ClientWorldJS.instance = new ClientWorldJS(Minecraft.getInstance(), event.getNewPlayer());
+		MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(ClientWorldJS.instance));
+		MinecraftForge.EVENT_BUS.post(new AttachPlayerDataEvent(ClientWorldJS.instance.clientPlayerData));
+	}
 
 	private int drawOverlay(Minecraft mc, int maxWidth, int x, int y, int p, Overlay o, boolean inv)
 	{

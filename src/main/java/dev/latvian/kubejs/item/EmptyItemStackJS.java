@@ -155,6 +155,30 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
+	public boolean areItemsEqual(ItemStackJS stack)
+	{
+		return stack.isEmpty();
+	}
+
+	@Override
+	public boolean areItemsEqual(ItemStack stack)
+	{
+		return stack.isEmpty();
+	}
+
+	@Override
+	public boolean isNBTEqual(ItemStackJS stack)
+	{
+		return stack.getNbt().isNull();
+	}
+
+	@Override
+	public boolean isNBTEqual(ItemStack stack)
+	{
+		return !stack.hasTag();
+	}
+
+	@Override
 	public boolean equals(Object o)
 	{
 		return ItemStackJS.of(o).isEmpty();

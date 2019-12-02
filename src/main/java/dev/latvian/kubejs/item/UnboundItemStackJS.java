@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.item;
 
+import dev.latvian.kubejs.util.JSObjectChangeListener;
 import dev.latvian.kubejs.util.nbt.NBTBaseJS;
 import dev.latvian.kubejs.util.nbt.NBTCompoundJS;
 import net.minecraft.item.Item;
@@ -14,7 +15,7 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-public class UnboundItemStackJS extends ItemStackJS
+public class UnboundItemStackJS extends ItemStackJS implements JSObjectChangeListener
 {
 	private final ResourceLocation item;
 	private int count;
@@ -127,5 +128,11 @@ public class UnboundItemStackJS extends ItemStackJS
 	public boolean areItemsEqual(ItemStack stack)
 	{
 		return item.equals(stack.getItem().getRegistryName());
+	}
+
+	@Override
+	public void onChanged(Object o)
+	{
+		cached = null;
 	}
 }

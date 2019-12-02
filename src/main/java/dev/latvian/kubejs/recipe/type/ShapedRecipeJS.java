@@ -8,7 +8,7 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeErrorJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
-import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.ListJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class ShapedRecipeJS extends RecipeJS
 				return new RecipeErrorJS("Shaped recipe result " + args[0] + " is not a valid item!");
 			}
 
-			List pattern = UtilsJS.getNormalizedListOrSelf(args[1]);
+			ListJS pattern = ListJS.orSelf(args[1]);
 
 			if (pattern.isEmpty())
 			{

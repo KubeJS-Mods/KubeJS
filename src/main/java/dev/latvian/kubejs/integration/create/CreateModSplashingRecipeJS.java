@@ -9,7 +9,7 @@ import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeErrorJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
 import dev.latvian.kubejs.recipe.type.RecipeJS;
-import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.ListJS;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class CreateModSplashingRecipeJS extends RecipeJS
 
 			CreateModSplashingRecipeJS recipe = new CreateModSplashingRecipeJS();
 
-			List results = UtilsJS.getNormalizedListOrSelf(args[0]);
+			ListJS results = ListJS.orSelf(args[0]);
 
 			if (results.isEmpty())
 			{

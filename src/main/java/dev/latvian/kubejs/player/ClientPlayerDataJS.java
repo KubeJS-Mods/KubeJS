@@ -20,7 +20,7 @@ public class ClientPlayerDataJS extends PlayerDataJS<PlayerEntity, ClientPlayerJ
 	public ClientPlayerDataJS(ClientWorldJS w)
 	{
 		world = w;
-		player = new ClientPlayerJS(this, world.getMinecraft().player);
+		player = new ClientPlayerJS(this);
 	}
 
 	public ClientWorldJS getWorld()
@@ -31,19 +31,19 @@ public class ClientPlayerDataJS extends PlayerDataJS<PlayerEntity, ClientPlayerJ
 	@Override
 	public UUID getId()
 	{
-		return world.getMinecraft().player.getUniqueID();
+		return world.minecraftPlayer.getUniqueID();
 	}
 
 	@Override
 	public String getName()
 	{
-		return world.getMinecraft().player.getGameProfile().getName();
+		return world.minecraftPlayer.getGameProfile().getName();
 	}
 
 	@Override
 	public GameProfile getProfile()
 	{
-		return world.getMinecraft().player.getGameProfile();
+		return world.minecraftPlayer.getGameProfile();
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class ClientPlayerDataJS extends PlayerDataJS<PlayerEntity, ClientPlayerJ
 	@Override
 	public ClientPlayerEntity getMinecraftPlayer()
 	{
-		return world.getMinecraft().player;
+		return world.minecraftPlayer;
 	}
 
 	@Override
