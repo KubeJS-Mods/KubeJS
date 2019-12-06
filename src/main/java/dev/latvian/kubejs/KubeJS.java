@@ -118,7 +118,7 @@ public class KubeJS
 
 				try (PrintWriter exampleJsWriter = new PrintWriter(new FileWriter(new File(startupFolder, "example.js"))))
 				{
-					exampleJsWriter.println("log.info('Hello, World! (You will only see this line once in console, during startup)')");
+					exampleJsWriter.println("console.info('Hello, World! (You will only see this line once in console, during startup)')");
 				}
 			}
 			catch (Exception ex)

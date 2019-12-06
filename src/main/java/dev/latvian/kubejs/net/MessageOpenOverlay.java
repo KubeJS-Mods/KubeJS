@@ -49,5 +49,6 @@ public class MessageOpenOverlay
 	void handle(Supplier<NetworkEvent.Context> context)
 	{
 		context.get().enqueueWork(() -> KubeJS.instance.proxy.openOverlay(overlay));
+		context.get().setPacketHandled(true);
 	}
 }

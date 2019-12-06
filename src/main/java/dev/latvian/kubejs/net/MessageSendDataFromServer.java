@@ -39,6 +39,7 @@ public class MessageSendDataFromServer
 		if (!channel.isEmpty())
 		{
 			context.get().enqueueWork(() -> KubeJS.instance.proxy.handleDataToClientPacket(channel, data));
+			context.get().setPacketHandled(true);
 		}
 	}
 }

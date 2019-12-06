@@ -31,5 +31,6 @@ public class MessageCloseOverlay
 	void handle(Supplier<NetworkEvent.Context> context)
 	{
 		context.get().enqueueWork(() -> KubeJS.instance.proxy.closeOverlay(overlay));
+		context.get().setPacketHandled(true);
 	}
 }

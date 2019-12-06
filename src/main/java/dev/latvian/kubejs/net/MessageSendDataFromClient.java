@@ -45,6 +45,7 @@ public class MessageSendDataFromClient
 			if (player != null)
 			{
 				context.get().enqueueWork(() -> new NetworkEventJS(player, channel, MapJS.of(data)).post(KubeJSEvents.PLAYER_DATA_FROM_CLIENT, channel));
+				context.get().setPacketHandled(true);
 			}
 		}
 	}
