@@ -296,18 +296,22 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 	@Override
 	public boolean addAll(Collection c)
 	{
-		boolean b = super.addAll(c);
-
-		if (b)
+		if (c == null || c.isEmpty())
 		{
-			for (Object v : this)
-			{
-				setChangeListener(v);
-			}
-
-			onChanged(null);
+			return false;
 		}
 
+		for (Object o : c)
+		{
+			Object v = UtilsJS.wrap(o, JSObjectType.ANY);
+
+			if (setChangeListener(v))
+			{
+				super.add(v);
+			}
+		}
+
+		onChanged(null);
 		return true;
 	}
 

@@ -294,7 +294,13 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public final ItemStackJS nbt(@Nullable Object o)
 	{
-		getNbt().putAll(MapJS.of(o));
+		MapJS nbt = MapJS.of(o);
+
+		if (nbt != null)
+		{
+			getNbt().putAll(nbt);
+		}
+
 		return this;
 	}
 

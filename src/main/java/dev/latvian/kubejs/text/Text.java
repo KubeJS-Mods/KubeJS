@@ -13,7 +13,7 @@ import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
-import io.netty.buffer.ByteBuf;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
@@ -159,14 +159,9 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return text;
 	}
 
-	public static void write(ByteBuf buf, @Nullable Text text)
+	public static Text read(PacketBuffer buffer)
 	{
-	}
-
-	@Nullable
-	public static Text read(ByteBuf buf)
-	{
-		return null;
+		return Text.of(buffer.readTextComponent());
 	}
 
 	private TextColor color;
@@ -602,5 +597,10 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	public int compareTo(Text o)
 	{
 		return toString().compareTo(toString());
+	}
+
+	public void write(PacketBuffer buffer)
+	{
+		buffer.writeTextComponent(component());
 	}
 }

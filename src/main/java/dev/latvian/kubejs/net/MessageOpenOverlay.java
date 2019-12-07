@@ -20,29 +20,29 @@ public class MessageOpenOverlay
 		overlay = o;
 	}
 
-	MessageOpenOverlay(PacketBuffer buf)
+	MessageOpenOverlay(PacketBuffer buffer)
 	{
-		overlay = new Overlay(buf.readString(5000));
-		overlay.color = buf.readInt();
-		overlay.alwaysOnTop = buf.readBoolean();
-		int s = buf.readUnsignedByte();
+		overlay = new Overlay(buffer.readString(5000));
+		overlay.color = buffer.readInt();
+		overlay.alwaysOnTop = buffer.readBoolean();
+		int s = buffer.readUnsignedByte();
 
 		for (int i = 0; i < s; i++)
 		{
-			overlay.add(Text.of(buf.readTextComponent()));
+			overlay.add(Text.read(buffer));
 		}
 	}
 
-	void write(PacketBuffer buf)
+	void write(PacketBuffer buffer)
 	{
-		buf.writeString(overlay.id, 5000);
-		buf.writeInt(overlay.color);
-		buf.writeBoolean(overlay.alwaysOnTop);
-		buf.writeByte(overlay.text.size());
+		buffer.writeString(overlay.id, 5000);
+		buffer.writeInt(overlay.color);
+		buffer.writeBoolean(overlay.alwaysOnTop);
+		buffer.writeByte(overlay.text.size());
 
 		for (Text t : overlay.text)
 		{
-			buf.writeTextComponent(t.component());
+			t.write(buffer);
 		}
 	}
 
