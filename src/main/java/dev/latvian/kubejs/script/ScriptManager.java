@@ -12,8 +12,10 @@ import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +34,7 @@ public class ScriptManager
 	public final ScriptType type;
 	public final EventsJS events;
 	public final Map<String, ScriptPack> packs;
+	public final List<String> errors;
 
 	public ScriptFile currentFile;
 	public Map<String, Object> bindings, constants;
@@ -41,6 +44,7 @@ public class ScriptManager
 		type = t;
 		events = new EventsJS(this);
 		packs = new LinkedHashMap<>();
+		errors = new ArrayList<>();
 	}
 
 	public void unload()
@@ -51,6 +55,7 @@ public class ScriptManager
 
 	public void load()
 	{
+		errors.clear();
 		bindings = new HashMap<>();
 		constants = new HashMap<>();
 		BindingsEvent event = new BindingsEvent(type, bindings, constants);
@@ -90,6 +95,8 @@ public class ScriptManager
 					{
 						file.getError().printStackTrace();
 					}
+
+					errors.add(file.info.location + ": " + file.getError().toString().replace("javax.script.ScriptException: ", ""));
 				}
 			}
 		}

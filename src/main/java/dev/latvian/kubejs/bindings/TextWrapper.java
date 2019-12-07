@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.bindings;
 
-import com.google.gson.JsonElement;
 import dev.latvian.kubejs.documentation.DisplayName;
 import dev.latvian.kubejs.documentation.Info;
 import dev.latvian.kubejs.documentation.P;
@@ -28,12 +27,6 @@ public class TextWrapper
 	public Text join(Text separator, Iterable<Text> texts)
 	{
 		return Text.join(separator, texts);
-	}
-
-	@Info("Creates text component from JSON")
-	public Text fromJson(JsonElement e)
-	{
-		return Text.fromJson(e);
 	}
 
 	@Info("Creates text component from string")

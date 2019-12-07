@@ -46,6 +46,8 @@ import net.minecraft.resources.IResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.MinecraftForge;
@@ -426,6 +428,11 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 		resourceManager.addResourcePack(virtualDataPack);
 		ScriptType.SERVER.console.setLineNumber(false);
 		ScriptType.SERVER.console.info("Scripts loaded");
+
+		for (int i = 0; i < scriptManager.errors.size(); i++)
+		{
+			minecraftServer.getPlayerList().sendMessage(new StringTextComponent("#" + (i + 1) + ": ").applyTextStyle(TextFormatting.DARK_RED).appendSibling(new StringTextComponent(scriptManager.errors.get(i)).applyTextStyle(TextFormatting.RED)));
+		}
 	}
 
 	@Override

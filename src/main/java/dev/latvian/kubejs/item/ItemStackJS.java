@@ -360,7 +360,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		double chance = getChance();
 		MapJS nbt = getNbt();
 
-		if (count > 1 || chance < 1D || nbt != null)
+		if (count > 1 || chance < 1D || !nbt.isEmpty())
 		{
 			builder.append("item.of('");
 			builder.append(getId());
@@ -380,7 +380,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 				builder.append(')');
 			}
 
-			if (nbt != null)
+			if (!nbt.isEmpty())
 			{
 				builder.append(".nbt(");
 				builder.append(nbt);

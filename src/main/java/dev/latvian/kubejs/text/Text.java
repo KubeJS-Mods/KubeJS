@@ -7,12 +7,14 @@ import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.Info;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
+import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.JsonSerializable;
-import dev.latvian.kubejs.util.JsonUtilsJS;
+import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
 
@@ -31,6 +33,11 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 {
 	public static Text of(@Nullable Object o)
 	{
+		return ofWrapped(UtilsJS.wrap(o, JSObjectType.ANY));
+	}
+
+	private static Text ofWrapped(@Nullable Object o)
+	{
 		if (o == null)
 		{
 			return new TextString("null");
@@ -47,66 +54,87 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		{
 			return (Text) o;
 		}
-		else if (o instanceof JsonElement)
+		else if (o instanceof ListJS)
 		{
-			return fromJson((JsonElement) o);
-		}
-		else if (o instanceof ITextComponent)
-		{
-			Text t = new TextString("");
+			Text text = new TextString("");
 
-			for (ITextComponent c : ((ITextComponent) o))
+			for (Object e1 : (ListJS) o)
 			{
-				Text t1;
+				text.append(ofWrapped(e1));
+			}
 
-				if (c instanceof TranslationTextComponent)
+			return text;
+		}
+		else if (o instanceof MapJS)
+		{
+			MapJS map = (MapJS) o;
+
+			if (map.containsKey("text") || map.containsKey("translate"))
+			{
+				Text text;
+
+				if (map.containsKey("text"))
 				{
-					t1 = new TextTranslate(((TranslationTextComponent) c).getKey(), ((TranslationTextComponent) c).getFormatArgs());
+					text = new TextString(map.get("text").toString());
 				}
 				else
 				{
-					t1 = new TextString(c.getUnformattedComponentText());
+					Object[] with;
+
+					if (map.containsKey("with"))
+					{
+						ListJS a = map.getOrNewList("with");
+						with = new Object[a.size()];
+						int i = 0;
+
+						for (Object e1 : a)
+						{
+							with[i] = e1;
+
+							if (with[i] instanceof MapJS || with[i] instanceof ListJS)
+							{
+								with[i] = ofWrapped(e1);
+							}
+
+							i++;
+						}
+					}
+					else
+					{
+						with = new Object[0];
+					}
+
+					text = new TextTranslate(map.get("translate").toString(), with);
 				}
 
-				t1.bold(c.getStyle().getBold());
-				t1.italic(c.getStyle().getItalic());
-				t1.underlined(c.getStyle().getUnderlined());
-				t1.strikethrough(c.getStyle().getStrikethrough());
-				t1.obfuscated(c.getStyle().getObfuscated());
-				t1.insertion(c.getStyle().getInsertion());
-
-				ClickEvent ce = c.getStyle().getClickEvent();
-
-				if (ce != null)
+				if (map.containsKey("color"))
 				{
-					if (ce.getAction() == ClickEvent.Action.RUN_COMMAND)
-					{
-						t1.click("command:" + ce.getValue());
-					}
-					else if (ce.getAction() == ClickEvent.Action.SUGGEST_COMMAND)
-					{
-						t1.click("suggest_command:" + ce.getValue());
-					}
-					else if (ce.getAction() == ClickEvent.Action.OPEN_URL)
-					{
-						t1.click(ce.getValue());
-					}
+					text.color = TextColor.MAP.get(map.get("color").toString());
 				}
 
-				HoverEvent he = c.getStyle().getHoverEvent();
+				text.bold = map.containsKey("bold") ? (Boolean) map.get("bold") : null;
+				text.italic = map.containsKey("italic") ? (Boolean) map.get("italic") : null;
+				text.underlined = map.containsKey("underlined") ? (Boolean) map.get("underlined") : null;
+				text.strikethrough = map.containsKey("strikethrough") ? (Boolean) map.get("strikethrough") : null;
+				text.obfuscated = map.containsKey("obfuscated") ? (Boolean) map.get("obfuscated") : null;
+				text.insertion = map.containsKey("insertion") ? map.get("insertion").toString() : null;
+				text.click = map.containsKey("click") ? map.get("click").toString() : null;
+				text.hover = map.containsKey("hover") ? ofWrapped(map.get("hover")) : null;
 
-				if (he != null && he.getAction() == HoverEvent.Action.SHOW_TEXT)
+				text.siblings = null;
+
+				if (map.containsKey("extra"))
 				{
-					t1.hover(of(he.getValue()));
+					for (Object e : map.getOrNewList("extra"))
+					{
+						text.append(ofWrapped(e));
+					}
 				}
-
-				t.append(t1);
+				return text;
 			}
-
-			return t;
 		}
 
-		return fromJson(JsonUtilsJS.of(o));
+		return new TextString(o.toString());
 	}
 
 	public static Text join(Text separator, Iterable<Text> texts)
@@ -129,73 +157,6 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		}
 
 		return text;
-	}
-
-	public static Text fromJson(JsonElement e)
-	{
-		if (e.isJsonNull())
-		{
-			return new TextString("null");
-		}
-		else if (e.isJsonArray())
-		{
-			Text text = new TextString("");
-
-			for (JsonElement e1 : e.getAsJsonArray())
-			{
-				text.append(fromJson(e1));
-			}
-
-			return text;
-		}
-		else if (e.isJsonObject())
-		{
-			JsonObject o = e.getAsJsonObject();
-
-			if (o.has("text") || o.has("translate"))
-			{
-				Text text;
-
-				if (o.has("text"))
-				{
-					text = new TextString(o.get("text").getAsString());
-				}
-				else
-				{
-					Object[] with;
-
-					if (o.has("with"))
-					{
-						JsonArray a = o.get("with").getAsJsonArray();
-						with = new Object[a.size()];
-						int i = 0;
-
-						for (JsonElement e1 : a)
-						{
-							with[i] = JsonUtilsJS.toPrimitive(e1);
-
-							if (with[i] == null)
-							{
-								with[i] = fromJson(e1);
-							}
-
-							i++;
-						}
-					}
-					else
-					{
-						with = new Object[0];
-					}
-
-					text = new TextTranslate(o.get("translate").getAsString(), with);
-				}
-
-				text.setPropertiesFromJson(o);
-				return text;
-			}
-		}
-
-		return new TextString(e.getAsString());
 	}
 
 	public static void write(ByteBuf buf, @Nullable Text text)
@@ -368,33 +329,6 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		}
 
 		return json;
-	}
-
-	public final void setPropertiesFromJson(JsonObject json)
-	{
-		if (json.has("color"))
-		{
-			color = TextColor.MAP.get(json.get("color").getAsString());
-		}
-
-		bold = json.has("bold") ? json.get("bold").getAsBoolean() : null;
-		italic = json.has("italic") ? json.get("italic").getAsBoolean() : null;
-		underlined = json.has("underlined") ? json.get("underlined").getAsBoolean() : null;
-		strikethrough = json.has("strikethrough") ? json.get("strikethrough").getAsBoolean() : null;
-		obfuscated = json.has("obfuscated") ? json.get("obfuscated").getAsBoolean() : null;
-		insertion = json.has("insertion") ? json.get("insertion").getAsString() : null;
-		click = json.has("click") ? json.get("click").getAsString() : null;
-		hover = json.has("hover") ? Text.fromJson(json.get("hover")) : null;
-
-		siblings = null;
-
-		if (json.has("extra"))
-		{
-			for (JsonElement e : json.get("extra").getAsJsonArray())
-			{
-				append(Text.fromJson(e));
-			}
-		}
 	}
 
 	@Override

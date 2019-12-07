@@ -351,4 +351,15 @@ public class BlockContainerJS
 		BlockState state = getBlockState();
 		return ItemStackJS.of(state.getBlock().getItem(minecraftWorld, pos, state));
 	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj instanceof CharSequence || obj instanceof ResourceLocation)
+		{
+			return getId().equals(UtilsJS.getID(obj));
+		}
+
+		return super.equals(obj);
+	}
 }

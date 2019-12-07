@@ -7,6 +7,8 @@ import com.google.gson.JsonPrimitive;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.text.TextString;
+import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import jdk.nashorn.api.scripting.JSObject;
@@ -21,6 +23,9 @@ import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.HoverEvent;
 import net.minecraft.world.IWorld;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
@@ -119,7 +124,57 @@ public class UtilsJS
 		// Vanilla text component
 		else if (o instanceof ITextComponent)
 		{
-			return Text.of(o);
+			Text t = new TextString("");
+
+			for (ITextComponent c : ((ITextComponent) o))
+			{
+				Text t1;
+
+				if (c instanceof TranslationTextComponent)
+				{
+					t1 = new TextTranslate(((TranslationTextComponent) c).getKey(), ((TranslationTextComponent) c).getFormatArgs());
+				}
+				else
+				{
+					t1 = new TextString(c.getUnformattedComponentText());
+				}
+
+				t1.bold(c.getStyle().getBold());
+				t1.italic(c.getStyle().getItalic());
+				t1.underlined(c.getStyle().getUnderlined());
+				t1.strikethrough(c.getStyle().getStrikethrough());
+				t1.obfuscated(c.getStyle().getObfuscated());
+				t1.insertion(c.getStyle().getInsertion());
+
+				ClickEvent ce = c.getStyle().getClickEvent();
+
+				if (ce != null)
+				{
+					if (ce.getAction() == ClickEvent.Action.RUN_COMMAND)
+					{
+						t1.click("command:" + ce.getValue());
+					}
+					else if (ce.getAction() == ClickEvent.Action.SUGGEST_COMMAND)
+					{
+						t1.click("suggest_command:" + ce.getValue());
+					}
+					else if (ce.getAction() == ClickEvent.Action.OPEN_URL)
+					{
+						t1.click(ce.getValue());
+					}
+				}
+
+				HoverEvent he = c.getStyle().getHoverEvent();
+
+				if (he != null && he.getAction() == HoverEvent.Action.SHOW_TEXT)
+				{
+					t1.hover(Text.of(he.getValue()));
+				}
+
+				t.append(t1);
+			}
+
+			return t;
 		}
 		// New Nashorn JS Object
 		else if (o instanceof JSObject)
