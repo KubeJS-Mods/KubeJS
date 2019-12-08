@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.script.ScriptType;
+import net.minecraft.item.BlockItem;
 import net.minecraft.resources.IResourcePack;
 import net.minecraft.resources.ResourcePackFileNotFoundException;
 import net.minecraft.resources.ResourcePackType;
@@ -12,6 +13,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.ResourceLocationException;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.io.BufferedInputStream;
@@ -77,19 +79,59 @@ public class KubeJSResourcePack implements IResourcePack
 		}
 		else if (packType == ResourcePackType.CLIENT_RESOURCES && location.getNamespace().equals(KubeJS.MOD_ID))
 		{
-			if (location.getPath().startsWith("models/item/") && location.getPath().endsWith(".json"))
+			if (location.getPath().endsWith(".json"))
 			{
-				JsonObject model = new JsonObject();
-				model.addProperty("parent", "item/generated");
-				JsonObject textures = new JsonObject();
-				textures.addProperty("layer0", "kubejs:item/" + location.getPath().substring(12, location.getPath().length() - 5));
-				model.add("textures", textures);
+				JsonObject json = new JsonObject();
 
-				return new ByteArrayInputStream(model.toString().getBytes(StandardCharsets.UTF_8));
+				if (generateJsonFile(location.getPath().substring(0, location.getPath().length() - 5), json))
+				{
+					return new ByteArrayInputStream(json.toString().getBytes(StandardCharsets.UTF_8));
+				}
 			}
 		}
 
 		throw new ResourcePackFileNotFoundException(folder, resourcePath);
+	}
+
+	private boolean generateJsonFile(String path, JsonObject json)
+	{
+		if (path.startsWith("models/item/"))
+		{
+			String s = path.substring(12);
+
+			if (ForgeRegistries.ITEMS.getValue(new ResourceLocation(KubeJS.MOD_ID, s)) instanceof BlockItem)
+			{
+				json.addProperty("parent", KubeJS.MOD_ID + ":block/" + s);
+			}
+			else
+			{
+				json.addProperty("parent", "item/generated");
+				JsonObject textures = new JsonObject();
+				textures.addProperty("layer0", KubeJS.MOD_ID + ":item/" + s);
+				json.add("textures", textures);
+			}
+
+			return true;
+		}
+		else if (path.startsWith("models/block/"))
+		{
+			json.addProperty("parent", "block/cube_all");
+			JsonObject textures = new JsonObject();
+			textures.addProperty("all", KubeJS.MOD_ID + ":block/" + path.substring(13));
+			json.add("textures", textures);
+			return true;
+		}
+		else if (path.startsWith("blockstates/"))
+		{
+			JsonObject variants = new JsonObject();
+			JsonObject model = new JsonObject();
+			model.addProperty("model", KubeJS.MOD_ID + ":block/" + path.substring(12));
+			variants.add("", model);
+			json.add("variants", variants);
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
@@ -97,7 +139,7 @@ public class KubeJSResourcePack implements IResourcePack
 	{
 		if (packType == ResourcePackType.CLIENT_RESOURCES && location.getNamespace().equals(KubeJS.MOD_ID))
 		{
-			if (location.getPath().startsWith("models/item/") && location.getPath().endsWith(".json"))
+			if (location.getPath().endsWith(".json") && generateJsonFile(location.getPath().substring(0, location.getPath().length() - 5), new JsonObject()))
 			{
 				return true;
 			}
