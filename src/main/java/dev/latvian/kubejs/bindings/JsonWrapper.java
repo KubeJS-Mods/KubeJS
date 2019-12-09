@@ -4,8 +4,10 @@ import com.google.gson.JsonElement;
 import dev.latvian.kubejs.documentation.DisplayName;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
+import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.UtilsJS;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -30,6 +32,11 @@ public class JsonWrapper
 	public String toPrettyString(@P("json") JsonElement json)
 	{
 		return JsonUtilsJS.toPrettyString(json);
+	}
+
+	public Object parse(String string)
+	{
+		return UtilsJS.wrap(JsonUtilsJS.fromString(string), JSObjectType.ANY);
 	}
 
 	@Nullable
