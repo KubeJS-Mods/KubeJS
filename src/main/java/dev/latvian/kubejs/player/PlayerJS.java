@@ -209,7 +209,7 @@ public abstract class PlayerJS<E extends PlayerEntity> extends LivingEntityJS im
 
 	public void addXP(@P("xp") int xp)
 	{
-		//FIXME: minecraftPlayer.addExperience(xp);
+		minecraftPlayer.giveExperiencePoints(xp);
 	}
 
 	public void addXPLevels(@P("levels") int l)
@@ -219,10 +219,10 @@ public abstract class PlayerJS<E extends PlayerEntity> extends LivingEntityJS im
 
 	public void setXp(@P("xp") int xp)
 	{
-		//minecraftPlayer.experienceTotal = 0;
-		//minecraftPlayer.experience = 0F;
-		//minecraftPlayer.experienceLevel = 0;
-		//FIXME: minecraftPlayer.addExperience(xp);
+		minecraftPlayer.experienceTotal = 0;
+		minecraftPlayer.experience = 0F;
+		minecraftPlayer.experienceLevel = 0;
+		minecraftPlayer.giveExperiencePoints(xp);
 	}
 
 	public int getXp()
