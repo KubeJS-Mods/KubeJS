@@ -9,7 +9,6 @@ import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
 import dev.latvian.kubejs.text.TextTranslate;
-import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import jdk.nashorn.api.scripting.JSObject;
 import jdk.nashorn.internal.runtime.ScriptObject;
@@ -453,7 +452,7 @@ public class UtilsJS
 
 	public static WorldJS getClientWorld()
 	{
-		return ClientWorldJS.instance;
+		return KubeJS.instance.proxy.getClientWorld();
 	}
 
 	@Nullable

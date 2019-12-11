@@ -26,7 +26,7 @@ public class ClientWorldJS extends WorldJS
 		super(e.world);
 		minecraft = mc;
 		minecraftPlayer = e;
-		clientPlayerData = new ClientPlayerDataJS(this);
+		clientPlayerData = new ClientPlayerDataJS(this, minecraftPlayer, true);
 	}
 
 	@MinecraftClass
@@ -48,8 +48,10 @@ public class ClientWorldJS extends WorldJS
 		{
 			return clientPlayerData;
 		}
-
-		throw new IllegalStateException("Can't access other client players!");
+		else
+		{
+			return new ClientPlayerDataJS(this, player, false);
+		}
 	}
 
 	@Override

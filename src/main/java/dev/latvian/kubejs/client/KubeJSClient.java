@@ -5,6 +5,8 @@ import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.net.NetworkEventJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Overlay;
+import dev.latvian.kubejs.world.ClientWorldJS;
+import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -53,5 +55,11 @@ public class KubeJSClient extends KubeJSCommon
 	public void closeOverlay(String id)
 	{
 		activeOverlays.remove(id);
+	}
+
+	@Override
+	public WorldJS getClientWorld()
+	{
+		return ClientWorldJS.instance;
 	}
 }

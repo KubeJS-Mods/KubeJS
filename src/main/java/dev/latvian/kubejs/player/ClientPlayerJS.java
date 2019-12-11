@@ -17,39 +17,58 @@ import javax.annotation.Nullable;
  */
 public class ClientPlayerJS extends PlayerJS<PlayerEntity>
 {
-	public ClientPlayerJS(ClientPlayerDataJS d)
+	private final boolean isSelf;
+
+	public ClientPlayerJS(ClientPlayerDataJS d, PlayerEntity p, boolean s)
 	{
-		super(d, d.getWorld(), d.getWorld().minecraftPlayer);
+		super(d, d.getWorld(), p);
+		isSelf = s;
+	}
+
+	public boolean isSelf()
+	{
+		return isSelf;
 	}
 
 	@Override
 	public PlayerStatsJS getStats()
 	{
+		if (!isSelf())
+		{
+			throw new IllegalStateException("Can't access other player stats!");
+		}
+
 		return new PlayerStatsJS(this, ((ClientPlayerEntity) minecraftPlayer).getStats());
 	}
 
 	@Override
 	public void openOverlay(Overlay overlay)
 	{
-		KubeJS.instance.proxy.openOverlay(overlay);
+		if (isSelf())
+		{
+			KubeJS.instance.proxy.openOverlay(overlay);
+		}
 	}
 
 	@Override
 	public void closeOverlay(String overlay)
 	{
-		KubeJS.instance.proxy.closeOverlay(overlay);
+		if (isSelf())
+		{
+			KubeJS.instance.proxy.closeOverlay(overlay);
+		}
 	}
 
 	@Override
 	public boolean isMiningBlock()
 	{
-		return Minecraft.getInstance().playerController.getIsHittingBlock();
+		return isSelf() && Minecraft.getInstance().playerController.getIsHittingBlock();
 	}
 
 	@Override
 	public void sendData(@P("channel") String channel, @Nullable @P("data") Object data)
 	{
-		if (!channel.isEmpty())
+		if (!channel.isEmpty() && isSelf())
 		{
 			KubeJSNet.MAIN.sendToServer(new MessageSendDataFromClient(channel, MapJS.nbt(data)));
 		}

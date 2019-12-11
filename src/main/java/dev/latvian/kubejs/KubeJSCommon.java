@@ -1,6 +1,7 @@
 package dev.latvian.kubejs;
 
 import dev.latvian.kubejs.util.Overlay;
+import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 
@@ -32,5 +33,10 @@ public class KubeJSCommon
 
 	public void closeOverlay(String id)
 	{
+	}
+
+	public WorldJS getClientWorld()
+	{
+		throw new IllegalStateException("Can't access client world from server side!");
 	}
 }

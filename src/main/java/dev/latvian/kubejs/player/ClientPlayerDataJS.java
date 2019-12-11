@@ -3,7 +3,6 @@ package dev.latvian.kubejs.player;
 import com.mojang.authlib.GameProfile;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 import javax.annotation.Nullable;
@@ -16,11 +15,13 @@ public class ClientPlayerDataJS extends PlayerDataJS<PlayerEntity, ClientPlayerJ
 {
 	private final ClientWorldJS world;
 	private final ClientPlayerJS player;
+	private final PlayerEntity minecraftPlayer;
 
-	public ClientPlayerDataJS(ClientWorldJS w)
+	public ClientPlayerDataJS(ClientWorldJS w, PlayerEntity p, boolean s)
 	{
 		world = w;
-		player = new ClientPlayerJS(this);
+		minecraftPlayer = p;
+		player = new ClientPlayerJS(this, minecraftPlayer, s);
 	}
 
 	public ClientWorldJS getWorld()
@@ -31,19 +32,19 @@ public class ClientPlayerDataJS extends PlayerDataJS<PlayerEntity, ClientPlayerJ
 	@Override
 	public UUID getId()
 	{
-		return world.minecraftPlayer.getUniqueID();
+		return player.getId();
 	}
 
 	@Override
 	public String getName()
 	{
-		return world.minecraftPlayer.getGameProfile().getName();
+		return player.getProfile().getName();
 	}
 
 	@Override
 	public GameProfile getProfile()
 	{
-		return world.minecraftPlayer.getGameProfile();
+		return player.getProfile();
 	}
 
 	@Override
@@ -54,9 +55,9 @@ public class ClientPlayerDataJS extends PlayerDataJS<PlayerEntity, ClientPlayerJ
 
 	@Nullable
 	@Override
-	public ClientPlayerEntity getMinecraftPlayer()
+	public PlayerEntity getMinecraftPlayer()
 	{
-		return world.minecraftPlayer;
+		return minecraftPlayer;
 	}
 
 	@Override
