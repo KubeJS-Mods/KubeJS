@@ -13,8 +13,10 @@ import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Predicate;
 
 /**
  * @author LatvianModder
@@ -183,6 +185,125 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 		super(s);
 	}
 
+	public int getLength()
+	{
+		return size();
+	}
+
+	public void push(Object... o)
+	{
+		if (o.length == 0)
+		{
+			return;
+		}
+		else if (o.length == 1)
+		{
+			add(o[0]);
+			return;
+		}
+
+		for (int i = 0; i < o.length; i++)
+		{
+			o[i] = UtilsJS.wrap(o[i], JSObjectType.ANY);
+			setChangeListener(o[i]);
+		}
+
+		super.addAll(Arrays.asList(o));
+		onChanged(null);
+	}
+
+	@Nullable
+	public Object pop()
+	{
+		if (!isEmpty())
+		{
+			return remove(size() - 1);
+		}
+
+		return null;
+	}
+
+	@Nullable
+	public Object shift()
+	{
+		if (!isEmpty())
+		{
+			return remove(0);
+		}
+
+		return null;
+	}
+
+	public void unshift(Object... o)
+	{
+		if (o.length == 0)
+		{
+			return;
+		}
+		else if (o.length == 1)
+		{
+			add(0, o[0]);
+			return;
+		}
+
+		for (int i = 0; i < o.length; i++)
+		{
+			o[i] = UtilsJS.wrap(o[i], JSObjectType.ANY);
+			setChangeListener(o[i]);
+		}
+
+		super.addAll(0, Arrays.asList(o));
+		onChanged(null);
+	}
+
+	public void reverse()
+	{
+		Collections.reverse(this);
+		onChanged(null);
+	}
+
+	public ListJS map(Predicate<Object> predicate)
+	{
+		ListJS list = new ListJS();
+
+		for (Object o : this)
+		{
+			if (predicate.test(o))
+			{
+				list.add(o);
+			}
+		}
+
+		return list;
+	}
+
+	public void splice(int pos, int deleteCount, Object... items)
+	{
+		for (int i = 0; i < deleteCount; i++)
+		{
+			remove(pos);
+		}
+
+		if (items.length == 0)
+		{
+			return;
+		}
+		else if (items.length == 1)
+		{
+			add(pos, items[0]);
+			return;
+		}
+
+		for (int i = 0; i < items.length; i++)
+		{
+			items[i] = UtilsJS.wrap(items[i], JSObjectType.ANY);
+			setChangeListener(items[i]);
+		}
+
+		super.addAll(pos, Arrays.asList(items));
+		onChanged(null);
+	}
+
 	@Override
 	public String toString()
 	{
@@ -301,16 +422,36 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 			return false;
 		}
 
-		for (Object o : c)
-		{
-			Object v = UtilsJS.wrap(o, JSObjectType.ANY);
+		Object[] o = c.toArray();
 
-			if (setChangeListener(v))
-			{
-				super.add(v);
-			}
+		for (int i = 0; i < o.length; i++)
+		{
+			o[i] = UtilsJS.wrap(o[i], JSObjectType.ANY);
+			setChangeListener(o[i]);
 		}
 
+		super.addAll(Arrays.asList(o));
+		onChanged(null);
+		return true;
+	}
+
+	@Override
+	public boolean addAll(int index, Collection c)
+	{
+		if (c == null || c.isEmpty())
+		{
+			return false;
+		}
+
+		Object[] o = c.toArray();
+
+		for (int i = 0; i < o.length; i++)
+		{
+			o[i] = UtilsJS.wrap(o[i], JSObjectType.ANY);
+			setChangeListener(o[i]);
+		}
+
+		super.addAll(index, Arrays.asList(o));
 		onChanged(null);
 		return true;
 	}

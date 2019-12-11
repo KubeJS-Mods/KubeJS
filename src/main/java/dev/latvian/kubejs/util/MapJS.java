@@ -45,6 +45,11 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 		super(s);
 	}
 
+	public int getLength()
+	{
+		return size();
+	}
+
 	@Override
 	public String toString()
 	{
