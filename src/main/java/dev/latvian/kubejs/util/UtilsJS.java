@@ -11,6 +11,7 @@ import dev.latvian.kubejs.text.TextString;
 import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.world.WorldJS;
 import jdk.nashorn.api.scripting.JSObject;
+import jdk.nashorn.internal.runtime.ScriptFunction;
 import jdk.nashorn.internal.runtime.ScriptObject;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.EndNBT;
@@ -180,7 +181,11 @@ public class UtilsJS
 		{
 			JSObject js = (JSObject) o;
 
-			if (js.isArray())
+			if (js.isFunction())
+			{
+				return js;
+			}
+			else if (js.isArray())
 			{
 				if (!type.checkList())
 				{
@@ -212,7 +217,11 @@ public class UtilsJS
 		{
 			ScriptObject js = (ScriptObject) o;
 
-			if (js.isArray())
+			if (js instanceof ScriptFunction)
+			{
+				return js;
+			}
+			else if (js.isArray())
 			{
 				if (!type.checkList())
 				{

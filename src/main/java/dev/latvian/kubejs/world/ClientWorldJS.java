@@ -44,7 +44,7 @@ public class ClientWorldJS extends WorldJS
 	@Override
 	public ClientPlayerDataJS getPlayerData(PlayerEntity player)
 	{
-		if (player.getUniqueID().equals(clientPlayerData.getId()))
+		if (player == minecraftPlayer || player.getUniqueID().equals(clientPlayerData.getId()))
 		{
 			return clientPlayerData;
 		}

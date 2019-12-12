@@ -6,6 +6,7 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.WrappedJS;
 import jdk.nashorn.api.scripting.AbstractJSObject;
 import net.minecraft.util.ResourceLocation;
 
@@ -14,7 +15,7 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public class RecipeFunction extends AbstractJSObject
+public class RecipeFunction extends AbstractJSObject implements WrappedJS
 {
 	public final RecipeTypeJS type;
 	private final List<RecipeJS> recipes;

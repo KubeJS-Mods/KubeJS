@@ -64,7 +64,7 @@ public class UtilsWrapper
 		return new ListJS();
 	}
 
-	public Map newMap()
+	public MapJS newMap()
 	{
 		return new MapJS();
 	}

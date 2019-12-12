@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-public class FunctionBinding extends AbstractJSObject
+public class FunctionBinding extends AbstractJSObject implements WrappedJS
 {
 	@FunctionalInterface
 	public interface Handler
