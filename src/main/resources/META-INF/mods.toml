@@ -10,7 +10,7 @@ authors="LatvianModder"
 description='''
 Allows you to tweak and customize modpack with JavaScript
 '''
-logoFile="logo.png"
+logoFile="kubejs_logo.png"
 
 [[dependencies.kubejs]]
     modId="forge"
