@@ -130,6 +130,7 @@ public class BlockBuilder
 	public Block.Properties createProperties()
 	{
 		Block.Properties properties = Block.Properties.create(material.getMinecraftMaterial());
+		properties.sound(material.getSound());
 
 		if (resistance >= 0F)
 		{

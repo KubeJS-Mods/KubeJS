@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.block;
 
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 
 import java.util.HashMap;
@@ -18,30 +19,30 @@ public class MaterialListJS
 	private MaterialListJS()
 	{
 		map = new HashMap<>();
-		air = add("air", Material.AIR);
-		add("wood", Material.WOOD);
-		add("rock", Material.ROCK);
-		add("iron", Material.IRON);
-		add("organic", Material.ORGANIC);
-		add("earth", Material.EARTH);
-		add("water", Material.WATER);
-		add("lava", Material.LAVA);
-		add("leaves", Material.LEAVES);
-		add("plants", Material.PLANTS);
-		add("sponge", Material.SPONGE);
-		add("wool", Material.WOOL);
-		add("sand", Material.SAND);
-		add("glass", Material.GLASS);
-		add("tnt", Material.TNT);
-		add("coral", Material.CORAL);
-		add("ice", Material.ICE);
-		add("snow", Material.SNOW);
-		add("clay", Material.CLAY);
-		add("gourd", Material.GOURD);
-		add("dragon_egg", Material.DRAGON_EGG);
-		add("portal", Material.PORTAL);
-		add("cake", Material.CAKE);
-		add("web", Material.WEB);
+		air = add("air", Material.AIR, SoundType.STONE);
+		add("wood", Material.WOOD, SoundType.WOOD);
+		add("rock", Material.ROCK, SoundType.STONE);
+		add("iron", Material.IRON, SoundType.METAL);
+		add("organic", Material.ORGANIC, SoundType.PLANT);
+		add("earth", Material.EARTH, SoundType.GROUND);
+		add("water", Material.WATER, SoundType.STONE);
+		add("lava", Material.LAVA, SoundType.STONE);
+		add("leaves", Material.LEAVES, SoundType.PLANT);
+		add("plants", Material.PLANTS, SoundType.PLANT);
+		add("sponge", Material.SPONGE, SoundType.PLANT);
+		add("wool", Material.WOOL, SoundType.CLOTH);
+		add("sand", Material.SAND, SoundType.SAND);
+		add("glass", Material.GLASS, SoundType.GLASS);
+		add("tnt", Material.TNT, SoundType.PLANT);
+		add("coral", Material.CORAL, SoundType.CORAL);
+		add("ice", Material.ICE, SoundType.GLASS);
+		add("snow", Material.SNOW, SoundType.SNOW);
+		add("clay", Material.CLAY, SoundType.GROUND);
+		add("gourd", Material.GOURD, SoundType.PLANT);
+		add("dragon_egg", Material.DRAGON_EGG, SoundType.STONE);
+		add("portal", Material.PORTAL, SoundType.STONE);
+		add("cake", Material.CAKE, SoundType.CLOTH);
+		add("web", Material.WEB, SoundType.CLOTH);
 	}
 
 	public MaterialJS add(MaterialJS m)
@@ -50,9 +51,9 @@ public class MaterialListJS
 		return m;
 	}
 
-	public MaterialJS add(String s, Material m)
+	public MaterialJS add(String s, Material m, SoundType e)
 	{
-		return add(new MaterialJS(s, m));
+		return add(new MaterialJS(s, m, e));
 	}
 
 	public MaterialJS get(String id)
