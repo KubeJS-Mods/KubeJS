@@ -129,8 +129,8 @@ public class ItemBuilder
 		Item.Properties properties = new Item.Properties();
 
 		properties.group(group);
-		properties.maxStackSize(maxStackSize);
 		properties.maxDamage(maxDamage);
+		properties.maxStackSize(maxStackSize);
 		properties.rarity(rarity);
 
 		for (Map.Entry<ToolType, Integer> entry : tools.entrySet())
