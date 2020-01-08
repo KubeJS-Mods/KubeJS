@@ -18,6 +18,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
+import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
@@ -25,6 +26,7 @@ import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -42,6 +44,7 @@ public class KubeJSServerEventHandler
 		MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
 		MinecraftForge.EVENT_BUS.addListener(this::serverStarted);
 		MinecraftForge.EVENT_BUS.addListener(this::serverStopping);
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::tagsUpdated);
 		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::serverTick);
 		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOW, this::command);
 	}
@@ -131,6 +134,14 @@ public class KubeJSServerEventHandler
 
 		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_UNLOAD);
 		ServerJS.instance = null;
+	}
+
+	private void tagsUpdated(TagsUpdatedEvent event)
+	{
+		if (ServerJS.instance != null && FMLEnvironment.dist.isClient())
+		{
+			ServerJS.instance.tagsUpdated(event.getTagManager());
+		}
 	}
 
 	private void serverTick(TickEvent.ServerTickEvent event)

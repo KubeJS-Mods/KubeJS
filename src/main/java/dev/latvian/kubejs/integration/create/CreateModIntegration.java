@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.integration.create;
 
 import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 
 /**
@@ -10,13 +11,13 @@ public class CreateModIntegration
 {
 	public void init()
 	{
-		MinecraftForge.EVENT_BUS.addListener(this::registerRecipeHanlders);
+		MinecraftForge.EVENT_BUS.addListener(this::registerRecipeHandlers);
 	}
 
-	private void registerRecipeHanlders(RegisterRecipeHandlersEvent event)
+	private void registerRecipeHandlers(RegisterRecipeHandlersEvent event)
 	{
-		event.register(CreateModCrushingRecipeJS.TYPE);
-		event.register(CreateModPressingRecipeJS.TYPE);
-		event.register(CreateModSplashingRecipeJS.TYPE);
+		event.register(new CreateModMachineRecipeTypeJS(new ResourceLocation("create:crushing")));
+		event.register(new CreateModMachineRecipeTypeJS(new ResourceLocation("create:pressing")));
+		event.register(new CreateModMachineRecipeTypeJS(new ResourceLocation("create:splashing")));
 	}
 }

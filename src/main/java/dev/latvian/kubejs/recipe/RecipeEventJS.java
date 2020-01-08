@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
+import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.type.CustomRecipeJS;
 import dev.latvian.kubejs.recipe.type.RecipeJS;
@@ -12,12 +13,16 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.kubejs.server.ServerEventJS;
 import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.util.DynamicMapJS;
+import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import javax.annotation.Nullable;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,207 +37,223 @@ import java.util.function.Predicate;
  */
 public class RecipeEventJS extends ServerEventJS
 {
-	private final IResourceManager resourceManager;
-	private final List<RecipeJS> recipes;
-	private final Map<ResourceLocation, RecipeFunction> deserializerMap;
-	private final Map<String, Map<String, RecipeFunction>> recipeFunctions;
+	@Ignore
+	private final List<RecipeJS> addedRecipes;
+	@Ignore
+	public final Map<ResourceLocation, RecipeFunction> deserializerMap;
+
+	private final DynamicMapJS<DynamicMapJS<RecipeFunction>> recipeFunctions;
 	private final Set<ResourceLocation> removedRecipes;
 	private final Set<ResourceLocation> brokenRecipes;
 	public boolean removeBrokenRecipes;
+	private RecipeCollection originalRecipes;
 
-	private List<RecipeJS> originalRecipes;
-
-	public RecipeEventJS(IResourceManager m, List<RecipeJS> r, Map<ResourceLocation, RecipeFunction> rf)
+	public RecipeEventJS()
 	{
-		resourceManager = m;
-		recipes = r;
-		deserializerMap = rf;
-		recipeFunctions = new HashMap<String, Map<String, RecipeFunction>>()
-		{
-			@Override
-			public Map<String, RecipeFunction> get(Object namespace)
-			{
-				Map<String, RecipeFunction> map = super.get(namespace);
-
-				if (map == null)
-				{
-					map = new HashMap<String, RecipeFunction>()
-					{
-						@Override
-						public RecipeFunction get(Object type)
-						{
-							RecipeFunction function = super.get(type);
-
-							if (function == null)
-							{
-								ResourceLocation id = new ResourceLocation(namespace.toString(), type.toString());
-
-								function = deserializerMap.get(id);
-
-								if (function == null)
-								{
-									function = new RecipeFunction(new CustomRecipeJS.CustomType(id), recipes);
-								}
-
-								put(type.toString(), function);
-							}
-
-							return function;
-						}
-
-						@Override
-						public boolean containsKey(Object key)
-						{
-							return true;
-						}
-					};
-
-					put(namespace.toString(), map);
-				}
-
-				return map;
-			}
-
-			@Override
-			public boolean containsKey(Object key)
-			{
-				return true;
-			}
-		};
-
+		addedRecipes = new ArrayList<>();
+		deserializerMap = new HashMap<>();
+		recipeFunctions = new DynamicMapJS<>(n -> new DynamicMapJS<>(p -> deserializerMap.computeIfAbsent(new ResourceLocation(n, p), id -> new RecipeFunction(this, new CustomRecipeJS.CustomType(id)))));
 		removedRecipes = new HashSet<>();
 		brokenRecipes = new HashSet<>();
 		removeBrokenRecipes = false;
+		originalRecipes = new RecipeCollection(new ArrayList<>());
+
+		originalRecipes.recipeChanged = recipe -> {
+			if (removedRecipes.add(recipe.id))
+			{
+				addedRecipes.add(recipe);
+				ScriptType.SERVER.console.info("Changed recipe " + recipe.id);
+			}
+		};
 	}
 
-	public Map<String, Map<String, RecipeFunction>> getRecipes()
+	@Ignore
+	public void loadRecipes(IResourceManager resourceManager)
+	{
+		try
+		{
+			for (ResourceLocation location : resourceManager.getAllResourceLocations("recipes", s -> s.endsWith(".json")))
+			{
+				try (InputStreamReader reader = new InputStreamReader(resourceManager.getResource(location).getInputStream()))
+				{
+					JsonObject json = new JsonParser().parse(reader).getAsJsonObject();
+					ResourceLocation type = new ResourceLocation(json.get("type").getAsString());
+					ResourceLocation recipeId = new ResourceLocation(location.getNamespace(), location.getPath().substring(8, location.getPath().length() - 5));
+
+					IRecipeSerializer serializer = ForgeRegistries.RECIPE_SERIALIZERS.getValue(type);
+					RecipeJS r;
+
+					if (serializer == null)
+					{
+						r = new RecipeErrorJS("Recipe type '" + type + "' is not registered!");
+					}
+					else
+					{
+						try
+						{
+							if (removeBrokenRecipes)
+							{
+								serializer.read(recipeId, json);
+							}
+
+							RecipeFunction function = getRecipes().get(type.getNamespace()).get(type.getPath());
+							r = function.type.create(json);
+						}
+						catch (Exception ex)
+						{
+							r = new RecipeErrorJS(ex.toString());
+						}
+					}
+
+					r.event = this;
+					r.id = recipeId;
+
+					if (!(r instanceof RecipeErrorJS))
+					{
+						originalRecipes.list.add(r);
+						r.group = json.has("group") ? json.get("group").getAsString() : "";
+					}
+					else if (removeBrokenRecipes)
+					{
+						brokenRecipes.add(r.id);
+
+						if (ServerJS.instance.logRemovedRecipes)
+						{
+							ScriptType.SERVER.console.info("Removed broken recipe " + r.id + ": " + ((RecipeErrorJS) r).message);
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			ex.printStackTrace();
+		}
+
+		originalRecipes.list.sort(null);
+	}
+
+	public DynamicMapJS<DynamicMapJS<RecipeFunction>> getRecipes()
 	{
 		return recipeFunctions;
 	}
 
-	private List<RecipeJS> getOriginalRecipes()
+	@Ignore
+	public RecipeJS addRecipe(RecipeJS recipe, RecipeTypeJS type, ListJS args1)
 	{
-		if (originalRecipes == null)
+		if (recipe instanceof RecipeErrorJS)
 		{
-			originalRecipes = new ArrayList<>();
-
-			try
-			{
-				for (ResourceLocation location : resourceManager.getAllResourceLocations("recipes", s -> s.endsWith(".json")))
-				{
-					try (InputStreamReader reader = new InputStreamReader(resourceManager.getResource(location).getInputStream()))
-					{
-						JsonObject json = new JsonParser().parse(reader).getAsJsonObject();
-						ResourceLocation type = new ResourceLocation(json.get("type").getAsString());
-						ResourceLocation recipeId = new ResourceLocation(location.getNamespace(), location.getPath().substring(8, location.getPath().length() - 5));
-
-						IRecipeSerializer serializer = ForgeRegistries.RECIPE_SERIALIZERS.getValue(type);
-						RecipeJS r;
-
-						if (serializer == null)
-						{
-							r = new RecipeErrorJS("Recipe type '" + type + "' is not registered!");
-						}
-						else
-						{
-							try
-							{
-								serializer.read(recipeId, json);
-								RecipeFunction function = getRecipes().get(type.getNamespace()).get(type.getPath());
-								r = function.type.create(json);
-							}
-							catch (Exception ex)
-							{
-								r = new RecipeErrorJS(ex.toString());
-							}
-						}
-
-						r.id = recipeId;
-
-						if (!(r instanceof RecipeErrorJS))
-						{
-							originalRecipes.add(r);
-							r.group = json.has("group") ? json.get("group").getAsString() : "";
-						}
-						else if (removeBrokenRecipes)
-						{
-							brokenRecipes.add(r.id);
-
-							if (ServerJS.instance.logRemovedRecipes)
-							{
-								ScriptType.SERVER.console.info("Removed broken recipe " + r.id + ": " + ((RecipeErrorJS) r).message);
-							}
-						}
-					}
-					catch (Exception ex)
-					{
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-			}
+			ScriptType.SERVER.console.error("Broken '" + type.id + "' recipe: " + ((RecipeErrorJS) recipe).message);
+			ScriptType.SERVER.console.error(args1);
+			ScriptType.SERVER.console.error("");
+			return recipe;
 		}
 
+		recipe.event = this;
+
+		if (recipe.id == null)
+		{
+			recipe.id = new ResourceLocation(type.id.getNamespace(), "kubejs_generated_" + addedRecipes.size());
+		}
+
+		if (recipe.group == null)
+		{
+			recipe.group = "";
+		}
+
+		if (ServerJS.instance.logAddedRecipes)
+		{
+			ScriptType.SERVER.console.info("Added '" + type.id + "' recipe: " + recipe.toJson());
+		}
+
+		addedRecipes.add(recipe);
+		return recipe;
+	}
+
+	@Ignore
+	public void removeRecipe(RecipeJS recipe)
+	{
+		if (removedRecipes.add(recipe.id))
+		{
+			if (ServerJS.instance.logRemovedRecipes)
+			{
+				ScriptType.SERVER.console.info("Removed recipe " + recipe.id);
+			}
+		}
+	}
+
+	public RecipeCollection getAll()
+	{
 		return originalRecipes;
 	}
 
-	public void nuke()
+	public RecipeCollection get(@Nullable @P("filter") @T(MapJS.class) Object o)
 	{
-		remove(recipe -> true);
-	}
+		MapJS map = MapJS.of(o);
 
-	public void remove(Predicate<RecipeJS> recipePredicate)
-	{
-		for (RecipeJS recipe : new ArrayList<>(getOriginalRecipes()))
+		if (map == null)
 		{
-			if (recipePredicate.test(recipe))
-			{
-				if (removedRecipes.add(recipe.id))
-				{
-					originalRecipes.remove(recipe);
-
-					if (ServerJS.instance.logRemovedRecipes)
-					{
-						ScriptType.SERVER.console.info("Removed recipe " + recipe.id);
-					}
-				}
-			}
+			return originalRecipes;
 		}
+
+		Predicate<RecipeJS> predicate = r -> true;
+
+		if (map.get("id") != null)
+		{
+			ResourceLocation id = UtilsJS.getID(map.get("id"));
+			predicate = predicate.and(recipe -> recipe.id.equals(id));
+		}
+
+		if (map.get("type") != null)
+		{
+			ResourceLocation type = UtilsJS.getID(map.get("type"));
+			predicate = predicate.and(recipe -> recipe.getType().id.equals(type));
+		}
+
+		if (map.get("group") != null)
+		{
+			String group = map.get("group").toString();
+			predicate = predicate.and(recipe -> recipe.group.equals(group));
+		}
+
+		if (map.get("mod") != null)
+		{
+			String mod = map.get("mod").toString();
+			predicate = predicate.and(recipe -> recipe.id.getNamespace().equals(mod));
+		}
+
+		if (map.get("input") != null)
+		{
+			IngredientJS in = IngredientJS.of(map.get("input"));
+			predicate = predicate.and(recipe -> recipe.hasInput(in));
+		}
+
+		if (map.get("output") != null)
+		{
+			IngredientJS out = IngredientJS.of(map.get("output"));
+			predicate = predicate.and(recipe -> recipe.hasOutput(out));
+		}
+
+		return originalRecipes.filter(predicate);
 	}
 
-	public void removeId(@P("id") @T(ResourceLocation.class) Object id)
+	public void remove(@P("filter") @T(MapJS.class) Object filter)
 	{
-		ResourceLocation location = UtilsJS.getID(id);
-		remove(recipe -> recipe.id.equals(location));
+		get(filter).remove();
 	}
 
-	public void removeType(@P("type") @T(ResourceLocation.class) Object type)
+	public void replaceInput(@P("filter") @T(MapJS.class) Object filter, @P("ingredient") @T(IngredientJS.class) Object ingredient, @P("with") @T(IngredientJS.class) Object with)
 	{
-		ResourceLocation location = UtilsJS.getID(type);
-		remove(recipe -> recipe.getType().id.equals(location));
+		get(filter).replaceInput(ingredient, with);
 	}
 
-	public void removeGroup(@P("group") String group)
+	public void replaceOutput(@P("filter") @T(MapJS.class) Object filter, @P("ingredient") @T(IngredientJS.class) Object ingredient, @P("with") @T(ItemStackJS.class) Object with)
 	{
-		remove(recipe -> recipe.group.equals(group));
-	}
-
-	public void removeMod(@P("mod") String mod)
-	{
-		remove(recipe -> recipe.id.getNamespace().equals(mod));
-	}
-
-	public void removeInput(@P("ingredient") @T(IngredientJS.class) Object ingredient)
-	{
-		IngredientJS in = IngredientJS.of(ingredient);
-		remove(recipe -> recipe.hasInput(in));
-	}
-
-	public void removeOutput(@P("ingredient") @T(IngredientJS.class) Object ingredient)
-	{
-		IngredientJS in = IngredientJS.of(ingredient);
-		remove(recipe -> recipe.hasOutput(in));
+		get(filter).replaceOutput(ingredient, with);
 	}
 
 	public RecipeFunction getShaped()
@@ -263,11 +284,11 @@ public class RecipeEventJS extends ServerEventJS
 			pack.addData(new ResourceLocation(r.getNamespace(), "recipes/" + r.getPath() + ".json"), "{\"type\":\"kubejs:deleted\"}");
 		}
 
-		for (RecipeJS r : recipes)
+		for (RecipeJS r : addedRecipes)
 		{
 			r.addToDataPack(pack);
 		}
 
-		ScriptType.SERVER.console.info("Added " + recipes.size() + " recipes, removed " + removedRecipes.size() + " recipes, removed " + brokenRecipes.size() + " broken recipes");
+		ScriptType.SERVER.console.info("Added " + addedRecipes.size() + " recipes, removed " + removedRecipes.size() + " recipes, removed " + brokenRecipes.size() + " broken recipes");
 	}
 }

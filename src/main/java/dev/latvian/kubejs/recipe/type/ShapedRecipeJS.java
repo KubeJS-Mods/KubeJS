@@ -86,7 +86,7 @@ public class ShapedRecipeJS extends RecipeJS
 		{
 			ShapedRecipeJS recipe = new ShapedRecipeJS();
 
-			recipe.result = ItemStackJS.fromRecipeJson(json.get("result"));
+			recipe.result = ItemStackJS.resultFromRecipeJson(json.get("result"));
 
 			if (recipe.result.isEmpty())
 			{
@@ -105,7 +105,7 @@ public class ShapedRecipeJS extends RecipeJS
 
 			for (Map.Entry<String, JsonElement> entry : json.get("key").getAsJsonObject().entrySet())
 			{
-				IngredientJS i = IngredientJS.fromRecipeJson(entry.getValue());
+				IngredientJS i = IngredientJS.ingredientFromRecipeJson(entry.getValue());
 
 				if (!i.isEmpty())
 				{
@@ -164,8 +164,10 @@ public class ShapedRecipeJS extends RecipeJS
 	}
 
 	@Override
-	public boolean hasInput(IngredientJS ingredient)
+	public boolean hasInput(Object i)
 	{
+		IngredientJS ingredient = IngredientJS.of(i);
+
 		for (IngredientJS in : key.values())
 		{
 			if (in.anyStackMatches(ingredient))
@@ -178,8 +180,37 @@ public class ShapedRecipeJS extends RecipeJS
 	}
 
 	@Override
-	public boolean hasOutput(IngredientJS ingredient)
+	public boolean hasOutput(Object i)
 	{
-		return ingredient.test(result);
+		return IngredientJS.of(i).test(result);
+	}
+
+	@Override
+	public boolean replaceInput(Object i, Object with)
+	{
+		boolean changed = false;
+
+		for (Map.Entry<String, IngredientJS> entry : new ArrayList<>(key.entrySet()))
+		{
+			if (entry.getValue().anyStackMatches(IngredientJS.of(i)))
+			{
+				key.put(entry.getKey(), IngredientJS.of(with));
+				changed = true;
+			}
+		}
+
+		return changed;
+	}
+
+	@Override
+	public boolean replaceOutput(Object i, Object with)
+	{
+		if (IngredientJS.of(i).test(result))
+		{
+			result = ItemStackJS.of(with);
+			return true;
+		}
+
+		return false;
 	}
 }

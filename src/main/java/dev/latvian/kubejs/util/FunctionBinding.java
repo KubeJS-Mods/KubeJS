@@ -23,10 +23,24 @@ public class FunctionBinding extends AbstractJSObject implements WrappedJS
 		handler = h;
 	}
 
+	public FunctionBinding(Runnable noArgFunction)
+	{
+		handler = args -> {
+			noArgFunction.run();
+			return null;
+		};
+	}
+
 	@Override
 	@Nullable
 	public Object call(Object thiz, Object... args)
 	{
 		return handler.call(args);
+	}
+
+	@Override
+	public boolean isFunction()
+	{
+		return true;
 	}
 }

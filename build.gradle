@@ -51,9 +51,9 @@ minecraft {
 			workingDirectory project.file('run')
 			//property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 			property 'forge.logging.console.level', 'debug'
-			
+
 			args 'nogui'
-			
+
 			mods {
 				kubejs {
 					source sourceSets.main
@@ -111,18 +111,18 @@ jar {
 	}
 }
 
+def reobfFile = file("$buildDir/reobfJar/output.jar")
+def reobfArtifact = artifacts.add('default', reobfFile) {
+	type 'jar'
+	builtBy 'reobfJar'
+}
+
 task deobfJar(type: Jar) {
 	from sourceSets.main.output
 	classifier 'deobf'
 }
 
 build.dependsOn deobfJar
-
-def reobfFile = file("$buildDir/reobfJar/output.jar")
-def reobfArtifact = artifacts.add('default', reobfFile) {
-	type 'jar'
-	builtBy 'reobfJar'
-}
 
 artifacts {
 	archives deobfJar

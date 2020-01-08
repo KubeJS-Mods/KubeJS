@@ -57,14 +57,14 @@ public class CookingRecipeJS extends RecipeJS
 				public RecipeJS create(JsonObject json)
 				{
 					CookingRecipeJS recipe = new CookingRecipeJS(Type.this);
-					recipe.result = ItemStackJS.fromRecipeJson(json.get("result"));
+					recipe.result = ItemStackJS.resultFromRecipeJson(json.get("result"));
 
 					if (recipe.result.isEmpty())
 					{
 						return new RecipeErrorJS("Cooking recipe result " + json.get("result") + " is not a valid item!");
 					}
 
-					recipe.ingredient = IngredientJS.fromRecipeJson(json.get("ingredient"));
+					recipe.ingredient = IngredientJS.ingredientFromRecipeJson(json.get("ingredient"));
 
 					if (recipe.ingredient.isEmpty())
 					{
@@ -110,14 +110,38 @@ public class CookingRecipeJS extends RecipeJS
 	}
 
 	@Override
-	public boolean hasInput(IngredientJS i)
+	public boolean hasInput(Object i)
 	{
-		return ingredient.anyStackMatches(i);
+		return ingredient.anyStackMatches(IngredientJS.of(i));
 	}
 
 	@Override
-	public boolean hasOutput(IngredientJS ingredient)
+	public boolean hasOutput(Object i)
 	{
-		return ingredient.test(result);
+		return IngredientJS.of(i).test(result);
+	}
+
+	@Override
+	public boolean replaceInput(Object i, Object with)
+	{
+		if (ingredient.anyStackMatches(IngredientJS.of(i)))
+		{
+			ingredient = IngredientJS.of(with);
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean replaceOutput(Object i, Object with)
+	{
+		if (IngredientJS.of(i).test(result))
+		{
+			result = ItemStackJS.of(with);
+			return true;
+		}
+
+		return false;
 	}
 }

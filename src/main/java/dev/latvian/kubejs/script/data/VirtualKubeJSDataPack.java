@@ -28,13 +28,15 @@ import java.util.function.Predicate;
  */
 public class VirtualKubeJSDataPack extends DelegatableResourcePack
 {
+	public final boolean first;
 	private final Map<ResourceLocation, String> locationToData;
 	private final Map<String, String> pathToData;
 	private final Set<String> namespaces;
 
-	public VirtualKubeJSDataPack()
+	public VirtualKubeJSDataPack(boolean f)
 	{
 		super(new File("dummy"));
+		first = f;
 		locationToData = new HashMap<>();
 		pathToData = new HashMap<>();
 		namespaces = new HashSet<>();
@@ -55,9 +57,27 @@ public class VirtualKubeJSDataPack extends DelegatableResourcePack
 	}
 
 	@Override
-	public InputStream getInputStream(String location) throws IOException
+	public InputStream getInputStream(String path) throws IOException
 	{
-		String s = pathToData.get(location);
+		String s = pathToData.get(path);
+
+		if (s != null)
+		{
+			if (ServerJS.instance.dataPackOutput)
+			{
+				ScriptType.SERVER.console.info("Served virtual file '" + path + "': " + s);
+			}
+
+			return new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
+		}
+
+		throw new FileNotFoundException(path);
+	}
+
+	@Override
+	public InputStream getResourceStream(ResourcePackType type, ResourceLocation location) throws IOException
+	{
+		String s = locationToData.get(location);
 
 		if (s != null)
 		{
@@ -69,13 +89,19 @@ public class VirtualKubeJSDataPack extends DelegatableResourcePack
 			return new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
 		}
 
-		throw new FileNotFoundException(location);
+		throw new FileNotFoundException(location.toString());
 	}
 
 	@Override
-	public boolean resourceExists(String location)
+	public boolean resourceExists(String path)
 	{
-		return pathToData.containsKey(location);
+		return pathToData.containsKey(path);
+	}
+
+	@Override
+	public boolean resourceExists(ResourcePackType type, ResourceLocation location)
+	{
+		return type == ResourcePackType.SERVER_DATA && locationToData.containsKey(location);
 	}
 
 	@Override
@@ -119,7 +145,7 @@ public class VirtualKubeJSDataPack extends DelegatableResourcePack
 	@Override
 	public String getName()
 	{
-		return "KubeJS Virtual Data Pack";
+		return "KubeJS Virtual Data Pack [First: " + first + "]";
 	}
 
 	@Override

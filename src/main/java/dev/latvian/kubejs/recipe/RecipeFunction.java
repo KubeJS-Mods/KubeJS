@@ -2,28 +2,23 @@ package dev.latvian.kubejs.recipe;
 
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.recipe.type.RecipeJS;
-import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.WrappedJS;
 import jdk.nashorn.api.scripting.AbstractJSObject;
-import net.minecraft.util.ResourceLocation;
-
-import java.util.List;
 
 /**
  * @author LatvianModder
  */
 public class RecipeFunction extends AbstractJSObject implements WrappedJS
 {
+	private final RecipeEventJS event;
 	public final RecipeTypeJS type;
-	private final List<RecipeJS> recipes;
 
-	public RecipeFunction(RecipeTypeJS t, List<RecipeJS> r)
+	public RecipeFunction(RecipeEventJS e, RecipeTypeJS t)
 	{
+		event = e;
 		type = t;
-		recipes = r;
 	}
 
 	@Override
@@ -44,7 +39,7 @@ public class RecipeFunction extends AbstractJSObject implements WrappedJS
 			{
 				JsonObject json = map.toJson();
 				json.addProperty("type", type.id.toString());
-				return add(type.create(json), args);
+				return event.addRecipe(type.create(json), type, args);
 			}
 			else
 			{
@@ -54,35 +49,13 @@ public class RecipeFunction extends AbstractJSObject implements WrappedJS
 
 		try
 		{
-			return add(type.create(args), args);
+			return event.addRecipe(type.create(args), type, args);
 		}
 		catch (Exception ex)
 		{
 			ex.printStackTrace();
-			return add(new RecipeErrorJS(ex.toString()), args);
+			return event.addRecipe(new RecipeErrorJS(ex.toString()), type, args);
 		}
-	}
-
-	private RecipeJS add(RecipeJS recipe, List args1)
-	{
-		if (recipe instanceof RecipeErrorJS)
-		{
-			ScriptType.SERVER.console.error("Broken '" + type.id + "' recipe: " + ((RecipeErrorJS) recipe).message);
-			ScriptType.SERVER.console.error(args1);
-			ScriptType.SERVER.console.error("");
-			return recipe;
-		}
-
-		recipe.id = new ResourceLocation(type.id.getNamespace(), "kubejs_generated_" + recipes.size());
-		recipe.group = "";
-
-		if (ServerJS.instance.logAddedRecipes)
-		{
-			ScriptType.SERVER.console.info("Added '" + type.id + "' recipe: " + recipe.toJson());
-		}
-
-		recipes.add(recipe);
-		return recipe;
 	}
 
 	@Override

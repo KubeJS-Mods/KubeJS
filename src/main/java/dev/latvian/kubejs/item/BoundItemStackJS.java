@@ -86,7 +86,7 @@ public class BoundItemStackJS extends ItemStackJS
 	@Override
 	public boolean testVanilla(ItemStack stack2)
 	{
-		if (stack2.getCount() >= stack.getCount() && stack.getItem() == stack2.getItem())
+		if (stack.getItem() == stack2.getItem())
 		{
 			CompoundNBT nbt = stack.getTag();
 			CompoundNBT nbt2 = stack2.getTag();

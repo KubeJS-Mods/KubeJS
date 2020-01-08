@@ -36,7 +36,7 @@ public interface IngredientJS extends JsonSerializable
 		{
 			return (IngredientJS) o;
 		}
-		else if (o instanceof String)
+		else if (o instanceof CharSequence)
 		{
 			if (o.toString().startsWith("#"))
 			{
@@ -93,7 +93,7 @@ public interface IngredientJS extends JsonSerializable
 		return ItemStackJS.of(o);
 	}
 
-	static IngredientJS fromRecipeJson(JsonElement json)
+	static IngredientJS ingredientFromRecipeJson(JsonElement json)
 	{
 		if (json.isJsonArray())
 		{
@@ -101,7 +101,7 @@ public interface IngredientJS extends JsonSerializable
 
 			for (JsonElement e : json.getAsJsonArray())
 			{
-				any.ingredients.add(fromRecipeJson(e));
+				any.ingredients.add(ingredientFromRecipeJson(e));
 			}
 
 			return any;

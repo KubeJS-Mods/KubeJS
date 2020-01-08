@@ -16,9 +16,7 @@ import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.player.ServerPlayerDataJS;
 import dev.latvian.kubejs.recipe.RecipeEventJS;
-import dev.latvian.kubejs.recipe.RecipeFunction;
 import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
-import dev.latvian.kubejs.recipe.type.RecipeJS;
 import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptFileInfo;
 import dev.latvian.kubejs.script.ScriptManager;
@@ -41,16 +39,21 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.profiler.IProfiler;
+import net.minecraft.resources.FallbackResourceManager;
 import net.minecraft.resources.IFutureReloadListener;
 import net.minecraft.resources.IResourceManager;
+import net.minecraft.resources.SimpleReloadableResourceManager;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tags.NetworkTagManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
@@ -99,7 +102,8 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 
 	public ServerWorldJS overworld;
 	private AttachedData data;
-	private final VirtualKubeJSDataPack virtualDataPack;
+	private final VirtualKubeJSDataPack virtualDataPackFirst;
+	private final VirtualKubeJSDataPack virtualDataPackLast;
 	public boolean dataPackOutput;
 	public boolean logAddedRecipes;
 	public boolean logRemovedRecipes;
@@ -114,7 +118,8 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 		playerMap = new HashMap<>();
 		fakePlayerMap = new HashMap<>();
 		worlds = new ArrayList<>();
-		virtualDataPack = new VirtualKubeJSDataPack();
+		virtualDataPackFirst = new VirtualKubeJSDataPack(true);
+		virtualDataPackLast = new VirtualKubeJSDataPack(false);
 		dataPackOutput = false;
 		logAddedRecipes = false;
 		logRemovedRecipes = false;
@@ -383,6 +388,7 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 		KubeJSNet.MAIN.send(PacketDistributor.ALL.noArg(), new MessageSendDataFromServer(channel, MapJS.nbt(data)));
 	}
 
+	@SuppressWarnings("deprecation")
 	@Ignore
 	public void reloadScripts(IResourceManager resourceManager)
 	{
@@ -409,23 +415,49 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 		}
 
 		//Loading is required in prepare stage to allow virtual data pack overrides
-		virtualDataPack.resetData();
+		virtualDataPackFirst.resetData();
 		ScriptType.SERVER.console.setLineNumber(true);
 		scriptManager.load();
-		new DataPackEventJS(virtualDataPack).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK);
 
-		List<RecipeJS> recipes = new ArrayList<>();
-		Map<ResourceLocation, RecipeFunction> recipeFunctions = new HashMap<>();
-		MinecraftForge.EVENT_BUS.post(new RegisterRecipeHandlersEvent(recipes, recipeFunctions));
-		RecipeEventJS recipeEvent = new RecipeEventJS(resourceManager, recipes, recipeFunctions);
+		new DataPackEventJS(virtualDataPackFirst).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_FIRST);
+		new DataPackEventJS(virtualDataPackLast).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_LAST);
+
+		new TagEventJS<>(Registry.ITEM, "items", "item").loadAndPost(resourceManager, virtualDataPackFirst, virtualDataPackLast);
+		new TagEventJS<>(Registry.BLOCK, "blocks", "block").loadAndPost(resourceManager, virtualDataPackFirst, virtualDataPackLast);
+		new TagEventJS<>(Registry.FLUID, "fluids", "fluid").loadAndPost(resourceManager, virtualDataPackFirst, virtualDataPackLast);
+		new TagEventJS<>(Registry.ENTITY_TYPE, "entity_types", "entity_type").loadAndPost(resourceManager, virtualDataPackFirst, virtualDataPackLast);
+
+		//ItemTags.setCollection(itemTagCollection);
+		//BlockTags.setCollection(blockTagCollection);
+		//FluidTags.setCollection(fluidTagCollection);
+		//EntityTypeTags.setCollection(entityTypeTagCollection);
+
+		RecipeEventJS recipeEvent = new RecipeEventJS();
+		MinecraftForge.EVENT_BUS.post(new RegisterRecipeHandlersEvent(recipeEvent));
+		recipeEvent.loadRecipes(resourceManager);
 		recipeEvent.post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_RECIPES);
-		recipeEvent.addDataToPack(virtualDataPack);
+		recipeEvent.addDataToPack(virtualDataPackFirst);
 
-		TagEventJS tagEvent = new TagEventJS(resourceManager);
-		tagEvent.post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_TAGS);
-		tagEvent.addDataToPack(virtualDataPack);
+		resourceManager.addResourcePack(virtualDataPackFirst);
+		resourceManager.addResourcePack(virtualDataPackLast);
 
-		resourceManager.addResourcePack(virtualDataPack);
+		if (resourceManager instanceof SimpleReloadableResourceManager)
+		{
+			Map<String, FallbackResourceManager> namespaceResourceManagers = ObfuscationReflectionHelper.getPrivateValue(SimpleReloadableResourceManager.class, (SimpleReloadableResourceManager) resourceManager, "field_199014_c");
+
+			if (namespaceResourceManagers != null)
+			{
+				for (FallbackResourceManager manager : namespaceResourceManagers.values())
+				{
+					if (manager.resourcePacks.remove(virtualDataPackLast))
+					{
+						manager.resourcePacks.add(0, virtualDataPackLast);
+					}
+				}
+			}
+		}
+
+		//resourceManager.addResourcePack(virtualDataPack);
 		ScriptType.SERVER.console.setLineNumber(false);
 		ScriptType.SERVER.console.info("Scripts loaded");
 
@@ -440,5 +472,13 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 	{
 		reloadScripts(resourceManager);
 		return CompletableFuture.supplyAsync(Object::new, backgroundExecutor).thenCompose(stage::markCompleteAwaitingOthers).thenAcceptAsync(o -> {}, gameExecutor);
+	}
+
+	public void tagsUpdated(NetworkTagManager tagManager)
+	{
+		//ItemTags.setCollection(itemTagCollection);
+		//BlockTags.setCollection(blockTagCollection);
+		//FluidTags.setCollection(fluidTagCollection);
+		//EntityTypeTags.setCollection(entityTypeTagCollection);
 	}
 }

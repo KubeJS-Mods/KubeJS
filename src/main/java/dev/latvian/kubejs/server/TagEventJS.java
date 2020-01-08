@@ -2,14 +2,16 @@ package dev.latvian.kubejs.server;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.documentation.Ignore;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,115 +19,150 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class TagEventJS extends ServerEventJS
+public class TagEventJS<T> extends ServerEventJS
 {
-	public static class TagClass
+	public static class TagList<T>
 	{
-		private final String name;
-		private final Map<ResourceLocation, TagList> tags;
+		private final TagEventJS<T> event;
+		private final ResourceLocation id;
+		private boolean replace;
+		private final List<String> added;
+		private final List<String> removed;
 
-		private TagClass(String n)
+		private TagList(TagEventJS<T> e, ResourceLocation i)
 		{
-			name = n;
-			tags = new HashMap<>();
+			event = e;
+			id = i;
+			replace = false;
+			added = new ArrayList<>();
+			removed = new ArrayList<>();
 		}
 
-		public TagList get(Object tag)
+		public TagList<T> replace()
 		{
-			ResourceLocation location = UtilsJS.getID(tag);
-			TagList list = tags.get(location);
+			replace = true;
+			return this;
+		}
 
-			if (list == null)
+		public TagList<T> add(Object... ids)
+		{
+			for (Object o : ids)
 			{
-				list = new TagList(this, location);
-				tags.put(location, list);
+				added.add(String.valueOf(o));
 			}
 
-			return list;
+			return this;
 		}
-	}
 
-	public static class TagList
-	{
-		private final TagClass tagClass;
-		private final ResourceLocation id;
-		private final List<String> values;
-
-		private TagList(TagClass c, ResourceLocation i)
+		public TagList<T> remove(Object... ids)
 		{
-			tagClass = c;
-			id = i;
-			values = new ArrayList<>();
+			for (Object o : ids)
+			{
+				removed.add(String.valueOf(o));
+			}
+
+			return this;
 		}
 
-		public void add(String... value)
-		{
-			values.addAll(Arrays.asList(value));
-		}
-
-		@Override
-		public String toString()
+		public JsonObject getFirst()
 		{
 			JsonObject json = new JsonObject();
-			json.addProperty("replace", false);
+			json.addProperty("replace", replace);
 
 			JsonArray a = new JsonArray();
 
-			for (String s : values)
+			for (String s : added)
 			{
 				a.add(s);
 			}
 
 			json.add("values", a);
+			return json;
+		}
 
-			return json.toString();
+		public JsonObject getLast()
+		{
+			JsonObject json = new JsonObject();
+			json.addProperty("replace", false);
+			JsonArray r = new JsonArray();
+
+			for (String s : removed)
+			{
+				r.add(s);
+			}
+
+			json.add("remove", r);
+			return json;
 		}
 	}
 
-	private final IResourceManager resourceManager;
-	private final Map<String, TagClass> tags;
+	private final Registry<T> registry;
+	//private final NetworkTagCollection<T> tagCollection;
+	private final String collectionName;
+	private final Map<ResourceLocation, TagList<T>> tags;
 
-	public TagEventJS(IResourceManager m)
+	public TagEventJS(Registry<T> r, String n, String tn)
 	{
-		resourceManager = m;
-		tags = new HashMap<String, TagClass>()
-		{
-			@Override
-			public TagClass get(Object key)
-			{
-				TagClass file = super.get(key);
-
-				if (file == null)
-				{
-					file = new TagClass(key.toString());
-					put(file.name, file);
-				}
-
-				return file;
-			}
-
-			@Override
-			public boolean containsKey(Object key)
-			{
-				return true;
-			}
-		};
-	}
-
-	public Map<String, TagClass> getTags()
-	{
-		return tags;
+		registry = r;
+		collectionName = n;
+		tags = new HashMap<>();
 	}
 
 	@Ignore
-	public void addDataToPack(VirtualKubeJSDataPack pack)
+	public void loadAndPost(IResourceManager resourceManager, VirtualKubeJSDataPack first, VirtualKubeJSDataPack last)
 	{
-		for (TagClass tagClass : tags.values())
+		/*
+		tagCollection = new NetworkTagCollection<>(registry, "tags/" + collectionName, tn);
+		tagCollection.reload(resourceManager, Runnable::run).thenAccept(tagCollection::registerAll);
+
+		for (Tag<T> tag : tagCollection.getTagMap().values())
 		{
-			for (TagList list : tagClass.tags.values())
+			TagList list = new TagList(tag.getId());
+			tags.put(list.id, list);
+
+			for (T t : tag.getAllElements())
 			{
-				pack.addData(new ResourceLocation(list.id.getNamespace(), "tags/" + tagClass.name + "/" + list.id.getPath() + ".json"), list.toString());
+				System.out.println("- " + t);
 			}
 		}
+		*/
+
+		post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_TAGS + "." + collectionName);
+
+		for (TagList list : tags.values())
+		{
+			if (!list.added.isEmpty())
+			{
+				first.addData(new ResourceLocation(list.id.getNamespace(), "tags/" + collectionName + "/" + list.id.getPath() + ".json"), list.getFirst().toString());
+			}
+
+			if (!list.removed.isEmpty())
+			{
+				last.addData(new ResourceLocation(list.id.getNamespace(), "tags/" + collectionName + "/" + list.id.getPath() + ".json"), list.getLast().toString());
+			}
+		}
+
+		//Map<ResourceLocation, Tag.Builder<T>> map = new HashMap<>();
+		//tagCollection.registerAll(map);
+		//return tagCollection;
+	}
+
+	public String getCollectionName()
+	{
+		return collectionName;
+	}
+
+	public TagList<T> get(Object tag)
+	{
+		ResourceLocation location = UtilsJS.getID(tag);
+		TagList<T> list = tags.get(location);
+
+		if (list == null)
+		{
+			list = new TagList<>(this, location);
+			tags.put(location, list);
+		}
+
+		return list;
 	}
 }

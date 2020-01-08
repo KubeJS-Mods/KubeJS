@@ -22,7 +22,7 @@ public class CustomRecipeJS extends RecipeJS
 		@Override
 		public RecipeJS create(ListJS args)
 		{
-			return new RecipeErrorJS("Can't create custom recipe!");
+			return new RecipeErrorJS("Can't create custom recipe for type " + id + "!");
 		}
 
 		@Override

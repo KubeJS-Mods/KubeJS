@@ -66,7 +66,7 @@ public class ShapelessRecipeJS extends RecipeJS
 		{
 			ShapelessRecipeJS recipe = new ShapelessRecipeJS();
 
-			recipe.result = ItemStackJS.fromRecipeJson(json.get("result"));
+			recipe.result = ItemStackJS.resultFromRecipeJson(json.get("result"));
 
 			if (recipe.result.isEmpty())
 			{
@@ -75,7 +75,7 @@ public class ShapelessRecipeJS extends RecipeJS
 
 			for (JsonElement e : json.get("ingredients").getAsJsonArray())
 			{
-				IngredientJS in = IngredientJS.fromRecipeJson(e);
+				IngredientJS in = IngredientJS.ingredientFromRecipeJson(e);
 
 				if (!in.isEmpty())
 				{
@@ -123,11 +123,11 @@ public class ShapelessRecipeJS extends RecipeJS
 	}
 
 	@Override
-	public boolean hasInput(IngredientJS ingredient)
+	public boolean hasInput(Object i)
 	{
 		for (IngredientJS in : ingredients)
 		{
-			if (in.anyStackMatches(ingredient))
+			if (in.anyStackMatches(IngredientJS.of(i)))
 			{
 				return true;
 			}
@@ -137,8 +137,37 @@ public class ShapelessRecipeJS extends RecipeJS
 	}
 
 	@Override
-	public boolean hasOutput(IngredientJS ingredient)
+	public boolean hasOutput(Object i)
 	{
-		return ingredient.test(result);
+		return IngredientJS.of(i).test(result);
+	}
+
+	@Override
+	public boolean replaceInput(Object i, Object with)
+	{
+		boolean changed = false;
+
+		for (int j = 0; j < ingredients.size(); j++)
+		{
+			if (ingredients.get(j).anyStackMatches(IngredientJS.of(i)))
+			{
+				ingredients.set(j, IngredientJS.of(with));
+				changed = true;
+			}
+		}
+
+		return changed;
+	}
+
+	@Override
+	public boolean replaceOutput(Object i, Object with)
+	{
+		if (IngredientJS.of(i).test(result))
+		{
+			result = ItemStackJS.of(with);
+			return true;
+		}
+
+		return false;
 	}
 }

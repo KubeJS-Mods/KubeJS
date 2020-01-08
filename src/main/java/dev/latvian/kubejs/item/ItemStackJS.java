@@ -78,6 +78,10 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		{
 			return new UnboundItemStackJS(((Item) o).getRegistryName());
 		}
+		else if (o instanceof CharSequence)
+		{
+			return new UnboundItemStackJS(new ResourceLocation(o.toString()));
+		}
 
 		MapJS map = MapJS.of(o);
 
@@ -152,7 +156,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return stack;
 	}
 
-	public static ItemStackJS fromRecipeJson(JsonElement json)
+	public static ItemStackJS resultFromRecipeJson(JsonElement json)
 	{
 		if (json.isJsonPrimitive())
 		{
@@ -370,26 +374,26 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		{
 			builder.append("item.of('");
 			builder.append(getId());
-			builder.append("')");
+			builder.append('\'');
 
 			if (count > 1)
 			{
-				builder.append(".count(");
+				builder.append(", ");
 				builder.append(count);
-				builder.append(')');
 			}
+
+			if (!nbt.isEmpty())
+			{
+				builder.append(", ");
+				builder.append(nbt);
+			}
+
+			builder.append(')');
 
 			if (chance < 1D)
 			{
 				builder.append(".chance(");
 				builder.append(chance);
-				builder.append(')');
-			}
-
-			if (!nbt.isEmpty())
-			{
-				builder.append(".nbt(");
-				builder.append(nbt);
 				builder.append(')');
 			}
 		}
@@ -406,13 +410,13 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	@Override
 	public boolean test(ItemStackJS stack)
 	{
-		return stack.getCount() >= getCount() && areItemsEqual(stack) && isNBTEqual(stack);
+		return areItemsEqual(stack) && isNBTEqual(stack);
 	}
 
 	@Override
 	public boolean testVanilla(ItemStack stack)
 	{
-		return stack.getCount() >= getCount() && areItemsEqual(stack) && isNBTEqual(stack);
+		return areItemsEqual(stack) && isNBTEqual(stack);
 	}
 
 	@Override

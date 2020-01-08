@@ -62,7 +62,8 @@ public class KubeJSEvents
 	public static final String SERVER_LOAD = "server.load";
 	public static final String SERVER_UNLOAD = "server.unload";
 	public static final String SERVER_TICK = "server.tick";
-	public static final String SERVER_DATAPACK = "server.datapack";
+	public static final String SERVER_DATAPACK_FIRST = "server.datapack.first";
+	public static final String SERVER_DATAPACK_LAST = "server.datapack.last";
 	public static final String SERVER_DATAPACK_RECIPES = "server.datapack.recipes";
 	public static final String SERVER_DATAPACK_TAGS = "server.datapack.tags";
 	public static final String SERVER_DATAPACK_LOOT_TABLES = "server.datapack.loot_tables";
@@ -143,7 +144,8 @@ public class KubeJSEvents
 		event.registerEvent(SERVER_LOAD, ServerEventJS.class).serverOnly();
 		event.registerEvent(SERVER_UNLOAD, ServerEventJS.class).serverOnly();
 		event.registerEvent(SERVER_TICK, ServerEventJS.class).serverOnly();
-		event.registerEvent(SERVER_DATAPACK, DataPackEventJS.class).serverOnly();
+		event.registerEvent(SERVER_DATAPACK_FIRST, DataPackEventJS.class).serverOnly();
+		event.registerEvent(SERVER_DATAPACK_LAST, DataPackEventJS.class).serverOnly();
 		event.registerEvent(SERVER_DATAPACK_RECIPES, RecipeEventJS.class).serverOnly();
 		event.registerEvent(SERVER_DATAPACK_TAGS, TagEventJS.class).serverOnly();
 
