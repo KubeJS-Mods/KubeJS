@@ -37,6 +37,9 @@ import java.util.function.Predicate;
  */
 public class RecipeEventJS extends ServerEventJS
 {
+	private static final Predicate<RecipeJS> ALWAYS_TRUE = r -> true;
+	private static final Predicate<RecipeJS> ALWAYS_FALSE = r -> false;
+
 	@Ignore
 	private final List<RecipeJS> addedRecipes;
 	@Ignore
@@ -191,16 +194,51 @@ public class RecipeEventJS extends ServerEventJS
 		return originalRecipes;
 	}
 
-	public RecipeCollection get(@Nullable @P("filter") @T(MapJS.class) Object o)
+	public static Predicate<RecipeJS> createPredicate(@Nullable Object o)
 	{
-		MapJS map = MapJS.of(o);
-
-		if (map == null)
+		if (o == null)
 		{
-			return originalRecipes;
+			return ALWAYS_TRUE;
 		}
 
-		Predicate<RecipeJS> predicate = r -> true;
+		ListJS list = ListJS.orSelf(o);
+
+		if (list.isEmpty())
+		{
+			return ALWAYS_TRUE;
+		}
+		else if (list.size() > 1)
+		{
+			Predicate<RecipeJS> predicate = ALWAYS_FALSE;
+
+			for (Object o1 : list)
+			{
+				Predicate<RecipeJS> p = createPredicate(o1);
+
+				if (p == ALWAYS_TRUE)
+				{
+					return ALWAYS_TRUE;
+				}
+
+				predicate = predicate.or(p);
+			}
+
+			return predicate;
+		}
+
+		MapJS map = MapJS.of(list.get(0));
+
+		if (map == null || map.isEmpty())
+		{
+			return ALWAYS_TRUE;
+		}
+
+		Predicate<RecipeJS> predicate = ALWAYS_TRUE;
+
+		if (map.get("or") != null)
+		{
+			predicate = predicate.and(createPredicate(map.get("or")));
+		}
 
 		if (map.get("id") != null)
 		{
@@ -238,7 +276,17 @@ public class RecipeEventJS extends ServerEventJS
 			predicate = predicate.and(recipe -> recipe.hasOutput(out));
 		}
 
-		return originalRecipes.filter(predicate);
+		return predicate;
+	}
+
+	public Predicate<RecipeJS> customFilter(Predicate<RecipeJS> filter)
+	{
+		return filter;
+	}
+
+	public RecipeCollection get(@Nullable @P("filter") @T(MapJS.class) Object o)
+	{
+		return originalRecipes.filter(createPredicate(o));
 	}
 
 	public void remove(@P("filter") @T(MapJS.class) Object filter)

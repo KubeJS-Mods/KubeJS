@@ -129,4 +129,15 @@ public class TagIngredientJS implements IngredientJS
 		json.addProperty("tag", tag.toString());
 		return json;
 	}
+
+	@Override
+	public boolean anyStackMatches(IngredientJS ingredient)
+	{
+		if (ingredient instanceof TagIngredientJS)
+		{
+			return tag.equals(((TagIngredientJS) ingredient).tag);
+		}
+
+		return IngredientJS.super.anyStackMatches(ingredient);
+	}
 }

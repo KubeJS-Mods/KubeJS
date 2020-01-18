@@ -30,9 +30,9 @@ public class CookingRecipeJS extends RecipeJS
 				@Override
 				public RecipeJS create(ListJS args)
 				{
-					if (args.size() != 2)
+					if (args.size() < 2)
 					{
-						return new RecipeErrorJS("Cooking recipe requires 2 arguments - result and ingredient!");
+						return new RecipeErrorJS("Cooking recipe requires at least 2 arguments - result and ingredient!");
 					}
 
 					CookingRecipeJS recipe = new CookingRecipeJS(Type.this);
@@ -48,6 +48,16 @@ public class CookingRecipeJS extends RecipeJS
 					if (recipe.ingredient.isEmpty())
 					{
 						return new RecipeErrorJS("Cooking recipe ingredient " + args.get(1) + " is not a valid ingredient!");
+					}
+
+					if (args.size() >= 3)
+					{
+						recipe.xp(((Number) args.get(2)).floatValue());
+					}
+
+					if (args.size() >= 4)
+					{
+						recipe.cookingTime(((Number) args.get(3)).intValue());
 					}
 
 					return recipe;
@@ -71,6 +81,16 @@ public class CookingRecipeJS extends RecipeJS
 						return new RecipeErrorJS("Cooking recipe ingredient " + json.get("ingredient") + " is not a valid ingredient!");
 					}
 
+					if (json.has("experience"))
+					{
+						recipe.xp(json.get("experience").getAsFloat());
+					}
+
+					if (json.has("cookingtime"))
+					{
+						recipe.cookingTime(json.get("cookingtime").getAsInt());
+					}
+
 					return recipe;
 				}
 			};
@@ -81,10 +101,12 @@ public class CookingRecipeJS extends RecipeJS
 	private IngredientJS ingredient = EmptyItemStackJS.INSTANCE;
 	private ItemStackJS result = EmptyItemStackJS.INSTANCE;
 	private float experience = 0.1F;
+	private int cookingTime;
 
 	public CookingRecipeJS(Type c)
 	{
 		cookingType = c;
+		cookingTime = c == Type.SMELTING ? 200 : 100;
 	}
 
 	@Override
@@ -100,12 +122,19 @@ public class CookingRecipeJS extends RecipeJS
 		json.add("ingredient", ingredient.toJson());
 		json.add("result", result.getResultJson());
 		json.addProperty("experience", experience);
+		json.addProperty("cookingtime", cookingTime);
 		return json;
 	}
 
 	public CookingRecipeJS xp(float xp)
 	{
-		experience = xp;
+		experience = Math.max(0F, xp);
+		return this;
+	}
+
+	public CookingRecipeJS cookingTime(int time)
+	{
+		cookingTime = Math.max(0, time);
 		return this;
 	}
 
