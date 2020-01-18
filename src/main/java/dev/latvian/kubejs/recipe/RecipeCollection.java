@@ -153,6 +153,8 @@ public class RecipeCollection implements IRecipeCollection
 			return this;
 		}
 
-		return new RecipeCollection(list1);
+		RecipeCollection collection = new RecipeCollection(list1);
+		collection.recipeChanged = recipeChanged;
+		return collection;
 	}
 }
