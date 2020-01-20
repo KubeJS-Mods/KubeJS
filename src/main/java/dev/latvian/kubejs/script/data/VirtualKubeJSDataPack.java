@@ -105,24 +105,27 @@ public class VirtualKubeJSDataPack extends DelegatableResourcePack
 	}
 
 	@Override
-	public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String pathIn, int maxDepth, Predicate<String> filter)
+	public Collection<ResourceLocation> findResources(ResourcePackType type, String namespace, String path, int maxDepth, Predicate<String> filter)
 	{
 		List<ResourceLocation> list = Lists.newArrayList();
 
 		for (ResourceLocation key : locationToData.keySet())
 		{
-			try
+			if (namespace.equals(key.getNamespace()))
 			{
-				int i = key.getPath().lastIndexOf('/');
-				String path = i == -1 ? key.getPath() : key.getPath().substring(i + 1);
-
-				if (key.getPath().startsWith(pathIn) && filter.test(path))
+				try
 				{
-					list.add(key);
+					int i = key.getPath().lastIndexOf('/');
+					String p = i == -1 ? key.getPath() : key.getPath().substring(i + 1);
+
+					if (key.getPath().startsWith(path) && filter.test(p))
+					{
+						list.add(key);
+					}
 				}
-			}
-			catch (Exception ex)
-			{
+				catch (Exception ex)
+				{
+				}
 			}
 		}
 

@@ -50,7 +50,7 @@ public class ItemBuilder
 		callback = c;
 		maxStackSize = 64;
 		maxDamage = 0;
-		containerItem = null;
+		containerItem = UtilsJS.NULL_ID;
 		tools = new HashMap<>();
 		rarity = Rarity.COMMON;
 		glow = false;
@@ -75,9 +75,9 @@ public class ItemBuilder
 		return this;
 	}
 
-	public ItemBuilder containerItem(@P("id") ResourceLocation id)
+	public ItemBuilder containerItem(@P("id") @T(ResourceLocation.class) Object id)
 	{
-		containerItem = id;
+		containerItem = UtilsJS.getID(id);
 		return this;
 	}
 
@@ -138,7 +138,7 @@ public class ItemBuilder
 			properties.addToolType(entry.getKey(), entry.getValue());
 		}
 
-		Item item = containerItem == null ? null : ForgeRegistries.ITEMS.getValue(containerItem);
+		Item item = containerItem == UtilsJS.NULL_ID ? null : ForgeRegistries.ITEMS.getValue(containerItem);
 
 		if (item != null && item != Items.AIR)
 		{

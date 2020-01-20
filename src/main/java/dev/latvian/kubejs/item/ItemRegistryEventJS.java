@@ -28,7 +28,11 @@ public class ItemRegistryEventJS extends EventJS
 
 	public ItemBuilder create(String name)
 	{
-		return new ItemBuilder(name, p -> registry.register(new ItemJS(p).setRegistryName(p.id)));
+		return new ItemBuilder(name, p -> {
+			ItemJS item = new ItemJS(p);
+			registry.register(item.setRegistryName(p.id));
+			ItemJS.KUBEJS_ITEMS.put(p.id, item);
+		});
 	}
 
 	public ItemBuilder createBlockItem(String name)
@@ -41,7 +45,9 @@ public class ItemRegistryEventJS extends EventJS
 				throw new IllegalArgumentException("Block with name " + name + " not found!");
 			}
 
-			registry.register(new BlockItemJS((BlockJS) block, p).setRegistryName(block.getRegistryName()));
+			BlockItemJS item = new BlockItemJS((BlockJS) block, p);
+			registry.register(item.setRegistryName(item.properties.id));
+			BlockItemJS.KUBEJS_BLOCK_ITEMS.put(item.properties.id, item);
 		});
 	}
 }

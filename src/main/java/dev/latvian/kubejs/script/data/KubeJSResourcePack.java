@@ -149,7 +149,7 @@ public class KubeJSResourcePack implements IResourcePack
 	}
 
 	@Override
-	public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String pathIn, int maxDepth, Predicate<String> filter)
+	public Collection<ResourceLocation> findResources(ResourcePackType type, String namespace, String path, int maxDepth, Predicate<String> filter)
 	{
 		if (type != packType)
 		{
@@ -159,15 +159,12 @@ public class KubeJSResourcePack implements IResourcePack
 		File file1 = new File(folder, type.getDirectoryName());
 		List<ResourceLocation> list = Lists.newArrayList();
 
-		for (String s : getResourceNamespaces(type))
-		{
-			getAllResourceLocations0(new File(new File(file1, s), pathIn), maxDepth, s, list, pathIn + "/", filter);
-		}
+		findResources0(new File(new File(file1, namespace), path), maxDepth, namespace, list, path, filter);
 
 		return list;
 	}
 
-	private void getAllResourceLocations0(File file, int maxDepth, String originPath, List<ResourceLocation> list, String path, Predicate<String> filter)
+	private void findResources0(File file, int maxDepth, String namespace, List<ResourceLocation> list, String path, Predicate<String> filter)
 	{
 		File[] files = file.listFiles();
 
@@ -182,14 +179,14 @@ public class KubeJSResourcePack implements IResourcePack
 			{
 				if (maxDepth > 0)
 				{
-					getAllResourceLocations0(f, maxDepth - 1, originPath, list, path + f.getName() + "/", filter);
+					findResources0(f, maxDepth - 1, namespace, list, path + f.getName() + "/", filter);
 				}
 			}
 			else if (!f.getName().endsWith(".mcmeta") && filter.test(f.getName()))
 			{
 				try
 				{
-					list.add(new ResourceLocation(originPath, path + f.getName()));
+					list.add(new ResourceLocation(namespace, path + f.getName()));
 				}
 				catch (ResourceLocationException ex)
 				{

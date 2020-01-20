@@ -38,10 +38,8 @@ import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.FallbackResourceManager;
 import net.minecraft.resources.IFutureReloadListener;
-import net.minecraft.resources.IResourceManager;
 import net.minecraft.resources.SimpleReloadableResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.NetworkTagManager;
@@ -67,12 +65,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 /**
  * @author LatvianModder
  */
-public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadListener
+public class ServerJS implements MessageSender, WithAttachedData
 {
 	public static ServerJS instance;
 
@@ -390,7 +387,7 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 
 	@SuppressWarnings("deprecation")
 	@Ignore
-	public void reloadScripts(IResourceManager resourceManager)
+	public void reloadScripts(SimpleReloadableResourceManager resourceManager)
 	{
 		scriptManager.unload();
 
@@ -441,23 +438,19 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 		resourceManager.addResourcePack(virtualDataPackFirst);
 		resourceManager.addResourcePack(virtualDataPackLast);
 
-		if (resourceManager instanceof SimpleReloadableResourceManager)
-		{
-			Map<String, FallbackResourceManager> namespaceResourceManagers = ObfuscationReflectionHelper.getPrivateValue(SimpleReloadableResourceManager.class, (SimpleReloadableResourceManager) resourceManager, "field_199014_c");
+		Map<String, FallbackResourceManager> namespaceResourceManagers = ObfuscationReflectionHelper.getPrivateValue(SimpleReloadableResourceManager.class, resourceManager, "field_199014_c");
 
-			if (namespaceResourceManagers != null)
+		if (namespaceResourceManagers != null)
+		{
+			for (FallbackResourceManager manager : namespaceResourceManagers.values())
 			{
-				for (FallbackResourceManager manager : namespaceResourceManagers.values())
+				if (manager.resourcePacks.remove(virtualDataPackLast))
 				{
-					if (manager.resourcePacks.remove(virtualDataPackLast))
-					{
-						manager.resourcePacks.add(0, virtualDataPackLast);
-					}
+					manager.resourcePacks.add(0, virtualDataPackLast);
 				}
 			}
 		}
 
-		//resourceManager.addResourcePack(virtualDataPack);
 		ScriptType.SERVER.console.setLineNumber(false);
 		ScriptType.SERVER.console.info("Scripts loaded");
 
@@ -467,11 +460,17 @@ public class ServerJS implements MessageSender, WithAttachedData, IFutureReloadL
 		}
 	}
 
-	@Override
-	public CompletableFuture<Void> reload(IStage stage, IResourceManager resourceManager, IProfiler preparationsProfiler, IProfiler reloadProfiler, Executor backgroundExecutor, Executor gameExecutor)
+	public IFutureReloadListener createReloadListener()
 	{
-		reloadScripts(resourceManager);
-		return CompletableFuture.supplyAsync(Object::new, backgroundExecutor).thenCompose(stage::markCompleteAwaitingOthers).thenAcceptAsync(o -> {}, gameExecutor);
+		return (stage, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> {
+			if (!(resourceManager instanceof SimpleReloadableResourceManager))
+			{
+				throw new IllegalStateException("Resource manager is not SimpleReloadableResourceManager, KubeJS will not work! Unsupported resource manager class: " + resourceManager.getClass());
+			}
+
+			reloadScripts((SimpleReloadableResourceManager) resourceManager);
+			return CompletableFuture.supplyAsync(Object::new, backgroundExecutor).thenCompose(stage::markCompleteAwaitingOthers).thenAcceptAsync(o -> {}, gameExecutor);
+		};
 	}
 
 	public void tagsUpdated(NetworkTagManager tagManager)

@@ -1,7 +1,8 @@
 package dev.latvian.kubejs.client;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.block.BlockJS;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptType;
@@ -15,6 +16,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
@@ -23,6 +26,8 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -38,6 +43,7 @@ public class KubeJSClientEventHandler
 
 	public void init()
 	{
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		MinecraftForge.EVENT_BUS.addListener(this::bindings);
 		MinecraftForge.EVENT_BUS.addListener(this::debugInfo);
 		MinecraftForge.EVENT_BUS.addListener(this::itemTooltip);
@@ -47,6 +53,27 @@ public class KubeJSClientEventHandler
 		MinecraftForge.EVENT_BUS.addListener(this::respawn);
 		MinecraftForge.EVENT_BUS.addListener(this::inGameScreenDraw);
 		MinecraftForge.EVENT_BUS.addListener(this::guiScreenDraw);
+	}
+
+	private void setup(FMLClientSetupEvent event)
+	{
+		for (BlockJS block : BlockJS.KUBEJS_BLOCKS.values())
+		{
+			switch (block.properties.renderType)
+			{
+				case "cutout":
+					RenderTypeLookup.setRenderLayer(block, RenderType.getCutout());
+					break;
+				case "cutout_mipped":
+					RenderTypeLookup.setRenderLayer(block, RenderType.getCutoutMipped());
+					break;
+				case "translucent":
+					RenderTypeLookup.setRenderLayer(block, RenderType.getTranslucent());
+					break;
+				default:
+					RenderTypeLookup.setRenderLayer(block, RenderType.getSolid());
+			}
+		}
 	}
 
 	private void bindings(BindingsEvent event)
@@ -125,7 +152,7 @@ public class KubeJSClientEventHandler
 		int g = (col >> 8) & 0xFF;
 		int b = col & 0xFF;
 
-		GlStateManager.disableTexture();
+		RenderSystem.disableTexture();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder buffer = tessellator.getBuffer();
 		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
@@ -150,7 +177,7 @@ public class KubeJSClientEventHandler
 		}
 
 		tessellator.draw();
-		GlStateManager.enableTexture();
+		RenderSystem.enableTexture();
 
 		for (int i = 0; i < list.size(); i++)
 		{
@@ -162,10 +189,10 @@ public class KubeJSClientEventHandler
 
 	private void addRectToBuffer(BufferBuilder buffer, int x, int y, int w, int h, int r, int g, int b, int a)
 	{
-		buffer.pos(x, y + h, 0D).color(r, g, b, a).endVertex();
-		buffer.pos(x + w, y + h, 0D).color(r, g, b, a).endVertex();
-		buffer.pos(x + w, y, 0D).color(r, g, b, a).endVertex();
-		buffer.pos(x, y, 0D).color(r, g, b, a).endVertex();
+		buffer.vertex(x, y + h, 0D).color(r, g, b, a).endVertex();
+		buffer.vertex(x + w, y + h, 0D).color(r, g, b, a).endVertex();
+		buffer.vertex(x + w, y, 0D).color(r, g, b, a).endVertex();
+		buffer.vertex(x, y, 0D).color(r, g, b, a).endVertex();
 	}
 
 	private void inGameScreenDraw(RenderGameOverlayEvent.Post event)
@@ -182,12 +209,12 @@ public class KubeJSClientEventHandler
 			return;
 		}
 
-		GlStateManager.pushMatrix();
-		GlStateManager.translatef(0, 0, 800);
-		GlStateManager.enableBlend();
-		GlStateManager.disableLighting();
+		RenderSystem.pushMatrix();
+		RenderSystem.translatef(0, 0, 800);
+		RenderSystem.enableBlend();
+		RenderSystem.disableLighting();
 
-		int maxWidth = mc.mainWindow.getScaledWidth() / 4;
+		int maxWidth = mc.getWindow().getScaledWidth() / 4;
 		int p = 4;
 		int spx = p;
 		int spy = p;
@@ -197,7 +224,7 @@ public class KubeJSClientEventHandler
 			spy += drawOverlay(mc, maxWidth, spx, spy, p, o, false);
 		}
 
-		GlStateManager.popMatrix();
+		RenderSystem.popMatrix();
 	}
 
 	private void guiScreenDraw(GuiScreenEvent.DrawScreenEvent.Post event)
@@ -209,12 +236,12 @@ public class KubeJSClientEventHandler
 
 		Minecraft mc = Minecraft.getInstance();
 
-		GlStateManager.pushMatrix();
-		GlStateManager.translatef(0, 0, 800);
-		GlStateManager.enableBlend();
-		GlStateManager.disableLighting();
+		RenderSystem.pushMatrix();
+		RenderSystem.translatef(0, 0, 800);
+		RenderSystem.enableBlend();
+		RenderSystem.disableLighting();
 
-		int maxWidth = mc.mainWindow.getScaledWidth() / 4;
+		int maxWidth = mc.getWindow().getScaledWidth() / 4;
 		int p = 4;
 		int spx = p;
 		int spy = p;
@@ -237,7 +264,7 @@ public class KubeJSClientEventHandler
 			}
 		}
 
-		GlStateManager.popMatrix();
+		RenderSystem.popMatrix();
 	}
 
 	private boolean isOver(List<Widget> list, int x, int y)

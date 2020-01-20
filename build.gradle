@@ -85,6 +85,7 @@ configurations.all {
 
 repositories {
 	mavenLocal()
+	maven { url "https://maven.tterrag.com/" } //Yarn2MCP
 	maven { url "https://maven.latmod.com/" } //Aurora
 }
 

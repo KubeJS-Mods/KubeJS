@@ -5,7 +5,6 @@ import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.block.Block;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ToolType;
 
@@ -35,7 +34,7 @@ public class BlockBuilder
 	@Ignore
 	public boolean fullBlock;
 	@Ignore
-	public BlockRenderLayer layer;
+	public String renderType;
 
 	public BlockBuilder(String i, Consumer<BlockBuilder> c)
 	{
@@ -49,7 +48,7 @@ public class BlockBuilder
 		harvestLevel = -1;
 		opaque = true;
 		fullBlock = false;
-		layer = BlockRenderLayer.SOLID;
+		renderType = "solid";
 	}
 
 	public BlockBuilder material(@P("material") MaterialJS m)
@@ -102,24 +101,10 @@ public class BlockBuilder
 		return this;
 	}
 
-	public BlockBuilder layer(@P("layer") String l)
+	public BlockBuilder renderType(@P("layer") String l)
 	{
-		switch (l.toLowerCase())
-		{
-			case "cutout":
-				layer = BlockRenderLayer.CUTOUT;
-				return this;
-			case "cutout_mipped":
-			case "mipped_cutout":
-				layer = BlockRenderLayer.CUTOUT_MIPPED;
-				return this;
-			case "translucent":
-				layer = BlockRenderLayer.TRANSLUCENT;
-				return this;
-			default:
-				layer = BlockRenderLayer.SOLID;
-				return this;
-		}
+		renderType = l;
+		return this;
 	}
 
 	public void add()

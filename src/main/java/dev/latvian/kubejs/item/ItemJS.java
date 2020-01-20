@@ -4,17 +4,22 @@ import dev.latvian.kubejs.text.Text;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author LatvianModder
  */
 public class ItemJS extends Item
 {
+	public static final Map<ResourceLocation, ItemJS> KUBEJS_ITEMS = new HashMap<>();
+
 	public final ItemBuilder properties;
 	private ItemStack containerItem;
 

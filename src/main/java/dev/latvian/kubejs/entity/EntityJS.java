@@ -254,32 +254,32 @@ public class EntityJS implements MessageSender
 
 	public double getX()
 	{
-		return minecraftEntity.posX;
+		return minecraftEntity.getX();
 	}
 
 	public void setX(@P("x") double x)
 	{
-		minecraftEntity.posX = x;
+		minecraftEntity.setPosition(x, getY(), getZ());
 	}
 
 	public double getY()
 	{
-		return minecraftEntity.posY;
+		return minecraftEntity.getY();
 	}
 
 	public void setY(@P("y") double y)
 	{
-		minecraftEntity.posY = y;
+		minecraftEntity.setPosition(getX(), y, getZ());
 	}
 
 	public double getZ()
 	{
-		return minecraftEntity.posZ;
+		return minecraftEntity.getZ();
 	}
 
 	public void setZ(@P("z") double z)
 	{
-		minecraftEntity.posZ = z;
+		minecraftEntity.setPosition(getX(), getY(), z);
 	}
 
 	public float getYaw()

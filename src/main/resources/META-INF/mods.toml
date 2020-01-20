@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[28,)"
+loaderVersion="[30,)"
 issueTrackerURL="https://github.com/KubeJS-Mods/KubeJS/issues"
 
 [[mods]]
@@ -15,14 +15,14 @@ logoFile="kubejs_logo.png"
 [[dependencies.kubejs]]
     modId="forge"
     mandatory=true
-    versionRange="[28,)"
+    versionRange="[30,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.kubejs]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.14.4]"
+    versionRange="[1.15,)"
     ordering="NONE"
     side="BOTH"
 

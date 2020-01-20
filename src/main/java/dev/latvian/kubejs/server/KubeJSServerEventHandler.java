@@ -67,8 +67,9 @@ public class KubeJSServerEventHandler
 			SimpleReloadableResourceManager manager = (SimpleReloadableResourceManager) event.getServer().getResourceManager();
 			List<IFutureReloadListener> reloadListeners = ObfuscationReflectionHelper.getPrivateValue(SimpleReloadableResourceManager.class, manager, "field_199015_d");
 			List<IFutureReloadListener> initTaskQueue = ObfuscationReflectionHelper.getPrivateValue(SimpleReloadableResourceManager.class, manager, "field_219539_d");
-			reloadListeners.add(0, ServerJS.instance);
-			initTaskQueue.add(0, ServerJS.instance);
+			IFutureReloadListener reloadListener = ServerJS.instance.createReloadListener();
+			reloadListeners.add(0, reloadListener);
+			initTaskQueue.add(0, reloadListener);
 		}
 		catch (Exception ex)
 		{
