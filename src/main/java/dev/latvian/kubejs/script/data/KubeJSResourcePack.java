@@ -3,6 +3,9 @@ package dev.latvian.kubejs.script.data;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.block.BlockJS;
+import dev.latvian.kubejs.item.BlockItemJS;
+import dev.latvian.kubejs.item.ItemJS;
 import dev.latvian.kubejs.script.ScriptType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.resources.IResourcePack;
@@ -77,13 +80,14 @@ public class KubeJSResourcePack implements IResourcePack
 		{
 			return new BufferedInputStream(new FileInputStream(file));
 		}
-		else if (packType == ResourcePackType.CLIENT_RESOURCES && location.getNamespace().equals(KubeJS.MOD_ID))
+		else if (location.getNamespace().equals(KubeJS.MOD_ID))
 		{
 			if (location.getPath().endsWith(".json"))
 			{
 				JsonObject json = new JsonObject();
+				String p = location.getPath().substring(0, location.getPath().length() - 5);
 
-				if (generateJsonFile(location.getPath().substring(0, location.getPath().length() - 5), json))
+				if (packType == ResourcePackType.CLIENT_RESOURCES ? generateClientJsonFile(p, json) : generateServerJsonFile(p, json))
 				{
 					return new ByteArrayInputStream(json.toString().getBytes(StandardCharsets.UTF_8));
 				}
@@ -93,7 +97,23 @@ public class KubeJSResourcePack implements IResourcePack
 		throw new ResourcePackFileNotFoundException(folder, resourcePath);
 	}
 
-	private boolean generateJsonFile(String path, JsonObject json)
+	@Override
+	public boolean resourceExists(ResourcePackType type, ResourceLocation location)
+	{
+		if (location.getPath().endsWith(".json") && location.getNamespace().equals(KubeJS.MOD_ID))
+		{
+			String p = location.getPath().substring(0, location.getPath().length() - 5);
+
+			if (packType == ResourcePackType.CLIENT_RESOURCES ? generateClientJsonFile(p, new JsonObject()) : generateServerJsonFile(p, new JsonObject()))
+			{
+				return true;
+			}
+		}
+
+		return type == packType && new File(folder, getFullPath(type, location)).exists();
+	}
+
+	private boolean generateClientJsonFile(String path, JsonObject json)
 	{
 		if (path.startsWith("models/item/"))
 		{
@@ -134,18 +154,9 @@ public class KubeJSResourcePack implements IResourcePack
 		return false;
 	}
 
-	@Override
-	public boolean resourceExists(ResourcePackType type, ResourceLocation location)
+	private boolean generateServerJsonFile(String path, JsonObject json)
 	{
-		if (packType == ResourcePackType.CLIENT_RESOURCES && location.getNamespace().equals(KubeJS.MOD_ID))
-		{
-			if (location.getPath().endsWith(".json") && generateJsonFile(location.getPath().substring(0, location.getPath().length() - 5), new JsonObject()))
-			{
-				return true;
-			}
-		}
-
-		return type == packType && new File(folder, getFullPath(type, location)).exists();
+		return false;
 	}
 
 	@Override
@@ -204,6 +215,13 @@ public class KubeJSResourcePack implements IResourcePack
 			return Collections.emptySet();
 		}
 
+		HashSet<String> namespaces = new HashSet<>();
+
+		if (!ItemJS.KUBEJS_ITEMS.isEmpty() || BlockItemJS.KUBEJS_BLOCK_ITEMS.isEmpty() || !BlockJS.KUBEJS_BLOCKS.isEmpty())
+		{
+			namespaces.add(KubeJS.MOD_ID);
+		}
+
 		File file = new File(folder, type.getDirectoryName());
 
 		if (file.exists() && file.isDirectory())
@@ -212,8 +230,6 @@ public class KubeJSResourcePack implements IResourcePack
 
 			if (list != null && list.length > 0)
 			{
-				HashSet<String> namespaces = new HashSet<>();
-
 				for (File f : list)
 				{
 					if (f.isDirectory())
@@ -221,12 +237,10 @@ public class KubeJSResourcePack implements IResourcePack
 						namespaces.add(f.getName().toLowerCase());
 					}
 				}
-
-				return namespaces;
 			}
 		}
 
-		return Collections.emptySet();
+		return namespaces;
 	}
 
 	@Nullable

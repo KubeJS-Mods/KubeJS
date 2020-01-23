@@ -1,7 +1,11 @@
 package dev.latvian.kubejs.server;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import dev.latvian.kubejs.ATHelper;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.MinecraftClass;
+import dev.latvian.kubejs.block.BlockJS;
 import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.Info;
 import dev.latvian.kubejs.documentation.O;
@@ -51,7 +55,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
@@ -435,10 +438,33 @@ public class ServerJS implements MessageSender, WithAttachedData
 		recipeEvent.post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_RECIPES);
 		recipeEvent.addDataToPack(virtualDataPackFirst);
 
+		for (BlockJS block : BlockJS.KUBEJS_BLOCKS.values())
+		{
+			JsonObject json = new JsonObject();
+			json.addProperty("type", "minecraft:block");
+			JsonArray pools = new JsonArray();
+			JsonObject pool = new JsonObject();
+			pool.addProperty("rolls", 1);
+			JsonArray entries = new JsonArray();
+			JsonObject entry = new JsonObject();
+			entry.addProperty("type", "minecraft:item");
+			entry.addProperty("name", block.properties.id.getNamespace() + ":" + block.properties.id.getPath());
+			entries.add(entry);
+			pool.add("entries", entries);
+			JsonArray conditions = new JsonArray();
+			JsonObject condition = new JsonObject();
+			condition.addProperty("condition", "minecraft:survives_explosion");
+			conditions.add(condition);
+			pool.add("conditions", conditions);
+			pools.add(pool);
+			json.add("pools", pools);
+			virtualDataPackFirst.addData(new ResourceLocation(block.properties.id.getNamespace(), "loot_tables/blocks/" + block.properties.id.getPath() + ".json"), json.toString());
+		}
+
 		resourceManager.addResourcePack(virtualDataPackFirst);
 		resourceManager.addResourcePack(virtualDataPackLast);
 
-		Map<String, FallbackResourceManager> namespaceResourceManagers = ObfuscationReflectionHelper.getPrivateValue(SimpleReloadableResourceManager.class, resourceManager, "field_199014_c");
+		Map<String, FallbackResourceManager> namespaceResourceManagers = ATHelper.getNamespaceResourceManagers(resourceManager);
 
 		if (namespaceResourceManagers != null)
 		{

@@ -86,6 +86,7 @@ public class ScriptManager
 				if (file.load(b))
 				{
 					i++;
+					type.console.info("Loaded script " + file.info.location);
 				}
 				else if (file.getError() != null)
 				{

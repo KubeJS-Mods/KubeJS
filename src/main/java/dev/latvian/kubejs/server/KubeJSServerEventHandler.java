@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.server;
 
+import dev.latvian.kubejs.ATHelper;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.command.CommandRegistryEventJS;
@@ -21,7 +22,6 @@ import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
@@ -65,8 +65,8 @@ public class KubeJSServerEventHandler
 		try
 		{
 			SimpleReloadableResourceManager manager = (SimpleReloadableResourceManager) event.getServer().getResourceManager();
-			List<IFutureReloadListener> reloadListeners = ObfuscationReflectionHelper.getPrivateValue(SimpleReloadableResourceManager.class, manager, "field_199015_d");
-			List<IFutureReloadListener> initTaskQueue = ObfuscationReflectionHelper.getPrivateValue(SimpleReloadableResourceManager.class, manager, "field_219539_d");
+			List<IFutureReloadListener> reloadListeners = ATHelper.getReloadListeners(manager);
+			List<IFutureReloadListener> initTaskQueue = ATHelper.getInitTaskQueue(manager);
 			IFutureReloadListener reloadListener = ServerJS.instance.createReloadListener();
 			reloadListeners.add(0, reloadListener);
 			initTaskQueue.add(0, reloadListener);
