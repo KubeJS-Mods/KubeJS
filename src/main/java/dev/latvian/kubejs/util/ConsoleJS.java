@@ -35,7 +35,8 @@ public class ConsoleJS
 
 	private String string(Object object)
 	{
-		String s = String.valueOf(UtilsJS.wrap(object, JSObjectType.ANY));
+		Object o = UtilsJS.wrap(object, JSObjectType.ANY);
+		String s = o == null || o instanceof String || o instanceof Number || o instanceof WrappedJS ? String.valueOf(o) : (o + " [" + o.getClass().getName() + "]");
 
 		if (lineNumber == 0 && group.isEmpty())
 		{
