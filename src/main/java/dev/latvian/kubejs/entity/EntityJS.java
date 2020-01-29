@@ -137,9 +137,9 @@ public class EntityJS implements MessageSender
 		return false;
 	}
 
-	public boolean isSneaking()
+	public boolean isCrouching()
 	{
-		return minecraftEntity.isSneaking();
+		return minecraftEntity.isCrouching();
 	}
 
 	public boolean isSprinting()
@@ -254,7 +254,7 @@ public class EntityJS implements MessageSender
 
 	public double getX()
 	{
-		return minecraftEntity.getX();
+		return minecraftEntity.getPosX();
 	}
 
 	public void setX(@P("x") double x)
@@ -264,7 +264,7 @@ public class EntityJS implements MessageSender
 
 	public double getY()
 	{
-		return minecraftEntity.getY();
+		return minecraftEntity.getPosY();
 	}
 
 	public void setY(@P("y") double y)
@@ -274,7 +274,7 @@ public class EntityJS implements MessageSender
 
 	public double getZ()
 	{
-		return minecraftEntity.getZ();
+		return minecraftEntity.getPosZ();
 	}
 
 	public void setZ(@P("z") double z)

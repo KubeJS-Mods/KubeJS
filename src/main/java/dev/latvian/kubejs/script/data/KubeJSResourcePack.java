@@ -160,7 +160,7 @@ public class KubeJSResourcePack implements IResourcePack
 	}
 
 	@Override
-	public Collection<ResourceLocation> findResources(ResourcePackType type, String namespace, String path, int maxDepth, Predicate<String> filter)
+	public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String namespace, String path, int maxDepth, Predicate<String> filter)
 	{
 		if (type != packType)
 		{

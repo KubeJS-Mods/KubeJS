@@ -27,10 +27,10 @@ public class GameRulesJS
 		{
 			cache = new HashMap<>();
 
-			GameRules.func_223590_a(new GameRules.IRuleEntryVisitor()
+			GameRules.visitAll(new GameRules.IRuleEntryVisitor()
 			{
 				@Override
-				public <T extends GameRules.RuleValue<T>> void func_223481_a(GameRules.RuleKey<T> key, GameRules.RuleType<T> type)
+				public <T extends GameRules.RuleValue<T>> void visit(GameRules.RuleKey<T> key, GameRules.RuleType<T> type)
 				{
 					cache.put(key.toString(), key);
 				}

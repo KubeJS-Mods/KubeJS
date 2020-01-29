@@ -78,7 +78,7 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS
 		if (!i.isEmpty())
 		{
 			Entity e = event.getEntity();
-			ItemEntity ei = new ItemEntity(e.world, e.getX(), e.getY(), e.getZ(), i);
+			ItemEntity ei = new ItemEntity(e.world, e.getPosX(), e.getPosY(), e.getPosZ(), i);
 			ei.setPickupDelay(10);
 			ItemEntityJS ie = new ItemEntityJS(getWorld(), ei);
 			getDrops().add(ie);

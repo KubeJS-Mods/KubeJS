@@ -105,7 +105,7 @@ public class VirtualKubeJSDataPack extends DelegatableResourcePack
 	}
 
 	@Override
-	public Collection<ResourceLocation> findResources(ResourcePackType type, String namespace, String path, int maxDepth, Predicate<String> filter)
+	public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String namespace, String path, int maxDepth, Predicate<String> filter)
 	{
 		List<ResourceLocation> list = Lists.newArrayList();
 

@@ -67,11 +67,11 @@ public class NBTUtilsJS
 		}
 		else if (o instanceof String || o instanceof Character)
 		{
-			return StringNBT.of(o.toString());
+			return StringNBT.valueOf(o.toString());
 		}
 		else if (o instanceof Boolean)
 		{
-			return ByteNBT.of((Boolean) o ? (byte) 1 : (byte) 0);
+			return ByteNBT.valueOf((Boolean) o ? (byte) 1 : (byte) 0);
 		}
 		else if (o instanceof Number)
 		{
@@ -79,22 +79,22 @@ public class NBTUtilsJS
 
 			if (number instanceof Byte)
 			{
-				return ByteNBT.of(number.byteValue());
+				return ByteNBT.valueOf(number.byteValue());
 			}
 			else if (number instanceof Short)
 			{
-				return ShortNBT.of(number.shortValue());
+				return ShortNBT.valueOf(number.shortValue());
 			}
 			else if (number instanceof Integer)
 			{
-				return IntNBT.of(number.intValue());
+				return IntNBT.valueOf(number.intValue());
 			}
 			else if (number instanceof Float)
 			{
-				return FloatNBT.of(number.floatValue());
+				return FloatNBT.valueOf(number.floatValue());
 			}
 
-			return DoubleNBT.of(number.doubleValue());
+			return DoubleNBT.valueOf(number.doubleValue());
 		}
 
 		return null;

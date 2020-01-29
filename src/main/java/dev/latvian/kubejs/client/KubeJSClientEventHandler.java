@@ -62,16 +62,16 @@ public class KubeJSClientEventHandler
 			switch (block.properties.renderType)
 			{
 				case "cutout":
-					RenderTypeLookup.setRenderLayer(block, RenderType.getCutout());
+					RenderTypeLookup.setRenderLayer(block, RenderType.cutout());
 					break;
 				case "cutout_mipped":
-					RenderTypeLookup.setRenderLayer(block, RenderType.getCutoutMipped());
+					RenderTypeLookup.setRenderLayer(block, RenderType.cutoutMipped());
 					break;
 				case "translucent":
-					RenderTypeLookup.setRenderLayer(block, RenderType.getTranslucent());
+					RenderTypeLookup.setRenderLayer(block, RenderType.translucent());
 					break;
 				default:
-					RenderTypeLookup.setRenderLayer(block, RenderType.getSolid());
+					RenderTypeLookup.setRenderLayer(block, RenderType.solid());
 			}
 		}
 	}
@@ -189,10 +189,10 @@ public class KubeJSClientEventHandler
 
 	private void addRectToBuffer(BufferBuilder buffer, int x, int y, int w, int h, int r, int g, int b, int a)
 	{
-		buffer.vertex(x, y + h, 0D).color(r, g, b, a).endVertex();
-		buffer.vertex(x + w, y + h, 0D).color(r, g, b, a).endVertex();
-		buffer.vertex(x + w, y, 0D).color(r, g, b, a).endVertex();
-		buffer.vertex(x, y, 0D).color(r, g, b, a).endVertex();
+		buffer.pos(x, y + h, 0D).color(r, g, b, a).endVertex();
+		buffer.pos(x + w, y + h, 0D).color(r, g, b, a).endVertex();
+		buffer.pos(x + w, y, 0D).color(r, g, b, a).endVertex();
+		buffer.pos(x, y, 0D).color(r, g, b, a).endVertex();
 	}
 
 	private void inGameScreenDraw(RenderGameOverlayEvent.Post event)
@@ -214,7 +214,7 @@ public class KubeJSClientEventHandler
 		RenderSystem.enableBlend();
 		RenderSystem.disableLighting();
 
-		int maxWidth = mc.getWindow().getScaledWidth() / 4;
+		int maxWidth = mc.getMainWindow().getScaledWidth() / 4;
 		int p = 4;
 		int spx = p;
 		int spy = p;
@@ -241,7 +241,7 @@ public class KubeJSClientEventHandler
 		RenderSystem.enableBlend();
 		RenderSystem.disableLighting();
 
-		int maxWidth = mc.getWindow().getScaledWidth() / 4;
+		int maxWidth = mc.getMainWindow().getScaledWidth() / 4;
 		int p = 4;
 		int spx = p;
 		int spy = p;
