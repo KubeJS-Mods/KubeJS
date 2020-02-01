@@ -85,7 +85,6 @@ configurations.all {
 
 repositories {
 	mavenLocal()
-	maven { url "https://maven.tterrag.com/" } //Yarn2MCP
 	maven { url "https://maven.latmod.com/" } //Aurora
 }
 
@@ -93,7 +92,6 @@ dependencies {
 	minecraft "net.minecraftforge:forge:${forge_version}"
 	compile "dev.latvian.mods:Aurora:1.+"
 	compile fg.deobf(curse.resolve('jei', project.jei_file))
-	compile fg.deobf(curse.resolve('packmode', project.packmode_file))
 	compile fg.deobf(curse.resolve('bookshelf', project.bookshelf_file))
 	compile fg.deobf(curse.resolve('game-stages', project.gamestages_file))
 }
@@ -150,7 +148,6 @@ if (ENV.CURSEFORGE_KEY) {
 			relations {
 				optionalDependency 'aurora'
 				optionalDependency 'jei'
-				optionalDependency 'packmode'
 				optionalDependency 'game-stages'
 				optionalDependency 'create'
 			}
