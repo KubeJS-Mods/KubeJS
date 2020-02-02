@@ -1,1 +1,1 @@
-# KubeJS [![](http://cf.way2muchnoise.eu/kubejs.svg) ![](https://cf.way2muchnoise.eu/packs/kubejs.svg) ![](http://cf.way2muchnoise.eu/versions/kubejs.svg)](https://www.curseforge.com/minecraft/mc-mods/kubejs)
+# [KubeJS](https://kubejs.latvian.dev/)
