@@ -84,7 +84,7 @@ repositories {
 
 dependencies {
 	minecraft "net.minecraftforge:forge:${forge_version}"
-	compile "dev.latvian.mods:Aurora:1.+"
+	compile "dev.latvian.mods:Aurora:${aurora_version}"
 	compile fg.deobf(curse.resolve('jei', project.jei_file))
 	compile fg.deobf(curse.resolve('bookshelf', project.bookshelf_file))
 	compile fg.deobf(curse.resolve('game-stages', project.gamestages_file))

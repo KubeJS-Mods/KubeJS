@@ -1,6 +1,34 @@
 {
+	"name": "${mod_name}",
 	"version": "${mod_version}",
 	"minecraft": "1.15.2",
-	"forge": "${forge_version}",
-	"mappings": "${mapping_version}"
+	"modloader": {
+		"type": "forge",
+		"version": "${forge_version}",
+		"mappings": "${mapping_version}"
+	},
+	"dependencies": [
+		{
+			"type": "maven",
+			"repository": "https://maven.latmod.com/",
+			"group": "dev.latvian.mods",
+			"name": "Aurora",
+			"version": "${aurora_version}"
+		},
+		{
+			"type": "curseforge",
+			"id": "jei",
+			"file": "${jei_file}"
+		},
+		{
+			"type": "curseforge",
+			"id": "bookshelf",
+			"file": "${bookshelf_file}"
+		},
+		{
+			"type": "curseforge",
+			"id": "game-stages",
+			"file": "${gamestages_file}"
+		}
+	]
 }
