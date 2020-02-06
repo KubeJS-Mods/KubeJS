@@ -77,12 +77,6 @@ minecraft {
 	}
 }
 
-/*
-configurations.all {
-	transitive = false
-}
-*/
-
 repositories {
 	mavenLocal()
 	maven { url "https://maven.latmod.com/" } //Aurora

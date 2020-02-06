@@ -5,7 +5,6 @@ import dev.latvian.kubejs.client.KubeJSClient;
 import dev.latvian.kubejs.entity.KubeJSEntityEventHandler;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.integration.IntegrationManager;
-import dev.latvian.kubejs.integration.aurora.AuroraIntegration;
 import dev.latvian.kubejs.item.KubeJSItemEventHandler;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.player.KubeJSPlayerEventHandler;
@@ -19,10 +18,8 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.KubeJSServerEventHandler;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
-import dev.latvian.mods.aurora.Aurora;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
@@ -179,10 +176,12 @@ public class KubeJS
 		IntegrationManager.init();
 		KubeJSNet.init();
 
+		/*
 		if (ModList.get().isLoaded(Aurora.MOD_ID))
 		{
 			new AuroraIntegration().init();
 		}
+		*/
 
 		new EventJS().post(ScriptType.STARTUP, KubeJSEvents.INIT);
 	}
