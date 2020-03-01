@@ -43,6 +43,10 @@ public class MaterialListJS
 		add("portal", Material.PORTAL, SoundType.STONE);
 		add("cake", Material.CAKE, SoundType.CLOTH);
 		add("web", Material.WEB, SoundType.CLOTH);
+		add("slime", Material.CLAY, SoundType.SLIME);
+		add("honey", Material.CLAY, SoundType.field_226947_m_);
+		add("berry_bush", Material.PLANTS, SoundType.SWEET_BERRY_BUSH);
+		add("lantern", Material.IRON, SoundType.LANTERN);
 	}
 
 	public MaterialJS add(MaterialJS m)
