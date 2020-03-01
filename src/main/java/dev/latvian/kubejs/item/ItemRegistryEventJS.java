@@ -4,9 +4,7 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.block.BlockJS;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.util.UtilsJS;
-import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 
 /**
@@ -37,17 +35,20 @@ public class ItemRegistryEventJS extends EventJS
 
 	public ItemBuilder createBlockItem(String name)
 	{
-		return new ItemBuilder(name, p -> {
-			Block block = ForgeRegistries.BLOCKS.getValue(p.id);
+		BlockJS block = BlockJS.KUBEJS_BLOCKS.get(UtilsJS.getID(KubeJS.appendModId(name)));
 
-			if (!(block instanceof BlockJS))
-			{
-				throw new IllegalArgumentException("Block with name " + name + " not found!");
-			}
+		if (block == null)
+		{
+			throw new IllegalArgumentException("Block with name " + name + " not found!");
+		}
 
-			BlockItemJS item = new BlockItemJS((BlockJS) block, p);
+		ItemBuilder itemBuilder = new ItemBuilder(name, p -> {
+			BlockItemJS item = new BlockItemJS(block, p);
 			registry.register(item.setRegistryName(item.properties.id));
 			BlockItemJS.KUBEJS_BLOCK_ITEMS.put(item.properties.id, item);
 		});
+
+		itemBuilder.parentModel = block.properties.model;
+		return itemBuilder;
 	}
 }

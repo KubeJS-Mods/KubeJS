@@ -6,6 +6,7 @@ import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.UtilsJS;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
@@ -43,6 +44,12 @@ public class ItemBuilder
 	public final List<Text> tooltip;
 	@Ignore
 	public ItemGroup group;
+	@Ignore
+	public Int2IntOpenHashMap color;
+	@Ignore
+	public String texture;
+	@Ignore
+	public String parentModel;
 
 	public ItemBuilder(String i, Consumer<ItemBuilder> c)
 	{
@@ -56,6 +63,10 @@ public class ItemBuilder
 		glow = false;
 		tooltip = new ArrayList<>();
 		group = ItemGroup.MISC;
+		color = new Int2IntOpenHashMap();
+		color.defaultReturnValue(0xFFFFFFFF);
+		texture = id.getNamespace() + ":item/" + id.getPath();
+		parentModel = "item/generated";
 	}
 
 	public ItemBuilder maxStackSize(@P("size") int v)
@@ -116,6 +127,24 @@ public class ItemBuilder
 			}
 		}
 
+		return this;
+	}
+
+	public ItemBuilder color(int index, int c)
+	{
+		color.put(index, 0xFF000000 | c);
+		return this;
+	}
+
+	public ItemBuilder texture(String tex)
+	{
+		texture = tex;
+		return this;
+	}
+
+	public ItemBuilder parentModel(String m)
+	{
+		parentModel = m;
 		return this;
 	}
 

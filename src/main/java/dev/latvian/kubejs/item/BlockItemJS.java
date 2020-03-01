@@ -16,11 +16,13 @@ public class BlockItemJS extends BlockItem
 	public static final Map<ResourceLocation, BlockItemJS> KUBEJS_BLOCK_ITEMS = new HashMap<>();
 
 	public final ItemBuilder properties;
+	public final BlockJS blockJS;
 
 	public BlockItemJS(BlockJS b, ItemBuilder p)
 	{
 		super(b, p.createItemProperties());
 		properties = p;
+		blockJS = b;
 	}
 
 	@Override

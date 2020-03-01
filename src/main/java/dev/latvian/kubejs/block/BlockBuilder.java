@@ -1,10 +1,13 @@
 package dev.latvian.kubejs.block;
 
+import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.util.UtilsJS;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.block.Block;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ToolType;
 
@@ -35,6 +38,12 @@ public class BlockBuilder
 	public boolean fullBlock;
 	@Ignore
 	public String renderType;
+	@Ignore
+	public Int2IntOpenHashMap color;
+	@Ignore
+	public final JsonObject textures;
+	@Ignore
+	public String model;
 
 	public BlockBuilder(String i, Consumer<BlockBuilder> c)
 	{
@@ -49,6 +58,11 @@ public class BlockBuilder
 		opaque = true;
 		fullBlock = false;
 		renderType = "solid";
+		color = new Int2IntOpenHashMap();
+		color.defaultReturnValue(0xFFFFFFFF);
+		textures = new JsonObject();
+		texture(id.getNamespace() + ":block/" + id.getPath());
+		model = id.getNamespace() + ":block/" + id.getPath();
 	}
 
 	public BlockBuilder material(@P("material") MaterialJS m)
@@ -104,6 +118,35 @@ public class BlockBuilder
 	public BlockBuilder renderType(@P("layer") String l)
 	{
 		renderType = l;
+		return this;
+	}
+
+	public BlockBuilder color(int index, int c)
+	{
+		color.put(index, 0xFF000000 | c);
+		return this;
+	}
+
+	public BlockBuilder texture(String tex)
+	{
+		for (Direction direction : Direction.values())
+		{
+			textures.addProperty(direction.getName(), tex);
+		}
+
+		textures.addProperty("particle", tex);
+		return this;
+	}
+
+	public BlockBuilder texture(Direction direction, String tex)
+	{
+		textures.addProperty(direction.getName(), tex);
+		return this;
+	}
+
+	public BlockBuilder model(String m)
+	{
+		model = m;
 		return this;
 	}
 

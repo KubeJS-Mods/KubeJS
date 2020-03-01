@@ -3,6 +3,7 @@ package dev.latvian.kubejs.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.block.BlockJS;
+import dev.latvian.kubejs.item.ItemJS;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptType;
@@ -21,6 +22,7 @@ import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -53,6 +55,8 @@ public class KubeJSClientEventHandler
 		MinecraftForge.EVENT_BUS.addListener(this::respawn);
 		MinecraftForge.EVENT_BUS.addListener(this::inGameScreenDraw);
 		MinecraftForge.EVENT_BUS.addListener(this::guiScreenDraw);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::itemColors);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::blockColors);
 	}
 
 	private void setup(FMLClientSetupEvent event)
@@ -278,5 +282,27 @@ public class KubeJSClientEventHandler
 		}
 
 		return false;
+	}
+
+	private void itemColors(ColorHandlerEvent.Item event)
+	{
+		for (ItemJS item : ItemJS.KUBEJS_ITEMS.values())
+		{
+			if (!item.properties.color.isEmpty())
+			{
+				event.getItemColors().register((stack, index) -> item.properties.color.get(index), item);
+			}
+		}
+	}
+
+	private void blockColors(ColorHandlerEvent.Block event)
+	{
+		for (BlockJS block : BlockJS.KUBEJS_BLOCKS.values())
+		{
+			if (!block.properties.color.isEmpty())
+			{
+				event.getBlockColors().register((state, world, pos, index) -> block.properties.color.get(index), block);
+			}
+		}
 	}
 }

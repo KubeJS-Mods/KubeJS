@@ -1,22 +1,22 @@
 package dev.latvian.kubejs.script.data;
 
 import com.google.common.collect.Lists;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.block.BlockJS;
 import dev.latvian.kubejs.item.BlockItemJS;
 import dev.latvian.kubejs.item.ItemJS;
 import dev.latvian.kubejs.script.ScriptType;
-import net.minecraft.item.BlockItem;
 import net.minecraft.resources.IResourcePack;
 import net.minecraft.resources.ResourcePackFileNotFoundException;
 import net.minecraft.resources.ResourcePackType;
 import net.minecraft.resources.data.IMetadataSectionSerializer;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.ResourceLocationException;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.io.BufferedInputStream;
@@ -117,41 +117,113 @@ public class KubeJSResourcePack implements IResourcePack
 	{
 		if (path.startsWith("models/item/"))
 		{
-			String s = path.substring(12);
+			ResourceLocation id = new ResourceLocation(KubeJS.MOD_ID, path.substring(12));
+			ItemJS item = ItemJS.KUBEJS_ITEMS.get(id);
 
-			if (ForgeRegistries.ITEMS.getValue(new ResourceLocation(KubeJS.MOD_ID, s)) instanceof BlockItem)
+			if (item == null)
 			{
-				json.addProperty("parent", KubeJS.MOD_ID + ":block/" + s);
+				BlockItemJS blockItem = BlockItemJS.KUBEJS_BLOCK_ITEMS.get(id);
+
+				if (blockItem != null)
+				{
+					json.addProperty("parent", blockItem.properties.parentModel);
+				}
+				else
+				{
+					json.addProperty("parent", KubeJS.MOD_ID + ":block/" + id.getPath());
+				}
 			}
 			else
 			{
-				json.addProperty("parent", "item/generated");
-				JsonObject textures = new JsonObject();
-				textures.addProperty("layer0", KubeJS.MOD_ID + ":item/" + s);
-				json.add("textures", textures);
+				json.addProperty("parent", item.properties.parentModel);
+
+				if (item.properties.parentModel.equals("item/generated"))
+				{
+					JsonObject textures = new JsonObject();
+					textures.addProperty("layer0", item.properties.texture);
+					json.add("textures", textures);
+				}
 			}
 
 			return true;
 		}
 		else if (path.startsWith("models/block/"))
 		{
-			json.addProperty("parent", "block/cube_all");
-			JsonObject textures = new JsonObject();
-			textures.addProperty("all", KubeJS.MOD_ID + ":block/" + path.substring(13));
-			json.add("textures", textures);
+			BlockJS block = BlockJS.KUBEJS_BLOCKS.get(new ResourceLocation(KubeJS.MOD_ID, path.substring(13)));
+
+			String particle = block.properties.textures.get("particle").getAsString();
+
+			if (areAllTexturesEqual(block.properties.textures, particle))
+			{
+				json.addProperty("parent", "block/cube_all");
+				JsonObject textures = new JsonObject();
+				textures.addProperty("all", particle);
+				json.add("textures", textures);
+			}
+			else
+			{
+				json.addProperty("parent", "block/cube");
+				json.add("textures", block.properties.textures);
+			}
+
+			if (!block.properties.color.isEmpty())
+			{
+				JsonObject cube = new JsonObject();
+				JsonArray from = new JsonArray();
+				from.add(0);
+				from.add(0);
+				from.add(0);
+				cube.add("from", from);
+				JsonArray to = new JsonArray();
+				to.add(16);
+				to.add(16);
+				to.add(16);
+				cube.add("to", to);
+				JsonObject faces = new JsonObject();
+
+				for (Direction direction : Direction.values())
+				{
+					JsonObject f = new JsonObject();
+					f.addProperty("texture", "#" + direction.getName());
+					f.addProperty("cullface", direction.getName());
+					f.addProperty("tintindex", 0);
+					faces.add(direction.getName(), f);
+				}
+
+				cube.add("faces", faces);
+
+				JsonArray elements = new JsonArray();
+				elements.add(cube);
+				json.add("elements", elements);
+			}
+
 			return true;
 		}
 		else if (path.startsWith("blockstates/"))
 		{
+			BlockJS block = BlockJS.KUBEJS_BLOCKS.get(new ResourceLocation(KubeJS.MOD_ID, path.substring(12)));
 			JsonObject variants = new JsonObject();
 			JsonObject model = new JsonObject();
-			model.addProperty("model", KubeJS.MOD_ID + ":block/" + path.substring(12));
+			model.addProperty("model", block.properties.model);
 			variants.add("", model);
 			json.add("variants", variants);
 			return true;
 		}
 
 		return false;
+	}
+
+	private boolean areAllTexturesEqual(JsonObject tex, String t)
+	{
+		for (Direction direction : Direction.values())
+		{
+			if (!tex.get(direction.getName()).getAsString().equals(t))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private boolean generateServerJsonFile(String path, JsonObject json)
