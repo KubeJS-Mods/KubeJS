@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.block.BlockJS;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.Item;
@@ -33,22 +32,9 @@ public class ItemRegistryEventJS extends EventJS
 		});
 	}
 
+	@Deprecated
 	public ItemBuilder createBlockItem(String name)
 	{
-		BlockJS block = BlockJS.KUBEJS_BLOCKS.get(UtilsJS.getID(KubeJS.appendModId(name)));
-
-		if (block == null)
-		{
-			throw new IllegalArgumentException("Block with name " + name + " not found!");
-		}
-
-		ItemBuilder itemBuilder = new ItemBuilder(name, p -> {
-			BlockItemJS item = new BlockItemJS(block, p);
-			registry.register(item.setRegistryName(item.properties.id));
-			BlockItemJS.KUBEJS_BLOCK_ITEMS.put(item.properties.id, item);
-		});
-
-		itemBuilder.parentModel = block.properties.model;
-		return itemBuilder;
+		return new ItemBuilder(name, p -> KubeJS.LOGGER.error("This method is deprecated! Replaced by block registry .item(function(item) { /*chained item functions here*/ }) or .noItem()"));
 	}
 }

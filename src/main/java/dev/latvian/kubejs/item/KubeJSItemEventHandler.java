@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.block.BlockJS;
 import dev.latvian.kubejs.player.InventoryChangedEventJS;
 import dev.latvian.kubejs.script.ScriptType;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -34,6 +35,19 @@ public class KubeJSItemEventHandler
 	private void registry(RegistryEvent.Register<Item> event)
 	{
 		new ItemRegistryEventJS(event.getRegistry()).post(ScriptType.STARTUP, KubeJSEvents.ITEM_REGISTRY);
+
+		for (BlockJS block : BlockJS.KUBEJS_BLOCKS.values())
+		{
+			if (block.properties.itemBuilder != null)
+			{
+				ItemBuilder itemBuilder = new ItemBuilder(block.getRegistryName().toString(), p -> {});
+				itemBuilder.parentModel = block.properties.model;
+				block.properties.itemBuilder.accept(itemBuilder);
+				BlockItemJS item = new BlockItemJS(block, itemBuilder);
+				event.getRegistry().register(item.setRegistryName(item.properties.id));
+				BlockItemJS.KUBEJS_BLOCK_ITEMS.put(item.properties.id, item);
+			}
+		}
 	}
 
 	private void rightClick(PlayerInteractEvent.RightClickItem event)

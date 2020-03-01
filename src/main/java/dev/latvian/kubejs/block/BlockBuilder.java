@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.documentation.P;
+import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.kubejs.util.UtilsJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.block.Block;
@@ -11,6 +12,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ToolType;
 
+import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 /**
@@ -44,6 +46,8 @@ public class BlockBuilder
 	public final JsonObject textures;
 	@Ignore
 	public String model;
+	@Ignore
+	public Consumer<ItemBuilder> itemBuilder;
 
 	public BlockBuilder(String i, Consumer<BlockBuilder> c)
 	{
@@ -63,6 +67,7 @@ public class BlockBuilder
 		textures = new JsonObject();
 		texture(id.getNamespace() + ":block/" + id.getPath());
 		model = id.getNamespace() + ":block/" + id.getPath();
+		itemBuilder = item -> {};
 	}
 
 	public BlockBuilder material(@P("material") MaterialJS m)
@@ -148,6 +153,17 @@ public class BlockBuilder
 	{
 		model = m;
 		return this;
+	}
+
+	public BlockBuilder item(@Nullable Consumer<ItemBuilder> i)
+	{
+		itemBuilder = i;
+		return this;
+	}
+
+	public BlockBuilder noItem()
+	{
+		return item(null);
 	}
 
 	public void add()
