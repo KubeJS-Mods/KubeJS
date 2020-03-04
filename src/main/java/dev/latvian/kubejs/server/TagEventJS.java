@@ -91,6 +91,7 @@ public class TagEventJS<T> extends ServerEventJS
 				r.add(s);
 			}
 
+			json.add("values", new JsonArray());
 			json.add("remove", r);
 			return json;
 		}
