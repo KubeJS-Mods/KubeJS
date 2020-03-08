@@ -2,6 +2,7 @@ package dev.latvian.kubejs.client;
 
 import dev.latvian.kubejs.KubeJSCommon;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.net.NetworkEventJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.MapJS;
@@ -38,7 +39,7 @@ public class KubeJSClient extends KubeJSCommon
 
 	private void setup(FMLClientSetupEvent event)
 	{
-		new ClientInitEventJS().post(ScriptType.CLIENT, KubeJSEvents.CLIENT_INIT);
+		new EventJS().post(ScriptType.CLIENT, KubeJSEvents.CLIENT_INIT);
 	}
 
 	@Override
