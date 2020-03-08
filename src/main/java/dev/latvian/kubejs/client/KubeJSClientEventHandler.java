@@ -66,16 +66,16 @@ public class KubeJSClientEventHandler
 			switch (block.properties.renderType)
 			{
 				case "cutout":
-					RenderTypeLookup.setRenderLayer(block, RenderType.cutout());
+					RenderTypeLookup.setRenderLayer(block, RenderType.getCutout());
 					break;
 				case "cutout_mipped":
-					RenderTypeLookup.setRenderLayer(block, RenderType.cutoutMipped());
+					RenderTypeLookup.setRenderLayer(block, RenderType.getCutoutMipped());
 					break;
 				case "translucent":
-					RenderTypeLookup.setRenderLayer(block, RenderType.translucent());
+					RenderTypeLookup.setRenderLayer(block, RenderType.getTranslucent());
 					break;
-				default:
-					RenderTypeLookup.setRenderLayer(block, RenderType.solid());
+				//default:
+				//	RenderTypeLookup.setRenderLayer(block, RenderType.getSolid());
 			}
 		}
 	}

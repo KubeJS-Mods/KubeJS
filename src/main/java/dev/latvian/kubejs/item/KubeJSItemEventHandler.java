@@ -70,7 +70,7 @@ public class KubeJSItemEventHandler
 
 	private void pickup(EntityItemPickupEvent event)
 	{
-		if (new ItemPickupEventJS(event).post(KubeJSEvents.ITEM_PICKUP))
+		if (event.getPlayer() != null && event.getPlayer().world != null && new ItemPickupEventJS(event).post(KubeJSEvents.ITEM_PICKUP))
 		{
 			event.setCanceled(true);
 		}
@@ -78,7 +78,7 @@ public class KubeJSItemEventHandler
 
 	private void toss(ItemTossEvent event)
 	{
-		if (new ItemTossEventJS(event).post(KubeJSEvents.ITEM_TOSS))
+		if (event.getPlayer() != null && event.getPlayer().world != null && new ItemTossEventJS(event).post(KubeJSEvents.ITEM_TOSS))
 		{
 			event.setCanceled(true);
 		}

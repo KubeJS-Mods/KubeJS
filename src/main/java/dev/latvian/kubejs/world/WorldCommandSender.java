@@ -15,6 +15,6 @@ public class WorldCommandSender extends CommandSource
 {
 	public WorldCommandSender(ServerWorldJS w)
 	{
-		super(ICommandSource.field_213139_a_, Vec3d.ZERO, Vec2f.ZERO, (ServerWorld) w.minecraftWorld, 4, "World", new StringTextComponent("World"), w.getServer().minecraftServer, null, true, (context, success, result) -> {}, EntityAnchorArgument.Type.FEET);
+		super(ICommandSource.DUMMY, Vec3d.ZERO, Vec2f.ZERO, (ServerWorld) w.minecraftWorld, 4, "World", new StringTextComponent("World"), w.getServer().minecraftServer, null, true, (context, success, result) -> {}, EntityAnchorArgument.Type.FEET);
 	}
 }
