@@ -27,17 +27,24 @@ public class KubeJSCommands
 				.then(Commands.literal("item_info")
 						.executes(context -> itemInfo(context.getSource().asPlayer()))
 				)
+				.then(Commands.literal("output_recipes")
+						.executes(context -> outputRecipes(context.getSource().asPlayer()))
+				)
+				.then(Commands.literal("input_recipes")
+						.executes(context -> inputRecipes(context.getSource().asPlayer()))
+				)
+				.then(Commands.literal("check_recipe_conflicts")
+						.executes(context -> checkRecipeConflicts(context.getSource().asPlayer()))
+				)
 		);
 	}
 
 	private static int itemInfo(ServerPlayerEntity player)
 	{
-		player.addTag("");
-
 		ItemStack stack = player.getHeldItem(Hand.MAIN_HAND);
 		player.sendMessage(new StringTextComponent("=== ").applyTextStyle(TextFormatting.GREEN).appendSibling(stack.getDisplayName().applyTextStyle(TextFormatting.BOLD)).appendText(" ==="));
 
-		player.sendMessage(new StringTextComponent("= Tags =").applyTextStyle(TextFormatting.YELLOW));
+		player.sendMessage(new StringTextComponent("= Item Tags =").applyTextStyle(TextFormatting.YELLOW));
 
 		List<ResourceLocation> tags = new ArrayList<>(stack.getItem().getTags());
 		tags.sort(null);
@@ -49,6 +56,24 @@ public class KubeJSCommands
 			player.sendMessage(component);
 		}
 
+		return Command.SINGLE_SUCCESS;
+	}
+
+	private static int outputRecipes(ServerPlayerEntity player)
+	{
+		player.sendMessage(new StringTextComponent("WIP!"));
+		return Command.SINGLE_SUCCESS;
+	}
+
+	private static int inputRecipes(ServerPlayerEntity player)
+	{
+		player.sendMessage(new StringTextComponent("WIP!"));
+		return Command.SINGLE_SUCCESS;
+	}
+
+	private static int checkRecipeConflicts(ServerPlayerEntity player)
+	{
+		player.sendMessage(new StringTextComponent("WIP!"));
 		return Command.SINGLE_SUCCESS;
 	}
 }

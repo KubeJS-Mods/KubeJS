@@ -3,6 +3,7 @@ package dev.latvian.kubejs.client;
 import dev.latvian.kubejs.KubeJSCommon;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.net.NetworkEventJS;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.world.ClientWorldJS;
@@ -11,6 +12,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.resources.ResourcePackList;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -30,6 +33,12 @@ public class KubeJSClient extends KubeJSCommon
 		new KubeJSClientEventHandler().init();
 		ResourcePackList list = Minecraft.getInstance().getResourcePackList();
 		list.addPackFinder(new KubeJSResourcePackFinder(folder));
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+	}
+
+	private void setup(FMLClientSetupEvent event)
+	{
+		new ClientInitEventJS().post(ScriptType.CLIENT, KubeJSEvents.CLIENT_INIT);
 	}
 
 	@Override

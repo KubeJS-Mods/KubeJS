@@ -54,6 +54,7 @@ public class KubeJSEvents
 	public static final String COMMAND_REGISTRY = "command.registry";
 	public static final String COMMAND_RUN = "command.run";
 
+	public static final String CLIENT_INIT = "client.init";
 	public static final String CLIENT_DEBUG_INFO = "client.debug_info";
 	public static final String CLIENT_LOGGED_IN = "client.logged_in";
 	public static final String CLIENT_TICK = "client.tick";
