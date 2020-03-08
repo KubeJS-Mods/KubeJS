@@ -56,7 +56,7 @@ public class KubeJSDataPackFinder implements IPackFinder
 		}
 
 		KubeJSResourcePack dataPack = new KubeJSResourcePack(folder, ResourcePackType.SERVER_DATA);
-		PackMetadataSection dataPackMetadata = new PackMetadataSection(new StringTextComponent("./kubejs/data/"), 4);
+		PackMetadataSection dataPackMetadata = new PackMetadataSection(new StringTextComponent("./kubejs/data/"), 5);
 		ResourcePackInfo dataPackInfo = new ResourcePackInfo("kubejs:data_pack", true, () -> dataPack, dataPack, dataPackMetadata, ResourcePackInfo.Priority.TOP, true);
 		nameToPackMap.put(dataPackInfo.getName(), (T) dataPackInfo);
 	}

@@ -53,7 +53,7 @@ public class KubeJSResourcePackFinder implements IPackFinder
 		}
 
 		KubeJSResourcePack pack = new KubeJSResourcePack(folder, ResourcePackType.CLIENT_RESOURCES);
-		PackMetadataSection metadataSection = new PackMetadataSection(new StringTextComponent("./kubejs/assets/"), 4);
+		PackMetadataSection metadataSection = new PackMetadataSection(new StringTextComponent("./kubejs/assets/"), 5);
 		ClientResourcePackInfo info = new ClientResourcePackInfo("kubejs:resource_pack", true, () -> pack, pack, metadataSection, ResourcePackInfo.Priority.TOP, false);
 		nameToPackMap.put(info.getName(), (T) info);
 	}
