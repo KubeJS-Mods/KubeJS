@@ -57,6 +57,7 @@ public class KubeJSEvents
 	public static final String CLIENT_INIT = "client.init";
 	public static final String CLIENT_DEBUG_INFO = "client.debug_info";
 	public static final String CLIENT_LOGGED_IN = "client.logged_in";
+	public static final String CLIENT_LOGGED_OUT = "client.logged_out";
 	public static final String CLIENT_TICK = "client.tick";
 	public static final String CLIENT_ITEM_TOOLTIP = "client.item_tooltip";
 

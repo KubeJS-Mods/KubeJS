@@ -1,0 +1,13 @@
+{
+	"required": true,
+	"package": "dev.latvian.kubejs.mixin",
+	"compatibilityLevel": "JAVA_8",
+	"refmap": "kubejs.refmap.json",
+	"mixins": [
+		"MinecraftMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"minVersion": "0.8"
+}

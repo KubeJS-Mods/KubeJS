@@ -5,7 +5,6 @@ import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.block.BlockJS;
 import dev.latvian.kubejs.item.ItemJS;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
-import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.FieldJS;
@@ -46,7 +45,6 @@ public class KubeJSClientEventHandler
 	public void init()
 	{
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-		MinecraftForge.EVENT_BUS.addListener(this::bindings);
 		MinecraftForge.EVENT_BUS.addListener(this::debugInfo);
 		MinecraftForge.EVENT_BUS.addListener(this::itemTooltip);
 		MinecraftForge.EVENT_BUS.addListener(this::clientTick);
@@ -80,11 +78,6 @@ public class KubeJSClientEventHandler
 		}
 	}
 
-	private void bindings(BindingsEvent event)
-	{
-		event.add("client", new ClientWrapper());
-	}
-
 	private void debugInfo(RenderGameOverlayEvent.Text event)
 	{
 		if (Minecraft.getInstance().player != null)
@@ -116,6 +109,11 @@ public class KubeJSClientEventHandler
 
 	private void loggedOut(ClientPlayerNetworkEvent.LoggedOutEvent event)
 	{
+		if (ClientWorldJS.instance != null)
+		{
+			new ClientLoggedInEventJS(ClientWorldJS.instance.clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_LOGGED_OUT);
+		}
+
 		ClientWorldJS.instance = null;
 		KubeJSClient.activeOverlays.clear();
 	}

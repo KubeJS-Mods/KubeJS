@@ -4,6 +4,7 @@ import dev.latvian.kubejs.KubeJSCommon;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.net.NetworkEventJS;
+import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Overlay;
@@ -35,6 +36,12 @@ public class KubeJSClient extends KubeJSCommon
 		ResourcePackList list = Minecraft.getInstance().getResourcePackList();
 		list.addPackFinder(new KubeJSResourcePackFinder(folder));
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+	}
+
+	@Override
+	public void clientBindings(BindingsEvent event)
+	{
+		event.add("client", new ClientWrapper());
 	}
 
 	private void setup(FMLClientSetupEvent event)

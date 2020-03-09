@@ -55,6 +55,19 @@ public class KubeJS
 	public KubeJS()
 	{
 		Locale.setDefault(Locale.US);
+
+		try
+		{
+			if (!Class.forName("org.spongepowered.asm.mixin.Mixin").isAnnotation())
+			{
+				throw new ClassNotFoundException();
+			}
+		}
+		catch (ClassNotFoundException ex)
+		{
+			throw new RuntimeException("Mixins not found! Please install MixinBootstrap mod!");
+		}
+
 		instance = this;
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP);
 		clientScriptManager = new ScriptManager(ScriptType.CLIENT);
@@ -81,20 +94,6 @@ public class KubeJS
 		}
 
 		proxy.init(folder);
-
-		/* FIXME: File langFile = new File(folder, "resources/lang/en_us.lang");
-
-		if (langFile.exists() && langFile.isFile())
-		{
-			try (InputStream stream = new FileInputStream(langFile))
-			{
-				LanguageMap.inject(stream);
-			}
-			catch (Exception ex)
-			{
-			}
-		}
-		 */
 
 		File startupFolder = new File(folder, "startup");
 
@@ -175,14 +174,6 @@ public class KubeJS
 		UtilsJS.init();
 		IntegrationManager.init();
 		KubeJSNet.init();
-
-		/*
-		if (ModList.get().isLoaded(Aurora.MOD_ID))
-		{
-			new AuroraIntegration().init();
-		}
-		*/
-
 		new EventJS().post(ScriptType.STARTUP, KubeJSEvents.INIT);
 	}
 

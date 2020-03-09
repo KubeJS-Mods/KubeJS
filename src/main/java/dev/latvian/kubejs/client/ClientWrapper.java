@@ -16,6 +16,8 @@ import java.nio.file.Files;
  */
 public class ClientWrapper
 {
+	public static String title = "";
+
 	@MinecraftClass
 	public Minecraft getMinecraft()
 	{
@@ -50,9 +52,10 @@ public class ClientWrapper
 		getMinecraft().displayGuiScreen(gui);
 	}
 
-	public void setTitle(String title)
+	public void setTitle(String t)
 	{
-		getMinecraft().getMainWindow().func_230148_b_(title);
+		title = t;
+		getMinecraft().func_230150_b_();
 	}
 
 	public void setIcon(String icon16, String icon32)
@@ -71,5 +74,15 @@ public class ClientWrapper
 	public void setIcon(String icon)
 	{
 		setIcon(icon, icon);
+	}
+
+	public String getCurrentWorldName()
+	{
+		if (getMinecraft().getCurrentServerData() != null)
+		{
+			return getMinecraft().getCurrentServerData().serverName;
+		}
+
+		return "Singleplayer";
 	}
 }

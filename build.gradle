@@ -1,14 +1,16 @@
 buildscript {
 	repositories {
 		jcenter()
-		maven { url = 'https://files.minecraftforge.net/maven' }
-		maven { url "https://plugins.gradle.org/m2/" }
 		mavenCentral()
+		maven { url "https://files.minecraftforge.net/maven" }
+		maven { url "https://plugins.gradle.org/m2/" }
+		maven { url "https://dist.creeper.host/Sponge/maven" }
 	}
 	dependencies {
 		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
 		classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.1.0'
 		classpath 'com.wynprice.cursemaven:CurseMaven:1.2.+'
+		classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
 	}
 }
 apply plugin: 'net.minecraftforge.gradle'
@@ -16,6 +18,7 @@ apply plugin: 'eclipse'
 apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: 'maven'
 apply plugin: 'com.wynprice.cursemaven'
+apply plugin: 'org.spongepowered.mixin'
 
 apply from: 'https://raw.githubusercontent.com/MinecraftModDevelopment/Gradle-Collection/master/generic/markdown-git-changelog.gradle'
 
@@ -28,10 +31,11 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 
 minecraft {
 	mappings channel: 'snapshot', version: project.mapping_version
-	// accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 	runs {
 		client {
 			workingDirectory project.file('run')
+			args '--mixin.config', 'kubejs.mixins.json'
 			//property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 			property 'forge.logging.console.level', 'debug'
 
@@ -49,6 +53,7 @@ minecraft {
 
 		server {
 			workingDirectory project.file('run')
+			args '--mixin.config', 'kubejs.mixins.json'
 			//property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 			property 'forge.logging.console.level', 'debug'
 
@@ -63,6 +68,7 @@ minecraft {
 
 		data {
 			workingDirectory project.file('run')
+			args '--mixin.config', 'kubejs.mixins.json'
 			//property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 			property 'forge.logging.console.level', 'debug'
 
@@ -80,11 +86,13 @@ minecraft {
 repositories {
 	mavenLocal()
 	maven { url "https://maven.latmod.com/" } //Aurora
+	maven { url "https://dist.creeper.host/Sponge/maven" } //Mixin
 }
 
 dependencies {
 	minecraft "net.minecraftforge:forge:${forge_version}"
-	compile "dev.latvian.mods:Aurora:${aurora_version}"
+	compileOnly "dev.latvian.mods:Aurora:${aurora_version}"
+	compile 'org.spongepowered:mixin:0.8-SNAPSHOT'
 	compile fg.deobf(curse.resolve('jei', project.jei_file))
 	compileOnly fg.deobf(curse.resolve('bookshelf', project.bookshelf_file))
 	compileOnly fg.deobf(curse.resolve('game-stages', project.gamestages_file))
@@ -93,6 +101,7 @@ dependencies {
 jar {
 	manifest {
 		attributes([
+				"MixinConfigs"            : "kubejs.mixins.json",
 				"Specification-Title"     : project.mod_id,
 				"Specification-Vendor"    : project.mod_author,
 				"Specification-Version"   : "1",
@@ -108,17 +117,6 @@ def reobfFile = file("$buildDir/reobfJar/output.jar")
 def reobfArtifact = artifacts.add('default', reobfFile) {
 	type 'jar'
 	builtBy 'reobfJar'
-}
-
-task deobfJar(type: Jar) {
-	from sourceSets.main.output
-	classifier 'deobf'
-}
-
-build.dependsOn deobfJar
-
-artifacts {
-	archives deobfJar
 }
 
 if (ENV.LOCAL_MAVEN) {
@@ -140,7 +138,7 @@ if (ENV.CURSEFORGE_KEY) {
 			addGameVersion "1.15.2"
 			addGameVersion "1.15.1"
 			relations {
-				optionalDependency 'aurora'
+				requiredDependency 'mixinbootstrap'
 				optionalDependency 'jei'
 				optionalDependency 'game-stages'
 				optionalDependency 'create'
@@ -150,4 +148,8 @@ if (ENV.CURSEFORGE_KEY) {
 			addArtifact(deobfJar)
 		}
 	}
+}
+
+mixin {
+	add sourceSets.main, "kubejs.refmap.json"
 }

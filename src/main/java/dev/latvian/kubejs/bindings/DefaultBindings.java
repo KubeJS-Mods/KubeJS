@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.bindings;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.fluid.FluidWrapper;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptManager;
@@ -76,5 +77,7 @@ public class DefaultBindings
 
 		event.addConstant("MAIN_HAND", Hand.MAIN_HAND);
 		event.addConstant("OFF_HAND", Hand.OFF_HAND);
+
+		KubeJS.instance.proxy.clientBindings(event);
 	}
 }

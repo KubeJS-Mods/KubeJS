@@ -1,5 +1,6 @@
 package dev.latvian.kubejs;
 
+import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,6 +15,10 @@ import java.io.File;
 public class KubeJSCommon
 {
 	public void init(File folder)
+	{
+	}
+
+	public void clientBindings(BindingsEvent event)
 	{
 	}
 
