@@ -39,7 +39,7 @@ public class KubeJSClient extends KubeJSCommon
 
 	private void setup(FMLClientSetupEvent event)
 	{
-		new EventJS().post(ScriptType.CLIENT, KubeJSEvents.CLIENT_INIT);
+		new EventJS().post(ScriptType.STARTUP, KubeJSEvents.CLIENT_INIT);
 	}
 
 	@Override
