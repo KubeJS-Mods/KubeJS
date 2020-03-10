@@ -1,8 +1,6 @@
 package dev.latvian.kubejs.entity;
 
 import dev.latvian.kubejs.MinecraftClass;
-import dev.latvian.kubejs.documentation.P;
-import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.world.WorldJS;
@@ -47,12 +45,12 @@ public class LivingEntityJS extends EntityJS
 		return minecraftLivingEntity.getHealth();
 	}
 
-	public void setHealth(@P("hp") float hp)
+	public void setHealth(float hp)
 	{
 		minecraftLivingEntity.setHealth(hp);
 	}
 
-	public void heal(@P("hp") float hp)
+	public void heal(float hp)
 	{
 		minecraftLivingEntity.heal(hp);
 	}
@@ -62,7 +60,7 @@ public class LivingEntityJS extends EntityJS
 		return minecraftLivingEntity.getMaxHealth();
 	}
 
-	public void setMaxHealth(@P("hp") float hp)
+	public void setMaxHealth(float hp)
 	{
 		minecraftLivingEntity.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(hp);
 	}
@@ -98,7 +96,7 @@ public class LivingEntityJS extends EntityJS
 		return minecraftLivingEntity.getRevengeTimer();
 	}
 
-	public void setRevengeTarget(@Nullable @P("target") LivingEntityJS target)
+	public void setRevengeTarget(@Nullable LivingEntityJS target)
 	{
 		minecraftLivingEntity.setRevengeTarget(target == null ? null : target.minecraftLivingEntity);
 	}
@@ -136,27 +134,27 @@ public class LivingEntityJS extends EntityJS
 		return getWorld().getLivingEntity(minecraftLivingEntity.getAttackingEntity());
 	}
 
-	public void swingArm(@P("hand") Hand hand)
+	public void swingArm(Hand hand)
 	{
 		minecraftLivingEntity.swingArm(hand);
 	}
 
-	public ItemStackJS getEquipment(@P("slot") EquipmentSlotType slot)
+	public ItemStackJS getEquipment(EquipmentSlotType slot)
 	{
 		return ItemStackJS.of(minecraftLivingEntity.getItemStackFromSlot(slot));
 	}
 
-	public void setEquipment(@P("slot") EquipmentSlotType slot, @P("item") @T(ItemStackJS.class) Object item)
+	public void setEquipment(EquipmentSlotType slot, Object item)
 	{
 		minecraftLivingEntity.setItemStackToSlot(slot, ItemStackJS.of(item).getItemStack());
 	}
 
-	public ItemStackJS getHeldItem(@P("hand") Hand hand)
+	public ItemStackJS getHeldItem(Hand hand)
 	{
 		return ItemStackJS.of(minecraftLivingEntity.getHeldItem(hand));
 	}
 
-	public void setHeldItem(@P("hand") Hand hand, @P("item") @T(ItemStackJS.class) Object item)
+	public void setHeldItem(Hand hand, Object item)
 	{
 		minecraftLivingEntity.setHeldItem(hand, ItemStackJS.of(item).getItemStack());
 	}
@@ -166,7 +164,7 @@ public class LivingEntityJS extends EntityJS
 		return getHeldItem(Hand.MAIN_HAND);
 	}
 
-	public void setMainHandItem(@P("item") @T(ItemStackJS.class) Object item)
+	public void setMainHandItem(Object item)
 	{
 		setHeldItem(Hand.MAIN_HAND, item);
 	}
@@ -176,12 +174,12 @@ public class LivingEntityJS extends EntityJS
 		return getHeldItem(Hand.OFF_HAND);
 	}
 
-	public void setOffHandItem(@P("item") @T(ItemStackJS.class) Object item)
+	public void setOffHandItem(Object item)
 	{
 		setHeldItem(Hand.OFF_HAND, item);
 	}
 
-	public void damageHeldItem(@P("hand") Hand hand, @P("amount") int amount, @P("onBroken") Consumer<ItemStackJS> onBroken)
+	public void damageHeldItem(Hand hand, int amount, Consumer<ItemStackJS> onBroken)
 	{
 		ItemStack stack = minecraftLivingEntity.getHeldItem(hand);
 
@@ -196,7 +194,7 @@ public class LivingEntityJS extends EntityJS
 		}
 	}
 
-	public void damageHeldItem(@P("hand") Hand hand, @P("amount") int amount)
+	public void damageHeldItem(Hand hand, int amount)
 	{
 		damageHeldItem(hand, amount, stack -> {});
 	}
@@ -206,7 +204,7 @@ public class LivingEntityJS extends EntityJS
 		damageHeldItem(Hand.MAIN_HAND, 1);
 	}
 
-	public boolean isHoldingInAnyHand(@P("ingredient") @T(IngredientJS.class) Object ingredient)
+	public boolean isHoldingInAnyHand(Object ingredient)
 	{
 		IngredientJS i = IngredientJS.of(ingredient);
 		return i.testVanilla(minecraftLivingEntity.getHeldItem(Hand.MAIN_HAND)) || i.testVanilla(minecraftLivingEntity.getHeldItem(Hand.OFF_HAND));
@@ -217,12 +215,12 @@ public class LivingEntityJS extends EntityJS
 		return minecraftLivingEntity.getAIMoveSpeed();
 	}
 
-	public void setMovementSpeed(@P("speed") float speed)
+	public void setMovementSpeed(float speed)
 	{
 		minecraftLivingEntity.setAIMoveSpeed(speed);
 	}
 
-	public boolean canEntityBeSeen(@P("entity") EntityJS entity)
+	public boolean canEntityBeSeen(EntityJS entity)
 	{
 		return minecraftLivingEntity.canEntityBeSeen(entity.minecraftEntity);
 	}
@@ -232,7 +230,7 @@ public class LivingEntityJS extends EntityJS
 		return minecraftLivingEntity.getAbsorptionAmount();
 	}
 
-	public void setAbsorptionAmount(@P("amount") float amount)
+	public void setAbsorptionAmount(float amount)
 	{
 		minecraftLivingEntity.setAbsorptionAmount(amount);
 	}

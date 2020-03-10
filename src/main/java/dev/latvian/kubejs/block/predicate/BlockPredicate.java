@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.block.predicate;
 
-import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.world.BlockContainerJS;
 
 /**
@@ -9,5 +8,5 @@ import dev.latvian.kubejs.world.BlockContainerJS;
 @FunctionalInterface
 public interface BlockPredicate
 {
-	boolean check(@P("block") BlockContainerJS block);
+	boolean check(BlockContainerJS block);
 }

@@ -1,7 +1,5 @@
 package dev.latvian.kubejs.integration.gamestages;
 
-import dev.latvian.kubejs.documentation.Info;
-import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import net.darkhax.gamestages.GameStageHelper;
 
@@ -20,22 +18,22 @@ public class GameStagesPlayerData
 		playerData = d;
 	}
 
-	public boolean has(@P("stage") String stage)
+	public boolean has(String stage)
 	{
 		return GameStageHelper.hasStage(playerData.getMinecraftPlayer(), stage);
 	}
 
-	public void add(@P("stage") String stage)
+	public void add(String stage)
 	{
 		GameStageHelper.addStage(playerData.getMinecraftPlayer(), stage);
 	}
 
-	public void remove(@P("stage") String stage)
+	public void remove(String stage)
 	{
 		GameStageHelper.removeStage(playerData.getMinecraftPlayer(), stage);
 	}
 
-	public boolean set(@P("stage") String stage, @P("value") boolean value)
+	public boolean set(String stage, boolean value)
 	{
 		if (value)
 		{
@@ -49,7 +47,7 @@ public class GameStagesPlayerData
 		}
 	}
 
-	public boolean toggle(@P("stage") String stage)
+	public boolean toggle(String stage)
 	{
 		return set(stage, !has(stage));
 	}
@@ -67,7 +65,6 @@ public class GameStagesPlayerData
 		}
 	}
 
-	@Info("Sends all stages from server to client")
 	public void sync()
 	{
 		GameStageHelper.syncPlayer(playerData.getMinecraftPlayer());

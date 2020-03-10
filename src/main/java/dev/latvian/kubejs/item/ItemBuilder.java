@@ -1,9 +1,6 @@
 package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.documentation.Ignore;
-import dev.latvian.kubejs.documentation.P;
-import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.UtilsJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -28,27 +25,16 @@ public class ItemBuilder
 {
 	public final ResourceLocation id;
 	private final Consumer<ItemBuilder> callback;
-	@Ignore
 	public int maxStackSize;
-	@Ignore
 	public int maxDamage;
-	@Ignore
 	public ResourceLocation containerItem;
-	@Ignore
 	public Map<ToolType, Integer> tools;
-	@Ignore
 	public Rarity rarity;
-	@Ignore
 	public boolean glow;
-	@Ignore
 	public final List<Text> tooltip;
-	@Ignore
 	public ItemGroup group;
-	@Ignore
 	public Int2IntOpenHashMap color;
-	@Ignore
 	public String texture;
-	@Ignore
 	public String parentModel;
 
 	public ItemBuilder(String i, Consumer<ItemBuilder> c)
@@ -69,7 +55,7 @@ public class ItemBuilder
 		parentModel = "item/generated";
 	}
 
-	public ItemBuilder maxStackSize(@P("size") int v)
+	public ItemBuilder maxStackSize(int v)
 	{
 		maxStackSize = v;
 		return this;
@@ -80,37 +66,37 @@ public class ItemBuilder
 		return maxStackSize(1);
 	}
 
-	public ItemBuilder maxDamage(@P("damage") int v)
+	public ItemBuilder maxDamage(int v)
 	{
 		maxDamage = v;
 		return this;
 	}
 
-	public ItemBuilder containerItem(@P("id") @T(ResourceLocation.class) Object id)
+	public ItemBuilder containerItem(Object id)
 	{
 		containerItem = UtilsJS.getID(id);
 		return this;
 	}
 
-	public ItemBuilder tool(@P("type") ToolType type, @P("level") int level)
+	public ItemBuilder tool(ToolType type, int level)
 	{
 		tools.put(type, level);
 		return this;
 	}
 
-	public ItemBuilder rarity(@P("rarity") Rarity v)
+	public ItemBuilder rarity(Rarity v)
 	{
 		rarity = v;
 		return this;
 	}
 
-	public ItemBuilder glow(@P("glow") boolean v)
+	public ItemBuilder glow(boolean v)
 	{
 		glow = v;
 		return this;
 	}
 
-	public ItemBuilder tooltip(@P("text") @T(Text.class) Object text)
+	public ItemBuilder tooltip(Object text)
 	{
 		tooltip.add(Text.of(text));
 		return this;

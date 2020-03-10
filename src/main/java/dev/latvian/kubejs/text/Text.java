@@ -3,10 +3,6 @@ package dev.latvian.kubejs.text;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.documentation.Ignore;
-import dev.latvian.kubejs.documentation.Info;
-import dev.latvian.kubejs.documentation.P;
-import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.ListJS;
@@ -175,14 +171,11 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	private Text hover;
 	private List<Text> siblings;
 
-	@Ignore
 	public abstract ITextComponent rawComponent();
 
-	@Ignore
 	public abstract Text rawCopy();
 
 	@Override
-	@Info("Convert text to json")
 	public abstract JsonElement toJson();
 
 	public final ITextComponent component()
@@ -240,7 +233,6 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return component().getFormattedText();
 	}
 
-	@Info("Create a deep copy of this text")
 	public final Text copy()
 	{
 		Text t = rawCopy();
@@ -348,197 +340,166 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return list.iterator();
 	}
 
-	@Info("Set color")
-	public final Text color(@P("value") TextColor value)
+	public final Text color(TextColor value)
 	{
 		color = value;
 		return this;
 	}
 
-	@Info("Set color to black")
 	public final Text black()
 	{
 		return color(TextColor.BLACK);
 	}
 
-	@Info("Set color to dark blue")
 	public final Text darkBlue()
 	{
 		return color(TextColor.DARK_BLUE);
 	}
 
-	@Info("Set color to dark green")
 	public final Text darkGreen()
 	{
 		return color(TextColor.DARK_GREEN);
 	}
 
-	@Info("Set color to dark aqua")
 	public final Text darkAqua()
 	{
 		return color(TextColor.DARK_AQUA);
 	}
 
-	@Info("Set color to dark red")
 	public final Text darkRed()
 	{
 		return color(TextColor.DARK_RED);
 	}
 
-	@Info("Set color to dark purple")
 	public final Text darkPurple()
 	{
 		return color(TextColor.DARK_PURPLE);
 	}
 
-	@Info("Set color to gold")
 	public final Text gold()
 	{
 		return color(TextColor.GOLD);
 	}
 
-	@Info("Set color to gray")
 	public final Text gray()
 	{
 		return color(TextColor.GRAY);
 	}
 
-	@Info("Set color to dark gray")
 	public final Text darkGray()
 	{
 		return color(TextColor.DARK_GRAY);
 	}
 
-	@Info("Set color to blue")
 	public final Text blue()
 	{
 		return color(TextColor.BLUE);
 	}
 
-	@Info("Set color to green")
 	public final Text green()
 	{
 		return color(TextColor.GREEN);
 	}
 
-	@Info("Set color to aqua")
 	public final Text aqua()
 	{
 		return color(TextColor.AQUA);
 	}
 
-	@Info("Set color to red")
 	public final Text red()
 	{
 		return color(TextColor.RED);
 	}
 
-	@Info("Set color to light purple")
 	public final Text lightPurple()
 	{
 		return color(TextColor.LIGHT_PURPLE);
 	}
 
-	@Info("Set color to yellow")
 	public final Text yellow()
 	{
 		return color(TextColor.YELLOW);
 	}
 
-	@Info("Set color to white")
 	public final Text white()
 	{
 		return color(TextColor.WHITE);
 	}
 
-	@Info("Set bold")
 	public final Text bold(@Nullable Boolean value)
 	{
 		bold = value;
 		return this;
 	}
 
-	@Info("Set bold")
 	public final Text bold()
 	{
 		return bold(true);
 	}
 
-	@Info("Set italic")
 	public final Text italic(@Nullable Boolean value)
 	{
 		italic = value;
 		return this;
 	}
 
-	@Info("Set italic")
 	public final Text italic()
 	{
 		return italic(true);
 	}
 
-	@Info("Set underlined")
 	public final Text underlined(@Nullable Boolean value)
 	{
 		underlined = value;
 		return this;
 	}
 
-	@Info("Set underlined")
 	public final Text underlined()
 	{
 		return underlined(true);
 	}
 
-	@Info("Set strikethrough")
 	public final Text strikethrough(@Nullable Boolean value)
 	{
 		strikethrough = value;
 		return this;
 	}
 
-	@Info("Set strikethrough")
 	public final Text strikethrough()
 	{
 		return strikethrough(true);
 	}
 
-	@Info("Set obfuscated")
 	public final Text obfuscated(@Nullable Boolean value)
 	{
 		obfuscated = value;
 		return this;
 	}
 
-	@Info("Set obfuscated")
 	public final Text obfuscated()
 	{
 		return obfuscated(true);
 	}
 
-	@Info("Set insertion text")
 	public final Text insertion(@Nullable String value)
 	{
 		insertion = value;
 		return this;
 	}
 
-	@Info("Set click URL")
 	public final Text click(@Nullable String value)
 	{
 		click = value;
 		return this;
 	}
 
-	@Info("Set hover text")
-	public final Text hover(@P("text") @T(Text.class) Object text)
+	public final Text hover(Object text)
 	{
 		hover = of(text);
 		return this;
 	}
 
-	@Info("Append text and end of this one")
-	public final Text append(@P("sibling") @T(Text.class) Object sibling)
+	public final Text append(Object sibling)
 	{
 		if (siblings == null)
 		{
@@ -549,13 +510,11 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return this;
 	}
 
-	@Info("List of siblings")
 	public final List<Text> getSiblings()
 	{
 		return siblings == null ? Collections.emptyList() : siblings;
 	}
 
-	@Info("True if this text component has sibling components")
 	public final boolean hasSiblings()
 	{
 		return siblings != null && !siblings.isEmpty();

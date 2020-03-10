@@ -3,7 +3,6 @@ package dev.latvian.kubejs.world;
 import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.block.MaterialJS;
 import dev.latvian.kubejs.block.MaterialListJS;
-import dev.latvian.kubejs.documentation.DisplayName;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -33,7 +32,6 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-@DisplayName("Block")
 public class BlockContainerJS
 {
 	private static final ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");

@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.block.predicate;
 
-import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.block.Block;
@@ -43,7 +42,7 @@ public class BlockIDPredicate implements BlockPredicate
 		return id + (properties == null || properties.isEmpty() ? "" : ("+" + properties));
 	}
 
-	public BlockIDPredicate with(@P("key") String key, @P("value") String value)
+	public BlockIDPredicate with(String key, String value)
 	{
 		if (properties == null)
 		{

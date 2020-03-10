@@ -1,7 +1,5 @@
 package dev.latvian.kubejs.entity;
 
-import dev.latvian.kubejs.documentation.P;
-import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.item.ItemFrameEntity;
@@ -36,7 +34,7 @@ public class ItemFrameEntityJS extends EntityJS
 		return stack.isEmpty() ? null : ItemStackJS.of(stack);
 	}
 
-	public void setItem(@P("item") @T(ItemStackJS.class) Object item)
+	public void setItem(Object item)
 	{
 		itemFrameEntity.setDisplayedItem(ItemStackJS.of(item).getItemStack());
 	}
@@ -46,7 +44,7 @@ public class ItemFrameEntityJS extends EntityJS
 		return itemFrameEntity.getRotation();
 	}
 
-	public void setFrameRotation(@P("rotation") int rotation)
+	public void setFrameRotation(int rotation)
 	{
 		itemFrameEntity.setItemRotation(rotation);
 	}

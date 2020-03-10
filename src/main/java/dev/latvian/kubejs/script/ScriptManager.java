@@ -2,7 +2,6 @@ package dev.latvian.kubejs.script;
 
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.bindings.DefaultBindings;
-import dev.latvian.kubejs.documentation.Documentation;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.event.EventsJS;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
@@ -113,7 +112,6 @@ public class ScriptManager
 			type.console.error("Loaded " + i + "/" + t + " KubeJS " + type.name + " scripts");
 		}
 
-		Documentation.clearCache();
 		events.postToHandlers(KubeJSEvents.LOADED, events.handlers(KubeJSEvents.LOADED), new EventJS());
 		MinecraftForge.EVENT_BUS.post(new ScriptsLoadedEvent());
 	}

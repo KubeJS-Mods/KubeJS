@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.world;
 
+import dev.latvian.kubejs.KubeJSCore;
 import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.util.ListJS;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -188,10 +189,7 @@ public class FireworksJS
 
 		if (lifeTime != -1)
 		{
-			CompoundNBT entityNbt = new CompoundNBT();
-			rocket.writeWithoutTypeId(entityNbt);
-			entityNbt.putInt("LifeTime", lifeTime);
-			rocket.read(entityNbt);
+			KubeJSCore.setLifeTime(rocket, lifeTime);
 		}
 
 		rocket.setInvisible(true);

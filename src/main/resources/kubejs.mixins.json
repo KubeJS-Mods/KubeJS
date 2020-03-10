@@ -4,7 +4,8 @@
 	"compatibilityLevel": "JAVA_8",
 	"refmap": "kubejs.refmap.json",
 	"mixins": [
-		"MinecraftMixin"
+		"MinecraftMixin",
+		"RecipeManagerMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

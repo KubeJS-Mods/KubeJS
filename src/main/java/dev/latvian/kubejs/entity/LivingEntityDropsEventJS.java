@@ -1,9 +1,5 @@
 package dev.latvian.kubejs.entity;
 
-import dev.latvian.kubejs.documentation.Ignore;
-import dev.latvian.kubejs.documentation.O;
-import dev.latvian.kubejs.documentation.P;
-import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
@@ -69,7 +65,6 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS
 		return drops;
 	}
 
-	@Ignore
 	@Nullable
 	public ItemEntityJS addDrop(Object item)
 	{
@@ -89,7 +84,7 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS
 	}
 
 	@Nullable
-	public ItemEntityJS addDrop(@P("item") @T(ItemStackJS.class) Object item, @O @P("chance") float chance)
+	public ItemEntityJS addDrop(Object item, float chance)
 	{
 		if (chance >= 1F || event.getEntity().world.rand.nextFloat() <= chance)
 		{

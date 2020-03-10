@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.ATHelper;
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.KubeJSCore;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.kubejs.command.KubeJSCommands;
@@ -26,7 +26,6 @@ import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
-import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -65,8 +64,8 @@ public class KubeJSServerEventHandler
 		try
 		{
 			SimpleReloadableResourceManager manager = (SimpleReloadableResourceManager) event.getServer().getResourceManager();
-			List<IFutureReloadListener> reloadListeners = ATHelper.getReloadListeners(manager);
-			List<IFutureReloadListener> initTaskQueue = ATHelper.getInitTaskQueue(manager);
+			List<IFutureReloadListener> reloadListeners = KubeJSCore.getReloadListeners(manager);
+			List<IFutureReloadListener> initTaskQueue = KubeJSCore.getInitTaskQueue(manager);
 			IFutureReloadListener reloadListener = ServerJS.instance.createReloadListener();
 			reloadListeners.add(0, reloadListener);
 			initTaskQueue.add(0, reloadListener);
@@ -139,7 +138,7 @@ public class KubeJSServerEventHandler
 
 	private void tagsUpdated(TagsUpdatedEvent event)
 	{
-		if (ServerJS.instance != null && FMLEnvironment.dist.isClient())
+		if (ServerJS.instance != null)
 		{
 			ServerJS.instance.tagsUpdated(event.getTagManager());
 		}

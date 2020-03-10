@@ -1,7 +1,5 @@
 package dev.latvian.kubejs.player;
 
-import dev.latvian.kubejs.documentation.P;
-import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
@@ -62,7 +60,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 	}
 
 	@Override
-	public void tell(@P("message") @T(Text.class) Object message)
+	public void tell(Object message)
 	{
 		ITextComponent component = Text.of(message).component();
 
@@ -73,7 +71,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 	}
 
 	@Override
-	public void setStatusMessage(@P("message") @T(Text.class) Object message)
+	public void setStatusMessage(Object message)
 	{
 		ITextComponent component = Text.of(message).component();
 
@@ -87,7 +85,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 	}
 
 	@Override
-	public int runCommand(@P("command") String command)
+	public int runCommand(String command)
 	{
 		int m = 0;
 
@@ -107,7 +105,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		}
 	}
 
-	public void playSound(@P("id") Object id, @P("volume") float volume, @P("pitch") float pitch)
+	public void playSound(Object id, float volume, float pitch)
 	{
 		SoundEvent event = id instanceof SoundEvent ? (SoundEvent) id : ForgeRegistries.SOUND_EVENTS.getValue(UtilsJS.getID(id));
 
@@ -120,12 +118,12 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		}
 	}
 
-	public void playSound(@P("id") Object id)
+	public void playSound(Object id)
 	{
 		playSound(id, 1F, 1F);
 	}
 
-	public EntityArrayList filter(@P("filter") Predicate<EntityJS> filter)
+	public EntityArrayList filter(Predicate<EntityJS> filter)
 	{
 		if (isEmpty())
 		{
@@ -145,7 +143,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		return list;
 	}
 
-	public void sendData(@P("channel") String channel, @Nullable @P("data") Object data)
+	public void sendData(String channel, @Nullable Object data)
 	{
 		CompoundNBT nbt = MapJS.nbt(data);
 

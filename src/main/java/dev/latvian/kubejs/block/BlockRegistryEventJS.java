@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.block;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.block.Block;
@@ -12,7 +11,6 @@ import net.minecraftforge.registries.IForgeRegistry;
  */
 public class BlockRegistryEventJS extends EventJS
 {
-	@Ignore
 	public final IForgeRegistry<Block> registry;
 
 	public BlockRegistryEventJS(IForgeRegistry<Block> r)

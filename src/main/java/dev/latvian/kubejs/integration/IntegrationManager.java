@@ -2,7 +2,6 @@ package dev.latvian.kubejs.integration;
 
 import dev.latvian.kubejs.integration.create.CreateModIntegration;
 import dev.latvian.kubejs.integration.gamestages.GameStagesIntegration;
-import dev.latvian.kubejs.integration.jei.JEIIntegration;
 import net.minecraftforge.fml.ModList;
 
 /**
@@ -15,11 +14,6 @@ public class IntegrationManager
 		if (ModList.get().isLoaded("gamestages"))
 		{
 			new GameStagesIntegration().init();
-		}
-
-		if (ModList.get().isLoaded("jei"))
-		{
-			new JEIIntegration().init();
 		}
 
 		if (ModList.get().isLoaded("create"))

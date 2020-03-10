@@ -6,9 +6,6 @@ import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.block.predicate.BlockEntityPredicate;
 import dev.latvian.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.kubejs.block.predicate.BlockPredicate;
-import dev.latvian.kubejs.documentation.DisplayName;
-import dev.latvian.kubejs.documentation.P;
-import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -24,7 +21,6 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-@DisplayName("BlockUtilities")
 public class BlockWrapper
 {
 	public Map<String, MaterialJS> getMaterial()
@@ -77,7 +73,7 @@ public class BlockWrapper
 	}
 
 	@MinecraftClass
-	public Block getBlock(@P("id") @T(ResourceLocation.class) Object id)
+	public Block getBlock(Object id)
 	{
 		Block b = ForgeRegistries.BLOCKS.getValue(UtilsJS.getID(id));
 		return b == null ? Blocks.AIR : b;

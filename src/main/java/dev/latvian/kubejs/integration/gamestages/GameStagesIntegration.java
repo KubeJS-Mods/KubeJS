@@ -1,8 +1,6 @@
 package dev.latvian.kubejs.integration.gamestages;
 
-import dev.latvian.kubejs.documentation.DocumentationEvent;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
-import dev.latvian.kubejs.script.DataType;
 import net.darkhax.gamestages.event.GameStageEvent;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -13,18 +11,9 @@ public class GameStagesIntegration
 {
 	public void init()
 	{
-		MinecraftForge.EVENT_BUS.addListener(this::registerDocumentation);
 		MinecraftForge.EVENT_BUS.addListener(this::attachPlayerData);
 		MinecraftForge.EVENT_BUS.addListener(this::gameStageAdded);
 		MinecraftForge.EVENT_BUS.addListener(this::gameStageRemoved);
-	}
-
-	private void registerDocumentation(DocumentationEvent event)
-	{
-		event.registerAttachedData(DataType.PLAYER, "gamestages", GameStagesPlayerData.class);
-
-		event.registerEvent("gamestage.added", GameStageEventJS.class).doubleParam("stage");
-		event.registerEvent("gamestage.removed", GameStageEventJS.class).doubleParam("stage");
 	}
 
 	private void attachPlayerData(AttachPlayerDataEvent event)

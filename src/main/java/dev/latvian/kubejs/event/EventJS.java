@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.event;
 
-import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.script.ScriptType;
 
 /**
@@ -20,7 +19,6 @@ public class EventJS
 		cancelled = true;
 	}
 
-	@Ignore
 	public final boolean isCancelled()
 	{
 		return cancelled;
@@ -30,7 +28,6 @@ public class EventJS
 	{
 	}
 
-	@Ignore
 	public final boolean post(ScriptType t, String id)
 	{
 		if (t != ScriptType.STARTUP && post(ScriptType.STARTUP, id) && canCancel())
@@ -44,7 +41,6 @@ public class EventJS
 		return b;
 	}
 
-	@Ignore
 	public final boolean post(ScriptType t, String id, String sub)
 	{
 		String id1 = id + '.' + sub;

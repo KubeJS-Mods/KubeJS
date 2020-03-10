@@ -13,7 +13,6 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.documentation.P;
 
 import javax.annotation.Nullable;
 import java.io.BufferedWriter;
@@ -292,12 +291,12 @@ public class JsonUtilsJS
 	}
 
 	@Nullable
-	public static MapJS read(@P("file") String file) throws IOException
+	public static MapJS read(String file) throws IOException
 	{
 		return read(KubeJS.getGameDirectory().resolve(file).toFile());
 	}
 
-	public static void write(@P("file") String file, @Nullable MapJS json) throws IOException
+	public static void write(String file, @Nullable MapJS json) throws IOException
 	{
 		write(KubeJS.getGameDirectory().resolve(file).toFile(), json);
 	}

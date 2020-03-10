@@ -3,7 +3,6 @@ package dev.latvian.kubejs.server;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.documentation.Ignore;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -109,7 +108,6 @@ public class TagEventJS<T> extends ServerEventJS
 		tags = new HashMap<>();
 	}
 
-	@Ignore
 	public void loadAndPost(IResourceManager resourceManager, VirtualKubeJSDataPack first, VirtualKubeJSDataPack last)
 	{
 		/*

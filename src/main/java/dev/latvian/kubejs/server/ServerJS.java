@@ -2,15 +2,10 @@ package dev.latvian.kubejs.server;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.ATHelper;
+import dev.latvian.kubejs.KubeJSCore;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.block.BlockJS;
-import dev.latvian.kubejs.documentation.Ignore;
-import dev.latvian.kubejs.documentation.Info;
-import dev.latvian.kubejs.documentation.O;
-import dev.latvian.kubejs.documentation.P;
-import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageSendDataFromServer;
 import dev.latvian.kubejs.player.AdvancementJS;
@@ -78,26 +73,12 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 	@MinecraftClass
 	public final MinecraftServer minecraftServer;
-
-	@Ignore
 	public final ScriptManager scriptManager;
-
-	@Ignore
 	public final List<ScheduledEvent> scheduledEvents;
-
-	@Ignore
 	public final List<ScheduledEvent> scheduledTickEvents;
-
-	@Ignore
 	public final Map<DimensionType, ServerWorldJS> worldMap;
-
-	@Ignore
 	public final Map<UUID, ServerPlayerDataJS> playerMap;
-
-	@Ignore
 	public final Map<UUID, FakeServerPlayerDataJS> fakePlayerMap;
-
-	@Ignore
 	public final List<ServerWorldJS> worlds;
 
 	public ServerWorldJS overworld;
@@ -142,7 +123,6 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return data;
 	}
 
-	@Info("List of all currently loaded worlds")
 	public List<ServerWorldJS> getWorlds()
 	{
 		return worlds;
@@ -183,7 +163,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return minecraftServer.getMOTD();
 	}
 
-	public void setMotd(@P("text") @T(Text.class) Object text)
+	public void setMotd(Object text)
 	{
 		minecraftServer.setMOTD(Text.of(text).component().getFormattedText());
 	}
@@ -234,7 +214,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return minecraftServer.getCommandManager().handleCommand(minecraftServer.getCommandSource(), command);
 	}
 
-	public WorldJS getWorld(@P("dimension") DimensionType dimension)
+	public WorldJS getWorld(DimensionType dimension)
 	{
 		if (dimension == DimensionType.OVERWORLD)
 		{
@@ -254,13 +234,13 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return world;
 	}
 
-	public WorldJS getWorld(@P("minecraftWorld") IWorld minecraftWorld)
+	public WorldJS getWorld(IWorld minecraftWorld)
 	{
 		return getWorld(minecraftWorld.getDimension().getType());
 	}
 
 	@Nullable
-	public PlayerJS getPlayer(@P("uuid") UUID uuid)
+	public PlayerJS getPlayer(UUID uuid)
 	{
 		ServerPlayerDataJS p = playerMap.get(uuid);
 
@@ -273,7 +253,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 	}
 
 	@Nullable
-	public PlayerJS getPlayer(@P("name") String name)
+	public PlayerJS getPlayer(String name)
 	{
 		name = name.trim().toLowerCase();
 
@@ -309,7 +289,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 	}
 
 	@Nullable
-	public PlayerJS getPlayer(@P("minecraftPlayer") PlayerEntity minecraftPlayer)
+	public PlayerJS getPlayer(PlayerEntity minecraftPlayer)
 	{
 		return getPlayer(minecraftPlayer.getUniqueID());
 	}
@@ -319,7 +299,6 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return new EntityArrayList(overworld, minecraftServer.getPlayerList().getPlayers());
 	}
 
-	@Ignore
 	public EntityArrayList getEntities()
 	{
 		EntityArrayList list = new EntityArrayList(overworld, 10);
@@ -332,7 +311,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return list;
 	}
 
-	public EntityArrayList getEntities(@O @P("filter") String filter)
+	public EntityArrayList getEntities(String filter)
 	{
 		EntityArrayList list = new EntityArrayList(overworld, 10);
 
@@ -344,27 +323,25 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return list;
 	}
 
-	public ScheduledEvent schedule(@P("timer") long timer, @O @P("data") @Nullable Object data, @P("callback") IScheduledEventCallback event)
+	public ScheduledEvent schedule(long timer, @Nullable Object data, IScheduledEventCallback event)
 	{
 		ScheduledEvent e = new ScheduledEvent(this, false, timer, System.currentTimeMillis() + timer, data, event);
 		scheduledEvents.add(e);
 		return e;
 	}
 
-	@Ignore
 	public ScheduledEvent schedule(long timer, IScheduledEventCallback event)
 	{
 		return schedule(timer, null, event);
 	}
 
-	public ScheduledEvent scheduleInTicks(@P("ticks") long ticks, @O @P("data") @Nullable Object data, @P("callback") IScheduledEventCallback event)
+	public ScheduledEvent scheduleInTicks(long ticks, @Nullable Object data, IScheduledEventCallback event)
 	{
 		ScheduledEvent e = new ScheduledEvent(this, true, ticks, overworld.getTime() + ticks, data, event);
 		scheduledEvents.add(e);
 		return e;
 	}
 
-	@Ignore
 	public ScheduledEvent scheduleInTicks(long ticks, IScheduledEventCallback event)
 	{
 		return scheduleInTicks(ticks, null, event);
@@ -377,19 +354,18 @@ public class ServerJS implements MessageSender, WithAttachedData
 	}
 
 	@Nullable
-	public AdvancementJS getAdvancement(@P("id") Object id)
+	public AdvancementJS getAdvancement(Object id)
 	{
 		Advancement a = minecraftServer.getAdvancementManager().getAdvancement(UtilsJS.getID(id));
 		return a == null ? null : new AdvancementJS(a);
 	}
 
-	public void sendDataToAll(@P("channel") String channel, @P("data") @Nullable Object data)
+	public void sendDataToAll(String channel, @Nullable Object data)
 	{
 		KubeJSNet.MAIN.send(PacketDistributor.ALL.noArg(), new MessageSendDataFromServer(channel, MapJS.nbt(data)));
 	}
 
 	@SuppressWarnings("deprecation")
-	@Ignore
 	public void reloadScripts(SimpleReloadableResourceManager resourceManager)
 	{
 		scriptManager.unload();
@@ -464,7 +440,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 		resourceManager.addResourcePack(virtualDataPackFirst);
 		resourceManager.addResourcePack(virtualDataPackLast);
 
-		Map<String, FallbackResourceManager> namespaceResourceManagers = ATHelper.getNamespaceResourceManagers(resourceManager);
+		Map<String, FallbackResourceManager> namespaceResourceManagers = KubeJSCore.getNamespaceResourceManagers(resourceManager);
 
 		if (namespaceResourceManagers != null)
 		{
@@ -501,6 +477,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 	public void tagsUpdated(NetworkTagManager tagManager)
 	{
+		//KubeJS.LOGGER.info(tagManager);
 		//ItemTags.setCollection(itemTagCollection);
 		//BlockTags.setCollection(blockTagCollection);
 		//FluidTags.setCollection(fluidTagCollection);

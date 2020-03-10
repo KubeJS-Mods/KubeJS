@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.player;
 
-import dev.latvian.kubejs.documentation.Info;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -28,13 +27,11 @@ public class InventoryChangedEventJS extends PlayerEventJS
 		return entityOf(player);
 	}
 
-	@Info("Will be non-empty when a single item has changed")
 	public ItemStackJS getItem()
 	{
 		return ItemStackJS.of(item);
 	}
 
-	@Info("Slot index that changed, can be -1")
 	public int getSlot()
 	{
 		return slot;

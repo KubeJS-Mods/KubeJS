@@ -1,7 +1,5 @@
 package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.documentation.Ignore;
-import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.script.ScriptFile;
 
 import javax.annotation.Nullable;
@@ -11,7 +9,6 @@ import javax.annotation.Nullable;
  */
 public class ScheduledEvent
 {
-	@Ignore
 	public final ScriptFile file;
 
 	private final ServerJS server;
@@ -68,7 +65,7 @@ public class ScheduledEvent
 		return endTime - timer;
 	}
 
-	public ScheduledEvent reschedule(@P("timer") long timer)
+	public ScheduledEvent reschedule(long timer)
 	{
 		if (isUsingTicks())
 		{

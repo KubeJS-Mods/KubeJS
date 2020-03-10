@@ -1,9 +1,6 @@
 package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.MinecraftClass;
-import dev.latvian.kubejs.documentation.Ignore;
-import dev.latvian.kubejs.documentation.P;
-import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
@@ -23,7 +20,6 @@ import java.util.LinkedList;
  */
 public class InventoryJS
 {
-	@Ignore
 	@MinecraftClass
 	public final IItemHandler minecraftInventory;
 
@@ -42,12 +38,12 @@ public class InventoryJS
 		return minecraftInventory.getSlots();
 	}
 
-	public ItemStackJS get(@P("slot") int slot)
+	public ItemStackJS get(int slot)
 	{
 		return ItemStackJS.of(minecraftInventory.getStackInSlot(slot));
 	}
 
-	public void set(@P("slot") int slot, @P("item") @T(ItemStackJS.class) Object item)
+	public void set(int slot, Object item)
 	{
 		if (minecraftInventory instanceof IItemHandlerModifiable)
 		{
@@ -59,22 +55,22 @@ public class InventoryJS
 		}
 	}
 
-	public ItemStackJS insert(@P("slot") int slot, @T(ItemStackJS.class) Object item, @P("simulate") boolean simulate)
+	public ItemStackJS insert(int slot, Object item, boolean simulate)
 	{
 		return ItemStackJS.of(minecraftInventory.insertItem(slot, ItemStackJS.of(item).getItemStack(), simulate));
 	}
 
-	public ItemStackJS extract(@P("slot") int slot, @P("amount") int amount, @P("simulate") boolean simulate)
+	public ItemStackJS extract(int slot, int amount, boolean simulate)
 	{
 		return ItemStackJS.of(minecraftInventory.extractItem(slot, amount, simulate));
 	}
 
-	public int getSlotLimit(@P("slot") int slot)
+	public int getSlotLimit(int slot)
 	{
 		return minecraftInventory.getSlotLimit(slot);
 	}
 
-	public boolean isItemValid(@P("slot") int slot, @T(ItemStackJS.class) Object item)
+	public boolean isItemValid(int slot, Object item)
 	{
 		return minecraftInventory.isItemValid(slot, ItemStackJS.of(item).getItemStack());
 	}
@@ -96,7 +92,7 @@ public class InventoryJS
 		}
 	}
 
-	public void clear(@P("ingredient") @T(IngredientJS.class) Object o)
+	public void clear(Object o)
 	{
 		IngredientJS ingredient = IngredientJS.of(o);
 
@@ -138,7 +134,7 @@ public class InventoryJS
 		return -1;
 	}
 
-	public int find(@P("filter") @T(IngredientJS.class) Object o)
+	public int find(Object o)
 	{
 		IngredientJS ingredient = IngredientJS.of(o);
 
@@ -172,7 +168,7 @@ public class InventoryJS
 		return count;
 	}
 
-	public int count(@P("filter") @T(IngredientJS.class) Object o)
+	public int count(Object o)
 	{
 		IngredientJS ingredient = IngredientJS.of(o);
 
@@ -211,7 +207,7 @@ public class InventoryJS
 		return count;
 	}
 
-	public int countNonEmpty(@P("filter") @T(IngredientJS.class) Object o)
+	public int countNonEmpty(Object o)
 	{
 		IngredientJS ingredient = IngredientJS.of(o);
 

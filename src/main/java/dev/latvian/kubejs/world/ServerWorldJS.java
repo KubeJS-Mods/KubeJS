@@ -2,7 +2,6 @@ package dev.latvian.kubejs.world;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.FakeServerPlayerDataJS;
@@ -76,7 +75,7 @@ public class ServerWorldJS extends WorldJS
 		return new EntityArrayList(this, ((ServerWorld) minecraftWorld).getEntities().collect(Collectors.toList()));
 	}
 
-	public EntityArrayList getEntities(@P("filter") String filter)
+	public EntityArrayList getEntities(String filter)
 	{
 		try
 		{

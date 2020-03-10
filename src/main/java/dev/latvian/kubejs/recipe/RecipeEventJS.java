@@ -2,10 +2,6 @@ package dev.latvian.kubejs.recipe;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.latvian.kubejs.documentation.Ignore;
-import dev.latvian.kubejs.documentation.P;
-import dev.latvian.kubejs.documentation.T;
-import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.type.CustomRecipeJS;
 import dev.latvian.kubejs.recipe.type.RecipeJS;
@@ -40,9 +36,7 @@ public class RecipeEventJS extends ServerEventJS
 	private static final Predicate<RecipeJS> ALWAYS_TRUE = r -> true;
 	private static final Predicate<RecipeJS> ALWAYS_FALSE = r -> false;
 
-	@Ignore
 	private final List<RecipeJS> addedRecipes;
-	@Ignore
 	public final Map<ResourceLocation, RecipeFunction> deserializerMap;
 
 	private final DynamicMapJS<DynamicMapJS<RecipeFunction>> recipeFunctions;
@@ -70,7 +64,6 @@ public class RecipeEventJS extends ServerEventJS
 		};
 	}
 
-	@Ignore
 	public void loadRecipes(IResourceManager resourceManager)
 	{
 		try
@@ -145,7 +138,6 @@ public class RecipeEventJS extends ServerEventJS
 		return recipeFunctions;
 	}
 
-	@Ignore
 	public RecipeJS addRecipe(RecipeJS recipe, RecipeTypeJS type, ListJS args1)
 	{
 		if (recipe instanceof RecipeErrorJS)
@@ -177,7 +169,6 @@ public class RecipeEventJS extends ServerEventJS
 		return recipe;
 	}
 
-	@Ignore
 	public void removeRecipe(RecipeJS recipe)
 	{
 		if (removedRecipes.add(recipe.id))
@@ -284,22 +275,22 @@ public class RecipeEventJS extends ServerEventJS
 		return filter;
 	}
 
-	public RecipeCollection get(@Nullable @P("filter") @T(MapJS.class) Object o)
+	public RecipeCollection get(@Nullable Object o)
 	{
 		return originalRecipes.filter(createPredicate(o));
 	}
 
-	public void remove(@P("filter") @T(MapJS.class) Object filter)
+	public void remove(Object filter)
 	{
 		get(filter).remove();
 	}
 
-	public void replaceInput(@P("filter") @T(MapJS.class) Object filter, @P("ingredient") @T(IngredientJS.class) Object ingredient, @P("with") @T(IngredientJS.class) Object with)
+	public void replaceInput(Object filter, Object ingredient, Object with)
 	{
 		get(filter).replaceInput(ingredient, with);
 	}
 
-	public void replaceOutput(@P("filter") @T(MapJS.class) Object filter, @P("ingredient") @T(IngredientJS.class) Object ingredient, @P("with") @T(ItemStackJS.class) Object with)
+	public void replaceOutput(Object filter, Object ingredient, Object with)
 	{
 		get(filter).replaceOutput(ingredient, with);
 	}
@@ -319,7 +310,6 @@ public class RecipeEventJS extends ServerEventJS
 		return deserializerMap.get(IRecipeSerializer.SMELTING.getRegistryName());
 	}
 
-	@Ignore
 	public void addDataToPack(VirtualKubeJSDataPack pack)
 	{
 		for (ResourceLocation r : removedRecipes)

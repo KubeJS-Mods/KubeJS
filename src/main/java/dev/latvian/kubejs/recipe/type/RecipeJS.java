@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.recipe.type;
 
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.recipe.IRecipeCollection;
 import dev.latvian.kubejs.recipe.RecipeEventJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
@@ -28,13 +27,13 @@ public abstract class RecipeJS implements Comparable<RecipeJS>, IRecipeCollectio
 		pack.addData(new ResourceLocation(id.getNamespace(), "recipes/" + id.getPath() + ".json"), toJson().toString());
 	}
 
-	public RecipeJS id(@P("id") Object _id)
+	public RecipeJS id(Object _id)
 	{
 		id = UtilsJS.getID(_id);
 		return this;
 	}
 
-	public RecipeJS group(@P("group") String g)
+	public RecipeJS group(String g)
 	{
 		group = g;
 		return this;

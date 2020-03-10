@@ -2,8 +2,6 @@ package dev.latvian.kubejs.block;
 
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.documentation.Ignore;
-import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.kubejs.util.UtilsJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -22,31 +20,18 @@ public class BlockBuilder
 {
 	public final ResourceLocation id;
 	private final Consumer<BlockBuilder> callback;
-	@Ignore
 	public MaterialJS material;
-	@Ignore
 	public float hardness;
-	@Ignore
 	public float resistance;
-	@Ignore
 	public float lightLevel;
-	@Ignore
 	public ToolType harvestTool;
-	@Ignore
 	public int harvestLevel;
-	@Ignore
 	public boolean opaque;
-	@Ignore
 	public boolean fullBlock;
-	@Ignore
 	public String renderType;
-	@Ignore
 	public Int2IntOpenHashMap color;
-	@Ignore
 	public final JsonObject textures;
-	@Ignore
 	public String model;
-	@Ignore
 	public Consumer<ItemBuilder> itemBuilder;
 
 	public BlockBuilder(String i, Consumer<BlockBuilder> c)
@@ -70,19 +55,19 @@ public class BlockBuilder
 		itemBuilder = item -> {};
 	}
 
-	public BlockBuilder material(@P("material") MaterialJS m)
+	public BlockBuilder material(MaterialJS m)
 	{
 		material = m;
 		return this;
 	}
 
-	public BlockBuilder hardness(@P("hardness") float h)
+	public BlockBuilder hardness(float h)
 	{
 		hardness = h;
 		return this;
 	}
 
-	public BlockBuilder resistance(@P("resistance") float r)
+	public BlockBuilder resistance(float r)
 	{
 		resistance = r;
 		return this;
@@ -95,32 +80,32 @@ public class BlockBuilder
 		return this;
 	}
 
-	public BlockBuilder lightLevel(@P("light") float light)
+	public BlockBuilder lightLevel(float light)
 	{
 		lightLevel = light;
 		return this;
 	}
 
-	public BlockBuilder harvestTool(@P("tool") ToolType tool, @P("level") int level)
+	public BlockBuilder harvestTool(ToolType tool, int level)
 	{
 		harvestTool = tool;
 		harvestLevel = level;
 		return this;
 	}
 
-	public BlockBuilder opaque(@P("opaque") boolean o)
+	public BlockBuilder opaque(boolean o)
 	{
 		opaque = o;
 		return this;
 	}
 
-	public BlockBuilder fullBlock(@P("fullBlock") boolean f)
+	public BlockBuilder fullBlock(boolean f)
 	{
 		fullBlock = f;
 		return this;
 	}
 
-	public BlockBuilder renderType(@P("layer") String l)
+	public BlockBuilder renderType(String l)
 	{
 		renderType = l;
 		return this;

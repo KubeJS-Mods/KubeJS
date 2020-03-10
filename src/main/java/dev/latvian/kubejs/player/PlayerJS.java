@@ -2,8 +2,6 @@ package dev.latvian.kubejs.player;
 
 import com.mojang.authlib.GameProfile;
 import dev.latvian.kubejs.MinecraftClass;
-import dev.latvian.kubejs.documentation.P;
-import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -93,12 +91,12 @@ public abstract class PlayerJS<E extends PlayerEntity> extends LivingEntityJS im
 		minecraftPlayer.container.detectAndSendChanges();
 	}
 
-	public void give(@P("item") @T(ItemStackJS.class) Object item)
+	public void give(Object item)
 	{
 		ItemHandlerHelper.giveItemToPlayer(minecraftPlayer, ItemStackJS.of(item).getItemStack());
 	}
 
-	public void giveInHand(@P("item") @T(ItemStackJS.class) Object item)
+	public void giveInHand(Object item)
 	{
 		ItemHandlerHelper.giveItemToPlayer(minecraftPlayer, ItemStackJS.of(item).getItemStack(), getSelectedSlot());
 	}
@@ -108,7 +106,7 @@ public abstract class PlayerJS<E extends PlayerEntity> extends LivingEntityJS im
 		return minecraftPlayer.inventory.currentItem;
 	}
 
-	public void setSelectedSlot(@P("index") int index)
+	public void setSelectedSlot(int index)
 	{
 		minecraftPlayer.inventory.currentItem = MathHelper.clamp(index, 0, 8);
 	}
@@ -118,13 +116,13 @@ public abstract class PlayerJS<E extends PlayerEntity> extends LivingEntityJS im
 		return ItemStackJS.of(minecraftPlayer.inventory.getItemStack());
 	}
 
-	public void setMouseItem(@P("item") @T(ItemStackJS.class) Object item)
+	public void setMouseItem(Object item)
 	{
 		minecraftPlayer.inventory.setItemStack(ItemStackJS.of(item).getItemStack());
 	}
 
 	@Override
-	public void setPositionAndRotation(@P("x") double x, @P("y") double y, @P("z") double z, @P("yaw") float yaw, @P("pitch") float pitch)
+	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch)
 	{
 		super.setPositionAndRotation(x, y, z, yaw, pitch);
 
@@ -135,7 +133,7 @@ public abstract class PlayerJS<E extends PlayerEntity> extends LivingEntityJS im
 	}
 
 	@Override
-	public void setStatusMessage(@P("message") Object message)
+	public void setStatusMessage(Object message)
 	{
 		minecraftPlayer.sendStatusMessage(Text.of(message).component(), true);
 	}
@@ -183,11 +181,11 @@ public abstract class PlayerJS<E extends PlayerEntity> extends LivingEntityJS im
 		return map;
 	}
 
-	public void sendData(@P("channel") String channel, @Nullable @P("data") Object data)
+	public void sendData(String channel, @Nullable Object data)
 	{
 	}
 
-	public void addFood(@P("food") int f, @P("modifier") float m)
+	public void addFood(int f, float m)
 	{
 		minecraftPlayer.getFoodStats().addStats(f, m);
 	}
@@ -207,17 +205,17 @@ public abstract class PlayerJS<E extends PlayerEntity> extends LivingEntityJS im
 		minecraftPlayer.addExhaustion(exhaustion);
 	}
 
-	public void addXP(@P("xp") int xp)
+	public void addXP(int xp)
 	{
 		minecraftPlayer.giveExperiencePoints(xp);
 	}
 
-	public void addXPLevels(@P("levels") int l)
+	public void addXPLevels(int l)
 	{
 		minecraftPlayer.addExperienceLevel(l);
 	}
 
-	public void setXp(@P("xp") int xp)
+	public void setXp(int xp)
 	{
 		minecraftPlayer.experienceTotal = 0;
 		minecraftPlayer.experience = 0F;
@@ -230,7 +228,7 @@ public abstract class PlayerJS<E extends PlayerEntity> extends LivingEntityJS im
 		return minecraftPlayer.experienceTotal;
 	}
 
-	public void setXpLevel(@P("level") int l)
+	public void setXpLevel(int l)
 	{
 		minecraftPlayer.experienceTotal = 0;
 		minecraftPlayer.experience = 0F;

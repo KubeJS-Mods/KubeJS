@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.player;
 
+import dev.latvian.kubejs.KubeJSCore;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageCloseOverlay;
 import dev.latvian.kubejs.net.MessageOpenOverlay;
@@ -7,15 +8,12 @@ import dev.latvian.kubejs.net.MessageSendDataFromServer;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextTranslate;
-import dev.latvian.kubejs.util.FieldJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Overlay;
-import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.play.server.SHeldItemChangePacket;
-import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.server.management.ProfileBanEntry;
 import net.minecraftforge.fml.network.PacketDistributor;
 
@@ -27,8 +25,6 @@ import java.util.Date;
  */
 public class ServerPlayerJS extends PlayerJS<ServerPlayerEntity>
 {
-	private static FieldJS<Boolean> isDestroyingBlockField;
-
 	public final ServerJS server;
 	private final boolean hasClientMod;
 
@@ -60,12 +56,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayerEntity>
 	@Override
 	public boolean isMiningBlock()
 	{
-		if (isDestroyingBlockField == null)
-		{
-			isDestroyingBlockField = UtilsJS.getField(PlayerInteractionManager.class, "field_73088_d");
-		}
-
-		return isDestroyingBlockField.get(minecraftPlayer.interactionManager).orElse(false);
+		return KubeJSCore.isDestroyingBlock(minecraftPlayer.interactionManager);
 	}
 
 	public boolean isOP()

@@ -1,9 +1,6 @@
 package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.MinecraftClass;
-import dev.latvian.kubejs.documentation.DisplayName;
-import dev.latvian.kubejs.documentation.P;
-import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -19,7 +16,6 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-@DisplayName("ItemUtilities")
 public class ItemWrapper
 {
 	public ItemStackJS of(Object object)
@@ -57,13 +53,13 @@ public class ItemWrapper
 		ItemStackJS.clearListCache();
 	}
 
-	public FireworksJS fireworks(@P("properties") Map<String, Object> properties)
+	public FireworksJS fireworks(Map<String, Object> properties)
 	{
 		return FireworksJS.of(properties);
 	}
 
 	@MinecraftClass
-	public Item getItem(@P("id") @T(ResourceLocation.class) Object id)
+	public Item getItem(Object id)
 	{
 		Item i = ForgeRegistries.ITEMS.getValue(UtilsJS.getID(id));
 		return i == null ? Items.AIR : i;

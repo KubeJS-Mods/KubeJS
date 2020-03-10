@@ -2,9 +2,6 @@ package dev.latvian.kubejs.entity;
 
 import com.mojang.authlib.GameProfile;
 import dev.latvian.kubejs.MinecraftClass;
-import dev.latvian.kubejs.documentation.Info;
-import dev.latvian.kubejs.documentation.P;
-import dev.latvian.kubejs.documentation.T;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.server.ServerJS;
@@ -96,7 +93,7 @@ public class EntityJS implements MessageSender
 	}
 
 	@Override
-	public void tell(@P("message") @T(Text.class) Object message)
+	public void tell(Object message)
 	{
 		minecraftEntity.sendMessage(Text.of(message).component());
 	}
@@ -207,7 +204,7 @@ public class EntityJS implements MessageSender
 		return minecraftEntity.fallDistance;
 	}
 
-	public void setFallDistance(@P("fallDistance") float fallDistance)
+	public void setFallDistance(float fallDistance)
 	{
 		minecraftEntity.fallDistance = fallDistance;
 	}
@@ -217,7 +214,7 @@ public class EntityJS implements MessageSender
 		return minecraftEntity.stepHeight;
 	}
 
-	public void setStepHeight(@P("stepHeight") float stepHeight)
+	public void setStepHeight(float stepHeight)
 	{
 		minecraftEntity.stepHeight = stepHeight;
 	}
@@ -227,7 +224,7 @@ public class EntityJS implements MessageSender
 		return minecraftEntity.noClip;
 	}
 
-	public void setNoClip(@P("noClip") boolean noClip)
+	public void setNoClip(boolean noClip)
 	{
 		minecraftEntity.noClip = noClip;
 	}
@@ -237,7 +234,7 @@ public class EntityJS implements MessageSender
 		return minecraftEntity.isSilent();
 	}
 
-	public void setSilent(@P("isSilent") boolean isSilent)
+	public void setSilent(boolean isSilent)
 	{
 		minecraftEntity.setSilent(isSilent);
 	}
@@ -247,7 +244,7 @@ public class EntityJS implements MessageSender
 		return minecraftEntity.hasNoGravity();
 	}
 
-	public void setNoGravity(@P("noGravity") boolean noGravity)
+	public void setNoGravity(boolean noGravity)
 	{
 		minecraftEntity.setNoGravity(noGravity);
 	}
@@ -257,7 +254,7 @@ public class EntityJS implements MessageSender
 		return minecraftEntity.getPosX();
 	}
 
-	public void setX(@P("x") double x)
+	public void setX(double x)
 	{
 		minecraftEntity.setPosition(x, getY(), getZ());
 	}
@@ -267,7 +264,7 @@ public class EntityJS implements MessageSender
 		return minecraftEntity.getPosY();
 	}
 
-	public void setY(@P("y") double y)
+	public void setY(double y)
 	{
 		minecraftEntity.setPosition(getX(), y, getZ());
 	}
@@ -277,7 +274,7 @@ public class EntityJS implements MessageSender
 		return minecraftEntity.getPosZ();
 	}
 
-	public void setZ(@P("z") double z)
+	public void setZ(double z)
 	{
 		minecraftEntity.setPosition(getX(), getY(), z);
 	}
@@ -287,7 +284,7 @@ public class EntityJS implements MessageSender
 		return minecraftEntity.rotationYaw;
 	}
 
-	public void setYaw(@P("yaw") float yaw)
+	public void setYaw(float yaw)
 	{
 		minecraftEntity.rotationYaw = yaw;
 	}
@@ -297,7 +294,7 @@ public class EntityJS implements MessageSender
 		return minecraftEntity.rotationPitch;
 	}
 
-	public void setPitch(@P("pitch") float pitch)
+	public void setPitch(float pitch)
 	{
 		minecraftEntity.rotationPitch = pitch;
 	}
@@ -307,7 +304,7 @@ public class EntityJS implements MessageSender
 		return minecraftEntity.getMotion().x;
 	}
 
-	public void setMotionX(@P("x") double x)
+	public void setMotionX(double x)
 	{
 		Vec3d m = minecraftEntity.getMotion();
 		minecraftEntity.setMotion(x, m.y, m.z);
@@ -318,7 +315,7 @@ public class EntityJS implements MessageSender
 		return minecraftEntity.getMotion().y;
 	}
 
-	public void setMotionY(@P("y") double y)
+	public void setMotionY(double y)
 	{
 		Vec3d m = minecraftEntity.getMotion();
 		minecraftEntity.setMotion(m.x, y, m.z);
@@ -329,13 +326,13 @@ public class EntityJS implements MessageSender
 		return minecraftEntity.getMotion().z;
 	}
 
-	public void setMotionZ(@P("z") double z)
+	public void setMotionZ(double z)
 	{
 		Vec3d m = minecraftEntity.getMotion();
 		minecraftEntity.setMotion(m.x, m.y, z);
 	}
 
-	public void setMotion(@P("x") double x, @P("y") double y, @P("z") double z)
+	public void setMotion(double x, double y, double z)
 	{
 		minecraftEntity.setMotion(x, y, z);
 	}
@@ -345,33 +342,33 @@ public class EntityJS implements MessageSender
 		return minecraftEntity.ticksExisted;
 	}
 
-	public void setPosition(@P("block") BlockContainerJS block)
+	public void setPosition(BlockContainerJS block)
 	{
 		setPosition(block.getX() + 0.5D, block.getY() + 0.05D, block.getZ() + 0.5D);
 	}
 
-	public void setPosition(@P("x") double x, @P("y") double y, @P("z") double z)
+	public void setPosition(double x, double y, double z)
 	{
 		setPositionAndRotation(x, y, z, getYaw(), getPitch());
 	}
 
-	public void setRotation(@P("yaw") float yaw, @P("pitch") float pitch)
+	public void setRotation(float yaw, float pitch)
 	{
 		setPositionAndRotation(getX(), getY(), getZ(), yaw, pitch);
 	}
 
-	public void setPositionAndRotation(@P("x") double x, @P("y") double y, @P("z") double z, @P("yaw") float yaw, @P("pitch") float pitch)
+	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch)
 	{
 		minecraftEntity.setLocationAndAngles(x, y, z, yaw, pitch);
 	}
 
-	public void addMotion(@P("x") double x, @P("y") double y, @P("z") double z)
+	public void addMotion(double x, double y, double z)
 	{
 		minecraftEntity.setMotion(minecraftEntity.getMotion().add(x, y, z));
 	}
 
 	@Override
-	public int runCommand(@P("command") String command)
+	public int runCommand(String command)
 	{
 		if (world instanceof ServerWorldJS)
 		{
@@ -386,7 +383,7 @@ public class EntityJS implements MessageSender
 		minecraftEntity.onKillCommand();
 	}
 
-	public boolean startRiding(@P("entity") EntityJS e, @P("force") boolean force)
+	public boolean startRiding(EntityJS e, boolean force)
 	{
 		return minecraftEntity.startRiding(e.minecraftEntity, force);
 	}
@@ -406,7 +403,7 @@ public class EntityJS implements MessageSender
 		return new EntityArrayList(world, minecraftEntity.getPassengers());
 	}
 
-	public boolean isPassenger(@P("entity") EntityJS e)
+	public boolean isPassenger(EntityJS e)
 	{
 		return minecraftEntity.isPassenger(e.minecraftEntity);
 	}
@@ -422,21 +419,18 @@ public class EntityJS implements MessageSender
 		return world.getEntity(minecraftEntity.getRidingEntity());
 	}
 
-	@Info("Scoreboard team ID")
 	public String getTeamID()
 	{
 		Team team = minecraftEntity.getTeam();
 		return team == null ? "" : team.getName();
 	}
 
-	@Info("Checks if this entity is on the same scoreboard team as another entity")
-	public boolean isOnSameTeam(@P("entity") EntityJS e)
+	public boolean isOnSameTeam(EntityJS e)
 	{
 		return minecraftEntity.isOnSameTeam(e.minecraftEntity);
 	}
 
-	@Info("Checks if this entity is on scoreboard team")
-	public boolean isOnScoreboardTeam(@P("teamID") String teamID)
+	public boolean isOnScoreboardTeam(String teamID)
 	{
 		Team team = minecraftEntity.getEntityWorld().getScoreboard().getTeam(teamID);
 		return team != null && minecraftEntity.isOnScoreboardTeam(team);
@@ -447,24 +441,21 @@ public class EntityJS implements MessageSender
 		minecraftEntity.setCustomName(name.component());
 	}
 
-	@Info("Custom display name")
 	public Text getCustomName()
 	{
 		return Text.of(minecraftEntity.getCustomName());
 	}
 
-	@Info("Checks if custom display name is set")
 	public boolean getHasCustomName()
 	{
 		return minecraftEntity.hasCustomName();
 	}
 
-	public void setCustomNameAlwaysVisible(@P("alwaysVisible") boolean b)
+	public void setCustomNameAlwaysVisible(boolean b)
 	{
 		minecraftEntity.setCustomNameVisible(b);
 	}
 
-	@Info("Custom display name will always be visible above head")
 	public boolean getCustomNameAlwaysVisible()
 	{
 		return minecraftEntity.isCustomNameVisible();
@@ -494,14 +485,12 @@ public class EntityJS implements MessageSender
 		return minecraftEntity.getEyeHeight();
 	}
 
-	@Info("Block position of the entity")
 	public BlockContainerJS getBlock()
 	{
 		return new BlockContainerJS(minecraftEntity.world, minecraftEntity.getPosition());
 	}
 
-	@Info("Sets entity on fire for x seconds")
-	public void setOnFire(@P("seconds") int seconds)
+	public void setOnFire(int seconds)
 	{
 		minecraftEntity.setFire(seconds);
 	}
@@ -511,7 +500,6 @@ public class EntityJS implements MessageSender
 		minecraftEntity.extinguish();
 	}
 
-	@Info("Entity NBT")
 	public MapJS getFullNBT()
 	{
 		CompoundNBT nbt = new CompoundNBT();
@@ -519,7 +507,7 @@ public class EntityJS implements MessageSender
 		return MapJS.of(nbt);
 	}
 
-	public void setFullNBT(@P("nbt") @T(MapJS.class) Object n)
+	public void setFullNBT(Object n)
 	{
 		CompoundNBT nbt = MapJS.nbt(n);
 
@@ -529,7 +517,6 @@ public class EntityJS implements MessageSender
 		}
 	}
 
-	@Info("Custom NBT you can use for saving custom data")
 	public MapJS getNbt()
 	{
 		CompoundNBT nbt = minecraftEntity.getPersistentData();
@@ -552,8 +539,7 @@ public class EntityJS implements MessageSender
 		return map;
 	}
 
-	@Info("Play sound at entity. Must be played from server side")
-	public void playSound(@P("id") Object id, @P("volume") float volume, @P("pitch") float pitch)
+	public void playSound(Object id, float volume, float pitch)
 	{
 		SoundEvent event = id instanceof SoundEvent ? (SoundEvent) id : ForgeRegistries.SOUND_EVENTS.getValue(UtilsJS.getID(id));
 
@@ -563,19 +549,17 @@ public class EntityJS implements MessageSender
 		}
 	}
 
-	@Info("Play sound at entity. Must be played from server side")
-	public void playSound(@P("id") Object id)
+	public void playSound(Object id)
 	{
 		playSound(id, 1F, 1F);
 	}
 
-	@Info("Spawn entity in world")
 	public void spawn()
 	{
 		world.minecraftWorld.addEntity(minecraftEntity);
 	}
 
-	public void attack(@P("source") String source, @P("hp") float hp)
+	public void attack(String source, float hp)
 	{
 		if (damageSourceMap == null)
 		{
@@ -603,7 +587,7 @@ public class EntityJS implements MessageSender
 		minecraftEntity.attackEntityFrom(s, hp);
 	}
 
-	public void attack(@P("hp") float hp)
+	public void attack(float hp)
 	{
 		minecraftEntity.attackEntityFrom(DamageSource.GENERIC, hp);
 	}
@@ -624,7 +608,7 @@ public class EntityJS implements MessageSender
 	}
 
 	@Nullable
-	public Map<String, Object> rayTrace(@P("distance") double distance)
+	public Map<String, Object> rayTrace(double distance)
 	{
 		Map<String, Object> map = new HashMap<>();
 		RayTraceResult ray = rayTraceResult(distance);

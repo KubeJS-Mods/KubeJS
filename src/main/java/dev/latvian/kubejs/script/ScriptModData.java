@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.script;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.documentation.P;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.IModInfo;
@@ -93,12 +92,12 @@ public class ScriptModData
 		return ModList.get().getModContainerById(KubeJS.MOD_ID).get().getModInfo().getVersion().toString();
 	}
 
-	public boolean isLoaded(@P("modID") String modId)
+	public boolean isLoaded(String modId)
 	{
 		return list.contains(modId);
 	}
 
-	public ModInfo getInfo(@P("modID") String modID)
+	public ModInfo getInfo(String modID)
 	{
 		ModInfo info = new ModInfo(modID);
 

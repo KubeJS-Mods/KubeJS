@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageSendDataFromClient;
 import dev.latvian.kubejs.util.MapJS;
@@ -66,7 +65,7 @@ public class ClientPlayerJS extends PlayerJS<PlayerEntity>
 	}
 
 	@Override
-	public void sendData(@P("channel") String channel, @Nullable @P("data") Object data)
+	public void sendData(String channel, @Nullable Object data)
 	{
 		if (!channel.isEmpty() && isSelf())
 		{

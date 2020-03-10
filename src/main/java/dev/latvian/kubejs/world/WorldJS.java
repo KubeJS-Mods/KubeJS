@@ -1,9 +1,6 @@
 package dev.latvian.kubejs.world;
 
 import dev.latvian.kubejs.MinecraftClass;
-import dev.latvian.kubejs.documentation.Ignore;
-import dev.latvian.kubejs.documentation.Info;
-import dev.latvian.kubejs.documentation.P;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.ItemEntityJS;
 import dev.latvian.kubejs.entity.ItemFrameEntityJS;
@@ -37,7 +34,6 @@ import java.util.Collection;
 /**
  * @author LatvianModder
  */
-@Info("This class represents a dimension. You can access weather, blocks, entities, etc. Client and server sides have different worlds")
 public abstract class WorldJS implements WithAttachedData
 {
 	@MinecraftClass
@@ -124,27 +120,26 @@ public abstract class WorldJS implements WithAttachedData
 		return minecraftWorld.isThundering();
 	}
 
-	public void setRainStrength(@P("strength") float strength)
+	public void setRainStrength(float strength)
 	{
 		minecraftWorld.setRainStrength(strength);
 	}
 
-	public BlockContainerJS getBlock(@P("x") int x, @P("y") int y, @P("z") int z)
+	public BlockContainerJS getBlock(int x, int y, int z)
 	{
 		return getBlock(new BlockPos(x, y, z));
 	}
 
-	public BlockContainerJS getBlock(@P("pos") BlockPos pos)
+	public BlockContainerJS getBlock(BlockPos pos)
 	{
 		return new BlockContainerJS(minecraftWorld, pos);
 	}
 
-	public BlockContainerJS getBlock(@P("blockEntity") TileEntity blockEntity)
+	public BlockContainerJS getBlock(TileEntity blockEntity)
 	{
 		return getBlock(blockEntity.getPos());
 	}
 
-	@Ignore
 	public abstract PlayerDataJS getPlayerData(PlayerEntity player);
 
 	@Nullable
@@ -203,7 +198,7 @@ public abstract class WorldJS implements WithAttachedData
 		return new EntityArrayList(this, 0);
 	}
 
-	public ExplosionJS createExplosion(@P("x") double x, @P("y") double y, @P("z") double z)
+	public ExplosionJS createExplosion(double x, double y, double z)
 	{
 		return new ExplosionJS(minecraftWorld, x, y, z);
 	}
@@ -221,7 +216,7 @@ public abstract class WorldJS implements WithAttachedData
 		return getEntity(type.create(minecraftWorld));
 	}
 
-	public void spawnLightning(@P("x") double x, @P("y") double y, @P("z") double z, @P("effectOnly") boolean effectOnly)
+	public void spawnLightning(double x, double y, double z, boolean effectOnly)
 	{
 		if (minecraftWorld instanceof ServerWorld)
 		{
@@ -229,7 +224,7 @@ public abstract class WorldJS implements WithAttachedData
 		}
 	}
 
-	public void spawnFireworks(@P("x") double x, @P("y") double y, @P("z") double z, @P("properties") FireworksJS f)
+	public void spawnFireworks(double x, double y, double z, FireworksJS f)
 	{
 		minecraftWorld.addEntity(f.createFireworkRocket(minecraftWorld, x, y, z));
 	}
