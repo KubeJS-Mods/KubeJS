@@ -143,7 +143,6 @@ if (ENV.CURSEFORGE_KEY) {
 			}
 			changelog = getGitChangelog
 			changelogType = 'markdown'
-			addArtifact(deobfJar)
 		}
 	}
 }
