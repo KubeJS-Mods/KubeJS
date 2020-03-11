@@ -75,6 +75,7 @@ public class UtilsJS
 
 		try
 		{
+
 			runnable.run();
 		}
 		catch (Exception ex)
@@ -139,6 +140,7 @@ public class UtilsJS
 					t1 = new TextString(c.getUnformattedComponentText());
 				}
 
+				//TODO: Replace with AT
 				t1.bold(c.getStyle().getBold());
 				t1.italic(c.getStyle().getItalic());
 				t1.underlined(c.getStyle().getUnderlined());
@@ -157,6 +159,10 @@ public class UtilsJS
 					else if (ce.getAction() == ClickEvent.Action.SUGGEST_COMMAND)
 					{
 						t1.click("suggest_command:" + ce.getValue());
+					}
+					else if (ce.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD)
+					{
+						t1.click("copy:" + ce.getValue());
 					}
 					else if (ce.getAction() == ClickEvent.Action.OPEN_URL)
 					{

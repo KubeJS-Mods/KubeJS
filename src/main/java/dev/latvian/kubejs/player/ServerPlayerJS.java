@@ -64,9 +64,9 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayerEntity>
 		return server.minecraftServer.getPlayerList().canSendCommands(minecraftPlayer.getGameProfile());
 	}
 
-	public void kick(Text reason)
+	public void kick(Object reason)
 	{
-		minecraftPlayer.connection.disconnect(reason.component());
+		minecraftPlayer.connection.disconnect(Text.of(reason).component());
 	}
 
 	public void kick()

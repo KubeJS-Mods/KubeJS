@@ -442,14 +442,11 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 		Map<String, FallbackResourceManager> namespaceResourceManagers = KubeJSCore.getNamespaceResourceManagers(resourceManager);
 
-		if (namespaceResourceManagers != null)
+		for (FallbackResourceManager manager : namespaceResourceManagers.values())
 		{
-			for (FallbackResourceManager manager : namespaceResourceManagers.values())
+			if (manager.resourcePacks.remove(virtualDataPackLast))
 			{
-				if (manager.resourcePacks.remove(virtualDataPackLast))
-				{
-					manager.resourcePacks.add(0, virtualDataPackLast);
-				}
+				manager.resourcePacks.add(0, virtualDataPackLast);
 			}
 		}
 

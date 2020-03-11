@@ -204,6 +204,10 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 			{
 				component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, click.substring(16)));
 			}
+			else if (click.startsWith("copy:"))
+			{
+				component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, click.substring(5)));
+			}
 			else
 			{
 				component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, click));

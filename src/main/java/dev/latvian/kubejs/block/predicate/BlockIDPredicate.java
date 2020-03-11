@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.block.predicate;
 
+import dev.latvian.kubejs.KubeJSCore;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.block.Block;
@@ -7,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.state.IProperty;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
@@ -148,50 +150,39 @@ public class BlockIDPredicate implements BlockPredicate
 		return true;
 	}
 
-	public void setHardness(float hardness)
+	public BlockIDPredicate setHardness(float hardness)
 	{
 		Block block = getBlock();
 
 		if (block != Blocks.AIR)
 		{
-			//block.setHardness(hardness);
+			KubeJSCore.setHardness(block, hardness);
 		}
+
+		return this;
 	}
 
-	public void setResistance(float resistance)
+	public BlockIDPredicate setResistance(float resistance)
 	{
 		Block block = getBlock();
 
 		if (block != Blocks.AIR)
 		{
-			//FIXME: block.setResistance(resistance);
+			KubeJSCore.setResistance(block, resistance);
 		}
+
+		return this;
 	}
 
-	public void setLightLevel(float lightLevel)
+	public BlockIDPredicate setLightLevel(float lightLevel)
 	{
 		Block block = getBlock();
 
 		if (block != Blocks.AIR)
 		{
-			//FIXME: block.setLightLevel(lightLevel);
+			KubeJSCore.setLightLevel(block, MathHelper.clamp((int) (lightLevel * 15F), 0, 15));
 		}
-	}
 
-	public void setHarvestLevel(String tool, int level)
-	{
-		Block block = getBlock();
-
-		if (block != Blocks.AIR)
-		{
-			if (properties == null || properties.isEmpty())
-			{
-				//FIXME: block.setHarvestLevel(tool, level);
-			}
-			else
-			{
-				//FIXME: block.setHarvestLevel(tool, level, getBlockState());
-			}
-		}
+		return this;
 	}
 }

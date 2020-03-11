@@ -1,10 +1,13 @@
 package dev.latvian.kubejs;
 
 import com.google.gson.JsonObject;
+import net.minecraft.block.Block;
 import net.minecraft.entity.item.FireworkRocketEntity;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.RecipeManager;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.FallbackResourceManager;
 import net.minecraft.resources.IFutureReloadListener;
@@ -69,6 +72,31 @@ public class KubeJSCore
 	public static boolean isDestroyingBlock(PlayerInteractionManager manager)
 	{
 		return manager.isDestroyingBlock;
+	}
+
+	public static Map<String, INBT> getNBTTagMap(CompoundNBT nbt)
+	{
+		return nbt.tagMap;
+	}
+
+	public static void setNBTTagMap(CompoundNBT nbt, Map<String, INBT> map)
+	{
+		nbt.tagMap = map;
+	}
+
+	public static void setHardness(Block block, float hardness)
+	{
+		block.blockHardness = hardness;
+	}
+
+	public static void setResistance(Block block, float resistance)
+	{
+		block.blockResistance = resistance;
+	}
+
+	public static void setLightLevel(Block block, int lightLevel)
+	{
+		block.lightValue = lightLevel;
 	}
 
 	// Mixin Helpers //

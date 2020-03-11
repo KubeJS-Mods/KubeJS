@@ -2,6 +2,7 @@ package dev.latvian.kubejs.util;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.kubejs.KubeJSCore;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 
@@ -229,6 +230,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 	public CompoundNBT toNBT()
 	{
 		CompoundNBT nbt = new CompoundNBT();
+		KubeJSCore.setNBTTagMap(nbt, new LinkedHashMap<>());
 
 		for (Map.Entry<String, Object> entry : entrySet())
 		{

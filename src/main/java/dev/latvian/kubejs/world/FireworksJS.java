@@ -3,6 +3,7 @@ package dev.latvian.kubejs.world;
 import dev.latvian.kubejs.KubeJSCore;
 import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.MapJS;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.entity.item.FireworkRocketEntity;
 import net.minecraft.item.DyeColor;
@@ -14,16 +15,21 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author LatvianModder
  */
 public class FireworksJS
 {
-	public static FireworksJS of(Map<String, Object> properties)
+	public static FireworksJS of(Object o)
 	{
+		MapJS properties = MapJS.of(o);
 		FireworksJS fireworks = new FireworksJS();
+
+		if (properties == null)
+		{
+			return fireworks;
+		}
 
 		if (properties.get("flight") instanceof Number)
 		{
@@ -37,73 +43,76 @@ public class FireworksJS
 
 		if (properties.containsKey("explosions"))
 		{
-			for (Object o : ListJS.orSelf(properties.get("explosions")))
+			for (Object o1 : ListJS.orSelf(properties.get("explosions")))
 			{
-				if (o instanceof Map)
+				MapJS m = MapJS.of(o1);
+
+				if (m == null)
 				{
-					Map m = (Map) o;
-					Explosion e = new Explosion();
-
-					if (m.get("shape") instanceof String)
-					{
-						e.shape = Shape.get(m.get("shape").toString());
-					}
-
-					if (m.get("flicker") instanceof Boolean)
-					{
-						e.flicker = (Boolean) m.get("flicker");
-					}
-
-					if (m.get("trail") instanceof Boolean)
-					{
-						e.trail = (Boolean) m.get("trail");
-					}
-
-					if (m.containsKey("colors"))
-					{
-						for (Object o1 : ListJS.orSelf(m.get("colors")))
-						{
-							if (o1 instanceof Number)
-							{
-								e.colors.add(((Number) o1).intValue());
-							}
-							else if (o1 instanceof TextColor)
-							{
-								e.colors.add(((TextColor) o1).color);
-							}
-							else if (o1 instanceof String)
-							{
-								e.colors.add(DyeColor.valueOf(o1.toString()).getColorValue());
-							}
-						}
-					}
-
-					if (m.containsKey("fadeColors"))
-					{
-						for (Object o1 : ListJS.orSelf(m.get("fadeColors")))
-						{
-							if (o1 instanceof Number)
-							{
-								e.fadeColors.add(((Number) o1).intValue());
-							}
-							else if (o1 instanceof TextColor)
-							{
-								e.fadeColors.add(((TextColor) o1).color);
-							}
-							else if (o1 instanceof String)
-							{
-								e.fadeColors.add(DyeColor.valueOf(o1.toString()).getColorValue());
-							}
-						}
-					}
-
-					if (e.colors.isEmpty())
-					{
-						e.colors.add(TextColor.YELLOW.color);
-					}
-
-					fireworks.explosions.add(e);
+					continue;
 				}
+
+				Explosion e = new Explosion();
+
+				if (m.get("shape") instanceof String)
+				{
+					e.shape = Shape.get(m.get("shape").toString());
+				}
+
+				if (m.get("flicker") instanceof Boolean)
+				{
+					e.flicker = (Boolean) m.get("flicker");
+				}
+
+				if (m.get("trail") instanceof Boolean)
+				{
+					e.trail = (Boolean) m.get("trail");
+				}
+
+				if (m.containsKey("colors"))
+				{
+					for (Object o2 : ListJS.orSelf(m.get("colors")))
+					{
+						if (o2 instanceof Number)
+						{
+							e.colors.add(((Number) o2).intValue());
+						}
+						else if (o2 instanceof TextColor)
+						{
+							e.colors.add(((TextColor) o2).color);
+						}
+						else if (o2 instanceof String)
+						{
+							e.colors.add(DyeColor.valueOf(o2.toString()).getColorValue());
+						}
+					}
+				}
+
+				if (m.containsKey("fadeColors"))
+				{
+					for (Object o2 : ListJS.orSelf(m.get("fadeColors")))
+					{
+						if (o2 instanceof Number)
+						{
+							e.fadeColors.add(((Number) o2).intValue());
+						}
+						else if (o2 instanceof TextColor)
+						{
+							e.fadeColors.add(((TextColor) o2).color);
+						}
+						else if (o2 instanceof String)
+						{
+							e.fadeColors.add(DyeColor.valueOf(o2.toString()).getColorValue());
+						}
+					}
+				}
+
+				if (e.colors.isEmpty())
+				{
+					e.colors.add(TextColor.YELLOW.color);
+				}
+
+				fireworks.explosions.add(e);
 			}
 		}
 
