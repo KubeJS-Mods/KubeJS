@@ -22,6 +22,7 @@ import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
@@ -43,7 +44,7 @@ public class KubeJSServerEventHandler
 		MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
 		MinecraftForge.EVENT_BUS.addListener(this::serverStarted);
 		MinecraftForge.EVENT_BUS.addListener(this::serverStopping);
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::tagsUpdated);
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::tagsUpdated);
 		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::serverTick);
 		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOW, this::command);
 	}
@@ -138,7 +139,7 @@ public class KubeJSServerEventHandler
 
 	private void tagsUpdated(TagsUpdatedEvent event)
 	{
-		if (ServerJS.instance != null)
+		if (ServerJS.instance != null && EffectiveSide.get().isServer())
 		{
 			ServerJS.instance.tagsUpdated(event.getTagManager());
 		}

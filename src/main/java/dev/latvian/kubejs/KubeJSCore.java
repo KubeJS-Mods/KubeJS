@@ -21,6 +21,7 @@ import net.minecraft.util.ResourceLocation;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author LatvianModder
@@ -44,12 +45,17 @@ public class KubeJSCore
 		return manager.namespaceResourceManagers;
 	}
 
+	public static <T> Map<ResourceLocation, Tag<T>> getTagMap(TagCollection<T> collection)
+	{
+		return collection.tagMap;
+	}
+
 	public static <T> void setTagMap(TagCollection<T> collection, Map<ResourceLocation, Tag<T>> m)
 	{
 		collection.tagMap = m;
 	}
 
-	public static <T> void setTaggedItems(Tag.ListEntry<T> tag, Collection<T> collection)
+	public static <T> void setTaggedItems(Tag<T> tag, Set<T> collection)
 	{
 		tag.taggedItems = collection;
 	}

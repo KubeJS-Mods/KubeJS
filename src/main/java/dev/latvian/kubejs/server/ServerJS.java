@@ -43,7 +43,6 @@ import net.minecraft.resources.SimpleReloadableResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.NetworkTagManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -365,7 +364,6 @@ public class ServerJS implements MessageSender, WithAttachedData
 		KubeJSNet.MAIN.send(PacketDistributor.ALL.noArg(), new MessageSendDataFromServer(channel, MapJS.nbt(data)));
 	}
 
-	@SuppressWarnings("deprecation")
 	public void reloadScripts(SimpleReloadableResourceManager resourceManager)
 	{
 		scriptManager.unload();
@@ -397,16 +395,6 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 		new DataPackEventJS(virtualDataPackFirst).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_FIRST);
 		new DataPackEventJS(virtualDataPackLast).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_LAST);
-
-		new TagEventJS<>(Registry.ITEM, "items", "item").loadAndPost(resourceManager, virtualDataPackFirst, virtualDataPackLast);
-		new TagEventJS<>(Registry.BLOCK, "blocks", "block").loadAndPost(resourceManager, virtualDataPackFirst, virtualDataPackLast);
-		new TagEventJS<>(Registry.FLUID, "fluids", "fluid").loadAndPost(resourceManager, virtualDataPackFirst, virtualDataPackLast);
-		new TagEventJS<>(Registry.ENTITY_TYPE, "entity_types", "entity_type").loadAndPost(resourceManager, virtualDataPackFirst, virtualDataPackLast);
-
-		//ItemTags.setCollection(itemTagCollection);
-		//BlockTags.setCollection(blockTagCollection);
-		//FluidTags.setCollection(fluidTagCollection);
-		//EntityTypeTags.setCollection(entityTypeTagCollection);
 
 		RecipeEventJS recipeEvent = new RecipeEventJS();
 		MinecraftForge.EVENT_BUS.post(new RegisterRecipeHandlersEvent(recipeEvent));
@@ -464,7 +452,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return (stage, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> {
 			if (!(resourceManager instanceof SimpleReloadableResourceManager))
 			{
-				throw new IllegalStateException("Resource manager is not SimpleReloadableResourceManager, KubeJS will not work! Unsupported resource manager class: " + resourceManager.getClass());
+				throw new RuntimeException("Resource manager is not SimpleReloadableResourceManager, KubeJS will not work! Unsupported resource manager class: " + resourceManager.getClass());
 			}
 
 			reloadScripts((SimpleReloadableResourceManager) resourceManager);
@@ -472,12 +460,13 @@ public class ServerJS implements MessageSender, WithAttachedData
 		};
 	}
 
-	public void tagsUpdated(NetworkTagManager tagManager)
+	public void tagsUpdated(NetworkTagManager manager)
 	{
-		//KubeJS.LOGGER.info(tagManager);
-		//ItemTags.setCollection(itemTagCollection);
-		//BlockTags.setCollection(blockTagCollection);
-		//FluidTags.setCollection(fluidTagCollection);
-		//EntityTypeTags.setCollection(entityTypeTagCollection);
+		ScriptType.SERVER.console.logger.info("Loading custom tags...");
+
+		for (TagGroup<?> group : TagGroup.GROUP_LIST)
+		{
+			new TagEventJS<>(group).post(manager);
+		}
 	}
 }

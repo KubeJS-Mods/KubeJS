@@ -1,19 +1,25 @@
 package dev.latvian.kubejs.server;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.common.collect.ImmutableMap;
+import dev.latvian.kubejs.KubeJSCore;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
+import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
-import net.minecraft.resources.IResourceManager;
+import net.minecraft.tags.NetworkTagCollection;
+import net.minecraft.tags.NetworkTagManager;
+import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author LatvianModder
@@ -24,144 +30,149 @@ public class TagEventJS<T> extends ServerEventJS
 	{
 		private final TagEventJS<T> event;
 		private final ResourceLocation id;
-		private boolean replace;
-		private final List<String> added;
-		private final List<String> removed;
+		private final List<T> added;
+		private final List<T> removed;
 
-		private TagList(TagEventJS<T> e, ResourceLocation i)
+		private TagList(TagEventJS<T> e, ResourceLocation _id)
 		{
 			event = e;
-			id = i;
-			replace = false;
+			id = _id;
 			added = new ArrayList<>();
 			removed = new ArrayList<>();
 		}
 
-		public TagList<T> replace()
+		public TagList add(Object ids)
 		{
-			replace = true;
-			return this;
-		}
-
-		public TagList<T> add(Object... ids)
-		{
-			for (Object o : ids)
+			for (Object o : ListJS.orSelf(ids))
 			{
-				added.add(String.valueOf(o));
+				String s = String.valueOf(o);
+
+				if (s.startsWith("#"))
+				{
+					Tag<T> tag = event.tagMap.get(new ResourceLocation(s.substring(1)));
+
+					if (tag != null)
+					{
+						added.addAll(tag.getAllElements());
+					}
+				}
+				else
+				{
+					event.registry.getValue(new ResourceLocation(s)).ifPresent(added::add);
+				}
 			}
 
 			return this;
 		}
 
-		public TagList<T> remove(Object... ids)
+		public TagList add(Object... ids)
 		{
-			for (Object o : ids)
+			return add(Arrays.asList(ids));
+		}
+
+		public TagList remove(Object ids)
+		{
+			for (Object o : ListJS.orSelf(ids))
 			{
-				removed.add(String.valueOf(o));
+				String s = String.valueOf(o);
+
+				if (s.startsWith("#"))
+				{
+					Tag<T> tag = event.tagMap.get(new ResourceLocation(s.substring(1)));
+
+					if (tag != null)
+					{
+						removed.addAll(tag.getAllElements());
+					}
+				}
+				else
+				{
+					event.registry.getValue(new ResourceLocation(s)).ifPresent(removed::add);
+				}
 			}
 
 			return this;
 		}
 
-		public JsonObject getFirst()
+		public TagList remove(Object... ids)
 		{
-			JsonObject json = new JsonObject();
-			json.addProperty("replace", replace);
-
-			JsonArray a = new JsonArray();
-
-			for (String s : added)
-			{
-				a.add(s);
-			}
-
-			json.add("values", a);
-			return json;
-		}
-
-		public JsonObject getLast()
-		{
-			JsonObject json = new JsonObject();
-			json.addProperty("replace", false);
-			JsonArray r = new JsonArray();
-
-			for (String s : removed)
-			{
-				r.add(s);
-			}
-
-			json.add("values", new JsonArray());
-			json.add("remove", r);
-			return json;
+			return remove(Arrays.asList(ids));
 		}
 	}
 
-	private final Registry<T> registry;
-	//private final NetworkTagCollection<T> tagCollection;
-	private final String collectionName;
-	private final Map<ResourceLocation, TagList<T>> tags;
+	private final TagGroup<T> group;
 
-	public TagEventJS(Registry<T> r, String n, String tn)
+	private Map<ResourceLocation, TagList<T>> tags;
+	private Registry<T> registry;
+	private Map<ResourceLocation, Tag<T>> tagMap;
+
+	public TagEventJS(TagGroup<T> g)
 	{
-		registry = r;
-		collectionName = n;
-		tags = new HashMap<>();
-	}
-
-	public void loadAndPost(IResourceManager resourceManager, VirtualKubeJSDataPack first, VirtualKubeJSDataPack last)
-	{
-		/*
-		tagCollection = new NetworkTagCollection<>(registry, "tags/" + collectionName, tn);
-		tagCollection.reload(resourceManager, Runnable::run).thenAccept(tagCollection::registerAll);
-
-		for (Tag<T> tag : tagCollection.getTagMap().values())
-		{
-			TagList list = new TagList(tag.getId());
-			tags.put(list.id, list);
-
-			for (T t : tag.getAllElements())
-			{
-				System.out.println("- " + t);
-			}
-		}
-		*/
-
-		post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_TAGS + "." + collectionName);
-
-		for (TagList list : tags.values())
-		{
-			if (!list.added.isEmpty())
-			{
-				first.addData(new ResourceLocation(list.id.getNamespace(), "tags/" + collectionName + "/" + list.id.getPath() + ".json"), list.getFirst().toString());
-			}
-
-			if (!list.removed.isEmpty())
-			{
-				last.addData(new ResourceLocation(list.id.getNamespace(), "tags/" + collectionName + "/" + list.id.getPath() + ".json"), list.getLast().toString());
-			}
-		}
-
-		//Map<ResourceLocation, Tag.Builder<T>> map = new HashMap<>();
-		//tagCollection.registerAll(map);
-		//return tagCollection;
+		group = g;
 	}
 
 	public String getCollectionName()
 	{
-		return collectionName;
+		return group.name;
+	}
+
+	void post(NetworkTagManager manager)
+	{
+		tags = new HashMap<>();
+		registry = group.registrySupplier.get();
+		NetworkTagCollection<T> tagCollection = group.collectionGetter.apply(manager);
+		tagMap = new HashMap<>(KubeJSCore.getTagMap(tagCollection));
+
+		post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_TAGS, group.name);
+
+		List<TagList<T>> list = new ArrayList<>();
+
+		for (TagList<T> l : tags.values())
+		{
+			if (!l.added.isEmpty() || !l.removed.isEmpty())
+			{
+				list.add(l);
+			}
+		}
+
+		if (!list.isEmpty())
+		{
+			int added = 0;
+			int removed = 0;
+
+			for (TagEventJS.TagList<T> tagList : list)
+			{
+				Tag<T> tag = tagMap.computeIfAbsent(tagList.id, Tag::new);
+				Set<T> taggedItems = new LinkedHashSet<>(tag.getAllElements());
+
+				ScriptType.SERVER.console.logger.info(group.name + "/#" + tag.getId());
+
+				for (T v : tagList.added)
+				{
+					ScriptType.SERVER.console.logger.info(" + " + v);
+					taggedItems.add(v);
+					added++;
+				}
+
+				for (T v : tagList.removed)
+				{
+					ScriptType.SERVER.console.logger.info(" - " + v);
+					taggedItems.remove(v);
+					removed++;
+				}
+
+				KubeJSCore.setTaggedItems(tag, taggedItems);
+				KubeJSCore.setEntries(tag, Collections.singleton(new Tag.ListEntry<>(taggedItems)));
+			}
+
+			KubeJSCore.setTagMap(tagCollection, ImmutableMap.copyOf(tagMap));
+			group.collectionSetter.accept(tagCollection);
+			ScriptType.SERVER.console.logger.info("Changed tags [" + group.name + "]: " + added + " added, " + removed + " removed");
+		}
 	}
 
 	public TagList<T> get(Object tag)
 	{
-		ResourceLocation location = UtilsJS.getID(tag);
-		TagList<T> list = tags.get(location);
-
-		if (list == null)
-		{
-			list = new TagList<>(this, location);
-			tags.put(location, list);
-		}
-
-		return list;
+		return tags.computeIfAbsent(UtilsJS.getID(tag), id -> new TagList<>(this, id));
 	}
 }
