@@ -17,6 +17,7 @@ import java.nio.file.Files;
 public class ClientWrapper
 {
 	public static String title = "";
+	public static boolean showTagNames = true;
 
 	@MinecraftClass
 	public Minecraft getMinecraft()
@@ -84,5 +85,10 @@ public class ClientWrapper
 		}
 
 		return "Singleplayer";
+	}
+
+	public void setShowTagNames(boolean v)
+	{
+		showTagNames = v;
 	}
 }

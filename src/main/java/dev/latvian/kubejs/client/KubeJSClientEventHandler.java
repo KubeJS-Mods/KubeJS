@@ -20,6 +20,9 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
@@ -88,6 +91,14 @@ public class KubeJSClientEventHandler
 
 	private void itemTooltip(ItemTooltipEvent event)
 	{
+		if (ClientWrapper.showTagNames && Minecraft.getInstance().gameSettings.advancedItemTooltips && Screen.hasShiftDown())
+		{
+			for (ResourceLocation tag : event.getItemStack().getItem().getTags())
+			{
+				event.getToolTip().add(new StringTextComponent(" #" + tag).applyTextStyle(TextFormatting.DARK_GRAY));
+			}
+		}
+
 		new ClientItemTooltipEventJS(event).post(ScriptType.CLIENT, KubeJSEvents.CLIENT_ITEM_TOOLTIP);
 	}
 
