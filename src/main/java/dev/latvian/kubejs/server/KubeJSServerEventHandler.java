@@ -44,7 +44,7 @@ public class KubeJSServerEventHandler
 		MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
 		MinecraftForge.EVENT_BUS.addListener(this::serverStarted);
 		MinecraftForge.EVENT_BUS.addListener(this::serverStopping);
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::tagsUpdated);
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::tagsUpdated);
 		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::serverTick);
 		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOW, this::command);
 	}

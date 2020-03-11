@@ -116,12 +116,25 @@ public class TagEventJS<T> extends ServerEventJS
 		return group.name;
 	}
 
-	void post(NetworkTagManager manager)
+	int[] post(NetworkTagManager manager)
 	{
+		int[] count = new int[3];
 		tags = new HashMap<>();
 		registry = group.registrySupplier.get();
 		NetworkTagCollection<T> tagCollection = group.collectionGetter.apply(manager);
-		tagMap = new HashMap<>(KubeJSCore.getTagMap(tagCollection));
+
+		tagMap = new HashMap<>(tagCollection.getTagMap());
+		count[0] += tagMap.size();
+
+		for (Tag<T> tag : tagMap.values())
+		{
+			ScriptType.SERVER.console.logger.debug(group.name + "/#" + tag.getId());
+
+			for (T v : tag.getAllElements())
+			{
+				ScriptType.SERVER.console.logger.debug("* " + registry.getKey(v));
+			}
+		}
 
 		post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_TAGS, group.name);
 
@@ -137,28 +150,25 @@ public class TagEventJS<T> extends ServerEventJS
 
 		if (!list.isEmpty())
 		{
-			int added = 0;
-			int removed = 0;
-
 			for (TagEventJS.TagList<T> tagList : list)
 			{
 				Tag<T> tag = tagMap.computeIfAbsent(tagList.id, Tag::new);
 				Set<T> taggedItems = new LinkedHashSet<>(tag.getAllElements());
 
-				ScriptType.SERVER.console.logger.info(group.name + "/#" + tag.getId());
+				ScriptType.SERVER.console.logger.debug(group.name + "/#" + tag.getId());
 
 				for (T v : tagList.added)
 				{
-					ScriptType.SERVER.console.logger.info(" + " + v);
+					ScriptType.SERVER.console.logger.debug("+ " + v);
 					taggedItems.add(v);
-					added++;
+					count[1]++;
 				}
 
 				for (T v : tagList.removed)
 				{
-					ScriptType.SERVER.console.logger.info(" - " + v);
+					ScriptType.SERVER.console.logger.debug("- " + v);
 					taggedItems.remove(v);
-					removed++;
+					count[2]++;
 				}
 
 				KubeJSCore.setTaggedItems(tag, taggedItems);
@@ -167,8 +177,10 @@ public class TagEventJS<T> extends ServerEventJS
 
 			KubeJSCore.setTagMap(tagCollection, ImmutableMap.copyOf(tagMap));
 			group.collectionSetter.accept(tagCollection);
-			ScriptType.SERVER.console.logger.info("Changed tags [" + group.name + "]: " + added + " added, " + removed + " removed");
+			ScriptType.SERVER.console.logger.debug("Found [" + group.name + "] " + count[0] + " tags, added " + count[1] + ", removed " + count[2]);
 		}
+
+		return count;
 	}
 
 	public TagList<T> get(Object tag)

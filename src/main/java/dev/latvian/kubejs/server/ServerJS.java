@@ -462,11 +462,19 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 	public void tagsUpdated(NetworkTagManager manager)
 	{
-		ScriptType.SERVER.console.logger.info("Loading custom tags...");
+		int[] count = new int[3];
+		ScriptType.SERVER.console.logger.info("Scanning tags...");
 
 		for (TagGroup<?> group : TagGroup.GROUP_LIST)
 		{
-			new TagEventJS<>(group).post(manager);
+			int[] c = new TagEventJS<>(group).post(manager);
+
+			for (int i = 0; i < c.length; i++)
+			{
+				count[i] += c[i];
+			}
 		}
+
+		ScriptType.SERVER.console.logger.info("Found " + count[0] + " tags, added " + count[1] + ", removed " + count[2]);
 	}
 }
