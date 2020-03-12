@@ -2,6 +2,8 @@ package dev.latvian.kubejs;
 
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.server.TagEventJS;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.FireworkRocketEntity;
 import net.minecraft.item.crafting.IRecipe;
@@ -18,11 +20,14 @@ import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagCollection;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.thread.EffectiveSide;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * @author LatvianModder
@@ -102,6 +107,14 @@ public class KubeJSCore
 	}
 
 	// Mixin Helpers //
+
+	public static <T> void customTags(TagCollection<T> tagCollection, String type, Function<ResourceLocation, Optional<T>> getter)
+	{
+		if (ServerJS.instance != null && EffectiveSide.get().isServer())
+		{
+			new TagEventJS<>(tagCollection, type, getter).post();
+		}
+	}
 
 	public static void customRecipes(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap, IResourceManager resourceManager, IProfiler profiler)
 	{

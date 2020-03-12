@@ -41,7 +41,6 @@ import net.minecraft.resources.FallbackResourceManager;
 import net.minecraft.resources.IFutureReloadListener;
 import net.minecraft.resources.SimpleReloadableResourceManager;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.tags.NetworkTagManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -458,23 +457,5 @@ public class ServerJS implements MessageSender, WithAttachedData
 			reloadScripts((SimpleReloadableResourceManager) resourceManager);
 			return CompletableFuture.supplyAsync(Object::new, backgroundExecutor).thenCompose(stage::markCompleteAwaitingOthers).thenAcceptAsync(o -> {}, gameExecutor);
 		};
-	}
-
-	public void tagsUpdated(NetworkTagManager manager)
-	{
-		int[] count = new int[3];
-		ScriptType.SERVER.console.logger.info("Scanning tags...");
-
-		for (TagGroup<?> group : TagGroup.GROUP_LIST)
-		{
-			int[] c = new TagEventJS<>(group).post(manager);
-
-			for (int i = 0; i < c.length; i++)
-			{
-				count[i] += c[i];
-			}
-		}
-
-		ScriptType.SERVER.console.logger.info("Found " + count[0] + " tags, added " + count[1] + ", removed " + count[2]);
 	}
 }

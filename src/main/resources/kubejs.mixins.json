@@ -5,6 +5,7 @@
 	"refmap": "kubejs.refmap.json",
 	"mixins": [
 		"MinecraftMixin",
+		"TagCollectionMixin",
 		"RecipeManagerMixin"
 	],
 	"injectors": {
