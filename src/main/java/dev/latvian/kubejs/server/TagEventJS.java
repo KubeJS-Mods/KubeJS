@@ -1,19 +1,17 @@
 package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.KubeJSCore;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.tags.Tag;
-import net.minecraft.tags.TagCollection;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -24,12 +22,16 @@ public class TagEventJS<T> extends ServerEventJS
 	public static class TagWrapper<T>
 	{
 		private final TagEventJS<T> event;
-		private final Tag<T> tag;
+		private final ResourceLocation id;
+		private final Tag.Builder<T> tag;
+		private final Set<Tag.ITagEntry<T>> entries;
 
-		private TagWrapper(TagEventJS<T> e, Tag<T> t)
+		private TagWrapper(TagEventJS<T> e, ResourceLocation i, Tag.Builder<T> t)
 		{
 			event = e;
+			id = i;
 			tag = t;
+			entries = ((TagBuilderAccess<T>) tag).getKJSEntries();
 		}
 
 		public TagWrapper<T> add(Object ids)
@@ -41,26 +43,24 @@ public class TagEventJS<T> extends ServerEventJS
 				if (s.startsWith("#"))
 				{
 					TagWrapper<T> w = event.get(s.substring(1));
-					tag.getAllElements().addAll(w.tag.getAllElements());
-					tag.getEntries().add(new Tag.TagEntry<>(w.tag));
-					event.addedCount += w.tag.getAllElements().size();
-					ScriptType.SERVER.console.logger.info("+ " + event.type + ":" + tag.getId() + " // " + s);
+					entries.add(new Tag.TagEntry<>(w.id));
+					event.addedCount += w.entries.size();
+					ScriptType.SERVER.console.logger.info("+ " + event.type + ":" + id + " // " + w.id);
 				}
 				else
 				{
-					ResourceLocation id = new ResourceLocation(s);
-					Optional<T> v = event.getter.apply(id);
+					ResourceLocation sid = new ResourceLocation(s);
+					Optional<T> v = event.getter.apply(sid);
 
 					if (v.isPresent())
 					{
-						tag.getAllElements().add(v.get());
-						tag.getEntries().add(new Tag.TagEntry<>(id));
+						entries.add(new Tag.ListEntry<>(Collections.singleton(v.get())));
 						event.addedCount++;
-						ScriptType.SERVER.console.logger.info("+ " + event.type + ":" + tag.getId() + " // " + s + " [" + v.get().getClass().getName() + "]");
+						ScriptType.SERVER.console.logger.info("+ " + event.type + ":" + id + " // " + s + " [" + v.get().getClass().getName() + "]");
 					}
 					else
 					{
-						ScriptType.SERVER.console.logger.warn("+ " + event.type + ":" + tag.getId() + " // " + s + " [Not found!]");
+						ScriptType.SERVER.console.logger.warn("+ " + event.type + ":" + id + " // " + s + " [Not found!]");
 					}
 				}
 			}
@@ -77,26 +77,24 @@ public class TagEventJS<T> extends ServerEventJS
 				if (s.startsWith("#"))
 				{
 					TagWrapper<T> w = event.get(s.substring(1));
-					tag.getAllElements().removeAll(w.tag.getAllElements());
-					tag.getEntries().remove(new Tag.TagEntry<>(w.tag));
-					event.removedCount += w.tag.getAllElements().size();
-					ScriptType.SERVER.console.logger.info("- " + event.type + ":" + tag.getId() + " // " + s);
+					entries.remove(new Tag.TagEntry<>(w.id));
+					event.addedCount += w.entries.size();
+					ScriptType.SERVER.console.logger.info("- " + event.type + ":" + id + " // " + w.id);
 				}
 				else
 				{
-					ResourceLocation id = new ResourceLocation(s);
-					Optional<T> v = event.getter.apply(id);
+					ResourceLocation sid = new ResourceLocation(s);
+					Optional<T> v = event.getter.apply(sid);
 
 					if (v.isPresent())
 					{
-						tag.getAllElements().remove(v.get());
-						tag.getEntries().remove(new Tag.TagEntry<>(id));
+						entries.remove(new Tag.ListEntry<>(Collections.singleton(v.get())));
 						event.addedCount++;
-						ScriptType.SERVER.console.logger.info("- " + event.type + ":" + tag.getId() + " // " + s + " [" + v.get().getClass().getName() + "]");
+						ScriptType.SERVER.console.logger.info("- " + event.type + ":" + id + " // " + s + " [" + v.get().getClass().getName() + "]");
 					}
 					else
 					{
-						ScriptType.SERVER.console.logger.warn("- " + event.type + ":" + tag.getId() + " // " + s + " [Not found!]");
+						ScriptType.SERVER.console.logger.warn("- " + event.type + ":" + id + " // " + s + " [Not found!]");
 					}
 				}
 			}
@@ -105,17 +103,17 @@ public class TagEventJS<T> extends ServerEventJS
 		}
 	}
 
-	private final TagCollection<T> tagCollection;
 	private final String type;
+	private final Map<ResourceLocation, Tag.Builder<T>> map;
 	private final Function<ResourceLocation, Optional<T>> getter;
 	private Map<ResourceLocation, TagWrapper<T>> tags;
 	private int addedCount;
 	private int removedCount;
 
-	public TagEventJS(TagCollection<T> c, String t, Function<ResourceLocation, Optional<T>> g)
+	public TagEventJS(String t, Map<ResourceLocation, Tag.Builder<T>> m, Function<ResourceLocation, Optional<T>> g)
 	{
-		tagCollection = c;
 		type = t;
+		map = m;
 		getter = g;
 	}
 
@@ -127,23 +125,17 @@ public class TagEventJS<T> extends ServerEventJS
 	public void post()
 	{
 		tags = new HashMap<>();
-		KubeJSCore.setTagMap(tagCollection, new HashMap<>(tagCollection.getTagMap()));
 
-		for (Tag<T> tag : tagCollection.getTagMap().values())
+		for (Map.Entry<ResourceLocation, Tag.Builder<T>> entry : map.entrySet())
 		{
-			tags.put(tag.getId(), new TagWrapper<>(this, tag));
-
-			ScriptType.SERVER.console.logger.debug(type + "/#" + tag.getId());
-
-			for (T v : tag.getAllElements())
-			{
-				ScriptType.SERVER.console.logger.debug("* " + (v instanceof IForgeRegistryEntry ? ((IForgeRegistryEntry) v).getRegistryName() : v));
-			}
+			TagWrapper<T> w = new TagWrapper<>(this, entry.getKey(), entry.getValue());
+			tags.put(entry.getKey(), w);
+			ScriptType.SERVER.console.logger.debug(type + "/#" + entry.getKey() + "; " + w.entries.size());
 		}
 
-		post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_TAGS, type + "s");
+		post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_TAGS, type);
 
-		ScriptType.SERVER.console.logger.info("Found [" + type + "] " + tags.size() + " tags, added " + addedCount + ", removed " + removedCount);
+		ScriptType.SERVER.console.logger.info("[" + type + "] Found " + tags.size() + " tags, added " + addedCount + ", removed " + removedCount);
 	}
 
 	public TagWrapper<T> get(Object tag)
@@ -153,9 +145,9 @@ public class TagEventJS<T> extends ServerEventJS
 
 		if (t == null)
 		{
-			t = new TagWrapper<>(this, new Tag<>(id, new LinkedHashSet<>(), false));
+			t = new TagWrapper<>(this, id, new Tag.Builder<>());
 			tags.put(id, t);
-			tagCollection.getTagMap().put(id, t.tag);
+			map.put(id, t.tag);
 		}
 
 		return t;

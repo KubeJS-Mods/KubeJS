@@ -38,7 +38,7 @@ public class FireworksJS
 
 		if (properties.get("lifeTime") instanceof Number)
 		{
-			fireworks.lifeTime = ((Number) properties.get("lifeTime")).intValue();
+			fireworks.lifetime = ((Number) properties.get("lifeTime")).intValue();
 		}
 
 		if (properties.containsKey("explosions"))
@@ -169,7 +169,7 @@ public class FireworksJS
 	}
 
 	public int flight = 2;
-	public int lifeTime = -1;
+	public int lifetime = -1;
 	public final List<Explosion> explosions = new ArrayList<>();
 
 	public FireworkRocketEntity createFireworkRocket(World w, double x, double y, double z)
@@ -196,9 +196,9 @@ public class FireworksJS
 
 		FireworkRocketEntity rocket = new FireworkRocketEntity(w, x, y, z, stack);
 
-		if (lifeTime != -1)
+		if (lifetime != -1)
 		{
-			KubeJSCore.setLifeTime(rocket, lifeTime);
+			KubeJSCore.setLifetime(rocket, lifetime);
 		}
 
 		rocket.setInvisible(true);

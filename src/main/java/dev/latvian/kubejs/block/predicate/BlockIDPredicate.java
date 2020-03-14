@@ -41,7 +41,34 @@ public class BlockIDPredicate implements BlockPredicate
 	@Override
 	public String toString()
 	{
-		return id + (properties == null || properties.isEmpty() ? "" : ("+" + properties));
+		if (properties == null || properties.isEmpty())
+		{
+			return id.toString();
+		}
+
+		StringBuilder sb = new StringBuilder(id.toString());
+		sb.append('[');
+
+		boolean first = true;
+
+		for (Map.Entry<String, String> entry : properties.entrySet())
+		{
+			if (first)
+			{
+				first = false;
+			}
+			else
+			{
+				sb.append(',');
+			}
+
+			sb.append(entry.getKey());
+			sb.append('=');
+			sb.append(entry.getValue());
+		}
+
+		sb.append(']');
+		return sb.toString();
 	}
 
 	public BlockIDPredicate with(String key, String value)

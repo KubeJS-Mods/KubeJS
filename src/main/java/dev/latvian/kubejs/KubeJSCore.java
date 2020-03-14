@@ -5,7 +5,13 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.server.TagEventJS;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.FireworkRocketEntity;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.RecipeManager;
@@ -18,15 +24,15 @@ import net.minecraft.resources.IResourceManager;
 import net.minecraft.resources.SimpleReloadableResourceManager;
 import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.tags.Tag;
-import net.minecraft.tags.TagCollection;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
-import java.util.Collection;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -51,29 +57,19 @@ public class KubeJSCore
 		return manager.namespaceResourceManagers;
 	}
 
-	public static <T> void setTagMap(TagCollection<T> collection, Map<ResourceLocation, Tag<T>> m)
-	{
-		collection.tagMap = m;
-	}
-
-	public static <T> void setTaggedItems(Tag<T> tag, Set<T> collection)
-	{
-		tag.taggedItems = collection;
-	}
-
-	public static <T> void setEntries(Tag<T> tag, Collection<Tag.ITagEntry<T>> collection)
-	{
-		tag.entries = collection;
-	}
-
 	public static Map<IRecipeType<?>, Map<ResourceLocation, IRecipe<?>>> getRecipes(RecipeManager manager)
 	{
 		return manager.recipes;
 	}
 
-	public static void setLifeTime(FireworkRocketEntity rocket, int lifeTime)
+	public static void setRecipes(RecipeManager manager, Map<IRecipeType<?>, Map<ResourceLocation, IRecipe<?>>> recipes)
 	{
-		rocket.lifetime = lifeTime;
+		manager.recipes = recipes;
+	}
+
+	public static void setLifetime(FireworkRocketEntity rocket, int lifeime)
+	{
+		rocket.lifetime = lifeime;
 	}
 
 	public static boolean isDestroyingBlock(PlayerInteractionManager manager)
@@ -108,12 +104,29 @@ public class KubeJSCore
 
 	// Mixin Helpers //
 
-	public static <T> void customTags(TagCollection<T> tagCollection, String type, Function<ResourceLocation, Optional<T>> getter)
+	public static <T> void customTags(Map<ResourceLocation, Tag.Builder<Block>> blocks, Map<ResourceLocation, Tag.Builder<Item>> items, Map<ResourceLocation, Tag.Builder<Fluid>> fluids, Map<ResourceLocation, Tag.Builder<EntityType<?>>> entityTypes)
 	{
-		if (ServerJS.instance != null && EffectiveSide.get().isServer())
+		if (ServerJS.instance != null)
 		{
-			new TagEventJS<>(tagCollection, type, getter).post();
+			new TagEventJS<>("blocks", blocks, valueGetter(ForgeRegistries.BLOCKS, Blocks.AIR)).post();
+			new TagEventJS<>("items", items, valueGetter(ForgeRegistries.ITEMS, Items.AIR)).post();
+			new TagEventJS<>("fluids", fluids, valueGetter(ForgeRegistries.FLUIDS, Fluids.EMPTY)).post();
+			new TagEventJS<>("entity_types", entityTypes, valueGetter(ForgeRegistries.ENTITIES, null)).post();
 		}
+	}
+
+	private static <T extends IForgeRegistryEntry<T>> Function<ResourceLocation, Optional<T>> valueGetter(IForgeRegistry<T> registry, @Nullable T def)
+	{
+		return id -> {
+			T value = registry.getValue(id);
+
+			if (value != null && value != def)
+			{
+				return Optional.of(value);
+			}
+
+			return Optional.empty();
+		};
 	}
 
 	public static void customRecipes(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap, IResourceManager resourceManager, IProfiler profiler)
