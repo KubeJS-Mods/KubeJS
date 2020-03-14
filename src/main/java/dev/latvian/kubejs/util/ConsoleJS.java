@@ -90,6 +90,11 @@ public class ConsoleJS
 		}
 	}
 
+	public void log(Object message)
+	{
+		info(message);
+	}
+
 	public void warn(Object message)
 	{
 		if (shouldPrint())
