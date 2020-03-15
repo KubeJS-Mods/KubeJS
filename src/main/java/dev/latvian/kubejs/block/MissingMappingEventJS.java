@@ -5,64 +5,65 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @author LatvianModder
  */
-public class MissingMappingEventJS extends EventJS
+public class MissingMappingEventJS<T extends IForgeRegistryEntry<T>> extends EventJS
 {
-	public final RegistryEvent.MissingMappings<?> event;
+	private final RegistryEvent.MissingMappings<T> event;
+	private final Function<ResourceLocation, T> valueProvider;
 
-	public MissingMappingEventJS(RegistryEvent.MissingMappings e)
+	public MissingMappingEventJS(RegistryEvent.MissingMappings<T> e, Function<ResourceLocation, T> v)
 	{
 		event = e;
+		valueProvider = v;
 	}
 
-	public ResourceLocation getRegistry()
-	{
-		return event.getName();
-	}
-
-	public void forEachMapping(Object key, Consumer<RegistryEvent.MissingMappings.Mapping> callback)
+	private void findMapping(Object key, Consumer<RegistryEvent.MissingMappings.Mapping<T>> callback)
 	{
 		ResourceLocation k = UtilsJS.getID(key);
 
-		for (RegistryEvent.MissingMappings.Mapping<?> mapping : event.getAllMappings())
+		for (RegistryEvent.MissingMappings.Mapping<T> mapping : event.getAllMappings())
 		{
-			if ((k.getNamespace().equals("*") || k.getNamespace().equals(mapping.key.getNamespace())) && (k.getPath().equals("*") || k.getPath().equals(mapping.key.getPath())))
+			if (mapping.key.equals(k))
 			{
 				callback.accept(mapping);
+				return;
 			}
 		}
 	}
 
 	public void remap(Object key, Object value)
 	{
-		ResourceLocation idTo = UtilsJS.getID(value);
-		Object to = event.getRegistry().getValue(idTo);
+		findMapping(key, mapping -> {
+			ResourceLocation idTo = UtilsJS.getID(value);
+			T to = valueProvider.apply(idTo);
 
-		if (to != null)
-		{
-			ResourceLocation id = UtilsJS.getID(key);
-			ScriptType.STARTUP.console.info("Remapping " + id + " to " + idTo + " (" + to + ")");
-			forEachMapping(id, mapping -> mapping.remap(UtilsJS.cast(to)));
-		}
+			if (to != null)
+			{
+				ScriptType.STARTUP.console.info("Remapping " + mapping.key + " to " + idTo + " (" + to.getClass() + ")");
+				mapping.remap(UtilsJS.cast(to));
+			}
+		});
 	}
 
 	public void ignore(Object key)
 	{
-		forEachMapping(key, RegistryEvent.MissingMappings.Mapping::ignore);
+		findMapping(key, RegistryEvent.MissingMappings.Mapping::ignore);
 	}
 
 	public void warn(Object key)
 	{
-		forEachMapping(key, RegistryEvent.MissingMappings.Mapping::warn);
+		findMapping(key, RegistryEvent.MissingMappings.Mapping::warn);
 	}
 
 	public void fail(Object key)
 	{
-		forEachMapping(key, RegistryEvent.MissingMappings.Mapping::fail);
+		findMapping(key, RegistryEvent.MissingMappings.Mapping::fail);
 	}
 }

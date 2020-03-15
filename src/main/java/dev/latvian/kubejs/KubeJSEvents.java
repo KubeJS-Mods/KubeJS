@@ -75,7 +75,6 @@ public class KubeJSEvents
 	public static final String WORLD_TICK = "world.tick";
 	public static final String WORLD_EXPLOSION_PRE = "world.explosion.pre";
 	public static final String WORLD_EXPLOSION_POST = "world.explosion.post";
-	public static final String WORLD_MISSING_MAPPINGS = "world.missing_mappings";
 
 	public static final String PLAYER_LOGGED_IN = "player.logged_in";
 	public static final String PLAYER_LOGGED_OUT = "player.logged_out";
@@ -105,6 +104,7 @@ public class KubeJSEvents
 	public static final String RECIPES_ALLOY_SMELTER = "recipes.alloy_smelter";
 
 	public static final String BLOCK_REGISTRY = "block.registry";
+	public static final String BLOCK_MISSING_MAPPINGS = "block.missing_mappings";
 	public static final String BLOCK_RIGHT_CLICK = "block.right_click";
 	public static final String BLOCK_LEFT_CLICK = "block.left_click";
 	public static final String BLOCK_PLACE = "block.place";
@@ -112,6 +112,7 @@ public class KubeJSEvents
 	public static final String BLOCK_DROPS = "block.drops";
 
 	public static final String ITEM_REGISTRY = "item.registry";
+	public static final String ITEM_MISSING_MAPPINGS = "item.missing_mappings";
 	public static final String ITEM_RIGHT_CLICK = "item.right_click";
 	public static final String ITEM_RIGHT_CLICK_EMPTY = "item.right_click_empty";
 	public static final String ITEM_LEFT_CLICK = "item.left_click";
@@ -156,7 +157,6 @@ public class KubeJSEvents
 		event.registerEvent(WORLD_TICK, SimpleWorldEventJS.class).serverOnly();
 		event.registerEvent(WORLD_EXPLOSION_PRE, ExplosionEventJS.Pre.class).serverOnly().canCancel();
 		event.registerEvent(WORLD_EXPLOSION_POST, ExplosionEventJS.Post.class).serverOnly();
-		event.registerEvent(WORLD_MISSING_MAPPINGS, MissingMappingEventJS.class).startup();
 
 		event.registerEvent(PLAYER_LOGGED_IN, SimplePlayerEventJS.class).serverOnly();
 		event.registerEvent(PLAYER_LOGGED_OUT, SimplePlayerEventJS.class).serverOnly();
@@ -186,6 +186,7 @@ public class KubeJSEvents
 		//event.registerEvent(RECIPES_ALLOY_SMELTER, AlloySmelterRecipeEventJS.class);
 
 		event.registerEvent(BLOCK_REGISTRY, BlockRegistryEventJS.class).startup();
+		event.registerEvent(BLOCK_MISSING_MAPPINGS, MissingMappingEventJS.class).startup();
 		event.registerEvent(BLOCK_RIGHT_CLICK, BlockRightClickEventJS.class).canCancel();
 		event.registerEvent(BLOCK_LEFT_CLICK, BlockLeftClickEventJS.class).canCancel();
 		event.registerEvent(BLOCK_PLACE, BlockPlaceEventJS.class).serverOnly().canCancel();
@@ -193,6 +194,7 @@ public class KubeJSEvents
 		event.registerEvent(BLOCK_DROPS, BlockDropsEventJS.class).serverOnly();
 
 		event.registerEvent(ITEM_REGISTRY, ItemRegistryEventJS.class).startup();
+		event.registerEvent(ITEM_MISSING_MAPPINGS, MissingMappingEventJS.class).startup();
 		event.registerEvent(ITEM_RIGHT_CLICK, ItemRightClickEventJS.class).canCancel();
 		event.registerEvent(ITEM_RIGHT_CLICK_EMPTY, ItemRightClickEmptyEventJS.class).clientOnly();
 		event.registerEvent(ITEM_LEFT_CLICK, ItemLeftClickEventJS.class).clientOnly();

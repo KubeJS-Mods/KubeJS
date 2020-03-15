@@ -4,6 +4,8 @@ import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.block.MissingMappingEventJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -11,6 +13,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.registries.ForgeRegistries;
 
 /**
  * @author LatvianModder
@@ -24,7 +27,8 @@ public class KubeJSWorldEventHandler
 		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::worldTick);
 		MinecraftForge.EVENT_BUS.addListener(this::explosionStart);
 		MinecraftForge.EVENT_BUS.addListener(this::explosionDetonate);
-		MinecraftForge.EVENT_BUS.addListener(this::missingMappings);
+		MinecraftForge.EVENT_BUS.addGenericListener(Block.class, this::missingBlockMappings);
+		MinecraftForge.EVENT_BUS.addGenericListener(Item.class, this::missingItemMappings);
 	}
 
 	private void worldLoaded(WorldEvent.Load event)
@@ -72,8 +76,13 @@ public class KubeJSWorldEventHandler
 		new ExplosionEventJS.Post(event).post(KubeJSEvents.WORLD_EXPLOSION_POST);
 	}
 
-	private void missingMappings(RegistryEvent.MissingMappings event)
+	private void missingBlockMappings(RegistryEvent.MissingMappings<Block> event)
 	{
-		new MissingMappingEventJS(event).post(ScriptType.STARTUP, KubeJSEvents.WORLD_MISSING_MAPPINGS);
+		new MissingMappingEventJS<>(event, ForgeRegistries.BLOCKS::getValue).post(ScriptType.STARTUP, KubeJSEvents.BLOCK_MISSING_MAPPINGS);
+	}
+
+	private void missingItemMappings(RegistryEvent.MissingMappings<Item> event)
+	{
+		new MissingMappingEventJS<>(event, ForgeRegistries.ITEMS::getValue).post(ScriptType.STARTUP, KubeJSEvents.ITEM_MISSING_MAPPINGS);
 	}
 }
