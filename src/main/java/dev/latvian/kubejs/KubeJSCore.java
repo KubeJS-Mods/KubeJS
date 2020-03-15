@@ -3,6 +3,9 @@ package dev.latvian.kubejs;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import dev.latvian.kubejs.recipe.RecipeEventJS;
+import dev.latvian.kubejs.recipe.RecipeTypeJS;
+import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.server.TagEventJS;
@@ -75,9 +78,9 @@ public class KubeJSCore
 		manager.recipes = recipes;
 	}
 
-	public static void setLifetime(FireworkRocketEntity rocket, int lifeime)
+	public static void setLifetime(FireworkRocketEntity rocket, int lifetime)
 	{
-		rocket.lifetime = lifeime;
+		rocket.lifetime = lifetime;
 	}
 
 	public static boolean isDestroyingBlock(PlayerInteractionManager manager)
@@ -145,28 +148,9 @@ public class KubeJSCore
 
 	public static void customRecipes(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap, IResourceManager resourceManager, IProfiler profiler)
 	{
-		ScriptType.SERVER.console.logger.info("Scanning recipes...");
-		int count = 0;
-		Map<IRecipeType<?>, Map<ResourceLocation, IRecipe<?>>> recipeMap = new HashMap<>();
-
-		for (Map.Entry<IRecipeType<?>, Map<ResourceLocation, IRecipe<?>>> entry : getRecipes(recipeManager).entrySet())
-		{
-			recipeMap.put(entry.getKey(), new HashMap<>(entry.getValue()));
-		}
-
-		for (Map.Entry<IRecipeType<?>, Map<ResourceLocation, IRecipe<?>>> entry : recipeMap.entrySet())
-		{
-			ScriptType.SERVER.console.logger.debug(entry.getKey().toString());
-
-			for (IRecipe<?> recipe : entry.getValue().values())
-			{
-				ScriptType.SERVER.console.logger.debug("* " + recipe.getSerializer().getRegistryName() + " / " + recipe.getId() + ": " + jsonMap.get(recipe.getId()));
-				count++;
-			}
-		}
-
-		setRecipes(recipeManager, recipeMap);
-		ScriptType.SERVER.console.logger.info("Found " + count + " recipes");
+		Map<ResourceLocation, RecipeTypeJS> typeMap = new HashMap<>();
+		MinecraftForge.EVENT_BUS.post(new RegisterRecipeHandlersEvent(typeMap));
+		new RecipeEventJS(recipeManager, typeMap, jsonMap).post(recipeManager);
 	}
 
 	@Nullable
@@ -180,15 +164,13 @@ public class KubeJSCore
 			return null;
 		}
 
-		Optional<IRecipeSerializer<?>> r = Registry.RECIPE_SERIALIZER.getValue(new ResourceLocation(t.getAsString()));
+		IRecipeSerializer<?> serializer = ForgeRegistries.RECIPE_SERIALIZERS.getValue(new ResourceLocation(t.getAsString()));
 
-		if (!r.isPresent())
+		if (serializer == null)
 		{
 			ScriptType.SERVER.console.logger.error("Invalid or unsupported recipe type '" + t.getAsString() + "' in recipe '" + recipeId + "'");
 			return null;
 		}
-
-		IRecipeSerializer<?> serializer = r.get();
 
 		try
 		{

@@ -158,7 +158,11 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public static ItemStackJS resultFromRecipeJson(JsonElement json)
 	{
-		if (json.isJsonPrimitive())
+		if (json == null || json.isJsonNull())
+		{
+			return EmptyItemStackJS.INSTANCE;
+		}
+		else if (json.isJsonPrimitive())
 		{
 			return of(json.getAsString());
 		}

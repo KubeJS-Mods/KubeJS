@@ -5,6 +5,7 @@ import dev.latvian.kubejs.item.ItemStackJS;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -89,5 +90,30 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	public void accept(IngredientJS ingredient)
 	{
 		ingredients.add(ingredient);
+	}
+
+	@Override
+	public String toString()
+	{
+		if (ingredients.isEmpty())
+		{
+			return "[]";
+		}
+
+		Iterator<IngredientJS> it = ingredients.iterator();
+		StringBuilder sb = new StringBuilder();
+		sb.append('[');
+		while (true)
+		{
+			IngredientJS e = it.next();
+			sb.append(e);
+
+			if (!it.hasNext())
+			{
+				return sb.append(']').toString();
+			}
+
+			sb.append('|');
+		}
 	}
 }

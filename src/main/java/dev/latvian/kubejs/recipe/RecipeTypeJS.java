@@ -1,35 +1,40 @@
 package dev.latvian.kubejs.recipe;
 
-import com.google.gson.JsonObject;
 import dev.latvian.kubejs.recipe.type.RecipeJS;
-import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
  */
-public abstract class RecipeTypeJS
+public class RecipeTypeJS
 {
-	public final ResourceLocation id;
 	public final IRecipeSerializer serializer;
+	public final Supplier<RecipeJS> factory;
 
-	public RecipeTypeJS(ResourceLocation i)
+	public RecipeTypeJS(IRecipeSerializer s, Supplier<RecipeJS> f)
 	{
-		id = i;
-		serializer = ForgeRegistries.RECIPE_SERIALIZERS.getValue(i);
-	}
-
-	public RecipeTypeJS(IRecipeSerializer s)
-	{
-		id = Objects.requireNonNull(s.getRegistryName());
 		serializer = s;
+		factory = f;
 	}
 
-	public abstract RecipeJS create(ListJS args);
+	public RecipeTypeJS(Object id, Supplier<RecipeJS> f)
+	{
+		this(Objects.requireNonNull(ForgeRegistries.RECIPE_SERIALIZERS.getValue(UtilsJS.getID(id))), f);
+	}
 
-	public abstract RecipeJS create(JsonObject json);
+	public boolean isCustom()
+	{
+		return false;
+	}
+
+	@Override
+	public String toString()
+	{
+		return serializer.getRegistryName().toString();
+	}
 }

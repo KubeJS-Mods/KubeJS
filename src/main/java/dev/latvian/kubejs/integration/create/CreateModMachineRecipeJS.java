@@ -1,14 +1,17 @@
 package dev.latvian.kubejs.integration.create;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.kubejs.recipe.RecipeTypeJS;
+import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.type.RecipeJS;
+import dev.latvian.kubejs.util.ListJS;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,27 +19,85 @@ import java.util.List;
  */
 public class CreateModMachineRecipeJS extends RecipeJS
 {
-	public final RecipeTypeJS recipeType;
 	public IngredientJS ingredient = EmptyItemStackJS.INSTANCE;
 	public List<ItemStackJS> results = new ArrayList<>();
-	public int processingTime = 300;
 
-	public CreateModMachineRecipeJS(RecipeTypeJS rt)
+	@Override
+	public void create(ListJS args)
 	{
-		recipeType = rt;
+		if (args.size() < 2)
+		{
+			throw new RecipeExceptionJS("Create machine recipe requires at least 2 arguments - result array and ingredient!");
+		}
+
+		ListJS results1 = ListJS.orSelf(args.get(0));
+
+		if (results1.isEmpty())
+		{
+			throw new RecipeExceptionJS("Create machine recipe results can't be empty!");
+		}
+
+		for (Object o : results1)
+		{
+			ItemStackJS stack = ItemStackJS.of(o);
+
+			if (stack.isEmpty())
+			{
+				throw new RecipeExceptionJS("Create machine recipe result " + o + " is not a valid item!");
+			}
+			else
+			{
+				results.add(stack);
+			}
+		}
+
+		ingredient = IngredientJS.of(args.get(1));
+
+		if (ingredient.isEmpty())
+		{
+			throw new RecipeExceptionJS("Create machine recipe ingredient " + args.get(1) + " is not a valid ingredient!");
+		}
+
+		if (args.size() >= 3)
+		{
+			time(((Number) args.get(2)).intValue());
+		}
 	}
 
 	@Override
-	public RecipeTypeJS getType()
+	public void deserialize()
 	{
-		return recipeType;
+		for (JsonElement e : json.get("results").getAsJsonArray())
+		{
+			ItemStackJS stack = ItemStackJS.resultFromRecipeJson(e);
+
+			if (stack.isEmpty())
+			{
+				throw new RecipeExceptionJS("Create machine recipe result " + e + " is not a valid item!");
+			}
+			else
+			{
+				results.add(stack);
+			}
+		}
+
+		if (results.isEmpty())
+		{
+			throw new RecipeExceptionJS("Create machine recipe results can't be empty!");
+		}
+
+		JsonElement in = json.get("ingredients").getAsJsonArray().get(0);
+		ingredient = IngredientJS.ingredientFromRecipeJson(in);
+
+		if (ingredient.isEmpty())
+		{
+			throw new RecipeExceptionJS("Create machine recipe ingredient " + in + " is not a valid ingredient!");
+		}
 	}
 
 	@Override
-	public JsonObject toJson()
+	public void serialize()
 	{
-		JsonObject json = create();
-
 		JsonArray ingredientsJson = new JsonArray();
 		ingredientsJson.add(ingredient.toJson());
 		json.add("ingredients", ingredientsJson);
@@ -49,34 +110,23 @@ public class CreateModMachineRecipeJS extends RecipeJS
 		}
 
 		json.add("results", resultsJson);
-		json.addProperty("processingTime", processingTime);
-		return json;
+
+		if (!json.has("processingTime"))
+		{
+			json.addProperty("processingTime", 300);
+		}
 	}
 
 	public CreateModMachineRecipeJS time(int t)
 	{
-		processingTime = Math.max(t, 0);
+		json.addProperty("processingTime", Math.max(t, 0));
 		return this;
 	}
 
 	@Override
-	public boolean hasInput(Object i)
+	public Collection<IngredientJS> getInput()
 	{
-		return ingredient.anyStackMatches(IngredientJS.of(i));
-	}
-
-	@Override
-	public boolean hasOutput(Object i)
-	{
-		for (ItemStackJS result : results)
-		{
-			if (IngredientJS.of(i).test(result))
-			{
-				return true;
-			}
-		}
-
-		return false;
+		return Collections.singleton(ingredient);
 	}
 
 	@Override
@@ -89,6 +139,12 @@ public class CreateModMachineRecipeJS extends RecipeJS
 		}
 
 		return false;
+	}
+
+	@Override
+	public Collection<ItemStackJS> getOutput()
+	{
+		return results;
 	}
 
 	@Override

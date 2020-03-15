@@ -14,8 +14,6 @@ import dev.latvian.kubejs.player.FakeServerPlayerDataJS;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.player.ServerPlayerDataJS;
-import dev.latvian.kubejs.recipe.RecipeEventJS;
-import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
 import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptFileInfo;
 import dev.latvian.kubejs.script.ScriptManager;
@@ -396,12 +394,6 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 		new DataPackEventJS(virtualDataPackFirst).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_FIRST);
 		new DataPackEventJS(virtualDataPackLast).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_LAST);
-
-		RecipeEventJS recipeEvent = new RecipeEventJS();
-		MinecraftForge.EVENT_BUS.post(new RegisterRecipeHandlersEvent(recipeEvent));
-		recipeEvent.loadRecipes(resourceManager);
-		recipeEvent.post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_RECIPES);
-		recipeEvent.addDataToPack(virtualDataPackFirst);
 
 		for (BlockJS block : BlockJS.KUBEJS_BLOCKS.values())
 		{

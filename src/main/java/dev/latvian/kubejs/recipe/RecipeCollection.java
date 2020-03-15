@@ -3,7 +3,6 @@ package dev.latvian.kubejs.recipe;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.type.RecipeJS;
-import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +29,12 @@ public class RecipeCollection implements IRecipeCollection
 		{
 			r.remove();
 		}
+	}
+
+	@Override
+	public int getCount()
+	{
+		return list.size();
 	}
 
 	@Override
@@ -115,7 +120,7 @@ public class RecipeCollection implements IRecipeCollection
 	{
 		for (RecipeJS r : list)
 		{
-			if (!r.group.equals(group))
+			if (!r.getGroup().equals(group))
 			{
 				r.setGroup(group);
 
@@ -124,15 +129,6 @@ public class RecipeCollection implements IRecipeCollection
 					recipeChanged.accept(r);
 				}
 			}
-		}
-	}
-
-	@Override
-	public void addToDataPack(VirtualKubeJSDataPack pack)
-	{
-		for (RecipeJS r : list)
-		{
-			r.addToDataPack(pack);
 		}
 	}
 

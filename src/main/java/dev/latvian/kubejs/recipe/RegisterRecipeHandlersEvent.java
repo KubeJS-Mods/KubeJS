@@ -1,21 +1,24 @@
 package dev.latvian.kubejs.recipe;
 
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.eventbus.api.Event;
+
+import java.util.Map;
 
 /**
  * @author LatvianModder
  */
 public class RegisterRecipeHandlersEvent extends Event
 {
-	private final RecipeEventJS event;
+	private final Map<ResourceLocation, RecipeTypeJS> map;
 
-	public RegisterRecipeHandlersEvent(RecipeEventJS e)
+	public RegisterRecipeHandlersEvent(Map<ResourceLocation, RecipeTypeJS> m)
 	{
-		event = e;
+		map = m;
 	}
 
 	public void register(RecipeTypeJS type)
 	{
-		event.deserializerMap.put(type.id, new RecipeFunction(event, type));
+		map.put(type.serializer.getRegistryName(), type);
 	}
 }
