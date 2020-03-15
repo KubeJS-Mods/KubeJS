@@ -8,6 +8,7 @@ import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.server.TagEventJS;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.gui.widget.button.ImageButton;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.FireworkRocketEntity;
 import net.minecraft.fluid.Fluid;
@@ -28,7 +29,9 @@ import net.minecraft.resources.SimpleReloadableResourceManager;
 import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -105,6 +108,12 @@ public class KubeJSCore
 	public static void setLightLevel(Block block, int lightLevel)
 	{
 		block.lightValue = lightLevel;
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	public static ResourceLocation getTexture(ImageButton button)
+	{
+		return button.resourceLocation;
 	}
 
 	// Mixin Helpers //

@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.latvian.kubejs.KubeJSCore;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.block.BlockJS;
 import dev.latvian.kubejs.item.ItemJS;
@@ -13,8 +14,10 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.recipebook.IRecipeShownListener;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.gui.widget.button.ImageButton;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
@@ -44,6 +47,7 @@ import java.util.List;
 public class KubeJSClientEventHandler
 {
 	private static FieldJS<List<Widget>> buttons;
+	private static final ResourceLocation RECIPE_BUTTON_TEXTURE = new ResourceLocation("textures/gui/recipe_button.png");
 
 	public void init()
 	{
@@ -56,6 +60,7 @@ public class KubeJSClientEventHandler
 		MinecraftForge.EVENT_BUS.addListener(this::respawn);
 		MinecraftForge.EVENT_BUS.addListener(this::inGameScreenDraw);
 		MinecraftForge.EVENT_BUS.addListener(this::guiScreenDraw);
+		MinecraftForge.EVENT_BUS.addListener(this::guiPostInit);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::itemColors);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::blockColors);
 	}
@@ -291,6 +296,21 @@ public class KubeJSClientEventHandler
 		}
 
 		return false;
+	}
+
+	private void guiPostInit(GuiScreenEvent.InitGuiEvent.Post event)
+	{
+		if (ClientWrapper.disableRecipeBook && event.getGui() instanceof IRecipeShownListener)
+		{
+			for (Widget widget : event.getWidgetList())
+			{
+				if (widget instanceof ImageButton && RECIPE_BUTTON_TEXTURE.equals(KubeJSCore.getTexture((ImageButton) widget)))
+				{
+					event.removeWidget(widget);
+					return;
+				}
+			}
+		}
 	}
 
 	private void itemColors(ColorHandlerEvent.Item event)

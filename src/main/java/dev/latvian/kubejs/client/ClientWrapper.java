@@ -18,6 +18,7 @@ public class ClientWrapper
 {
 	public static String title = "";
 	public static boolean showTagNames = true;
+	public static boolean disableRecipeBook = false;
 
 	@MinecraftClass
 	public Minecraft getMinecraft()
@@ -90,5 +91,10 @@ public class ClientWrapper
 	public void setShowTagNames(boolean v)
 	{
 		showTagNames = v;
+	}
+
+	public void setDisableRecipeBook(boolean v)
+	{
+		disableRecipeBook = v;
 	}
 }

@@ -95,14 +95,6 @@ public class KubeJSEvents
 	public static final String ENTITY_CHECK_SPAWN = "entity.check_spawn";
 	public static final String ENTITY_SPAWNED = "entity.spawned";
 
-	public static final String RECIPES_REMOVE_OUTPUT = "recipes.remove.output";
-	public static final String RECIPES_REMOVE_INPUT = "recipes.remove.input";
-	public static final String RECIPES_CRAFTING_TABLE = "recipes.crafting_table";
-	public static final String RECIPES_FURNACE = "recipes.furnace";
-	public static final String RECIPES_PULVERIZER = "recipes.pulverizer";
-	public static final String RECIPES_COMPRESSOR = "recipes.compressor";
-	public static final String RECIPES_ALLOY_SMELTER = "recipes.alloy_smelter";
-
 	public static final String BLOCK_REGISTRY = "block.registry";
 	public static final String BLOCK_MISSING_MAPPINGS = "block.missing_mappings";
 	public static final String BLOCK_RIGHT_CLICK = "block.right_click";
@@ -176,14 +168,6 @@ public class KubeJSEvents
 		event.registerEvent(ENTITY_DROPS, LivingEntityDropsEventJS.class).serverOnly().canCancel();
 		event.registerEvent(ENTITY_CHECK_SPAWN, CheckLivingEntitySpawnEventJS.class).serverOnly().canCancel();
 		event.registerEvent(ENTITY_SPAWNED, EntitySpawnedEventJS.class).serverOnly().canCancel();
-
-		//event.registerEvent(RECIPES_REMOVE_OUTPUT, RemoveRecipesEventJS.class);
-		//event.registerEvent(RECIPES_REMOVE_INPUT, RemoveRecipesEventJS.class);
-		//event.registerEvent(RECIPES_CRAFTING_TABLE, CraftingTableRecipeEventJS.class);
-		//event.registerEvent(RECIPES_FURNACE, FurnaceRecipeEventJS.class);
-		//event.registerEvent(RECIPES_PULVERIZER, PulverizerRecipeEventJS.class);
-		//event.registerEvent(RECIPES_COMPRESSOR, CompressorRecipeEventJS.class);
-		//event.registerEvent(RECIPES_ALLOY_SMELTER, AlloySmelterRecipeEventJS.class);
 
 		event.registerEvent(BLOCK_REGISTRY, BlockRegistryEventJS.class).startup();
 		event.registerEvent(BLOCK_MISSING_MAPPINGS, MissingMappingEventJS.class).startup();
