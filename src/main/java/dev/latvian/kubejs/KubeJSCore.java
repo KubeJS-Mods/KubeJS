@@ -1,6 +1,8 @@
 package dev.latvian.kubejs;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.server.TagEventJS;
@@ -13,6 +15,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.nbt.CompoundNBT;
@@ -25,11 +28,13 @@ import net.minecraft.resources.SimpleReloadableResourceManager;
 import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -133,18 +138,57 @@ public class KubeJSCore
 	{
 		ScriptType.SERVER.console.logger.info("Scanning recipes...");
 		int count = 0;
+		Map<IRecipeType<?>, Map<ResourceLocation, IRecipe<?>>> recipeMap = new HashMap<>();
 
 		for (Map.Entry<IRecipeType<?>, Map<ResourceLocation, IRecipe<?>>> entry : getRecipes(recipeManager).entrySet())
+		{
+			recipeMap.put(entry.getKey(), new HashMap<>(entry.getValue()));
+		}
+
+		for (Map.Entry<IRecipeType<?>, Map<ResourceLocation, IRecipe<?>>> entry : recipeMap.entrySet())
 		{
 			ScriptType.SERVER.console.logger.debug(entry.getKey().toString());
 
 			for (IRecipe<?> recipe : entry.getValue().values())
 			{
-				ScriptType.SERVER.console.logger.debug("* " + recipe.getSerializer().getRegistryName() + " / " + recipe.getId());
+				ScriptType.SERVER.console.logger.debug("* " + recipe.getSerializer().getRegistryName() + " / " + recipe.getId() + ": " + jsonMap.get(recipe.getId()));
 				count++;
 			}
 		}
 
+		setRecipes(recipeManager, recipeMap);
 		ScriptType.SERVER.console.logger.info("Found " + count + " recipes");
+	}
+
+	@Nullable
+	public static IRecipe<?> customRecipeDeserializer(ResourceLocation recipeId, JsonObject json)
+	{
+		JsonElement t = json.get("type");
+
+		if (!(t instanceof JsonPrimitive) || !((JsonPrimitive) t).isString())
+		{
+			ScriptType.SERVER.console.logger.error("Missing or invalid recipe recipe type, expected a string in recipe '" + recipeId + "'");
+			return null;
+		}
+
+		Optional<IRecipeSerializer<?>> r = Registry.RECIPE_SERIALIZER.getValue(new ResourceLocation(t.getAsString()));
+
+		if (!r.isPresent())
+		{
+			ScriptType.SERVER.console.logger.error("Invalid or unsupported recipe type '" + t.getAsString() + "' in recipe '" + recipeId + "'");
+			return null;
+		}
+
+		IRecipeSerializer<?> serializer = r.get();
+
+		try
+		{
+			return serializer.read(recipeId, json);
+		}
+		catch (Exception ex)
+		{
+			ScriptType.SERVER.console.logger.error("Failed to parse recipe '" + recipeId + "': " + ex);
+			return null;
+		}
 	}
 }

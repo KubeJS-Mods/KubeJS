@@ -22,7 +22,7 @@ import java.util.Map;
 public abstract class NetworkTagManagerReloadResultsMixin<T>
 {
 	@Inject(method = "<init>", at = @At("RETURN"))
-	public void customTags(Map<ResourceLocation, Tag.Builder<Block>> blocks, Map<ResourceLocation, Tag.Builder<Item>> items, Map<ResourceLocation, Tag.Builder<Fluid>> fluids, Map<ResourceLocation, Tag.Builder<EntityType<?>>> entityTypes, CallbackInfo ci)
+	private void customTags(Map<ResourceLocation, Tag.Builder<Block>> blocks, Map<ResourceLocation, Tag.Builder<Item>> items, Map<ResourceLocation, Tag.Builder<Fluid>> fluids, Map<ResourceLocation, Tag.Builder<EntityType<?>>> entityTypes, CallbackInfo ci)
 	{
 		KubeJSCore.customTags(blocks, items, fluids, entityTypes);
 	}

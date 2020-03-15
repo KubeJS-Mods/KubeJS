@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MinecraftMixin
 {
 	@Inject(method = "func_230149_ax_", at = @At("RETURN"), remap = false, cancellable = true)
-	public void getWindowTitle(CallbackInfoReturnable<String> ci)
+	private void getWindowTitle(CallbackInfoReturnable<String> ci)
 	{
 		if (!ClientWrapper.title.isEmpty())
 		{

@@ -86,6 +86,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 	public boolean dataPackOutput;
 	public boolean logAddedRecipes;
 	public boolean logRemovedRecipes;
+	public boolean betterRecipeErrorLogging;
 
 	public ServerJS(MinecraftServer ms)
 	{
@@ -102,6 +103,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 		dataPackOutput = false;
 		logAddedRecipes = false;
 		logRemovedRecipes = false;
+		betterRecipeErrorLogging = true;
 	}
 
 	public void updateWorldList()
