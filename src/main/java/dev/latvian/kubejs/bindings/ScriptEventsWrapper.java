@@ -3,6 +3,7 @@ package dev.latvian.kubejs.bindings;
 import dev.latvian.kubejs.event.DataEvent;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.event.IEventHandler;
+import dev.latvian.kubejs.util.ListJS;
 
 import javax.annotation.Nullable;
 
@@ -18,16 +19,11 @@ public class ScriptEventsWrapper
 		events = e;
 	}
 
-	public void listen(String id, IEventHandler handler)
+	public void listen(Object id, IEventHandler handler)
 	{
-		events.listen(id, handler);
-	}
-
-	public void listenAll(String[] ids, IEventHandler handler)
-	{
-		for (String s : ids)
+		for (Object o : ListJS.orSelf(id))
 		{
-			listen(s, handler);
+			events.listen(String.valueOf(o), handler);
 		}
 	}
 
