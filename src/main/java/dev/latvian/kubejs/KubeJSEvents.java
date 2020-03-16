@@ -66,9 +66,7 @@ public class KubeJSEvents
 	public static final String SERVER_TICK = "server.tick";
 	public static final String SERVER_DATAPACK_FIRST = "server.datapack.first";
 	public static final String SERVER_DATAPACK_LAST = "server.datapack.last";
-	public static final String SERVER_DATAPACK_RECIPES = "server.datapack.recipes";
-	public static final String SERVER_DATAPACK_TAGS = "server.datapack.tags";
-	public static final String SERVER_DATAPACK_LOOT_TABLES = "server.datapack.loot_tables";
+	public static final String RECIPES = "recipes";
 
 	public static final String WORLD_LOAD = "world.load";
 	public static final String WORLD_UNLOAD = "world.unload";
@@ -97,6 +95,7 @@ public class KubeJSEvents
 
 	public static final String BLOCK_REGISTRY = "block.registry";
 	public static final String BLOCK_MISSING_MAPPINGS = "block.missing_mappings";
+	public static final String BLOCK_TAGS = "block.tags";
 	public static final String BLOCK_RIGHT_CLICK = "block.right_click";
 	public static final String BLOCK_LEFT_CLICK = "block.left_click";
 	public static final String BLOCK_PLACE = "block.place";
@@ -105,6 +104,7 @@ public class KubeJSEvents
 
 	public static final String ITEM_REGISTRY = "item.registry";
 	public static final String ITEM_MISSING_MAPPINGS = "item.missing_mappings";
+	public static final String ITEM_TAGS = "item.tags";
 	public static final String ITEM_RIGHT_CLICK = "item.right_click";
 	public static final String ITEM_RIGHT_CLICK_EMPTY = "item.right_click_empty";
 	public static final String ITEM_LEFT_CLICK = "item.left_click";
@@ -113,6 +113,10 @@ public class KubeJSEvents
 	public static final String ITEM_TOSS = "item.toss";
 	public static final String ITEM_CRAFTED = "item.crafted";
 	public static final String ITEM_SMELTED = "item.smelted";
+
+	public static final String FLUID_TAGS = "fluid.tags";
+
+	public static final String ENTITY_TYPE_TAGS = "entity_type.tags";
 
 	public static void registerDocumentation(DocumentationEvent event)
 	{
@@ -141,8 +145,7 @@ public class KubeJSEvents
 		event.registerEvent(SERVER_TICK, ServerEventJS.class).serverOnly();
 		event.registerEvent(SERVER_DATAPACK_FIRST, DataPackEventJS.class).serverOnly();
 		event.registerEvent(SERVER_DATAPACK_LAST, DataPackEventJS.class).serverOnly();
-		event.registerEvent(SERVER_DATAPACK_RECIPES, RecipeEventJS.class).serverOnly();
-		event.registerEvent(SERVER_DATAPACK_TAGS, TagEventJS.class).serverOnly();
+		event.registerEvent(RECIPES, RecipeEventJS.class).serverOnly();
 
 		event.registerEvent(WORLD_LOAD, SimpleWorldEventJS.class).serverOnly();
 		event.registerEvent(WORLD_UNLOAD, SimpleWorldEventJS.class).serverOnly();
@@ -171,6 +174,7 @@ public class KubeJSEvents
 
 		event.registerEvent(BLOCK_REGISTRY, BlockRegistryEventJS.class).startup();
 		event.registerEvent(BLOCK_MISSING_MAPPINGS, MissingMappingEventJS.class).startup();
+		event.registerEvent(BLOCK_TAGS, TagEventJS.class).serverOnly();
 		event.registerEvent(BLOCK_RIGHT_CLICK, BlockRightClickEventJS.class).canCancel();
 		event.registerEvent(BLOCK_LEFT_CLICK, BlockLeftClickEventJS.class).canCancel();
 		event.registerEvent(BLOCK_PLACE, BlockPlaceEventJS.class).serverOnly().canCancel();
@@ -179,6 +183,7 @@ public class KubeJSEvents
 
 		event.registerEvent(ITEM_REGISTRY, ItemRegistryEventJS.class).startup();
 		event.registerEvent(ITEM_MISSING_MAPPINGS, MissingMappingEventJS.class).startup();
+		event.registerEvent(ITEM_TAGS, TagEventJS.class).serverOnly();
 		event.registerEvent(ITEM_RIGHT_CLICK, ItemRightClickEventJS.class).canCancel();
 		event.registerEvent(ITEM_RIGHT_CLICK_EMPTY, ItemRightClickEmptyEventJS.class).clientOnly();
 		event.registerEvent(ITEM_LEFT_CLICK, ItemLeftClickEventJS.class).clientOnly();
@@ -187,5 +192,9 @@ public class KubeJSEvents
 		event.registerEvent(ITEM_TOSS, ItemTossEventJS.class).canCancel();
 		event.registerEvent(ITEM_CRAFTED, ItemCraftedEventJS.class).serverOnly();
 		event.registerEvent(ITEM_SMELTED, ItemSmeltedEventJS.class).serverOnly();
+
+		event.registerEvent(FLUID_TAGS, TagEventJS.class).serverOnly();
+
+		event.registerEvent(ENTITY_DROPS, TagEventJS.class).serverOnly();
 	}
 }

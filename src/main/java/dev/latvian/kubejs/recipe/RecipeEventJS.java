@@ -95,7 +95,8 @@ public class RecipeEventJS extends ServerEventJS
 	{
 		ScriptType.SERVER.console.logger.info("Found " + originalRecipes.list.size() + " recipes");
 		ScriptType.SERVER.console.setLineNumber(true);
-		post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_RECIPES);
+		post(ScriptType.SERVER, KubeJSEvents.RECIPES);
+		post(ScriptType.SERVER, "server.datapack.recipes"); // TODO: To be removed some time later
 		ScriptType.SERVER.console.setLineNumber(false);
 
 		Map<IRecipeType<?>, Map<ResourceLocation, IRecipe<?>>> newRecipeMap = new HashMap<>();

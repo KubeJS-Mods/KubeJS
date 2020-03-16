@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -122,7 +121,7 @@ public class TagEventJS<T> extends ServerEventJS
 		return type;
 	}
 
-	public void post()
+	public void post(String event)
 	{
 		tags = new HashMap<>();
 
@@ -133,7 +132,8 @@ public class TagEventJS<T> extends ServerEventJS
 			ScriptType.SERVER.console.logger.debug(type + "/#" + entry.getKey() + "; " + w.entries.size());
 		}
 
-		post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_TAGS, type);
+		post(ScriptType.SERVER, event);
+		post(ScriptType.SERVER, "server.datapack.tags." + type); //TODO: To be removed
 
 		ScriptType.SERVER.console.logger.info("[" + type + "] Found " + tags.size() + " tags, added " + addedCount + ", removed " + removedCount);
 	}
