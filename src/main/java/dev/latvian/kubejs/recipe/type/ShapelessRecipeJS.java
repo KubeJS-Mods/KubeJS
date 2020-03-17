@@ -137,7 +137,7 @@ public class ShapelessRecipeJS extends RecipeJS
 	{
 		if (IngredientJS.of(i).test(result))
 		{
-			result = ItemStackJS.of(with);
+			result = ItemStackJS.of(with).count(result.getCount());
 			save();
 			return true;
 		}

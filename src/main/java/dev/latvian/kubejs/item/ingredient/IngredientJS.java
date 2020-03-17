@@ -73,16 +73,29 @@ public interface IngredientJS extends JsonSerializable
 
 		if (map != null)
 		{
-			if (map.containsKey("tag"))
+			if (map.containsKey("ingredient"))
 			{
-				TagIngredientJS ingredient = new TagIngredientJS(new ResourceLocation(map.get("tag").toString()));
+				IngredientJS in = of(map.get("ingredient"));
 
 				if (map.containsKey("count"))
 				{
-					return ingredient.count(UtilsJS.parseInt(map.get("count"), 1));
+					return in.count(UtilsJS.parseInt(map.get("count"), 1));
+				}
+				else if (map.containsKey("amount"))
+				{
+					in = in.count(UtilsJS.parseInt(map.get("amount"), 1));
+
+					if (in instanceof IngredientStackJS)
+					{
+						((IngredientStackJS) in).countKey = "amount";
+					}
 				}
 
-				return ingredient;
+				return in;
+			}
+			else if (map.containsKey("tag"))
+			{
+				return new TagIngredientJS(new ResourceLocation(map.get("tag").toString()));
 			}
 			else if (map.containsKey("mod"))
 			{
@@ -114,7 +127,27 @@ public interface IngredientJS extends JsonSerializable
 		{
 			JsonObject o = json.getAsJsonObject();
 
-			if (o.has("tag"))
+			if (o.has("ingredient"))
+			{
+				IngredientJS in = ingredientFromRecipeJson(o.get("ingredient"));
+
+				if (o.has("count"))
+				{
+					return in.count(o.get("count").getAsInt());
+				}
+				else if (o.has("amount"))
+				{
+					in = in.count(o.get("amount").getAsInt());
+
+					if (in instanceof IngredientStackJS)
+					{
+						((IngredientStackJS) in).countKey = "amount";
+					}
+				}
+
+				return in;
+			}
+			else if (o.has("tag"))
 			{
 				return new TagIngredientJS(new ResourceLocation(o.get("tag").getAsString()));
 			}

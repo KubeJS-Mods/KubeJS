@@ -250,7 +250,7 @@ public class CustomRecipeJS extends RecipeJS
 		{
 			if (input.get(j).anyStackMatches(IngredientJS.of(i)))
 			{
-				input.set(j, IngredientJS.of(with));
+				input.set(j, IngredientJS.of(with).count(input.get(j).getCount()));
 				changed = true;
 				save();
 			}
@@ -274,7 +274,7 @@ public class CustomRecipeJS extends RecipeJS
 		{
 			if (IngredientJS.of(i).test(output.get(j)))
 			{
-				output.set(j, ItemStackJS.of(with));
+				output.set(j, ItemStackJS.of(with).count(output.get(j).getCount()));
 				changed = true;
 				save();
 			}
