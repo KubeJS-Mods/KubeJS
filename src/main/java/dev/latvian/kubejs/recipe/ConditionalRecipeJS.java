@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.recipe;
 
-import dev.latvian.kubejs.recipe.type.RecipeJS;
 import dev.latvian.kubejs.util.ListJS;
 
 /**

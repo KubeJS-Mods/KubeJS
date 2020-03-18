@@ -77,21 +77,24 @@ public interface IngredientJS extends JsonSerializable
 			{
 				IngredientJS in = of(map.get("ingredient"));
 
+				if (in.isEmpty())
+				{
+					return in;
+				}
+
+				IngredientStackJS stack = new IngredientStackJS(in, 1);
+
 				if (map.containsKey("count"))
 				{
-					return in.count(UtilsJS.parseInt(map.get("count"), 1));
+					stack.count(UtilsJS.parseInt(map.get("count"), 1));
 				}
 				else if (map.containsKey("amount"))
 				{
-					in = in.count(UtilsJS.parseInt(map.get("amount"), 1));
-
-					if (in instanceof IngredientStackJS)
-					{
-						((IngredientStackJS) in).countKey = "amount";
-					}
+					stack.count(UtilsJS.parseInt(map.get("amount"), 1));
+					stack.countKey = "amount";
 				}
 
-				return in;
+				return stack;
 			}
 			else if (map.containsKey("tag"))
 			{
@@ -224,7 +227,11 @@ public interface IngredientJS extends JsonSerializable
 
 	default IngredientJS count(int count)
 	{
-		if (count == getCount())
+		if (count <= 0)
+		{
+			return EmptyItemStackJS.INSTANCE;
+		}
+		else if (count == 1 || count == getCount())
 		{
 			return this;
 		}

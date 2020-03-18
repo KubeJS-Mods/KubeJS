@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.recipe;
 
-import dev.latvian.kubejs.recipe.type.CustomRecipeJS;
+import dev.latvian.kubejs.recipe.minecraft.CustomRecipeJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 
 /**

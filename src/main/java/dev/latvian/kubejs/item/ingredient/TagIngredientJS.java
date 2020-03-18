@@ -133,9 +133,9 @@ public class TagIngredientJS implements IngredientJS
 	@Override
 	public boolean anyStackMatches(IngredientJS ingredient)
 	{
-		if (ingredient instanceof TagIngredientJS)
+		if (ingredient instanceof TagIngredientJS && tag.equals(((TagIngredientJS) ingredient).tag))
 		{
-			return tag.equals(((TagIngredientJS) ingredient).tag);
+			return true;
 		}
 
 		return IngredientJS.super.anyStackMatches(ingredient);

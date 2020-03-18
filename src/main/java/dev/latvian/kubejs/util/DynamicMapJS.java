@@ -1,24 +1,26 @@
 package dev.latvian.kubejs.util;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.function.Function;
 
 /**
  * @author LatvianModder
  */
-public class DynamicMapJS<T> extends HashMap<String, T> implements WrappedJS
+public class DynamicMapJS<K, V> extends HashMap<K, V> implements WrappedJS
 {
-	private final Function<String, ? extends T> objectProvider;
+	private final Function<K, ? extends V> objectProvider;
 
-	public DynamicMapJS(Function<String, ? extends T> o)
+	public DynamicMapJS(Function<K, ? extends V> o)
 	{
 		objectProvider = o;
 	}
 
 	@Override
-	public T get(Object key)
+	@Nonnull
+	public V get(Object key)
 	{
-		return super.computeIfAbsent(key.toString(), objectProvider);
+		return super.computeIfAbsent((K) key, objectProvider);
 	}
 
 	@Override

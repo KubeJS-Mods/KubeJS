@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.recipe.type;
+package dev.latvian.kubejs.recipe.minecraft;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -6,12 +6,10 @@ import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -21,8 +19,6 @@ public class CustomRecipeJS extends RecipeJS
 {
 	public static final Supplier<RecipeJS> FACTORY = CustomRecipeJS::new;
 
-	private List<IngredientJS> input;
-	private List<ItemStackJS> output;
 	private String inputKey;
 	private int inputType;
 	private String outputKey;
@@ -30,8 +26,6 @@ public class CustomRecipeJS extends RecipeJS
 
 	public CustomRecipeJS()
 	{
-		input = new ArrayList<>(1);
-		output = new ArrayList<>(1);
 		inputKey = "";
 		inputType = -1;
 		outputKey = "";
@@ -61,7 +55,7 @@ public class CustomRecipeJS extends RecipeJS
 
 				if (!i.isEmpty())
 				{
-					input.add(i);
+					inputItems.add(i);
 				}
 			}
 
@@ -74,7 +68,7 @@ public class CustomRecipeJS extends RecipeJS
 
 		if (!i.isEmpty())
 		{
-			input.add(i);
+			inputItems.add(i);
 			inputKey = k;
 			inputType = 0;
 			return true;
@@ -100,7 +94,7 @@ public class CustomRecipeJS extends RecipeJS
 
 				if (!i.isEmpty())
 				{
-					output.add(i);
+					outputItems.add(i);
 				}
 			}
 
@@ -128,7 +122,7 @@ public class CustomRecipeJS extends RecipeJS
 			}
 
 			outputKey = k;
-			output.add(i);
+			outputItems.add(i);
 			return true;
 		}
 
@@ -138,8 +132,8 @@ public class CustomRecipeJS extends RecipeJS
 	@Override
 	public void deserialize()
 	{
-		input.clear();
-		output.clear();
+		inputItems.clear();
+		outputItems.clear();
 		inputKey = "";
 		inputType = -1;
 		outputKey = "";
@@ -197,7 +191,7 @@ public class CustomRecipeJS extends RecipeJS
 			{
 				JsonArray a = new JsonArray();
 
-				for (IngredientJS in : input)
+				for (IngredientJS in : inputItems)
 				{
 					a.add(in.toJson());
 				}
@@ -206,7 +200,7 @@ public class CustomRecipeJS extends RecipeJS
 			}
 			else if (inputType == 0)
 			{
-				json.add(inputKey, (input.isEmpty() ? EmptyItemStackJS.INSTANCE : input.get(0)).toJson());
+				json.add(inputKey, (inputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : inputItems.get(0)).toJson());
 			}
 		}
 
@@ -216,7 +210,7 @@ public class CustomRecipeJS extends RecipeJS
 			{
 				JsonArray a = new JsonArray();
 
-				for (ItemStackJS in : output)
+				for (ItemStackJS in : outputItems)
 				{
 					a.add(in.getResultJson());
 				}
@@ -225,61 +219,13 @@ public class CustomRecipeJS extends RecipeJS
 			}
 			else if (outputType == 2)
 			{
-				json.addProperty(outputKey, (output.isEmpty() ? EmptyItemStackJS.INSTANCE : output.get(0)).getId().toString());
-				json.addProperty("count", (output.isEmpty() ? EmptyItemStackJS.INSTANCE : output.get(0)).getCount());
+				json.addProperty(outputKey, (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).getId().toString());
+				json.addProperty("count", (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).getCount());
 			}
 			else if (outputType == 0)
 			{
-				json.add(outputKey, (output.isEmpty() ? EmptyItemStackJS.INSTANCE : output.get(0)).getResultJson());
+				json.add(outputKey, (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).getResultJson());
 			}
 		}
-	}
-
-	@Override
-	public Collection<IngredientJS> getInput()
-	{
-		return input;
-	}
-
-	@Override
-	public boolean replaceInput(Object i, Object with)
-	{
-		boolean changed = false;
-
-		for (int j = 0; j < input.size(); j++)
-		{
-			if (input.get(j).anyStackMatches(IngredientJS.of(i)))
-			{
-				input.set(j, IngredientJS.of(with).count(input.get(j).getCount()));
-				changed = true;
-				save();
-			}
-		}
-
-		return changed;
-	}
-
-	@Override
-	public Collection<ItemStackJS> getOutput()
-	{
-		return output;
-	}
-
-	@Override
-	public boolean replaceOutput(Object i, Object with)
-	{
-		boolean changed = false;
-
-		for (int j = 0; j < output.size(); j++)
-		{
-			if (IngredientJS.of(i).test(output.get(j)))
-			{
-				output.set(j, ItemStackJS.of(with).count(output.get(j).getCount()));
-				changed = true;
-				save();
-			}
-		}
-
-		return changed;
 	}
 }

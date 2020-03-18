@@ -196,6 +196,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 	}
 
 	@Override
+	@Nullable
 	public Object remove(Object key)
 	{
 		Object o = super.remove(key);

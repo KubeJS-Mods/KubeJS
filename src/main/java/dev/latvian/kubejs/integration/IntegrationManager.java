@@ -1,7 +1,9 @@
 package dev.latvian.kubejs.integration;
 
-import dev.latvian.kubejs.integration.create.CreateModIntegration;
 import dev.latvian.kubejs.integration.gamestages.GameStagesIntegration;
+import dev.latvian.kubejs.recipe.create.CreateRecipes;
+import dev.latvian.kubejs.recipe.mekanism.MekanismRecipes;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModList;
 
 /**
@@ -18,7 +20,12 @@ public class IntegrationManager
 
 		if (ModList.get().isLoaded("create"))
 		{
-			new CreateModIntegration().init();
+			MinecraftForge.EVENT_BUS.addListener(CreateRecipes::registerRecipeHandlers);
+		}
+
+		if (ModList.get().isLoaded("mekanism"))
+		{
+			MinecraftForge.EVENT_BUS.addListener(MekanismRecipes::registerRecipeHandlers);
 		}
 	}
 }

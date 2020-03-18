@@ -80,7 +80,14 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		}
 		else if (o instanceof CharSequence)
 		{
-			return new UnboundItemStackJS(new ResourceLocation(o.toString()));
+			String s = o.toString();
+
+			if (s.startsWith("#"))
+			{
+				return new TagIngredientJS(new ResourceLocation(s.substring(1))).getFirst();
+			}
+
+			return new UnboundItemStackJS(new ResourceLocation(s));
 		}
 
 		MapJS map = MapJS.of(o);

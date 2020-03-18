@@ -1,8 +1,7 @@
 package dev.latvian.kubejs.recipe;
 
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.recipe.type.CustomRecipeJS;
-import dev.latvian.kubejs.recipe.type.RecipeJS;
+import dev.latvian.kubejs.recipe.minecraft.CustomRecipeJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;

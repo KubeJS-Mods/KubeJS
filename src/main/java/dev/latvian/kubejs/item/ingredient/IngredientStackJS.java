@@ -2,6 +2,7 @@ package dev.latvian.kubejs.item.ingredient;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.item.ItemStack;
 
@@ -12,14 +13,19 @@ import java.util.Set;
  */
 public class IngredientStackJS implements IngredientJS
 {
+	public static IngredientStackJS stackOf(IngredientJS in)
+	{
+		return in instanceof IngredientStackJS ? (IngredientStackJS) in : new IngredientStackJS(in, 1);
+	}
+
 	public IngredientJS ingredient;
 	private int countOverride;
 	public String countKey;
 
-	public IngredientStackJS(IngredientJS i, int a)
+	public IngredientStackJS(IngredientJS i, int c)
 	{
 		ingredient = i;
-		countOverride = a;
+		countOverride = c;
 		countKey = "count";
 	}
 
@@ -37,9 +43,9 @@ public class IngredientStackJS implements IngredientJS
 	@Override
 	public IngredientJS count(int count)
 	{
-		if (count == 1)
+		if (count <= 0)
 		{
-			return ingredient;
+			return EmptyItemStackJS.INSTANCE;
 		}
 
 		countOverride = count;
@@ -91,14 +97,9 @@ public class IngredientStackJS implements IngredientJS
 	@Override
 	public JsonElement toJson()
 	{
-		if (countOverride > 1)
-		{
-			JsonObject json = new JsonObject();
-			json.add("ingredient", ingredient.toJson());
-			json.addProperty(countKey, countOverride);
-			return json;
-		}
-
-		return ingredient.toJson();
+		JsonObject json = new JsonObject();
+		json.add("ingredient", ingredient.toJson());
+		json.addProperty(countKey, countOverride);
+		return json;
 	}
 }

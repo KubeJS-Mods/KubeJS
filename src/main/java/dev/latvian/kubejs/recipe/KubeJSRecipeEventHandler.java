@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.recipe;
 
-import dev.latvian.kubejs.recipe.type.CookingRecipeJS;
-import dev.latvian.kubejs.recipe.type.ShapedRecipeJS;
-import dev.latvian.kubejs.recipe.type.ShapelessRecipeJS;
+import dev.latvian.kubejs.recipe.minecraft.CookingRecipeJS;
+import dev.latvian.kubejs.recipe.minecraft.ShapedRecipeJS;
+import dev.latvian.kubejs.recipe.minecraft.ShapelessRecipeJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.ConditionalRecipe;

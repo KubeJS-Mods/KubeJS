@@ -1,5 +1,8 @@
 package dev.latvian.kubejs.item;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
 import dev.latvian.kubejs.player.PlayerJS;
@@ -203,5 +206,19 @@ public class EmptyItemStackJS extends ItemStackJS
 	public int getHarvestLevel(ToolType tool, @Nullable PlayerJS player, @Nullable BlockContainerJS block)
 	{
 		return -1;
+	}
+
+	@Override
+	public JsonElement toJson()
+	{
+		return new JsonArray();
+	}
+
+	@Override
+	public JsonElement getResultJson()
+	{
+		JsonObject json = new JsonObject();
+		json.addProperty("item", "minecraft:air");
+		return json;
 	}
 }

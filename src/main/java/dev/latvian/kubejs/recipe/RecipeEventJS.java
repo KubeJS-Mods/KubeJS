@@ -1,10 +1,13 @@
 package dev.latvian.kubejs.recipe;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import dev.latvian.kubejs.KubeJSCore;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.item.EmptyItemStackJS;
+import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.kubejs.recipe.type.RecipeJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerEventJS;
 import dev.latvian.kubejs.server.ServerJS;
@@ -17,12 +20,17 @@ import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -30,24 +38,27 @@ import java.util.function.Predicate;
  */
 public class RecipeEventJS extends ServerEventJS
 {
+	public static RecipeEventJS instance;
+
 	private static final Predicate<RecipeJS> ALWAYS_TRUE = r -> true;
 	private static final Predicate<RecipeJS> ALWAYS_FALSE = r -> false;
 
-	private final Map<ResourceLocation, RecipeTypeJS> typeMap;
-	private final RecipeCollection originalRecipes;
-
+	public final Map<ResourceLocation, RecipeTypeJS> typeMap;
+	public final List<RecipeJS> originalRecipes;
 	private final List<RecipeJS> addedRecipes;
-	public final Map<ResourceLocation, RecipeFunction> functionMap;
+	private final Set<RecipeJS> removedRecipes;
+	public final DynamicMapJS<ResourceLocation, RecipeFunction> functionMap;
 
-	private final DynamicMapJS<DynamicMapJS<RecipeFunction>> recipeFunctions;
+	private final DynamicMapJS<String, DynamicMapJS<String, RecipeFunction>> recipeFunctions;
 
-	public RecipeEventJS(RecipeManager recipeManager, Map<ResourceLocation, RecipeTypeJS> t, Map<ResourceLocation, JsonObject> jsonMap)
+	public RecipeEventJS(Map<ResourceLocation, RecipeTypeJS> t)
 	{
 		typeMap = t;
-		originalRecipes = new RecipeCollection(new ArrayList<>());
+		originalRecipes = new ArrayList<>();
 
 		ScriptType.SERVER.console.logger.info("Scanning recipes...");
 
+		/*
 		for (Map.Entry<IRecipeType<?>, Map<ResourceLocation, IRecipe<?>>> entry : KubeJSCore.getRecipes(recipeManager).entrySet())
 		{
 			ScriptType.SERVER.console.logger.debug(entry.getKey().toString());
@@ -60,7 +71,7 @@ public class RecipeEventJS extends ServerEventJS
 				r.id = recipe.getId();
 				r.type = type;
 				r.originalRecipe = recipe;
-				r.json = jsonMap.get(r.id);
+				r.json = JsonUtilsJS.copy(jsonMap.get(r.id)).getAsJsonObject();
 
 				if (r.json.has("recipes") && r.json.has("type") && r.json.get("type").getAsString().equals("forge:conditional"))
 				{
@@ -70,7 +81,7 @@ public class RecipeEventJS extends ServerEventJS
 				try
 				{
 					r.deserialize();
-					originalRecipes.list.add(r);
+					originalRecipes.add(r);
 					ScriptType.SERVER.console.logger.debug("* " + r + ": " + r.getInput() + " -> " + r.getOutput());
 				}
 				catch (Exception ex)
@@ -79,21 +90,87 @@ public class RecipeEventJS extends ServerEventJS
 				}
 			}
 		}
+		 */
 
 		addedRecipes = new ArrayList<>();
-		functionMap = new HashMap<>();
+		removedRecipes = new HashSet<>();
+		functionMap = new DynamicMapJS<>(id -> {
+			IRecipeSerializer<?> serializer = ForgeRegistries.RECIPE_SERIALIZERS.getValue(id);
 
-		for (RecipeTypeJS type : typeMap.values())
-		{
-			functionMap.put(type.serializer.getRegistryName(), new RecipeFunction(this, type.serializer.getRegistryName(), type));
-		}
+			if (serializer != null)
+			{
+				RecipeTypeJS typeJS = typeMap.get(serializer.getRegistryName());
+				return new RecipeFunction(this, id, typeJS != null ? typeJS : new CustomRecipeTypeJS(serializer));
+			}
+			else
+			{
+				return new RecipeFunction(this, id, null);
+			}
+		});
 
-		recipeFunctions = new DynamicMapJS<>(n -> new DynamicMapJS<>(p -> functionMap.computeIfAbsent(new ResourceLocation(n, p), id -> new RecipeFunction(this, id, null))));
+		recipeFunctions = new DynamicMapJS<>(n -> new DynamicMapJS<>(p -> functionMap.get(new ResourceLocation(n, p))));
 	}
 
-	public void post(RecipeManager recipeManager)
+	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap)
 	{
-		ScriptType.SERVER.console.logger.info("Found " + originalRecipes.list.size() + " recipes");
+		for (Map.Entry<ResourceLocation, JsonObject> entry : jsonMap.entrySet())
+		{
+			ResourceLocation recipeId = entry.getKey();
+
+			if (recipeId.getPath().startsWith("_"))
+			{
+				continue; //Forge: filter anything beginning with "_" as it's used for metadata.
+			}
+
+			JsonObject json = entry.getValue();
+
+			try
+			{
+				if (!CraftingHelper.processConditions(json, "conditions"))
+				{
+					ScriptType.SERVER.console.logger.info("Skipping loading recipe {} as it's conditions were not met", recipeId);
+					continue;
+				}
+
+				JsonElement t = json.get("type");
+
+				if (!(t instanceof JsonPrimitive) || !((JsonPrimitive) t).isString())
+				{
+					ScriptType.SERVER.console.logger.warn("Missing or invalid recipe recipe type, expected a string in recipe {}", recipeId);
+					continue;
+				}
+
+				RecipeFunction function = functionMap.get(new ResourceLocation(t.getAsString()));
+
+				if (function.type == null)
+				{
+					ScriptType.SERVER.console.logger.warn("Skipping loading recipe {} as it's type {} is unknown", recipeId, function.typeID);
+					continue;
+				}
+
+				RecipeJS recipeJS = function.type.factory.get();
+				recipeJS.id = recipeId;
+				recipeJS.type = function.type;
+				recipeJS.json = json;
+				recipeJS.originalRecipe = function.type.serializer.read(recipeId, json);
+
+				if (recipeJS.originalRecipe == null)
+				{
+					ScriptType.SERVER.console.logger.warn("Skipping loading recipe {} as it's serializer returned null", recipeId);
+					continue;
+				}
+
+				recipeJS.deserialize();
+				originalRecipes.add(recipeJS);
+				ScriptType.SERVER.console.logger.debug("Loaded recipe {}: {} -> {}", recipeId, recipeJS.inputItems, recipeJS.outputItems);
+			}
+			catch (Exception ex)
+			{
+				ScriptType.SERVER.console.logger.error("Parsing error loading recipe {}: {}", recipeId, ex);
+			}
+		}
+
+		ScriptType.SERVER.console.logger.info("Found " + originalRecipes.size() + " recipes");
 		ScriptType.SERVER.console.setLineNumber(true);
 		post(ScriptType.SERVER, KubeJSEvents.RECIPES);
 		post(ScriptType.SERVER, "server.datapack.recipes"); // TODO: To be removed some time later
@@ -104,9 +181,9 @@ public class RecipeEventJS extends ServerEventJS
 		int modified = 0;
 		int added = 0;
 
-		for (RecipeJS r : originalRecipes.list)
+		for (RecipeJS r : originalRecipes)
 		{
-			if (r.remove)
+			if (removedRecipes.contains(r))
 			{
 				removed++;
 				continue;
@@ -151,44 +228,42 @@ public class RecipeEventJS extends ServerEventJS
 		ScriptType.SERVER.console.info("Added " + added + " recipes, removed " + removed + " recipes, modified " + modified + " recipes");
 	}
 
-	public DynamicMapJS<DynamicMapJS<RecipeFunction>> getRecipes()
+	public DynamicMapJS<String, DynamicMapJS<String, RecipeFunction>> getRecipes()
 	{
 		return recipeFunctions;
 	}
 
-	public RecipeJS addRecipe(RecipeJS recipe, RecipeTypeJS type, ListJS args1)
+	public RecipeJS addRecipe(RecipeJS r, RecipeTypeJS type, ListJS args1)
 	{
-		addedRecipes.add(recipe);
+		addedRecipes.add(r);
 
-		if (recipe.id == null)
+		if (r.id == null)
 		{
-			recipe.id = new ResourceLocation(type.serializer.getRegistryName().getNamespace(), "kubejs_generated_" + addedRecipes.size());
+			ResourceLocation itemId = r.outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE.getId() : r.outputItems.get(0).getId();
+			r.id = new ResourceLocation(type.serializer.getRegistryName().getNamespace(), "kubejs_generated_" + addedRecipes.size() + "_" + itemId.getNamespace() + "_" + itemId.getPath().replace('/', '_'));
 		}
-
-		String s = "+ " + recipe + ": " + recipe.getInput() + " -> " + recipe.getOutput();
 
 		if (ServerJS.instance.logAddedRecipes)
 		{
-			ScriptType.SERVER.console.logger.info(s);
+			ScriptType.SERVER.console.logger.info("+ {}: {} -> {}", r, r.inputItems, r.outputItems);
 		}
 		else
 		{
-			ScriptType.SERVER.console.logger.debug(s);
+			ScriptType.SERVER.console.logger.debug("+ {}: {} -> {}", r, r.inputItems, r.outputItems);
 		}
 
-		return recipe;
+		return r;
 	}
 
-	public RecipeCollection getAll()
+	public Predicate<RecipeJS> createFilter(@Nullable Object o)
 	{
-		return originalRecipes;
-	}
-
-	public Predicate<RecipeJS> createPredicate(@Nullable Object o)
-	{
-		if (o == null)
+		if (o == null || o == ALWAYS_TRUE)
 		{
 			return ALWAYS_TRUE;
+		}
+		else if (o == ALWAYS_FALSE)
+		{
+			return ALWAYS_FALSE;
 		}
 
 		ListJS list = ListJS.orSelf(o);
@@ -203,14 +278,16 @@ public class RecipeEventJS extends ServerEventJS
 
 			for (Object o1 : list)
 			{
-				Predicate<RecipeJS> p = createPredicate(o1);
+				Predicate<RecipeJS> p = createFilter(o1);
 
 				if (p == ALWAYS_TRUE)
 				{
 					return ALWAYS_TRUE;
 				}
-
-				predicate = predicate.or(p);
+				else if (p != ALWAYS_FALSE)
+				{
+					predicate = predicate.or(p);
+				}
 			}
 
 			return predicate;
@@ -227,7 +304,7 @@ public class RecipeEventJS extends ServerEventJS
 
 		if (map.get("or") != null)
 		{
-			predicate = predicate.and(createPredicate(map.get("or")));
+			predicate = predicate.and(createFilter(map.get("or")));
 		}
 
 		if (map.get("id") != null)
@@ -280,24 +357,83 @@ public class RecipeEventJS extends ServerEventJS
 		return filter;
 	}
 
-	public RecipeCollection get(@Nullable Object o)
+	public void forEachRecipe(@Nullable Object o, Consumer<RecipeJS> consumer)
 	{
-		return originalRecipes.filter(createPredicate(o));
+		Predicate<RecipeJS> filter = createFilter(o);
+
+		if (filter == ALWAYS_TRUE)
+		{
+			originalRecipes.forEach(consumer);
+		}
+		else if (filter != ALWAYS_FALSE)
+		{
+			originalRecipes.stream().filter(filter).forEach(consumer);
+		}
 	}
 
-	public void remove(Object filter)
+	public int remove(Object filter)
 	{
-		get(filter).remove();
+		int[] count = new int[1];
+		forEachRecipe(filter, r -> {
+			if (removedRecipes.add(r))
+			{
+				if (ServerJS.instance.logRemovedRecipes)
+				{
+					ScriptType.SERVER.console.logger.info("- {}: {} -> {}", r, r.inputItems, r.outputItems);
+				}
+				else
+				{
+					ScriptType.SERVER.console.logger.debug("- {}: {} -> {}", r, r.inputItems, r.outputItems);
+				}
+
+				count[0]++;
+			}
+		});
+		return count[0];
 	}
 
-	public void replaceInput(Object filter, Object ingredient, Object with)
+	public int replaceInput(Object filter, Object ingredient, Object with)
 	{
-		get(filter).replaceInput(ingredient, with);
+		String is = ingredient.toString();
+		String ws = with.toString();
+		int[] count = new int[1];
+		IngredientJS i = IngredientJS.of(ingredient);
+		IngredientJS w = IngredientJS.of(with);
+		forEachRecipe(filter, r -> {
+			if (r.replaceInput(i, w))
+			{
+				count[0]++;
+				ScriptType.SERVER.console.logger.info("~ {}: OUT {} -> {}", r, is, ws);
+			}
+		});
+		return count[0];
 	}
 
-	public void replaceOutput(Object filter, Object ingredient, Object with)
+	public int replaceInput(Object ingredient, Object with)
 	{
-		get(filter).replaceOutput(ingredient, with);
+		return replaceInput(ALWAYS_TRUE, ingredient, with);
+	}
+
+	public int replaceOutput(Object filter, Object ingredient, Object with)
+	{
+		String is = ingredient.toString();
+		String ws = with.toString();
+		int[] count = new int[1];
+		IngredientJS i = IngredientJS.of(ingredient);
+		ItemStackJS w = ItemStackJS.of(with);
+		forEachRecipe(filter, r -> {
+			if (r.replaceOutput(i, w))
+			{
+				count[0]++;
+				ScriptType.SERVER.console.logger.info("~ {}: IN {} -> {}", r, is, ws);
+			}
+		});
+		return count[0];
+	}
+
+	public int replaceOutput(Object ingredient, Object with)
+	{
+		return replaceOutput(ALWAYS_TRUE, ingredient, with);
 	}
 
 	public RecipeFunction getShaped()
