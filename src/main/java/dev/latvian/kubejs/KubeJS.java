@@ -18,7 +18,6 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.KubeJSServerEventHandler;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -77,7 +76,6 @@ public class KubeJS
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadComplete);
 
-		MinecraftForge.EVENT_BUS.addListener(KubeJSEvents::registerDocumentation);
 		new KubeJSServerEventHandler().init();
 		new KubeJSWorldEventHandler().init();
 		new KubeJSPlayerEventHandler().init();
