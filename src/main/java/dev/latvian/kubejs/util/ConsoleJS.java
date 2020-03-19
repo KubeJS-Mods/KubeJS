@@ -127,6 +127,22 @@ public class ConsoleJS
 		}
 	}
 
+	public void debug(Object message)
+	{
+		if (shouldPrint())
+		{
+			logger.debug(string(message));
+		}
+	}
+
+	public void debugf(String message, Object... args)
+	{
+		if (shouldPrint())
+		{
+			logger.debug(string(message, args));
+		}
+	}
+
 	public void group()
 	{
 		group += "  ";

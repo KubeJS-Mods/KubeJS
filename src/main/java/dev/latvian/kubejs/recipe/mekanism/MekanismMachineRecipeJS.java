@@ -28,7 +28,7 @@ public class MekanismMachineRecipeJS extends RecipeJS
 
 		if (output.isEmpty())
 		{
-			throw new RecipeExceptionJS("Mekanism enriching recipe result can't be empty!");
+			throw new RecipeExceptionJS("Mekanism machine recipe result can't be empty!");
 		}
 
 		outputItems.add(output);
@@ -58,7 +58,7 @@ public class MekanismMachineRecipeJS extends RecipeJS
 
 		if (inputItems.isEmpty())
 		{
-			throw new RecipeExceptionJS("Mekanism enriching recipe ingredient " + args.get(1) + " is not a valid ingredient!");
+			throw new RecipeExceptionJS("Mekanism machine recipe ingredient " + args.get(1) + " is not a valid ingredient!");
 		}
 	}
 
@@ -73,7 +73,7 @@ public class MekanismMachineRecipeJS extends RecipeJS
 
 			if (output.isEmpty())
 			{
-				throw new RecipeExceptionJS("Mekanism enriching recipe result can't be empty!");
+				throw new RecipeExceptionJS("Mekanism machine recipe result can't be empty!");
 			}
 			else
 			{
@@ -135,7 +135,7 @@ public class MekanismMachineRecipeJS extends RecipeJS
 
 		if (inputItems.isEmpty())
 		{
-			throw new RecipeExceptionJS("Mekanism enriching recipe ingredient " + json.get("ingredient") + " is not a valid ingredient!");
+			throw new RecipeExceptionJS("Mekanism machine recipe ingredient " + json.get("ingredient") + " is not a valid ingredient!");
 		}
 	}
 

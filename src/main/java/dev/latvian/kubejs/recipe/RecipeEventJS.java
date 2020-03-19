@@ -58,40 +58,6 @@ public class RecipeEventJS extends ServerEventJS
 
 		ScriptType.SERVER.console.logger.info("Scanning recipes...");
 
-		/*
-		for (Map.Entry<IRecipeType<?>, Map<ResourceLocation, IRecipe<?>>> entry : KubeJSCore.getRecipes(recipeManager).entrySet())
-		{
-			ScriptType.SERVER.console.logger.debug(entry.getKey().toString());
-
-			for (IRecipe<?> recipe : entry.getValue().values())
-			{
-				IRecipeSerializer serializer = recipe.getSerializer();
-				RecipeTypeJS type = typeMap.computeIfAbsent(serializer.getRegistryName(), id -> new CustomRecipeTypeJS(serializer));
-				RecipeJS r = type.factory.get();
-				r.id = recipe.getId();
-				r.type = type;
-				r.originalRecipe = recipe;
-				r.json = JsonUtilsJS.copy(jsonMap.get(r.id)).getAsJsonObject();
-
-				if (r.json.has("recipes") && r.json.has("type") && r.json.get("type").getAsString().equals("forge:conditional"))
-				{
-					r.json = r.json.get("recipes").getAsJsonArray().get(0).getAsJsonObject().get("recipe").getAsJsonObject();
-				}
-
-				try
-				{
-					r.deserialize();
-					originalRecipes.add(r);
-					ScriptType.SERVER.console.logger.debug("* " + r + ": " + r.getInput() + " -> " + r.getOutput());
-				}
-				catch (Exception ex)
-				{
-					ScriptType.SERVER.console.logger.warn("! " + r + ": " + ex);
-				}
-			}
-		}
-		 */
-
 		addedRecipes = new ArrayList<>();
 		removedRecipes = new HashSet<>();
 		functionMap = new DynamicMapJS<>(id -> {
@@ -113,6 +79,8 @@ public class RecipeEventJS extends ServerEventJS
 
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap)
 	{
+		ScriptType.SERVER.console.setLineNumber(true);
+
 		for (Map.Entry<ResourceLocation, JsonObject> entry : jsonMap.entrySet())
 		{
 			ResourceLocation recipeId = entry.getKey();
@@ -128,7 +96,7 @@ public class RecipeEventJS extends ServerEventJS
 			{
 				if (!CraftingHelper.processConditions(json, "conditions"))
 				{
-					ScriptType.SERVER.console.logger.info("Skipping loading recipe {} as it's conditions were not met", recipeId);
+					ScriptType.SERVER.console.info("Skipping loading recipe " + recipeId + " as it's conditions were not met");
 					continue;
 				}
 
@@ -136,7 +104,7 @@ public class RecipeEventJS extends ServerEventJS
 
 				if (!(t instanceof JsonPrimitive) || !((JsonPrimitive) t).isString())
 				{
-					ScriptType.SERVER.console.logger.warn("Missing or invalid recipe recipe type, expected a string in recipe {}", recipeId);
+					ScriptType.SERVER.console.warn("Missing or invalid recipe recipe type, expected a string in recipe " + recipeId);
 					continue;
 				}
 
@@ -144,29 +112,37 @@ public class RecipeEventJS extends ServerEventJS
 
 				if (function.type == null)
 				{
-					ScriptType.SERVER.console.logger.warn("Skipping loading recipe {} as it's type {} is unknown", recipeId, function.typeID);
+					ScriptType.SERVER.console.warn("Skipping loading recipe " + recipeId + " as it's type " + function.typeID + " is unknown");
 					continue;
 				}
 
-				RecipeJS recipeJS = function.type.factory.get();
-				recipeJS.id = recipeId;
-				recipeJS.type = function.type;
-				recipeJS.json = json;
-				recipeJS.originalRecipe = function.type.serializer.read(recipeId, json);
+				RecipeJS r = function.type.factory.get();
+				r.id = recipeId;
+				r.type = function.type;
+				r.json = json;
+				r.originalRecipe = function.type.serializer.read(recipeId, json);
 
-				if (recipeJS.originalRecipe == null)
+				if (r.originalRecipe == null)
 				{
-					ScriptType.SERVER.console.logger.warn("Skipping loading recipe {} as it's serializer returned null", recipeId);
+					ScriptType.SERVER.console.warn("Skipping loading recipe " + r + " as it's serializer returned null");
 					continue;
 				}
 
-				recipeJS.deserialize();
-				originalRecipes.add(recipeJS);
-				ScriptType.SERVER.console.logger.debug("Loaded recipe {}: {} -> {}", recipeId, recipeJS.inputItems, recipeJS.outputItems);
+				r.deserialize();
+				originalRecipes.add(r);
+
+				if (r.originalRecipe.isDynamic())
+				{
+					ScriptType.SERVER.console.debug("Loaded recipe " + r + ": <dynamic>");
+				}
+				else
+				{
+					ScriptType.SERVER.console.debug("Loaded recipe " + r + ": " + r.inputItems + " -> " + r.outputItems);
+				}
 			}
 			catch (Exception ex)
 			{
-				ScriptType.SERVER.console.logger.error("Parsing error loading recipe {}: {}", recipeId, ex);
+				ScriptType.SERVER.console.error("Parsing error loading recipe " + recipeId + ": " + ex);
 			}
 		}
 
@@ -245,11 +221,11 @@ public class RecipeEventJS extends ServerEventJS
 
 		if (ServerJS.instance.logAddedRecipes)
 		{
-			ScriptType.SERVER.console.logger.info("+ {}: {} -> {}", r, r.inputItems, r.outputItems);
+			ScriptType.SERVER.console.info("+ " + r + ": " + r.inputItems + " -> " + r.outputItems);
 		}
 		else
 		{
-			ScriptType.SERVER.console.logger.debug("+ {}: {} -> {}", r, r.inputItems, r.outputItems);
+			ScriptType.SERVER.console.debug("+ " + r + ": " + r.inputItems + " -> " + r.outputItems);
 		}
 
 		return r;
@@ -379,11 +355,11 @@ public class RecipeEventJS extends ServerEventJS
 			{
 				if (ServerJS.instance.logRemovedRecipes)
 				{
-					ScriptType.SERVER.console.logger.info("- {}: {} -> {}", r, r.inputItems, r.outputItems);
+					ScriptType.SERVER.console.info("- " + r + ": " + r.inputItems + " -> " + r.outputItems);
 				}
 				else
 				{
-					ScriptType.SERVER.console.logger.debug("- {}: {} -> {}", r, r.inputItems, r.outputItems);
+					ScriptType.SERVER.console.debug("- " + r + ": " + r.inputItems + " -> " + r.outputItems);
 				}
 
 				count[0]++;
@@ -394,16 +370,20 @@ public class RecipeEventJS extends ServerEventJS
 
 	public int replaceInput(Object filter, Object ingredient, Object with)
 	{
-		String is = ingredient.toString();
-		String ws = with.toString();
 		int[] count = new int[1];
 		IngredientJS i = IngredientJS.of(ingredient);
 		IngredientJS w = IngredientJS.of(with);
+		String is = i.toString();
+		String ws = w.toString();
 		forEachRecipe(filter, r -> {
 			if (r.replaceInput(i, w))
 			{
 				count[0]++;
-				ScriptType.SERVER.console.logger.info("~ {}: OUT {} -> {}", r, is, ws);
+
+				if (ServerJS.instance.logAddedRecipes || ServerJS.instance.logRemovedRecipes)
+				{
+					ScriptType.SERVER.console.info("~ " + r + ": OUT " + is + " -> " + ws);
+				}
 			}
 		});
 		return count[0];
@@ -416,16 +396,20 @@ public class RecipeEventJS extends ServerEventJS
 
 	public int replaceOutput(Object filter, Object ingredient, Object with)
 	{
-		String is = ingredient.toString();
-		String ws = with.toString();
 		int[] count = new int[1];
 		IngredientJS i = IngredientJS.of(ingredient);
 		ItemStackJS w = ItemStackJS.of(with);
+		String is = i.toString();
+		String ws = w.toString();
 		forEachRecipe(filter, r -> {
 			if (r.replaceOutput(i, w))
 			{
 				count[0]++;
-				ScriptType.SERVER.console.logger.info("~ {}: IN {} -> {}", r, is, ws);
+
+				if (ServerJS.instance.logAddedRecipes || ServerJS.instance.logRemovedRecipes)
+				{
+					ScriptType.SERVER.console.info("~ " + r + ": IN " + is + " -> " + ws);
+				}
 			}
 		});
 		return count[0];

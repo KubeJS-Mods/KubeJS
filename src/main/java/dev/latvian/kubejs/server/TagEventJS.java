@@ -132,8 +132,10 @@ public class TagEventJS<T> extends ServerEventJS
 			ScriptType.SERVER.console.logger.debug(type + "/#" + entry.getKey() + "; " + w.entries.size());
 		}
 
+		ScriptType.SERVER.console.setLineNumber(true);
 		post(ScriptType.SERVER, event);
 		post(ScriptType.SERVER, "server.datapack.tags." + type); //TODO: To be removed
+		ScriptType.SERVER.console.setLineNumber(false);
 
 		ScriptType.SERVER.console.logger.info("[" + type + "] Found " + tags.size() + " tags, added " + addedCount + ", removed " + removedCount);
 	}
