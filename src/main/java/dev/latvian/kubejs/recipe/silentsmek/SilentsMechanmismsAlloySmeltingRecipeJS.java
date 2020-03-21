@@ -4,11 +4,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.item.UnboundItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAnyIngredientJS;
+import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.ListJS;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,14 +81,25 @@ public class SilentsMechanmismsAlloySmeltingRecipeJS extends RecipeJS
 			JsonObject o = e.getAsJsonObject();
 			MatchAnyIngredientJS l = new MatchAnyIngredientJS();
 
-			for (JsonElement e1 : o.get("values").getAsJsonArray())
+			if (o.has("values"))
 			{
-				IngredientJS i = IngredientJS.ingredientFromRecipeJson(e1);
-
-				if (!i.isEmpty())
+				for (JsonElement e1 : o.get("values").getAsJsonArray())
 				{
-					l.ingredients.add(i);
+					IngredientJS i = IngredientJS.ingredientFromRecipeJson(e1);
+
+					if (!i.isEmpty())
+					{
+						l.ingredients.add(i);
+					}
 				}
+			}
+			else if (o.has("tag"))
+			{
+				l.ingredients.add(new TagIngredientJS(new ResourceLocation(o.get("tag").getAsString())));
+			}
+			else if (o.has("item"))
+			{
+				l.ingredients.add(new UnboundItemStackJS(new ResourceLocation(o.get("item").getAsString())));
 			}
 
 			if (!l.isEmpty())
