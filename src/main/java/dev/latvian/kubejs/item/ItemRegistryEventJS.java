@@ -6,6 +6,8 @@ import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.Item;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import java.util.function.Supplier;
+
 /**
  * @author LatvianModder
  */
@@ -36,5 +38,10 @@ public class ItemRegistryEventJS extends EventJS
 	public ItemBuilder createBlockItem(String name)
 	{
 		return new ItemBuilder(name, p -> KubeJS.LOGGER.error("This method is deprecated! Replaced by block registry .item(function(item) { /*chained item functions here*/ }) or .noItem()"));
+	}
+
+	public Supplier<FoodBuilder> createFood(Supplier<FoodBuilder> builder)
+	{
+		return builder;
 	}
 }

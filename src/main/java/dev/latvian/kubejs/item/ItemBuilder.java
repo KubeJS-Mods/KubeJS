@@ -36,6 +36,7 @@ public class ItemBuilder
 	public Int2IntOpenHashMap color;
 	public String texture;
 	public String parentModel;
+	public FoodBuilder foodBuilder;
 
 	public ItemBuilder(String i, Consumer<ItemBuilder> c)
 	{
@@ -53,6 +54,7 @@ public class ItemBuilder
 		color.defaultReturnValue(0xFFFFFFFF);
 		texture = id.getNamespace() + ":item/" + id.getPath();
 		parentModel = "item/generated";
+		foodBuilder = null;
 	}
 
 	public ItemBuilder maxStackSize(int v)
@@ -134,6 +136,13 @@ public class ItemBuilder
 		return this;
 	}
 
+	public ItemBuilder food(Consumer<FoodBuilder> b)
+	{
+		foodBuilder = new FoodBuilder();
+		b.accept(foodBuilder);
+		return this;
+	}
+
 	public void add()
 	{
 		callback.accept(this);
@@ -158,6 +167,11 @@ public class ItemBuilder
 		if (item != null && item != Items.AIR)
 		{
 			properties.containerItem(item);
+		}
+
+		if (foodBuilder != null)
+		{
+			properties.food(foodBuilder.build());
 		}
 
 		return properties;
