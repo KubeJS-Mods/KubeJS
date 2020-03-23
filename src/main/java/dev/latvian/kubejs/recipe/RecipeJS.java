@@ -48,11 +48,11 @@ public abstract class RecipeJS
 		return this;
 	}
 
-	public final boolean hasInput(IngredientJS ingredient)
+	public final boolean hasInput(IngredientJS ingredient, boolean exact)
 	{
 		for (IngredientJS in : inputItems)
 		{
-			if (in.anyStackMatches(ingredient))
+			if (exact ? in.equals(ingredient) : in.anyStackMatches(ingredient))
 			{
 				return true;
 			}
@@ -61,13 +61,13 @@ public abstract class RecipeJS
 		return false;
 	}
 
-	public final boolean replaceInput(IngredientJS i, IngredientJS with)
+	public final boolean replaceInput(IngredientJS i, IngredientJS with, boolean exact)
 	{
 		boolean changed = false;
 
 		for (int j = 0; j < inputItems.size(); j++)
 		{
-			if (inputItems.get(j).anyStackMatches(i))
+			if (exact ? inputItems.get(j).equals(i) : inputItems.get(j).anyStackMatches(i))
 			{
 				inputItems.set(j, IngredientJS.of(with));
 				changed = true;
@@ -78,11 +78,11 @@ public abstract class RecipeJS
 		return changed;
 	}
 
-	public final boolean hasOutput(IngredientJS ingredient)
+	public final boolean hasOutput(IngredientJS ingredient, boolean exact)
 	{
 		for (ItemStackJS out : outputItems)
 		{
-			if (ingredient.test(out))
+			if (exact ? ingredient.equals(out) : ingredient.test(out))
 			{
 				return true;
 			}
@@ -91,13 +91,13 @@ public abstract class RecipeJS
 		return false;
 	}
 
-	public final boolean replaceOutput(IngredientJS i, ItemStackJS with)
+	public final boolean replaceOutput(IngredientJS i, ItemStackJS with, boolean exact)
 	{
 		boolean changed = false;
 
 		for (int j = 0; j < outputItems.size(); j++)
 		{
-			if (i.test(outputItems.get(j)))
+			if (exact ? i.equals(outputItems.get(j)) : i.test(outputItems.get(j)))
 			{
 				outputItems.set(j, with.getCopy().count(outputItems.get(j).getCount())).chance(outputItems.get(j).getChance());
 				changed = true;

@@ -276,6 +276,8 @@ public class RecipeEventJS extends ServerEventJS
 			return ALWAYS_TRUE;
 		}
 
+		boolean exact = Boolean.TRUE.equals(map.get("exact"));
+
 		Predicate<RecipeJS> predicate = ALWAYS_TRUE;
 
 		if (map.get("or") != null)
@@ -316,13 +318,13 @@ public class RecipeEventJS extends ServerEventJS
 		if (map.get("input") != null)
 		{
 			IngredientJS in = IngredientJS.of(map.get("input"));
-			predicate = predicate.and(recipe -> recipe.hasInput(in));
+			predicate = predicate.and(recipe -> recipe.hasInput(in, exact));
 		}
 
 		if (map.get("output") != null)
 		{
 			IngredientJS out = IngredientJS.of(map.get("output"));
-			predicate = predicate.and(recipe -> recipe.hasOutput(out));
+			predicate = predicate.and(recipe -> recipe.hasOutput(out, exact));
 		}
 
 		return predicate;
@@ -368,7 +370,7 @@ public class RecipeEventJS extends ServerEventJS
 		return count[0];
 	}
 
-	public int replaceInput(Object filter, Object ingredient, Object with)
+	public int replaceInput(Object filter, Object ingredient, Object with, boolean exact)
 	{
 		int[] count = new int[1];
 		IngredientJS i = IngredientJS.of(ingredient);
@@ -376,7 +378,7 @@ public class RecipeEventJS extends ServerEventJS
 		String is = i.toString();
 		String ws = w.toString();
 		forEachRecipe(filter, r -> {
-			if (r.replaceInput(i, w))
+			if (r.replaceInput(i, w, exact))
 			{
 				count[0]++;
 
@@ -389,12 +391,17 @@ public class RecipeEventJS extends ServerEventJS
 		return count[0];
 	}
 
+	public int replaceInput(Object filter, Object ingredient, Object with)
+	{
+		return replaceInput(filter, ingredient, with, false);
+	}
+
 	public int replaceInput(Object ingredient, Object with)
 	{
 		return replaceInput(ALWAYS_TRUE, ingredient, with);
 	}
 
-	public int replaceOutput(Object filter, Object ingredient, Object with)
+	public int replaceOutput(Object filter, Object ingredient, Object with, boolean exact)
 	{
 		int[] count = new int[1];
 		IngredientJS i = IngredientJS.of(ingredient);
@@ -402,7 +409,7 @@ public class RecipeEventJS extends ServerEventJS
 		String is = i.toString();
 		String ws = w.toString();
 		forEachRecipe(filter, r -> {
-			if (r.replaceOutput(i, w))
+			if (r.replaceOutput(i, w, exact))
 			{
 				count[0]++;
 
@@ -413,6 +420,11 @@ public class RecipeEventJS extends ServerEventJS
 			}
 		});
 		return count[0];
+	}
+
+	public int replaceOutput(Object filter, Object ingredient, Object with)
+	{
+		return replaceOutput(filter, ingredient, with, false);
 	}
 
 	public int replaceOutput(Object ingredient, Object with)
