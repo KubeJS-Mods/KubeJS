@@ -9,6 +9,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -22,6 +23,7 @@ public class FoodBuilder
 	private boolean alwaysEdible;
 	private boolean fastToEat;
 	private final List<Pair<Supplier<EffectInstance>, Float>> effects = Lists.newArrayList();
+	public Consumer<ItemFoodEatenEventJS> eaten;
 
 	public FoodBuilder hunger(int h)
 	{
@@ -57,6 +59,12 @@ public class FoodBuilder
 	{
 		ResourceLocation id = UtilsJS.getID(potion);
 		effects.add(Pair.of(() -> new EffectInstance(ForgeRegistries.POTIONS.getValue(id), duration, amplifier), probability));
+		return this;
+	}
+
+	public FoodBuilder eaten(Consumer<ItemFoodEatenEventJS> e)
+	{
+		eaten = e;
 		return this;
 	}
 

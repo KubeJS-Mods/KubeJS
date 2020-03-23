@@ -11,6 +11,7 @@ import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.WrappedJS;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -24,7 +25,7 @@ import java.util.function.Predicate;
  * @author LatvianModder
  */
 @FunctionalInterface
-public interface IngredientJS extends JsonSerializable
+public interface IngredientJS extends JsonSerializable, WrappedJS
 {
 	static IngredientJS of(@Nullable Object o)
 	{

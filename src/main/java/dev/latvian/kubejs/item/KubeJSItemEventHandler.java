@@ -10,6 +10,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -30,6 +31,7 @@ public class KubeJSItemEventHandler
 		MinecraftForge.EVENT_BUS.addListener(this::entityInteract);
 		MinecraftForge.EVENT_BUS.addListener(this::crafted);
 		MinecraftForge.EVENT_BUS.addListener(this::smelted);
+		MinecraftForge.EVENT_BUS.addListener(this::destroyed);
 	}
 
 	private void registry(RegistryEvent.Register<Item> event)
@@ -107,6 +109,14 @@ public class KubeJSItemEventHandler
 		{
 			new ItemSmeltedEventJS(event).post(KubeJSEvents.ITEM_SMELTED);
 			new InventoryChangedEventJS((ServerPlayerEntity) event.getPlayer(), event.getSmelting(), -1).post(KubeJSEvents.PLAYER_INVENTORY_CHANGED);
+		}
+	}
+
+	private void destroyed(PlayerDestroyItemEvent event)
+	{
+		if (event.getPlayer() instanceof ServerPlayerEntity)
+		{
+			new ItemDestroyedEventJS(event).post(KubeJSEvents.ITEM_DESTROYED);
 		}
 	}
 }

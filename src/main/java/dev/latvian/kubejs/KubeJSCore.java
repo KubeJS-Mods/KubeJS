@@ -1,17 +1,23 @@
 package dev.latvian.kubejs;
 
 import com.google.gson.JsonObject;
+import dev.latvian.kubejs.item.ItemFoodEatenEventJS;
+import dev.latvian.kubejs.item.ItemJS;
 import dev.latvian.kubejs.recipe.RecipeEventJS;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.server.TagEventJS;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.widget.button.ImageButton;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.FireworkRocketEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
@@ -140,5 +146,26 @@ public class KubeJSCore
 	{
 		RecipeEventJS.instance.post(recipeManager, jsonMap);
 		RecipeEventJS.instance = null;
+	}
+
+	public static void foodEaten(LivingEntity e, ItemStack is)
+	{
+		if (e instanceof ServerPlayerEntity)
+		{
+			ItemFoodEatenEventJS event = new ItemFoodEatenEventJS((ServerPlayerEntity) e, is);
+			Item i = is.getItem();
+
+			if (i instanceof ItemJS)
+			{
+				ItemJS j = (ItemJS) i;
+
+				if (j.properties.foodBuilder != null && j.properties.foodBuilder.eaten != null)
+				{
+					j.properties.foodBuilder.eaten.accept(event);
+				}
+			}
+
+			event.post(ScriptType.SERVER, KubeJSEvents.ITEM_FOOD_EATEN);
+		}
 	}
 }

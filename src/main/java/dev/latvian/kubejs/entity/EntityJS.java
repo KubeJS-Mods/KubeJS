@@ -9,6 +9,7 @@ import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
@@ -38,7 +39,7 @@ import java.util.UUID;
 /**
  * @author LatvianModder
  */
-public class EntityJS implements MessageSender
+public class EntityJS implements MessageSender, WrappedJS
 {
 	private static Map<String, DamageSource> damageSourceMap;
 
