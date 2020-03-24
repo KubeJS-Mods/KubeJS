@@ -19,6 +19,7 @@ public class ClientWrapper
 	public static String title = "";
 	public static boolean showTagNames = true;
 	public static boolean disableRecipeBook = false;
+	public static boolean exportAtlases = false;
 
 	@MinecraftClass
 	public Minecraft getMinecraft()
@@ -96,5 +97,10 @@ public class ClientWrapper
 	public void setDisableRecipeBook(boolean v)
 	{
 		disableRecipeBook = v;
+	}
+
+	public void setExportAtlases(boolean v)
+	{
+		exportAtlases = v;
 	}
 }

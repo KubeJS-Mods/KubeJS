@@ -30,13 +30,23 @@ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.OutputStream;
+import java.nio.IntBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -63,6 +73,7 @@ public class KubeJSClientEventHandler
 		MinecraftForge.EVENT_BUS.addListener(this::guiPostInit);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::itemColors);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::blockColors);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::postAtlasStitch);
 	}
 
 	private void setup(FMLClientSetupEvent event)
@@ -332,6 +343,69 @@ public class KubeJSClientEventHandler
 			{
 				event.getBlockColors().register((state, world, pos, index) -> block.properties.color.get(index), block);
 			}
+		}
+	}
+
+	private void postAtlasStitch(TextureStitchEvent.Post event)
+	{
+		if (!ClientWrapper.exportAtlases)
+		{
+			return;
+		}
+
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, event.getMap().getGlTextureId());
+		int w = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH);
+		int h = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT);
+
+		if (w <= 0 || h <= 0)
+		{
+			return;
+		}
+
+		BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		int[] pixels = new int[w * h];
+
+		IntBuffer result = BufferUtils.createIntBuffer(w * h);
+		GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, result);
+		result.get(pixels);
+
+		image.setRGB(0, 0, w, h, pixels, 0, w);
+
+		Path path = FMLPaths.GAMEDIR.get().resolve("kubejs/exported/" + event.getMap().getTextureLocation().getNamespace() + "/" + event.getMap().getTextureLocation().getPath());
+
+		if (!Files.exists(path.getParent()))
+		{
+			try
+			{
+				Files.createDirectories(path.getParent());
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+				return;
+			}
+		}
+
+		if (!Files.exists(path))
+		{
+			try
+			{
+				Files.createFile(path);
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+				return;
+			}
+		}
+
+		try (OutputStream stream = Files.newOutputStream(path))
+		{
+			ImageIO.write(image, "PNG", stream);
+		}
+		catch (Exception ex)
+		{
+			ex.printStackTrace();
 		}
 	}
 }
