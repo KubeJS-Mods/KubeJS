@@ -38,4 +38,16 @@ public class RecipeTypeJS
 	{
 		return string;
 	}
+
+	@Override
+	public int hashCode()
+	{
+		return string.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		return string.equals(obj.toString());
+	}
 }
