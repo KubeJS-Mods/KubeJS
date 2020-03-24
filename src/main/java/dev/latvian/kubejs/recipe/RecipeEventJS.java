@@ -293,14 +293,8 @@ public class RecipeEventJS extends ServerEventJS
 
 		if (map.get("type") != null)
 		{
-			RecipeTypeJS type = typeMap.get(UtilsJS.getID(map.get("type")));
-
-			if (type == null)
-			{
-				return ALWAYS_FALSE;
-			}
-
-			predicate = predicate.and(recipe -> recipe.type.equals(type));
+			ResourceLocation type = UtilsJS.getID(map.get("type"));
+			predicate = predicate.and(recipe -> type.equals(recipe.type.serializer.getRegistryName()));
 		}
 
 		if (map.get("group") != null)
