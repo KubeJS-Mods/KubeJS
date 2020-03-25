@@ -5,6 +5,7 @@ import dev.latvian.kubejs.player.ClientPlayerJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.InputMappings;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 import javax.annotation.Nullable;
@@ -102,5 +103,10 @@ public class ClientWrapper
 	public void setExportAtlases(boolean v)
 	{
 		exportAtlases = v;
+	}
+
+	public boolean isKeyDown(int key)
+	{
+		return InputMappings.isKeyDown(getMinecraft().getMainWindow().getHandle(), key);
 	}
 }
