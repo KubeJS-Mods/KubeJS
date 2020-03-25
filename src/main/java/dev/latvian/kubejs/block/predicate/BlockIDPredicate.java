@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.block.predicate;
 
-import dev.latvian.kubejs.KubeJSCore;
+import dev.latvian.kubejs.core.BlockKJS;
+import dev.latvian.kubejs.core.BlockStateKJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.block.Block;
@@ -9,6 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.state.IProperty;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.common.ToolType;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
@@ -149,13 +151,11 @@ public class BlockIDPredicate implements BlockPredicate
 	@Override
 	public boolean check(BlockContainerJS b)
 	{
-		if (getBlock() == Blocks.AIR)
-		{
-			return false;
-		}
+		return getBlock() != Blocks.AIR && checkState(b.getBlockState());
+	}
 
-		BlockState state = b.getBlockState();
-
+	public boolean checkState(BlockState state)
+	{
 		if (state.getBlock() != getBlock())
 		{
 			return false;
@@ -183,7 +183,7 @@ public class BlockIDPredicate implements BlockPredicate
 
 		if (block != Blocks.AIR)
 		{
-			KubeJSCore.setHardness(block, hardness);
+			((BlockKJS) block).setHardnessKJS(hardness);
 		}
 
 		return this;
@@ -195,7 +195,7 @@ public class BlockIDPredicate implements BlockPredicate
 
 		if (block != Blocks.AIR)
 		{
-			KubeJSCore.setResistance(block, resistance);
+			((BlockKJS) block).setResistanceKJS(resistance);
 		}
 
 		return this;
@@ -207,7 +207,30 @@ public class BlockIDPredicate implements BlockPredicate
 
 		if (block != Blocks.AIR)
 		{
-			KubeJSCore.setLightLevel(block, MathHelper.clamp((int) (lightLevel * 15F), 0, 15));
+			int level = MathHelper.clamp((int) (lightLevel * 15F), 0, 15);
+
+			((BlockKJS) block).setLightLevelKJS(level);
+
+			for (BlockState state : block.getStateContainer().getValidStates())
+			{
+				if (checkState(state))
+				{
+					((BlockStateKJS) state).setLightLevelKJS(level);
+				}
+			}
+		}
+
+		return this;
+	}
+
+	public BlockIDPredicate setHarvestTool(ToolType type, int level)
+	{
+		Block block = getBlock();
+
+		if (block != Blocks.AIR)
+		{
+			((BlockKJS) block).setHarvestToolKJS(type);
+			((BlockKJS) block).setHarvestLevelKJS(level);
 		}
 
 		return this;

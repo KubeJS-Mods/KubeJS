@@ -3,8 +3,8 @@ package dev.latvian.kubejs.recipe;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import dev.latvian.kubejs.KubeJSCore;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.core.RecipeManagerKJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
@@ -200,7 +200,7 @@ public class RecipeEventJS extends ServerEventJS
 			}
 		}
 
-		KubeJSCore.setRecipes(recipeManager, newRecipeMap);
+		((RecipeManagerKJS) recipeManager).setRecipesKJS(newRecipeMap);
 		ScriptType.SERVER.console.info("Added " + added + " recipes, removed " + removed + " recipes, modified " + modified + " recipes");
 	}
 

@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.mixin;
+package dev.latvian.kubejs.core.mixin;
 
 import dev.latvian.kubejs.client.ClientWrapper;
 import net.minecraft.client.Minecraft;

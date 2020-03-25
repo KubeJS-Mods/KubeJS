@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.player;
 
-import dev.latvian.kubejs.KubeJSCore;
+import dev.latvian.kubejs.core.PlayerInteractionManagerKJS;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageCloseOverlay;
 import dev.latvian.kubejs.net.MessageOpenOverlay;
@@ -56,7 +56,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayerEntity>
 	@Override
 	public boolean isMiningBlock()
 	{
-		return KubeJSCore.isDestroyingBlock(minecraftPlayer.interactionManager);
+		return ((PlayerInteractionManagerKJS) minecraftPlayer.interactionManager).isDestroyingBlockKJS();
 	}
 
 	public boolean isOP()

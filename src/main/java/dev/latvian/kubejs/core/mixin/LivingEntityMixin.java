@@ -1,6 +1,6 @@
-package dev.latvian.kubejs.mixin;
+package dev.latvian.kubejs.core.mixin;
 
-import dev.latvian.kubejs.KubeJSCore;
+import dev.latvian.kubejs.core.KubeJSCore;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;

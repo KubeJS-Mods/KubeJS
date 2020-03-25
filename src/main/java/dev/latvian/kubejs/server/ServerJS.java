@@ -2,10 +2,10 @@ package dev.latvian.kubejs.server;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.KubeJSCore;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.block.BlockJS;
+import dev.latvian.kubejs.core.SimpleReloadableResourceManagerKJS;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageSendDataFromServer;
 import dev.latvian.kubejs.player.AdvancementJS;
@@ -424,7 +424,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 		resourceManager.addResourcePack(virtualDataPackFirst);
 		resourceManager.addResourcePack(virtualDataPackLast);
 
-		Map<String, FallbackResourceManager> namespaceResourceManagers = KubeJSCore.getNamespaceResourceManagers(resourceManager);
+		Map<String, FallbackResourceManager> namespaceResourceManagers = ((SimpleReloadableResourceManagerKJS) resourceManager).getNamespaceResourceManagersKJS();
 
 		for (FallbackResourceManager manager : namespaceResourceManagers.values())
 		{

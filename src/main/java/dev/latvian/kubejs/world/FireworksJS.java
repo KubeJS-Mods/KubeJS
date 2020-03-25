@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.world;
 
-import dev.latvian.kubejs.KubeJSCore;
+import dev.latvian.kubejs.core.FireworkRocketEntityKJS;
 import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
@@ -198,7 +198,7 @@ public class FireworksJS
 
 		if (lifetime != -1)
 		{
-			KubeJSCore.setLifetime(rocket, lifetime);
+			((FireworkRocketEntityKJS) rocket).setLifetimeKJS(lifetime);
 		}
 
 		rocket.setInvisible(true);

@@ -1,10 +1,10 @@
 package dev.latvian.kubejs.server;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.KubeJSCore;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.kubejs.command.KubeJSCommands;
+import dev.latvian.kubejs.core.SimpleReloadableResourceManagerKJS;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
 import dev.latvian.kubejs.script.ScriptType;
@@ -14,7 +14,6 @@ import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.SimpleWorldEventJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.resources.IFutureReloadListener;
-import net.minecraft.resources.SimpleReloadableResourceManager;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
@@ -61,12 +60,10 @@ public class KubeJSServerEventHandler
 	{
 		try
 		{
-			SimpleReloadableResourceManager manager = (SimpleReloadableResourceManager) event.getServer().getResourceManager();
-			List<IFutureReloadListener> reloadListeners = KubeJSCore.getReloadListeners(manager);
-			List<IFutureReloadListener> initTaskQueue = KubeJSCore.getInitTaskQueue(manager);
+			SimpleReloadableResourceManagerKJS manager = (SimpleReloadableResourceManagerKJS) event.getServer().getResourceManager();
 			IFutureReloadListener reloadListener = ServerJS.instance.createReloadListener();
-			reloadListeners.add(0, reloadListener);
-			initTaskQueue.add(0, reloadListener);
+			manager.getReloadListenersKJS().add(0, reloadListener);
+			manager.getInitTaskQueueKJS().add(0, reloadListener);
 		}
 		catch (Exception ex)
 		{

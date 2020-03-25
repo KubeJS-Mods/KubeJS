@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.server;
 
+import dev.latvian.kubejs.core.TagBuilderKJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -30,7 +31,7 @@ public class TagEventJS<T> extends ServerEventJS
 			event = e;
 			id = i;
 			tag = t;
-			entries = ((TagBuilderAccess<T>) tag).getKJSEntries();
+			entries = ((TagBuilderKJS<T>) tag).getKJSEntries();
 		}
 
 		public TagWrapper<T> add(Object ids)

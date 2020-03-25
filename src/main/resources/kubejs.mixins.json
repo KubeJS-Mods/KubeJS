@@ -1,14 +1,21 @@
 {
 	"required": true,
-	"package": "dev.latvian.kubejs.mixin",
+	"package": "dev.latvian.kubejs.core.mixin",
 	"compatibilityLevel": "JAVA_8",
 	"refmap": "kubejs.refmap.json",
 	"mixins": [
+		"BlockMixin",
+		"BlockStateMixin",
+		"CompoundNBTMixin",
+		"FireworkRocketEntityMixin",
+		"ImageButtonMixin",
+		"LivingEntityMixin",
 		"MinecraftMixin",
 		"NetworkTagManagerReloadResultsMixin",
-		"TagBuilderMixin",
+		"PlayerInteractionManagerMixin",
 		"RecipeManagerMixin",
-		"LivingEntityMixin"
+		"SimpleReloadableResourceManagerMixin",
+		"TagBuilderMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
