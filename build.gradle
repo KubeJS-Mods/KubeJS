@@ -31,7 +31,7 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 
 minecraft {
 	mappings channel: 'snapshot', version: project.mapping_version
-	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+	//accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 	runs {
 		client {
 			workingDirectory project.file('run')
@@ -138,7 +138,6 @@ if (ENV.CURSEFORGE_KEY) {
 				requiredDependency 'mixinbootstrap'
 				optionalDependency 'jei'
 				optionalDependency 'game-stages'
-				optionalDependency 'create'
 			}
 			changelog = getGitChangelog
 			changelogType = 'markdown'
