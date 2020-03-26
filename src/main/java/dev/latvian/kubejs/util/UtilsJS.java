@@ -30,13 +30,17 @@ import net.minecraft.world.IWorld;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
+import java.util.function.Function;
 
 /**
  * @author LatvianModder
@@ -75,7 +79,6 @@ public class UtilsJS
 
 		try
 		{
-
 			runnable.run();
 		}
 		catch (Exception ex)
@@ -507,5 +510,19 @@ public class UtilsJS
 	public static String getPath(Object o)
 	{
 		return getID(o).getPath();
+	}
+
+	public static <T extends IForgeRegistryEntry<T>> Function<ResourceLocation, Optional<T>> valueGetter(IForgeRegistry<T> registry, @Nullable T def)
+	{
+		return id -> {
+			T value = registry.getValue(id);
+
+			if (value != null && value != def)
+			{
+				return Optional.of(value);
+			}
+
+			return Optional.empty();
+		};
 	}
 }

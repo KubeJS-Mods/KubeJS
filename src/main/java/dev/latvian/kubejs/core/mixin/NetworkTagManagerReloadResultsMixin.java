@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.core.mixin;
 
-import dev.latvian.kubejs.core.KubeJSCore;
+import dev.latvian.kubejs.core.NetworkTagManagerReloadResultsKJS;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
@@ -19,11 +19,11 @@ import java.util.Map;
  * @author LatvianModder
  */
 @Mixin(NetworkTagManager.ReloadResults.class)
-public abstract class NetworkTagManagerReloadResultsMixin<T>
+public abstract class NetworkTagManagerReloadResultsMixin<T> implements NetworkTagManagerReloadResultsKJS
 {
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void customTags(Map<ResourceLocation, Tag.Builder<Block>> blocks, Map<ResourceLocation, Tag.Builder<Item>> items, Map<ResourceLocation, Tag.Builder<Fluid>> fluids, Map<ResourceLocation, Tag.Builder<EntityType<?>>> entityTypes, CallbackInfo ci)
 	{
-		KubeJSCore.customTags(blocks, items, fluids, entityTypes);
+		customTagsKJS(blocks, items, fluids, entityTypes);
 	}
 }

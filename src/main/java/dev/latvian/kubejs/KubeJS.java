@@ -76,6 +76,7 @@ public class KubeJS
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadComplete);
 
+		new KubeJSOtherEventHandler().init();
 		new KubeJSServerEventHandler().init();
 		new KubeJSWorldEventHandler().init();
 		new KubeJSPlayerEventHandler().init();

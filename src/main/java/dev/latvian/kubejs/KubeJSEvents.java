@@ -76,4 +76,6 @@ public class KubeJSEvents
 	public static final String FLUID_TAGS = "fluid.tags";
 
 	public static final String ENTITY_TYPE_TAGS = "entity_type.tags";
+
+	public static final String SOUND_REGISTRY = "sound.registry";
 }

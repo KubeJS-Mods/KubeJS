@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.core.mixin;
 
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.core.KubeJSCore;
 import dev.latvian.kubejs.core.RecipeManagerKJS;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
@@ -26,7 +25,7 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS
 	@Inject(method = "apply", at = @At("HEAD"), cancellable = true)
 	private void customRecipesHead(Map<ResourceLocation, JsonObject> map, IResourceManager resourceManager, IProfiler profiler, CallbackInfo ci)
 	{
-		KubeJSCore.customRecipes((RecipeManager) (Object) this, map);
+		customRecipesKJS(map);
 		ci.cancel();
 	}
 
