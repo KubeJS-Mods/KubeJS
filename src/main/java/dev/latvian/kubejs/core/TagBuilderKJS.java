@@ -9,5 +9,5 @@ import java.util.Set;
  */
 public interface TagBuilderKJS<T>
 {
-	Set<Tag.ITagEntry<T>> getKJSEntries();
+	Set<Tag.ITagEntry<T>> getEntriesKJS();
 }

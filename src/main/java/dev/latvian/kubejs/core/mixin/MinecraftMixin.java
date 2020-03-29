@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.core.mixin;
 
-import dev.latvian.kubejs.client.ClientWrapper;
+import dev.latvian.kubejs.client.PackOverrides;
 import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -13,12 +13,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Minecraft.class)
 public abstract class MinecraftMixin
 {
-	@Inject(method = "func_230149_ax_", at = @At("RETURN"), remap = false, cancellable = true)
+	@Inject(method = "func_230149_ax_", at = @At("HEAD"), remap = false, cancellable = true)
 	private void getWindowTitle(CallbackInfoReturnable<String> ci)
 	{
-		if (!ClientWrapper.title.isEmpty())
+		String s = PackOverrides.get((Minecraft) (Object) this).getTitle();
+
+		if (!s.isEmpty())
 		{
-			ci.setReturnValue(ClientWrapper.title);
+			ci.setReturnValue(s);
 		}
 	}
 }

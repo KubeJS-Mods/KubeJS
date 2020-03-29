@@ -6,18 +6,14 @@ import dev.latvian.kubejs.world.ClientWorldJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.InputMappings;
-import net.minecraftforge.fml.loading.FMLPaths;
 
 import javax.annotation.Nullable;
-import java.io.InputStream;
-import java.nio.file.Files;
 
 /**
  * @author LatvianModder
  */
 public class ClientWrapper
 {
-	public static String title = "";
 	public static boolean showTagNames = true;
 	public static boolean disableRecipeBook = false;
 	public static boolean exportAtlases = false;
@@ -58,26 +54,16 @@ public class ClientWrapper
 
 	public void setTitle(String t)
 	{
-		title = t;
+		PackOverrides.get(getMinecraft()).setTitle(t);
 		getMinecraft().func_230150_b_();
 	}
 
 	public void setIcon(String icon16, String icon32)
 	{
-		try (InputStream stream16 = Files.newInputStream(FMLPaths.GAMEDIR.get().resolve(icon16));
-			 InputStream stream32 = Files.newInputStream(FMLPaths.GAMEDIR.get().resolve(icon32)))
-		{
-			Minecraft.getInstance().getMainWindow().setWindowIcon(stream16, stream32);
-		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
-		}
 	}
 
 	public void setIcon(String icon)
 	{
-		setIcon(icon, icon);
 	}
 
 	public String getCurrentWorldName()

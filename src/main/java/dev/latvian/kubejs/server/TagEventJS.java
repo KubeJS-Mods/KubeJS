@@ -31,7 +31,7 @@ public class TagEventJS<T> extends ServerEventJS
 			event = e;
 			id = i;
 			tag = t;
-			entries = ((TagBuilderKJS<T>) tag).getKJSEntries();
+			entries = ((TagBuilderKJS<T>) tag).getEntriesKJS();
 		}
 
 		public TagWrapper<T> add(Object ids)
