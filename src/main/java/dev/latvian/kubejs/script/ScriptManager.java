@@ -69,7 +69,8 @@ public class ScriptManager
 
 		for (ScriptPack pack : packs.values())
 		{
-			pack.engine = new NashornScriptEngineFactory().getScriptEngine();
+			pack.engine = new NashornScriptEngineFactory().getScriptEngine(s -> false);
+
 			ScriptContext context = pack.engine.getContext();
 
 			for (String s : BLOCKED_FUNCTIONS)
