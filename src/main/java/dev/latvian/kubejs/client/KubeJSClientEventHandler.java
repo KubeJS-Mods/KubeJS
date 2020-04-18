@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.block.BlockJS;
 import dev.latvian.kubejs.core.ImageButtonKJS;
+import dev.latvian.kubejs.item.BlockItemJS;
 import dev.latvian.kubejs.item.ItemJS;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.script.ScriptType;
@@ -326,6 +327,14 @@ public class KubeJSClientEventHandler
 	private void itemColors(ColorHandlerEvent.Item event)
 	{
 		for (ItemJS item : ItemJS.KUBEJS_ITEMS.values())
+		{
+			if (!item.properties.color.isEmpty())
+			{
+				event.getItemColors().register((stack, index) -> item.properties.color.get(index), item);
+			}
+		}
+
+		for (BlockItemJS item : BlockItemJS.KUBEJS_BLOCK_ITEMS.values())
 		{
 			if (!item.properties.color.isEmpty())
 			{
