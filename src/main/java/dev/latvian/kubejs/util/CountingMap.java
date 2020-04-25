@@ -24,7 +24,7 @@ public class CountingMap
 			value = v;
 		}
 
-		public Entry(Object2LongOpenHashMap.Entry entry)
+		public Entry(Object2LongOpenHashMap.Entry<Object> entry)
 		{
 			key = entry.getKey();
 			value = entry.getLongValue();

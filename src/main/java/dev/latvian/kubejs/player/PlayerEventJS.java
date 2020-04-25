@@ -41,9 +41,9 @@ public abstract class PlayerEventJS extends LivingEntityEventJS
 	{
 		if (ModList.get().isLoaded("gamestages"))
 		{
-			if (getPlayer() != null)
+			if (getPlayer() instanceof ServerPlayerJS)
 			{
-				GameStageKJSHelper.addStage(getPlayer().minecraftPlayer, stage);
+				GameStageKJSHelper.addStage(((ServerPlayerJS) getPlayer()).minecraftPlayer, stage);
 			}
 		}
 		else
@@ -56,9 +56,9 @@ public abstract class PlayerEventJS extends LivingEntityEventJS
 	{
 		if (ModList.get().isLoaded("gamestages"))
 		{
-			if (getPlayer() != null)
+			if (getPlayer() instanceof ServerPlayerJS)
 			{
-				GameStageKJSHelper.removeStage(getPlayer().minecraftPlayer, stage);
+				GameStageKJSHelper.removeStage(((ServerPlayerJS) getPlayer()).minecraftPlayer, stage);
 			}
 		}
 		else
