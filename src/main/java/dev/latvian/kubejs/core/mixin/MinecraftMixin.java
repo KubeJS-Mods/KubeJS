@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.core.mixin;
 
-import dev.latvian.kubejs.client.PackOverrides;
+import dev.latvian.kubejs.client.ClientProperties;
 import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,7 +16,7 @@ public abstract class MinecraftMixin
 	@Inject(method = "func_230149_ax_", at = @At("HEAD"), remap = false, cancellable = true)
 	private void getWindowTitle(CallbackInfoReturnable<String> ci)
 	{
-		String s = PackOverrides.get((Minecraft) (Object) this).getTitle();
+		String s = ClientProperties.get().title;
 
 		if (!s.isEmpty())
 		{

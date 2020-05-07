@@ -107,7 +107,7 @@ public class KubeJSClientEventHandler
 
 	private void itemTooltip(ItemTooltipEvent event)
 	{
-		if (ClientWrapper.showTagNames && Minecraft.getInstance().gameSettings.advancedItemTooltips && Screen.hasShiftDown())
+		if (ClientProperties.get().showTagNames && Minecraft.getInstance().gameSettings.advancedItemTooltips && Screen.hasShiftDown())
 		{
 			for (ResourceLocation tag : event.getItemStack().getItem().getTags())
 			{
@@ -311,7 +311,7 @@ public class KubeJSClientEventHandler
 
 	private void guiPostInit(GuiScreenEvent.InitGuiEvent.Post event)
 	{
-		if (ClientWrapper.disableRecipeBook && event.getGui() instanceof IRecipeShownListener)
+		if (ClientProperties.get().disableRecipeBook && event.getGui() instanceof IRecipeShownListener)
 		{
 			for (Widget widget : event.getWidgetList())
 			{
@@ -356,7 +356,7 @@ public class KubeJSClientEventHandler
 
 	private void postAtlasStitch(TextureStitchEvent.Post event)
 	{
-		if (!ClientWrapper.exportAtlases)
+		if (!ClientProperties.get().exportAtlases)
 		{
 			return;
 		}

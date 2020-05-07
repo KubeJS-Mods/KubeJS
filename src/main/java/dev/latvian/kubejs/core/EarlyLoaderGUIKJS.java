@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.core;
 
-import dev.latvian.kubejs.client.ClientWrapper;
+import dev.latvian.kubejs.client.ClientProperties;
 
 /**
  * @author LatvianModder
@@ -9,11 +9,11 @@ public interface EarlyLoaderGUIKJS
 {
 	default float[] getNewMemoryColorKJS(float[] color)
 	{
-		return ClientWrapper.fmlMemoryColor == null ? color : ClientWrapper.fmlMemoryColor;
+		return ClientProperties.get().fmlMemoryColor == null ? color : ClientProperties.get().fmlMemoryColor;
 	}
 
 	default float[] getNewLogColorKJS(float[] color)
 	{
-		return ClientWrapper.fmlLogColor == null ? color : ClientWrapper.fmlLogColor;
+		return ClientProperties.get().fmlLogColor == null ? color : ClientProperties.get().fmlLogColor;
 	}
 }
