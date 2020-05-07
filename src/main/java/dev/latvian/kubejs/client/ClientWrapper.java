@@ -17,6 +17,12 @@ public class ClientWrapper
 	public static boolean showTagNames = true;
 	public static boolean disableRecipeBook = false;
 	public static boolean exportAtlases = false;
+	public static int backgroundColor = 0xFFFFFF;
+	public static int barColor = 0xE22837;
+	public static int barBackgroundColor = 0xFFFFFF;
+	public static int barBorderColor = 0x000000;
+	public static float[] fmlMemoryColor = null;
+	public static float[] fmlLogColor = null;
 
 	@MinecraftClass
 	public Minecraft getMinecraft()
@@ -58,14 +64,6 @@ public class ClientWrapper
 		getMinecraft().func_230150_b_();
 	}
 
-	public void setIcon(String icon16, String icon32)
-	{
-	}
-
-	public void setIcon(String icon)
-	{
-	}
-
 	public String getCurrentWorldName()
 	{
 		if (getMinecraft().getCurrentServerData() != null)
@@ -94,5 +92,41 @@ public class ClientWrapper
 	public boolean isKeyDown(int key)
 	{
 		return InputMappings.isKeyDown(getMinecraft().getMainWindow().getHandle(), key);
+	}
+
+	public void setBackgroundColor(int color)
+	{
+		backgroundColor = color;
+	}
+
+	public void setBarColor(int color)
+	{
+		barColor = color;
+	}
+
+	public void setBarBackgroundColor(int color)
+	{
+		barBackgroundColor = color;
+	}
+
+	public void setBarBorderColor(int color)
+	{
+		barBorderColor = color;
+	}
+
+	public void setFmlMemoryColor(int color)
+	{
+		fmlMemoryColor = new float[3];
+		fmlMemoryColor[0] = ((color >> 16) & 0xFF) / 255F;
+		fmlMemoryColor[1] = ((color >> 8) & 0xFF) / 255F;
+		fmlMemoryColor[2] = ((color >> 0) & 0xFF) / 255F;
+	}
+
+	public void setFmlLogColor(int color)
+	{
+		fmlLogColor = new float[3];
+		fmlLogColor[0] = ((color >> 16) & 0xFF) / 255F;
+		fmlLogColor[1] = ((color >> 8) & 0xFF) / 255F;
+		fmlLogColor[2] = ((color >> 0) & 0xFF) / 255F;
 	}
 }
