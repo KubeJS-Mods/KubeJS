@@ -16,4 +16,9 @@ public interface EarlyLoaderGUIKJS
 	{
 		return ClientProperties.get().fmlLogColor == null ? color : ClientProperties.get().fmlLogColor;
 	}
+
+	default float[] getBackgroundColorKJS()
+	{
+		return ClientProperties.get().backgroundColor3f;
+	}
 }

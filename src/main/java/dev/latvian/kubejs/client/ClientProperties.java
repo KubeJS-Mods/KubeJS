@@ -39,6 +39,7 @@ public class ClientProperties
 	public boolean disableRecipeBook;
 	public boolean exportAtlases;
 	public int backgroundColor;
+	public float[] backgroundColor3f;
 	public int barColor;
 	public int barBackgroundColor;
 	public int barBorderColor;
@@ -93,6 +94,7 @@ public class ClientProperties
 			disableRecipeBook = get("disableRecipeBook", false);
 			exportAtlases = get("exportAtlases", false);
 			backgroundColor = getColor("backgroundColor", 0xFFFFFF);
+			backgroundColor3f = getFloatColor(backgroundColor);
 			barColor = getColor("barColor", 0xE22837);
 			barBackgroundColor = getColor("barBackgroundColor", 0xFFFFFF);
 			barBorderColor = getColor("barBorderColor", 0x000000);
@@ -143,7 +145,7 @@ public class ClientProperties
 
 	private int getColor(String key, int def)
 	{
-		String s = get(key, "default");
+		String s = get(key, String.format("%06X", def & 0xFFFFFF));
 
 		if (s.isEmpty() || s.equals("default"))
 		{
@@ -161,6 +163,15 @@ public class ClientProperties
 		}
 	}
 
+	private float[] getFloatColor(int color)
+	{
+		float[] c = new float[3];
+		c[0] = ((color >> 16) & 0xFF) / 255F;
+		c[1] = ((color >> 8) & 0xFF) / 255F;
+		c[2] = ((color >> 0) & 0xFF) / 255F;
+		return c;
+	}
+
 	@Nullable
 	private float[] getFloatColor(String key)
 	{
@@ -173,12 +184,7 @@ public class ClientProperties
 
 		try
 		{
-			int color = Integer.decode(s);
-			float[] c = new float[3];
-			c[0] = ((color >> 16) & 0xFF) / 255F;
-			c[1] = ((color >> 8) & 0xFF) / 255F;
-			c[2] = ((color >> 0) & 0xFF) / 255F;
-			return c;
+			return getFloatColor(Integer.decode(s));
 		}
 		catch (Exception ex)
 		{

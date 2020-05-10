@@ -1,17 +1,13 @@
 package dev.latvian.kubejs.core.mixin;
 
-import dev.latvian.kubejs.client.ClientProperties;
 import dev.latvian.kubejs.core.EarlyLoaderGUIKJS;
 import net.minecraft.client.MainWindow;
 import net.minecraftforge.fml.client.EarlyLoaderGUI;
-import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * @author LatvianModder
@@ -35,20 +31,21 @@ public abstract class EarlyLoaderGUIMixin implements EarlyLoaderGUIKJS
 		return getNewLogColorKJS(color);
 	}
 
-	@Inject(method = "setupMatrix", remap = false, at = @At("RETURN"))
-	private void setupMatrix(CallbackInfo ci)
+	@ModifyArg(method = "renderTick", remap = false, at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;clearColor(FFFF)V"), index = 0)
+	private float backgroundRKJS(float c)
 	{
-		int w = window.getScaledWidth();
-		int h = window.getScaledHeight();
+		return getBackgroundColorKJS()[0];
+	}
 
-		int color = ClientProperties.get().backgroundColor;
+	@ModifyArg(method = "renderTick", remap = false, at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;clearColor(FFFF)V"), index = 1)
+	private float backgroundGKJS(float c)
+	{
+		return getBackgroundColorKJS()[1];
+	}
 
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glColor4f((color >> 16 & 255) / 255F, (color >> 8 & 255) / 255F, (color & 255) / 255F, 1F);
-		GL11.glVertex2f(0F, 0F);
-		GL11.glVertex2f(w, 0F);
-		GL11.glVertex2f(w, h);
-		GL11.glVertex2f(0F, h);
-		GL11.glEnd();
+	@ModifyArg(method = "renderTick", remap = false, at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;clearColor(FFFF)V"), index = 2)
+	private float backgroundBKJS(float c)
+	{
+		return getBackgroundColorKJS()[2];
 	}
 }
