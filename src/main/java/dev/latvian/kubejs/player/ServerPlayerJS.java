@@ -15,6 +15,7 @@ import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.play.server.SHeldItemChangePacket;
 import net.minecraft.server.management.ProfileBanEntry;
+import net.minecraft.world.GameType;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
@@ -58,6 +59,32 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayerEntity>
 	{
 		return ((PlayerInteractionManagerKJS) minecraftPlayer.interactionManager).isDestroyingBlockKJS();
 	}
+
+	public void setCreativeMode(boolean mode)
+	{
+		minecraftPlayer.interactionManager.setGameType(mode ? GameType.CREATIVE : GameType.SURVIVAL);
+	}
+
+	public void setGameMode(String mode)
+	{
+		if (mode.equals("survival"))
+		{
+			minecraftPlayer.interactionManager.setGameType(GameType.SURVIVAL);
+		}
+		else if (mode.equals("creative"))
+		{
+			minecraftPlayer.interactionManager.setGameType(GameType.CREATIVE);
+		}
+		else if (mode.equals("adventure"))
+		{
+			minecraftPlayer.interactionManager.setGameType(GameType.ADVENTURE);
+		}
+		else if (mode.equals("spectator"))
+		{
+			minecraftPlayer.interactionManager.setGameType(GameType.SPECTATOR);
+		}
+	}
+
 
 	public boolean isOP()
 	{
