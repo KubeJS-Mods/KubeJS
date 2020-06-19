@@ -8,9 +8,12 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -33,6 +36,8 @@ public class BlockBuilder
 	public final JsonObject textures;
 	public String model;
 	public Consumer<ItemBuilder> itemBuilder;
+	public List<VoxelShape> customShape;
+	public boolean notSolid;
 
 	public BlockBuilder(String i, Consumer<BlockBuilder> c)
 	{
@@ -53,6 +58,8 @@ public class BlockBuilder
 		texture(id.getNamespace() + ":block/" + id.getPath());
 		model = id.getNamespace() + ":block/" + id.getPath();
 		itemBuilder = item -> {};
+		customShape = new ArrayList<>();
+		notSolid = false;
 	}
 
 	public BlockBuilder material(MaterialJS m)
@@ -151,6 +158,18 @@ public class BlockBuilder
 		return item(null);
 	}
 
+	public BlockBuilder shapeCube(double x0, double y0, double z0, double x1, double y1, double z1)
+	{
+		customShape.add(Block.makeCuboidShape(x0, y0, z0, x1, y1, z1));
+		return this;
+	}
+
+	public BlockBuilder notSolid()
+	{
+		notSolid = true;
+		return this;
+	}
+
 	public void add()
 	{
 		callback.accept(this);
@@ -180,6 +199,11 @@ public class BlockBuilder
 		if (harvestLevel >= 0)
 		{
 			properties.harvestLevel(harvestLevel);
+		}
+
+		if (notSolid)
+		{
+			properties.notSolid();
 		}
 
 		return properties;

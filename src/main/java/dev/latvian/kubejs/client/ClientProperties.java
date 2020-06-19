@@ -145,7 +145,7 @@ public class ClientProperties
 
 	private int getColor(String key, int def)
 	{
-		String s = get(key, String.format("%06X", def & 0xFFFFFF));
+		String s = get(key, String.format("#%06X", def & 0xFFFFFF));
 
 		if (s.isEmpty() || s.equals("default"))
 		{
@@ -154,7 +154,7 @@ public class ClientProperties
 
 		try
 		{
-			return 0xFFFFFF & Integer.decode(s);
+			return 0xFFFFFF & Integer.decode(s.startsWith("#") ? s : ("#" + s));
 		}
 		catch (Exception ex)
 		{
