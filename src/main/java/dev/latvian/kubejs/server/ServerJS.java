@@ -1,10 +1,7 @@
 package dev.latvian.kubejs.server;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.MinecraftClass;
-import dev.latvian.kubejs.block.BlockJS;
 import dev.latvian.kubejs.core.SimpleReloadableResourceManagerKJS;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageSendDataFromServer;
@@ -397,29 +394,6 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 		new DataPackEventJS(virtualDataPackFirst).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_FIRST);
 		new DataPackEventJS(virtualDataPackLast).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_LAST);
-
-		for (BlockJS block : BlockJS.KUBEJS_BLOCKS.values())
-		{
-			JsonObject json = new JsonObject();
-			json.addProperty("type", "minecraft:block");
-			JsonArray pools = new JsonArray();
-			JsonObject pool = new JsonObject();
-			pool.addProperty("rolls", 1);
-			JsonArray entries = new JsonArray();
-			JsonObject entry = new JsonObject();
-			entry.addProperty("type", "minecraft:item");
-			entry.addProperty("name", block.properties.id.getNamespace() + ":" + block.properties.id.getPath());
-			entries.add(entry);
-			pool.add("entries", entries);
-			JsonArray conditions = new JsonArray();
-			JsonObject condition = new JsonObject();
-			condition.addProperty("condition", "minecraft:survives_explosion");
-			conditions.add(condition);
-			pool.add("conditions", conditions);
-			pools.add(pool);
-			json.add("pools", pools);
-			virtualDataPackFirst.addData(new ResourceLocation(block.properties.id.getNamespace(), "loot_tables/blocks/" + block.properties.id.getPath() + ".json"), json.toString());
-		}
 
 		resourceManager.addResourcePack(virtualDataPackFirst);
 		resourceManager.addResourcePack(virtualDataPackLast);
