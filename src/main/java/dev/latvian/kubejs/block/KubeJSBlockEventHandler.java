@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.block;
 
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.item.ItemStackJS;
-import dev.latvian.kubejs.script.ScriptType;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -27,7 +27,12 @@ public class KubeJSBlockEventHandler
 
 	private void registry(RegistryEvent.Register<Block> event)
 	{
-		new BlockRegistryEventJS(event.getRegistry()).post(ScriptType.STARTUP, KubeJSEvents.BLOCK_REGISTRY);
+		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values())
+		{
+			builder.block = new BlockJS(builder);
+			builder.block.setRegistryName(builder.id);
+			event.getRegistry().register(builder.block);
+		}
 	}
 
 	private void rightClick(PlayerInteractEvent.RightClickBlock event)

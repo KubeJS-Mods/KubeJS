@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.util.BuilderBase;
 import dev.latvian.kubejs.util.UtilsJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.item.Item;
@@ -21,10 +21,8 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class ItemBuilder
+public class ItemBuilder extends BuilderBase
 {
-	public final ResourceLocation id;
-	private final Consumer<ItemBuilder> callback;
 	public int maxStackSize;
 	public int maxDamage;
 	public ResourceLocation containerItem;
@@ -38,10 +36,11 @@ public class ItemBuilder
 	public String parentModel;
 	public FoodBuilder foodBuilder;
 
-	public ItemBuilder(String i, Consumer<ItemBuilder> c)
+	public ItemJS item;
+
+	public ItemBuilder(String i)
 	{
-		id = UtilsJS.getID(KubeJS.appendModId(i));
-		callback = c;
+		super(i);
 		maxStackSize = 64;
 		maxDamage = 0;
 		containerItem = UtilsJS.NULL_ID;
@@ -55,6 +54,13 @@ public class ItemBuilder
 		texture = id.getNamespace() + ":item/" + id.getPath();
 		parentModel = "item/generated";
 		foodBuilder = null;
+		displayName = "";
+	}
+
+	@Override
+	public String getType()
+	{
+		return "item";
 	}
 
 	public ItemBuilder maxStackSize(int v)
@@ -141,11 +147,6 @@ public class ItemBuilder
 		foodBuilder = new FoodBuilder();
 		b.accept(foodBuilder);
 		return this;
-	}
-
-	public void add()
-	{
-		callback.accept(this);
 	}
 
 	public Item.Properties createItemProperties()

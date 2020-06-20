@@ -1,13 +1,10 @@
 package dev.latvian.kubejs.block;
 
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.item.ItemBuilder;
-import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.BuilderBase;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraftforge.common.ToolType;
 
@@ -19,10 +16,8 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class BlockBuilder
+public class BlockBuilder extends BuilderBase
 {
-	public final ResourceLocation id;
-	private final Consumer<BlockBuilder> callback;
 	public MaterialJS material;
 	public float hardness;
 	public float resistance;
@@ -35,14 +30,15 @@ public class BlockBuilder
 	public Int2IntOpenHashMap color;
 	public final JsonObject textures;
 	public String model;
-	public Consumer<ItemBuilder> itemBuilder;
+	public BlockItemBuilder itemBuilder;
 	public List<VoxelShape> customShape;
 	public boolean notSolid;
 
-	public BlockBuilder(String i, Consumer<BlockBuilder> c)
+	public BlockJS block;
+
+	public BlockBuilder(String i)
 	{
-		id = UtilsJS.getID(KubeJS.appendModId(i));
-		callback = c;
+		super(i);
 		material = MaterialListJS.INSTANCE.map.get("wood");
 		hardness = 0.5F;
 		resistance = -1F;
@@ -57,9 +53,17 @@ public class BlockBuilder
 		textures = new JsonObject();
 		texture(id.getNamespace() + ":block/" + id.getPath());
 		model = id.getNamespace() + ":block/" + id.getPath();
-		itemBuilder = item -> {};
+		itemBuilder = new BlockItemBuilder(i);
+		itemBuilder.blockBuilder = this;
+		itemBuilder.parentModel = model;
 		customShape = new ArrayList<>();
 		notSolid = false;
+	}
+
+	@Override
+	public String getType()
+	{
+		return "block";
 	}
 
 	public BlockBuilder material(MaterialJS m)
@@ -144,12 +148,21 @@ public class BlockBuilder
 	public BlockBuilder model(String m)
 	{
 		model = m;
+		itemBuilder.parentModel = model;
 		return this;
 	}
 
-	public BlockBuilder item(@Nullable Consumer<ItemBuilder> i)
+	public BlockBuilder item(@Nullable Consumer<BlockItemBuilder> i)
 	{
-		itemBuilder = i;
+		if (i == null)
+		{
+			itemBuilder = null;
+		}
+		else
+		{
+			i.accept(itemBuilder);
+		}
+
 		return this;
 	}
 
@@ -168,11 +181,6 @@ public class BlockBuilder
 	{
 		notSolid = true;
 		return this;
-	}
-
-	public void add()
-	{
-		callback.accept(this);
 	}
 
 	public Block.Properties createProperties()

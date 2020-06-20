@@ -1,28 +1,20 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.block.BlockJS;
+import dev.latvian.kubejs.block.BlockItemBuilder;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author LatvianModder
  */
 public class BlockItemJS extends BlockItem
 {
-	public static final Map<ResourceLocation, BlockItemJS> KUBEJS_BLOCK_ITEMS = new HashMap<>();
+	public final BlockItemBuilder properties;
 
-	public final ItemBuilder properties;
-	public final BlockJS blockJS;
-
-	public BlockItemJS(BlockJS b, ItemBuilder p)
+	public BlockItemJS(BlockItemBuilder p)
 	{
-		super(b, p.createItemProperties());
+		super(p.blockBuilder.block, p.createItemProperties());
 		properties = p;
-		blockJS = b;
 	}
 
 	@Override

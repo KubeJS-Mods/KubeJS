@@ -1,10 +1,14 @@
 package dev.latvian.kubejs;
 
+import dev.latvian.kubejs.block.BlockRegistryEventJS;
 import dev.latvian.kubejs.block.KubeJSBlockEventHandler;
 import dev.latvian.kubejs.client.KubeJSClient;
 import dev.latvian.kubejs.entity.KubeJSEntityEventHandler;
 import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.fluid.FluidRegistryEventJS;
+import dev.latvian.kubejs.fluid.KubeJSFluidEventHandler;
 import dev.latvian.kubejs.integration.IntegrationManager;
+import dev.latvian.kubejs.item.ItemRegistryEventJS;
 import dev.latvian.kubejs.item.KubeJSItemEventHandler;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.player.KubeJSPlayerEventHandler;
@@ -84,6 +88,7 @@ public class KubeJS
 		new KubeJSBlockEventHandler().init();
 		new KubeJSItemEventHandler().init();
 		new KubeJSRecipeEventHandler().init();
+		new KubeJSFluidEventHandler().init();
 
 		File folder = getGameDirectory().resolve("kubejs").toFile();
 
@@ -143,6 +148,10 @@ public class KubeJS
 		}
 
 		startupScriptManager.load();
+
+		new BlockRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.BLOCK_REGISTRY);
+		new ItemRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.ITEM_REGISTRY);
+		new FluidRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.FLUID_REGISTRY);
 	}
 
 	public static String appendModId(String id)

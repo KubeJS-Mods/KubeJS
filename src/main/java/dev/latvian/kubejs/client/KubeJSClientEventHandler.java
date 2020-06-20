@@ -2,10 +2,11 @@ package dev.latvian.kubejs.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.block.BlockJS;
+import dev.latvian.kubejs.KubeJSObjects;
+import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.core.ImageButtonKJS;
-import dev.latvian.kubejs.item.BlockItemJS;
-import dev.latvian.kubejs.item.ItemJS;
+import dev.latvian.kubejs.fluid.FluidBuilder;
+import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.text.Text;
@@ -78,18 +79,18 @@ public class KubeJSClientEventHandler
 
 	private void setup(FMLClientSetupEvent event)
 	{
-		for (BlockJS block : BlockJS.KUBEJS_BLOCKS.values())
+		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values())
 		{
-			switch (block.properties.renderType)
+			switch (builder.renderType)
 			{
 				case "cutout":
-					RenderTypeLookup.setRenderLayer(block, RenderType.getCutout());
+					RenderTypeLookup.setRenderLayer(builder.block, RenderType.getCutout());
 					break;
 				case "cutout_mipped":
-					RenderTypeLookup.setRenderLayer(block, RenderType.getCutoutMipped());
+					RenderTypeLookup.setRenderLayer(builder.block, RenderType.getCutoutMipped());
 					break;
 				case "translucent":
-					RenderTypeLookup.setRenderLayer(block, RenderType.getTranslucent());
+					RenderTypeLookup.setRenderLayer(builder.block, RenderType.getTranslucent());
 					break;
 				//default:
 				//	RenderTypeLookup.setRenderLayer(block, RenderType.getSolid());
@@ -326,30 +327,38 @@ public class KubeJSClientEventHandler
 
 	private void itemColors(ColorHandlerEvent.Item event)
 	{
-		for (ItemJS item : ItemJS.KUBEJS_ITEMS.values())
+		for (ItemBuilder builder : KubeJSObjects.ITEMS.values())
 		{
-			if (!item.properties.color.isEmpty())
+			if (!builder.color.isEmpty())
 			{
-				event.getItemColors().register((stack, index) -> item.properties.color.get(index), item);
+				event.getItemColors().register((stack, index) -> builder.color.get(index), builder.item);
 			}
 		}
 
-		for (BlockItemJS item : BlockItemJS.KUBEJS_BLOCK_ITEMS.values())
+		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values())
 		{
-			if (!item.properties.color.isEmpty())
+			if (builder.itemBuilder != null && !builder.color.isEmpty())
 			{
-				event.getItemColors().register((stack, index) -> item.properties.color.get(index), item);
+				event.getItemColors().register((stack, index) -> builder.color.get(index), builder.itemBuilder.blockItem);
+			}
+		}
+
+		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values())
+		{
+			if (builder.fluid.getAttributes().getColor() != 0xFFFFFFFF)
+			{
+				event.getItemColors().register((stack, index) -> index == 1 ? builder.fluid.getAttributes().getColor() : 0xFFFFFFFF, builder.bucketItem);
 			}
 		}
 	}
 
 	private void blockColors(ColorHandlerEvent.Block event)
 	{
-		for (BlockJS block : BlockJS.KUBEJS_BLOCKS.values())
+		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values())
 		{
-			if (!block.properties.color.isEmpty())
+			if (!builder.color.isEmpty())
 			{
-				event.getBlockColors().register((state, world, pos, index) -> block.properties.color.get(index), block);
+				event.getBlockColors().register((state, world, pos, index) -> builder.color.get(index), builder.block);
 			}
 		}
 	}
