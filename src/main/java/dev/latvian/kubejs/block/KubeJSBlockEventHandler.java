@@ -32,10 +32,13 @@ public class KubeJSBlockEventHandler
 	{
 		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values())
 		{
+			BlockBuilder.current = builder;
 			builder.block = new BlockJS(builder);
 			builder.block.setRegistryName(builder.id);
 			event.getRegistry().register(builder.block);
 		}
+
+		BlockBuilder.current = null;
 
 		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values())
 		{

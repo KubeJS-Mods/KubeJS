@@ -615,7 +615,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return Objects.equals(MapJS.nbt(nbt), nbt1);
 	}
 
-	public int getHarvestLevel(ToolType tool, @Nullable PlayerJS player, @Nullable BlockContainerJS block)
+	public int getHarvestLevel(ToolType tool, @Nullable PlayerJS<?> player, @Nullable BlockContainerJS block)
 	{
 		ItemStack stack = getItemStack();
 		return stack.getItem().getHarvestLevel(stack, tool, player == null ? null : player.minecraftPlayer, block == null ? null : block.getBlockState());

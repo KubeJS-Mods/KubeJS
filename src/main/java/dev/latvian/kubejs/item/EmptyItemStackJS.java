@@ -203,7 +203,7 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public int getHarvestLevel(ToolType tool, @Nullable PlayerJS player, @Nullable BlockContainerJS block)
+	public int getHarvestLevel(ToolType tool, @Nullable PlayerJS<?> player, @Nullable BlockContainerJS block)
 	{
 		return -1;
 	}

@@ -18,6 +18,8 @@ import java.util.function.Consumer;
  */
 public class BlockBuilder extends BuilderBase
 {
+	public static BlockBuilder current;
+
 	public MaterialJS material;
 	public float hardness;
 	public float resistance;
@@ -33,6 +35,7 @@ public class BlockBuilder extends BuilderBase
 	public BlockItemBuilder itemBuilder;
 	public List<VoxelShape> customShape;
 	public boolean notSolid;
+	public boolean waterlogged;
 
 	public BlockJS block;
 
@@ -58,6 +61,7 @@ public class BlockBuilder extends BuilderBase
 		itemBuilder.parentModel = model;
 		customShape = new ArrayList<>();
 		notSolid = false;
+		waterlogged = false;
 	}
 
 	@Override
@@ -180,6 +184,12 @@ public class BlockBuilder extends BuilderBase
 	public BlockBuilder notSolid()
 	{
 		notSolid = true;
+		return this;
+	}
+
+	public BlockBuilder waterlogged()
+	{
+		waterlogged = true;
 		return this;
 	}
 
