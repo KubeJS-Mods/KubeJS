@@ -248,9 +248,16 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 	@Override
 	default JsonElement toJson()
 	{
+		Set<ItemStackJS> set = getStacks();
+
+		if (set.size() == 1)
+		{
+			return set.iterator().next().toJson();
+		}
+
 		JsonArray array = new JsonArray();
 
-		for (ItemStackJS stackJS : getStacks())
+		for (ItemStackJS stackJS : set)
 		{
 			array.add(stackJS.toJson());
 		}

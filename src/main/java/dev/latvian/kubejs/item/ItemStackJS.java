@@ -631,6 +631,13 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	{
 		JsonObject json = new JsonObject();
 		json.addProperty("item", getId().toString());
+
+		if (!getNbt().isEmpty())
+		{
+			json.addProperty("type", "forge:nbt");
+			json.addProperty("nbt", getNbt().toNBT().toString());
+		}
+
 		return json;
 	}
 
