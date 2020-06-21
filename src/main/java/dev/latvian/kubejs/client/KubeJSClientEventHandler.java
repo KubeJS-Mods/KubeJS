@@ -345,9 +345,9 @@ public class KubeJSClientEventHandler
 
 		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values())
 		{
-			if (builder.fluid.getAttributes().getColor() != 0xFFFFFFFF)
+			if (builder.stillFluid.getAttributes().getColor() != 0xFFFFFFFF)
 			{
-				event.getItemColors().register((stack, index) -> index == 1 ? builder.fluid.getAttributes().getColor() : 0xFFFFFFFF, builder.bucketItem);
+				event.getItemColors().register((stack, index) -> index == 1 ? builder.stillFluid.getAttributes().getColor() : 0xFFFFFFFF, builder.bucketItem);
 			}
 		}
 	}

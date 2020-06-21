@@ -12,7 +12,7 @@ public class BucketItemJS extends BucketItem
 
 	public BucketItemJS(FluidBuilder b)
 	{
-		super(() -> b.fluid, new Properties().maxStackSize(1).group(ItemGroup.MISC));
+		super(() -> b.stillFluid, new Properties().maxStackSize(1).group(ItemGroup.MISC));
 		properties = b;
 	}
 }

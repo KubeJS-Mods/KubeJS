@@ -246,10 +246,23 @@ public class KubeJSResourcePack implements IResourcePack
 
 				return true;
 			}
+			else
+			{
+				FluidBuilder fluidBuilder = KubeJSObjects.FLUIDS.get(new ResourceLocation(namespace, path.substring(13)));
+
+				if (fluidBuilder != null)
+				{
+					JsonObject textures = new JsonObject();
+					textures.addProperty("particle", fluidBuilder.stillTexture.toString());
+					json.add("textures", textures);
+					return true;
+				}
+			}
 		}
 		else if (path.startsWith("blockstates/"))
 		{
-			BlockBuilder builder = KubeJSObjects.BLOCKS.get(new ResourceLocation(namespace, path.substring(12)));
+			ResourceLocation id = new ResourceLocation(namespace, path.substring(12));
+			BlockBuilder builder = KubeJSObjects.BLOCKS.get(id);
 
 			if (builder != null)
 			{
@@ -263,6 +276,20 @@ public class KubeJSResourcePack implements IResourcePack
 				}
 
 				return true;
+			}
+			else
+			{
+				FluidBuilder fluidBuilder = KubeJSObjects.FLUIDS.get(id);
+
+				if (fluidBuilder != null)
+				{
+					JsonObject variants = new JsonObject();
+					JsonObject model = new JsonObject();
+					model.addProperty("model", namespace + ":block/" + fluidBuilder.id.getPath());
+					variants.add("", model);
+					json.add("variants", variants);
+					return true;
+				}
 			}
 		}
 

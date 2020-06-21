@@ -3,22 +3,19 @@ package dev.latvian.kubejs.fluid;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.util.BuilderBase;
 import dev.latvian.kubejs.util.UtilsJS;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.Item;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.item.Rarity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
-
-import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
  */
 public class FluidBuilder extends BuilderBase
 {
-	private ResourceLocation stillTexture = new ResourceLocation("block/lava_still");
-	private ResourceLocation flowingTexture = new ResourceLocation("block/lava_still");
+	public ResourceLocation stillTexture;
+	public ResourceLocation flowingTexture;
 	private int color = 0xFFFFFFFF;
 	private int luminosity = 0;
 	private int density = 1000;
@@ -27,8 +24,10 @@ public class FluidBuilder extends BuilderBase
 	private boolean isGaseous;
 	private Rarity rarity = Rarity.COMMON;
 
-	public FluidJS fluid;
+	public ForgeFlowingFluid.Source stillFluid;
+	public ForgeFlowingFluid.Flowing flowingFluid;
 	public BucketItemJS bucketItem;
+	public FlowingFluidBlock block;
 
 	public FluidBuilder(String i)
 	{
@@ -66,19 +65,14 @@ public class FluidBuilder extends BuilderBase
 		return this;
 	}
 
-	public FluidBuilder texture(Object id)
-	{
-		return textureStill(id).textureFlowing(id);
-	}
-
 	public FluidBuilder textureThick(int color)
 	{
-		return texture(KubeJS.MOD_ID + ":fluid/fluid_thick").color(color);
+		return textureStill(KubeJS.MOD_ID + ":fluid/fluid_thick").textureFlowing(KubeJS.MOD_ID + ":fluid/fluid_thick_flow").color(color);
 	}
 
 	public FluidBuilder textureThin(int color)
 	{
-		return texture(KubeJS.MOD_ID + ":fluid/fluid_thin").color(color);
+		return textureStill(KubeJS.MOD_ID + ":fluid/fluid_thin").textureFlowing(KubeJS.MOD_ID + ":fluid/fluid_thin_flow").color(color);
 	}
 
 	public FluidBuilder luminosity(int luminosity)
@@ -117,7 +111,7 @@ public class FluidBuilder extends BuilderBase
 		return this;
 	}
 
-	public ForgeFlowingFluid.Properties createProperties(Supplier<Fluid> fluid, Supplier<Item> bucket)
+	public ForgeFlowingFluid.Properties createProperties()
 	{
 		FluidAttributes.Builder builder = FluidAttributes.builder(
 				stillTexture,
@@ -136,6 +130,6 @@ public class FluidBuilder extends BuilderBase
 			builder.gaseous();
 		}
 
-		return new ForgeFlowingFluid.Properties(fluid, fluid, builder).bucket(bucket);
+		return new ForgeFlowingFluid.Properties(() -> stillFluid, () -> flowingFluid, builder).bucket(() -> bucketItem).block(() -> block);
 	}
 }
