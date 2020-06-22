@@ -67,12 +67,6 @@ public class ModIngredientJS implements IngredientJS
 	}
 
 	@Override
-	public boolean isEmpty()
-	{
-		return getFirst().isEmpty();
-	}
-
-	@Override
 	public String toString()
 	{
 		return "mod:" + mod;

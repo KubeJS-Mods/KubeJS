@@ -185,7 +185,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 
 	default boolean isEmpty()
 	{
-		return false;
+		return getFirst().isEmpty();
 	}
 
 	default Set<ItemStackJS> getStacks()

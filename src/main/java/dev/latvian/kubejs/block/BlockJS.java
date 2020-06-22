@@ -16,6 +16,8 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author LatvianModder
@@ -33,12 +35,13 @@ public class BlockJS extends Block
 
 		if (!properties.customShape.isEmpty())
 		{
-			shape = properties.customShape.get(0);
+			List<VoxelShape> s = new ArrayList<>(properties.customShape);
+			shape = s.get(0);
 
-			if (properties.customShape.size() > 1)
+			if (s.size() > 1)
 			{
-				properties.customShape.remove(0);
-				shape = VoxelShapes.or(shape, properties.customShape.toArray(new VoxelShape[0]));
+				s.remove(0);
+				shape = VoxelShapes.or(shape, s.toArray(new VoxelShape[0]));
 			}
 		}
 

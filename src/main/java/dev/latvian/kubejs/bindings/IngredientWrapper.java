@@ -7,10 +7,12 @@ import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAnyIngredientJS;
 import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
+import dev.latvian.kubejs.item.ingredient.RegexIngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.util.UtilsJS;
 
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
@@ -52,5 +54,15 @@ public class IngredientWrapper
 	public IngredientJS mod(String modId)
 	{
 		return new ModIngredientJS(modId);
+	}
+
+	public IngredientJS regex(Pattern pattern)
+	{
+		return new RegexIngredientJS(pattern);
+	}
+
+	public IngredientJS regex(String pattern)
+	{
+		return regex(Pattern.compile(pattern));
 	}
 }

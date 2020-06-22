@@ -50,6 +50,11 @@ public class UtilsWrapper
 		return UtilsJS.RANDOM;
 	}
 
+	public Random newRandom(long seed)
+	{
+		return new Random(seed);
+	}
+
 	public <T> List<T> emptyList()
 	{
 		return Collections.emptyList();
