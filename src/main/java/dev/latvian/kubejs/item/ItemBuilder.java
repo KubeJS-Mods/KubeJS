@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.item;
 
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.BuilderBase;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -8,7 +9,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
 import net.minecraft.item.Rarity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -25,7 +25,7 @@ public class ItemBuilder extends BuilderBase
 {
 	public int maxStackSize;
 	public int maxDamage;
-	public ResourceLocation containerItem;
+	public String containerItem;
 	public Map<ToolType, Integer> tools;
 	public Rarity rarity;
 	public boolean glow;
@@ -43,7 +43,7 @@ public class ItemBuilder extends BuilderBase
 		super(i);
 		maxStackSize = 64;
 		maxDamage = 0;
-		containerItem = UtilsJS.NULL_ID;
+		containerItem = "minecraft:air";
 		tools = new HashMap<>();
 		rarity = Rarity.COMMON;
 		glow = false;
@@ -80,7 +80,7 @@ public class ItemBuilder extends BuilderBase
 		return this;
 	}
 
-	public ItemBuilder containerItem(Object id)
+	public ItemBuilder containerItem(@ID String id)
 	{
 		containerItem = UtilsJS.getID(id);
 		return this;
@@ -163,7 +163,7 @@ public class ItemBuilder extends BuilderBase
 			properties.addToolType(entry.getKey(), entry.getValue());
 		}
 
-		Item item = containerItem == UtilsJS.NULL_ID ? null : ForgeRegistries.ITEMS.getValue(containerItem);
+		Item item = ForgeRegistries.ITEMS.getValue(UtilsJS.getMCID(containerItem));
 
 		if (item != null && item != Items.AIR)
 		{

@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.client;
 
-import dev.latvian.kubejs.MinecraftClass;
+import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.player.ClientPlayerJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import net.minecraft.client.Minecraft;

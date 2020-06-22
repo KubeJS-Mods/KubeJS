@@ -86,11 +86,11 @@ public abstract class FluidStackJS implements WrappedJSObjectChangeListener<MapJ
 		return stack;
 	}
 
-	public abstract ResourceLocation getId();
+	public abstract String getId();
 
 	public Fluid getFluid()
 	{
-		Fluid f = ForgeRegistries.FLUIDS.getValue(getId());
+		Fluid f = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(getId()));
 		return f == null ? Fluids.EMPTY : f;
 	}
 

@@ -215,7 +215,7 @@ public class RecipeEventJS extends ServerEventJS
 
 		if (r.id == null)
 		{
-			ResourceLocation itemId = r.outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE.getId() : r.outputItems.get(0).getId();
+			ResourceLocation itemId = UtilsJS.getMCID(r.outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE.getId() : r.outputItems.get(0).getId());
 			r.id = new ResourceLocation(type.serializer.getRegistryName().getNamespace(), "kubejs_generated_" + addedRecipes.size() + "_" + itemId.getNamespace() + "_" + itemId.getPath().replace('/', '_'));
 		}
 
@@ -287,13 +287,13 @@ public class RecipeEventJS extends ServerEventJS
 
 		if (map.get("id") != null)
 		{
-			ResourceLocation id = UtilsJS.getID(map.get("id"));
+			ResourceLocation id = UtilsJS.getMCID(map.get("id").toString());
 			predicate = predicate.and(recipe -> recipe.id.equals(id));
 		}
 
 		if (map.get("type") != null)
 		{
-			ResourceLocation type = UtilsJS.getID(map.get("type"));
+			ResourceLocation type = UtilsJS.getMCID(map.get("type").toString());
 			predicate = predicate.and(recipe -> type.equals(recipe.type.serializer.getRegistryName()));
 		}
 

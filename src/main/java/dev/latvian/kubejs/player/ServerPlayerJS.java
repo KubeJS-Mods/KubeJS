@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.core.PlayerInteractionManagerKJS;
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageCloseOverlay;
 import dev.latvian.kubejs.net.MessageOpenOverlay;
@@ -114,7 +115,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayerEntity>
 		return hasClientMod;
 	}
 
-	public void unlockAdvancement(Object id)
+	public void unlockAdvancement(@ID String id)
 	{
 		AdvancementJS a = ServerJS.instance.getAdvancement(id);
 
@@ -129,7 +130,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayerEntity>
 		}
 	}
 
-	public void revokeAdvancement(Object id)
+	public void revokeAdvancement(@ID String id)
 	{
 		AdvancementJS a = ServerJS.instance.getAdvancement(id);
 

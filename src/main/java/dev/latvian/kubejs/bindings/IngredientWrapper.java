@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.bindings;
 
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
@@ -43,9 +44,9 @@ public class IngredientWrapper
 		return ingredient;
 	}
 
-	public IngredientJS tag(Object tag)
+	public IngredientJS tag(@ID String tag)
 	{
-		return new TagIngredientJS(UtilsJS.getID(tag));
+		return new TagIngredientJS(UtilsJS.getMCID(tag));
 	}
 
 	public IngredientJS mod(String modId)

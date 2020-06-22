@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.world;
 
-import dev.latvian.kubejs.MinecraftClass;
+import dev.latvian.kubejs.docs.ID;
+import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.ItemEntityJS;
 import dev.latvian.kubejs.entity.ItemFrameEntityJS;
@@ -98,6 +99,11 @@ public abstract class WorldJS implements WithAttachedData
 	public DimensionType getDimension()
 	{
 		return minecraftWorld.getDimension().getType();
+	}
+
+	public String getDimensionId()
+	{
+		return DimensionType.getKey(getDimension()).toString();
 	}
 
 	public boolean isOverworld()
@@ -204,9 +210,9 @@ public abstract class WorldJS implements WithAttachedData
 	}
 
 	@Nullable
-	public EntityJS createEntity(Object id)
+	public EntityJS createEntity(@ID String id)
 	{
-		EntityType type = ForgeRegistries.ENTITIES.getValue(UtilsJS.getID(id));
+		EntityType<?> type = ForgeRegistries.ENTITIES.getValue(UtilsJS.getMCID(id));
 
 		if (type == null)
 		{

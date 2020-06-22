@@ -1,8 +1,9 @@
 package dev.latvian.kubejs.world;
 
-import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.block.MaterialJS;
 import dev.latvian.kubejs.block.MaterialListJS;
+import dev.latvian.kubejs.docs.ID;
+import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -147,14 +148,15 @@ public class BlockContainerJS
 		clearCache();
 	}
 
-	public ResourceLocation getId()
+	@ID
+	public String getId()
 	{
-		return getBlockState().getBlock().getRegistryName();
+		return getBlockState().getBlock().getRegistryName().toString();
 	}
 
-	public void set(Object id, Map<?, ?> properties, int flags)
+	public void set(@ID String id, Map<?, ?> properties, int flags)
 	{
-		Block block = id instanceof Block ? (Block) id : ForgeRegistries.BLOCKS.getValue(UtilsJS.getID(id));
+		Block block = ForgeRegistries.BLOCKS.getValue(UtilsJS.getMCID(id));
 		BlockState state = (block == null ? Blocks.AIR : block).getDefaultState();
 
 		if (!properties.isEmpty() && state.getBlock() != Blocks.AIR)
@@ -180,12 +182,12 @@ public class BlockContainerJS
 		setBlockState(state, flags);
 	}
 
-	public void set(Object id, Map<?, ?> properties)
+	public void set(@ID String id, Map<?, ?> properties)
 	{
 		set(id, properties, 3);
 	}
 
-	public void set(Object id)
+	public void set(@ID String id)
 	{
 		set(id, Collections.emptyMap());
 	}
@@ -215,10 +217,11 @@ public class BlockContainerJS
 		return cachedEntity;
 	}
 
-	public ResourceLocation getEntityID()
+	@ID
+	public String getEntityId()
 	{
 		TileEntity entity = getEntity();
-		return entity == null ? UtilsJS.NULL_ID : entity.getType().getRegistryName();
+		return entity == null ? "minecraft:air" : entity.getType().getRegistryName().toString();
 	}
 
 	@Nullable
@@ -253,15 +256,15 @@ public class BlockContainerJS
 	@Override
 	public String toString()
 	{
-		ResourceLocation id = getId();
+		String id = getId();
 		Map<String, String> properties = getProperties();
 
 		if (properties.isEmpty())
 		{
-			return id.toString();
+			return id;
 		}
 
-		StringBuilder builder = new StringBuilder(id.toString());
+		StringBuilder builder = new StringBuilder(id);
 		builder.append('[');
 
 		boolean first = true;
@@ -292,7 +295,7 @@ public class BlockContainerJS
 	}
 
 	@Nullable
-	public EntityJS createEntity(Object id)
+	public EntityJS createEntity(@ID String id)
 	{
 		EntityJS entity = getWorld().createEntity(id);
 
@@ -353,9 +356,13 @@ public class BlockContainerJS
 	@Override
 	public boolean equals(Object obj)
 	{
-		if (obj instanceof CharSequence || obj instanceof ResourceLocation)
+		if (obj == this)
 		{
-			return getId().equals(UtilsJS.getID(obj));
+			return true;
+		}
+		else if (obj instanceof CharSequence || obj instanceof ResourceLocation)
+		{
+			return getId().equals(obj.toString());
 		}
 
 		return super.equals(obj);

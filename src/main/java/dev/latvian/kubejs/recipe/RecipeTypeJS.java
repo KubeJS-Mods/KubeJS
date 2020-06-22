@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.recipe;
 
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -23,9 +24,9 @@ public class RecipeTypeJS
 		string = s.getRegistryName().toString();
 	}
 
-	public RecipeTypeJS(Object id, Supplier<RecipeJS> f)
+	public RecipeTypeJS(@ID String id, Supplier<RecipeJS> f)
 	{
-		this(Objects.requireNonNull(ForgeRegistries.RECIPE_SERIALIZERS.getValue(UtilsJS.getID(id))), f);
+		this(Objects.requireNonNull(ForgeRegistries.RECIPE_SERIALIZERS.getValue(UtilsJS.getMCID(id))), f);
 	}
 
 	public boolean isCustom()

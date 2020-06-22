@@ -2,7 +2,6 @@ package dev.latvian.kubejs.fluid;
 
 import dev.latvian.kubejs.util.MapJS;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
@@ -20,9 +19,9 @@ public class BoundFluidStackJS extends FluidStackJS
 	}
 
 	@Override
-	public ResourceLocation getId()
+	public String getId()
 	{
-		return fluidStack.getFluid().getRegistryName();
+		return fluidStack.getFluid().getRegistryName().toString();
 	}
 
 	@Override

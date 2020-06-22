@@ -1,52 +1,40 @@
 package dev.latvian.kubejs.player;
 
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.UtilsJS;
-import net.minecraft.stats.Stat;
 import net.minecraft.stats.StatisticsManager;
-import net.minecraft.util.ResourceLocation;
 
 /**
  * @author LatvianModder
  */
 public class PlayerStatsJS
 {
-	private final PlayerJS player;
+	private final PlayerJS<?> player;
 	private final StatisticsManager statFile;
 
-	public PlayerStatsJS(PlayerJS p, StatisticsManager s)
+	public PlayerStatsJS(PlayerJS<?> p, StatisticsManager s)
 	{
 		player = p;
 		statFile = s;
 	}
 
-	public PlayerJS getPlayer()
+	public PlayerJS<?> getPlayer()
 	{
 		return player;
 	}
 
-	public int get(Object id)
+	public int get(@ID String id)
 	{
-		Stat<ResourceLocation> stat = UtilsJS.getStat(id);
-		return stat == null ? 0 : statFile.getValue(stat);
+		return statFile.getValue(UtilsJS.getStat(id));
 	}
 
-	public void set(Object id, int value)
+	public void set(@ID String id, int value)
 	{
-		Stat<ResourceLocation> stat = UtilsJS.getStat(id);
-
-		if (stat != null)
-		{
-			statFile.setValue(player.minecraftPlayer, stat, value);
-		}
+		statFile.setValue(player.minecraftPlayer, UtilsJS.getStat(id), value);
 	}
 
-	public void add(Object id, int value)
+	public void add(@ID String id, int value)
 	{
-		Stat<ResourceLocation> stat = UtilsJS.getStat(id);
-
-		if (stat != null)
-		{
-			statFile.increment(player.minecraftPlayer, stat, value);
-		}
+		statFile.increment(player.minecraftPlayer, UtilsJS.getStat(id), value);
 	}
 }

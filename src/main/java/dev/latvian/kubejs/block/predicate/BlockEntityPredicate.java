@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.block.predicate;
 
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.tileentity.TileEntity;
@@ -13,9 +14,9 @@ public class BlockEntityPredicate implements BlockPredicate
 	private final ResourceLocation id;
 	private BlockEntityPredicateDataCheck checkData;
 
-	public BlockEntityPredicate(Object i)
+	public BlockEntityPredicate(@ID String i)
 	{
-		id = UtilsJS.getID(i);
+		id = UtilsJS.getMCID(i);
 	}
 
 	public BlockEntityPredicate data(BlockEntityPredicateDataCheck cd)

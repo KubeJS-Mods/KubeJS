@@ -30,6 +30,12 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
+	public String getId()
+	{
+		return "minecraft:air";
+	}
+
+	@Override
 	public Item getItem()
 	{
 		return Items.AIR;

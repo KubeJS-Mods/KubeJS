@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.item;
 
 import com.google.common.collect.Lists;
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.Food;
 import net.minecraft.potion.EffectInstance;
@@ -55,9 +56,9 @@ public class FoodBuilder
 		return this;
 	}
 
-	public FoodBuilder effect(Object potion, int duration, int amplifier, float probability)
+	public FoodBuilder effect(@ID String potion, int duration, int amplifier, float probability)
 	{
-		ResourceLocation id = UtilsJS.getID(potion);
+		ResourceLocation id = UtilsJS.getMCID(potion);
 		effects.add(Pair.of(() -> new EffectInstance(ForgeRegistries.POTIONS.getValue(id), duration, amplifier), probability));
 		return this;
 	}

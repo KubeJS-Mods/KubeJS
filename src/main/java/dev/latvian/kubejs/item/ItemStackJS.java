@@ -5,7 +5,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.MinecraftClass;
+import dev.latvian.kubejs.docs.ID;
+import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.ingredient.IgnoreNBTIngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
@@ -251,13 +252,13 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		cachedItemList = null;
 	}
 
-	public static List<ResourceLocation> getTypeList()
+	public static List<String> getTypeList()
 	{
-		List<ResourceLocation> list = new ArrayList<>();
+		List<String> list = new ArrayList<>();
 
-		for (Item item : ForgeRegistries.ITEMS)
+		for (ResourceLocation id : ForgeRegistries.ITEMS.getKeys())
 		{
-			list.add(item.getRegistryName());
+			list.add(id.toString());
 		}
 
 		return list;
@@ -270,9 +271,10 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	@MinecraftClass
 	public abstract ItemStack getItemStack();
 
-	public ResourceLocation getId()
+	@ID
+	public String getId()
 	{
-		return getItem().getRegistryName();
+		return getItem().getRegistryName().toString();
 	}
 
 	public abstract ItemStackJS getCopy();
@@ -453,7 +455,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	{
 		if (o instanceof CharSequence)
 		{
-			return getId().equals(UtilsJS.getID(o));
+			return getId().equals(UtilsJS.getID(o.toString()));
 		}
 		else if (o instanceof ItemStack)
 		{
@@ -469,7 +471,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	{
 		if (o instanceof CharSequence)
 		{
-			return getId().equals(UtilsJS.getID(o)) && getCount() == 1 && getNbt().isEmpty();
+			return getId().equals(UtilsJS.getID(o.toString())) && getCount() == 1 && getNbt().isEmpty();
 		}
 		else if (o instanceof ItemStack)
 		{
@@ -630,7 +632,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	public JsonElement toJson()
 	{
 		JsonObject json = new JsonObject();
-		json.addProperty("item", getId().toString());
+		json.addProperty("item", getId());
 
 		if (!getNbt().isEmpty())
 		{
@@ -644,7 +646,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	public JsonElement getResultJson()
 	{
 		JsonObject json = new JsonObject();
-		json.addProperty("item", getId().toString());
+		json.addProperty("item", getId());
 		json.addProperty("count", getCount());
 
 		MapJS nbt = getNbt();

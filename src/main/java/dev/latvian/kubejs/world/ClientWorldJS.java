@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.world;
 
-import dev.latvian.kubejs.MinecraftClass;
+import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.player.ClientPlayerDataJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.script.ScriptType;

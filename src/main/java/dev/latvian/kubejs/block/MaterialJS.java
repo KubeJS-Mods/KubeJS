@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.block;
 
-import dev.latvian.kubejs.MinecraftClass;
+import dev.latvian.kubejs.docs.MinecraftClass;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 

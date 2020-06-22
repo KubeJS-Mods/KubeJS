@@ -3,6 +3,7 @@ package dev.latvian.kubejs.recipe;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.util.ListJS;
@@ -36,13 +37,13 @@ public abstract class RecipeJS
 		originalRecipe = null;
 	}
 
-	public RecipeJS id(Object _id)
+	public RecipeJS id(@ID String _id)
 	{
-		id = UtilsJS.getID(_id);
+		id = UtilsJS.getMCID(_id);
 		return this;
 	}
 
-	public RecipeJS group(String g)
+	public RecipeJS group(@ID String g)
 	{
 		setGroup(g);
 		return this;
@@ -108,13 +109,14 @@ public abstract class RecipeJS
 		return changed;
 	}
 
+	@ID
 	public String getGroup()
 	{
 		JsonElement e = json.get("group");
 		return e instanceof JsonPrimitive ? e.getAsString() : "";
 	}
 
-	public void setGroup(String g)
+	public void setGroup(@ID String g)
 	{
 		if (g.isEmpty())
 		{
@@ -134,6 +136,7 @@ public abstract class RecipeJS
 		return id + "[" + type + "]";
 	}
 
+	@ID
 	public String getId()
 	{
 		return id.toString();
@@ -149,6 +152,7 @@ public abstract class RecipeJS
 		return id.getPath();
 	}
 
+	@ID
 	public String getType()
 	{
 		return type.toString();

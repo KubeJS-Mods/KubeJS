@@ -1,7 +1,8 @@
 package dev.latvian.kubejs.entity;
 
 import com.mojang.authlib.GameProfile;
-import dev.latvian.kubejs.MinecraftClass;
+import dev.latvian.kubejs.docs.ID;
+import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.server.ServerJS;
@@ -19,7 +20,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
@@ -70,9 +70,10 @@ public class EntityJS implements MessageSender, WrappedJS
 		return minecraftEntity.getUniqueID();
 	}
 
-	public ResourceLocation getType()
+	@ID
+	public String getType()
 	{
-		return UtilsJS.getID(minecraftEntity.getType().getRegistryName());
+		return minecraftEntity.getType().getRegistryName().toString();
 	}
 
 	@Override
@@ -420,7 +421,7 @@ public class EntityJS implements MessageSender, WrappedJS
 		return world.getEntity(minecraftEntity.getRidingEntity());
 	}
 
-	public String getTeamID()
+	public String getTeamId()
 	{
 		Team team = minecraftEntity.getTeam();
 		return team == null ? "" : team.getName();
@@ -540,9 +541,9 @@ public class EntityJS implements MessageSender, WrappedJS
 		return map;
 	}
 
-	public void playSound(Object id, float volume, float pitch)
+	public void playSound(@ID String id, float volume, float pitch)
 	{
-		SoundEvent event = id instanceof SoundEvent ? (SoundEvent) id : ForgeRegistries.SOUND_EVENTS.getValue(UtilsJS.getID(id));
+		SoundEvent event = ForgeRegistries.SOUND_EVENTS.getValue(UtilsJS.getMCID(id));
 
 		if (event != null)
 		{
@@ -550,7 +551,7 @@ public class EntityJS implements MessageSender, WrappedJS
 		}
 	}
 
-	public void playSound(Object id)
+	public void playSound(@ID String id)
 	{
 		playSound(id, 1F, 1F);
 	}

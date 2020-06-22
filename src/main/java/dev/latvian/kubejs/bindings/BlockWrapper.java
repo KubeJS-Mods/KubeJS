@@ -1,11 +1,12 @@
 package dev.latvian.kubejs.bindings;
 
-import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.block.MaterialJS;
 import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.block.predicate.BlockEntityPredicate;
 import dev.latvian.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.kubejs.block.predicate.BlockPredicate;
+import dev.latvian.kubejs.docs.ID;
+import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -28,12 +29,12 @@ public class BlockWrapper
 		return MaterialListJS.INSTANCE.map;
 	}
 
-	public BlockIDPredicate id(Object id)
+	public BlockIDPredicate id(@ID String id)
 	{
 		return new BlockIDPredicate(id);
 	}
 
-	public BlockIDPredicate id(Object id, Map<String, Object> properties)
+	public BlockIDPredicate id(@ID String id, Map<String, Object> properties)
 	{
 		BlockIDPredicate b = id(id);
 
@@ -45,7 +46,7 @@ public class BlockWrapper
 		return b;
 	}
 
-	public BlockEntityPredicate entity(Object id)
+	public BlockEntityPredicate entity(@ID String id)
 	{
 		return new BlockEntityPredicate(id);
 	}
@@ -73,19 +74,19 @@ public class BlockWrapper
 	}
 
 	@MinecraftClass
-	public Block getBlock(Object id)
+	public Block getBlock(@ID String id)
 	{
-		Block b = ForgeRegistries.BLOCKS.getValue(UtilsJS.getID(id));
+		Block b = ForgeRegistries.BLOCKS.getValue(UtilsJS.getMCID(id));
 		return b == null ? Blocks.AIR : b;
 	}
 
-	public List<ResourceLocation> getTypeList()
+	public List<String> getTypeList()
 	{
-		List<ResourceLocation> list = new ArrayList<>();
+		List<String> list = new ArrayList<>();
 
-		for (Block block : ForgeRegistries.BLOCKS)
+		for (ResourceLocation block : ForgeRegistries.BLOCKS.getKeys())
 		{
-			list.add(block.getRegistryName());
+			list.add(block.toString());
 		}
 
 		return list;

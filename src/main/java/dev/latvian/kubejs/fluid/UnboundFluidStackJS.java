@@ -13,21 +13,23 @@ import javax.annotation.Nullable;
  */
 public class UnboundFluidStackJS extends FluidStackJS
 {
-	private final ResourceLocation fluid;
+	private final ResourceLocation fluidRL;
+	private final String fluid;
 	private int amount;
 	private MapJS nbt;
 	private FluidStack cached;
 
 	public UnboundFluidStackJS(ResourceLocation f)
 	{
-		fluid = f;
+		fluidRL = f;
+		fluid = fluidRL.toString();
 		amount = FluidAttributes.BUCKET_VOLUME;
 		nbt = null;
 		cached = null;
 	}
 
 	@Override
-	public ResourceLocation getId()
+	public String getId()
 	{
 		return fluid;
 	}
@@ -85,7 +87,7 @@ public class UnboundFluidStackJS extends FluidStackJS
 	@Override
 	public FluidStackJS copy()
 	{
-		return new UnboundFluidStackJS(fluid).amount(amount).nbt(nbt);
+		return new UnboundFluidStackJS(fluidRL).amount(amount).nbt(nbt);
 	}
 
 	@Override

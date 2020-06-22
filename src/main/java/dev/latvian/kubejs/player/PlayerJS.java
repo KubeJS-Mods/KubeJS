@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.player;
 
 import com.mojang.authlib.GameProfile;
-import dev.latvian.kubejs.MinecraftClass;
+import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemStackJS;

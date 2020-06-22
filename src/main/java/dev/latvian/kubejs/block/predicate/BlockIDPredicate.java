@@ -2,6 +2,7 @@ package dev.latvian.kubejs.block.predicate;
 
 import dev.latvian.kubejs.core.BlockKJS;
 import dev.latvian.kubejs.core.BlockStateKJS;
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.block.Block;
@@ -35,9 +36,9 @@ public class BlockIDPredicate implements BlockPredicate
 	private Block cachedBlock;
 	private List<PropertyObject> cachedProperties;
 
-	public BlockIDPredicate(Object i)
+	public BlockIDPredicate(@ID String i)
 	{
-		id = UtilsJS.getID(i);
+		id = UtilsJS.getMCID(i);
 	}
 
 	@Override

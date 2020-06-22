@@ -1,4 +1,4 @@
-package dev.latvian.kubejs;
+package dev.latvian.kubejs.docs;
 
 import javax.annotation.meta.TypeQualifierDefault;
 import java.lang.annotation.Documented;

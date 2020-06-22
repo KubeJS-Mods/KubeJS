@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.item;
 
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.MapJS;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,14 +16,16 @@ import javax.annotation.Nullable;
  */
 public class UnboundItemStackJS extends ItemStackJS
 {
-	private final ResourceLocation item;
+	private final String item;
+	private final ResourceLocation itemRL;
 	private int count;
 	private MapJS nbt;
 	private ItemStack cached;
 
 	public UnboundItemStackJS(ResourceLocation i)
 	{
-		item = i;
+		item = i.toString();
+		itemRL = i;
 		count = 1;
 		nbt = null;
 		cached = null;
@@ -31,7 +34,7 @@ public class UnboundItemStackJS extends ItemStackJS
 	@Override
 	public Item getItem()
 	{
-		Item i = ForgeRegistries.ITEMS.getValue(item);
+		Item i = ForgeRegistries.ITEMS.getValue(new ResourceLocation(item));
 
 		if (i != null)
 		{
@@ -65,7 +68,8 @@ public class UnboundItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public ResourceLocation getId()
+	@ID
+	public String getId()
 	{
 		return item;
 	}
@@ -79,7 +83,7 @@ public class UnboundItemStackJS extends ItemStackJS
 	@Override
 	public ItemStackJS getCopy()
 	{
-		UnboundItemStackJS stack = new UnboundItemStackJS(item);
+		UnboundItemStackJS stack = new UnboundItemStackJS(itemRL);
 		stack.count = count;
 		stack.nbt = nbt == null ? null : nbt.copy();
 		stack.setChance(getChance());
@@ -116,7 +120,7 @@ public class UnboundItemStackJS extends ItemStackJS
 	{
 		if (stack instanceof UnboundItemStackJS)
 		{
-			return item.equals(((UnboundItemStackJS) stack).item);
+			return itemRL.equals(((UnboundItemStackJS) stack).itemRL);
 		}
 
 		return getItem() == stack.getItem();
@@ -125,7 +129,7 @@ public class UnboundItemStackJS extends ItemStackJS
 	@Override
 	public boolean areItemsEqual(ItemStack stack)
 	{
-		return item.equals(stack.getItem().getRegistryName());
+		return itemRL.equals(stack.getItem().getRegistryName());
 	}
 
 	@Override

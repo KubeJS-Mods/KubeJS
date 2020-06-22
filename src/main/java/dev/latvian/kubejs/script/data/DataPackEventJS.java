@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.script.data;
 
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.server.ServerEventJS;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.MapJS;
@@ -17,12 +18,12 @@ public class DataPackEventJS extends ServerEventJS
 		virtualDataPack = d;
 	}
 
-	public void add(Object id, String content)
+	public void add(@ID String id, String content)
 	{
-		virtualDataPack.addData(UtilsJS.getID(id), content);
+		virtualDataPack.addData(UtilsJS.getMCID(id), content);
 	}
 
-	public void addJson(Object id, Object json)
+	public void addJson(@ID String id, Object json)
 	{
 		MapJS map = MapJS.of(json);
 

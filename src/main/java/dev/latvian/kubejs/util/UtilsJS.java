@@ -5,6 +5,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
@@ -47,7 +48,6 @@ import java.util.function.Function;
  */
 public class UtilsJS
 {
-	public static final ResourceLocation NULL_ID = new ResourceLocation("minecraft", "null");
 	public static final Random RANDOM = new Random();
 
 	public static void init()
@@ -121,7 +121,7 @@ public class UtilsJS
 		{
 			return o;
 		}
-		else if (o instanceof CharSequence)
+		else if (o instanceof CharSequence || o instanceof ResourceLocation)
 		{
 			return o.toString();
 		}
@@ -368,6 +368,7 @@ public class UtilsJS
 		}
 	}
 
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static <T> FieldJS<T> getField(Class className, String fieldName)
 	{
 		try
@@ -436,19 +437,9 @@ public class UtilsJS
 		}
 	}
 
-	@Nullable
-	public static Stat<ResourceLocation> getStat(@Nullable Object id)
+	public static Stat<ResourceLocation> getStat(@ID String id)
 	{
-		if (id == null)
-		{
-			return null;
-		}
-		else if (id instanceof Stat)
-		{
-			return (Stat) id;
-		}
-
-		return Stats.CUSTOM.get(getID(id));
+		return Stats.CUSTOM.get(getMCID(id));
 	}
 
 	public static ToolType getToolType(String id)
@@ -474,42 +465,57 @@ public class UtilsJS
 	}
 
 	@Nullable
-	public static Effect getPotion(@Nullable Object id)
+	public static Effect getPotion(@ID String id)
 	{
-		if (id == null)
-		{
-			return null;
-		}
-		else if (id instanceof Effect)
-		{
-			return (Effect) id;
-		}
-
-		return ForgeRegistries.POTIONS.getValue(getID(id));
+		return ForgeRegistries.POTIONS.getValue(getMCID(id));
 	}
 
-	public static ResourceLocation getID(@Nullable Object o)
+	@ID
+	public static String getID(@ID @Nullable String s)
 	{
-		if (o == null)
+		if (s == null || s.isEmpty())
 		{
-			return NULL_ID;
-		}
-		else if (o instanceof ResourceLocation)
-		{
-			return (ResourceLocation) o;
+			return "minecraft:air";
 		}
 
-		return new ResourceLocation(o.toString());
+		if (s.indexOf(':') == -1)
+		{
+			return "minecraft:" + s;
+		}
+
+		return s;
 	}
 
-	public static String getNamespace(Object o)
+	public static ResourceLocation getMCID(@ID @Nullable String s)
 	{
-		return getID(o).getNamespace();
+		if (s == null || s.isEmpty())
+		{
+			return new ResourceLocation("minecraft:air");
+		}
+
+		return new ResourceLocation(s);
 	}
 
-	public static String getPath(Object o)
+	public static String getNamespace(@ID @Nullable String s)
 	{
-		return getID(o).getPath();
+		if (s == null || s.isEmpty())
+		{
+			return "minecraft";
+		}
+
+		int i = s.indexOf(':');
+		return i == -1 ? "minecraft" : s.substring(0, i);
+	}
+
+	public static String getPath(@ID @Nullable String s)
+	{
+		if (s == null || s.isEmpty())
+		{
+			return "air";
+		}
+
+		int i = s.indexOf(':');
+		return i == -1 ? s : s.substring(i + 1);
 	}
 
 	public static <T extends IForgeRegistryEntry<T>> Function<ResourceLocation, Optional<T>> valueGetter(IForgeRegistry<T> registry, @Nullable T def)

@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.fluid;
 
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.BuilderBase;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.block.FlowingFluidBlock;
@@ -14,8 +15,8 @@ import net.minecraftforge.fluids.ForgeFlowingFluid;
  */
 public class FluidBuilder extends BuilderBase
 {
-	public ResourceLocation stillTexture;
-	public ResourceLocation flowingTexture;
+	public String stillTexture;
+	public String flowingTexture;
 	private int color = 0xFFFFFFFF;
 	private int luminosity = 0;
 	private int density = 1000;
@@ -53,13 +54,13 @@ public class FluidBuilder extends BuilderBase
 		return this;
 	}
 
-	public FluidBuilder textureStill(Object id)
+	public FluidBuilder textureStill(@ID String id)
 	{
 		stillTexture = UtilsJS.getID(id);
 		return this;
 	}
 
-	public FluidBuilder textureFlowing(Object id)
+	public FluidBuilder textureFlowing(@ID String id)
 	{
 		flowingTexture = UtilsJS.getID(id);
 		return this;
@@ -114,8 +115,8 @@ public class FluidBuilder extends BuilderBase
 	public ForgeFlowingFluid.Properties createProperties()
 	{
 		FluidAttributes.Builder builder = FluidAttributes.builder(
-				stillTexture,
-				flowingTexture)
+				new ResourceLocation(stillTexture),
+				new ResourceLocation(flowingTexture))
 				.translationKey("fluid." + id.getNamespace() + "." + id.getPath())
 				.color(color)
 				.rarity(rarity)

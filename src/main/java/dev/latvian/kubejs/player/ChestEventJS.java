@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.player;
 
-import dev.latvian.kubejs.MinecraftClass;
+import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.inventory.IInventory;

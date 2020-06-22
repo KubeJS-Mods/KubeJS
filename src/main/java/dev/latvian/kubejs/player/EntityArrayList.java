@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.player;
 
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
@@ -105,20 +106,20 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		}
 	}
 
-	public void playSound(Object id, float volume, float pitch)
+	public void playSound(@ID String id, float volume, float pitch)
 	{
-		SoundEvent event = id instanceof SoundEvent ? (SoundEvent) id : ForgeRegistries.SOUND_EVENTS.getValue(UtilsJS.getID(id));
+		SoundEvent event = ForgeRegistries.SOUND_EVENTS.getValue(UtilsJS.getMCID(id));
 
 		if (event != null)
 		{
 			for (EntityJS entity : this)
 			{
-				entity.playSound(event, volume, pitch);
+				entity.minecraftEntity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), event, entity.minecraftEntity.getSoundCategory(), volume, pitch);
 			}
 		}
 	}
 
-	public void playSound(Object id)
+	public void playSound(@ID String id)
 	{
 		playSound(id, 1F, 1F);
 	}

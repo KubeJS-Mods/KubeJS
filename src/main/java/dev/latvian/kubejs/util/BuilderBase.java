@@ -15,7 +15,7 @@ public abstract class BuilderBase
 
 	public BuilderBase(String s)
 	{
-		id = UtilsJS.getID(KubeJS.appendModId(s));
+		id = UtilsJS.getMCID(KubeJS.appendModId(s));
 		translationKey = getType() + "." + id.getNamespace() + "." + id.getPath();
 		displayName = "";
 	}

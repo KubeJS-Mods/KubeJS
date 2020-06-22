@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.block;
 
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -24,9 +25,9 @@ public class MissingMappingEventJS<T extends IForgeRegistryEntry<T>> extends Eve
 		valueProvider = v;
 	}
 
-	private void findMapping(Object key, Consumer<RegistryEvent.MissingMappings.Mapping<T>> callback)
+	private void findMapping(@ID String key, Consumer<RegistryEvent.MissingMappings.Mapping<T>> callback)
 	{
-		ResourceLocation k = UtilsJS.getID(key);
+		ResourceLocation k = UtilsJS.getMCID(key);
 
 		for (RegistryEvent.MissingMappings.Mapping<T> mapping : event.getAllMappings())
 		{
@@ -38,10 +39,10 @@ public class MissingMappingEventJS<T extends IForgeRegistryEntry<T>> extends Eve
 		}
 	}
 
-	public void remap(Object key, Object value)
+	public void remap(@ID String key, @ID String value)
 	{
 		findMapping(key, mapping -> {
-			ResourceLocation idTo = UtilsJS.getID(value);
+			ResourceLocation idTo = UtilsJS.getMCID(value);
 			T to = valueProvider.apply(idTo);
 
 			if (to != null)
@@ -52,17 +53,17 @@ public class MissingMappingEventJS<T extends IForgeRegistryEntry<T>> extends Eve
 		});
 	}
 
-	public void ignore(Object key)
+	public void ignore(@ID String key)
 	{
 		findMapping(key, RegistryEvent.MissingMappings.Mapping::ignore);
 	}
 
-	public void warn(Object key)
+	public void warn(@ID String key)
 	{
 		findMapping(key, RegistryEvent.MissingMappings.Mapping::warn);
 	}
 
-	public void fail(Object key)
+	public void fail(@ID String key)
 	{
 		findMapping(key, RegistryEvent.MissingMappings.Mapping::fail);
 	}

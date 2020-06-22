@@ -1,8 +1,9 @@
 package dev.latvian.kubejs.server;
 
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.MinecraftClass;
 import dev.latvian.kubejs.core.SimpleReloadableResourceManagerKJS;
+import dev.latvian.kubejs.docs.ID;
+import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageSendDataFromServer;
 import dev.latvian.kubejs.player.AdvancementJS;
@@ -352,9 +353,9 @@ public class ServerJS implements MessageSender, WithAttachedData
 	}
 
 	@Nullable
-	public AdvancementJS getAdvancement(Object id)
+	public AdvancementJS getAdvancement(@ID String id)
 	{
-		Advancement a = minecraftServer.getAdvancementManager().getAdvancement(UtilsJS.getID(id));
+		Advancement a = minecraftServer.getAdvancementManager().getAdvancement(UtilsJS.getMCID(id));
 		return a == null ? null : new AdvancementJS(a);
 	}
 

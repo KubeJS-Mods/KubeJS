@@ -1,13 +1,13 @@
 package dev.latvian.kubejs.bindings;
 
-import dev.latvian.kubejs.MinecraftClass;
+import dev.latvian.kubejs.docs.ID;
+import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.FireworksJS;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
@@ -38,7 +38,7 @@ public class ItemWrapper
 		return ItemStackJS.getList();
 	}
 
-	public List<ResourceLocation> getTypeList()
+	public List<String> getTypeList()
 	{
 		return ItemStackJS.getTypeList();
 	}
@@ -59,9 +59,9 @@ public class ItemWrapper
 	}
 
 	@MinecraftClass
-	public Item getItem(Object id)
+	public Item getItem(@ID String id)
 	{
-		Item i = ForgeRegistries.ITEMS.getValue(UtilsJS.getID(id));
+		Item i = ForgeRegistries.ITEMS.getValue(UtilsJS.getMCID(id));
 		return i == null ? Items.AIR : i;
 	}
 }

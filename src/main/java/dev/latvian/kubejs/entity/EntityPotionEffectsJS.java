@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.entity;
 
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.Effect;
@@ -36,35 +37,35 @@ public class EntityPotionEffectsJS
 		return entity.getActivePotionMap();
 	}
 
-	public boolean isActive(Object potion)
+	public boolean isActive(@ID String potion)
 	{
 		Effect p = UtilsJS.getPotion(potion);
 		return p != null && entity.isPotionActive(p);
 	}
 
 	@Nullable
-	public EffectInstance getActive(Object potion)
+	public EffectInstance getActive(@ID String potion)
 	{
 		Effect p = UtilsJS.getPotion(potion);
 		return p == null ? null : entity.getActivePotionEffect(p);
 	}
 
-	public void add(Object potion)
+	public void add(@ID String potion)
 	{
 		add(potion, 0, 0);
 	}
 
-	public void add(Object potion, int duration)
+	public void add(@ID String potion, int duration)
 	{
 		add(potion, duration, 0);
 	}
 
-	public void add(Object potion, int duration, int amplifier)
+	public void add(@ID String potion, int duration, int amplifier)
 	{
 		add(potion, duration, amplifier, false, true);
 	}
 
-	public void add(Object potion, int duration, int amplifier, boolean ambient, boolean showParticles)
+	public void add(@ID String potion, int duration, int amplifier, boolean ambient, boolean showParticles)
 	{
 		Effect p = UtilsJS.getPotion(potion);
 

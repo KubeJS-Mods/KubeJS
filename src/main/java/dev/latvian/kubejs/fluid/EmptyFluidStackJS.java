@@ -3,7 +3,6 @@ package dev.latvian.kubejs.fluid;
 import dev.latvian.kubejs.util.MapJS;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
@@ -22,9 +21,9 @@ public class EmptyFluidStackJS extends FluidStackJS
 	}
 
 	@Override
-	public ResourceLocation getId()
+	public String getId()
 	{
-		return Fluids.EMPTY.getRegistryName();
+		return "minecraft:empty";
 	}
 
 	@Override

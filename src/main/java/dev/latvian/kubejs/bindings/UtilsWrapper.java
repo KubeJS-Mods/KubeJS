@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.bindings;
 
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.ConsoleJS;
@@ -79,9 +80,9 @@ public class UtilsWrapper
 		return new ResourceLocation(namespace, path);
 	}
 
-	public ResourceLocation id(Object id)
+	public ResourceLocation id(@ID String id)
 	{
-		return UtilsJS.getID(id);
+		return UtilsJS.getMCID(id);
 	}
 
 	public ConsoleJS createConsole(String name)
@@ -119,8 +120,7 @@ public class UtilsWrapper
 		return UtilsJS.parseDouble(object, def);
 	}
 
-	@Nullable
-	public Stat<ResourceLocation> getStat(@Nullable Object id)
+	public Stat<ResourceLocation> getStat(@ID String id)
 	{
 		return UtilsJS.getStat(id);
 	}
@@ -148,9 +148,9 @@ public class UtilsWrapper
 	}
 
 	@Nullable
-	public SoundEvent getSound(Object id)
+	public SoundEvent getSound(@ID String id)
 	{
-		return ForgeRegistries.SOUND_EVENTS.getValue(UtilsJS.getID(id));
+		return ForgeRegistries.SOUND_EVENTS.getValue(UtilsJS.getMCID(id));
 	}
 
 	public Object randomOf(Random random, Collection<Object> objects)
@@ -188,7 +188,7 @@ public class UtilsWrapper
 	}
 
 	@Nullable
-	public Effect getPotion(@Nullable Object id)
+	public Effect getPotion(@ID String id)
 	{
 		return UtilsJS.getPotion(id);
 	}

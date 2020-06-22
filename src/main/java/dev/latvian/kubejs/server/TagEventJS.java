@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.server;
 
 import dev.latvian.kubejs.core.TagBuilderKJS;
+import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -141,9 +142,9 @@ public class TagEventJS<T> extends ServerEventJS
 		ScriptType.SERVER.console.logger.info("[" + type + "] Found " + tags.size() + " tags, added " + addedCount + ", removed " + removedCount);
 	}
 
-	public TagWrapper<T> get(Object tag)
+	public TagWrapper<T> get(@ID String tag)
 	{
-		ResourceLocation id = UtilsJS.getID(tag);
+		ResourceLocation id = UtilsJS.getMCID(tag);
 		TagWrapper<T> t = tags.get(id);
 
 		if (t == null)
