@@ -101,7 +101,7 @@ public class CreateMachineRecipeJS extends RecipeJS
 
 		for (ItemStackJS stack : outputItems)
 		{
-			resultsJson.add(stack.getResultJson());
+			resultsJson.add(stack.toResultJson());
 		}
 
 		json.add("results", resultsJson);

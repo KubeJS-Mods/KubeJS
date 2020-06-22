@@ -1,6 +1,9 @@
 package dev.latvian.kubejs.recipe;
 
 import com.google.gson.JsonObject;
+import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.recipe.minecraft.CustomRecipeJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
@@ -10,6 +13,7 @@ import jdk.nashorn.api.scripting.AbstractJSObject;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -56,7 +60,7 @@ public class RecipeFunction extends AbstractJSObject implements WrappedJS
 				{
 					RecipeJS recipe = type.factory.get();
 					recipe.type = type;
-					recipe.json = map.toJson();
+					recipe.json = ((MapJS) normalize(map)).toJson();
 					recipe.deserialize();
 					return event.addRecipe(recipe, type, args);
 				}
@@ -82,6 +86,53 @@ public class RecipeFunction extends AbstractJSObject implements WrappedJS
 		}
 
 		return new CustomRecipeJS();
+	}
+
+	private Object normalize(Object o)
+	{
+		if (o instanceof ItemStackJS)
+		{
+			return ((ItemStackJS) o).toResultJson();
+		}
+		else if (o instanceof IngredientJS)
+		{
+			return ((IngredientJS) o).toJson();
+		}
+		else if (o instanceof String)
+		{
+			String s = (String) o;
+
+			if (s.length() >= 4 && s.startsWith("#") && s.indexOf(':') != -1)
+			{
+				return new TagIngredientJS(new ResourceLocation(s.substring(1))).toJson();
+			}
+
+			return o;
+		}
+		else if (o instanceof ListJS)
+		{
+			ListJS list = new ListJS();
+
+			for (Object o1 : (ListJS) o)
+			{
+				list.add(normalize(o1));
+			}
+
+			return list;
+		}
+		else if (o instanceof MapJS)
+		{
+			MapJS map = new MapJS();
+
+			for (Map.Entry<String, Object> entry : ((MapJS) o).entrySet())
+			{
+				map.put(entry.getKey(), normalize(entry.getValue()));
+			}
+
+			return map;
+		}
+
+		return o;
 	}
 
 	@Override

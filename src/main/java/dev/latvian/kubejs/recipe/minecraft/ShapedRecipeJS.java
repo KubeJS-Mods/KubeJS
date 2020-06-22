@@ -137,6 +137,6 @@ public class ShapedRecipeJS extends RecipeJS
 		}
 
 		json.add("key", keyJson);
-		json.add("result", outputItems.get(0).getResultJson());
+		json.add("result", outputItems.get(0).toResultJson());
 	}
 }

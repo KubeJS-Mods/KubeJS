@@ -212,19 +212,19 @@ public class CustomRecipeJS extends RecipeJS
 
 				for (ItemStackJS in : outputItems)
 				{
-					a.add(in.getResultJson());
+					a.add(in.toResultJson());
 				}
 
 				json.add(outputKey, a);
 			}
 			else if (outputType == 2)
 			{
-				json.addProperty(outputKey, (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).getId().toString());
+				json.addProperty(outputKey, (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).getId());
 				json.addProperty("count", (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).getCount());
 			}
 			else if (outputType == 0)
 			{
-				json.add(outputKey, (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).getResultJson());
+				json.add(outputKey, (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).toResultJson());
 			}
 		}
 	}

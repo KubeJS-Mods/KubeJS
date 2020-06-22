@@ -179,9 +179,11 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 
 		for (Map.Entry<?, ?> entry : m.entrySet())
 		{
-			if (setChangeListener(entry.getValue()))
+			Object v = UtilsJS.wrap(entry.getValue(), JSObjectType.ANY);
+
+			if (setChangeListener(v))
 			{
-				super.put(entry.getKey().toString(), entry.getValue());
+				super.put(entry.getKey().toString(), v);
 			}
 		}
 

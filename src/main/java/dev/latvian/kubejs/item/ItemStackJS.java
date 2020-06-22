@@ -643,7 +643,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return json;
 	}
 
-	public JsonElement getResultJson()
+	public JsonElement toResultJson()
 	{
 		JsonObject json = new JsonObject();
 		json.addProperty("item", getId());

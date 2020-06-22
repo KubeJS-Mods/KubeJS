@@ -95,6 +95,6 @@ public class ShapelessRecipeJS extends RecipeJS
 		}
 
 		json.add("ingredients", ingredientsJson);
-		json.add("result", outputItems.get(0).getResultJson());
+		json.add("result", outputItems.get(0).toResultJson());
 	}
 }

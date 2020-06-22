@@ -92,7 +92,7 @@ public class CookingRecipeJS extends RecipeJS
 	public void serialize()
 	{
 		json.add("ingredient", inputItems.get(0).toJson());
-		json.add("result", outputItems.get(0).getResultJson());
+		json.add("result", outputItems.get(0).toResultJson());
 	}
 
 	public CookingRecipeJS xp(float xp)

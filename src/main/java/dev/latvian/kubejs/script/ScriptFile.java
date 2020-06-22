@@ -7,7 +7,7 @@ import java.io.Reader;
 /**
  * @author LatvianModder
  */
-public class ScriptFile
+public class ScriptFile implements Comparable<ScriptFile>
 {
 	public final ScriptPack pack;
 	public final ScriptFileInfo info;
@@ -42,5 +42,11 @@ public class ScriptFile
 			error = ex;
 			return false;
 		}
+	}
+
+	@Override
+	public int compareTo(ScriptFile o)
+	{
+		return Integer.compare(o.info.getPriority(), info.getPriority());
 	}
 }

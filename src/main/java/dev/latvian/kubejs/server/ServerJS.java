@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.server;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.core.SimpleReloadableResourceManagerKJS;
 import dev.latvian.kubejs.docs.ID;
@@ -20,6 +21,7 @@ import dev.latvian.kubejs.script.ScriptFileInfo;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.script.ScriptPack;
 import dev.latvian.kubejs.script.ScriptPackInfo;
+import dev.latvian.kubejs.script.ScriptSource;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.data.DataPackEventJS;
 import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
@@ -47,17 +49,16 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -368,24 +369,42 @@ public class ServerJS implements MessageSender, WithAttachedData
 	{
 		scriptManager.unload();
 
-		Set<String> namespaces = new LinkedHashSet<>(resourceManager.getResourceNamespaces());
+		Map<String, List<ResourceLocation>> packs = new HashMap<>();
 
-		for (String namespace : namespaces)
+		for (ResourceLocation resource : resourceManager.getAllResourceLocations("kubejs", s -> s.endsWith(".js")))
 		{
-			try (InputStreamReader reader = new InputStreamReader(resourceManager.getResource(new ResourceLocation(namespace, "kubejs/scripts.json")).getInputStream()))
-			{
-				ScriptPack pack = new ScriptPack(scriptManager, new ScriptPackInfo(namespace, reader, "kubejs/"));
+			packs.computeIfAbsent(resource.getNamespace(), s -> new ArrayList<>()).add(resource);
+		}
 
-				for (ScriptFileInfo fileInfo : pack.info.scripts)
+		for (Map.Entry<String, List<ResourceLocation>> entry : packs.entrySet())
+		{
+			ScriptPack pack = new ScriptPack(scriptManager, new ScriptPackInfo(entry.getKey(), "kubejs/"));
+
+			for (ResourceLocation id : entry.getValue())
+			{
+				pack.info.scripts.add(new ScriptFileInfo(pack.info, id.getPath().substring(7)));
+			}
+
+			for (ScriptFileInfo fileInfo : pack.info.scripts)
+			{
+				ScriptSource scriptSource = info -> new InputStreamReader(resourceManager.getResource(info.location).getInputStream());
+				Throwable error = fileInfo.preload(scriptSource);
+
+				if (error == null)
 				{
-					pack.scripts.add(new ScriptFile(pack, fileInfo, info -> new InputStreamReader(resourceManager.getResource(info.location).getInputStream())));
+					if (fileInfo.shouldLoad(FMLEnvironment.dist))
+					{
+						pack.scripts.add(new ScriptFile(pack, fileInfo, scriptSource));
+					}
 				}
+				else
+				{
+					KubeJS.LOGGER.error("Failed to pre-load script file " + fileInfo.location + ": " + error);
+				}
+			}
 
-				scriptManager.packs.put(pack.info.namespace, pack);
-			}
-			catch (Exception ex)
-			{
-			}
+			pack.scripts.sort(null);
+			scriptManager.packs.put(pack.info.namespace, pack);
 		}
 
 		//Loading is required in prepare stage to allow virtual data pack overrides

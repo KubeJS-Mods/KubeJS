@@ -40,4 +40,3 @@ public class RegexIngredientJS implements IngredientJS
 		return "regex:" + pattern;
 	}
 }
-

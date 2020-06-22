@@ -164,6 +164,6 @@ public class MekanismMachineRecipeJS extends RecipeJS
 			json.add(inputName, inputArray);
 		}
 
-		json.add(outputName, outputItems.get(0).getResultJson());
+		json.add(outputName, outputItems.get(0).toResultJson());
 	}
 }

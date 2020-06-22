@@ -18,6 +18,7 @@ import dev.latvian.kubejs.script.ScriptFileInfo;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.script.ScriptPack;
 import dev.latvian.kubejs.script.ScriptPackInfo;
+import dev.latvian.kubejs.script.ScriptSource;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.KubeJSServerEventHandler;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -131,27 +132,56 @@ public class KubeJS
 
 		if (new File(startupFolder, "scripts.json").exists())
 		{
-			try (FileReader reader = new FileReader(new File(startupFolder, "scripts.json")))
+			LOGGER.warn("KubeJS no longer uses scripts.json file, please delete it! To reorder scripts, add '// priority: 10' on top of them. Default priority is 0.");
+		}
+
+		ScriptPack pack = new ScriptPack(startupScriptManager, new ScriptPackInfo("startup", ""));
+		loadScripts(pack, startupFolder, "");
+
+		for (ScriptFileInfo fileInfo : pack.info.scripts)
+		{
+			ScriptSource scriptSource = info -> new FileReader(new File(startupFolder, info.file));
+
+			Throwable error = fileInfo.preload(scriptSource);
+
+			if (error == null)
 			{
-				ScriptPack pack = new ScriptPack(startupScriptManager, new ScriptPackInfo("startup", reader, ""));
-
-				for (ScriptFileInfo fileInfo : pack.info.scripts)
-				{
-					pack.scripts.add(new ScriptFile(pack, fileInfo, info -> new FileReader(new File(startupFolder, info.file))));
-				}
-
-				startupScriptManager.packs.put(pack.info.namespace, pack);
+				pack.scripts.add(new ScriptFile(pack, fileInfo, scriptSource));
 			}
-			catch (Exception ex)
+			else
 			{
+				LOGGER.error("Failed to pre-load script file " + fileInfo.location + ": " + error);
 			}
 		}
+
+		pack.scripts.sort(null);
+		startupScriptManager.packs.put(pack.info.namespace, pack);
 
 		startupScriptManager.load();
 
 		new BlockRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.BLOCK_REGISTRY);
 		new ItemRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.ITEM_REGISTRY);
 		new FluidRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.FLUID_REGISTRY);
+	}
+
+	private void loadScripts(ScriptPack pack, File dir, String path)
+	{
+		File[] files = dir.listFiles();
+
+		if (files != null && files.length > 0)
+		{
+			for (File file : files)
+			{
+				if (file.isDirectory())
+				{
+					loadScripts(pack, file, path.isEmpty() ? file.getName() : (path + "/" + file.getName()));
+				}
+				else if (file.getName().endsWith(".js"))
+				{
+					pack.info.scripts.add(new ScriptFileInfo(pack.info, path.isEmpty() ? file.getName() : (path + "/" + file.getName())));
+				}
+			}
+		}
 	}
 
 	public static String appendModId(String id)

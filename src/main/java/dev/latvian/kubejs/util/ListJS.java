@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -262,7 +263,7 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 		onChanged(null);
 	}
 
-	public ListJS map(Predicate<Object> predicate)
+	public ListJS filter(Predicate<Object> predicate)
 	{
 		ListJS list = new ListJS();
 
@@ -272,6 +273,18 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 			{
 				list.add(o);
 			}
+		}
+
+		return list;
+	}
+
+	public ListJS map(Function<Object, Object> transformer)
+	{
+		ListJS list = new ListJS();
+
+		for (Object o : this)
+		{
+			list.add(transformer.apply(o));
 		}
 
 		return list;

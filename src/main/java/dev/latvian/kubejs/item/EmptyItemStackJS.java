@@ -221,7 +221,7 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public JsonElement getResultJson()
+	public JsonElement toResultJson()
 	{
 		JsonObject json = new JsonObject();
 		json.addProperty("item", "minecraft:air");

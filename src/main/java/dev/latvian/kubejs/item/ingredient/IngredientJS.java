@@ -20,6 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
@@ -39,16 +40,22 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 		}
 		else if (o instanceof CharSequence)
 		{
-			if (o.toString().startsWith("#"))
+			String s = o.toString();
+
+			if (s.startsWith("#"))
 			{
-				return new TagIngredientJS(new ResourceLocation(o.toString().substring(1)));
+				return new TagIngredientJS(new ResourceLocation(s.substring(1)));
 			}
-			else if (o.toString().startsWith("mod:"))
+			else if (s.startsWith("mod:"))
 			{
-				return new ModIngredientJS(o.toString().substring(4));
+				return new ModIngredientJS(s.substring(4));
+			}
+			else if (s.startsWith("regex:"))
+			{
+				return new RegexIngredientJS(Pattern.compile(s.substring(6)));
 			}
 
-			return ItemStackJS.of(KubeJS.appendModId(o.toString()));
+			return ItemStackJS.of(KubeJS.appendModId(s));
 		}
 
 		List<Object> list = ListJS.of(o);
@@ -104,6 +111,10 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 			else if (map.containsKey("mod"))
 			{
 				return new ModIngredientJS(map.get("mod").toString());
+			}
+			else if (map.containsKey("regex"))
+			{
+				return new RegexIngredientJS(Pattern.compile(map.get("regex").toString()));
 			}
 		}
 
