@@ -9,6 +9,7 @@ import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.PlayerJS;
+import dev.latvian.kubejs.player.ServerPlayerJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.GameRulesJS;
 import dev.latvian.kubejs.server.ServerJS;
@@ -24,8 +25,9 @@ import net.minecraft.entity.item.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -71,11 +73,6 @@ public abstract class WorldJS implements WithAttachedData
 		return null;
 	}
 
-	public long getSeed()
-	{
-		return minecraftWorld.getSeed();
-	}
-
 	public long getTime()
 	{
 		return minecraftWorld.getGameTime();
@@ -86,29 +83,14 @@ public abstract class WorldJS implements WithAttachedData
 		return minecraftWorld.getDayTime();
 	}
 
-	public void setTime(long time)
+	public String getDimension()
 	{
-		minecraftWorld.setGameTime(time);
-	}
-
-	public void setLocalTime(long time)
-	{
-		minecraftWorld.setDayTime(time);
-	}
-
-	public DimensionType getDimension()
-	{
-		return minecraftWorld.getDimension().getType();
-	}
-
-	public String getDimensionId()
-	{
-		return DimensionType.getKey(getDimension()).toString();
+		return minecraftWorld.func_234922_V_().func_240901_a_().toString();
 	}
 
 	public boolean isOverworld()
 	{
-		return getDimension() == DimensionType.OVERWORLD;
+		return minecraftWorld.func_234922_V_() == DimensionType.field_235999_c_; //FIXME
 	}
 
 	public boolean isDaytime()
@@ -222,12 +204,20 @@ public abstract class WorldJS implements WithAttachedData
 		return getEntity(type.create(minecraftWorld));
 	}
 
-	public void spawnLightning(double x, double y, double z, boolean effectOnly)
+	public void spawnLightning(double x, double y, double z, boolean effectOnly, @Nullable EntityJS player)
 	{
 		if (minecraftWorld instanceof ServerWorld)
 		{
-			((ServerWorld) minecraftWorld).addLightningBolt(new LightningBoltEntity(minecraftWorld, x, y, z, effectOnly));
+			LightningBoltEntity e = EntityType.LIGHTNING_BOLT.create(minecraftWorld);
+			e.func_233576_c_(new Vector3d(x, y, z));
+			e.setCaster(player instanceof ServerPlayerJS ? ((ServerPlayerJS) player).minecraftPlayer : null);
+			minecraftWorld.addEntity(e);
 		}
+	}
+
+	public void spawnLightning(double x, double y, double z, boolean effectOnly)
+	{
+		spawnLightning(x, y, z, effectOnly, null);
 	}
 
 	public void spawnFireworks(double x, double y, double z, FireworksJS f)

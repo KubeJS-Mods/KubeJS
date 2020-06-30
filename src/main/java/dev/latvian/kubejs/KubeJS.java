@@ -20,7 +20,6 @@ import dev.latvian.kubejs.script.ScriptPack;
 import dev.latvian.kubejs.script.ScriptPackInfo;
 import dev.latvian.kubejs.script.ScriptSource;
 import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.server.KubeJSServerEventHandler;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
 import net.minecraftforge.fml.DistExecutor;
@@ -75,14 +74,12 @@ public class KubeJS
 		instance = this;
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP);
 		clientScriptManager = new ScriptManager(ScriptType.CLIENT);
-		//noinspection Convert2MethodRef
-		proxy = DistExecutor.runForDist(() -> () -> new KubeJSClient(), () -> () -> new KubeJSCommon());
+		proxy = DistExecutor.safeRunForDist(() -> KubeJSClient::new, () -> KubeJSCommon::new);
 
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadComplete);
 
 		new KubeJSOtherEventHandler().init();
-		new KubeJSServerEventHandler().init();
 		new KubeJSWorldEventHandler().init();
 		new KubeJSPlayerEventHandler().init();
 		new KubeJSEntityEventHandler().init();

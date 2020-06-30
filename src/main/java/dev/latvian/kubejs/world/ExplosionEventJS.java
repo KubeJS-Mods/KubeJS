@@ -4,7 +4,7 @@ import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.event.world.ExplosionEvent;
 
 import javax.annotation.Nullable;
@@ -29,7 +29,7 @@ public abstract class ExplosionEventJS extends WorldEventJS
 		return worldOf(event.getWorld());
 	}
 
-	public Vec3d getPosition()
+	public Vector3d getPosition()
 	{
 		return event.getExplosion().getPosition();
 	}

@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.script;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.server.ServerScriptManager;
 import dev.latvian.kubejs.util.ConsoleJS;
 import net.minecraft.world.IWorldReader;
 import org.apache.logging.log4j.LogManager;
@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 public enum ScriptType
 {
 	STARTUP("startup", "KubeJS Startup", () -> KubeJS.startupScriptManager),
-	SERVER("server", "KubeJS Server", () -> ServerJS.instance.scriptManager),
+	SERVER("server", "KubeJS Server", () -> ServerScriptManager.instance.scriptManager),
 	CLIENT("client", "KubeJS Client", () -> KubeJS.clientScriptManager);
 
 	public static ScriptType of(IWorldReader world)

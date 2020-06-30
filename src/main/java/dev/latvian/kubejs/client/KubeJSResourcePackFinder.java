@@ -3,6 +3,7 @@ package dev.latvian.kubejs.client;
 import dev.latvian.kubejs.script.data.KubeJSResourcePack;
 import net.minecraft.client.resources.ClientResourcePackInfo;
 import net.minecraft.resources.IPackFinder;
+import net.minecraft.resources.IPackNameDecorator;
 import net.minecraft.resources.ResourcePackInfo;
 import net.minecraft.resources.ResourcePackType;
 import net.minecraft.resources.data.PackMetadataSection;
@@ -11,7 +12,7 @@ import net.minecraft.util.text.StringTextComponent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
@@ -26,7 +27,7 @@ public class KubeJSResourcePackFinder implements IPackFinder
 	}
 
 	@Override
-	public <T extends ResourcePackInfo> void addPackInfosToMap(Map<String, T> nameToPackMap, ResourcePackInfo.IFactory<T> packInfoFactory)
+	public <T extends ResourcePackInfo> void func_230230_a_(Consumer<T> nameToPackMap, ResourcePackInfo.IFactory<T> packInfoFactory)
 	{
 		File assetsFolder = new File(folder, "assets");
 
@@ -54,7 +55,6 @@ public class KubeJSResourcePackFinder implements IPackFinder
 
 		KubeJSResourcePack pack = new KubeJSResourcePack(folder, ResourcePackType.CLIENT_RESOURCES);
 		PackMetadataSection metadataSection = new PackMetadataSection(new StringTextComponent("./kubejs/assets/"), 5);
-		ClientResourcePackInfo info = new ClientResourcePackInfo("kubejs:resource_pack", true, () -> pack, pack, metadataSection, ResourcePackInfo.Priority.TOP, false);
-		nameToPackMap.put(info.getName(), (T) info);
+		nameToPackMap.accept((T) new ClientResourcePackInfo("kubejs:resource_pack", true, () -> pack, pack, metadataSection, ResourcePackInfo.Priority.TOP, IPackNameDecorator.field_232626_b_, false));
 	}
 }

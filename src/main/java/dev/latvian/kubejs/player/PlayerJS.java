@@ -16,7 +16,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -254,10 +254,10 @@ public abstract class PlayerJS<E extends PlayerEntity> extends LivingEntityJS im
 	{
 		if (minecraftPlayer.isElytraFlying())
 		{
-			Vec3d v = minecraftPlayer.getLookVec();
+			Vector3d v = minecraftPlayer.getLookVec();
 			double d0 = 1.5D;
 			double d1 = 0.1D;
-			Vec3d m = minecraftPlayer.getMotion();
+			Vector3d m = minecraftPlayer.getMotion();
 			minecraftPlayer.setMotion(m.add(v.x * 0.1D + (v.x * 1.5D - m.x) * 0.5D, v.y * 0.1D + (v.y * 1.5D - m.y) * 0.5D, v.z * 0.1D + (v.z * 1.5D - m.z) * 0.5D));
 		}
 	}

@@ -1,17 +1,13 @@
 package dev.latvian.kubejs.block.predicate;
 
-import dev.latvian.kubejs.core.BlockKJS;
-import dev.latvian.kubejs.core.BlockStateKJS;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.state.IProperty;
+import net.minecraft.state.Property;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
@@ -27,7 +23,7 @@ public class BlockIDPredicate implements BlockPredicate
 {
 	private static class PropertyObject
 	{
-		private IProperty<?> property;
+		private Property<?> property;
 		private Object value;
 	}
 
@@ -108,16 +104,16 @@ public class BlockIDPredicate implements BlockPredicate
 		{
 			cachedProperties = new LinkedList<>();
 
-			Map<String, IProperty<?>> map = new HashMap<>();
+			Map<String, Property<?>> map = new HashMap<>();
 
-			for (IProperty<?> property : getBlock().getDefaultState().getProperties())
+			for (Property<?> property : getBlock().getDefaultState().func_235904_r_())
 			{
 				map.put(property.getName(), property);
 			}
 
 			for (Map.Entry<String, String> entry : properties.entrySet())
 			{
-				IProperty<?> property = map.get(entry.getKey());
+				Property<?> property = map.get(entry.getKey());
 
 				if (property != null)
 				{
@@ -178,6 +174,7 @@ public class BlockIDPredicate implements BlockPredicate
 		return true;
 	}
 
+	/* FIXME
 	public BlockIDPredicate setHardness(float hardness)
 	{
 		Block block = getBlock();
@@ -236,4 +233,5 @@ public class BlockIDPredicate implements BlockPredicate
 
 		return this;
 	}
+	 */
 }

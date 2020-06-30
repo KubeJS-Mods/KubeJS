@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.client;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSObjects;
@@ -25,6 +26,7 @@ import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextProperties;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
@@ -108,11 +110,11 @@ public class KubeJSClientEventHandler
 
 	private void itemTooltip(ItemTooltipEvent event)
 	{
-		if (ClientProperties.get().showTagNames && Minecraft.getInstance().gameSettings.advancedItemTooltips && Screen.hasShiftDown())
+		if (ClientProperties.get().showTagNames && Minecraft.getInstance().gameSettings.advancedItemTooltips && Screen.func_231173_s_()) //hasShiftDown
 		{
 			for (ResourceLocation tag : event.getItemStack().getItem().getTags())
 			{
-				event.getToolTip().add(new StringTextComponent(" #" + tag).applyTextStyle(TextFormatting.DARK_GRAY));
+				event.getToolTip().add(new StringTextComponent(" #" + tag).func_240699_a_(TextFormatting.DARK_GRAY));
 			}
 		}
 
@@ -153,21 +155,21 @@ public class KubeJSClientEventHandler
 		MinecraftForge.EVENT_BUS.post(new AttachPlayerDataEvent(ClientWorldJS.instance.clientPlayerData));
 	}
 
-	private int drawOverlay(Minecraft mc, int maxWidth, int x, int y, int p, Overlay o, boolean inv)
+	private int drawOverlay(Minecraft mc, MatrixStack matrixStack, int maxWidth, int x, int y, int p, Overlay o, boolean inv)
 	{
-		List<String> list = new ArrayList<>();
+		List<ITextProperties> list = new ArrayList<>();
 		int l = 10;
 
 		for (Text t : o.text)
 		{
-			list.addAll(mc.fontRenderer.listFormattedStringToWidth(t.getFormattedString(), maxWidth));
+			list.addAll(mc.fontRenderer.func_238425_b_(t.component(), maxWidth));
 		}
 
 		int mw = 0;
 
-		for (String s : list)
+		for (ITextProperties s : list)
 		{
-			mw = Math.max(mw, mc.fontRenderer.getStringWidth(s));
+			mw = Math.max(mw, mc.fontRenderer.getStringWidth(s.getString()));
 		}
 
 		if (mw == 0)
@@ -211,7 +213,7 @@ public class KubeJSClientEventHandler
 
 		for (int i = 0; i < list.size(); i++)
 		{
-			mc.fontRenderer.drawStringWithShadow(list.get(i), x + p, y + i * l + p, 0xFFFFFFFF);
+			mc.fontRenderer.func_238407_a_(matrixStack, list.get(i), x + p, y + i * l + p, 0xFFFFFFFF);
 		}
 
 		return list.size() * l + p * 2 + (p - 2);
@@ -239,8 +241,9 @@ public class KubeJSClientEventHandler
 			return;
 		}
 
-		RenderSystem.pushMatrix();
-		RenderSystem.translatef(0, 0, 800);
+		MatrixStack matrixStack = new MatrixStack();
+		matrixStack.translate(0, 0, 800);
+
 		RenderSystem.enableBlend();
 		RenderSystem.disableLighting();
 
@@ -251,10 +254,8 @@ public class KubeJSClientEventHandler
 
 		for (Overlay o : KubeJSClient.activeOverlays.values())
 		{
-			spy += drawOverlay(mc, maxWidth, spx, spy, p, o, false);
+			spy += drawOverlay(mc, matrixStack, maxWidth, spx, spy, p, o, false);
 		}
-
-		RenderSystem.popMatrix();
 	}
 
 	private void guiScreenDraw(GuiScreenEvent.DrawScreenEvent.Post event)
@@ -265,9 +266,9 @@ public class KubeJSClientEventHandler
 		}
 
 		Minecraft mc = Minecraft.getInstance();
+		MatrixStack matrixStack = new MatrixStack();
+		matrixStack.translate(0, 0, 800);
 
-		RenderSystem.pushMatrix();
-		RenderSystem.translatef(0, 0, 800);
 		RenderSystem.enableBlend();
 		RenderSystem.disableLighting();
 
@@ -290,18 +291,16 @@ public class KubeJSClientEventHandler
 		{
 			if (o.alwaysOnTop)
 			{
-				spy += drawOverlay(mc, maxWidth, spx, spy, p, o, true);
+				spy += drawOverlay(mc, matrixStack, maxWidth, spx, spy, p, o, true);
 			}
 		}
-
-		RenderSystem.popMatrix();
 	}
 
 	private boolean isOver(List<Widget> list, int x, int y)
 	{
 		for (Widget w : list)
 		{
-			if (w.visible && x >= w.x && y >= w.y && x < w.x + w.getWidth() && y < w.y + w.getHeight())
+			if (w.field_230694_p_ && x >= w.field_230690_l_ && y >= w.field_230691_m_ && x < w.field_230690_l_ + w.func_230998_h_() && y < w.field_230691_m_ + w.getHeight()) //TODO: visible, width
 			{
 				return true;
 			}

@@ -230,10 +230,10 @@ public class KubeJSResourcePack implements IResourcePack
 						for (Direction direction : Direction.values())
 						{
 							JsonObject f = new JsonObject();
-							f.addProperty("texture", "#" + direction.getName());
-							f.addProperty("cullface", direction.getName());
+							f.addProperty("texture", "#" + direction.func_176610_l());
+							f.addProperty("cullface", direction.func_176610_l());
 							f.addProperty("tintindex", 0);
-							faces.add(direction.getName(), f);
+							faces.add(direction.func_176610_l(), f);
 						}
 
 						cube.add("faces", faces);
@@ -253,7 +253,7 @@ public class KubeJSResourcePack implements IResourcePack
 				if (fluidBuilder != null)
 				{
 					JsonObject textures = new JsonObject();
-					textures.addProperty("particle", fluidBuilder.stillTexture.toString());
+					textures.addProperty("particle", fluidBuilder.stillTexture);
 					json.add("textures", textures);
 					return true;
 				}
@@ -300,7 +300,7 @@ public class KubeJSResourcePack implements IResourcePack
 	{
 		for (Direction direction : Direction.values())
 		{
-			if (!tex.get(direction.getName()).getAsString().equals(t))
+			if (!tex.get(direction.func_176610_l()).getAsString().equals(t))
 			{
 				return false;
 			}

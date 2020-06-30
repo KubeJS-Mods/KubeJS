@@ -1,13 +1,13 @@
 package dev.latvian.kubejs.core;
 
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * @author LatvianModder
  */
-public interface TagBuilderKJS<T>
+public interface TagBuilderKJS
 {
-	Set<Tag.ITagEntry<T>> getEntriesKJS();
+	List<ITag.Proxy> getProxyListKJS();
 }

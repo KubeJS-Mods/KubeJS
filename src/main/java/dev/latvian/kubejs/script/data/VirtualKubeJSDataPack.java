@@ -2,7 +2,7 @@ package dev.latvian.kubejs.script.data;
 
 import com.google.common.collect.Lists;
 import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.server.ServerSettings;
 import net.minecraft.resources.ResourcePackType;
 import net.minecraft.resources.data.IMetadataSectionSerializer;
 import net.minecraft.util.ResourceLocation;
@@ -63,7 +63,7 @@ public class VirtualKubeJSDataPack extends DelegatableResourcePack
 
 		if (s != null)
 		{
-			if (ServerJS.instance.dataPackOutput)
+			if (ServerSettings.instance.dataPackOutput)
 			{
 				ScriptType.SERVER.console.info("Served virtual file '" + path + "': " + s);
 			}
@@ -81,7 +81,7 @@ public class VirtualKubeJSDataPack extends DelegatableResourcePack
 
 		if (s != null)
 		{
-			if (ServerJS.instance.dataPackOutput)
+			if (ServerSettings.instance.dataPackOutput)
 			{
 				ScriptType.SERVER.console.info("Served virtual file '" + location + "': " + s);
 			}

@@ -12,6 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -67,7 +68,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 		for (EntityJS entity : this)
 		{
-			entity.minecraftEntity.sendMessage(component);
+			entity.minecraftEntity.sendMessage(component, Util.field_240973_b_);
 		}
 	}
 

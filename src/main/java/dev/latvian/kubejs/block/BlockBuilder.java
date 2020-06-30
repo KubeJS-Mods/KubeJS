@@ -136,7 +136,7 @@ public class BlockBuilder extends BuilderBase
 	{
 		for (Direction direction : Direction.values())
 		{
-			textures.addProperty(direction.getName(), tex);
+			textures.addProperty(direction.func_176610_l(), tex);
 		}
 
 		textures.addProperty("particle", tex);
@@ -145,7 +145,7 @@ public class BlockBuilder extends BuilderBase
 
 	public BlockBuilder texture(Direction direction, String tex)
 	{
-		textures.addProperty(direction.getName(), tex);
+		textures.addProperty(direction.func_176610_l(), tex);
 		return this;
 	}
 
@@ -207,7 +207,7 @@ public class BlockBuilder extends BuilderBase
 			properties.hardnessAndResistance(hardness);
 		}
 
-		properties.lightValue((int) (lightLevel * 15F));
+		properties.func_235838_a_(state -> (int) (lightLevel * 15F));
 
 		if (harvestTool != null)
 		{

@@ -5,7 +5,7 @@ import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import net.minecraft.entity.item.FireworkRocketEntity;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;

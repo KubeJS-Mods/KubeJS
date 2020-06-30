@@ -1,12 +1,11 @@
 package dev.latvian.kubejs.core;
 
-import net.minecraftforge.common.ToolType;
-
 /**
  * @author LatvianModder
  */
 public interface BlockKJS
 {
+	/* FIXME
 	void setHardnessKJS(float hardness);
 
 	void setResistanceKJS(float resistance);
@@ -16,4 +15,5 @@ public interface BlockKJS
 	void setHarvestToolKJS(ToolType type);
 
 	void setHarvestLevelKJS(int level);
+	 */
 }

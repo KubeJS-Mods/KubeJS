@@ -31,7 +31,7 @@ public class FacingWrapper
 
 		for (Direction facing : Direction.values())
 		{
-			map0.put(facing.getName(), facing);
+			map0.put(facing.func_176610_l(), facing);
 		}
 
 		map = Collections.unmodifiableMap(map0);

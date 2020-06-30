@@ -27,7 +27,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -38,6 +38,8 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -130,7 +132,11 @@ public class UtilsJS
 		{
 			Text t = new TextString("");
 
-			for (ITextComponent c : ((ITextComponent) o))
+			List<ITextComponent> list = new ArrayList<>();
+			list.add((ITextComponent) o);
+			list.addAll(((ITextComponent) o).getSiblings());
+
+			for (ITextComponent c : list)
 			{
 				Text t1;
 
@@ -175,9 +181,9 @@ public class UtilsJS
 
 				HoverEvent he = c.getStyle().getHoverEvent();
 
-				if (he != null && he.getAction() == HoverEvent.Action.SHOW_TEXT)
+				if (he != null && he.getAction() == HoverEvent.Action.field_230550_a_)
 				{
-					t1.hover(Text.of(he.getValue()));
+					t1.hover(Text.of(he.func_240662_a_(HoverEvent.Action.field_230550_a_)));
 				}
 
 				t.append(t1);
@@ -447,7 +453,7 @@ public class UtilsJS
 		return ToolType.get(id);
 	}
 
-	public static WorldJS getWorld(IWorld world)
+	public static WorldJS getWorld(World world)
 	{
 		if (world.isRemote())
 		{

@@ -1,19 +1,20 @@
 package dev.latvian.kubejs.server;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.core.TagBuilderKJS;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import net.minecraft.tags.ITag;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
 
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
 
 /**
  * @author LatvianModder
@@ -24,15 +25,15 @@ public class TagEventJS<T> extends ServerEventJS
 	{
 		private final TagEventJS<T> event;
 		private final ResourceLocation id;
-		private final Tag.Builder<T> tag;
-		private final Set<Tag.ITagEntry<T>> entries;
+		private final Tag.Builder builder;
+		private final List<ITag.Proxy> proxyList;
 
-		private TagWrapper(TagEventJS<T> e, ResourceLocation i, Tag.Builder<T> t)
+		private TagWrapper(TagEventJS<T> e, ResourceLocation i, Tag.Builder t)
 		{
 			event = e;
 			id = i;
-			tag = t;
-			entries = ((TagBuilderKJS<T>) tag).getEntriesKJS();
+			builder = t;
+			proxyList = ((TagBuilderKJS) builder).getProxyListKJS();
 		}
 
 		public TagWrapper<T> add(Object ids)
@@ -44,18 +45,18 @@ public class TagEventJS<T> extends ServerEventJS
 				if (s.startsWith("#"))
 				{
 					TagWrapper<T> w = event.get(s.substring(1));
-					entries.add(new Tag.TagEntry<>(w.id));
-					event.addedCount += w.entries.size();
+					builder.func_232964_b_(w.id, KubeJS.MOD_ID);
+					event.addedCount += w.proxyList.size();
 					ScriptType.SERVER.console.logger.info("+ " + event.type + ":" + id + " // " + w.id);
 				}
 				else
 				{
 					ResourceLocation sid = new ResourceLocation(s);
-					Optional<T> v = event.getter.apply(sid);
+					Optional<T> v = event.registry.getValue(sid);
 
 					if (v.isPresent())
 					{
-						entries.add(new Tag.ListEntry<>(Collections.singleton(v.get())));
+						builder.func_232961_a_(sid, KubeJS.MOD_ID);
 						event.addedCount++;
 						ScriptType.SERVER.console.logger.info("+ " + event.type + ":" + id + " // " + s + " [" + v.get().getClass().getName() + "]");
 					}
@@ -78,18 +79,20 @@ public class TagEventJS<T> extends ServerEventJS
 				if (s.startsWith("#"))
 				{
 					TagWrapper<T> w = event.get(s.substring(1));
-					entries.remove(new Tag.TagEntry<>(w.id));
-					event.addedCount += w.entries.size();
+					ITag.ITagEntry entry = new ITag.TagEntry(w.id);
+					proxyList.removeIf(p -> entry.equals(p.func_232968_a_()));
+					event.addedCount += w.proxyList.size();
 					ScriptType.SERVER.console.logger.info("- " + event.type + ":" + id + " // " + w.id);
 				}
 				else
 				{
 					ResourceLocation sid = new ResourceLocation(s);
-					Optional<T> v = event.getter.apply(sid);
+					Optional<T> v = event.registry.getValue(sid);
 
 					if (v.isPresent())
 					{
-						entries.remove(new Tag.ListEntry<>(Collections.singleton(v.get())));
+						ITag.ITagEntry entry = new ITag.ItemEntry(sid);
+						proxyList.removeIf(p -> entry.equals(p.func_232968_a_()));
 						event.addedCount++;
 						ScriptType.SERVER.console.logger.info("- " + event.type + ":" + id + " // " + s + " [" + v.get().getClass().getName() + "]");
 					}
@@ -105,17 +108,17 @@ public class TagEventJS<T> extends ServerEventJS
 	}
 
 	private final String type;
-	private final Map<ResourceLocation, Tag.Builder<T>> map;
-	private final Function<ResourceLocation, Optional<T>> getter;
+	private final Map<ResourceLocation, Tag.Builder> map;
+	private final Registry<T> registry;
 	private Map<ResourceLocation, TagWrapper<T>> tags;
 	private int addedCount;
 	private int removedCount;
 
-	public TagEventJS(String t, Map<ResourceLocation, Tag.Builder<T>> m, Function<ResourceLocation, Optional<T>> g)
+	public TagEventJS(String t, Map<ResourceLocation, Tag.Builder> m, Registry<T> r)
 	{
 		type = t;
 		map = m;
-		getter = g;
+		registry = r;
 	}
 
 	public String getType()
@@ -127,11 +130,11 @@ public class TagEventJS<T> extends ServerEventJS
 	{
 		tags = new HashMap<>();
 
-		for (Map.Entry<ResourceLocation, Tag.Builder<T>> entry : map.entrySet())
+		for (Map.Entry<ResourceLocation, Tag.Builder> entry : map.entrySet())
 		{
 			TagWrapper<T> w = new TagWrapper<>(this, entry.getKey(), entry.getValue());
 			tags.put(entry.getKey(), w);
-			ScriptType.SERVER.console.logger.debug(type + "/#" + entry.getKey() + "; " + w.entries.size());
+			ScriptType.SERVER.console.logger.debug(type + "/#" + entry.getKey() + "; " + w.proxyList.size());
 		}
 
 		ScriptType.SERVER.console.setLineNumber(true);
@@ -149,9 +152,9 @@ public class TagEventJS<T> extends ServerEventJS
 
 		if (t == null)
 		{
-			t = new TagWrapper<>(this, id, new Tag.Builder<>());
+			t = new TagWrapper<>(this, id, Tag.Builder.create());
 			tags.put(id, t);
-			map.put(id, t.tag);
+			map.put(id, t.builder);
 		}
 
 		return t;

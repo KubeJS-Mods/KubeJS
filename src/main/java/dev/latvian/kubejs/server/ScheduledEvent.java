@@ -20,7 +20,7 @@ public class ScheduledEvent
 
 	ScheduledEvent(ServerJS s, boolean ut, long t, long e, @Nullable Object d, IScheduledEventCallback c)
 	{
-		file = s.scriptManager.currentFile;
+		file = s.serverScriptManager.scriptManager.currentFile;
 		usingTicks = ut;
 		server = s;
 		timer = t;

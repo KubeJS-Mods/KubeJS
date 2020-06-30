@@ -1,6 +1,8 @@
 package dev.latvian.kubejs.server;
 
+import com.mojang.serialization.Dynamic;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.world.GameRules;
 
 import javax.annotation.Nullable;
@@ -12,7 +14,7 @@ import java.util.Map;
  */
 public class GameRulesJS
 {
-	private final GameRules rules;
+	private GameRules rules;
 	private Map<String, GameRules.RuleKey> cache;
 
 	public GameRulesJS(GameRules r)
@@ -69,6 +71,6 @@ public class GameRulesJS
 	{
 		CompoundNBT nbt = rules.write();
 		nbt.putString(rule, String.valueOf(value));
-		rules.read(nbt);
+		rules = new GameRules(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt)); //TODO: Check if works
 	}
 }

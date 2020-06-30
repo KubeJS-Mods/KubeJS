@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.script.data;
 
 import net.minecraft.resources.IPackFinder;
+import net.minecraft.resources.IPackNameDecorator;
 import net.minecraft.resources.ResourcePackInfo;
 import net.minecraft.resources.ResourcePackType;
 import net.minecraft.resources.data.PackMetadataSection;
@@ -9,7 +10,7 @@ import net.minecraft.util.text.StringTextComponent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
@@ -24,7 +25,7 @@ public class KubeJSDataPackFinder implements IPackFinder
 	}
 
 	@Override
-	public <T extends ResourcePackInfo> void addPackInfosToMap(Map<String, T> nameToPackMap, ResourcePackInfo.IFactory<T> packInfoFactory)
+	public <T extends ResourcePackInfo> void func_230230_a_(Consumer<T> nameToPackMap, ResourcePackInfo.IFactory<T> packInfoFactory)
 	{
 		File dataFolder = new File(folder, "data");
 
@@ -57,7 +58,6 @@ public class KubeJSDataPackFinder implements IPackFinder
 
 		KubeJSResourcePack dataPack = new KubeJSResourcePack(folder, ResourcePackType.SERVER_DATA);
 		PackMetadataSection dataPackMetadata = new PackMetadataSection(new StringTextComponent("./kubejs/data/"), 5);
-		ResourcePackInfo dataPackInfo = new ResourcePackInfo("kubejs:data_pack", true, () -> dataPack, dataPack, dataPackMetadata, ResourcePackInfo.Priority.TOP, true);
-		nameToPackMap.put(dataPackInfo.getName(), (T) dataPackInfo);
+		nameToPackMap.accept((T) new ResourcePackInfo("kubejs:data_pack", true, () -> dataPack, dataPack, dataPackMetadata, ResourcePackInfo.Priority.TOP, IPackNameDecorator.field_232626_b_, true));
 	}
 }

@@ -7,17 +7,20 @@ import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.player.ServerPlayerJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.LightningBoltEntity;
-import net.minecraft.state.IProperty;
+import net.minecraft.state.Property;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -57,7 +60,7 @@ public class BlockContainerJS
 
 	public WorldJS getWorld()
 	{
-		return UtilsJS.getWorld(minecraftWorld);
+		return UtilsJS.getWorld((World) minecraftWorld);
 	}
 
 	public BlockPos getPos()
@@ -65,9 +68,9 @@ public class BlockContainerJS
 		return pos;
 	}
 
-	public int getDimension()
+	public String getDimension()
 	{
-		return minecraftWorld.getDimension().getType().getId();
+		return ((World) minecraftWorld).func_234922_V_().func_240901_a_().toString();
 	}
 
 	public int getX()
@@ -161,16 +164,16 @@ public class BlockContainerJS
 
 		if (!properties.isEmpty() && state.getBlock() != Blocks.AIR)
 		{
-			Map<String, IProperty> pmap = new HashMap<>();
+			Map<String, Property> pmap = new HashMap<>();
 
-			for (IProperty property : state.getProperties())
+			for (Property property : state.func_235904_r_())
 			{
 				pmap.put(property.getName(), property);
 			}
 
 			for (Map.Entry entry : properties.entrySet())
 			{
-				IProperty<?> property = pmap.get(String.valueOf(entry.getKey()));
+				Property<?> property = pmap.get(String.valueOf(entry.getKey()));
 
 				if (property != null)
 				{
@@ -197,7 +200,7 @@ public class BlockContainerJS
 		Map<String, String> map = new HashMap<>();
 		BlockState state = getBlockState();
 
-		for (IProperty property : state.getProperties())
+		for (Property property : state.func_235904_r_())
 		{
 			map.put(property.getName(), property.getName(state.get(property)));
 		}
@@ -307,12 +310,20 @@ public class BlockContainerJS
 		return entity;
 	}
 
-	public void spawnLightning(boolean effectOnly)
+	public void spawnLightning(boolean effectOnly, @Nullable EntityJS player)
 	{
 		if (minecraftWorld instanceof ServerWorld)
 		{
-			((ServerWorld) minecraftWorld).addLightningBolt(new LightningBoltEntity((ServerWorld) minecraftWorld, getX(), getY(), getZ(), effectOnly));
+			LightningBoltEntity e = EntityType.LIGHTNING_BOLT.create((ServerWorld) minecraftWorld);
+			e.func_233576_c_(new Vector3d(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D));
+			e.setCaster(player instanceof ServerPlayerJS ? ((ServerPlayerJS) player).minecraftPlayer : null);
+			minecraftWorld.addEntity(e);
 		}
+	}
+
+	public void spawnLightning(boolean effectOnly)
+	{
+		spawnLightning(effectOnly, null);
 	}
 
 	public void spawnFireworks(FireworksJS fireworks)

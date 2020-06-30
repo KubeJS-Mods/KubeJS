@@ -38,13 +38,15 @@ public class ClientProperties
 	public boolean showTagNames;
 	public boolean disableRecipeBook;
 	public boolean exportAtlases;
+	public boolean overrideColors;
 	public int backgroundColor;
-	public float[] backgroundColor3f;
 	public int barColor;
-	public int barBackgroundColor;
 	public int barBorderColor;
-	public float[] fmlMemoryColor;
-	public float[] fmlLogColor;
+	public int fmlMemoryColor;
+	public int fmlLogColor;
+	public float[] backgroundColor3f;
+	public float[] fmlMemoryColor3f;
+	public float[] fmlLogColor3f;
 
 	private ClientProperties()
 	{
@@ -74,32 +76,20 @@ public class ClientProperties
 				writeProperties = true;
 			}
 
-			Path titleFile = folder.resolve("packtitle.txt");
-
-			if (Files.exists(titleFile))
-			{
-				try
-				{
-					Files.lines(titleFile).findFirst().ifPresent(s -> properties.setProperty("title", s.trim()));
-					Files.delete(titleFile);
-				}
-				catch (Exception ex)
-				{
-					ex.printStackTrace();
-				}
-			}
-
 			title = get("title", "");
 			showTagNames = get("showTagNames", true);
 			disableRecipeBook = get("disableRecipeBook", false);
 			exportAtlases = get("exportAtlases", false);
-			backgroundColor = getColor("backgroundColor", 0xFFFFFF);
-			backgroundColor3f = getFloatColor(backgroundColor);
-			barColor = getColor("barColor", 0xE22837);
-			barBackgroundColor = getColor("barBackgroundColor", 0xFFFFFF);
-			barBorderColor = getColor("barBorderColor", 0x000000);
-			fmlMemoryColor = getFloatColor("fmlMemoryColor");
-			fmlLogColor = getFloatColor("fmlLogColor");
+			overrideColors = get("overrideColors", true);
+			backgroundColor = getColor("backgroundColor", 0x2E3440);
+			barColor = getColor("barColor", 0xECEFF4);
+			barBorderColor = getColor("barBorderColor", 0xECEFF4);
+			fmlMemoryColor = getColor("fmlMemoryColor", 0xECEFF4);
+			fmlLogColor = getColor("fmlLogColor", 0xECEFF4);
+
+			backgroundColor3f = getColor3f(backgroundColor);
+			fmlMemoryColor3f = getColor3f(fmlMemoryColor);
+			fmlLogColor3f = getColor3f(fmlLogColor);
 
 			Path iconFile = folder.resolve("packicon.png");
 
@@ -145,7 +135,7 @@ public class ClientProperties
 
 	private int getColor(String key, int def)
 	{
-		String s = get(key, String.format("#%06X", def & 0xFFFFFF));
+		String s = get(key, String.format("%06X", def & 0xFFFFFF));
 
 		if (s.isEmpty() || s.equals("default"))
 		{
@@ -163,7 +153,7 @@ public class ClientProperties
 		}
 	}
 
-	private float[] getFloatColor(int color)
+	private float[] getColor3f(int color)
 	{
 		float[] c = new float[3];
 		c[0] = ((color >> 16) & 0xFF) / 255F;
@@ -173,7 +163,7 @@ public class ClientProperties
 	}
 
 	@Nullable
-	private float[] getFloatColor(String key)
+	private float[] getColor3f(String key)
 	{
 		String s = get(key, "default");
 
@@ -184,7 +174,7 @@ public class ClientProperties
 
 		try
 		{
-			return getFloatColor(Integer.decode(s));
+			return getColor3f(Integer.decode(s));
 		}
 		catch (Exception ex)
 		{

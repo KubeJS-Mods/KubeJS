@@ -18,7 +18,10 @@ public interface RecipeManagerKJS
 
 	default void customRecipesKJS(Map<ResourceLocation, JsonObject> jsonMap)
 	{
-		RecipeEventJS.instance.post((RecipeManager) this, jsonMap);
-		RecipeEventJS.instance = null;
+		if (RecipeEventJS.instance != null)
+		{
+			RecipeEventJS.instance.post((RecipeManager) this, jsonMap);
+			RecipeEventJS.instance = null;
+		}
 	}
 }

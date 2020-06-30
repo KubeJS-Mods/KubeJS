@@ -3,6 +3,7 @@ package dev.latvian.kubejs.entity;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 
 /**
@@ -26,7 +27,7 @@ public class CheckLivingEntitySpawnEventJS extends LivingEntityEventJS
 	@Override
 	public WorldJS getWorld()
 	{
-		return worldOf(event.getWorld());
+		return worldOf((World) event.getWorld());
 	}
 
 	@Override

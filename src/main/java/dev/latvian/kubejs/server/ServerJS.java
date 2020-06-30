@@ -1,8 +1,5 @@
 package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.core.SimpleReloadableResourceManagerKJS;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.net.KubeJSNet;
@@ -10,21 +7,8 @@ import dev.latvian.kubejs.net.MessageSendDataFromServer;
 import dev.latvian.kubejs.player.AdvancementJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.FakeServerPlayerDataJS;
-import dev.latvian.kubejs.player.PlayerDataJS;
-import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.player.ServerPlayerDataJS;
-import dev.latvian.kubejs.recipe.RecipeEventJS;
-import dev.latvian.kubejs.recipe.RecipeTypeJS;
-import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
-import dev.latvian.kubejs.script.ScriptFile;
-import dev.latvian.kubejs.script.ScriptFileInfo;
-import dev.latvian.kubejs.script.ScriptManager;
-import dev.latvian.kubejs.script.ScriptPack;
-import dev.latvian.kubejs.script.ScriptPackInfo;
-import dev.latvian.kubejs.script.ScriptSource;
-import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.script.data.DataPackEventJS;
-import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
+import dev.latvian.kubejs.player.ServerPlayerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.AttachedData;
 import dev.latvian.kubejs.util.MapJS;
@@ -38,29 +22,24 @@ import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.resources.FallbackResourceManager;
-import net.minecraft.resources.IFutureReloadListener;
-import net.minecraft.resources.SimpleReloadableResourceManager;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Util;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * @author LatvianModder
@@ -71,39 +50,27 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 	@MinecraftClass
 	public final MinecraftServer minecraftServer;
-	public final ScriptManager scriptManager;
+	public final ServerScriptManager serverScriptManager;
 	public final List<ScheduledEvent> scheduledEvents;
 	public final List<ScheduledEvent> scheduledTickEvents;
-	public final Map<DimensionType, ServerWorldJS> worldMap;
+	public final Map<String, ServerWorldJS> worldMap;
 	public final Map<UUID, ServerPlayerDataJS> playerMap;
 	public final Map<UUID, FakeServerPlayerDataJS> fakePlayerMap;
 	public final List<ServerWorldJS> worlds;
 
 	public ServerWorldJS overworld;
 	private AttachedData data;
-	private final VirtualKubeJSDataPack virtualDataPackFirst;
-	private final VirtualKubeJSDataPack virtualDataPackLast;
-	public boolean dataPackOutput;
-	public boolean logAddedRecipes;
-	public boolean logRemovedRecipes;
-	public boolean betterRecipeErrorLogging;
 
-	public ServerJS(MinecraftServer ms)
+	public ServerJS(MinecraftServer ms, ServerScriptManager m)
 	{
 		minecraftServer = ms;
-		scriptManager = new ScriptManager(ScriptType.SERVER);
+		serverScriptManager = m;
 		scheduledEvents = new LinkedList<>();
 		scheduledTickEvents = new LinkedList<>();
 		worldMap = new HashMap<>();
 		playerMap = new HashMap<>();
 		fakePlayerMap = new HashMap<>();
 		worlds = new ArrayList<>();
-		virtualDataPackFirst = new VirtualKubeJSDataPack(true);
-		virtualDataPackLast = new VirtualKubeJSDataPack(false);
-		dataPackOutput = false;
-		logAddedRecipes = false;
-		logRemovedRecipes = false;
-		betterRecipeErrorLogging = true;
 	}
 
 	public void updateWorldList()
@@ -143,11 +110,6 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return minecraftServer.isHardcore();
 	}
 
-	public void setHardcore(boolean hardcore)
-	{
-		overworld.minecraftWorld.getWorldInfo().setHardcore(hardcore);
-	}
-
 	public boolean isSinglePlayer()
 	{
 		return minecraftServer.isSinglePlayer();
@@ -165,7 +127,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 	public void setMotd(Object text)
 	{
-		minecraftServer.setMOTD(Text.of(text).component().getFormattedText());
+		minecraftServer.setMOTD(Text.of(text).component().getString());
 	}
 
 	public void stop()
@@ -189,11 +151,11 @@ public class ServerJS implements MessageSender, WithAttachedData
 	public void tell(Object message)
 	{
 		ITextComponent component = Text.of(message).component();
-		minecraftServer.sendMessage(component);
+		minecraftServer.sendMessage(component, Util.field_240973_b_);
 
 		for (ServerPlayerEntity player : minecraftServer.getPlayerList().getPlayers())
 		{
-			player.sendMessage(component);
+			player.sendMessage(component, Util.field_240973_b_);
 		}
 	}
 
@@ -214,18 +176,13 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return minecraftServer.getCommandManager().handleCommand(minecraftServer.getCommandSource(), command);
 	}
 
-	public WorldJS getWorld(DimensionType dimension)
+	public WorldJS getWorld(String dimension)
 	{
-		if (dimension == DimensionType.OVERWORLD)
-		{
-			return overworld;
-		}
-
 		ServerWorldJS world = worldMap.get(dimension);
 
 		if (world == null)
 		{
-			world = new ServerWorldJS(this, minecraftServer.getWorld(dimension));
+			world = new ServerWorldJS(this, minecraftServer.getWorld(RegistryKey.func_240903_a_(Registry.field_239699_ae_, new ResourceLocation(dimension))));
 			worldMap.put(dimension, world);
 			updateWorldList();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(world));
@@ -234,13 +191,23 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return world;
 	}
 
-	public WorldJS getWorld(IWorld minecraftWorld)
+	public WorldJS getWorld(World minecraftWorld)
 	{
-		return getWorld(minecraftWorld.getDimension().getType());
+		ServerWorldJS world = worldMap.get(minecraftWorld.func_234922_V_().func_240901_a_().toString());
+
+		if (world == null)
+		{
+			world = new ServerWorldJS(this, (ServerWorld) minecraftWorld);
+			worldMap.put(minecraftWorld.func_234922_V_().func_240901_a_().toString(), world);
+			updateWorldList();
+			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(world));
+		}
+
+		return world;
 	}
 
 	@Nullable
-	public PlayerJS getPlayer(UUID uuid)
+	public ServerPlayerJS getPlayer(UUID uuid)
 	{
 		ServerPlayerDataJS p = playerMap.get(uuid);
 
@@ -253,7 +220,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 	}
 
 	@Nullable
-	public PlayerJS getPlayer(String name)
+	public ServerPlayerJS getPlayer(String name)
 	{
 		name = name.trim().toLowerCase();
 
@@ -269,7 +236,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 			return getPlayer(uuid);
 		}
 
-		for (PlayerDataJS p : playerMap.values())
+		for (ServerPlayerDataJS p : playerMap.values())
 		{
 			if (p.getName().equalsIgnoreCase(name))
 			{
@@ -277,7 +244,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 			}
 		}
 
-		for (PlayerDataJS p : playerMap.values())
+		for (ServerPlayerDataJS p : playerMap.values())
 		{
 			if (p.getName().toLowerCase().contains(name))
 			{
@@ -289,7 +256,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 	}
 
 	@Nullable
-	public PlayerJS getPlayer(PlayerEntity minecraftPlayer)
+	public ServerPlayerJS getPlayer(PlayerEntity minecraftPlayer)
 	{
 		return getPlayer(minecraftPlayer.getUniqueID());
 	}
@@ -363,94 +330,5 @@ public class ServerJS implements MessageSender, WithAttachedData
 	public void sendDataToAll(String channel, @Nullable Object data)
 	{
 		KubeJSNet.MAIN.send(PacketDistributor.ALL.noArg(), new MessageSendDataFromServer(channel, MapJS.nbt(data)));
-	}
-
-	public void reloadScripts(SimpleReloadableResourceManager resourceManager)
-	{
-		scriptManager.unload();
-
-		Map<String, List<ResourceLocation>> packs = new HashMap<>();
-
-		for (ResourceLocation resource : resourceManager.getAllResourceLocations("kubejs", s -> s.endsWith(".js")))
-		{
-			packs.computeIfAbsent(resource.getNamespace(), s -> new ArrayList<>()).add(resource);
-		}
-
-		for (Map.Entry<String, List<ResourceLocation>> entry : packs.entrySet())
-		{
-			ScriptPack pack = new ScriptPack(scriptManager, new ScriptPackInfo(entry.getKey(), "kubejs/"));
-
-			for (ResourceLocation id : entry.getValue())
-			{
-				pack.info.scripts.add(new ScriptFileInfo(pack.info, id.getPath().substring(7)));
-			}
-
-			for (ScriptFileInfo fileInfo : pack.info.scripts)
-			{
-				ScriptSource scriptSource = info -> new InputStreamReader(resourceManager.getResource(info.location).getInputStream());
-				Throwable error = fileInfo.preload(scriptSource);
-
-				if (error == null)
-				{
-					if (fileInfo.shouldLoad(FMLEnvironment.dist))
-					{
-						pack.scripts.add(new ScriptFile(pack, fileInfo, scriptSource));
-					}
-				}
-				else
-				{
-					KubeJS.LOGGER.error("Failed to pre-load script file " + fileInfo.location + ": " + error);
-				}
-			}
-
-			pack.scripts.sort(null);
-			scriptManager.packs.put(pack.info.namespace, pack);
-		}
-
-		//Loading is required in prepare stage to allow virtual data pack overrides
-		virtualDataPackFirst.resetData();
-		ScriptType.SERVER.console.setLineNumber(true);
-		scriptManager.load();
-
-		new DataPackEventJS(virtualDataPackFirst).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_FIRST);
-		new DataPackEventJS(virtualDataPackLast).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_LAST);
-
-		resourceManager.addResourcePack(virtualDataPackFirst);
-		resourceManager.addResourcePack(virtualDataPackLast);
-
-		Map<String, FallbackResourceManager> namespaceResourceManagers = ((SimpleReloadableResourceManagerKJS) resourceManager).getNamespaceResourceManagersKJS();
-
-		for (FallbackResourceManager manager : namespaceResourceManagers.values())
-		{
-			if (manager.resourcePacks.remove(virtualDataPackLast))
-			{
-				manager.resourcePacks.add(0, virtualDataPackLast);
-			}
-		}
-
-		ScriptType.SERVER.console.setLineNumber(false);
-		ScriptType.SERVER.console.info("Scripts loaded");
-
-		for (int i = 0; i < scriptManager.errors.size(); i++)
-		{
-			minecraftServer.getPlayerList().sendMessage(new StringTextComponent("#" + (i + 1) + ": ").applyTextStyle(TextFormatting.DARK_RED).appendSibling(new StringTextComponent(scriptManager.errors.get(i)).applyTextStyle(TextFormatting.RED)));
-		}
-
-		Map<ResourceLocation, RecipeTypeJS> typeMap = new HashMap<>();
-		MinecraftForge.EVENT_BUS.post(new RegisterRecipeHandlersEvent(typeMap));
-		RecipeEventJS.instance = new RecipeEventJS(typeMap);
-	}
-
-	public IFutureReloadListener createReloadListener()
-	{
-		return (stage, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> {
-			if (!(resourceManager instanceof SimpleReloadableResourceManager))
-			{
-				throw new RuntimeException("Resource manager is not SimpleReloadableResourceManager, KubeJS will not work! Unsupported resource manager class: " + resourceManager.getClass());
-			}
-
-			reloadScripts((SimpleReloadableResourceManager) resourceManager);
-			return CompletableFuture.supplyAsync(Object::new, backgroundExecutor).thenCompose(stage::markCompleteAwaitingOthers).thenAcceptAsync(o -> {}, gameExecutor);
-		};
 	}
 }

@@ -12,27 +12,39 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(ResourceLoadProgressGui.class)
 public abstract class ResourceLoadProgressGuiMixin implements ResourceLoadProgressGuiKJS
 {
-	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/ResourceLoadProgressGui;fill(IIIII)V"), index = 4)
+	@ModifyArg(method = "func_230430_a_", remap = false, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/ResourceLoadProgressGui;func_238467_a_(Lcom/mojang/blaze3d/matrix/MatrixStack;IIIII)V", remap = false), index = 5)
 	private int backgroundColorKJS(int color)
 	{
-		return getNewBackgroundColorKJS(color);
+		return getBackgroundColorKJS(color);
 	}
 
-	@ModifyArg(method = "renderProgressBar", at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/client/gui/ResourceLoadProgressGui;fill(IIIII)V"), index = 4)
+	@ModifyArg(method = "func_238629_a_", remap = false, at = @At(value = "INVOKE", ordinal = 4, target = "Lnet/minecraft/client/gui/ResourceLoadProgressGui;func_238467_a_(Lcom/mojang/blaze3d/matrix/MatrixStack;IIIII)V", remap = false), index = 5)
 	private int barBorderColorKJS(int color)
 	{
-		return getNewBarBorderColorKJS(color);
+		return getBarColorKJS(color);
 	}
 
-	@ModifyArg(method = "renderProgressBar", at = @At(value = "INVOKE", ordinal = 1, target = "Lnet/minecraft/client/gui/ResourceLoadProgressGui;fill(IIIII)V"), index = 4)
-	private int barBackgroundColorKJS(int color)
+	@ModifyArg(method = "func_238629_a_", remap = false, at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/client/gui/ResourceLoadProgressGui;func_238467_a_(Lcom/mojang/blaze3d/matrix/MatrixStack;IIIII)V", remap = false), index = 5)
+	private int barColorKJS1(int color)
 	{
-		return getNewBarBackgroundColorKJS(color);
+		return getBarBorderColorKJS(color);
 	}
 
-	@ModifyArg(method = "renderProgressBar", at = @At(value = "INVOKE", ordinal = 2, target = "Lnet/minecraft/client/gui/ResourceLoadProgressGui;fill(IIIII)V"), index = 4)
-	private int barColorKJS(int color)
+	@ModifyArg(method = "func_238629_a_", remap = false, at = @At(value = "INVOKE", ordinal = 1, target = "Lnet/minecraft/client/gui/ResourceLoadProgressGui;func_238467_a_(Lcom/mojang/blaze3d/matrix/MatrixStack;IIIII)V", remap = false), index = 5)
+	private int barColorKJS2(int color)
 	{
-		return getNewBarColorKJS(color);
+		return getBarBorderColorKJS(color);
+	}
+
+	@ModifyArg(method = "func_238629_a_", remap = false, at = @At(value = "INVOKE", ordinal = 2, target = "Lnet/minecraft/client/gui/ResourceLoadProgressGui;func_238467_a_(Lcom/mojang/blaze3d/matrix/MatrixStack;IIIII)V", remap = false), index = 5)
+	private int barColorKJS3(int color)
+	{
+		return getBarBorderColorKJS(color);
+	}
+
+	@ModifyArg(method = "func_238629_a_", remap = false, at = @At(value = "INVOKE", ordinal = 3, target = "Lnet/minecraft/client/gui/ResourceLoadProgressGui;func_238467_a_(Lcom/mojang/blaze3d/matrix/MatrixStack;IIIII)V", remap = false), index = 5)
+	private int barColorKJS4(int color)
+	{
+		return getBarBorderColorKJS(color);
 	}
 }

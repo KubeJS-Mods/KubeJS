@@ -57,7 +57,7 @@ public class ClientWorldJS extends WorldJS
 	@Override
 	public String toString()
 	{
-		return "ClientWorld:" + minecraftWorld.getDimension().getType().getRegistryName();
+		return "ClientWorld:" + getDimension();
 	}
 
 	@Override

@@ -21,11 +21,12 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
@@ -97,7 +98,7 @@ public class EntityJS implements MessageSender, WrappedJS
 	@Override
 	public void tell(Object message)
 	{
-		minecraftEntity.sendMessage(Text.of(message).component());
+		minecraftEntity.sendMessage(Text.of(message).component(), Util.field_240973_b_);
 	}
 
 	public String toString()
@@ -198,7 +199,7 @@ public class EntityJS implements MessageSender, WrappedJS
 
 	public boolean isOnGround()
 	{
-		return minecraftEntity.onGround;
+		return minecraftEntity.func_233570_aj_();
 	}
 
 	public float getFallDistance()
@@ -308,7 +309,7 @@ public class EntityJS implements MessageSender, WrappedJS
 
 	public void setMotionX(double x)
 	{
-		Vec3d m = minecraftEntity.getMotion();
+		Vector3d m = minecraftEntity.getMotion();
 		minecraftEntity.setMotion(x, m.y, m.z);
 	}
 
@@ -319,7 +320,7 @@ public class EntityJS implements MessageSender, WrappedJS
 
 	public void setMotionY(double y)
 	{
-		Vec3d m = minecraftEntity.getMotion();
+		Vector3d m = minecraftEntity.getMotion();
 		minecraftEntity.setMotion(m.x, y, m.z);
 	}
 
@@ -330,7 +331,7 @@ public class EntityJS implements MessageSender, WrappedJS
 
 	public void setMotionZ(double z)
 	{
-		Vec3d m = minecraftEntity.getMotion();
+		Vector3d m = minecraftEntity.getMotion();
 		minecraftEntity.setMotion(m.x, m.y, z);
 	}
 
@@ -489,7 +490,7 @@ public class EntityJS implements MessageSender, WrappedJS
 
 	public BlockContainerJS getBlock()
 	{
-		return new BlockContainerJS(minecraftEntity.world, minecraftEntity.getPosition());
+		return new BlockContainerJS(minecraftEntity.world, minecraftEntity.func_233580_cy_());
 	}
 
 	public void setOnFire(int seconds)
@@ -598,14 +599,14 @@ public class EntityJS implements MessageSender, WrappedJS
 	{
 		double f = minecraftEntity.rotationPitch;
 		double f1 = minecraftEntity.rotationYaw;
-		Vec3d vec3d = minecraftEntity.getEyePosition(1);
+		Vector3d vec3d = minecraftEntity.getEyePosition(1);
 		double f2 = Math.cos(-f1 * (Math.PI / 180D) - (float) Math.PI);
 		double f3 = Math.sin(-f1 * (Math.PI / 180D) - (float) Math.PI);
 		double f4 = -Math.cos(-f * (Math.PI / 180D));
 		double f5 = Math.sin(-f * (Math.PI / 180D));
 		double f6 = f3 * f4;
 		double f7 = f2 * f4;
-		Vec3d vec3d1 = vec3d.add(f6 * distance, f5 * distance, f7 * distance);
+		Vector3d vec3d1 = vec3d.add(f6 * distance, f5 * distance, f7 * distance);
 		return minecraftEntity.world.rayTraceBlocks(new RayTraceContext(vec3d, vec3d1, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.ANY, minecraftEntity));
 	}
 

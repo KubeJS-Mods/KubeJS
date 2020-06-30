@@ -4,7 +4,7 @@ import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.entity.Entity;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
@@ -21,7 +21,7 @@ public abstract class WorldEventJS extends EventJS
 		return getWorld().getServer();
 	}
 
-	protected WorldJS worldOf(IWorld world)
+	protected WorldJS worldOf(World world)
 	{
 		return UtilsJS.getWorld(world);
 	}

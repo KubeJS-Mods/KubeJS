@@ -8,6 +8,7 @@ import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.event.world.BlockEvent;
 
@@ -30,7 +31,7 @@ public class BlockDropsEventJS extends PlayerEventJS
 	@Override
 	public WorldJS getWorld()
 	{
-		return worldOf(event.getWorld());
+		return worldOf((World) event.getWorld());
 	}
 
 	@Override

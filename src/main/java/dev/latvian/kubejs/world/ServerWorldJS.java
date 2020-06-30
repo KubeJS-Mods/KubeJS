@@ -12,6 +12,7 @@ import net.minecraft.command.arguments.EntitySelectorParser;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.IServerWorldInfo;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.stream.Collectors;
@@ -41,6 +42,21 @@ public class ServerWorldJS extends WorldJS
 		return server;
 	}
 
+	public long getSeed()
+	{
+		return ((ServerWorld) minecraftWorld).getSeed();
+	}
+
+	public void setTime(long time)
+	{
+		((IServerWorldInfo) minecraftWorld.getWorldInfo()).setGameTime(time);
+	}
+
+	public void setLocalTime(long time)
+	{
+		((IServerWorldInfo) minecraftWorld.getWorldInfo()).setDayTime(time);
+	}
+
 	@Override
 	public ServerPlayerDataJS getPlayerData(PlayerEntity player)
 	{
@@ -66,7 +82,7 @@ public class ServerWorldJS extends WorldJS
 	@Override
 	public String toString()
 	{
-		return "ServerWorld:" + minecraftWorld.getDimension().getType().getRegistryName();
+		return "ServerWorld:" + getDimension();
 	}
 
 	@Override

@@ -6,7 +6,7 @@ import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.script.ScriptModData;
 import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.util.MapJS;
 import net.minecraft.block.Blocks;
@@ -29,7 +29,8 @@ public class DefaultBindings
 
 		if (event.type == ScriptType.SERVER)
 		{
-			event.add("server", ServerJS.instance);
+			ServerSettings.instance = new ServerSettings();
+			event.add("settings", ServerSettings.instance);
 		}
 
 		event.add("mod", ScriptModData.getInstance());

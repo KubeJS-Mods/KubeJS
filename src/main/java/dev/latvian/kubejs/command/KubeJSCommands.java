@@ -8,6 +8,7 @@ import net.minecraft.command.Commands;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -46,9 +47,11 @@ public class KubeJSCommands
 	private static int itemInfo(ServerPlayerEntity player)
 	{
 		ItemStack stack = player.getHeldItemMainhand();
-		player.sendMessage(new StringTextComponent("=== ").applyTextStyle(TextFormatting.GREEN).appendSibling(stack.getDisplayName().applyTextStyle(TextFormatting.BOLD)).appendText(" ==="));
+		ITextComponent c = stack.getDisplayName();
+		c.getStyle().func_240713_a_(true); //bold
+		player.sendMessage(new StringTextComponent("=== ").func_240699_a_(TextFormatting.GREEN).func_230529_a_(c).func_240702_b_(" ==="), Util.field_240973_b_);
 
-		player.sendMessage(new StringTextComponent("= Item Tags =").applyTextStyle(TextFormatting.YELLOW));
+		player.sendMessage(new StringTextComponent("= Item Tags =").func_240699_a_(TextFormatting.YELLOW), Util.field_240973_b_);
 
 		List<ResourceLocation> tags = new ArrayList<>(stack.getItem().getTags());
 		tags.sort(null);
@@ -56,9 +59,9 @@ public class KubeJSCommands
 		for (ResourceLocation id : tags)
 		{
 			ITextComponent component = new StringTextComponent("- " + id);
-			component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, id.toString()));
-			component.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent("Click to copy")));
-			player.sendMessage(component);
+			component.getStyle().func_240715_a_(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, id.toString()));
+			component.getStyle().func_240716_a_(new HoverEvent(HoverEvent.Action.field_230550_a_, new StringTextComponent("Click to copy")));
+			player.sendMessage(component, Util.field_240973_b_);
 		}
 
 		return Command.SINGLE_SUCCESS;
@@ -68,26 +71,26 @@ public class KubeJSCommands
 	{
 		ItemStackJS is = ItemStackJS.of(player.getHeldItemMainhand());
 		ITextComponent component = new StringTextComponent(is.toString() + " [Click to copy]");
-		component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, is.toString()));
-		player.sendMessage(component);
+		component.getStyle().func_240715_a_(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, is.toString()));
+		player.sendMessage(component, Util.field_240973_b_);
 		return 1;
 	}
 
 	private static int outputRecipes(ServerPlayerEntity player)
 	{
-		player.sendMessage(new StringTextComponent("WIP!"));
+		player.sendMessage(new StringTextComponent("WIP!"), Util.field_240973_b_);
 		return Command.SINGLE_SUCCESS;
 	}
 
 	private static int inputRecipes(ServerPlayerEntity player)
 	{
-		player.sendMessage(new StringTextComponent("WIP!"));
+		player.sendMessage(new StringTextComponent("WIP!"), Util.field_240973_b_);
 		return Command.SINGLE_SUCCESS;
 	}
 
 	private static int checkRecipeConflicts(ServerPlayerEntity player)
 	{
-		player.sendMessage(new StringTextComponent("WIP!"));
+		player.sendMessage(new StringTextComponent("WIP!"), Util.field_240973_b_);
 		return Command.SINGLE_SUCCESS;
 	}
 }

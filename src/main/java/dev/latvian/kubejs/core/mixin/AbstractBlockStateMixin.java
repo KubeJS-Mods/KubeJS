@@ -1,15 +1,15 @@
 package dev.latvian.kubejs.core.mixin;
 
-import dev.latvian.kubejs.core.BlockStateKJS;
-import net.minecraft.block.BlockState;
+import dev.latvian.kubejs.core.AbstractBlockStateKJS;
+import net.minecraft.block.AbstractBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 /**
  * @author LatvianModder
  */
-@Mixin(BlockState.class)
-public abstract class BlockStateMixin implements BlockStateKJS
+@Mixin(AbstractBlock.AbstractBlockState.class)
+public abstract class AbstractBlockStateMixin implements AbstractBlockStateKJS
 {
 	@Override
 	@Accessor("lightLevel")

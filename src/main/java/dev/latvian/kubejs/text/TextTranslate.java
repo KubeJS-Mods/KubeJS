@@ -49,7 +49,7 @@ public class TextTranslate extends Text
 	}
 
 	@Override
-	public ITextComponent rawComponent()
+	public TranslationTextComponent rawComponent()
 	{
 		Object[] o = new Object[objects.length];
 
@@ -61,7 +61,7 @@ public class TextTranslate extends Text
 			}
 			else if (objects[i] instanceof ITextComponent)
 			{
-				o[i] = ((ITextComponent) objects[i]).deepCopy();
+				o[i] = ((ITextComponent) objects[i]).func_230532_e_();
 			}
 			else
 			{
@@ -85,7 +85,7 @@ public class TextTranslate extends Text
 			}
 			else if (objects[i] instanceof ITextComponent)
 			{
-				o[i] = ((ITextComponent) objects[i]).deepCopy();
+				o[i] = ((ITextComponent) objects[i]).func_230532_e_();
 			}
 			else
 			{

@@ -8,8 +8,8 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
@@ -49,13 +49,13 @@ public class TagIngredientJS implements IngredientJS
 	@Override
 	public Set<ItemStackJS> getStacks()
 	{
-		Tag<Item> t = ItemTags.getCollection().get(tag);
+		ITag<Item> t = ItemTags.getCollection().get(tag);
 
-		if (t != null && t.getAllElements().size() > 0)
+		if (t != null && t.func_230236_b_().size() > 0)
 		{
 			NonNullList<ItemStack> list = NonNullList.create();
 
-			for (Item item : t.getAllElements())
+			for (Item item : t.func_230236_b_())
 			{
 				item.fillItemGroup(ItemGroup.SEARCH, list);
 			}
@@ -79,13 +79,13 @@ public class TagIngredientJS implements IngredientJS
 	@Override
 	public ItemStackJS getFirst()
 	{
-		Tag<Item> t = ItemTags.getCollection().get(tag);
+		ITag<Item> t = ItemTags.getCollection().get(tag);
 
-		if (t != null && t.getAllElements().size() > 0)
+		if (t != null && t.func_230236_b_().size() > 0)
 		{
 			NonNullList<ItemStack> list = NonNullList.create();
 
-			for (Item item : t.getAllElements())
+			for (Item item : t.func_230236_b_())
 			{
 				item.fillItemGroup(ItemGroup.SEARCH, list);
 
@@ -112,8 +112,8 @@ public class TagIngredientJS implements IngredientJS
 			return false;
 		}
 
-		Tag<Item> t = ItemTags.getCollection().get(tag);
-		return t != null && t.getAllElements().isEmpty();
+		ITag<Item> t = ItemTags.getCollection().get(tag);
+		return t != null && t.func_230236_b_().isEmpty();
 	}
 
 	@Override

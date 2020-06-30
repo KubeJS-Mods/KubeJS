@@ -7,18 +7,18 @@ import dev.latvian.kubejs.client.ClientProperties;
  */
 public interface EarlyLoaderGUIKJS
 {
-	default float[] getNewMemoryColorKJS(float[] color)
+	default float[] getMemoryColorKJS(float[] color)
 	{
-		return ClientProperties.get().fmlMemoryColor == null ? color : ClientProperties.get().fmlMemoryColor;
+		return ClientProperties.get().overrideColors ? ClientProperties.get().fmlMemoryColor3f : color;
 	}
 
-	default float[] getNewLogColorKJS(float[] color)
+	default float[] getLogColorKJS(float[] color)
 	{
-		return ClientProperties.get().fmlLogColor == null ? color : ClientProperties.get().fmlLogColor;
+		return ClientProperties.get().overrideColors ? ClientProperties.get().fmlLogColor3f : color;
 	}
 
-	default float[] getBackgroundColorKJS()
+	default float getBackgroundColorKJS(float c, int index)
 	{
-		return ClientProperties.get().backgroundColor3f;
+		return ClientProperties.get().overrideColors ? ClientProperties.get().backgroundColor3f[index] : c;
 	}
 }

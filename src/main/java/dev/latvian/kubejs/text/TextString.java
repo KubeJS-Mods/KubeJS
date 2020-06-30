@@ -3,7 +3,6 @@ package dev.latvian.kubejs.text;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 import javax.annotation.Nullable;
@@ -20,13 +19,13 @@ public class TextString extends Text
 		string = String.valueOf(text);
 	}
 
-	public String getString()
+	public String getRawString()
 	{
 		return string;
 	}
 
 	@Override
-	public ITextComponent rawComponent()
+	public StringTextComponent rawComponent()
 	{
 		return new StringTextComponent(string);
 	}

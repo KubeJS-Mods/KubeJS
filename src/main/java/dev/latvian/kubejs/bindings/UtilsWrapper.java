@@ -16,7 +16,7 @@ import net.minecraft.potion.Effect;
 import net.minecraft.stats.Stat;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
@@ -135,7 +135,7 @@ public class UtilsWrapper
 		return UtilsJS.getToolType(id);
 	}
 
-	public WorldJS getWorld(IWorld world)
+	public WorldJS getWorld(World world)
 	{
 		if (world.isRemote())
 		{

@@ -5,8 +5,7 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -62,7 +61,7 @@ public class LivingEntityJS extends EntityJS
 
 	public void setMaxHealth(float hp)
 	{
-		minecraftLivingEntity.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(hp);
+		minecraftLivingEntity.getAttribute(Attributes.field_233818_a_).setBaseValue(hp);
 	}
 
 	public boolean isUndead()
@@ -237,7 +236,7 @@ public class LivingEntityJS extends EntityJS
 
 	public double getReachDistance()
 	{
-		return minecraftLivingEntity.getAttribute(PlayerEntity.REACH_DISTANCE).getValue();
+		return minecraftLivingEntity.getAttribute(net.minecraftforge.common.ForgeMod.REACH_DISTANCE.get()).getValue();
 	}
 
 	@Nullable

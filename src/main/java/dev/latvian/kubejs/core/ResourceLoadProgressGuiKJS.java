@@ -7,23 +7,18 @@ import dev.latvian.kubejs.client.ClientProperties;
  */
 public interface ResourceLoadProgressGuiKJS
 {
-	default int getNewBackgroundColorKJS(int color)
+	default int getBackgroundColorKJS(int color)
 	{
-		return (color & 0xFF000000) | ClientProperties.get().backgroundColor;
+		return ClientProperties.get().overrideColors ? ((color & 0xFF000000) | ClientProperties.get().backgroundColor) : color;
 	}
 
-	default int getNewBarColorKJS(int color)
+	default int getBarColorKJS(int color)
 	{
-		return (color & 0xFF000000) | ClientProperties.get().barColor;
+		return ClientProperties.get().overrideColors ? ((color & 0xFF000000) | ClientProperties.get().barColor) : color;
 	}
 
-	default int getNewBarBackgroundColorKJS(int color)
+	default int getBarBorderColorKJS(int color)
 	{
-		return (color & 0xFF000000) | ClientProperties.get().barBackgroundColor;
-	}
-
-	default int getNewBarBorderColorKJS(int color)
-	{
-		return (color & 0xFF000000) | ClientProperties.get().barBorderColor;
+		return ClientProperties.get().overrideColors ? ((color & 0xFF000000) | ClientProperties.get().barBorderColor) : color;
 	}
 }

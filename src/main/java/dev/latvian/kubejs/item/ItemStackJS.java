@@ -12,7 +12,6 @@ import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
@@ -351,22 +350,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 		Text t = Text.of(displayName);
 		MapJS nbt = getNbt();
-
-		if (t instanceof TextTranslate)
-		{
-			nbt.getOrNewMap("display").put("LocName", ((TextTranslate) t).getKey());
-		}
-		else
-		{
-			String s = t.getFormattedString();
-
-			if (s.endsWith("\u00a7r"))
-			{
-				s = s.substring(0, s.length() - 2);
-			}
-
-			nbt.getOrNewMap("display").put("Name", s);
-		}
+		nbt.getOrNewMap("display").put("Name", t.toJson());
 	}
 
 	public final ItemStackJS name(String displayName)
@@ -573,7 +557,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 			{
 				try
 				{
-					lore.add(ITextComponent.Serializer.fromJson(o.toString()));
+					lore.add(ITextComponent.Serializer.func_240644_b_(o.toString()));
 				}
 				catch (JsonParseException var19)
 				{
