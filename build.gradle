@@ -94,6 +94,7 @@ dependencies {
 	compile fg.deobf(curse.resolve('jei', project.jei_file))
 	compileOnly fg.deobf(curse.resolve('bookshelf', project.bookshelf_file))
 	compileOnly fg.deobf(curse.resolve('game-stages', project.gamestages_file))
+	runtimeOnly fg.deobf(curse.resolve('immersive-engineering', project.ie_file))
 }
 
 jar {
