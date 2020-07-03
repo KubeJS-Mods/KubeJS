@@ -108,15 +108,16 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 			}
 			else if (map.containsKey("type"))
 			{
+				JsonObject json = map.toJson();
+
 				try
 				{
-					JsonObject json = map.toJson();
 					Ingredient ingredient = CraftingHelper.getIngredient(json);
 					return new CustomIngredient(ingredient, json);
 				}
 				catch (Exception ex)
 				{
-					ex.printStackTrace();
+					KubeJS.LOGGER.error("Failed to load ingredient " + json + ": " + ex.toString());
 					return stack -> false;
 				}
 			}
@@ -187,7 +188,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 				}
 				catch (Exception ex)
 				{
-					ex.printStackTrace();
+					KubeJS.LOGGER.error("Failed to load ingredient " + o + ": " + ex.toString());
 					return stack -> false;
 				}
 			}

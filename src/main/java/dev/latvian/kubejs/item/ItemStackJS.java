@@ -232,7 +232,14 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 		for (Item item : ForgeRegistries.ITEMS)
 		{
-			item.fillItemGroup(ItemGroup.SEARCH, stackList);
+			try
+			{
+				item.fillItemGroup(ItemGroup.SEARCH, stackList);
+			}
+			catch (Throwable ex)
+			{
+				KubeJS.LOGGER.error("Failed to load item list from " + item.getRegistryName() + "/" + item.getClass().getName() + ": " + ex);
+			}
 		}
 
 		for (ItemStack stack : stackList)
