@@ -79,7 +79,7 @@ public class TagEventJS<T> extends ServerEventJS
 				{
 					TagWrapper<T> w = event.get(s.substring(1));
 					entries.remove(new Tag.TagEntry<>(w.id));
-					event.addedCount += w.entries.size();
+					event.removedCount += w.entries.size();
 					ScriptType.SERVER.console.logger.info("- " + event.type + ":" + id + " // " + w.id);
 				}
 				else
@@ -90,7 +90,7 @@ public class TagEventJS<T> extends ServerEventJS
 					if (v.isPresent())
 					{
 						entries.remove(new Tag.ListEntry<>(Collections.singleton(v.get())));
-						event.addedCount++;
+						event.removedCount++;
 						ScriptType.SERVER.console.logger.info("- " + event.type + ":" + id + " // " + s + " [" + v.get().getClass().getName() + "]");
 					}
 					else
@@ -100,6 +100,14 @@ public class TagEventJS<T> extends ServerEventJS
 				}
 			}
 
+			return this;
+		}
+
+		public TagWrapper<T> removeAll()
+		{
+			ScriptType.SERVER.console.logger.info("- " + event.type + ":" + id + " // (all)");
+			event.removedCount += entries.size();
+			entries.clear();
 			return this;
 		}
 	}
