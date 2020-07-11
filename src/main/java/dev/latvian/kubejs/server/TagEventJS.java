@@ -45,7 +45,7 @@ public class TagEventJS<T> extends ServerEventJS
 				if (s.startsWith("#"))
 				{
 					TagWrapper<T> w = event.get(s.substring(1));
-					builder.func_232964_b_(w.id, KubeJS.MOD_ID);
+					builder.addTagEntry(w.id, KubeJS.MOD_ID);
 					event.addedCount += w.proxyList.size();
 					ScriptType.SERVER.console.logger.info("+ " + event.type + ":" + id + " // " + w.id);
 				}
@@ -56,7 +56,7 @@ public class TagEventJS<T> extends ServerEventJS
 
 					if (v.isPresent())
 					{
-						builder.func_232961_a_(sid, KubeJS.MOD_ID);
+						builder.addItemEntry(sid, KubeJS.MOD_ID);
 						event.addedCount++;
 						ScriptType.SERVER.console.logger.info("+ " + event.type + ":" + id + " // " + s + " [" + v.get().getClass().getName() + "]");
 					}
@@ -80,8 +80,8 @@ public class TagEventJS<T> extends ServerEventJS
 				{
 					TagWrapper<T> w = event.get(s.substring(1));
 					ITag.ITagEntry entry = new ITag.TagEntry(w.id);
-					proxyList.removeIf(p -> entry.equals(p.func_232968_a_()));
-					event.addedCount += w.proxyList.size();
+					proxyList.removeIf(p -> entry.equals(p.getEntry()));
+					event.removedCount += w.proxyList.size();
 					ScriptType.SERVER.console.logger.info("- " + event.type + ":" + id + " // " + w.id);
 				}
 				else
@@ -92,8 +92,8 @@ public class TagEventJS<T> extends ServerEventJS
 					if (v.isPresent())
 					{
 						ITag.ITagEntry entry = new ITag.ItemEntry(sid);
-						proxyList.removeIf(p -> entry.equals(p.func_232968_a_()));
-						event.addedCount++;
+						proxyList.removeIf(p -> entry.equals(p.getEntry()));
+						event.removedCount++;
 						ScriptType.SERVER.console.logger.info("- " + event.type + ":" + id + " // " + s + " [" + v.get().getClass().getName() + "]");
 					}
 					else
@@ -103,6 +103,14 @@ public class TagEventJS<T> extends ServerEventJS
 				}
 			}
 
+			return this;
+		}
+
+		public TagWrapper<T> removeAll()
+		{
+			ScriptType.SERVER.console.logger.info("- " + event.type + ":" + id + " // (all)");
+			event.removedCount += proxyList.size();
+			proxyList.clear();
 			return this;
 		}
 	}

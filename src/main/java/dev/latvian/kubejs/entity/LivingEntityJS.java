@@ -61,7 +61,7 @@ public class LivingEntityJS extends EntityJS
 
 	public void setMaxHealth(float hp)
 	{
-		minecraftLivingEntity.getAttribute(Attributes.field_233818_a_).setBaseValue(hp);
+		minecraftLivingEntity.getAttribute(Attributes.MAX_HEALTH).setBaseValue(hp);
 	}
 
 	public boolean isUndead()

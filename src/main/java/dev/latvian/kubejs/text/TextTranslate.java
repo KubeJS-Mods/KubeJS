@@ -61,7 +61,7 @@ public class TextTranslate extends Text
 			}
 			else if (objects[i] instanceof ITextComponent)
 			{
-				o[i] = ((ITextComponent) objects[i]).func_230532_e_();
+				o[i] = ((ITextComponent) objects[i]).deepCopy();
 			}
 			else
 			{
@@ -85,7 +85,7 @@ public class TextTranslate extends Text
 			}
 			else if (objects[i] instanceof ITextComponent)
 			{
-				o[i] = ((ITextComponent) objects[i]).func_230532_e_();
+				o[i] = ((ITextComponent) objects[i]).deepCopy();
 			}
 			else
 			{

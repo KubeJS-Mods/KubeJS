@@ -66,7 +66,7 @@ public class BlockWrapper
 
 			for (Direction facing : Direction.values())
 			{
-				facingMap.put(facing.func_176610_l(), facing);
+				facingMap.put(facing.getString(), facing);
 			}
 		}
 

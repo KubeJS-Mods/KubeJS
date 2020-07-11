@@ -51,11 +51,11 @@ public class TagIngredientJS implements IngredientJS
 	{
 		ITag<Item> t = ItemTags.getCollection().get(tag);
 
-		if (t != null && t.func_230236_b_().size() > 0)
+		if (t != null && t.getAllElements().size() > 0)
 		{
 			NonNullList<ItemStack> list = NonNullList.create();
 
-			for (Item item : t.func_230236_b_())
+			for (Item item : t.getAllElements())
 			{
 				item.fillItemGroup(ItemGroup.SEARCH, list);
 			}
@@ -81,11 +81,11 @@ public class TagIngredientJS implements IngredientJS
 	{
 		ITag<Item> t = ItemTags.getCollection().get(tag);
 
-		if (t != null && t.func_230236_b_().size() > 0)
+		if (t != null && t.getAllElements().size() > 0)
 		{
 			NonNullList<ItemStack> list = NonNullList.create();
 
-			for (Item item : t.func_230236_b_())
+			for (Item item : t.getAllElements())
 			{
 				item.fillItemGroup(ItemGroup.SEARCH, list);
 
@@ -113,7 +113,7 @@ public class TagIngredientJS implements IngredientJS
 		}
 
 		ITag<Item> t = ItemTags.getCollection().get(tag);
-		return t != null && t.func_230236_b_().isEmpty();
+		return t != null && t.getAllElements().isEmpty();
 	}
 
 	@Override

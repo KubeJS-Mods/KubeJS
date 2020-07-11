@@ -68,7 +68,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 		for (EntityJS entity : this)
 		{
-			entity.minecraftEntity.sendMessage(component, Util.field_240973_b_);
+			entity.minecraftEntity.sendMessage(component, Util.DUMMY_UUID);
 		}
 	}
 

@@ -15,7 +15,7 @@ import java.util.List;
 public abstract class TagBuilderMixin implements TagBuilderKJS
 {
 	@Override
-	@Accessor(value = "field_232953_a_", remap = false)
 	@Final
+	@Accessor(value = "proxyTags")
 	public abstract List<ITag.Proxy> getProxyListKJS();
 }

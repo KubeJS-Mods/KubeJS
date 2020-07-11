@@ -48,10 +48,10 @@ public class KubeJSCommands
 	{
 		ItemStack stack = player.getHeldItemMainhand();
 		ITextComponent c = stack.getDisplayName();
-		c.getStyle().func_240713_a_(true); //bold
-		player.sendMessage(new StringTextComponent("=== ").func_240699_a_(TextFormatting.GREEN).func_230529_a_(c).func_240702_b_(" ==="), Util.field_240973_b_);
+		c.getStyle().setBold(true);
+		player.sendMessage(new StringTextComponent("=== ").func_240699_a_(TextFormatting.GREEN).func_230529_a_(c).func_240702_b_(" ==="), Util.DUMMY_UUID);
 
-		player.sendMessage(new StringTextComponent("= Item Tags =").func_240699_a_(TextFormatting.YELLOW), Util.field_240973_b_);
+		player.sendMessage(new StringTextComponent("= Item Tags =").func_240699_a_(TextFormatting.YELLOW), Util.DUMMY_UUID);
 
 		List<ResourceLocation> tags = new ArrayList<>(stack.getItem().getTags());
 		tags.sort(null);
@@ -59,9 +59,9 @@ public class KubeJSCommands
 		for (ResourceLocation id : tags)
 		{
 			ITextComponent component = new StringTextComponent("- " + id);
-			component.getStyle().func_240715_a_(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, id.toString()));
-			component.getStyle().func_240716_a_(new HoverEvent(HoverEvent.Action.field_230550_a_, new StringTextComponent("Click to copy")));
-			player.sendMessage(component, Util.field_240973_b_);
+			component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, id.toString()));
+			component.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent("Click to copy")));
+			player.sendMessage(component, Util.DUMMY_UUID);
 		}
 
 		return Command.SINGLE_SUCCESS;
@@ -71,26 +71,26 @@ public class KubeJSCommands
 	{
 		ItemStackJS is = ItemStackJS.of(player.getHeldItemMainhand());
 		ITextComponent component = new StringTextComponent(is.toString() + " [Click to copy]");
-		component.getStyle().func_240715_a_(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, is.toString()));
-		player.sendMessage(component, Util.field_240973_b_);
+		component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, is.toString()));
+		player.sendMessage(component, Util.DUMMY_UUID);
 		return 1;
 	}
 
 	private static int outputRecipes(ServerPlayerEntity player)
 	{
-		player.sendMessage(new StringTextComponent("WIP!"), Util.field_240973_b_);
+		player.sendMessage(new StringTextComponent("WIP!"), Util.DUMMY_UUID);
 		return Command.SINGLE_SUCCESS;
 	}
 
 	private static int inputRecipes(ServerPlayerEntity player)
 	{
-		player.sendMessage(new StringTextComponent("WIP!"), Util.field_240973_b_);
+		player.sendMessage(new StringTextComponent("WIP!"), Util.DUMMY_UUID);
 		return Command.SINGLE_SUCCESS;
 	}
 
 	private static int checkRecipeConflicts(ServerPlayerEntity player)
 	{
-		player.sendMessage(new StringTextComponent("WIP!"), Util.field_240973_b_);
+		player.sendMessage(new StringTextComponent("WIP!"), Util.DUMMY_UUID);
 		return Command.SINGLE_SUCCESS;
 	}
 }

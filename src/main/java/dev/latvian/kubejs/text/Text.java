@@ -10,6 +10,7 @@ import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.text.Color;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.event.ClickEvent;
@@ -185,39 +186,39 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 
 		if (color != null)
 		{
-			component.getStyle().func_240712_a_(color.textFormatting);
+			component.getStyle().setColor(Color.func_240744_a_(color.textFormatting));
 		}
 
-		component.getStyle().func_240713_a_(bold);
-		component.getStyle().func_240722_b_(italic);
+		component.getStyle().setBold(bold);
+		component.getStyle().setItalic(italic);
 		component.getStyle().setUnderlined(underlined);
 		component.getStyle().setStrikethrough(strikethrough);
 		component.getStyle().setObfuscated(obfuscated);
-		component.getStyle().func_240714_a_(insertion);
+		component.getStyle().setInsertion(insertion);
 
 		if (click != null)
 		{
 			if (click.startsWith("command:"))
 			{
-				component.getStyle().func_240715_a_(new ClickEvent(ClickEvent.Action.RUN_COMMAND, click.substring(8)));
+				component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, click.substring(8)));
 			}
 			else if (click.startsWith("suggest_command:"))
 			{
-				component.getStyle().func_240715_a_(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, click.substring(16)));
+				component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, click.substring(16)));
 			}
 			else if (click.startsWith("copy:"))
 			{
-				component.getStyle().func_240715_a_(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, click.substring(5)));
+				component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, click.substring(5)));
 			}
 			else
 			{
-				component.getStyle().func_240715_a_(new ClickEvent(ClickEvent.Action.OPEN_URL, click));
+				component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, click));
 			}
 		}
 
 		if (hover != null)
 		{
-			component.getStyle().func_240716_a_(new HoverEvent(HoverEvent.Action.field_230550_a_, hover.component()));
+			component.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover.component()));
 		}
 
 		for (Text text : getSiblings())

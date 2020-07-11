@@ -151,11 +151,11 @@ public class ServerJS implements MessageSender, WithAttachedData
 	public void tell(Object message)
 	{
 		ITextComponent component = Text.of(message).component();
-		minecraftServer.sendMessage(component, Util.field_240973_b_);
+		minecraftServer.sendMessage(component, Util.DUMMY_UUID);
 
 		for (ServerPlayerEntity player : minecraftServer.getPlayerList().getPlayers())
 		{
-			player.sendMessage(component, Util.field_240973_b_);
+			player.sendMessage(component, Util.DUMMY_UUID);
 		}
 	}
 
@@ -182,7 +182,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 		if (world == null)
 		{
-			world = new ServerWorldJS(this, minecraftServer.getWorld(RegistryKey.func_240903_a_(Registry.field_239699_ae_, new ResourceLocation(dimension))));
+			world = new ServerWorldJS(this, minecraftServer.getWorld(RegistryKey.func_240903_a_(Registry.WORLD_KEY, new ResourceLocation(dimension))));
 			worldMap.put(dimension, world);
 			updateWorldList();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(world));

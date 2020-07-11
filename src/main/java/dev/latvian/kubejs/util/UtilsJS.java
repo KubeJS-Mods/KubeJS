@@ -181,9 +181,9 @@ public class UtilsJS
 
 				HoverEvent he = c.getStyle().getHoverEvent();
 
-				if (he != null && he.getAction() == HoverEvent.Action.field_230550_a_)
+				if (he != null && he.getAction() == HoverEvent.Action.SHOW_TEXT)
 				{
-					t1.hover(Text.of(he.func_240662_a_(HoverEvent.Action.field_230550_a_)));
+					t1.hover(Text.of(he.func_240662_a_(HoverEvent.Action.SHOW_TEXT)));
 				}
 
 				t.append(t1);

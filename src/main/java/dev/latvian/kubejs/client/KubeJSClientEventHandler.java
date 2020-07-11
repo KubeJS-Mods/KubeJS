@@ -110,7 +110,7 @@ public class KubeJSClientEventHandler
 
 	private void itemTooltip(ItemTooltipEvent event)
 	{
-		if (ClientProperties.get().showTagNames && Minecraft.getInstance().gameSettings.advancedItemTooltips && Screen.func_231173_s_()) //hasShiftDown
+		if (ClientProperties.get().showTagNames && Minecraft.getInstance().gameSettings.advancedItemTooltips && Screen.hasShiftDown())
 		{
 			for (ResourceLocation tag : event.getItemStack().getItem().getTags())
 			{
@@ -300,7 +300,7 @@ public class KubeJSClientEventHandler
 	{
 		for (Widget w : list)
 		{
-			if (w.field_230694_p_ && x >= w.field_230690_l_ && y >= w.field_230691_m_ && x < w.field_230690_l_ + w.func_230998_h_() && y < w.field_230691_m_ + w.getHeight()) //TODO: visible, width
+			if (w.visible && x >= w.x && y >= w.y && x < w.x + w.getWidth() && y < w.y + w.getHeight())
 			{
 				return true;
 			}

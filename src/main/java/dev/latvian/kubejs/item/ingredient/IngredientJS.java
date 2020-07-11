@@ -13,7 +13,9 @@ import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.crafting.CraftingHelper;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashSet;
@@ -104,6 +106,20 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 
 				return stack;
 			}
+			else if (map.containsKey("type"))
+			{
+				try
+				{
+					JsonObject json = map.toJson();
+					Ingredient ingredient = CraftingHelper.getIngredient(json);
+					return new CustomIngredient(ingredient, json);
+				}
+				catch (Exception ex)
+				{
+					ex.printStackTrace();
+					return stack -> false;
+				}
+			}
 			else if (map.containsKey("tag"))
 			{
 				return new TagIngredientJS(new ResourceLocation(map.get("tag").toString()));
@@ -161,6 +177,19 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 				}
 
 				return in;
+			}
+			else if (o.has("type"))
+			{
+				try
+				{
+					Ingredient ingredient = CraftingHelper.getIngredient(o);
+					return new CustomIngredient(ingredient, o);
+				}
+				catch (Exception ex)
+				{
+					ex.printStackTrace();
+					return stack -> false;
+				}
 			}
 			else if (o.has("tag"))
 			{

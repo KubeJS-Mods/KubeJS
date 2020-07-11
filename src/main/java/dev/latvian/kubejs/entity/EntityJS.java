@@ -98,7 +98,7 @@ public class EntityJS implements MessageSender, WrappedJS
 	@Override
 	public void tell(Object message)
 	{
-		minecraftEntity.sendMessage(Text.of(message).component(), Util.field_240973_b_);
+		minecraftEntity.sendMessage(Text.of(message).component(), Util.DUMMY_UUID);
 	}
 
 	public String toString()
