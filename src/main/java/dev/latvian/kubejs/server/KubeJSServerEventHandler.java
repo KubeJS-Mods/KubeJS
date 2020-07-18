@@ -2,7 +2,6 @@ package dev.latvian.kubejs.server;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.kubejs.command.KubeJSCommands;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
@@ -15,13 +14,13 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 
 import java.util.ArrayList;
@@ -47,10 +46,10 @@ public class KubeJSServerEventHandler
 	}
 
 	@SubscribeEvent
-	public static void serverStarting(FMLServerStartingEvent event)
+	public static void registerCommands(RegisterCommandsEvent event)
 	{
-		KubeJSCommands.register(event.getCommandDispatcher());
-		new CommandRegistryEventJS(event.getServer().isSinglePlayer(), event.getCommandDispatcher()).post(ScriptType.SERVER, KubeJSEvents.COMMAND_REGISTRY);
+		KubeJSCommands.register(event.getDispatcher());
+		// new CommandRegistryEventJS(event).post(ScriptType.SERVER, KubeJSEvents.COMMAND_REGISTRY);
 	}
 
 	@SubscribeEvent

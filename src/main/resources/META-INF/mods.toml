@@ -15,7 +15,7 @@ logoFile="kubejs_logo.png"
 [[dependencies.kubejs]]
     modId="forge"
     mandatory=true
-    versionRange="[30,)"
+    versionRange="[32.0.67,)"
     ordering="NONE"
     side="BOTH"
 
@@ -24,13 +24,6 @@ logoFile="kubejs_logo.png"
     mandatory=true
     versionRange="[1.15,)"
     ordering="NONE"
-    side="BOTH"
-
-[[dependencies.kubejs]]
-    modId="aurora"
-    mandatory=false
-    versionRange="[1.0.0,)"
-    ordering="BEFORE"
     side="BOTH"
 
 [[dependencies.kubejs]]

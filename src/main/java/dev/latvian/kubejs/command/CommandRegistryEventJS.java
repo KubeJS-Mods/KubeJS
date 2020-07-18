@@ -3,28 +3,28 @@ package dev.latvian.kubejs.command;
 import com.mojang.brigadier.CommandDispatcher;
 import dev.latvian.kubejs.server.ServerEventJS;
 import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
+import net.minecraftforge.event.RegisterCommandsEvent;
 
 /**
  * @author LatvianModder
  */
 public class CommandRegistryEventJS extends ServerEventJS
 {
-	private final boolean singlePlayer;
-	private final CommandDispatcher<CommandSource> dispatcher;
+	private final RegisterCommandsEvent event;
 
-	public CommandRegistryEventJS(boolean s, CommandDispatcher<CommandSource> c)
+	public CommandRegistryEventJS(RegisterCommandsEvent e)
 	{
-		singlePlayer = s;
-		dispatcher = c;
+		event = e;
 	}
 
 	public boolean isSinglePlayer()
 	{
-		return singlePlayer;
+		return event.getEnvironment() == Commands.EnvironmentType.ALL || event.getEnvironment() == Commands.EnvironmentType.INTEGRATED;
 	}
 
 	public CommandDispatcher<CommandSource> getDispatcher()
 	{
-		return dispatcher;
+		return event.getDispatcher();
 	}
 }
