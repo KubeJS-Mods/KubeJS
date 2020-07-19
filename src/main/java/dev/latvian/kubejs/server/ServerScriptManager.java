@@ -88,30 +88,8 @@ public class ServerScriptManager
 		new DataPackEventJS(virtualDataPackFirst).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_FIRST);
 		new DataPackEventJS(virtualDataPackLast).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_LAST);
 
-		/*
-		resourceManager.addResourcePack(virtualDataPackFirst);
-		resourceManager.addResourcePack(virtualDataPackLast);
-
-		Map<String, FallbackResourceManager> namespaceResourceManagers = ((SimpleReloadableResourceManagerKJS) resourceManager).getNamespaceResourceManagersKJS();
-
-		for (FallbackResourceManager manager : namespaceResourceManagers.values())
-		{
-			if (manager.resourcePacks.remove(virtualDataPackLast))
-			{
-				manager.resourcePacks.add(0, virtualDataPackLast);
-			}
-		}
-		 */
-
 		ScriptType.SERVER.console.setLineNumber(false);
 		ScriptType.SERVER.console.info("Scripts loaded");
-
-		/*
-		for (int i = 0; i < scriptManager.errors.size(); i++)
-		{
-			minecraftServer.getPlayerList().func_232641_a_(new StringTextComponent("#" + (i + 1) + ": ").func_240699_a_(TextFormatting.DARK_RED).func_230529_a_(new StringTextComponent(scriptManager.errors.get(i)).func_240699_a_(TextFormatting.RED)), ChatType.CHAT, Util.field_240973_b_);
-		}
-		 */
 
 		Map<ResourceLocation, RecipeTypeJS> typeMap = new HashMap<>();
 		MinecraftForge.EVENT_BUS.post(new RegisterRecipeHandlersEvent(typeMap));
