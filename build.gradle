@@ -85,7 +85,7 @@ minecraft {
 
 repositories {
 	mavenLocal()
-	maven { url "https://dist.creeper.host/Sponge/maven" } //Mixin
+	maven { url "https://dist.creeper.host/Sponge/maven" } // Mixin
 }
 
 dependencies {
