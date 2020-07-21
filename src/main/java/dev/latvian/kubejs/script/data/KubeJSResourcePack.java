@@ -459,7 +459,7 @@ public class KubeJSResourcePack implements IResourcePack
 	@Override
 	public String getName()
 	{
-		return "KubeJS Resource Pack";
+		return "KubeJS Resource Pack [" + packType.getDirectoryName() + "]";
 	}
 
 	@Override

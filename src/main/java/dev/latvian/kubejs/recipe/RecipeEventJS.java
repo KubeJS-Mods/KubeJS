@@ -56,7 +56,7 @@ public class RecipeEventJS extends ServerEventJS
 		typeMap = t;
 		originalRecipes = new ArrayList<>();
 
-		ScriptType.SERVER.console.logger.info("Scanning recipes...");
+		ScriptType.SERVER.console.info("Scanning recipes...");
 
 		addedRecipes = new ArrayList<>();
 		removedRecipes = new HashSet<>();
@@ -146,7 +146,7 @@ public class RecipeEventJS extends ServerEventJS
 			}
 		}
 
-		ScriptType.SERVER.console.logger.info("Found " + originalRecipes.size() + " recipes");
+		ScriptType.SERVER.console.info("Found " + originalRecipes.size() + " recipes");
 		ScriptType.SERVER.console.setLineNumber(true);
 		post(ScriptType.SERVER, KubeJSEvents.RECIPES);
 		post(ScriptType.SERVER, "server.datapack.recipes"); // TODO: To be removed some time later

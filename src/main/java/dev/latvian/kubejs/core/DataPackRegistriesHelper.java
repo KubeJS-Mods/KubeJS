@@ -22,7 +22,7 @@ public class DataPackRegistriesHelper
 		list.add(new KubeJSResourcePack(KubeJS.getGameDirectory().resolve("kubejs").toFile(), ResourcePackType.SERVER_DATA));
 		list.add(ServerScriptManager.instance.virtualDataPackFirst);
 
-		System.out.println(list);
+		// System.out.println(list);
 		// net.minecraft.resources.VanillaPack@3e7fc07e, net.minecraftforge.fml.packs.ModFileResourcePack@29ebaf2f, net.minecraftforge.fml.packs.ModFileResourcePack@1a61f634
 		return list;
 	}
