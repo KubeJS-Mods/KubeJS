@@ -191,16 +191,16 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 		return size();
 	}
 
-	public void push(Object... o)
+	public ListJS push(Object... o)
 	{
 		if (o.length == 0)
 		{
-			return;
+			return this;
 		}
 		else if (o.length == 1)
 		{
 			add(o[0]);
-			return;
+			return this;
 		}
 
 		for (int i = 0; i < o.length; i++)
@@ -211,6 +211,7 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 
 		super.addAll(Arrays.asList(o));
 		onChanged(null);
+		return this;
 	}
 
 	@Nullable
@@ -235,16 +236,16 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 		return null;
 	}
 
-	public void unshift(Object... o)
+	public ListJS unshift(Object... o)
 	{
 		if (o.length == 0)
 		{
-			return;
+			return this;
 		}
 		else if (o.length == 1)
 		{
 			add(0, o[0]);
-			return;
+			return this;
 		}
 
 		for (int i = 0; i < o.length; i++)
@@ -255,12 +256,14 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 
 		super.addAll(0, Arrays.asList(o));
 		onChanged(null);
+		return this;
 	}
 
-	public void reverse()
+	public ListJS reverse()
 	{
 		Collections.reverse(this);
 		onChanged(null);
+		return this;
 	}
 
 	public ListJS filter(Predicate<Object> predicate)
@@ -290,7 +293,7 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 		return list;
 	}
 
-	public void splice(int pos, int deleteCount, Object... items)
+	public ListJS splice(int pos, int deleteCount, Object... items)
 	{
 		for (int i = 0; i < deleteCount; i++)
 		{
@@ -299,12 +302,12 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 
 		if (items.length == 0)
 		{
-			return;
+			return this;
 		}
 		else if (items.length == 1)
 		{
 			add(pos, items[0]);
-			return;
+			return this;
 		}
 
 		for (int i = 0; i < items.length; i++)
@@ -315,6 +318,7 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 
 		super.addAll(pos, Arrays.asList(items));
 		onChanged(null);
+		return this;
 	}
 
 	@Override
