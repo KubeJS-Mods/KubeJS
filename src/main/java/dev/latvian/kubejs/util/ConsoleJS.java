@@ -11,9 +11,10 @@ import org.apache.logging.log4j.Logger;
 public class ConsoleJS
 {
 	private final ScriptType type;
-	public final Logger logger;
+	private final Logger logger;
 	private String group;
 	private int lineNumber;
+	private boolean muted;
 
 	public ConsoleJS(ScriptType m, Logger log)
 	{
@@ -23,9 +24,24 @@ public class ConsoleJS
 		lineNumber = 0;
 	}
 
+	public Logger getLogger()
+	{
+		return logger;
+	}
+
 	protected boolean shouldPrint()
 	{
-		return true;
+		return !muted;
+	}
+
+	public void setMuted(boolean m)
+	{
+		muted = m;
+	}
+
+	public boolean getMuted()
+	{
+		return muted;
 	}
 
 	public void setLineNumber(boolean b)
