@@ -46,7 +46,7 @@ public class ConsoleJS
 
 	public void setLineNumber(boolean b)
 	{
-		lineNumber = Math.max(0, lineNumber + (b ? 1 : -1));
+		lineNumber += b ? 1 : -1;
 	}
 
 	private String string(Object object)
@@ -54,7 +54,7 @@ public class ConsoleJS
 		Object o = UtilsJS.wrap(object, JSObjectType.ANY);
 		String s = o == null || o instanceof String || o instanceof Number || o instanceof WrappedJS ? String.valueOf(o) : (o + " [" + o.getClass().getName() + "]");
 
-		if (lineNumber == 0 && group.isEmpty())
+		if (lineNumber <= 0 && group.isEmpty())
 		{
 			return s;
 		}

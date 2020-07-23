@@ -8,7 +8,7 @@ import net.minecraft.item.crafting.IRecipeSerializer;
  */
 public class CustomRecipeTypeJS extends RecipeTypeJS
 {
-	public CustomRecipeTypeJS(IRecipeSerializer s)
+	public CustomRecipeTypeJS(IRecipeSerializer<?> s)
 	{
 		super(s, CustomRecipeJS::new);
 	}

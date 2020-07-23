@@ -3,9 +3,8 @@ package dev.latvian.kubejs.recipe;
 import dev.latvian.kubejs.recipe.minecraft.CookingRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.ShapedRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.ShapelessRecipeJS;
-import net.minecraft.item.crafting.IRecipeSerializer;
+import dev.latvian.kubejs.recipe.minecraft.StonecuttingRecipeJS;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.crafting.ConditionalRecipe;
 
 /**
  * @author LatvianModder
@@ -19,14 +18,13 @@ public class KubeJSRecipeEventHandler
 
 	private void registerRecipeHandlers(RegisterRecipeHandlersEvent event)
 	{
-		event.register(new RecipeTypeJS(ConditionalRecipe.SERIALZIER, ConditionalRecipeJS::new));
-		event.register(new RecipeTypeJS(IRecipeSerializer.CRAFTING_SHAPED, ShapedRecipeJS::new));
-		event.register(new RecipeTypeJS(IRecipeSerializer.CRAFTING_SHAPELESS, ShapelessRecipeJS::new));
-		//event.register(new RecipeTypeJS(IRecipeSerializer.STONECUTTING, StonecuttingRecipeJS::new));
-
-		for (CookingRecipeJS.Type type : CookingRecipeJS.Type.values())
-		{
-			event.register(new RecipeTypeJS(type.serializer, () -> new CookingRecipeJS(type)));
-		}
+		event.register("forge:conditional", ConditionalRecipeJS::new);
+		event.register("minecraft:crafting_shaped", ShapedRecipeJS::new);
+		event.register("minecraft:crafting_shapeless", ShapelessRecipeJS::new);
+		event.register("minecraft:stonecutting", StonecuttingRecipeJS::new);
+		event.register("minecraft:smelting", CookingRecipeJS::new);
+		event.register("minecraft:blasting", CookingRecipeJS::new);
+		event.register("minecraft:smoking", CookingRecipeJS::new);
+		event.register("minecraft:campfire_cooking", CookingRecipeJS::new);
 	}
 }

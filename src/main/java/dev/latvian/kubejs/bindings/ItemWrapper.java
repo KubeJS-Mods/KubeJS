@@ -40,7 +40,7 @@ public class ItemWrapper
 
 	public ListJS getTypeList()
 	{
-		return ListJS.of(ItemStackJS.getTypeList());
+		return ItemStackJS.getTypeList();
 	}
 
 	public ItemStackJS getEmpty()
