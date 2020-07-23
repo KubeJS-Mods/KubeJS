@@ -3,7 +3,25 @@
 	"package": "dev.latvian.kubejs.core.mixin",
 	"compatibilityLevel": "JAVA_8",
 	"refmap": "kubejs.refmap.json",
-	"mixins": ["BlockMixin", "BlockStateMixin", "CompoundNBTMixin", "EarlyLoaderGUIMixin", "FireworkRocketEntityMixin", "ImageButtonMixin", "LivingEntityMixin", "MainWindowMixin", "MinecraftMixin", "NetworkTagManagerReloadResultsMixin", "PlayerInteractionManagerMixin", "RecipeManagerMixin", "ResourceLoadProgressGuiMixin", "SimpleReloadableResourceManagerMixin", "TagBuilderMixin"],
+	"mixins": [
+		"BlockMixin",
+		"BlockStateMixin",
+		"CompoundNBTMixin",
+		"FireworkRocketEntityMixin",
+		"LivingEntityMixin",
+		"NetworkTagManagerReloadResultsMixin",
+		"PlayerInteractionManagerMixin",
+		"RecipeManagerMixin",
+		"SimpleReloadableResourceManagerMixin",
+		"TagBuilderMixin"
+	],
+	"client": [
+		"EarlyLoaderGUIMixin",
+		"ImageButtonMixin",
+		"MainWindowMixin",
+		"MinecraftMixin",
+		"ResourceLoadProgressGuiMixin"
+	],
 	"injectors": {
 		"defaultRequire": 1
 	},
