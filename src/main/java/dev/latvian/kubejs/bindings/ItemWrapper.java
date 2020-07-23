@@ -4,13 +4,13 @@ import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.FireworksJS;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,12 +33,12 @@ public class ItemWrapper
 		return ItemStackJS.of(object, count, nbt);
 	}
 
-	public List<ItemStackJS> getList()
+	public ListJS getList()
 	{
-		return ItemStackJS.getList();
+		return ItemStackJS.getListJS();
 	}
 
-	public List<String> getTypeList()
+	public ListJS getTypeList()
 	{
 		return ItemStackJS.getTypeList();
 	}

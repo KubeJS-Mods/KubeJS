@@ -5,11 +5,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.core.RecipeManagerKJS;
+import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.server.ServerEventJS;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.DynamicMapJS;
 import dev.latvian.kubejs.util.ListJS;
@@ -36,7 +36,7 @@ import java.util.function.Predicate;
 /**
  * @author LatvianModder
  */
-public class RecipeEventJS extends ServerEventJS
+public class RecipeEventJS extends EventJS
 {
 	public static RecipeEventJS instance;
 
@@ -56,7 +56,7 @@ public class RecipeEventJS extends ServerEventJS
 		typeMap = t;
 		originalRecipes = new ArrayList<>();
 
-		ScriptType.SERVER.console.logger.info("Scanning recipes...");
+		ScriptType.SERVER.console.info("Scanning recipes...");
 
 		addedRecipes = new ArrayList<>();
 		removedRecipes = new HashSet<>();
@@ -146,7 +146,7 @@ public class RecipeEventJS extends ServerEventJS
 			}
 		}
 
-		ScriptType.SERVER.console.logger.info("Found " + originalRecipes.size() + " recipes");
+		ScriptType.SERVER.console.info("Found " + originalRecipes.size() + " recipes");
 		ScriptType.SERVER.console.setLineNumber(true);
 		post(ScriptType.SERVER, KubeJSEvents.RECIPES);
 		post(ScriptType.SERVER, "server.datapack.recipes"); // TODO: To be removed some time later

@@ -2,6 +2,7 @@ package dev.latvian.kubejs.server;
 
 import dev.latvian.kubejs.core.TagBuilderKJS;
 import dev.latvian.kubejs.docs.ID;
+import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -18,7 +19,7 @@ import java.util.function.Function;
 /**
  * @author LatvianModder
  */
-public class TagEventJS<T> extends ServerEventJS
+public class TagEventJS<T> extends EventJS
 {
 	public static class TagWrapper<T>
 	{
@@ -46,7 +47,7 @@ public class TagEventJS<T> extends ServerEventJS
 					TagWrapper<T> w = event.get(s.substring(1));
 					entries.add(new Tag.TagEntry<>(w.id));
 					event.addedCount += w.entries.size();
-					ScriptType.SERVER.console.logger.info("+ " + event.type + ":" + id + " // " + w.id);
+					ScriptType.SERVER.console.info("+ " + event.type + ":" + id + " // " + w.id);
 				}
 				else
 				{
@@ -57,11 +58,11 @@ public class TagEventJS<T> extends ServerEventJS
 					{
 						entries.add(new Tag.ListEntry<>(Collections.singleton(v.get())));
 						event.addedCount++;
-						ScriptType.SERVER.console.logger.info("+ " + event.type + ":" + id + " // " + s + " [" + v.get().getClass().getName() + "]");
+						ScriptType.SERVER.console.info("+ " + event.type + ":" + id + " // " + s + " [" + v.get().getClass().getName() + "]");
 					}
 					else
 					{
-						ScriptType.SERVER.console.logger.warn("+ " + event.type + ":" + id + " // " + s + " [Not found!]");
+						ScriptType.SERVER.console.warn("+ " + event.type + ":" + id + " // " + s + " [Not found!]");
 					}
 				}
 			}
@@ -78,9 +79,9 @@ public class TagEventJS<T> extends ServerEventJS
 				if (s.startsWith("#"))
 				{
 					TagWrapper<T> w = event.get(s.substring(1));
-					entries.remove(new Tag.TagEntry<>(w.id));
+					entries.remove(new Tag.TagEntry<T>(w.id));
 					event.removedCount += w.entries.size();
-					ScriptType.SERVER.console.logger.info("- " + event.type + ":" + id + " // " + w.id);
+					ScriptType.SERVER.console.info("- " + event.type + ":" + id + " // " + w.id);
 				}
 				else
 				{
@@ -91,11 +92,11 @@ public class TagEventJS<T> extends ServerEventJS
 					{
 						entries.remove(new Tag.ListEntry<>(Collections.singleton(v.get())));
 						event.removedCount++;
-						ScriptType.SERVER.console.logger.info("- " + event.type + ":" + id + " // " + s + " [" + v.get().getClass().getName() + "]");
+						ScriptType.SERVER.console.info("- " + event.type + ":" + id + " // " + s + " [" + v.get().getClass().getName() + "]");
 					}
 					else
 					{
-						ScriptType.SERVER.console.logger.warn("- " + event.type + ":" + id + " // " + s + " [Not found!]");
+						ScriptType.SERVER.console.warn("- " + event.type + ":" + id + " // " + s + " [Not found!]");
 					}
 				}
 			}
@@ -105,7 +106,7 @@ public class TagEventJS<T> extends ServerEventJS
 
 		public TagWrapper<T> removeAll()
 		{
-			ScriptType.SERVER.console.logger.info("- " + event.type + ":" + id + " // (all)");
+			ScriptType.SERVER.console.info("- " + event.type + ":" + id + " // (all)");
 			event.removedCount += entries.size();
 			entries.clear();
 			return this;
@@ -139,7 +140,7 @@ public class TagEventJS<T> extends ServerEventJS
 		{
 			TagWrapper<T> w = new TagWrapper<>(this, entry.getKey(), entry.getValue());
 			tags.put(entry.getKey(), w);
-			ScriptType.SERVER.console.logger.debug(type + "/#" + entry.getKey() + "; " + w.entries.size());
+			ScriptType.SERVER.console.debug(type + "/#" + entry.getKey() + "; " + w.entries.size());
 		}
 
 		ScriptType.SERVER.console.setLineNumber(true);
@@ -147,7 +148,7 @@ public class TagEventJS<T> extends ServerEventJS
 		post(ScriptType.SERVER, "server.datapack.tags." + type); //TODO: To be removed
 		ScriptType.SERVER.console.setLineNumber(false);
 
-		ScriptType.SERVER.console.logger.info("[" + type + "] Found " + tags.size() + " tags, added " + addedCount + ", removed " + removedCount);
+		ScriptType.SERVER.console.info("[" + type + "] Found " + tags.size() + " tags, added " + addedCount + ", removed " + removedCount);
 	}
 
 	public TagWrapper<T> get(@ID String tag)

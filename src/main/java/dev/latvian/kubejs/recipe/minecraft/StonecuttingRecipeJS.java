@@ -59,7 +59,7 @@ public class StonecuttingRecipeJS extends RecipeJS
 	public void serialize()
 	{
 		json.add("ingredient", inputItems.get(0).toJson());
-		json.addProperty("result", outputItems.get(0).getId().toString());
+		json.addProperty("result", outputItems.get(0).getId());
 		json.addProperty("count", outputItems.get(0).getCount());
 	}
 }

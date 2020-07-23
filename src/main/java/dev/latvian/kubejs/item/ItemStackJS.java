@@ -36,7 +36,6 @@ import net.minecraftforge.common.ToolType;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -51,6 +50,8 @@ import java.util.Set;
 public abstract class ItemStackJS implements IngredientJS, NBTSerializable, WrappedJSObjectChangeListener<MapJS>
 {
 	private static List<ItemStackJS> cachedItemList;
+	private static ListJS cachedItemListJS;
+	private static ListJS cachedItemTypeListJS;
 
 	public static ItemStackJS of(@Nullable Object o)
 	{
@@ -254,21 +255,35 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return cachedItemList;
 	}
 
+	public static ListJS getListJS()
+	{
+		if (cachedItemListJS == null)
+		{
+			cachedItemListJS = Objects.requireNonNull(ListJS.of(getList()));
+		}
+
+		return cachedItemListJS;
+	}
+
 	public static void clearListCache()
 	{
 		cachedItemList = null;
+		cachedItemListJS = null;
 	}
 
-	public static List<String> getTypeList()
+	public static ListJS getTypeList()
 	{
-		List<String> list = new ArrayList<>();
-
-		for (ResourceLocation id : ForgeRegistries.ITEMS.getKeys())
+		if (cachedItemTypeListJS == null)
 		{
-			list.add(id.toString());
+			cachedItemTypeListJS = new ListJS();
+
+			for (ResourceLocation id : ForgeRegistries.ITEMS.getKeys())
+			{
+				cachedItemTypeListJS.add(id.toString());
+			}
 		}
 
-		return list;
+		return cachedItemTypeListJS;
 	}
 
 	private double chance = 1D;

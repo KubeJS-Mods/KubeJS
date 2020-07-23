@@ -5,35 +5,12 @@ import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.ListJS;
-import net.minecraft.item.crafting.IRecipeSerializer;
 
 /**
  * @author LatvianModder
  */
 public class CookingRecipeJS extends RecipeJS
 {
-	public enum Type
-	{
-		SMELTING(IRecipeSerializer.SMELTING),
-		BLASTING(IRecipeSerializer.BLASTING),
-		SMOKING(IRecipeSerializer.SMOKING),
-		CAMPFIRE(IRecipeSerializer.CAMPFIRE_COOKING);
-
-		public final IRecipeSerializer serializer;
-
-		Type(IRecipeSerializer s)
-		{
-			serializer = s;
-		}
-	}
-
-	public final Type cookingType;
-
-	public CookingRecipeJS(Type c)
-	{
-		cookingType = c;
-	}
-
 	@Override
 	public void create(ListJS args)
 	{
