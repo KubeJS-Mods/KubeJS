@@ -40,13 +40,25 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 		{
 			return (IngredientJS) o;
 		}
+		else if (o instanceof Pattern)
+		{
+			return new RegexIngredientJS((Pattern) o);
+		}
 		else if (o instanceof CharSequence)
 		{
 			String s = o.toString();
 
-			if (s.startsWith("#"))
+			if (s.equals("*"))
+			{
+				return MatchAllIngredientJS.INSTANCE;
+			}
+			else if (s.startsWith("#"))
 			{
 				return new TagIngredientJS(new ResourceLocation(s.substring(1)));
+			}
+			else if (s.startsWith("@"))
+			{
+				return new ModIngredientJS(s.substring(1));
 			}
 			else if (s.startsWith("mod:"))
 			{
@@ -54,7 +66,19 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 			}
 			else if (s.startsWith("regex:"))
 			{
-				return new RegexIngredientJS(Pattern.compile(s.substring(6)));
+				Pattern reg = UtilsJS.regex(s.substring(6), false);
+
+				if (reg != null)
+				{
+					return new RegexIngredientJS(reg);
+				}
+			}
+
+			Pattern reg = UtilsJS.regex(s, true);
+
+			if (reg != null)
+			{
+				return new RegexIngredientJS(reg);
 			}
 
 			return ItemStackJS.of(KubeJS.appendModId(s));

@@ -211,4 +211,34 @@ public class ClientProperties
 
 		return false;
 	}
+
+	public float[] getMemoryColor(float[] color)
+	{
+		return overrideColors ? fmlMemoryColor3f : color;
+	}
+
+	public float[] getLogColor(float[] color)
+	{
+		return overrideColors ? fmlLogColor3f : color;
+	}
+
+	public float getBackgroundColor(float c, int index)
+	{
+		return overrideColors ? backgroundColor3f[index] : c;
+	}
+
+	public int getBackgroundColor(int color)
+	{
+		return overrideColors ? ((color & 0xFF000000) | backgroundColor) : color;
+	}
+
+	public int getBarColor(int color)
+	{
+		return overrideColors ? ((color & 0xFF000000) | barColor) : color;
+	}
+
+	public int getBarBorderColor(int color)
+	{
+		return overrideColors ? ((color & 0xFF000000) | barBorderColor) : color;
+	}
 }

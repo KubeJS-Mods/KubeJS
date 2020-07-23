@@ -95,9 +95,10 @@ public class UtilsWrapper
 		return new ConsoleJS(ScriptType.STARTUP, LogManager.getLogger(name));
 	}
 
-	public Pattern regex(String pattern)
+	@Nullable
+	public Pattern regex(String s)
 	{
-		return Pattern.compile(pattern);
+		return UtilsJS.regex(s, false);
 	}
 
 	public Pattern regex(String pattern, int flags)

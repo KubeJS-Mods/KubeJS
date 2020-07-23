@@ -85,12 +85,12 @@ minecraft {
 
 repositories {
 	mavenLocal()
-	maven { url "https://dist.creeper.host/Sponge/maven" } // Mixin
+	// maven { url "https://dist.creeper.host/Sponge/maven" } // Mixin
 }
 
 dependencies {
 	minecraft "net.minecraftforge:forge:${forge_version}"
-	compile 'org.spongepowered:mixin:0.8-SNAPSHOT'
+	// compile 'org.spongepowered:mixin:0.8-SNAPSHOT'
 	compile fg.deobf(curse.resolve('jei', project.jei_file))
 	compileOnly fg.deobf(curse.resolve('bookshelf', project.bookshelf_file))
 	compileOnly fg.deobf(curse.resolve('game-stages', project.gamestages_file))
@@ -135,7 +135,6 @@ if (ENV.CURSEFORGE_KEY) {
 			releaseType = "release"
 			addGameVersion "1.16.1"
 			relations {
-				requiredDependency 'mixinbootstrap'
 				optionalDependency 'jei'
 				optionalDependency 'game-stages'
 			}
