@@ -43,6 +43,6 @@ public class GroupIngredientJS implements IngredientJS
 	@Override
 	public String toString()
 	{
-		return "%" + group.getPath();
+		return "'%" + group.getPath() + "'";
 	}
 }

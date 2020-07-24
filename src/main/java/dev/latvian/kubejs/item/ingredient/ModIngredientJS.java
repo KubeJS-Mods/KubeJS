@@ -69,6 +69,6 @@ public class ModIngredientJS implements IngredientJS
 	@Override
 	public String toString()
 	{
-		return "mod:" + mod;
+		return "'@" + mod + "'";
 	}
 }

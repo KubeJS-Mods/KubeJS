@@ -9,7 +9,6 @@ import dev.latvian.kubejs.item.ingredient.MatchAnyIngredientJS;
 import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
 import dev.latvian.kubejs.item.ingredient.RegexIngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
-import dev.latvian.kubejs.util.UtilsJS;
 
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -48,7 +47,7 @@ public class IngredientWrapper
 
 	public IngredientJS tag(@ID String tag)
 	{
-		return new TagIngredientJS(UtilsJS.getMCID(tag));
+		return new TagIngredientJS(tag);
 	}
 
 	public IngredientJS mod(String modId)
