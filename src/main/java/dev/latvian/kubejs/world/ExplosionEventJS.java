@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.world;
 
+import dev.latvian.kubejs.core.ExplosionKJS;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.player.EntityArrayList;
@@ -74,6 +75,16 @@ public abstract class ExplosionEventJS extends WorldEventJS
 		public boolean canCancel()
 		{
 			return true;
+		}
+
+		public float getSize()
+		{
+			return ((ExplosionKJS) event.getExplosion()).getSizeKJS();
+		}
+
+		public void setSize(float s)
+		{
+			((ExplosionKJS) event.getExplosion()).setSizeKJS(s);
 		}
 	}
 
