@@ -15,6 +15,7 @@ public class ConsoleJS
 	private String group;
 	private int lineNumber;
 	private boolean muted;
+	private boolean debugEnabled;
 
 	public ConsoleJS(ScriptType m, Logger log)
 	{
@@ -22,6 +23,8 @@ public class ConsoleJS
 		logger = log;
 		group = "";
 		lineNumber = 0;
+		muted = false;
+		debugEnabled = false;
 	}
 
 	public Logger getLogger()
@@ -42,6 +45,16 @@ public class ConsoleJS
 	public boolean getMuted()
 	{
 		return muted;
+	}
+
+	public void setDebugEnabled(boolean m)
+	{
+		debugEnabled = m;
+	}
+
+	public boolean getDebugEnabled()
+	{
+		return debugEnabled;
 	}
 
 	public void setLineNumber(boolean b)
@@ -145,17 +158,17 @@ public class ConsoleJS
 
 	public void debug(Object message)
 	{
-		if (shouldPrint())
+		if (debugEnabled && shouldPrint())
 		{
-			logger.debug(string(message));
+			logger.info(string(message));
 		}
 	}
 
 	public void debugf(String message, Object... args)
 	{
-		if (shouldPrint())
+		if (debugEnabled && shouldPrint())
 		{
-			logger.debug(string(message, args));
+			logger.info(string(message, args));
 		}
 	}
 
