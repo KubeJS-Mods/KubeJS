@@ -2,7 +2,6 @@ package dev.latvian.kubejs.client;
 
 import dev.latvian.kubejs.event.EventJS;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 import java.util.List;
 
@@ -11,11 +10,11 @@ import java.util.List;
  */
 public class DebugInfoEventJS extends EventJS
 {
-	public final transient RenderGameOverlayEvent.Text event;
+	private final List<String> lines;
 
-	public DebugInfoEventJS(RenderGameOverlayEvent.Text e)
+	public DebugInfoEventJS(List<String> l)
 	{
-		event = e;
+		lines = l;
 	}
 
 	public boolean getShowDebug()
@@ -23,13 +22,8 @@ public class DebugInfoEventJS extends EventJS
 		return Minecraft.getInstance().gameSettings.showDebugInfo;
 	}
 
-	public List<String> getLeft()
+	public List<String> getLines()
 	{
-		return event.getLeft();
-	}
-
-	public List<String> getRight()
-	{
-		return event.getRight();
+		return lines;
 	}
 }

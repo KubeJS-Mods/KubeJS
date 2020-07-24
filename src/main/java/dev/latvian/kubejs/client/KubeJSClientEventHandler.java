@@ -104,7 +104,8 @@ public class KubeJSClientEventHandler
 	{
 		if (Minecraft.getInstance().player != null)
 		{
-			new DebugInfoEventJS(event).post(ScriptType.CLIENT, KubeJSEvents.CLIENT_DEBUG_INFO);
+			new DebugInfoEventJS(event.getLeft()).post(ScriptType.CLIENT, KubeJSEvents.CLIENT_DEBUG_INFO_LEFT);
+			new DebugInfoEventJS(event.getRight()).post(ScriptType.CLIENT, KubeJSEvents.CLIENT_DEBUG_INFO_RIGHT);
 		}
 	}
 
