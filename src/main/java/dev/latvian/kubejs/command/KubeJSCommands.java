@@ -3,12 +3,15 @@ package dev.latvian.kubejs.command;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
+import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
+import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
+import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -26,9 +29,6 @@ public class KubeJSCommands
 	public static void register(CommandDispatcher<CommandSource> dispatcher)
 	{
 		dispatcher.register(Commands.literal("kubejs")
-				.then(Commands.literal("item_info")
-						.executes(context -> itemInfo(context.getSource().asPlayer()))
-				)
 				.then(Commands.literal("hand")
 						.executes(context -> hand(context.getSource().asPlayer()))
 				)
@@ -42,37 +42,43 @@ public class KubeJSCommands
 						.executes(context -> checkRecipeConflicts(context.getSource().asPlayer()))
 				)
 		);
+
+		dispatcher.register(Commands.literal("kjs_hand")
+				.executes(context -> hand(context.getSource().asPlayer()))
+		);
 	}
 
-	private static int itemInfo(ServerPlayerEntity player)
+	private static ITextComponent copy(String s, TextFormatting col, String info)
 	{
-		ItemStack stack = player.getHeldItemMainhand();
-		ITextComponent c = stack.getDisplayName();
-		c.getStyle().setBold(true);
-		player.sendMessage(new StringTextComponent("=== ").func_240699_a_(TextFormatting.GREEN).func_230529_a_(c).func_240702_b_(" ==="), Util.DUMMY_UUID);
+		StringTextComponent component = new StringTextComponent("- ");
+		component.getStyle().setColor(Color.func_240744_a_(TextFormatting.GRAY));
+		component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, s));
+		component.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent(info + " (Click to copy)")));
+		component.func_230529_a_(new StringTextComponent(s).func_240699_a_(col));
+		return component;
+	}
 
-		player.sendMessage(new StringTextComponent("= Item Tags =").func_240699_a_(TextFormatting.YELLOW), Util.DUMMY_UUID);
+	private static int hand(ServerPlayerEntity player)
+	{
+		player.sendMessage(new StringTextComponent("Item in hand:"), Util.DUMMY_UUID);
+		ItemStackJS stack = ItemStackJS.of(player.getHeldItemMainhand());
+		player.sendMessage(copy(stack.toString(), TextFormatting.GREEN, "Item ID"), Util.DUMMY_UUID);
 
 		List<ResourceLocation> tags = new ArrayList<>(stack.getItem().getTags());
 		tags.sort(null);
 
 		for (ResourceLocation id : tags)
 		{
-			ITextComponent component = new StringTextComponent("- " + id);
-			component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, id.toString()));
-			component.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent("Click to copy")));
-			player.sendMessage(component, Util.DUMMY_UUID);
+			player.sendMessage(copy("#" + id.toString(), TextFormatting.YELLOW, "Item Tag [" + new TagIngredientJS(id).getStacks().size() + " items]"), Util.DUMMY_UUID);
 		}
 
-		return Command.SINGLE_SUCCESS;
-	}
+		player.sendMessage(copy("@" + stack.getMod(), TextFormatting.AQUA, "Mod [" + new ModIngredientJS(stack.getMod()).getStacks().size() + " items]"), Util.DUMMY_UUID);
 
-	private static int hand(ServerPlayerEntity player)
-	{
-		ItemStackJS is = ItemStackJS.of(player.getHeldItemMainhand());
-		ITextComponent component = new StringTextComponent(is.toString() + " [Click to copy]");
-		component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, is.toString()));
-		player.sendMessage(component, Util.DUMMY_UUID);
+		if (stack.getItem().getGroup() != null)
+		{
+			player.sendMessage(copy("%" + stack.getItemGroup(), TextFormatting.LIGHT_PURPLE, "Item Group [" + new GroupIngredientJS(stack.getItem().getGroup()).getStacks().size() + " items]"), Util.DUMMY_UUID);
+		}
+
 		return 1;
 	}
 

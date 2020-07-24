@@ -12,6 +12,7 @@ import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
@@ -60,18 +61,20 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 			{
 				return new ModIngredientJS(s.substring(1));
 			}
-			else if (s.startsWith("mod:"))
+			else if (s.startsWith("%"))
 			{
-				return new ModIngredientJS(s.substring(4));
-			}
-			else if (s.startsWith("regex:"))
-			{
-				Pattern reg = UtilsJS.regex(s.substring(6), false);
+				ItemGroup group = ItemStackJS.findGroup(s.substring(1));
 
-				if (reg != null)
+				if (group == null)
 				{
-					return new RegexIngredientJS(reg);
+					return EmptyItemStackJS.INSTANCE;
 				}
+				else if (group == ItemGroup.SEARCH)
+				{
+					return MatchAllIngredientJS.INSTANCE;
+				}
+
+				return new GroupIngredientJS(group);
 			}
 
 			Pattern reg = UtilsJS.regex(s, true);
@@ -147,14 +150,6 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 			else if (map.containsKey("tag"))
 			{
 				return new TagIngredientJS(new ResourceLocation(map.get("tag").toString()));
-			}
-			else if (map.containsKey("mod"))
-			{
-				return new ModIngredientJS(map.get("mod").toString());
-			}
-			else if (map.containsKey("regex"))
-			{
-				return new RegexIngredientJS(Pattern.compile(map.get("regex").toString()));
 			}
 		}
 

@@ -278,6 +278,20 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return cachedItemTypeListJS;
 	}
 
+	@Nullable
+	public static ItemGroup findGroup(String id)
+	{
+		for (ItemGroup group : ItemGroup.GROUPS)
+		{
+			if (id.equals(group.getPath()))
+			{
+				return group;
+			}
+		}
+
+		return null;
+	}
+
 	private double chance = 1D;
 
 	public abstract Item getItem();
@@ -672,5 +686,15 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	@Override
 	public void onChanged(@Nullable MapJS o)
 	{
+	}
+
+	public String getItemGroup()
+	{
+		if (getItem().getGroup() == null)
+		{
+			return "";
+		}
+
+		return getItem().getGroup().getPath();
 	}
 }
