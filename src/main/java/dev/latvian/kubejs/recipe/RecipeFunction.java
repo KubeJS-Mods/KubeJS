@@ -104,7 +104,7 @@ public class RecipeFunction extends AbstractJSObject implements WrappedJS
 
 			if (s.length() >= 4 && s.startsWith("#") && s.indexOf(':') != -1)
 			{
-				return new TagIngredientJS(new ResourceLocation(s.substring(1))).toJson();
+				return new TagIngredientJS(s.substring(1)).toJson();
 			}
 
 			return o;

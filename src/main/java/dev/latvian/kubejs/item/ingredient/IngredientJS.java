@@ -15,7 +15,6 @@ import dev.latvian.kubejs.util.WrappedJS;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 
 import javax.annotation.Nullable;
@@ -51,7 +50,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 			}
 			else if (s.startsWith("#"))
 			{
-				return new TagIngredientJS(new ResourceLocation(s.substring(1)));
+				return new TagIngredientJS(s.substring(1));
 			}
 			else if (s.startsWith("@"))
 			{
@@ -161,7 +160,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 			}
 			else if (map.containsKey("tag"))
 			{
-				return new TagIngredientJS(new ResourceLocation(map.get("tag").toString()));
+				return new TagIngredientJS(map.get("tag").toString());
 			}
 			else if (map.containsKey("mod"))
 			{
@@ -232,7 +231,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 			}
 			else if (o.has("tag"))
 			{
-				return new TagIngredientJS(new ResourceLocation(o.get("tag").getAsString()));
+				return new TagIngredientJS(o.get("tag").getAsString());
 			}
 			else if (o.has("item"))
 			{

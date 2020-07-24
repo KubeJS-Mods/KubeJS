@@ -5,16 +5,18 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -22,14 +24,18 @@ import java.util.Set;
  */
 public class TagIngredientJS implements IngredientJS
 {
-	private final ResourceLocation tag;
+	private static final Map<String, ItemTags.Wrapper> TAG_CACHE = new HashMap<>();
 
-	public TagIngredientJS(ResourceLocation t)
+	private final String tag;
+	private final ItemTags.Wrapper cachedTag;
+
+	public TagIngredientJS(String t)
 	{
-		tag = t;
+		tag = UtilsJS.getID(t);
+		cachedTag = TAG_CACHE.computeIfAbsent(tag, i -> new ItemTags.Wrapper(new ResourceLocation(i)));
 	}
 
-	public ResourceLocation getTag()
+	public String getTag()
 	{
 		return tag;
 	}
@@ -37,25 +43,23 @@ public class TagIngredientJS implements IngredientJS
 	@Override
 	public boolean test(ItemStackJS stack)
 	{
-		return !stack.isEmpty() && stack.getItem().getTags().contains(tag);
+		return !stack.isEmpty() && cachedTag.contains(stack.getItem());
 	}
 
 	@Override
 	public boolean testVanilla(ItemStack stack)
 	{
-		return !stack.isEmpty() && stack.getItem().getTags().contains(tag);
+		return !stack.isEmpty() && cachedTag.contains(stack.getItem());
 	}
 
 	@Override
 	public Set<ItemStackJS> getStacks()
 	{
-		Tag<Item> t = ItemTags.getCollection().get(tag);
-
-		if (t != null && t.getAllElements().size() > 0)
+		if (cachedTag.getAllElements().size() > 0)
 		{
 			NonNullList<ItemStack> list = NonNullList.create();
 
-			for (Item item : t.getAllElements())
+			for (Item item : cachedTag.getAllElements())
 			{
 				item.fillItemGroup(ItemGroup.SEARCH, list);
 			}
@@ -79,13 +83,11 @@ public class TagIngredientJS implements IngredientJS
 	@Override
 	public ItemStackJS getFirst()
 	{
-		Tag<Item> t = ItemTags.getCollection().get(tag);
-
-		if (t != null && t.getAllElements().size() > 0)
+		if (cachedTag.getAllElements().size() > 0)
 		{
 			NonNullList<ItemStack> list = NonNullList.create();
 
-			for (Item item : t.getAllElements())
+			for (Item item : cachedTag.getAllElements())
 			{
 				item.fillItemGroup(ItemGroup.SEARCH, list);
 
@@ -107,13 +109,7 @@ public class TagIngredientJS implements IngredientJS
 	@Override
 	public boolean isEmpty()
 	{
-		if (ItemTags.getCollection().getTagMap().isEmpty())
-		{
-			return false;
-		}
-
-		Tag<Item> t = ItemTags.getCollection().get(tag);
-		return t != null && t.getAllElements().isEmpty();
+		return cachedTag.getAllElements().isEmpty();
 	}
 
 	@Override
@@ -126,7 +122,7 @@ public class TagIngredientJS implements IngredientJS
 	public JsonElement toJson()
 	{
 		JsonObject json = new JsonObject();
-		json.addProperty("tag", tag.toString());
+		json.addProperty("tag", tag);
 		return json;
 	}
 

@@ -95,7 +95,7 @@ public class SilentsMechanmismsAlloySmeltingRecipeJS extends RecipeJS
 			}
 			else if (o.has("tag"))
 			{
-				l.ingredients.add(new TagIngredientJS(new ResourceLocation(o.get("tag").getAsString())));
+				l.ingredients.add(new TagIngredientJS(o.get("tag").getAsString()));
 			}
 			else if (o.has("item"))
 			{

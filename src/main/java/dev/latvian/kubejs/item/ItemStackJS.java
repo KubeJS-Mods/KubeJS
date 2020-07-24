@@ -7,8 +7,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.docs.MinecraftClass;
+import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.kubejs.item.ingredient.IgnoreNBTIngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.text.Text;
@@ -86,7 +88,22 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 			if (s.startsWith("#"))
 			{
-				return new TagIngredientJS(new ResourceLocation(s.substring(1))).getFirst();
+				return new TagIngredientJS(s.substring(1)).getFirst();
+			}
+			else if (s.startsWith("@"))
+			{
+				return new ModIngredientJS(s.substring(1)).getFirst();
+			}
+			else if (s.startsWith("%"))
+			{
+				ItemGroup group = ItemStackJS.findGroup(s.substring(1));
+
+				if (group == null)
+				{
+					return EmptyItemStackJS.INSTANCE;
+				}
+
+				return new GroupIngredientJS(group).getFirst();
 			}
 
 			return new UnboundItemStackJS(new ResourceLocation(s));
@@ -114,7 +131,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 			}
 			else if (map.get("tag") instanceof CharSequence)
 			{
-				ItemStackJS stack = new TagIngredientJS(new ResourceLocation(map.get("tag").toString())).getFirst();
+				ItemStackJS stack = new TagIngredientJS(map.get("tag").toString()).getFirst();
 
 				if (map.containsKey("count"))
 				{
@@ -134,7 +151,22 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 		if (s.startsWith("#"))
 		{
-			return new TagIngredientJS(new ResourceLocation(s.substring(1))).getFirst();
+			return new TagIngredientJS(s.substring(1)).getFirst();
+		}
+		else if (s.startsWith("@"))
+		{
+			return new ModIngredientJS(s.substring(1)).getFirst();
+		}
+		else if (s.startsWith("%"))
+		{
+			ItemGroup group = ItemStackJS.findGroup(s.substring(1));
+
+			if (group == null)
+			{
+				return EmptyItemStackJS.INSTANCE;
+			}
+
+			return new GroupIngredientJS(group).getFirst();
 		}
 
 		return new UnboundItemStackJS(new ResourceLocation(s));
@@ -165,7 +197,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return stack;
 	}
 
-	public static ItemStackJS resultFromRecipeJson(JsonElement json)
+	public static ItemStackJS resultFromRecipeJson(@Nullable JsonElement json)
 	{
 		if (json == null || json.isJsonNull())
 		{

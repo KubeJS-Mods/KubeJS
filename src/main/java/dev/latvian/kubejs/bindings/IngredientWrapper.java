@@ -39,7 +39,7 @@ public class IngredientWrapper
 		return predicate::test;
 	}
 
-	public IngredientJS matchAny(Object[] objects)
+	public IngredientJS matchAny(Object objects)
 	{
 		MatchAnyIngredientJS ingredient = new MatchAnyIngredientJS();
 		ingredient.addAll(objects);
@@ -48,7 +48,7 @@ public class IngredientWrapper
 
 	public IngredientJS tag(@ID String tag)
 	{
-		return new TagIngredientJS(UtilsJS.getMCID(tag));
+		return new TagIngredientJS(UtilsJS.getID(tag));
 	}
 
 	public IngredientJS mod(String modId)
