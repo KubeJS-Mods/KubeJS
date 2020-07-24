@@ -27,7 +27,54 @@ public class ShapedRecipeJS extends RecipeJS
 	{
 		if (args.size() < 3)
 		{
-			throw new RecipeExceptionJS("Shaped recipe requires 3 arguments - result, pattern and keys!");
+			if (args.size() < 2)
+			{
+				throw new RecipeExceptionJS("Shaped recipe requires 3 arguments - result, pattern and keys!");
+			}
+
+			ItemStackJS result = ItemStackJS.of(args.get(0));
+
+			if (result.isEmpty())
+			{
+				throw new RecipeExceptionJS("Shaped recipe result " + args.get(0) + " is not a valid item!");
+			}
+
+			outputItems.add(result);
+			ListJS vertical = ListJS.orSelf(args.get(1));
+
+			if (vertical.isEmpty())
+			{
+				throw new RecipeExceptionJS("Shaped recipe pattern is empty!");
+			}
+
+			int id = 0;
+
+			for (Object o : vertical)
+			{
+				StringBuilder horizontalPattern = new StringBuilder();
+				ListJS horizontal = ListJS.orSelf(o);
+
+				for (Object item : horizontal)
+				{
+					IngredientJS ingredient = IngredientJS.of(item);
+
+					if (!ingredient.isEmpty())
+					{
+						String currentId = String.valueOf(id++);
+						horizontalPattern.append(currentId);
+						inputItems.add(ingredient);
+						key.add(currentId);
+					}
+					else
+					{
+						horizontalPattern.append(" ");
+					}
+				}
+
+				pattern.add(horizontalPattern.toString());
+			}
+
+			return;
 		}
 
 		ItemStackJS result = ItemStackJS.of(args.get(0));
