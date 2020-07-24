@@ -55,7 +55,7 @@ public class TagIngredientJS implements IngredientJS
 	@Override
 	public Set<ItemStackJS> getStacks()
 	{
-		if (cachedTag != null && cachedTag.getAllElements().size() > 0)
+		if (cachedTag.getAllElements().size() > 0)
 		{
 			NonNullList<ItemStack> list = NonNullList.create();
 
@@ -83,7 +83,7 @@ public class TagIngredientJS implements IngredientJS
 	@Override
 	public ItemStackJS getFirst()
 	{
-		if (cachedTag != null && cachedTag.getAllElements().size() > 0)
+		if (cachedTag.getAllElements().size() > 0)
 		{
 			NonNullList<ItemStack> list = NonNullList.create();
 
@@ -109,12 +109,7 @@ public class TagIngredientJS implements IngredientJS
 	@Override
 	public boolean isEmpty()
 	{
-		if (ItemTags.getCollection().getTagMap().isEmpty())
-		{
-			return false;
-		}
-
-		return cachedTag != null && cachedTag.getAllElements().isEmpty();
+		return cachedTag.getAllElements().isEmpty();
 	}
 
 	@Override

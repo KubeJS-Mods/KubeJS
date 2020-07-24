@@ -2,6 +2,7 @@ package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.util.ListJS;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -30,9 +31,9 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 		return this;
 	}
 
-	public MatchAnyIngredientJS addAll(Object[] ingredients)
+	public MatchAnyIngredientJS addAll(Object ingredients)
 	{
-		for (Object o : ingredients)
+		for (Object o : ListJS.orSelf(ingredients))
 		{
 			add(o);
 		}

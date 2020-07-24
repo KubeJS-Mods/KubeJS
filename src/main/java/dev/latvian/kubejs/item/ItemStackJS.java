@@ -196,7 +196,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return stack;
 	}
 
-	public static ItemStackJS resultFromRecipeJson(JsonElement json)
+	public static ItemStackJS resultFromRecipeJson(@Nullable JsonElement json)
 	{
 		if (json == null || json.isJsonNull())
 		{
