@@ -8,9 +8,11 @@ import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.FireworksJS;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -63,5 +65,12 @@ public class ItemWrapper
 	{
 		Item i = ForgeRegistries.ITEMS.getValue(UtilsJS.getMCID(id));
 		return i == null ? Items.AIR : i;
+	}
+
+	@Nullable
+	@MinecraftClass
+	public ItemGroup findGroup(String id)
+	{
+		return ItemStackJS.findGroup(id);
 	}
 }

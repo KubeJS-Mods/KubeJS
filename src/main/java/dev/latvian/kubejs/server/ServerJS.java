@@ -65,7 +65,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * @author LatvianModder
  */
-public class ServerJS implements MessageSender, WithAttachedData
+public class ServerJS extends ServerSettings implements MessageSender, WithAttachedData
 {
 	public static ServerJS instance;
 
@@ -83,10 +83,6 @@ public class ServerJS implements MessageSender, WithAttachedData
 	private AttachedData data;
 	private final VirtualKubeJSDataPack virtualDataPackFirst;
 	private final VirtualKubeJSDataPack virtualDataPackLast;
-	public boolean dataPackOutput;
-	public boolean logAddedRecipes;
-	public boolean logRemovedRecipes;
-	public boolean betterRecipeErrorLogging;
 
 	public ServerJS(MinecraftServer ms)
 	{
@@ -100,10 +96,6 @@ public class ServerJS implements MessageSender, WithAttachedData
 		worlds = new ArrayList<>();
 		virtualDataPackFirst = new VirtualKubeJSDataPack(true);
 		virtualDataPackLast = new VirtualKubeJSDataPack(false);
-		dataPackOutput = false;
-		logAddedRecipes = false;
-		logRemovedRecipes = false;
-		betterRecipeErrorLogging = true;
 	}
 
 	public void updateWorldList()

@@ -12,6 +12,7 @@ import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
@@ -44,17 +45,54 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 		{
 			String s = o.toString();
 
-			if (s.startsWith("#"))
+			if (s.equals("*"))
+			{
+				return MatchAllIngredientJS.INSTANCE;
+			}
+			else if (s.startsWith("#"))
 			{
 				return new TagIngredientJS(new ResourceLocation(s.substring(1)));
 			}
+			else if (s.startsWith("@"))
+			{
+				return new ModIngredientJS(s.substring(1));
+			}
+			else if (s.startsWith("%"))
+			{
+				ItemGroup group = ItemStackJS.findGroup(s.substring(1));
+
+				if (group == null)
+				{
+					return EmptyItemStackJS.INSTANCE;
+				}
+				else if (group == ItemGroup.SEARCH)
+				{
+					return MatchAllIngredientJS.INSTANCE;
+				}
+
+				return new GroupIngredientJS(group);
+			}
+			// Deprecated
 			else if (s.startsWith("mod:"))
 			{
 				return new ModIngredientJS(s.substring(4));
 			}
+			// Deprecated
 			else if (s.startsWith("regex:"))
 			{
-				return new RegexIngredientJS(Pattern.compile(s.substring(6)));
+				Pattern reg = UtilsJS.regex(s.substring(6), false);
+
+				if (reg != null)
+				{
+					return new RegexIngredientJS(reg);
+				}
+			}
+
+			Pattern reg = UtilsJS.regex(s, true);
+
+			if (reg != null)
+			{
+				return new RegexIngredientJS(reg);
 			}
 
 			return ItemStackJS.of(KubeJS.appendModId(s));
@@ -118,7 +156,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 				catch (Exception ex)
 				{
 					KubeJS.LOGGER.error("Failed to load ingredient " + json + ": " + ex.toString());
-					return stack -> false;
+					return EmptyItemStackJS.INSTANCE;
 				}
 			}
 			else if (map.containsKey("tag"))
@@ -189,7 +227,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 				catch (Exception ex)
 				{
 					KubeJS.LOGGER.error("Failed to load ingredient " + o + ": " + ex.toString());
-					return stack -> false;
+					return EmptyItemStackJS.INSTANCE;
 				}
 			}
 			else if (o.has("tag"))

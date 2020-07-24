@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class DebugInfoEventJS extends EventJS
 {
-	public final transient RenderGameOverlayEvent.Text event;
+	private final RenderGameOverlayEvent.Text event;
 
 	public DebugInfoEventJS(RenderGameOverlayEvent.Text e)
 	{

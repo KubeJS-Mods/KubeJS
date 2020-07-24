@@ -10,7 +10,7 @@ import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.util.DynamicMapJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
@@ -219,7 +219,7 @@ public class RecipeEventJS extends EventJS
 			r.id = new ResourceLocation(type.serializer.getRegistryName().getNamespace(), "kubejs_generated_" + addedRecipes.size() + "_" + itemId.getNamespace() + "_" + itemId.getPath().replace('/', '_'));
 		}
 
-		if (ServerJS.instance.logAddedRecipes)
+		if (ServerSettings.instance.logAddedRecipes)
 		{
 			ScriptType.SERVER.console.info("+ " + r + ": " + r.inputItems + " -> " + r.outputItems);
 		}
@@ -349,7 +349,7 @@ public class RecipeEventJS extends EventJS
 		forEachRecipe(filter, r -> {
 			if (removedRecipes.add(r))
 			{
-				if (ServerJS.instance.logRemovedRecipes)
+				if (ServerSettings.instance.logRemovedRecipes)
 				{
 					ScriptType.SERVER.console.info("- " + r + ": " + r.inputItems + " -> " + r.outputItems);
 				}
@@ -376,7 +376,7 @@ public class RecipeEventJS extends EventJS
 			{
 				count[0]++;
 
-				if (ServerJS.instance.logAddedRecipes || ServerJS.instance.logRemovedRecipes)
+				if (ServerSettings.instance.logAddedRecipes || ServerSettings.instance.logRemovedRecipes)
 				{
 					ScriptType.SERVER.console.info("~ " + r + ": OUT " + is + " -> " + ws);
 				}
@@ -407,7 +407,7 @@ public class RecipeEventJS extends EventJS
 			{
 				count[0]++;
 
-				if (ServerJS.instance.logAddedRecipes || ServerJS.instance.logRemovedRecipes)
+				if (ServerSettings.instance.logAddedRecipes || ServerSettings.instance.logRemovedRecipes)
 				{
 					ScriptType.SERVER.console.info("~ " + r + ": IN " + is + " -> " + ws);
 				}

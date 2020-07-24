@@ -53,6 +53,7 @@ public class KubeJSServerEventHandler
 		}
 
 		ServerJS.instance = new ServerJS(event.getServer());
+		ServerSettings.instance = ServerJS.instance;
 		event.getServer().getResourcePacks().addPackFinder(new KubeJSDataPackFinder(KubeJS.getGameDirectory().resolve("kubejs").toFile()));
 	}
 
@@ -129,6 +130,7 @@ public class KubeJSServerEventHandler
 
 		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_UNLOAD);
 		ServerJS.instance = null;
+		ServerSettings.instance = null;
 	}
 
 	private void serverTick(TickEvent.ServerTickEvent event)

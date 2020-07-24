@@ -42,12 +42,64 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
  */
 public class UtilsJS
 {
+	public static final Pattern REGEX_PATTERN = Pattern.compile("\\/(.*)\\/([a-z]*)");
+
+	@Nullable
+	public static Pattern regex(String string, boolean strong)
+	{
+		Matcher matcher = REGEX_PATTERN.matcher(string);
+
+		if (matcher.find())
+		{
+			int flags = 0;
+			String f = matcher.group(2);
+
+			for (int i = 0; i < f.length(); i++)
+			{
+				switch (f.charAt(i))
+				{
+					case 'd':
+						flags |= Pattern.UNIX_LINES;
+						break;
+					case 'i':
+						flags |= Pattern.CASE_INSENSITIVE;
+						break;
+					case 'x':
+						flags |= Pattern.COMMENTS;
+						break;
+					case 'm':
+						flags |= Pattern.MULTILINE;
+						break;
+					case 's':
+						flags |= Pattern.DOTALL;
+						break;
+					case 'u':
+						flags |= Pattern.UNICODE_CASE;
+						break;
+					case 'U':
+						flags |= Pattern.UNICODE_CHARACTER_CLASS;
+						break;
+				}
+			}
+
+			return Pattern.compile(matcher.group(1), flags);
+		}
+		else if (!strong)
+		{
+			return Pattern.compile(string);
+		}
+
+		return null;
+	}
+
 	public static final Random RANDOM = new Random();
 
 	public static void init()
