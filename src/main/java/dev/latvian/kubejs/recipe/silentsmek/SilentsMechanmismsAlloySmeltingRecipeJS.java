@@ -4,14 +4,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ItemStackJS;
-import dev.latvian.kubejs.item.UnboundItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAnyIngredientJS;
-import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.ListJS;
-import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +19,7 @@ import java.util.List;
 public class SilentsMechanmismsAlloySmeltingRecipeJS extends RecipeJS
 {
 	public List<Integer> inputCount = new ArrayList<>();
+	public int processTime = 400;
 
 	@Override
 	public void create(ListJS args)
@@ -62,6 +60,30 @@ public class SilentsMechanmismsAlloySmeltingRecipeJS extends RecipeJS
 		{
 			throw new RecipeExceptionJS("Silents Mechanisms alloy smelting recipe ingredient " + args.get(1) + " is not a valid ingredient!");
 		}
+
+		if (args.size() >= 3 && args.get(2) instanceof Number)
+		{
+			processTime(((Number) args.get(2)).intValue());
+		}
+	}
+
+	private static IngredientJS deserializeIngredient(JsonElement element)
+	{
+		if (element.isJsonObject())
+		{
+			JsonObject json = element.getAsJsonObject();
+
+			if (json.has("value"))
+			{
+				return IngredientJS.ingredientFromRecipeJson(json.get("value"));
+			}
+			if (json.has("values"))
+			{
+				return IngredientJS.ingredientFromRecipeJson(json.get("values"));
+			}
+		}
+
+		return IngredientJS.ingredientFromRecipeJson(element);
 	}
 
 	@Override
@@ -74,50 +96,26 @@ public class SilentsMechanmismsAlloySmeltingRecipeJS extends RecipeJS
 			throw new RecipeExceptionJS("Silents Mechanisms alloy smelting recipe result can't be empty!");
 		}
 
+		processTime = json.has("process_time") ? json.get("process_time").getAsInt() : 400;
+
 		outputItems.add(result);
 
 		for (JsonElement e : json.get("ingredients").getAsJsonArray())
 		{
-			JsonObject o = e.getAsJsonObject();
-			MatchAnyIngredientJS l = new MatchAnyIngredientJS();
+			IngredientJS i = deserializeIngredient(e);
 
-			if (o.has("values"))
+			if (!i.isEmpty())
 			{
-				for (JsonElement e1 : o.get("values").getAsJsonArray())
+				inputItems.add(i);
+
+				if (e.isJsonObject() && e.getAsJsonObject().has("count"))
 				{
-					IngredientJS i = IngredientJS.ingredientFromRecipeJson(e1);
-
-					if (!i.isEmpty())
-					{
-						l.ingredients.add(i);
-					}
+					inputCount.add(e.getAsJsonObject().get("count").getAsInt());
 				}
-			}
-			else if (o.has("value"))
-			{
-				for (JsonElement e1 : o.get("value").getAsJsonArray())
+				else
 				{
-					IngredientJS i = IngredientJS.ingredientFromRecipeJson(e1);
-
-					if (!i.isEmpty())
-					{
-						l.ingredients.add(i);
-					}
+					inputCount.add(1);
 				}
-			}
-			else if (o.has("tag"))
-			{
-				l.ingredients.add(new TagIngredientJS(o.get("tag").getAsString()));
-			}
-			else if (o.has("item"))
-			{
-				l.ingredients.add(new UnboundItemStackJS(new ResourceLocation(o.get("item").getAsString())));
-			}
-
-			if (!l.isEmpty())
-			{
-				inputItems.add(l.ingredients.size() == 1 ? l.ingredients.get(0) : l);
-				inputCount.add(o.has("count") ? o.get("count").getAsInt() : 1);
 			}
 		}
 
@@ -157,5 +155,12 @@ public class SilentsMechanmismsAlloySmeltingRecipeJS extends RecipeJS
 
 		json.add("ingredients", ingredientsJson);
 		json.add("result", outputItems.get(0).toResultJson());
+		json.addProperty("process_time", processTime);
+	}
+
+	public SilentsMechanmismsAlloySmeltingRecipeJS processTime(int t)
+	{
+		processTime = Math.max(0, t);
+		return this;
 	}
 }
