@@ -60,7 +60,7 @@ public class ShapedRecipeJS extends RecipeJS
 
 					if (!ingredient.isEmpty())
 					{
-						String currentId = String.valueOf('A' + (id++));
+						String currentId = String.valueOf((char) ('A' + (id++)));
 						horizontalPattern.append(currentId);
 						inputItems.add(ingredient);
 						key.add(currentId);

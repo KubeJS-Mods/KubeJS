@@ -75,8 +75,7 @@ public class KubeJS
 		instance = this;
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP);
 		clientScriptManager = new ScriptManager(ScriptType.CLIENT);
-		//noinspection Convert2MethodRef
-		proxy = DistExecutor.runForDist(() -> () -> new KubeJSClient(), () -> () -> new KubeJSCommon());
+		proxy = DistExecutor.safeRunForDist(() -> KubeJSClient::new, () -> KubeJSCommon::new);
 
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadComplete);

@@ -34,7 +34,7 @@ public class ScriptFile implements Comparable<ScriptFile>
 
 		try (Reader reader = source.createReader(info))
 		{
-			pack.engine.eval(reader, bindings);
+			pack.engine.eval(BabelExecutor.process(reader), bindings);
 			return true;
 		}
 		catch (Throwable ex)
