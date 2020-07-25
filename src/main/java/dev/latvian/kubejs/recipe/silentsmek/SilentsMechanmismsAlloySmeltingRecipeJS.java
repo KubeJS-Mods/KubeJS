@@ -93,6 +93,18 @@ public class SilentsMechanmismsAlloySmeltingRecipeJS extends RecipeJS
 					}
 				}
 			}
+			else if (o.has("value"))
+			{
+				for (JsonElement e1 : o.get("value").getAsJsonArray())
+				{
+					IngredientJS i = IngredientJS.ingredientFromRecipeJson(e1);
+
+					if (!i.isEmpty())
+					{
+						l.ingredients.add(i);
+					}
+				}
+			}
 			else if (o.has("tag"))
 			{
 				l.ingredients.add(new TagIngredientJS(o.get("tag").getAsString()));
