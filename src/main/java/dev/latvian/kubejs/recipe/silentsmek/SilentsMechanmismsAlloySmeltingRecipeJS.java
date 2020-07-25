@@ -150,7 +150,7 @@ public class SilentsMechanmismsAlloySmeltingRecipeJS extends RecipeJS
 				valuesJson.add(inputItems.get(i).toJson());
 			}
 
-			ingredientJson.add("values", valuesJson);
+			ingredientJson.add("value", valuesJson);
 			ingredientJson.addProperty("count", inputCount.get(i));
 			ingredientsJson.add(ingredientJson);
 		}
