@@ -8,9 +8,12 @@ import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.script.ScriptType;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.plugins.jei.info.IngredientInfoRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -62,5 +65,13 @@ public class JEIPlugin implements IModPlugin
 	public void registerItemSubtypes(ISubtypeRegistration registration)
 	{
 		new AddJEISubtypesEventJS(registration).post(ScriptType.CLIENT, JEIIntegration.JEI_SUBTYPES);
+	}
+
+	@Override
+	public void registerRecipes(IRecipeRegistration registration)
+	{
+		List<IngredientInfoRecipe<?>> list = new ArrayList<>();
+		new InformationJEIEventJS(list).post(ScriptType.CLIENT, JEIIntegration.JEI_INFORMATION);
+		registration.addRecipes(list, VanillaRecipeCategoryUid.INFORMATION);
 	}
 }
