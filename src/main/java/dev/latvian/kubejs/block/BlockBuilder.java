@@ -76,6 +76,11 @@ public class BlockBuilder extends BuilderBase
 		return this;
 	}
 
+	public BlockBuilder material(String id)
+	{
+		return material(MaterialListJS.INSTANCE.map.getOrDefault(id, material));
+	}
+
 	public BlockBuilder hardness(float h)
 	{
 		hardness = h;
