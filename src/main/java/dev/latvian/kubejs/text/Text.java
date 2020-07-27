@@ -223,7 +223,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 
 		for (Text text : getSiblings())
 		{
-			component.func_230529_a_(text.component());
+			component.append(text.component());
 		}
 
 		return component;

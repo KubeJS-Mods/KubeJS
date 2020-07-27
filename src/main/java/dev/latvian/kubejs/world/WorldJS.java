@@ -25,7 +25,6 @@ import net.minecraft.entity.item.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -90,7 +89,7 @@ public abstract class WorldJS implements WithAttachedData
 
 	public boolean isOverworld()
 	{
-		return minecraftWorld.func_234922_V_() == DimensionType.field_235999_c_; //FIXME
+		return minecraftWorld.func_234922_V_() == DimensionType.OVERWORLD; //FIXME
 	}
 
 	public boolean isDaytime()
@@ -209,7 +208,7 @@ public abstract class WorldJS implements WithAttachedData
 		if (minecraftWorld instanceof ServerWorld)
 		{
 			LightningBoltEntity e = EntityType.LIGHTNING_BOLT.create(minecraftWorld);
-			e.func_233576_c_(new Vector3d(x, y, z));
+			e.moveForced(x, y, z);
 			e.setCaster(player instanceof ServerPlayerJS ? ((ServerPlayerJS) player).minecraftPlayer : null);
 			minecraftWorld.addEntity(e);
 		}

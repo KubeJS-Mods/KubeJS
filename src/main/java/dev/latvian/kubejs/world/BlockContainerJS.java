@@ -20,7 +20,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -166,7 +165,7 @@ public class BlockContainerJS
 		{
 			Map<String, Property> pmap = new HashMap<>();
 
-			for (Property property : state.func_235904_r_())
+			for (Property property : state.getProperties())
 			{
 				pmap.put(property.getName(), property);
 			}
@@ -200,7 +199,7 @@ public class BlockContainerJS
 		Map<String, String> map = new HashMap<>();
 		BlockState state = getBlockState();
 
-		for (Property property : state.func_235904_r_())
+		for (Property property : state.getProperties())
 		{
 			map.put(property.getName(), property.getName(state.get(property)));
 		}
@@ -315,7 +314,7 @@ public class BlockContainerJS
 		if (minecraftWorld instanceof ServerWorld)
 		{
 			LightningBoltEntity e = EntityType.LIGHTNING_BOLT.create((ServerWorld) minecraftWorld);
-			e.func_233576_c_(new Vector3d(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D));
+			e.moveForced(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D);
 			e.setCaster(player instanceof ServerPlayerJS ? ((ServerPlayerJS) player).minecraftPlayer : null);
 			minecraftWorld.addEntity(e);
 		}

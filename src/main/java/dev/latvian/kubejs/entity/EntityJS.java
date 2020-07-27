@@ -199,7 +199,7 @@ public class EntityJS implements MessageSender, WrappedJS
 
 	public boolean isOnGround()
 	{
-		return minecraftEntity.func_233570_aj_();
+		return minecraftEntity.isOnGround();
 	}
 
 	public float getFallDistance()
@@ -490,7 +490,7 @@ public class EntityJS implements MessageSender, WrappedJS
 
 	public BlockContainerJS getBlock()
 	{
-		return new BlockContainerJS(minecraftEntity.world, minecraftEntity.func_233580_cy_());
+		return new BlockContainerJS(minecraftEntity.world, minecraftEntity.getPosition());
 	}
 
 	public void setOnFire(int seconds)

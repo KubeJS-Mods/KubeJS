@@ -79,7 +79,7 @@ public class KubeJSCommands
 		component.getStyle().setColor(Color.func_240744_a_(TextFormatting.GRAY));
 		component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, s));
 		component.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent(info + " (Click to copy)")));
-		component.func_230529_a_(new StringTextComponent(s).func_240699_a_(col));
+		component.append(new StringTextComponent(s).mergeStyle(col));
 		return component;
 	}
 

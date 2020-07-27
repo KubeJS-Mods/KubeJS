@@ -17,7 +17,7 @@ public interface DataPackRegistriesKJS
 		try
 		{
 			ServerScriptManager.instance = new ServerScriptManager();
-			SimpleReloadableResourceManagerKJS manager = (SimpleReloadableResourceManagerKJS) (((DataPackRegistries) this).func_240970_h_());
+			SimpleReloadableResourceManagerKJS manager = (SimpleReloadableResourceManagerKJS) (((DataPackRegistries) this).getResourceManager());
 			IFutureReloadListener reloadListener = ServerScriptManager.instance.createReloadListener();
 			manager.getReloadListenersKJS().add(0, reloadListener);
 			manager.getInitTaskQueueKJS().add(0, reloadListener);

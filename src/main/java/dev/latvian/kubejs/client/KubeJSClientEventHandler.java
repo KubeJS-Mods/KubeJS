@@ -115,7 +115,7 @@ public class KubeJSClientEventHandler
 		{
 			for (ResourceLocation tag : event.getItemStack().getItem().getTags())
 			{
-				event.getToolTip().add(new StringTextComponent(" #" + tag).func_240699_a_(TextFormatting.DARK_GRAY));
+				event.getToolTip().add(new StringTextComponent(" #" + tag).mergeStyle(TextFormatting.DARK_GRAY));
 			}
 		}
 
@@ -246,7 +246,7 @@ public class KubeJSClientEventHandler
 		matrixStack.translate(0, 0, 800);
 
 		RenderSystem.enableBlend();
-		RenderSystem.disableLighting();
+		//RenderSystem.disableLighting();
 
 		int maxWidth = mc.getMainWindow().getScaledWidth() / 4;
 		int p = 4;
@@ -271,7 +271,7 @@ public class KubeJSClientEventHandler
 		matrixStack.translate(0, 0, 800);
 
 		RenderSystem.enableBlend();
-		RenderSystem.disableLighting();
+		//RenderSystem.disableLighting();
 
 		int maxWidth = mc.getMainWindow().getScaledWidth() / 4;
 		int p = 4;

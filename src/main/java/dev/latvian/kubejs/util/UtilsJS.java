@@ -235,7 +235,7 @@ public class UtilsJS
 
 				if (he != null && he.getAction() == HoverEvent.Action.SHOW_TEXT)
 				{
-					t1.hover(Text.of(he.func_240662_a_(HoverEvent.Action.SHOW_TEXT)));
+					t1.hover(Text.of(he.getParameter(HoverEvent.Action.SHOW_TEXT)));
 				}
 
 				t.append(t1);

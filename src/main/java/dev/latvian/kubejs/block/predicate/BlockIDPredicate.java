@@ -106,7 +106,7 @@ public class BlockIDPredicate implements BlockPredicate
 
 			Map<String, Property<?>> map = new HashMap<>();
 
-			for (Property<?> property : getBlock().getDefaultState().func_235904_r_())
+			for (Property<?> property : getBlock().getDefaultState().getProperties())
 			{
 				map.put(property.getName(), property);
 			}

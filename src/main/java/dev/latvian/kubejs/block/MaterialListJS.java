@@ -44,7 +44,7 @@ public class MaterialListJS
 		add("cake", Material.CAKE, SoundType.CLOTH);
 		add("web", Material.WEB, SoundType.CLOTH);
 		add("slime", Material.CLAY, SoundType.SLIME);
-		add("honey", Material.CLAY, SoundType.field_226947_m_);
+		add("honey", Material.CLAY, SoundType.HONEY);
 		add("berry_bush", Material.PLANTS, SoundType.SWEET_BERRY_BUSH);
 		add("lantern", Material.IRON, SoundType.LANTERN);
 	}
