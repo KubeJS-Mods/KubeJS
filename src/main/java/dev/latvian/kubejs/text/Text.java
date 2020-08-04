@@ -10,9 +10,11 @@ import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.Color;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
 
@@ -110,12 +112,13 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 					text.color = TextColor.MAP.get(map.get("color").toString());
 				}
 
-				text.bold = map.containsKey("bold") ? (Boolean) map.get("bold") : null;
-				text.italic = map.containsKey("italic") ? (Boolean) map.get("italic") : null;
-				text.underlined = map.containsKey("underlined") ? (Boolean) map.get("underlined") : null;
-				text.strikethrough = map.containsKey("strikethrough") ? (Boolean) map.get("strikethrough") : null;
-				text.obfuscated = map.containsKey("obfuscated") ? (Boolean) map.get("obfuscated") : null;
-				text.insertion = map.containsKey("insertion") ? map.get("insertion").toString() : null;
+				text.bold = (Boolean) map.getOrDefault("bold", null);
+				text.italic = (Boolean) map.getOrDefault("italic", null);
+				text.underlined = (Boolean) map.getOrDefault("underlined", null);
+				text.strikethrough = (Boolean) map.getOrDefault("strikethrough", null);
+				text.obfuscated = (Boolean) map.getOrDefault("obfuscated", null);
+				text.insertion = (String) map.getOrDefault("insertion", null);
+				text.font = map.containsKey("font") ? new ResourceLocation(map.get("font").toString()) : null;
 				text.click = map.containsKey("click") ? map.get("click").toString() : null;
 				text.hover = map.containsKey("hover") ? ofWrapped(map.get("hover")) : null;
 
@@ -169,6 +172,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	private Boolean strikethrough;
 	private Boolean obfuscated;
 	private String insertion;
+	private ResourceLocation font;
 	private String click;
 	private Text hover;
 	private List<Text> siblings;
@@ -183,43 +187,47 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	public final ITextComponent component()
 	{
 		IFormattableTextComponent component = rawComponent();
+		Style style = component.getStyle();
 
 		if (color != null)
 		{
-			component.getStyle().setColor(Color.func_240744_a_(color.textFormatting));
+			style = style.setColor(Color.func_240744_a_(color.textFormatting));
 		}
 
-		component.getStyle().setBold(bold);
-		component.getStyle().setItalic(italic);
-		component.getStyle().setUnderlined(underlined);
-		component.getStyle().setStrikethrough(strikethrough);
-		component.getStyle().setObfuscated(obfuscated);
-		component.getStyle().setInsertion(insertion);
+		style = style.setBold(bold);
+		style = style.setItalic(italic);
+		style = style.setUnderlined(underlined);
+		style = style.setStrikethrough(strikethrough);
+		style = style.setObfuscated(obfuscated);
+		style = style.setInsertion(insertion);
+		style = style.setFontId(font);
 
 		if (click != null)
 		{
 			if (click.startsWith("command:"))
 			{
-				component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, click.substring(8)));
+				style = style.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, click.substring(8)));
 			}
 			else if (click.startsWith("suggest_command:"))
 			{
-				component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, click.substring(16)));
+				style = style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, click.substring(16)));
 			}
 			else if (click.startsWith("copy:"))
 			{
-				component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, click.substring(5)));
+				style = style.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, click.substring(5)));
 			}
 			else
 			{
-				component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, click));
+				style = style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, click));
 			}
 		}
 
 		if (hover != null)
 		{
-			component.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover.component()));
+			style = style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover.component()));
 		}
+
+		component.setStyle(style);
 
 		for (Text text : getSiblings())
 		{
@@ -244,6 +252,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		t.strikethrough = strikethrough;
 		t.obfuscated = obfuscated;
 		t.insertion = insertion;
+		t.font = font;
 		t.click = click;
 		t.hover = hover == null ? null : hover.copy();
 
@@ -292,6 +301,11 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		if (insertion != null)
 		{
 			json.addProperty("insertion", insertion);
+		}
+
+		if (font != null)
+		{
+			json.addProperty("font", font.toString());
 		}
 
 		if (click != null)
@@ -488,6 +502,12 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return this;
 	}
 
+	public final Text font(@Nullable String value)
+	{
+		font = value == null || value.isEmpty() ? null : new ResourceLocation(value);
+		return this;
+	}
+
 	public final Text click(@Nullable String value)
 	{
 		click = value;
@@ -534,7 +554,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 
 			if (color == t.color && bold == t.bold && italic == t.italic && underlined == t.underlined && strikethrough == t.strikethrough && obfuscated == t.obfuscated)
 			{
-				return Objects.equals(insertion, t.insertion) && Objects.equals(click, t.click) && Objects.equals(hover, t.hover) && Objects.equals(siblings, t.siblings);
+				return Objects.equals(insertion, t.insertion) && Objects.equals(font, t.font) && Objects.equals(click, t.click) && Objects.equals(hover, t.hover) && Objects.equals(siblings, t.siblings);
 			}
 		}
 
@@ -544,7 +564,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(color, bold, italic, underlined, strikethrough, obfuscated, insertion, click, hover, siblings);
+		return Objects.hash(color, bold, italic, underlined, strikethrough, obfuscated, insertion, font, click, hover, siblings);
 	}
 
 	@Override
