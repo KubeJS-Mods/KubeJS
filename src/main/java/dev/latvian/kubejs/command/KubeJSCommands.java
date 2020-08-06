@@ -66,6 +66,9 @@ public class KubeJSCommands
 								)
 						)
 				)
+				.then(Commands.literal("wiki")
+						.executes(context -> wiki(context.getSource()))
+				)
 		);
 
 		dispatcher.register(Commands.literal("kjs_hand")
@@ -150,6 +153,12 @@ public class KubeJSCommands
 		}
 
 		player.sendMessage(new StringTextComponent(tag.getAllElements().size() + " elements"), Util.DUMMY_UUID);
+		return Command.SINGLE_SUCCESS;
+	}
+
+	private static int wiki(CommandSource source)
+	{
+		source.sendFeedback(new StringTextComponent("Click here to open the Wiki").mergeStyle(TextFormatting.BLUE).modifyStyle(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://mods.latvian.dev/books/kubejs"))), false);
 		return Command.SINGLE_SUCCESS;
 	}
 }
