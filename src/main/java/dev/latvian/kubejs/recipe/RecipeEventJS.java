@@ -12,6 +12,7 @@ import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.util.DynamicMapJS;
+import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -25,6 +26,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
@@ -439,5 +442,28 @@ public class RecipeEventJS extends EventJS
 	public RecipeFunction getSmelting()
 	{
 		return functionMap.get(IRecipeSerializer.SMELTING.getRegistryName());
+	}
+
+	public void printTypes()
+	{
+		ScriptType.SERVER.console.info("== All recipe types ==");
+		HashSet<String> list = new HashSet<>();
+		originalRecipes.forEach(r -> list.add(r.type.toString()));
+		list.stream().sorted().forEach(ScriptType.SERVER.console::info);
+		ScriptType.SERVER.console.info(list.size() + " types");
+	}
+
+	public void printExamples(String type)
+	{
+		List<RecipeJS> list = originalRecipes.stream().filter(recipeJS -> recipeJS.type.toString().equals(type)).collect(Collectors.toList());
+		Collections.shuffle(list);
+
+		ScriptType.SERVER.console.info("== Random examples of '" + type + "' ==");
+
+		for (int i = 0; i < Math.min(list.size(), 5); i++)
+		{
+			RecipeJS r = list.get(i);
+			ScriptType.SERVER.console.info("- " + r.id + ":\n" + JsonUtilsJS.toPrettyString(r.json));
+		}
 	}
 }

@@ -63,7 +63,7 @@ public abstract class ExplosionEventJS extends WorldEventJS
 
 	public static class Pre extends ExplosionEventJS
 	{
-		public final transient ExplosionEvent.Start event;
+		private final ExplosionEvent.Start event;
 
 		public Pre(ExplosionEvent.Start e)
 		{
@@ -90,7 +90,7 @@ public abstract class ExplosionEventJS extends WorldEventJS
 
 	public static class Post extends ExplosionEventJS
 	{
-		public final transient ExplosionEvent.Detonate event;
+		private final ExplosionEvent.Detonate event;
 
 		public Post(ExplosionEvent.Detonate e)
 		{
