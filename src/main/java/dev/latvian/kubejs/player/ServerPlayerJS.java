@@ -189,4 +189,9 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayerEntity>
 		BlockPos pos = minecraftPlayer.getBedLocation();
 		return pos == null ? null : new BlockContainerJS(minecraftPlayer.world, pos);
 	}
+
+	public void setSpawnLocation(BlockContainerJS c)
+	{
+		minecraftPlayer.setSpawnPoint(c.getPos(), true, false, c.minecraftWorld.getDimension().getType());
+	}
 }
