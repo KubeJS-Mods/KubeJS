@@ -11,11 +11,13 @@ import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Overlay;
+import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.play.server.SHeldItemChangePacket;
 import net.minecraft.server.management.ProfileBanEntry;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameType;
 import net.minecraftforge.fml.network.PacketDistributor;
 
@@ -179,5 +181,12 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayerEntity>
 		{
 			KubeJSNet.MAIN.send(PacketDistributor.PLAYER.with(() -> minecraftPlayer), new MessageSendDataFromServer(channel, MapJS.nbt(data)));
 		}
+	}
+
+	@Nullable
+	public BlockContainerJS getSpawnLocation()
+	{
+		BlockPos pos = minecraftPlayer.getBedLocation();
+		return pos == null ? null : new BlockContainerJS(minecraftPlayer.world, pos);
 	}
 }
