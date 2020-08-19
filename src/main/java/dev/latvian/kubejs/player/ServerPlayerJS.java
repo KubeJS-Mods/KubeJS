@@ -19,6 +19,7 @@ import net.minecraft.network.play.server.SHeldItemChangePacket;
 import net.minecraft.server.management.ProfileBanEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameType;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
@@ -70,24 +71,22 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayerEntity>
 
 	public void setGameMode(String mode)
 	{
-		if (mode.equals("survival"))
+		switch (mode)
 		{
-			minecraftPlayer.interactionManager.setGameType(GameType.SURVIVAL);
-		}
-		else if (mode.equals("creative"))
-		{
-			minecraftPlayer.interactionManager.setGameType(GameType.CREATIVE);
-		}
-		else if (mode.equals("adventure"))
-		{
-			minecraftPlayer.interactionManager.setGameType(GameType.ADVENTURE);
-		}
-		else if (mode.equals("spectator"))
-		{
-			minecraftPlayer.interactionManager.setGameType(GameType.SPECTATOR);
+			case "survival":
+				minecraftPlayer.interactionManager.setGameType(GameType.SURVIVAL);
+				break;
+			case "creative":
+				minecraftPlayer.interactionManager.setGameType(GameType.CREATIVE);
+				break;
+			case "adventure":
+				minecraftPlayer.interactionManager.setGameType(GameType.ADVENTURE);
+				break;
+			case "spectator":
+				minecraftPlayer.interactionManager.setGameType(GameType.SPECTATOR);
+				break;
 		}
 	}
-
 
 	public boolean isOP()
 	{
@@ -188,5 +187,13 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayerEntity>
 	{
 		BlockPos pos = minecraftPlayer.func_241140_K_();
 		return pos == null ? null : new BlockContainerJS(minecraftPlayer.world, pos);
+	}
+
+	public void setSpawnLocation(BlockContainerJS c)
+	{
+		if (c.minecraftWorld instanceof World)
+		{
+			minecraftPlayer.func_241153_a_(((World) c.minecraftWorld).func_234923_W_(), c.getPos(), true, false);
+		}
 	}
 }

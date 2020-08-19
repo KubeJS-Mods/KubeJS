@@ -1,6 +1,7 @@
-modLoader="javafml"
-loaderVersion="[30,)"
-issueTrackerURL="https://github.com/KubeJS-Mods/KubeJS/issues"
+modLoader = "javafml"
+loaderVersion = "[32,)"
+issueTrackerURL = "https://github.com/KubeJS-Mods/KubeJS/issues"
+license = "GNU LGPLv3"
 
 [[mods]]
 modId="kubejs"
@@ -22,9 +23,9 @@ license="GNU LGPLv3"
 
 [[dependencies.kubejs]]
     modId="minecraft"
-    mandatory=true
-    versionRange="[1.15,)"
-    ordering="NONE"
+mandatory = true
+versionRange = "[1.16,)"
+ordering = "NONE"
     side="BOTH"
 
 [[dependencies.kubejs]]
