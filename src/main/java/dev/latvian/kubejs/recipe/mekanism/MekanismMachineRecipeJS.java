@@ -8,7 +8,9 @@ import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.ListJS;
+import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +20,19 @@ import java.util.List;
 public class MekanismMachineRecipeJS extends RecipeJS
 {
 	public List<Integer> inputAmount = new ArrayList<>();
-	private String inputName = "input";
-	private String outputName = "output";
+	public final String inputName;
+	public final String outputName;
+
+	public MekanismMachineRecipeJS(String in, String out)
+	{
+		inputName = in;
+		outputName = out;
+	}
+
+	public MekanismMachineRecipeJS()
+	{
+		this("input", "output");
+	}
 
 	@Override
 	public void create(ListJS args)
@@ -62,81 +75,77 @@ public class MekanismMachineRecipeJS extends RecipeJS
 		}
 	}
 
-	@Override
-	public void deserialize()
+	public static List<Pair<IngredientJS, Integer>> deserializeIngredient(@Nullable JsonElement json)
 	{
-		ItemStackJS output = ItemStackJS.resultFromRecipeJson(json.get("output"));
+		List<Pair<IngredientJS, Integer>> list = new ArrayList<>();
 
-		if (output.isEmpty())
+		if (json instanceof JsonArray)
 		{
-			output = ItemStackJS.resultFromRecipeJson(json.get("mainOutput"));
-
-			if (output.isEmpty())
+			for (JsonElement e : (JsonArray) json)
 			{
-				throw new RecipeExceptionJS("Mekanism machine recipe result can't be empty!");
-			}
-			else
-			{
-				outputName = "mainOutput";
+				list.addAll(deserializeIngredient(e));
 			}
 		}
-
-		outputItems.add(output);
-
-		JsonElement in = json.get("input");
-
-		if (in == null || in.isJsonNull())
+		else if (json instanceof JsonObject)
 		{
-			in = json.get("itemInput");
-			inputName = "itemInput";
-		}
-
-		if (in instanceof JsonArray)
-		{
-			for (JsonElement e : (JsonArray) in)
-			{
-				JsonObject o = e.getAsJsonObject();
-				IngredientJS i = IngredientJS.ingredientFromRecipeJson(o.get("ingredient"));
-
-				if (!i.isEmpty())
-				{
-					inputItems.add(i.count(1));
-
-					if (o.has("amount"))
-					{
-						inputAmount.add(o.get("amount").getAsInt());
-					}
-					else
-					{
-						inputAmount.add(1);
-					}
-				}
-			}
-		}
-		else if (in instanceof JsonObject)
-		{
-			JsonObject o = in.getAsJsonObject();
+			JsonObject o = json.getAsJsonObject();
 			IngredientJS i = IngredientJS.ingredientFromRecipeJson(o.get("ingredient"));
 
 			if (!i.isEmpty())
 			{
-				inputItems.add(i.count(1));
+				int c;
 
 				if (o.has("amount"))
 				{
-					inputAmount.add(o.get("amount").getAsInt());
+					c = o.get("amount").getAsInt();
 				}
 				else
 				{
-					inputAmount.add(1);
+					c = 1;
 				}
+
+				list.add(Pair.of(i.count(1), c));
 			}
+		}
+
+		return list;
+	}
+
+	@Override
+	public void deserialize()
+	{
+		ItemStackJS output = ItemStackJS.resultFromRecipeJson(json.get(outputName));
+
+		if (output.isEmpty())
+		{
+			throw new RecipeExceptionJS("Mekanism machine recipe result can't be empty!");
+		}
+
+		outputItems.add(output);
+
+		for (Pair<IngredientJS, Integer> pair : deserializeIngredient(json.get(inputName)))
+		{
+			inputItems.add(pair.getLeft());
+			inputAmount.add(pair.getRight());
 		}
 
 		if (inputItems.isEmpty())
 		{
-			throw new RecipeExceptionJS("Mekanism machine recipe ingredient " + json.get("ingredient") + " is not a valid ingredient!");
+			throw new RecipeExceptionJS("Mekanism machine recipe ingredient " + json.get(inputName) + " is not a valid ingredient!");
 		}
+	}
+
+	public static JsonObject serializeIngredient(IngredientJS ingredient, int amount)
+	{
+		JsonObject json = new JsonObject();
+		json.add("ingredient", ingredient.toJson());
+
+		if (amount > 1)
+		{
+			json.addProperty("amount", amount);
+		}
+
+		return json;
 	}
 
 	@Override
@@ -144,10 +153,7 @@ public class MekanismMachineRecipeJS extends RecipeJS
 	{
 		if (inputItems.size() == 1)
 		{
-			JsonObject inputJson = new JsonObject();
-			inputJson.add("ingredient", inputItems.get(0).toJson());
-			inputJson.addProperty("amount", inputAmount.get(0));
-			json.add(inputName, inputJson);
+			json.add(inputName, serializeIngredient(inputItems.get(0), inputAmount.get(0)));
 		}
 		else
 		{
@@ -155,10 +161,7 @@ public class MekanismMachineRecipeJS extends RecipeJS
 
 			for (int i = 0; i < inputItems.size(); i++)
 			{
-				JsonObject inputJson = new JsonObject();
-				inputJson.add("ingredient", inputItems.get(i).toJson());
-				inputJson.addProperty("amount", inputAmount.get(i));
-				inputArray.add(inputJson);
+				inputArray.add(serializeIngredient(inputItems.get(i), inputAmount.get(i)));
 			}
 
 			json.add(inputName, inputArray);
