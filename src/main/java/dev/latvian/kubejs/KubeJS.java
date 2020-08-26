@@ -53,6 +53,7 @@ public class KubeJS
 	public static final String MOD_ID = "kubejs";
 	public static final String MOD_NAME = "KubeJS";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
+	public static final boolean PRINT_PROCESSED_SCRIPTS = System.getProperty("kubejs.printprocessedscripts", "0").equals("1");
 
 	public final KubeJSCommon proxy;
 	public static boolean nextClientHasClientMod = false;
@@ -62,18 +63,6 @@ public class KubeJS
 	public KubeJS()
 	{
 		Locale.setDefault(Locale.US);
-
-		try
-		{
-			if (!Class.forName("org.spongepowered.asm.mixin.Mixin").isAnnotation())
-			{
-				throw new ClassNotFoundException();
-			}
-		}
-		catch (ClassNotFoundException ex)
-		{
-			throw new RuntimeException("Mixins not found! Please install MixinBootstrap mod!");
-		}
 
 		instance = this;
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP);

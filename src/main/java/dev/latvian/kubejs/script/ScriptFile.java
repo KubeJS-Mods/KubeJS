@@ -1,5 +1,7 @@
 package dev.latvian.kubejs.script;
 
+import dev.latvian.kubejs.KubeJS;
+
 import javax.annotation.Nullable;
 import javax.script.Bindings;
 import java.io.Reader;
@@ -34,7 +36,14 @@ public class ScriptFile implements Comparable<ScriptFile>
 
 		try (Reader reader = source.createReader(info))
 		{
-			pack.engine.eval(BabelExecutor.process(reader), bindings);
+			String processedScript = BabelExecutor.process(reader);
+
+			if (KubeJS.PRINT_PROCESSED_SCRIPTS)
+			{
+				KubeJS.LOGGER.info("Processed script: " + info.location + ":\n" + processedScript);
+			}
+
+			pack.engine.eval(processedScript, bindings);
 			return true;
 		}
 		catch (Throwable ex)

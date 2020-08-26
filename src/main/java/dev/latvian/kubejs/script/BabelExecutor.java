@@ -52,6 +52,6 @@ public class BabelExecutor
 	{
 		init();
 		bindings.put("input", IOUtils.toString(reader));
-		return scriptEngine.eval("Babel.transform(input, { presets: ['es2015'], sourceMaps: 'inline' }).code", bindings).toString();
+		return scriptEngine.eval("Babel.transform(input, { presets: ['es2015'], sourceMaps: true, retainLines: true, sourceType: 'script' }).code", bindings).toString();
 	}
 }
