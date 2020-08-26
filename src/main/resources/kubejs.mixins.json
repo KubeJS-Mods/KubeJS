@@ -11,12 +11,11 @@
 		"ExplosionMixin",
 		"FireworkRocketEntityMixin",
 		"LivingEntityMixin",
-		"NetworkTagCollectionMixin",
 		"PlayerInteractionManagerMixin",
 		"RecipeManagerMixin",
 		"SimpleReloadableResourceManagerMixin",
 		"TagBuilderMixin",
-		"TagCollectionMixin"
+		"TagCollectionReaderMixin"
 	],
 	"client": [
 		"EarlyLoaderGUIMixin",

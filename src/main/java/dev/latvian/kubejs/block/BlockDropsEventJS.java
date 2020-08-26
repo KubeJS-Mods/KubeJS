@@ -1,25 +1,20 @@
 package dev.latvian.kubejs.block;
 
 import dev.latvian.kubejs.entity.EntityJS;
-import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
-import dev.latvian.kubejs.world.BlockContainerJS;
-import dev.latvian.kubejs.world.WorldJS;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ToolType;
-import net.minecraftforge.event.world.BlockEvent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author LatvianModder
  */
 public class BlockDropsEventJS extends PlayerEventJS
 {
+	@Override
+	public EntityJS getEntity()
+	{
+		return null;
+	}
+	
+	/*
 	public final BlockEvent.HarvestDropsEvent event;
 	public List<ItemStackJS> dropList;
 
@@ -130,4 +125,5 @@ public class BlockDropsEventJS extends PlayerEventJS
 	{
 		return getItemHarvestLevel(ToolType.SHOVEL);
 	}
+	 */
 }

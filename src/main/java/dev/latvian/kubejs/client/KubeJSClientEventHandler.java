@@ -25,8 +25,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextProperties;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
@@ -158,7 +158,7 @@ public class KubeJSClientEventHandler
 
 	private int drawOverlay(Minecraft mc, MatrixStack matrixStack, int maxWidth, int x, int y, int p, Overlay o, boolean inv)
 	{
-		List<ITextProperties> list = new ArrayList<>();
+		List<IReorderingProcessor> list = new ArrayList<>();
 		int l = 10;
 
 		for (Text t : o.text)
@@ -168,9 +168,9 @@ public class KubeJSClientEventHandler
 
 		int mw = 0;
 
-		for (ITextProperties s : list)
+		for (IReorderingProcessor s : list)
 		{
-			mw = Math.max(mw, mc.fontRenderer.getStringWidth(s.getString()));
+			mw = Math.max(mw, mc.fontRenderer.func_243245_a(s));
 		}
 
 		if (mw == 0)

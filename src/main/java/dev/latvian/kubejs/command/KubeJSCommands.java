@@ -14,8 +14,8 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ITag;
+import net.minecraft.tags.ITagCollection;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagCollection;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.Color;
@@ -128,7 +128,7 @@ public class KubeJSCommands
 		return Command.SINGLE_SUCCESS;
 	}
 
-	private static int tagObjects(ServerPlayerEntity player, TagCollection<?> collection, ResourceLocation t)
+	private static int tagObjects(ServerPlayerEntity player, ITagCollection<?> collection, ResourceLocation t)
 	{
 		ITag<?> tag = collection.get(t);
 

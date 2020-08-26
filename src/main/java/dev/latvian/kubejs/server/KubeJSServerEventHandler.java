@@ -64,7 +64,7 @@ public class KubeJSServerEventHandler
 			if (world != ServerJS.instance.overworld.minecraftWorld)
 			{
 				ServerWorldJS w = new ServerWorldJS(ServerJS.instance, world);
-				ServerJS.instance.worldMap.put(world.func_234922_V_().func_240901_a_().toString(), w);
+				ServerJS.instance.worldMap.put(world.func_234923_W_().func_240901_a_().toString(), w);
 			}
 		}
 

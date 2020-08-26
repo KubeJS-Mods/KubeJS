@@ -10,8 +10,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.ITag;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
-import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
@@ -38,7 +38,7 @@ public class TagIngredientJS implements IngredientJS
 
 	public ITag<Item> getActualTag()
 	{
-		ITag<Item> t = TagCollectionManager.func_232928_e_().func_232925_b_().get(tag);
+		ITag<Item> t = ItemTags.getCollection().get(tag);
 		return t == null ? Tag.func_241284_a_() : t;
 	}
 
@@ -115,7 +115,7 @@ public class TagIngredientJS implements IngredientJS
 	@Override
 	public boolean isEmpty()
 	{
-		if (TagCollectionManager.func_232928_e_().func_232925_b_().getTagMap().isEmpty())
+		if (ItemTags.getCollection().getRegisteredTags().isEmpty())
 		{
 			return false;
 		}

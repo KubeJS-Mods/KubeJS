@@ -69,7 +69,7 @@ public class BlockContainerJS
 
 	public String getDimension()
 	{
-		return ((World) minecraftWorld).func_234922_V_().func_240901_a_().toString();
+		return ((World) minecraftWorld).func_234923_W_().func_240901_a_().toString();
 	}
 
 	public int getX()

@@ -25,7 +25,7 @@ public class KubeJSDataPackFinder implements IPackFinder
 	}
 
 	@Override
-	public <T extends ResourcePackInfo> void func_230230_a_(Consumer<T> nameToPackMap, ResourcePackInfo.IFactory<T> packInfoFactory)
+	public void func_230230_a_(Consumer<ResourcePackInfo> nameToPackMap, ResourcePackInfo.IFactory packInfoFactory)
 	{
 		File dataFolder = new File(folder, "data");
 
@@ -58,6 +58,6 @@ public class KubeJSDataPackFinder implements IPackFinder
 
 		KubeJSResourcePack dataPack = new KubeJSResourcePack(folder, ResourcePackType.SERVER_DATA);
 		PackMetadataSection dataPackMetadata = new PackMetadataSection(new StringTextComponent("./kubejs/data/"), 5);
-		nameToPackMap.accept((T) new ResourcePackInfo("kubejs:data_pack", true, () -> dataPack, dataPack, dataPackMetadata, ResourcePackInfo.Priority.TOP, IPackNameDecorator.BUILTIN, true));
+		nameToPackMap.accept(new ResourcePackInfo("kubejs:data_pack", true, () -> dataPack, dataPack, dataPackMetadata, ResourcePackInfo.Priority.TOP, IPackNameDecorator.BUILTIN, true));
 	}
 }

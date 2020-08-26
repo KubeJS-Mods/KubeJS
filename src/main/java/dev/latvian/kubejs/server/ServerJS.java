@@ -193,12 +193,12 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 	public WorldJS getWorld(World minecraftWorld)
 	{
-		ServerWorldJS world = worldMap.get(minecraftWorld.func_234922_V_().func_240901_a_().toString());
+		ServerWorldJS world = worldMap.get(minecraftWorld.func_234923_W_().func_240901_a_().toString());
 
 		if (world == null)
 		{
 			world = new ServerWorldJS(this, (ServerWorld) minecraftWorld);
-			worldMap.put(minecraftWorld.func_234922_V_().func_240901_a_().toString(), world);
+			worldMap.put(minecraftWorld.func_234923_W_().func_240901_a_().toString(), world);
 			updateWorldList();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(world));
 		}

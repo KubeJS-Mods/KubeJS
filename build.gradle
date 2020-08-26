@@ -129,9 +129,9 @@ if (ENV.CURSEFORGE_KEY) {
 	curseforge {
 		apiKey = ENV.CURSEFORGE_KEY
 		project {
-			id = "${curseforge_id}"
+			id = project.curseforge_id
 			releaseType = "release"
-			addGameVersion "1.16.1"
+			addGameVersion "1.16.2"
 			relations {
 				optionalDependency 'jei'
 				optionalDependency 'game-stages'

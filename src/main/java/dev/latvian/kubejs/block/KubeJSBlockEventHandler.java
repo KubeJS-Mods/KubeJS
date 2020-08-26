@@ -3,7 +3,6 @@ package dev.latvian.kubejs.block;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.fluid.FluidBuilder;
-import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.block.Block;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.material.Material;
@@ -25,7 +24,7 @@ public class KubeJSBlockEventHandler
 		MinecraftForge.EVENT_BUS.addListener(this::leftClick);
 		MinecraftForge.EVENT_BUS.addListener(this::blockBreak);
 		MinecraftForge.EVENT_BUS.addListener(this::blockPlace);
-		MinecraftForge.EVENT_BUS.addListener(this::blockDrops);
+		//MinecraftForge.EVENT_BUS.addListener(this::blockDrops);
 	}
 
 	private void registry(RegistryEvent.Register<Block> event)
@@ -80,6 +79,7 @@ public class KubeJSBlockEventHandler
 		}
 	}
 
+	/*
 	private void blockDrops(BlockEvent.HarvestDropsEvent event)
 	{
 		if (event.getWorld().isRemote())
@@ -100,4 +100,5 @@ public class KubeJSBlockEventHandler
 			}
 		}
 	}
+	 */
 }

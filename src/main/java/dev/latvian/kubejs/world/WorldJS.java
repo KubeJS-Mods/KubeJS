@@ -25,7 +25,6 @@ import net.minecraft.entity.item.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -84,12 +83,12 @@ public abstract class WorldJS implements WithAttachedData
 
 	public String getDimension()
 	{
-		return minecraftWorld.func_234922_V_().func_240901_a_().toString();
+		return minecraftWorld.func_234923_W_().func_240901_a_().toString();
 	}
 
 	public boolean isOverworld()
 	{
-		return minecraftWorld.func_234922_V_() == DimensionType.OVERWORLD; //FIXME
+		return minecraftWorld.func_234923_W_() == World.field_234918_g_; //FIXME
 	}
 
 	public boolean isDaytime()
