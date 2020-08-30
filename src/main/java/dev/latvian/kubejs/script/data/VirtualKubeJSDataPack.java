@@ -3,10 +3,10 @@ package dev.latvian.kubejs.script.data;
 import com.google.common.collect.Lists;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
+import net.minecraft.resources.ResourcePack;
 import net.minecraft.resources.ResourcePackType;
 import net.minecraft.resources.data.IMetadataSectionSerializer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.packs.DelegatableResourcePack;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
@@ -26,7 +26,7 @@ import java.util.function.Predicate;
 /**
  * @author LatvianModder
  */
-public class VirtualKubeJSDataPack extends DelegatableResourcePack
+public class VirtualKubeJSDataPack extends ResourcePack
 {
 	public final boolean first;
 	private final Map<ResourceLocation, String> locationToData;

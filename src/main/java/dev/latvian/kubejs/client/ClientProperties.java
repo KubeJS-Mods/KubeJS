@@ -1,8 +1,9 @@
 package dev.latvian.kubejs.client;
 
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.KubeJSPaths;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.loading.FMLPaths;
 
 import javax.annotation.Nullable;
 import java.io.InputStream;
@@ -54,19 +55,22 @@ public class ClientProperties
 
 		try
 		{
-			Path folder = FMLPaths.GAMEDIR.get().resolve("kubejs");
+			Path propertiesFile = KubeJSPaths.CONFIG.resolve("client.properties");
 
-			if (Files.notExists(folder))
-			{
-				Files.createDirectories(folder);
-			}
+			UtilsJS.tryIO(() -> {
+				Path p0 = KubeJSPaths.DIRECTORY.resolve("client.properties");
 
-			Path p = folder.resolve("client.properties");
+				if (Files.exists(p0))
+				{
+					Files.move(p0, propertiesFile);
+				}
+			});
+
 			writeProperties = false;
 
-			if (Files.exists(p))
+			if (Files.exists(propertiesFile))
 			{
-				try (Reader reader = Files.newBufferedReader(p))
+				try (Reader reader = Files.newBufferedReader(propertiesFile))
 				{
 					properties.load(reader);
 				}
@@ -91,7 +95,16 @@ public class ClientProperties
 			fmlMemoryColor3f = getColor3f(fmlMemoryColor);
 			fmlLogColor3f = getColor3f(fmlLogColor);
 
-			Path iconFile = folder.resolve("packicon.png");
+			Path iconFile = KubeJSPaths.CONFIG.resolve("packicon.png");
+
+			UtilsJS.tryIO(() -> {
+				Path p0 = KubeJSPaths.DIRECTORY.resolve("packicon.png");
+
+				if (Files.exists(p0))
+				{
+					Files.move(p0, iconFile);
+				}
+			});
 
 			if (Files.exists(iconFile))
 			{
@@ -100,7 +113,7 @@ public class ClientProperties
 
 			if (writeProperties)
 			{
-				try (Writer writer = Files.newBufferedWriter(p))
+				try (Writer writer = Files.newBufferedWriter(propertiesFile))
 				{
 					properties.store(writer, "KubeJS Client Properties");
 				}
@@ -111,7 +124,7 @@ public class ClientProperties
 			ex.printStackTrace();
 		}
 
-		KubeJS.LOGGER.info("Loaded kubejs/client.properties");
+		KubeJS.LOGGER.info("Loaded client.properties");
 	}
 
 	private String get(String key, String def)

@@ -35,7 +35,6 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -53,6 +52,23 @@ import java.util.regex.Pattern;
 public class UtilsJS
 {
 	public static final Pattern REGEX_PATTERN = Pattern.compile("\\/(.*)\\/([a-z]*)");
+
+	public interface TryIO
+	{
+		void run() throws IOException;
+	}
+
+	public static void tryIO(TryIO tryIO)
+	{
+		try
+		{
+			tryIO.run();
+		}
+		catch (IOException ex)
+		{
+			ex.printStackTrace();
+		}
+	}
 
 	@Nullable
 	public static Pattern regex(String string, boolean strong)
@@ -141,11 +157,9 @@ public class UtilsJS
 		}
 	}
 
-	public static File getFile(String path) throws IOException
+	public static Path getFile(String path) throws IOException
 	{
-		Path path1 = KubeJS.getGameDirectory().resolve(path);
-		KubeJS.verifyFilePath(path1);
-		return path1.toFile();
+		return KubeJS.verifyFilePath(KubeJS.getGameDirectory().resolve(path));
 	}
 
 	@Nullable

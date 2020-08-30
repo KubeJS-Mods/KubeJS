@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSObjects;
+import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.core.ImageButtonKJS;
 import dev.latvian.kubejs.fluid.FluidBuilder;
@@ -39,7 +40,6 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLPaths;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -301,7 +301,7 @@ public class KubeJSClientEventHandler
 	{
 		for (Widget w : list)
 		{
-			if (w.visible && x >= w.x && y >= w.y && x < w.x + w.getWidth() && y < w.y + w.getHeight())
+			if (w.visible && x >= w.x && y >= w.y && x < w.x + w.getWidth() && y < w.y + w.getWidth_CLASH()) //getWidth_CLASH = getHeight
 			{
 				return true;
 			}
@@ -388,7 +388,7 @@ public class KubeJSClientEventHandler
 
 		image.setRGB(0, 0, w, h, pixels, 0, w);
 
-		Path path = FMLPaths.GAMEDIR.get().resolve("kubejs/exported/" + event.getMap().getTextureLocation().getNamespace() + "/" + event.getMap().getTextureLocation().getPath());
+		Path path = KubeJSPaths.EXPORTED.resolve(event.getMap().getTextureLocation().getNamespace() + "/" + event.getMap().getTextureLocation().getPath());
 
 		if (!Files.exists(path.getParent()))
 		{

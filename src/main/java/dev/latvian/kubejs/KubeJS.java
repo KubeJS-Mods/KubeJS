@@ -13,12 +13,9 @@ import dev.latvian.kubejs.item.KubeJSItemEventHandler;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.player.KubeJSPlayerEventHandler;
 import dev.latvian.kubejs.recipe.KubeJSRecipeEventHandler;
-import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptFileInfo;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.script.ScriptPack;
-import dev.latvian.kubejs.script.ScriptPackInfo;
-import dev.latvian.kubejs.script.ScriptSource;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
@@ -36,11 +33,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -49,11 +46,12 @@ import java.util.Locale;
 @Mod(KubeJS.MOD_ID)
 public class KubeJS
 {
-	public static KubeJS instance;
 	public static final String MOD_ID = "kubejs";
 	public static final String MOD_NAME = "KubeJS";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
 	public static final boolean PRINT_PROCESSED_SCRIPTS = System.getProperty("kubejs.printprocessedscripts", "0").equals("1");
+
+	public static KubeJS instance;
 
 	public final KubeJSCommon proxy;
 	public static boolean nextClientHasClientMod = false;
@@ -65,8 +63,30 @@ public class KubeJS
 		Locale.setDefault(Locale.US);
 
 		instance = this;
-		startupScriptManager = new ScriptManager(ScriptType.STARTUP);
-		clientScriptManager = new ScriptManager(ScriptType.CLIENT);
+
+		if (Files.notExists(KubeJSPaths.README))
+		{
+			UtilsJS.tryIO(() -> {
+				List<String> list = new ArrayList<>();
+				list.add("Find more info on the website: https://kubejs.latvian.dev/");
+				list.add("");
+				list.add("Directory information:");
+				list.add("");
+				list.add("assets - Acts as a resource pack, you can put any client resources in here, like textures, models, etc. Example: assets/kubejs/textures/item/test_item.png");
+				list.add("data - Acts as a datapack, you can put any server resources in here, like loot tables, functions, etc. Example: data/kubejs/loot_tables/blocks/test_block.json");
+				list.add("");
+				list.add("startup_scripts - Scripts that get loaded once during game startup - Used for adding items and other things");
+				list.add("server_scripts - Scripts that get loaded every time server resources reload - Used for modifying recipes, tags, and handling server events");
+				list.add("client_scripts - Scripts that get loaded every time client resources reload - Used for JEI events, tooltips and other client side things");
+				list.add("");
+				list.add("config - KubeKS config storage. This is also the only directory that scripts can access other than world directory");
+				list.add("exported - Data dumps like texture atlases end up here");
+				Files.write(KubeJSPaths.README, list);
+			});
+		}
+
+		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS, "/data/kubejs/example_startup_script.js");
+		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS, "/data/kubejs/example_client_script.js");
 		proxy = DistExecutor.safeRunForDist(() -> KubeJSClient::new, () -> KubeJSCommon::new);
 
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
@@ -81,73 +101,18 @@ public class KubeJS
 		new KubeJSRecipeEventHandler().init();
 		new KubeJSFluidEventHandler().init();
 
-		File folder = getGameDirectory().resolve("kubejs").toFile();
+		Path oldStartupFolder = KubeJSPaths.DIRECTORY.resolve("startup");
 
-		if (!folder.exists())
+		if (Files.exists(oldStartupFolder))
 		{
-			folder.mkdirs();
-		}
-
-		proxy.init(folder);
-
-		File startupFolder = new File(folder, "startup");
-
-		if (!startupFolder.exists())
-		{
-			startupFolder.mkdirs();
-
-			try
-			{
-				try (PrintWriter scriptsJsonWriter = new PrintWriter(new FileWriter(new File(startupFolder, "scripts.json"))))
-				{
-					scriptsJsonWriter.println("{");
-					scriptsJsonWriter.println("	\"scripts\": [");
-					scriptsJsonWriter.println("		{\"file\": \"example.js\"}");
-					scriptsJsonWriter.println("	]");
-					scriptsJsonWriter.println("}");
-				}
-
-				try (PrintWriter exampleJsWriter = new PrintWriter(new FileWriter(new File(startupFolder, "example.js"))))
-				{
-					exampleJsWriter.println("console.info('Hello, World! (You will only see this line once in console, during startup)')");
-				}
-			}
-			catch (Exception ex)
-			{
-				ex.printStackTrace();
-			}
+			UtilsJS.tryIO(() -> Files.move(oldStartupFolder, KubeJSPaths.STARTUP_SCRIPTS));
 		}
 
 		startupScriptManager.unload();
-
-		if (new File(startupFolder, "scripts.json").exists())
-		{
-			LOGGER.warn("KubeJS no longer uses scripts.json file, please delete it! To reorder scripts, add '// priority: 10' on top of them. Default priority is 0.");
-		}
-
-		ScriptPack pack = new ScriptPack(startupScriptManager, new ScriptPackInfo("startup", ""));
-		loadScripts(pack, startupFolder, "");
-
-		for (ScriptFileInfo fileInfo : pack.info.scripts)
-		{
-			ScriptSource scriptSource = info -> new FileReader(new File(startupFolder, info.file));
-
-			Throwable error = fileInfo.preload(scriptSource);
-
-			if (error == null)
-			{
-				pack.scripts.add(new ScriptFile(pack, fileInfo, scriptSource));
-			}
-			else
-			{
-				LOGGER.error("Failed to pre-load script file " + fileInfo.location + ": " + error);
-			}
-		}
-
-		pack.scripts.sort(null);
-		startupScriptManager.packs.put(pack.info.namespace, pack);
-
+		startupScriptManager.loadFromDirectory();
 		startupScriptManager.load();
+
+		proxy.init();
 
 		new BlockRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.BLOCK_REGISTRY);
 		new ItemRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.ITEM_REGISTRY);
@@ -156,24 +121,23 @@ public class KubeJS
 		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 	}
 
-	private void loadScripts(ScriptPack pack, File dir, String path)
+	public static void loadScripts(ScriptPack pack, Path dir, String path)
 	{
-		File[] files = dir.listFiles();
-
-		if (files != null && files.length > 0)
+		if (!path.isEmpty() && !path.endsWith("/"))
 		{
-			for (File file : files)
-			{
-				if (file.isDirectory())
-				{
-					loadScripts(pack, file, path.isEmpty() ? file.getName() : (path + "/" + file.getName()));
-				}
-				else if (file.getName().endsWith(".js"))
-				{
-					pack.info.scripts.add(new ScriptFileInfo(pack.info, path.isEmpty() ? file.getName() : (path + "/" + file.getName())));
-				}
-			}
+			path += "/";
 		}
+
+		final String pathPrefix = path;
+
+		UtilsJS.tryIO(() -> Files.walk(dir, 10).filter(Files::isRegularFile).forEach(file -> {
+			String fileName = dir.relativize(file).toString().replace(File.separatorChar, '/');
+
+			if (fileName.endsWith(".js"))
+			{
+				pack.info.scripts.add(new ScriptFileInfo(pack.info, pathPrefix + fileName));
+			}
+		}));
 	}
 
 	public static String appendModId(String id)
@@ -186,12 +150,14 @@ public class KubeJS
 		return FMLPaths.GAMEDIR.get();
 	}
 
-	public static void verifyFilePath(Path path) throws IOException
+	public static Path verifyFilePath(Path path) throws IOException
 	{
 		if (!path.normalize().toAbsolutePath().startsWith(getGameDirectory()))
 		{
 			throw new IOException("You can't access files outside Minecraft directory!");
 		}
+
+		return path;
 	}
 
 	public static void verifyFilePath(File file) throws IOException

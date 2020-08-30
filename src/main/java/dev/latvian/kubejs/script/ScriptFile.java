@@ -1,10 +1,13 @@
 package dev.latvian.kubejs.script;
 
 import dev.latvian.kubejs.KubeJS;
+import org.apache.commons.io.IOUtils;
 
 import javax.annotation.Nullable;
 import javax.script.Bindings;
-import java.io.Reader;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author LatvianModder
@@ -34,9 +37,9 @@ public class ScriptFile implements Comparable<ScriptFile>
 	{
 		error = null;
 
-		try (Reader reader = source.createReader(info))
+		try (InputStream stream = source.createStream(info))
 		{
-			String processedScript = BabelExecutor.process(reader);
+			String processedScript = BabelExecutor.process(new String(IOUtils.toByteArray(new BufferedInputStream(stream)), StandardCharsets.UTF_8));
 
 			if (KubeJS.PRINT_PROCESSED_SCRIPTS)
 			{

@@ -1,33 +1,33 @@
 package dev.latvian.kubejs.script.data;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSObjects;
+import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.fluid.FluidBuilder;
 import dev.latvian.kubejs.item.ItemBuilder;
-import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.BuilderBase;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.IResourcePack;
 import net.minecraft.resources.ResourcePackFileNotFoundException;
 import net.minecraft.resources.ResourcePackType;
 import net.minecraft.resources.data.IMetadataSectionSerializer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.ResourceLocationException;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -40,12 +40,10 @@ import java.util.function.Predicate;
  */
 public class KubeJSResourcePack implements IResourcePack
 {
-	private final File folder;
 	private final ResourcePackType packType;
 
-	public KubeJSResourcePack(File f, ResourcePackType t)
+	public KubeJSResourcePack(ResourcePackType t)
 	{
-		folder = f;
 		packType = t;
 	}
 
@@ -63,7 +61,7 @@ public class KubeJSResourcePack implements IResourcePack
 			return KubeJSResourcePack.class.getResourceAsStream("/kubejs_logo.png");
 		}
 
-		throw new ResourcePackFileNotFoundException(folder, fileName);
+		throw new ResourcePackFileNotFoundException(KubeJSPaths.DIRECTORY.toFile(), fileName);
 	}
 
 	@Override
@@ -76,11 +74,11 @@ public class KubeJSResourcePack implements IResourcePack
 			throw new IllegalStateException(packType.getDirectoryName() + " KubeJS pack can't load " + resourcePath + "!");
 		}
 
-		File file = new File(folder, resourcePath);
+		Path file = KubeJSPaths.DIRECTORY.resolve(resourcePath);
 
-		if (file.exists())
+		if (Files.exists(file))
 		{
-			return new BufferedInputStream(new FileInputStream(file));
+			return Files.newInputStream(file);
 		}
 		else
 		{
@@ -96,7 +94,7 @@ public class KubeJSResourcePack implements IResourcePack
 			}
 		}
 
-		throw new ResourcePackFileNotFoundException(folder, resourcePath);
+		throw new ResourcePackFileNotFoundException(KubeJSPaths.DIRECTORY.toFile(), resourcePath);
 	}
 
 	@Override
@@ -112,7 +110,7 @@ public class KubeJSResourcePack implements IResourcePack
 			}
 		}
 
-		return type == packType && new File(folder, getFullPath(type, location)).exists();
+		return type == packType && Files.exists(KubeJSPaths.DIRECTORY.resolve(getFullPath(type, location)));
 	}
 
 	private boolean generateClientJsonFile(String namespace, String path, JsonObject json, boolean real)
@@ -354,7 +352,6 @@ public class KubeJSResourcePack implements IResourcePack
 			return Collections.emptySet();
 		}
 
-		File file1 = new File(folder, type.getDirectoryName());
 		List<ResourceLocation> list = Lists.newArrayList();
 
 		if (type == ResourcePackType.CLIENT_RESOURCES)
@@ -375,41 +372,25 @@ public class KubeJSResourcePack implements IResourcePack
 			}
 		}
 
-		findResources0(new File(new File(file1, namespace), path), maxDepth, namespace, list, path.endsWith("/") ? path : (path + "/"), filter);
+		UtilsJS.tryIO(() -> {
+			Path root = KubeJSPaths.get(type).toAbsolutePath();
+
+			if (Files.exists(root) && Files.isDirectory(root))
+			{
+				Path inputPath = root.getFileSystem().getPath(path);
+
+				Files.walk(root)
+						.map(p -> root.relativize(p.toAbsolutePath()))
+						.filter(p -> p.getNameCount() > 1 && p.getNameCount() - 1 <= maxDepth)
+						.filter(p -> !p.toString().endsWith(".mcmeta"))
+						.filter(p -> p.subpath(1, p.getNameCount()).startsWith(inputPath))
+						.filter(p -> filter.test(p.getFileName().toString()))
+						.map(p -> new ResourceLocation(p.getName(0).toString(), Joiner.on('/').join(p.subpath(1, Math.min(maxDepth, p.getNameCount())))))
+						.forEach(list::add);
+			}
+		});
 
 		return list;
-	}
-
-	private void findResources0(File file, int maxDepth, String namespace, List<ResourceLocation> list, String path, Predicate<String> filter)
-	{
-		File[] files = file.listFiles();
-
-		if (files == null || files.length == 0)
-		{
-			return;
-		}
-
-		for (File f : files)
-		{
-			if (f.isDirectory())
-			{
-				if (maxDepth > 0)
-				{
-					findResources0(f, maxDepth - 1, namespace, list, path + f.getName() + "/", filter);
-				}
-			}
-			else if (!f.getName().endsWith(".mcmeta") && filter.test(f.getName()))
-			{
-				try
-				{
-					list.add(new ResourceLocation(namespace, path + f.getName()));
-				}
-				catch (ResourceLocationException ex)
-				{
-					(packType == ResourcePackType.CLIENT_RESOURCES ? ScriptType.CLIENT : ScriptType.SERVER).console.error(ex.getMessage());
-				}
-			}
-		}
 	}
 
 	@Override
@@ -428,23 +409,19 @@ public class KubeJSResourcePack implements IResourcePack
 			namespaces.add(builder.id.getNamespace());
 		}
 
-		File file = new File(folder, type.getDirectoryName());
+		UtilsJS.tryIO(() -> {
+			Path root = KubeJSPaths.get(type).toAbsolutePath();
 
-		if (file.exists() && file.isDirectory())
-		{
-			File[] list = file.listFiles();
-
-			if (list != null && list.length > 0)
+			if (Files.exists(root) && Files.isDirectory(root))
 			{
-				for (File f : list)
-				{
-					if (f.isDirectory())
-					{
-						namespaces.add(f.getName().toLowerCase());
-					}
-				}
+				Files.walk(root, 1)
+						.map(path -> root.relativize(path.toAbsolutePath()))
+						.filter(path -> path.getNameCount() > 0)
+						.map(p -> p.toString().replaceAll("/$", ""))
+						.filter(s -> !s.isEmpty())
+						.forEach(namespaces::add);
 			}
-		}
+		});
 
 		return namespaces;
 	}

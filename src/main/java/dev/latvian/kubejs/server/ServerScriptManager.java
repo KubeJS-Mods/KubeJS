@@ -2,6 +2,7 @@ package dev.latvian.kubejs.server;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.recipe.RecipeEventJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
 import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
@@ -18,9 +19,7 @@ import net.minecraft.resources.IFutureReloadListener;
 import net.minecraft.resources.SimpleReloadableResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.loading.FMLEnvironment;
 
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,13 +33,14 @@ public class ServerScriptManager
 {
 	public static ServerScriptManager instance;
 
-	public final ScriptManager scriptManager = new ScriptManager(ScriptType.SERVER);
+	public final ScriptManager scriptManager = new ScriptManager(ScriptType.SERVER, KubeJSPaths.SERVER_SCRIPTS, "/data/kubejs/example_server_script.js");
 	public final VirtualKubeJSDataPack virtualDataPackFirst = new VirtualKubeJSDataPack(true);
 	public final VirtualKubeJSDataPack virtualDataPackLast = new VirtualKubeJSDataPack(false);
 
 	public void reloadScripts(SimpleReloadableResourceManager resourceManager)
 	{
 		scriptManager.unload();
+		scriptManager.loadFromDirectory();
 
 		Map<String, List<ResourceLocation>> packs = new HashMap<>();
 
@@ -60,15 +60,12 @@ public class ServerScriptManager
 
 			for (ScriptFileInfo fileInfo : pack.info.scripts)
 			{
-				ScriptSource scriptSource = info -> new InputStreamReader(resourceManager.getResource(info.location).getInputStream());
+				ScriptSource.FromResource scriptSource = info -> resourceManager.getResource(info.location);
 				Throwable error = fileInfo.preload(scriptSource);
 
 				if (error == null)
 				{
-					if (fileInfo.shouldLoad(FMLEnvironment.dist))
-					{
-						pack.scripts.add(new ScriptFile(pack, fileInfo, scriptSource));
-					}
+					pack.scripts.add(new ScriptFile(pack, fileInfo, scriptSource));
 				}
 				else
 				{

@@ -7,14 +7,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 
 import javax.annotation.Nullable;
-import java.io.File;
 
 /**
  * @author LatvianModder
  */
 public class KubeJSCommon
 {
-	public void init(File folder)
+	public void init()
 	{
 	}
 

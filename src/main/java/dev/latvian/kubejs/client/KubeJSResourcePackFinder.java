@@ -1,16 +1,20 @@
 package dev.latvian.kubejs.client;
 
+import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.script.data.KubeJSResourcePack;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.IPackFinder;
 import net.minecraft.resources.IPackNameDecorator;
 import net.minecraft.resources.ResourcePackInfo;
 import net.minecraft.resources.ResourcePackType;
 import net.minecraft.resources.data.PackMetadataSection;
 import net.minecraft.util.text.StringTextComponent;
+import org.apache.commons.io.IOUtils;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.function.Consumer;
 
 /**
@@ -18,33 +22,29 @@ import java.util.function.Consumer;
  */
 public class KubeJSResourcePackFinder implements IPackFinder
 {
-	private final File folder;
-
-	public KubeJSResourcePackFinder(File f)
-	{
-		folder = f;
-	}
-
 	@Override
 	public void func_230230_a_(Consumer<ResourcePackInfo> nameToPackMap, ResourcePackInfo.IFactory packInfoFactory)
 	{
-		File assetsFolder = new File(folder, "assets");
-
-		if (!assetsFolder.exists())
+		if (Files.notExists(KubeJSPaths.ASSETS))
 		{
-			assetsFolder.mkdirs();
+			UtilsJS.tryIO(() -> Files.createDirectories(KubeJSPaths.ASSETS));
+			UtilsJS.tryIO(() -> Files.createDirectories(KubeJSPaths.ASSETS.resolve("kubejs/textures/block")));
+			UtilsJS.tryIO(() -> Files.createDirectories(KubeJSPaths.ASSETS.resolve("kubejs/textures/item")));
 
-			File langFolder = new File(new File(assetsFolder, "modpack"), "lang");
-			langFolder.mkdirs();
-
-			try
+			try (InputStream in = KubeJS.class.getResourceAsStream("/data/kubejs/example_block_texture.png");
+				 OutputStream out = Files.newOutputStream(KubeJSPaths.ASSETS.resolve("kubejs/textures/block/example_block.png")))
 			{
-				try (PrintWriter initWriter = new PrintWriter(new FileWriter(new File(langFolder, "en_us.json"))))
-				{
-					initWriter.println("{");
-					initWriter.println("\t\"modpack.example.translation_key\": \"Example Translation\"");
-					initWriter.println("}");
-				}
+				out.write(IOUtils.toByteArray(in));
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+			}
+
+			try (InputStream in = KubeJS.class.getResourceAsStream("/data/kubejs/example_item_texture.png");
+				 OutputStream out = Files.newOutputStream(KubeJSPaths.ASSETS.resolve("kubejs/textures/item/example_item.png")))
+			{
+				out.write(IOUtils.toByteArray(in));
 			}
 			catch (Exception ex)
 			{
@@ -52,7 +52,7 @@ public class KubeJSResourcePackFinder implements IPackFinder
 			}
 		}
 
-		KubeJSResourcePack pack = new KubeJSResourcePack(folder, ResourcePackType.CLIENT_RESOURCES);
+		KubeJSResourcePack pack = new KubeJSResourcePack(ResourcePackType.CLIENT_RESOURCES);
 		PackMetadataSection metadataSection = new PackMetadataSection(new StringTextComponent("./kubejs/assets/"), 5);
 		nameToPackMap.accept(new ResourcePackInfo("kubejs:resource_pack", true, () -> pack, pack, metadataSection, ResourcePackInfo.Priority.TOP, IPackNameDecorator.BUILTIN, false));
 	}

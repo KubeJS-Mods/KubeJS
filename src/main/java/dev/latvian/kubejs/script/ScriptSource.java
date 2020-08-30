@@ -1,7 +1,11 @@
 package dev.latvian.kubejs.script;
 
+import net.minecraft.resources.IResource;
+
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * @author LatvianModder
@@ -9,5 +13,27 @@ import java.io.Reader;
 @FunctionalInterface
 public interface ScriptSource
 {
-	Reader createReader(ScriptFileInfo info) throws IOException;
+	InputStream createStream(ScriptFileInfo info) throws IOException;
+
+	interface FromPath extends ScriptSource
+	{
+		Path getPath(ScriptFileInfo info);
+
+		@Override
+		default InputStream createStream(ScriptFileInfo info) throws IOException
+		{
+			return Files.newInputStream(getPath(info));
+		}
+	}
+
+	interface FromResource extends ScriptSource
+	{
+		IResource getResource(ScriptFileInfo info) throws IOException;
+
+		@Override
+		default InputStream createStream(ScriptFileInfo info) throws IOException
+		{
+			return getResource(info).getInputStream();
+		}
+	}
 }

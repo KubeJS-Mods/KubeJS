@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.client;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSCommon;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.event.EventJS;
@@ -18,7 +19,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import javax.annotation.Nullable;
-import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -30,11 +30,15 @@ public class KubeJSClient extends KubeJSCommon
 	public static final Map<String, Overlay> activeOverlays = new LinkedHashMap<>();
 
 	@Override
-	public void init(File folder)
+	public void init()
 	{
+		KubeJS.clientScriptManager.unload();
+		KubeJS.clientScriptManager.loadFromDirectory();
+		KubeJS.clientScriptManager.load();
+
 		new KubeJSClientEventHandler().init();
 		ResourcePackList list = Minecraft.getInstance().getResourcePackList();
-		list.addPackFinder(new KubeJSResourcePackFinder(folder));
+		list.addPackFinder(new KubeJSResourcePackFinder());
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 	}
 
@@ -46,7 +50,7 @@ public class KubeJSClient extends KubeJSCommon
 
 	private void setup(FMLClientSetupEvent event)
 	{
-		new EventJS().post(ScriptType.STARTUP, KubeJSEvents.CLIENT_INIT);
+		new EventJS().post(ScriptType.CLIENT, KubeJSEvents.CLIENT_INIT);
 	}
 
 	@Override
