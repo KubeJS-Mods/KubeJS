@@ -79,7 +79,7 @@ public class KubeJS
 				list.add("server_scripts - Scripts that get loaded every time server resources reload - Used for modifying recipes, tags, and handling server events");
 				list.add("client_scripts - Scripts that get loaded every time client resources reload - Used for JEI events, tooltips and other client side things");
 				list.add("");
-				list.add("config - KubeKS config storage. This is also the only directory that scripts can access other than world directory");
+				list.add("config - KubeJS config storage. This is also the only directory that scripts can access other than world directory");
 				list.add("exported - Data dumps like texture atlases end up here");
 				Files.write(KubeJSPaths.README, list);
 			});
