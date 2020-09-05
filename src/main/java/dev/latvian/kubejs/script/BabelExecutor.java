@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.script;
 
+import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJS;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.apache.commons.io.IOUtils;
@@ -28,6 +29,12 @@ public class BabelExecutor
 			return;
 		}
 
+		if (!CommonProperties.get().enableES6)
+		{
+			inited = true;
+			return;
+		}
+
 		long start = System.currentTimeMillis();
 		inited = true;
 		scriptEngine = new NashornScriptEngineFactory().getScriptEngine();
@@ -48,6 +55,11 @@ public class BabelExecutor
 
 	public static String process(String string) throws ScriptException
 	{
+		if (!CommonProperties.get().enableES6)
+		{
+			return string;
+		}
+
 		init();
 		bindings.put("input", string);
 		return scriptEngine.eval("Babel.transform(input, { presets: ['es2015'], sourceMaps: true, retainLines: true, sourceType: 'script' }).code", bindings).toString();
