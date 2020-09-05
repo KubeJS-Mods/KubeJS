@@ -171,5 +171,10 @@ public class ScriptManager
 
 		events.postToHandlers(KubeJSEvents.LOADED, events.handlers(KubeJSEvents.LOADED), new EventJS());
 		MinecraftForge.EVENT_BUS.post(new ScriptsLoadedEvent());
+
+		if (i != t && type == ScriptType.STARTUP)
+		{
+			throw new RuntimeException("There were startup script errors! See latest.log for more info");
+		}
 	}
 }
