@@ -63,7 +63,7 @@ public class KubeJSWorldEventHandler
 
 		ServerJS.instance.playerMap.clear();
 
-		for (WorldJS w : ServerJS.instance.worldMap.values())
+		for (WorldJS w : new ArrayList<>(ServerJS.instance.worldMap.values()))
 		{
 			EventsJS.post(KubeJSEvents.WORLD_UNLOAD, new SimpleWorldEventJS(w));
 			ServerJS.instance.worldMap.remove(w.getDimension());
