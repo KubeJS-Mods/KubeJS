@@ -51,7 +51,7 @@ public class ClientWrapper
 	public void setTitle(String t)
 	{
 		ClientProperties.get().title = t.trim();
-		getMinecraft().func_230150_b_();
+		getMinecraft().setDefaultMinecraftTitle();
 	}
 
 	public String getCurrentWorldName()

@@ -79,7 +79,7 @@ public class KubeJSCommands
 	private static ITextComponent copy(String s, TextFormatting col, String info)
 	{
 		StringTextComponent component = new StringTextComponent("- ");
-		component.setStyle(component.getStyle().setColor(Color.func_240744_a_(TextFormatting.GRAY)));
+		component.setStyle(component.getStyle().setColor(Color.fromTextFormatting(TextFormatting.GRAY)));
 		component.setStyle(component.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, s)));
 		component.setStyle(component.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent(info + " (Click to copy)"))));
 		component.append(new StringTextComponent(s).mergeStyle(col));

@@ -182,7 +182,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 		if (world == null)
 		{
-			world = new ServerWorldJS(this, minecraftServer.getWorld(RegistryKey.func_240903_a_(Registry.WORLD_KEY, new ResourceLocation(dimension))));
+			world = new ServerWorldJS(this, minecraftServer.getWorld(RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(dimension))));
 			worldMap.put(dimension, world);
 			updateWorldList();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(world));
@@ -193,12 +193,12 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 	public WorldJS getWorld(World minecraftWorld)
 	{
-		ServerWorldJS world = worldMap.get(minecraftWorld.func_234923_W_().func_240901_a_().toString());
+		ServerWorldJS world = worldMap.get(minecraftWorld.getDimensionKey().getLocation().toString());
 
 		if (world == null)
 		{
 			world = new ServerWorldJS(this, (ServerWorld) minecraftWorld);
-			worldMap.put(minecraftWorld.func_234923_W_().func_240901_a_().toString(), world);
+			worldMap.put(minecraftWorld.getDimensionKey().getLocation().toString(), world);
 			updateWorldList();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(world));
 		}

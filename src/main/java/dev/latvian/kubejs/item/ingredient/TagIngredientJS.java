@@ -55,11 +55,11 @@ public class TagIngredientJS implements IngredientJS
 	{
 		if (actualTag == null)
 		{
-			actualTag = TagCollectionManager.func_242178_a().func_241836_b().get(tag);
+			actualTag = TagCollectionManager.getManager().getItemTags().get(tag);
 
 			if (actualTag == null)
 			{
-				actualTag = Tag.func_241284_a_();
+				actualTag = Tag.getEmptyTag();
 			}
 		}
 

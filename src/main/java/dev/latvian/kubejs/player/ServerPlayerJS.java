@@ -193,7 +193,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayerEntity>
 	{
 		if (c.minecraftWorld instanceof World)
 		{
-			minecraftPlayer.func_242111_a(((World) c.minecraftWorld).func_234923_W_(), c.getPos(), 0F, true, false);
+			minecraftPlayer.func_242111_a(((World) c.minecraftWorld).getDimensionKey(), c.getPos(), 0F, true, false);
 		}
 	}
 }

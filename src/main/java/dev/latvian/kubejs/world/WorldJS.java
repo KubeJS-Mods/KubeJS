@@ -83,12 +83,12 @@ public abstract class WorldJS implements WithAttachedData
 
 	public String getDimension()
 	{
-		return minecraftWorld.func_234923_W_().func_240901_a_().toString();
+		return minecraftWorld.getDimensionKey().getLocation().toString();
 	}
 
 	public boolean isOverworld()
 	{
-		return minecraftWorld.func_234923_W_() == World.field_234918_g_; //FIXME
+		return minecraftWorld.getDimensionKey() == World.OVERWORLD;
 	}
 
 	public boolean isDaytime()

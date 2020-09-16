@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 public class KubeJSResourcePackFinder implements IPackFinder
 {
 	@Override
-	public void func_230230_a_(Consumer<ResourcePackInfo> nameToPackMap, ResourcePackInfo.IFactory packInfoFactory)
+	public void findPacks(Consumer<ResourcePackInfo> nameToPackMap, ResourcePackInfo.IFactory packInfoFactory)
 	{
 		if (Files.notExists(KubeJSPaths.ASSETS))
 		{

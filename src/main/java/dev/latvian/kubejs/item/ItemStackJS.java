@@ -619,7 +619,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 			{
 				try
 				{
-					lore.add(ITextComponent.Serializer.func_240644_b_(o.toString()));
+					lore.add(ITextComponent.Serializer.getComponentFromJson(o.toString()));
 				}
 				catch (JsonParseException var19)
 				{

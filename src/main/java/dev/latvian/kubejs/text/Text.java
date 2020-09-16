@@ -191,7 +191,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 
 		if (color != null)
 		{
-			style = style.setColor(Color.func_240744_a_(color.textFormatting));
+			style = style.setColor(Color.fromTextFormatting(color.textFormatting));
 		}
 
 		style = style.setBold(bold);

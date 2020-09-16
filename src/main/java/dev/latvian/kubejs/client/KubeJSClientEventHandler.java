@@ -163,7 +163,7 @@ public class KubeJSClientEventHandler
 
 		for (Text t : o.text)
 		{
-			list.addAll(mc.fontRenderer.func_238425_b_(t.component(), maxWidth));
+			list.addAll(mc.fontRenderer.trimStringToWidth(t.component(), maxWidth));
 		}
 
 		int mw = 0;
@@ -301,7 +301,7 @@ public class KubeJSClientEventHandler
 	{
 		for (Widget w : list)
 		{
-			if (w.visible && x >= w.x && y >= w.y && x < w.x + w.getWidth() && y < w.y + w.getWidth_CLASH()) //getWidth_CLASH = getHeight
+			if (w.visible && x >= w.x && y >= w.y && x < w.x + w.getWidth() && y < w.y + w.getHeightRealms()) //getWidth_CLASH = getHeight
 			{
 				return true;
 			}

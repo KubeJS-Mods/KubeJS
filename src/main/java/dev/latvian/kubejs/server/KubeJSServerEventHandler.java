@@ -55,7 +55,7 @@ public class KubeJSServerEventHandler
 	@SubscribeEvent
 	public static void serverStarted(FMLServerStartedEvent event)
 	{
-		ServerJS.instance.overworld = new ServerWorldJS(ServerJS.instance, ServerJS.instance.minecraftServer.getWorld(World.field_234918_g_));
+		ServerJS.instance.overworld = new ServerWorldJS(ServerJS.instance, ServerJS.instance.minecraftServer.getWorld(World.OVERWORLD));
 		ServerJS.instance.worldMap.put("minecraft:overworld", ServerJS.instance.overworld);
 		ServerJS.instance.worlds.add(ServerJS.instance.overworld);
 
@@ -64,7 +64,7 @@ public class KubeJSServerEventHandler
 			if (world != ServerJS.instance.overworld.minecraftWorld)
 			{
 				ServerWorldJS w = new ServerWorldJS(ServerJS.instance, world);
-				ServerJS.instance.worldMap.put(world.func_234923_W_().func_240901_a_().toString(), w);
+				ServerJS.instance.worldMap.put(world.getDimensionKey().getLocation().toString(), w);
 			}
 		}
 

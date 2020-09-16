@@ -33,10 +33,10 @@ public class KubeJSWorldEventHandler
 
 	private void worldLoaded(WorldEvent.Load event)
 	{
-		if (ServerJS.instance != null && ServerJS.instance.overworld != null && event.getWorld() instanceof ServerWorld && !ServerJS.instance.worldMap.containsKey(((ServerWorld) event.getWorld()).func_234923_W_().func_240901_a_().toString()))
+		if (ServerJS.instance != null && ServerJS.instance.overworld != null && event.getWorld() instanceof ServerWorld && !ServerJS.instance.worldMap.containsKey(((ServerWorld) event.getWorld()).getDimensionKey().getLocation().toString()))
 		{
 			ServerWorldJS w = new ServerWorldJS(ServerJS.instance, (ServerWorld) event.getWorld());
-			ServerJS.instance.worldMap.put(((ServerWorld) event.getWorld()).func_234923_W_().func_240901_a_().toString(), w);
+			ServerJS.instance.worldMap.put(((ServerWorld) event.getWorld()).getDimensionKey().getLocation().toString(), w);
 			ServerJS.instance.updateWorldList();
 			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(w));
 			new SimpleWorldEventJS(w).post(ScriptType.SERVER, KubeJSEvents.WORLD_LOAD);
@@ -45,7 +45,7 @@ public class KubeJSWorldEventHandler
 
 	private void worldUnloaded(WorldEvent.Unload event)
 	{
-		if (ServerJS.instance != null && ServerJS.instance.overworld != null && event.getWorld() instanceof ServerWorld && ServerJS.instance.worldMap.containsKey(((ServerWorld) event.getWorld()).func_234923_W_().func_240901_a_().toString()))
+		if (ServerJS.instance != null && ServerJS.instance.overworld != null && event.getWorld() instanceof ServerWorld && ServerJS.instance.worldMap.containsKey(((ServerWorld) event.getWorld()).getDimensionKey().getLocation().toString()))
 		{
 			WorldJS w = ServerJS.instance.getWorld(((ServerWorld) event.getWorld()));
 			new SimpleWorldEventJS(w).post(ScriptType.SERVER, KubeJSEvents.WORLD_UNLOAD);
