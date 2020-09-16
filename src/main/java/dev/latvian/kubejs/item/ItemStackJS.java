@@ -88,7 +88,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 			if (s.startsWith("#"))
 			{
-				return new TagIngredientJS(s.substring(1)).getFirst();
+				return TagIngredientJS.createTag(s.substring(1)).getFirst();
 			}
 			else if (s.startsWith("@"))
 			{
@@ -131,7 +131,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 			}
 			else if (map.get("tag") instanceof CharSequence)
 			{
-				ItemStackJS stack = new TagIngredientJS(map.get("tag").toString()).getFirst();
+				ItemStackJS stack = TagIngredientJS.createTag(map.get("tag").toString()).getFirst();
 
 				if (map.containsKey("count"))
 				{
@@ -151,7 +151,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 		if (s.startsWith("#"))
 		{
-			return new TagIngredientJS(s.substring(1)).getFirst();
+			return TagIngredientJS.createTag(s.substring(1)).getFirst();
 		}
 		else if (s.startsWith("@"))
 		{

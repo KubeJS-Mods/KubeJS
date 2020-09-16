@@ -10,13 +10,15 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.ITag;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -24,9 +26,22 @@ import java.util.Set;
  */
 public class TagIngredientJS implements IngredientJS
 {
-	private final ResourceLocation tag;
+	private static final Map<String, TagIngredientJS> tagIngredientCache = new HashMap<>();
 
-	public TagIngredientJS(String t)
+	public static TagIngredientJS createTag(String tag)
+	{
+		return tagIngredientCache.computeIfAbsent(tag, TagIngredientJS::new);
+	}
+
+	public static void clearTagCache()
+	{
+		tagIngredientCache.clear();
+	}
+
+	private final ResourceLocation tag;
+	private ITag<Item> actualTag;
+
+	private TagIngredientJS(String t)
 	{
 		tag = UtilsJS.getMCID(t);
 	}
@@ -38,8 +53,17 @@ public class TagIngredientJS implements IngredientJS
 
 	public ITag<Item> getActualTag()
 	{
-		ITag<Item> t = ItemTags.getCollection().get(tag);
-		return t == null ? Tag.func_241284_a_() : t;
+		if (actualTag == null)
+		{
+			actualTag = TagCollectionManager.func_242178_a().func_241836_b().get(tag);
+
+			if (actualTag == null)
+			{
+				actualTag = Tag.func_241284_a_();
+			}
+		}
+
+		return actualTag;
 	}
 
 	@Override
@@ -115,12 +139,7 @@ public class TagIngredientJS implements IngredientJS
 	@Override
 	public boolean isEmpty()
 	{
-		if (ItemTags.getCollection().getRegisteredTags().isEmpty())
-		{
-			return false;
-		}
-
-		return getActualTag().getAllElements().isEmpty();
+		return false;
 	}
 
 	@Override

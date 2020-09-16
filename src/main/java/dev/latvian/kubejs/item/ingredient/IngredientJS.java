@@ -54,7 +54,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 			}
 			else if (s.startsWith("#"))
 			{
-				return new TagIngredientJS(s.substring(1));
+				return TagIngredientJS.createTag(s.substring(1));
 			}
 			else if (s.startsWith("@"))
 			{
@@ -148,7 +148,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 			}
 			else if (map.containsKey("tag"))
 			{
-				return new TagIngredientJS(map.get("tag").toString());
+				return TagIngredientJS.createTag(map.get("tag").toString());
 			}
 		}
 
@@ -211,7 +211,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 			}
 			else if (o.has("tag"))
 			{
-				return new TagIngredientJS(o.get("tag").getAsString());
+				return TagIngredientJS.createTag(o.get("tag").getAsString());
 			}
 			else if (o.has("item"))
 			{

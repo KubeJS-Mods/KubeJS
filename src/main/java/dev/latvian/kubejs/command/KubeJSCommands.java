@@ -97,7 +97,7 @@ public class KubeJSCommands
 
 		for (ResourceLocation id : tags)
 		{
-			player.sendMessage(copy("#" + id.toString(), TextFormatting.YELLOW, "Item Tag [" + new TagIngredientJS(id.toString()).getStacks().size() + " items]"), Util.DUMMY_UUID);
+			player.sendMessage(copy("#" + id.toString(), TextFormatting.YELLOW, "Item Tag [" + TagIngredientJS.createTag(id.toString()).getStacks().size() + " items]"), Util.DUMMY_UUID);
 		}
 
 		player.sendMessage(copy("@" + stack.getMod(), TextFormatting.AQUA, "Mod [" + new ModIngredientJS(stack.getMod()).getStacks().size() + " items]"), Util.DUMMY_UUID);
