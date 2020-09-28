@@ -26,9 +26,19 @@ public class HideJEIEventJS<T> extends EventJS
 		hidden = new ArrayList<>();
 	}
 
+	public Collection<T> getAllIngredients()
+	{
+		return runtime.getIngredientManager().getAllIngredients(type);
+	}
+
 	public void hide(Object o)
 	{
 		hidden.addAll(function.apply(o));
+	}
+
+	public void hideAll()
+	{
+		hidden.addAll(getAllIngredients());
 	}
 
 	@Override

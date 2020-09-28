@@ -21,21 +21,21 @@ import java.util.function.Function;
 @Mixin(TagCollectionReader.class)
 public abstract class TagCollectionReaderMixin<T> implements TagCollectionKJS<T>
 {
-	@Inject(method = "func_242226_a", at = @At("HEAD"))
+	@Inject(method = "buildTagCollectionFromMap", at = @At("HEAD"))
 	private void customTags(Map<ResourceLocation, ITag.Builder> map, CallbackInfoReturnable<ITagCollection<T>> ci)
 	{
 		customTagsKJS(map);
 	}
 
 	@Override
-	@Accessor("field_242220_d")
+	@Accessor("idToTagFunction")
 	public abstract Function<ResourceLocation, Optional<T>> getRegistryKJS();
 
 	@Override
-	@Accessor("field_242221_e")
+	@Accessor("path")
 	public abstract String getResourceLocationPrefixKJS();
 
 	@Override
-	@Accessor("field_242222_f")
+	@Accessor("tagType")
 	public abstract String getItemTypeNameKJS();
 }

@@ -57,6 +57,8 @@ public class JEIPlugin implements IModPlugin
 			return fs.isEmpty() ? Collections.emptyList() : Collections.singletonList(fs.getFluidStack());
 		}).post(ScriptType.CLIENT, JEIIntegration.JEI_HIDE_FLUIDS);
 
+		new HideCustomJEIEventJS(runtime).post(ScriptType.CLIENT, JEIIntegration.JEI_HIDE_CUSTOM);
+
 		new AddJEIEventJS<>(runtime, VanillaTypes.ITEM, object -> ItemStackJS.of(object).getItemStack()).post(ScriptType.CLIENT, JEIIntegration.JEI_ADD_ITEMS);
 		new AddJEIEventJS<>(runtime, VanillaTypes.FLUID, object -> FluidStackJS.of(object).getFluidStack()).post(ScriptType.CLIENT, JEIIntegration.JEI_ADD_FLUIDS);
 	}

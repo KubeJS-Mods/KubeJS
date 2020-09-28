@@ -90,8 +90,8 @@ repositories {
 dependencies {
 	minecraft "net.minecraftforge:forge:${forge_version}"
 	compile fg.deobf(curse.resolve('jei', project.jei_file))
-	compileOnly fg.deobf(curse.resolve('bookshelf', project.bookshelf_file))
-	compileOnly fg.deobf(curse.resolve('game-stages', project.gamestages_file))
+	compile fg.deobf(curse.resolve('bookshelf', project.bookshelf_file))
+	compile fg.deobf(curse.resolve('game-stages', project.gamestages_file))
 	//compile "org.graalvm.js:js:20.2.0"
 }
 
@@ -133,6 +133,7 @@ if (ENV.CURSEFORGE_KEY) {
 			id = project.curseforge_id
 			releaseType = "release"
 			addGameVersion "1.16.2"
+			addGameVersion "1.16.3"
 			relations {
 				optionalDependency 'jei'
 				optionalDependency 'game-stages'
