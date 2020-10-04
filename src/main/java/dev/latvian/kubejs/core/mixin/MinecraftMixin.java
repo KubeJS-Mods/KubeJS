@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Minecraft.class)
 public abstract class MinecraftMixin
 {
-	@Inject(method = "getWindowTitle", at = @At("HEAD"), remap = false, cancellable = true)
+	@Inject(method = "getWindowTitle", at = @At("HEAD"), cancellable = true)
 	private void getWindowTitle(CallbackInfoReturnable<String> ci)
 	{
 		String s = ClientProperties.get().title;
