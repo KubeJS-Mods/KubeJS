@@ -28,6 +28,7 @@ public class BlockBuilder extends BuilderBase
 	public int harvestLevel;
 	public boolean opaque;
 	public boolean fullBlock;
+	public boolean requiresTool;
 	public String renderType;
 	public Int2IntOpenHashMap color;
 	public final JsonObject textures;
@@ -50,6 +51,7 @@ public class BlockBuilder extends BuilderBase
 		harvestLevel = -1;
 		opaque = true;
 		fullBlock = false;
+		requiresTool = false;
 		renderType = "solid";
 		color = new Int2IntOpenHashMap();
 		color.defaultReturnValue(0xFFFFFFFF);
@@ -113,6 +115,11 @@ public class BlockBuilder extends BuilderBase
 		return this;
 	}
 
+	public BlockBuilder harvestTool(String tool, int level)
+	{
+		return harvestTool(ToolType.get(tool), level);
+	}
+
 	public BlockBuilder opaque(boolean o)
 	{
 		opaque = o;
@@ -122,6 +129,12 @@ public class BlockBuilder extends BuilderBase
 	public BlockBuilder fullBlock(boolean f)
 	{
 		fullBlock = f;
+		return this;
+	}
+
+	public BlockBuilder requiresTool(boolean f)
+	{
+		requiresTool = f;
 		return this;
 	}
 
@@ -232,6 +245,11 @@ public class BlockBuilder extends BuilderBase
 		if (notSolid)
 		{
 			properties.notSolid();
+		}
+
+		if (requiresTool)
+		{
+			properties.setRequiresTool();
 		}
 
 		return properties;
