@@ -37,6 +37,10 @@ public class BlockBuilder extends BuilderBase
 	public List<VoxelShape> customShape;
 	public boolean notSolid;
 	public boolean waterlogged;
+	public boolean noDrops;
+	public float slipperiness = 0.6F;
+	public float speedFactor = 1.0F;
+	public float jumpFactor = 1.0F;
 
 	public BlockJS block;
 
@@ -64,6 +68,7 @@ public class BlockBuilder extends BuilderBase
 		customShape = new ArrayList<>();
 		notSolid = false;
 		waterlogged = false;
+		noDrops = false;
 	}
 
 	@Override
@@ -216,6 +221,30 @@ public class BlockBuilder extends BuilderBase
 		return this;
 	}
 
+	public BlockBuilder noDrops()
+	{
+		noDrops = true;
+		return this;
+	}
+
+	public BlockBuilder slipperiness(float f)
+	{
+		slipperiness = f;
+		return this;
+	}
+
+	public BlockBuilder speedFactor(float f)
+	{
+		speedFactor = f;
+		return this;
+	}
+
+	public BlockBuilder jumpFactor(float f)
+	{
+		jumpFactor = f;
+		return this;
+	}
+
 	public Block.Properties createProperties()
 	{
 		Block.Properties properties = Block.Properties.create(material.getMinecraftMaterial());
@@ -252,6 +281,14 @@ public class BlockBuilder extends BuilderBase
 			properties.setRequiresTool();
 		}
 
+		if (noDrops)
+		{
+			properties.noDrops();
+		}
+
+		properties.slipperiness(slipperiness);
+		properties.speedFactor(speedFactor);
+		properties.jumpFactor(jumpFactor);
 		return properties;
 	}
 }
