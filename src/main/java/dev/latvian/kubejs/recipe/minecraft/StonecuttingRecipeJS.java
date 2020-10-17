@@ -43,6 +43,11 @@ public class StonecuttingRecipeJS extends RecipeJS
 			throw new RecipeExceptionJS("Stonecutting recipe result " + json.get("result") + " is not a valid item!");
 		}
 
+		if (json.has("count"))
+		{
+			result.setCount(json.get("count").getAsInt());
+		}
+
 		outputItems.add(result);
 
 		IngredientJS ingredient = IngredientJS.ingredientFromRecipeJson(json.get("ingredient"));
