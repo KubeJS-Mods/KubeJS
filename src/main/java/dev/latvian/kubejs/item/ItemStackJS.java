@@ -22,6 +22,7 @@ import dev.latvian.kubejs.util.NBTSerializable;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import dev.latvian.kubejs.world.BlockContainerJS;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -694,6 +695,16 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	public int getHarvestLevel(ToolType tool)
 	{
 		return getHarvestLevel(tool, null, null);
+	}
+
+	public float getHarvestSpeed(@Nullable BlockContainerJS block)
+	{
+		return getItemStack().getDestroySpeed(block == null ? Blocks.AIR.getDefaultState() : block.getBlockState());
+	}
+
+	public float getHarvestSpeed()
+	{
+		return getHarvestSpeed(null);
 	}
 
 	@Override

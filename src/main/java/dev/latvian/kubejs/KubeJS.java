@@ -64,18 +64,6 @@ public class KubeJS
 	{
 		Locale.setDefault(Locale.US);
 
-		try
-		{
-			if (!Class.forName("org.spongepowered.asm.mixin.Mixin").isAnnotation())
-			{
-				throw new ClassNotFoundException();
-			}
-		}
-		catch (ClassNotFoundException ex)
-		{
-			throw new RuntimeException("Mixins not found! Please install MixinBootstrap mod!");
-		}
-
 		instance = this;
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP);
 		clientScriptManager = new ScriptManager(ScriptType.CLIENT);

@@ -1,6 +1,6 @@
-modLoader="javafml"
-loaderVersion="[30,)"
-issueTrackerURL="https://github.com/KubeJS-Mods/KubeJS/issues"
+modLoader = "javafml"
+loaderVersion = "[31,)"
+issueTrackerURL = "https://github.com/KubeJS-Mods/KubeJS/issues"
 
 [[mods]]
 modId="kubejs"
@@ -14,9 +14,9 @@ logoFile="kubejs_logo.png"
 
 [[dependencies.kubejs]]
     modId="forge"
-    mandatory=true
-    versionRange="[30,)"
-    ordering="NONE"
+mandatory = true
+versionRange = "[31.2.45,)"
+ordering = "NONE"
     side="BOTH"
 
 [[dependencies.kubejs]]
