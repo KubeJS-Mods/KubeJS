@@ -134,7 +134,6 @@ if (ENV.CURSEFORGE_KEY) {
 			releaseType = "release"
 			addGameVersion "1.15.2"
 			relations {
-				requiredDependency 'mixinbootstrap'
 				optionalDependency 'jei'
 				optionalDependency 'game-stages'
 			}
