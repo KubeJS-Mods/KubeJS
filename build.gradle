@@ -9,7 +9,7 @@ buildscript {
 	dependencies {
 		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
 		classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.1.0'
-		classpath 'com.wynprice.cursemaven:CurseMaven:1.2.+'
+		classpath 'com.wynprice.cursemaven:CurseMaven:2.+'
 		classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
 	}
 }
@@ -89,9 +89,9 @@ repositories {
 
 dependencies {
 	minecraft "net.minecraftforge:forge:${forge_version}"
-	compile fg.deobf(curse.resolve('jei', project.jei_file))
-	compile fg.deobf(curse.resolve('bookshelf', project.bookshelf_file))
-	compile fg.deobf(curse.resolve('game-stages', project.gamestages_file))
+	compile fg.deobf("curse.maven:jei:${jei_file}")
+	compile fg.deobf("curse.maven:bookshelf:${bookshelf_file}")
+	compile fg.deobf("curse.maven:game-stages:${gamestages_file}")
 	//compile "org.graalvm.js:js:20.2.0"
 }
 
