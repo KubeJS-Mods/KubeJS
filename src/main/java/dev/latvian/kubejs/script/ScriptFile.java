@@ -1,10 +1,8 @@
 package dev.latvian.kubejs.script;
 
-import dev.latvian.kubejs.KubeJS;
 import org.apache.commons.io.IOUtils;
 
 import javax.annotation.Nullable;
-import javax.script.Bindings;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -33,20 +31,14 @@ public class ScriptFile implements Comparable<ScriptFile>
 		return error;
 	}
 
-	public boolean load(Bindings bindings)
+	public boolean load()
 	{
 		error = null;
 
 		try (InputStream stream = source.createStream(info))
 		{
-			String processedScript = BabelExecutor.process(new String(IOUtils.toByteArray(new BufferedInputStream(stream)), StandardCharsets.UTF_8));
-
-			if (KubeJS.PRINT_PROCESSED_SCRIPTS)
-			{
-				KubeJS.LOGGER.info("Processed script: " + info.location + ":\n" + processedScript);
-			}
-
-			pack.engine.eval(processedScript, bindings);
+			String script = new String(IOUtils.toByteArray(new BufferedInputStream(stream)), StandardCharsets.UTF_8);
+			pack.context.evaluateString(pack.scope, script, info.location.toString(), 1, null);
 			return true;
 		}
 		catch (Throwable ex)

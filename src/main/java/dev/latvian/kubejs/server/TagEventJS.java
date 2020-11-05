@@ -154,10 +154,9 @@ public class TagEventJS<T> extends EventJS
 			return this;
 		}
 
-		public TagWrapper<T> setPriorityList(@Nullable Object o)
+		public void setPriorityList(@Nullable Object o)
 		{
 			priorityList = parsePriorityList(o);
-			return this;
 		}
 
 		private void gatherAllItemIDs(HashSet<String> set, ITag.ITagEntry entry)

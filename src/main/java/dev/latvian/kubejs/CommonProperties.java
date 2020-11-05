@@ -26,8 +26,6 @@ public class CommonProperties
 	private final Properties properties;
 	private boolean writeProperties;
 
-	public boolean enableES6;
-
 	private CommonProperties()
 	{
 		properties = new Properties();
@@ -48,8 +46,6 @@ public class CommonProperties
 			{
 				writeProperties = true;
 			}
-
-			enableES6 = get("enableES6", true);
 
 			if (writeProperties)
 			{

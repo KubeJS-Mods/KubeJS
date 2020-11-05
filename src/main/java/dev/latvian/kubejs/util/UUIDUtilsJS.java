@@ -34,9 +34,11 @@ public class UUIDUtilsJS
 	}
 
 	@Nullable
-	public static UUID fromString(@Nullable String s)
+	public static UUID fromString(@Nullable Object o)
 	{
-		if (s == null || !(s.length() == 32 || s.length() == 36))
+		String s = String.valueOf(o);
+
+		if (o == null || !(s.length() == 32 || s.length() == 36))
 		{
 			return null;
 		}

@@ -9,7 +9,9 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.WrappedJS;
-import jdk.nashorn.api.scripting.AbstractJSObject;
+import dev.latvian.mods.rhino.BaseFunction;
+import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.Scriptable;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
@@ -18,7 +20,7 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class RecipeFunction extends AbstractJSObject implements WrappedJS
+public class RecipeFunction extends BaseFunction implements WrappedJS
 {
 	private final RecipeEventJS event;
 	public final ResourceLocation typeID;
@@ -32,7 +34,7 @@ public class RecipeFunction extends AbstractJSObject implements WrappedJS
 	}
 
 	@Override
-	public RecipeJS call(Object thiz, Object... args0)
+	public RecipeJS call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args0)
 	{
 		try
 		{

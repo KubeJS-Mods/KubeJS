@@ -12,6 +12,7 @@ import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
+import dev.latvian.mods.rhino.Wrapper;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
@@ -32,6 +33,11 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 {
 	static IngredientJS of(@Nullable Object o)
 	{
+		if (o instanceof Wrapper)
+		{
+			o = ((Wrapper) o).unwrap();
+		}
+
 		if (o == null)
 		{
 			return EmptyItemStackJS.INSTANCE;

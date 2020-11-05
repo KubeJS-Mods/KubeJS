@@ -21,6 +21,7 @@ import dev.latvian.kubejs.util.NBTSerializable;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import dev.latvian.kubejs.world.BlockContainerJS;
+import dev.latvian.mods.rhino.Wrapper;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -57,6 +58,11 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public static ItemStackJS of(@Nullable Object o)
 	{
+		if (o instanceof Wrapper)
+		{
+			o = ((Wrapper) o).unwrap();
+		}
+
 		if (o == null)
 		{
 			return EmptyItemStackJS.INSTANCE;
@@ -85,6 +91,11 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		else if (o instanceof CharSequence)
 		{
 			String s = o.toString();
+
+			if (s.isEmpty() || s.equals("air"))
+			{
+				return EmptyItemStackJS.INSTANCE;
+			}
 
 			if (s.startsWith("#"))
 			{
@@ -142,34 +153,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 			}
 		}
 
-		String s = String.valueOf(o).trim();
-
-		if (s.isEmpty() || s.equals("air"))
-		{
-			return EmptyItemStackJS.INSTANCE;
-		}
-
-		if (s.startsWith("#"))
-		{
-			return TagIngredientJS.createTag(s.substring(1)).getFirst();
-		}
-		else if (s.startsWith("@"))
-		{
-			return new ModIngredientJS(s.substring(1)).getFirst();
-		}
-		else if (s.startsWith("%"))
-		{
-			ItemGroup group = ItemStackJS.findGroup(s.substring(1));
-
-			if (group == null)
-			{
-				return EmptyItemStackJS.INSTANCE;
-			}
-
-			return new GroupIngredientJS(group).getFirst();
-		}
-
-		return new UnboundItemStackJS(new ResourceLocation(s));
+		return EmptyItemStackJS.INSTANCE;
 	}
 
 	public static ItemStackJS of(@Nullable Object o, @Nullable Object countOrNBT)

@@ -20,7 +20,7 @@ apply plugin: 'maven'
 apply plugin: 'com.wynprice.cursemaven'
 apply plugin: 'org.spongepowered.mixin'
 
-apply from: 'https://raw.githubusercontent.com/MinecraftModDevelopment/Gradle-Collection/master/generic/markdown-git-changelog.gradle'
+apply from: 'https://files.latmod.com/public/markdown-git-changelog.gradle'
 
 def ENV = System.getenv()
 version = ENV.BUILD_NUMBER ? "${mod_version}.${ENV.BUILD_NUMBER}" : "${mod_version}.custom"
@@ -89,10 +89,10 @@ repositories {
 
 dependencies {
 	minecraft "net.minecraftforge:forge:${forge_version}"
+	compile fg.deobf("curse.maven:rhino:${rhino_file}")
 	compile fg.deobf("curse.maven:jei:${jei_file}")
 	compile fg.deobf("curse.maven:bookshelf:${bookshelf_file}")
 	compile fg.deobf("curse.maven:game-stages:${gamestages_file}")
-	//compile "org.graalvm.js:js:20.2.0"
 }
 
 jar {
@@ -135,6 +135,7 @@ if (ENV.CURSEFORGE_KEY) {
 			addGameVersion "1.16.2"
 			addGameVersion "1.16.3"
 			relations {
+				requiredDependency 'rhino'
 				optionalDependency 'jei'
 				optionalDependency 'game-stages'
 			}
