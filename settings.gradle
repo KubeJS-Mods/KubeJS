@@ -1,2 +1,15 @@
-rootProject.name = 'KubeJS-1.16.3'
+pluginManagement {
+    repositories {
+        jcenter()
+        maven { url "https://maven.fabricmc.net/" }
+        maven { url "https://dl.bintray.com/shedaniel/cloth" }
+        gradlePluginPortal()
+    }
+}
+
+include "common"
+include "fabric"
+include "forge"
+
+rootProject.name = "KubeJS"
 
