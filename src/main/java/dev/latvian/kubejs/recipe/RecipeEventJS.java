@@ -11,11 +11,11 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
-import dev.latvian.kubejs.util.DynamicMapJS;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.util.DynamicMap;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
@@ -50,9 +50,8 @@ public class RecipeEventJS extends EventJS
 	public final List<RecipeJS> originalRecipes;
 	private final List<RecipeJS> addedRecipes;
 	private final Set<RecipeJS> removedRecipes;
-	public final DynamicMapJS<ResourceLocation, RecipeFunction> functionMap;
-
-	private final DynamicMapJS<String, DynamicMapJS<String, RecipeFunction>> recipeFunctions;
+	private final Map<ResourceLocation, RecipeFunction> functionMap;
+	private final DynamicMap<DynamicMap<RecipeFunction>> recipeFunctions;
 
 	public RecipeEventJS(Map<ResourceLocation, RecipeTypeJS> t)
 	{
@@ -63,21 +62,8 @@ public class RecipeEventJS extends EventJS
 
 		addedRecipes = new ArrayList<>();
 		removedRecipes = new HashSet<>();
-		functionMap = new DynamicMapJS<>(id -> {
-			IRecipeSerializer<?> serializer = ForgeRegistries.RECIPE_SERIALIZERS.getValue(id);
-
-			if (serializer != null)
-			{
-				RecipeTypeJS typeJS = typeMap.get(serializer.getRegistryName());
-				return new RecipeFunction(this, id, typeJS != null ? typeJS : new CustomRecipeTypeJS(serializer));
-			}
-			else
-			{
-				return new RecipeFunction(this, id, null);
-			}
-		});
-
-		recipeFunctions = new DynamicMapJS<>(n -> new DynamicMapJS<>(p -> functionMap.get(new ResourceLocation(n, p))));
+		functionMap = new HashMap<>();
+		recipeFunctions = new DynamicMap<>(n -> new DynamicMap<>(p -> getRecipeFunction(new ResourceLocation(n, p))));
 	}
 
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap)
@@ -111,7 +97,7 @@ public class RecipeEventJS extends EventJS
 					continue;
 				}
 
-				RecipeFunction function = functionMap.get(new ResourceLocation(t.getAsString()));
+				RecipeFunction function = getRecipeFunction(new ResourceLocation(t.getAsString()));
 
 				if (function.type == null)
 				{
@@ -207,9 +193,31 @@ public class RecipeEventJS extends EventJS
 		ScriptType.SERVER.console.info("Added " + added + " recipes, removed " + removed + " recipes, modified " + modified + " recipes");
 	}
 
-	public DynamicMapJS<String, DynamicMapJS<String, RecipeFunction>> getRecipes()
+	public DynamicMap<DynamicMap<RecipeFunction>> getRecipes()
 	{
 		return recipeFunctions;
+	}
+
+	public RecipeFunction getRecipeFunction(@Nullable ResourceLocation id)
+	{
+		if (id == null)
+		{
+			throw new NullPointerException("Recipe type is null!");
+		}
+
+		return functionMap.computeIfAbsent(id, i -> {
+			IRecipeSerializer<?> serializer = ForgeRegistries.RECIPE_SERIALIZERS.getValue(i);
+
+			if (serializer != null)
+			{
+				RecipeTypeJS typeJS = typeMap.get(serializer.getRegistryName());
+				return new RecipeFunction(this, i, typeJS != null ? typeJS : new CustomRecipeTypeJS(serializer));
+			}
+			else
+			{
+				return new RecipeFunction(this, i, null);
+			}
+		});
 	}
 
 	public RecipeJS addRecipe(RecipeJS r, RecipeTypeJS type, ListJS args1)
@@ -431,17 +439,17 @@ public class RecipeEventJS extends EventJS
 
 	public RecipeFunction getShaped()
 	{
-		return functionMap.get(IRecipeSerializer.CRAFTING_SHAPED.getRegistryName());
+		return getRecipeFunction(IRecipeSerializer.CRAFTING_SHAPED.getRegistryName());
 	}
 
 	public RecipeFunction getShapeless()
 	{
-		return functionMap.get(IRecipeSerializer.CRAFTING_SHAPELESS.getRegistryName());
+		return getRecipeFunction(IRecipeSerializer.CRAFTING_SHAPELESS.getRegistryName());
 	}
 
 	public RecipeFunction getSmelting()
 	{
-		return functionMap.get(IRecipeSerializer.SMELTING.getRegistryName());
+		return getRecipeFunction(IRecipeSerializer.SMELTING.getRegistryName());
 	}
 
 	public void printTypes()

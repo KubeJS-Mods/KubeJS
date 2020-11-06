@@ -11,9 +11,7 @@ import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
 import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.world.WorldJS;
-import jdk.nashorn.api.scripting.JSObject;
-import jdk.nashorn.internal.runtime.ScriptFunction;
-import jdk.nashorn.internal.runtime.ScriptObject;
+import dev.latvian.mods.rhino.Wrapper;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.EndNBT;
 import net.minecraft.nbt.INBT;
@@ -177,6 +175,10 @@ public class UtilsJS
 		{
 			return o.toString();
 		}
+		else if (o instanceof Wrapper)
+		{
+			return wrap(((Wrapper) o).unwrap(), type);
+		}
 		// Vanilla text component
 		else if (o instanceof ITextComponent)
 		{
@@ -236,78 +238,6 @@ public class UtilsJS
 			}
 
 			return t;
-		}
-		// New Nashorn JS Object
-		else if (o instanceof JSObject)
-		{
-			JSObject js = (JSObject) o;
-
-			if (js.isFunction())
-			{
-				return js;
-			}
-			else if (js.isArray())
-			{
-				if (!type.checkList())
-				{
-					return null;
-				}
-
-				ListJS list = new ListJS(js.values().size());
-				list.addAll(js.values());
-				return list;
-			}
-			else if (type.checkMap())
-			{
-				MapJS map = new MapJS();
-
-				for (String k : ((JSObject) o).keySet())
-				{
-					map.put(k, ((JSObject) o).getMember(k));
-				}
-
-				return map;
-			}
-			else
-			{
-				return null;
-			}
-		}
-		// Old Nashorn JS Object
-		else if (o instanceof ScriptObject)
-		{
-			ScriptObject js = (ScriptObject) o;
-
-			if (js instanceof ScriptFunction)
-			{
-				return js;
-			}
-			else if (js.isArray())
-			{
-				if (!type.checkList())
-				{
-					return null;
-				}
-
-				ListJS list = new ListJS(js.size());
-				list.addAll(js.values());
-				return list;
-			}
-			else if (type.checkMap())
-			{
-				MapJS map = new MapJS(js.size());
-
-				for (Object k : js.keySet())
-				{
-					map.put(k.toString(), js.get(k));
-				}
-
-				return map;
-			}
-			else
-			{
-				return null;
-			}
 		}
 		// Maps
 		else if (o instanceof Map)

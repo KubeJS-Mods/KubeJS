@@ -3,53 +3,53 @@ loaderVersion = "[31,)"
 issueTrackerURL = "https://github.com/KubeJS-Mods/KubeJS/issues"
 
 [[mods]]
-modId="kubejs"
-version="${file.jarVersion}"
-displayName="KubeJS"
-authors="LatvianModder"
-description='''
+modId = "kubejs"
+version = "${file.jarVersion}"
+displayName = "KubeJS"
+authors = "LatvianModder"
+description = '''
 Allows you to tweak and customize modpack with JavaScript
 '''
-logoFile="kubejs_logo.png"
+logoFile = "kubejs_logo.png"
 
 [[dependencies.kubejs]]
-    modId="forge"
+modId = "forge"
 mandatory = true
 versionRange = "[31.2.45,)"
 ordering = "NONE"
-    side="BOTH"
+side = "BOTH"
 
 [[dependencies.kubejs]]
-    modId="minecraft"
-    mandatory=true
-    versionRange="[1.15,)"
-    ordering="NONE"
-    side="BOTH"
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.15,)"
+ordering = "NONE"
+side = "BOTH"
 
 [[dependencies.kubejs]]
-    modId="aurora"
-    mandatory=false
-    versionRange="[1.0.0,)"
-    ordering="BEFORE"
-    side="BOTH"
+modId = "rhino"
+mandatory = true
+versionRange = "[1.7.13,)"
+ordering = "AFTER"
+side = "BOTH"
 
 [[dependencies.kubejs]]
-    modId="gamestages"
-    mandatory=false
-    versionRange="[1.0.0,)"
-    ordering="AFTER"
-    side="BOTH"
+modId = "gamestages"
+mandatory = false
+versionRange = "[1.0.0,)"
+ordering = "AFTER"
+side = "BOTH"
 
 [[dependencies.kubejs]]
-    modId="jei"
-    mandatory=false
-    versionRange="[1.0.0,)"
-    ordering="AFTER"
-    side="BOTH"
+modId = "jei"
+mandatory = false
+versionRange = "[1.0.0,)"
+ordering = "AFTER"
+side = "BOTH"
 
 [[dependencies.kubejs]]
-    modId="packmode"
-    mandatory=false
-    versionRange="[1.0.0,)"
-    ordering="AFTER"
-    side="BOTH"
+modId = "packmode"
+mandatory = false
+versionRange = "[1.0.0,)"
+ordering = "AFTER"
+side = "BOTH"

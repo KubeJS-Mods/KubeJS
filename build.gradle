@@ -9,7 +9,6 @@ buildscript {
 	dependencies {
 		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
 		classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.1.0'
-		classpath 'com.wynprice.cursemaven:CurseMaven:1.2.+'
 		classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
 	}
 }
@@ -17,10 +16,9 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: 'maven'
-apply plugin: 'com.wynprice.cursemaven'
 apply plugin: 'org.spongepowered.mixin'
 
-apply from: 'https://raw.githubusercontent.com/MinecraftModDevelopment/Gradle-Collection/master/generic/markdown-git-changelog.gradle'
+apply from: 'https://files.latmod.com/public/markdown-git-changelog.gradle'
 
 def ENV = System.getenv()
 version = ENV.BUILD_NUMBER ? "${mod_version}.${ENV.BUILD_NUMBER}" : "${mod_version}.custom"
@@ -85,14 +83,16 @@ minecraft {
 
 repositories {
 	mavenLocal()
+	maven { url = "https://www.cursemaven.com" }
 }
 
 dependencies {
 	minecraft "net.minecraftforge:forge:${forge_version}"
-	compile fg.deobf(curse.resolve('jei', project.jei_file))
-	compileOnly fg.deobf(curse.resolve('bookshelf', project.bookshelf_file))
-	compileOnly fg.deobf(curse.resolve('game-stages', project.gamestages_file))
-	runtimeOnly fg.deobf(curse.resolve('immersive-engineering', project.ie_file))
+	compile fg.deobf("curse.maven:rhino:${rhino_file}")
+	compile fg.deobf("curse.maven:jei:${jei_file}")
+	compileOnly fg.deobf("curse.maven:bookshelf:${bookshelf_file}")
+	compileOnly fg.deobf("curse.maven:game-stages:${gamestages_file}")
+	runtimeOnly fg.deobf("curse.maven:immersive-engineering:${ie_file}")
 }
 
 jar {
@@ -134,6 +134,7 @@ if (ENV.CURSEFORGE_KEY) {
 			releaseType = "release"
 			addGameVersion "1.15.2"
 			relations {
+				requiredDependency 'rhino'
 				optionalDependency 'jei'
 				optionalDependency 'game-stages'
 			}

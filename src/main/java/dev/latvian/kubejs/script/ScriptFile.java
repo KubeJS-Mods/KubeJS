@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.script;
 
 import javax.annotation.Nullable;
-import javax.script.Bindings;
 import java.io.Reader;
 
 /**
@@ -28,13 +27,13 @@ public class ScriptFile implements Comparable<ScriptFile>
 		return error;
 	}
 
-	public boolean load(Bindings bindings)
+	public boolean load()
 	{
 		error = null;
 
 		try (Reader reader = source.createReader(info))
 		{
-			pack.engine.eval(BabelExecutor.process(reader), bindings);
+			pack.context.evaluateReader(pack.scope, reader, info.location.toString(), 1, null);
 			return true;
 		}
 		catch (Throwable ex)
