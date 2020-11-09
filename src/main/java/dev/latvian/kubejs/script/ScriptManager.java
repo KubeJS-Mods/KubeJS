@@ -8,10 +8,10 @@ import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.ClassShutter;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.RhinoException;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.commons.io.IOUtils;
 
-import javax.script.ScriptException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -126,14 +126,17 @@ public class ScriptManager
 				}
 				else if (file.getError() != null)
 				{
-					type.console.error("Error loading KubeJS script " + file.info.location + ": " + file.getError().toString().replace("javax.script.ScriptException: ", ""));
-
-					if (!(file.getError() instanceof ScriptException))
+					if (file.getError() instanceof RhinoException)
 					{
+						type.console.error("Error loading KubeJS script: " + file.getError().getMessage());
+						errors.add(file.getError().getMessage());
+					}
+					else
+					{
+						type.console.error("Error loading KubeJS script: " + file.info.location + ": " + file.getError());
+						errors.add(file.info.location + ": " + file.getError());
 						file.getError().printStackTrace();
 					}
-
-					errors.add(file.info.location + ": " + file.getError().toString().replace("javax.script.ScriptException: ", ""));
 				}
 			}
 		}
