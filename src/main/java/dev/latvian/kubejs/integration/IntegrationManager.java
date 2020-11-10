@@ -16,22 +16,22 @@ public class IntegrationManager
 	{
 		if (ModList.get().isLoaded("gamestages"))
 		{
-			new GameStagesIntegration().init();
+			GameStagesIntegration.init();
 		}
 
-		if (ModList.get().isLoaded("create"))
+		if (ModList.get().isLoaded("create") && !ModList.get().isLoaded("kubejs_create"))
 		{
-			MinecraftForge.EVENT_BUS.addListener(CreateRecipes::registerRecipeHandlers);
+			MinecraftForge.EVENT_BUS.register(CreateRecipes.class);
 		}
 
-		if (ModList.get().isLoaded("mekanism"))
+		if (ModList.get().isLoaded("mekanism") && !ModList.get().isLoaded("kubejs_mekanism"))
 		{
-			MinecraftForge.EVENT_BUS.addListener(MekanismRecipes::registerRecipeHandlers);
+			MinecraftForge.EVENT_BUS.register(MekanismRecipes.class);
 		}
 
-		if (ModList.get().isLoaded("silents_mechanisms"))
+		if (ModList.get().isLoaded("silents_mechanisms") && !ModList.get().isLoaded("kubejs_silents_mechanisms"))
 		{
-			MinecraftForge.EVENT_BUS.addListener(SilentsMechanismsRecipes::registerRecipeHandlers);
+			MinecraftForge.EVENT_BUS.register(SilentsMechanismsRecipes.class);
 		}
 	}
 }
