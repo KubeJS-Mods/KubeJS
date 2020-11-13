@@ -4,7 +4,6 @@ pluginManagement {
         maven { url "https://maven.fabricmc.net/" }
         maven { url "https://dl.bintray.com/shedaniel/cloth" }
         gradlePluginPortal()
-        mavenLocal()
     }
 }
 
