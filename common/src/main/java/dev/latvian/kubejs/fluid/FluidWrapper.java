@@ -1,12 +1,14 @@
 package dev.latvian.kubejs.fluid;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.util.UtilsJS;
+import me.shedaniel.architectury.registry.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,19 +36,19 @@ public class FluidWrapper
 	@MinecraftClass
 	public Fluid getType(@ID String id)
 	{
-		Fluid f = ForgeRegistries.FLUIDS.getValue(UtilsJS.getMCID(id));
-		return f == null ? Fluids.EMPTY : f;
+		Fluid fluid = Registries.get(KubeJS.MOD_ID).get(Registry.FLUID_REGISTRY).get(UtilsJS.getMCID(id));
+		return fluid == null ? Fluids.EMPTY : fluid;
 	}
 
 	public List<String> getTypes()
 	{
-		List<String> set = new ArrayList<>();
+		List<String> types = new ArrayList<>();
 
-		for (ResourceLocation id : ForgeRegistries.FLUIDS.getKeys())
+		for (ResourceLocation id : Registries.get(KubeJS.MOD_ID).get(Registry.FLUID_REGISTRY).getIds())
 		{
-			set.add(id.toString());
+			types.add(id.toString());
 		}
 
-		return set;
+		return types;
 	}
 }

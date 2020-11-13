@@ -1,14 +1,16 @@
 package dev.latvian.kubejs.world;
 
-import dev.latvian.kubejs.core.ExplosionKJS;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.player.EntityArrayList;
+import me.shedaniel.architectury.hooks.ExplosionHooks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.world.ExplosionEvent;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,22 +19,24 @@ import java.util.List;
  */
 public abstract class ExplosionEventJS extends WorldEventJS
 {
-	private final ExplosionEvent event;
+	protected final Level world;
+	protected final Explosion explosion;
 
-	private ExplosionEventJS(ExplosionEvent e)
+	public ExplosionEventJS(Level world, Explosion explosion)
 	{
-		event = e;
+		this.world = world;
+		this.explosion = explosion;
 	}
 
 	@Override
 	public WorldJS getWorld()
 	{
-		return worldOf(event.getWorld());
+		return worldOf(world);
 	}
 
 	public Vec3 getPosition()
 	{
-		return event.getExplosion().getPosition();
+		return ExplosionHooks.getPosition(explosion);
 	}
 
 	public double getX()
@@ -52,23 +56,20 @@ public abstract class ExplosionEventJS extends WorldEventJS
 
 	public BlockContainerJS getBlock()
 	{
-		return new BlockContainerJS(event.getWorld(), new BlockPos(event.getExplosion().getPosition()));
+		return new BlockContainerJS(world, new BlockPos(getPosition()));
 	}
 
 	@Nullable
 	public LivingEntityJS getExploder()
 	{
-		return getWorld().getLivingEntity(event.getExplosion().getExplosivePlacedBy());
+		return getWorld().getLivingEntity(explosion.getSourceMob());
 	}
 
 	public static class Pre extends ExplosionEventJS
 	{
-		private final ExplosionEvent.Start event;
-
-		public Pre(ExplosionEvent.Start e)
+		public Pre(Level world, Explosion explosion)
 		{
-			super(e);
-			event = e;
+			super(world, explosion);
 		}
 
 		@Override
@@ -79,47 +80,47 @@ public abstract class ExplosionEventJS extends WorldEventJS
 
 		public float getSize()
 		{
-			return ((ExplosionKJS) event.getExplosion()).getSizeKJS();
+			return ExplosionHooks.getRadius(explosion);
 		}
 
 		public void setSize(float s)
 		{
-			((ExplosionKJS) event.getExplosion()).setSizeKJS(s);
+			ExplosionHooks.setRadius(explosion, s);
 		}
 	}
 
 	public static class Post extends ExplosionEventJS
 	{
-		private final ExplosionEvent.Detonate event;
+		private final List<Entity> affectedEntities;
 
-		public Post(ExplosionEvent.Detonate e)
+		public Post(Level world, Explosion explosion, List<Entity> affectedEntities)
 		{
-			super(e);
-			event = e;
+			super(world, explosion);
+			this.affectedEntities = affectedEntities;
 		}
 
 		public EntityArrayList getAffectedEntities()
 		{
-			return new EntityArrayList(getWorld(), event.getAffectedEntities());
+			return new EntityArrayList(getWorld(), affectedEntities);
 		}
 
 		public void removeAffectedEntity(EntityJS entity)
 		{
-			event.getAffectedEntities().remove(entity.minecraftEntity);
+			affectedEntities.remove(entity.minecraftEntity);
 		}
 
 		public void removeAllAffectedEntities()
 		{
-			event.getAffectedEntities().clear();
+			affectedEntities.clear();
 		}
 
 		public List<BlockContainerJS> getAffectedBlocks()
 		{
-			List<BlockContainerJS> list = new ArrayList<>(event.getAffectedBlocks().size());
+			List<BlockContainerJS> list = new ArrayList<>(explosion.getToBlow().size());
 
-			for (BlockPos pos : event.getAffectedBlocks())
+			for (BlockPos pos : explosion.getToBlow())
 			{
-				list.add(new BlockContainerJS(event.getWorld(), pos));
+				list.add(new BlockContainerJS(world, pos));
 			}
 
 			return list;
@@ -127,17 +128,17 @@ public abstract class ExplosionEventJS extends WorldEventJS
 
 		public void removeAffectedBlock(BlockContainerJS block)
 		{
-			event.getAffectedBlocks().remove(block.getPos());
+			explosion.getToBlow().remove(block.getPos());
 		}
 
 		public void removeAllAffectedBlocks()
 		{
-			event.getAffectedBlocks().clear();
+			explosion.getToBlow().clear();
 		}
 
 		public void removeKnockback()
 		{
-			event.getExplosion().getPlayerKnockbackMap().clear();
+			explosion.getHitPlayers().clear();
 		}
 	}
 }

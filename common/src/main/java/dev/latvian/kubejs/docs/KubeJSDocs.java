@@ -1,15 +1,17 @@
 package dev.latvian.kubejs.docs;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.event.EventJS;
-import net.minecraftforge.fml.common.Mod;
 
 /**
  * @author LatvianModder
  */
-@Mod.EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSDocs
 {
+	public static void init()
+	{
+		DocumentationEvent.EVENT.register(KubeJSDocs::documentation);
+	}
+
 	public static void documentation(DocumentationEvent event)
 	{
 		event.type(Object.class)

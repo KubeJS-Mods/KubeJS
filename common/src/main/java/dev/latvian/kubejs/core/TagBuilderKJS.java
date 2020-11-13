@@ -1,7 +1,8 @@
 package dev.latvian.kubejs.core;
 
-import java.util.List;
 import net.minecraft.tags.Tag;
+
+import java.util.List;
 
 /**
  * @author LatvianModder

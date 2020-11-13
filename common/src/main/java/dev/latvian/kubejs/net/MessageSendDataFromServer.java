@@ -1,11 +1,11 @@
 package dev.latvian.kubejs.net;
 
 import dev.latvian.kubejs.KubeJS;
+import me.shedaniel.architectury.networking.NetworkManager.PacketContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fml.network.NetworkEvent;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.function.Supplier;
 
 /**
@@ -34,12 +34,11 @@ public class MessageSendDataFromServer
 		buf.writeNbt(data);
 	}
 
-	void handle(Supplier<NetworkEvent.Context> context)
+	void handle(Supplier<PacketContext> context)
 	{
 		if (!channel.isEmpty())
 		{
-			context.get().enqueueWork(() -> KubeJS.instance.proxy.handleDataToClientPacket(channel, data));
-			context.get().setPacketHandled(true);
+			context.get().queue(() -> KubeJS.instance.proxy.handleDataToClientPacket(channel, data));
 		}
 	}
 }

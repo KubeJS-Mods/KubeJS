@@ -2,9 +2,9 @@ package dev.latvian.kubejs.entity;
 
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.world.WorldJS;
-import org.jetbrains.annotations.Nullable;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author LatvianModder

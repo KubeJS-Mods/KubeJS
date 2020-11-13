@@ -1,12 +1,14 @@
 package dev.latvian.kubejs.item;
 
 import com.google.common.collect.Lists;
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.UtilsJS;
+import me.shedaniel.architectury.registry.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
@@ -59,7 +61,7 @@ public class FoodBuilder
 	public FoodBuilder effect(@ID String potion, int duration, int amplifier, float probability)
 	{
 		ResourceLocation id = UtilsJS.getMCID(potion);
-		effects.add(Pair.of(() -> new MobEffectInstance(ForgeRegistries.POTIONS.getValue(id), duration, amplifier), probability));
+		effects.add(Pair.of(() -> new MobEffectInstance(Registries.get(KubeJS.MOD_ID).get(Registry.MOB_EFFECT_REGISTRY).get(id), duration, amplifier), probability));
 		return this;
 	}
 
@@ -92,7 +94,7 @@ public class FoodBuilder
 
 		for (Pair<Supplier<MobEffectInstance>, Float> effect : effects)
 		{
-			b.effect(effect.getKey(), effect.getRight());
+			b.effect(effect.getKey().get(), effect.getRight());
 		}
 
 		return b.build();

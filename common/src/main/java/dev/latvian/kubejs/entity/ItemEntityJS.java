@@ -2,9 +2,11 @@ package dev.latvian.kubejs.entity;
 
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.world.WorldJS;
-import org.jetbrains.annotations.Nullable;
+import me.shedaniel.architectury.hooks.ItemEntityHooks;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.UUID;
 
 /**
@@ -35,12 +37,12 @@ public class ItemEntityJS extends EntityJS
 
 	public int getLifespan()
 	{
-		return itemEntity.lifespan;
+		return ItemEntityHooks.lifespan(itemEntity).getAsInt();
 	}
 
 	public void setLifespan(int lifespan)
 	{
-		itemEntity.lifespan = lifespan;
+		ItemEntityHooks.lifespan(itemEntity).accept(lifespan);
 	}
 
 	@Nullable

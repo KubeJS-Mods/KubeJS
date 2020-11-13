@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.world;
 
+import com.google.common.collect.Lists;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
@@ -13,9 +14,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.storage.ServerLevelData;
-import net.minecraftforge.common.MinecraftForge;
-
-import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
@@ -72,7 +70,7 @@ public class ServerWorldJS extends WorldJS
 		if (fakeData == null)
 		{
 			fakeData = new FakeServerPlayerDataJS(server, (ServerPlayer) player);
-			MinecraftForge.EVENT_BUS.post(new AttachPlayerDataEvent(fakeData));
+			AttachPlayerDataEvent.EVENT.invoker().accept(new AttachPlayerDataEvent(fakeData));
 		}
 
 		fakeData.player = (ServerPlayer) player;
@@ -88,7 +86,7 @@ public class ServerWorldJS extends WorldJS
 	@Override
 	public EntityArrayList getEntities()
 	{
-		return new EntityArrayList(this, ((ServerLevel) minecraftWorld).getEntities().collect(Collectors.toList()));
+		return new EntityArrayList(this, Lists.newArrayList(((ServerLevel) minecraftWorld).getAllEntities()));
 	}
 
 	public EntityArrayList getEntities(String filter)

@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.server;
 
 import dev.latvian.kubejs.event.EventJS;
-
 import org.jetbrains.annotations.Nullable;
 
 /**

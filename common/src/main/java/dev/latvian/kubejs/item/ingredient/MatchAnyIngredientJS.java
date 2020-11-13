@@ -3,8 +3,8 @@ package dev.latvian.kubejs.item.ingredient;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.util.ListJS;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;

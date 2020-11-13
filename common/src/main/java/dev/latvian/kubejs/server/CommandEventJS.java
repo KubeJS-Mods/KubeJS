@@ -1,17 +1,17 @@
 package dev.latvian.kubejs.server;
 
 import com.mojang.brigadier.ParseResults;
+import me.shedaniel.architectury.event.events.CommandPerformEvent;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraftforge.event.CommandEvent;
 
 /**
  * @author LatvianModder
  */
 public class CommandEventJS extends ServerEventJS
 {
-	public final CommandEvent event;
+	public final CommandPerformEvent event;
 
-	public CommandEventJS(CommandEvent e)
+	public CommandEventJS(CommandPerformEvent e)
 	{
 		event = e;
 	}
@@ -24,21 +24,21 @@ public class CommandEventJS extends ServerEventJS
 
 	public ParseResults<CommandSourceStack> getParseResults()
 	{
-		return event.getParseResults();
+		return event.getResults();
 	}
 
 	public void setParseResults(ParseResults<CommandSourceStack> parse)
 	{
-		event.setParseResults(parse);
+		event.setResults(parse);
 	}
 
 	public Throwable getException()
 	{
-		return event.getException();
+		return event.getThrowable();
 	}
 
 	public void setException(Throwable exception)
 	{
-		event.setException(exception);
+		event.setThrowable(exception);
 	}
 }

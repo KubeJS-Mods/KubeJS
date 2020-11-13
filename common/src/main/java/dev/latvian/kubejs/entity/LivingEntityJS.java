@@ -4,12 +4,14 @@ import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.world.WorldJS;
-import org.jetbrains.annotations.Nullable;
+import me.shedaniel.architectury.ExpectPlatform;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -235,12 +237,18 @@ public class LivingEntityJS extends EntityJS
 
 	public double getReachDistance()
 	{
-		return minecraftLivingEntity.getAttribute(net.minecraftforge.common.ForgeMod.REACH_DISTANCE.get()).getValue();
+		return getReachDistance(minecraftLivingEntity);
 	}
 
 	@Nullable
 	public Map<String, Object> rayTrace()
 	{
 		return rayTrace(getReachDistance());
+	}
+
+	@ExpectPlatform
+	private static double getReachDistance(LivingEntity livingEntity)
+	{
+		throw new AssertionError();
 	}
 }

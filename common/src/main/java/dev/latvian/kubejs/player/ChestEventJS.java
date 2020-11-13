@@ -4,10 +4,10 @@ import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.event.entity.player.PlayerContainerEvent;
-
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -17,9 +17,9 @@ public class ChestEventJS extends InventoryEventJS
 {
 	private InventoryJS inventory;
 
-	public ChestEventJS(PlayerContainerEvent e)
+	public ChestEventJS(Player player, AbstractContainerMenu menu)
 	{
-		super(e);
+		super(player, menu);
 	}
 
 	@MinecraftClass

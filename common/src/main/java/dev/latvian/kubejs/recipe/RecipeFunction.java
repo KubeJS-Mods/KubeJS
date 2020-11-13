@@ -12,8 +12,9 @@ import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
-import org.jetbrains.annotations.Nullable;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Map;
 
 /**
@@ -76,12 +77,10 @@ public class RecipeFunction extends BaseFunction implements WrappedJS
 			recipe.json = new JsonObject();
 			recipe.create(args);
 			return event.addRecipe(recipe, type, args);
-		}
-		catch (RecipeExceptionJS ex)
+		} catch (RecipeExceptionJS ex)
 		{
 			ScriptType.SERVER.console.warn("Failed to create recipe for type '" + typeID + "': " + ex);
-		}
-		catch (Exception ex)
+		} catch (Exception ex)
 		{
 			ex.printStackTrace();
 		}

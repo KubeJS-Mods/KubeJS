@@ -2,28 +2,31 @@ package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
-import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * @author LatvianModder
  */
 public class ItemSmeltedEventJS extends PlayerEventJS
 {
-	public final PlayerEvent.ItemSmeltedEvent event;
+	public final Player player;
+	public final ItemStack smelted;
 
-	public ItemSmeltedEventJS(PlayerEvent.ItemSmeltedEvent e)
+	public ItemSmeltedEventJS(Player player, ItemStack smelted)
 	{
-		event = e;
+		this.player = player;
+		this.smelted = smelted;
 	}
 
 	@Override
 	public EntityJS getEntity()
 	{
-		return entityOf(event.getPlayer());
+		return entityOf(player);
 	}
 
 	public ItemStackJS getItem()
 	{
-		return ItemStackJS.of(event.getSmelting());
+		return ItemStackJS.of(smelted);
 	}
 }

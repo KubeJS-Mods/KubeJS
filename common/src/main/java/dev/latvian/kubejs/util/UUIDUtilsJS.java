@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.util;
 
 import org.jetbrains.annotations.Nullable;
+
 import java.util.UUID;
 
 /**
@@ -62,8 +63,7 @@ public class UUIDUtilsJS
 			}
 
 			return UUID.fromString(sb.toString());
-		}
-		catch (Exception e)
+		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}

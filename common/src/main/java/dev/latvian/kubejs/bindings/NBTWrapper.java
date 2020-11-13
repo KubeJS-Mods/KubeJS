@@ -2,8 +2,8 @@ package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.NBTUtilsJS;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.io.IOException;
 

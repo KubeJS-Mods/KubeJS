@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.bindings;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.block.MaterialJS;
 import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.block.predicate.BlockEntityPredicate;
@@ -8,11 +9,12 @@ import dev.latvian.kubejs.block.predicate.BlockPredicate;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.util.UtilsJS;
+import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,7 +78,7 @@ public class BlockWrapper
 	@MinecraftClass
 	public Block getBlock(@ID String id)
 	{
-		Block b = ForgeRegistries.BLOCKS.getValue(UtilsJS.getMCID(id));
+		Block b = Registries.get(KubeJS.MOD_ID).get(Registry.BLOCK_REGISTRY).get(UtilsJS.getMCID(id));
 		return b == null ? Blocks.AIR : b;
 	}
 
@@ -84,7 +86,7 @@ public class BlockWrapper
 	{
 		List<String> list = new ArrayList<>();
 
-		for (ResourceLocation block : ForgeRegistries.BLOCKS.getKeys())
+		for (ResourceLocation block : Registries.get(KubeJS.MOD_ID).get(Registry.BLOCK_REGISTRY).getIds())
 		{
 			list.add(block.toString());
 		}

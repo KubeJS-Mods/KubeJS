@@ -8,7 +8,6 @@ import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.ClassShutter;
 import dev.latvian.mods.rhino.Context;
-import net.minecraftforge.common.MinecraftForge;
 import org.apache.commons.io.IOUtils;
 
 import javax.script.ScriptException;
@@ -58,7 +57,7 @@ public class ScriptManager
 			UtilsJS.tryIO(() -> Files.createDirectories(directory));
 
 			try (InputStream in = KubeJS.class.getResourceAsStream(exampleScript);
-				 OutputStream out = Files.newOutputStream(directory.resolve("script.js")))
+			     OutputStream out = Files.newOutputStream(directory.resolve("script.js")))
 			{
 				out.write(IOUtils.toByteArray(in));
 			}
@@ -110,7 +109,7 @@ public class ScriptManager
 			pack.scope = context.initStandardObjects();
 
 			BindingsEvent event = new BindingsEvent(type, pack.scope);
-			MinecraftForge.EVENT_BUS.post(event);
+			BindingsEvent.EVENT.invoker().accept(event);
 			DefaultBindings.init(this, event);
 
 			for (ScriptFile file : pack.scripts)
@@ -152,7 +151,6 @@ public class ScriptManager
 		Context.exit();
 
 		events.postToHandlers(KubeJSEvents.LOADED, events.handlers(KubeJSEvents.LOADED), new EventJS());
-		MinecraftForge.EVENT_BUS.post(new ScriptsLoadedEvent());
 
 		if (i != t && type == ScriptType.STARTUP)
 		{

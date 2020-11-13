@@ -5,15 +5,16 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.SerializationTags;
 import net.minecraft.tags.SetTag;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -54,7 +55,7 @@ public class TagIngredientJS implements IngredientJS
 	{
 		if (actualTag == null)
 		{
-			actualTag = SerializationTags.getInstance().getItems().getTag(tag);
+			actualTag = Tags.items().getTag(tag);
 
 			if (actualTag == null)
 			{

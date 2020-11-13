@@ -3,8 +3,8 @@ package dev.latvian.kubejs.net;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
 import dev.latvian.kubejs.util.MapJS;
-import org.jetbrains.annotations.Nullable;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author LatvianModder

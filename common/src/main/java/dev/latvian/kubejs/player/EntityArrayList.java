@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.player;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.text.Text;
@@ -8,15 +9,16 @@ import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.WorldJS;
+import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.Util;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.registries.ForgeRegistries;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Predicate;
@@ -109,7 +111,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 	public void playSound(@ID String id, float volume, float pitch)
 	{
-		SoundEvent event = ForgeRegistries.SOUND_EVENTS.getValue(UtilsJS.getMCID(id));
+		SoundEvent event = Registries.get(KubeJS.MOD_ID).get(Registry.SOUND_EVENT_REGISTRY).get(UtilsJS.getMCID(id));
 
 		if (event != null)
 		{

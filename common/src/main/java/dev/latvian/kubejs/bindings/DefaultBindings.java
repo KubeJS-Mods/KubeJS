@@ -9,12 +9,12 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.util.MapJS;
+import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.ToolType;
 
 /**
  * @author LatvianModder
@@ -75,6 +75,7 @@ public class DefaultBindings
 		event.addConstant("TOOL_TYPE_AXE", ToolType.AXE);
 		event.addConstant("TOOL_TYPE_PICKAXE", ToolType.PICKAXE);
 		event.addConstant("TOOL_TYPE_SHOVEL", ToolType.SHOVEL);
+		event.addConstant("TOOL_TYPE_HOE", ToolType.HOE);
 
 		event.addConstant("MAIN_HAND", InteractionHand.MAIN_HAND);
 		event.addConstant("OFF_HAND", InteractionHand.OFF_HAND);

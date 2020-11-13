@@ -1,17 +1,20 @@
 package dev.latvian.kubejs.entity;
 
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 
 /**
  * @author LatvianModder
  */
 public class LivingEntityDeathEventJS extends LivingEntityEventJS
 {
-	public final LivingDeathEvent event;
+	public final LivingEntity entity;
+	public final DamageSource source;
 
-	public LivingEntityDeathEventJS(LivingDeathEvent e)
+	public LivingEntityDeathEventJS(LivingEntity entity, DamageSource source)
 	{
-		event = e;
+		this.entity = entity;
+		this.source = source;
 	}
 
 	@Override
@@ -23,11 +26,11 @@ public class LivingEntityDeathEventJS extends LivingEntityEventJS
 	@Override
 	public EntityJS getEntity()
 	{
-		return entityOf(event);
+		return entityOf(entity);
 	}
 
 	public DamageSourceJS getSource()
 	{
-		return new DamageSourceJS(getWorld(), event.getSource());
+		return new DamageSourceJS(getWorld(), source);
 	}
 }

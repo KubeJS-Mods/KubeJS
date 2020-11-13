@@ -2,10 +2,11 @@ package dev.latvian.kubejs.entity;
 
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.UtilsJS;
-import org.jetbrains.annotations.Nullable;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.Map;
 

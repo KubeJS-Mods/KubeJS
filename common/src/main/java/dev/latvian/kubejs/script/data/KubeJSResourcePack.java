@@ -12,16 +12,16 @@ import dev.latvian.kubejs.fluid.FluidBuilder;
 import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.kubejs.util.BuilderBase;
 import dev.latvian.kubejs.util.UtilsJS;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.ResourcePackFileNotFoundException;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,7 +53,7 @@ public class KubeJSResourcePack implements PackResources
 	}
 
 	@Override
-	@OnlyIn(Dist.CLIENT)
+	@Environment(EnvType.CLIENT)
 	public InputStream getRootResource(String fileName) throws IOException
 	{
 		if (fileName.equals("pack.png"))
@@ -372,7 +372,8 @@ public class KubeJSResourcePack implements PackResources
 			}
 		}
 
-		UtilsJS.tryIO(() -> {
+		UtilsJS.tryIO(() ->
+		{
 			Path root = KubeJSPaths.get(type).toAbsolutePath();
 
 			if (Files.exists(root) && Files.isDirectory(root))
@@ -409,7 +410,8 @@ public class KubeJSResourcePack implements PackResources
 			namespaces.add(builder.id.getNamespace());
 		}
 
-		UtilsJS.tryIO(() -> {
+		UtilsJS.tryIO(() ->
+		{
 			Path root = KubeJSPaths.get(type).toAbsolutePath();
 
 			if (Files.exists(root) && Files.isDirectory(root))

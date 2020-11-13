@@ -4,8 +4,8 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.client.Minecraft;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.Writer;
@@ -57,7 +57,8 @@ public class ClientProperties
 		{
 			Path propertiesFile = KubeJSPaths.CONFIG.resolve("client.properties");
 
-			UtilsJS.tryIO(() -> {
+			UtilsJS.tryIO(() ->
+			{
 				Path p0 = KubeJSPaths.DIRECTORY.resolve("client.properties");
 
 				if (Files.exists(p0))
@@ -97,7 +98,8 @@ public class ClientProperties
 
 			Path iconFile = KubeJSPaths.CONFIG.resolve("packicon.png");
 
-			UtilsJS.tryIO(() -> {
+			UtilsJS.tryIO(() ->
+			{
 				Path p0 = KubeJSPaths.DIRECTORY.resolve("packicon.png");
 
 				if (Files.exists(p0))
@@ -118,8 +120,7 @@ public class ClientProperties
 					properties.store(writer, "KubeJS Client Properties");
 				}
 			}
-		}
-		catch (Exception ex)
+		} catch (Exception ex)
 		{
 			ex.printStackTrace();
 		}
@@ -158,8 +159,7 @@ public class ClientProperties
 		try
 		{
 			return 0xFFFFFF & Integer.decode(s.startsWith("#") ? s : ("#" + s));
-		}
-		catch (Exception ex)
+		} catch (Exception ex)
 		{
 			ex.printStackTrace();
 			return def;
@@ -188,8 +188,7 @@ public class ClientProperties
 		try
 		{
 			return getColor3f(Integer.decode(s));
-		}
-		catch (Exception ex)
+		} catch (Exception ex)
 		{
 			ex.printStackTrace();
 			return null;
@@ -203,13 +202,12 @@ public class ClientProperties
 			if (icon != null)
 			{
 				try (InputStream stream16 = Files.newInputStream(icon);
-					 InputStream stream32 = Files.newInputStream(icon))
+				     InputStream stream32 = Files.newInputStream(icon))
 				{
 					tempIconCancel = false;
 					Minecraft.getInstance().getWindow().setIcon(stream16, stream32);
 					tempIconCancel = true;
-				}
-				catch (Exception ex)
+				} catch (Exception ex)
 				{
 					ex.printStackTrace();
 				}

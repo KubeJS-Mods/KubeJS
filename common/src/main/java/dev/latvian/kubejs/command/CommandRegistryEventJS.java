@@ -4,27 +4,28 @@ import com.mojang.brigadier.CommandDispatcher;
 import dev.latvian.kubejs.server.ServerEventJS;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraftforge.event.RegisterCommandsEvent;
 
 /**
  * @author LatvianModder
  */
 public class CommandRegistryEventJS extends ServerEventJS
 {
-	private final RegisterCommandsEvent event;
+	private final CommandDispatcher<CommandSourceStack> dispatcher;
+	private final Commands.CommandSelection selection;
 
-	public CommandRegistryEventJS(RegisterCommandsEvent e)
+	public CommandRegistryEventJS(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection selection)
 	{
-		event = e;
+		this.dispatcher = dispatcher;
+		this.selection = selection;
 	}
 
 	public boolean isSinglePlayer()
 	{
-		return event.getEnvironment() == Commands.CommandSelection.ALL || event.getEnvironment() == Commands.CommandSelection.INTEGRATED;
+		return selection == Commands.CommandSelection.ALL || selection == Commands.CommandSelection.INTEGRATED;
 	}
 
 	public CommandDispatcher<CommandSourceStack> getDispatcher()
 	{
-		return event.getDispatcher();
+		return dispatcher;
 	}
 }

@@ -5,8 +5,7 @@ import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import java.util.ArrayList;
-import java.util.List;
+import me.shedaniel.architectury.hooks.DyeColorHooks;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
@@ -14,6 +13,9 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author LatvianModder
@@ -82,7 +84,7 @@ public class FireworksJS
 						}
 						else if (o2 instanceof String)
 						{
-							e.colors.add(DyeColor.valueOf(o2.toString()).getColorValue());
+							e.colors.add(DyeColorHooks.getColorValue(DyeColor.valueOf(o2.toString())));
 						}
 					}
 				}
@@ -101,7 +103,7 @@ public class FireworksJS
 						}
 						else if (o2 instanceof String)
 						{
-							e.fadeColors.add(DyeColor.valueOf(o2.toString()).getColorValue());
+							e.fadeColors.add(DyeColorHooks.getColorValue(DyeColor.valueOf(o2.toString())));
 						}
 					}
 				}

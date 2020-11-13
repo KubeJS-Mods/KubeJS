@@ -1,16 +1,19 @@
 package dev.latvian.kubejs.item;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.BuilderBase;
 import dev.latvian.kubejs.util.UtilsJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import me.shedaniel.architectury.ExpectPlatform;
+import me.shedaniel.architectury.registry.Registries;
+import me.shedaniel.architectury.registry.ToolType;
+import net.minecraft.core.Registry;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
-import net.minecraftforge.common.ToolType;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +30,9 @@ public class ItemBuilder extends BuilderBase
 	public int maxDamage;
 	public String containerItem;
 	public Map<ToolType, Integer> tools;
+	public float miningSpeed;
+	public Float attackDamage;
+	public Float attackSpeed;
 	public Rarity rarity;
 	public boolean glow;
 	public final List<Text> tooltip;
@@ -45,6 +51,7 @@ public class ItemBuilder extends BuilderBase
 		maxDamage = 0;
 		containerItem = "minecraft:air";
 		tools = new HashMap<>();
+		miningSpeed = 1.0F;
 		rarity = Rarity.COMMON;
 		glow = false;
 		tooltip = new ArrayList<>();
@@ -86,9 +93,32 @@ public class ItemBuilder extends BuilderBase
 		return this;
 	}
 
+	public ItemBuilder tool(String type, int level)
+	{
+		return tool(ToolType.byName(type), level);
+	}
+
 	public ItemBuilder tool(ToolType type, int level)
 	{
 		tools.put(type, level);
+		return this;
+	}
+
+	public ItemBuilder miningSpeed(float miningSpeed)
+	{
+		this.miningSpeed = miningSpeed;
+		return this;
+	}
+
+	public ItemBuilder attackDamage(float attackDamage)
+	{
+		this.attackDamage = attackDamage;
+		return this;
+	}
+
+	public ItemBuilder attackSpeed(float attackSpeed)
+	{
+		this.attackSpeed = attackSpeed;
 		return this;
 	}
 
@@ -149,6 +179,26 @@ public class ItemBuilder extends BuilderBase
 		return this;
 	}
 
+	public Map<ToolType, Integer> getToolsMap()
+	{
+		return tools;
+	}
+
+	public float getMiningSpeed()
+	{
+		return miningSpeed;
+	}
+
+	public Float getAttackDamage()
+	{
+		return attackDamage;
+	}
+
+	public Float getAttackSpeed()
+	{
+		return attackSpeed;
+	}
+
 	public Item.Properties createItemProperties()
 	{
 		Item.Properties properties = new Item.Properties();
@@ -160,10 +210,10 @@ public class ItemBuilder extends BuilderBase
 
 		for (Map.Entry<ToolType, Integer> entry : tools.entrySet())
 		{
-			properties.addToolType(entry.getKey(), entry.getValue());
+			appendToolType(properties, entry.getKey(), entry.getValue());
 		}
 
-		Item item = ForgeRegistries.ITEMS.getValue(UtilsJS.getMCID(containerItem));
+		Item item = Registries.get(KubeJS.MOD_ID).get(Registry.ITEM_REGISTRY).get(UtilsJS.getMCID(containerItem));
 
 		if (item != null && item != Items.AIR)
 		{
@@ -176,5 +226,11 @@ public class ItemBuilder extends BuilderBase
 		}
 
 		return properties;
+	}
+
+	@ExpectPlatform
+	private static void appendToolType(Item.Properties properties, ToolType type, Integer level)
+	{
+		throw new AssertionError();
 	}
 }

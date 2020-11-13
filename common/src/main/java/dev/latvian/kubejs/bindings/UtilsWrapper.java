@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.bindings;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
@@ -12,16 +13,17 @@ import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
+import me.shedaniel.architectury.registry.Registries;
+import me.shedaniel.architectury.registry.ToolType;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stat;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.ToolType;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -156,7 +158,7 @@ public class UtilsWrapper
 	@Nullable
 	public SoundEvent getSound(@ID String id)
 	{
-		return ForgeRegistries.SOUND_EVENTS.getValue(UtilsJS.getMCID(id));
+		return Registries.get(KubeJS.MOD_ID).get(Registry.SOUND_EVENT_REGISTRY).get(UtilsJS.getMCID(id));
 	}
 
 	public Object randomOf(Random random, Collection<Object> objects)

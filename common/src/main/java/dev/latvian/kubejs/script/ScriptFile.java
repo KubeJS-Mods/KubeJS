@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.script;
 
 import org.apache.commons.io.IOUtils;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -40,8 +40,7 @@ public class ScriptFile implements Comparable<ScriptFile>
 			String script = new String(IOUtils.toByteArray(new BufferedInputStream(stream)), StandardCharsets.UTF_8);
 			pack.context.evaluateString(pack.scope, script, info.location.toString(), 1, null);
 			return true;
-		}
-		catch (Throwable ex)
+		} catch (Throwable ex)
 		{
 			error = ex;
 			return false;

@@ -2,11 +2,12 @@ package dev.latvian.kubejs.core;
 
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.server.TagEventJS;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.Tag;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
 
 /**
  * @author LatvianModder

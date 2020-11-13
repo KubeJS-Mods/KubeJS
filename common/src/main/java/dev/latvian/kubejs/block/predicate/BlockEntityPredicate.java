@@ -3,6 +3,8 @@ package dev.latvian.kubejs.block.predicate;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
+import me.shedaniel.architectury.registry.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -29,7 +31,7 @@ public class BlockEntityPredicate implements BlockPredicate
 	public boolean check(BlockContainerJS block)
 	{
 		BlockEntity tileEntity = block.getEntity();
-		return tileEntity != null && id.equals(tileEntity.getType().getRegistryName()) && (checkData == null || checkData.checkData(block.getEntityData()));
+		return tileEntity != null && id.equals(Registries.getId(tileEntity.getType(), Registry.BLOCK_ENTITY_TYPE_REGISTRY)) && (checkData == null || checkData.checkData(block.getEntityData()));
 	}
 
 	@Override

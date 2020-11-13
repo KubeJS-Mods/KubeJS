@@ -20,9 +20,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.UserBanListEntry;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fml.network.PacketDistributor;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Date;
 
 /**
@@ -49,13 +48,13 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer>
 	@Override
 	public void openOverlay(Overlay overlay)
 	{
-		KubeJSNet.MAIN.send(PacketDistributor.PLAYER.with(() -> minecraftPlayer), new MessageOpenOverlay(overlay));
+		KubeJSNet.MAIN.sendToPlayer(minecraftPlayer, new MessageOpenOverlay(overlay));
 	}
 
 	@Override
 	public void closeOverlay(String overlay)
 	{
-		KubeJSNet.MAIN.send(PacketDistributor.PLAYER.with(() -> minecraftPlayer), new MessageCloseOverlay(overlay));
+		KubeJSNet.MAIN.sendToPlayer(minecraftPlayer, new MessageCloseOverlay(overlay));
 	}
 
 	@Override
@@ -184,7 +183,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer>
 	{
 		if (!channel.isEmpty())
 		{
-			KubeJSNet.MAIN.send(PacketDistributor.PLAYER.with(() -> minecraftPlayer), new MessageSendDataFromServer(channel, MapJS.nbt(data)));
+			KubeJSNet.MAIN.sendToPlayer(minecraftPlayer, new MessageSendDataFromServer(channel, MapJS.nbt(data)));
 		}
 	}
 

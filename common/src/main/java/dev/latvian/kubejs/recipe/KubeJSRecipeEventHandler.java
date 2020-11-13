@@ -5,21 +5,22 @@ import dev.latvian.kubejs.recipe.minecraft.ShapedRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.ShapelessRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.SmithingRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.StonecuttingRecipeJS;
-import net.minecraftforge.common.MinecraftForge;
+import me.shedaniel.architectury.platform.Platform;
 
 /**
  * @author LatvianModder
  */
 public class KubeJSRecipeEventHandler
 {
-	public void init()
+	public static void init()
 	{
-		MinecraftForge.EVENT_BUS.addListener(this::registerRecipeHandlers);
+		RegisterRecipeHandlersEvent.EVENT.register(KubeJSRecipeEventHandler::registerRecipeHandlers);
 	}
 
-	private void registerRecipeHandlers(RegisterRecipeHandlersEvent event)
+	private static void registerRecipeHandlers(RegisterRecipeHandlersEvent event)
 	{
-		event.register("forge:conditional", ConditionalRecipeJS::new);
+		if (Platform.getModLoader().equals("forge"))
+			event.register("forge:conditional", ConditionalRecipeJS::new);
 		event.register("minecraft:crafting_shaped", ShapedRecipeJS::new);
 		event.register("minecraft:crafting_shapeless", ShapelessRecipeJS::new);
 		event.register("minecraft:stonecutting", StonecuttingRecipeJS::new);

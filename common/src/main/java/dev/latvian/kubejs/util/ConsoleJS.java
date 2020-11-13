@@ -4,8 +4,8 @@ import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptType;
 import jdk.nashorn.internal.runtime.ECMAErrors;
 import org.apache.logging.log4j.Logger;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -303,8 +303,7 @@ public class ConsoleJS
 				info("");
 				printClass(sc.getName(), true);
 			}
-		}
-		catch (Throwable ex)
+		} catch (Throwable ex)
 		{
 			error("= Error loading class =");
 			error(ex.toString());
@@ -395,9 +394,9 @@ public class ConsoleJS
 
 			VarFunc varFunc = (VarFunc) o;
 			return Objects.equals(name, varFunc.name) &&
-					Objects.equals(type, varFunc.type) &&
-					Objects.equals(flags, varFunc.flags) &&
-					Objects.equals(params, varFunc.params);
+			       Objects.equals(type, varFunc.type) &&
+			       Objects.equals(flags, varFunc.flags) &&
+			       Objects.equals(params, varFunc.params);
 		}
 
 		@Override

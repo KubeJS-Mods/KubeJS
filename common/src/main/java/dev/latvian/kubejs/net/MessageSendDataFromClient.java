@@ -2,12 +2,12 @@ package dev.latvian.kubejs.net;
 
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.util.MapJS;
+import me.shedaniel.architectury.networking.NetworkManager.PacketContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.fml.network.NetworkEvent;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.function.Supplier;
 
 /**
@@ -36,16 +36,15 @@ public class MessageSendDataFromClient
 		buf.writeNbt(data);
 	}
 
-	void handle(Supplier<NetworkEvent.Context> context)
+	void handle(Supplier<PacketContext> context)
 	{
 		if (!channel.isEmpty())
 		{
-			final Player player = context.get().getSender();
+			final Player player = context.get().getPlayer();
 
 			if (player != null)
 			{
-				context.get().enqueueWork(() -> new NetworkEventJS(player, channel, MapJS.of(data)).post(KubeJSEvents.PLAYER_DATA_FROM_CLIENT, channel));
-				context.get().setPacketHandled(true);
+				context.get().queue(() -> new NetworkEventJS(player, channel, MapJS.of(data)).post(KubeJSEvents.PLAYER_DATA_FROM_CLIENT, channel));
 			}
 		}
 	}

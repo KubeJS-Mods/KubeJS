@@ -5,8 +5,8 @@ import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.io.IOException;
 

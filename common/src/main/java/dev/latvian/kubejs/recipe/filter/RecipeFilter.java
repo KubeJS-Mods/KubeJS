@@ -5,8 +5,8 @@ import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.function.Predicate;
 
 /**

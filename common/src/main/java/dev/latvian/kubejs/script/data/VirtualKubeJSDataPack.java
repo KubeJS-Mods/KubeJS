@@ -3,11 +3,12 @@ package dev.latvian.kubejs.script.data;
 import com.google.common.collect.Lists;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
-import org.jetbrains.annotations.Nullable;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -121,8 +122,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources
 					{
 						list.add(key);
 					}
-				}
-				catch (Exception ex)
+				} catch (Exception ex)
 				{
 				}
 			}

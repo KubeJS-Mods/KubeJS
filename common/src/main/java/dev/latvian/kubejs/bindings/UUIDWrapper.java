@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.util.UUIDUtilsJS;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.UUID;
 
 /**

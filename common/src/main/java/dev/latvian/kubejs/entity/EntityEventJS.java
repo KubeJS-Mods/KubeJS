@@ -3,7 +3,6 @@ package dev.latvian.kubejs.entity;
 import dev.latvian.kubejs.world.WorldEventJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.event.entity.EntityEvent;
 
 /**
  * @author LatvianModder
@@ -33,10 +32,5 @@ public abstract class EntityEventJS extends WorldEventJS
 		}
 
 		return cachedEntity;
-	}
-
-	protected EntityJS entityOf(EntityEvent event)
-	{
-		return entityOf(event.getEntity());
 	}
 }

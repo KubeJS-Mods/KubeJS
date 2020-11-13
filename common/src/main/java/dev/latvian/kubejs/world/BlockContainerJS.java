@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.world;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.block.MaterialJS;
 import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.docs.ID;
@@ -10,8 +11,12 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.ServerPlayerJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import me.shedaniel.architectury.ExpectPlatform;
+import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
@@ -23,11 +28,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.registries.ForgeRegistries;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -153,12 +155,12 @@ public class BlockContainerJS
 	@ID
 	public String getId()
 	{
-		return getBlockState().getBlock().getRegistryName().toString();
+		return Registries.getId(getBlockState().getBlock(), Registry.BLOCK_REGISTRY).toString();
 	}
 
 	public void set(@ID String id, Map<?, ?> properties, int flags)
 	{
-		Block block = ForgeRegistries.BLOCKS.getValue(UtilsJS.getMCID(id));
+		Block block = Registries.get(KubeJS.MOD_ID).get(Registry.BLOCK_REGISTRY).get(UtilsJS.getMCID(id));
 		BlockState state = (block == null ? Blocks.AIR : block).defaultBlockState();
 
 		if (!properties.isEmpty() && state.getBlock() != Blocks.AIR)
@@ -223,7 +225,7 @@ public class BlockContainerJS
 	public String getEntityId()
 	{
 		BlockEntity entity = getEntity();
-		return entity == null ? "minecraft:air" : entity.getType().getRegistryName().toString();
+		return entity == null ? "minecraft:air" : Registries.getId(entity.getType(), Registry.BLOCK_ENTITY_TYPE_REGISTRY).toString();
 	}
 
 	@Nullable
@@ -233,11 +235,11 @@ public class BlockContainerJS
 
 		if (entity != null)
 		{
-			MapJS entityData = MapJS.of(entity.serializeNBT());
+			MapJS entityData = MapJS.of(entity.save(new CompoundTag()));
 
 			if (entityData != null)
 			{
-				entityData.changeListener = o -> entity.deserializeNBT(MapJS.nbt(o));
+				entityData.changeListener = o -> entity.load(entity.getBlockState(), MapJS.nbt(o));
 				return entityData;
 			}
 		}
@@ -340,15 +342,16 @@ public class BlockContainerJS
 
 		if (tileEntity != null)
 		{
-			IItemHandler handler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).orElse(null);
-
-			if (handler != null)
-			{
-				return new InventoryJS(handler);
-			}
+			return getInventoryFromBlockEntity(tileEntity, facing);
 		}
 
 		return null;
+	}
+
+	@ExpectPlatform
+	private static InventoryJS getInventoryFromBlockEntity(BlockEntity tileEntity, Direction facing)
+	{
+		throw new AssertionError();
 	}
 
 	public MaterialJS getMaterial()

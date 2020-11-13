@@ -3,6 +3,7 @@ package dev.latvian.kubejs.recipe;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.core.RecipeManagerKJS;
 import dev.latvian.kubejs.event.EventJS;
@@ -16,15 +17,16 @@ import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.DynamicMap;
+import me.shedaniel.architectury.ExpectPlatform;
+import me.shedaniel.architectury.registry.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.registries.ForgeRegistries;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -80,7 +82,7 @@ public class RecipeEventJS extends EventJS
 
 			try
 			{
-				if (!CraftingHelper.processConditions(json, "conditions"))
+				if (!processConditions(json, "conditions"))
 				{
 					ScriptType.SERVER.console.info("Skipping loading recipe " + recipeId + " as it's conditions were not met");
 					continue;
@@ -201,7 +203,7 @@ public class RecipeEventJS extends EventJS
 		if (r.id == null)
 		{
 			ResourceLocation itemId = UtilsJS.getMCID(r.outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE.getId() : r.outputItems.get(0).getId());
-			r.id = new ResourceLocation(type.serializer.getRegistryName().getNamespace(), "kubejs_generated_" + addedRecipes.size() + "_" + itemId.getNamespace() + "_" + itemId.getPath().replace('/', '_'));
+			r.id = new ResourceLocation(Registries.getId(type.serializer, Registry.RECIPE_SERIALIZER_REGISTRY).getNamespace(), "kubejs_generated_" + addedRecipes.size() + "_" + itemId.getNamespace() + "_" + itemId.getPath().replace('/', '_'));
 		}
 
 		if (ServerSettings.instance.logAddedRecipes)
@@ -238,7 +240,8 @@ public class RecipeEventJS extends EventJS
 	public int remove(Object filter)
 	{
 		int[] count = new int[1];
-		forEachRecipe(filter, r -> {
+		forEachRecipe(filter, r ->
+		{
 			if (removedRecipes.add(r))
 			{
 				if (ServerSettings.instance.logRemovedRecipes)
@@ -263,7 +266,8 @@ public class RecipeEventJS extends EventJS
 		IngredientJS w = IngredientJS.of(with);
 		String is = i.toString();
 		String ws = w.toString();
-		forEachRecipe(filter, r -> {
+		forEachRecipe(filter, r ->
+		{
 			if (r.replaceInput(i, w, exact))
 			{
 				count[0]++;
@@ -294,7 +298,8 @@ public class RecipeEventJS extends EventJS
 		ItemStackJS w = ItemStackJS.of(with);
 		String is = i.toString();
 		String ws = w.toString();
-		forEachRecipe(filter, r -> {
+		forEachRecipe(filter, r ->
+		{
 			if (r.replaceOutput(i, w, exact))
 			{
 				count[0]++;
@@ -325,34 +330,55 @@ public class RecipeEventJS extends EventJS
 			throw new NullPointerException("Recipe type is null!");
 		}
 
-		return functionMap.computeIfAbsent(id, i -> {
-			RecipeSerializer<?> serializer = ForgeRegistries.RECIPE_SERIALIZERS.getValue(i);
+		return functionMap.computeIfAbsent(id, location ->
+		{
+			RecipeSerializer<?> serializer = Registries.get(KubeJS.MOD_ID).get(Registry.RECIPE_SERIALIZER_REGISTRY).get(location);
 
 			if (serializer != null)
 			{
-				RecipeTypeJS typeJS = typeMap.get(serializer.getRegistryName());
-				return new RecipeFunction(this, i, typeJS != null ? typeJS : new CustomRecipeTypeJS(serializer));
+				RecipeTypeJS typeJS = typeMap.get(Registries.getId(serializer, Registry.RECIPE_SERIALIZER_REGISTRY));
+				return new RecipeFunction(this, location, typeJS != null ? typeJS : new CustomRecipeTypeJS(serializer));
 			}
 			else
 			{
-				return new RecipeFunction(this, i, null);
+				return new RecipeFunction(this, location, null);
 			}
 		});
 	}
 
 	public RecipeFunction getShaped()
 	{
-		return getRecipeFunction(RecipeSerializer.SHAPED_RECIPE.getRegistryName());
+		return getRecipeFunction(Registries.getId(RecipeSerializer.SHAPED_RECIPE, Registry.RECIPE_SERIALIZER_REGISTRY));
 	}
 
 	public RecipeFunction getShapeless()
 	{
-		return getRecipeFunction(RecipeSerializer.SHAPELESS_RECIPE.getRegistryName());
+		return getRecipeFunction(Registries.getId(RecipeSerializer.SHAPELESS_RECIPE, Registry.RECIPE_SERIALIZER_REGISTRY));
 	}
 
 	public RecipeFunction getSmelting()
 	{
-		return getRecipeFunction(RecipeSerializer.SMELTING_RECIPE.getRegistryName());
+		return getRecipeFunction(Registries.getId(RecipeSerializer.SMELTING_RECIPE, Registry.RECIPE_SERIALIZER_REGISTRY));
+	}
+
+	public RecipeFunction getBlasting()
+	{
+		return getRecipeFunction(Registries.getId(RecipeSerializer.BLASTING_RECIPE, Registry.RECIPE_SERIALIZER_REGISTRY));
+	}
+
+	public RecipeFunction getSmoking()
+	{
+		return getRecipeFunction(Registries.getId(RecipeSerializer.SMOKING_RECIPE, Registry.RECIPE_SERIALIZER_REGISTRY));
+	}
+
+	public RecipeFunction getStonecutter()
+	{
+		return getRecipeFunction(Registries.getId(RecipeSerializer.STONECUTTER, Registry.RECIPE_SERIALIZER_REGISTRY));
+	}
+
+	public RecipeFunction getSmithing()
+	{
+		return getRecipeFunction(Registries.getId(RecipeSerializer.SMITHING, Registry.RECIPE_SERIALIZER_REGISTRY));
 	}
 
 	public void printTypes()
@@ -376,5 +402,11 @@ public class RecipeEventJS extends EventJS
 			RecipeJS r = list.get(i);
 			ScriptType.SERVER.console.info("- " + r.id + ":\n" + JsonUtilsJS.toPrettyString(r.json));
 		}
+	}
+
+	@ExpectPlatform
+	private static boolean processConditions(JsonObject json, String key)
+	{
+		throw new AssertionError();
 	}
 }

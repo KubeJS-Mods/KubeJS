@@ -1,7 +1,8 @@
 package dev.latvian.kubejs.item.ingredient;
 
-import java.util.function.Predicate;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.function.Predicate;
 
 /**
  * @author LatvianModder

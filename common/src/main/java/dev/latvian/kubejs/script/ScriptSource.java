@@ -1,10 +1,11 @@
 package dev.latvian.kubejs.script;
 
+import net.minecraft.server.packs.resources.Resource;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import net.minecraft.server.packs.resources.Resource;
 
 /**
  * @author LatvianModder

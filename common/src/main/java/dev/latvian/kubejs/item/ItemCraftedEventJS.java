@@ -2,33 +2,39 @@ package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
-import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * @author LatvianModder
  */
 public class ItemCraftedEventJS extends PlayerEventJS
 {
-	public final PlayerEvent.ItemCraftedEvent event;
+	public final Player player;
+	public final ItemStack crafted;
+	public final Container container;
 
-	public ItemCraftedEventJS(PlayerEvent.ItemCraftedEvent e)
+	public ItemCraftedEventJS(Player player, ItemStack crafted, Container container)
 	{
-		event = e;
+		this.player = player;
+		this.crafted = crafted;
+		this.container = container;
 	}
 
 	@Override
 	public EntityJS getEntity()
 	{
-		return entityOf(event.getPlayer());
+		return entityOf(player);
 	}
 
 	public ItemStackJS getItem()
 	{
-		return ItemStackJS.of(event.getCrafting());
+		return ItemStackJS.of(crafted);
 	}
 
 	public InventoryJS getInventory()
 	{
-		return new InventoryJS(event.getInventory());
+		return new InventoryJS(container);
 	}
 }

@@ -2,18 +2,23 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.text.Text;
-import net.minecraftforge.event.ServerChatEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 
 /**
  * @author LatvianModder
  */
 public class PlayerChatEventJS extends PlayerEventJS
 {
-	public final ServerChatEvent event;
+	public ServerPlayer player;
+	public String message;
+	public Component component;
 
-	public PlayerChatEventJS(ServerChatEvent e)
+	public PlayerChatEventJS(ServerPlayer player, String message, Component component)
 	{
-		event = e;
+		this.player = player;
+		this.message = message;
+		this.component = component;
 	}
 
 	@Override
@@ -25,21 +30,21 @@ public class PlayerChatEventJS extends PlayerEventJS
 	@Override
 	public EntityJS getEntity()
 	{
-		return entityOf(event.getPlayer());
+		return entityOf(player);
 	}
 
 	public String getUsername()
 	{
-		return event.getUsername();
+		return player.getGameProfile().getName();
 	}
 
 	public String getMessage()
 	{
-		return event.getMessage();
+		return message;
 	}
 
 	public void setMessage(Text text)
 	{
-		event.setComponent(text.component());
+		component = text.component();
 	}
 }

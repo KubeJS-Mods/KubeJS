@@ -1,8 +1,8 @@
 package dev.latvian.kubejs;
 
 import dev.latvian.kubejs.util.UtilsJS;
+import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.server.packs.PackType;
-import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,7 +12,7 @@ import java.nio.file.Path;
  */
 public class KubeJSPaths
 {
-	public static final Path DIRECTORY = FMLPaths.GAMEDIR.get().resolve("kubejs").normalize();
+	public static final Path DIRECTORY = Platform.getGameFolder().resolve("kubejs").normalize();
 	public static final Path DATA = DIRECTORY.resolve("data");
 	public static final Path ASSETS = DIRECTORY.resolve("assets");
 	public static final Path STARTUP_SCRIPTS = DIRECTORY.resolve("startup_scripts");

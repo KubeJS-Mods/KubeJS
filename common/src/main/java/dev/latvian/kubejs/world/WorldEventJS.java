@@ -3,9 +3,9 @@ package dev.latvian.kubejs.world;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.UtilsJS;
-import org.jetbrains.annotations.Nullable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author LatvianModder

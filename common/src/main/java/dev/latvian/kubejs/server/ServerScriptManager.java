@@ -18,7 +18,6 @@ import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.SimpleReloadableResourceManager;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +39,6 @@ public class ServerScriptManager
 	public void reloadScripts(SimpleReloadableResourceManager resourceManager)
 	{
 		scriptManager.unload();
-		scriptManager.loadFromDirectory();
 
 		Map<String, List<ResourceLocation>> packs = new HashMap<>();
 
@@ -77,6 +75,8 @@ public class ServerScriptManager
 			scriptManager.packs.put(pack.info.namespace, pack);
 		}
 
+		scriptManager.loadFromDirectory();
+
 		//Loading is required in prepare stage to allow virtual data pack overrides
 		virtualDataPackFirst.resetData();
 		ScriptType.SERVER.console.setLineNumber(true);
@@ -89,7 +89,7 @@ public class ServerScriptManager
 		ScriptType.SERVER.console.info("Scripts loaded");
 
 		Map<ResourceLocation, RecipeTypeJS> typeMap = new HashMap<>();
-		MinecraftForge.EVENT_BUS.post(new RegisterRecipeHandlersEvent(typeMap));
+		RegisterRecipeHandlersEvent.EVENT.invoker().accept(new RegisterRecipeHandlersEvent(typeMap));
 		RecipeEventJS.instance = new RecipeEventJS(typeMap);
 	}
 

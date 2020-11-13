@@ -8,10 +8,11 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author LatvianModder

@@ -4,22 +4,19 @@ import com.mojang.authlib.GameProfile;
 import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
+import dev.latvian.kubejs.item.ItemHandlerUtils;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.AttachedData;
-import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.WithAttachedData;
 import dev.latvian.kubejs.world.WorldJS;
-import net.minecraft.nbt.CompoundTag;
+import me.shedaniel.architectury.hooks.PlayerHooks;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.items.ItemHandlerHelper;
-
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -54,7 +51,7 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 
 	public boolean isFake()
 	{
-		return minecraftPlayer instanceof FakePlayer;
+		return PlayerHooks.isFake(minecraftPlayer);
 	}
 
 	public String toString()
@@ -93,12 +90,12 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 
 	public void give(Object item)
 	{
-		ItemHandlerHelper.giveItemToPlayer(minecraftPlayer, ItemStackJS.of(item).getItemStack());
+		ItemHandlerUtils.giveItemToPlayer(minecraftPlayer, ItemStackJS.of(item).getItemStack(), -1);
 	}
 
 	public void giveInHand(Object item)
 	{
-		ItemHandlerHelper.giveItemToPlayer(minecraftPlayer, ItemStackJS.of(item).getItemStack(), getSelectedSlot());
+		ItemHandlerUtils.giveItemToPlayer(minecraftPlayer, ItemStackJS.of(item).getItemStack(), getSelectedSlot());
 	}
 
 	public int getSelectedSlot()
@@ -153,32 +150,6 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 	@Override
 	public void spawn()
 	{
-	}
-
-	@Override
-	public MapJS getNbt()
-	{
-		CompoundTag nbt = minecraftEntity.getPersistentData();
-		CompoundTag nbt1 = (CompoundTag) nbt.get(PlayerEntity.PERSISTED_NBT_TAG);
-		MapJS map = MapJS.of(nbt1 == null ? null : nbt1.get("KubeJS"));
-
-		if (map == null)
-		{
-			map = new MapJS();
-		}
-
-		map.changeListener = m -> {
-			CompoundTag n = MapJS.nbt(m);
-
-			if (n != null)
-			{
-				CompoundTag n1 = minecraftEntity.getPersistentData().getCompound(PlayerEntity.PERSISTED_NBT_TAG);
-				n1.put("KubeJS", n);
-				minecraftEntity.getPersistentData().put(PlayerEntity.PERSISTED_NBT_TAG, n1);
-			}
-		};
-
-		return map;
 	}
 
 	public void sendData(String channel, @Nullable Object data)
@@ -264,7 +235,7 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 
 	public void closeInventory()
 	{
-		minecraftPlayer.closeContainer();
+		PlayerHooks.closeContainer(minecraftPlayer);
 	}
 
 	@MinecraftClass

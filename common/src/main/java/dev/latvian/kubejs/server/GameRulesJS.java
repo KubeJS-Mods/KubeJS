@@ -1,10 +1,11 @@
 package dev.latvian.kubejs.server;
 
 import com.mojang.serialization.Dynamic;
-import org.jetbrains.annotations.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.level.GameRules;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 

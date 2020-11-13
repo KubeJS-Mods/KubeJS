@@ -1,7 +1,8 @@
 package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.KubeJS;
+import com.mojang.brigadier.CommandDispatcher;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.kubejs.command.KubeJSCommands;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
@@ -10,18 +11,15 @@ import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.SimpleWorldEventJS;
 import dev.latvian.kubejs.world.WorldJS;
+import me.shedaniel.architectury.event.events.CommandPerformEvent;
+import me.shedaniel.architectury.event.events.LifecycleEvent;
+import me.shedaniel.architectury.event.events.TickEvent;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.CommandEvent;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
-import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -30,30 +28,37 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-@Mod.EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSServerEventHandler
 {
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public static void serverAboutToStartEarly(FMLServerAboutToStartEvent event)
+	public static void init()
+	{
+		LifecycleEvent.SERVER_STARTING.register(KubeJSServerEventHandler::serverStarting);
+		LifecycleEvent.SERVER_STARTED.register(KubeJSServerEventHandler::serverStarted);
+		LifecycleEvent.SERVER_STOPPING.register(KubeJSServerEventHandler::serverStopping);
+		TickEvent.SERVER_POST.register(KubeJSServerEventHandler::serverTick);
+		CommandPerformEvent.EVENT.register(KubeJSServerEventHandler::command);
+	}
+
+	public static void serverStarting(MinecraftServer server)
 	{
 		if (ServerJS.instance != null)
 		{
 			destroyServer();
 		}
 
-		ServerJS.instance = new ServerJS(event.getServer(), ServerScriptManager.instance);
+		ServerJS.instance = new ServerJS(server, ServerScriptManager.instance);
+		KubeJSServerEventHandler.registerCommands(server.getCommands().getDispatcher(),
+				server.isDedicatedServer() ? Commands.CommandSelection.DEDICATED : Commands.CommandSelection.INTEGRATED);
 		//event.getServer().getResourcePacks().addPackFinder(new KubeJSDataPackFinder(KubeJS.getGameDirectory().resolve("kubejs").toFile()));
 	}
 
-	@SubscribeEvent
-	public static void registerCommands(RegisterCommandsEvent event)
+	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection selection)
 	{
-		KubeJSCommands.register(event.getDispatcher());
-		// new CommandRegistryEventJS(event).post(ScriptType.SERVER, KubeJSEvents.COMMAND_REGISTRY);
+		KubeJSCommands.register(dispatcher);
+		new CommandRegistryEventJS(dispatcher, selection).post(ScriptType.SERVER, KubeJSEvents.COMMAND_REGISTRY);
 	}
 
-	@SubscribeEvent
-	public static void serverStarted(FMLServerStartedEvent event)
+	public static void serverStarted(MinecraftServer server)
 	{
 		ServerJS.instance.overworld = new ServerWorldJS(ServerJS.instance, ServerJS.instance.minecraftServer.getLevel(Level.OVERWORLD));
 		ServerJS.instance.worldMap.put("minecraft:overworld", ServerJS.instance.overworld);
@@ -70,18 +75,17 @@ public class KubeJSServerEventHandler
 
 		ServerJS.instance.updateWorldList();
 
-		MinecraftForge.EVENT_BUS.post(new AttachServerDataEvent(ServerJS.instance));
+		AttachServerDataEvent.EVENT.invoker().accept(new AttachServerDataEvent(ServerJS.instance));
 		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_LOAD);
 
 		for (ServerWorldJS world : ServerJS.instance.worlds)
 		{
-			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(ServerJS.instance.getOverworld()));
+			AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(ServerJS.instance.getOverworld()));
 			new SimpleWorldEventJS(ServerJS.instance.getOverworld()).post(KubeJSEvents.WORLD_LOAD);
 		}
 	}
 
-	@SubscribeEvent
-	public static void serverStopping(FMLServerStoppingEvent event)
+	public static void serverStopping(MinecraftServer server)
 	{
 		destroyServer();
 	}
@@ -108,14 +112,8 @@ public class KubeJSServerEventHandler
 		ServerJS.instance = null;
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public static void serverTick(TickEvent.ServerTickEvent event)
+	public static void serverTick(MinecraftServer server)
 	{
-		if (event.phase != TickEvent.Phase.END)
-		{
-			return;
-		}
-
 		ServerJS s = ServerJS.instance;
 
 		if (!s.scheduledEvents.isEmpty())
@@ -195,12 +193,12 @@ public class KubeJSServerEventHandler
 		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_TICK);
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOW)
-	public static void command(CommandEvent event)
+	public static InteractionResult command(CommandPerformEvent event)
 	{
 		if (new CommandEventJS(event).post(ScriptType.SERVER, KubeJSEvents.COMMAND_RUN))
 		{
-			event.setCanceled(true);
+			return InteractionResult.FAIL;
 		}
+		return InteractionResult.PASS;
 	}
 }

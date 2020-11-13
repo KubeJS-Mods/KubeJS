@@ -8,11 +8,8 @@ import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.InvWrapper;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.LinkedList;
 
 /**
@@ -21,16 +18,16 @@ import java.util.LinkedList;
 public class InventoryJS
 {
 	@MinecraftClass
-	public final IItemHandler minecraftInventory;
+	public final ItemHandler minecraftInventory;
 
-	public InventoryJS(IItemHandler h)
+	public InventoryJS(ItemHandler h)
 	{
 		minecraftInventory = h;
 	}
 
 	public InventoryJS(Container h)
 	{
-		minecraftInventory = new InvWrapper(h);
+		minecraftInventory = new ContainerInventory(h);
 	}
 
 	public int getSize()
@@ -45,9 +42,9 @@ public class InventoryJS
 
 	public void set(int slot, Object item)
 	{
-		if (minecraftInventory instanceof IItemHandlerModifiable)
+		if (minecraftInventory instanceof ItemHandler.Mutable)
 		{
-			((IItemHandlerModifiable) minecraftInventory).setStackInSlot(slot, ItemStackJS.of(item).getItemStack());
+			((ItemHandler.Mutable) minecraftInventory).setStackInSlot(slot, ItemStackJS.of(item).getItemStack());
 		}
 		else
 		{
@@ -77,7 +74,7 @@ public class InventoryJS
 
 	public void clear()
 	{
-		IItemHandlerModifiable modInv = minecraftInventory instanceof IItemHandlerModifiable ? (IItemHandlerModifiable) minecraftInventory : null;
+		ItemHandler.Mutable modInv = minecraftInventory instanceof ItemHandler.Mutable ? (ItemHandler.Mutable) minecraftInventory : null;
 
 		for (int i = minecraftInventory.getSlots(); i >= 0; i--)
 		{
@@ -101,7 +98,7 @@ public class InventoryJS
 			clear();
 		}
 
-		IItemHandlerModifiable modInv = minecraftInventory instanceof IItemHandlerModifiable ? (IItemHandlerModifiable) minecraftInventory : null;
+		ItemHandler.Mutable modInv = minecraftInventory instanceof ItemHandler.Mutable ? (ItemHandler.Mutable) minecraftInventory : null;
 
 		for (int i = minecraftInventory.getSlots(); i >= 0; i--)
 		{
@@ -259,18 +256,18 @@ public class InventoryJS
 
 	public void markDirty()
 	{
-		if (minecraftInventory instanceof InvWrapper)
+		if (minecraftInventory instanceof ContainerInventory)
 		{
-			((InvWrapper) minecraftInventory).getInv().markDirty();
+			((ContainerInventory) minecraftInventory).getInv().setChanged();
 		}
 	}
 
 	@Nullable
 	public BlockContainerJS getBlock(WorldJS world)
 	{
-		if (minecraftInventory instanceof InvWrapper)
+		if (minecraftInventory instanceof ContainerInventory)
 		{
-			Container inv = ((InvWrapper) minecraftInventory).getInv();
+			Container inv = ((ContainerInventory) minecraftInventory).getInv();
 
 			if (inv instanceof BlockEntity)
 			{

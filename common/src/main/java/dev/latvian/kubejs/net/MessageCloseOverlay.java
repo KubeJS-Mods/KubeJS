@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.net;
 
 import dev.latvian.kubejs.KubeJS;
+import me.shedaniel.architectury.networking.NetworkManager.PacketContext;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -28,9 +28,8 @@ public class MessageCloseOverlay
 		buf.writeUtf(overlay, 5000);
 	}
 
-	void handle(Supplier<NetworkEvent.Context> context)
+	void handle(Supplier<PacketContext> context)
 	{
-		context.get().enqueueWork(() -> KubeJS.instance.proxy.closeOverlay(overlay));
-		context.get().setPacketHandled(true);
+		context.get().queue(() -> KubeJS.instance.proxy.closeOverlay(overlay));
 	}
 }

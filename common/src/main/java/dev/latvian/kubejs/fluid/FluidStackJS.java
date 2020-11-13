@@ -1,17 +1,18 @@
 package dev.latvian.kubejs.fluid;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
+import me.shedaniel.architectury.fluid.FluidStack;
+import me.shedaniel.architectury.registry.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidAttributes;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Objects;
 
 /**
@@ -35,7 +36,7 @@ public abstract class FluidStackJS implements WrappedJSObjectChangeListener<MapJ
 		}
 		else if (o instanceof Fluid)
 		{
-			return new UnboundFluidStackJS(((Fluid) o).getRegistryName());
+			return new UnboundFluidStackJS(Registries.getId((Fluid) o, Registry.FLUID_REGISTRY));
 		}
 
 		MapJS map = MapJS.of(o);
@@ -58,7 +59,7 @@ public abstract class FluidStackJS implements WrappedJSObjectChangeListener<MapJ
 		}
 
 		String[] s = o.toString().split(" ", 2);
-		return new UnboundFluidStackJS(new ResourceLocation(s[0])).amount(UtilsJS.parseInt(s.length == 2 ? s[1] : "", FluidAttributes.BUCKET_VOLUME));
+		return new UnboundFluidStackJS(new ResourceLocation(s[0])).amount(UtilsJS.parseInt(s.length == 2 ? s[1] : "", FluidStack.bucketAmount().intValue()));
 	}
 
 	public static FluidStackJS of(@Nullable Object o, @Nullable Object amountOrNBT)
@@ -90,7 +91,7 @@ public abstract class FluidStackJS implements WrappedJSObjectChangeListener<MapJ
 
 	public Fluid getFluid()
 	{
-		Fluid f = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(getId()));
+		Fluid f = Registries.get(KubeJS.MOD_ID).get(Registry.FLUID_REGISTRY).get(new ResourceLocation(getId()));
 		return f == null ? Fluids.EMPTY : f;
 	}
 
@@ -130,6 +131,7 @@ public abstract class FluidStackJS implements WrappedJSObjectChangeListener<MapJ
 		return Objects.hash(getFluid(), getNbt());
 	}
 
+	@Override
 	public boolean equals(Object o)
 	{
 		FluidStackJS f = FluidStackJS.of(o);
@@ -161,13 +163,13 @@ public abstract class FluidStackJS implements WrappedJSObjectChangeListener<MapJ
 		int amount = getAmount();
 		MapJS nbt = getNbt();
 
-		if (amount != FluidAttributes.BUCKET_VOLUME || nbt != null)
+		if (amount != FluidStack.bucketAmount().intValue() || nbt != null)
 		{
 			builder.append("fluid.of('");
 			builder.append(getId());
 			builder.append("')");
 
-			if (amount != FluidAttributes.BUCKET_VOLUME)
+			if (amount != FluidStack.bucketAmount().intValue())
 			{
 				builder.append(".amount(");
 				builder.append(amount);

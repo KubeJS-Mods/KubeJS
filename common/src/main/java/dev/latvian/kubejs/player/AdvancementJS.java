@@ -5,6 +5,7 @@ import dev.latvian.kubejs.text.TextString;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.LinkedHashSet;
 import java.util.Set;
 

@@ -2,13 +2,13 @@ package dev.latvian.kubejs.fluid;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.docs.ID;
+import dev.latvian.kubejs.item.ItemJS;
 import dev.latvian.kubejs.util.BuilderBase;
 import dev.latvian.kubejs.util.UtilsJS;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraftforge.fluids.FluidAttributes;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
+import net.minecraft.world.level.material.FlowingFluid;
 
 /**
  * @author LatvianModder
@@ -17,17 +17,18 @@ public class FluidBuilder extends BuilderBase
 {
 	public String stillTexture;
 	public String flowingTexture;
-	private int color = 0xFFFFFFFF;
-	private int luminosity = 0;
-	private int density = 1000;
-	private int temperature = 300;
-	private int viscosity = 1000;
-	private boolean isGaseous;
-	private Rarity rarity = Rarity.COMMON;
+	public int color = 0xFFFFFFFF;
+	public int luminosity = 0;
+	public int density = 1000;
+	public int temperature = 300;
+	public int viscosity = 1000;
+	public boolean isGaseous;
+	public Rarity rarity = Rarity.COMMON;
+	public Object extraPlatformInfo;
 
-	public ForgeFlowingFluid.Source stillFluid;
-	public ForgeFlowingFluid.Flowing flowingFluid;
-	public BucketItemJS bucketItem;
+	public FlowingFluid stillFluid;
+	public FlowingFluid flowingFluid;
+	public BucketItem bucketItem;
 	public LiquidBlock block;
 
 	public FluidBuilder(String i)
@@ -110,27 +111,5 @@ public class FluidBuilder extends BuilderBase
 	{
 		this.rarity = rarity;
 		return this;
-	}
-
-	public ForgeFlowingFluid.Properties createProperties()
-	{
-		FluidAttributes.Builder builder = FluidAttributes.builder(
-				new ResourceLocation(stillTexture),
-				new ResourceLocation(flowingTexture))
-				.translationKey("fluid." + id.getNamespace() + "." + id.getPath())
-				.color(color)
-				.rarity(rarity)
-				.density(density)
-				.viscosity(viscosity)
-				.luminosity(luminosity)
-				.temperature(temperature)
-				.rarity(rarity);
-
-		if (isGaseous)
-		{
-			builder.gaseous();
-		}
-
-		return new ForgeFlowingFluid.Properties(() -> stillFluid, () -> flowingFluid, builder).bucket(() -> bucketItem).block(() -> block);
 	}
 }

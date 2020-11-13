@@ -5,24 +5,24 @@ import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraftforge.registries.IForgeRegistry;
+
+import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
  */
 public class SoundRegistryEventJS extends EventJS
 {
-	public final IForgeRegistry<SoundEvent> registry;
+	public final Consumer<ResourceLocation> registry;
 
-	public SoundRegistryEventJS(IForgeRegistry<SoundEvent> r)
+	public SoundRegistryEventJS(Consumer<ResourceLocation> registry)
 	{
-		registry = r;
+		this.registry = registry;
 	}
 
 	public void register(@ID String id)
 	{
 		ResourceLocation r = UtilsJS.getMCID(KubeJS.appendModId(id));
-		registry.register(new SoundEvent(r).setRegistryName(r));
+		registry.accept(r);
 	}
 }

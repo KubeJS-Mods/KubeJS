@@ -1,18 +1,21 @@
 package dev.latvian.kubejs.entity;
 
 import dev.latvian.kubejs.world.WorldJS;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 
 /**
  * @author LatvianModder
  */
 public class EntitySpawnedEventJS extends EntityEventJS
 {
-	public final EntityJoinWorldEvent event;
+	public final Entity entity;
+	public final Level world;
 
-	public EntitySpawnedEventJS(EntityJoinWorldEvent e)
+	public EntitySpawnedEventJS(Entity entity, Level world)
 	{
-		event = e;
+		this.entity = entity;
+		this.world = world;
 	}
 
 	@Override
@@ -24,12 +27,12 @@ public class EntitySpawnedEventJS extends EntityEventJS
 	@Override
 	public WorldJS getWorld()
 	{
-		return worldOf(event.getWorld());
+		return worldOf(world);
 	}
 
 	@Override
 	public EntityJS getEntity()
 	{
-		return entityOf(event);
+		return entityOf(entity);
 	}
 }

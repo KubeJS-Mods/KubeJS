@@ -3,10 +3,10 @@ package dev.latvian.kubejs.script;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.server.ServerScriptManager;
 import dev.latvian.kubejs.util.ConsoleJS;
+import net.minecraft.world.level.LevelReader;
 import org.apache.logging.log4j.LogManager;
 
 import java.util.function.Supplier;
-import net.minecraft.world.level.LevelReader;
 
 /**
  * @author LatvianModder

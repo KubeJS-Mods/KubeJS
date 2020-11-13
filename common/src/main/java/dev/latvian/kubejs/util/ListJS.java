@@ -2,6 +2,7 @@ package dev.latvian.kubejs.util;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import me.shedaniel.architectury.utils.NbtType;
 import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.IntArrayTag;
@@ -9,9 +10,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.LongArrayTag;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.Tag;
-import net.minecraftforge.common.util.Constants;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -550,7 +550,7 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 			}
 		}
 
-		if (commmonId == Constants.NBT.TAG_INT)
+		if (commmonId == NbtType.INT)
 		{
 			int[] array = new int[s];
 
@@ -561,7 +561,7 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 
 			return new IntArrayTag(array);
 		}
-		else if (commmonId == Constants.NBT.TAG_BYTE)
+		else if (commmonId == NbtType.BYTE)
 		{
 			byte[] array = new byte[s];
 
@@ -572,7 +572,7 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 
 			return new ByteArrayTag(array);
 		}
-		else if (commmonId == Constants.NBT.TAG_LONG)
+		else if (commmonId == NbtType.LONG)
 		{
 			long[] array = new long[s];
 

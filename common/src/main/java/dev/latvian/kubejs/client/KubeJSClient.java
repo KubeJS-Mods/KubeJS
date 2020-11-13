@@ -7,18 +7,18 @@ import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.net.NetworkEventJS;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
+import me.shedaniel.architectury.hooks.PackRepositoryHooks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -38,8 +38,8 @@ public class KubeJSClient extends KubeJSCommon
 
 		new KubeJSClientEventHandler().init();
 		PackRepository list = Minecraft.getInstance().getResourcePackRepository();
-		list.addPackFinder(new KubeJSResourcePackFinder());
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+		PackRepositoryHooks.addSource(list, new KubeJSResourcePackFinder());
+		ScriptsLoadedEvent.EVENT.register(this::setup);
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class KubeJSClient extends KubeJSCommon
 		event.add("client", new ClientWrapper());
 	}
 
-	private void setup(FMLClientSetupEvent event)
+	private void setup()
 	{
 		new EventJS().post(ScriptType.CLIENT, KubeJSEvents.CLIENT_INIT);
 	}

@@ -3,8 +3,8 @@ package dev.latvian.kubejs.net;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.Overlay;
+import me.shedaniel.architectury.networking.NetworkManager.PacketContext;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -46,9 +46,8 @@ public class MessageOpenOverlay
 		}
 	}
 
-	void handle(Supplier<NetworkEvent.Context> context)
+	void handle(Supplier<PacketContext> context)
 	{
-		context.get().enqueueWork(() -> KubeJS.instance.proxy.openOverlay(overlay));
-		context.get().setPacketHandled(true);
+		context.get().queue(() -> KubeJS.instance.proxy.openOverlay(overlay));
 	}
 }

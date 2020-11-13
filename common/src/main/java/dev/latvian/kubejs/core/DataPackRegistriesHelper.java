@@ -4,11 +4,12 @@ import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.script.data.KubeJSResourcePack;
 import dev.latvian.kubejs.server.ServerScriptManager;
 import dev.latvian.kubejs.util.UtilsJS;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackType;
+
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackType;
 
 /**
  * @author LatvianModder

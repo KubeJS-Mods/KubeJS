@@ -22,7 +22,11 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.mods.rhino.Wrapper;
+import me.shedaniel.architectury.ExpectPlatform;
+import me.shedaniel.architectury.registry.Registries;
+import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
@@ -35,10 +39,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.ToolType;
-import net.minecraftforge.registries.ForgeRegistries;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -86,7 +88,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		}
 		else if (o instanceof Item)
 		{
-			return new UnboundItemStackJS(((Item) o).getRegistryName());
+			return new UnboundItemStackJS(Registries.getId((Item) o, Registry.ITEM_REGISTRY));
 		}
 		else if (o instanceof CharSequence)
 		{
@@ -247,7 +249,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		LinkedHashSet<ItemStackJS> set = new LinkedHashSet<>();
 		NonNullList<ItemStack> stackList = NonNullList.create();
 
-		for (Item item : ForgeRegistries.ITEMS)
+		for (Item item : Registries.get(KubeJS.MOD_ID).get(Registry.ITEM_REGISTRY))
 		{
 			item.fillItemCategory(CreativeModeTab.TAB_SEARCH, stackList);
 		}
@@ -286,7 +288,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		{
 			cachedItemTypeListJS = new ListJS();
 
-			for (ResourceLocation id : ForgeRegistries.ITEMS.getKeys())
+			for (ResourceLocation id : Registries.get(KubeJS.MOD_ID).get(Registry.ITEM_REGISTRY).getIds())
 			{
 				cachedItemTypeListJS.add(id.toString());
 			}
@@ -319,7 +321,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	@ID
 	public String getId()
 	{
-		return getItem().getRegistryName().toString();
+		return Registries.getId(getItem(), Registry.ITEM_REGISTRY).toString();
 	}
 
 	public abstract ItemStackJS getCopy();
@@ -519,7 +521,8 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		final String key = getItem() == Items.ENCHANTED_BOOK ? "StoredEnchantments" : "Enchantments";
 		final MapJS enchantments = new MapJS();
 
-		enchantments.changeListener = o -> {
+		enchantments.changeListener = o ->
+		{
 			ListJS list = new ListJS(o.size());
 
 			for (Map.Entry<String, Object> entry : o.entrySet())
@@ -569,7 +572,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public String getMod()
 	{
-		return getItem().getRegistryName().getNamespace();
+		return Registries.getId(getItem(), Registry.ITEM_REGISTRY).getNamespace();
 	}
 
 	public ListJS getLore()
@@ -577,7 +580,8 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		final MapJS nbt = getNbt();
 		final ListJS lore = new ListJS();
 
-		lore.changeListener = o -> {
+		lore.changeListener = o ->
+		{
 			if (lore.isEmpty())
 			{
 				nbt.remove("Lore");
@@ -649,8 +653,12 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public int getHarvestLevel(ToolType tool, @Nullable PlayerJS<?> player, @Nullable BlockContainerJS block)
 	{
-		ItemStack stack = getItemStack();
-		return stack.getItem().getHarvestLevel(stack, tool, player == null ? null : player.minecraftPlayer, block == null ? null : block.getBlockState());
+		return _getHarvestLevel(this, tool, player, block);
+	}
+
+	@ExpectPlatform
+	private static int _getHarvestLevel(ItemStackJS stack, ToolType tool, @Nullable PlayerJS<?> player, @Nullable BlockContainerJS block) {
+		throw new AssertionError();
 	}
 
 	public int getHarvestLevel(ToolType tool)
@@ -707,7 +715,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	@Override
 	public CompoundTag toNBT()
 	{
-		return getItemStack().serializeNBT();
+		return getItemStack().save(new CompoundTag());
 	}
 
 	@Override

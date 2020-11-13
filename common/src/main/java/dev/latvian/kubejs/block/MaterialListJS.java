@@ -1,9 +1,10 @@
 package dev.latvian.kubejs.block;
 
-import java.util.HashMap;
-import java.util.Map;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author LatvianModder

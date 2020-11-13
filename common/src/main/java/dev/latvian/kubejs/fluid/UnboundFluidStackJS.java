@@ -1,11 +1,10 @@
 package dev.latvian.kubejs.fluid;
 
 import dev.latvian.kubejs.util.MapJS;
+import me.shedaniel.architectury.fluid.FluidStack;
+import me.shedaniel.architectury.utils.Fraction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidAttributes;
-import net.minecraftforge.fluids.FluidStack;
-
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -23,7 +22,7 @@ public class UnboundFluidStackJS extends FluidStackJS
 	{
 		fluidRL = f;
 		fluid = fluidRL.toString();
-		amount = FluidAttributes.BUCKET_VOLUME;
+		amount = FluidStack.bucketAmount().intValue();
 		nbt = null;
 		cached = null;
 	}
@@ -45,7 +44,7 @@ public class UnboundFluidStackJS extends FluidStackJS
 	{
 		if (cached == null)
 		{
-			cached = new FluidStack(getFluid(), amount, MapJS.nbt(nbt));
+			cached = FluidStack.create(this::getFluid, Fraction.ofWhole(amount), MapJS.nbt(nbt));
 		}
 
 		return cached;

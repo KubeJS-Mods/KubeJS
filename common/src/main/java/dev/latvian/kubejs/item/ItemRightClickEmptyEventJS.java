@@ -3,29 +3,31 @@ package dev.latvian.kubejs.item;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
 import net.minecraft.world.InteractionHand;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * @author LatvianModder
  */
 public class ItemRightClickEmptyEventJS extends PlayerEventJS
 {
-	public final PlayerInteractEvent.RightClickEmpty event;
+	public final Player player;
+	public final InteractionHand hand;
 
-	public ItemRightClickEmptyEventJS(PlayerInteractEvent.RightClickEmpty e)
+	public ItemRightClickEmptyEventJS(Player player, InteractionHand hand)
 	{
-		event = e;
+		this.player = player;
+		this.hand = hand;
 	}
 
 	@Override
 	public EntityJS getEntity()
 	{
-		return entityOf(event);
+		return entityOf(player);
 	}
 
 	public InteractionHand getHand()
 	{
-		return event.getHand();
+		return hand;
 	}
 
 	public ItemStackJS getItem()

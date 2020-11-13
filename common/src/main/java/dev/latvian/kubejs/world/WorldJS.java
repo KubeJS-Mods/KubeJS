@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.world;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.entity.EntityJS;
@@ -16,7 +17,9 @@ import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.AttachedData;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WithAttachedData;
+import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -27,9 +30,8 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.registries.ForgeRegistries;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 
 /**
@@ -192,7 +194,7 @@ public abstract class WorldJS implements WithAttachedData
 	@Nullable
 	public EntityJS createEntity(@ID String id)
 	{
-		EntityType<?> type = ForgeRegistries.ENTITIES.getValue(UtilsJS.getMCID(id));
+		EntityType<?> type = Registries.get(KubeJS.MOD_ID).get(Registry.ENTITY_TYPE_REGISTRY).get(UtilsJS.getMCID(id));
 
 		if (type == null)
 		{

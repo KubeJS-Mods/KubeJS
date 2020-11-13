@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.entity;
 
 import dev.latvian.kubejs.world.WorldJS;
-import org.jetbrains.annotations.Nullable;
 import net.minecraft.world.damagesource.DamageSource;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author LatvianModder

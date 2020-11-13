@@ -1,13 +1,12 @@
 package dev.latvian.kubejs.script;
 
+import com.google.common.collect.Sets;
 import dev.latvian.kubejs.KubeJS;
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.forgespi.language.IModInfo;
+import me.shedaniel.architectury.platform.Mod;
+import me.shedaniel.architectury.platform.Platform;
+import net.minecraft.SharedConstants;
 
 import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -21,7 +20,7 @@ public class ScriptModData
 	{
 		if (instance == null)
 		{
-			instance = new ScriptModData("forge", "1.14.4", ModList.get().getMods());
+			instance = new ScriptModData(Platform.getModLoader(), SharedConstants.getCurrentVersion().getName());
 		}
 
 		return instance;
@@ -56,25 +55,25 @@ public class ScriptModData
 		}
 	}
 
-	private final String type;
+	private final String modLoader;
 	private final String mcVersion;
 	private final HashSet<String> list;
 
-	public ScriptModData(String t, String mc, List<net.minecraftforge.fml.loading.moddiscovery.ModInfo> modList)
+	public ScriptModData(String modLoader, String mcVersion)
 	{
-		type = t;
-		mcVersion = mc;
-		list = new HashSet<>(modList.size());
+		this.modLoader = modLoader;
+		this.mcVersion = mcVersion;
+		this.list = Sets.newHashSet();
 
-		for (net.minecraftforge.fml.loading.moddiscovery.ModInfo info : modList)
+		for (Mod mod : Platform.getMods())
 		{
-			list.add(info.getModId());
+			this.list.add(mod.getModId());
 		}
 	}
 
 	public String getType()
 	{
-		return type;
+		return modLoader;
 	}
 
 	public String getMcVersion()
@@ -89,7 +88,7 @@ public class ScriptModData
 
 	public String getModVersion()
 	{
-		return ModList.get().getModContainerById(KubeJS.MOD_ID).get().getModInfo().getVersion().toString();
+		return Platform.getMod(KubeJS.MOD_ID).getVersion();
 	}
 
 	public boolean isLoaded(String modId)
@@ -101,13 +100,15 @@ public class ScriptModData
 	{
 		ModInfo info = new ModInfo(modID);
 
-		Optional<? extends ModContainer> modContainer = ModList.get().getModContainerById(modID);
-
-		if (modContainer.isPresent())
+		try
 		{
-			IModInfo i = modContainer.get().getModInfo();
-			info.name = i.getDisplayName();
-			info.version = i.getVersion().toString();
+			Mod mod = Platform.getMod(modID);
+
+			info.name = mod.getName();
+			info.version = mod.getVersion();
+		}
+		catch (Throwable ignored)
+		{
 		}
 
 		return info;

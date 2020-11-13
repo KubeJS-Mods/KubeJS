@@ -9,12 +9,12 @@ import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
+import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.common.ToolType;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.Set;
 

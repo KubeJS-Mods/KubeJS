@@ -6,13 +6,17 @@ import dev.latvian.mods.rhino.NativeJavaClass;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.ScriptableObject;
 import dev.latvian.mods.rhino.util.DynamicFunction;
-import net.minecraftforge.eventbus.api.Event;
+import me.shedaniel.architectury.event.Event;
+import me.shedaniel.architectury.event.EventFactory;
+
+import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
  */
-public class BindingsEvent extends Event
+public class BindingsEvent
 {
+	public static final Event<Consumer<BindingsEvent>> EVENT = EventFactory.createConsumerLoop(BindingsEvent.class);
 	public final ScriptType type;
 	public Scriptable scope;
 

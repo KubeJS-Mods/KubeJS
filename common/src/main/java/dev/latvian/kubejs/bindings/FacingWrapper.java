@@ -1,9 +1,10 @@
 package dev.latvian.kubejs.bindings;
 
+import net.minecraft.core.Direction;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.core.Direction;
 
 /**
  * @author LatvianModder

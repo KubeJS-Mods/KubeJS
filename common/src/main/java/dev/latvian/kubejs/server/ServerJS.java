@@ -30,10 +30,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.network.PacketDistributor;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -185,7 +183,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 			world = new ServerWorldJS(this, minecraftServer.getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(dimension))));
 			worldMap.put(dimension, world);
 			updateWorldList();
-			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(world));
+			AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(world));
 		}
 
 		return world;
@@ -200,7 +198,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 			world = new ServerWorldJS(this, (ServerLevel) minecraftWorld);
 			worldMap.put(minecraftWorld.dimension().location().toString(), world);
 			updateWorldList();
-			MinecraftForge.EVENT_BUS.post(new AttachWorldDataEvent(world));
+			AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(world));
 		}
 
 		return world;
@@ -329,6 +327,6 @@ public class ServerJS implements MessageSender, WithAttachedData
 
 	public void sendDataToAll(String channel, @Nullable Object data)
 	{
-		KubeJSNet.MAIN.send(PacketDistributor.ALL.noArg(), new MessageSendDataFromServer(channel, MapJS.nbt(data)));
+		KubeJSNet.MAIN.sendToPlayers(minecraftServer.getPlayerList().getPlayers(), new MessageSendDataFromServer(channel, MapJS.nbt(data)));
 	}
 }

@@ -3,12 +3,13 @@ package dev.latvian.kubejs.block;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.util.BuilderBase;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import me.shedaniel.architectury.registry.BlockProperties;
+import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.ToolType;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -122,7 +123,7 @@ public class BlockBuilder extends BuilderBase
 
 	public BlockBuilder harvestTool(String tool, int level)
 	{
-		return harvestTool(ToolType.get(tool), level);
+		return harvestTool(ToolType.byName(tool), level);
 	}
 
 	public BlockBuilder opaque(boolean o)
@@ -247,7 +248,7 @@ public class BlockBuilder extends BuilderBase
 
 	public Block.Properties createProperties()
 	{
-		Block.Properties properties = Block.Properties.of(material.getMinecraftMaterial());
+		BlockProperties properties = BlockProperties.of(material.getMinecraftMaterial());
 		properties.sound(material.getSound());
 
 		if (resistance >= 0F)
@@ -261,14 +262,9 @@ public class BlockBuilder extends BuilderBase
 
 		properties.lightLevel(state -> (int) (lightLevel * 15F));
 
-		if (harvestTool != null)
+		if (harvestTool != null && harvestLevel >= 0)
 		{
-			properties.harvestTool(harvestTool);
-		}
-
-		if (harvestLevel >= 0)
-		{
-			properties.harvestLevel(harvestLevel);
+			properties.tool(harvestTool, harvestLevel);
 		}
 
 		if (notSolid)

@@ -139,7 +139,7 @@ public class CustomRecipeJS extends RecipeJS
 		outputKey = "";
 		outputType = -1;
 
-		if (originalRecipe == null || originalRecipe.isSpecial())
+		if (originalRecipe != null && originalRecipe.isSpecial())
 		{
 			return;
 		}
@@ -147,12 +147,12 @@ public class CustomRecipeJS extends RecipeJS
 		try
 		{
 			if (!addInput("ingredient")
-					&& !addInput("ingredients")
-					&& !addInput("in")
-					&& !addInput("input")
-					&& !addInput("inputs")
-					&& !addInput("itemInput")
-					&& !addInput("infusionInput")
+			    && !addInput("ingredients")
+			    && !addInput("in")
+			    && !addInput("input")
+			    && !addInput("inputs")
+			    && !addInput("itemInput")
+			    && !addInput("infusionInput")
 			)
 			{
 				ScriptType.SERVER.console.debug("! " + this + ": Couldn't find any input items!");
@@ -165,13 +165,13 @@ public class CustomRecipeJS extends RecipeJS
 		try
 		{
 			if (!addOutput("result")
-					&& !addOutput("results")
-					&& !addOutput("out")
-					&& !addOutput("output")
-					&& !addOutput("outputs")
-					&& !addOutput("itemOutput")
-					&& !addOutput("mainOutput")
-					&& !addOutput("secondaryOutput")
+			    && !addOutput("results")
+			    && !addOutput("out")
+			    && !addOutput("output")
+			    && !addOutput("outputs")
+			    && !addOutput("itemOutput")
+			    && !addOutput("mainOutput")
+			    && !addOutput("secondaryOutput")
 			)
 			{
 				ScriptType.SERVER.console.debug("! " + this + ": Couldn't find any output items!");

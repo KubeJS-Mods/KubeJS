@@ -4,7 +4,6 @@ import dev.latvian.kubejs.event.DataEvent;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.event.IEventHandler;
 import dev.latvian.kubejs.util.ListJS;
-
 import org.jetbrains.annotations.Nullable;
 
 /**

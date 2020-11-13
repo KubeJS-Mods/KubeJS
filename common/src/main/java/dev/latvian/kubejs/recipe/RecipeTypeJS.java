@@ -1,7 +1,10 @@
 package dev.latvian.kubejs.recipe;
 
-import java.util.function.Supplier;
+import me.shedaniel.architectury.registry.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+
+import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
@@ -16,7 +19,7 @@ public class RecipeTypeJS
 	{
 		serializer = s;
 		factory = f;
-		string = s.getRegistryName().toString();
+		string = Registries.getId(s, Registry.RECIPE_SERIALIZER_REGISTRY).toString();
 	}
 
 	public boolean isCustom()

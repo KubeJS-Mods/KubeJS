@@ -13,12 +13,12 @@ import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.Wrapper;
+import me.shedaniel.architectury.ExpectPlatform;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.CraftingHelper;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -143,7 +143,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 				try
 				{
 					JsonObject json = map.toJson();
-					Ingredient ingredient = CraftingHelper.getIngredient(json);
+					Ingredient ingredient = getCustomIngredient(json);
 					return new CustomIngredient(ingredient, json);
 				}
 				catch (Exception ex)
@@ -159,6 +159,12 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 		}
 
 		return ItemStackJS.of(o);
+	}
+
+	@ExpectPlatform
+	static Ingredient getCustomIngredient(JsonObject object)
+	{
+		throw new AssertionError();
 	}
 
 	static IngredientJS ingredientFromRecipeJson(JsonElement json)
@@ -206,7 +212,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 			{
 				try
 				{
-					Ingredient ingredient = CraftingHelper.getIngredient(o);
+					Ingredient ingredient = getCustomIngredient(o);
 					return new CustomIngredient(ingredient, o);
 				}
 				catch (Exception ex)

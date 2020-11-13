@@ -3,8 +3,9 @@ package dev.latvian.kubejs.player;
 import com.mojang.authlib.GameProfile;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
-import org.jetbrains.annotations.Nullable;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.UUID;
 
 /**

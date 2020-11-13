@@ -1,14 +1,16 @@
 package dev.latvian.kubejs.block.predicate;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
+import me.shedaniel.architectury.registry.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -87,7 +89,7 @@ public class BlockIDPredicate implements BlockPredicate
 	{
 		if (cachedBlock == null)
 		{
-			cachedBlock = ForgeRegistries.BLOCKS.getValue(id);
+			cachedBlock = Registries.get(KubeJS.MOD_ID).get(Registry.BLOCK_REGISTRY).get(id);
 
 			if (cachedBlock == null)
 			{

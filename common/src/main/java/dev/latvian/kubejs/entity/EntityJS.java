@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.entity;
 
 import com.mojang.authlib.GameProfile;
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -14,8 +15,12 @@ import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
+import me.shedaniel.architectury.ExpectPlatform;
+import me.shedaniel.architectury.hooks.EntityHooks;
+import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.Util;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -27,9 +32,8 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Team;
-import net.minecraftforge.registries.ForgeRegistries;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -74,7 +78,7 @@ public class EntityJS implements MessageSender, WrappedJS
 	@ID
 	public String getType()
 	{
-		return minecraftEntity.getType().getRegistryName().toString();
+		return Registries.getId(minecraftEntity.getType(), Registry.ENTITY_TYPE_REGISTRY).toString();
 	}
 
 	@Override
@@ -86,7 +90,7 @@ public class EntityJS implements MessageSender, WrappedJS
 	@MinecraftClass
 	public GameProfile getProfile()
 	{
-		return new GameProfile(getId(), minecraftEntity.getEncodeId());
+		return new GameProfile(getId(), EntityHooks.getEncodeId(minecraftEntity));
 	}
 
 	@Override
@@ -522,29 +526,12 @@ public class EntityJS implements MessageSender, WrappedJS
 
 	public MapJS getNbt()
 	{
-		CompoundTag nbt = minecraftEntity.getPersistentData();
-		MapJS map = MapJS.of(nbt.get("KubeJS"));
-
-		if (map == null)
-		{
-			map = new MapJS();
-		}
-
-		map.changeListener = o -> {
-			CompoundTag n = MapJS.nbt(o);
-
-			if (n != null)
-			{
-				minecraftEntity.getPersistentData().put("KubeJS", n);
-			}
-		};
-
-		return map;
+		return getPersistentData(minecraftEntity);
 	}
 
 	public void playSound(@ID String id, float volume, float pitch)
 	{
-		SoundEvent event = ForgeRegistries.SOUND_EVENTS.getValue(UtilsJS.getMCID(id));
+		SoundEvent event = Registries.get(KubeJS.MOD_ID).get(Registry.SOUND_EVENT_REGISTRY).get(UtilsJS.getMCID(id));
 
 		if (event != null)
 		{
@@ -618,7 +605,6 @@ public class EntityJS implements MessageSender, WrappedJS
 
 		if (ray.getType() != HitResult.Type.MISS)
 		{
-			map.put("info", ray.hitInfo);
 			map.put("hitX", ray.getLocation().x);
 			map.put("hitY", ray.getLocation().y);
 			map.put("hitZ", ray.getLocation().z);
@@ -627,7 +613,6 @@ public class EntityJS implements MessageSender, WrappedJS
 			{
 				map.put("block", new BlockContainerJS(getWorld().minecraftWorld, ((BlockHitResult) ray).getBlockPos()));
 				map.put("facing", ((BlockHitResult) ray).getDirection());
-				map.put("subHit", ray.subHit);
 			}
 			else if (ray instanceof EntityHitResult)
 			{
@@ -636,5 +621,11 @@ public class EntityJS implements MessageSender, WrappedJS
 		}
 
 		return map;
+	}
+
+	@ExpectPlatform
+	private static MapJS getPersistentData(Entity entity)
+	{
+		throw new AssertionError();
 	}
 }

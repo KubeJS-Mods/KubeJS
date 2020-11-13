@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.util;
 
 import dev.latvian.kubejs.KubeJS;
-import org.jetbrains.annotations.Nullable;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.FloatTag;
@@ -10,6 +9,8 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

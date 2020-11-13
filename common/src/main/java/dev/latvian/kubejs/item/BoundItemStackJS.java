@@ -2,10 +2,11 @@ package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.MapJS;
-import org.jetbrains.annotations.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Objects;
 
 /**

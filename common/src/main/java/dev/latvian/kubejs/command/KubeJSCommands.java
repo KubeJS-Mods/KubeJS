@@ -6,6 +6,8 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
+import dev.latvian.kubejs.util.Tags;
+import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
@@ -18,13 +20,8 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagCollection;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,18 +48,18 @@ public class KubeJSCommands
 				)
 				.then(Commands.literal("list_tag")
 						.then(Commands.argument("tag", ResourceLocationArgument.id())
-								.executes(context -> tagObjects(context.getSource().getPlayerOrException(), ItemTags.getAllTags(), ResourceLocationArgument.getId(context, "tag")))
+								.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.items(), ResourceLocationArgument.getId(context, "tag")))
 								.then(Commands.literal("item")
-										.executes(context -> tagObjects(context.getSource().getPlayerOrException(), ItemTags.getAllTags(), ResourceLocationArgument.getId(context, "tag")))
+										.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.items(), ResourceLocationArgument.getId(context, "tag")))
 								)
 								.then(Commands.literal("block")
-										.executes(context -> tagObjects(context.getSource().getPlayerOrException(), BlockTags.getAllTags(), ResourceLocationArgument.getId(context, "tag")))
+										.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.blocks(), ResourceLocationArgument.getId(context, "tag")))
 								)
 								.then(Commands.literal("fluid")
-										.executes(context -> tagObjects(context.getSource().getPlayerOrException(), FluidTags.getCollection(), ResourceLocationArgument.getId(context, "tag")))
+										.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.fluids(), ResourceLocationArgument.getId(context, "tag")))
 								)
 								.then(Commands.literal("entity_type")
-										.executes(context -> tagObjects(context.getSource().getPlayerOrException(), EntityTypeTags.getAllTags(), ResourceLocationArgument.getId(context, "tag")))
+										.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.entityTypes(), ResourceLocationArgument.getId(context, "tag")))
 								)
 						)
 				)
@@ -92,7 +89,7 @@ public class KubeJSCommands
 		ItemStackJS stack = ItemStackJS.of(player.getMainHandItem());
 		player.sendMessage(copy(stack.toString(), ChatFormatting.GREEN, "Item ID"), Util.NIL_UUID);
 
-		List<ResourceLocation> tags = new ArrayList<>(stack.getItem().getTags());
+		List<ResourceLocation> tags = new ArrayList<>(Tags.byItem(stack.getItem()));
 		tags.sort(null);
 
 		for (ResourceLocation id : tags)
@@ -142,13 +139,14 @@ public class KubeJSCommands
 
 		for (Object o : tag.getValues())
 		{
-			if (o instanceof IForgeRegistryEntry)
+			ResourceLocation id = Registries.getRegistryName(o);
+			if (id == null)
 			{
-				player.sendMessage(new TextComponent("- " + ((IForgeRegistryEntry) o).getRegistryName()), Util.NIL_UUID);
+				player.sendMessage(new TextComponent("- " + o), Util.NIL_UUID);
 			}
 			else
 			{
-				player.sendMessage(new TextComponent("- " + o), Util.NIL_UUID);
+				player.sendMessage(new TextComponent("- " + id.toString()), Util.NIL_UUID);
 			}
 		}
 

@@ -3,9 +3,9 @@ package dev.latvian.kubejs;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.world.WorldJS;
-import org.jetbrains.annotations.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author LatvianModder

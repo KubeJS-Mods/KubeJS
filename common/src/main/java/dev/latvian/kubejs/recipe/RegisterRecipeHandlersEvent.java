@@ -1,20 +1,25 @@
 package dev.latvian.kubejs.recipe;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.UtilsJS;
+import me.shedaniel.architectury.event.Event;
+import me.shedaniel.architectury.event.EventFactory;
+import me.shedaniel.architectury.registry.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
  */
-public class RegisterRecipeHandlersEvent extends Event
+public class RegisterRecipeHandlersEvent
 {
+	public static final Event<Consumer<RegisterRecipeHandlersEvent>> EVENT = EventFactory.createConsumerLoop(RegisterRecipeHandlersEvent.class);
 	private final Map<ResourceLocation, RecipeTypeJS> map;
 
 	public RegisterRecipeHandlersEvent(Map<ResourceLocation, RecipeTypeJS> m)
@@ -24,11 +29,11 @@ public class RegisterRecipeHandlersEvent extends Event
 
 	public void register(RecipeTypeJS type)
 	{
-		map.put(type.serializer.getRegistryName(), type);
+		map.put(Registries.getId(type.serializer, Registry.RECIPE_SERIALIZER_REGISTRY), type);
 	}
 
 	public void register(@ID String id, Supplier<RecipeJS> f)
 	{
-		register(new RecipeTypeJS(Objects.requireNonNull(ForgeRegistries.RECIPE_SERIALIZERS.getValue(UtilsJS.getMCID(id))), f));
+		register(new RecipeTypeJS(Objects.requireNonNull(Registries.get(KubeJS.MOD_ID).get(Registry.RECIPE_SERIALIZER_REGISTRY).get(UtilsJS.getMCID(id)), "Cannot found recipe serializer: " + UtilsJS.getMCID(id).toString()), f));
 	}
 }

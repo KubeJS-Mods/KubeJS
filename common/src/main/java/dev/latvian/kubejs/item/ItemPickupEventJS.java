@@ -2,18 +2,24 @@ package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * @author LatvianModder
  */
 public class ItemPickupEventJS extends PlayerEventJS
 {
-	public final EntityItemPickupEvent event;
+	public final Player player;
+	public final ItemEntity entity;
+	public final ItemStack stack;
 
-	public ItemPickupEventJS(EntityItemPickupEvent e)
+	public ItemPickupEventJS(Player player, ItemEntity entity, ItemStack stack)
 	{
-		event = e;
+		this.player = player;
+		this.entity = entity;
+		this.stack = stack;
 	}
 
 	@Override
@@ -25,16 +31,16 @@ public class ItemPickupEventJS extends PlayerEventJS
 	@Override
 	public EntityJS getEntity()
 	{
-		return entityOf(event);
+		return entityOf(player);
 	}
 
 	public EntityJS getItemEntity()
 	{
-		return getWorld().getEntity(event.getItem());
+		return getWorld().getEntity(entity);
 	}
 
 	public ItemStackJS getItem()
 	{
-		return ItemStackJS.of(event.getItem().getItem());
+		return ItemStackJS.of(stack);
 	}
 }

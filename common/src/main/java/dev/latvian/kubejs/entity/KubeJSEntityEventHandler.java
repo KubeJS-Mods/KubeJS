@@ -3,82 +3,49 @@ package dev.latvian.kubejs.entity;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingSpawnEvent;
-import net.minecraftforge.eventbus.api.Event;
+import me.shedaniel.architectury.event.events.EntityEvent;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 
 /**
  * @author LatvianModder
  */
 public class KubeJSEntityEventHandler
 {
-	public void init()
+	public static void init()
 	{
-		MinecraftForge.EVENT_BUS.addListener(this::livingDeath);
-		MinecraftForge.EVENT_BUS.addListener(this::livingAttack);
-		MinecraftForge.EVENT_BUS.addListener(this::livingDrops);
-		MinecraftForge.EVENT_BUS.addListener(this::checkLivingSpawn);
-		MinecraftForge.EVENT_BUS.addListener(this::entitySpawned);
+		EntityEvent.LIVING_DEATH.register(KubeJSEntityEventHandler::livingDeath);
+		EntityEvent.LIVING_ATTACK.register(KubeJSEntityEventHandler::livingAttack);
+		EntityEvent.ADD.register(KubeJSEntityEventHandler::entitySpawned);
 	}
 
-	private void livingDeath(LivingDeathEvent event)
+	private static InteractionResult livingDeath(LivingEntity entity, DamageSource source)
 	{
-		if (new LivingEntityDeathEventJS(event).post(KubeJSEvents.ENTITY_DEATH))
+		if (new LivingEntityDeathEventJS(entity, source).post(KubeJSEvents.ENTITY_DEATH))
 		{
-			event.setCanceled(true);
+			return InteractionResult.FAIL;
 		}
+		return InteractionResult.PASS;
 	}
 
-	private void livingAttack(LivingAttackEvent event)
+	private static InteractionResult livingAttack(LivingEntity entity, DamageSource source, float amount)
 	{
-		if (event.getAmount() > 0F && new LivingEntityAttackEventJS(event).post(KubeJSEvents.ENTITY_ATTACK))
+		if (amount > 0F && new LivingEntityAttackEventJS(entity, source, amount).post(KubeJSEvents.ENTITY_ATTACK))
 		{
-			event.setCanceled(true);
+			return InteractionResult.FAIL;
 		}
+		return InteractionResult.PASS;
 	}
 
-	private void livingDrops(LivingDropsEvent event)
+	private static InteractionResult entitySpawned(Entity entity, Level world)
 	{
-		if (event.getEntity().world.isRemote())
+		if (ServerJS.instance != null && ServerJS.instance.overworld != null && !world.isClientSide() && new EntitySpawnedEventJS(entity, world).post(ScriptType.SERVER, KubeJSEvents.ENTITY_SPAWNED))
 		{
-			return;
+			return InteractionResult.FAIL;
 		}
-
-		LivingEntityDropsEventJS e = new LivingEntityDropsEventJS(event);
-
-		if (e.post(KubeJSEvents.ENTITY_DROPS))
-		{
-			event.setCanceled(true);
-		}
-		else if (e.drops != null)
-		{
-			event.getDrops().clear();
-
-			for (ItemEntityJS ie : e.drops)
-			{
-				event.getDrops().add((ItemEntity) ie.minecraftEntity);
-			}
-		}
-	}
-
-	private void checkLivingSpawn(LivingSpawnEvent.CheckSpawn event)
-	{
-		if (ServerJS.instance != null && ServerJS.instance.overworld != null && !event.getWorld().isRemote() && new CheckLivingEntitySpawnEventJS(event).post(ScriptType.SERVER, KubeJSEvents.ENTITY_CHECK_SPAWN))
-		{
-			event.setResult(Event.Result.DENY);
-		}
-	}
-
-	private void entitySpawned(EntityJoinWorldEvent event)
-	{
-		if (ServerJS.instance != null && ServerJS.instance.overworld != null && !event.getWorld().isRemote() && new EntitySpawnedEventJS(event).post(ScriptType.SERVER, KubeJSEvents.ENTITY_SPAWNED))
-		{
-			event.setCanceled(true);
-		}
+		return InteractionResult.PASS;
 	}
 }

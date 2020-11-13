@@ -1,10 +1,11 @@
 package dev.latvian.kubejs.core;
 
 import dev.latvian.kubejs.server.ServerScriptManager;
-import java.util.List;
 import net.minecraft.server.ServerResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
+
+import java.util.List;
 
 /**
  * @author LatvianModder
@@ -20,8 +21,7 @@ public interface DataPackRegistriesKJS
 			PreparableReloadListener reloadListener = ServerScriptManager.instance.createReloadListener();
 			manager.getReloadListenersKJS().add(0, reloadListener);
 			manager.getInitTaskQueueKJS().add(0, reloadListener);
-		}
-		catch (Exception ex)
+		} catch (Exception ex)
 		{
 			throw new RuntimeException("KubeJS failed to register it's script loader!");
 		}

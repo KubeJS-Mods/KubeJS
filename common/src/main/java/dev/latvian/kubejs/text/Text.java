@@ -9,15 +9,16 @@ import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -190,14 +191,16 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 
 		if (color != null)
 		{
-			style = style.withColor(TextColor.fromLegacyFormat(color.textFormatting));
+			style = style.withColor(net.minecraft.network.chat.TextColor.fromLegacyFormat(color.textFormatting));
 		}
 
 		style = style.withBold(bold);
 		style = style.withItalic(italic);
-		style = style.setUnderlined(underlined);
-		style = style.setStrikethrough(strikethrough);
-		style = style.setObfuscated(obfuscated);
+		style = style.withUnderlined(underlined);
+		if (strikethrough)
+		style = style.applyFormat(ChatFormatting.STRIKETHROUGH);
+		if (obfuscated)
+			style = style.applyFormat(ChatFormatting.OBFUSCATED);
 		style = style.withInsertion(insertion);
 		style = style.withFont(font);
 
@@ -573,9 +576,9 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	}
 
 	@Override
-	public int compareTo(Text o)
+	public int compareTo(Text other)
 	{
-		return toString().compareTo(toString());
+		return toString().compareTo(other.toString());
 	}
 
 	public void write(FriendlyByteBuf buffer)

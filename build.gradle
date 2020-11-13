@@ -1,5 +1,5 @@
 plugins {
-    id "architect-plugin" version "1.0.10"
+    id "architect-plugin" version "1.1.16783"
 }
 
 architect {
@@ -9,12 +9,24 @@ architect {
 allprojects {
     apply plugin: "java"
     apply plugin: "architect-plugin"
+    apply from: "https://files.latmod.com/public/markdown-git-changelog.gradle"
 
     archivesBaseName = rootProject.archives_base_name
-    version = rootProject.mod_version
+    def ENV = System.getenv()
+    version = ENV.BUILD_NUMBER ? "${rootProject.mod_version}.${ENV.BUILD_NUMBER}" : "${rootProject.mod_version}.custom"
     group = rootProject.maven_group
 
     tasks.withType(JavaCompile) {
         options.encoding = "UTF-8"
+    }
+
+    repositories {
+        maven { url "https://dl.bintray.com/shedaniel/cloth" }
+        maven { 
+            url "https://www.cursemaven.com"
+            content {
+                includeGroup "curse.maven"
+            }
+        }
     }
 }

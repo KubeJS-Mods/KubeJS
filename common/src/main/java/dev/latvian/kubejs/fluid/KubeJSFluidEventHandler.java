@@ -1,32 +1,36 @@
 package dev.latvian.kubejs.fluid;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSObjects;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import dev.latvian.kubejs.script.ScriptsLoadedEvent;
+import me.shedaniel.architectury.registry.Registries;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.material.FlowingFluid;
 
 /**
  * @author LatvianModder
  */
 public class KubeJSFluidEventHandler
 {
-	public void init()
+	public static void init()
 	{
-		FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Fluid.class, this::registry);
+		ScriptsLoadedEvent.EVENT.register(KubeJSFluidEventHandler::registry);
 	}
 
-	private void registry(RegistryEvent.Register<Fluid> event)
+	private static FlowingFluid buildFluid(boolean source, FluidBuilder builder)
+	{
+		throw new AssertionError();
+	}
+
+	private static void registry()
 	{
 		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values())
 		{
-			builder.stillFluid = new ForgeFlowingFluid.Source(builder.createProperties());
-			builder.stillFluid.setRegistryName(builder.id);
-			event.getRegistry().register(builder.stillFluid);
-
-			builder.flowingFluid = new ForgeFlowingFluid.Flowing(builder.createProperties());
-			builder.flowingFluid.setRegistryName(builder.id.getNamespace() + ":flowing_" + builder.id.getPath());
-			event.getRegistry().register(builder.flowingFluid);
+			Registries.get(KubeJS.MOD_ID).get(Registry.FLUID_REGISTRY).register(builder.id, () ->
+					builder.stillFluid = buildFluid(true, builder));
+			Registries.get(KubeJS.MOD_ID).get(Registry.FLUID_REGISTRY).register(new ResourceLocation(builder.id.getNamespace(), "flowing_" + builder.id.getPath()), () ->
+					builder.flowingFluid = buildFluid(false, builder));
 		}
 	}
 }

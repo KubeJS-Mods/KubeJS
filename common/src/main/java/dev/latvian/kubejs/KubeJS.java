@@ -2,12 +2,11 @@ package dev.latvian.kubejs;
 
 import dev.latvian.kubejs.block.BlockRegistryEventJS;
 import dev.latvian.kubejs.block.KubeJSBlockEventHandler;
-import dev.latvian.kubejs.client.KubeJSClient;
+import dev.latvian.kubejs.docs.KubeJSDocs;
 import dev.latvian.kubejs.entity.KubeJSEntityEventHandler;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.fluid.FluidRegistryEventJS;
 import dev.latvian.kubejs.fluid.KubeJSFluidEventHandler;
-import dev.latvian.kubejs.integration.IntegrationManager;
 import dev.latvian.kubejs.item.ItemRegistryEventJS;
 import dev.latvian.kubejs.item.KubeJSItemEventHandler;
 import dev.latvian.kubejs.net.KubeJSNet;
@@ -17,18 +16,12 @@ import dev.latvian.kubejs.script.ScriptFileInfo;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.script.ScriptPack;
 import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.script.ScriptsLoadedEvent;
+import dev.latvian.kubejs.server.KubeJSServerEventHandler;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ExtensionPoint;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.fml.network.FMLNetworkConstants;
-import org.apache.commons.lang3.tuple.Pair;
+import me.shedaniel.architectury.platform.Platform;
+import net.fabricmc.api.EnvType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,7 +36,6 @@ import java.util.Locale;
 /**
  * @author LatvianModder
  */
-@Mod(KubeJS.MOD_ID)
 public class KubeJS
 {
 	public static final String MOD_ID = "kubejs";
@@ -57,7 +49,7 @@ public class KubeJS
 
 	public static ScriptManager startupScriptManager, clientScriptManager;
 
-	public KubeJS()
+	public KubeJS() throws Throwable
 	{
 		Locale.setDefault(Locale.US);
 
@@ -86,19 +78,19 @@ public class KubeJS
 
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS, "/data/kubejs/example_startup_script.js");
 		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS, "/data/kubejs/example_client_script.js");
-		proxy = DistExecutor.safeRunForDist(() -> KubeJSClient::new, () -> KubeJSCommon::new);
+		String proxyClass = "dev.latvian.kubejs." + (Platform.getEnv() == EnvType.CLIENT ? "client.KubeJSClient" : "KubeJSCommon");
+		proxy = (KubeJSCommon) Class.forName(proxyClass).getDeclaredConstructor().newInstance();
 
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadComplete);
-
-		new KubeJSOtherEventHandler().init();
-		new KubeJSWorldEventHandler().init();
-		new KubeJSPlayerEventHandler().init();
-		new KubeJSEntityEventHandler().init();
-		new KubeJSBlockEventHandler().init();
-		new KubeJSItemEventHandler().init();
-		new KubeJSRecipeEventHandler().init();
-		new KubeJSFluidEventHandler().init();
+		KubeJSDocs.init();
+		KubeJSOtherEventHandler.init();
+		KubeJSWorldEventHandler.init();
+		KubeJSPlayerEventHandler.init();
+		KubeJSEntityEventHandler.init();
+		KubeJSBlockEventHandler.init();
+		KubeJSItemEventHandler.init();
+		KubeJSRecipeEventHandler.init();
+		KubeJSFluidEventHandler.init();
+		KubeJSServerEventHandler.init();
 
 		Path oldStartupFolder = KubeJSPaths.DIRECTORY.resolve("startup");
 
@@ -116,8 +108,6 @@ public class KubeJS
 		new BlockRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.BLOCK_REGISTRY);
 		new ItemRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.ITEM_REGISTRY);
 		new FluidRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.FLUID_REGISTRY);
-
-		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 	}
 
 	public static void loadScripts(ScriptPack pack, Path dir, String path)
@@ -146,7 +136,7 @@ public class KubeJS
 
 	public static Path getGameDirectory()
 	{
-		return FMLPaths.GAMEDIR.get();
+		return Platform.getGameFolder();
 	}
 
 	public static Path verifyFilePath(Path path) throws IOException
@@ -164,16 +154,16 @@ public class KubeJS
 		verifyFilePath(file.toPath());
 	}
 
-	private void setup(FMLCommonSetupEvent event)
+	public void setup()
 	{
 		UtilsJS.init();
-		IntegrationManager.init();
 		KubeJSNet.init();
 		new EventJS().post(ScriptType.STARTUP, KubeJSEvents.INIT);
 	}
 
-	private void loadComplete(FMLLoadCompleteEvent event)
+	public void loadComplete()
 	{
+		ScriptsLoadedEvent.EVENT.invoker().run();
 		new EventJS().post(ScriptType.STARTUP, KubeJSEvents.POSTINIT);
 	}
 }

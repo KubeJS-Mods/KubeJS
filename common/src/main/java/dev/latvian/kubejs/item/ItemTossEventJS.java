@@ -2,18 +2,21 @@ package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
-import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * @author LatvianModder
  */
 public class ItemTossEventJS extends PlayerEventJS
 {
-	public final ItemTossEvent event;
+	public final Player player;
+	public final ItemEntity entity;
 
-	public ItemTossEventJS(ItemTossEvent e)
+	public ItemTossEventJS(Player player, ItemEntity entity)
 	{
-		event = e;
+		this.player = player;
+		this.entity = entity;
 	}
 
 	@Override
@@ -25,16 +28,16 @@ public class ItemTossEventJS extends PlayerEventJS
 	@Override
 	public EntityJS getEntity()
 	{
-		return entityOf(event.getPlayer());
+		return entityOf(player);
 	}
 
 	public EntityJS getItemEntity()
 	{
-		return getWorld().getEntity(event.getEntityItem());
+		return getWorld().getEntity(entity);
 	}
 
 	public ItemStackJS getItem()
 	{
-		return ItemStackJS.of(event.getEntityItem().getItem());
+		return ItemStackJS.of(entity.getItem());
 	}
 }

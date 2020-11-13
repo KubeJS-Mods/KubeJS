@@ -12,6 +12,10 @@ import dev.latvian.kubejs.text.TextString;
 import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.Wrapper;
+import me.shedaniel.architectury.ExpectPlatform;
+import me.shedaniel.architectury.registry.Registries;
+import me.shedaniel.architectury.registry.ToolType;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
 import net.minecraft.nbt.NumericTag;
@@ -26,14 +30,10 @@ import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.ToolType;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -375,7 +375,7 @@ public class UtilsJS
 	{
 		try
 		{
-			return new FieldJS<>(ObfuscationReflectionHelper.findField(className, fieldName));
+			return new FieldJS<>(findField(className, fieldName));
 		}
 		catch (Throwable ex)
 		{
@@ -446,7 +446,7 @@ public class UtilsJS
 
 	public static ToolType getToolType(String id)
 	{
-		return ToolType.get(id);
+		return ToolType.byName(id);
 	}
 
 	public static WorldJS getWorld(Level world)
@@ -469,7 +469,7 @@ public class UtilsJS
 	@Nullable
 	public static MobEffect getPotion(@ID String id)
 	{
-		return ForgeRegistries.POTIONS.getValue(getMCID(id));
+		return Registries.get(KubeJS.MOD_ID).get(Registry.MOB_EFFECT_REGISTRY).get(getMCID(id));
 	}
 
 	@ID
@@ -520,17 +520,19 @@ public class UtilsJS
 		return i == -1 ? s : s.substring(i + 1);
 	}
 
-	public static <T extends IForgeRegistryEntry<T>> Function<ResourceLocation, Optional<T>> valueGetter(IForgeRegistry<T> registry, @Nullable T def)
+	public static <T> Function<ResourceLocation, Optional<T>> valueGetter(Object registry, @Nullable T def)
 	{
-		return id -> {
-			T value = registry.getValue(id);
+		return getValue(registry, def);
+	}
+	
+	@ExpectPlatform
+	private static <T> Field findField(Class<? extends T> className, String fieldName)
+	{
+		throw new AssertionError();
+	}
 
-			if (value != null && value != def)
-			{
-				return Optional.of(value);
-			}
-
-			return Optional.empty();
-		};
+	@ExpectPlatform
+	private static <T> Function<ResourceLocation, Optional<T>> getValue(Object registry, @Nullable T def) {
+		throw new AssertionError();
 	}
 }

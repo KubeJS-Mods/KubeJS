@@ -1,12 +1,11 @@
 package dev.latvian.kubejs.script;
 
 import dev.latvian.kubejs.util.WithAttachedData;
-import net.minecraftforge.eventbus.api.Event;
 
 /**
  * @author LatvianModder
  */
-public class AttachDataEvent<T extends WithAttachedData> extends Event
+public class AttachDataEvent<T extends WithAttachedData>
 {
 	private final DataType<T> type;
 	private final T parent;

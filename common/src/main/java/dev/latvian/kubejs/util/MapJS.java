@@ -3,9 +3,10 @@ package dev.latvian.kubejs.util;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.core.CompoundNBTKJS;
-import org.jetbrains.annotations.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 

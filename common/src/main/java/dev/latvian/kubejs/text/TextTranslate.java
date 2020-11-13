@@ -3,16 +3,17 @@ package dev.latvian.kubejs.text;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.util.JsonUtilsJS;
-import java.util.Objects;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+
+import java.util.Objects;
 
 /**
  * @author LatvianModder
  */
 public class TextTranslate extends Text
 {
-	private static final Object[] NO_OBJECTS = { };
+	private static final Object[] NO_OBJECTS = {};
 
 	private final String key;
 	private final Object[] objects;

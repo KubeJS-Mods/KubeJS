@@ -76,8 +76,7 @@ public class EventsJS
 					//ScriptManager.instance.currentFile = null;
 					return true;
 				}
-			}
-			catch (Throwable ex)
+			} catch (Throwable ex)
 			{
 				if (ex.getClass().getName().equals("jdk.nashorn.api.scripting.NashornException"))
 				{

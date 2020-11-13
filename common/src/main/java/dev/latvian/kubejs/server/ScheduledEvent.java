@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.server;
 
 import dev.latvian.kubejs.script.ScriptFile;
-
 import org.jetbrains.annotations.Nullable;
 
 /**

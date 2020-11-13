@@ -1,14 +1,15 @@
 package dev.latvian.kubejs.item;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.MapJS;
+import me.shedaniel.architectury.registry.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.registries.ForgeRegistries;
-
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -34,7 +35,7 @@ public class UnboundItemStackJS extends ItemStackJS
 	@Override
 	public Item getItem()
 	{
-		Item i = ForgeRegistries.ITEMS.getValue(new ResourceLocation(item));
+		Item i = Registries.get(KubeJS.MOD_ID).get(Registry.ITEM_REGISTRY).get(new ResourceLocation(item));
 
 		if (i != null)
 		{
@@ -129,7 +130,7 @@ public class UnboundItemStackJS extends ItemStackJS
 	@Override
 	public boolean areItemsEqual(ItemStack stack)
 	{
-		return itemRL.equals(stack.getItem().getRegistryName());
+		return itemRL.equals(Registries.getId(stack.getItem(), Registry.ITEM_REGISTRY));
 	}
 
 	@Override

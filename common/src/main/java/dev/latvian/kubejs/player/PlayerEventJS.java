@@ -2,9 +2,10 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.LivingEntityEventJS;
-import dev.latvian.kubejs.integration.gamestages.GameStageKJSHelper;
-import net.minecraftforge.fml.ModList;
-
+import me.shedaniel.architectury.ExpectPlatform;
+import me.shedaniel.architectury.platform.Platform;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -29,9 +30,9 @@ public abstract class PlayerEventJS extends LivingEntityEventJS
 
 	public boolean hasGameStage(String stage)
 	{
-		if (getPlayer() != null && ModList.get().isLoaded("gamestages"))
+		if (getPlayer() != null && Platform.isModLoaded("gamestages"))
 		{
-			return GameStageKJSHelper.hasStage(getPlayer().minecraftPlayer, stage);
+			return hasStage(getPlayer().minecraftPlayer, stage);
 		}
 
 		return false;
@@ -39,11 +40,11 @@ public abstract class PlayerEventJS extends LivingEntityEventJS
 
 	public void addGameStage(String stage)
 	{
-		if (ModList.get().isLoaded("gamestages"))
+		if (Platform.isModLoaded("gamestages"))
 		{
 			if (getPlayer() instanceof ServerPlayerJS)
 			{
-				GameStageKJSHelper.addStage(((ServerPlayerJS) getPlayer()).minecraftPlayer, stage);
+				addStage((ServerPlayer) getPlayer().minecraftPlayer, stage);
 			}
 		}
 		else
@@ -54,16 +55,34 @@ public abstract class PlayerEventJS extends LivingEntityEventJS
 
 	public void removeGameStage(String stage)
 	{
-		if (ModList.get().isLoaded("gamestages"))
+		if (Platform.isModLoaded("gamestages"))
 		{
 			if (getPlayer() instanceof ServerPlayerJS)
 			{
-				GameStageKJSHelper.removeStage(((ServerPlayerJS) getPlayer()).minecraftPlayer, stage);
+				removeStage((ServerPlayer) getPlayer().minecraftPlayer, stage);
 			}
 		}
 		else
 		{
 			getWorld().getSide().console.error("Can't remove gamestage " + stage + ", GameStages mod isn't loaded!");
 		}
+	}
+
+	@ExpectPlatform
+	private static boolean hasStage(Player player, String stage)
+	{
+		throw new AssertionError();
+	}
+
+	@ExpectPlatform
+	private static void addStage(ServerPlayer player, String stage)
+	{
+		throw new AssertionError();
+	}
+
+	@ExpectPlatform
+	private static void removeStage(ServerPlayer player, String stage)
+	{
+		throw new AssertionError();
 	}
 }

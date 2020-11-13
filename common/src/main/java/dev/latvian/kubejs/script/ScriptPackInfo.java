@@ -1,9 +1,10 @@
 package dev.latvian.kubejs.script;
 
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author LatvianModder

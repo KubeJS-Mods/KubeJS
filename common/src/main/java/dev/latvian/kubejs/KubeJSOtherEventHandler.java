@@ -2,22 +2,19 @@ package dev.latvian.kubejs;
 
 import dev.latvian.kubejs.client.SoundRegistryEventJS;
 import dev.latvian.kubejs.script.ScriptType;
+import me.shedaniel.architectury.registry.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 /**
  * @author LatvianModder
  */
 public class KubeJSOtherEventHandler
 {
-	public void init()
+	public static void init()
 	{
-		FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(SoundEvent.class, this::registry);
-	}
-
-	private void registry(RegistryEvent.Register<SoundEvent> event)
-	{
-		new SoundRegistryEventJS(event.getRegistry()).post(ScriptType.STARTUP, KubeJSEvents.SOUND_REGISTRY);
+		new SoundRegistryEventJS(id -> {
+			Registries.get(KubeJS.MOD_ID).get(Registry.SOUND_EVENT_REGISTRY).register(id, () -> new SoundEvent(id));
+		}).post(ScriptType.STARTUP, KubeJSEvents.SOUND_REGISTRY);
 	}
 }

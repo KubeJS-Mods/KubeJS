@@ -1,8 +1,9 @@
 package dev.latvian.kubejs.text;
 
+import net.minecraft.ChatFormatting;
+
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.ChatFormatting;
 
 /**
  * @author LatvianModder

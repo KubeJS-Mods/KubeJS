@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.block.predicate;
 
 import dev.latvian.kubejs.util.MapJS;
-
 import org.jetbrains.annotations.Nullable;
 
 /**

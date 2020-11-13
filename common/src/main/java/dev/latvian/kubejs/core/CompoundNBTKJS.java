@@ -1,7 +1,8 @@
 package dev.latvian.kubejs.core;
 
-import java.util.Map;
 import net.minecraft.nbt.Tag;
+
+import java.util.Map;
 
 /**
  * @author LatvianModder
