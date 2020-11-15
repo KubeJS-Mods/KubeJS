@@ -2,7 +2,7 @@ package dev.latvian.kubejs.util;
 
 import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptType;
-import jdk.nashorn.internal.runtime.ECMAErrors;
+import dev.latvian.mods.rhino.Context;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
@@ -87,7 +87,7 @@ public class ConsoleJS
 		{
 			int ln = getScriptLine();
 
-			if (ln != -1)
+			if (ln > 0)
 			{
 				ScriptFile f = type.manager.get().currentFile;
 
@@ -97,7 +97,7 @@ public class ConsoleJS
 				}
 
 				builder.append(':');
-				builder.append(getScriptLine());
+				builder.append(ln);
 				builder.append(": ");
 			}
 		}
@@ -207,15 +207,9 @@ public class ConsoleJS
 
 	public int getScriptLine()
 	{
-		for (StackTraceElement element : Thread.currentThread().getStackTrace())
-		{
-			if (ECMAErrors.isScriptFrame(element))
-			{
-				return element.getLineNumber();
-			}
-		}
-
-		return -1;
+		int[] linep = {0};
+		Context.getSourcePositionFromStack(linep);
+		return linep[0];
 	}
 
 	public void printClass(String className, boolean tree)

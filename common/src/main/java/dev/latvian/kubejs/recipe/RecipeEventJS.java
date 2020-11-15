@@ -84,7 +84,11 @@ public class RecipeEventJS extends EventJS
 			{
 				if (!processConditions(json, "conditions"))
 				{
-					ScriptType.SERVER.console.info("Skipping loading recipe " + recipeId + " as it's conditions were not met");
+					if (ServerSettings.instance.logSkippedRecipes)
+					{
+						ScriptType.SERVER.console.info("Skipping loading recipe " + recipeId + " as it's conditions were not met");
+					}
+
 					continue;
 				}
 

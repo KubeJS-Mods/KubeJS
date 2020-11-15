@@ -11,6 +11,7 @@ import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.SimpleWorldEventJS;
 import dev.latvian.kubejs.world.WorldJS;
+import dev.latvian.mods.rhino.RhinoException;
 import me.shedaniel.architectury.event.events.CommandPerformEvent;
 import me.shedaniel.architectury.event.events.LifecycleEvent;
 import me.shedaniel.architectury.event.events.TickEvent;
@@ -139,16 +140,13 @@ public class KubeJSServerEventHandler
 				{
 					e.call();
 				}
+				catch (RhinoException ex)
+				{
+					e.file.pack.manager.type.console.error("Error occurred while handling scheduled event callback: " + ex.getMessage());
+				}
 				catch (Throwable ex)
 				{
-					if (ex.getClass().getName().equals("jdk.nashorn.api.scripting.NashornException"))
-					{
-						e.file.pack.manager.type.console.error("Error occurred while handling scheduled event callback in " + e.file.info.location + ": " + ex);
-					}
-					else
-					{
-						ex.printStackTrace();
-					}
+					ex.printStackTrace();
 				}
 			}
 		}
@@ -176,16 +174,13 @@ public class KubeJSServerEventHandler
 				{
 					e.call();
 				}
+				catch (RhinoException ex)
+				{
+					e.file.pack.manager.type.console.error("Error occurred while handling scheduled event callback: " + ex.getMessage());
+				}
 				catch (Throwable ex)
 				{
-					if (ex.getClass().getName().equals("jdk.nashorn.api.scripting.NashornException"))
-					{
-						e.file.pack.manager.type.console.error("Error occurred while handling scheduled event callback in " + e.file.info.location + ": " + ex);
-					}
-					else
-					{
-						ex.printStackTrace();
-					}
+					ex.printStackTrace();
 				}
 			}
 		}

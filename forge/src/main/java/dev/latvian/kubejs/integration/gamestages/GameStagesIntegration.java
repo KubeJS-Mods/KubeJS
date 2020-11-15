@@ -3,30 +3,32 @@ package dev.latvian.kubejs.integration.gamestages;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import net.darkhax.gamestages.event.GameStageEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 /**
  * @author LatvianModder
  */
 public class GameStagesIntegration
 {
-	public void init()
+	public static void init()
 	{
-		AttachPlayerDataEvent.EVENT.register(this::attachPlayerData);
-		MinecraftForge.EVENT_BUS.addListener(this::gameStageAdded);
-		MinecraftForge.EVENT_BUS.addListener(this::gameStageRemoved);
+		MinecraftForge.EVENT_BUS.register(GameStagesIntegration.class);
 	}
 
-	private void attachPlayerData(AttachPlayerDataEvent event)
+	@SubscribeEvent
+	public static void attachPlayerData(AttachPlayerDataEvent event)
 	{
 		event.add("gamestages", new GameStagesPlayerData(event.getParent()));
 	}
 
-	private void gameStageAdded(GameStageEvent.Added e)
+	@SubscribeEvent
+	public static void gameStageAdded(GameStageEvent.Added e)
 	{
 		new GameStageEventJS(e).post("gamestage.added", e.getStageName());
 	}
 
-	private void gameStageRemoved(GameStageEvent.Removed e)
+	@SubscribeEvent
+	public static void gameStageRemoved(GameStageEvent.Removed e)
 	{
 		new GameStageEventJS(e).post("gamestage.removed", e.getStageName());
 	}
