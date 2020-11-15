@@ -2,7 +2,6 @@
   "required": true,
   "package": "dev.latvian.kubejs.mixin.fabric",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "kubejs.refmap.json",
   "mixins": [
     "CompoundNBTMixin",
     "DataPackRegistriesMixin",
@@ -18,7 +17,8 @@
     "ImageButtonMixin",
     "MainWindowMixin",
     "MinecraftMixin",
-    "ResourceLoadProgressGuiMixin"
+    "ResourceLoadProgressGuiMixin",
+    "ClientRecipeBookMixin"
   ],
   "injectors": {
     "defaultRequire": 1

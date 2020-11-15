@@ -13,7 +13,6 @@ dependencies {
     modCompile("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
     modCompile("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
     modCompile("me.shedaniel:architectury:${rootProject.architectury_version}:fabric")
-    include("me.shedaniel:architectury:${rootProject.architectury_version}:fabric")
     modRuntime("me.shedaniel:RoughlyEnoughItems:${rootProject.fabric_rei_version}") {
         exclude group: "net.fabricmc.fabric-api"
         exclude group: "net.fabricmc"

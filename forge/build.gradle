@@ -73,7 +73,6 @@ dependencies {
     compile fg.deobf("curse.maven:bookshelf:${rootProject.forge_bookshelf_file}")
     compile fg.deobf("curse.maven:game-stages:${rootProject.forge_gamestages_file}")
     compile fg.deobf("me.shedaniel:architectury:${rootProject.architectury_version}:forge")
-    shadow fg.deobf("me.shedaniel:architectury:${rootProject.architectury_version}:forge")
     compile "curse.maven:rhino:${rootProject.rhino_file}"
 
     compile(project(path: ":common", configuration: "mcpGenerateMod")) {
@@ -85,7 +84,6 @@ dependencies {
 }
 
 shadowJar {
-    relocate "me.shedaniel.architectury", "${rootProject.maven_group}.shadowed.me.shedaniel.architectury"
     exclude "fabric.mod.json"
 
     configurations = [project.configurations.shadow]
