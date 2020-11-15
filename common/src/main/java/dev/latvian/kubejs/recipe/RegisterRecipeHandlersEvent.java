@@ -3,6 +3,7 @@ package dev.latvian.kubejs.recipe;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.UtilsJS;
+import me.shedaniel.architectury.ForgeEvent;
 import me.shedaniel.architectury.event.Event;
 import me.shedaniel.architectury.event.EventFactory;
 import me.shedaniel.architectury.registry.Registries;
@@ -17,6 +18,7 @@ import java.util.function.Supplier;
 /**
  * @author LatvianModder
  */
+@ForgeEvent
 public class RegisterRecipeHandlersEvent
 {
 	public static final Event<Consumer<RegisterRecipeHandlersEvent>> EVENT = EventFactory.createConsumerLoop(RegisterRecipeHandlersEvent.class);

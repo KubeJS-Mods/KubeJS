@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.docs;
 
+import me.shedaniel.architectury.ForgeEvent;
 import me.shedaniel.architectury.event.Event;
 import me.shedaniel.architectury.event.EventFactory;
 
@@ -10,6 +11,7 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
+@ForgeEvent
 public class DocumentationEvent
 {
 	public static final Event<Consumer<DocumentationEvent>> EVENT = EventFactory.createConsumerLoop(DocumentationEvent.class);

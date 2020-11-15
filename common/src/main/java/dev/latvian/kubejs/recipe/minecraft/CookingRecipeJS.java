@@ -5,6 +5,7 @@ import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.ListJS;
+import me.shedaniel.architectury.platform.Platform;
 
 /**
  * @author LatvianModder
@@ -69,7 +70,14 @@ public class CookingRecipeJS extends RecipeJS
 	public void serialize()
 	{
 		json.add("ingredient", inputItems.get(0).toJson());
-		json.add("result", outputItems.get(0).toResultJson());
+		if (Platform.getModLoader().equals("forge"))
+		{
+			json.add("result", outputItems.get(0).toResultJson());
+		}
+		else
+		{
+			json.addProperty("result", outputItems.get(0).getId());
+		}
 	}
 
 	public CookingRecipeJS xp(float xp)

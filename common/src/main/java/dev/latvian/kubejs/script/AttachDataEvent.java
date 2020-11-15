@@ -1,10 +1,12 @@
 package dev.latvian.kubejs.script;
 
 import dev.latvian.kubejs.util.WithAttachedData;
+import me.shedaniel.architectury.ForgeEvent;
 
 /**
  * @author LatvianModder
  */
+@ForgeEvent
 public class AttachDataEvent<T extends WithAttachedData>
 {
 	private final DataType<T> type;

@@ -141,6 +141,14 @@ public class ConsoleJS
 		}
 	}
 
+	public void warn(Object message, Throwable throwable)
+	{
+		if (shouldPrint())
+		{
+			logger.warn(string(message), throwable);
+		}
+	}
+
 	public void warnf(String message, Object... args)
 	{
 		if (shouldPrint())
@@ -297,7 +305,8 @@ public class ConsoleJS
 				info("");
 				printClass(sc.getName(), true);
 			}
-		} catch (Throwable ex)
+		}
+		catch (Throwable ex)
 		{
 			error("= Error loading class =");
 			error(ex.toString());
@@ -356,6 +365,22 @@ public class ConsoleJS
 	public void printObject(@Nullable Object o)
 	{
 		printObject(o, false);
+	}
+
+	public void infoSlightly(String message, Throwable throwable)
+	{
+		if (shouldPrint())
+		{
+			logger.info(string(message) + ": " + throwable);
+		}
+	}
+
+	public void warnSlightly(String message, Throwable throwable)
+	{
+		if (shouldPrint())
+		{
+			logger.warn(string(message) + ": " + throwable);
+		}
 	}
 
 	private static final class VarFunc implements Comparable<VarFunc>
