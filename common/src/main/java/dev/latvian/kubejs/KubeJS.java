@@ -78,7 +78,7 @@ public class KubeJS
 
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS, "/data/kubejs/example_startup_script.js");
 		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS, "/data/kubejs/example_client_script.js");
-		String proxyClass = "dev.latvian.kubejs." + (Platform.getEnv() == EnvType.CLIENT ? "client.KubeJSClient" : "KubeJSCommon");
+		String proxyClass = Platform.getEnv() == EnvType.CLIENT ? "dev.latvian.kubejs.client.KubeJSClient" : "dev.latvian.kubejs.KubeJSCommon";
 		proxy = (KubeJSCommon) Class.forName(proxyClass).getDeclaredConstructor().newInstance();
 
 		KubeJSDocs.init();

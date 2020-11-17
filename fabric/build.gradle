@@ -19,7 +19,7 @@ dependencies {
     }
     compile("curse.maven:rhino:${rootProject.rhino_file}")
 
-    compileOnly(project(path: ":common", configuration: "transformed")) {
+    compileOnly(project(path: ":common")) {
         transitive = false
     }
     runtimeOnly(project(path: ":common", configuration: "transformed")) {

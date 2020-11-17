@@ -22,7 +22,6 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
-import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -46,8 +45,6 @@ public class KubeJSForge
 		MinecraftForge.EVENT_BUS.addGenericListener(Block.class, KubeJSForge::missingBlockMappings);
 		MinecraftForge.EVENT_BUS.addGenericListener(Item.class, KubeJSForge::missingItemMappings);
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::itemDestroyed);
-		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::blockBreak);
-		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::blockPlace);
 
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::livingDrops);
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::checkLivingSpawn);
@@ -68,22 +65,6 @@ public class KubeJSForge
 		if (event.getPlayer() instanceof ServerPlayerEntity)
 		{
 			new ItemDestroyedEventJS(event).post(KubeJSEvents.ITEM_DESTROYED);
-		}
-	}
-
-	private static void blockBreak(BlockEvent.BreakEvent event)
-	{
-		if (new BlockBreakEventJS(event).post(KubeJSEvents.BLOCK_BREAK))
-		{
-			event.setCanceled(true);
-		}
-	}
-
-	private static void blockPlace(BlockEvent.EntityPlaceEvent event)
-	{
-		if (new BlockPlaceEventJS(event).post(KubeJSEvents.BLOCK_PLACE))
-		{
-			event.setCanceled(true);
 		}
 	}
 
