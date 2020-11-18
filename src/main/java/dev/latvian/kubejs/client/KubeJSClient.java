@@ -32,6 +32,11 @@ public class KubeJSClient extends KubeJSCommon
 	@Override
 	public void init()
 	{
+		if (Minecraft.getInstance() == null) // You'd think that this is impossible, but not when you use runData gradle task
+		{
+			return;
+		}
+
 		KubeJS.clientScriptManager.unload();
 		KubeJS.clientScriptManager.loadFromDirectory();
 		KubeJS.clientScriptManager.load();
