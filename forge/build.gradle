@@ -81,6 +81,9 @@ dependencies {
     shadow(project(path: ":common", configuration: "mcp")) {
         transitive = false
     }
+
+    // We need this for Gradle 5.
+    annotationProcessor "org.spongepowered:mixin:0.8:processor"
 }
 
 shadowJar {

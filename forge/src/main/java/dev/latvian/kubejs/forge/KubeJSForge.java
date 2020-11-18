@@ -2,8 +2,6 @@ package dev.latvian.kubejs.forge;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.block.forge.BlockBreakEventJS;
-import dev.latvian.kubejs.block.forge.BlockPlaceEventJS;
 import dev.latvian.kubejs.block.forge.MissingMappingEventJS;
 import dev.latvian.kubejs.entity.ItemEntityJS;
 import dev.latvian.kubejs.entity.forge.CheckLivingEntitySpawnEventJS;
