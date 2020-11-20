@@ -1,0 +1,199 @@
+package dev.latvian.kubejs.server;
+
+import com.mojang.brigadier.CommandDispatcher;
+import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.command.CommandRegistryEventJS;
+import dev.latvian.kubejs.command.KubeJSCommands;
+import dev.latvian.kubejs.player.PlayerDataJS;
+import dev.latvian.kubejs.player.SimplePlayerEventJS;
+import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.world.AttachWorldDataEvent;
+import dev.latvian.kubejs.world.ServerWorldJS;
+import dev.latvian.kubejs.world.SimpleWorldEventJS;
+import dev.latvian.kubejs.world.WorldJS;
+import dev.latvian.mods.rhino.RhinoException;
+import me.shedaniel.architectury.event.events.CommandPerformEvent;
+import me.shedaniel.architectury.event.events.LifecycleEvent;
+import me.shedaniel.architectury.event.events.TickEvent;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.level.Level;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+/**
+ * @author LatvianModder
+ */
+public class KubeJSServerEventHandler
+{
+	public static void init()
+	{
+		LifecycleEvent.SERVER_STARTING.register(KubeJSServerEventHandler::serverStarting);
+		LifecycleEvent.SERVER_STARTED.register(KubeJSServerEventHandler::serverStarted);
+		LifecycleEvent.SERVER_STOPPING.register(KubeJSServerEventHandler::serverStopping);
+		TickEvent.SERVER_POST.register(KubeJSServerEventHandler::serverTick);
+		CommandPerformEvent.EVENT.register(KubeJSServerEventHandler::command);
+	}
+
+	public static void serverStarting(MinecraftServer server)
+	{
+		if (ServerJS.instance != null)
+		{
+			destroyServer();
+		}
+
+		ServerJS.instance = new ServerJS(server, ServerScriptManager.instance);
+		KubeJSServerEventHandler.registerCommands(server.getCommands().getDispatcher(),
+				server.isDedicatedServer() ? Commands.CommandSelection.DEDICATED : Commands.CommandSelection.INTEGRATED);
+		//event.getServer().getResourcePacks().addPackFinder(new KubeJSDataPackFinder(KubeJS.getGameDirectory().resolve("kubejs").toFile()));
+	}
+
+	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection selection)
+	{
+		KubeJSCommands.register(dispatcher);
+		new CommandRegistryEventJS(dispatcher, selection).post(ScriptType.SERVER, KubeJSEvents.COMMAND_REGISTRY);
+	}
+
+	public static void serverStarted(MinecraftServer server)
+	{
+		ServerJS.instance.overworld = new ServerWorldJS(ServerJS.instance, ServerJS.instance.minecraftServer.getLevel(Level.OVERWORLD));
+		ServerJS.instance.worldMap.put("minecraft:overworld", ServerJS.instance.overworld);
+		ServerJS.instance.worlds.add(ServerJS.instance.overworld);
+
+		for (ServerLevel world : ServerJS.instance.minecraftServer.getAllLevels())
+		{
+			if (world != ServerJS.instance.overworld.minecraftWorld)
+			{
+				ServerWorldJS w = new ServerWorldJS(ServerJS.instance, world);
+				ServerJS.instance.worldMap.put(world.dimension().location().toString(), w);
+			}
+		}
+
+		ServerJS.instance.updateWorldList();
+
+		AttachServerDataEvent.EVENT.invoker().accept(new AttachServerDataEvent(ServerJS.instance));
+		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_LOAD);
+
+		for (ServerWorldJS world : ServerJS.instance.worlds)
+		{
+			AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(ServerJS.instance.getOverworld()));
+			new SimpleWorldEventJS(ServerJS.instance.getOverworld()).post(KubeJSEvents.WORLD_LOAD);
+		}
+	}
+
+	public static void serverStopping(MinecraftServer server)
+	{
+		destroyServer();
+	}
+
+	public static void destroyServer()
+	{
+		for (PlayerDataJS p : new ArrayList<>(ServerJS.instance.playerMap.values()))
+		{
+			new SimplePlayerEventJS(p.getMinecraftPlayer()).post(KubeJSEvents.PLAYER_LOGGED_OUT);
+			ServerJS.instance.playerMap.remove(p.getId());
+		}
+
+		ServerJS.instance.playerMap.clear();
+
+		for (WorldJS w : new ArrayList<>(ServerJS.instance.worldMap.values()))
+		{
+			new SimpleWorldEventJS(w).post(KubeJSEvents.WORLD_UNLOAD);
+			ServerJS.instance.worldMap.remove(w.getDimension());
+		}
+
+		ServerJS.instance.updateWorldList();
+
+		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_UNLOAD);
+		ServerJS.instance = null;
+	}
+
+	public static void serverTick(MinecraftServer server)
+	{
+		ServerJS s = ServerJS.instance;
+
+		if (!s.scheduledEvents.isEmpty())
+		{
+			long now = System.currentTimeMillis();
+			Iterator<ScheduledEvent> eventIterator = s.scheduledEvents.iterator();
+			List<ScheduledEvent> list = new ArrayList<>();
+
+			while (eventIterator.hasNext())
+			{
+				ScheduledEvent e = eventIterator.next();
+
+				if (now >= e.getEndTime())
+				{
+					list.add(e);
+					eventIterator.remove();
+				}
+			}
+
+			for (ScheduledEvent e : list)
+			{
+				try
+				{
+					e.call();
+				}
+				catch (RhinoException ex)
+				{
+					e.file.pack.manager.type.console.error("Error occurred while handling scheduled event callback: " + ex.getMessage());
+				}
+				catch (Throwable ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+		}
+
+		if (!s.scheduledTickEvents.isEmpty())
+		{
+			long now = s.getOverworld().getTime();
+			Iterator<ScheduledEvent> eventIterator = s.scheduledTickEvents.iterator();
+			List<ScheduledEvent> list = new ArrayList<>();
+
+			while (eventIterator.hasNext())
+			{
+				ScheduledEvent e = eventIterator.next();
+
+				if (now >= e.getEndTime())
+				{
+					list.add(e);
+					eventIterator.remove();
+				}
+			}
+
+			for (ScheduledEvent e : list)
+			{
+				try
+				{
+					e.call();
+				}
+				catch (RhinoException ex)
+				{
+					e.file.pack.manager.type.console.error("Error occurred while handling scheduled event callback: " + ex.getMessage());
+				}
+				catch (Throwable ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+		}
+
+		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_TICK);
+	}
+
+	public static InteractionResult command(CommandPerformEvent event)
+	{
+		if (new CommandEventJS(event).post(ScriptType.SERVER, KubeJSEvents.COMMAND_RUN))
+		{
+			return InteractionResult.FAIL;
+		}
+		return InteractionResult.PASS;
+	}
+}

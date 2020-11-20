@@ -1,0 +1,117 @@
+buildscript {
+    repositories {
+        maven { url "https://files.minecraftforge.net/maven" }
+        maven { url "https://dist.creeper.host/Sponge/maven" }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath(group: "net.minecraftforge.gradle", name: "ForgeGradle", version: "3.+", changing: true)
+        classpath "org.spongepowered:mixingradle:0.7-SNAPSHOT"
+    }
+}
+
+plugins {
+    id "com.github.johnrengelman.shadow" version "5.0.0"
+    id "eclipse"
+}
+
+apply plugin: "net.minecraftforge.gradle"
+apply plugin: "org.spongepowered.mixin"
+
+minecraft {
+    mappings(channel: "official", version: rootProject.architect.minecraft)
+//    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    runs {
+        client {
+            workingDirectory rootProject.file('run')
+            args '--mixin.config', 'kubejs.mixins.json'
+            //property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+
+            if (project.hasProperty('mc_dev_uuid')) args '--uuid', rootProject.mc_dev_uuid
+            if (project.hasProperty('mc_dev_username')) args '--username', rootProject.mc_dev_username
+            if (project.hasProperty('mc_dev_width')) args '--width', rootProject.mc_dev_width
+            if (project.hasProperty('mc_dev_height')) args '--height', rootProject.mc_dev_height
+
+            mods {
+                kubejs {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+            args '--mixin.config', 'kubejs.mixins.json'
+            //property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+
+            args 'nogui'
+
+            mods {
+                kubejs {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+repositories {
+    jcenter()
+    maven { url "https://files.minecraftforge.net/maven" }
+}
+
+configurations {
+    shadow
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${rootProject.architect.minecraft}-${rootProject.forge_version}"
+    compile fg.deobf("curse.maven:jei:${rootProject.forge_jei_file}")
+    compile fg.deobf("curse.maven:bookshelf:${rootProject.forge_bookshelf_file}")
+    compile fg.deobf("curse.maven:game-stages:${rootProject.forge_gamestages_file}")
+    compile fg.deobf("me.shedaniel:architectury:${rootProject.architectury_version}:forge")
+    compile "curse.maven:rhino:${rootProject.rhino_file}"
+
+    compile(project(path: ":common", configuration: "mcpGenerateMod")) {
+        transitive = false
+    }
+    shadow(project(path: ":common", configuration: "mcp")) {
+        transitive = false
+    }
+
+    // We need this for Gradle 5.
+    annotationProcessor "org.spongepowered:mixin:0.8:processor"
+}
+
+shadowJar {
+    exclude "fabric.mod.json"
+
+    configurations = [project.configurations.shadow]
+    classifier null
+}
+
+reobf {
+    shadowJar {}
+}
+
+jar {
+    manifest {
+        attributes([
+                "MixinConfigs"            : "kubejs.mixins.json",
+                "Specification-Title"     : project.mod_id,
+                "Specification-Vendor"    : project.mod_author,
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : version,
+                "Implementation-Vendor"   : project.mod_author,
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+mixin {
+    add sourceSets.main, "kubejs.refmap.json"
+}
