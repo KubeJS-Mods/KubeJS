@@ -32,7 +32,6 @@ import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -229,7 +228,9 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 				if (o.has("chance"))
 				{
-					stack.setChance(o.get("chance").getAsDouble());
+					boolean locked = o.has("locked") && o.get("locked").getAsBoolean();
+					double c = o.get("chance").getAsDouble();
+					stack.setChance(locked ? -c : c);
 				}
 
 				return stack;
@@ -311,7 +312,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return null;
 	}
 
-	private double chance = 1D;
+	private double chance = -1D;
 
 	public abstract Item getItem();
 
@@ -370,7 +371,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public void setChance(double c)
 	{
-		chance = Mth.clamp(c, 0D, 1D);
+		chance = c;
 	}
 
 	public double getChance()
@@ -415,7 +416,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		double chance = getChance();
 		MapJS nbt = getNbt();
 
-		if (count > 1 || chance < 1D || !nbt.isEmpty())
+		if (count > 1 || chance != -1D || !nbt.isEmpty())
 		{
 			builder.append("item.of('");
 			builder.append(getId());
@@ -435,7 +436,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 			builder.append(')');
 
-			if (chance < 1D)
+			if (chance != -1D)
 			{
 				builder.append(".chance(");
 				builder.append(chance);
@@ -704,7 +705,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 			json.addProperty("nbt", nbt.toNBT().toString());
 		}
 
-		if (getChance() < 1D)
+		if (getChance() != -1D)
 		{
 			json.addProperty("chance", getChance());
 		}
