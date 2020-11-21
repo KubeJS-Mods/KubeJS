@@ -3,7 +3,7 @@ package dev.latvian.kubejs.recipe;
 /**
  * @author LatvianModder
  */
-public class MissingRecipeFunctionException extends Exception
+public class MissingRecipeFunctionException extends RecipeExceptionJS
 {
 	public MissingRecipeFunctionException(String message)
 	{

@@ -42,8 +42,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static net.minecraft.world.item.crafting.RecipeManager.*;
-
 /**
  * @author LatvianModder
  */
@@ -106,7 +104,7 @@ public class RecipeEventJS extends EventJS
 
 				if (function.type == null)
 				{
-					throw new MissingRecipeFunctionException("Skipping loading recipe " + recipeId + " as it's type " + function.typeID + " is unknown");
+					throw new MissingRecipeFunctionException("Unknown recipe type '" + function.typeID + "'").fallback();
 				}
 
 				RecipeJS recipe = function.type.factory.get();
@@ -117,7 +115,7 @@ public class RecipeEventJS extends EventJS
 
 				if (recipe.originalRecipe == null)
 				{
-					throw new NullPointerException("Skipping loading recipe " + recipe + " as it's serializer returned null");
+					throw new MissingRecipeFunctionException("Serializer returned null");
 				}
 
 				recipe.deserializeJson();
@@ -134,17 +132,36 @@ public class RecipeEventJS extends EventJS
 			}
 			catch (Exception ex)
 			{
-				if (!(ex instanceof MissingRecipeFunctionException))
+				if (!(ex instanceof RecipeExceptionJS) || ((RecipeExceptionJS) ex).fallback)
 				{
-					ScriptType.SERVER.console.infoSlightly("Failed to parse recipe for '" + recipeId + "'! Falling back to vanilla!", ex);
+					if (ServerSettings.instance.logSkippedRecipes)
+					{
+						ScriptType.SERVER.console.warn("Failed to parse recipe '" + recipeId + "'! Falling back to vanilla", ex);
+					}
+
+					try
+					{
+						fallbackedRecipes.add(Objects.requireNonNull(RecipeManager.fromJson(recipeId, json)));
+					}
+					catch (NullPointerException | IllegalArgumentException | JsonParseException ex2)
+					{
+						if (ServerSettings.instance.logSkippedRecipes)
+						{
+							ScriptType.SERVER.console.warn("Parsing error loading recipe " + recipeId, ex2);
+						}
+					}
+					catch (Exception ex3)
+					{
+						ScriptType.SERVER.console.warn("Parsing error loading recipe " + recipeId + ":");
+						ex3.printStackTrace();
+					}
 				}
-				try
+				else
 				{
-					fallbackedRecipes.add(Objects.requireNonNull(fromJson(recipeId, GsonHelper.convertToJsonObject(entry.getValue(), "top element"))));
-				}
-				catch (NullPointerException | IllegalArgumentException | JsonParseException ex2)
-				{
-					ScriptType.SERVER.console.warn("Parsing error loading recipe " + recipeId, ex2);
+					if (ServerSettings.instance.logSkippedRecipes)
+					{
+						ScriptType.SERVER.console.warn("Failed to parse recipe '" + recipeId + "'", ex);
+					}
 				}
 			}
 		}
@@ -187,7 +204,7 @@ public class RecipeEventJS extends EventJS
 					}
 					catch (Throwable ex)
 					{
-						ScriptType.SERVER.console.warnSlightly("Error parsing recipe " + recipe + ": " + recipe.json, ex);
+						ScriptType.SERVER.console.warn("Error parsing recipe " + recipe + ": " + recipe.json, ex);
 						failed.increment();
 					}
 					return recipe.originalRecipe;
@@ -227,7 +244,7 @@ public class RecipeEventJS extends EventJS
 					}
 					catch (Throwable ex)
 					{
-						ScriptType.SERVER.console.warnSlightly("Error creating recipe " + recipe + ": " + recipe.json, ex);
+						ScriptType.SERVER.console.warn("Error creating recipe " + recipe + ": " + recipe.json, ex);
 						failed.increment();
 					}
 					return recipe.originalRecipe;

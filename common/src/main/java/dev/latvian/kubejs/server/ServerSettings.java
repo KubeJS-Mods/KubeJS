@@ -12,4 +12,5 @@ public class ServerSettings
 	public boolean logRemovedRecipes = false;
 	public boolean betterRecipeErrorLogging = true;
 	public boolean logSkippedRecipes = true;
+	public boolean logRecipeParseErrors = true;
 }
