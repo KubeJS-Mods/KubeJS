@@ -63,7 +63,7 @@ public class RecipeFunction extends BaseFunction implements WrappedJS
 					RecipeJS recipe = type.factory.get();
 					recipe.type = type;
 					recipe.json = ((MapJS) normalize(map)).toJson();
-					recipe.deserialize();
+					recipe.deserializeJson();
 					return event.addRecipe(recipe, type, args);
 				}
 				else

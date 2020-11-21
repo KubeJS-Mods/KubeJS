@@ -325,6 +325,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return Registries.getId(getItem(), Registry.ITEM_REGISTRY).toString();
 	}
 
+	@Override
 	public abstract ItemStackJS getCopy();
 
 	public abstract void setCount(int count);
@@ -335,8 +336,14 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	@Override
 	public final ItemStackJS count(int c)
 	{
-		setCount(c);
-		return this;
+		if (c == getCount())
+		{
+			return this;
+		}
+
+		ItemStackJS is = getCopy();
+		is.setCount(c);
+		return is;
 	}
 
 	public final ItemStackJS x(int c)
@@ -381,8 +388,14 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public final ItemStackJS chance(double c)
 	{
-		setChance(c);
-		return this;
+		if (chance == c)
+		{
+			return this;
+		}
+
+		ItemStackJS is = getCopy();
+		is.setChance(c);
+		return is;
 	}
 
 	public Text getName()
@@ -683,6 +696,11 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	{
 		JsonObject json = new JsonObject();
 		json.addProperty("item", getId());
+
+		if (getCount() > 1)
+		{
+			json.addProperty("count", getCount());
+		}
 
 		if (!getNbt().isEmpty())
 		{

@@ -6,6 +6,7 @@ import com.google.gson.JsonPrimitive;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
@@ -13,12 +14,15 @@ import net.minecraft.world.item.crafting.Recipe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 
 /**
  * @author LatvianModder
  */
 public abstract class RecipeJS
 {
+	public static RecipeJS currentRecipe = null;
+
 	public ResourceLocation id;
 	public RecipeTypeJS type;
 	public JsonObject json = null;
@@ -32,10 +36,19 @@ public abstract class RecipeJS
 
 	public abstract void serialize();
 
+	public final void deserializeJson()
+	{
+		currentRecipe = this;
+		deserialize();
+		currentRecipe = null;
+	}
+
 	public final void serializeJson()
 	{
+		currentRecipe = this;
 		json.addProperty("type", type.getId());
 		serialize();
+		currentRecipe = null;
 	}
 
 	public final void save()
@@ -57,18 +70,30 @@ public abstract class RecipeJS
 
 	public final boolean hasInput(IngredientJS ingredient, boolean exact)
 	{
-		for (IngredientJS in : inputItems)
+		return getInputIndex(ingredient, exact) != -1;
+	}
+
+	public final int getInputIndex(IngredientJS ingredient, boolean exact)
+	{
+		for (int i = 0; i < inputItems.size(); i++)
 		{
+			IngredientJS in = inputItems.get(i);
+
 			if (exact ? in.equals(ingredient) : in.anyStackMatches(ingredient))
 			{
-				return true;
+				return i;
 			}
 		}
 
-		return false;
+		return -1;
 	}
 
 	public final boolean replaceInput(IngredientJS i, IngredientJS with, boolean exact)
+	{
+		return replaceInput(i, with, exact, (in, original) -> in.count(original.getCount()));
+	}
+
+	public final boolean replaceInput(IngredientJS i, IngredientJS with, boolean exact, BiFunction<IngredientJS, IngredientJS, IngredientJS> func)
 	{
 		boolean changed = false;
 
@@ -76,7 +101,7 @@ public abstract class RecipeJS
 		{
 			if (exact ? inputItems.get(j).equals(i) : inputItems.get(j).anyStackMatches(i))
 			{
-				inputItems.set(j, IngredientJS.of(with));
+				inputItems.set(j, func.apply(with.getCopy(), inputItems.get(j)));
 				changed = true;
 				save();
 			}
@@ -87,18 +112,30 @@ public abstract class RecipeJS
 
 	public final boolean hasOutput(IngredientJS ingredient, boolean exact)
 	{
-		for (ItemStackJS out : outputItems)
+		return getOutputIndex(ingredient, exact) != -1;
+	}
+
+	public final int getOutputIndex(IngredientJS ingredient, boolean exact)
+	{
+		for (int i = 0; i < outputItems.size(); i++)
 		{
+			ItemStackJS out = outputItems.get(i);
+
 			if (exact ? ingredient.equals(out) : ingredient.test(out))
 			{
-				return true;
+				return i;
 			}
 		}
 
-		return false;
+		return -1;
 	}
 
 	public final boolean replaceOutput(IngredientJS i, ItemStackJS with, boolean exact)
+	{
+		return replaceOutput(i, with, exact, (out, original) -> out.count(original.getCount()).chance(original.getChance()));
+	}
+
+	public final boolean replaceOutput(IngredientJS i, ItemStackJS with, boolean exact, BiFunction<ItemStackJS, ItemStackJS, ItemStackJS> func)
 	{
 		boolean changed = false;
 
@@ -106,7 +143,7 @@ public abstract class RecipeJS
 		{
 			if (exact ? i.equals(outputItems.get(j)) : i.test(outputItems.get(j)))
 			{
-				outputItems.set(j, with.getCopy().count(outputItems.get(j).getCount())).chance(outputItems.get(j).getChance());
+				outputItems.set(j, func.apply(with.getCopy(), outputItems.get(j)));
 				changed = true;
 				save();
 			}
@@ -162,5 +199,13 @@ public abstract class RecipeJS
 	public String getType()
 	{
 		return type.toString();
+	}
+
+	public JsonElement serializeIngredientStack(IngredientStackJS in)
+	{
+		JsonObject json = new JsonObject();
+		json.add(in.ingredientKey, in.ingredient.toJson());
+		json.addProperty(in.countKey, in.getCount());
+		return json;
 	}
 }

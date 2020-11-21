@@ -6,7 +6,6 @@ import dev.latvian.kubejs.util.ListJS;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -94,27 +93,21 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	}
 
 	@Override
+	public IngredientJS getCopy()
+	{
+		MatchAnyIngredientJS i = new MatchAnyIngredientJS();
+
+		for (IngredientJS in : ingredients)
+		{
+			i.ingredients.add(in.getCopy());
+		}
+
+		return i;
+	}
+
+	@Override
 	public String toString()
 	{
-		if (ingredients.isEmpty())
-		{
-			return "[]";
-		}
-
-		Iterator<IngredientJS> it = ingredients.iterator();
-		StringBuilder sb = new StringBuilder();
-		sb.append('[');
-		while (true)
-		{
-			IngredientJS e = it.next();
-			sb.append(e);
-
-			if (!it.hasNext())
-			{
-				return sb.append(']').toString();
-			}
-
-			sb.append('|');
-		}
+		return ingredients.toString();
 	}
 }

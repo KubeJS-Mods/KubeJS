@@ -3,6 +3,7 @@ package dev.latvian.kubejs.item.ingredient;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ItemStackJS;
+import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -46,9 +47,9 @@ public class CustomIngredient implements IngredientJS
 	{
 		Set<ItemStackJS> set = new HashSet<>();
 
-		for (ItemStack is : ingredient.getItems())
+		for (int i : ingredient.getStackingIds())
 		{
-			set.add(ItemStackJS.of(is));
+			set.add(ItemStackJS.of(StackedContents.fromStackingIndex(i)));
 		}
 
 		return set;

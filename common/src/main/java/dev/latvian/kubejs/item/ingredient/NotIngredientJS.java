@@ -32,4 +32,10 @@ public final class NotIngredientJS implements IngredientJS
 	{
 		return ingredientJS;
 	}
+
+	@Override
+	public IngredientJS getCopy()
+	{
+		return new NotIngredientJS(ingredientJS.getCopy());
+	}
 }

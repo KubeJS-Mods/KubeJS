@@ -56,4 +56,10 @@ public class MatchAllIngredientJS implements IngredientJS
 	{
 		return EmptyItemStackJS.INSTANCE;
 	}
+
+	@Override
+	public String toString()
+	{
+		return "'*'";
+	}
 }

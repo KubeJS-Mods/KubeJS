@@ -40,4 +40,10 @@ public final class FilteredIngredientJS implements IngredientJS
 
 		return set;
 	}
+
+	@Override
+	public IngredientJS getCopy()
+	{
+		return new FilteredIngredientJS(ingredient.getCopy(), filter.getCopy());
+	}
 }

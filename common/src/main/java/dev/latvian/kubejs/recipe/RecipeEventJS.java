@@ -75,14 +75,6 @@ public class RecipeEventJS extends EventJS
 
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap)
 	{
-		class MissingRecipeFunctionException extends Exception
-		{
-			public MissingRecipeFunctionException(String message)
-			{
-				super(message);
-			}
-		}
-
 		ScriptType.SERVER.console.setLineNumber(true);
 		Stopwatch timer = Stopwatch.createStarted();
 
@@ -128,7 +120,7 @@ public class RecipeEventJS extends EventJS
 					throw new NullPointerException("Skipping loading recipe " + recipe + " as it's serializer returned null");
 				}
 
-				recipe.deserialize();
+				recipe.deserializeJson();
 				originalRecipes.add(recipe);
 
 				if (recipe.originalRecipe.isSpecial())
@@ -310,7 +302,7 @@ public class RecipeEventJS extends EventJS
 
 	public int remove(Object filter)
 	{
-		int[] count = new int[1];
+		MutableInt count = new MutableInt();
 		forEachRecipe(filter, r ->
 		{
 			if (removedRecipes.add(r))
@@ -324,15 +316,15 @@ public class RecipeEventJS extends EventJS
 					ScriptType.SERVER.console.debug("- " + r + ": " + r.inputItems + " -> " + r.outputItems);
 				}
 
-				count[0]++;
+				count.increment();
 			}
 		});
-		return count[0];
+		return count.getValue();
 	}
 
 	public int replaceInput(Object filter, Object ingredient, Object with, boolean exact)
 	{
-		int[] count = new int[1];
+		MutableInt count = new MutableInt();
 		IngredientJS i = IngredientJS.of(ingredient);
 		IngredientJS[] w = new IngredientJS[] {IngredientJS.of(with)};
 		String is = i.toString();
@@ -341,16 +333,16 @@ public class RecipeEventJS extends EventJS
 		{
 			if (r.replaceInput(i, w[0], exact))
 			{
-				count[0]++;
+				count.increment();
 				w[0] = IngredientJS.of(with);
 
 				if (ServerSettings.instance.logAddedRecipes || ServerSettings.instance.logRemovedRecipes)
 				{
-					ScriptType.SERVER.console.info("~ " + r + ": OUT " + is + " -> " + ws);
+					ScriptType.SERVER.console.info("~ " + r + ": IN " + is + " -> " + ws);
 				}
 			}
 		});
-		return count[0];
+		return count.getValue();
 	}
 
 	public int replaceInput(Object filter, Object ingredient, Object with)
@@ -365,25 +357,24 @@ public class RecipeEventJS extends EventJS
 
 	public int replaceOutput(Object filter, Object ingredient, Object with, boolean exact)
 	{
-		int[] count = new int[1];
+		MutableInt count = new MutableInt();
 		IngredientJS i = IngredientJS.of(ingredient);
-		ItemStackJS[] w = new ItemStackJS[] {ItemStackJS.of(with)};
+		ItemStackJS w = ItemStackJS.of(with);
 		String is = i.toString();
-		String ws = w[0].toString();
+		String ws = w.toString();
 		forEachRecipe(filter, r ->
 		{
-			if (r.replaceOutput(i, w[0], exact))
+			if (r.replaceOutput(i, w, exact))
 			{
-				count[0]++;
-				w[0] = ItemStackJS.of(with);
+				count.increment();
 
 				if (ServerSettings.instance.logAddedRecipes || ServerSettings.instance.logRemovedRecipes)
 				{
-					ScriptType.SERVER.console.info("~ " + r + ": IN " + is + " -> " + ws);
+					ScriptType.SERVER.console.info("~ " + r + ": OUT " + is + " -> " + ws);
 				}
 			}
 		});
-		return count[0];
+		return count.getValue();
 	}
 
 	public int replaceOutput(Object filter, Object ingredient, Object with)
@@ -444,7 +435,7 @@ public class RecipeEventJS extends EventJS
 		return getRecipeFunction(Registries.getId(RecipeSerializer.SMOKING_RECIPE, Registry.RECIPE_SERIALIZER_REGISTRY));
 	}
 
-	public RecipeFunction getStonecutter()
+	public RecipeFunction getStonecutting()
 	{
 		return getRecipeFunction(Registries.getId(RecipeSerializer.STONECUTTER, Registry.RECIPE_SERIALIZER_REGISTRY));
 	}

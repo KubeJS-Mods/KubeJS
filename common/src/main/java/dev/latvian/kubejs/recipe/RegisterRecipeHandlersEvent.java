@@ -32,10 +32,11 @@ public class RegisterRecipeHandlersEvent
 	public void register(RecipeTypeJS type)
 	{
 		map.put(Registries.getId(type.serializer, Registry.RECIPE_SERIALIZER_REGISTRY), type);
+		KubeJS.LOGGER.info("Registered custom recipe handler for type " + type);
 	}
 
 	public void register(@ID String id, Supplier<RecipeJS> f)
 	{
-		register(new RecipeTypeJS(Objects.requireNonNull(Registries.get(KubeJS.MOD_ID).get(Registry.RECIPE_SERIALIZER_REGISTRY).get(UtilsJS.getMCID(id)), "Cannot found recipe serializer: " + UtilsJS.getMCID(id).toString()), f));
+		register(new RecipeTypeJS(Objects.requireNonNull(Registries.get(KubeJS.MOD_ID).get(Registry.RECIPE_SERIALIZER_REGISTRY).get(UtilsJS.getMCID(id)), "Cannot find recipe serializer: " + UtilsJS.getMCID(id).toString()), f));
 	}
 }

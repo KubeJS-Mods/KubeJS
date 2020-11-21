@@ -34,4 +34,10 @@ public final class IgnoreNBTIngredientJS implements IngredientJS
 	{
 		return item.getStacks();
 	}
+
+	@Override
+	public IngredientJS getCopy()
+	{
+		return new IgnoreNBTIngredientJS(item.getCopy());
+	}
 }
