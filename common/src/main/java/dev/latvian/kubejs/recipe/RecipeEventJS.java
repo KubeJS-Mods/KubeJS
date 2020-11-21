@@ -81,7 +81,7 @@ public class RecipeEventJS extends EventJS
 		{
 			ResourceLocation recipeId = entry.getKey();
 
-			if (Platform.getModLoader().equals("forge") && recipeId.getPath().startsWith("_"))
+			if (Platform.isForge() && recipeId.getPath().startsWith("_"))
 			{
 				continue; //Forge: filter anything beginning with "_" as it's used for metadata.
 			}
@@ -194,7 +194,7 @@ public class RecipeEventJS extends EventJS
 					{
 						recipe.serializeJson();
 						Recipe<?> resultRecipe = Objects.requireNonNull(recipe.type.serializer.fromJson(recipe.id, recipe.json));
-						if (Platform.getModLoader().equals("fabric"))
+						if (Platform.isFabric())
 						{
 							// Fabric: we love tech reborn
 							if (recipe.type.serializer.getClass().getName().contains("RebornRecipeType"))

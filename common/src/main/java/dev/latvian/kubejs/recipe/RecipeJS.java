@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.recipe;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -17,6 +18,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
@@ -219,7 +221,7 @@ public abstract class RecipeJS
 	{
 		IngredientJS ingredient = IngredientJS.of(o);
 
-		if (ingredient.isInvalidRecipeIngredient() && !Platform.getModLoader().equals("fabric"))
+		if (ingredient.isInvalidRecipeIngredient() && !Platform.isFabric()) // This is stupid >:(
 		{
 			if (key.isEmpty())
 			{
@@ -243,11 +245,84 @@ public abstract class RecipeJS
 	{
 		ItemStackJS result = ItemStackJS.of(o);
 
-		if (result.isInvalidRecipeIngredient() && !Platform.getModLoader().equals("fabric"))
+		if (result.isInvalidRecipeIngredient() && !Platform.isFabric()) // This is stupid >:(
 		{
 			throw new RecipeExceptionJS(o + " is not a valid result!");
 		}
 
 		return result;
+	}
+
+	public List<IngredientJS> parseIngredientItemList(@Nullable Object o)
+	{
+		List<IngredientJS> list = new ArrayList<>();
+
+		if (o instanceof JsonElement)
+		{
+			JsonArray array;
+
+			if (o instanceof JsonArray)
+			{
+				array = ((JsonArray) o).getAsJsonArray();
+			}
+			else
+			{
+				array = new JsonArray();
+				array.add((JsonElement) o);
+			}
+
+			for (JsonElement e : array)
+			{
+				list.add(parseIngredientItem(e));
+			}
+		}
+		else
+		{
+			for (Object o1 : ListJS.orSelf(o))
+			{
+				list.add(parseIngredientItem(o1));
+			}
+		}
+
+		return list;
+	}
+
+	public List<IngredientStackJS> parseIngredientItemStackList(@Nullable Object o)
+	{
+		return parseIngredientItemList(o).stream().map(IngredientJS::asIngredientStack).collect(Collectors.toList());
+	}
+
+	public List<ItemStackJS> parseResultItemList(@Nullable Object o)
+	{
+		List<ItemStackJS> list = new ArrayList<>();
+
+		if (o instanceof JsonElement)
+		{
+			JsonArray array;
+
+			if (o instanceof JsonArray)
+			{
+				array = ((JsonArray) o).getAsJsonArray();
+			}
+			else
+			{
+				array = new JsonArray();
+				array.add((JsonElement) o);
+			}
+
+			for (JsonElement e : array)
+			{
+				list.add(parseResultItem(e));
+			}
+		}
+		else
+		{
+			for (Object o1 : ListJS.orSelf(o))
+			{
+				list.add(parseResultItem(o1));
+			}
+		}
+
+		return list;
 	}
 }

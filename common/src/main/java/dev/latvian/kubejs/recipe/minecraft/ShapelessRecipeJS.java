@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.recipe.minecraft;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
@@ -16,11 +15,7 @@ public class ShapelessRecipeJS extends RecipeJS
 	public void create(ListJS args)
 	{
 		outputItems.add(parseResultItem(args.get(0)));
-
-		for (Object o : ListJS.orSelf(args.get(1)))
-		{
-			inputItems.add(parseIngredientItem(o));
-		}
+		inputItems.addAll(parseIngredientItemList(args.get(1)));
 
 		if (inputItems.isEmpty())
 		{
@@ -32,11 +27,7 @@ public class ShapelessRecipeJS extends RecipeJS
 	public void deserialize()
 	{
 		outputItems.add(parseResultItem(json.get("result")));
-
-		for (JsonElement e : json.get("ingredients").getAsJsonArray())
-		{
-			inputItems.add(parseIngredientItem(e));
-		}
+		inputItems.addAll(parseIngredientItemList(json.get("ingredients")));
 
 		if (inputItems.isEmpty())
 		{

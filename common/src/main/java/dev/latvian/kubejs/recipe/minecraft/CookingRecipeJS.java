@@ -38,7 +38,7 @@ public class CookingRecipeJS extends RecipeJS
 	{
 		if (serializeOutputs)
 		{
-			if (Platform.getModLoader().equals("forge"))
+			if (Platform.isForge())
 			{
 				json.add("result", outputItems.get(0).toResultJson());
 			}
