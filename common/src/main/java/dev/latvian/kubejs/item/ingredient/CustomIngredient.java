@@ -54,4 +54,10 @@ public class CustomIngredient implements IngredientJS
 
 		return set;
 	}
+
+	@Override
+	public boolean isEmpty()
+	{
+		return false;
+	}
 }
