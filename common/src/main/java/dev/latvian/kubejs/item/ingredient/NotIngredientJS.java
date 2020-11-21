@@ -38,4 +38,10 @@ public final class NotIngredientJS implements IngredientJS
 	{
 		return new NotIngredientJS(ingredientJS.getCopy());
 	}
+
+	@Override
+	public boolean isInvalidRecipeIngredient()
+	{
+		return ingredientJS.isInvalidRecipeIngredient();
+	}
 }

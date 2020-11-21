@@ -23,6 +23,8 @@
 	],
 	"depends": {
 		"fabric": "*",
-		"minecraft": "~1.16.2"
+		"minecraft": "~1.16.2",
+		"rhino": "*",
+		"architectury": "*"
 	}
 }

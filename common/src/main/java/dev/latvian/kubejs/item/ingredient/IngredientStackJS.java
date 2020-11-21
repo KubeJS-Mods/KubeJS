@@ -83,6 +83,12 @@ public class IngredientStackJS implements IngredientJS
 	}
 
 	@Override
+	public boolean isInvalidRecipeIngredient()
+	{
+		return countOverride <= 0 || ingredient.isInvalidRecipeIngredient();
+	}
+
+	@Override
 	public Set<ItemStackJS> getStacks()
 	{
 		return ingredient.getStacks();

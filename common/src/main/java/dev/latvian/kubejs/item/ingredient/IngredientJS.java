@@ -287,7 +287,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 
 	default boolean isInvalidRecipeIngredient()
 	{
-		return true;
+		return false;
 	}
 
 	default Set<ItemStackJS> getStacks()
