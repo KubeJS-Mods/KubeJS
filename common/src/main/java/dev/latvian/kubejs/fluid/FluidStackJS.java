@@ -4,6 +4,7 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import me.shedaniel.architectury.fluid.FluidStack;
 import me.shedaniel.architectury.registry.Registries;
@@ -18,7 +19,7 @@ import java.util.Objects;
 /**
  * @author LatvianModder
  */
-public abstract class FluidStackJS implements WrappedJSObjectChangeListener<MapJS>
+public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeListener<MapJS>
 {
 	public static FluidStackJS of(@Nullable Object o)
 	{
@@ -158,36 +159,26 @@ public abstract class FluidStackJS implements WrappedJSObjectChangeListener<MapJ
 
 	public String toString()
 	{
-		StringBuilder builder = new StringBuilder();
-
 		int amount = getAmount();
 		MapJS nbt = getNbt();
 
-		if (amount != FluidStack.bucketAmount().intValue() || nbt != null)
+		StringBuilder builder = new StringBuilder();
+		builder.append("fluid.of('");
+		builder.append(getId());
+		builder.append("')");
+
+		if (amount != FluidStack.bucketAmount().intValue())
 		{
-			builder.append("fluid.of('");
-			builder.append(getId());
-			builder.append("')");
-
-			if (amount != FluidStack.bucketAmount().intValue())
-			{
-				builder.append(".amount(");
-				builder.append(amount);
-				builder.append(')');
-			}
-
-			if (nbt != null)
-			{
-				builder.append(".nbt(");
-				nbt.toString(builder);
-				builder.append(')');
-			}
+			builder.append(".amount(");
+			builder.append(amount);
+			builder.append(')');
 		}
-		else
+
+		if (nbt != null)
 		{
-			builder.append('\'');
-			builder.append(getId());
-			builder.append('\'');
+			builder.append(".nbt(");
+			nbt.toString(builder);
+			builder.append(')');
 		}
 
 		return builder.toString();
