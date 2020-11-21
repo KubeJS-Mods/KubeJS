@@ -25,8 +25,8 @@ public abstract class DataPackRegistriesMixin implements DataPackRegistriesKJS
 	}
 
 	@ModifyArg(method = "loadResources", at = @At(value = "INVOKE", ordinal = 0,
-	                                              target = "Lnet/minecraft/resources/IReloadableResourceManager;reload(Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;Ljava/util/List;Ljava/util/concurrent/CompletableFuture;)Ljava/util/concurrent/CompletableFuture;"),
-	           index = 2)
+			target = "Lnet/minecraft/resources/IReloadableResourceManager;reload(Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;Ljava/util/List;Ljava/util/concurrent/CompletableFuture;)Ljava/util/concurrent/CompletableFuture;"),
+			index = 2)
 	private static List<IResourcePack> resourcePackList(List<IResourcePack> list)
 	{
 		return DataPackRegistriesHelper.getResourcePackListKJS(list);

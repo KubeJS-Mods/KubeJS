@@ -524,7 +524,7 @@ public class UtilsJS
 	{
 		return getValue(registry, def);
 	}
-	
+
 	@ExpectPlatform
 	private static <T> Field findField(Class<? extends T> className, String fieldName)
 	{
@@ -532,7 +532,8 @@ public class UtilsJS
 	}
 
 	@ExpectPlatform
-	private static <T> Function<ResourceLocation, Optional<T>> getValue(Object registry, @Nullable T def) {
+	private static <T> Function<ResourceLocation, Optional<T>> getValue(Object registry, @Nullable T def)
+	{
 		throw new AssertionError();
 	}
 }

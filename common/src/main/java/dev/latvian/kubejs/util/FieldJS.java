@@ -32,7 +32,8 @@ public class FieldJS<T>
 			}
 
 			return Optional.ofNullable(UtilsJS.cast(field.get(object)));
-		} catch (Exception ex)
+		}
+		catch (Exception ex)
 		{
 			return Optional.empty();
 		}
@@ -60,7 +61,8 @@ public class FieldJS<T>
 
 			field.set(object, value);
 			return true;
-		} catch (Exception ex)
+		}
+		catch (Exception ex)
 		{
 			return false;
 		}

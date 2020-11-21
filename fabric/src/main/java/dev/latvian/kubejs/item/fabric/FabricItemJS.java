@@ -15,8 +15,8 @@ import java.util.Map;
 
 public class FabricItemJS extends ItemJS implements DynamicAttributeTool
 {
-	private Map<ResourceLocation, Integer> toolsMap;
-	private float miningSpeed;
+	private final Map<ResourceLocation, Integer> toolsMap;
+	private final float miningSpeed;
 
 	public FabricItemJS(ItemBuilder p)
 	{
@@ -39,7 +39,10 @@ public class FabricItemJS extends ItemJS implements DynamicAttributeTool
 		{
 			Tag.Named<Item> identified = (Tag.Named<Item>) tag;
 			Integer level = toolsMap.get(identified.getName());
-			if (level != null) return level;
+			if (level != null)
+			{
+				return level;
+			}
 		}
 		return 0;
 	}
@@ -47,7 +50,10 @@ public class FabricItemJS extends ItemJS implements DynamicAttributeTool
 	@Override
 	public float getDestroySpeed(ItemStack stack, BlockState state)
 	{
-		if (toolsMap.isEmpty()) return miningSpeed;
+		if (toolsMap.isEmpty())
+		{
+			return miningSpeed;
+		}
 		return super.getDestroySpeed(stack, state);
 	}
 
@@ -58,7 +64,10 @@ public class FabricItemJS extends ItemJS implements DynamicAttributeTool
 		{
 			Tag.Named<Item> identified = (Tag.Named<Item>) tag;
 			Integer level = toolsMap.get(identified.getName());
-			if (level != null) return miningSpeed;
+			if (level != null)
+			{
+				return miningSpeed;
+			}
 		}
 		return 1.0F;
 	}

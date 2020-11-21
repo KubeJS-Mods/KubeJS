@@ -37,9 +37,13 @@ public class ContainerInventory implements ItemHandler.Mutable
 	public boolean equals(Object o)
 	{
 		if (this == o)
+		{
 			return true;
+		}
 		if (o == null || getClass() != o.getClass())
+		{
 			return false;
+		}
 
 		ContainerInventory that = (ContainerInventory) o;
 
@@ -71,7 +75,9 @@ public class ContainerInventory implements ItemHandler.Mutable
 	public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate)
 	{
 		if (stack.isEmpty())
+		{
 			return ItemStack.EMPTY;
+		}
 
 		ItemStack stackInSlot = getInv().getItem(slot);
 
@@ -79,13 +85,19 @@ public class ContainerInventory implements ItemHandler.Mutable
 		if (!stackInSlot.isEmpty())
 		{
 			if (stackInSlot.getCount() >= Math.min(stackInSlot.getMaxStackSize(), getSlotLimit(slot)))
+			{
 				return stack;
+			}
 
 			if (!ItemHandlerUtils.canItemStacksStack(stack, stackInSlot))
+			{
 				return stack;
+			}
 
 			if (!getInv().canPlaceItem(slot, stack))
+			{
 				return stack;
+			}
 
 			m = Math.min(stack.getMaxStackSize(), getSlotLimit(slot)) - stackInSlot.getCount();
 
@@ -123,7 +135,9 @@ public class ContainerInventory implements ItemHandler.Mutable
 		else
 		{
 			if (!getInv().canPlaceItem(slot, stack))
+			{
 				return stack;
+			}
 
 			m = Math.min(stack.getMaxStackSize(), getSlotLimit(slot));
 			if (m < stack.getCount())
@@ -160,12 +174,16 @@ public class ContainerInventory implements ItemHandler.Mutable
 	public ItemStack extractItem(int slot, int amount, boolean simulate)
 	{
 		if (amount == 0)
+		{
 			return ItemStack.EMPTY;
+		}
 
 		ItemStack stackInSlot = getInv().getItem(slot);
 
 		if (stackInSlot.isEmpty())
+		{
 			return ItemStack.EMPTY;
+		}
 
 		if (simulate)
 		{

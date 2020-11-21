@@ -33,7 +33,8 @@ public class RecipeTypeJS
 		return string;
 	}
 
-	public String getId() {
+	public String getId()
+	{
 		return string;
 	}
 

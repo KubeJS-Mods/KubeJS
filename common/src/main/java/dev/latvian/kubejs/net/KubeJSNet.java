@@ -4,8 +4,7 @@ import dev.latvian.kubejs.KubeJS;
 import me.shedaniel.architectury.networking.NetworkChannel;
 import net.minecraft.resources.ResourceLocation;
 
-import static me.shedaniel.architectury.networking.NetworkManager.clientToServer;
-import static me.shedaniel.architectury.networking.NetworkManager.serverToClient;
+import static me.shedaniel.architectury.networking.NetworkManager.*;
 
 /**
  * @author LatvianModder

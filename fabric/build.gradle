@@ -1,41 +1,41 @@
 plugins {
-    id "fabric-loom"
-    id "com.github.johnrengelman.shadow" version "5.0.0"
+	id "fabric-loom"
+	id "com.github.johnrengelman.shadow" version "5.0.0"
 }
 
 configurations {
-    shadow
+	shadow
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:${rootProject.architect.minecraft}")
-    mappings(minecraft.officialMojangMappings())
-    modCompile("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
-    modCompile("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
-    modCompile("me.shedaniel:architectury:${rootProject.architectury_version}:fabric")
-    modRuntime("me.shedaniel:RoughlyEnoughItems:${rootProject.fabric_rei_version}") {
-        exclude group: "net.fabricmc.fabric-api"
-        exclude group: "net.fabricmc"
-    }
-    compile("curse.maven:rhino:${rootProject.rhino_file}")
+	minecraft("com.mojang:minecraft:${rootProject.architect.minecraft}")
+	mappings(minecraft.officialMojangMappings())
+	modCompile("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
+	modCompile("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
+	modCompile("me.shedaniel:architectury:${rootProject.architectury_version}:fabric")
+	modRuntime("me.shedaniel:RoughlyEnoughItems:${rootProject.fabric_rei_version}") {
+		exclude group: "net.fabricmc.fabric-api"
+		exclude group: "net.fabricmc"
+	}
+	compile("curse.maven:rhino:${rootProject.rhino_file}")
 
-    compileOnly(project(path: ":common")) {
-        transitive = false
-    }
-    runtimeOnly(project(path: ":common", configuration: "transformed")) {
-        transitive = false
-    }
-    shadow(project(path: ":common", configuration: "transformed")) {
-        transitive = false
-    }
+	compileOnly(project(path: ":common")) {
+		transitive = false
+	}
+	runtimeOnly(project(path: ":common", configuration: "transformed")) {
+		transitive = false
+	}
+	shadow(project(path: ":common", configuration: "transformed")) {
+		transitive = false
+	}
 }
 
 shadowJar {
-    configurations = [project.configurations.shadow]
-    classifier "fabric"
+	configurations = [project.configurations.shadow]
+	classifier "fabric"
 }
 
 remapJar {
-    dependsOn(shadowJar)
-    input.set(shadowJar.archivePath)
+	dependsOn(shadowJar)
+	input.set(shadowJar.archivePath)
 }

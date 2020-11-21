@@ -413,9 +413,9 @@ public class ConsoleJS
 
 			VarFunc varFunc = (VarFunc) o;
 			return Objects.equals(name, varFunc.name) &&
-			       Objects.equals(type, varFunc.type) &&
-			       Objects.equals(flags, varFunc.flags) &&
-			       Objects.equals(params, varFunc.params);
+					Objects.equals(type, varFunc.type) &&
+					Objects.equals(flags, varFunc.flags) &&
+					Objects.equals(params, varFunc.params);
 		}
 
 		@Override

@@ -42,7 +42,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static net.minecraft.world.item.crafting.RecipeManager.fromJson;
+import static net.minecraft.world.item.crafting.RecipeManager.*;
 
 /**
  * @author LatvianModder
@@ -222,15 +222,19 @@ public class RecipeEventJS extends EventJS
 		timer.reset().start();
 		addedRecipes.stream()
 				.map(recipe -> {
-					try {
+					try
+					{
 						recipe.serializeJson();
 						Recipe<?> resultRecipe = Objects.requireNonNull(recipe.type.serializer.fromJson(recipe.id, recipe.json));
-						if (recipe.type.serializer.getClass().getName().contains("RebornRecipeType")) {
+						if (recipe.type.serializer.getClass().getName().contains("RebornRecipeType"))
+						{
 							resultRecipe = resultRecipe.getClass().getConstructor(recipe.type.serializer.getClass(), ResourceLocation.class).newInstance(recipe.type.serializer, recipe.id);
 							resultRecipe.getClass().getMethod("deserialize", JsonObject.class).invoke(resultRecipe, recipe.json);
 						}
 						recipe.originalRecipe = resultRecipe;
-					} catch (Throwable ex) {
+					}
+					catch (Throwable ex)
+					{
 						ScriptType.SERVER.console.warnSlightly("Error creating recipe " + recipe + ": " + recipe.json, ex);
 						failed.increment();
 					}
@@ -330,7 +334,7 @@ public class RecipeEventJS extends EventJS
 	{
 		int[] count = new int[1];
 		IngredientJS i = IngredientJS.of(ingredient);
-		IngredientJS[] w = new IngredientJS[] { IngredientJS.of(with) };
+		IngredientJS[] w = new IngredientJS[] {IngredientJS.of(with)};
 		String is = i.toString();
 		String ws = w[0].toString();
 		forEachRecipe(filter, r ->
@@ -363,7 +367,7 @@ public class RecipeEventJS extends EventJS
 	{
 		int[] count = new int[1];
 		IngredientJS i = IngredientJS.of(ingredient);
-		ItemStackJS[] w = new ItemStackJS[] { ItemStackJS.of(with) };
+		ItemStackJS[] w = new ItemStackJS[] {ItemStackJS.of(with)};
 		String is = i.toString();
 		String ws = w[0].toString();
 		forEachRecipe(filter, r ->

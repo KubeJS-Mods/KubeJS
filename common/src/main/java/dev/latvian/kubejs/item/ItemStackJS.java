@@ -658,7 +658,8 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	}
 
 	@ExpectPlatform
-	private static int _getHarvestLevel(ItemStackJS stack, ToolType tool, @Nullable PlayerJS<?> player, @Nullable BlockContainerJS block) {
+	private static int _getHarvestLevel(ItemStackJS stack, ToolType tool, @Nullable PlayerJS<?> player, @Nullable BlockContainerJS block)
+	{
 		throw new AssertionError();
 	}
 

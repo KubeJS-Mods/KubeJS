@@ -122,7 +122,8 @@ public class VirtualKubeJSDataPack extends AbstractPackResources
 					{
 						list.add(key);
 					}
-				} catch (Exception ex)
+				}
+				catch (Exception ex)
 				{
 				}
 			}

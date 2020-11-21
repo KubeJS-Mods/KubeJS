@@ -32,7 +32,8 @@ public abstract class RecipeJS
 
 	public abstract void serialize();
 
-	public final void serializeJson() {
+	public final void serializeJson()
+	{
 		json.addProperty("type", type.getId());
 		serialize();
 	}

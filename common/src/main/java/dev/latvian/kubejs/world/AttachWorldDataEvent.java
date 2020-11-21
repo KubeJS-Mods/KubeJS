@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 public class AttachWorldDataEvent extends AttachDataEvent<WorldJS>
 {
 	public static final Event<Consumer<AttachWorldDataEvent>> EVENT = EventFactory.createConsumerLoop(AttachWorldDataEvent.class);
+
 	public AttachWorldDataEvent(WorldJS w)
 	{
 		super(DataType.WORLD, w);

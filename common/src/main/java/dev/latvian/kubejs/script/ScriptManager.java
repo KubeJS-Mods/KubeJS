@@ -57,7 +57,7 @@ public class ScriptManager
 			UtilsJS.tryIO(() -> Files.createDirectories(directory));
 
 			try (InputStream in = KubeJS.class.getResourceAsStream(exampleScript);
-			     OutputStream out = Files.newOutputStream(directory.resolve("script.js")))
+				 OutputStream out = Files.newOutputStream(directory.resolve("script.js")))
 			{
 				out.write(IOUtils.toByteArray(in));
 			}

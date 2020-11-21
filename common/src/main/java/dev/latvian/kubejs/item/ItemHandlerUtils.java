@@ -33,7 +33,10 @@ public class ItemHandlerUtils
 {
 	public static void giveItemToPlayer(Player player, @Nonnull ItemStack stack, int preferredSlot)
 	{
-		if (stack.isEmpty()) return;
+		if (stack.isEmpty())
+		{
+			return;
+		}
 
 		ItemHandler inventory = new PlayerMainInvWrapper(player.inventory);
 		Level world = player.level;
@@ -73,7 +76,9 @@ public class ItemHandlerUtils
 	public static ItemStack insertItemStacked(ItemHandler inventory, @Nonnull ItemStack stack, boolean simulate)
 	{
 		if (inventory == null || stack.isEmpty())
+		{
 			return stack;
+		}
 
 		// not stackable -> just insert into a new slot
 		if (!stack.isStackable())
@@ -122,7 +127,9 @@ public class ItemHandlerUtils
 	public static ItemStack insertItem(ItemHandler dest, @Nonnull ItemStack stack, boolean simulate)
 	{
 		if (dest == null || stack.isEmpty())
+		{
 			return stack;
+		}
 
 		for (int i = 0; i < dest.getSlots(); i++)
 		{
@@ -139,13 +146,19 @@ public class ItemHandlerUtils
 	public static boolean canItemStacksStackRelaxed(@Nonnull ItemStack a, @Nonnull ItemStack b)
 	{
 		if (a.isEmpty() || b.isEmpty() || a.getItem() != b.getItem())
+		{
 			return false;
+		}
 
 		if (!a.isStackable())
+		{
 			return false;
+		}
 
 		if (a.hasTag() != b.hasTag())
+		{
 			return false;
+		}
 
 		return (!a.hasTag() || a.getTag().equals(b.getTag())) && ContainerInventory.areCapsCompatible(a, b);
 	}
@@ -153,7 +166,9 @@ public class ItemHandlerUtils
 	public static boolean canItemStacksStack(@NotNull ItemStack a, @NotNull ItemStack b)
 	{
 		if (a.isEmpty() || !a.sameItem(b) || a.hasTag() != b.hasTag())
+		{
 			return false;
+		}
 
 		return (!a.hasTag() || a.getTag().equals(b.getTag())) && ContainerInventory.areCapsCompatible(a, b);
 	}

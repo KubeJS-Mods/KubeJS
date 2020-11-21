@@ -2,7 +2,6 @@ package dev.latvian.kubejs.fluid;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.docs.ID;
-import dev.latvian.kubejs.item.ItemJS;
 import dev.latvian.kubejs.util.BuilderBase;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.world.item.BucketItem;

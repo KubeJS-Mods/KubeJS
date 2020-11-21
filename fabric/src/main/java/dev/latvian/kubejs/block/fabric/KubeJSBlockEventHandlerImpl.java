@@ -8,6 +8,8 @@ public class KubeJSBlockEventHandlerImpl
 {
 	public static LiquidBlock build(FluidBuilder builder, BlockBehaviour.Properties properties)
 	{
-		return new LiquidBlock(builder.stillFluid, properties) {};
+		return new LiquidBlock(builder.stillFluid, properties)
+		{
+		};
 	}
 }

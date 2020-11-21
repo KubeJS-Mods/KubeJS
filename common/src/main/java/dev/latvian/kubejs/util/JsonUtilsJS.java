@@ -147,7 +147,8 @@ public class JsonUtilsJS
 			jsonWriter.setLenient(true);
 			jsonWriter.setHtmlSafe(false);
 			Streams.write(json, jsonWriter);
-		} catch (IOException ex)
+		}
+		catch (IOException ex)
 		{
 			ex.printStackTrace();
 		}
@@ -167,7 +168,8 @@ public class JsonUtilsJS
 			jsonWriter.setLenient(true);
 			jsonWriter.setHtmlSafe(false);
 			Streams.write(json, jsonWriter);
-		} catch (IOException ex)
+		}
+		catch (IOException ex)
 		{
 			ex.printStackTrace();
 		}
@@ -196,7 +198,8 @@ public class JsonUtilsJS
 			}
 
 			return element;
-		} catch (Exception ex)
+		}
+		catch (Exception ex)
 		{
 			ex.printStackTrace();
 		}
@@ -228,7 +231,8 @@ public class JsonUtilsJS
 			{
 				Double.parseDouble(p.getAsString());
 				return p.getAsNumber();
-			} catch (Exception ex)
+			}
+			catch (Exception ex)
 			{
 				return p.getAsString();
 			}
@@ -248,7 +252,7 @@ public class JsonUtilsJS
 		}
 
 		try (FileReader fileReader = new FileReader(file);
-		     JsonReader jsonReader = new JsonReader(fileReader))
+			 JsonReader jsonReader = new JsonReader(fileReader))
 		{
 			JsonElement element;
 			boolean lenient = jsonReader.isLenient();
@@ -277,7 +281,7 @@ public class JsonUtilsJS
 		JsonObject json = o.toJson();
 
 		try (Writer fileWriter = new FileWriter(file);
-		     JsonWriter jsonWriter = new JsonWriter(new BufferedWriter(fileWriter)))
+			 JsonWriter jsonWriter = new JsonWriter(new BufferedWriter(fileWriter)))
 		{
 			jsonWriter.setIndent("\t");
 			jsonWriter.setSerializeNulls(true);

@@ -11,14 +11,21 @@ public class KubeJSFluidEventHandlerImpl
 	public static FlowingFluid build(boolean source, FluidBuilder builder)
 	{
 		if (source)
+		{
 			return new ForgeFlowingFluid.Source(createProperties(builder));
-		else return new ForgeFlowingFluid.Flowing(createProperties(builder));
+		}
+		else
+		{
+			return new ForgeFlowingFluid.Flowing(createProperties(builder));
+		}
 	}
 
 	public static ForgeFlowingFluid.Properties createProperties(FluidBuilder fluidBuilder)
 	{
 		if (fluidBuilder.extraPlatformInfo != null)
+		{
 			return (ForgeFlowingFluid.Properties) fluidBuilder.extraPlatformInfo;
+		}
 		FluidAttributes.Builder builder = FluidAttributes.builder(
 				new ResourceLocation(fluidBuilder.stillTexture),
 				new ResourceLocation(fluidBuilder.flowingTexture))

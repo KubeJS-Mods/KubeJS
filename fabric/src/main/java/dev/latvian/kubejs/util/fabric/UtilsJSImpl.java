@@ -36,7 +36,10 @@ public class UtilsJSImpl
 		{
 			reg = RegistriesImpl.RegistryProviderImpl.INSTANCE.get((ResourceKey) registry);
 		}
-		else throw new UnsupportedOperationException("Not a registry: " + registry);
+		else
+		{
+			throw new UnsupportedOperationException("Not a registry: " + registry);
+		}
 		return id -> {
 			T value = reg.get(id);
 

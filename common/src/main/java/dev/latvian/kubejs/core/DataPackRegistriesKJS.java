@@ -21,7 +21,8 @@ public interface DataPackRegistriesKJS
 			PreparableReloadListener reloadListener = ServerScriptManager.instance.createReloadListener();
 			manager.getReloadListenersKJS().add(0, reloadListener);
 			manager.getInitTaskQueueKJS().add(0, reloadListener);
-		} catch (Exception ex)
+		}
+		catch (Exception ex)
 		{
 			throw new RuntimeException("KubeJS failed to register it's script loader!");
 		}

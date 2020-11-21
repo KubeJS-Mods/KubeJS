@@ -77,10 +77,12 @@ public class RecipeFunction extends BaseFunction implements WrappedJS
 			recipe.json = new JsonObject();
 			recipe.create(args);
 			return event.addRecipe(recipe, type, args);
-		} catch (RecipeExceptionJS ex)
+		}
+		catch (RecipeExceptionJS ex)
 		{
 			ScriptType.SERVER.console.warn("Failed to create recipe for type '" + typeID + "': " + ex);
-		} catch (Exception ex)
+		}
+		catch (Exception ex)
 		{
 			ex.printStackTrace();
 		}

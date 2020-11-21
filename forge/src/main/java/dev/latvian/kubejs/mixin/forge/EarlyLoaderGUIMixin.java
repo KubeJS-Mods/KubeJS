@@ -22,35 +22,35 @@ public abstract class EarlyLoaderGUIMixin
 	private MainWindow window;
 
 	@ModifyArg(method = "renderMemoryInfo", remap = false,
-	           at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/client/EarlyLoaderGUI;renderMessage(Ljava/lang/String;[FIF)V"), index = 1)
+			at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/client/EarlyLoaderGUI;renderMessage(Ljava/lang/String;[FIF)V"), index = 1)
 	private float[] memoryColorKJS(float[] color)
 	{
 		return ClientProperties.get().getMemoryColor(color);
 	}
 
 	@ModifyArg(method = "renderMessages", remap = false,
-	           at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/client/EarlyLoaderGUI;renderMessage(Ljava/lang/String;[FIF)V"), index = 1)
+			at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/client/EarlyLoaderGUI;renderMessage(Ljava/lang/String;[FIF)V"), index = 1)
 	private float[] logColorKJS(float[] color)
 	{
 		return ClientProperties.get().getLogColor(color);
 	}
 
 	@ModifyArg(method = "renderTick", remap = false, at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;clearColor(FFFF)V"),
-	           index = 0)
+			index = 0)
 	private float backgroundRKJS(float c)
 	{
 		return ClientProperties.get().getBackgroundColor(c, 0);
 	}
 
 	@ModifyArg(method = "renderTick", remap = false, at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;clearColor(FFFF)V"),
-	           index = 1)
+			index = 1)
 	private float backgroundGKJS(float c)
 	{
 		return ClientProperties.get().getBackgroundColor(c, 1);
 	}
 
 	@ModifyArg(method = "renderTick", remap = false, at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;clearColor(FFFF)V"),
-	           index = 2)
+			index = 2)
 	private float backgroundBKJS(float c)
 	{
 		return ClientProperties.get().getBackgroundColor(c, 2);

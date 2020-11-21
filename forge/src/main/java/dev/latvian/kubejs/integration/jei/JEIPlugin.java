@@ -56,7 +56,9 @@ public class JEIPlugin implements IModPlugin
 		new HideJEIEventJS<>(runtime, VanillaTypes.FLUID, object -> {
 			FluidStackJS fs = FluidStackJS.of(object);
 			if (fs.isEmpty())
+			{
 				return Collections.emptyList();
+			}
 			return Collections.singletonList(fromArchitectury(fs.getFluidStack()));
 		}).post(ScriptType.CLIENT, JEIIntegration.JEI_HIDE_FLUIDS);
 

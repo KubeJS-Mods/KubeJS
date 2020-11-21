@@ -13,7 +13,7 @@ import java.util.Objects;
  */
 public class TextTranslate extends Text
 {
-	private static final Object[] NO_OBJECTS = {};
+	private static final Object[] NO_OBJECTS = { };
 
 	private final String key;
 	private final Object[] objects;

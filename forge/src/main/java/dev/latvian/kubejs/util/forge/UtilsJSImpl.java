@@ -35,7 +35,10 @@ public class UtilsJSImpl
 		{
 			reg = Registries.get(KubeJS.MOD_ID).get((RegistryKey) registry);
 		}
-		else throw new UnsupportedOperationException("Not a registry: " + registry);
+		else
+		{
+			throw new UnsupportedOperationException("Not a registry: " + registry);
+		}
 		return id -> {
 			T value = reg.get(id);
 

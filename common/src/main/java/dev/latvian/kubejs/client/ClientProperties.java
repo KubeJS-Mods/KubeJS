@@ -120,7 +120,8 @@ public class ClientProperties
 					properties.store(writer, "KubeJS Client Properties");
 				}
 			}
-		} catch (Exception ex)
+		}
+		catch (Exception ex)
 		{
 			ex.printStackTrace();
 		}
@@ -159,7 +160,8 @@ public class ClientProperties
 		try
 		{
 			return 0xFFFFFF & Integer.decode(s.startsWith("#") ? s : ("#" + s));
-		} catch (Exception ex)
+		}
+		catch (Exception ex)
 		{
 			ex.printStackTrace();
 			return def;
@@ -188,7 +190,8 @@ public class ClientProperties
 		try
 		{
 			return getColor3f(Integer.decode(s));
-		} catch (Exception ex)
+		}
+		catch (Exception ex)
 		{
 			ex.printStackTrace();
 			return null;
@@ -202,12 +205,13 @@ public class ClientProperties
 			if (icon != null)
 			{
 				try (InputStream stream16 = Files.newInputStream(icon);
-				     InputStream stream32 = Files.newInputStream(icon))
+					 InputStream stream32 = Files.newInputStream(icon))
 				{
 					tempIconCancel = false;
 					Minecraft.getInstance().getWindow().setIcon(stream16, stream32);
 					tempIconCancel = true;
-				} catch (Exception ex)
+				}
+				catch (Exception ex)
 				{
 					ex.printStackTrace();
 				}

@@ -16,7 +16,6 @@ import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.util.FieldJS;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
@@ -55,7 +54,6 @@ import java.nio.IntBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 

@@ -1,28 +1,28 @@
 {
-  "schemaVersion": 1,
-  "id": "kubejs",
-  "version": "${version}",
-  "name": "KubeJS",
-  "description": "Allows you to tweak and customize modpack with JavaScript",
-  "authors": [
-    "LatvianModder"
-  ],
-  "contact": {
-    "sources": "https://github.com/KubeJS-Mods/KubeJS",
-    "issues": "https://github.com/KubeJS-Mods/KubeJS/issues"
-  },
-  "license": "GNU LGPLv3",
-  "icon": "kubejs_logo.png",
-  "entrypoints": {
-    "main": [
-      "dev.latvian.kubejs.fabric.KubeJSFabric"
-    ]
-  },
-  "mixins": [
-    "kubejs.mixins.json"
-  ],
-  "depends": {
-    "fabric": "*",
-    "minecraft": "~1.16.2"
-  }
+	"schemaVersion": 1,
+	"id": "kubejs",
+	"version": "${version}",
+	"name": "KubeJS",
+	"description": "Allows you to tweak and customize modpack with JavaScript",
+	"authors": [
+		"LatvianModder"
+	],
+	"contact": {
+		"sources": "https://github.com/KubeJS-Mods/KubeJS",
+		"issues": "https://github.com/KubeJS-Mods/KubeJS/issues"
+	},
+	"license": "GNU LGPLv3",
+	"icon": "kubejs_logo.png",
+	"entrypoints": {
+		"main": [
+			"dev.latvian.kubejs.fabric.KubeJSFabric"
+		]
+	},
+	"mixins": [
+		"kubejs.mixins.json"
+	],
+	"depends": {
+		"fabric": "*",
+		"minecraft": "~1.16.2"
+	}
 }

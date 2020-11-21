@@ -63,7 +63,8 @@ public class UUIDUtilsJS
 			}
 
 			return UUID.fromString(sb.toString());
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}

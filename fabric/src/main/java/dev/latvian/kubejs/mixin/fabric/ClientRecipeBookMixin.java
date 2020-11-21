@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ClientRecipeBookMixin
 {
 	@Inject(method = "getCategory",
-	        at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;warn(Ljava/lang/String;[Lorg/apache/logging/log4j/util/Supplier;)V",
-	                 ordinal = 0), cancellable = true)
+			at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;warn(Ljava/lang/String;[Lorg/apache/logging/log4j/util/Supplier;)V",
+					ordinal = 0), cancellable = true)
 	private static void getCategory(Recipe<?> recipe, CallbackInfoReturnable<RecipeBookCategories> cir)
 	{
 		cir.setReturnValue(RecipeBookCategories.UNKNOWN);
