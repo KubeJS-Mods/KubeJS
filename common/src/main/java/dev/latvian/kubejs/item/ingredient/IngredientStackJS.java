@@ -125,4 +125,10 @@ public class IngredientStackJS implements IngredientJS
 		json.addProperty(countKey, countOverride);
 		return json;
 	}
+
+	@Override
+	public IngredientStackJS asIngredientStack()
+	{
+		return this;
+	}
 }

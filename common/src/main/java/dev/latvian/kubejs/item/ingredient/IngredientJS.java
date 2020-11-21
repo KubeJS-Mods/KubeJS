@@ -384,4 +384,9 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 
 		return false;
 	}
+
+	default IngredientStackJS asIngredientStack()
+	{
+		return new IngredientStackJS(count(1), getCount());
+	}
 }
