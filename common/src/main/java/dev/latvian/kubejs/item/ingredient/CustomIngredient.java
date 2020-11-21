@@ -60,4 +60,10 @@ public class CustomIngredient implements IngredientJS
 	{
 		return false;
 	}
+
+	@Override
+	public String toString()
+	{
+		return json.toString();
+	}
 }

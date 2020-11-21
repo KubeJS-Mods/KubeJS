@@ -14,6 +14,7 @@ import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.Wrapper;
+import jdk.nashorn.internal.objects.NativeRegExp;
 import me.shedaniel.architectury.ExpectPlatform;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -50,6 +51,19 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 		else if (o instanceof Pattern)
 		{
 			return new RegexIngredientJS((Pattern) o);
+		}
+		else if (o instanceof NativeRegExp)
+		{
+			Pattern reg = UtilsJS.regex(o.toString(), true);
+
+			if (reg != null)
+			{
+				return new RegexIngredientJS(reg);
+			}
+		}
+		else if (o instanceof JsonElement)
+		{
+			return ingredientFromRecipeJson((JsonElement) o);
 		}
 		else if (o instanceof CharSequence)
 		{
@@ -130,7 +144,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 				try
 				{
 					Ingredient ingredient = getCustomIngredient(json);
-					in = new CustomIngredient(ingredient, json);
+					return new CustomIngredient(ingredient, json);
 				}
 				catch (Exception ex)
 				{
@@ -209,7 +223,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 				try
 				{
 					Ingredient ingredient = getCustomIngredient(o);
-					in = new CustomIngredient(ingredient, o);
+					return new CustomIngredient(ingredient, o);
 				}
 				catch (Exception ex)
 				{
@@ -269,6 +283,11 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 	default boolean isEmpty()
 	{
 		return getFirst().isEmpty();
+	}
+
+	default boolean isInvalidRecipeIngredient()
+	{
+		return true;
 	}
 
 	default Set<ItemStackJS> getStacks()

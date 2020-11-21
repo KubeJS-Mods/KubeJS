@@ -96,7 +96,7 @@ public class EmptyItemStackJS extends ItemStackJS
 
 	public String toString()
 	{
-		return "air";
+		return "item.empty";
 	}
 
 	@Override
@@ -225,6 +225,7 @@ public class EmptyItemStackJS extends ItemStackJS
 	{
 		JsonObject json = new JsonObject();
 		json.addProperty("item", "minecraft:air");
+		json.addProperty("count", 1);
 		return json;
 	}
 }

@@ -110,4 +110,18 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	{
 		return ingredients.toString();
 	}
+
+	@Override
+	public boolean isInvalidRecipeIngredient()
+	{
+		for (IngredientJS i : ingredients)
+		{
+			if (i.isInvalidRecipeIngredient())
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
 }

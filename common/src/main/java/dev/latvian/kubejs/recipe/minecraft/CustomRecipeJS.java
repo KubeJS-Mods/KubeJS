@@ -152,6 +152,8 @@ public class CustomRecipeJS extends RecipeJS
 					&& !addInput("input")
 					&& !addInput("inputs")
 					&& !addInput("itemInput")
+					&& !addInput("item_input")
+					&& !addInput("item_inputs")
 					&& !addInput("infusionInput")
 			)
 			{
@@ -170,6 +172,8 @@ public class CustomRecipeJS extends RecipeJS
 					&& !addOutput("output")
 					&& !addOutput("outputs")
 					&& !addOutput("itemOutput")
+					&& !addOutput("item_output")
+					&& !addOutput("item_outputs")
 					&& !addOutput("mainOutput")
 					&& !addOutput("secondaryOutput")
 			)
@@ -185,26 +189,7 @@ public class CustomRecipeJS extends RecipeJS
 	@Override
 	public void serialize()
 	{
-		if (inputType != -1 && !inputKey.isEmpty())
-		{
-			if (inputType == 1)
-			{
-				JsonArray a = new JsonArray();
-
-				for (IngredientJS in : inputItems)
-				{
-					a.add(in.toJson());
-				}
-
-				json.add(inputKey, a);
-			}
-			else if (inputType == 0)
-			{
-				json.add(inputKey, (inputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : inputItems.get(0)).toJson());
-			}
-		}
-
-		if (outputType != -1 && !outputKey.isEmpty())
+		if (serializeOutputs && outputType != -1 && !outputKey.isEmpty())
 		{
 			if (outputType == 1)
 			{
@@ -225,6 +210,25 @@ public class CustomRecipeJS extends RecipeJS
 			else if (outputType == 0)
 			{
 				json.add(outputKey, (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).toResultJson());
+			}
+		}
+
+		if (serializeInputs && inputType != -1 && !inputKey.isEmpty())
+		{
+			if (inputType == 1)
+			{
+				JsonArray a = new JsonArray();
+
+				for (IngredientJS in : inputItems)
+				{
+					a.add(in.toJson());
+				}
+
+				json.add(inputKey, a);
+			}
+			else if (inputType == 0)
+			{
+				json.add(inputKey, (inputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : inputItems.get(0)).toJson());
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.util.UtilsJS;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.ItemStack;
@@ -39,6 +40,6 @@ public class RegexIngredientJS implements IngredientJS
 	@Override
 	public String toString()
 	{
-		return "regex:" + pattern;
+		return UtilsJS.toRegexString(pattern);
 	}
 }

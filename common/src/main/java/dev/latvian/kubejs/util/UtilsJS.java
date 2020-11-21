@@ -49,11 +49,16 @@ import java.util.regex.Pattern;
  */
 public class UtilsJS
 {
+	public static final Random RANDOM = new Random();
 	public static final Pattern REGEX_PATTERN = Pattern.compile("\\/(.*)\\/([a-z]*)");
 
 	public interface TryIO
 	{
 		void run() throws IOException;
+	}
+
+	public static void init()
+	{
 	}
 
 	public static void tryIO(TryIO tryIO)
@@ -66,6 +71,12 @@ public class UtilsJS
 		{
 			ex.printStackTrace();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T cast(Object o)
+	{
+		return (T) o;
 	}
 
 	@Nullable
@@ -116,16 +127,50 @@ public class UtilsJS
 		return null;
 	}
 
-	public static final Random RANDOM = new Random();
-
-	public static void init()
+	public static String toRegexString(Pattern pattern)
 	{
-	}
+		StringBuilder sb = new StringBuilder("/");
+		sb.append(pattern.pattern());
+		sb.append('/');
 
-	@SuppressWarnings("unchecked")
-	public static <T> T cast(Object o)
-	{
-		return (T) o;
+		int flags = pattern.flags();
+
+		if ((flags & Pattern.UNIX_LINES) != 0)
+		{
+			sb.append('d');
+		}
+
+		if ((flags & Pattern.CASE_INSENSITIVE) != 0)
+		{
+			sb.append('i');
+		}
+
+		if ((flags & Pattern.COMMENTS) != 0)
+		{
+			sb.append('x');
+		}
+
+		if ((flags & Pattern.MULTILINE) != 0)
+		{
+			sb.append('m');
+		}
+
+		if ((flags & Pattern.DOTALL) != 0)
+		{
+			sb.append('s');
+		}
+
+		if ((flags & Pattern.UNICODE_CASE) != 0)
+		{
+			sb.append('u');
+		}
+
+		if ((flags & Pattern.UNICODE_CHARACTER_CLASS) != 0)
+		{
+			sb.append('U');
+		}
+
+		return sb.toString();
 	}
 
 	public static void queueIO(Runnable runnable)

@@ -9,9 +9,11 @@ import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -27,8 +29,10 @@ public abstract class RecipeJS
 	public RecipeTypeJS type;
 	public JsonObject json = null;
 	public Recipe<?> originalRecipe = null;
-	public final List<IngredientJS> inputItems = new ArrayList<>(1);
 	public final List<ItemStackJS> outputItems = new ArrayList<>(1);
+	public final List<IngredientJS> inputItems = new ArrayList<>(1);
+	public boolean serializeOutputs;
+	public boolean serializeInputs;
 
 	public abstract void create(ListJS args);
 
@@ -103,6 +107,7 @@ public abstract class RecipeJS
 			{
 				inputItems.set(j, func.apply(with.getCopy(), inputItems.get(j)));
 				changed = true;
+				serializeInputs = true;
 				save();
 			}
 		}
@@ -145,6 +150,7 @@ public abstract class RecipeJS
 			{
 				outputItems.set(j, func.apply(with.getCopy(), outputItems.get(j)));
 				changed = true;
+				serializeOutputs = true;
 				save();
 			}
 		}
@@ -207,5 +213,41 @@ public abstract class RecipeJS
 		json.add(in.ingredientKey, in.ingredient.toJson());
 		json.addProperty(in.countKey, in.getCount());
 		return json;
+	}
+
+	public IngredientJS parseIngredientItem(@Nullable Object o, String key)
+	{
+		IngredientJS ingredient = IngredientJS.of(o);
+
+		if (ingredient.isInvalidRecipeIngredient() && !Platform.getModLoader().equals("fabric"))
+		{
+			if (key.isEmpty())
+			{
+				throw new RecipeExceptionJS(o + " is not a valid ingredient!");
+			}
+			else
+			{
+				throw new RecipeExceptionJS(o + " with key '" + key + "' is not a valid ingredient!");
+			}
+		}
+
+		return ingredient;
+	}
+
+	public IngredientJS parseIngredientItem(@Nullable Object o)
+	{
+		return parseIngredientItem(o, "");
+	}
+
+	public ItemStackJS parseResultItem(@Nullable Object o)
+	{
+		ItemStackJS result = ItemStackJS.of(o);
+
+		if (result.isInvalidRecipeIngredient() && !Platform.getModLoader().equals("fabric"))
+		{
+			throw new RecipeExceptionJS(o + " is not a valid result!");
+		}
+
+		return result;
 	}
 }

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.core.CompoundNBTKJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagParser;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
@@ -28,6 +29,17 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 		if (map instanceof CompoundTag)
 		{
 			return (CompoundTag) map;
+		}
+		else if (map instanceof CharSequence)
+		{
+			try
+			{
+				return TagParser.parseTag(map.toString());
+			}
+			catch (Exception ex)
+			{
+				return null;
+			}
 		}
 
 		MapJS m = of(map);

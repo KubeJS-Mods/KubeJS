@@ -137,12 +137,6 @@ public class TagIngredientJS implements IngredientJS
 	}
 
 	@Override
-	public boolean isEmpty()
-	{
-		return false;
-	}
-
-	@Override
 	public String toString()
 	{
 		return "'#" + tag + "'";

@@ -51,4 +51,9 @@ public class FluidWrapper
 
 		return types;
 	}
+
+	public FluidStackJS getEmpty()
+	{
+		return EmptyFluidStackJS.INSTANCE;
+	}
 }

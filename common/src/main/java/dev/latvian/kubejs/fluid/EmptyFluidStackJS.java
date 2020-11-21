@@ -78,4 +78,10 @@ public class EmptyFluidStackJS extends FluidStackJS
 	{
 		return FluidStackJS.of(o).isEmpty();
 	}
+
+	@Override
+	public String toString()
+	{
+		return "fluid.empty";
+	}
 }

@@ -11,6 +11,7 @@ import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.kubejs.item.ingredient.IgnoreNBTIngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
+import dev.latvian.kubejs.item.ingredient.RegexIngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.text.Text;
@@ -22,6 +23,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.mods.rhino.Wrapper;
+import jdk.nashorn.internal.objects.NativeRegExp;
 import me.shedaniel.architectury.ExpectPlatform;
 import me.shedaniel.architectury.registry.Registries;
 import me.shedaniel.architectury.registry.ToolType;
@@ -47,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
@@ -89,11 +92,28 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		{
 			return new UnboundItemStackJS(Registries.getId((Item) o, Registry.ITEM_REGISTRY));
 		}
+		else if (o instanceof JsonElement)
+		{
+			return resultFromRecipeJson((JsonElement) o);
+		}
+		else if (o instanceof Pattern)
+		{
+			return new RegexIngredientJS((Pattern) o).getFirst();
+		}
+		else if (o instanceof NativeRegExp)
+		{
+			Pattern reg = UtilsJS.regex(o.toString(), true);
+
+			if (reg != null)
+			{
+				return new RegexIngredientJS(reg).getFirst();
+			}
+		}
 		else if (o instanceof CharSequence)
 		{
 			String s = o.toString();
 
-			if (s.isEmpty() || s.equals("air"))
+			if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air"))
 			{
 				return EmptyItemStackJS.INSTANCE;
 			}
@@ -357,6 +377,12 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return getCount() <= 0;
 	}
 
+	@Override
+	public boolean isInvalidRecipeIngredient()
+	{
+		return isEmpty();
+	}
+
 	public boolean isBlock()
 	{
 		return getItem() instanceof BlockItem;
@@ -366,7 +392,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public final ItemStackJS nbt(@Nullable Object o)
 	{
-		MapJS nbt = MapJS.of(o);
+		MapJS nbt = MapJS.of(o instanceof Map ? o : MapJS.nbt(o));
 
 		if (nbt != null)
 		{

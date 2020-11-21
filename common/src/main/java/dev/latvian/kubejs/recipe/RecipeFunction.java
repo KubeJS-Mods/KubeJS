@@ -63,6 +63,8 @@ public class RecipeFunction extends BaseFunction implements WrappedJS
 					RecipeJS recipe = type.factory.get();
 					recipe.type = type;
 					recipe.json = ((MapJS) normalize(map)).toJson();
+					recipe.serializeInputs = true;
+					recipe.serializeOutputs = true;
 					recipe.deserializeJson();
 					return event.addRecipe(recipe, type, args);
 				}
@@ -75,12 +77,14 @@ public class RecipeFunction extends BaseFunction implements WrappedJS
 			RecipeJS recipe = type.factory.get();
 			recipe.type = type;
 			recipe.json = new JsonObject();
+			recipe.serializeInputs = true;
+			recipe.serializeOutputs = true;
 			recipe.create(args);
 			return event.addRecipe(recipe, type, args);
 		}
 		catch (RecipeExceptionJS ex)
 		{
-			ScriptType.SERVER.console.warn("Failed to create recipe for type '" + typeID + "': " + ex);
+			ScriptType.SERVER.console.warn("Failed to create recipe for type '" + typeID + "'", ex);
 		}
 		catch (Exception ex)
 		{

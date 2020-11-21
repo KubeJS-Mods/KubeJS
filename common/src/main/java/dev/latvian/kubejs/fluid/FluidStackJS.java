@@ -1,6 +1,10 @@
 package dev.latvian.kubejs.fluid;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -9,6 +13,7 @@ import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import me.shedaniel.architectury.fluid.FluidStack;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -37,7 +42,24 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 		}
 		else if (o instanceof Fluid)
 		{
-			return new UnboundFluidStackJS(Registries.getId((Fluid) o, Registry.FLUID_REGISTRY));
+			UnboundFluidStackJS f = new UnboundFluidStackJS(Registries.getId((Fluid) o, Registry.FLUID_REGISTRY));
+			return f.isEmpty() ? EmptyFluidStackJS.INSTANCE : f;
+		}
+		else if (o instanceof JsonElement)
+		{
+			return fromJson((JsonElement) o);
+		}
+		else if (o instanceof CharSequence)
+		{
+			String s = o.toString();
+
+			if (s.isEmpty() || s.equals("-") || s.equals("empty") || s.equals("minecraft:empty"))
+			{
+				return EmptyFluidStackJS.INSTANCE;
+			}
+
+			String[] s1 = s.split(" ", 2);
+			return new UnboundFluidStackJS(new ResourceLocation(s1[0])).amount(UtilsJS.parseInt(s1.length == 2 ? s1[1] : "", FluidStack.bucketAmount().intValue()));
 		}
 
 		MapJS map = MapJS.of(o);
@@ -59,8 +81,7 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 			return stack;
 		}
 
-		String[] s = o.toString().split(" ", 2);
-		return new UnboundFluidStackJS(new ResourceLocation(s[0])).amount(UtilsJS.parseInt(s.length == 2 ? s[1] : "", FluidStack.bucketAmount().intValue()));
+		return EmptyFluidStackJS.INSTANCE;
 	}
 
 	public static FluidStackJS of(@Nullable Object o, @Nullable Object amountOrNBT)
@@ -86,6 +107,56 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 		stack.setAmount(amount);
 		stack.setNbt(nbt);
 		return stack;
+	}
+
+	public static FluidStackJS fromJson(JsonElement e)
+	{
+		if (!e.isJsonObject())
+		{
+			return of(e.getAsString());
+		}
+
+		JsonObject json = e.getAsJsonObject();
+
+		FluidStackJS fluid = of(json.get("fluid").getAsString());
+
+		if (fluid.isEmpty())
+		{
+			throw new RecipeExceptionJS(json + " is not a valid fluid!");
+		}
+
+		int amount = FluidStack.bucketAmount().intValue();
+		Object nbt = null;
+
+		if (json.has("amount"))
+		{
+			amount = json.get("amount").getAsInt();
+		}
+		else if (json.has("count"))
+		{
+			amount = json.get("count").getAsInt();
+		}
+
+		if (json.has("nbt"))
+		{
+			if (json.get("nbt").isJsonObject())
+			{
+				nbt = MapJS.of(json.get("nbt"));
+			}
+			else
+			{
+				try
+				{
+					nbt = TagParser.parseTag(json.get("nbt").getAsString());
+				}
+				catch (CommandSyntaxException ex)
+				{
+					return EmptyFluidStackJS.INSTANCE;
+				}
+			}
+		}
+
+		return FluidStackJS.of(fluid, amount, nbt);
 	}
 
 	public abstract String getId();
@@ -182,6 +253,24 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 		}
 
 		return builder.toString();
+	}
+
+	public JsonObject toJson()
+	{
+		JsonObject o = new JsonObject();
+		o.addProperty("fluid", getId());
+
+		if (getAmount() != FluidStack.bucketAmount().intValue())
+		{
+			o.addProperty("amount", getAmount());
+		}
+
+		if (getNbt() != null)
+		{
+			o.add("nbt", getNbt().toJson());
+		}
+
+		return o;
 	}
 
 	@Override

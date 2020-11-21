@@ -57,6 +57,7 @@ public class RecipeEventJS extends EventJS
 	private final Map<ResourceLocation, RecipeFunction> functionMap;
 
 	private final DynamicMap<DynamicMap<RecipeFunction>> recipeFunctions;
+	private MutableInt modifiedRecipes;
 
 	public RecipeEventJS(Map<ResourceLocation, RecipeTypeJS> t)
 	{
@@ -166,15 +167,17 @@ public class RecipeEventJS extends EventJS
 			}
 		}
 
-		ScriptType.SERVER.console.getLogger().info("Found {} recipes and {} failed recipes in {}.", originalRecipes.size(), fallbackedRecipes.size(), timer.stop());
+		MutableInt removed = new MutableInt(0), added = new MutableInt(0), failed = new MutableInt(0), fallbacked = new MutableInt(0);
+		modifiedRecipes = new MutableInt(0);
+
+		ScriptType.SERVER.console.getLogger().info("Found {} recipes and {} failed recipes in {}", originalRecipes.size(), fallbackedRecipes.size(), timer.stop());
 		timer.reset().start();
 		ScriptType.SERVER.console.setLineNumber(true);
 		post(ScriptType.SERVER, KubeJSEvents.RECIPES);
 		ScriptType.SERVER.console.setLineNumber(false);
-		ScriptType.SERVER.console.getLogger().info("Posted recipe events in {}.", timer.stop());
+		ScriptType.SERVER.console.getLogger().info("Posted recipe events in {}", timer.stop());
 
 		Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> newRecipeMap = new HashMap<>();
-		MutableInt removed = new MutableInt(0), modified = new MutableInt(0), added = new MutableInt(0), failed = new MutableInt(0), fallbacked = new MutableInt(0);
 
 		timer.reset().start();
 		originalRecipes.stream()
@@ -214,7 +217,7 @@ public class RecipeEventJS extends EventJS
 						Collectors.groupingBy(Recipe::getId,
 								Collectors.reducing(null, Function.identity(), (recipe, recipe2) -> recipe2))))
 				.forEach((recipeType, map) -> {
-					modified.add(map.size());
+					//modified.add(map.size());
 					newRecipeMap.computeIfAbsent(recipeType, type -> new HashMap<>()).putAll(map);
 				});
 		fallbackedRecipes.stream()
@@ -226,7 +229,7 @@ public class RecipeEventJS extends EventJS
 					fallbacked.add(map.size());
 					newRecipeMap.computeIfAbsent(recipeType, type -> new HashMap<>()).putAll(map);
 				});
-		ScriptType.SERVER.console.getLogger().info("Modified & removed recipes in {}.", timer.stop());
+		ScriptType.SERVER.console.getLogger().info("Modified & removed recipes in {}", timer.stop());
 
 		timer.reset().start();
 		addedRecipes.stream()
@@ -258,10 +261,10 @@ public class RecipeEventJS extends EventJS
 					newRecipeMap.computeIfAbsent(recipeType, type -> new HashMap<>()).putAll(map);
 				});
 
-		ScriptType.SERVER.console.getLogger().info("Added recipes in {}.", timer.stop());
+		ScriptType.SERVER.console.getLogger().info("Added recipes in {}", timer.stop());
 		pingNewRecipes(newRecipeMap);
 		((RecipeManagerKJS) recipeManager).setRecipesKJS(newRecipeMap);
-		ScriptType.SERVER.console.getLogger().info("Added {} recipes, removed {} recipes, modified {} recipes, with {} failed recipes and {} fall-backed recipes.", added.getValue(), removed.getValue(), modified.getValue(), failed.getValue(), fallbacked.getValue());
+		ScriptType.SERVER.console.getLogger().info("Added {} recipes, removed {} recipes, modified {} recipes, with {} failed recipes and {} fall-backed recipes", added.getValue(), removed.getValue(), modifiedRecipes.getValue(), failed.getValue(), fallbacked.getValue());
 	}
 
 	@ExpectPlatform
@@ -346,6 +349,7 @@ public class RecipeEventJS extends EventJS
 		IngredientJS[] w = new IngredientJS[] {IngredientJS.of(with)};
 		String is = i.toString();
 		String ws = w[0].toString();
+
 		forEachRecipe(filter, r ->
 		{
 			if (r.replaceInput(i, w[0], exact))
@@ -359,6 +363,8 @@ public class RecipeEventJS extends EventJS
 				}
 			}
 		});
+
+		modifiedRecipes.add(count);
 		return count.getValue();
 	}
 
@@ -379,6 +385,7 @@ public class RecipeEventJS extends EventJS
 		ItemStackJS w = ItemStackJS.of(with);
 		String is = i.toString();
 		String ws = w.toString();
+
 		forEachRecipe(filter, r ->
 		{
 			if (r.replaceOutput(i, w, exact))
@@ -391,6 +398,8 @@ public class RecipeEventJS extends EventJS
 				}
 			}
 		});
+
+		modifiedRecipes.add(count);
 		return count.getValue();
 	}
 
