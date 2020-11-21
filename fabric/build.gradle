@@ -32,7 +32,7 @@ dependencies {
 
 shadowJar {
     configurations = [project.configurations.shadow]
-    classifier "shadow"
+    classifier "fabric"
 }
 
 remapJar {

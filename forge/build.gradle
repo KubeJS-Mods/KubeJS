@@ -86,11 +86,15 @@ dependencies {
     annotationProcessor "org.spongepowered:mixin:0.8:processor"
 }
 
+jar {
+    classifier 'forge'
+}
+
 shadowJar {
     exclude "fabric.mod.json"
 
     configurations = [project.configurations.shadow]
-    classifier null
+    classifier "forge"
 }
 
 reobf {
