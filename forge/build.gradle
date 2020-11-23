@@ -21,6 +21,7 @@ plugins {
 apply plugin: "net.minecraftforge.gradle"
 apply plugin: "org.spongepowered.mixin"
 apply plugin: 'maven'
+apply plugin: 'com.matthewprenger.cursegradle'
 
 def ENV = System.getenv()
 
