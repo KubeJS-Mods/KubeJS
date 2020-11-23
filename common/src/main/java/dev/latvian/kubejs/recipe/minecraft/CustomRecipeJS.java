@@ -90,7 +90,7 @@ public class CustomRecipeJS extends RecipeJS
 		{
 			for (JsonElement e1 : e.getAsJsonArray())
 			{
-				ItemStackJS i = ItemStackJS.resultFromRecipeJson(e1);
+				ItemStackJS i = ItemStackJS.of(e1);
 
 				if (!i.isEmpty())
 				{
@@ -103,7 +103,7 @@ public class CustomRecipeJS extends RecipeJS
 			return true;
 		}
 
-		ItemStackJS i = ItemStackJS.resultFromRecipeJson(e);
+		ItemStackJS i = ItemStackJS.of(e);
 
 		if (!i.isEmpty())
 		{

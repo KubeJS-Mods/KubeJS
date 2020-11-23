@@ -117,7 +117,12 @@ public class IngredientStackJS implements IngredientJS
 	{
 		if (RecipeJS.currentRecipe != null)
 		{
-			return RecipeJS.currentRecipe.serializeIngredientStack(this);
+			JsonElement e = RecipeJS.currentRecipe.serializeIngredientStack(this);
+
+			if (e != null)
+			{
+				return e;
+			}
 		}
 
 		JsonObject json = new JsonObject();

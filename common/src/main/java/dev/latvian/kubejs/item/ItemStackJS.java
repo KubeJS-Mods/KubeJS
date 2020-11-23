@@ -14,6 +14,7 @@ import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
 import dev.latvian.kubejs.item.ingredient.RegexIngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.player.PlayerJS;
+import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.ListJS;
@@ -202,6 +203,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return stack;
 	}
 
+	// Use ItemStackJS.of(object)
 	public static ItemStackJS resultFromRecipeJson(@Nullable JsonElement json)
 	{
 		if (json == null || json.isJsonNull())
@@ -215,6 +217,16 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		else if (json.isJsonObject())
 		{
 			JsonObject o = json.getAsJsonObject();
+
+			if (RecipeJS.currentRecipe != null)
+			{
+				ItemStackJS is = RecipeJS.currentRecipe.resultFromRecipeJson(o);
+
+				if (is != null)
+				{
+					return is;
+				}
+			}
 
 			if (o.has("item"))
 			{
@@ -254,6 +266,10 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 				}
 
 				return stack;
+			}
+			else if (o.has("tag"))
+			{
+				return TagIngredientJS.createTag(o.get("tag").getAsString()).getFirst();
 			}
 		}
 
@@ -748,6 +764,16 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public JsonElement toResultJson()
 	{
+		if (RecipeJS.currentRecipe != null)
+		{
+			JsonElement e = RecipeJS.currentRecipe.serializeItemStack(this);
+
+			if (e != null)
+			{
+				return e;
+			}
+		}
+
 		JsonObject json = new JsonObject();
 		json.addProperty("item", getId());
 		json.addProperty("count", getCount());

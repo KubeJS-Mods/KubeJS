@@ -46,4 +46,10 @@ public final class FilteredIngredientJS implements IngredientJS
 	{
 		return new FilteredIngredientJS(ingredient.getCopy(), filter.getCopy());
 	}
+
+	@Override
+	public String toString()
+	{
+		return "ingredient.of(" + ingredient + ").filter(" + filter + ")";
+	}
 }

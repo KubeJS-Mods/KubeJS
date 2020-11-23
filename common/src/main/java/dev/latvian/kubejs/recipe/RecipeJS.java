@@ -209,12 +209,22 @@ public abstract class RecipeJS
 		return type.toString();
 	}
 
+	@Nullable
+	public ItemStackJS resultFromRecipeJson(JsonObject json)
+	{
+		return null;
+	}
+
+	@Nullable
 	public JsonElement serializeIngredientStack(IngredientStackJS in)
 	{
-		JsonObject json = new JsonObject();
-		json.add(in.ingredientKey, in.ingredient.toJson());
-		json.addProperty(in.countKey, in.getCount());
-		return json;
+		return null;
+	}
+
+	@Nullable
+	public JsonElement serializeItemStack(ItemStackJS stack)
+	{
+		return null;
 	}
 
 	public IngredientJS parseIngredientItem(@Nullable Object o, String key)
