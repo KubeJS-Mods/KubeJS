@@ -1,13 +1,15 @@
 buildscript {
 	repositories {
-		maven { url "https://files.minecraftforge.net/maven" }
-		maven { url "https://dist.creeper.host/Sponge/maven" }
 		jcenter()
 		mavenCentral()
+		maven { url "https://files.minecraftforge.net/maven" }
+		maven { url "https://dist.creeper.host/Sponge/maven" }
+		maven { url "https://plugins.gradle.org/m2/" }
 	}
 	dependencies {
 		classpath(group: "net.minecraftforge.gradle", name: "ForgeGradle", version: "3.+", changing: true)
 		classpath "org.spongepowered:mixingradle:0.7-SNAPSHOT"
+		classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.4.0'
 	}
 }
 
@@ -18,6 +20,9 @@ plugins {
 
 apply plugin: "net.minecraftforge.gradle"
 apply plugin: "org.spongepowered.mixin"
+apply plugin: 'maven'
+
+def ENV = System.getenv()
 
 minecraft {
 	mappings(channel: "official", version: rootProject.architect.minecraft)
@@ -114,4 +119,36 @@ jar {
 
 mixin {
 	add sourceSets.main, "kubejs.refmap.json"
+}
+
+if (ENV.LOCAL_MAVEN) {
+	uploadArchives {
+		repositories {
+			mavenDeployer {
+				repository(url: "file://${ENV.LOCAL_MAVEN}")
+			}
+		}
+	}
+}
+
+if (ENV.CURSEFORGE_KEY) {
+	curseforge {
+		apiKey = ENV.CURSEFORGE_KEY
+		project {
+			id = project.curseforge_id
+			releaseType = "release"
+			addGameVersion "Forge"
+			addGameVersion "1.16.2"
+			addGameVersion "1.16.3"
+			addGameVersion "1.16.4"
+			relations {
+				requiredDependency 'rhino'
+				requiredDependency 'architectury-forge'
+				optionalDependency 'jei'
+				optionalDependency 'game-stages'
+			}
+			changelog = getGitChangelog
+			changelogType = 'markdown'
+		}
+	}
 }
