@@ -89,9 +89,9 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public double getChance()
+	public boolean hasChance()
 	{
-		return -1D;
+		return false;
 	}
 
 	public String toString()

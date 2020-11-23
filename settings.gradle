@@ -11,5 +11,4 @@ include "common"
 include "fabric"
 include "forge"
 
-rootProject.name = "KubeJS"
-
+rootProject.name = "KubeJS-1.16.4"

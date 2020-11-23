@@ -332,7 +332,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return null;
 	}
 
-	private double chance = -1D;
+	private double chance = Double.NaN;
 
 	public abstract Item getItem();
 
@@ -402,6 +402,16 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return this;
 	}
 
+	public boolean hasChance()
+	{
+		return !Double.isNaN(chance);
+	}
+
+	public void removeChance()
+	{
+		setChance(Double.NaN);
+	}
+
 	public void setChance(double c)
 	{
 		chance = c;
@@ -414,7 +424,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public final ItemStackJS chance(double c)
 	{
-		if (chance == c)
+		if (Double.isNaN(chance) && Double.isNaN(c) || chance == c)
 		{
 			return this;
 		}
@@ -452,10 +462,9 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		StringBuilder builder = new StringBuilder();
 
 		int count = getCount();
-		double chance = getChance();
 		MapJS nbt = getNbt();
 
-		if (count > 1 || chance != -1D || !nbt.isEmpty())
+		if (count > 1 || hasChance() || !nbt.isEmpty())
 		{
 			builder.append("item.of('");
 			builder.append(getId());
@@ -475,10 +484,10 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 			builder.append(')');
 
-			if (chance != -1D)
+			if (hasChance())
 			{
 				builder.append(".chance(");
-				builder.append(chance);
+				builder.append(getChance());
 				builder.append(')');
 			}
 		}
@@ -750,7 +759,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 			json.addProperty("nbt", nbt.toNBT().toString());
 		}
 
-		if (getChance() != -1D)
+		if (hasChance())
 		{
 			json.addProperty("chance", getChance());
 		}
