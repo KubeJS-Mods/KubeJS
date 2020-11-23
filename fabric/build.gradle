@@ -58,7 +58,7 @@ if (ENV.CURSEFORGE_KEY) {
 		apiKey = ENV.CURSEFORGE_KEY
 		project {
 			id = project.curseforge_id_fabric
-			releaseType = "release"
+			releaseType = "alpha"
 			addGameVersion "Fabric"
 			addGameVersion "1.16.2"
 			addGameVersion "1.16.3"
