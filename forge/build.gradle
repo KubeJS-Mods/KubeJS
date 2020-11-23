@@ -20,7 +20,6 @@ plugins {
 
 apply plugin: "net.minecraftforge.gradle"
 apply plugin: "org.spongepowered.mixin"
-apply plugin: 'maven'
 apply plugin: 'com.matthewprenger.cursegradle'
 
 def ENV = System.getenv()
@@ -122,26 +121,17 @@ mixin {
 	add sourceSets.main, "kubejs.refmap.json"
 }
 
-if (ENV.LOCAL_MAVEN) {
-	uploadArchives {
-		repositories {
-			mavenDeployer {
-				repository(url: "file://${ENV.LOCAL_MAVEN}")
-			}
-		}
-	}
-}
-
 if (ENV.CURSEFORGE_KEY) {
 	curseforge {
 		apiKey = ENV.CURSEFORGE_KEY
 		project {
-			id = project.curseforge_id
+			id = project.curseforge_id_forge
 			releaseType = "release"
 			addGameVersion "Forge"
 			addGameVersion "1.16.2"
 			addGameVersion "1.16.3"
 			addGameVersion "1.16.4"
+			mainArtifact(shadowJar.archivePath)
 			relations {
 				requiredDependency 'rhino'
 				requiredDependency 'architectury-forge'

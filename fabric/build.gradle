@@ -1,7 +1,20 @@
+buildscript {
+	repositories {
+		maven { url "https://plugins.gradle.org/m2/" }
+	}
+	dependencies {
+		classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.4.0'
+	}
+}
+
 plugins {
 	id "fabric-loom"
 	id "com.github.johnrengelman.shadow" version "5.0.0"
 }
+
+apply plugin: 'com.matthewprenger.cursegradle'
+
+def ENV = System.getenv()
 
 configurations {
 	shadow
@@ -38,4 +51,26 @@ shadowJar {
 remapJar {
 	dependsOn(shadowJar)
 	input.set(shadowJar.archivePath)
+}
+
+if (ENV.CURSEFORGE_KEY) {
+	curseforge {
+		apiKey = ENV.CURSEFORGE_KEY
+		project {
+			id = project.curseforge_id_fabric
+			releaseType = "release"
+			addGameVersion "Fabric"
+			addGameVersion "1.16.2"
+			addGameVersion "1.16.3"
+			addGameVersion "1.16.4"
+			mainArtifact(shadowJar.archivePath)
+			relations {
+				requiredDependency 'rhino'
+				requiredDependency 'architectury-fabric'
+				requiredDependency 'fabric-api'
+			}
+			changelog = getGitChangelog
+			changelogType = 'markdown'
+		}
+	}
 }
