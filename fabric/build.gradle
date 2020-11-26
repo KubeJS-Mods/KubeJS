@@ -58,7 +58,7 @@ shadowJar {
 remapJar {
 	dependsOn(shadowJar)
 	input.set(shadowJar.archivePath)
-    archiveClassifier = "fabric"
+	archiveClassifier = "fabric"
 }
 
 if (ENV.CURSEFORGE_KEY) {
