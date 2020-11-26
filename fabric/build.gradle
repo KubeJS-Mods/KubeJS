@@ -43,14 +43,22 @@ dependencies {
 	}
 }
 
+processResources {
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+    inputs.property "version", project.version
+}
+
 shadowJar {
 	configurations = [project.configurations.shadow]
-	classifier "fabric"
+	classifier "shadow"
 }
 
 remapJar {
 	dependsOn(shadowJar)
 	input.set(shadowJar.archivePath)
+	archiveClassifier = "fabric"
 }
 
 if (ENV.CURSEFORGE_KEY) {
@@ -63,7 +71,7 @@ if (ENV.CURSEFORGE_KEY) {
 			addGameVersion "1.16.2"
 			addGameVersion "1.16.3"
 			addGameVersion "1.16.4"
-			mainArtifact(shadowJar.archivePath)
+			mainArtifact(remapJar.archivePath)
 			relations {
 				requiredDependency 'rhino'
 				requiredDependency 'architectury-fabric'

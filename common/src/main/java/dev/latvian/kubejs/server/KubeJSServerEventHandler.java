@@ -13,6 +13,7 @@ import dev.latvian.kubejs.world.SimpleWorldEventJS;
 import dev.latvian.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.RhinoException;
 import me.shedaniel.architectury.event.events.CommandPerformEvent;
+import me.shedaniel.architectury.event.events.CommandRegistrationEvent;
 import me.shedaniel.architectury.event.events.LifecycleEvent;
 import me.shedaniel.architectury.event.events.TickEvent;
 import net.minecraft.commands.CommandSourceStack;
@@ -33,14 +34,15 @@ public class KubeJSServerEventHandler
 {
 	public static void init()
 	{
-		LifecycleEvent.SERVER_STARTING.register(KubeJSServerEventHandler::serverStarting);
+		LifecycleEvent.SERVER_BEFORE_START.register(KubeJSServerEventHandler::serverAboutToStart);
+		CommandRegistrationEvent.EVENT.register(KubeJSServerEventHandler::registerCommands);
 		LifecycleEvent.SERVER_STARTED.register(KubeJSServerEventHandler::serverStarted);
 		LifecycleEvent.SERVER_STOPPING.register(KubeJSServerEventHandler::serverStopping);
 		TickEvent.SERVER_POST.register(KubeJSServerEventHandler::serverTick);
 		CommandPerformEvent.EVENT.register(KubeJSServerEventHandler::command);
 	}
 
-	public static void serverStarting(MinecraftServer server)
+	public static void serverAboutToStart(MinecraftServer server)
 	{
 		if (ServerJS.instance != null)
 		{
@@ -48,15 +50,13 @@ public class KubeJSServerEventHandler
 		}
 
 		ServerJS.instance = new ServerJS(server, ServerScriptManager.instance);
-		KubeJSServerEventHandler.registerCommands(server.getCommands().getDispatcher(),
-				server.isDedicatedServer() ? Commands.CommandSelection.DEDICATED : Commands.CommandSelection.INTEGRATED);
 		//event.getServer().getResourcePacks().addPackFinder(new KubeJSDataPackFinder(KubeJS.getGameDirectory().resolve("kubejs").toFile()));
 	}
 
 	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection selection)
 	{
 		KubeJSCommands.register(dispatcher);
-		new CommandRegistryEventJS(dispatcher, selection).post(ScriptType.SERVER, KubeJSEvents.COMMAND_REGISTRY);
+//		new CommandRegistryEventJS(dispatcher, selection).post(ScriptType.SERVER, KubeJSEvents.COMMAND_REGISTRY);
 	}
 
 	public static void serverStarted(MinecraftServer server)

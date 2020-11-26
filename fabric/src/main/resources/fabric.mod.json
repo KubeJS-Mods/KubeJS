@@ -25,6 +25,6 @@
 		"fabric": "*",
 		"minecraft": "~1.16.2",
 		"rhino": "*",
-		"architectury": "*"
+		"architectury": ">=1.1.52"
 	}
 }

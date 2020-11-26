@@ -46,6 +46,8 @@ public class KubeJSForge
 
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::livingDrops);
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::checkLivingSpawn);
+
+		kubeJS.loadComplete();
 	}
 
 	private static void missingBlockMappings(RegistryEvent.MissingMappings<Block> event)
