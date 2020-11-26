@@ -6,7 +6,7 @@ import net.minecraft.block.FlowingFluidBlock;
 
 public class KubeJSBlockEventHandlerImpl
 {
-	public static FlowingFluidBlock build(FluidBuilder builder, AbstractBlock.Properties properties)
+	public static FlowingFluidBlock buildFluidBlock(FluidBuilder builder, AbstractBlock.Properties properties)
 	{
 		return new FlowingFluidBlock(() -> builder.stillFluid, properties);
 	}
