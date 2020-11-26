@@ -32,5 +32,9 @@ public class KubeJSRecipeEventHandler
 		event.register("minecraft:smoking", CookingRecipeJS::new);
 		event.register("minecraft:campfire_cooking", CookingRecipeJS::new);
 		event.register("minecraft:smithing", SmithingRecipeJS::new);
+
+		// Mod recipe types that use vanilla syntax
+
+		event.register("cucumber:shaped_no_mirror", ShapedRecipeJS::new);
 	}
 }
