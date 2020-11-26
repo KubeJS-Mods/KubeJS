@@ -35,6 +35,9 @@ public class KubeJSRecipeEventHandler
 
 		// Mod recipe types that use vanilla syntax
 
-		event.register("cucumber:shaped_no_mirror", ShapedRecipeJS::new);
+		if (Platform.isModLoaded("cucumber"))
+		{
+			event.register("cucumber:shaped_no_mirror", ShapedRecipeJS::new);
+		}
 	}
 }
