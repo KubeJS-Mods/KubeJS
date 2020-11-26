@@ -197,11 +197,11 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		style = style.withBold(bold);
 		style = style.withItalic(italic);
 		style = style.withUnderlined(underlined);
-		if (strikethrough)
+		if (Objects.equals(strikethrough, true))
 		{
 			style = style.applyFormat(ChatFormatting.STRIKETHROUGH);
 		}
-		if (obfuscated)
+		if (Objects.equals(obfuscated, true))
 		{
 			style = style.applyFormat(ChatFormatting.OBFUSCATED);
 		}
