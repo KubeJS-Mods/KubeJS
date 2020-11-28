@@ -321,12 +321,13 @@ public class KubeJSClientEventHandler
 	{
 		if (ClientProperties.get().disableRecipeBook && screen instanceof RecipeUpdateListener)
 		{
-			Iterator<AbstractWidget> iterator = widgets.iterator();
+			Iterator<GuiEventListener> iterator = children.iterator();
 			while (iterator.hasNext())
 			{
-				AbstractWidget widget = iterator.next();
-				if (widget instanceof ImageButtonKJS && RECIPE_BUTTON_TEXTURE.equals(((ImageButtonKJS) widget).getButtonTextureKJS()))
+				GuiEventListener listener = iterator.next();
+				if (listener instanceof AbstractWidget && listener instanceof ImageButtonKJS && RECIPE_BUTTON_TEXTURE.equals(((ImageButtonKJS) listener).getButtonTextureKJS()))
 				{
+					ScreenHooks.getButtons(screen).remove(listener);
 					iterator.remove();
 					return;
 				}
