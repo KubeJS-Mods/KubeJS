@@ -39,5 +39,10 @@ public class KubeJSRecipeEventHandler
 		{
 			event.register("cucumber:shaped_no_mirror", ShapedRecipeJS::new);
 		}
+
+		if (Platform.isModLoaded("mysticalagriculture"))
+		{
+			event.register("mysticalagriculture:tag", ShapedRecipeJS::new);
+		}
 	}
 }
