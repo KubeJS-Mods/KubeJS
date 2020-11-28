@@ -5,6 +5,7 @@ import dev.latvian.kubejs.recipe.minecraft.ShapedRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.ShapelessRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.SmithingRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.StonecuttingRecipeJS;
+import dev.latvian.kubejs.recipe.mod.MATagRecipeJS;
 import me.shedaniel.architectury.platform.Platform;
 
 /**
@@ -42,7 +43,7 @@ public class KubeJSRecipeEventHandler
 
 		if (Platform.isModLoaded("mysticalagriculture"))
 		{
-			event.register("mysticalagriculture:tag", ShapedRecipeJS::new);
+			event.register("mysticalagriculture:tag", MATagRecipeJS::new);
 		}
 	}
 }

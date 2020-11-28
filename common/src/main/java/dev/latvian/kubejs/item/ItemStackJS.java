@@ -269,7 +269,18 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 			}
 			else if (o.has("tag"))
 			{
-				return TagIngredientJS.createTag(o.get("tag").getAsString()).getFirst();
+				int c = 1;
+
+				if (o.has("count"))
+				{
+					c = o.get("count").getAsInt();
+				}
+				else if (o.has("amount"))
+				{
+					c = o.get("amount").getAsInt();
+				}
+
+				return TagIngredientJS.createTag(o.get("tag").getAsString()).getFirst().count(c);
 			}
 		}
 
