@@ -120,14 +120,6 @@ public class ConsoleJS
 		}
 	}
 
-	public void info(Object message, Throwable throwable)
-	{
-		if (shouldPrint())
-		{
-			logger.info(string(message) + ": " + throwable);
-		}
-	}
-
 	public void infof(Object message, Object... args)
 	{
 		if (shouldPrint())
@@ -153,7 +145,17 @@ public class ConsoleJS
 	{
 		if (shouldPrint())
 		{
-			logger.warn(string(message) + ": " + throwable);
+			String s = throwable.toString();
+
+			if (s.equals("java.lang.NullPointerException"))
+			{
+				logger.warn(string(message) + ":");
+				throwable.printStackTrace();
+			}
+			else
+			{
+				logger.warn(string(message) + ": " + s);
+			}
 		}
 	}
 
@@ -181,9 +183,14 @@ public class ConsoleJS
 		}
 	}
 
+	public boolean shouldPrintDebug()
+	{
+		return debugEnabled && shouldPrint();
+	}
+
 	public void debug(Object message)
 	{
-		if (debugEnabled && shouldPrint())
+		if (shouldPrintDebug())
 		{
 			logger.info(string(message));
 		}
@@ -191,7 +198,7 @@ public class ConsoleJS
 
 	public void debugf(String message, Object... args)
 	{
-		if (debugEnabled && shouldPrint())
+		if (shouldPrintDebug())
 		{
 			logger.info(string(message, args));
 		}

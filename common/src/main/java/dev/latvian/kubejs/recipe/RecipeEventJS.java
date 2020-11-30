@@ -86,26 +86,30 @@ public class RecipeEventJS extends EventJS
 				continue; //Forge: filter anything beginning with "_" as it's used for metadata.
 			}
 
+			String recipeIdAndType = recipeId + "[unknown:type]";
+
 			JsonObject json = entry.getValue();
 
 			try
 			{
+				ResourceLocation type = new ResourceLocation(GsonHelper.getAsString(json, "type"));
+				recipeIdAndType = recipeId + "[" + type + "]";
+
 				if (!processConditions(json, "conditions"))
 				{
 					if (ServerSettings.instance.logSkippedRecipes)
 					{
-						ScriptType.SERVER.console.info("Skipping loading recipe " + recipeId + " as it's conditions were not met");
+						ScriptType.SERVER.console.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");
 					}
 
 					continue;
 				}
 
-				String type = GsonHelper.getAsString(json, "type");
-				RecipeFunction function = getRecipeFunction(new ResourceLocation(type));
+				RecipeFunction function = getRecipeFunction(type);
 
 				if (function.type == null)
 				{
-					throw new MissingRecipeFunctionException("Unknown recipe type '" + function.typeID + "'").fallback();
+					throw new MissingRecipeFunctionException("Unknown recipe type!").fallback();
 				}
 
 				RecipeJS recipe = function.type.factory.get();
@@ -116,28 +120,31 @@ public class RecipeEventJS extends EventJS
 
 				if (recipe.originalRecipe == null)
 				{
-					throw new MissingRecipeFunctionException("Serializer returned null");
+					throw new MissingRecipeFunctionException("Original json is misformatted!");
 				}
 
 				recipe.deserializeJson();
 				originalRecipes.add(recipe);
 
-				if (recipe.originalRecipe.isSpecial())
+				if (ScriptType.SERVER.console.shouldPrintDebug())
 				{
-					ScriptType.SERVER.console.debug("Loaded recipe " + recipe + ": <dynamic>");
-				}
-				else
-				{
-					ScriptType.SERVER.console.debug("Loaded recipe " + recipe + ": " + recipe.inputItems + " -> " + recipe.outputItems);
+					if (recipe.originalRecipe.isSpecial())
+					{
+						ScriptType.SERVER.console.debug("Loaded recipe " + recipeIdAndType + ": <dynamic>");
+					}
+					else
+					{
+						ScriptType.SERVER.console.debug("Loaded recipe " + recipeIdAndType + ": " + recipe.inputItems + " -> " + recipe.outputItems);
+					}
 				}
 			}
-			catch (Exception ex)
+			catch (Throwable ex)
 			{
 				if (!(ex instanceof RecipeExceptionJS) || ((RecipeExceptionJS) ex).fallback)
 				{
-					if (ServerSettings.instance.logSkippedRecipes)
+					if (ServerSettings.instance.logErroringRecipes)
 					{
-						ScriptType.SERVER.console.warn("Failed to parse recipe '" + recipeId + "'! Falling back to vanilla", ex);
+						ScriptType.SERVER.console.warn("Failed to parse recipe '" + recipeIdAndType + "'! Falling back to vanilla", ex);
 					}
 
 					try
@@ -146,23 +153,20 @@ public class RecipeEventJS extends EventJS
 					}
 					catch (NullPointerException | IllegalArgumentException | JsonParseException ex2)
 					{
-						if (ServerSettings.instance.logSkippedRecipes)
+						if (ServerSettings.instance.logErroringRecipes)
 						{
-							ScriptType.SERVER.console.warn("Parsing error loading recipe " + recipeId, ex2);
+							ScriptType.SERVER.console.warn("Failed to parse recipe " + recipeIdAndType, ex2);
 						}
 					}
 					catch (Exception ex3)
 					{
-						ScriptType.SERVER.console.warn("Parsing error loading recipe " + recipeId + ":");
+						ScriptType.SERVER.console.warn("Failed to parse recipe " + recipeIdAndType + ":");
 						ex3.printStackTrace();
 					}
 				}
-				else
+				else if (ServerSettings.instance.logErroringRecipes)
 				{
-					if (ServerSettings.instance.logSkippedRecipes)
-					{
-						ScriptType.SERVER.console.warn("Failed to parse recipe '" + recipeId + "'", ex);
-					}
+					ScriptType.SERVER.console.warn("Failed to parse recipe '" + recipeIdAndType + "'", ex);
 				}
 			}
 		}

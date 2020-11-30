@@ -22,7 +22,7 @@ public class KubeJSRecipeEventHandler
 	{
 		if (Platform.isForge())
 		{
-			event.register("forge:conditional", ConditionalRecipeJS::new);
+			event.ignore("forge:conditional");
 		}
 
 		event.register("minecraft:crafting_shaped", ShapedRecipeJS::new);
