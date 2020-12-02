@@ -68,10 +68,6 @@ public class RecipeFunction extends BaseFunction implements WrappedJS
 					recipe.deserializeJson();
 					return event.addRecipe(recipe, type, args);
 				}
-				else
-				{
-					throw new RecipeExceptionJS("One argument recipes have to be a JSON object!");
-				}
 			}
 
 			RecipeJS recipe = type.factory.get();

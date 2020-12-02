@@ -295,7 +295,7 @@ public class RecipeEventJS extends EventJS
 		{
 			ScriptType.SERVER.console.info("+ " + r + ": " + r.inputItems + " -> " + r.outputItems);
 		}
-		else
+		else if (ScriptType.SERVER.console.shouldPrintDebug())
 		{
 			ScriptType.SERVER.console.debug("+ " + r + ": " + r.inputItems + " -> " + r.outputItems);
 		}
@@ -335,7 +335,7 @@ public class RecipeEventJS extends EventJS
 				{
 					ScriptType.SERVER.console.info("- " + r + ": " + r.inputItems + " -> " + r.outputItems);
 				}
-				else
+				else if (ScriptType.SERVER.console.shouldPrintDebug())
 				{
 					ScriptType.SERVER.console.debug("- " + r + ": " + r.inputItems + " -> " + r.outputItems);
 				}
@@ -364,6 +364,10 @@ public class RecipeEventJS extends EventJS
 				if (ServerSettings.instance.logAddedRecipes || ServerSettings.instance.logRemovedRecipes)
 				{
 					ScriptType.SERVER.console.info("~ " + r + ": IN " + is + " -> " + ws);
+				}
+				else if (ScriptType.SERVER.console.shouldPrintDebug())
+				{
+					ScriptType.SERVER.console.debug("~ " + r + ": IN " + is + " -> " + ws);
 				}
 			}
 		});
@@ -399,6 +403,10 @@ public class RecipeEventJS extends EventJS
 				if (ServerSettings.instance.logAddedRecipes || ServerSettings.instance.logRemovedRecipes)
 				{
 					ScriptType.SERVER.console.info("~ " + r + ": OUT " + is + " -> " + ws);
+				}
+				else if (ScriptType.SERVER.console.shouldPrintDebug())
+				{
+					ScriptType.SERVER.console.debug("~ " + r + ": OUT " + is + " -> " + ws);
 				}
 			}
 		});
