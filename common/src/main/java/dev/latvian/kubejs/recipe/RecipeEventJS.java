@@ -93,6 +93,7 @@ public class RecipeEventJS extends EventJS
 			try
 			{
 				ResourceLocation type = new ResourceLocation(GsonHelper.getAsString(json, "type"));
+
 				recipeIdAndType = recipeId + "[" + type + "]";
 
 				if (!processConditions(json, "conditions"))
@@ -120,7 +121,12 @@ public class RecipeEventJS extends EventJS
 
 				if (recipe.originalRecipe == null)
 				{
-					throw new MissingRecipeFunctionException("Original json is misformatted!");
+					if (ServerSettings.instance.logSkippedRecipes)
+					{
+						ScriptType.SERVER.console.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");
+					}
+
+					continue;
 				}
 
 				recipe.deserializeJson();
