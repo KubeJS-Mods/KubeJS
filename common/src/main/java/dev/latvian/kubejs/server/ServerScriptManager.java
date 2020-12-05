@@ -79,6 +79,7 @@ public class ServerScriptManager
 
 		//Loading is required in prepare stage to allow virtual data pack overrides
 		virtualDataPackFirst.resetData();
+		virtualDataPackLast.resetData();
 		ScriptType.SERVER.console.setLineNumber(true);
 		scriptManager.load();
 
@@ -98,7 +99,7 @@ public class ServerScriptManager
 		return (stage, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> {
 			if (!(resourceManager instanceof SimpleReloadableResourceManager))
 			{
-				throw new RuntimeException("Resource manager is not SimpleReloadableResourceManager, KubeJS will not work! Unsupported resource manager class: " + resourceManager.getClass());
+				throw new RuntimeException("Resource manager is not SimpleReloadableResourceManager, KubeJS will not work! Unsupported resource manager class: " + resourceManager.getClass().getName());
 			}
 
 			reloadScripts((SimpleReloadableResourceManager) resourceManager);
