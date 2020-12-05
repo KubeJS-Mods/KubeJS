@@ -47,6 +47,11 @@ public class VirtualKubeJSDataPack extends AbstractPackResources
 		locationToData.put(id, data);
 		pathToData.put("data/" + id.getNamespace() + "/" + id.getPath(), data);
 		namespaces.add(id.getNamespace());
+
+		if (ServerSettings.instance.dataPackOutput)
+		{
+			ScriptType.SERVER.console.info("Registered virtual file [" + (first ? "first" : "last") + "] '" + id + "': " + data);
+		}
 	}
 
 	public void resetData()
@@ -65,7 +70,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources
 		{
 			if (ServerSettings.instance.dataPackOutput)
 			{
-				ScriptType.SERVER.console.info("Served virtual file '" + path + "': " + s);
+				ScriptType.SERVER.console.info("Served virtual file [" + (first ? "first" : "last") + "] '" + path + "': " + s);
 			}
 
 			return new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
@@ -83,7 +88,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources
 		{
 			if (ServerSettings.instance.dataPackOutput)
 			{
-				ScriptType.SERVER.console.info("Served virtual file '" + location + "': " + s);
+				ScriptType.SERVER.console.info("Served virtual file [" + (first ? "first" : "last") + "] '" + location + "': " + s);
 			}
 
 			return new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
