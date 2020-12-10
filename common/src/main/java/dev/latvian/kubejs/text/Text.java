@@ -109,7 +109,12 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 
 				if (map.containsKey("color"))
 				{
-					text.color = TextColor.MAP.get(map.get("color").toString());
+					TextColor c = TextColor.MAP.get(map.get("color").toString());
+
+					if (c != null)
+					{
+						text.color = c.color;
+					}
 				}
 
 				text.bold = (Boolean) map.getOrDefault("bold", null);
@@ -165,7 +170,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return Text.of(buffer.readComponent());
 	}
 
-	private TextColor color;
+	private int color = -1;
 	private Boolean bold;
 	private Boolean italic;
 	private Boolean underlined;
@@ -189,9 +194,9 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		MutableComponent component = rawComponent();
 		Style style = component.getStyle();
 
-		if (color != null)
+		if (color != -1)
 		{
-			style = style.withColor(net.minecraft.network.chat.TextColor.fromLegacyFormat(color.textFormatting));
+			style = style.withColor(net.minecraft.network.chat.TextColor.fromRgb(color));
 		}
 
 		style = style.withBold(bold);
@@ -274,9 +279,9 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	{
 		JsonObject json = new JsonObject();
 
-		if (color != null)
+		if (color != -1)
 		{
-			json.addProperty("color", color.textFormatting.getName());
+			json.addProperty("color", String.format("#%06X", color));
 		}
 
 		if (bold != null)
@@ -363,7 +368,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 
 	public final Text color(dev.latvian.kubejs.text.TextColor value)
 	{
-		color = value;
+		color = value.color & 0xFFFFFF;
 		return this;
 	}
 
@@ -445,6 +450,18 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	public final Text white()
 	{
 		return color(dev.latvian.kubejs.text.TextColor.WHITE);
+	}
+
+	public final Text color(int col)
+	{
+		color = col & 0xFFFFFF;
+		return this;
+	}
+
+	public final Text noColor()
+	{
+		color = -1;
+		return this;
 	}
 
 	public final Text bold(@Nullable Boolean value)
