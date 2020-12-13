@@ -128,7 +128,7 @@ public abstract class RecipeJS
 		{
 			if (exact ? inputItems.get(j).equals(i) : inputItems.get(j).anyStackMatches(i))
 			{
-				inputItems.set(j, func.apply(with.getCopy(), inputItems.get(j)));
+				inputItems.set(j, convertReplacedInput(j, inputItems.get(j), func.apply(with.getCopy(), inputItems.get(j))));
 				changed = true;
 				serializeInputs = true;
 				save();
@@ -171,7 +171,7 @@ public abstract class RecipeJS
 		{
 			if (exact ? i.equals(outputItems.get(j)) : i.test(outputItems.get(j)))
 			{
-				outputItems.set(j, func.apply(with.getCopy(), outputItems.get(j)));
+				outputItems.set(j, convertReplacedOutput(j, outputItems.get(j), func.apply(with.getCopy(), outputItems.get(j))));
 				changed = true;
 				serializeOutputs = true;
 				save();
@@ -228,6 +228,16 @@ public abstract class RecipeJS
 	public String getType()
 	{
 		return type.toString();
+	}
+
+	public IngredientJS convertReplacedInput(int index, IngredientJS oldIngredient, IngredientJS newIngredient)
+	{
+		return newIngredient;
+	}
+
+	public ItemStackJS convertReplacedOutput(int index, ItemStackJS oldStack, ItemStackJS newStack)
+	{
+		return newStack;
 	}
 
 	@Nullable
