@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.event.IEventHandler;
 import dev.latvian.kubejs.fluid.FluidWrapper;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptManager;
@@ -8,6 +9,7 @@ import dev.latvian.kubejs.script.ScriptModData;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.text.TextColor;
+import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.world.InteractionHand;
@@ -36,6 +38,16 @@ public class DefaultBindings
 		event.add("mod", ScriptModData.getInstance());
 		event.add("console", manager.type.console);
 		event.add("events", new ScriptEventsWrapper(event.type.manager.get().events));
+
+		event.addFunction("onEvent", args -> {
+			for (Object o : ListJS.orSelf(args[0]))
+			{
+				event.type.manager.get().events.listen(String.valueOf(o), (IEventHandler) args[1]);
+			}
+
+			return null;
+		}, null, IEventHandler.class);
+
 		event.add("Utils", new UtilsWrapper());
 		event.add("utils", new UtilsWrapper());
 		event.add("Text", new TextWrapper());
