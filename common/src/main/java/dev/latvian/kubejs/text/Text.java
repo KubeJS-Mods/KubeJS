@@ -366,96 +366,112 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return list.iterator();
 	}
 
-	public final Text color(dev.latvian.kubejs.text.TextColor value)
+	public final Text color(TextColor value)
 	{
 		color = value.color & 0xFFFFFF;
 		return this;
 	}
 
-	public final Text black()
+	public final Text color(String value)
 	{
-		return color(dev.latvian.kubejs.text.TextColor.BLACK);
-	}
+		TextColor col = TextColor.MAP.get(value);
 
-	public final Text darkBlue()
-	{
-		return color(dev.latvian.kubejs.text.TextColor.DARK_BLUE);
-	}
+		if (col != null)
+		{
+			color = col.color & 0xFFFFFF;
+		}
+		else if (value.startsWith("#"))
+		{
+			color = Integer.decode(value) & 0xFFFFFF;
+		}
 
-	public final Text darkGreen()
-	{
-		return color(dev.latvian.kubejs.text.TextColor.DARK_GREEN);
-	}
-
-	public final Text darkAqua()
-	{
-		return color(dev.latvian.kubejs.text.TextColor.DARK_AQUA);
-	}
-
-	public final Text darkRed()
-	{
-		return color(dev.latvian.kubejs.text.TextColor.DARK_RED);
-	}
-
-	public final Text darkPurple()
-	{
-		return color(dev.latvian.kubejs.text.TextColor.DARK_PURPLE);
-	}
-
-	public final Text gold()
-	{
-		return color(dev.latvian.kubejs.text.TextColor.GOLD);
-	}
-
-	public final Text gray()
-	{
-		return color(dev.latvian.kubejs.text.TextColor.GRAY);
-	}
-
-	public final Text darkGray()
-	{
-		return color(dev.latvian.kubejs.text.TextColor.DARK_GRAY);
-	}
-
-	public final Text blue()
-	{
-		return color(dev.latvian.kubejs.text.TextColor.BLUE);
-	}
-
-	public final Text green()
-	{
-		return color(dev.latvian.kubejs.text.TextColor.GREEN);
-	}
-
-	public final Text aqua()
-	{
-		return color(dev.latvian.kubejs.text.TextColor.AQUA);
-	}
-
-	public final Text red()
-	{
-		return color(dev.latvian.kubejs.text.TextColor.RED);
-	}
-
-	public final Text lightPurple()
-	{
-		return color(dev.latvian.kubejs.text.TextColor.LIGHT_PURPLE);
-	}
-
-	public final Text yellow()
-	{
-		return color(dev.latvian.kubejs.text.TextColor.YELLOW);
-	}
-
-	public final Text white()
-	{
-		return color(dev.latvian.kubejs.text.TextColor.WHITE);
+		return this;
 	}
 
 	public final Text color(int col)
 	{
 		color = col & 0xFFFFFF;
 		return this;
+	}
+
+	public final Text black()
+	{
+		return color(TextColor.BLACK);
+	}
+
+	public final Text darkBlue()
+	{
+		return color(TextColor.DARK_BLUE);
+	}
+
+	public final Text darkGreen()
+	{
+		return color(TextColor.DARK_GREEN);
+	}
+
+	public final Text darkAqua()
+	{
+		return color(TextColor.DARK_AQUA);
+	}
+
+	public final Text darkRed()
+	{
+		return color(TextColor.DARK_RED);
+	}
+
+	public final Text darkPurple()
+	{
+		return color(TextColor.DARK_PURPLE);
+	}
+
+	public final Text gold()
+	{
+		return color(TextColor.GOLD);
+	}
+
+	public final Text gray()
+	{
+		return color(TextColor.GRAY);
+	}
+
+	public final Text darkGray()
+	{
+		return color(TextColor.DARK_GRAY);
+	}
+
+	public final Text blue()
+	{
+		return color(TextColor.BLUE);
+	}
+
+	public final Text green()
+	{
+		return color(TextColor.GREEN);
+	}
+
+	public final Text aqua()
+	{
+		return color(TextColor.AQUA);
+	}
+
+	public final Text red()
+	{
+		return color(TextColor.RED);
+	}
+
+	public final Text lightPurple()
+	{
+		return color(TextColor.LIGHT_PURPLE);
+	}
+
+	public final Text yellow()
+	{
+		return color(TextColor.YELLOW);
+	}
+
+	public final Text white()
+	{
+		return color(TextColor.WHITE);
 	}
 
 	public final Text noColor()
