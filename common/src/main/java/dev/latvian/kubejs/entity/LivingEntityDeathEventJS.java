@@ -8,8 +8,8 @@ import net.minecraft.world.entity.LivingEntity;
  */
 public class LivingEntityDeathEventJS extends LivingEntityEventJS
 {
-	public final LivingEntity entity;
-	public final DamageSource source;
+	private final LivingEntity entity;
+	private final DamageSource source;
 
 	public LivingEntityDeathEventJS(LivingEntity entity, DamageSource source)
 	{

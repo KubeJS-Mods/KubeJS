@@ -49,9 +49,9 @@ public class RecipeEventJS extends EventJS
 {
 	public static RecipeEventJS instance;
 
-	public final Map<ResourceLocation, RecipeTypeJS> typeMap;
-	public final List<Recipe<?>> fallbackedRecipes = new ArrayList<>();
-	public final List<RecipeJS> originalRecipes;
+	private final Map<ResourceLocation, RecipeTypeJS> typeMap;
+	private final List<Recipe<?>> fallbackedRecipes = new ArrayList<>();
+	private final List<RecipeJS> originalRecipes;
 	private final List<RecipeJS> addedRecipes;
 	private final Set<RecipeJS> removedRecipes;
 	private final Map<ResourceLocation, RecipeFunction> functionMap;

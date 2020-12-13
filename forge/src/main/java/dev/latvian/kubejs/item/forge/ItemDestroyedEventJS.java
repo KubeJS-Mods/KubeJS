@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 
 public class ItemDestroyedEventJS extends PlayerEventJS
 {
-	public final PlayerDestroyItemEvent event;
+	private final PlayerDestroyItemEvent event;
 
 	public ItemDestroyedEventJS(PlayerDestroyItemEvent e)
 	{

@@ -15,10 +15,10 @@ import org.jetbrains.annotations.Nullable;
  */
 public class BlockLeftClickEventJS extends PlayerEventJS
 {
-	public final Player player;
-	public final InteractionHand hand;
-	public final BlockPos pos;
-	public final Direction direction;
+	private final Player player;
+	private final InteractionHand hand;
+	private final BlockPos pos;
+	private final Direction direction;
 
 	public BlockLeftClickEventJS(Player player, InteractionHand hand, BlockPos pos, Direction direction)
 	{

@@ -9,7 +9,7 @@ import net.minecraft.commands.CommandSourceStack;
  */
 public class CommandEventJS extends ServerEventJS
 {
-	public final CommandPerformEvent event;
+	private final CommandPerformEvent event;
 
 	public CommandEventJS(CommandPerformEvent e)
 	{

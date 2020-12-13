@@ -9,8 +9,8 @@ import net.minecraft.world.level.Level;
  */
 public class EntitySpawnedEventJS extends EntityEventJS
 {
-	public final Entity entity;
-	public final Level world;
+	private final Entity entity;
+	private final Level world;
 
 	public EntitySpawnedEventJS(Entity entity, Level world)
 	{

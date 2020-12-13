@@ -14,10 +14,10 @@ import net.minecraft.world.entity.player.Player;
  */
 public class BlockRightClickEventJS extends PlayerEventJS
 {
-	public final Player player;
-	public final InteractionHand hand;
-	public final BlockPos pos;
-	public final Direction direction;
+	private final Player player;
+	private final InteractionHand hand;
+	private final BlockPos pos;
+	private final Direction direction;
 	private BlockContainerJS block;
 	private ItemStackJS item;
 

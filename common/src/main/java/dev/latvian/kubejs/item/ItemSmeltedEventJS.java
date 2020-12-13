@@ -10,8 +10,8 @@ import net.minecraft.world.item.ItemStack;
  */
 public class ItemSmeltedEventJS extends PlayerEventJS
 {
-	public final Player player;
-	public final ItemStack smelted;
+	private final Player player;
+	private final ItemStack smelted;
 
 	public ItemSmeltedEventJS(Player player, ItemStack smelted)
 	{

@@ -13,7 +13,7 @@ import net.minecraftforge.event.entity.living.LivingSpawnEvent;
  */
 public class CheckLivingEntitySpawnEventJS extends LivingEntityEventJS
 {
-	public final LivingSpawnEvent.CheckSpawn event;
+	private final LivingSpawnEvent.CheckSpawn event;
 
 	public CheckLivingEntitySpawnEventJS(LivingSpawnEvent.CheckSpawn e)
 	{

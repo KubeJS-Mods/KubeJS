@@ -13,10 +13,10 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class BlockPlaceEventJS extends EntityEventJS
 {
-	public final Entity entity;
-	public final Level world;
-	public final BlockPos pos;
-	public final BlockState state;
+	private final Entity entity;
+	private final Level world;
+	private final BlockPos pos;
+	private final BlockState state;
 
 	public BlockPlaceEventJS(Entity entity, Level world, BlockPos pos, BlockState state)
 	{

@@ -10,8 +10,8 @@ import net.minecraft.world.entity.player.Player;
  */
 public class ItemRightClickEventJS extends PlayerEventJS
 {
-	public final Player player;
-	public final InteractionHand hand;
+	private final Player player;
+	private final InteractionHand hand;
 
 	public ItemRightClickEventJS(Player player, InteractionHand hand)
 	{

@@ -81,11 +81,11 @@ public class KubeJSForge
 		{
 			event.setCanceled(true);
 		}
-		else if (e.drops != null)
+		else if (e.eventDrops != null)
 		{
 			event.getDrops().clear();
 
-			for (ItemEntityJS ie : e.drops)
+			for (ItemEntityJS ie : e.eventDrops)
 			{
 				event.getDrops().add((ItemEntity) ie.minecraftEntity);
 			}

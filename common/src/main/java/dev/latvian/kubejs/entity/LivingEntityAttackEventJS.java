@@ -8,9 +8,9 @@ import net.minecraft.world.entity.LivingEntity;
  */
 public class LivingEntityAttackEventJS extends LivingEntityEventJS
 {
-	public final LivingEntity entity;
-	public final DamageSource source;
-	public final float amount;
+	private final LivingEntity entity;
+	private final DamageSource source;
+	private final float amount;
 
 	public LivingEntityAttackEventJS(LivingEntity entity, DamageSource source, float amount)
 	{
