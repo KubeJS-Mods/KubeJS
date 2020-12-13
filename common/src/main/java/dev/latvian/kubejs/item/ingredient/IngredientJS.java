@@ -328,7 +328,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 		return EmptyItemStackJS.INSTANCE;
 	}
 
-	default IngredientJS count(int count)
+	default IngredientJS withCount(int count)
 	{
 		if (count <= 0)
 		{
@@ -340,6 +340,12 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 		}
 
 		return new IngredientStackJS(this, count);
+	}
+
+	@Deprecated
+	default IngredientJS count(int count)
+	{
+		return withCount(count);
 	}
 
 	default IngredientJS getCopy()

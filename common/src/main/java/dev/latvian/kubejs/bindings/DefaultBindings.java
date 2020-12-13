@@ -36,27 +36,36 @@ public class DefaultBindings
 		event.add("mod", ScriptModData.getInstance());
 		event.add("console", manager.type.console);
 		event.add("events", new ScriptEventsWrapper(event.type.manager.get().events));
+		event.add("Utils", new UtilsWrapper());
 		event.add("utils", new UtilsWrapper());
+		event.add("Text", new TextWrapper());
 		event.add("text", new TextWrapper());
 		event.add("uuid", new UUIDWrapper());
 		event.add("json", new JsonWrapper());
+		event.add("Block", new BlockWrapper());
 		event.add("block", new BlockWrapper());
+		event.add("Item", new ItemWrapper());
 		event.add("item", new ItemWrapper());
+		event.add("Ingredient", new IngredientWrapper());
 		event.add("ingredient", new IngredientWrapper());
 		event.add("nbt", new NBTWrapper());
 		event.add("facing", new FacingWrapper());
 
+		event.add("Fluid", new FluidWrapper());
 		event.add("fluid", new FluidWrapper());
 
 		event.addConstant("SECOND", 1000L);
 		event.addConstant("MINUTE", 60000L);
 		event.addConstant("HOUR", 3600000L);
 
+		event.add("TextColor", TextColor.class);
+
 		for (TextColor color : TextColor.MAP.values())
 		{
 			event.addConstant(color.name.toUpperCase(), color);
 		}
 
+		event.add("EquipmentSlot", EquipmentSlot.class);
 		event.addConstant("SLOT_MAINHAND", EquipmentSlot.MAINHAND);
 		event.addConstant("SLOT_OFFHAND", EquipmentSlot.OFFHAND);
 		event.addConstant("SLOT_FEET", EquipmentSlot.FEET);
@@ -64,6 +73,7 @@ public class DefaultBindings
 		event.addConstant("SLOT_CHEST", EquipmentSlot.CHEST);
 		event.addConstant("SLOT_HEAD", EquipmentSlot.HEAD);
 
+		event.add("Rarity", Rarity.class);
 		event.addConstant("RARITY_COMMON", Rarity.COMMON);
 		event.addConstant("RARITY_UNCOMMON", Rarity.UNCOMMON);
 		event.addConstant("RARITY_RARE", Rarity.RARE);
@@ -72,11 +82,13 @@ public class DefaultBindings
 		event.addConstant("AIR_ITEM", Items.AIR);
 		event.addConstant("AIR_BLOCK", Blocks.AIR);
 
+		event.add("ToolType", ToolType.class);
 		event.addConstant("TOOL_TYPE_AXE", ToolType.AXE);
 		event.addConstant("TOOL_TYPE_PICKAXE", ToolType.PICKAXE);
 		event.addConstant("TOOL_TYPE_SHOVEL", ToolType.SHOVEL);
 		event.addConstant("TOOL_TYPE_HOE", ToolType.HOE);
 
+		event.add("Hand", InteractionHand.class);
 		event.addConstant("MAIN_HAND", InteractionHand.MAIN_HAND);
 		event.addConstant("OFF_HAND", InteractionHand.OFF_HAND);
 
