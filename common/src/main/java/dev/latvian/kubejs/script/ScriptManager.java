@@ -105,38 +105,45 @@ public class ScriptManager
 
 		for (ScriptPack pack : packs.values())
 		{
-			pack.context = context;
-			pack.scope = context.initStandardObjects();
-
-			BindingsEvent event = new BindingsEvent(type, pack.scope);
-			BindingsEvent.EVENT.invoker().accept(event);
-			DefaultBindings.init(this, event);
-
-			for (ScriptFile file : pack.scripts)
+			try
 			{
-				t++;
-				currentFile = file;
-				long start = System.currentTimeMillis();
+				pack.context = context;
+				pack.scope = context.initStandardObjects();
 
-				if (file.load())
+				BindingsEvent event = new BindingsEvent(type, pack.scope);
+				BindingsEvent.EVENT.invoker().accept(event);
+				DefaultBindings.init(this, event);
+
+				for (ScriptFile file : pack.scripts)
 				{
-					i++;
-					type.console.info("Loaded script " + file.info.location + " in " + (System.currentTimeMillis() - start) / 1000D + " s");
-				}
-				else if (file.getError() != null)
-				{
-					if (file.getError() instanceof RhinoException)
+					t++;
+					currentFile = file;
+					long start = System.currentTimeMillis();
+
+					if (file.load())
 					{
-						type.console.error("Error loading KubeJS script: " + file.getError().getMessage());
-						errors.add(file.getError().getMessage());
+						i++;
+						type.console.info("Loaded script " + file.info.location + " in " + (System.currentTimeMillis() - start) / 1000D + " s");
 					}
-					else
+					else if (file.getError() != null)
 					{
-						type.console.error("Error loading KubeJS script: " + file.info.location + ": " + file.getError());
-						errors.add(file.info.location + ": " + file.getError());
-						file.getError().printStackTrace();
+						if (file.getError() instanceof RhinoException)
+						{
+							type.console.error("Error loading KubeJS script: " + file.getError().getMessage());
+							errors.add(file.getError().getMessage());
+						}
+						else
+						{
+							type.console.error("Error loading KubeJS script: " + file.info.location + ": " + file.getError());
+							errors.add(file.info.location + ": " + file.getError());
+							file.getError().printStackTrace();
+						}
 					}
 				}
+			}
+			catch (Throwable ex)
+			{
+				ex.printStackTrace();
 			}
 		}
 
