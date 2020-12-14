@@ -506,7 +506,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 		if (count > 1 || hasChance() || !nbt.isEmpty())
 		{
-			builder.append("item.of('");
+			builder.append("Item.of('");
 			builder.append(getId());
 			builder.append('\'');
 
@@ -519,7 +519,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 			if (!nbt.isEmpty())
 			{
 				builder.append(", ");
-				builder.append(nbt);
+				nbt.toString(builder);
 			}
 
 			builder.append(')');
