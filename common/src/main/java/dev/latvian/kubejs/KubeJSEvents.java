@@ -25,6 +25,7 @@ public class KubeJSEvents
 	public static final String SERVER_DATAPACK_FIRST = "server.datapack.first";
 	public static final String SERVER_DATAPACK_LAST = "server.datapack.last";
 	public static final String RECIPES = "recipes";
+	public static final String RECIPES_COMPOSTABLES = "recipes.compostables";
 
 	public static final String WORLD_LOAD = "world.load";
 	public static final String WORLD_UNLOAD = "world.unload";
