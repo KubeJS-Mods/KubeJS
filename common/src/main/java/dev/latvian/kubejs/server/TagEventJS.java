@@ -119,10 +119,19 @@ public class TagEventJS<T> extends EventJS
 				if (s.startsWith("#"))
 				{
 					TagWrapper<T> w = event.get(s.substring(1));
-					Tag.Entry entry = new Tag.TagEntry(w.id);
-					proxyList.removeIf(p -> entry.equals(p.getEntry()));
-					event.removedCount += w.proxyList.size();
-					ScriptType.SERVER.console.debug("- " + event.type + ":" + id + " // " + w.id);
+					String entryId = w.id.toString();
+					int originalSize = proxyList.size();
+					proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(s));
+					int removedCount = proxyList.size() - originalSize;
+					if (removedCount == 0)
+					{
+						ScriptType.SERVER.console.warn("Failed to remove " + s + " from " + event.type + "@" + id + " tags ");
+					}
+					else
+					{
+						event.removedCount -= removedCount;
+						ScriptType.SERVER.console.debug("- " + event.type + ":" + id + " // " + w.id);
+					}
 				}
 				else
 				{
@@ -131,10 +140,18 @@ public class TagEventJS<T> extends EventJS
 
 					if (v.isPresent())
 					{
-						Tag.Entry entry = new Tag.ElementEntry(sid);
-						proxyList.removeIf(p -> entry.equals(p.getEntry()));
-						event.removedCount++;
-						ScriptType.SERVER.console.debug("- " + event.type + ":" + id + " // " + s + " [" + v.get().getClass().getName() + "]");
+						int originalSize = proxyList.size();
+						proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(s));
+						int removedCount = proxyList.size() - originalSize;
+						if (removedCount == 0)
+						{
+							ScriptType.SERVER.console.warn("Failed to remove " + s + " from " + event.type + "@" + id + " tags ");
+						}
+						else
+						{
+							event.removedCount -= removedCount;
+							ScriptType.SERVER.console.debug("- " + event.type + ":" + id + " // " + s + " [" + v.get().getClass().getName() + "]");
+						}
 					}
 					else
 					{
@@ -144,6 +161,13 @@ public class TagEventJS<T> extends EventJS
 			}
 
 			return this;
+		}
+
+		private String getIdOfEntry(String s)
+		{
+			if (s.length() > 0 && s.charAt(s.length() - 1) == '?')
+				return s.substring(0, s.length() - 1);
+			return s;
 		}
 
 		public TagWrapper<T> removeAll()
