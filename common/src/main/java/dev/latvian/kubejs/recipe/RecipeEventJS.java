@@ -113,33 +113,38 @@ public class RecipeEventJS extends EventJS
 				if (type.equals(FORGE_CONDITIONAL))
 				{
 					JsonArray items = GsonHelper.getAsJsonArray(json, "recipes");
+					boolean skip = true;
 
 					for (int idx = 0; idx < items.size(); idx++)
 					{
-						JsonElement ele = items.get(idx);
+						JsonElement e = items.get(idx);
 
-						if (!ele.isJsonObject())
+						if (!e.isJsonObject())
 						{
 							throw new RecipeExceptionJS("Invalid recipes entry at index " + idx + " Must be JsonObject");
 						}
 
-						JsonObject o = ele.getAsJsonObject();
+						JsonObject o = e.getAsJsonObject();
 
 						if (processConditions(o, "conditions"))
 						{
 							json = o.get("recipe").getAsJsonObject();
 							type = new ResourceLocation(GsonHelper.getAsString(json, "type"));
 							recipeIdAndType = recipeId + "[" + type + "]";
+							skip = false;
 							break;
 						}
 					}
 
-					if (ServerSettings.instance.logSkippedRecipes)
+					if (skip)
 					{
-						ScriptType.SERVER.console.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");
-					}
+						if (ServerSettings.instance.logSkippedRecipes)
+						{
+							ScriptType.SERVER.console.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");
+						}
 
-					continue;
+						continue;
+					}
 				}
 
 				RecipeFunction function = getRecipeFunction(type);
