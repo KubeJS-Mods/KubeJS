@@ -76,6 +76,12 @@ public class TagEventJS<T> extends EventJS
 			priorityList = null;
 		}
 
+		@Override
+		public String toString()
+		{
+			return event.type + ":" + id;
+		}
+
 		public TagWrapper<T> add(Object ids)
 		{
 			for (Object o : ListJS.orSelf(ids))
@@ -87,7 +93,11 @@ public class TagEventJS<T> extends EventJS
 					TagWrapper<T> w = event.get(s.substring(1));
 					builder.addTag(w.id, KubeJS.MOD_ID);
 					event.addedCount += w.proxyList.size();
-					ScriptType.SERVER.console.debug("+ " + event.type + ":" + id + " // " + w.id);
+
+					if (ScriptType.SERVER.console.shouldPrintDebug())
+					{
+						ScriptType.SERVER.console.debug("+ " + this + " // " + w.id);
+					}
 				}
 				else
 				{
@@ -98,11 +108,15 @@ public class TagEventJS<T> extends EventJS
 					{
 						builder.addElement(sid, KubeJS.MOD_ID);
 						event.addedCount++;
-						ScriptType.SERVER.console.debug("+ " + event.type + ":" + id + " // " + s + " [" + v.get().getClass().getName() + "]");
+
+						if (ScriptType.SERVER.console.shouldPrintDebug())
+						{
+							ScriptType.SERVER.console.debug("+ " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
+						}
 					}
 					else
 					{
-						ScriptType.SERVER.console.warn("+ " + event.type + ":" + id + " // " + s + " [Not found!]");
+						ScriptType.SERVER.console.warn("+ " + this + " // " + s + " [Not found!]");
 					}
 				}
 			}
@@ -123,14 +137,22 @@ public class TagEventJS<T> extends EventJS
 					int originalSize = proxyList.size();
 					proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(s));
 					int removedCount = proxyList.size() - originalSize;
+
 					if (removedCount == 0)
 					{
-						ScriptType.SERVER.console.warn("Failed to remove " + s + " from " + event.type + "@" + id + " tags ");
+						if (ServerSettings.instance.logSkippedRecipes)
+						{
+							ScriptType.SERVER.console.warn(s + " didn't contain tag " + this + ", skipped");
+						}
 					}
 					else
 					{
 						event.removedCount -= removedCount;
-						ScriptType.SERVER.console.debug("- " + event.type + ":" + id + " // " + w.id);
+
+						if (ScriptType.SERVER.console.shouldPrintDebug())
+						{
+							ScriptType.SERVER.console.debug("- " + this + " // " + w.id);
+						}
 					}
 				}
 				else
@@ -143,19 +165,27 @@ public class TagEventJS<T> extends EventJS
 						int originalSize = proxyList.size();
 						proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(s));
 						int removedCount = proxyList.size() - originalSize;
+
 						if (removedCount == 0)
 						{
-							ScriptType.SERVER.console.warn("Failed to remove " + s + " from " + event.type + "@" + id + " tags ");
+							if (ServerSettings.instance.logSkippedRecipes)
+							{
+								ScriptType.SERVER.console.warn(s + " didn't contain tag " + id + ", skipped");
+							}
 						}
 						else
 						{
 							event.removedCount -= removedCount;
-							ScriptType.SERVER.console.debug("- " + event.type + ":" + id + " // " + s + " [" + v.get().getClass().getName() + "]");
+
+							if (ScriptType.SERVER.console.shouldPrintDebug())
+							{
+								ScriptType.SERVER.console.debug("- " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
+							}
 						}
 					}
 					else
 					{
-						ScriptType.SERVER.console.warn("- " + event.type + ":" + id + " // " + s + " [Not found!]");
+						ScriptType.SERVER.console.warn("- " + this + " // " + s + " [Not found!]");
 					}
 				}
 			}
@@ -166,15 +196,30 @@ public class TagEventJS<T> extends EventJS
 		private String getIdOfEntry(String s)
 		{
 			if (s.length() > 0 && s.charAt(s.length() - 1) == '?')
+			{
 				return s.substring(0, s.length() - 1);
+			}
+
 			return s;
 		}
 
 		public TagWrapper<T> removeAll()
 		{
-			ScriptType.SERVER.console.debug("- " + event.type + ":" + id + " // (all)");
-			event.removedCount += proxyList.size();
-			proxyList.clear();
+			if (ScriptType.SERVER.console.shouldPrintDebug())
+			{
+				ScriptType.SERVER.console.debug("- " + this + " // (all)");
+			}
+
+			if (!proxyList.isEmpty())
+			{
+				event.removedCount += proxyList.size();
+				proxyList.clear();
+			}
+			else if (ServerSettings.instance.logSkippedRecipes)
+			{
+				ScriptType.SERVER.console.warn("Tag " + this + " didn't contain any elements, skipped");
+			}
+
 			return this;
 		}
 
@@ -187,7 +232,7 @@ public class TagEventJS<T> extends EventJS
 		{
 			if (entry instanceof Tag.ElementEntry)
 			{
-				set.add(((Tag.ElementEntry) entry).toString());
+				set.add(entry.toString());
 			}
 			else if (entry instanceof Tag.TagEntry)
 			{
@@ -252,7 +297,11 @@ public class TagEventJS<T> extends EventJS
 
 			if (!proxyList0.equals(proxyList))
 			{
-				ScriptType.SERVER.console.debug("* " + event.type + ":" + id);
+				if (ScriptType.SERVER.console.shouldPrintDebug())
+				{
+					ScriptType.SERVER.console.debug("* Re-arranged " + this);
+				}
+
 				return true;
 			}
 
