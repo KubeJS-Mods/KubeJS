@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.server;
 
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.core.TagBuilderKJS;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.event.EventJS;
@@ -12,6 +13,7 @@ import net.minecraft.tags.SetTag;
 import net.minecraft.tags.Tag;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -383,5 +385,25 @@ public class TagEventJS<T> extends EventJS
 	public void setGlobalPriorityList(@Nullable Object o)
 	{
 		globalPriorityList = parsePriorityList(o);
+	}
+
+	public void dumpToFile()
+	{
+		List<String> lines = new ArrayList<>();
+
+		map.forEach((tagId, tagBuilder) -> {
+			lines.add("#" + tagId);
+			tagBuilder.getEntries().forEach(builderEntry -> lines.add("- " + builderEntry.getEntry()));
+			lines.add("");
+		});
+
+		try
+		{
+			Files.write(KubeJSPaths.EXPORTED.resolve(type + "_tag_dump.txt"), lines);
+		}
+		catch (Exception ex)
+		{
+			throw new RuntimeException(ex);
+		}
 	}
 }
