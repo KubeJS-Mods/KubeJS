@@ -14,7 +14,10 @@ import net.minecraft.tags.Tag;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -336,6 +339,35 @@ public class TagEventJS<T> extends EventJS
 
 	public void post(String event)
 	{
+		Path dumpFile = KubeJSPaths.EXPORTED.resolve("tags/" + type + ".txt");
+
+		if (!Files.exists(dumpFile))
+		{
+			try
+			{
+				if (!Files.exists(dumpFile.getParent()))
+				{
+					Files.createDirectories(dumpFile.getParent());
+				}
+
+				List<String> lines = new ArrayList<>();
+
+				map.forEach((tagId, tagBuilder) -> {
+					lines.add("");
+					lines.add("#" + tagId);
+					tagBuilder.getEntries().forEach(builderEntry -> lines.add("- " + builderEntry.getEntry()));
+				});
+
+				lines.add(0, "To refresh this file, delete it and run /reload command again! Last updated: " + DateFormat.getDateTimeInstance().format(new Date()));
+
+				Files.write(dumpFile, lines);
+			}
+			catch (Exception ex)
+			{
+				throw new RuntimeException(ex);
+			}
+		}
+
 		tags = new HashMap<>();
 
 		for (Map.Entry<ResourceLocation, SetTag.Builder> entry : map.entrySet())
@@ -385,25 +417,5 @@ public class TagEventJS<T> extends EventJS
 	public void setGlobalPriorityList(@Nullable Object o)
 	{
 		globalPriorityList = parsePriorityList(o);
-	}
-
-	public void dumpToFile()
-	{
-		List<String> lines = new ArrayList<>();
-
-		map.forEach((tagId, tagBuilder) -> {
-			lines.add("#" + tagId);
-			tagBuilder.getEntries().forEach(builderEntry -> lines.add("- " + builderEntry.getEntry()));
-			lines.add("");
-		});
-
-		try
-		{
-			Files.write(KubeJSPaths.EXPORTED.resolve(type + "_tag_dump.txt"), lines);
-		}
-		catch (Exception ex)
-		{
-			throw new RuntimeException(ex);
-		}
 	}
 }
