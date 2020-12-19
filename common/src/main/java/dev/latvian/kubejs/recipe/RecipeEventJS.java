@@ -1,6 +1,8 @@
 package dev.latvian.kubejs.recipe;
 
 import com.google.common.base.Stopwatch;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import dev.latvian.kubejs.KubeJS;
@@ -47,6 +49,8 @@ import java.util.stream.Collectors;
  */
 public class RecipeEventJS extends EventJS
 {
+	public static final ResourceLocation FORGE_CONDITIONAL = new ResourceLocation("forge:conditional");
+
 	public static RecipeEventJS instance;
 
 	private final Map<ResourceLocation, RecipeTypeJS> typeMap;
@@ -98,6 +102,40 @@ public class RecipeEventJS extends EventJS
 
 				if (!processConditions(json, "conditions"))
 				{
+					if (ServerSettings.instance.logSkippedRecipes)
+					{
+						ScriptType.SERVER.console.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");
+					}
+
+					continue;
+				}
+
+				if (type.equals(FORGE_CONDITIONAL))
+				{
+					JsonArray items = GsonHelper.getAsJsonArray(json, "recipes");
+
+					for (int idx = 0; idx < items.size(); idx++)
+					{
+						JsonElement ele = items.get(idx);
+
+						if (!ele.isJsonObject())
+						{
+							throw new RecipeExceptionJS("Invalid recipes entry at index " + idx + " Must be JsonObject");
+						}
+
+						JsonObject o = ele.getAsJsonObject();
+
+						if (processConditions(o, "conditions"))
+						{
+							json = o.get("recipe").getAsJsonObject();
+							type = new ResourceLocation(GsonHelper.getAsString(json, "type"));
+							recipeIdAndType = recipeId + "[" + type + "]";
+							break;
+						}
+
+						idx++;
+					}
+
 					if (ServerSettings.instance.logSkippedRecipes)
 					{
 						ScriptType.SERVER.console.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");

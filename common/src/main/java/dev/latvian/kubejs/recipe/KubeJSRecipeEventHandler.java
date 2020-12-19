@@ -21,11 +21,6 @@ public class KubeJSRecipeEventHandler
 
 	private static void registerRecipeHandlers(RegisterRecipeHandlersEvent event)
 	{
-		if (Platform.isForge())
-		{
-			event.ignore("forge:conditional");
-		}
-
 		event.register("minecraft:crafting_shaped", ShapedRecipeJS::new);
 		event.register("minecraft:crafting_shapeless", ShapelessRecipeJS::new);
 		event.register("minecraft:stonecutting", StonecuttingRecipeJS::new);
