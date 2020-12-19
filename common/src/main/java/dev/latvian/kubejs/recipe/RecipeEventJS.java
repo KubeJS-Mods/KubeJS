@@ -132,8 +132,6 @@ public class RecipeEventJS extends EventJS
 							recipeIdAndType = recipeId + "[" + type + "]";
 							break;
 						}
-
-						idx++;
 					}
 
 					if (ServerSettings.instance.logSkippedRecipes)
