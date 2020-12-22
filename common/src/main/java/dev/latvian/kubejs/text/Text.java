@@ -9,9 +9,7 @@ import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
@@ -192,60 +190,91 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	public final Component component()
 	{
 		MutableComponent component = rawComponent();
-		Style style = component.getStyle();
 
-		if (color != -1)
+		if (color != -1 || bold != null || italic != null || underlined != null || strikethrough != null || obfuscated != null || insertion != null || font != null || click != null || hover != null)
 		{
-			style = style.withColor(net.minecraft.network.chat.TextColor.fromRgb(color));
-		}
+			JsonObject json = new JsonObject();
 
-		style = style.withBold(bold);
-		style = style.withItalic(italic);
-
-		if (Objects.equals(underlined, true))
-		{
-			style = style.applyFormat(ChatFormatting.UNDERLINE);
-		}
-
-		if (Objects.equals(strikethrough, true))
-		{
-			style = style.applyFormat(ChatFormatting.STRIKETHROUGH);
-		}
-
-		if (Objects.equals(obfuscated, true))
-		{
-			style = style.applyFormat(ChatFormatting.OBFUSCATED);
-		}
-
-		style = style.withInsertion(insertion);
-		style = style.withFont(font);
-
-		if (click != null)
-		{
-			if (click.startsWith("command:"))
+			if (color != -1)
 			{
-				style = style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, click.substring(8)));
+				json.addProperty("color", String.format("#%06X", color));
 			}
-			else if (click.startsWith("suggest_command:"))
-			{
-				style = style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, click.substring(16)));
-			}
-			else if (click.startsWith("copy:"))
-			{
-				style = style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, click.substring(5)));
-			}
-			else
-			{
-				style = style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, click));
-			}
-		}
 
-		if (hover != null)
-		{
-			style = style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover.component()));
-		}
+			if (bold != null)
+			{
+				json.addProperty("bold", bold);
+			}
 
-		component.setStyle(style);
+			if (italic != null)
+			{
+				json.addProperty("italic", italic);
+			}
+
+			if (underlined != null)
+			{
+				json.addProperty("underlined", underlined);
+			}
+
+			if (strikethrough != null)
+			{
+				json.addProperty("strikethrough", strikethrough);
+			}
+
+			if (obfuscated != null)
+			{
+				json.addProperty("obfuscated", obfuscated);
+			}
+
+			if (insertion != null)
+			{
+				json.addProperty("insertion", insertion);
+			}
+
+			if (font != null)
+			{
+				json.addProperty("font", font.toString());
+			}
+
+			if (click != null)
+			{
+				JsonObject o = new JsonObject();
+
+				if (click.startsWith("command:"))
+				{
+					o.addProperty("action", "run_command");
+					o.addProperty("value", click.substring(8));
+				}
+				else if (click.startsWith("suggest_command:"))
+				{
+					o.addProperty("action", "suggest_command");
+					o.addProperty("value", click.substring(16));
+				}
+				else if (click.startsWith("copy:"))
+				{
+					o.addProperty("action", "copy_to_clipboard");
+					o.addProperty("value", click.substring(5));
+				}
+				else if (click.startsWith("file:"))
+				{
+					o.addProperty("action", "open_file");
+					o.addProperty("value", click.substring(5));
+				}
+				else
+				{
+					o.addProperty("action", "open_url");
+					o.addProperty("value", click);
+				}
+
+				json.add("clickEvent", o);
+			}
+
+			if (hover != null)
+			{
+				json.add("hoverEvent", new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover.component()).serialize());
+			}
+
+			component.setStyle(new Style.Serializer().deserialize(json, Style.class, null));
+		}
 
 		for (Text text : getSiblings())
 		{
