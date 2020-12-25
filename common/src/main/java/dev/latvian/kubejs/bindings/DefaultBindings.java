@@ -10,7 +10,6 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.util.ListJS;
-import dev.latvian.kubejs.util.MapJS;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -18,12 +17,14 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Blocks;
 
+import java.util.HashMap;
+
 /**
  * @author LatvianModder
  */
 public class DefaultBindings
 {
-	public static final MapJS GLOBAL = new MapJS();
+	public static final HashMap<String, Object> GLOBAL = new HashMap<>();
 
 	public static void init(ScriptManager manager, BindingsEvent event)
 	{
