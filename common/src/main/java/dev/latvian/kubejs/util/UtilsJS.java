@@ -83,16 +83,13 @@ public class UtilsJS
 	@Nullable
 	public static Pattern parseRegex(Object o)
 	{
-		if (o instanceof CharSequence)
+		if (o instanceof CharSequence || o instanceof NativeRegExp)
 		{
 			return regex(o.toString());
 		}
 		else if (o instanceof Pattern)
 		{
 			return (Pattern) o;
-		}
-		else if (o instanceof NativeRegExp)
-		{
 		}
 
 		return null;
