@@ -507,6 +507,16 @@ public class TagEventJS<T> extends EventJS
 		return t;
 	}
 
+	public TagWrapper<T> add(@ID String tag, Object ids)
+	{
+		return get(tag).add(ids);
+	}
+
+	public TagWrapper<T> remove(@ID String tag, Object ids)
+	{
+		return get(tag).remove(ids);
+	}
+
 	public void setGlobalPriorityList(@Nullable Object o)
 	{
 		globalPriorityList = parsePriorityList(o);

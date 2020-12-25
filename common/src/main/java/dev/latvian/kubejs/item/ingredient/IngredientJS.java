@@ -99,7 +99,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 				return new GroupIngredientJS(group);
 			}
 
-			Pattern reg = UtilsJS.regex(s);
+			Pattern reg = UtilsJS.parseRegex(s);
 
 			if (reg != null)
 			{
