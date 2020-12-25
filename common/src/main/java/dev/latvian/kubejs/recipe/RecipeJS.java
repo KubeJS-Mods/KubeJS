@@ -160,7 +160,7 @@ public abstract class RecipeJS
 
 	public final boolean replaceOutput(IngredientJS i, ItemStackJS with, boolean exact)
 	{
-		return replaceOutput(i, with, exact, (out, original) -> out.count(original.getCount()).chance(original.getChance()));
+		return replaceOutput(i, with, exact, (out, original) -> out.withCount(original.getCount()).withChance(original.getChance()));
 	}
 
 	public final boolean replaceOutput(IngredientJS i, ItemStackJS with, boolean exact, BiFunction<ItemStackJS, ItemStackJS, ItemStackJS> func)

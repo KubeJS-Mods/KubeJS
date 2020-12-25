@@ -97,10 +97,10 @@ public class UtilsWrapper
 		return new ConsoleJS(ScriptType.STARTUP, LogManager.getLogger(name));
 	}
 
-	@Nullable
 	public Pattern regex(String s)
 	{
-		return UtilsJS.regex(s, false);
+		Pattern pattern = UtilsJS.regex(s);
+		return pattern == null ? Pattern.compile(s) : pattern;
 	}
 
 	public Pattern regex(String pattern, int flags)

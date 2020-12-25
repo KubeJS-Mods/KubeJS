@@ -520,6 +520,11 @@ public class RecipeEventJS extends EventJS
 		return getRecipeFunction(Registries.getId(RecipeSerializer.SMOKING_RECIPE, Registry.RECIPE_SERIALIZER_REGISTRY));
 	}
 
+	public RecipeFunction getCampfireCooking()
+	{
+		return getRecipeFunction(Registries.getId(RecipeSerializer.CAMPFIRE_COOKING_RECIPE, Registry.RECIPE_SERIALIZER_REGISTRY));
+	}
+
 	public RecipeFunction getStonecutting()
 	{
 		return getRecipeFunction(Registries.getId(RecipeSerializer.STONECUTTER, Registry.RECIPE_SERIALIZER_REGISTRY));

@@ -24,7 +24,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.mods.rhino.Wrapper;
-import jdk.nashorn.internal.objects.NativeRegExp;
+import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import me.shedaniel.architectury.ExpectPlatform;
 import me.shedaniel.architectury.registry.Registries;
 import me.shedaniel.architectury.registry.ToolType;
@@ -97,18 +97,16 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		{
 			return resultFromRecipeJson((JsonElement) o);
 		}
-		else if (o instanceof Pattern)
+		else if (o instanceof Pattern || o instanceof NativeRegExp)
 		{
-			return new RegexIngredientJS((Pattern) o).getFirst();
-		}
-		else if (o instanceof NativeRegExp)
-		{
-			Pattern reg = UtilsJS.regex(o.toString(), true);
+			Pattern reg = UtilsJS.parseRegex(o);
 
 			if (reg != null)
 			{
 				return new RegexIngredientJS(reg).getFirst();
 			}
+
+			return EmptyItemStackJS.INSTANCE;
 		}
 		else if (o instanceof CharSequence)
 		{
@@ -137,6 +135,13 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 				}
 
 				return new GroupIngredientJS(group).getFirst();
+			}
+
+			Pattern reg = UtilsJS.parseRegex(s);
+
+			if (reg != null)
+			{
+				return new RegexIngredientJS(reg).getFirst();
 			}
 
 			return new UnboundItemStackJS(new ResourceLocation(s));
@@ -462,7 +467,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return chance;
 	}
 
-	public final ItemStackJS chance(double c)
+	public final ItemStackJS withChance(double c)
 	{
 		if (Double.isNaN(chance) && Double.isNaN(c) || chance == c)
 		{
@@ -472,6 +477,12 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		ItemStackJS is = getCopy();
 		is.setChance(c);
 		return is;
+	}
+
+	@Deprecated
+	public final ItemStackJS chance(double c)
+	{
+		return withChance(c);
 	}
 
 	public Text getName()

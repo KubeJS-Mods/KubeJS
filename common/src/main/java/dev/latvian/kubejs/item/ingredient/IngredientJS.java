@@ -14,7 +14,7 @@ import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.Wrapper;
-import jdk.nashorn.internal.objects.NativeRegExp;
+import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import me.shedaniel.architectury.ExpectPlatform;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -48,18 +48,16 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 		{
 			return (IngredientJS) o;
 		}
-		else if (o instanceof Pattern)
+		else if (o instanceof Pattern || o instanceof NativeRegExp)
 		{
-			return new RegexIngredientJS((Pattern) o);
-		}
-		else if (o instanceof NativeRegExp)
-		{
-			Pattern reg = UtilsJS.regex(o.toString(), true);
+			Pattern reg = UtilsJS.parseRegex(o);
 
 			if (reg != null)
 			{
 				return new RegexIngredientJS(reg);
 			}
+
+			return EmptyItemStackJS.INSTANCE;
 		}
 		else if (o instanceof JsonElement)
 		{
@@ -101,7 +99,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 				return new GroupIngredientJS(group);
 			}
 
-			Pattern reg = UtilsJS.regex(s, true);
+			Pattern reg = UtilsJS.regex(s);
 
 			if (reg != null)
 			{

@@ -12,6 +12,7 @@ import dev.latvian.kubejs.text.TextString;
 import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.Wrapper;
+import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import me.shedaniel.architectury.ExpectPlatform;
 import me.shedaniel.architectury.registry.Registries;
 import me.shedaniel.architectury.registry.ToolType;
@@ -80,11 +81,34 @@ public class UtilsJS
 	}
 
 	@Nullable
-	public static Pattern regex(String string, boolean strong)
+	public static Pattern parseRegex(Object o)
 	{
+		if (o instanceof CharSequence)
+		{
+			return regex(o.toString());
+		}
+		else if (o instanceof Pattern)
+		{
+			return (Pattern) o;
+		}
+		else if (o instanceof NativeRegExp)
+		{
+		}
+
+		return null;
+	}
+
+	@Nullable
+	public static Pattern regex(String string)
+	{
+		if (string.length() < 3)
+		{
+			return null;
+		}
+
 		Matcher matcher = REGEX_PATTERN.matcher(string);
 
-		if (matcher.find())
+		if (matcher.matches())
 		{
 			int flags = 0;
 			String f = matcher.group(2);
@@ -118,10 +142,6 @@ public class UtilsJS
 			}
 
 			return Pattern.compile(matcher.group(1), flags);
-		}
-		else if (!strong)
-		{
-			return Pattern.compile(string);
 		}
 
 		return null;

@@ -8,6 +8,7 @@ import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.SetTag;
 import net.minecraft.tags.Tag;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
@@ -106,22 +108,52 @@ public class TagEventJS<T> extends EventJS
 				}
 				else
 				{
-					ResourceLocation sid = new ResourceLocation(s);
-					Optional<T> v = event.registry.apply(sid);
+					Pattern pattern = UtilsJS.parseRegex(s);
 
-					if (v.isPresent())
+					if (pattern != null && event.actualRegistry != null)
 					{
-						builder.addElement(sid, KubeJS.MOD_ID);
-						event.addedCount++;
-
-						if (ScriptType.SERVER.console.shouldPrintDebug())
+						for (ResourceLocation sid : event.actualRegistry.keySet())
 						{
-							ScriptType.SERVER.console.debug("+ " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
+							if (pattern.matcher(sid.toString()).find())
+							{
+								Optional<T> v = event.registry.apply(sid);
+
+								if (v.isPresent())
+								{
+									builder.addElement(sid, KubeJS.MOD_ID);
+									event.addedCount++;
+
+									if (ScriptType.SERVER.console.shouldPrintDebug())
+									{
+										ScriptType.SERVER.console.debug("+ " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
+									}
+								}
+								else
+								{
+									ScriptType.SERVER.console.warn("+ " + this + " // " + s + " [Not found!]");
+								}
+							}
 						}
 					}
 					else
 					{
-						ScriptType.SERVER.console.warn("+ " + this + " // " + s + " [Not found!]");
+						ResourceLocation sid = new ResourceLocation(s);
+						Optional<T> v = event.registry.apply(sid);
+
+						if (v.isPresent())
+						{
+							builder.addElement(sid, KubeJS.MOD_ID);
+							event.addedCount++;
+
+							if (ScriptType.SERVER.console.shouldPrintDebug())
+							{
+								ScriptType.SERVER.console.debug("+ " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
+							}
+						}
+						else
+						{
+							ScriptType.SERVER.console.warn("+ " + this + " // " + s + " [Not found!]");
+						}
 					}
 				}
 			}
@@ -162,35 +194,78 @@ public class TagEventJS<T> extends EventJS
 				}
 				else
 				{
-					ResourceLocation sid = new ResourceLocation(s);
-					Optional<T> v = event.registry.apply(sid);
+					Pattern pattern = UtilsJS.parseRegex(s);
 
-					if (v.isPresent())
+					if (pattern != null && event.actualRegistry != null)
 					{
-						int originalSize = proxyList.size();
-						proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(s));
-						int removedCount = proxyList.size() - originalSize;
-
-						if (removedCount == 0)
+						for (ResourceLocation sid : event.actualRegistry.keySet())
 						{
-							if (ServerSettings.instance.logSkippedRecipes)
+							if (pattern.matcher(sid.toString()).find())
 							{
-								ScriptType.SERVER.console.warn(s + " didn't contain tag " + id + ", skipped");
-							}
-						}
-						else
-						{
-							event.removedCount -= removedCount;
+								Optional<T> v = event.registry.apply(sid);
 
-							if (ScriptType.SERVER.console.shouldPrintDebug())
-							{
-								ScriptType.SERVER.console.debug("- " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
+								if (v.isPresent())
+								{
+									int originalSize = proxyList.size();
+									proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(s));
+									int removedCount = proxyList.size() - originalSize;
+
+									if (removedCount == 0)
+									{
+										if (ServerSettings.instance.logSkippedRecipes)
+										{
+											ScriptType.SERVER.console.warn(s + " didn't contain tag " + id + ", skipped");
+										}
+									}
+									else
+									{
+										event.removedCount -= removedCount;
+
+										if (ScriptType.SERVER.console.shouldPrintDebug())
+										{
+											ScriptType.SERVER.console.debug("- " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
+										}
+									}
+								}
+								else
+								{
+									ScriptType.SERVER.console.warn("- " + this + " // " + s + " [Not found!]");
+								}
 							}
 						}
 					}
 					else
 					{
-						ScriptType.SERVER.console.warn("- " + this + " // " + s + " [Not found!]");
+						ResourceLocation sid = new ResourceLocation(s);
+						Optional<T> v = event.registry.apply(sid);
+
+						if (v.isPresent())
+						{
+							int originalSize = proxyList.size();
+							proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(s));
+							int removedCount = proxyList.size() - originalSize;
+
+							if (removedCount == 0)
+							{
+								if (ServerSettings.instance.logSkippedRecipes)
+								{
+									ScriptType.SERVER.console.warn(s + " didn't contain tag " + id + ", skipped");
+								}
+							}
+							else
+							{
+								event.removedCount -= removedCount;
+
+								if (ScriptType.SERVER.console.shouldPrintDebug())
+								{
+									ScriptType.SERVER.console.debug("- " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
+								}
+							}
+						}
+						else
+						{
+							ScriptType.SERVER.console.warn("- " + this + " // " + s + " [Not found!]");
+						}
 					}
 				}
 			}
@@ -321,6 +396,7 @@ public class TagEventJS<T> extends EventJS
 	private int addedCount;
 	private int removedCount;
 	private List<Predicate<String>> globalPriorityList;
+	private Registry<T> actualRegistry;
 
 	public TagEventJS(String t, Map<ResourceLocation, SetTag.Builder> m, Function<ResourceLocation, Optional<T>> r)
 	{
@@ -330,6 +406,23 @@ public class TagEventJS<T> extends EventJS
 		addedCount = 0;
 		removedCount = 0;
 		globalPriorityList = null;
+		actualRegistry = null;
+
+		switch (t)
+		{
+			case "items":
+				actualRegistry = UtilsJS.cast(Registry.ITEM);
+				break;
+			case "blocks":
+				actualRegistry = UtilsJS.cast(Registry.BLOCK);
+				break;
+			case "fluids":
+				actualRegistry = UtilsJS.cast(Registry.FLUID);
+				break;
+			case "entity_types":
+				actualRegistry = UtilsJS.cast(Registry.ENTITY_TYPE);
+				break;
+		}
 	}
 
 	public String getType()

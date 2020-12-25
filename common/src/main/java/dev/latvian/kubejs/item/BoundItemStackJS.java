@@ -36,7 +36,7 @@ public class BoundItemStackJS extends ItemStackJS
 	@Override
 	public ItemStackJS getCopy()
 	{
-		return new BoundItemStackJS(stack.copy()).chance(getChance());
+		return new BoundItemStackJS(stack.copy()).withChance(getChance());
 	}
 
 	@Override
