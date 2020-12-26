@@ -32,8 +32,6 @@ public class ScriptManager
 	public final Map<String, ScriptPack> packs;
 	public final List<String> errors;
 
-	public ScriptFile currentFile;
-
 	public ScriptManager(ScriptType t, Path p, String e)
 	{
 		type = t;
@@ -117,7 +115,6 @@ public class ScriptManager
 				for (ScriptFile file : pack.scripts)
 				{
 					t++;
-					currentFile = file;
 					long start = System.currentTimeMillis();
 
 					if (file.load())
@@ -146,8 +143,6 @@ public class ScriptManager
 				ex.printStackTrace();
 			}
 		}
-
-		currentFile = null;
 
 		if (i == t)
 		{

@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.mixin.fabric;
 
-import dev.latvian.kubejs.core.DataPackRegistriesHelper;
-import dev.latvian.kubejs.core.DataPackRegistriesKJS;
+import dev.latvian.kubejs.server.ServerScriptManager;
 import net.minecraft.server.ServerResources;
 import net.minecraft.server.packs.PackResources;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,12 +15,13 @@ import java.util.List;
  * @author LatvianModder
  */
 @Mixin(ServerResources.class)
-public abstract class DataPackRegistriesMixin implements DataPackRegistriesKJS
+public abstract class DataPackRegistriesMixin
 {
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void init(CallbackInfo ci)
 	{
-		initKJS();
+		ServerScriptManager.instance = new ServerScriptManager();
+		ServerScriptManager.instance.init((ServerResources) (Object) this);
 	}
 
 	@ModifyArg(method = "loadResources", at = @At(value = "INVOKE", ordinal = 0,
@@ -29,6 +29,6 @@ public abstract class DataPackRegistriesMixin implements DataPackRegistriesKJS
 			index = 2)
 	private static List<PackResources> resourcePackList(List<PackResources> list)
 	{
-		return DataPackRegistriesHelper.getResourcePackListKJS(list);
+		return ServerScriptManager.instance.resourcePackList(list);
 	}
 }

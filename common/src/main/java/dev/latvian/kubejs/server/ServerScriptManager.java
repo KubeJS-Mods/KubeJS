@@ -14,16 +14,19 @@ import dev.latvian.kubejs.script.ScriptPackInfo;
 import dev.latvian.kubejs.script.ScriptSource;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.data.DataPackEventJS;
+import dev.latvian.kubejs.script.data.KubeJSResourcePack;
 import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.ServerResources;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.SimpleReloadableResourceManager;
 
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * @author LatvianModder
@@ -33,12 +36,41 @@ public class ServerScriptManager
 	public static ServerScriptManager instance;
 
 	public final ScriptManager scriptManager = new ScriptManager(ScriptType.SERVER, KubeJSPaths.SERVER_SCRIPTS, "/data/kubejs/example_server_script.js");
-	public final VirtualKubeJSDataPack virtualDataPackFirst = new VirtualKubeJSDataPack(true);
-	public final VirtualKubeJSDataPack virtualDataPackLast = new VirtualKubeJSDataPack(false);
 
-	public void reloadScripts(SimpleReloadableResourceManager resourceManager)
+	public void init(ServerResources serverResources)
 	{
+		try
+		{
+			if (Files.notExists(KubeJSPaths.DATA))
+			{
+				Files.createDirectories(KubeJSPaths.DATA);
+			}
+		}
+		catch (Throwable ex)
+		{
+			throw new RuntimeException("KubeJS failed to register it's script loader!", ex);
+		}
+	}
+
+	public List<PackResources> resourcePackList(List<PackResources> list0)
+	{
+		VirtualKubeJSDataPack virtualDataPackLow = new VirtualKubeJSDataPack(false);
+		VirtualKubeJSDataPack virtualDataPackHigh = new VirtualKubeJSDataPack(true);
+		List<PackResources> list = new ArrayList<>();
+		list.add(virtualDataPackLow);
+		list.addAll(list0);
+		list.add(new KubeJSResourcePack(PackType.SERVER_DATA));
+		list.add(virtualDataPackHigh);
+
+		SimpleReloadableResourceManager resourceManager = new SimpleReloadableResourceManager(PackType.SERVER_DATA);
+
+		for (PackResources p : list)
+		{
+			resourceManager.add(p);
+		}
+
 		scriptManager.unload();
+		scriptManager.loadFromDirectory();
 
 		Map<String, List<ResourceLocation>> packs = new HashMap<>();
 
@@ -75,35 +107,20 @@ public class ServerScriptManager
 			scriptManager.packs.put(pack.info.namespace, pack);
 		}
 
-		scriptManager.loadFromDirectory();
-
-		//Loading is required in prepare stage to allow virtual data pack overrides
-		virtualDataPackFirst.resetData();
-		virtualDataPackLast.resetData();
-		ScriptType.SERVER.console.setLineNumber(true);
 		scriptManager.load();
 
-		new DataPackEventJS(virtualDataPackFirst).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_FIRST);
-		new DataPackEventJS(virtualDataPackLast).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_LAST);
-
+		ScriptType.SERVER.console.setLineNumber(true);
+		new DataPackEventJS(virtualDataPackLow).post(ScriptType.SERVER, "server.datapack.last");
+		new DataPackEventJS(virtualDataPackLow).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_LOW_PRIORITY);
+		new DataPackEventJS(virtualDataPackHigh).post(ScriptType.SERVER, "server.datapack.first");
+		new DataPackEventJS(virtualDataPackHigh).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_HIGH_PRIORITY);
 		ScriptType.SERVER.console.setLineNumber(false);
+
 		ScriptType.SERVER.console.info("Scripts loaded");
 
 		Map<ResourceLocation, RecipeTypeJS> typeMap = new HashMap<>();
 		RegisterRecipeHandlersEvent.EVENT.invoker().accept(new RegisterRecipeHandlersEvent(typeMap));
 		RecipeEventJS.instance = new RecipeEventJS(typeMap);
-	}
-
-	public PreparableReloadListener createReloadListener()
-	{
-		return (stage, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> {
-			if (!(resourceManager instanceof SimpleReloadableResourceManager))
-			{
-				throw new RuntimeException("Resource manager is not SimpleReloadableResourceManager, KubeJS will not work! Unsupported resource manager class: " + resourceManager.getClass().getName());
-			}
-
-			reloadScripts((SimpleReloadableResourceManager) resourceManager);
-			return CompletableFuture.supplyAsync(Object::new, backgroundExecutor).thenCompose(stage::wait).thenAcceptAsync(o -> {}, gameExecutor);
-		};
+		return list;
 	}
 }

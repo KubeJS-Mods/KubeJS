@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.util;
 
-import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
 import org.apache.logging.log4j.Logger;
@@ -85,19 +84,18 @@ public class ConsoleJS
 
 		if (lineNumber > 0)
 		{
-			int ln = getScriptLine();
+			int[] lineP = {0};
+			String lineS = Context.getSourcePositionFromStack(lineP);
 
-			if (ln > 0)
+			if (lineP[0] > 0)
 			{
-				ScriptFile f = type.manager.get().currentFile;
-
-				if (f != null)
+				if (lineS != null)
 				{
-					builder.append(f.info.location);
+					builder.append(lineS);
 				}
 
 				builder.append(':');
-				builder.append(ln);
+				builder.append(lineP[0]);
 				builder.append(": ");
 			}
 		}

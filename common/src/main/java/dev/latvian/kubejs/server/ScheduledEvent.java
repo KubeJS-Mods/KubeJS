@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.script.ScriptFile;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -8,8 +7,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ScheduledEvent
 {
-	public final ScriptFile file;
-
 	private final ServerJS server;
 	private final boolean usingTicks;
 	private final long timer;
@@ -19,7 +16,6 @@ public class ScheduledEvent
 
 	ScheduledEvent(ServerJS s, boolean ut, long t, long e, @Nullable Object d, IScheduledEventCallback c)
 	{
-		file = s.serverScriptManager.scriptManager.currentFile;
 		usingTicks = ut;
 		server = s;
 		timer = t;
