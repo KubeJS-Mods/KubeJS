@@ -21,7 +21,7 @@ public abstract class DataPackRegistriesMixin
 	private void init(CallbackInfo ci)
 	{
 		ServerScriptManager.instance = new ServerScriptManager();
-		ServerScriptManager.instance.init((DataPackRegistries) (Object) this);
+		ServerScriptManager.instance.init((ServerResources) (Object) this);
 	}
 
 	@ModifyArg(method = "loadResources", at = @At(value = "INVOKE", ordinal = 0,
