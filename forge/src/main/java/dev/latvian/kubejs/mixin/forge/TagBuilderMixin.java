@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.mixin.forge;
 
 import dev.latvian.kubejs.core.TagBuilderKJS;
-import net.minecraft.tags.ITag;
 import net.minecraft.tags.Tag;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,5 +17,5 @@ public abstract class TagBuilderMixin implements TagBuilderKJS
 	@Override
 	@Final
 	@Accessor(value = "entries")
-	public abstract List<ITag.Proxy> getProxyListKJS();
+	public abstract List<Tag.BuilderEntry> getProxyListKJS();
 }

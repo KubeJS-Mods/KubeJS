@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.item.forge;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 public class ContainerInventoryImpl
 {

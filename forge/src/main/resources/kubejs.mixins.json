@@ -2,7 +2,6 @@
 	"required": true,
 	"package": "dev.latvian.kubejs.mixin.forge",
 	"compatibilityLevel": "JAVA_8",
-	"refmap": "kubejs.refmap.json",
 	"mixins": [
 		"CompoundNBTMixin",
 		"DataPackRegistriesMixin",

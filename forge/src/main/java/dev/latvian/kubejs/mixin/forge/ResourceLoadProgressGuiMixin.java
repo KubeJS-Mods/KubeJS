@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.mixin.forge;
 
 import dev.latvian.kubejs.client.ClientProperties;
-import net.minecraft.client.gui.ResourceLoadProgressGui;
+import net.minecraft.client.gui.screens.LoadingOverlay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -9,11 +9,11 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 /**
  * @author LatvianModder
  */
-@Mixin(ResourceLoadProgressGui.class)
+@Mixin(LoadingOverlay.class)
 public abstract class ResourceLoadProgressGuiMixin
 {
 	@ModifyArg(method = "render",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/ResourceLoadProgressGui;fill(Lcom/mojang/blaze3d/matrix/MatrixStack;IIIII)V"),
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/LoadingOverlay;fill(Lcom/mojang/blaze3d/vertex/PoseStack;IIIII)V"),
 			index = 5)
 	private int backgroundColorKJS(int color)
 	{
@@ -21,7 +21,7 @@ public abstract class ResourceLoadProgressGuiMixin
 	}
 
 	@ModifyArg(method = "drawProgressBar", at = @At(value = "INVOKE", ordinal = 0,
-			target = "Lnet/minecraft/client/gui/ResourceLoadProgressGui;fill(Lcom/mojang/blaze3d/matrix/MatrixStack;IIIII)V"),
+			target = "Lnet/minecraft/client/gui/screens/LoadingOverlay;fill(Lcom/mojang/blaze3d/vertex/PoseStack;IIIII)V"),
 			index = 5)
 	private int barColorKJS1(int color)
 	{
@@ -29,7 +29,7 @@ public abstract class ResourceLoadProgressGuiMixin
 	}
 
 	@ModifyArg(method = "drawProgressBar", at = @At(value = "INVOKE", ordinal = 1,
-			target = "Lnet/minecraft/client/gui/ResourceLoadProgressGui;fill(Lcom/mojang/blaze3d/matrix/MatrixStack;IIIII)V"),
+			target = "Lnet/minecraft/client/gui/screens/LoadingOverlay;fill(Lcom/mojang/blaze3d/vertex/PoseStack;IIIII)V"),
 			index = 5)
 	private int barColorKJS2(int color)
 	{
@@ -37,7 +37,7 @@ public abstract class ResourceLoadProgressGuiMixin
 	}
 
 	@ModifyArg(method = "drawProgressBar", at = @At(value = "INVOKE", ordinal = 2,
-			target = "Lnet/minecraft/client/gui/ResourceLoadProgressGui;fill(Lcom/mojang/blaze3d/matrix/MatrixStack;IIIII)V"),
+			target = "Lnet/minecraft/client/gui/screens/LoadingOverlay;fill(Lcom/mojang/blaze3d/vertex/PoseStack;IIIII)V"),
 			index = 5)
 	private int barColorKJS3(int color)
 	{
@@ -45,7 +45,7 @@ public abstract class ResourceLoadProgressGuiMixin
 	}
 
 	@ModifyArg(method = "drawProgressBar", at = @At(value = "INVOKE", ordinal = 3,
-			target = "Lnet/minecraft/client/gui/ResourceLoadProgressGui;fill(Lcom/mojang/blaze3d/matrix/MatrixStack;IIIII)V"),
+			target = "Lnet/minecraft/client/gui/screens/LoadingOverlay;fill(Lcom/mojang/blaze3d/vertex/PoseStack;IIIII)V"),
 			index = 5)
 	private int barColorKJS4(int color)
 	{
@@ -53,7 +53,7 @@ public abstract class ResourceLoadProgressGuiMixin
 	}
 
 	@ModifyArg(method = "drawProgressBar", at = @At(value = "INVOKE", ordinal = 4,
-			target = "Lnet/minecraft/client/gui/ResourceLoadProgressGui;fill(Lcom/mojang/blaze3d/matrix/MatrixStack;IIIII)V"),
+			target = "Lnet/minecraft/client/gui/screens/LoadingOverlay;fill(Lcom/mojang/blaze3d/vertex/PoseStack;IIIII)V"),
 			index = 5)
 	private int barBorderColorKJS(int color)
 	{

@@ -1,7 +1,3 @@
-plugins {
-	id "fabric-loom"
-}
-
 dependencies {
 	minecraft "com.mojang:minecraft:${rootProject.architect.minecraft}"
 	mappings minecraft.officialMojangMappings()

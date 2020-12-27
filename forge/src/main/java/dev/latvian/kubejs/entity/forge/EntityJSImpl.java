@@ -1,17 +1,17 @@
 package dev.latvian.kubejs.entity.forge;
 
 import dev.latvian.kubejs.util.MapJS;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
 public class EntityJSImpl
 {
 	public static MapJS getPersistentData(Entity entity)
 	{
-		if (!(entity instanceof PlayerEntity))
+		if (!(entity instanceof Player))
 		{
-			CompoundNBT nbt = entity.getPersistentData();
+			CompoundTag nbt = entity.getPersistentData();
 			MapJS map = MapJS.of(nbt.get("KubeJS"));
 
 			if (map == null)
@@ -21,7 +21,7 @@ public class EntityJSImpl
 
 			map.changeListener = o ->
 			{
-				CompoundNBT n = MapJS.nbt(o);
+				CompoundTag n = MapJS.nbt(o);
 
 				if (n != null)
 				{
@@ -31,8 +31,8 @@ public class EntityJSImpl
 
 			return map;
 		}
-		CompoundNBT nbt = entity.getPersistentData();
-		CompoundNBT nbt1 = (CompoundNBT) nbt.get(PlayerEntity.PERSISTED_NBT_TAG);
+		CompoundTag nbt = entity.getPersistentData();
+		CompoundTag nbt1 = (CompoundTag) nbt.get(Player.PERSISTED_NBT_TAG);
 		MapJS map = MapJS.of(nbt1 == null ? null : nbt1.get("KubeJS"));
 
 		if (map == null)
@@ -42,13 +42,13 @@ public class EntityJSImpl
 
 		map.changeListener = m ->
 		{
-			CompoundNBT n = MapJS.nbt(m);
+			CompoundTag n = MapJS.nbt(m);
 
 			if (n != null)
 			{
-				CompoundNBT n1 = entity.getPersistentData().getCompound(PlayerEntity.PERSISTED_NBT_TAG);
+				CompoundTag n1 = entity.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
 				n1.put("KubeJS", n);
-				entity.getPersistentData().put(PlayerEntity.PERSISTED_NBT_TAG, n1);
+				entity.getPersistentData().put(Player.PERSISTED_NBT_TAG, n1);
 			}
 		};
 

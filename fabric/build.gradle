@@ -8,7 +8,6 @@ buildscript {
 }
 
 plugins {
-	id "fabric-loom"
 	id "com.github.johnrengelman.shadow" version "5.0.0"
 }
 
@@ -18,6 +17,10 @@ def ENV = System.getenv()
 
 configurations {
 	shadow
+}
+
+architectury {
+	platformSetupLoomIde()
 }
 
 dependencies {

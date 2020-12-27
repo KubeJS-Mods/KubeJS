@@ -2,9 +2,9 @@ package dev.latvian.kubejs.world.forge;
 
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemHandler;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 
 public class BlockContainerJSImpl
 {
-	public static InventoryJS getInventoryFromBlockEntity(TileEntity tileEntity, Direction facing)
+	public static InventoryJS getInventoryFromBlockEntity(BlockEntity tileEntity, Direction facing)
 	{
 		IItemHandler handler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).orElse(null);
 

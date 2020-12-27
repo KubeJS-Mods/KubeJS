@@ -4,8 +4,8 @@ import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.registration.ISubtypeRegistration;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.function.Function;
 
@@ -31,7 +31,7 @@ public class AddJEISubtypesEventJS extends EventJS
 		@Override
 		public String apply(ItemStack stack)
 		{
-			CompoundNBT nbt = stack.getTag();
+			CompoundTag nbt = stack.getTag();
 
 			if (nbt == null || !nbt.contains(key))
 			{

@@ -3,7 +3,7 @@ package dev.latvian.kubejs.item.forge;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 
 import javax.annotation.Nullable;
@@ -30,7 +30,7 @@ public class ItemDestroyedEventJS extends PlayerEventJS
 	}
 
 	@Nullable
-	public Hand getHand()
+	public InteractionHand getHand()
 	{
 		return event.getHand();
 	}

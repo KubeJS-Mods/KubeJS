@@ -2,12 +2,12 @@ package dev.latvian.kubejs.mixin.forge;
 
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.core.RecipeManagerKJS;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.RecipeManager;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +23,7 @@ import java.util.Map;
 public abstract class RecipeManagerMixin implements RecipeManagerKJS
 {
 	@Inject(method = "apply", at = @At("HEAD"), cancellable = true)
-	private void customRecipesHead(Map<ResourceLocation, JsonObject> map, IResourceManager resourceManager, IProfiler profiler, CallbackInfo ci)
+	private void customRecipesHead(Map<ResourceLocation, JsonObject> map, ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfo ci)
 	{
 		customRecipesKJS(map);
 		ci.cancel();
@@ -31,5 +31,5 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS
 
 	@Override
 	@Accessor("recipes")
-	public abstract void setRecipesKJS(Map<IRecipeType<?>, Map<ResourceLocation, IRecipe<?>>> map);
+	public abstract void setRecipesKJS(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map);
 }

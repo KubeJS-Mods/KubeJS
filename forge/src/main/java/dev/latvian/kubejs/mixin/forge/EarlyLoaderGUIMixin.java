@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.mixin.forge;
 
+import com.mojang.blaze3d.platform.Window;
 import dev.latvian.kubejs.client.ClientProperties;
-import net.minecraft.client.MainWindow;
 import net.minecraftforge.fml.client.EarlyLoaderGUI;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +19,7 @@ public abstract class EarlyLoaderGUIMixin
 {
 	@Shadow(remap = false)
 	@Final
-	private MainWindow window;
+	private Window window;
 
 	@ModifyArg(method = "renderMemoryInfo", remap = false,
 			at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/client/EarlyLoaderGUI;renderMessage(Ljava/lang/String;[FIF)V"), index = 1)
