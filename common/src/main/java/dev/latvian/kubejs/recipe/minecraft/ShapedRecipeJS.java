@@ -28,7 +28,7 @@ public class ShapedRecipeJS extends RecipeJS
 		{
 			if (args.size() < 2)
 			{
-				throw new RecipeExceptionJS("Shaped recipe requires 3 arguments - result, pattern and keys!");
+				throw new RecipeExceptionJS("Requires 3 arguments - result, pattern and keys!");
 			}
 
 			outputItems.add(parseResultItem(args.get(0)));
@@ -36,7 +36,7 @@ public class ShapedRecipeJS extends RecipeJS
 
 			if (vertical.isEmpty())
 			{
-				throw new RecipeExceptionJS("Shaped recipe pattern is empty!");
+				throw new RecipeExceptionJS("Pattern is empty!");
 			}
 
 			int id = 0;
@@ -75,7 +75,7 @@ public class ShapedRecipeJS extends RecipeJS
 
 		if (pattern1.isEmpty())
 		{
-			throw new RecipeExceptionJS("Shaped recipe pattern is empty!");
+			throw new RecipeExceptionJS("Pattern is empty!");
 		}
 
 		for (Object p : pattern1)
@@ -87,7 +87,7 @@ public class ShapedRecipeJS extends RecipeJS
 
 		if (key1 == null || key1.isEmpty())
 		{
-			throw new RecipeExceptionJS("Shaped recipe key map is empty!");
+			throw new RecipeExceptionJS("Key map is empty!");
 		}
 
 		for (String k : key1.keySet())
@@ -107,20 +107,10 @@ public class ShapedRecipeJS extends RecipeJS
 			pattern.add(e.getAsString());
 		}
 
-		if (pattern.isEmpty())
-		{
-			throw new RecipeExceptionJS("Shaped recipe pattern is empty!");
-		}
-
 		for (Map.Entry<String, JsonElement> entry : json.get("key").getAsJsonObject().entrySet())
 		{
 			inputItems.add(parseIngredientItem(entry.getValue(), entry.getKey()));
 			key.add(entry.getKey());
-		}
-
-		if (key.isEmpty())
-		{
-			throw new RecipeExceptionJS("Shaped recipe key map is empty!");
 		}
 	}
 

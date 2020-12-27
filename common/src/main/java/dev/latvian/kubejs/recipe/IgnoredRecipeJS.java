@@ -5,11 +5,12 @@ import dev.latvian.kubejs.util.ListJS;
 /**
  * @author LatvianModder
  */
-public class ConditionalRecipeJS extends RecipeJS
+public class IgnoredRecipeJS extends RecipeJS
 {
 	@Override
 	public void create(ListJS args)
 	{
+		throw new RecipeExceptionJS("Can't create an ignored recipe!");
 	}
 
 	@Override

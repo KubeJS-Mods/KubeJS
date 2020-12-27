@@ -76,6 +76,24 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 		return builder.toString();
 	}
 
+	private boolean isWordChar(char c)
+	{
+		return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '_';
+	}
+
+	private boolean isWordString(String s)
+	{
+		for (int i = 0; i < s.length(); i++)
+		{
+			if (!isWordChar(s.charAt(i)))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	@Override
 	public void toString(StringBuilder builder)
 	{
@@ -99,7 +117,17 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 				builder.append(',');
 			}
 
-			builder.append(entry.getKey());
+			if (isWordString(entry.getKey()))
+			{
+				builder.append(entry.getKey());
+			}
+			else
+			{
+				builder.append('"');
+				builder.append(entry.getKey().replace("\"", "\\\""));
+				builder.append('"');
+			}
+
 			builder.append(':');
 
 			if (entry.getValue() instanceof CharSequence)

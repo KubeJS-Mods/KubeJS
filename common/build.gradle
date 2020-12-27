@@ -5,7 +5,7 @@ dependencies {
 	// Do NOT use other classes from fabric loader
 	modCompile "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
 	modCompile "me.shedaniel:architectury:${rootProject.architectury_version}"
-	compile "curse.maven:rhino:${rootProject.rhino_file}"
+	compile "curse.maven:rhino-416294:${rootProject.rhino_file}"
 	compileOnly "com.google.code.findbugs:jsr305:3.+"
 }
 

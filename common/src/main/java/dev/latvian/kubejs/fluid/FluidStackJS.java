@@ -234,7 +234,7 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 		MapJS nbt = getNbt();
 
 		StringBuilder builder = new StringBuilder();
-		builder.append("fluid.of('");
+		builder.append("Fluid.of('");
 		builder.append(getId());
 		builder.append("')");
 

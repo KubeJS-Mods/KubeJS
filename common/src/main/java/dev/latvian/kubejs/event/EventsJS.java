@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.event;
 
-import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptManager;
+import dev.latvian.mods.rhino.RhinoException;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -16,12 +16,10 @@ public class EventsJS
 {
 	private static class ScriptEventHandler
 	{
-		private final ScriptFile file;
 		private final IEventHandler handler;
 
-		private ScriptEventHandler(ScriptFile f, IEventHandler h)
+		private ScriptEventHandler(IEventHandler h)
 		{
-			file = f;
 			handler = h;
 		}
 	}
@@ -45,7 +43,7 @@ public class EventsJS
 			map.put(id, list);
 		}
 
-		list.add(new ScriptEventHandler(scriptManager.currentFile, handler));
+		list.add(new ScriptEventHandler(handler));
 	}
 
 	public List<ScriptEventHandler> handlers(String id)
@@ -65,28 +63,22 @@ public class EventsJS
 
 		for (ScriptEventHandler handler : list)
 		{
-			scriptManager.currentFile = handler.file;
-
 			try
 			{
 				handler.handler.onEvent(event);
 
 				if (c && event.isCancelled())
 				{
-					//ScriptManager.instance.currentFile = null;
 					return true;
 				}
 			}
+			catch (RhinoException ex)
+			{
+				scriptManager.type.console.error("Error occurred while handling event '" + id + "': " + ex.getMessage());
+			}
 			catch (Throwable ex)
 			{
-				if (ex.getClass().getName().equals("jdk.nashorn.api.scripting.NashornException"))
-				{
-					handler.file.pack.manager.type.console.error("Error occurred while firing '" + id + "' event in " + handler.file.info.location + ": " + ex);
-				}
-				else
-				{
-					ex.printStackTrace();
-				}
+				ex.printStackTrace();
 			}
 		}
 

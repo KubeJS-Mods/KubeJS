@@ -8,7 +8,7 @@ import net.minecraftforge.fluids.ForgeFlowingFluid;
 
 public class KubeJSFluidEventHandlerImpl
 {
-	public static FlowingFluid build(boolean source, FluidBuilder builder)
+	public static FlowingFluid buildFluid(boolean source, FluidBuilder builder)
 	{
 		if (source)
 		{

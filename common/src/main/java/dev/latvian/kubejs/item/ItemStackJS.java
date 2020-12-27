@@ -24,7 +24,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.mods.rhino.Wrapper;
-import jdk.nashorn.internal.objects.NativeRegExp;
+import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import me.shedaniel.architectury.ExpectPlatform;
 import me.shedaniel.architectury.registry.Registries;
 import me.shedaniel.architectury.registry.ToolType;
@@ -97,18 +97,16 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		{
 			return resultFromRecipeJson((JsonElement) o);
 		}
-		else if (o instanceof Pattern)
+		else if (o instanceof Pattern || o instanceof NativeRegExp)
 		{
-			return new RegexIngredientJS((Pattern) o).getFirst();
-		}
-		else if (o instanceof NativeRegExp)
-		{
-			Pattern reg = UtilsJS.regex(o.toString(), true);
+			Pattern reg = UtilsJS.parseRegex(o);
 
 			if (reg != null)
 			{
 				return new RegexIngredientJS(reg).getFirst();
 			}
+
+			return EmptyItemStackJS.INSTANCE;
 		}
 		else if (o instanceof CharSequence)
 		{
@@ -139,6 +137,13 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 				return new GroupIngredientJS(group).getFirst();
 			}
 
+			Pattern reg = UtilsJS.parseRegex(s);
+
+			if (reg != null)
+			{
+				return new RegexIngredientJS(reg).getFirst();
+			}
+
 			return new UnboundItemStackJS(new ResourceLocation(s));
 		}
 
@@ -157,7 +162,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 				if (map.containsKey("nbt"))
 				{
-					stack.nbt(map.get("nbt"));
+					stack.withNBT(map.get("nbt"));
 				}
 
 				return stack;
@@ -189,7 +194,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		}
 		else if (n instanceof MapJS)
 		{
-			stack.nbt(n);
+			stack.withNBT(n);
 		}
 
 		return stack;
@@ -199,7 +204,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	{
 		ItemStackJS stack = of(o);
 		stack.setCount(count);
-		stack.nbt(nbt);
+		stack.withNBT(nbt);
 		return stack;
 	}
 
@@ -243,13 +248,13 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 					if (element.isJsonObject())
 					{
-						stack.nbt(element);
+						stack.withNBT(element);
 					}
 					else
 					{
 						try
 						{
-							stack.nbt(TagParser.parseTag(GsonHelper.convertToString(element, "nbt")));
+							stack.withNBT(TagParser.parseTag(GsonHelper.convertToString(element, "nbt")));
 						}
 						catch (CommandSyntaxException ex)
 						{
@@ -269,7 +274,18 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 			}
 			else if (o.has("tag"))
 			{
-				return TagIngredientJS.createTag(o.get("tag").getAsString()).getFirst();
+				int c = 1;
+
+				if (o.has("count"))
+				{
+					c = o.get("count").getAsInt();
+				}
+				else if (o.has("amount"))
+				{
+					c = o.get("amount").getAsInt();
+				}
+
+				return TagIngredientJS.createTag(o.get("tag").getAsString()).getFirst().count(c);
 			}
 		}
 
@@ -370,7 +386,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	public abstract int getCount();
 
 	@Override
-	public final ItemStackJS count(int c)
+	public final ItemStackJS withCount(int c)
 	{
 		if (c == getCount())
 		{
@@ -382,9 +398,16 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return is;
 	}
 
+	@Override
+	@Deprecated
+	public final ItemStackJS count(int c)
+	{
+		return withCount(c);
+	}
+
 	public final ItemStackJS x(int c)
 	{
-		return count(c);
+		return withCount(c);
 	}
 
 	@Override
@@ -406,7 +429,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public abstract MapJS getNbt();
 
-	public final ItemStackJS nbt(@Nullable Object o)
+	public final ItemStackJS withNBT(@Nullable Object o)
 	{
 		MapJS nbt = MapJS.of(o instanceof Map ? o : MapJS.nbt(o));
 
@@ -416,6 +439,12 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		}
 
 		return this;
+	}
+
+	@Deprecated
+	public final ItemStackJS nbt(@Nullable Object o)
+	{
+		return withNBT(o);
 	}
 
 	public boolean hasChance()
@@ -438,7 +467,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return chance;
 	}
 
-	public final ItemStackJS chance(double c)
+	public final ItemStackJS withChance(double c)
 	{
 		if (Double.isNaN(chance) && Double.isNaN(c) || chance == c)
 		{
@@ -448,6 +477,12 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		ItemStackJS is = getCopy();
 		is.setChance(c);
 		return is;
+	}
+
+	@Deprecated
+	public final ItemStackJS chance(double c)
+	{
+		return withChance(c);
 	}
 
 	public Text getName()
@@ -482,7 +517,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 		if (count > 1 || hasChance() || !nbt.isEmpty())
 		{
-			builder.append("item.of('");
+			builder.append("Item.of('");
 			builder.append(getId());
 			builder.append('\'');
 
@@ -495,7 +530,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 			if (!nbt.isEmpty())
 			{
 				builder.append(", ");
-				builder.append(nbt);
+				nbt.toString(builder);
 			}
 
 			builder.append(')');

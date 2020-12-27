@@ -5,7 +5,7 @@ import net.minecraft.world.level.material.FlowingFluid;
 
 public class KubeJSFluidEventHandlerImpl
 {
-	public static FlowingFluid build(boolean source, FluidBuilder builder)
+	public static FlowingFluid buildFluid(boolean source, FluidBuilder builder)
 	{
 		return null;
 	}

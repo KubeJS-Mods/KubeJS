@@ -44,7 +44,7 @@ public class IngredientStackJS implements IngredientJS
 	}
 
 	@Override
-	public IngredientJS count(int count)
+	public IngredientJS withCount(int count)
 	{
 		if (count <= 0)
 		{

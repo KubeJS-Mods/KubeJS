@@ -6,7 +6,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class KubeJSBlockEventHandlerImpl
 {
-	public static LiquidBlock build(FluidBuilder builder, BlockBehaviour.Properties properties)
+	public static LiquidBlock buildFluidBlock(FluidBuilder builder, BlockBehaviour.Properties properties)
 	{
 		return new LiquidBlock(() -> builder.stillFluid, properties);
 	}

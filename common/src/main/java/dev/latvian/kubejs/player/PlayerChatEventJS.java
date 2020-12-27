@@ -10,8 +10,8 @@ import net.minecraft.server.level.ServerPlayer;
  */
 public class PlayerChatEventJS extends PlayerEventJS
 {
-	public ServerPlayer player;
-	public String message;
+	private final ServerPlayer player;
+	private final String message;
 	public Component component;
 
 	public PlayerChatEventJS(ServerPlayer player, String message, Component component)

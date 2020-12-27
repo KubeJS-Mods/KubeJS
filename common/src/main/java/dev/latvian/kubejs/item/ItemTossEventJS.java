@@ -10,8 +10,8 @@ import net.minecraft.world.entity.player.Player;
  */
 public class ItemTossEventJS extends PlayerEventJS
 {
-	public final Player player;
-	public final ItemEntity entity;
+	private final Player player;
+	private final ItemEntity entity;
 
 	public ItemTossEventJS(Player player, ItemEntity entity)
 	{

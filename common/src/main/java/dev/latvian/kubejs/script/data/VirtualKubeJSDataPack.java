@@ -28,15 +28,15 @@ import java.util.function.Predicate;
  */
 public class VirtualKubeJSDataPack extends AbstractPackResources
 {
-	public final boolean first;
+	public final boolean high;
 	private final Map<ResourceLocation, String> locationToData;
 	private final Map<String, String> pathToData;
 	private final Set<String> namespaces;
 
-	public VirtualKubeJSDataPack(boolean f)
+	public VirtualKubeJSDataPack(boolean h)
 	{
 		super(new File("dummy"));
-		first = f;
+		high = h;
 		locationToData = new HashMap<>();
 		pathToData = new HashMap<>();
 		namespaces = new HashSet<>();
@@ -47,13 +47,11 @@ public class VirtualKubeJSDataPack extends AbstractPackResources
 		locationToData.put(id, data);
 		pathToData.put("data/" + id.getNamespace() + "/" + id.getPath(), data);
 		namespaces.add(id.getNamespace());
-	}
 
-	public void resetData()
-	{
-		locationToData.clear();
-		pathToData.clear();
-		namespaces.clear();
+		if (ServerSettings.instance.dataPackOutput)
+		{
+			ScriptType.SERVER.console.info("Registered virtual file [" + (high ? "high" : "low") + " priority] '" + id + "': " + data);
+		}
 	}
 
 	@Override
@@ -65,7 +63,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources
 		{
 			if (ServerSettings.instance.dataPackOutput)
 			{
-				ScriptType.SERVER.console.info("Served virtual file '" + path + "': " + s);
+				ScriptType.SERVER.console.info("Served virtual file [" + (high ? "high" : "low") + " priority] '" + path + "': " + s);
 			}
 
 			return new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
@@ -83,7 +81,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources
 		{
 			if (ServerSettings.instance.dataPackOutput)
 			{
-				ScriptType.SERVER.console.info("Served virtual file '" + location + "': " + s);
+				ScriptType.SERVER.console.info("Served virtual file [" + (high ? "high" : "low") + " priority] '" + location + "': " + s);
 			}
 
 			return new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
@@ -148,7 +146,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources
 	@Override
 	public String getName()
 	{
-		return "KubeJS Virtual Data Pack [First: " + first + "]";
+		return "KubeJS Virtual Data Pack [" + (high ? "high" : "low") + " priority]";
 	}
 
 	@Override

@@ -37,6 +37,11 @@ public class RegisterRecipeHandlersEvent
 
 	public void register(@ID String id, Supplier<RecipeJS> f)
 	{
-		register(new RecipeTypeJS(Objects.requireNonNull(Registries.get(KubeJS.MOD_ID).get(Registry.RECIPE_SERIALIZER_REGISTRY).get(UtilsJS.getMCID(id)), "Cannot find recipe serializer: " + UtilsJS.getMCID(id).toString()), f));
+		register(new RecipeTypeJS(Objects.requireNonNull(Registries.get(KubeJS.MOD_ID).get(Registry.RECIPE_SERIALIZER_REGISTRY).get(UtilsJS.getMCID(id)), "Cannot find recipe serializer: " + UtilsJS.getMCID(id)), f));
+	}
+
+	public void ignore(@ID String id)
+	{
+		register(id, IgnoredRecipeJS::new);
 	}
 }

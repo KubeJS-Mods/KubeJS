@@ -11,9 +11,9 @@ import net.minecraft.world.item.ItemStack;
  */
 public class ItemPickupEventJS extends PlayerEventJS
 {
-	public final Player player;
-	public final ItemEntity entity;
-	public final ItemStack stack;
+	private final Player player;
+	private final ItemEntity entity;
+	private final ItemStack stack;
 
 	public ItemPickupEventJS(Player player, ItemEntity entity, ItemStack stack)
 	{

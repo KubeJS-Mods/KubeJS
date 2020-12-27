@@ -13,7 +13,7 @@ import java.util.function.Consumer;
  */
 public class SoundRegistryEventJS extends EventJS
 {
-	public final Consumer<ResourceLocation> registry;
+	private final Consumer<ResourceLocation> registry;
 
 	public SoundRegistryEventJS(Consumer<ResourceLocation> registry)
 	{

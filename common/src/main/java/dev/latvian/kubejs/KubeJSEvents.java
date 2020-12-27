@@ -22,9 +22,10 @@ public class KubeJSEvents
 	public static final String SERVER_LOAD = "server.load";
 	public static final String SERVER_UNLOAD = "server.unload";
 	public static final String SERVER_TICK = "server.tick";
-	public static final String SERVER_DATAPACK_FIRST = "server.datapack.first";
-	public static final String SERVER_DATAPACK_LAST = "server.datapack.last";
+	public static final String SERVER_DATAPACK_HIGH_PRIORITY = "server.datapack.high_priority";
+	public static final String SERVER_DATAPACK_LOW_PRIORITY = "server.datapack.low_priority";
 	public static final String RECIPES = "recipes";
+	public static final String RECIPES_COMPOSTABLES = "recipes.compostables";
 
 	public static final String WORLD_LOAD = "world.load";
 	public static final String WORLD_UNLOAD = "world.unload";

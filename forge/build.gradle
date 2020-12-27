@@ -35,7 +35,7 @@ dependencies {
 	modCompile("curse.maven:bookshelf:${rootProject.forge_bookshelf_file}")
 	modCompile("curse.maven:game-stages:${rootProject.forge_gamestages_file}")
 	modCompile("me.shedaniel:architectury:${rootProject.architectury_version}:forge")
-	modCompile("curse.maven:rhino:${rootProject.rhino_file}")
+	modCompile("curse.maven:rhino-416294:${rootProject.rhino_file}")
 
 	compileOnly(project(path: ":common")) {
 		transitive = false

@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.util;
 
-import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
 import org.apache.logging.log4j.Logger;
@@ -85,19 +84,18 @@ public class ConsoleJS
 
 		if (lineNumber > 0)
 		{
-			int ln = getScriptLine();
+			int[] lineP = {0};
+			String lineS = Context.getSourcePositionFromStack(lineP);
 
-			if (ln > 0)
+			if (lineP[0] > 0)
 			{
-				ScriptFile f = type.manager.get().currentFile;
-
-				if (f != null)
+				if (lineS != null)
 				{
-					builder.append(f.info.location);
+					builder.append(lineS);
 				}
 
 				builder.append(':');
-				builder.append(ln);
+				builder.append(lineP[0]);
 				builder.append(": ");
 			}
 		}
@@ -117,14 +115,6 @@ public class ConsoleJS
 		if (shouldPrint())
 		{
 			logger.info(string(message));
-		}
-	}
-
-	public void info(Object message, Throwable throwable)
-	{
-		if (shouldPrint())
-		{
-			logger.info(string(message) + ": " + throwable);
 		}
 	}
 
@@ -153,7 +143,17 @@ public class ConsoleJS
 	{
 		if (shouldPrint())
 		{
-			logger.warn(string(message) + ": " + throwable);
+			String s = throwable.toString();
+
+			if (s.equals("java.lang.NullPointerException"))
+			{
+				logger.warn(string(message) + ":");
+				throwable.printStackTrace();
+			}
+			else
+			{
+				logger.warn(string(message) + ": " + s);
+			}
 		}
 	}
 
@@ -181,9 +181,14 @@ public class ConsoleJS
 		}
 	}
 
+	public boolean shouldPrintDebug()
+	{
+		return debugEnabled && shouldPrint();
+	}
+
 	public void debug(Object message)
 	{
-		if (debugEnabled && shouldPrint())
+		if (shouldPrintDebug())
 		{
 			logger.info(string(message));
 		}
@@ -191,7 +196,7 @@ public class ConsoleJS
 
 	public void debugf(String message, Object... args)
 	{
-		if (debugEnabled && shouldPrint())
+		if (shouldPrintDebug())
 		{
 			logger.info(string(message, args));
 		}

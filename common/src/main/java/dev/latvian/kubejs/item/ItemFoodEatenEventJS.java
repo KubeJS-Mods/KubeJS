@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 public class ItemFoodEatenEventJS extends PlayerEventJS
 {
 	private final ServerPlayer player;
-	public final ItemStackJS item;
+	private final ItemStackJS item;
 
 	public ItemFoodEatenEventJS(ServerPlayer p, ItemStack is)
 	{

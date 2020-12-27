@@ -1,7 +1,10 @@
 package dev.latvian.kubejs.core;
 
 import com.google.gson.JsonObject;
+import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.recipe.CompostablesRecipeEventJS;
 import dev.latvian.kubejs.recipe.RecipeEventJS;
+import dev.latvian.kubejs.script.ScriptType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -21,6 +24,7 @@ public interface RecipeManagerKJS
 		if (RecipeEventJS.instance != null)
 		{
 			RecipeEventJS.instance.post((RecipeManager) this, jsonMap);
+			new CompostablesRecipeEventJS().post(ScriptType.SERVER, KubeJSEvents.RECIPES_COMPOSTABLES);
 			RecipeEventJS.instance = null;
 		}
 	}

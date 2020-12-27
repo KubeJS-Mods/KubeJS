@@ -9,6 +9,7 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
@@ -17,6 +18,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -62,15 +64,34 @@ public abstract class RecipeJS
 		originalRecipe = null;
 	}
 
+	public RecipeJS set(Object data)
+	{
+		MapJS m = MapJS.of(data);
+
+		if (m != null)
+		{
+			for (Map.Entry<String, JsonElement> entry : m.toJson().entrySet())
+			{
+				json.add(entry.getKey(), entry.getValue());
+			}
+
+			save();
+		}
+
+		return this;
+	}
+
 	public RecipeJS id(@ID String _id)
 	{
 		id = UtilsJS.getMCID(_id);
+		save();
 		return this;
 	}
 
 	public RecipeJS group(@ID String g)
 	{
 		setGroup(g);
+		save();
 		return this;
 	}
 
@@ -107,7 +128,7 @@ public abstract class RecipeJS
 		{
 			if (exact ? inputItems.get(j).equals(i) : inputItems.get(j).anyStackMatches(i))
 			{
-				inputItems.set(j, func.apply(with.getCopy(), inputItems.get(j)));
+				inputItems.set(j, convertReplacedInput(j, inputItems.get(j), func.apply(with.getCopy(), inputItems.get(j))));
 				changed = true;
 				serializeInputs = true;
 				save();
@@ -139,7 +160,7 @@ public abstract class RecipeJS
 
 	public final boolean replaceOutput(IngredientJS i, ItemStackJS with, boolean exact)
 	{
-		return replaceOutput(i, with, exact, (out, original) -> out.count(original.getCount()).chance(original.getChance()));
+		return replaceOutput(i, with, exact, (out, original) -> out.withCount(original.getCount()).withChance(original.getChance()));
 	}
 
 	public final boolean replaceOutput(IngredientJS i, ItemStackJS with, boolean exact, BiFunction<ItemStackJS, ItemStackJS, ItemStackJS> func)
@@ -150,7 +171,7 @@ public abstract class RecipeJS
 		{
 			if (exact ? i.equals(outputItems.get(j)) : i.test(outputItems.get(j)))
 			{
-				outputItems.set(j, func.apply(with.getCopy(), outputItems.get(j)));
+				outputItems.set(j, convertReplacedOutput(j, outputItems.get(j), func.apply(with.getCopy(), outputItems.get(j))));
 				changed = true;
 				serializeOutputs = true;
 				save();
@@ -207,6 +228,16 @@ public abstract class RecipeJS
 	public String getType()
 	{
 		return type.toString();
+	}
+
+	public IngredientJS convertReplacedInput(int index, IngredientJS oldIngredient, IngredientJS newIngredient)
+	{
+		return newIngredient;
+	}
+
+	public ItemStackJS convertReplacedOutput(int index, ItemStackJS oldStack, ItemStackJS newStack)
+	{
+		return newStack;
 	}
 
 	@Nullable

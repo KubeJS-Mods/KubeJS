@@ -33,7 +33,7 @@ dependencies {
 		exclude group: "net.fabricmc.fabric-api"
 		exclude group: "net.fabricmc"
 	}
-	compile("curse.maven:rhino:${rootProject.rhino_file}")
+	compile("curse.maven:rhino-416294:${rootProject.rhino_file}")
 
 	compileOnly(project(path: ":common")) {
 		transitive = false

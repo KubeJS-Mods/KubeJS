@@ -2,7 +2,6 @@ package dev.latvian.kubejs.server;
 
 import com.mojang.brigadier.CommandDispatcher;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.kubejs.command.KubeJSCommands;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
@@ -56,7 +55,7 @@ public class KubeJSServerEventHandler
 	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection selection)
 	{
 		KubeJSCommands.register(dispatcher);
-//		new CommandRegistryEventJS(dispatcher, selection).post(ScriptType.SERVER, KubeJSEvents.COMMAND_REGISTRY);
+		//		new CommandRegistryEventJS(dispatcher, selection).post(ScriptType.SERVER, KubeJSEvents.COMMAND_REGISTRY);
 	}
 
 	public static void serverStarted(MinecraftServer server)
@@ -142,7 +141,7 @@ public class KubeJSServerEventHandler
 				}
 				catch (RhinoException ex)
 				{
-					e.file.pack.manager.type.console.error("Error occurred while handling scheduled event callback: " + ex.getMessage());
+					ScriptType.SERVER.console.error("Error occurred while handling scheduled event callback: " + ex.getMessage());
 				}
 				catch (Throwable ex)
 				{
@@ -176,7 +175,7 @@ public class KubeJSServerEventHandler
 				}
 				catch (RhinoException ex)
 				{
-					e.file.pack.manager.type.console.error("Error occurred while handling scheduled event callback: " + ex.getMessage());
+					ScriptType.SERVER.console.error("Error occurred while handling scheduled event callback: " + ex.getMessage());
 				}
 				catch (Throwable ex)
 				{

@@ -11,9 +11,9 @@ import net.minecraft.world.item.ItemStack;
  */
 public class ItemCraftedEventJS extends PlayerEventJS
 {
-	public final Player player;
-	public final ItemStack crafted;
-	public final Container container;
+	private final Player player;
+	private final ItemStack crafted;
+	private final Container container;
 
 	public ItemCraftedEventJS(Player player, ItemStack crafted, Container container)
 	{

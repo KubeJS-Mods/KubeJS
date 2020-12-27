@@ -1,6 +1,8 @@
 package dev.latvian.kubejs.recipe;
 
 import com.google.common.base.Stopwatch;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import dev.latvian.kubejs.KubeJS;
@@ -47,11 +49,13 @@ import java.util.stream.Collectors;
  */
 public class RecipeEventJS extends EventJS
 {
+	public static final ResourceLocation FORGE_CONDITIONAL = new ResourceLocation("forge:conditional");
+
 	public static RecipeEventJS instance;
 
-	public final Map<ResourceLocation, RecipeTypeJS> typeMap;
-	public final List<Recipe<?>> fallbackedRecipes = new ArrayList<>();
-	public final List<RecipeJS> originalRecipes;
+	private final Map<ResourceLocation, RecipeTypeJS> typeMap;
+	private final List<Recipe<?>> fallbackedRecipes = new ArrayList<>();
+	private final List<RecipeJS> originalRecipes;
 	private final List<RecipeJS> addedRecipes;
 	private final Set<RecipeJS> removedRecipes;
 	private final Map<ResourceLocation, RecipeFunction> functionMap;
@@ -86,26 +90,68 @@ public class RecipeEventJS extends EventJS
 				continue; //Forge: filter anything beginning with "_" as it's used for metadata.
 			}
 
+			String recipeIdAndType = recipeId + "[unknown:type]";
+
 			JsonObject json = entry.getValue();
 
 			try
 			{
+				ResourceLocation type = new ResourceLocation(GsonHelper.getAsString(json, "type"));
+
+				recipeIdAndType = recipeId + "[" + type + "]";
+
 				if (!processConditions(json, "conditions"))
 				{
 					if (ServerSettings.instance.logSkippedRecipes)
 					{
-						ScriptType.SERVER.console.info("Skipping loading recipe " + recipeId + " as it's conditions were not met");
+						ScriptType.SERVER.console.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");
 					}
 
 					continue;
 				}
 
-				String type = GsonHelper.getAsString(json, "type");
-				RecipeFunction function = getRecipeFunction(new ResourceLocation(type));
+				if (type.equals(FORGE_CONDITIONAL))
+				{
+					JsonArray items = GsonHelper.getAsJsonArray(json, "recipes");
+					boolean skip = true;
+
+					for (int idx = 0; idx < items.size(); idx++)
+					{
+						JsonElement e = items.get(idx);
+
+						if (!e.isJsonObject())
+						{
+							throw new RecipeExceptionJS("Invalid recipes entry at index " + idx + " Must be JsonObject");
+						}
+
+						JsonObject o = e.getAsJsonObject();
+
+						if (processConditions(o, "conditions"))
+						{
+							json = o.get("recipe").getAsJsonObject();
+							type = new ResourceLocation(GsonHelper.getAsString(json, "type"));
+							recipeIdAndType = recipeId + "[" + type + "]";
+							skip = false;
+							break;
+						}
+					}
+
+					if (skip)
+					{
+						if (ServerSettings.instance.logSkippedRecipes)
+						{
+							ScriptType.SERVER.console.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");
+						}
+
+						continue;
+					}
+				}
+
+				RecipeFunction function = getRecipeFunction(type);
 
 				if (function.type == null)
 				{
-					throw new MissingRecipeFunctionException("Unknown recipe type '" + function.typeID + "'").fallback();
+					throw new MissingRecipeFunctionException("Unknown recipe type!").fallback();
 				}
 
 				RecipeJS recipe = function.type.factory.get();
@@ -116,28 +162,36 @@ public class RecipeEventJS extends EventJS
 
 				if (recipe.originalRecipe == null)
 				{
-					throw new MissingRecipeFunctionException("Serializer returned null");
+					if (ServerSettings.instance.logSkippedRecipes)
+					{
+						ScriptType.SERVER.console.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");
+					}
+
+					continue;
 				}
 
 				recipe.deserializeJson();
 				originalRecipes.add(recipe);
 
-				if (recipe.originalRecipe.isSpecial())
+				if (ScriptType.SERVER.console.shouldPrintDebug())
 				{
-					ScriptType.SERVER.console.debug("Loaded recipe " + recipe + ": <dynamic>");
-				}
-				else
-				{
-					ScriptType.SERVER.console.debug("Loaded recipe " + recipe + ": " + recipe.inputItems + " -> " + recipe.outputItems);
+					if (recipe.originalRecipe.isSpecial())
+					{
+						ScriptType.SERVER.console.debug("Loaded recipe " + recipeIdAndType + ": <dynamic>");
+					}
+					else
+					{
+						ScriptType.SERVER.console.debug("Loaded recipe " + recipeIdAndType + ": " + recipe.inputItems + " -> " + recipe.outputItems);
+					}
 				}
 			}
-			catch (Exception ex)
+			catch (Throwable ex)
 			{
 				if (!(ex instanceof RecipeExceptionJS) || ((RecipeExceptionJS) ex).fallback)
 				{
-					if (ServerSettings.instance.logSkippedRecipes)
+					if (ServerSettings.instance.logErroringRecipes)
 					{
-						ScriptType.SERVER.console.warn("Failed to parse recipe '" + recipeId + "'! Falling back to vanilla", ex);
+						ScriptType.SERVER.console.warn("Failed to parse recipe '" + recipeIdAndType + "'! Falling back to vanilla", ex);
 					}
 
 					try
@@ -146,23 +200,20 @@ public class RecipeEventJS extends EventJS
 					}
 					catch (NullPointerException | IllegalArgumentException | JsonParseException ex2)
 					{
-						if (ServerSettings.instance.logSkippedRecipes)
+						if (ServerSettings.instance.logErroringRecipes)
 						{
-							ScriptType.SERVER.console.warn("Parsing error loading recipe " + recipeId, ex2);
+							ScriptType.SERVER.console.warn("Failed to parse recipe " + recipeIdAndType, ex2);
 						}
 					}
 					catch (Exception ex3)
 					{
-						ScriptType.SERVER.console.warn("Parsing error loading recipe " + recipeId + ":");
+						ScriptType.SERVER.console.warn("Failed to parse recipe " + recipeIdAndType + ":");
 						ex3.printStackTrace();
 					}
 				}
-				else
+				else if (ServerSettings.instance.logErroringRecipes)
 				{
-					if (ServerSettings.instance.logSkippedRecipes)
-					{
-						ScriptType.SERVER.console.warn("Failed to parse recipe '" + recipeId + "'", ex);
-					}
+					ScriptType.SERVER.console.warn("Failed to parse recipe '" + recipeIdAndType + "'", ex);
 				}
 			}
 		}
@@ -291,7 +342,7 @@ public class RecipeEventJS extends EventJS
 		{
 			ScriptType.SERVER.console.info("+ " + r + ": " + r.inputItems + " -> " + r.outputItems);
 		}
-		else
+		else if (ScriptType.SERVER.console.shouldPrintDebug())
 		{
 			ScriptType.SERVER.console.debug("+ " + r + ": " + r.inputItems + " -> " + r.outputItems);
 		}
@@ -331,7 +382,7 @@ public class RecipeEventJS extends EventJS
 				{
 					ScriptType.SERVER.console.info("- " + r + ": " + r.inputItems + " -> " + r.outputItems);
 				}
-				else
+				else if (ScriptType.SERVER.console.shouldPrintDebug())
 				{
 					ScriptType.SERVER.console.debug("- " + r + ": " + r.inputItems + " -> " + r.outputItems);
 				}
@@ -360,6 +411,10 @@ public class RecipeEventJS extends EventJS
 				if (ServerSettings.instance.logAddedRecipes || ServerSettings.instance.logRemovedRecipes)
 				{
 					ScriptType.SERVER.console.info("~ " + r + ": IN " + is + " -> " + ws);
+				}
+				else if (ScriptType.SERVER.console.shouldPrintDebug())
+				{
+					ScriptType.SERVER.console.debug("~ " + r + ": IN " + is + " -> " + ws);
 				}
 			}
 		});
@@ -395,6 +450,10 @@ public class RecipeEventJS extends EventJS
 				if (ServerSettings.instance.logAddedRecipes || ServerSettings.instance.logRemovedRecipes)
 				{
 					ScriptType.SERVER.console.info("~ " + r + ": OUT " + is + " -> " + ws);
+				}
+				else if (ScriptType.SERVER.console.shouldPrintDebug())
+				{
+					ScriptType.SERVER.console.debug("~ " + r + ": OUT " + is + " -> " + ws);
 				}
 			}
 		});
@@ -459,6 +518,11 @@ public class RecipeEventJS extends EventJS
 	public RecipeFunction getSmoking()
 	{
 		return getRecipeFunction(Registries.getId(RecipeSerializer.SMOKING_RECIPE, Registry.RECIPE_SERIALIZER_REGISTRY));
+	}
+
+	public RecipeFunction getCampfireCooking()
+	{
+		return getRecipeFunction(Registries.getId(RecipeSerializer.CAMPFIRE_COOKING_RECIPE, Registry.RECIPE_SERIALIZER_REGISTRY));
 	}
 
 	public RecipeFunction getStonecutting()

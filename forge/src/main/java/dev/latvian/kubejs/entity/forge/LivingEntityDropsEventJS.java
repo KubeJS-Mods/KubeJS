@@ -19,8 +19,8 @@ import java.util.List;
  */
 public class LivingEntityDropsEventJS extends LivingEntityEventJS
 {
-	public final LivingDropsEvent event;
-	public List<ItemEntityJS> drops;
+	private final LivingDropsEvent event;
+	public List<ItemEntityJS> eventDrops;
 
 	public LivingEntityDropsEventJS(LivingDropsEvent e)
 	{
@@ -56,17 +56,17 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS
 
 	public List<ItemEntityJS> getDrops()
 	{
-		if (drops == null)
+		if (eventDrops == null)
 		{
-			drops = new ArrayList<>();
+			eventDrops = new ArrayList<>();
 
 			for (ItemEntity entity : event.getDrops())
 			{
-				drops.add(new ItemEntityJS(getWorld(), entity));
+				eventDrops.add(new ItemEntityJS(getWorld(), entity));
 			}
 		}
 
-		return drops;
+		return eventDrops;
 	}
 
 	@Nullable

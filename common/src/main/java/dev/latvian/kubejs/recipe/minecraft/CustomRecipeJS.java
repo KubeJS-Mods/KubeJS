@@ -10,15 +10,11 @@ import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 
-import java.util.function.Supplier;
-
 /**
  * @author LatvianModder
  */
 public class CustomRecipeJS extends RecipeJS
 {
-	public static final Supplier<RecipeJS> FACTORY = CustomRecipeJS::new;
-
 	private String inputKey;
 	private int inputType;
 	private String outputKey;
