@@ -1,9 +1,18 @@
 plugins {
-	id "architect-plugin" version "1.1.19"
+	id "architect-plugin" version "1.2.33"
+	id "forgified-fabric-loom" version "0.5.13" apply false
 }
 
 architect {
 	minecraft = rootProject.minecraft_version
+}
+
+subprojects {
+	apply plugin: "forgified-fabric-loom"
+
+	loom {
+		silentMojangMappingsLicense()
+	}
 }
 
 allprojects {
@@ -21,6 +30,7 @@ allprojects {
 	}
 
 	repositories {
+        mavenLocal()
 		maven {
 			url "https://www.cursemaven.com"
 			content {

@@ -1,13 +1,13 @@
 package dev.latvian.kubejs.block.forge;
 
 import dev.latvian.kubejs.fluid.FluidBuilder;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.FlowingFluidBlock;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class KubeJSBlockEventHandlerImpl
 {
-	public static FlowingFluidBlock build(FluidBuilder builder, AbstractBlock.Properties properties)
+	public static LiquidBlock build(FluidBuilder builder, BlockBehaviour.Properties properties)
 	{
-		return new FlowingFluidBlock(() -> builder.stillFluid, properties);
+		return new LiquidBlock(() -> builder.stillFluid, properties);
 	}
 }

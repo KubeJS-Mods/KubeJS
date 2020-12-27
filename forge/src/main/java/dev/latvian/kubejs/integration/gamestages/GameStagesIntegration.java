@@ -15,6 +15,7 @@ public class GameStagesIntegration
 		MinecraftForge.EVENT_BUS.register(GameStagesIntegration.class);
 	}
 
+	// Just ignore when it says that it is not an Event
 	@SubscribeEvent
 	public static void attachPlayerData(AttachPlayerDataEvent event)
 	{

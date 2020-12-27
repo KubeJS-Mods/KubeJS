@@ -1,10 +1,10 @@
 package dev.latvian.kubejs.mixin.forge;
 
 import dev.latvian.kubejs.core.TagCollectionKJS;
-import net.minecraft.tags.ITagCollection;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.Tag;
-import net.minecraft.tags.TagCollectionReader;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.tags.TagCollection;
+import net.minecraft.tags.TagLoader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,11 +18,11 @@ import java.util.function.Function;
 /**
  * @author LatvianModder
  */
-@Mixin(TagCollectionReader.class)
+@Mixin(TagLoader.class)
 public abstract class TagCollectionReaderMixin<T> implements TagCollectionKJS<T>
 {
 	@Inject(method = "load", at = @At("HEAD"))
-	private void customTags(Map<ResourceLocation, Tag.Builder> map, CallbackInfoReturnable<ITagCollection<T>> ci)
+	private void customTags(Map<ResourceLocation, Tag.Builder> map, CallbackInfoReturnable<TagCollection<T>> ci)
 	{
 		customTagsKJS(map);
 	}

@@ -3,8 +3,8 @@ package dev.latvian.kubejs.util.forge;
 import dev.latvian.kubejs.KubeJS;
 import me.shedaniel.architectury.registry.Registries;
 import me.shedaniel.architectury.registry.Registry;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -25,15 +25,15 @@ public class UtilsJSImpl
 		Registry<T> reg;
 		if (registry instanceof IForgeRegistry)
 		{
-			reg = Registries.get(KubeJS.MOD_ID).get(RegistryKey.createRegistryKey(((IForgeRegistry<?>) registry).getRegistryName()));
+			reg = Registries.get(KubeJS.MOD_ID).get(ResourceKey.createRegistryKey(((IForgeRegistry<?>) registry).getRegistryName()));
 		}
-		else if (registry instanceof net.minecraft.util.registry.Registry)
+		else if (registry instanceof net.minecraft.core.Registry)
 		{
-			reg = Registries.get(KubeJS.MOD_ID).get((net.minecraft.util.registry.Registry) registry);
+			reg = Registries.get(KubeJS.MOD_ID).get((net.minecraft.core.Registry) registry);
 		}
-		else if (registry instanceof RegistryKey)
+		else if (registry instanceof ResourceKey)
 		{
-			reg = Registries.get(KubeJS.MOD_ID).get((RegistryKey) registry);
+			reg = Registries.get(KubeJS.MOD_ID).get((ResourceKey) registry);
 		}
 		else
 		{

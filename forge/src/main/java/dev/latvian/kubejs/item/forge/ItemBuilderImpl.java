@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.item.forge;
 
 import me.shedaniel.architectury.registry.ToolType;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 
 public class ItemBuilderImpl
 {

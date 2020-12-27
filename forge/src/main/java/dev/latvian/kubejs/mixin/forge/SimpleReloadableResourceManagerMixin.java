@@ -1,9 +1,9 @@
 package dev.latvian.kubejs.mixin.forge;
 
 import dev.latvian.kubejs.core.SimpleReloadableResourceManagerKJS;
-import net.minecraft.resources.FallbackResourceManager;
-import net.minecraft.resources.IFutureReloadListener;
-import net.minecraft.resources.SimpleReloadableResourceManager;
+import net.minecraft.server.packs.resources.FallbackResourceManager;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.SimpleReloadableResourceManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
@@ -22,9 +22,9 @@ public abstract class SimpleReloadableResourceManagerMixin implements SimpleRelo
 
 	@Override
 	@Accessor("listeners")
-	public abstract List<IFutureReloadListener> getReloadListenersKJS();
+	public abstract List<PreparableReloadListener> getReloadListenersKJS();
 
 	@Override
 	@Accessor("recentlyRegistered")
-	public abstract List<IFutureReloadListener> getInitTaskQueueKJS();
+	public abstract List<PreparableReloadListener> getInitTaskQueueKJS();
 }

@@ -5,9 +5,9 @@ import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.ItemEntityJS;
 import dev.latvian.kubejs.entity.LivingEntityEventJS;
 import dev.latvian.kubejs.item.ItemStackJS;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 
 import javax.annotation.Nullable;

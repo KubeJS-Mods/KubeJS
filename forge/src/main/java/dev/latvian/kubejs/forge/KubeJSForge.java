@@ -11,10 +11,10 @@ import dev.latvian.kubejs.item.forge.ItemDestroyedEventJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import me.shedaniel.architectury.platform.forge.EventBuses;
-import net.minecraft.block.Block;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -62,7 +62,7 @@ public class KubeJSForge
 
 	private static void itemDestroyed(PlayerDestroyItemEvent event)
 	{
-		if (event.getPlayer() instanceof ServerPlayerEntity)
+		if (event.getPlayer() instanceof ServerPlayer)
 		{
 			new ItemDestroyedEventJS(event).post(KubeJSEvents.ITEM_DESTROYED);
 		}

@@ -1,9 +1,9 @@
 package dev.latvian.kubejs.recipe.forge;
 
 import com.google.gson.JsonObject;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.common.crafting.CraftingHelper;
 
 import java.util.Map;
@@ -16,7 +16,7 @@ public class RecipeEventJSImpl
 	}
 
 
-	public static void pingNewRecipes(Map<IRecipeType<?>, Map<ResourceLocation, IRecipe<?>>> map)
+	public static void pingNewRecipes(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map)
 	{
 	}
 }

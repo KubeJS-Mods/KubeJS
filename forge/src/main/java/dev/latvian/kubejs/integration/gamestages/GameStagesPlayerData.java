@@ -2,7 +2,7 @@ package dev.latvian.kubejs.integration.gamestages;
 
 import dev.latvian.kubejs.player.PlayerDataJS;
 import net.darkhax.gamestages.GameStageHelper;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,17 +26,17 @@ public class GameStagesPlayerData
 
 	public void add(String stage)
 	{
-		if (playerData.getMinecraftPlayer() instanceof ServerPlayerEntity)
+		if (playerData.getMinecraftPlayer() instanceof ServerPlayer)
 		{
-			GameStageHelper.addStage((ServerPlayerEntity) playerData.getMinecraftPlayer(), stage);
+			GameStageHelper.addStage((ServerPlayer) playerData.getMinecraftPlayer(), stage);
 		}
 	}
 
 	public void remove(String stage)
 	{
-		if (playerData.getMinecraftPlayer() instanceof ServerPlayerEntity)
+		if (playerData.getMinecraftPlayer() instanceof ServerPlayer)
 		{
-			GameStageHelper.removeStage((ServerPlayerEntity) playerData.getMinecraftPlayer(), stage);
+			GameStageHelper.removeStage((ServerPlayer) playerData.getMinecraftPlayer(), stage);
 		}
 	}
 
@@ -74,9 +74,9 @@ public class GameStagesPlayerData
 
 	public void sync()
 	{
-		if (playerData.getMinecraftPlayer() instanceof ServerPlayerEntity)
+		if (playerData.getMinecraftPlayer() instanceof ServerPlayer)
 		{
-			GameStageHelper.syncPlayer((ServerPlayerEntity) playerData.getMinecraftPlayer());
+			GameStageHelper.syncPlayer((ServerPlayer) playerData.getMinecraftPlayer());
 		}
 	}
 }
