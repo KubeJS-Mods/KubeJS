@@ -10,8 +10,6 @@ import dev.latvian.kubejs.integration.IntegrationManager;
 import dev.latvian.kubejs.item.forge.ItemDestroyedEventJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
-import dev.latvian.kubejs.world.gen.WorldgenAddEventJS;
-import dev.latvian.kubejs.world.gen.WorldgenRemoveEventJS;
 import me.shedaniel.architectury.platform.forge.EventBuses;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -22,9 +20,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
-import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -50,8 +46,6 @@ public class KubeJSForge
 
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::livingDrops);
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::checkLivingSpawn);
-
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, KubeJSForge::onBiomesLoad);
 
 		kubeJS.loadComplete();
 	}
@@ -104,11 +98,5 @@ public class KubeJSForge
 		{
 			event.setResult(Event.Result.DENY);
 		}
-	}
-
-	private static void onBiomesLoad(BiomeLoadingEvent event)
-	{
-		new WorldgenRemoveEventJS(event.getGeneration()).post(ScriptType.SERVER, KubeJSEvents.SERVER_WORLDGEN_REMOVE);
-		new WorldgenAddEventJS(event.getGeneration()).post(ScriptType.SERVER, KubeJSEvents.SERVER_WORLDGEN_ADD);
 	}
 }

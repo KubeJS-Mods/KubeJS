@@ -1,10 +1,12 @@
 package dev.latvian.kubejs.world.gen;
 
 import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.util.MapJS;
-import net.minecraft.core.Registry;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.biome.BiomeGenerationSettings;
+import net.minecraft.tags.SerializationTags;
+import net.minecraft.util.UniformInt;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.GenerationStep;
@@ -15,113 +17,119 @@ import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguratio
 import net.minecraft.world.level.levelgen.feature.configurations.RangeDecoratorConfiguration;
 import net.minecraft.world.level.levelgen.placement.ChanceDecoratorConfiguration;
 import net.minecraft.world.level.levelgen.placement.FeatureDecorator;
-import net.minecraft.world.level.levelgen.structure.templatesystem.AlwaysTrueTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.BlockStateMatchTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
+
+import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
  */
 public class WorldgenAddEventJS extends EventJS
 {
-	/*
-	AnyRuleTest ruleTest = new AnyRuleTest();
-		ruleTest.list.add(new BlockMatchRuleTest(Blocks.DIRT));
-		BlockState ore = Blocks.GLOWSTONE.defaultBlockState();
-		int cluster_count = 17;
-
-		BiomeGenerationSettingsBuilder gen = event.getGeneration();
-		gen.addFeature(
-				GenerationStage.Decoration.UNDERGROUND_ORES,
-				Feature.ORE.configured(
-						new OreFeatureConfig(
-								ruleTest,
-								ore,
-								cluster_count
-						)
-				)
-						.range(128)
-						.squared()
-						.count(20)
-		);
-	 */
-
-	public static BlockState parseBlockState(String blockStateId)
+	public void addFeature(GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> configuredFeature)
 	{
-		int i = blockStateId.indexOf('[');
-
-		if (i == -1)
-		{
-			return Registry.BLOCK.get(new ResourceLocation(blockStateId)).defaultBlockState();
-		}
-		else if (blockStateId.indexOf(']') == blockStateId.length() - 1)
-		{
-			String[] s = blockStateId.substring(i + 1, blockStateId.length() - 1).split(",");
-
-			System.out.println(s);
-		}
-
-		return Blocks.AIR.defaultBlockState();
 	}
 
-	private final BiomeGenerationSettings.Builder builder;
-
-	public WorldgenAddEventJS(BiomeGenerationSettings.Builder b)
+	public void addEntitySpawn(MobCategory category, MobSpawnSettings.SpawnerData spawnerData)
 	{
-		builder = b;
 	}
 
-	public RuleTest parseRuleTest(Object o)
+	public boolean verifyBiomes(WorldgenEntryList<String> biomes)
 	{
-		if (Boolean.TRUE.equals(o))
-		{
-			return AlwaysTrueTest.INSTANCE;
-		}
-		else if (Boolean.FALSE.equals(o))
-		{
-			throw new RuntimeException("wtf are you doing");
-		}
-
-		return AlwaysTrueTest.INSTANCE;
+		return true;
 	}
 
-	private static <T> T cast(Object o)
+	public void addOre(Consumer<AddOreProperties> p)
 	{
-		return (T) o;
-	}
+		AddOreProperties properties = new AddOreProperties();
+		p.accept(properties);
 
-	public void ore(String blockStateId, Object p)
-	{
-		BlockState state = parseBlockState(blockStateId);
-
-		if (state == Blocks.AIR.defaultBlockState())
+		if (properties._block == Blocks.AIR.defaultBlockState())
 		{
 			return;
 		}
 
-		OreProperties properties = new OreProperties(MapJS.of(p));
+		if (!verifyBiomes(properties.biomes))
+		{
+			return;
+		}
 
-		ConfiguredFeature<OreConfiguration, ?> oreConfig = (properties.noSurface ? Feature.NO_SURFACE_ORE : Feature.ORE).configured(new OreConfiguration(properties.spawnsIn, state, properties.clusterCount));
+		AnyRuleTest ruleTest = new AnyRuleTest();
 
-		oreConfig = cast(oreConfig.decorated(FeatureDecorator.RANGE.configured(new RangeDecoratorConfiguration(properties.minHeight, 0, properties.maxHeight))));
-		oreConfig = cast(oreConfig.count(properties.clusterCount));
+		for (String s : properties.spawnsIn.values)
+		{
+			boolean invert = false;
+
+			while (s.startsWith("!"))
+			{
+				s = s.substring(1);
+				invert = !invert;
+			}
+
+			if (s.startsWith("#"))
+			{
+				RuleTest tagTest = new TagMatchTest(SerializationTags.getInstance().getBlocks().getTag(new ResourceLocation(s.substring(1))));
+				ruleTest.list.add(invert ? new InvertRuleTest(tagTest) : tagTest);
+			}
+			else
+			{
+				BlockState bs = UtilsJS.parseBlockState(s);
+				RuleTest tagTest = s.indexOf('[') != -1 ? new BlockStateMatchTest(bs) : new BlockMatchTest(bs.getBlock());
+				ruleTest.list.add(invert ? new InvertRuleTest(tagTest) : tagTest);
+			}
+		}
+
+		RuleTest ruleTest1 = ruleTest.list.isEmpty() ? OreConfiguration.Predicates.NATURAL_STONE : ruleTest;
+
+		ConfiguredFeature<OreConfiguration, ?> oreConfig = (properties.noSurface ? Feature.NO_SURFACE_ORE : Feature.ORE).configured(new OreConfiguration(properties.spawnsIn.blacklist ? new InvertRuleTest(ruleTest1) : ruleTest1, properties._block, properties.clusterMaxSize));
+
+		oreConfig = UtilsJS.cast(oreConfig.decorated(FeatureDecorator.RANGE.configured(new RangeDecoratorConfiguration(properties.minHeight, 0, properties.maxHeight))));
+		oreConfig = UtilsJS.cast(oreConfig.count(UniformInt.of(properties.clusterMinCount, properties.clusterMaxCount - properties.clusterMinCount)));
 
 		if (properties.squared)
 		{
-			oreConfig = cast(oreConfig.squared());
+			oreConfig = UtilsJS.cast(oreConfig.squared());
 		}
 
-		builder.addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, oreConfig);
+		addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, oreConfig);
 	}
 
-	public void lake(String blockStateId, int rarity)
+	public void addLake(Consumer<AddLakeProperties> p)
 	{
-		BlockState state = parseBlockState(blockStateId);
+		AddLakeProperties properties = new AddLakeProperties();
+		p.accept(properties);
 
-		if (state == Blocks.AIR.defaultBlockState())
+		if (properties._block == Blocks.AIR.defaultBlockState())
 		{
 			return;
 		}
 
-		builder.addFeature(GenerationStep.Decoration.LAKES, Feature.LAKE.configured(new BlockStateConfiguration(state)).decorated(FeatureDecorator.WATER_LAKE.configured(new ChanceDecoratorConfiguration(rarity))));
+		if (!verifyBiomes(properties.biomes))
+		{
+			return;
+		}
+
+		addFeature(GenerationStep.Decoration.LAKES, Feature.LAKE.configured(new BlockStateConfiguration(properties._block)).decorated((FeatureDecorator.WATER_LAKE).configured(new ChanceDecoratorConfiguration(properties.chance))));
+	}
+
+	public void addSpawn(Consumer<AddSpawnProperties> p)
+	{
+		AddSpawnProperties properties = new AddSpawnProperties();
+		p.accept(properties);
+
+		if (properties._entity == null || properties._category == null)
+		{
+			return;
+		}
+
+		if (!verifyBiomes(properties.biomes))
+		{
+			return;
+		}
+
+		addEntitySpawn(properties._category, new MobSpawnSettings.SpawnerData(properties._entity, properties.weight, properties.minCount, properties.maxCount));
 	}
 }

@@ -26,8 +26,8 @@ public class KubeJSEvents
 	public static final String SERVER_DATAPACK_LOW_PRIORITY = "server.datapack.low_priority";
 	public static final String RECIPES = "recipes";
 	public static final String RECIPES_COMPOSTABLES = "recipes.compostables";
-	public static final String SERVER_WORLDGEN_ADD = "server.worldgen.add";
-	public static final String SERVER_WORLDGEN_REMOVE = "server.worldgen.remove";
+	public static final String WORLDGEN_ADD = "worldgen.add";
+	public static final String WORLDGEN_REMOVE = "worldgen.remove";
 
 	public static final String WORLD_LOAD = "world.load";
 	public static final String WORLD_UNLOAD = "world.unload";

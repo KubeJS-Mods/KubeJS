@@ -31,6 +31,9 @@ import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -597,5 +600,42 @@ public class UtilsJS
 	private static <T> Function<ResourceLocation, Optional<T>> getValue(Object registry, @Nullable T def)
 	{
 		throw new AssertionError();
+	}
+
+	public static BlockState parseBlockState(String string)
+	{
+		if (string.isEmpty())
+		{
+			return Blocks.AIR.defaultBlockState();
+		}
+
+		int i = string.indexOf('[');
+		boolean hasProperties = i >= 0 && string.indexOf(']') == string.length() - 1;
+		BlockState state = Registry.BLOCK.get(new ResourceLocation(hasProperties ? string.substring(0, i) : string)).defaultBlockState();
+
+		if (hasProperties)
+		{
+			for (String s : string.substring(i + 1, string.length() - 1).split(","))
+			{
+				String[] s1 = s.split("=", 2);
+
+				if (s1.length == 2 && !s1[0].isEmpty() && !s1[1].isEmpty())
+				{
+					Property<?> p = state.getBlock().getStateDefinition().getProperty(s1[0]);
+
+					if (p != null)
+					{
+						Optional<?> o = p.getValue(s1[1]);
+
+						if (o.isPresent())
+						{
+							state = state.setValue(p, UtilsJS.cast(o.get()));
+						}
+					}
+				}
+			}
+		}
+
+		return state;
 	}
 }
