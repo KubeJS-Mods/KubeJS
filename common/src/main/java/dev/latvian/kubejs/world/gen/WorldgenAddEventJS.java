@@ -94,7 +94,7 @@ public class WorldgenAddEventJS extends EventJS
 			oreConfig = UtilsJS.cast(oreConfig.squared());
 		}
 
-		addFeature(GenerationStep.Decoration.UNDERGROUND_ORES, oreConfig);
+		addFeature(properties._worldgenLayer, oreConfig);
 	}
 
 	public void addLake(Consumer<AddLakeProperties> p)
@@ -112,7 +112,7 @@ public class WorldgenAddEventJS extends EventJS
 			return;
 		}
 
-		addFeature(GenerationStep.Decoration.LAKES, Feature.LAKE.configured(new BlockStateConfiguration(properties._block)).decorated((FeatureDecorator.WATER_LAKE).configured(new ChanceDecoratorConfiguration(properties.chance))));
+		addFeature(properties._worldgenLayer, Feature.LAKE.configured(new BlockStateConfiguration(properties._block)).decorated((FeatureDecorator.WATER_LAKE).configured(new ChanceDecoratorConfiguration(properties.chance))));
 	}
 
 	public void addSpawn(Consumer<AddSpawnProperties> p)

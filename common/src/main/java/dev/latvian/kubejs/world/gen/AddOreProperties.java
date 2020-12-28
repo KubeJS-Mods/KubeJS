@@ -3,12 +3,14 @@ package dev.latvian.kubejs.world.gen;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.GenerationStep;
 
 /**
  * @author LatvianModder
  */
 public class AddOreProperties
 {
+	public GenerationStep.Decoration _worldgenLayer = GenerationStep.Decoration.UNDERGROUND_ORES;
 	public BlockState _block = Blocks.AIR.defaultBlockState();
 	public boolean noSurface = false;
 	public int clusterMinSize = 5;
@@ -22,6 +24,11 @@ public class AddOreProperties
 	public boolean squared = true;
 	public final WorldgenEntryList<String> biomes = new WorldgenEntryList<>();
 	public final WorldgenEntryList<String> spawnsIn = new WorldgenEntryList<>();
+
+	public void setWorldgenLayer(String id)
+	{
+		_worldgenLayer = GenerationStep.Decoration.valueOf(id.toUpperCase());
+	}
 
 	public void setBlock(String id)
 	{
