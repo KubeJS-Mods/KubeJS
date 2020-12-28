@@ -1,17 +1,7 @@
-buildscript {
-	repositories {
-		maven { url "https://plugins.gradle.org/m2/" }
-	}
-	dependencies {
-		classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.4.0'
-	}
-}
-
 plugins {
 	id "com.github.johnrengelman.shadow" version "5.0.0"
+	id "com.matthewprenger.cursegradle"
 }
-
-apply plugin: 'com.matthewprenger.cursegradle'
 
 def ENV = System.getenv()
 
