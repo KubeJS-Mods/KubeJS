@@ -1,6 +1,7 @@
 plugins {
 	id "architect-plugin" version "1.2.33"
-	id "forgified-fabric-loom" version "0.5.13" apply false
+	id "forgified-fabric-loom" version "0.5.14" apply false
+	id "com.matthewprenger.cursegradle" version "1.4.0" apply false
 }
 
 architect {
@@ -30,7 +31,6 @@ allprojects {
 	}
 
 	repositories {
-        mavenLocal()
 		maven {
 			url "https://www.cursemaven.com"
 			content {
