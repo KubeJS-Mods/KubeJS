@@ -36,6 +36,11 @@ public class RecipeFunction extends BaseFunction implements WrappedJS
 	@Override
 	public RecipeJS call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args0)
 	{
+		return createRecipe(args0);
+	}
+
+	public RecipeJS createRecipe(Object[] args0)
+	{
 		try
 		{
 			if (type == null)

@@ -17,6 +17,7 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.DynamicMap;
 import me.shedaniel.architectury.ExpectPlatform;
@@ -533,6 +534,13 @@ public class RecipeEventJS extends EventJS
 	public RecipeFunction getSmithing()
 	{
 		return getRecipeFunction(Registries.getId(RecipeSerializer.SMITHING, Registry.RECIPE_SERIALIZER_REGISTRY));
+	}
+
+	public RecipeJS custom(Object o)
+	{
+		MapJS json = MapJS.of(o);
+		ResourceLocation id = new ResourceLocation(json.getOrDefault("type", "").toString());
+		return getRecipeFunction(id).createRecipe(new Object[] {json});
 	}
 
 	public void printTypes()
