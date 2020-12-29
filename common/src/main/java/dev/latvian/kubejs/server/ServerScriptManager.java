@@ -90,7 +90,7 @@ public class ServerScriptManager
 
 			for (ScriptFileInfo fileInfo : pack.info.scripts)
 			{
-				ScriptSource.FromResource scriptSource = info -> resourceManager.getResource(info.location);
+				ScriptSource.FromResource scriptSource = info -> resourceManager.getResource(info.id);
 				Throwable error = fileInfo.preload(scriptSource);
 
 				if (error == null)

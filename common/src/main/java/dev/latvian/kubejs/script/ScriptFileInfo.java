@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.script;
 
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -8,15 +9,19 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
  */
 public class ScriptFileInfo
 {
+	private static final Pattern FILE_FIXER = Pattern.compile("[^\\w.\\/]");
+
 	public final ScriptPackInfo pack;
 	public final String file;
-	public final ResourceLocation location;
+	public final ResourceLocation id;
+	public final String location;
 	private final Map<String, String> properties;
 	private int priority;
 
@@ -24,7 +29,8 @@ public class ScriptFileInfo
 	{
 		pack = p;
 		file = f;
-		location = new ResourceLocation(pack.namespace, pack.pathStart + file);
+		id = new ResourceLocation(pack.namespace, FILE_FIXER.matcher(pack.pathStart + file).replaceAll("_").toLowerCase());
+		location = UtilsJS.getID(pack.namespace + ":" + pack.pathStart + file);
 		properties = new HashMap<>();
 		priority = 0;
 	}
