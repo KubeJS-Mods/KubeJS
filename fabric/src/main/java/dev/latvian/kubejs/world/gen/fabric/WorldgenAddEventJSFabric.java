@@ -77,7 +77,7 @@ public class WorldgenAddEventJSFabric extends WorldgenAddEventJS
 	@Override
 	public boolean verifyBiomes(WorldgenEntryList<String> biomes)
 	{
-		return biomes.verify(s -> {
+		return biomes.verify(String::valueOf, s -> {
 			if (s.startsWith("#"))
 			{
 				return selectionContext.getBiome().getBiomeCategory() == Biome.BiomeCategory.byName(s.substring(1));

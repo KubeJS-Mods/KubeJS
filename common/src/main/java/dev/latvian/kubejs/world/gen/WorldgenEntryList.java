@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.world.gen;
 
-import java.util.ArrayList;
-import java.util.List;
+import dev.latvian.kubejs.util.ListJS;
+
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -10,54 +10,19 @@ import java.util.function.Predicate;
  */
 public class WorldgenEntryList<T>
 {
-	public List<T> values = new ArrayList<>();
+	public Object values = null;
 	public boolean blacklist = false;
 
-	public <E> WorldgenEntryList<E> map(Function<T, E> function)
+	public boolean verify(Function<Object, T> factory, Predicate<T> filter)
 	{
-		WorldgenEntryList<E> l = new WorldgenEntryList<>();
-		l.blacklist = blacklist;
-
-		for (T t : values)
-		{
-			l.values.add(function.apply(t));
-		}
-
-		return l;
-	}
-
-	public WorldgenEntryList()
-	{
-	}
-
-	public WorldgenEntryList(T item)
-	{
-		values.add(item);
-	}
-
-	public void add(T item)
-	{
-		values.add(item);
-	}
-
-	public void add(T[] items)
-	{
-		for (T item : items)
-		{
-			add(item);
-		}
-	}
-
-	public boolean verify(Predicate<T> filter)
-	{
-		if (values.isEmpty())
+		if (values == null)
 		{
 			return true;
 		}
 
-		for (T value : values)
+		for (Object v : ListJS.orSelf(values))
 		{
-			if (filter.test(value) != blacklist)
+			if (filter.test(factory.apply(v)))
 			{
 				return !blacklist;
 			}

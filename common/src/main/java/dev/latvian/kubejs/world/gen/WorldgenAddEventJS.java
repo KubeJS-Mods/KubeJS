@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.world.gen;
 
 import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.SerializationTags;
@@ -59,8 +60,9 @@ public class WorldgenAddEventJS extends EventJS
 
 		AnyRuleTest ruleTest = new AnyRuleTest();
 
-		for (String s : properties.spawnsIn.values)
+		for (Object o : ListJS.orSelf(properties.spawnsIn.values))
 		{
+			String s = String.valueOf(o);
 			boolean invert = false;
 
 			while (s.startsWith("!"))
@@ -88,6 +90,11 @@ public class WorldgenAddEventJS extends EventJS
 
 		oreConfig = UtilsJS.cast(oreConfig.decorated(FeatureDecorator.RANGE.configured(new RangeDecoratorConfiguration(properties.minHeight, 0, properties.maxHeight))));
 		oreConfig = UtilsJS.cast(oreConfig.count(UniformInt.of(properties.clusterMinCount, properties.clusterMaxCount - properties.clusterMinCount)));
+
+		if (properties.chance > 0)
+		{
+			oreConfig = UtilsJS.cast(oreConfig.chance(properties.chance));
+		}
 
 		if (properties.squared)
 		{
