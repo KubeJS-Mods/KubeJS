@@ -23,21 +23,21 @@ public class WorldgenAddEventJSForge extends WorldgenAddEventJS
 	}
 
 	@Override
-	public void addFeature(GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> configuredFeature)
+	protected void addFeature(GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> configuredFeature)
 	{
 		event.getGeneration().addFeature(decoration, configuredFeature);
 	}
 
 	@Override
-	public void addEntitySpawn(MobCategory category, MobSpawnSettings.SpawnerData spawnerData)
+	protected void addEntitySpawn(MobCategory category, MobSpawnSettings.SpawnerData spawnerData)
 	{
 		event.getSpawns().addSpawn(category, spawnerData);
 	}
 
 	@Override
-	public boolean verifyBiomes(WorldgenEntryList<String> biomes)
+	protected boolean verifyBiomes(WorldgenEntryList biomes)
 	{
-		return biomes.verify(String::valueOf, s -> {
+		return biomes.verify(s -> {
 			if (s.startsWith("#"))
 			{
 				return event.getCategory() == Biome.BiomeCategory.byName(s.substring(1));

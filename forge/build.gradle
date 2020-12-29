@@ -21,9 +21,9 @@ dependencies {
 	minecraft("com.mojang:minecraft:${rootProject.architect.minecraft}")
 	mappings(minecraft.officialMojangMappings())
 	forge("net.minecraftforge:forge:${rootProject.architect.minecraft}-${rootProject.forge_version}")
-	modCompile("curse.maven:jei:${rootProject.forge_jei_file}")
-	modCompile("curse.maven:bookshelf:${rootProject.forge_bookshelf_file}")
-	modCompile("curse.maven:game-stages:${rootProject.forge_gamestages_file}")
+	modCompile("curse.maven:jei-238222:${rootProject.forge_jei_file}")
+	modCompile("curse.maven:bookshelf-228525:${rootProject.forge_bookshelf_file}")
+	modCompile("curse.maven:game-stages-268655:${rootProject.forge_gamestages_file}")
 	modCompile("me.shedaniel:architectury:${rootProject.architectury_version}:forge")
 	modCompile("curse.maven:rhino-416294:${rootProject.rhino_file}")
 

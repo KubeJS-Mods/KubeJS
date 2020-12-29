@@ -1,33 +1,42 @@
 package dev.latvian.kubejs.world.gen;
 
-import dev.latvian.kubejs.util.ListJS;
-
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 
 /**
  * @author LatvianModder
  */
-public class WorldgenEntryList<T>
+public class WorldgenEntryList
 {
-	public Object values = null;
+	public List<String> values = new ArrayList<>();
 	public boolean blacklist = false;
 
-	public boolean verify(Function<Object, T> factory, Predicate<T> filter)
+	public boolean verify(Predicate<String> filter)
 	{
-		if (values == null)
+		if (values.isEmpty())
 		{
 			return true;
 		}
 
-		for (Object v : ListJS.orSelf(values))
+		for (String v : values)
 		{
-			if (filter.test(factory.apply(v)))
+			if (filter.test(v))
 			{
 				return !blacklist;
 			}
 		}
 
 		return blacklist;
+	}
+
+	public boolean verify(String contains)
+	{
+		return verify(s -> s.equals(contains));
+	}
+
+	public boolean verifyIgnoreCase(String contains)
+	{
+		return verify(s -> s.equalsIgnoreCase(contains));
 	}
 }

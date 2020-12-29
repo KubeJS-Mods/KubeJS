@@ -32,7 +32,7 @@ public class WorldgenAddEventJSFabric extends WorldgenAddEventJS
 		modificationContext = m;
 	}
 
-	private Registry<ConfiguredFeature<?, ?>> getFeatureRegistry(Object o)
+	private Registry<ConfiguredFeature<?, ?>> getFeatureRegistry()
 	{
 		if (featureRegistry == null)
 		{
@@ -41,7 +41,7 @@ public class WorldgenAddEventJSFabric extends WorldgenAddEventJS
 				Class<?> c = Class.forName("net.fabricmc.fabric.impl.biome.modification.BiomeModificationContextImpl$GenerationSettingsContextImpl");
 				Field field = c.getDeclaredField("features");
 				field.setAccessible(true);
-				featureRegistry = UtilsJS.cast(field.get(o));
+				featureRegistry = UtilsJS.cast(field.get(modificationContext.getGenerationSettings()));
 			}
 			catch (Exception ex)
 			{
@@ -53,11 +53,11 @@ public class WorldgenAddEventJSFabric extends WorldgenAddEventJS
 	}
 
 	@Override
-	public void addFeature(GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> configuredFeature)
+	protected void addFeature(GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> configuredFeature)
 	{
 		try
 		{
-			Registry<ConfiguredFeature<?, ?>> reg = getFeatureRegistry(modificationContext.getGenerationSettings());
+			Registry<ConfiguredFeature<?, ?>> reg = getFeatureRegistry();
 			ResourceLocation id = new ResourceLocation("kubejs", "feature_" + UUID.randomUUID().toString().replace("-", "_").toLowerCase());
 			Registry.register(reg, id, configuredFeature);
 			modificationContext.getGenerationSettings().addFeature(decoration, ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id));
@@ -69,15 +69,15 @@ public class WorldgenAddEventJSFabric extends WorldgenAddEventJS
 	}
 
 	@Override
-	public void addEntitySpawn(MobCategory category, MobSpawnSettings.SpawnerData spawnerData)
+	protected void addEntitySpawn(MobCategory category, MobSpawnSettings.SpawnerData spawnerData)
 	{
 		modificationContext.getSpawnSettings().addSpawn(category, spawnerData);
 	}
 
 	@Override
-	public boolean verifyBiomes(WorldgenEntryList<String> biomes)
+	protected boolean verifyBiomes(WorldgenEntryList biomes)
 	{
-		return biomes.verify(String::valueOf, s -> {
+		return biomes.verify(s -> {
 			if (s.startsWith("#"))
 			{
 				return selectionContext.getBiome().getBiomeCategory() == Biome.BiomeCategory.byName(s.substring(1));

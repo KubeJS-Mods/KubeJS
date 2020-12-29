@@ -51,7 +51,7 @@ public class HideCustomJEIEventJS extends EventJS
 					}
 
 					return list;
-				});
+				}, o -> true);
 			}
 			catch (Exception ex)
 			{

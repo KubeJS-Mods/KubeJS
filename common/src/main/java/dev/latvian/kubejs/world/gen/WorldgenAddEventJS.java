@@ -30,15 +30,15 @@ import java.util.function.Consumer;
  */
 public class WorldgenAddEventJS extends EventJS
 {
-	public void addFeature(GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> configuredFeature)
+	protected void addFeature(GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> configuredFeature)
 	{
 	}
 
-	public void addEntitySpawn(MobCategory category, MobSpawnSettings.SpawnerData spawnerData)
+	protected void addEntitySpawn(MobCategory category, MobSpawnSettings.SpawnerData spawnerData)
 	{
 	}
 
-	public boolean verifyBiomes(WorldgenEntryList<String> biomes)
+	protected boolean verifyBiomes(WorldgenEntryList biomes)
 	{
 		return true;
 	}

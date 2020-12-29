@@ -13,7 +13,7 @@ public class AddSpawnProperties
 	public EntityType<?> _entity = null;
 	public int minCount = 4;
 	public int maxCount = 4;
-	public final WorldgenEntryList<String> biomes = new WorldgenEntryList<>();
+	public final WorldgenEntryList biomes = new WorldgenEntryList();
 
 	public void setCategory(String s)
 	{

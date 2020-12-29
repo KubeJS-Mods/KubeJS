@@ -14,7 +14,7 @@ public class AddLakeProperties
 	public BlockState _block = Blocks.AIR.defaultBlockState();
 	public int chance = 20;
 	public int retrogen = 0;
-	public final WorldgenEntryList<String> biomes = new WorldgenEntryList<>();
+	public final WorldgenEntryList biomes = new WorldgenEntryList();
 
 	public void setBlock(String id)
 	{
