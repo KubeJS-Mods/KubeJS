@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.mixin.common;
+package dev.latvian.kubejs.mixin.fabric;
 
 import dev.latvian.kubejs.core.ImageButtonKJS;
 import net.minecraft.client.gui.components.ImageButton;

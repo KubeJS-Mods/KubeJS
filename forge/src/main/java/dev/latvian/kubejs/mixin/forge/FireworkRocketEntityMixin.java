@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.mixin.common;
+package dev.latvian.kubejs.mixin.forge;
 
 import dev.latvian.kubejs.core.FireworkRocketEntityKJS;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;

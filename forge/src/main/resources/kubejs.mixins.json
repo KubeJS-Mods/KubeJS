@@ -3,9 +3,22 @@
 	"package": "dev.latvian.kubejs.mixin.forge",
 	"compatibilityLevel": "JAVA_8",
 	"mixins": [
+		"CompoundNBTMixin",
+		"DataPackRegistriesMixin",
+		"FireworkRocketEntityMixin",
+		"LivingEntityMixin",
+		"PlayerInteractionManagerMixin",
+		"RecipeManagerMixin",
+		"SimpleReloadableResourceManagerMixin",
+		"TagBuilderMixin",
+		"TagCollectionReaderMixin"
 	],
 	"client": [
-		"EarlyLoaderGUIMixin"
+		"EarlyLoaderGUIMixin",
+		"ImageButtonMixin",
+		"MainWindowMixin",
+		"MinecraftMixin",
+		"ResourceLoadProgressGuiMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

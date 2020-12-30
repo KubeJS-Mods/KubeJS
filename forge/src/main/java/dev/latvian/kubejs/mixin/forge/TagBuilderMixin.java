@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.mixin.common;
+package dev.latvian.kubejs.mixin.forge;
 
 import dev.latvian.kubejs.core.TagBuilderKJS;
 import net.minecraft.tags.Tag;
