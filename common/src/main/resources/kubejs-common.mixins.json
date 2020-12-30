@@ -1,0 +1,26 @@
+{
+	"required": true,
+	"package": "dev.latvian.kubejs.mixin.common",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [
+		"CompoundNBTMixin",
+		"DataPackRegistriesMixin",
+		"FireworkRocketEntityMixin",
+		"LivingEntityMixin",
+		"PlayerInteractionManagerMixin",
+		"RecipeManagerMixin",
+		"SimpleReloadableResourceManagerMixin",
+		"TagBuilderMixin",
+		"TagCollectionReaderMixin"
+	],
+	"client": [
+		"ImageButtonMixin",
+		"MainWindowMixin",
+		"MinecraftMixin",
+		"ResourceLoadProgressGuiMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"minVersion": "0.8.1"
+}
