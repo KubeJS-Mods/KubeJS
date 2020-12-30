@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.mixin.forge;
+package dev.latvian.kubejs.mixin.common;
 
 import dev.latvian.kubejs.core.LivingEntityKJS;
 import net.minecraft.world.entity.LivingEntity;

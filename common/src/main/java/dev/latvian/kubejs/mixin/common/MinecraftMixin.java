@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.mixin.forge;
+package dev.latvian.kubejs.mixin.common;
 
 import dev.latvian.kubejs.client.ClientProperties;
 import net.minecraft.client.Minecraft;
