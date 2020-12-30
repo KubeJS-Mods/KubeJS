@@ -85,7 +85,7 @@ public class ClientProperties
 			showTagNames = get("showTagNames", true);
 			disableRecipeBook = get("disableRecipeBook", false);
 			exportAtlases = get("exportAtlases", false);
-			overrideColors = get("overrideColors", true);
+			overrideColors = get("overrideColors", false);
 			backgroundColor = getColor("backgroundColor", 0x2E3440);
 			barColor = getColor("barColor", 0xECEFF4);
 			barBorderColor = getColor("barBorderColor", 0xECEFF4);
