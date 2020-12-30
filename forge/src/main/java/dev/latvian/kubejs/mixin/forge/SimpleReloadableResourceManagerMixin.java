@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.mixin.common;
+package dev.latvian.kubejs.mixin.forge;
 
 import dev.latvian.kubejs.core.SimpleReloadableResourceManagerKJS;
 import net.minecraft.server.packs.resources.FallbackResourceManager;

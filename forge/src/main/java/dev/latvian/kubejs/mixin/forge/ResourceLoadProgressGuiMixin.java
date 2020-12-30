@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.mixin.common;
+package dev.latvian.kubejs.mixin.forge;
 
 import dev.latvian.kubejs.client.ClientProperties;
 import net.minecraft.client.gui.screens.LoadingOverlay;

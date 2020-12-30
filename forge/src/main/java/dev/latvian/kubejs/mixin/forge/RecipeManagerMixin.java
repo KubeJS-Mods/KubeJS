@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.mixin.common;
+package dev.latvian.kubejs.mixin.forge;
 
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.core.RecipeManagerKJS;

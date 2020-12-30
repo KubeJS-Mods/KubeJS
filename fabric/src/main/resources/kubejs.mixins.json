@@ -3,9 +3,22 @@
 	"package": "dev.latvian.kubejs.mixin.fabric",
 	"compatibilityLevel": "JAVA_8",
 	"mixins": [
+		"CompoundNBTMixin",
+		"DataPackRegistriesMixin",
+		"FireworkRocketEntityMixin",
+		"LivingEntityMixin",
+		"PlayerInteractionManagerMixin",
+		"RecipeManagerMixin",
+		"SimpleReloadableResourceManagerMixin",
+		"TagBuilderMixin",
+		"TagCollectionReaderMixin"
 	],
 	"client": [
-		"ClientRecipeBookMixin"
+		"ClientRecipeBookMixin",
+		"ImageButtonMixin",
+		"MainWindowMixin",
+		"MinecraftMixin",
+		"ResourceLoadProgressGuiMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

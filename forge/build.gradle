@@ -14,7 +14,7 @@ architectury {
 }
 
 loom {
-	mixinConfigs = ["kubejs.mixins.json", "kubejs-common.mixins.json"]
+	mixinConfig = "kubejs.mixins.json"
 }
 
 dependencies {
