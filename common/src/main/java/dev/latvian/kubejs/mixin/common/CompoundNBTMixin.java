@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.mixin.fabric;
+package dev.latvian.kubejs.mixin.common;
 
 import dev.latvian.kubejs.core.CompoundNBTKJS;
 import net.minecraft.nbt.CompoundTag;
