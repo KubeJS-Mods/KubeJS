@@ -8,9 +8,17 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -18,21 +26,27 @@ import java.util.stream.Collectors;
  */
 public class ConsoleJS
 {
+	private static final ExecutorService LOG_WRITER = Executors.newFixedThreadPool(1);
+
 	private final ScriptType type;
 	private final Logger logger;
+	private final Path logFile;
 	private String group;
 	private int lineNumber;
 	private boolean muted;
 	private boolean debugEnabled;
+	private boolean writeToFile;
 
 	public ConsoleJS(ScriptType m, Logger log)
 	{
 		type = m;
 		logger = log;
+		logFile = m.getLogFile();
 		group = "";
 		lineNumber = 0;
 		muted = false;
 		debugEnabled = false;
+		writeToFile = true;
 	}
 
 	public Logger getLogger()
@@ -63,6 +77,30 @@ public class ConsoleJS
 	public boolean getDebugEnabled()
 	{
 		return debugEnabled;
+	}
+
+	public void setWriteToFile(boolean m)
+	{
+		writeToFile = m;
+	}
+
+	public boolean getWriteToFile()
+	{
+		return writeToFile;
+	}
+
+	public void resetFile()
+	{
+		LOG_WRITER.submit(() -> {
+			try
+			{
+				Files.write(logFile, Collections.emptyList());
+			}
+			catch (Exception ex)
+			{
+				logger.error("Failed to clear the log file: " + ex);
+			}
+		});
 	}
 
 	public void setLineNumber(boolean b)
@@ -105,25 +143,92 @@ public class ConsoleJS
 		return builder.toString();
 	}
 
-	private String string(Object object, Object... args)
+	private String stringf(Object object, Object... args)
 	{
 		return string(String.format(String.valueOf(object), args));
 	}
 
-	public void info(Object message)
+	private void log(Consumer<String> logFunction, String type, Object message)
 	{
 		if (shouldPrint())
 		{
-			logger.info(string(message));
+			String s = string(message);
+			logFunction.accept(s);
+			writeToFile(type, s);
 		}
+	}
+
+	private void logf(Consumer<String> logFunction, String type, Object message, Object... args)
+	{
+		if (!shouldPrint())
+		{
+			String s = stringf(message, args);
+			logFunction.accept(s);
+			writeToFile(type, s);
+		}
+	}
+
+	private void writeToFile(String type, String line)
+	{
+		if (!writeToFile)
+		{
+			return;
+		}
+
+		Calendar calendar = Calendar.getInstance();
+		StringBuilder sb = new StringBuilder();
+		sb.append('[');
+
+		if (calendar.get(Calendar.HOUR_OF_DAY) < 10)
+		{
+			sb.append('0');
+		}
+
+		sb.append(calendar.get(Calendar.HOUR_OF_DAY));
+		sb.append(':');
+
+		if (calendar.get(Calendar.MINUTE) < 10)
+		{
+			sb.append('0');
+		}
+
+		sb.append(calendar.get(Calendar.MINUTE));
+		sb.append(':');
+
+		if (calendar.get(Calendar.SECOND) < 10)
+		{
+			sb.append('0');
+		}
+
+		sb.append(calendar.get(Calendar.SECOND));
+		sb.append(']');
+		sb.append(' ');
+		sb.append('[');
+		sb.append(type);
+		sb.append(']');
+		sb.append(' ');
+		sb.append(line);
+
+		LOG_WRITER.submit(() -> {
+			try
+			{
+				Files.write(logFile, Collections.singleton(sb.toString()), StandardOpenOption.APPEND);
+			}
+			catch (Exception ex)
+			{
+				logger.error("Failed to write to the log file: " + ex);
+			}
+		});
+	}
+
+	public void info(Object message)
+	{
+		log(logger::info, "INFO", message);
 	}
 
 	public void infof(Object message, Object... args)
 	{
-		if (shouldPrint())
-		{
-			logger.info(string(message, args));
-		}
+		logf(logger::info, "INFO", message, args);
 	}
 
 	public void log(Object message)
@@ -133,10 +238,7 @@ public class ConsoleJS
 
 	public void warn(Object message)
 	{
-		if (shouldPrint())
-		{
-			logger.warn(string(message));
-		}
+		log(logger::warn, "WARN", message);
 	}
 
 	public void warn(String message, Throwable throwable)
@@ -147,38 +249,29 @@ public class ConsoleJS
 
 			if (s.equals("java.lang.NullPointerException"))
 			{
-				logger.warn(string(message) + ":");
+				warn(message + ":");
 				throwable.printStackTrace();
 			}
 			else
 			{
-				logger.warn(string(message) + ": " + s);
+				warn(message + ": " + s);
 			}
 		}
 	}
 
 	public void warnf(String message, Object... args)
 	{
-		if (shouldPrint())
-		{
-			logger.warn(string(message, args));
-		}
+		logf(logger::warn, "WARN", message, args);
 	}
 
 	public void error(Object message)
 	{
-		if (shouldPrint())
-		{
-			logger.error(string(message));
-		}
+		log(logger::error, "ERR ", message);
 	}
 
 	public void errorf(String message, Object... args)
 	{
-		if (shouldPrint())
-		{
-			logger.error(string(message, args));
-		}
+		logf(logger::error, "ERR ", message, args);
 	}
 
 	public boolean shouldPrintDebug()
@@ -190,7 +283,7 @@ public class ConsoleJS
 	{
 		if (shouldPrintDebug())
 		{
-			logger.info(string(message));
+			info(message);
 		}
 	}
 
@@ -198,7 +291,7 @@ public class ConsoleJS
 	{
 		if (shouldPrintDebug())
 		{
-			logger.info(string(message, args));
+			infof(message, args);
 		}
 	}
 

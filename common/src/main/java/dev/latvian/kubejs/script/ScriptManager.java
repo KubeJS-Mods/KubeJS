@@ -159,7 +159,7 @@ public class ScriptManager
 
 		if (i != t && type == ScriptType.STARTUP)
 		{
-			throw new RuntimeException("There were startup script errors! See latest.log for more info");
+			throw new RuntimeException("There were startup script syntax errors! See logs/kubejs/startup.txt for more info");
 		}
 	}
 }
