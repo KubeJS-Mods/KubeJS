@@ -28,6 +28,11 @@ public class IngredientWrapper
 		return IngredientJS.of(object);
 	}
 
+	public IngredientJS of(Object object, int count)
+	{
+		return of(object).withCount(Math.max(1, count));
+	}
+
 	public IngredientJS custom(Predicate<ItemStackJS> predicate)
 	{
 		return predicate::test;
