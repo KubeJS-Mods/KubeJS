@@ -9,6 +9,8 @@ import org.apache.logging.log4j.LogManager;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -26,12 +28,16 @@ public enum ScriptType
 	}
 
 	public final String name;
+	public final List<String> errors;
+	public final List<String> warnings;
 	public final ConsoleJS console;
 	public final Supplier<ScriptManager> manager;
 
 	ScriptType(String n, String cname, Supplier<ScriptManager> m)
 	{
 		name = n;
+		errors = new ArrayList<>();
+		warnings = new ArrayList<>();
 		console = new ConsoleJS(this, LogManager.getLogger(cname));
 		manager = m;
 	}

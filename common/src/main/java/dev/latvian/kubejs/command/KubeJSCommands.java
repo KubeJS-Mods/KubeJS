@@ -6,6 +6,7 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.Tags;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.ChatFormatting;
@@ -16,6 +17,7 @@ import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -37,6 +39,13 @@ public class KubeJSCommands
 				.then(Commands.literal("hand")
 						.executes(context -> hand(context.getSource().getPlayerOrException()))
 				)
+				.then(Commands.literal("errors")
+						.executes(context -> errors(context.getSource()))
+				)
+				.then(Commands.literal("warnings")
+						.executes(context -> warnings(context.getSource()))
+				)
+				/*
 				.then(Commands.literal("output_recipes")
 						.executes(context -> outputRecipes(context.getSource().getPlayerOrException()))
 				)
@@ -46,6 +55,7 @@ public class KubeJSCommands
 				.then(Commands.literal("check_recipe_conflicts")
 						.executes(context -> checkRecipeConflicts(context.getSource().getPlayerOrException()))
 				)
+				 */
 				.then(Commands.literal("list_tag")
 						.then(Commands.argument("tag", ResourceLocationArgument.id())
 								.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.items(), ResourceLocationArgument.getId(context, "tag")))
@@ -102,6 +112,50 @@ public class KubeJSCommands
 		if (stack.getItem().getItemCategory() != null)
 		{
 			player.sendMessage(copy("'%" + stack.getItemGroup() + "'", ChatFormatting.LIGHT_PURPLE, "Item Group [" + new GroupIngredientJS(stack.getItem().getItemCategory()).getStacks().size() + " items]"), Util.NIL_UUID);
+		}
+
+		return 1;
+	}
+
+	private static int errors(CommandSourceStack source)
+	{
+		if (ScriptType.SERVER.errors.isEmpty())
+		{
+			source.sendSuccess(new TextComponent("No errors found!").withStyle(ChatFormatting.GREEN), false);
+
+			if (!ScriptType.SERVER.warnings.isEmpty())
+			{
+				source.sendSuccess(new TextComponent(" warnings found. Run /kubejs warnings to see them").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))), false);
+			}
+			return 1;
+		}
+
+		for (int i = 0; i < ScriptType.SERVER.errors.size(); i++)
+		{
+			source.sendSuccess(new TextComponent("[" + (i + 1) + "] " + ScriptType.SERVER.errors.get(i)).withStyle(ChatFormatting.RED), false);
+		}
+
+		source.sendSuccess(new TextComponent("More info in 'logs/kubejs/server.txt'").withStyle(ChatFormatting.DARK_RED), false);
+
+		if (!ScriptType.SERVER.warnings.isEmpty())
+		{
+			source.sendSuccess(new TextComponent(ScriptType.SERVER.warnings.size() + " warnings found. Run '/kubejs warnings' to see them").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))), false);
+		}
+
+		return 1;
+	}
+
+	private static int warnings(CommandSourceStack source)
+	{
+		if (ScriptType.SERVER.warnings.isEmpty())
+		{
+			source.sendSuccess(new TextComponent("No warnings found!").withStyle(ChatFormatting.GREEN), false);
+			return 1;
+		}
+
+		for (int i = 0; i < ScriptType.SERVER.warnings.size(); i++)
+		{
+			source.sendSuccess(new TextComponent("[" + (i + 1) + "] " + ScriptType.SERVER.warnings.get(i)).withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))), false);
 		}
 
 		return 1;

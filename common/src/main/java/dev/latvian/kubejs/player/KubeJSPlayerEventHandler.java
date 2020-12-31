@@ -2,12 +2,15 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import me.shedaniel.architectury.event.events.ChatEvent;
 import me.shedaniel.architectury.event.events.PlayerEvent;
 import me.shedaniel.architectury.event.events.TickEvent;
+import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -43,6 +46,11 @@ public class KubeJSPlayerEventHandler
 			AttachPlayerDataEvent.EVENT.invoker().accept(new AttachPlayerDataEvent(p));
 			new SimplePlayerEventJS(player).post(KubeJSEvents.PLAYER_LOGGED_IN);
 			player.inventoryMenu.addSlotListener(new InventoryListener(player));
+		}
+
+		if (!ScriptType.SERVER.errors.isEmpty())
+		{
+			player.displayClientMessage(new TextComponent("KubeJS errors found! Run '/kubejs errors' for more info").withStyle(ChatFormatting.RED), false);
 		}
 	}
 

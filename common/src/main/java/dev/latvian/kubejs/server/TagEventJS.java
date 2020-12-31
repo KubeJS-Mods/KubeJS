@@ -33,6 +33,16 @@ import java.util.regex.Pattern;
  */
 public class TagEventJS<T> extends EventJS
 {
+	private static String getIdOfEntry(String s)
+	{
+		if (s.length() > 0 && s.charAt(s.length() - 1) == '?')
+		{
+			return s.substring(0, s.length() - 1);
+		}
+
+		return s;
+	}
+
 	@Nullable
 	private static List<Predicate<String>> parsePriorityList(@Nullable Object o)
 	{
@@ -130,7 +140,7 @@ public class TagEventJS<T> extends EventJS
 								}
 								else
 								{
-									ScriptType.SERVER.console.warn("+ " + this + " // " + s + " [Not found!]");
+									ScriptType.SERVER.console.error("+ " + this + " // " + s + " [Not found!]");
 								}
 							}
 						}
@@ -152,7 +162,7 @@ public class TagEventJS<T> extends EventJS
 						}
 						else
 						{
-							ScriptType.SERVER.console.warn("+ " + this + " // " + s + " [Not found!]");
+							ScriptType.SERVER.console.error("+ " + this + " // " + s + " [Not found!]");
 						}
 					}
 				}
@@ -229,7 +239,7 @@ public class TagEventJS<T> extends EventJS
 								}
 								else
 								{
-									ScriptType.SERVER.console.warn("- " + this + " // " + s + " [Not found!]");
+									ScriptType.SERVER.console.error("- " + this + " // " + s + " [Not found!]");
 								}
 							}
 						}
@@ -264,23 +274,13 @@ public class TagEventJS<T> extends EventJS
 						}
 						else
 						{
-							ScriptType.SERVER.console.warn("- " + this + " // " + s + " [Not found!]");
+							ScriptType.SERVER.console.error("- " + this + " // " + s + " [Not found!]");
 						}
 					}
 				}
 			}
 
 			return this;
-		}
-
-		private String getIdOfEntry(String s)
-		{
-			if (s.length() > 0 && s.charAt(s.length() - 1) == '?')
-			{
-				return s.substring(0, s.length() - 1);
-			}
-
-			return s;
 		}
 
 		public TagWrapper<T> removeAll()
@@ -520,6 +520,19 @@ public class TagEventJS<T> extends EventJS
 	public TagWrapper<T> removeAll(@ID String tag)
 	{
 		return get(tag).removeAll();
+	}
+
+	public void removeAllTagsFrom(Object ids)
+	{
+		for (Object o : ListJS.orSelf(ids))
+		{
+			String id = String.valueOf(o);
+
+			for (TagWrapper<T> tagWrapper : tags.values())
+			{
+				tagWrapper.proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(id));
+			}
+		}
 	}
 
 	public void setGlobalPriorityList(@Nullable Object o)

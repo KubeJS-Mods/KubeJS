@@ -15,9 +15,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,7 +28,6 @@ public class ScriptManager
 	public final String exampleScript;
 	public final EventsJS events;
 	public final Map<String, ScriptPack> packs;
-	public final List<String> errors;
 
 	public ScriptManager(ScriptType t, Path p, String e)
 	{
@@ -39,13 +36,15 @@ public class ScriptManager
 		exampleScript = e;
 		events = new EventsJS(this);
 		packs = new LinkedHashMap<>();
-		errors = new ArrayList<>();
 	}
 
 	public void unload()
 	{
 		events.clear();
 		packs.clear();
+		type.errors.clear();
+		type.warnings.clear();
+		type.console.resetFile();
 	}
 
 	public void loadFromDirectory()
@@ -96,8 +95,6 @@ public class ScriptManager
 
 		long startAll = System.currentTimeMillis();
 
-		errors.clear();
-
 		int i = 0;
 		int t = 0;
 
@@ -127,12 +124,10 @@ public class ScriptManager
 						if (file.getError() instanceof RhinoException)
 						{
 							type.console.error("Error loading KubeJS script: " + file.getError().getMessage());
-							errors.add(file.getError().getMessage());
 						}
 						else
 						{
 							type.console.error("Error loading KubeJS script: " + file.info.location + ": " + file.getError());
-							errors.add(file.info.location + ": " + file.getError());
 							file.getError().printStackTrace();
 						}
 					}
@@ -140,19 +135,12 @@ public class ScriptManager
 			}
 			catch (Throwable ex)
 			{
+				type.console.error("Failed to read script pack " + pack.info.namespace + ": ", ex);
 				ex.printStackTrace();
 			}
 		}
 
-		if (i == t)
-		{
-			type.console.info("Loaded " + i + "/" + t + " KubeJS " + type.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s");
-		}
-		else
-		{
-			type.console.error("Loaded " + i + "/" + t + " KubeJS " + type.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s");
-		}
-
+		type.console.info("Loaded " + i + "/" + t + " KubeJS " + type.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s");
 		Context.exit();
 
 		events.postToHandlers(KubeJSEvents.LOADED, events.handlers(KubeJSEvents.LOADED), new EventJS());

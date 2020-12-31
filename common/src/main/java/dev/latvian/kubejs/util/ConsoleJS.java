@@ -238,7 +238,10 @@ public class ConsoleJS
 
 	public void warn(Object message)
 	{
-		log(logger::warn, "WARN", message);
+		log(s -> {
+			logger.warn(s);
+			type.warnings.add(s);
+		}, "WARN", message);
 	}
 
 	public void warn(String message, Throwable throwable)
@@ -261,17 +264,44 @@ public class ConsoleJS
 
 	public void warnf(String message, Object... args)
 	{
-		logf(logger::warn, "WARN", message, args);
+		logf(s -> {
+			logger.warn(s);
+			type.warnings.add(s);
+		}, "WARN", message, args);
 	}
 
 	public void error(Object message)
 	{
-		log(logger::error, "ERR ", message);
+		log(s -> {
+			logger.error(s);
+			type.errors.add(s);
+		}, "ERR ", message);
+	}
+
+	public void error(String message, Throwable throwable)
+	{
+		if (shouldPrint())
+		{
+			String s = throwable.toString();
+
+			if (s.equals("java.lang.NullPointerException"))
+			{
+				error(message + ":");
+				throwable.printStackTrace();
+			}
+			else
+			{
+				error(message + ": " + s);
+			}
+		}
 	}
 
 	public void errorf(String message, Object... args)
 	{
-		logf(logger::error, "ERR ", message, args);
+		logf(s -> {
+			logger.error(s);
+			type.errors.add(s);
+		}, "ERR ", message, args);
 	}
 
 	public boolean shouldPrintDebug()

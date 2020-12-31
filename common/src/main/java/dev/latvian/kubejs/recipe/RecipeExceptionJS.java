@@ -6,11 +6,13 @@ package dev.latvian.kubejs.recipe;
 public class RecipeExceptionJS extends IllegalArgumentException
 {
 	public boolean fallback;
+	public boolean error;
 
 	public RecipeExceptionJS(String m)
 	{
 		super(m);
 		fallback = false;
+		error = false;
 	}
 
 	@Override
@@ -22,6 +24,12 @@ public class RecipeExceptionJS extends IllegalArgumentException
 	public RecipeExceptionJS fallback()
 	{
 		fallback = true;
+		return this;
+	}
+
+	public RecipeExceptionJS error()
+	{
+		error = true;
 		return this;
 	}
 }
