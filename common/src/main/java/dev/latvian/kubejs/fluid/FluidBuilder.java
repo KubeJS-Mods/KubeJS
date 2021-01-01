@@ -17,6 +17,7 @@ public class FluidBuilder extends BuilderBase
 	public String stillTexture;
 	public String flowingTexture;
 	public int color = 0xFFFFFFFF;
+	public int bucketColor = 0xFFFFFFFF;
 	public int luminosity = 0;
 	public int density = 1000;
 	public int temperature = 300;
@@ -33,7 +34,8 @@ public class FluidBuilder extends BuilderBase
 	public FluidBuilder(String i)
 	{
 		super(i);
-		textureThin(0xFF0000);
+		textureStill(KubeJS.MOD_ID + ":fluid/fluid_thin");
+		textureFlowing(KubeJS.MOD_ID + ":fluid/fluid_thin_flow");
 	}
 
 	@Override
@@ -49,6 +51,18 @@ public class FluidBuilder extends BuilderBase
 		if ((color & 0xFFFFFF) == color)
 		{
 			color |= 0xFF000000;
+		}
+
+		return bucketColor(color);
+	}
+
+	public FluidBuilder bucketColor(int c)
+	{
+		bucketColor = c;
+
+		if ((bucketColor & 0xFFFFFF) == bucketColor)
+		{
+			bucketColor |= 0xFF000000;
 		}
 
 		return this;
