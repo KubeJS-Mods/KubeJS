@@ -15,6 +15,7 @@
 	],
 	"client": [
 		"ImageButtonMixin",
+		"KeyboardHandlerMixin",
 		"MainWindowMixin",
 		"MinecraftMixin",
 		"ResourceLoadProgressGuiMixin"
