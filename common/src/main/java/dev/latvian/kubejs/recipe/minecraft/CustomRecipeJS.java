@@ -109,7 +109,7 @@ public class CustomRecipeJS extends RecipeJS
 
 				if (json.has("count"))
 				{
-					i.count(json.get("count").getAsInt());
+					i.withCount(json.get("count").getAsInt());
 				}
 			}
 			else

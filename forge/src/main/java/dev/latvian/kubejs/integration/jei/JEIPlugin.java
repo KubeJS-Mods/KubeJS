@@ -6,6 +6,7 @@ import dev.latvian.kubejs.fluid.FluidStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.util.MapJS;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
@@ -15,12 +16,11 @@ import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.plugins.jei.info.IngredientInfoRecipe;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author LatvianModder
@@ -28,12 +28,13 @@ import java.util.List;
 @JeiPlugin
 public class JEIPlugin implements IModPlugin
 {
+	public static final ResourceLocation ID = new ResourceLocation(KubeJS.MOD_ID, "jei");
 	public IJeiRuntime runtime;
 
 	@Override
 	public ResourceLocation getPluginUid()
 	{
-		return new ResourceLocation(KubeJS.MOD_ID, "jei");
+		return ID;
 	}
 
 	@Override
@@ -42,24 +43,11 @@ public class JEIPlugin implements IModPlugin
 		runtime = r;
 		DefaultBindings.GLOBAL.put("jeiRuntime", runtime);
 
-		new HideJEIEventJS<>(runtime, VanillaTypes.ITEM, object -> {
-			List<ItemStack> list = new ArrayList<>();
-
-			for (ItemStackJS stack : IngredientJS.of(object).getStacks())
-			{
-				list.add(stack.getItemStack());
-			}
-
-			return list;
-		}, stack -> !stack.isEmpty()).post(ScriptType.CLIENT, JEIIntegration.JEI_HIDE_ITEMS);
+		new HideJEIEventJS<>(runtime, VanillaTypes.ITEM, object -> IngredientJS.of(object)::testVanilla, stack -> !stack.isEmpty()).post(ScriptType.CLIENT, JEIIntegration.JEI_HIDE_ITEMS);
 
 		new HideJEIEventJS<>(runtime, VanillaTypes.FLUID, object -> {
 			FluidStackJS fs = FluidStackJS.of(object);
-			if (fs.isEmpty())
-			{
-				return Collections.emptyList();
-			}
-			return Collections.singletonList(fromArchitectury(fs.getFluidStack()));
+			return fluidStack -> fluidStack.getFluid().isSame(fs.getFluid()) && Objects.equals(fluidStack.getTag(), MapJS.nbt(fs.getNbt()));
 		}, stack -> !stack.isEmpty()).post(ScriptType.CLIENT, JEIIntegration.JEI_HIDE_FLUIDS);
 
 		new HideCustomJEIEventJS(runtime).post(ScriptType.CLIENT, JEIIntegration.JEI_HIDE_CUSTOM);

@@ -117,7 +117,7 @@ public abstract class RecipeJS
 
 	public final boolean replaceInput(IngredientJS i, IngredientJS with, boolean exact)
 	{
-		return replaceInput(i, with, exact, (in, original) -> in.count(original.getCount()));
+		return replaceInput(i, with, exact, (in, original) -> in.withCount(original.getCount()));
 	}
 
 	public final boolean replaceInput(IngredientJS i, IngredientJS with, boolean exact, BiFunction<IngredientJS, IngredientJS, IngredientJS> func)

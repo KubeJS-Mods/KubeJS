@@ -45,7 +45,7 @@ public class SilentsMechanmismsAlloySmeltingRecipeJS extends RecipeJS
 
 				if (c > 1)
 				{
-					inputItems.add(i.count(1));
+					inputItems.add(i.withCount(1));
 					inputCount.add(c);
 				}
 				else

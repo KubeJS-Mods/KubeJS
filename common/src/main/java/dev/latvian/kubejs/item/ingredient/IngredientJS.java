@@ -164,11 +164,11 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 
 			if (map.containsKey("count"))
 			{
-				in = in.count(UtilsJS.parseInt(map.get("count"), 1));
+				in = in.withCount(UtilsJS.parseInt(map.get("count"), 1));
 			}
 			else if (map.containsKey("amount"))
 			{
-				in = in.count(UtilsJS.parseInt(map.get("amount"), 1));
+				in = in.withCount(UtilsJS.parseInt(map.get("amount"), 1));
 
 				if (in instanceof IngredientStackJS)
 				{
@@ -243,11 +243,11 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 
 			if (o.has("count"))
 			{
-				in = in.count(o.get("count").getAsInt());
+				in = in.withCount(o.get("count").getAsInt());
 			}
 			else if (o.has("amount"))
 			{
-				in = in.count(o.get("amount").getAsInt());
+				in = in.withCount(o.get("amount").getAsInt());
 
 				if (in instanceof IngredientStackJS)
 				{
@@ -319,7 +319,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 		{
 			if (!stack.isEmpty())
 			{
-				return stack.count(getCount());
+				return stack.withCount(getCount());
 			}
 		}
 
@@ -391,6 +391,6 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 
 	default IngredientStackJS asIngredientStack()
 	{
-		return new IngredientStackJS(count(1), getCount());
+		return new IngredientStackJS(withCount(1), getCount());
 	}
 }

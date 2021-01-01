@@ -285,7 +285,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 					c = o.get("amount").getAsInt();
 				}
 
-				return TagIngredientJS.createTag(o.get("tag").getAsString()).getFirst().count(c);
+				return TagIngredientJS.createTag(o.get("tag").getAsString()).getFirst().withCount(c);
 			}
 		}
 
@@ -302,9 +302,15 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		LinkedHashSet<ItemStackJS> set = new LinkedHashSet<>();
 		NonNullList<ItemStack> stackList = NonNullList.create();
 
-		for (Item item : Registries.get(KubeJS.MOD_ID).get(Registry.ITEM_REGISTRY))
+		for (Item item : Registry.ITEM)
 		{
-			item.fillItemCategory(CreativeModeTab.TAB_SEARCH, stackList);
+			try
+			{
+				item.fillItemCategory(CreativeModeTab.TAB_SEARCH, stackList);
+			}
+			catch (Throwable ex)
+			{
+			}
 		}
 
 		for (ItemStack stack : stackList)
