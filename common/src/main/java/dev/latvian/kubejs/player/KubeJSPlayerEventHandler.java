@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.player;
 
+import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.script.ScriptType;
@@ -48,7 +49,7 @@ public class KubeJSPlayerEventHandler
 			player.inventoryMenu.addSlotListener(new InventoryListener(player));
 		}
 
-		if (!ScriptType.SERVER.errors.isEmpty())
+		if (!ScriptType.SERVER.errors.isEmpty() && !CommonProperties.get().hideServerScriptErrors)
 		{
 			player.displayClientMessage(new TextComponent("KubeJS errors found! Run '/kubejs errors' for more info").withStyle(ChatFormatting.RED), false);
 		}

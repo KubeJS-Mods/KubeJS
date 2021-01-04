@@ -26,6 +26,7 @@ public class CommonProperties
 	private final Properties properties;
 	private boolean writeProperties;
 
+	public boolean hideServerScriptErrors;
 
 	private CommonProperties()
 	{
@@ -47,6 +48,8 @@ public class CommonProperties
 			{
 				writeProperties = true;
 			}
+
+			hideServerScriptErrors = get("hideServerScriptErrors", false);
 
 			if (writeProperties)
 			{
