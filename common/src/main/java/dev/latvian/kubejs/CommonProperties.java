@@ -1,7 +1,5 @@
 package dev.latvian.kubejs;
 
-import org.apache.logging.log4j.Logger;
-
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
@@ -28,8 +26,6 @@ public class CommonProperties
 	private final Properties properties;
 	private boolean writeProperties;
 
-	public boolean reduceLootTableSpam;
-	public boolean removeLootTableSpam;
 
 	private CommonProperties()
 	{
@@ -51,9 +47,6 @@ public class CommonProperties
 			{
 				writeProperties = true;
 			}
-
-			reduceLootTableSpam = get("reduceLootTableSpam", true);
-			removeLootTableSpam = get("removeLootTableSpam", true);
 
 			if (writeProperties)
 			{
@@ -88,25 +81,5 @@ public class CommonProperties
 	private boolean get(String key, boolean def)
 	{
 		return get(key, def ? "true" : "false").equals("true");
-	}
-
-	public void cantParse(Logger logger, String message, Object id, Object exception)
-	{
-		if (!CommonProperties.get().reduceLootTableSpam)
-		{
-			logger.error(message, id, exception);
-		}
-		else if (!CommonProperties.get().removeLootTableSpam)
-		{
-			logger.error("Couldn't parse loot table " + id + ": " + exception);
-		}
-	}
-
-	public void validationProblem(Logger logger, String message)
-	{
-		if (!CommonProperties.get().removeLootTableSpam)
-		{
-			logger.warn(message);
-		}
 	}
 }

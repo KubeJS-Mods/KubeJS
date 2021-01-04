@@ -50,6 +50,6 @@ public final class FilteredIngredientJS implements IngredientJS
 	@Override
 	public String toString()
 	{
-		return "ingredient.of(" + ingredient + ").filter(" + filter + ")";
+		return "Ingredient.of(" + ingredient + ").filter(" + filter + ")";
 	}
 }
