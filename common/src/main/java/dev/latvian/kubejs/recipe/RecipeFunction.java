@@ -91,7 +91,7 @@ public class RecipeFunction extends BaseFunction implements WrappedJS
 		catch (RecipeExceptionJS ex)
 		{
 			ex.error();
-			ScriptType.SERVER.console.warn("Failed to create recipe for type '" + typeID + "'", ex);
+			ScriptType.SERVER.console.error("Failed to create recipe for type '" + typeID + "'", ex);
 		}
 		catch (Exception ex)
 		{
