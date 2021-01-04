@@ -385,6 +385,17 @@ public class EntityJS implements MessageSender, WrappedJS
 		return 0;
 	}
 
+	@Override
+	public int runCommandSilent(String command)
+	{
+		if (world instanceof ServerWorldJS)
+		{
+			return world.getServer().minecraftServer.getCommands().performCommand(minecraftEntity.createCommandSourceStack().withSuppressedOutput(), command);
+		}
+
+		return 0;
+	}
+
 	public void kill()
 	{
 		minecraftEntity.kill();

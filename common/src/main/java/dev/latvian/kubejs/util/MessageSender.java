@@ -21,4 +21,9 @@ public interface MessageSender
 	}
 
 	int runCommand(String command);
+
+	default int runCommandSilent(String command)
+	{
+		return runCommand(command);
+	}
 }

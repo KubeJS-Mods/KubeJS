@@ -101,6 +101,19 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		return m;
 	}
 
+	@Override
+	public int runCommandSilent(String command)
+	{
+		int m = 0;
+
+		for (EntityJS entity : this)
+		{
+			m = Math.max(m, entity.runCommandSilent(command));
+		}
+
+		return m;
+	}
+
 	public void kill()
 	{
 		for (EntityJS entity : this)

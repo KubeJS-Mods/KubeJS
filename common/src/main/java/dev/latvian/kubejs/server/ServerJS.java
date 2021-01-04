@@ -174,6 +174,12 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return minecraftServer.getCommands().performCommand(minecraftServer.createCommandSourceStack(), command);
 	}
 
+	@Override
+	public int runCommandSilent(String command)
+	{
+		return minecraftServer.getCommands().performCommand(minecraftServer.createCommandSourceStack().withSuppressedOutput(), command);
+	}
+
 	public WorldJS getWorld(String dimension)
 	{
 		ServerWorldJS world = worldMap.get(dimension);
