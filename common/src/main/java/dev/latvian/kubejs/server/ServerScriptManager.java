@@ -5,6 +5,7 @@ import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.recipe.RecipeEventJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
+import dev.latvian.kubejs.recipe.RecipeTypeRegistryEventJS;
 import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
 import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptFileInfo;
@@ -120,6 +121,7 @@ public class ServerScriptManager
 
 		Map<ResourceLocation, RecipeTypeJS> typeMap = new HashMap<>();
 		RegisterRecipeHandlersEvent.EVENT.invoker().accept(new RegisterRecipeHandlersEvent(typeMap));
+		new RecipeTypeRegistryEventJS(typeMap).post(ScriptType.SERVER, KubeJSEvents.RECIPES_TYPE_REGISTRY);
 		RecipeEventJS.instance = new RecipeEventJS(typeMap);
 		return list;
 	}

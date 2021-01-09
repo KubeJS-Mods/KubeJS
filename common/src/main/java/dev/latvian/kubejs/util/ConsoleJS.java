@@ -2,6 +2,7 @@ package dev.latvian.kubejs.util;
 
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
+import net.minecraft.Util;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,9 +17,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -27,29 +25,6 @@ import java.util.stream.Collectors;
  */
 public class ConsoleJS
 {
-	private static final ExecutorService LOG_WRITER = Executors.newFixedThreadPool(1);
-
-	public static void shutdownLogWriter()
-	{
-		LOG_WRITER.shutdown();
-
-		boolean bl2;
-
-		try
-		{
-			bl2 = LOG_WRITER.awaitTermination(3L, TimeUnit.SECONDS);
-		}
-		catch (InterruptedException var3)
-		{
-			bl2 = false;
-		}
-
-		if (!bl2)
-		{
-			LOG_WRITER.shutdownNow();
-		}
-	}
-
 	private final ScriptType type;
 	private final Logger logger;
 	private final Path logFile;
@@ -113,7 +88,7 @@ public class ConsoleJS
 
 	public void resetFile()
 	{
-		LOG_WRITER.submit(() -> {
+		Util.ioPool().execute(() -> {
 			try
 			{
 				Files.write(logFile, Collections.emptyList());
@@ -231,7 +206,7 @@ public class ConsoleJS
 		sb.append(' ');
 		sb.append(line);
 
-		LOG_WRITER.submit(() -> {
+		Util.ioPool().execute(() -> {
 			try
 			{
 				Files.write(logFile, Collections.singleton(sb.toString()), StandardOpenOption.APPEND);

@@ -11,8 +11,7 @@
 		"RecipeManagerMixin",
 		"SimpleReloadableResourceManagerMixin",
 		"TagBuilderMixin",
-		"TagCollectionReaderMixin",
-		"UtilMixin"
+		"TagCollectionReaderMixin"
 	],
 	"client": [
 		"ImageButtonMixin",
