@@ -37,14 +37,20 @@ public class KubeJSClient extends KubeJSCommon
 			return;
 		}
 
-		KubeJS.clientScriptManager.unload();
-		KubeJS.clientScriptManager.loadFromDirectory();
-		KubeJS.clientScriptManager.load();
+		reloadClientScripts();
 
 		new KubeJSClientEventHandler().init();
 		PackRepository list = Minecraft.getInstance().getResourcePackRepository();
 		PackRepositoryHooks.addSource(list, new KubeJSResourcePackFinder());
 		ScriptsLoadedEvent.EVENT.register(this::setup);
+	}
+
+	public static void reloadClientScripts()
+	{
+		KubeJSClientEventHandler.staticItemTooltips = null;
+		KubeJS.clientScriptManager.unload();
+		KubeJS.clientScriptManager.loadFromDirectory();
+		KubeJS.clientScriptManager.load();
 	}
 
 	@Override

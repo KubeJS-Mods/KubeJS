@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Set;
@@ -77,6 +78,12 @@ public class IngredientStackJS implements IngredientJS
 	}
 
 	@Override
+	public boolean testVanillaItem(Item item)
+	{
+		return ingredient.testVanillaItem(item);
+	}
+
+	@Override
 	public boolean isEmpty()
 	{
 		return ingredient.isEmpty();
@@ -95,9 +102,21 @@ public class IngredientStackJS implements IngredientJS
 	}
 
 	@Override
+	public Set<Item> getVanillaItems()
+	{
+		return ingredient.getVanillaItems();
+	}
+
+	@Override
 	public IngredientJS not()
 	{
 		return new IngredientStackJS(ingredient.not(), countOverride);
+	}
+
+	@Override
+	public IngredientJS filter(IngredientJS filter)
+	{
+		return new IngredientStackJS(ingredient.filter(filter), countOverride);
 	}
 
 	@Override

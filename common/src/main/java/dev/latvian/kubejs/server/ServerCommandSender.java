@@ -15,6 +15,6 @@ public class ServerCommandSender extends CommandSourceStack
 {
 	public ServerCommandSender(ServerJS w)
 	{
-		super(CommandSource.NULL, Vec3.ZERO, Vec2.ZERO, (ServerLevel) w.getOverworld().minecraftWorld, 4, "Server", new TextComponent("Server"), w.minecraftServer, null, true, (context, success, result) -> {}, EntityAnchorArgument.Anchor.FEET);
+		super(CommandSource.NULL, Vec3.ZERO, Vec2.ZERO, (ServerLevel) w.getOverworld().minecraftWorld, 4, "Server", new TextComponent("Server"), w.getMinecraftServer(), null, true, (context, success, result) -> {}, EntityAnchorArgument.Anchor.FEET);
 	}
 }

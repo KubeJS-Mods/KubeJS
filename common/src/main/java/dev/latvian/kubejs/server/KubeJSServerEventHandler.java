@@ -49,7 +49,6 @@ public class KubeJSServerEventHandler
 		}
 
 		ServerJS.instance = new ServerJS(server, ServerScriptManager.instance);
-		//event.getServer().getResourcePacks().addPackFinder(new KubeJSDataPackFinder(KubeJS.getGameDirectory().resolve("kubejs").toFile()));
 	}
 
 	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection selection)
@@ -60,11 +59,11 @@ public class KubeJSServerEventHandler
 
 	public static void serverStarted(MinecraftServer server)
 	{
-		ServerJS.instance.overworld = new ServerWorldJS(ServerJS.instance, ServerJS.instance.minecraftServer.getLevel(Level.OVERWORLD));
+		ServerJS.instance.overworld = new ServerWorldJS(ServerJS.instance, server.getLevel(Level.OVERWORLD));
 		ServerJS.instance.worldMap.put("minecraft:overworld", ServerJS.instance.overworld);
 		ServerJS.instance.worlds.add(ServerJS.instance.overworld);
 
-		for (ServerLevel world : ServerJS.instance.minecraftServer.getAllLevels())
+		for (ServerLevel world : server.getAllLevels())
 		{
 			if (world != ServerJS.instance.overworld.minecraftWorld)
 			{
@@ -92,23 +91,20 @@ public class KubeJSServerEventHandler
 
 	public static void destroyServer()
 	{
-		for (PlayerDataJS p : new ArrayList<>(ServerJS.instance.playerMap.values()))
+		ServerJS s = ServerJS.instance;
+
+		for (PlayerDataJS<?, ?> p : s.playerMap.values())
 		{
 			new SimplePlayerEventJS(p.getMinecraftPlayer()).post(KubeJSEvents.PLAYER_LOGGED_OUT);
-			ServerJS.instance.playerMap.remove(p.getId());
 		}
 
-		ServerJS.instance.playerMap.clear();
-
-		for (WorldJS w : new ArrayList<>(ServerJS.instance.worldMap.values()))
+		for (WorldJS w : s.worldMap.values())
 		{
 			new SimpleWorldEventJS(w).post(KubeJSEvents.WORLD_UNLOAD);
-			ServerJS.instance.worldMap.remove(w.getDimension());
 		}
 
-		ServerJS.instance.updateWorldList();
-
 		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_UNLOAD);
+		s.release();
 		ServerJS.instance = null;
 	}
 

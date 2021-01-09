@@ -2,7 +2,9 @@ package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -29,6 +31,12 @@ public class MatchAllIngredientJS implements IngredientJS
 	public boolean testVanilla(ItemStack stack)
 	{
 		return !stack.isEmpty();
+	}
+
+	@Override
+	public boolean testVanillaItem(Item item)
+	{
+		return item != Items.AIR;
 	}
 
 	@Override

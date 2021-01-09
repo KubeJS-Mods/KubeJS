@@ -17,7 +17,6 @@ public class KubeJSEvents
 	public static final String CLIENT_LOGGED_IN = "client.logged_in";
 	public static final String CLIENT_LOGGED_OUT = "client.logged_out";
 	public static final String CLIENT_TICK = "client.tick";
-	public static final String CLIENT_ITEM_TOOLTIP = "client.item_tooltip";
 
 	public static final String SERVER_LOAD = "server.load";
 	public static final String SERVER_UNLOAD = "server.unload";
@@ -76,6 +75,7 @@ public class KubeJSEvents
 	public static final String ITEM_SMELTED = "item.smelted";
 	public static final String ITEM_DESTROYED = "item.destroyed";
 	public static final String ITEM_FOOD_EATEN = "item.food_eaten";
+	public static final String ITEM_TOOLTIP = "item.tooltip";
 
 	public static final String FLUID_REGISTRY = "fluid.registry";
 	public static final String FLUID_TAGS = "fluid.tags";

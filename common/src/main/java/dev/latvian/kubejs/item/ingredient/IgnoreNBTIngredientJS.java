@@ -1,8 +1,10 @@
 package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.item.ItemStackJS;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -30,9 +32,21 @@ public final class IgnoreNBTIngredientJS implements IngredientJS
 	}
 
 	@Override
+	public boolean testVanillaItem(Item i)
+	{
+		return item.getItem() == i;
+	}
+
+	@Override
 	public Set<ItemStackJS> getStacks()
 	{
 		return item.getStacks();
+	}
+
+	@Override
+	public Set<Item> getVanillaItems()
+	{
+		return Collections.singleton(item.getItem());
 	}
 
 	@Override

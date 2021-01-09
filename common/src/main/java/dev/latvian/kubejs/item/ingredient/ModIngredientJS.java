@@ -2,9 +2,10 @@ package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
-import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -35,7 +36,13 @@ public class ModIngredientJS implements IngredientJS
 	@Override
 	public boolean testVanilla(ItemStack stack)
 	{
-		return !stack.isEmpty() && mod.equals(Registries.getId(stack.getItem(), Registry.ITEM_REGISTRY).getNamespace());
+		return !stack.isEmpty() && mod.equals(Registry.ITEM.getKey(stack.getItem()).getNamespace());
+	}
+
+	@Override
+	public boolean testVanillaItem(Item item)
+	{
+		return item != Items.AIR && mod.equals(Registry.ITEM.getKey(item).getNamespace());
 	}
 
 	@Override

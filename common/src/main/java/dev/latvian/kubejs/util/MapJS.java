@@ -46,6 +46,29 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 		return m == null ? null : m.toNBT();
 	}
 
+	@Nullable
+	public static JsonObject json(@Nullable Object map)
+	{
+		if (map instanceof JsonObject)
+		{
+			return (JsonObject) map;
+		}
+		else if (map instanceof CharSequence)
+		{
+			try
+			{
+				return JsonUtilsJS.GSON.fromJson(map.toString(), JsonObject.class);
+			}
+			catch (Exception ex)
+			{
+				return null;
+			}
+		}
+
+		MapJS m = of(map);
+		return m == null ? null : m.toJson();
+	}
+
 	public WrappedJSObjectChangeListener<MapJS> changeListener;
 
 	public MapJS()

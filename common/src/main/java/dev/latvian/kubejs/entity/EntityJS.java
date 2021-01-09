@@ -379,7 +379,7 @@ public class EntityJS implements MessageSender, WrappedJS
 	{
 		if (world instanceof ServerWorldJS)
 		{
-			return world.getServer().minecraftServer.getCommands().performCommand(minecraftEntity.createCommandSourceStack(), command);
+			return world.getServer().getMinecraftServer().getCommands().performCommand(minecraftEntity.createCommandSourceStack(), command);
 		}
 
 		return 0;
@@ -390,7 +390,7 @@ public class EntityJS implements MessageSender, WrappedJS
 	{
 		if (world instanceof ServerWorldJS)
 		{
-			return world.getServer().minecraftServer.getCommands().performCommand(minecraftEntity.createCommandSourceStack().withSuppressedOutput(), command);
+			return world.getServer().getMinecraftServer().getCommands().performCommand(minecraftEntity.createCommandSourceStack().withSuppressedOutput(), command);
 		}
 
 		return 0;

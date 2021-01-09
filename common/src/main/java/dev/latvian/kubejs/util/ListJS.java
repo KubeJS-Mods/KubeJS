@@ -174,6 +174,29 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 		return list;
 	}
 
+	@Nullable
+	public static JsonArray json(@Nullable Object array)
+	{
+		if (array instanceof JsonArray)
+		{
+			return (JsonArray) array;
+		}
+		else if (array instanceof CharSequence)
+		{
+			try
+			{
+				return JsonUtilsJS.GSON.fromJson(array.toString(), JsonArray.class);
+			}
+			catch (Exception ex)
+			{
+				return null;
+			}
+		}
+
+		ListJS l = of(array);
+		return l == null ? null : l.toJson();
+	}
+
 	public WrappedJSObjectChangeListener<ListJS> changeListener;
 
 	public ListJS()

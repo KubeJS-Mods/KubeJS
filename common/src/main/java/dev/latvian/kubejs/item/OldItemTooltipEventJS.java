@@ -1,28 +1,26 @@
-package dev.latvian.kubejs.client;
+package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.text.Text;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 
 import java.util.List;
 
 /**
  * @author LatvianModder
  */
-public class ClientItemTooltipEventJS extends EventJS
+public class OldItemTooltipEventJS extends EventJS
 {
 	private final ItemStack stack;
 	private final List<Component> lines;
-	private final TooltipFlag flag;
+	private final boolean advanced;
 
-	public ClientItemTooltipEventJS(ItemStack stack, List<Component> lines, TooltipFlag flag)
+	public OldItemTooltipEventJS(ItemStack stack, List<Component> lines, boolean a)
 	{
 		this.stack = stack;
 		this.lines = lines;
-		this.flag = flag;
+		this.advanced = a;
 	}
 
 	public ItemStackJS getItem()
@@ -32,7 +30,7 @@ public class ClientItemTooltipEventJS extends EventJS
 
 	public boolean isAdvanced()
 	{
-		return flag.isAdvanced();
+		return advanced;
 	}
 
 	public void add(Object text)

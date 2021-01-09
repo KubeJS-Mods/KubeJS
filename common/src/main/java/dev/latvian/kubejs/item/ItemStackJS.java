@@ -571,9 +571,21 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	}
 
 	@Override
+	public boolean testVanillaItem(Item item)
+	{
+		return item == getItem();
+	}
+
+	@Override
 	public Set<ItemStackJS> getStacks()
 	{
 		return Collections.singleton(this);
+	}
+
+	@Override
+	public Set<Item> getVanillaItems()
+	{
+		return Collections.singleton(getItem());
 	}
 
 	@Override

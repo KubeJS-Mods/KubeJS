@@ -12,6 +12,8 @@ import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.core.ImageButtonKJS;
 import dev.latvian.kubejs.fluid.FluidBuilder;
 import dev.latvian.kubejs.item.ItemBuilder;
+import dev.latvian.kubejs.item.ItemTooltipEventJS;
+import dev.latvian.kubejs.item.OldItemTooltipEventJS;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.ScriptsLoadedEvent;
@@ -41,7 +43,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -54,8 +58,11 @@ import java.nio.IntBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -63,6 +70,7 @@ import java.util.List;
 public class KubeJSClientEventHandler
 {
 	private static final ResourceLocation RECIPE_BUTTON_TEXTURE = new ResourceLocation("textures/gui/recipe_button.png");
+	public static Map<Item, List<ItemTooltipEventJS.StaticTooltipHandler>> staticItemTooltips = null;
 
 	public void init()
 	{
@@ -121,7 +129,9 @@ public class KubeJSClientEventHandler
 
 	private void itemTooltip(ItemStack stack, List<Component> lines, TooltipFlag flag)
 	{
-		if (ClientProperties.get().showTagNames && Minecraft.getInstance().options.advancedItemTooltips && Screen.hasShiftDown())
+		boolean advanced = flag.isAdvanced();
+
+		if (advanced && ClientProperties.get().showTagNames && Screen.hasShiftDown())
 		{
 			for (ResourceLocation tag : Tags.byItemStack(stack))
 			{
@@ -129,7 +139,24 @@ public class KubeJSClientEventHandler
 			}
 		}
 
-		new ClientItemTooltipEventJS(stack, lines, flag).post(ScriptType.CLIENT, KubeJSEvents.CLIENT_ITEM_TOOLTIP);
+		if (staticItemTooltips == null)
+		{
+			staticItemTooltips = new HashMap<>();
+			new ItemTooltipEventJS(staticItemTooltips).post(ScriptType.CLIENT, KubeJSEvents.ITEM_TOOLTIP);
+		}
+
+		for (ItemTooltipEventJS.StaticTooltipHandler h : staticItemTooltips.getOrDefault(Items.AIR, Collections.emptyList()))
+		{
+			h.tooltip(stack, advanced, lines);
+		}
+
+		for (ItemTooltipEventJS.StaticTooltipHandler h : staticItemTooltips.getOrDefault(stack.getItem(), Collections.emptyList()))
+		{
+			h.tooltip(stack, advanced, lines);
+		}
+
+		// TODO: Remove me
+		new OldItemTooltipEventJS(stack, lines, advanced).post(ScriptType.CLIENT, "client.item_tooltip");
 	}
 
 	private void clientTick(Minecraft minecraft)

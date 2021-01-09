@@ -1,8 +1,10 @@
 package dev.latvian.kubejs.script.data;
 
+import com.google.gson.JsonElement;
 import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.server.ServerEventJS;
 import dev.latvian.kubejs.util.JsonUtilsJS;
+import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 
@@ -25,11 +27,16 @@ public class DataPackEventJS extends ServerEventJS
 
 	public void addJson(@ID String id, Object json)
 	{
-		MapJS map = MapJS.of(json);
+		JsonElement j = MapJS.json(json);
 
-		if (map != null)
+		if (j == null)
 		{
-			add(id, JsonUtilsJS.toString(map.toJson()));
+			j = ListJS.json(json);
+		}
+
+		if (j != null)
+		{
+			add(id, JsonUtilsJS.toString(j));
 		}
 	}
 }

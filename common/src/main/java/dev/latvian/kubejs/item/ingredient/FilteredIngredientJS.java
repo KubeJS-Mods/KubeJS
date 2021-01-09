@@ -1,6 +1,8 @@
 package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.item.ItemStackJS;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -26,6 +28,18 @@ public final class FilteredIngredientJS implements IngredientJS
 	}
 
 	@Override
+	public boolean testVanilla(ItemStack stack)
+	{
+		return ingredient.testVanilla(stack) && filter.testVanilla(stack);
+	}
+
+	@Override
+	public boolean testVanillaItem(Item item)
+	{
+		return ingredient.testVanillaItem(item) && filter.testVanillaItem(item);
+	}
+
+	@Override
 	public Set<ItemStackJS> getStacks()
 	{
 		Set<ItemStackJS> set = new LinkedHashSet<>();
@@ -35,6 +49,22 @@ public final class FilteredIngredientJS implements IngredientJS
 			if (filter.test(stack))
 			{
 				set.add(stack);
+			}
+		}
+
+		return set;
+	}
+
+	@Override
+	public Set<Item> getVanillaItems()
+	{
+		Set<Item> set = new LinkedHashSet<>();
+
+		for (Item item : ingredient.getVanillaItems())
+		{
+			if (filter.testVanillaItem(item))
+			{
+				set.add(item);
 			}
 		}
 

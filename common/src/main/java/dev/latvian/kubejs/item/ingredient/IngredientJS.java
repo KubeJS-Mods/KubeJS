@@ -7,6 +7,7 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.item.UnboundItemStackJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.ListJS;
@@ -16,8 +17,11 @@ import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import me.shedaniel.architectury.ExpectPlatform;
+import net.minecraft.core.Registry;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
@@ -273,6 +277,11 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 		return test(new BoundItemStackJS(stack));
 	}
 
+	default boolean testVanillaItem(Item item)
+	{
+		return test(new UnboundItemStackJS(Registry.ITEM.getKey(item)));
+	}
+
 	default Predicate<ItemStack> getVanillaPredicate()
 	{
 		return new VanillaPredicate(this);
@@ -297,6 +306,21 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 			if (test(stack))
 			{
 				set.add(stack.getCopy());
+			}
+		}
+
+		return set;
+	}
+
+	default Set<Item> getVanillaItems()
+	{
+		Set<Item> set = new LinkedHashSet<>();
+
+		for (Item item : Registry.ITEM)
+		{
+			if (item != Items.AIR && testVanillaItem(item))
+			{
+				set.add(item);
 			}
 		}
 

@@ -40,7 +40,7 @@ import java.util.Collection;
 public abstract class WorldJS implements WithAttachedData
 {
 	@MinecraftClass
-	public final Level minecraftWorld;
+	public Level minecraftWorld;
 
 	private AttachedData data;
 

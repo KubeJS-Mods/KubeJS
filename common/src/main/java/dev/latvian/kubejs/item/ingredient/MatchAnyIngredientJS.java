@@ -3,6 +3,9 @@ package dev.latvian.kubejs.item.ingredient;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.util.ListJS;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -60,6 +63,44 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	}
 
 	@Override
+	public boolean testVanilla(ItemStack stack)
+	{
+		if (stack.isEmpty())
+		{
+			return false;
+		}
+
+		for (IngredientJS ingredient : ingredients)
+		{
+			if (ingredient.testVanilla(stack))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean testVanillaItem(Item item)
+	{
+		if (item == Items.AIR)
+		{
+			return false;
+		}
+
+		for (IngredientJS ingredient : ingredients)
+		{
+			if (ingredient.testVanillaItem(item))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	@Override
 	public Set<ItemStackJS> getStacks()
 	{
 		Set<ItemStackJS> set = new LinkedHashSet<>();
@@ -67,6 +108,19 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 		for (IngredientJS ingredient : ingredients)
 		{
 			set.addAll(ingredient.getStacks());
+		}
+
+		return set;
+	}
+
+	@Override
+	public Set<Item> getVanillaItems()
+	{
+		Set<Item> set = new LinkedHashSet<>();
+
+		for (IngredientJS ingredient : ingredients)
+		{
+			set.addAll(ingredient.getVanillaItems());
 		}
 
 		return set;

@@ -15,7 +15,7 @@ public class WorldCommandSender extends CommandSourceStack
 {
 	public WorldCommandSender(ServerWorldJS w)
 	{
-		super(CommandSource.NULL, Vec3.ZERO, Vec2.ZERO, (ServerLevel) w.minecraftWorld, 4, "World", new TextComponent("World"), w.getServer().minecraftServer, null, true, (context, success, result) ->
+		super(CommandSource.NULL, Vec3.ZERO, Vec2.ZERO, (ServerLevel) w.minecraftWorld, 4, "World", new TextComponent("World"), w.getServer().getMinecraftServer(), null, true, (context, success, result) ->
 		{
 		}, EntityAnchorArgument.Anchor.FEET);
 	}

@@ -89,7 +89,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer>
 
 	public boolean isOP()
 	{
-		return server.minecraftServer.getPlayerList().isOp(minecraftPlayer.getGameProfile());
+		return server.getMinecraftServer().getPlayerList().isOp(minecraftPlayer.getGameProfile());
 	}
 
 	public void kick(Object reason)
@@ -106,7 +106,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer>
 	{
 		Date date = new Date();
 		UserBanListEntry userlistbansentry = new UserBanListEntry(minecraftPlayer.getGameProfile(), date, banner, new Date(date.getTime() + (expiresInMillis <= 0L ? 315569260000L : expiresInMillis)), reason);
-		server.minecraftServer.getPlayerList().getBans().add(userlistbansentry);
+		server.getMinecraftServer().getPlayerList().getBans().add(userlistbansentry);
 		kick(new TextTranslate("multiplayer.disconnect.banned"));
 	}
 

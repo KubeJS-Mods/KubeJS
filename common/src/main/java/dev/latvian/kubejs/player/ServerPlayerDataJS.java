@@ -62,7 +62,7 @@ public class ServerPlayerDataJS extends PlayerDataJS<ServerPlayer, ServerPlayerJ
 	@Nullable
 	public ServerPlayer getMinecraftPlayer()
 	{
-		return server.minecraftServer.getPlayerList().getPlayer(getId());
+		return server.getMinecraftServer().getPlayerList().getPlayer(getId());
 	}
 
 	@Override

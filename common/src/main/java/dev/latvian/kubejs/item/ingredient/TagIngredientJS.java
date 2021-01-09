@@ -13,6 +13,7 @@ import net.minecraft.tags.SetTag;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -78,6 +79,12 @@ public class TagIngredientJS implements IngredientJS
 	}
 
 	@Override
+	public boolean testVanillaItem(Item item)
+	{
+		return item != Items.AIR && getActualTag().contains(item);
+	}
+
+	@Override
 	public Set<ItemStackJS> getStacks()
 	{
 		Tag<Item> t = getActualTag();
@@ -92,6 +99,19 @@ public class TagIngredientJS implements IngredientJS
 			}
 
 			return set;
+		}
+
+		return Collections.emptySet();
+	}
+
+	@Override
+	public Set<Item> getVanillaItems()
+	{
+		Tag<Item> t = getActualTag();
+
+		if (t.getValues().size() > 0)
+		{
+			return new LinkedHashSet<>(t.getValues());
 		}
 
 		return Collections.emptySet();

@@ -112,7 +112,19 @@ public class EmptyItemStackJS extends ItemStackJS
 	}
 
 	@Override
+	public boolean testVanillaItem(Item item)
+	{
+		return false;
+	}
+
+	@Override
 	public Set<ItemStackJS> getStacks()
+	{
+		return Collections.emptySet();
+	}
+
+	@Override
+	public Set<Item> getVanillaItems()
 	{
 		return Collections.emptySet();
 	}

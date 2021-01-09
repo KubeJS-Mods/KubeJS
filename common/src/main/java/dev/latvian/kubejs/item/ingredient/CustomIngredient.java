@@ -4,10 +4,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.world.entity.player.StackedContents;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -37,6 +39,12 @@ public class CustomIngredient implements IngredientJS
 	}
 
 	@Override
+	public boolean testVanillaItem(Item item)
+	{
+		return ingredient.test(new ItemStack(item));
+	}
+
+	@Override
 	public JsonElement toJson()
 	{
 		return json;
@@ -45,11 +53,29 @@ public class CustomIngredient implements IngredientJS
 	@Override
 	public Set<ItemStackJS> getStacks()
 	{
-		Set<ItemStackJS> set = new HashSet<>();
+		Set<ItemStackJS> set = new LinkedHashSet<>();
 
 		for (int i : ingredient.getStackingIds())
 		{
 			set.add(ItemStackJS.of(StackedContents.fromStackingIndex(i)));
+		}
+
+		return set;
+	}
+
+	@Override
+	public Set<Item> getVanillaItems()
+	{
+		Set<Item> set = new LinkedHashSet<>();
+
+		for (int i : ingredient.getStackingIds())
+		{
+			Item item = Item.byId(i);
+
+			if (item != Items.AIR)
+			{
+				set.add(item);
+			}
 		}
 
 		return set;

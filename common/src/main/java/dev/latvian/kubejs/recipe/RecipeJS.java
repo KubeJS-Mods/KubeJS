@@ -64,13 +64,13 @@ public abstract class RecipeJS
 		originalRecipe = null;
 	}
 
-	public RecipeJS set(Object data)
+	public RecipeJS merge(Object data)
 	{
-		MapJS m = MapJS.of(data);
+		JsonObject j = MapJS.json(data);
 
-		if (m != null)
+		if (j != null)
 		{
-			for (Map.Entry<String, JsonElement> entry : m.toJson().entrySet())
+			for (Map.Entry<String, JsonElement> entry : j.entrySet())
 			{
 				json.add(entry.getKey(), entry.getValue());
 			}
@@ -79,6 +79,12 @@ public abstract class RecipeJS
 		}
 
 		return this;
+	}
+
+	@Deprecated
+	public RecipeJS set(Object data)
+	{
+		return merge(data);
 	}
 
 	public RecipeJS id(@ID String _id)
