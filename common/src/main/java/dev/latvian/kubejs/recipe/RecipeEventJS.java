@@ -93,10 +93,10 @@ public class RecipeEventJS extends EventJS
 
 			String recipeIdAndType = recipeId + "[unknown:type]";
 
-			JsonObject json = entry.getValue();
-
 			try
 			{
+				JsonObject json = entry.getValue();
+
 				ResourceLocation type = new ResourceLocation(GsonHelper.getAsString(json, "type"));
 
 				recipeIdAndType = recipeId + "[" + type + "]";
@@ -197,7 +197,7 @@ public class RecipeEventJS extends EventJS
 
 					try
 					{
-						fallbackedRecipes.add(Objects.requireNonNull(RecipeManager.fromJson(recipeId, json)));
+						fallbackedRecipes.add(Objects.requireNonNull(RecipeManager.fromJson(recipeId, entry.getValue())));
 					}
 					catch (NullPointerException | IllegalArgumentException | JsonParseException ex2)
 					{
