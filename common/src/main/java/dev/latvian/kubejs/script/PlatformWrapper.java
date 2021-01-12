@@ -1,26 +1,26 @@
 package dev.latvian.kubejs.script;
 
-import com.google.common.collect.Sets;
 import dev.latvian.kubejs.KubeJS;
 import me.shedaniel.architectury.platform.Mod;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.SharedConstants;
 
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * @author LatvianModder
  */
-public class ScriptModData
+public class PlatformWrapper
 {
-	private static ScriptModData instance;
+	private static PlatformWrapper instance;
 
-	public static ScriptModData getInstance()
+	public static PlatformWrapper getInstance()
 	{
 		if (instance == null)
 		{
-			instance = new ScriptModData(Platform.getModLoader(), SharedConstants.getCurrentVersion().getName());
+			instance = new PlatformWrapper();
 		}
 
 		return instance;
@@ -55,30 +55,48 @@ public class ScriptModData
 		}
 	}
 
-	private final String modLoader;
-	private final String mcVersion;
-	private final HashSet<String> list;
+	private final Set<String> list;
+	private final Map<String, ModInfo> map;
 
-	public ScriptModData(String modLoader, String mcVersion)
+	public PlatformWrapper()
 	{
-		this.modLoader = modLoader;
-		this.mcVersion = mcVersion;
-		this.list = Sets.newHashSet();
+		map = new LinkedHashMap<>();
 
 		for (Mod mod : Platform.getMods())
 		{
-			this.list.add(mod.getModId());
+			ModInfo info = new ModInfo(mod.getModId());
+			info.name = mod.getName();
+			info.version = mod.getVersion();
+			map.put(info.id, info);
 		}
+
+		list = map.keySet();
 	}
 
+	public String getName()
+	{
+		return Platform.getModLoader();
+	}
+
+	public boolean isForge()
+	{
+		return Platform.isForge();
+	}
+
+	public boolean isFabric()
+	{
+		return Platform.isFabric();
+	}
+
+	@Deprecated
 	public String getType()
 	{
-		return modLoader;
+		return Platform.getModLoader();
 	}
 
 	public String getMcVersion()
 	{
-		return mcVersion;
+		return SharedConstants.getCurrentVersion().getName();
 	}
 
 	public Set<String> getList()
@@ -88,29 +106,21 @@ public class ScriptModData
 
 	public String getModVersion()
 	{
-		return Platform.getMod(KubeJS.MOD_ID).getVersion();
+		return getInfo(KubeJS.MOD_ID).version;
 	}
 
 	public boolean isLoaded(String modId)
 	{
-		return list.contains(modId);
+		return map.containsKey(modId);
 	}
 
 	public ModInfo getInfo(String modID)
 	{
-		ModInfo info = new ModInfo(modID);
+		return map.get(modID);
+	}
 
-		try
-		{
-			Mod mod = Platform.getMod(modID);
-
-			info.name = mod.getName();
-			info.version = mod.getVersion();
-		}
-		catch (Throwable ignored)
-		{
-		}
-
-		return info;
+	public Map<String, ModInfo> getMods()
+	{
+		return map;
 	}
 }

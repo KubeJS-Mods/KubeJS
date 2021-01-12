@@ -4,8 +4,8 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.event.IEventHandler;
 import dev.latvian.kubejs.fluid.FluidWrapper;
 import dev.latvian.kubejs.script.BindingsEvent;
+import dev.latvian.kubejs.script.PlatformWrapper;
 import dev.latvian.kubejs.script.ScriptManager;
-import dev.latvian.kubejs.script.ScriptModData;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.text.TextColor;
@@ -36,7 +36,8 @@ public class DefaultBindings
 			event.add("settings", ServerSettings.instance);
 		}
 
-		event.add("mod", ScriptModData.getInstance());
+		event.add("Platform", PlatformWrapper.getInstance());
+		event.add("mod", PlatformWrapper.getInstance());
 		event.add("console", manager.type.console);
 		event.add("events", new ScriptEventsWrapper(event.type.manager.get().events));
 

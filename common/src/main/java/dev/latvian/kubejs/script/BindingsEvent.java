@@ -48,7 +48,7 @@ public class BindingsEvent
 		add(name, new DynamicFunction(callback));
 	}
 
-	public void addFunction(String name, DynamicFunction.Callback callback, Class... types)
+	public void addFunction(String name, DynamicFunction.Callback callback, Class<?>... types)
 	{
 		add(name, new TypedDynamicFunction(callback, types));
 	}
