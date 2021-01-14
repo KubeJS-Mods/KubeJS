@@ -204,8 +204,16 @@ public class ItemBuilder extends BuilderBase
 		Item.Properties properties = new Item.Properties();
 
 		properties.tab(group);
-		properties.durability(maxDamage);
-		properties.stacksTo(maxStackSize);
+
+		if (maxDamage > 0)
+		{
+			properties.durability(maxDamage);
+		}
+		else
+		{
+			properties.stacksTo(maxStackSize);
+		}
+
 		properties.rarity(rarity);
 
 		for (Map.Entry<ToolType, Integer> entry : tools.entrySet())
