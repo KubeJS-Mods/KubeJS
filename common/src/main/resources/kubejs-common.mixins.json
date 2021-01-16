@@ -7,6 +7,7 @@
 		"DataPackRegistriesMixin",
 		"FireworkRocketEntityMixin",
 		"LivingEntityMixin",
+		"LootTablesMixin",
 		"PlayerInteractionManagerMixin",
 		"RecipeManagerMixin",
 		"SimpleReloadableResourceManagerMixin",

@@ -9,6 +9,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.ClassShutter;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.RhinoException;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
@@ -92,6 +93,8 @@ public class ScriptManager
 		Context context = Context.enter();
 		context.setLanguageVersion(Context.VERSION_ES6);
 		context.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE);
+		context.getTypeWrappers().register("id", ResourceLocation.class, String.class, ResourceLocation::toString);
+		context.getTypeWrappers().register("id", String.class, ResourceLocation.class, ResourceLocation::new);
 
 		long startAll = System.currentTimeMillis();
 

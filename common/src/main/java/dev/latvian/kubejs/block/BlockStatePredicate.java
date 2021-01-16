@@ -236,8 +236,7 @@ public abstract class BlockStatePredicate
 
 		for (Object o : ListJS.orSelf(blocks))
 		{
-			Pattern pattern = UtilsJS.parseRegex(o);
-			BlockStatePredicate p = pattern == null ? BlockStatePredicate.parse(o.toString()) : new FromRegex(pattern);
+			BlockStatePredicate p = of0(o);
 
 			if (p != BlockStatePredicate.Empty.INSTANCE)
 			{
@@ -246,6 +245,25 @@ public abstract class BlockStatePredicate
 		}
 
 		return predicate.list.size() == 1 ? predicate.list.get(0) : predicate.list.isEmpty() ? BlockStatePredicate.Empty.INSTANCE : predicate;
+	}
+
+	private static BlockStatePredicate of0(Object o)
+	{
+		if (o instanceof Block)
+		{
+			return new FromID((Block) o);
+		}
+		else if (o instanceof BlockState)
+		{
+			return new FromState((BlockState) o);
+		}
+		else if (o instanceof Tag)
+		{
+			return new FromTag((Tag<Block>) o);
+		}
+
+		Pattern pattern = UtilsJS.parseRegex(o);
+		return pattern == null ? BlockStatePredicate.parse(o.toString()) : new FromRegex(pattern);
 	}
 
 	public abstract boolean check(BlockState state);

@@ -1,0 +1,45 @@
+package dev.latvian.kubejs.loot;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.mods.rhino.util.wrap.Wrap;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.storage.loot.Deserializers;
+
+import java.util.Map;
+import java.util.function.Consumer;
+
+/**
+ * @author LatvianModder
+ */
+public abstract class LootEventJS<LB extends LootBuilder<?, ?>> extends EventJS
+{
+	private final Map<ResourceLocation, JsonElement> lootMap;
+	final Gson gsonConditions;
+	final Gson gsonFunctions;
+	final Gson gsonLootTables;
+
+	public LootEventJS(Map<ResourceLocation, JsonElement> c)
+	{
+		lootMap = c;
+		gsonConditions = Deserializers.createConditionSerializer().create();
+		gsonFunctions = Deserializers.createFunctionSerializer().create();
+		gsonLootTables = Deserializers.createLootTableSerializer().create();
+	}
+
+	public abstract LB newLootBuilder();
+
+	public void addJson(@Wrap("id") ResourceLocation id, Object json)
+	{
+		lootMap.put(id, MapJS.json(json));
+	}
+
+	public void build(@Wrap("id") ResourceLocation id, Consumer<LB> lb)
+	{
+		LB lootBuilder = newLootBuilder();
+		lb.accept(lootBuilder);
+		addJson(id, lootBuilder.toJson(this));
+	}
+}

@@ -27,6 +27,8 @@ public class CommonProperties
 	private boolean writeProperties;
 
 	public boolean hideServerScriptErrors;
+	public boolean serverOnly;
+	public boolean exportVisualizerData;
 
 	private CommonProperties()
 	{
@@ -50,12 +52,14 @@ public class CommonProperties
 			}
 
 			hideServerScriptErrors = get("hideServerScriptErrors", false);
+			serverOnly = get("serverOnly", false);
+			exportVisualizerData = get("exportVisualizerData", false);
 
 			if (writeProperties)
 			{
 				try (Writer writer = Files.newBufferedWriter(propertiesFile))
 				{
-					properties.store(writer, "KubeJS Common Properties\nIt's recommended to disable ES6 if you want to improve loading times and don't care about lambdas and other ES6 JavaScript features.");
+					properties.store(writer, "KubeJS Common Properties");
 				}
 			}
 		}
