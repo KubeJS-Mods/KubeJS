@@ -3,6 +3,7 @@ package dev.latvian.kubejs.block;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.SerializationTags;
 import net.minecraft.tags.Tag;
@@ -14,7 +15,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
@@ -116,6 +120,38 @@ public abstract class BlockStatePredicate
 		}
 	}
 
+	public static class FromRegex extends BlockStatePredicate
+	{
+		public final Pattern pattern;
+		private final LinkedHashSet<Block> matchedBlocks;
+
+		public FromRegex(Pattern p)
+		{
+			pattern = p;
+			matchedBlocks = new LinkedHashSet<>();
+
+			for (Map.Entry<ResourceKey<Block>, Block> entry : Registry.BLOCK.entrySet())
+			{
+				if (pattern.matcher(entry.getKey().location().toString()).find())
+				{
+					matchedBlocks.add(entry.getValue());
+				}
+			}
+		}
+
+		@Override
+		public boolean check(BlockState state)
+		{
+			return matchedBlocks.contains(state.getBlock());
+		}
+
+		@Override
+		public Collection<Block> getBlocks()
+		{
+			return matchedBlocks;
+		}
+	}
+
 	public static class FromList extends BlockStatePredicate
 	{
 		public final List<BlockStatePredicate> list = new ArrayList<>();
@@ -200,7 +236,8 @@ public abstract class BlockStatePredicate
 
 		for (Object o : ListJS.orSelf(blocks))
 		{
-			BlockStatePredicate p = BlockStatePredicate.parse(o.toString());
+			Pattern pattern = UtilsJS.parseRegex(o);
+			BlockStatePredicate p = pattern == null ? BlockStatePredicate.parse(o.toString()) : new FromRegex(pattern);
 
 			if (p != BlockStatePredicate.Empty.INSTANCE)
 			{
