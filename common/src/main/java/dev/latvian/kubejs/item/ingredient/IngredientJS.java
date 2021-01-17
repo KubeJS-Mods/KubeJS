@@ -364,10 +364,9 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 		return new IngredientStackJS(this, count);
 	}
 
-	@Deprecated
-	default IngredientJS count(int count)
+	default IngredientJS x(int c)
 	{
-		return withCount(count);
+		return withCount(c);
 	}
 
 	default IngredientJS getCopy()

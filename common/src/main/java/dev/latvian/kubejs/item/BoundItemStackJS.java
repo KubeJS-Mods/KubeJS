@@ -58,6 +58,23 @@ public class BoundItemStackJS extends ItemStackJS
 	}
 
 	@Override
+	public ItemStackJS withCount(int c)
+	{
+		if (c <= 0)
+		{
+			return EmptyItemStackJS.INSTANCE;
+		}
+		else if (c == stack.getCount())
+		{
+			return this;
+		}
+
+		ItemStack is = stack.copy();
+		is.setCount(c);
+		return new BoundItemStackJS(is).withChance(getChance());
+	}
+
+	@Override
 	public MapJS getNbt()
 	{
 		MapJS nbt = MapJS.of(stack.getTag());
@@ -69,6 +86,21 @@ public class BoundItemStackJS extends ItemStackJS
 
 		nbt.changeListener = this;
 		return nbt;
+	}
+
+	@Override
+	public ItemStackJS withNBT(@Nullable Object o)
+	{
+		CompoundTag tag = MapJS.nbt(o);
+
+		if (tag != null)
+		{
+			ItemStack is = stack.copy();
+
+			return new BoundItemStackJS(is).withChance(getChance());
+		}
+
+		return this;
 	}
 
 	@Override

@@ -317,7 +317,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		{
 			if (!stack.isEmpty())
 			{
-				set.add(new BoundItemStackJS(stack).getCopy().count(1));
+				set.add(new BoundItemStackJS(stack).getCopy().withCount(1));
 			}
 		}
 
@@ -392,9 +392,13 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	public abstract int getCount();
 
 	@Override
-	public final ItemStackJS withCount(int c)
+	public ItemStackJS withCount(int c)
 	{
-		if (c == getCount())
+		if (c <= 0)
+		{
+			return EmptyItemStackJS.INSTANCE;
+		}
+		else if (c == getCount())
 		{
 			return this;
 		}
@@ -402,13 +406,6 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		ItemStackJS is = getCopy();
 		is.setCount(c);
 		return is;
-	}
-
-	@Override
-	@Deprecated
-	public final ItemStackJS count(int c)
-	{
-		return withCount(c);
 	}
 
 	public final ItemStackJS x(int c)
@@ -435,13 +432,20 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public abstract MapJS getNbt();
 
-	public final ItemStackJS withNBT(@Nullable Object o)
+	public ItemStackJS withNBT(@Nullable Object o)
 	{
+		if (isEmpty())
+		{
+			return this;
+		}
+
 		MapJS nbt = MapJS.of(o instanceof Map ? o : MapJS.nbt(o));
 
 		if (nbt != null)
 		{
-			getNbt().putAll(nbt);
+			ItemStackJS is = getCopy();
+			is.getNbt().putAll(nbt);
+			return is;
 		}
 
 		return this;
