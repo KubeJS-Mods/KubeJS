@@ -59,19 +59,21 @@ public class KubeJS
 		{
 			UtilsJS.tryIO(() -> {
 				List<String> list = new ArrayList<>();
-				list.add("Find more info on the website: https://kubejs.latvian.dev/");
+				list.add("Find more info on the website: https://kubejs.com/");
 				list.add("");
 				list.add("Directory information:");
 				list.add("");
 				list.add("assets - Acts as a resource pack, you can put any client resources in here, like textures, models, etc. Example: assets/kubejs/textures/item/test_item.png");
 				list.add("data - Acts as a datapack, you can put any server resources in here, like loot tables, functions, etc. Example: data/kubejs/loot_tables/blocks/test_block.json");
 				list.add("");
-				list.add("startup_scripts - Scripts that get loaded once during game startup - Used for adding items and other things");
-				list.add("server_scripts - Scripts that get loaded every time server resources reload - Used for modifying recipes, tags, and handling server events");
-				list.add("client_scripts - Scripts that get loaded every time client resources reload - Used for JEI events, tooltips and other client side things");
+				list.add("startup_scripts - Scripts that get loaded once during game startup - Used for adding items and other things that can only happen while the game is loading (Can be reloaded with /kubejs reload_startup_scripts, but it may not work!)");
+				list.add("server_scripts - Scripts that get loaded every time server resources reload - Used for modifying recipes, tags, loot tables, and handling server events (Can be reloaded with /reload)");
+				list.add("client_scripts - Scripts that get loaded every time client resources reload - Used for JEI events, tooltips and other client side things (Can be reloaded with F3+T)");
 				list.add("");
 				list.add("config - KubeJS config storage. This is also the only directory that scripts can access other than world directory");
 				list.add("exported - Data dumps like texture atlases end up here");
+				list.add("");
+				list.add("You can find type-specific logs in logs/kubejs/ directory");
 				Files.write(KubeJSPaths.README, list);
 			});
 		}

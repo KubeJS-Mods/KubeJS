@@ -3,7 +3,7 @@
 	"id": "kubejs",
 	"version": "${version}",
 	"name": "KubeJS",
-	"description": "Allows you to tweak and customize modpack with JavaScript",
+	"description": "Customize your modpack or server with JavaScript!",
 	"authors": [
 		"LatvianModder"
 	],
@@ -17,9 +17,9 @@
 		"main": [
 			"dev.latvian.kubejs.fabric.KubeJSFabric"
 		],
-    	"rei_plugins": [
-    		"dev.latvian.kubejs.integration.rei.REIPlugin"
-    	]
+		"rei_plugins": [
+			"dev.latvian.kubejs.integration.rei.REIPlugin"
+		]
 	},
 	"mixins": [
 		"kubejs-common.mixins.json",

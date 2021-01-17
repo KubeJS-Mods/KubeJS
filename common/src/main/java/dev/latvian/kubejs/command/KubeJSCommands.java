@@ -2,6 +2,7 @@ package dev.latvian.kubejs.command;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
@@ -44,6 +45,10 @@ public class KubeJSCommands
 				)
 				.then(Commands.literal("warnings")
 						.executes(context -> warnings(context.getSource()))
+				)
+				.then(Commands.literal("reload_startup_scripts")
+						.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
+						.executes(context -> reloadStartup(context.getSource()))
 				)
 				/*
 				.then(Commands.literal("output_recipes")
@@ -161,6 +166,15 @@ public class KubeJSCommands
 		return 1;
 	}
 
+	private static int reloadStartup(CommandSourceStack source)
+	{
+		KubeJS.startupScriptManager.unload();
+		KubeJS.startupScriptManager.loadFromDirectory();
+		KubeJS.startupScriptManager.load();
+		source.sendSuccess(new TextComponent("Reloading startup scripts..."), false);
+		return 1;
+	}
+
 	private static int outputRecipes(ServerPlayer player)
 	{
 		player.sendMessage(new TextComponent("WIP!"), Util.NIL_UUID);
@@ -210,7 +224,7 @@ public class KubeJSCommands
 
 	private static int wiki(CommandSourceStack source)
 	{
-		source.sendSuccess(new TextComponent("Click here to open the Wiki").withStyle(ChatFormatting.BLUE).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://mods.latvian.dev/books/kubejs"))), false);
+		source.sendSuccess(new TextComponent("Click here to open the Wiki").withStyle(ChatFormatting.BLUE).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://kubejs.com/"))), false);
 		return Command.SINGLE_SUCCESS;
 	}
 }

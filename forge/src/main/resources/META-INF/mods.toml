@@ -9,7 +9,7 @@ version = "${file.jarVersion}"
 displayName = "KubeJS"
 authors = "LatvianModder"
 description = '''
-Allows you to tweak and customize modpack with JavaScript
+Customize your modpack or server with JavaScript!
 '''
 logoFile = "kubejs_logo.png"
 license = "GNU LGPLv3"
