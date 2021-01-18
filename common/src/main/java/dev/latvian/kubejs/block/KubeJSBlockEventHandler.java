@@ -69,7 +69,7 @@ public class KubeJSBlockEventHandler
 
 	private static InteractionResult rightClick(Player player, InteractionHand hand, BlockPos pos, Direction direction)
 	{
-		if (new BlockRightClickEventJS(player, hand, pos, direction).post(KubeJSEvents.BLOCK_RIGHT_CLICK))
+		if (player != null && player.level != null && new BlockRightClickEventJS(player, hand, pos, direction).post(KubeJSEvents.BLOCK_RIGHT_CLICK))
 		{
 			return InteractionResult.FAIL;
 		}
@@ -78,7 +78,7 @@ public class KubeJSBlockEventHandler
 
 	private static InteractionResult leftClick(Player player, InteractionHand hand, BlockPos pos, Direction direction)
 	{
-		if (new BlockLeftClickEventJS(player, hand, pos, direction).post(KubeJSEvents.BLOCK_LEFT_CLICK))
+		if (player != null && player.level != null && new BlockLeftClickEventJS(player, hand, pos, direction).post(KubeJSEvents.BLOCK_LEFT_CLICK))
 		{
 			return InteractionResult.FAIL;
 		}
@@ -87,7 +87,7 @@ public class KubeJSBlockEventHandler
 
 	private static InteractionResult blockBreak(Level world, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp)
 	{
-		if (new BlockBreakEventJS(player, world, pos, state, xp).post(KubeJSEvents.BLOCK_BREAK))
+		if (player != null && player.level != null && new BlockBreakEventJS(player, world, pos, state, xp).post(KubeJSEvents.BLOCK_BREAK))
 		{
 			return InteractionResult.FAIL;
 		}
@@ -96,7 +96,7 @@ public class KubeJSBlockEventHandler
 
 	private static InteractionResult blockPlace(Level world, BlockPos pos, BlockState state, @Nullable Entity placer)
 	{
-		if (new BlockPlaceEventJS(placer, world, pos, state).post(KubeJSEvents.BLOCK_PLACE))
+		if (world != null && (placer == null || placer.level != null) && new BlockPlaceEventJS(placer, world, pos, state).post(KubeJSEvents.BLOCK_PLACE))
 		{
 			return InteractionResult.FAIL;
 		}
