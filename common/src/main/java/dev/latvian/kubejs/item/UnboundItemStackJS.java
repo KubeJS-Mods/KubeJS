@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.MapJS;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
@@ -69,7 +68,6 @@ public class UnboundItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	@ID
 	public String getId()
 	{
 		return item;

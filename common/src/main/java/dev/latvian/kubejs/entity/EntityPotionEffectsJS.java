@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.entity;
 
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.util.wrap.Wrap;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -37,35 +37,35 @@ public class EntityPotionEffectsJS
 		return entity.getActiveEffectsMap();
 	}
 
-	public boolean isActive(@ID String potion)
+	public boolean isActive(@Wrap("id") String potion)
 	{
 		MobEffect p = UtilsJS.getPotion(potion);
 		return p != null && entity.hasEffect(p);
 	}
 
 	@Nullable
-	public MobEffectInstance getActive(@ID String potion)
+	public MobEffectInstance getActive(@Wrap("id") String potion)
 	{
 		MobEffect p = UtilsJS.getPotion(potion);
 		return p == null ? null : entity.getEffect(p);
 	}
 
-	public void add(@ID String potion)
+	public void add(@Wrap("id") String potion)
 	{
 		add(potion, 0, 0);
 	}
 
-	public void add(@ID String potion, int duration)
+	public void add(@Wrap("id") String potion, int duration)
 	{
 		add(potion, duration, 0);
 	}
 
-	public void add(@ID String potion, int duration, int amplifier)
+	public void add(@Wrap("id") String potion, int duration, int amplifier)
 	{
 		add(potion, duration, amplifier, false, true);
 	}
 
-	public void add(@ID String potion, int duration, int amplifier, boolean ambient, boolean showParticles)
+	public void add(@Wrap("id") String potion, int duration, int amplifier, boolean ambient, boolean showParticles)
 	{
 		MobEffect p = UtilsJS.getPotion(potion);
 

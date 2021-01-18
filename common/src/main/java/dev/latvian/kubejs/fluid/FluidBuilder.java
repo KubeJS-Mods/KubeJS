@@ -1,9 +1,9 @@
 package dev.latvian.kubejs.fluid;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.BuilderBase;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.util.wrap.Wrap;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.LiquidBlock;
@@ -68,13 +68,13 @@ public class FluidBuilder extends BuilderBase
 		return this;
 	}
 
-	public FluidBuilder textureStill(@ID String id)
+	public FluidBuilder textureStill(@Wrap("id") String id)
 	{
 		stillTexture = UtilsJS.getID(id);
 		return this;
 	}
 
-	public FluidBuilder textureFlowing(@ID String id)
+	public FluidBuilder textureFlowing(@Wrap("id") String id)
 	{
 		flowingTexture = UtilsJS.getID(id);
 		return this;

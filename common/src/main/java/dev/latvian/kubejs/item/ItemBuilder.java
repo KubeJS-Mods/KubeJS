@@ -1,10 +1,10 @@
 package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.BuilderBase;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.util.wrap.Wrap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import me.shedaniel.architectury.ExpectPlatform;
 import me.shedaniel.architectury.registry.Registries;
@@ -87,7 +87,7 @@ public class ItemBuilder extends BuilderBase
 		return this;
 	}
 
-	public ItemBuilder containerItem(@ID String id)
+	public ItemBuilder containerItem(@Wrap("id") String id)
 	{
 		containerItem = UtilsJS.getID(id);
 		return this;

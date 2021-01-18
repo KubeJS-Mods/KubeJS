@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.kubejs.item.ingredient.IgnoreNBTIngredientJS;
@@ -377,7 +376,6 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	@MinecraftClass
 	public abstract ItemStack getItemStack();
 
-	@ID
 	public String getId()
 	{
 		return Registries.getId(getItem(), Registry.ITEM_REGISTRY).toString();

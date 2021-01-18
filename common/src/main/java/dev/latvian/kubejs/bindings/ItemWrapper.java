@@ -1,13 +1,13 @@
 package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.FireworksJS;
+import dev.latvian.mods.rhino.util.wrap.Wrap;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.CreativeModeTab;
@@ -63,7 +63,7 @@ public class ItemWrapper
 	}
 
 	@MinecraftClass
-	public Item getItem(@ID String id)
+	public Item getItem(@Wrap("id") String id)
 	{
 		Item item = Registries.get(KubeJS.MOD_ID).get(Registry.ITEM_REGISTRY).get(UtilsJS.getMCID(id));
 		return item == null ? Items.AIR : item;

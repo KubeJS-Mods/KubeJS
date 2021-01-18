@@ -28,7 +28,6 @@ public class CommonProperties
 
 	public boolean hideServerScriptErrors;
 	public boolean serverOnly;
-	public boolean exportVisualizerData;
 
 	private CommonProperties()
 	{
@@ -53,7 +52,6 @@ public class CommonProperties
 
 			hideServerScriptErrors = get("hideServerScriptErrors", false);
 			serverOnly = get("serverOnly", false);
-			exportVisualizerData = get("exportVisualizerData", false);
 
 			if (writeProperties)
 			{

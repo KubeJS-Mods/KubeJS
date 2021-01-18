@@ -4,13 +4,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.util.wrap.Wrap;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
@@ -87,14 +87,14 @@ public abstract class RecipeJS
 		return merge(data);
 	}
 
-	public RecipeJS id(@ID String _id)
+	public RecipeJS id(@Wrap("id") String _id)
 	{
 		id = UtilsJS.getMCID(_id);
 		save();
 		return this;
 	}
 
-	public RecipeJS group(@ID String g)
+	public RecipeJS group(@Wrap("id") String g)
 	{
 		setGroup(g);
 		save();
@@ -187,14 +187,13 @@ public abstract class RecipeJS
 		return changed;
 	}
 
-	@ID
 	public String getGroup()
 	{
 		JsonElement e = json.get("group");
 		return e instanceof JsonPrimitive ? e.getAsString() : "";
 	}
 
-	public void setGroup(@ID String g)
+	public void setGroup(@Wrap("id") String g)
 	{
 		if (g.isEmpty())
 		{
@@ -214,7 +213,6 @@ public abstract class RecipeJS
 		return id + "[" + type + "]";
 	}
 
-	@ID
 	public String getId()
 	{
 		return id.toString();
@@ -230,7 +228,6 @@ public abstract class RecipeJS
 		return id.getPath();
 	}
 
-	@ID
 	public String getType()
 	{
 		return type.toString();

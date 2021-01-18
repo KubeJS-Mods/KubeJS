@@ -63,11 +63,12 @@ if (ENV.CURSEFORGE_KEY) {
 		apiKey = ENV.CURSEFORGE_KEY
 		project {
 			id = project.curseforge_id_fabric
-			releaseType = "alpha"
+			releaseType = "beta"
 			addGameVersion "Fabric"
 			addGameVersion "1.16.2"
 			addGameVersion "1.16.3"
 			addGameVersion "1.16.4"
+			addGameVersion "1.16.5"
 			mainArtifact(remapJar.archivePath)
 			relations {
 				requiredDependency 'rhino'

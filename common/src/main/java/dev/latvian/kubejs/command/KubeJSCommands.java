@@ -1,5 +1,7 @@
 package dev.latvian.kubejs.command;
 
+import com.google.common.collect.Lists;
+import com.google.gson.JsonObject;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import dev.latvian.kubejs.KubeJS;
@@ -8,6 +10,7 @@ import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.util.Tags;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.ChatFormatting;
@@ -22,11 +25,16 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.commands.ReloadCommand;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagCollection;
+import net.minecraft.world.level.storage.WorldData;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -49,6 +57,10 @@ public class KubeJSCommands
 				.then(Commands.literal("reload_startup_scripts")
 						.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
 						.executes(context -> reloadStartup(context.getSource()))
+				)
+				.then(Commands.literal("export")
+						.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
+						.executes(context -> export(context.getSource()))
 				)
 				/*
 				.then(Commands.literal("output_recipes")
@@ -172,6 +184,37 @@ public class KubeJSCommands
 		KubeJS.startupScriptManager.loadFromDirectory();
 		KubeJS.startupScriptManager.load();
 		source.sendSuccess(new TextComponent("Reloading startup scripts..."), false);
+		return 1;
+	}
+
+	private static int export(CommandSourceStack source)
+	{
+		if (ServerSettings.dataExport != null)
+		{
+			return 0;
+		}
+
+		ServerSettings.source = source;
+		ServerSettings.dataExport = new JsonObject();
+		source.sendSuccess(new TextComponent("Reloading server and exporting data..."), false);
+
+		MinecraftServer minecraftServer = source.getServer();
+		PackRepository packRepository = minecraftServer.getPackRepository();
+		WorldData worldData = minecraftServer.getWorldData();
+		Collection<String> collection = packRepository.getSelectedIds();
+		packRepository.reload();
+		Collection<String> collection2 = Lists.newArrayList(collection);
+		Collection<String> collection3 = worldData.getDataPackConfig().getDisabled();
+
+		for (String string : packRepository.getAvailableIds())
+		{
+			if (!collection3.contains(string) && !collection2.contains(string))
+			{
+				collection2.add(string);
+			}
+		}
+
+		ReloadCommand.reloadPacks(collection2, source);
 		return 1;
 	}
 

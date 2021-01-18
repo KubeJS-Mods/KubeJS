@@ -6,9 +6,9 @@ import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.block.predicate.BlockEntityPredicate;
 import dev.latvian.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.kubejs.block.predicate.BlockPredicate;
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.util.wrap.Wrap;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
@@ -31,12 +31,12 @@ public class BlockWrapper
 		return MaterialListJS.INSTANCE.map;
 	}
 
-	public BlockIDPredicate id(@ID String id)
+	public BlockIDPredicate id(@Wrap("id") String id)
 	{
 		return new BlockIDPredicate(id);
 	}
 
-	public BlockIDPredicate id(@ID String id, Map<String, Object> properties)
+	public BlockIDPredicate id(@Wrap("id") String id, Map<String, Object> properties)
 	{
 		BlockIDPredicate b = id(id);
 
@@ -48,7 +48,7 @@ public class BlockWrapper
 		return b;
 	}
 
-	public BlockEntityPredicate entity(@ID String id)
+	public BlockEntityPredicate entity(@Wrap("id") String id)
 	{
 		return new BlockEntityPredicate(id);
 	}
@@ -76,7 +76,7 @@ public class BlockWrapper
 	}
 
 	@MinecraftClass
-	public Block getBlock(@ID String id)
+	public Block getBlock(@Wrap("id") String id)
 	{
 		Block b = Registries.get(KubeJS.MOD_ID).get(Registry.BLOCK_REGISTRY).get(UtilsJS.getMCID(id));
 		return b == null ? Blocks.AIR : b;

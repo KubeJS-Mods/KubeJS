@@ -82,6 +82,8 @@ public class RecipeEventJS extends EventJS
 		ScriptType.SERVER.console.setLineNumber(true);
 		Stopwatch timer = Stopwatch.createStarted();
 
+		JsonObject allRecipeMap = new JsonObject();
+
 		for (Map.Entry<ResourceLocation, JsonObject> entry : jsonMap.entrySet())
 		{
 			ResourceLocation recipeId = entry.getKey();
@@ -184,6 +186,38 @@ public class RecipeEventJS extends EventJS
 					{
 						ScriptType.SERVER.console.debug("Loaded recipe " + recipeIdAndType + ": " + recipe.inputItems + " -> " + recipe.outputItems);
 					}
+				}
+
+				if (ServerSettings.dataExport != null)
+				{
+					JsonObject exp = new JsonObject();
+					exp.add("recipe", json);
+
+					if (!recipe.inputItems.isEmpty())
+					{
+						JsonArray array = new JsonArray();
+
+						for (IngredientJS in : recipe.inputItems)
+						{
+							array.add(in.toJson());
+						}
+
+						exp.add("inputs", array);
+					}
+
+					if (!recipe.outputItems.isEmpty())
+					{
+						JsonArray array = new JsonArray();
+
+						for (ItemStackJS out : recipe.outputItems)
+						{
+							array.add(out.toResultJson());
+						}
+
+						exp.add("outputs", array);
+					}
+
+					allRecipeMap.add(recipe.getId(), exp);
 				}
 			}
 			catch (Throwable ex)
@@ -312,6 +346,21 @@ public class RecipeEventJS extends EventJS
 					added.add(map.size());
 					newRecipeMap.computeIfAbsent(recipeType, type -> new HashMap<>()).putAll(map);
 				});
+
+		if (ServerSettings.dataExport != null)
+		{
+			for (RecipeJS r : removedRecipes)
+			{
+				JsonElement e = allRecipeMap.get(r.getId());
+
+				if (e instanceof JsonObject)
+				{
+					((JsonObject) e).addProperty("removed", true);
+				}
+			}
+
+			ServerSettings.dataExport.add("recipes", allRecipeMap);
+		}
 
 		ScriptType.SERVER.console.getLogger().info("Added recipes in {}", timer.stop());
 		pingNewRecipes(newRecipeMap);

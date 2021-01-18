@@ -3,6 +3,7 @@ package dev.latvian.kubejs.mixin.common;
 import com.google.gson.JsonElement;
 import dev.latvian.kubejs.loot.BlockLootEventJS;
 import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.server.ServerSettings;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootTables;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,5 +26,6 @@ public abstract class LootTablesMixin
 		Map<ResourceLocation, JsonElement> map1 = new HashMap<>(map);
 		new BlockLootEventJS(map1).post(ScriptType.SERVER, "block.loot_tables");
 		map1.forEach(action);
+		ServerSettings.exportData();
 	}
 }

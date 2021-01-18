@@ -2,7 +2,6 @@ package dev.latvian.kubejs.entity;
 
 import com.mojang.authlib.GameProfile;
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.EntityArrayList;
@@ -15,6 +14,7 @@ import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
+import dev.latvian.mods.rhino.util.wrap.Wrap;
 import me.shedaniel.architectury.ExpectPlatform;
 import me.shedaniel.architectury.hooks.EntityHooks;
 import me.shedaniel.architectury.registry.Registries;
@@ -75,7 +75,6 @@ public class EntityJS implements MessageSender, WrappedJS
 		return minecraftEntity.getUUID();
 	}
 
-	@ID
 	public String getType()
 	{
 		return Registries.getId(minecraftEntity.getType(), Registry.ENTITY_TYPE_REGISTRY).toString();
@@ -540,7 +539,7 @@ public class EntityJS implements MessageSender, WrappedJS
 		return getPersistentData(minecraftEntity);
 	}
 
-	public void playSound(@ID String id, float volume, float pitch)
+	public void playSound(@Wrap("id") String id, float volume, float pitch)
 	{
 		SoundEvent event = Registries.get(KubeJS.MOD_ID).get(Registry.SOUND_EVENT_REGISTRY).get(UtilsJS.getMCID(id));
 
@@ -550,7 +549,7 @@ public class EntityJS implements MessageSender, WrappedJS
 		}
 	}
 
-	public void playSound(@ID String id)
+	public void playSound(@Wrap("id") String id)
 	{
 		playSound(id, 1F, 1F);
 	}

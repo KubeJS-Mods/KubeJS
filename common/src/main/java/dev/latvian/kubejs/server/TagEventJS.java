@@ -1,13 +1,15 @@
 package dev.latvian.kubejs.server;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.core.TagBuilderKJS;
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.util.wrap.Wrap;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.SetTag;
@@ -408,7 +410,7 @@ public class TagEventJS<T> extends EventJS
 		globalPriorityList = null;
 		actualRegistry = null;
 
-		switch (t)
+		switch (type)
 		{
 			case "items":
 				actualRegistry = UtilsJS.cast(Registry.ITEM);
@@ -489,10 +491,36 @@ public class TagEventJS<T> extends EventJS
 			}
 		}
 
+		if (ServerSettings.dataExport != null && actualRegistry != null)
+		{
+			JsonObject tj = ServerSettings.dataExport.getAsJsonObject("tags");
+
+			if (tj == null)
+			{
+				tj = new JsonObject();
+				ServerSettings.dataExport.add("tags", tj);
+			}
+
+			JsonObject tj1 = tj.getAsJsonObject(type);
+
+			if (tj1 == null)
+			{
+				tj1 = new JsonObject();
+				tj.add(type, tj1);
+			}
+
+			for (Map.Entry<ResourceLocation, SetTag.Builder> entry : map.entrySet())
+			{
+				JsonArray a = new JsonArray();
+				entry.getValue().getEntries().forEach(e -> a.add(e.getEntry().toString()));
+				tj1.add(entry.getKey().toString(), a);
+			}
+		}
+
 		ScriptType.SERVER.console.info("[" + type + "] Found " + tags.size() + " tags, added " + addedCount + " objects, removed " + removedCount + " objects"/*, reordered " + reordered + " tags"*/);
 	}
 
-	public TagWrapper<T> get(@ID String tag)
+	public TagWrapper<T> get(@Wrap("id") String tag)
 	{
 		ResourceLocation id = UtilsJS.getMCID(tag);
 		TagWrapper<T> t = tags.get(id);
@@ -507,17 +535,17 @@ public class TagEventJS<T> extends EventJS
 		return t;
 	}
 
-	public TagWrapper<T> add(@ID String tag, Object ids)
+	public TagWrapper<T> add(@Wrap("id") String tag, Object ids)
 	{
 		return get(tag).add(ids);
 	}
 
-	public TagWrapper<T> remove(@ID String tag, Object ids)
+	public TagWrapper<T> remove(@Wrap("id") String tag, Object ids)
 	{
 		return get(tag).remove(ids);
 	}
 
-	public TagWrapper<T> removeAll(@ID String tag)
+	public TagWrapper<T> removeAll(@Wrap("id") String tag)
 	{
 		return get(tag).removeAll();
 	}

@@ -1,9 +1,9 @@
 package dev.latvian.kubejs.fluid;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.util.wrap.Wrap;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -18,23 +18,23 @@ import java.util.List;
  */
 public class FluidWrapper
 {
-	public FluidStackJS of(@ID Object o)
+	public FluidStackJS of(@Wrap("id") Object o)
 	{
 		return FluidStackJS.of(o);
 	}
 
-	public FluidStackJS of(@ID Object o, Object amountOrNBT)
+	public FluidStackJS of(@Wrap("id") Object o, Object amountOrNBT)
 	{
 		return FluidStackJS.of(o, amountOrNBT);
 	}
 
-	public FluidStackJS of(@ID Object o, int amount, Object nbt)
+	public FluidStackJS of(@Wrap("id") Object o, int amount, Object nbt)
 	{
 		return FluidStackJS.of(o, amount, nbt);
 	}
 
 	@MinecraftClass
-	public Fluid getType(@ID String id)
+	public Fluid getType(@Wrap("id") String id)
 	{
 		Fluid fluid = Registries.get(KubeJS.MOD_ID).get(Registry.FLUID_REGISTRY).get(UtilsJS.getMCID(id));
 		return fluid == null ? Fluids.EMPTY : fluid;

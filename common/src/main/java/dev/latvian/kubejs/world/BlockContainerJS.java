@@ -3,7 +3,6 @@ package dev.latvian.kubejs.world;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.block.MaterialJS;
 import dev.latvian.kubejs.block.MaterialListJS;
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
@@ -11,6 +10,7 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.ServerPlayerJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.util.wrap.Wrap;
 import me.shedaniel.architectury.ExpectPlatform;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.BlockPos;
@@ -152,13 +152,12 @@ public class BlockContainerJS
 		clearCache();
 	}
 
-	@ID
 	public String getId()
 	{
 		return Registries.getId(getBlockState().getBlock(), Registry.BLOCK_REGISTRY).toString();
 	}
 
-	public void set(@ID String id, Map<?, ?> properties, int flags)
+	public void set(@Wrap("id") String id, Map<?, ?> properties, int flags)
 	{
 		Block block = Registries.get(KubeJS.MOD_ID).get(Registry.BLOCK_REGISTRY).get(UtilsJS.getMCID(id));
 		BlockState state = (block == null ? Blocks.AIR : block).defaultBlockState();
@@ -186,12 +185,12 @@ public class BlockContainerJS
 		setBlockState(state, flags);
 	}
 
-	public void set(@ID String id, Map<?, ?> properties)
+	public void set(@Wrap("id") String id, Map<?, ?> properties)
 	{
 		set(id, properties, 3);
 	}
 
-	public void set(@ID String id)
+	public void set(@Wrap("id") String id)
 	{
 		set(id, Collections.emptyMap());
 	}
@@ -221,7 +220,6 @@ public class BlockContainerJS
 		return cachedEntity;
 	}
 
-	@ID
 	public String getEntityId()
 	{
 		BlockEntity entity = getEntity();
@@ -299,7 +297,7 @@ public class BlockContainerJS
 	}
 
 	@Nullable
-	public EntityJS createEntity(@ID String id)
+	public EntityJS createEntity(@Wrap("id") String id)
 	{
 		EntityJS entity = getWorld().createEntity(id);
 
@@ -359,7 +357,6 @@ public class BlockContainerJS
 		return MaterialListJS.INSTANCE.get(getBlockState().getMaterial());
 	}
 
-	@SuppressWarnings("deprecation")
 	public ItemStackJS getItem()
 	{
 		BlockState state = getBlockState();

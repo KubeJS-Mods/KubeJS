@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
@@ -9,6 +8,7 @@ import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.WorldJS;
+import dev.latvian.mods.rhino.util.wrap.Wrap;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.Util;
 import net.minecraft.core.Registry;
@@ -122,7 +122,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		}
 	}
 
-	public void playSound(@ID String id, float volume, float pitch)
+	public void playSound(@Wrap("id") String id, float volume, float pitch)
 	{
 		SoundEvent event = Registries.get(KubeJS.MOD_ID).get(Registry.SOUND_EVENT_REGISTRY).get(UtilsJS.getMCID(id));
 
@@ -135,7 +135,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		}
 	}
 
-	public void playSound(@ID String id)
+	public void playSound(@Wrap("id") String id)
 	{
 		playSound(id, 1F, 1F);
 	}

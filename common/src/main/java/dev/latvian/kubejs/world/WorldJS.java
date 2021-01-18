@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.world;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.ItemEntityJS;
@@ -17,6 +16,7 @@ import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.AttachedData;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WithAttachedData;
+import dev.latvian.mods.rhino.util.wrap.Wrap;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -192,7 +192,7 @@ public abstract class WorldJS implements WithAttachedData
 	}
 
 	@Nullable
-	public EntityJS createEntity(@ID String id)
+	public EntityJS createEntity(@Wrap("id") String id)
 	{
 		EntityType<?> type = Registries.get(KubeJS.MOD_ID).get(Registry.ENTITY_TYPE_REGISTRY).get(UtilsJS.getMCID(id));
 

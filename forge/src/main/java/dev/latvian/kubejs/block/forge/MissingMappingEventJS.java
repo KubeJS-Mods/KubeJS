@@ -1,9 +1,9 @@
 package dev.latvian.kubejs.block.forge;
 
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.util.wrap.Wrap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -25,7 +25,7 @@ public class MissingMappingEventJS<T extends IForgeRegistryEntry<T>> extends Eve
 		valueProvider = v;
 	}
 
-	private void findMapping(@ID String key, Consumer<RegistryEvent.MissingMappings.Mapping<T>> callback)
+	private void findMapping(@Wrap("id") String key, Consumer<RegistryEvent.MissingMappings.Mapping<T>> callback)
 	{
 		ResourceLocation k = UtilsJS.getMCID(key);
 
@@ -39,7 +39,7 @@ public class MissingMappingEventJS<T extends IForgeRegistryEntry<T>> extends Eve
 		}
 	}
 
-	public void remap(@ID String key, @ID String value)
+	public void remap(@Wrap("id") String key, @Wrap("id") String value)
 	{
 		findMapping(key, mapping ->
 		{
@@ -54,17 +54,17 @@ public class MissingMappingEventJS<T extends IForgeRegistryEntry<T>> extends Eve
 		});
 	}
 
-	public void ignore(@ID String key)
+	public void ignore(@Wrap("id") String key)
 	{
 		findMapping(key, RegistryEvent.MissingMappings.Mapping::ignore);
 	}
 
-	public void warn(@ID String key)
+	public void warn(@Wrap("id") String key)
 	{
 		findMapping(key, RegistryEvent.MissingMappings.Mapping::warn);
 	}
 
-	public void fail(@ID String key)
+	public void fail(@Wrap("id") String key)
 	{
 		findMapping(key, RegistryEvent.MissingMappings.Mapping::fail);
 	}

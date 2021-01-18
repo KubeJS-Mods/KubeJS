@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.core.PlayerInteractionManagerKJS;
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageCloseOverlay;
 import dev.latvian.kubejs.net.MessageOpenOverlay;
@@ -13,6 +12,7 @@ import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
+import dev.latvian.mods.rhino.util.wrap.Wrap;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
@@ -115,13 +115,13 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer>
 		return hasClientMod;
 	}
 
-	public boolean isAdvancementDone(@ID String id)
+	public boolean isAdvancementDone(@Wrap("id") String id)
 	{
 		AdvancementJS a = ServerJS.instance.getAdvancement(id);
 		return a != null && minecraftPlayer.getAdvancements().getOrStartProgress(a.advancement).isDone();
 	}
 
-	public void unlockAdvancement(@ID String id)
+	public void unlockAdvancement(@Wrap("id") String id)
 	{
 		AdvancementJS a = ServerJS.instance.getAdvancement(id);
 
@@ -136,7 +136,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer>
 		}
 	}
 
-	public void revokeAdvancement(@ID String id)
+	public void revokeAdvancement(@Wrap("id") String id)
 	{
 		AdvancementJS a = ServerJS.instance.getAdvancement(id);
 

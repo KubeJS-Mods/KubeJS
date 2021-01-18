@@ -5,7 +5,6 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
@@ -13,6 +12,7 @@ import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
+import dev.latvian.mods.rhino.util.wrap.Wrap;
 import me.shedaniel.architectury.ExpectPlatform;
 import me.shedaniel.architectury.registry.Registries;
 import me.shedaniel.architectury.registry.ToolType;
@@ -504,7 +504,7 @@ public class UtilsJS
 		}
 	}
 
-	public static Stat<ResourceLocation> getStat(@ID String id)
+	public static Stat<ResourceLocation> getStat(@Wrap("id") String id)
 	{
 		return Stats.CUSTOM.get(getMCID(id));
 	}
@@ -532,13 +532,12 @@ public class UtilsJS
 	}
 
 	@Nullable
-	public static MobEffect getPotion(@ID String id)
+	public static MobEffect getPotion(@Wrap("id") String id)
 	{
 		return Registries.get(KubeJS.MOD_ID).get(Registry.MOB_EFFECT_REGISTRY).get(getMCID(id));
 	}
 
-	@ID
-	public static String getID(@ID @Nullable String s)
+	public static String getID(@Wrap("id") @Nullable String s)
 	{
 		if (s == null || s.isEmpty())
 		{
@@ -553,7 +552,7 @@ public class UtilsJS
 		return s;
 	}
 
-	public static ResourceLocation getMCID(@ID @Nullable String s)
+	public static ResourceLocation getMCID(@Wrap("id") @Nullable String s)
 	{
 		if (s == null || s.isEmpty())
 		{
@@ -563,7 +562,7 @@ public class UtilsJS
 		return new ResourceLocation(s);
 	}
 
-	public static String getNamespace(@ID @Nullable String s)
+	public static String getNamespace(@Wrap("id") @Nullable String s)
 	{
 		if (s == null || s.isEmpty())
 		{
@@ -574,7 +573,7 @@ public class UtilsJS
 		return i == -1 ? "minecraft" : s.substring(0, i);
 	}
 
-	public static String getPath(@ID @Nullable String s)
+	public static String getPath(@Wrap("id") @Nullable String s)
 	{
 		if (s == null || s.isEmpty())
 		{

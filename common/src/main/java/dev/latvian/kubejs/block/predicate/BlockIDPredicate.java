@@ -1,9 +1,9 @@
 package dev.latvian.kubejs.block.predicate;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.docs.ID;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
+import dev.latvian.mods.rhino.util.wrap.Wrap;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -34,7 +34,7 @@ public class BlockIDPredicate implements BlockPredicate
 	private Block cachedBlock;
 	private List<PropertyObject> cachedProperties;
 
-	public BlockIDPredicate(@ID String i)
+	public BlockIDPredicate(@Wrap("id") String i)
 	{
 		id = UtilsJS.getMCID(i);
 	}
