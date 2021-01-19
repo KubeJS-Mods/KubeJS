@@ -15,6 +15,7 @@ architectury {
 
 loom {
 	mixinConfigs = ["kubejs.mixins.json", "kubejs-common.mixins.json"]
+	useFabricMixin = true
 }
 
 dependencies {
