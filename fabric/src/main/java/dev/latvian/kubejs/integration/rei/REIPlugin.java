@@ -10,8 +10,11 @@ import me.shedaniel.rei.api.RecipeHelper;
 import me.shedaniel.rei.api.plugins.REIPluginV0;
 import me.shedaniel.rei.utils.CollectionUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionResult;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -19,6 +22,8 @@ import java.util.function.Function;
  */
 public class REIPlugin implements REIPluginV0
 {
+	private final Set<ResourceLocation> categoriesYeeted = new HashSet<>();
+
 	@Override
 	public ResourceLocation getPluginIdentifier()
 	{
@@ -29,7 +34,7 @@ public class REIPlugin implements REIPluginV0
 	public void registerEntries(EntryRegistry entryRegistry)
 	{
 		Function<Object, Collection<EntryStack>> itemSerializer = o -> EntryStack.ofItemStacks(CollectionUtils.map(IngredientJS.of(o).getStacks(), ItemStackJS::getItemStack));
-		
+
 		new HideREIEventJS<>(entryRegistry, EntryStack.Type.ITEM, itemSerializer).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_ITEMS);
 		new AddREIEventJS(entryRegistry, itemSerializer).post(ScriptType.CLIENT, REIIntegration.REI_ADD_ITEMS);
 	}
@@ -38,5 +43,20 @@ public class REIPlugin implements REIPluginV0
 	public void registerRecipeDisplays(RecipeHelper recipeHelper)
 	{
 		new InformationREIEventJS().post(ScriptType.CLIENT, REIIntegration.REI_INFORMATION);
+	}
+
+	@Override
+	public void registerOthers(RecipeHelper recipeHelper)
+	{
+		recipeHelper.registerRecipeVisibilityHandler((category, display) -> {
+			return categoriesYeeted.contains(category.getIdentifier()) ? InteractionResult.FAIL : InteractionResult.PASS;
+		});
+	}
+
+	@Override
+	public void postRegister()
+	{
+		categoriesYeeted.clear();
+		new YeetREICategoryEventJS(categoriesYeeted).post(ScriptType.CLIENT, REIIntegration.REI_YEET_CATEGORIES);
 	}
 }
