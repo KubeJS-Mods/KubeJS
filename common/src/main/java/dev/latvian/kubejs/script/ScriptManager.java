@@ -9,6 +9,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.ClassShutter;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.RhinoException;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.io.IOUtils;
 
@@ -18,12 +19,58 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * @author LatvianModder
  */
 public class ScriptManager
 {
+	private static final Object2BooleanOpenHashMap<String> CLASS_WHITELIST_CACHE = new Object2BooleanOpenHashMap<>();
+
+	private static final String[] BLACKLISTED_PACKAGES = {
+			"java.io.", // IO and network
+			"java.nio.",
+			"java.net.",
+			"sun.",
+			"com.sun.",
+			"io.netty",
+
+			"dev.latvian.mods.rhino.", // Rhino itself
+			"dev.latvian.kubejs.script.", // KubeJS itself
+
+			"cpw.mods.modlauncher.", // Forge / FML internal stuff
+			"cpw.mods.gross.",
+			"net.minecraftforge.fml.",
+			"net.minecraftforge.accesstransformer.",
+			"net.minecraftforge.coremod.",
+			"org.openjdk.nashorn.",
+			"jdk.nashorn.",
+
+			"net.fabricmc.accesswidener.", // Fabric internal stuff
+			"net.fabricmc.devlaunchinjector.",
+			"net.fabricmc.loader.",
+			"net.fabricmc.tinyremapper.",
+
+			"org.objectweb.asm.", // ASM
+			"org.spongepowered.asm.", // Sponge ASM
+			"me.shedaniel.architectury.", // Architectury
+
+			"com.chocohead.mm.", // Manningham Mills
+	};
+
+	private static final Predicate<String> CLASS_WHITELIST_FUNCTION = s -> {
+		for (String s1 : BLACKLISTED_PACKAGES)
+		{
+			if (s.startsWith(s1))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	};
+
 	public final ScriptType type;
 	public final Path directory;
 	public final String exampleScript;
@@ -92,7 +139,7 @@ public class ScriptManager
 	{
 		Context context = Context.enter();
 		context.setLanguageVersion(Context.VERSION_ES6);
-		context.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE);
+		context.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || CLASS_WHITELIST_CACHE.computeBooleanIfAbsent(fullClassName, CLASS_WHITELIST_FUNCTION));
 		context.getTypeWrappers().register("id", ResourceLocation.class, String.class, ResourceLocation::toString);
 		context.getTypeWrappers().register("id", String.class, ResourceLocation.class, ResourceLocation::new);
 
