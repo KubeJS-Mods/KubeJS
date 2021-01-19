@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.forge;
 
+import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.block.forge.MissingMappingEventJS;
@@ -15,6 +16,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -46,6 +48,19 @@ public class KubeJSForge
 
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::livingDrops);
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::checkLivingSpawn);
+
+		if (!CommonProperties.get().serverOnly)
+		{
+			// Yes this is stupid but for now I will do this until more mods update to 1.16.5 properly, because we never know how many mods hardcode [.4]. Use ForgeMod.enableMilkFluid(); after a while
+
+			try
+			{
+				ForgeMod.class.getDeclaredMethod("enableMilkFluid").invoke(null);
+			}
+			catch (Throwable ex)
+			{
+			}
+		}
 
 		kubeJS.loadComplete();
 	}
