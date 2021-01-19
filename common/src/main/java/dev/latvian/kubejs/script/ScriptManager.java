@@ -34,7 +34,8 @@ public class ScriptManager
 			"java.net.",
 			"sun.",
 			"com.sun.",
-			"io.netty",
+			"io.netty.",
+			"java.lang.reflect.",
 
 			"dev.latvian.mods.rhino.", // Rhino itself
 			"dev.latvian.kubejs.script.", // KubeJS itself
