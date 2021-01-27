@@ -19,6 +19,9 @@
 		],
 		"rei_plugins": [
 			"dev.latvian.kubejs.integration.rei.REIPlugin"
+		],
+		"kubejs-init": [
+			"dev.latvian.kubejs.integration.techreborn.TechRebornIntegration"
 		]
 	},
 	"mixins": [

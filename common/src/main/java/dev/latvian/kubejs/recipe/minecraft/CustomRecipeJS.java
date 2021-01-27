@@ -7,6 +7,7 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
+import dev.latvian.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 
@@ -135,8 +136,9 @@ public class CustomRecipeJS extends RecipeJS
 		outputKey = "";
 		outputType = -1;
 
-		if (originalRecipe != null && originalRecipe.isSpecial())
+		if (originalRecipe != null && SpecialRecipeSerializerManager.INSTANCE.isSpecial(originalRecipe))
 		{
+			ScriptType.SERVER.console.debug("Skipped " + this + " as custom recipe because it is dynamic.");
 			return;
 		}
 
