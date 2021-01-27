@@ -13,6 +13,7 @@ import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.filter.RecipeFilter;
+import dev.latvian.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.util.JsonUtilsJS;
@@ -75,6 +76,9 @@ public class RecipeEventJS extends EventJS
 		removedRecipes = new HashSet<>();
 		functionMap = new HashMap<>();
 		recipeFunctions = new DynamicMap<>(n -> new DynamicMap<>(p -> getRecipeFunction(new ResourceLocation(n, p))));
+
+		SpecialRecipeSerializerManager.INSTANCE.reset();
+		SpecialRecipeSerializerManager.INSTANCE.post(ScriptType.SERVER, KubeJSEvents.RECIPES_SERIALIZER_SPECIAL_FLAG);
 	}
 
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap)
@@ -178,7 +182,7 @@ public class RecipeEventJS extends EventJS
 
 				if (ScriptType.SERVER.console.shouldPrintDebug())
 				{
-					if (recipe.originalRecipe.isSpecial())
+					if (SpecialRecipeSerializerManager.INSTANCE.isSpecial(recipe.originalRecipe))
 					{
 						ScriptType.SERVER.console.debug("Loaded recipe " + recipeIdAndType + ": <dynamic>");
 					}
