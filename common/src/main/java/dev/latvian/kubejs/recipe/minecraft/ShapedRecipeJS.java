@@ -8,9 +8,11 @@ import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 /**
@@ -64,6 +66,13 @@ public class ShapedRecipeJS extends RecipeJS
 				}
 
 				pattern.add(horizontalPattern.toString());
+			}
+
+			int maxLength = pattern.stream().mapToInt(String::length).max().getAsInt();
+			ListIterator<String> iterator = pattern.listIterator();
+			
+			while (iterator.hasNext()) {
+				iterator.set(StringUtils.rightPad(iterator.next(), maxLength));
 			}
 
 			return;
