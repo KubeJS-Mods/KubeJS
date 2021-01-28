@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.bindings.RarityWrapper;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.BuilderBase;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -13,7 +14,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.Rarity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +33,7 @@ public class ItemBuilder extends BuilderBase
 	public float miningSpeed;
 	public Float attackDamage;
 	public Float attackSpeed;
-	public Rarity rarity;
+	public RarityWrapper rarity;
 	public boolean glow;
 	public final List<Text> tooltip;
 	public CreativeModeTab group;
@@ -52,7 +52,7 @@ public class ItemBuilder extends BuilderBase
 		containerItem = "minecraft:air";
 		tools = new HashMap<>();
 		miningSpeed = 1.0F;
-		rarity = Rarity.COMMON;
+		rarity = RarityWrapper.COMMON;
 		glow = false;
 		tooltip = new ArrayList<>();
 		group = CreativeModeTab.TAB_MISC;
@@ -122,7 +122,7 @@ public class ItemBuilder extends BuilderBase
 		return this;
 	}
 
-	public ItemBuilder rarity(Rarity v)
+	public ItemBuilder rarity(RarityWrapper v)
 	{
 		rarity = v;
 		return this;
@@ -214,7 +214,7 @@ public class ItemBuilder extends BuilderBase
 			properties.stacksTo(maxStackSize);
 		}
 
-		properties.rarity(rarity);
+		properties.rarity(rarity.rarity);
 
 		for (Map.Entry<ToolType, Integer> entry : tools.entrySet())
 		{

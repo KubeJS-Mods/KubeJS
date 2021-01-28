@@ -142,7 +142,7 @@ public class KubeJSCommands
 
 			if (!ScriptType.SERVER.warnings.isEmpty())
 			{
-				source.sendSuccess(new TextComponent(" warnings found. Run /kubejs warnings to see them").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))), false);
+				source.sendSuccess(new TextComponent(ScriptType.SERVER.warnings.size() + " warnings found. Run /kubejs warnings to see them").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))), false);
 			}
 			return 1;
 		}

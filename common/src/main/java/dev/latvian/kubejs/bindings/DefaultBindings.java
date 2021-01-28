@@ -14,7 +14,6 @@ import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Blocks;
 
 import java.util.HashMap;
@@ -87,11 +86,11 @@ public class DefaultBindings
 		event.addConstant("SLOT_CHEST", EquipmentSlot.CHEST);
 		event.addConstant("SLOT_HEAD", EquipmentSlot.HEAD);
 
-		event.add("Rarity", Rarity.class);
-		event.addConstant("RARITY_COMMON", Rarity.COMMON);
-		event.addConstant("RARITY_UNCOMMON", Rarity.UNCOMMON);
-		event.addConstant("RARITY_RARE", Rarity.RARE);
-		event.addConstant("RARITY_EPIC", Rarity.EPIC);
+		event.add("Rarity", RarityWrapper.class);
+		event.addConstant("RARITY_COMMON", RarityWrapper.COMMON);
+		event.addConstant("RARITY_UNCOMMON", RarityWrapper.UNCOMMON);
+		event.addConstant("RARITY_RARE", RarityWrapper.RARE);
+		event.addConstant("RARITY_EPIC", RarityWrapper.EPIC);
 
 		event.addConstant("AIR_ITEM", Items.AIR);
 		event.addConstant("AIR_BLOCK", Blocks.AIR);

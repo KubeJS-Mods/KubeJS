@@ -31,12 +31,11 @@ public class KubeJSFluidEventHandlerImpl
 				new ResourceLocation(fluidBuilder.flowingTexture))
 				.translationKey("fluid." + fluidBuilder.id.getNamespace() + "." + fluidBuilder.id.getPath())
 				.color(fluidBuilder.color)
-				.rarity(fluidBuilder.rarity)
+				.rarity(fluidBuilder.rarity.rarity)
 				.density(fluidBuilder.density)
 				.viscosity(fluidBuilder.viscosity)
 				.luminosity(fluidBuilder.luminosity)
-				.temperature(fluidBuilder.temperature)
-				.rarity(fluidBuilder.rarity);
+				.temperature(fluidBuilder.temperature);
 
 		if (fluidBuilder.isGaseous)
 		{

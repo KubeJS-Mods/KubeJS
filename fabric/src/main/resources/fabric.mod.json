@@ -28,7 +28,7 @@
 	"depends": {
 		"fabric": "*",
 		"minecraft": "~1.16.2",
-		"rhino": "*",
+		"rhino": ">=1.7.13.10",
 		"architectury": ">=1.1.52"
 	}
 }

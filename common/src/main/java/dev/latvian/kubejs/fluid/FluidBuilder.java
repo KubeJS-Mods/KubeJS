@@ -1,11 +1,11 @@
 package dev.latvian.kubejs.fluid;
 
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.bindings.RarityWrapper;
 import dev.latvian.kubejs.util.BuilderBase;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.wrap.Wrap;
 import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.FlowingFluid;
 
@@ -23,7 +23,7 @@ public class FluidBuilder extends BuilderBase
 	public int temperature = 300;
 	public int viscosity = 1000;
 	public boolean isGaseous;
-	public Rarity rarity = Rarity.COMMON;
+	public RarityWrapper rarity = RarityWrapper.COMMON;
 	public Object extraPlatformInfo;
 
 	public FlowingFluid stillFluid;
@@ -120,7 +120,7 @@ public class FluidBuilder extends BuilderBase
 		return this;
 	}
 
-	public FluidBuilder rarity(Rarity rarity)
+	public FluidBuilder rarity(RarityWrapper rarity)
 	{
 		this.rarity = rarity;
 		return this;
