@@ -34,6 +34,9 @@ import net.minecraft.world.item.crafting.RecipeType;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -289,8 +292,10 @@ public class RecipeEventJS extends EventJS
 							// Fabric: we love tech reborn
 							if (recipe.type.serializer.getClass().getName().contains("RebornRecipeType"))
 							{
-								resultRecipe = resultRecipe.getClass().getConstructor(recipe.type.serializer.getClass(), ResourceLocation.class).newInstance(recipe.type.serializer, recipe.id);
-								resultRecipe.getClass().getMethod("deserialize", JsonObject.class).invoke(resultRecipe, recipe.json);
+								MethodHandle constructor = MethodHandles.lookup().findConstructor(resultRecipe.getClass(), MethodType.methodType(void.class, recipe.type.serializer.getClass(), ResourceLocation.class));
+								resultRecipe = (Recipe<?>) constructor.invoke(recipe.type.serializer, recipe.id);
+								MethodHandles.lookup().findVirtual(resultRecipe.getClass(), "deserialize", MethodType.methodType(void.class, JsonObject.class))
+										.invoke(resultRecipe, recipe.json);
 							}
 						}
 						recipe.originalRecipe = resultRecipe;
@@ -330,8 +335,10 @@ public class RecipeEventJS extends EventJS
 						Recipe<?> resultRecipe = Objects.requireNonNull(recipe.type.serializer.fromJson(recipe.id, recipe.json));
 						if (recipe.type.serializer.getClass().getName().contains("RebornRecipeType"))
 						{
-							resultRecipe = resultRecipe.getClass().getConstructor(recipe.type.serializer.getClass(), ResourceLocation.class).newInstance(recipe.type.serializer, recipe.id);
-							resultRecipe.getClass().getMethod("deserialize", JsonObject.class).invoke(resultRecipe, recipe.json);
+							MethodHandle constructor = MethodHandles.lookup().findConstructor(resultRecipe.getClass(), MethodType.methodType(void.class, recipe.type.serializer.getClass(), ResourceLocation.class));
+							resultRecipe = (Recipe<?>) constructor.invoke(recipe.type.serializer, recipe.id);
+							MethodHandles.lookup().findVirtual(resultRecipe.getClass(), "deserialize", MethodType.methodType(void.class, JsonObject.class))
+									.invoke(resultRecipe, recipe.json);
 						}
 						recipe.originalRecipe = resultRecipe;
 					}
