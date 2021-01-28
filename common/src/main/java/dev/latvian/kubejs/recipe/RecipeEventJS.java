@@ -27,6 +27,7 @@ import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -54,6 +56,8 @@ import java.util.stream.Collectors;
  */
 public class RecipeEventJS extends EventJS
 {
+	private static final Map<Class, MethodHandle> TR_CONSTRUCTORS = new ConcurrentHashMap<>();
+	private static final Map<Class, MethodHandle> TR_DESERIALIZERS = new ConcurrentHashMap<>();
 	public static final ResourceLocation FORGE_CONDITIONAL = new ResourceLocation("forge:conditional");
 
 	public static RecipeEventJS instance;
@@ -82,6 +86,28 @@ public class RecipeEventJS extends EventJS
 
 		SpecialRecipeSerializerManager.INSTANCE.reset();
 		SpecialRecipeSerializerManager.INSTANCE.post(ScriptType.SERVER, KubeJSEvents.RECIPES_SERIALIZER_SPECIAL_FLAG);
+	}
+	
+	private static MethodHandle getTRRecipeConstructor(Recipe<?> resultRecipe, RecipeJS recipe) throws NoSuchMethodException, IllegalAccessException
+	{
+		Class<? extends Recipe> recipeClass = resultRecipe.getClass();
+		MethodHandle handle = TR_CONSTRUCTORS.get(recipeClass);
+		if (handle != null) return handle;
+
+		handle = MethodHandles.lookup().findConstructor(recipeClass, MethodType.methodType(void.class, recipe.type.serializer.getClass(), ResourceLocation.class));
+		TR_CONSTRUCTORS.put(recipeClass, handle);
+		return handle;
+	}
+
+	private static MethodHandle getTRRecipeSerializer(Recipe<?> resultRecipe) throws NoSuchMethodException, IllegalAccessException
+	{
+		Class<? extends Recipe> recipeClass = resultRecipe.getClass();
+		MethodHandle handle = TR_DESERIALIZERS.get(recipeClass);
+		if (handle != null) return handle;
+
+		handle = MethodHandles.lookup().findVirtual(resultRecipe.getClass(), "deserialize", MethodType.methodType(void.class, JsonObject.class));
+		TR_DESERIALIZERS.put(recipeClass, handle);
+		return handle;
 	}
 
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap)
@@ -292,10 +318,9 @@ public class RecipeEventJS extends EventJS
 							// Fabric: we love tech reborn
 							if (recipe.type.serializer.getClass().getName().contains("RebornRecipeType"))
 							{
-								MethodHandle constructor = MethodHandles.lookup().findConstructor(resultRecipe.getClass(), MethodType.methodType(void.class, recipe.type.serializer.getClass(), ResourceLocation.class));
+								MethodHandle constructor = getTRRecipeConstructor(resultRecipe, recipe);
 								resultRecipe = (Recipe<?>) constructor.invoke(recipe.type.serializer, recipe.id);
-								MethodHandles.lookup().findVirtual(resultRecipe.getClass(), "deserialize", MethodType.methodType(void.class, JsonObject.class))
-										.invoke(resultRecipe, recipe.json);
+								getTRRecipeSerializer(resultRecipe).invoke(resultRecipe, recipe.json);
 							}
 						}
 						recipe.originalRecipe = resultRecipe;
@@ -335,10 +360,9 @@ public class RecipeEventJS extends EventJS
 						Recipe<?> resultRecipe = Objects.requireNonNull(recipe.type.serializer.fromJson(recipe.id, recipe.json));
 						if (recipe.type.serializer.getClass().getName().contains("RebornRecipeType"))
 						{
-							MethodHandle constructor = MethodHandles.lookup().findConstructor(resultRecipe.getClass(), MethodType.methodType(void.class, recipe.type.serializer.getClass(), ResourceLocation.class));
+							MethodHandle constructor = getTRRecipeConstructor(resultRecipe, recipe);
 							resultRecipe = (Recipe<?>) constructor.invoke(recipe.type.serializer, recipe.id);
-							MethodHandles.lookup().findVirtual(resultRecipe.getClass(), "deserialize", MethodType.methodType(void.class, JsonObject.class))
-									.invoke(resultRecipe, recipe.json);
+							getTRRecipeSerializer(resultRecipe).invoke(resultRecipe, recipe.json);
 						}
 						recipe.originalRecipe = resultRecipe;
 					}
