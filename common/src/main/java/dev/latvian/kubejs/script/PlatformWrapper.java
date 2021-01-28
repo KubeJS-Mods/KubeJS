@@ -3,6 +3,7 @@ package dev.latvian.kubejs.script;
 import dev.latvian.kubejs.KubeJS;
 import me.shedaniel.architectury.platform.Mod;
 import me.shedaniel.architectury.platform.Platform;
+import me.shedaniel.architectury.utils.Env;
 import net.minecraft.SharedConstants;
 
 import java.util.LinkedHashMap;
@@ -122,5 +123,15 @@ public class PlatformWrapper
 	public Map<String, ModInfo> getMods()
 	{
 		return map;
+	}
+
+	public boolean isDevelopmentEnvironment()
+	{
+		return Platform.isDevelopmentEnvironment();
+	}
+
+	public boolean isClientEnvironment()
+	{
+		return Platform.getEnvironment() == Env.CLIENT;
 	}
 }
