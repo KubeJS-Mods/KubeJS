@@ -423,31 +423,6 @@ public class UtilsJS
 		return o;
 	}
 
-	public static <T> FieldJS<T> getField(String className, String fieldName)
-	{
-		try
-		{
-			return getField(Class.forName(className), fieldName);
-		}
-		catch (Throwable ex)
-		{
-			return new FieldJS<>(null);
-		}
-	}
-
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	public static <T> FieldJS<T> getField(Class className, String fieldName)
-	{
-		try
-		{
-			return new FieldJS<>(findField(className, fieldName));
-		}
-		catch (Throwable ex)
-		{
-			return new FieldJS<>(null);
-		}
-	}
-
 	public static int parseInt(@Nullable Object object, int def)
 	{
 		if (object == null)

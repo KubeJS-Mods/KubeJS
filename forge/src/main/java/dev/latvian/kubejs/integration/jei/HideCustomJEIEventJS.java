@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.integration.jei;
 
 import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.util.FieldJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -17,7 +16,7 @@ import java.util.List;
 public class HideCustomJEIEventJS extends EventJS
 {
 	private final IJeiRuntime runtime;
-	private final HashMap<String, HideJEIEventJS> events;
+	private final HashMap<IIngredientType<?>, HideJEIEventJS<?>> events;
 
 	public HideCustomJEIEventJS(IJeiRuntime r)
 	{
@@ -26,37 +25,19 @@ public class HideCustomJEIEventJS extends EventJS
 	}
 
 	@SuppressWarnings("all")
-	public HideJEIEventJS get(String s)
+	public HideJEIEventJS get(IIngredientType s)
 	{
 		return events.computeIfAbsent(s, type -> {
-			try
-			{
-				int d = type.lastIndexOf('.');
-				String cname = type.substring(0, d);
-				String fname = type.substring(d + 1);
-				FieldJS<IIngredientType> field = UtilsJS.getField(cname, fname);
-				IIngredientType t = field.staticGet().orElse(null);
+			return new HideJEIEventJS(runtime, type, o -> {
+				List list = new ArrayList();
 
-				if (t == null)
+				for (Object o1 : ListJS.orSelf(o))
 				{
-					throw new NullPointerException();
+					list.add(UtilsJS.cast(o1));
 				}
 
-				return new HideJEIEventJS(runtime, t, o -> {
-					List list = new ArrayList();
-
-					for (Object o1 : ListJS.orSelf(o))
-					{
-						list.add(UtilsJS.cast(o1));
-					}
-
-					return list;
-				}, o -> true);
-			}
-			catch (Exception ex)
-			{
-				throw new IllegalArgumentException("Unknown or inaccessible type!", ex);
-			}
+				return list;
+			}, o -> true);
 		});
 	}
 

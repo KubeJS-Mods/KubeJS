@@ -5,7 +5,6 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.CountingMap;
-import dev.latvian.kubejs.util.FieldJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Overlay;
@@ -106,16 +105,6 @@ public class UtilsWrapper
 	public Pattern regex(String pattern, int flags)
 	{
 		return Pattern.compile(pattern, flags);
-	}
-
-	public <T> FieldJS<T> getField(String className, String fieldName)
-	{
-		return UtilsJS.getField(className, fieldName);
-	}
-
-	public <T> FieldJS<T> getField(Class className, String fieldName)
-	{
-		return UtilsJS.getField(className, fieldName);
 	}
 
 	public int parseInt(@Nullable Object object, int def)

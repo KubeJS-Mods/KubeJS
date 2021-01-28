@@ -23,7 +23,7 @@ allprojects {
 
 	archivesBaseName = rootProject.archives_base_name
 	def ENV = System.getenv()
-	version = ENV.BUILD_NUMBER ? "${rootProject.mod_version}.${ENV.BUILD_NUMBER}" : "${rootProject.mod_version}.custom"
+	version = "${rootProject.mod_version}-build.${ENV.BUILD_NUMBER ?: 9999}"
 	group = rootProject.maven_group
 
 	tasks.withType(JavaCompile) {
