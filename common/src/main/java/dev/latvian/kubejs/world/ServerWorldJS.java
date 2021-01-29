@@ -91,9 +91,18 @@ public class ServerWorldJS extends WorldJS
 
 	public EntityArrayList getEntities(String filter)
 	{
+		if (filter.equals("@e"))
+		{
+			return getEntities();
+		}
+		else if (filter.equals("@a"))
+		{
+			return getPlayers();
+		}
+
 		try
 		{
-			return createEntityList(new EntitySelectorParser(new StringReader(filter), true).getSelector().findEntities(new WorldCommandSender(this)));
+			return createEntityList(new EntitySelectorParser(new StringReader(filter), true).parse().findEntities(new WorldCommandSender(this)));
 		}
 		catch (CommandSyntaxException e)
 		{
