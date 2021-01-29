@@ -5,7 +5,7 @@ license = "GNU LGPLv3"
 
 [[mods]]
 modId = "kubejs"
-version = "${file.jarVersion}"
+version = "${version}"
 displayName = "KubeJS"
 authors = "LatvianModder"
 description = '''

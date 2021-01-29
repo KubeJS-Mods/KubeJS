@@ -19,9 +19,9 @@ loom {
 }
 
 dependencies {
-	minecraft("com.mojang:minecraft:${rootProject.architect.minecraft}")
+	minecraft("com.mojang:minecraft:${rootProject.architectury.minecraft}")
 	mappings(minecraft.officialMojangMappings())
-	forge("net.minecraftforge:forge:${rootProject.architect.minecraft}-${rootProject.forge_version}")
+	forge("net.minecraftforge:forge:${rootProject.architectury.minecraft}-${rootProject.forge_version}")
 	modCompile("curse.maven:jei-238222:${rootProject.forge_jei_file}")
 	modCompile("curse.maven:bookshelf-228525:${rootProject.forge_bookshelf_file}")
 	modCompile("curse.maven:game-stages-268655:${rootProject.forge_gamestages_file}")
@@ -31,11 +31,19 @@ dependencies {
 	compileOnly(project(path: ":common")) {
 		transitive = false
 	}
-	runtimeOnly(project(path: ":common", configuration: "transformForgeFakeMod")) {
+	runtimeOnly(project(path: ":common", configuration: "transformDevelopmentForge")) {
 		transitive = false
 	}
-	shadow(project(path: ":common", configuration: "transformForge")) {
+	shadow(project(path: ":common", configuration: "transformProductionForge")) {
 		transitive = false
+	}
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("META-INF/mods.toml") {
+		expand "version": project.version
 	}
 }
 
@@ -49,13 +57,12 @@ shadowJar {
 remapJar {
 	dependsOn(shadowJar)
 	input.set(shadowJar.archivePath)
-	archiveClassifier = "forge"
+	classifier "forge"
 }
 
 jar {
 	manifest {
 		attributes([
-				"MixinConfigs"            : "kubejs.mixins.json",
 				"Specification-Title"     : project.mod_id,
 				"Specification-Vendor"    : project.mod_author,
 				"Specification-Version"   : "1",

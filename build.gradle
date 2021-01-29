@@ -1,10 +1,11 @@
 plugins {
-	id "architectury-plugin" version "1.3.52"
-	id "forgified-fabric-loom" version "0.6.45" apply false
+	id "architectury-plugin" version "2.0.65"
+	id "forgified-fabric-loom" version "0.6.56" apply false
 	id "com.matthewprenger.cursegradle" version "1.4.0" apply false
+	id "maven-publish"
 }
 
-architect {
+architectury {
 	minecraft = rootProject.minecraft_version
 }
 
@@ -13,6 +14,7 @@ subprojects {
 
 	loom {
 		silentMojangMappingsLicense()
+		useFabricMixin = true
 	}
 }
 
@@ -21,10 +23,10 @@ allprojects {
 	apply plugin: "architectury-plugin"
 	apply from: "https://files.latmod.com/public/markdown-git-changelog.gradle"
 
-	archivesBaseName = rootProject.archives_base_name
 	def ENV = System.getenv()
-	version = "${rootProject.mod_version}-build.${ENV.BUILD_NUMBER ?: 9999}"
-	group = rootProject.maven_group
+	version = "${mod_version}-build.${ENV.BUILD_NUMBER ?: 9999}"
+	group = project.mod_package
+	archivesBaseName = project.mod_name
 
 	tasks.withType(JavaCompile) {
 		options.encoding = "UTF-8"
