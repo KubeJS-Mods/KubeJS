@@ -47,4 +47,9 @@ public class RegisterRecipeHandlersEvent
 	{
 		register(new IgnoredRecipeTypeJS(Objects.requireNonNull(Registry.RECIPE_SERIALIZER.get(id), "Cannot find recipe serializer: " + id)));
 	}
+
+	public void ignore(String id)
+	{
+		ignore(new ResourceLocation(id));
+	}
 }
