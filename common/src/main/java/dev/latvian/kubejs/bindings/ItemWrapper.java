@@ -9,6 +9,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -69,5 +70,10 @@ public class ItemWrapper
 	public CreativeModeTab findGroup(String id)
 	{
 		return ItemStackJS.findGroup(id);
+	}
+
+	public boolean exists(ResourceLocation id)
+	{
+		return Registry.ITEM.get(id) != Items.AIR;
 	}
 }
