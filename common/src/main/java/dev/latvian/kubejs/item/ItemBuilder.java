@@ -1,16 +1,13 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.bindings.RarityWrapper;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.BuilderBase;
-import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import me.shedaniel.architectury.ExpectPlatform;
-import me.shedaniel.architectury.registry.Registries;
+import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -87,9 +84,9 @@ public class ItemBuilder extends BuilderBase
 		return this;
 	}
 
-	public ItemBuilder containerItem(@Wrap("id") String id)
+	public ItemBuilder containerItem(String id)
 	{
-		containerItem = UtilsJS.getID(id);
+		containerItem = id;
 		return this;
 	}
 
@@ -221,9 +218,9 @@ public class ItemBuilder extends BuilderBase
 			appendToolType(properties, entry.getKey(), entry.getValue());
 		}
 
-		Item item = Registries.get(KubeJS.MOD_ID).get(Registry.ITEM_REGISTRY).get(UtilsJS.getMCID(containerItem));
+		Item item = Registry.ITEM.get(new ResourceLocation(containerItem));
 
-		if (item != null && item != Items.AIR)
+		if (item != Items.AIR)
 		{
 			properties.craftRemainder(item);
 		}

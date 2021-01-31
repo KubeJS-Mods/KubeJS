@@ -9,19 +9,18 @@ import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.MessageSender;
-import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
-import me.shedaniel.architectury.ExpectPlatform;
+import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.hooks.EntityHooks;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.Util;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -539,9 +538,9 @@ public class EntityJS implements MessageSender, WrappedJS
 		return getPersistentData(minecraftEntity);
 	}
 
-	public void playSound(@Wrap("id") String id, float volume, float pitch)
+	public void playSound(ResourceLocation id, float volume, float pitch)
 	{
-		SoundEvent event = Registries.get(KubeJS.MOD_ID).get(Registry.SOUND_EVENT_REGISTRY).get(UtilsJS.getMCID(id));
+		SoundEvent event = Registries.get(KubeJS.MOD_ID).get(Registry.SOUND_EVENT_REGISTRY).get(id);
 
 		if (event != null)
 		{
@@ -549,7 +548,7 @@ public class EntityJS implements MessageSender, WrappedJS
 		}
 	}
 
-	public void playSound(@Wrap("id") String id)
+	public void playSound(ResourceLocation id)
 	{
 		playSound(id, 1F, 1F);
 	}

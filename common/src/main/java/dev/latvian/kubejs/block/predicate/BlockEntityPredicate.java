@@ -1,8 +1,6 @@
 package dev.latvian.kubejs.block.predicate;
 
-import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -16,9 +14,9 @@ public class BlockEntityPredicate implements BlockPredicate
 	private final ResourceLocation id;
 	private BlockEntityPredicateDataCheck checkData;
 
-	public BlockEntityPredicate(@Wrap("id") String i)
+	public BlockEntityPredicate(ResourceLocation i)
 	{
-		id = UtilsJS.getMCID(i);
+		id = i;
 	}
 
 	public BlockEntityPredicate data(BlockEntityPredicateDataCheck cd)

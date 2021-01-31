@@ -3,7 +3,7 @@ package dev.latvian.kubejs.fluid;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.script.ScriptsLoadedEvent;
-import me.shedaniel.architectury.ExpectPlatform;
+import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;

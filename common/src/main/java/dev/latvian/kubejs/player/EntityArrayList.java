@@ -6,14 +6,13 @@ import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.MessageSender;
-import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.WorldJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
@@ -122,9 +121,9 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		}
 	}
 
-	public void playSound(@Wrap("id") String id, float volume, float pitch)
+	public void playSound(ResourceLocation id, float volume, float pitch)
 	{
-		SoundEvent event = Registries.get(KubeJS.MOD_ID).get(Registry.SOUND_EVENT_REGISTRY).get(UtilsJS.getMCID(id));
+		SoundEvent event = Registries.get(KubeJS.MOD_ID).get(Registry.SOUND_EVENT_REGISTRY).get(id);
 
 		if (event != null)
 		{
@@ -135,7 +134,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		}
 	}
 
-	public void playSound(@Wrap("id") String id)
+	public void playSound(ResourceLocation id)
 	{
 		playSound(id, 1F, 1F);
 	}

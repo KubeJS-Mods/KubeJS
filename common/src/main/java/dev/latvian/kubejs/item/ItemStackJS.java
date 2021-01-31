@@ -24,7 +24,7 @@ import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
-import me.shedaniel.architectury.ExpectPlatform;
+import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.registry.Registries;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.core.NonNullList;
@@ -161,7 +161,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 				if (map.containsKey("nbt"))
 				{
-					stack.withNBT(map.get("nbt"));
+					stack = stack.withNBT(map.get("nbt"));
 				}
 
 				return stack;
@@ -193,7 +193,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		}
 		else if (n instanceof MapJS)
 		{
-			stack.withNBT(n);
+			stack = stack.withNBT(n);
 		}
 
 		return stack;
@@ -201,10 +201,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public static ItemStackJS of(@Nullable Object o, int count, @Nullable Object nbt)
 	{
-		ItemStackJS stack = of(o);
-		stack.setCount(count);
-		stack.withNBT(nbt);
-		return stack;
+		return of(o).withCount(count).withNBT(nbt);
 	}
 
 	// Use ItemStackJS.of(object)
@@ -247,13 +244,13 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 					if (element.isJsonObject())
 					{
-						stack.withNBT(element);
+						stack = stack.withNBT(element);
 					}
 					else
 					{
 						try
 						{
-							stack.withNBT(TagParser.parseTag(GsonHelper.convertToString(element, "nbt")));
+							stack = stack.withNBT(TagParser.parseTag(GsonHelper.convertToString(element, "nbt")));
 						}
 						catch (CommandSyntaxException ex)
 						{
@@ -687,6 +684,12 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	public ItemStackJS enchant(Object enchantments)
 	{
 		getEnchantments().putAll(MapJS.of(enchantments));
+		return this;
+	}
+
+	public ItemStackJS enchant(String id, int level)
+	{
+		getEnchantments().put(id, level);
 		return this;
 	}
 

@@ -49,7 +49,7 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 		{
 			return fromJson((JsonElement) o);
 		}
-		else if (o instanceof CharSequence)
+		else if (o instanceof CharSequence || o instanceof ResourceLocation)
 		{
 			String s = o.toString();
 

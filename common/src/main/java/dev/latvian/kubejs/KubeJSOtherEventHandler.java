@@ -13,8 +13,6 @@ public class KubeJSOtherEventHandler
 {
 	public static void init()
 	{
-		new SoundRegistryEventJS(id -> {
-			Registries.get(KubeJS.MOD_ID).get(Registry.SOUND_EVENT_REGISTRY).register(id, () -> new SoundEvent(id));
-		}).post(ScriptType.STARTUP, KubeJSEvents.SOUND_REGISTRY);
+		new SoundRegistryEventJS(id -> Registries.get(KubeJS.MOD_ID).get(Registry.SOUND_EVENT_REGISTRY).register(id, () -> new SoundEvent(id))).post(ScriptType.STARTUP, KubeJSEvents.SOUND_REGISTRY);
 	}
 }

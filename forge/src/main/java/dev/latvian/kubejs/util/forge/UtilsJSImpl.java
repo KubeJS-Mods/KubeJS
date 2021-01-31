@@ -5,21 +5,14 @@ import me.shedaniel.architectury.registry.Registries;
 import me.shedaniel.architectury.registry.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.function.Function;
 
 public class UtilsJSImpl
 {
-	public static <T> Field findField(Class<? extends T> className, String fieldName)
-	{
-		return ObfuscationReflectionHelper.findField((Class) className, fieldName);
-	}
-
 	private static <T> Function<ResourceLocation, Optional<T>> getValue(Object registry, @Nullable T def)
 	{
 		Registry<T> reg;

@@ -10,6 +10,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.LongArrayTag;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagParser;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -195,6 +196,29 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 
 		ListJS l = of(array);
 		return l == null ? null : l.toJson();
+	}
+
+	@Nullable
+	public static CollectionTag<?> nbt(@Nullable Object list)
+	{
+		if (list instanceof CollectionTag)
+		{
+			return (CollectionTag<?>) list;
+		}
+		else if (list instanceof CharSequence)
+		{
+			try
+			{
+				return (CollectionTag<?>) TagParser.parseTag("{a:" + list.toString() + "}").get("a");
+			}
+			catch (Exception ex)
+			{
+				return null;
+			}
+		}
+
+		ListJS l = of(list);
+		return l == null ? null : l.toNBT();
 	}
 
 	public WrappedJSObjectChangeListener<ListJS> changeListener;
@@ -391,7 +415,7 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 	}
 
 	@Override
-	public ListJS copy()
+	public ListJS getCopy()
 	{
 		ListJS list = new ListJS(size());
 

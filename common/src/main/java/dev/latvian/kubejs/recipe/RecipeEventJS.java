@@ -21,13 +21,12 @@ import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.DynamicMap;
-import me.shedaniel.architectury.ExpectPlatform;
+import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.platform.Platform;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -87,12 +86,15 @@ public class RecipeEventJS extends EventJS
 		SpecialRecipeSerializerManager.INSTANCE.reset();
 		SpecialRecipeSerializerManager.INSTANCE.post(ScriptType.SERVER, KubeJSEvents.RECIPES_SERIALIZER_SPECIAL_FLAG);
 	}
-	
+
 	private static MethodHandle getTRRecipeConstructor(Recipe<?> resultRecipe, RecipeJS recipe) throws NoSuchMethodException, IllegalAccessException
 	{
 		Class<? extends Recipe> recipeClass = resultRecipe.getClass();
 		MethodHandle handle = TR_CONSTRUCTORS.get(recipeClass);
-		if (handle != null) return handle;
+		if (handle != null)
+		{
+			return handle;
+		}
 
 		handle = MethodHandles.lookup().findConstructor(recipeClass, MethodType.methodType(void.class, recipe.type.serializer.getClass(), ResourceLocation.class));
 		TR_CONSTRUCTORS.put(recipeClass, handle);
@@ -103,7 +105,10 @@ public class RecipeEventJS extends EventJS
 	{
 		Class<? extends Recipe> recipeClass = resultRecipe.getClass();
 		MethodHandle handle = TR_DESERIALIZERS.get(recipeClass);
-		if (handle != null) return handle;
+		if (handle != null)
+		{
+			return handle;
+		}
 
 		handle = MethodHandles.lookup().findVirtual(resultRecipe.getClass(), "deserialize", MethodType.methodType(void.class, JsonObject.class));
 		TR_DESERIALIZERS.put(recipeClass, handle);
@@ -440,10 +445,8 @@ public class RecipeEventJS extends EventJS
 		return filter;
 	}
 
-	public void forEachRecipe(@Nullable Object o, Consumer<RecipeJS> consumer)
+	public void forEachRecipe(RecipeFilter filter, Consumer<RecipeJS> consumer)
 	{
-		RecipeFilter filter = RecipeFilter.of(o);
-
 		if (filter == RecipeFilter.ALWAYS_TRUE)
 		{
 			originalRecipes.forEach(consumer);
@@ -456,7 +459,7 @@ public class RecipeEventJS extends EventJS
 		}
 	}
 
-	public int remove(Object filter)
+	public int remove(RecipeFilter filter)
 	{
 		MutableInt count = new MutableInt();
 		forEachRecipe(filter, r ->
@@ -478,20 +481,17 @@ public class RecipeEventJS extends EventJS
 		return count.getValue();
 	}
 
-	public int replaceInput(Object filter, Object ingredient, Object with, boolean exact)
+	public int replaceInput(RecipeFilter filter, IngredientJS ingredient, IngredientJS with, boolean exact)
 	{
 		MutableInt count = new MutableInt();
-		IngredientJS i = IngredientJS.of(ingredient);
-		IngredientJS[] w = new IngredientJS[] {IngredientJS.of(with)};
-		String is = i.toString();
-		String ws = w[0].toString();
+		String is = ingredient.toString();
+		String ws = with.toString();
 
 		forEachRecipe(filter, r ->
 		{
-			if (r.replaceInput(i, w[0], exact))
+			if (r.replaceInput(ingredient, with, exact))
 			{
 				count.increment();
-				w[0] = IngredientJS.of(with);
 
 				if (ServerSettings.instance.logAddedRecipes || ServerSettings.instance.logRemovedRecipes)
 				{
@@ -508,27 +508,25 @@ public class RecipeEventJS extends EventJS
 		return count.getValue();
 	}
 
-	public int replaceInput(Object filter, Object ingredient, Object with)
+	public int replaceInput(RecipeFilter filter, IngredientJS ingredient, IngredientJS with)
 	{
 		return replaceInput(filter, ingredient, with, false);
 	}
 
-	public int replaceInput(Object ingredient, Object with)
+	public int replaceInput(IngredientJS ingredient, IngredientJS with)
 	{
 		return replaceInput(RecipeFilter.ALWAYS_TRUE, ingredient, with);
 	}
 
-	public int replaceOutput(Object filter, Object ingredient, Object with, boolean exact)
+	public int replaceOutput(RecipeFilter filter, IngredientJS ingredient, ItemStackJS with, boolean exact)
 	{
 		MutableInt count = new MutableInt();
-		IngredientJS i = IngredientJS.of(ingredient);
-		ItemStackJS w = ItemStackJS.of(with);
-		String is = i.toString();
-		String ws = w.toString();
+		String is = ingredient.toString();
+		String ws = with.toString();
 
 		forEachRecipe(filter, r ->
 		{
-			if (r.replaceOutput(i, w, exact))
+			if (r.replaceOutput(ingredient, with, exact))
 			{
 				count.increment();
 
@@ -547,12 +545,12 @@ public class RecipeEventJS extends EventJS
 		return count.getValue();
 	}
 
-	public int replaceOutput(Object filter, Object ingredient, Object with)
+	public int replaceOutput(RecipeFilter filter, IngredientJS ingredient, ItemStackJS with)
 	{
 		return replaceOutput(filter, ingredient, with, false);
 	}
 
-	public int replaceOutput(Object ingredient, Object with)
+	public int replaceOutput(IngredientJS ingredient, ItemStackJS with)
 	{
 		return replaceOutput(RecipeFilter.ALWAYS_TRUE, ingredient, with);
 	}

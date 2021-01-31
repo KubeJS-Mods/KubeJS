@@ -5,5 +5,5 @@ package dev.latvian.kubejs.util;
  */
 public interface Copyable
 {
-	Copyable copy();
+	Copyable getCopy();
 }

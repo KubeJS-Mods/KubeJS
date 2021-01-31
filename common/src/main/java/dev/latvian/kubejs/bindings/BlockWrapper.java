@@ -7,14 +7,11 @@ import dev.latvian.kubejs.block.predicate.BlockEntityPredicate;
 import dev.latvian.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.kubejs.block.predicate.BlockPredicate;
 import dev.latvian.kubejs.docs.MinecraftClass;
-import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,12 +28,12 @@ public class BlockWrapper
 		return MaterialListJS.INSTANCE.map;
 	}
 
-	public BlockIDPredicate id(@Wrap("id") String id)
+	public BlockIDPredicate id(ResourceLocation id)
 	{
 		return new BlockIDPredicate(id);
 	}
 
-	public BlockIDPredicate id(@Wrap("id") String id, Map<String, Object> properties)
+	public BlockIDPredicate id(ResourceLocation id, Map<String, Object> properties)
 	{
 		BlockIDPredicate b = id(id);
 
@@ -48,7 +45,7 @@ public class BlockWrapper
 		return b;
 	}
 
-	public BlockEntityPredicate entity(@Wrap("id") String id)
+	public BlockEntityPredicate entity(ResourceLocation id)
 	{
 		return new BlockEntityPredicate(id);
 	}
@@ -76,10 +73,9 @@ public class BlockWrapper
 	}
 
 	@MinecraftClass
-	public Block getBlock(@Wrap("id") String id)
+	public Block getBlock(ResourceLocation id)
 	{
-		Block b = Registries.get(KubeJS.MOD_ID).get(Registry.BLOCK_REGISTRY).get(UtilsJS.getMCID(id));
-		return b == null ? Blocks.AIR : b;
+		return Registry.BLOCK.get(id);
 	}
 
 	public List<String> getTypeList()

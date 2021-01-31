@@ -3,7 +3,6 @@ package dev.latvian.kubejs.loot;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.block.BlockStatePredicate;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -30,7 +29,7 @@ public class BlockLootEventJS extends LootEventJS<BlockLootBuilder>
 	}
 
 	@Override
-	public void addJson(@Wrap("id") ResourceLocation id, Object json)
+	public void addJson(ResourceLocation id, Object json)
 	{
 		super.addJson(new ResourceLocation(id.getNamespace(), "blocks/" + id.getPath()), json);
 	}

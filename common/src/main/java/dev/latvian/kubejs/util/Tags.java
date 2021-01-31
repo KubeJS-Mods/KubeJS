@@ -1,7 +1,9 @@
 package dev.latvian.kubejs.util;
 
+import com.google.common.collect.Lists;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.SerializationTags;
+import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagCollection;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -10,6 +12,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class Tags
 {
@@ -35,11 +39,21 @@ public class Tags
 
 	public static Collection<ResourceLocation> byItemStack(ItemStack stack)
 	{
-		return items().getMatchingTags(stack.getItem());
+		return byItem(stack.getItem());
 	}
 
 	public static Collection<ResourceLocation> byItem(Item item)
 	{
-		return items().getMatchingTags(item);
+		List<ResourceLocation> list = Lists.newArrayList();
+
+		for (Map.Entry<ResourceLocation, Tag<Item>> entry : items().getAllTags().entrySet())
+		{
+			if (entry.getValue().contains(item))
+			{
+				list.add(entry.getKey());
+			}
+		}
+
+		return list;
 	}
 }

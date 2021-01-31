@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.bindings;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.ConsoleJS;
@@ -11,8 +10,6 @@ import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
-import me.shedaniel.architectury.registry.Registries;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -86,9 +83,14 @@ public class UtilsWrapper
 		return new ResourceLocation(namespace, path);
 	}
 
-	public ResourceLocation id(@Wrap("id") String id)
+	public ResourceLocation id(String id)
 	{
 		return UtilsJS.getMCID(id);
+	}
+
+	public ResourceLocation id(ResourceLocation id)
+	{
+		return id;
 	}
 
 	public ConsoleJS createConsole(String name)
@@ -117,7 +119,7 @@ public class UtilsWrapper
 		return UtilsJS.parseDouble(object, def);
 	}
 
-	public Stat<ResourceLocation> getStat(@Wrap("id") String id)
+	public Stat<ResourceLocation> getStat(ResourceLocation id)
 	{
 		return UtilsJS.getStat(id);
 	}
@@ -145,9 +147,9 @@ public class UtilsWrapper
 	}
 
 	@Nullable
-	public SoundEvent getSound(@Wrap("id") String id)
+	public SoundEvent getSound(ResourceLocation id)
 	{
-		return Registries.get(KubeJS.MOD_ID).get(Registry.SOUND_EVENT_REGISTRY).get(UtilsJS.getMCID(id));
+		return Registry.SOUND_EVENT.get(id);
 	}
 
 	public Object randomOf(Random random, Collection<Object> objects)
@@ -185,7 +187,7 @@ public class UtilsWrapper
 	}
 
 	@Nullable
-	public MobEffect getPotion(@Wrap("id") String id)
+	public MobEffect getPotion(ResourceLocation id)
 	{
 		return UtilsJS.getPotion(id);
 	}

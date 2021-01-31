@@ -1,11 +1,7 @@
 package dev.latvian.kubejs.item;
 
 import com.google.common.collect.Lists;
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
-import me.shedaniel.architectury.registry.Registries;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.food.FoodProperties;
@@ -58,10 +54,9 @@ public class FoodBuilder
 		return this;
 	}
 
-	public FoodBuilder effect(@Wrap("id") String potion, int duration, int amplifier, float probability)
+	public FoodBuilder effect(ResourceLocation potion, int duration, int amplifier, float probability)
 	{
-		ResourceLocation id = UtilsJS.getMCID(potion);
-		effects.add(Pair.of(() -> new MobEffectInstance(Registries.get(KubeJS.MOD_ID).get(Registry.MOB_EFFECT_REGISTRY).get(id), duration, amplifier), probability));
+		effects.add(Pair.of(() -> new MobEffectInstance(UtilsJS.getPotion(potion), duration, amplifier), probability));
 		return this;
 	}
 

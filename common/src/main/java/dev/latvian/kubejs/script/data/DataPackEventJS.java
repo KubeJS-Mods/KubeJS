@@ -5,8 +5,7 @@ import dev.latvian.kubejs.server.ServerEventJS;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * @author LatvianModder
@@ -20,12 +19,12 @@ public class DataPackEventJS extends ServerEventJS
 		virtualDataPack = d;
 	}
 
-	public void add(@Wrap("id") String id, String content)
+	public void add(ResourceLocation id, String content)
 	{
-		virtualDataPack.addData(UtilsJS.getMCID(id), content);
+		virtualDataPack.addData(id, content);
 	}
 
-	public void addJson(@Wrap("id") String id, Object json)
+	public void addJson(ResourceLocation id, Object json)
 	{
 		JsonElement j = MapJS.json(json);
 

@@ -3,7 +3,6 @@ package dev.latvian.kubejs.loot;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.BinomialDistributionGenerator;
 import net.minecraft.world.level.storage.loot.ConstantIntValue;
@@ -62,7 +61,7 @@ public class LootBuilderPool
 		entries.add(MapJS.json(o));
 	}
 
-	public void addItem(@Wrap("id") ResourceLocation item)
+	public void addItem(ResourceLocation item)
 	{
 		JsonObject json = new JsonObject();
 		json.addProperty("type", "minecraft:item");

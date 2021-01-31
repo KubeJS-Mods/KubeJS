@@ -178,7 +178,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 	}
 
 	@Override
-	public MapJS copy()
+	public MapJS getCopy()
 	{
 		MapJS map = new MapJS(size());
 

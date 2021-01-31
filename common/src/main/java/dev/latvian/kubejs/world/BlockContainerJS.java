@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.world;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.block.MaterialJS;
 import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.docs.MinecraftClass;
@@ -10,8 +9,7 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.ServerPlayerJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
-import me.shedaniel.architectury.ExpectPlatform;
+import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -157,10 +155,10 @@ public class BlockContainerJS
 		return Registries.getId(getBlockState().getBlock(), Registry.BLOCK_REGISTRY).toString();
 	}
 
-	public void set(@Wrap("id") String id, Map<?, ?> properties, int flags)
+	public void set(ResourceLocation id, Map<?, ?> properties, int flags)
 	{
-		Block block = Registries.get(KubeJS.MOD_ID).get(Registry.BLOCK_REGISTRY).get(UtilsJS.getMCID(id));
-		BlockState state = (block == null ? Blocks.AIR : block).defaultBlockState();
+		Block block = Registry.BLOCK.get(id);
+		BlockState state = block.defaultBlockState();
 
 		if (!properties.isEmpty() && state.getBlock() != Blocks.AIR)
 		{
@@ -185,12 +183,12 @@ public class BlockContainerJS
 		setBlockState(state, flags);
 	}
 
-	public void set(@Wrap("id") String id, Map<?, ?> properties)
+	public void set(ResourceLocation id, Map<?, ?> properties)
 	{
 		set(id, properties, 3);
 	}
 
-	public void set(@Wrap("id") String id)
+	public void set(ResourceLocation id)
 	{
 		set(id, Collections.emptyMap());
 	}
@@ -297,7 +295,7 @@ public class BlockContainerJS
 	}
 
 	@Nullable
-	public EntityJS createEntity(@Wrap("id") String id)
+	public EntityJS createEntity(ResourceLocation id)
 	{
 		EntityJS entity = getWorld().createEntity(id);
 

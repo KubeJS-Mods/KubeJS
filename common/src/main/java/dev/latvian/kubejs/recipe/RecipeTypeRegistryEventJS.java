@@ -2,8 +2,6 @@ package dev.latvian.kubejs.recipe;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -30,13 +28,13 @@ public class RecipeTypeRegistryEventJS extends EventJS
 		KubeJS.LOGGER.info("Registered custom recipe handler for type " + type);
 	}
 
-	public void register(@Wrap("id") String id, Supplier<RecipeJS> f)
+	public void register(ResourceLocation id, Supplier<RecipeJS> f)
 	{
-		register(new RecipeTypeJS(Objects.requireNonNull(Registries.get(KubeJS.MOD_ID).get(Registry.RECIPE_SERIALIZER_REGISTRY).get(UtilsJS.getMCID(id)), "Cannot find recipe serializer: " + UtilsJS.getMCID(id)), f));
+		register(new RecipeTypeJS(Objects.requireNonNull(Registry.RECIPE_SERIALIZER.get(id), "Cannot find recipe serializer: " + id), f));
 	}
 
-	public void ignore(@Wrap("id") String id)
+	public void ignore(ResourceLocation id)
 	{
-		register(new IgnoredRecipeTypeJS(Objects.requireNonNull(Registries.get(KubeJS.MOD_ID).get(Registry.RECIPE_SERIALIZER_REGISTRY).get(UtilsJS.getMCID(id)), "Cannot find recipe serializer: " + UtilsJS.getMCID(id))));
+		register(new IgnoredRecipeTypeJS(Objects.requireNonNull(Registry.RECIPE_SERIALIZER.get(id), "Cannot find recipe serializer: " + id)));
 	}
 }

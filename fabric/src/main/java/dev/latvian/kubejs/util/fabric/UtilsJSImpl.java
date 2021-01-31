@@ -6,25 +6,11 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.function.Function;
 
 public class UtilsJSImpl
 {
-	public static <T> Field findField(Class<? extends T> className, String fieldName)
-	{
-		try
-		{
-			// We actually need the field description to remap, but it is unmapped in production anyways so it is probably fine to not even remap it.
-			return className.getDeclaredField(fieldName);
-		}
-		catch (NoSuchFieldException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
 	private static <T> Function<ResourceLocation, Optional<T>> getValue(Object registry, @Nullable T def)
 	{
 		Registry<T> reg;

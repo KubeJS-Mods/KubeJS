@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.Deserializers;
 
@@ -31,12 +30,12 @@ public abstract class LootEventJS<LB extends LootBuilder<?, ?>> extends EventJS
 
 	public abstract LB newLootBuilder();
 
-	public void addJson(@Wrap("id") ResourceLocation id, Object json)
+	public void addJson(ResourceLocation id, Object json)
 	{
 		lootMap.put(id, MapJS.json(json));
 	}
 
-	public void build(@Wrap("id") ResourceLocation id, Consumer<LB> lb)
+	public void build(ResourceLocation id, Consumer<LB> lb)
 	{
 		LB lootBuilder = newLootBuilder();
 		lb.accept(lootBuilder);

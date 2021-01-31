@@ -12,12 +12,10 @@ import dev.latvian.kubejs.util.AttachedData;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.UUIDUtilsJS;
-import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WithAttachedData;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
 import net.minecraft.Util;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.core.Registry;
@@ -341,9 +339,9 @@ public class ServerJS implements MessageSender, WithAttachedData
 	}
 
 	@Nullable
-	public AdvancementJS getAdvancement(@Wrap("id") String id)
+	public AdvancementJS getAdvancement(ResourceLocation id)
 	{
-		Advancement a = getMinecraftServer().getAdvancements().getAdvancement(UtilsJS.getMCID(id));
+		Advancement a = getMinecraftServer().getAdvancements().getAdvancement(id);
 		return a == null ? null : new AdvancementJS(a);
 	}
 

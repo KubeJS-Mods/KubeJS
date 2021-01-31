@@ -3,7 +3,6 @@ package dev.latvian.kubejs.block.forge;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -25,13 +24,11 @@ public class MissingMappingEventJS<T extends IForgeRegistryEntry<T>> extends Eve
 		valueProvider = v;
 	}
 
-	private void findMapping(@Wrap("id") String key, Consumer<RegistryEvent.MissingMappings.Mapping<T>> callback)
+	private void findMapping(ResourceLocation key, Consumer<RegistryEvent.MissingMappings.Mapping<T>> callback)
 	{
-		ResourceLocation k = UtilsJS.getMCID(key);
-
 		for (RegistryEvent.MissingMappings.Mapping<T> mapping : event.getAllMappings())
 		{
-			if (mapping.key.equals(k))
+			if (mapping.key.equals(key))
 			{
 				callback.accept(mapping);
 				return;
@@ -39,32 +36,31 @@ public class MissingMappingEventJS<T extends IForgeRegistryEntry<T>> extends Eve
 		}
 	}
 
-	public void remap(@Wrap("id") String key, @Wrap("id") String value)
+	public void remap(ResourceLocation key, ResourceLocation value)
 	{
 		findMapping(key, mapping ->
 		{
-			ResourceLocation idTo = UtilsJS.getMCID(value);
-			T to = valueProvider.apply(idTo);
+			T to = valueProvider.apply(value);
 
 			if (to != null)
 			{
-				ScriptType.STARTUP.console.info("Remapping " + mapping.key + " to " + idTo + " (" + to.getClass() + ")");
+				ScriptType.STARTUP.console.info("Remapping " + mapping.key + " to " + value + " (" + to.getClass() + ")");
 				mapping.remap(UtilsJS.cast(to));
 			}
 		});
 	}
 
-	public void ignore(@Wrap("id") String key)
+	public void ignore(ResourceLocation key)
 	{
 		findMapping(key, RegistryEvent.MissingMappings.Mapping::ignore);
 	}
 
-	public void warn(@Wrap("id") String key)
+	public void warn(ResourceLocation key)
 	{
 		findMapping(key, RegistryEvent.MissingMappings.Mapping::warn);
 	}
 
-	public void fail(@Wrap("id") String key)
+	public void fail(ResourceLocation key)
 	{
 		findMapping(key, RegistryEvent.MissingMappings.Mapping::fail);
 	}

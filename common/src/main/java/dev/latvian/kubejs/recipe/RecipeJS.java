@@ -9,8 +9,6 @@ import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
@@ -87,14 +85,14 @@ public abstract class RecipeJS
 		return merge(data);
 	}
 
-	public RecipeJS id(@Wrap("id") String _id)
+	public RecipeJS id(ResourceLocation _id)
 	{
-		id = UtilsJS.getMCID(_id);
+		id = _id;
 		save();
 		return this;
 	}
 
-	public RecipeJS group(@Wrap("id") String g)
+	public RecipeJS group(String g)
 	{
 		setGroup(g);
 		save();
@@ -193,7 +191,7 @@ public abstract class RecipeJS
 		return e instanceof JsonPrimitive ? e.getAsString() : "";
 	}
 
-	public void setGroup(@Wrap("id") String g)
+	public void setGroup(String g)
 	{
 		if (g.isEmpty())
 		{

@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.StatsCounter;
 
 /**
@@ -23,17 +23,17 @@ public class PlayerStatsJS
 		return player;
 	}
 
-	public int get(@Wrap("id") String id)
+	public int get(ResourceLocation id)
 	{
 		return statFile.getValue(UtilsJS.getStat(id));
 	}
 
-	public void set(@Wrap("id") String id, int value)
+	public void set(ResourceLocation id, int value)
 	{
 		statFile.setValue(player.minecraftPlayer, UtilsJS.getStat(id), value);
 	}
 
-	public void add(@Wrap("id") String id, int value)
+	public void add(ResourceLocation id, int value)
 	{
 		statFile.increment(player.minecraftPlayer, UtilsJS.getStat(id), value);
 	}

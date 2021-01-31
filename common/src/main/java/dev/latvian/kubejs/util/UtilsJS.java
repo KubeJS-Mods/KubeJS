@@ -12,9 +12,7 @@ import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
-import me.shedaniel.architectury.ExpectPlatform;
-import me.shedaniel.architectury.registry.Registries;
+import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -37,7 +35,6 @@ import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -230,7 +227,7 @@ public class UtilsJS
 	{
 		if (o instanceof Copyable)
 		{
-			return ((Copyable) o).copy();
+			return ((Copyable) o).getCopy();
 		}
 		else if (o instanceof JsonElement)
 		{
@@ -479,9 +476,9 @@ public class UtilsJS
 		}
 	}
 
-	public static Stat<ResourceLocation> getStat(@Wrap("id") String id)
+	public static Stat<ResourceLocation> getStat(ResourceLocation id)
 	{
-		return Stats.CUSTOM.get(getMCID(id));
+		return Stats.CUSTOM.get(id);
 	}
 
 	public static ToolType getToolType(String id)
@@ -507,12 +504,12 @@ public class UtilsJS
 	}
 
 	@Nullable
-	public static MobEffect getPotion(@Wrap("id") String id)
+	public static MobEffect getPotion(ResourceLocation id)
 	{
-		return Registries.get(KubeJS.MOD_ID).get(Registry.MOB_EFFECT_REGISTRY).get(getMCID(id));
+		return Registry.MOB_EFFECT.get(id);
 	}
 
-	public static String getID(@Wrap("id") @Nullable String s)
+	public static String getID(@Nullable String s)
 	{
 		if (s == null || s.isEmpty())
 		{
@@ -527,7 +524,7 @@ public class UtilsJS
 		return s;
 	}
 
-	public static ResourceLocation getMCID(@Wrap("id") @Nullable String s)
+	public static ResourceLocation getMCID(@Nullable String s)
 	{
 		if (s == null || s.isEmpty())
 		{
@@ -537,7 +534,7 @@ public class UtilsJS
 		return new ResourceLocation(s);
 	}
 
-	public static String getNamespace(@Wrap("id") @Nullable String s)
+	public static String getNamespace(@Nullable String s)
 	{
 		if (s == null || s.isEmpty())
 		{
@@ -548,7 +545,7 @@ public class UtilsJS
 		return i == -1 ? "minecraft" : s.substring(0, i);
 	}
 
-	public static String getPath(@Wrap("id") @Nullable String s)
+	public static String getPath(@Nullable String s)
 	{
 		if (s == null || s.isEmpty())
 		{
@@ -562,12 +559,6 @@ public class UtilsJS
 	public static <T> Function<ResourceLocation, Optional<T>> valueGetter(Object registry, @Nullable T def)
 	{
 		return getValue(registry, def);
-	}
-
-	@ExpectPlatform
-	private static <T> Field findField(Class<? extends T> className, String fieldName)
-	{
-		throw new AssertionError();
 	}
 
 	@ExpectPlatform

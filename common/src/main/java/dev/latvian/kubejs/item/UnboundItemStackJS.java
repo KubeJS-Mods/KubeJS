@@ -84,7 +84,7 @@ public class UnboundItemStackJS extends ItemStackJS
 	{
 		UnboundItemStackJS stack = new UnboundItemStackJS(itemRL);
 		stack.count = count;
-		stack.nbt = nbt == null ? null : nbt.copy();
+		stack.nbt = nbt == null ? null : nbt.getCopy();
 		stack.setChance(getChance());
 		return stack;
 	}

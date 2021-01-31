@@ -1,16 +1,33 @@
 package dev.latvian.kubejs.script;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.bindings.DefaultBindings;
+import dev.latvian.kubejs.block.BlockStatePredicate;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.event.EventsJS;
+import dev.latvian.kubejs.fluid.FluidStackJS;
+import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
+import dev.latvian.kubejs.recipe.filter.RecipeFilter;
+import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.UUIDUtilsJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.ClassShutter;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.RhinoException;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import net.minecraft.nbt.CollectionTag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
@@ -19,7 +36,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
@@ -141,8 +160,32 @@ public class ScriptManager
 		Context context = Context.enter();
 		context.setLanguageVersion(Context.VERSION_ES6);
 		context.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || CLASS_WHITELIST_CACHE.computeBooleanIfAbsent(fullClassName, CLASS_WHITELIST_FUNCTION));
-		context.getTypeWrappers().register("id", ResourceLocation.class, String.class, ResourceLocation::toString);
-		context.getTypeWrappers().register("id", String.class, ResourceLocation.class, ResourceLocation::new);
+		context.getTypeWrappers().removeAll();
+
+		// Java / Minecraft //
+		context.getTypeWrappers().register(String.class, String::valueOf);
+		context.getTypeWrappers().register(CharSequence.class, String::valueOf);
+		context.getTypeWrappers().register(ResourceLocation.class, o -> UtilsJS.getMCID(o == null ? null : o.toString()));
+		context.getTypeWrappers().register(JsonObject.class, MapJS::json);
+		context.getTypeWrappers().register(JsonArray.class, ListJS::json);
+		context.getTypeWrappers().register(ItemStack.class, o -> ItemStackJS.of(o).getItemStack());
+		context.getTypeWrappers().register(CompoundTag.class, MapJS::nbt);
+		context.getTypeWrappers().register(CollectionTag.class, ListJS::nbt);
+		context.getTypeWrappers().register(ListTag.class, o -> (ListTag) ListJS.nbt(o));
+		context.getTypeWrappers().register(UUID.class, UUIDUtilsJS::fromString);
+		context.getTypeWrappers().register(Pattern.class, UtilsJS::parseRegex);
+
+		context.getTypeWrappers().register(Item.class, o -> ItemStackJS.of(o).getItem());
+		// handle other registries here as well like blocks, potions, sounds etc
+
+		// KubeJS //
+		context.getTypeWrappers().register(ItemStackJS.class, ItemStackJS::of);
+		context.getTypeWrappers().register(IngredientJS.class, IngredientJS::of);
+		context.getTypeWrappers().register(IngredientStackJS.class, o -> IngredientJS.of(o).asIngredientStack());
+		context.getTypeWrappers().register(Text.class, Text::of);
+		context.getTypeWrappers().register(BlockStatePredicate.class, BlockStatePredicate::of);
+		context.getTypeWrappers().register(FluidStackJS.class, FluidStackJS::of);
+		context.getTypeWrappers().register(RecipeFilter.class, RecipeFilter::of);
 
 		long startAll = System.currentTimeMillis();
 

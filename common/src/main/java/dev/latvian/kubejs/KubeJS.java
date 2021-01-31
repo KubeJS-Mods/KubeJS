@@ -22,6 +22,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
 import me.shedaniel.architectury.platform.Platform;
 import net.fabricmc.api.EnvType;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,6 +42,11 @@ public class KubeJS
 	public static final String MOD_ID = "kubejs";
 	public static final String MOD_NAME = "KubeJS";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
+
+	public static ResourceLocation id(String path)
+	{
+		return new ResourceLocation(MOD_ID, path);
+	}
 
 	public static KubeJS instance;
 

@@ -9,6 +9,7 @@ import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.UnboundItemStackJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.kubejs.util.Copyable;
 import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
@@ -16,7 +17,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
-import me.shedaniel.architectury.ExpectPlatform;
+import me.shedaniel.architectury.annotations.ExpectPlatform;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -35,7 +36,7 @@ import java.util.regex.Pattern;
  * @author LatvianModder
  */
 @FunctionalInterface
-public interface IngredientJS extends JsonSerializable, WrappedJS
+public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 {
 	static IngredientJS of(@Nullable Object o)
 	{
@@ -356,7 +357,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 		{
 			return EmptyItemStackJS.INSTANCE;
 		}
-		else if (count == 1 || count == getCount())
+		else if (count == getCount())
 		{
 			return this;
 		}
@@ -369,6 +370,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS
 		return withCount(c);
 	}
 
+	@Override
 	default IngredientJS getCopy()
 	{
 		return this;

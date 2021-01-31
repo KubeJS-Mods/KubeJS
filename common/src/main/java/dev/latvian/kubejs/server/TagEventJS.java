@@ -9,7 +9,6 @@ import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.SetTag;
@@ -109,7 +108,7 @@ public class TagEventJS<T> extends EventJS
 
 				if (s.startsWith("#"))
 				{
-					TagWrapper<T> w = event.get(s.substring(1));
+					TagWrapper<T> w = event.get(new ResourceLocation(s.substring(1)));
 					builder.addTag(w.id, KubeJS.MOD_ID);
 					event.addedCount += w.proxyList.size();
 
@@ -181,7 +180,7 @@ public class TagEventJS<T> extends EventJS
 
 				if (s.startsWith("#"))
 				{
-					TagWrapper<T> w = event.get(s.substring(1));
+					TagWrapper<T> w = event.get(new ResourceLocation(s.substring(1)));
 					String entryId = w.id.toString();
 					int originalSize = proxyList.size();
 					proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(s));
@@ -520,9 +519,8 @@ public class TagEventJS<T> extends EventJS
 		ScriptType.SERVER.console.info("[" + type + "] Found " + tags.size() + " tags, added " + addedCount + " objects, removed " + removedCount + " objects"/*, reordered " + reordered + " tags"*/);
 	}
 
-	public TagWrapper<T> get(@Wrap("id") String tag)
+	public TagWrapper<T> get(ResourceLocation id)
 	{
-		ResourceLocation id = UtilsJS.getMCID(tag);
 		TagWrapper<T> t = tags.get(id);
 
 		if (t == null)
@@ -535,17 +533,17 @@ public class TagEventJS<T> extends EventJS
 		return t;
 	}
 
-	public TagWrapper<T> add(@Wrap("id") String tag, Object ids)
+	public TagWrapper<T> add(ResourceLocation tag, Object ids)
 	{
 		return get(tag).add(ids);
 	}
 
-	public TagWrapper<T> remove(@Wrap("id") String tag, Object ids)
+	public TagWrapper<T> remove(ResourceLocation tag, Object ids)
 	{
 		return get(tag).remove(ids);
 	}
 
-	public TagWrapper<T> removeAll(@Wrap("id") String tag)
+	public TagWrapper<T> removeAll(ResourceLocation tag)
 	{
 		return get(tag).removeAll();
 	}

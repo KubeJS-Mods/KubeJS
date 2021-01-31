@@ -3,8 +3,7 @@ package dev.latvian.kubejs.fluid;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.bindings.RarityWrapper;
 import dev.latvian.kubejs.util.BuilderBase;
-import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.FlowingFluid;
@@ -34,8 +33,8 @@ public class FluidBuilder extends BuilderBase
 	public FluidBuilder(String i)
 	{
 		super(i);
-		textureStill(KubeJS.MOD_ID + ":fluid/fluid_thin");
-		textureFlowing(KubeJS.MOD_ID + ":fluid/fluid_thin_flow");
+		textureStill(KubeJS.id("fluid/fluid_thin"));
+		textureFlowing(KubeJS.id("fluid/fluid_thin_flow"));
 	}
 
 	@Override
@@ -68,26 +67,26 @@ public class FluidBuilder extends BuilderBase
 		return this;
 	}
 
-	public FluidBuilder textureStill(@Wrap("id") String id)
+	public FluidBuilder textureStill(ResourceLocation id)
 	{
-		stillTexture = UtilsJS.getID(id);
+		stillTexture = id.toString();
 		return this;
 	}
 
-	public FluidBuilder textureFlowing(@Wrap("id") String id)
+	public FluidBuilder textureFlowing(ResourceLocation id)
 	{
-		flowingTexture = UtilsJS.getID(id);
+		flowingTexture = id.toString();
 		return this;
 	}
 
 	public FluidBuilder textureThick(int color)
 	{
-		return textureStill(KubeJS.MOD_ID + ":fluid/fluid_thick").textureFlowing(KubeJS.MOD_ID + ":fluid/fluid_thick_flow").color(color);
+		return textureStill(KubeJS.id("fluid/fluid_thick")).textureFlowing(KubeJS.id("fluid/fluid_thick_flow")).color(color);
 	}
 
 	public FluidBuilder textureThin(int color)
 	{
-		return textureStill(KubeJS.MOD_ID + ":fluid/fluid_thin").textureFlowing(KubeJS.MOD_ID + ":fluid/fluid_thin_flow").color(color);
+		return textureStill(KubeJS.id("fluid/fluid_thin")).textureFlowing(KubeJS.id("fluid/fluid_thin_flow")).color(color);
 	}
 
 	public FluidBuilder luminosity(int luminosity)

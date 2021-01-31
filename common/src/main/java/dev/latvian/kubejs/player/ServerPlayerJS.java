@@ -12,10 +12,10 @@ import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
-import dev.latvian.mods.rhino.util.wrap.Wrap;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.UserBanListEntry;
 import net.minecraft.world.level.GameType;
@@ -115,13 +115,13 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer>
 		return hasClientMod;
 	}
 
-	public boolean isAdvancementDone(@Wrap("id") String id)
+	public boolean isAdvancementDone(ResourceLocation id)
 	{
 		AdvancementJS a = ServerJS.instance.getAdvancement(id);
 		return a != null && minecraftPlayer.getAdvancements().getOrStartProgress(a.advancement).isDone();
 	}
 
-	public void unlockAdvancement(@Wrap("id") String id)
+	public void unlockAdvancement(ResourceLocation id)
 	{
 		AdvancementJS a = ServerJS.instance.getAdvancement(id);
 
@@ -136,7 +136,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer>
 		}
 	}
 
-	public void revokeAdvancement(@Wrap("id") String id)
+	public void revokeAdvancement(ResourceLocation id)
 	{
 		AdvancementJS a = ServerJS.instance.getAdvancement(id);
 
