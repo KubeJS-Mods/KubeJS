@@ -19,4 +19,12 @@ public class GroupFilter implements RecipeFilter
 	{
 		return r.getGroup().equals(group);
 	}
+
+	@Override
+	public String toString()
+	{
+		return "GroupFilter{" +
+				"group='" + group + '\'' +
+				'}';
+	}
 }

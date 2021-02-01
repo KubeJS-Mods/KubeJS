@@ -22,4 +22,13 @@ public class InputFilter implements RecipeFilter
 	{
 		return r.hasInput(in, exact);
 	}
+
+	@Override
+	public String toString()
+	{
+		return "InputFilter{" +
+				"in=" + in +
+				", exact=" + exact +
+				'}';
+	}
 }

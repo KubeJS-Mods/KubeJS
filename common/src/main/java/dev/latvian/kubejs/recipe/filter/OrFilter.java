@@ -25,4 +25,10 @@ public class OrFilter implements RecipeFilter
 
 		return false;
 	}
+
+	@Override
+	public String toString()
+	{
+		return "OrFilter[" + list + ']';
+	}
 }

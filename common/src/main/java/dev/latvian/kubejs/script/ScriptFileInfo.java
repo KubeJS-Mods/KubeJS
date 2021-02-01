@@ -24,6 +24,7 @@ public class ScriptFileInfo
 	public final String location;
 	private final Map<String, String> properties;
 	private int priority;
+	private boolean ignored;
 
 	public ScriptFileInfo(ScriptPackInfo p, String f)
 	{
@@ -33,12 +34,15 @@ public class ScriptFileInfo
 		location = UtilsJS.getID(pack.namespace + ":" + pack.pathStart + file);
 		properties = new HashMap<>();
 		priority = 0;
+		ignored = false;
 	}
 
 	@Nullable
 	public Throwable preload(ScriptSource source)
 	{
 		properties.clear();
+		priority = 0;
+		ignored = false;
 
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(source.createStream(this), StandardCharsets.UTF_8)))
 		{
@@ -64,6 +68,7 @@ public class ScriptFileInfo
 			}
 
 			priority = Integer.parseInt(getProperty("priority", "0"));
+			ignored = getProperty("ignored", "false").equals("true");
 			return null;
 		}
 		catch (Throwable ex)
@@ -80,5 +85,10 @@ public class ScriptFileInfo
 	public int getPriority()
 	{
 		return priority;
+	}
+
+	public boolean isIgnored()
+	{
+		return ignored;
 	}
 }

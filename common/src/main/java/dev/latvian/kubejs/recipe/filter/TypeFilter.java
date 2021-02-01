@@ -19,4 +19,12 @@ public class TypeFilter implements RecipeFilter
 	{
 		return r.type.toString().equals(type);
 	}
+
+	@Override
+	public String toString()
+	{
+		return "TypeFilter{" +
+				"type='" + type + '\'' +
+				'}';
+	}
 }

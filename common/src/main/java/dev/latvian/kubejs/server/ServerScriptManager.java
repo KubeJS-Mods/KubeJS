@@ -94,6 +94,11 @@ public class ServerScriptManager
 				ScriptSource.FromResource scriptSource = info -> resourceManager.getResource(info.id);
 				Throwable error = fileInfo.preload(scriptSource);
 
+				if (fileInfo.isIgnored())
+				{
+					continue;
+				}
+
 				if (error == null)
 				{
 					pack.scripts.add(new ScriptFile(pack, fileInfo, scriptSource));

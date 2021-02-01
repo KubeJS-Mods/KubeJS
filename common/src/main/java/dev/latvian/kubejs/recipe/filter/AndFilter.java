@@ -25,4 +25,10 @@ public class AndFilter implements RecipeFilter
 
 		return true;
 	}
+
+	@Override
+	public String toString()
+	{
+		return "AndFilter[" + list + ']';
+	}
 }

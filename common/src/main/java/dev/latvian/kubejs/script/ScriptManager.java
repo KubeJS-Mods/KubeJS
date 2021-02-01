@@ -141,6 +141,11 @@ public class ScriptManager
 
 			Throwable error = fileInfo.preload(scriptSource);
 
+			if (fileInfo.isIgnored())
+			{
+				continue;
+			}
+
 			if (error == null)
 			{
 				pack.scripts.add(new ScriptFile(pack, fileInfo, scriptSource));

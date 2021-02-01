@@ -20,4 +20,12 @@ public class IDFilter implements RecipeFilter
 	{
 		return r.id.equals(id);
 	}
+
+	@Override
+	public String toString()
+	{
+		return "IDFilter{" +
+				"id=" + id +
+				'}';
+	}
 }

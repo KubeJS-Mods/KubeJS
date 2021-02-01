@@ -19,4 +19,12 @@ public class ModFilter implements RecipeFilter
 	{
 		return r.getMod().equals(mod);
 	}
+
+	@Override
+	public String toString()
+	{
+		return "ModFilter{" +
+				"mod='" + mod + '\'' +
+				'}';
+	}
 }

@@ -22,4 +22,13 @@ public class OutputFilter implements RecipeFilter
 	{
 		return r.hasOutput(out, exact);
 	}
+
+	@Override
+	public String toString()
+	{
+		return "OutputFilter{" +
+				"out=" + out +
+				", exact=" + exact +
+				'}';
+	}
 }

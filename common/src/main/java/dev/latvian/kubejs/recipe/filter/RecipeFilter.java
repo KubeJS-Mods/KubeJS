@@ -8,6 +8,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
@@ -76,7 +77,9 @@ public interface RecipeFilter extends Predicate<RecipeJS>
 
 		if (map.get("id") != null)
 		{
-			predicate.list.add(new IDFilter(UtilsJS.getMCID(map.get("id").toString())));
+			String s = map.get("id").toString();
+			Pattern pattern = UtilsJS.parseRegex(s);
+			predicate.list.add(pattern == null ? new IDFilter(UtilsJS.getMCID(s)) : new RegexIDFilter(pattern));
 		}
 
 		if (map.get("type") != null)
