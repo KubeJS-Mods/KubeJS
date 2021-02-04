@@ -429,11 +429,7 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 
 	protected boolean setChangeListener(@Nullable Object v)
 	{
-		if (v == null)
-		{
-			return false;
-		}
-		else if (v instanceof MapJS)
+		if (v instanceof MapJS)
 		{
 			((MapJS) v).changeListener = this::onChanged;
 		}
