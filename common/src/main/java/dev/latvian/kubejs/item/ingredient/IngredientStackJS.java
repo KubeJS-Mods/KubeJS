@@ -8,6 +8,8 @@ import dev.latvian.kubejs.recipe.RecipeJS;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -154,5 +156,18 @@ public class IngredientStackJS implements IngredientJS
 	public IngredientStackJS asIngredientStack()
 	{
 		return this;
+	}
+
+	@Override
+	public List<IngredientJS> unwrapStackIngredient()
+	{
+		List<IngredientJS> list = new ArrayList<>();
+
+		for (int i = 0; i < countOverride; i++)
+		{
+			list.add(ingredient.getCopy());
+		}
+
+		return list;
 	}
 }

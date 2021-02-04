@@ -26,6 +26,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -417,5 +418,10 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 	default IngredientStackJS asIngredientStack()
 	{
 		return new IngredientStackJS(withCount(1), getCount());
+	}
+
+	default List<IngredientJS> unwrapStackIngredient()
+	{
+		return Collections.singletonList(this);
 	}
 }

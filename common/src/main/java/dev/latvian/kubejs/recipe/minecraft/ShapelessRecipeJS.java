@@ -33,7 +33,10 @@ public class ShapelessRecipeJS extends RecipeJS
 
 			for (IngredientJS in : inputItems)
 			{
-				ingredientsJson.add(in.toJson());
+				for (IngredientJS in1 : in.unwrapStackIngredient())
+				{
+					ingredientsJson.add(in1.toJson());
+				}
 			}
 
 			json.add("ingredients", ingredientsJson);
