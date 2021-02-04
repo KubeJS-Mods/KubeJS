@@ -64,10 +64,6 @@ public class BoundItemStackJS extends ItemStackJS
 		{
 			return EmptyItemStackJS.INSTANCE;
 		}
-		else if (c == stack.getCount())
-		{
-			return this;
-		}
 
 		ItemStack is = stack.copy();
 		is.setCount(c);

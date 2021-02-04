@@ -9,6 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -55,10 +56,10 @@ public class IngredientStackJS implements IngredientJS
 		}
 		else if (count == 1)
 		{
-			return ingredient;
+			return ingredient.getCopy();
 		}
 
-		return count == countOverride ? this : new IngredientStackJS(ingredient, count);
+		return count == countOverride ? getCopy() : new IngredientStackJS(ingredient, count);
 	}
 
 	@Override
@@ -161,11 +162,16 @@ public class IngredientStackJS implements IngredientJS
 	@Override
 	public List<IngredientJS> unwrapStackIngredient()
 	{
+		if (countOverride <= 1)
+		{
+			return Collections.singletonList(ingredient.withCount(1));
+		}
+
 		List<IngredientJS> list = new ArrayList<>();
 
 		for (int i = 0; i < countOverride; i++)
 		{
-			list.add(ingredient.getCopy());
+			list.add(ingredient.withCount(1));
 		}
 
 		return list;

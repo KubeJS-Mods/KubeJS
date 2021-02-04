@@ -25,8 +25,8 @@ public abstract class DataPackRegistriesMixin
 	}
 
 	@ModifyArg(method = "loadResources", at = @At(value = "INVOKE", ordinal = 0,
-	                                              target = "Lnet/minecraft/server/packs/resources/ReloadableResourceManager;reload(Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;Ljava/util/List;Ljava/util/concurrent/CompletableFuture;)Ljava/util/concurrent/CompletableFuture;"),
-	           index = 2)
+			target = "Lnet/minecraft/server/packs/resources/ReloadableResourceManager;reload(Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;Ljava/util/List;Ljava/util/concurrent/CompletableFuture;)Ljava/util/concurrent/CompletableFuture;"),
+			index = 2)
 	private static List<PackResources> resourcePackList(List<PackResources> list)
 	{
 		return ServerScriptManager.instance.resourcePackList(list);

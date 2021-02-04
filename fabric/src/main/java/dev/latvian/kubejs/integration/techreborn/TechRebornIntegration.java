@@ -12,7 +12,7 @@ public class TechRebornIntegration implements KubeJSInitializer
 		if (Platform.isModLoaded("techreborn"))
 		{
 			SpecialRecipeSerializerManager.EVENT.register(() -> {
-				for (String s : new String[]{
+				for (String s : new String[] {
 						"techreborn:alloy_smelter",
 						"techreborn:assembling_machine",
 						"techreborn:centrifuge",

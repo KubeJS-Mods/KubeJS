@@ -2,7 +2,6 @@ package dev.latvian.kubejs.util;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.core.CompoundNBTKJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
@@ -295,9 +294,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 	@Override
 	public CompoundTag toNBT()
 	{
-		CompoundTag nbt = new CompoundTag();
-		//noinspection ConstantConditions
-		((CompoundNBTKJS) nbt).setTagsKJS(new LinkedHashMap<>());
+		CompoundTag nbt = new NBTUtilsJS.OrderedCompoundTag();
 
 		for (Map.Entry<String, Object> entry : entrySet())
 		{

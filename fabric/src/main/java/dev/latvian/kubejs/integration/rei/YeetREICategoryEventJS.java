@@ -24,7 +24,7 @@ public class YeetREICategoryEventJS extends EventJS
 
 	public void yeet(String categoryToYeet)
 	{
-		yeet(new String[]{categoryToYeet});
+		yeet(new String[] {categoryToYeet});
 	}
 
 	public void yeet(String[] categoriesToYeet)

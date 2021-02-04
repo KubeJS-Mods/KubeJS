@@ -393,16 +393,13 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		{
 			return EmptyItemStackJS.INSTANCE;
 		}
-		else if (c == getCount())
-		{
-			return this;
-		}
 
 		ItemStackJS is = getCopy();
 		is.setCount(c);
 		return is;
 	}
 
+	@Override
 	public final ItemStackJS x(int c)
 	{
 		return withCount(c);
@@ -648,7 +645,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 				{
 					MapJS ench = new MapJS(2);
 					ench.put("id", new ResourceLocation(entry.getKey()).toString());
-					ench.put("lvl", entry.getValue());
+					ench.put("lvl", ((Number) entry.getValue()).intValue());
 					list.add(ench);
 				}
 			}

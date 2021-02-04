@@ -70,8 +70,9 @@ public class ShapedRecipeJS extends RecipeJS
 
 			int maxLength = pattern.stream().mapToInt(String::length).max().getAsInt();
 			ListIterator<String> iterator = pattern.listIterator();
-			
-			while (iterator.hasNext()) {
+
+			while (iterator.hasNext())
+			{
 				iterator.set(StringUtils.rightPad(iterator.next(), maxLength));
 			}
 

@@ -26,6 +26,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -358,12 +359,8 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 		{
 			return EmptyItemStackJS.INSTANCE;
 		}
-		else if (count == getCount())
-		{
-			return this;
-		}
 
-		return new IngredientStackJS(this, count);
+		return count == 1 ? getCopy() : new IngredientStackJS(getCopy(), count);
 	}
 
 	default IngredientJS x(int c)
@@ -422,6 +419,20 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 
 	default List<IngredientJS> unwrapStackIngredient()
 	{
-		return Collections.singletonList(this);
+		int count = getCount();
+
+		if (count <= 0)
+		{
+			return Collections.singletonList(withCount(1));
+		}
+
+		List<IngredientJS> list = new ArrayList<>();
+
+		for (int i = 0; i < count; i++)
+		{
+			list.add(withCount(1));
+		}
+
+		return list;
 	}
 }

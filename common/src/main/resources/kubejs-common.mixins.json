@@ -3,7 +3,6 @@
 	"package": "dev.latvian.kubejs.mixin.common",
 	"compatibilityLevel": "JAVA_8",
 	"mixins": [
-		"CompoundNBTMixin",
 		"DataPackRegistriesMixin",
 		"FireworkRocketEntityMixin",
 		"LivingEntityMixin",
