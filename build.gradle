@@ -1,6 +1,6 @@
 plugins {
-	id "architectury-plugin" version "2.0.65"
-	id "forgified-fabric-loom" version "0.6.56" apply false
+	id "architectury-plugin" version "2.0.66"
+	id "forgified-fabric-loom" version "0.6.64" apply false
 	id "com.matthewprenger.cursegradle" version "1.4.0" apply false
 	id "maven-publish"
 }

@@ -450,13 +450,25 @@ public class RecipeEventJS extends EventJS
 		if (filter == RecipeFilter.ALWAYS_TRUE)
 		{
 			originalRecipes.forEach(consumer);
-			addedRecipes.forEach(consumer);
 		}
 		else if (filter != RecipeFilter.ALWAYS_FALSE)
 		{
 			originalRecipes.stream().filter(filter).forEach(consumer);
-			addedRecipes.stream().filter(filter).forEach(consumer);
 		}
+	}
+
+	public int countRecipes(RecipeFilter filter)
+	{
+		if (filter == RecipeFilter.ALWAYS_TRUE)
+		{
+			return originalRecipes.size();
+		}
+		else if (filter != RecipeFilter.ALWAYS_FALSE)
+		{
+			return (int) originalRecipes.stream().filter(filter).count();
+		}
+
+		return 0;
 	}
 
 	public int remove(RecipeFilter filter)
