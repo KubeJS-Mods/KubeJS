@@ -63,6 +63,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author LatvianModder
@@ -368,7 +369,7 @@ public class KubeJSClientEventHandler
 		{
 			if (!builder.color.isEmpty())
 			{
-				ColorHandlers.registerItemColors((stack, index) -> builder.color.get(index), builder.item);
+				ColorHandlers.registerItemColors((stack, index) -> builder.color.get(index), Objects.requireNonNull(builder.item, "Item " + builder.id + " is null!"));
 			}
 		}
 
@@ -376,7 +377,7 @@ public class KubeJSClientEventHandler
 		{
 			if (builder.itemBuilder != null && !builder.color.isEmpty())
 			{
-				ColorHandlers.registerItemColors((stack, index) -> builder.color.get(index), builder.itemBuilder.blockItem);
+				ColorHandlers.registerItemColors((stack, index) -> builder.color.get(index), Objects.requireNonNull(builder.itemBuilder.blockItem, "Block Item " + builder.id + " is null!"));
 			}
 		}
 
@@ -384,7 +385,7 @@ public class KubeJSClientEventHandler
 		{
 			if (builder.bucketColor != 0xFFFFFFFF)
 			{
-				ColorHandlers.registerItemColors((stack, index) -> index == 1 ? builder.bucketColor : 0xFFFFFFFF, builder.bucketItem);
+				ColorHandlers.registerItemColors((stack, index) -> index == 1 ? builder.bucketColor : 0xFFFFFFFF, Objects.requireNonNull(builder.bucketItem, "Bucket Item " + builder.id + " is null!"));
 			}
 		}
 	}
