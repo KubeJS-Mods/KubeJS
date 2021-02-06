@@ -4,7 +4,6 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.fluid.FluidBuilder;
-import dev.latvian.kubejs.script.ScriptsLoadedEvent;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.event.events.EntityEvent;
 import me.shedaniel.architectury.event.events.InteractionEvent;
@@ -34,7 +33,7 @@ public class KubeJSBlockEventHandler
 {
 	public static void init()
 	{
-		ScriptsLoadedEvent.EVENT.register(KubeJSBlockEventHandler::registry);
+		registry();
 		InteractionEvent.RIGHT_CLICK_BLOCK.register(KubeJSBlockEventHandler::rightClick);
 		InteractionEvent.LEFT_CLICK_BLOCK.register(KubeJSBlockEventHandler::leftClick);
 		PlayerEvent.BREAK_BLOCK.register(KubeJSBlockEventHandler::blockBreak);
@@ -52,18 +51,17 @@ public class KubeJSBlockEventHandler
 	{
 		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values())
 		{
-			Registries.get(KubeJS.MOD_ID).get(Registry.BLOCK_REGISTRY).register(builder.id, () -> {
-				BlockBuilder.current = builder;
-				return builder.block = new BlockJS(builder);
-			});
+			BlockBuilder.current = builder;
+			builder.block = new BlockJS(builder);
+			Registries.get(KubeJS.MOD_ID).get(Registry.BLOCK_REGISTRY).register(builder.id, () -> builder.block);
 		}
 
 		BlockBuilder.current = null;
 
 		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values())
 		{
-			Registries.get(KubeJS.MOD_ID).get(Registry.BLOCK_REGISTRY).register(builder.id, () -> builder.block =
-					buildFluidBlock(builder, Block.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops()));
+			builder.block = buildFluidBlock(builder, Block.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops());
+			Registries.get(KubeJS.MOD_ID).get(Registry.BLOCK_REGISTRY).register(builder.id, () -> builder.block);
 		}
 	}
 

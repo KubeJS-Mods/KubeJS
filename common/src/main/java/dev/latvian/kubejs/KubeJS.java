@@ -90,15 +90,6 @@ public class KubeJS
 		proxy = (KubeJSCommon) Class.forName(proxyClass).getDeclaredConstructor().newInstance();
 
 		KubeJSDocs.init();
-		KubeJSOtherEventHandler.init();
-		KubeJSWorldEventHandler.init();
-		KubeJSPlayerEventHandler.init();
-		KubeJSEntityEventHandler.init();
-		KubeJSBlockEventHandler.init();
-		KubeJSItemEventHandler.init();
-		KubeJSRecipeEventHandler.init();
-		KubeJSFluidEventHandler.init();
-		KubeJSServerEventHandler.init();
 
 		Path oldStartupFolder = KubeJSPaths.DIRECTORY.resolve("startup");
 
@@ -111,11 +102,21 @@ public class KubeJS
 		startupScriptManager.loadFromDirectory();
 		startupScriptManager.load();
 
-		proxy.init();
-
 		new BlockRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.BLOCK_REGISTRY);
 		new ItemRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.ITEM_REGISTRY);
 		new FluidRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.FLUID_REGISTRY);
+
+		KubeJSOtherEventHandler.init();
+		KubeJSWorldEventHandler.init();
+		KubeJSPlayerEventHandler.init();
+		KubeJSEntityEventHandler.init();
+		KubeJSBlockEventHandler.init();
+		KubeJSItemEventHandler.init();
+		KubeJSRecipeEventHandler.init();
+		KubeJSFluidEventHandler.init();
+		KubeJSServerEventHandler.init();
+
+		proxy.init();
 	}
 
 	public static void loadScripts(ScriptPack pack, Path dir, String path)

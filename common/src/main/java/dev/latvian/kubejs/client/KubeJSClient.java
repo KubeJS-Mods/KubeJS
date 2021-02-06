@@ -7,7 +7,6 @@ import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.net.NetworkEventJS;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.world.ClientWorldJS;
@@ -42,7 +41,7 @@ public class KubeJSClient extends KubeJSCommon
 		new KubeJSClientEventHandler().init();
 		PackRepository list = Minecraft.getInstance().getResourcePackRepository();
 		PackRepositoryHooks.addSource(list, new KubeJSResourcePackFinder());
-		ScriptsLoadedEvent.EVENT.register(this::setup);
+		setup();
 	}
 
 	public static void reloadClientScripts()

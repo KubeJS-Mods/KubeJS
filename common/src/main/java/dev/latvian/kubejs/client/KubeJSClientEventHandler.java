@@ -16,7 +16,6 @@ import dev.latvian.kubejs.item.ItemTooltipEventJS;
 import dev.latvian.kubejs.item.OldItemTooltipEventJS;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.Tags;
@@ -75,7 +74,7 @@ public class KubeJSClientEventHandler
 
 	public void init()
 	{
-		ScriptsLoadedEvent.EVENT.register(this::setup);
+		setup();
 		GuiEvent.DEBUG_TEXT_LEFT.register(this::debugInfoLeft);
 		GuiEvent.DEBUG_TEXT_RIGHT.register(this::debugInfoRight);
 		TooltipEvent.ITEM.register(this::itemTooltip);
@@ -86,8 +85,8 @@ public class KubeJSClientEventHandler
 		GuiEvent.RENDER_HUD.register(this::inGameScreenDraw);
 		GuiEvent.RENDER_POST.register(this::guiScreenDraw);
 		GuiEvent.INIT_POST.register(this::guiPostInit);
-		ScriptsLoadedEvent.EVENT.register(this::itemColors);
-		ScriptsLoadedEvent.EVENT.register(this::blockColors);
+		blockColors();
+		itemColors();
 		TextureStitchEvent.POST.register(this::postAtlasStitch);
 	}
 

@@ -6,7 +6,6 @@ import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.fluid.FluidBuilder;
 import dev.latvian.kubejs.player.InventoryChangedEventJS;
-import dev.latvian.kubejs.script.ScriptsLoadedEvent;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.event.events.InteractionEvent;
 import me.shedaniel.architectury.event.events.PlayerEvent;
@@ -31,7 +30,7 @@ public class KubeJSItemEventHandler
 {
 	public static void init()
 	{
-		ScriptsLoadedEvent.EVENT.register(KubeJSItemEventHandler::registry);
+		registry();
 		InteractionEvent.RIGHT_CLICK_ITEM.register(KubeJSItemEventHandler::rightClick);
 		InteractionEvent.CLIENT_RIGHT_CLICK_AIR.register(KubeJSItemEventHandler::rightClickEmpty);
 		InteractionEvent.CLIENT_LEFT_CLICK_AIR.register(KubeJSItemEventHandler::leftClickEmpty);
@@ -58,20 +57,23 @@ public class KubeJSItemEventHandler
 	{
 		for (ItemBuilder builder : KubeJSObjects.ITEMS.values())
 		{
-			Registries.get(KubeJS.MOD_ID).get(Registry.ITEM_REGISTRY).register(builder.id, () -> builder.item = new ItemJS(builder));
+			builder.item = new ItemJS(builder);
+			Registries.get(KubeJS.MOD_ID).get(Registry.ITEM_REGISTRY).register(builder.id, () -> builder.item);
 		}
 
 		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values())
 		{
 			if (builder.itemBuilder != null)
 			{
-				Registries.get(KubeJS.MOD_ID).get(Registry.ITEM_REGISTRY).register(builder.id, () -> builder.itemBuilder.blockItem = new BlockItemJS(builder.itemBuilder));
+				builder.itemBuilder.blockItem = new BlockItemJS(builder.itemBuilder);
+				Registries.get(KubeJS.MOD_ID).get(Registry.ITEM_REGISTRY).register(builder.id, () -> builder.itemBuilder.blockItem);
 			}
 		}
 
 		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values())
 		{
-			Registries.get(KubeJS.MOD_ID).get(Registry.ITEM_REGISTRY).register(new ResourceLocation(builder.id.getNamespace(), builder.id.getPath() + "_bucket"), () -> builder.bucketItem = buildBucket(builder));
+			builder.bucketItem = buildBucket(builder);
+			Registries.get(KubeJS.MOD_ID).get(Registry.ITEM_REGISTRY).register(new ResourceLocation(builder.id.getNamespace(), builder.id.getPath() + "_bucket"), () -> builder.bucketItem);
 		}
 	}
 
