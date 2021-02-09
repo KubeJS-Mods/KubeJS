@@ -59,8 +59,6 @@ public class KubeJS
 	{
 		Locale.setDefault(Locale.US);
 
-		instance = this;
-
 		if (Files.notExists(KubeJSPaths.README))
 		{
 			UtilsJS.tryIO(() -> {

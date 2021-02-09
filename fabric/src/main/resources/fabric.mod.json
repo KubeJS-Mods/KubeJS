@@ -17,6 +17,12 @@
 		"main": [
 			"dev.latvian.kubejs.fabric.KubeJSFabric"
 		],
+		"client": [
+			"dev.latvian.kubejs.fabric.KubeJSFabric"
+		],
+		"server": [
+			"dev.latvian.kubejs.fabric.KubeJSFabric"
+		],
 		"rei_plugins": [
 			"dev.latvian.kubejs.integration.rei.REIPlugin"
 		],

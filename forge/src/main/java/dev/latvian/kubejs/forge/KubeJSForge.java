@@ -26,6 +26,7 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.FMLNetworkConstants;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -37,8 +38,9 @@ public class KubeJSForge
 	public KubeJSForge() throws Throwable
 	{
 		EventBuses.registerModEventBus(KubeJS.MOD_ID, FMLJavaModLoadingContext.get().getModEventBus());
-		KubeJS kubeJS = new KubeJS();
-		kubeJS.setup();
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(KubeJSForge::loadComplete);
+		KubeJS.instance = new KubeJS();
+		KubeJS.instance.setup();
 		IntegrationManager.init();
 		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 
@@ -61,8 +63,11 @@ public class KubeJSForge
 			{
 			}
 		}
+	}
 
-		kubeJS.loadComplete();
+	private static void loadComplete(FMLLoadCompleteEvent event)
+	{
+		KubeJS.instance.loadComplete();
 	}
 
 	private static void missingBlockMappings(RegistryEvent.MissingMappings<Block> event)
