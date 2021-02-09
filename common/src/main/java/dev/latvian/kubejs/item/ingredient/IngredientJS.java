@@ -435,4 +435,9 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 
 		return list;
 	}
+
+	default Ingredient createVanillaIngredient()
+	{
+		return Ingredient.of(getStacks().stream().map(ItemStackJS::getItemStack));
+	}
 }

@@ -5,6 +5,7 @@
 	"mixins": [
 		"DataPackRegistriesMixin",
 		"FireworkRocketEntityMixin",
+		"ItemMixin",
 		"LivingEntityMixin",
 		"LootTablesMixin",
 		"PlayerInteractionManagerMixin",
@@ -12,7 +13,8 @@
 		"ResourceLocationMixin",
 		"SimpleReloadableResourceManagerMixin",
 		"TagBuilderMixin",
-		"TagCollectionReaderMixin"
+		"TagCollectionReaderMixin",
+		"TieredItemMixin"
 	],
 	"client": [
 		"ImageButtonMixin",

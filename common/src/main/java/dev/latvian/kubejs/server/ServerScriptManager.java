@@ -3,6 +3,7 @@ package dev.latvian.kubejs.server;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSPaths;
+import dev.latvian.kubejs.item.ItemModificationEventJS;
 import dev.latvian.kubejs.recipe.RecipeEventJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
 import dev.latvian.kubejs.recipe.RecipeTypeRegistryEventJS;
@@ -120,6 +121,9 @@ public class ServerScriptManager
 		new DataPackEventJS(virtualDataPackLow).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_LOW_PRIORITY);
 		new DataPackEventJS(virtualDataPackHigh).post(ScriptType.SERVER, "server.datapack.first");
 		new DataPackEventJS(virtualDataPackHigh).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_HIGH_PRIORITY);
+
+		new ItemModificationEventJS().post(ScriptType.SERVER, KubeJSEvents.ITEM_MODIFICATION);
+
 		ScriptType.SERVER.console.setLineNumber(false);
 
 		ScriptType.SERVER.console.info("Scripts loaded");

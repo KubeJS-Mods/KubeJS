@@ -15,30 +15,31 @@ public class MaterialListJS
 
 	public final Map<String, MaterialJS> map;
 	public final MaterialJS air;
+	public final MaterialJS wood;
 
 	private MaterialListJS()
 	{
 		map = new HashMap<>();
 		air = add("air", Material.AIR, SoundType.STONE);
-		add("wood", Material.WOOD, SoundType.WOOD);
-		add("rock", Material.STONE, SoundType.STONE);
-		add("iron", Material.METAL, SoundType.METAL);
-		add("organic", Material.GRASS, SoundType.GRASS);
-		add("earth", Material.DIRT, SoundType.GRAVEL);
+		wood = add("wood", Material.WOOD, SoundType.WOOD);
+		add("stone", Material.STONE, SoundType.STONE);
+		add("metal", Material.METAL, SoundType.METAL);
+		add("grass", Material.GRASS, SoundType.GRASS);
+		add("dirt", Material.DIRT, SoundType.GRAVEL);
 		add("water", Material.WATER, SoundType.STONE);
 		add("lava", Material.LAVA, SoundType.STONE);
 		add("leaves", Material.LEAVES, SoundType.GRASS);
-		add("plants", Material.PLANT, SoundType.GRASS);
+		add("plant", Material.PLANT, SoundType.GRASS);
 		add("sponge", Material.SPONGE, SoundType.GRASS);
 		add("wool", Material.WOOL, SoundType.WOOL);
 		add("sand", Material.SAND, SoundType.SAND);
 		add("glass", Material.GLASS, SoundType.GLASS);
-		add("tnt", Material.EXPLOSIVE, SoundType.GRASS);
+		add("explosive", Material.EXPLOSIVE, SoundType.GRASS);
 		add("coral", Material.CORAL, SoundType.CORAL_BLOCK);
 		add("ice", Material.ICE, SoundType.GLASS);
 		add("snow", Material.TOP_SNOW, SoundType.SNOW);
 		add("clay", Material.CLAY, SoundType.GRAVEL);
-		add("gourd", Material.VEGETABLE, SoundType.GRASS);
+		add("vegetable", Material.VEGETABLE, SoundType.GRASS);
 		add("dragon_egg", Material.EGG, SoundType.STONE);
 		add("portal", Material.PORTAL, SoundType.STONE);
 		add("cake", Material.CAKE, SoundType.WOOL);
@@ -47,6 +48,25 @@ public class MaterialListJS
 		add("honey", Material.CLAY, SoundType.HONEY_BLOCK);
 		add("berry_bush", Material.PLANT, SoundType.SWEET_BERRY_BUSH);
 		add("lantern", Material.METAL, SoundType.LANTERN);
+
+		// Legacy
+		add("rock", Material.STONE, SoundType.STONE);
+		add("iron", Material.METAL, SoundType.METAL);
+		add("organic", Material.GRASS, SoundType.GRASS);
+		add("earth", Material.DIRT, SoundType.GRAVEL);
+		add("plants", Material.PLANT, SoundType.GRASS);
+		add("tnt", Material.EXPLOSIVE, SoundType.GRASS);
+		add("gourd", Material.VEGETABLE, SoundType.GRASS);
+	}
+
+	public MaterialJS of(Object o)
+	{
+		if (o instanceof MaterialJS)
+		{
+			return (MaterialJS) o;
+		}
+
+		return map.getOrDefault(String.valueOf(o).toLowerCase(), wood);
 	}
 
 	public MaterialJS add(MaterialJS m)

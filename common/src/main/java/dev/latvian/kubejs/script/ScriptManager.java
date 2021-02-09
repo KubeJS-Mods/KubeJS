@@ -6,6 +6,8 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.bindings.DefaultBindings;
 import dev.latvian.kubejs.block.BlockStatePredicate;
+import dev.latvian.kubejs.block.MaterialJS;
+import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.fluid.FluidStackJS;
@@ -191,6 +193,7 @@ public class ScriptManager
 		context.getTypeWrappers().register(BlockStatePredicate.class, BlockStatePredicate::of);
 		context.getTypeWrappers().register(FluidStackJS.class, FluidStackJS::of);
 		context.getTypeWrappers().register(RecipeFilter.class, RecipeFilter::of);
+		context.getTypeWrappers().register(MaterialJS.class, MaterialListJS.INSTANCE::of);
 
 		long startAll = System.currentTimeMillis();
 

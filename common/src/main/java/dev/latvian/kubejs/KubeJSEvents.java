@@ -78,6 +78,7 @@ public class KubeJSEvents
 	public static final String ITEM_DESTROYED = "item.destroyed";
 	public static final String ITEM_FOOD_EATEN = "item.food_eaten";
 	public static final String ITEM_TOOLTIP = "item.tooltip";
+	public static final String ITEM_MODIFICATION = "item.modification";
 
 	public static final String FLUID_REGISTRY = "fluid.registry";
 	public static final String FLUID_TAGS = "fluid.tags";
