@@ -12,6 +12,7 @@ import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.util.Tags;
+import dev.latvian.kubejs.util.UtilsJS;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
@@ -180,10 +181,11 @@ public class KubeJSCommands
 
 	private static int reloadStartup(CommandSourceStack source)
 	{
+		source.sendSuccess(new TextComponent("Reloading startup scripts..."), false);
 		KubeJS.startupScriptManager.unload();
 		KubeJS.startupScriptManager.loadFromDirectory();
 		KubeJS.startupScriptManager.load();
-		source.sendSuccess(new TextComponent("Reloading startup scripts..."), false);
+		UtilsJS.postModificationEvents();
 		return 1;
 	}
 

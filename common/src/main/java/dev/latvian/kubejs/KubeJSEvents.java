@@ -63,6 +63,7 @@ public class KubeJSEvents
 	public static final String BLOCK_PLACE = "block.place";
 	public static final String BLOCK_BREAK = "block.break";
 	public static final String BLOCK_DROPS = "block.drops";
+	public static final String BLOCK_MODIFICATION = "block.modification";
 
 	public static final String ITEM_REGISTRY = "item.registry";
 	public static final String ITEM_MISSING_MAPPINGS = "item.missing_mappings";

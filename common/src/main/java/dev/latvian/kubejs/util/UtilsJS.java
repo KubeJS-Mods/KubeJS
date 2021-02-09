@@ -5,6 +5,10 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.block.BlockModificationEventJS;
+import dev.latvian.kubejs.item.ItemModificationEventJS;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
@@ -602,5 +606,11 @@ public class UtilsJS
 		}
 
 		return state;
+	}
+
+	public static void postModificationEvents()
+	{
+		new BlockModificationEventJS().post(ScriptType.STARTUP, KubeJSEvents.BLOCK_MODIFICATION);
+		new ItemModificationEventJS().post(ScriptType.STARTUP, KubeJSEvents.ITEM_MODIFICATION);
 	}
 }

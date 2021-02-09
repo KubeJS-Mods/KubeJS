@@ -3,7 +3,6 @@ package dev.latvian.kubejs.server;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSPaths;
-import dev.latvian.kubejs.item.ItemModificationEventJS;
 import dev.latvian.kubejs.recipe.RecipeEventJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
 import dev.latvian.kubejs.recipe.RecipeTypeRegistryEventJS;
@@ -18,6 +17,7 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.data.DataPackEventJS;
 import dev.latvian.kubejs.script.data.KubeJSResourcePack;
 import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ServerResources;
 import net.minecraft.server.packs.PackResources;
@@ -122,7 +122,7 @@ public class ServerScriptManager
 		new DataPackEventJS(virtualDataPackHigh).post(ScriptType.SERVER, "server.datapack.first");
 		new DataPackEventJS(virtualDataPackHigh).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_HIGH_PRIORITY);
 
-		new ItemModificationEventJS().post(ScriptType.SERVER, KubeJSEvents.ITEM_MODIFICATION);
+		UtilsJS.postModificationEvents();
 
 		ScriptType.SERVER.console.setLineNumber(false);
 

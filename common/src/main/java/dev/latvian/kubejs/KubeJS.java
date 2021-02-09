@@ -57,6 +57,7 @@ public class KubeJS
 
 	public KubeJS() throws Throwable
 	{
+		instance = this;
 		Locale.setDefault(Locale.US);
 
 		if (Files.notExists(KubeJSPaths.README))
@@ -172,5 +173,6 @@ public class KubeJS
 	{
 		ScriptsLoadedEvent.EVENT.invoker().run();
 		new EventJS().post(ScriptType.STARTUP, KubeJSEvents.POSTINIT);
+		UtilsJS.postModificationEvents();
 	}
 }

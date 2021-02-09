@@ -1,6 +1,8 @@
 package dev.latvian.kubejs.mixin.common;
 
 import dev.latvian.kubejs.core.ItemKJS;
+import dev.latvian.mods.rhino.util.RemapForJS;
+import net.minecraft.core.Registry;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,4 +33,10 @@ public abstract class ItemMixin implements ItemKJS
 	@Override
 	@Accessor("rarity")
 	public abstract void setRarityKJS(Rarity r);
+
+	@RemapForJS("getId")
+	public String getIdKJS()
+	{
+		return Registry.ITEM.getKey((Item) (Object) this).toString();
+	}
 }

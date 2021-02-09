@@ -3,6 +3,9 @@
 	"package": "dev.latvian.kubejs.mixin.common",
 	"compatibilityLevel": "JAVA_8",
 	"mixins": [
+		"BlockBehaviourMixin",
+		"BlockMixin",
+		"BlockStateBaseMixin",
 		"DataPackRegistriesMixin",
 		"FireworkRocketEntityMixin",
 		"ItemMixin",
