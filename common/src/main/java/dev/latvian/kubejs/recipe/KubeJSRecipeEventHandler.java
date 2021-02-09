@@ -46,5 +46,11 @@ public class KubeJSRecipeEventHandler
 		{
 			event.register("botanypots:crop", BotanyPotsCropRecipeJS::new);
 		}
+
+		if (Platform.isModLoaded("extendedcrafting"))
+		{
+			event.register("extendedcrafting:shaped_table", ShapedRecipeJS::new);
+			event.register("extendedcrafting:shapeless_table", ShapelessRecipeJS::new);
+		}
 	}
 }
