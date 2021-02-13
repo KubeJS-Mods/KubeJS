@@ -73,10 +73,18 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 		else if (o instanceof CharSequence)
 		{
 			String s = o.toString();
+			int count = 1;
+			int spaceIndex = s.indexOf(' ');
+
+			if (spaceIndex >= 2 && s.indexOf('x') == spaceIndex - 1)
+			{
+				count = Integer.parseInt(s.substring(0, spaceIndex - 1));
+				s = s.substring(spaceIndex + 1);
+			}
 
 			if (s.equals("*"))
 			{
-				return MatchAllIngredientJS.INSTANCE;
+				return MatchAllIngredientJS.INSTANCE.withCount(count);
 			}
 			else if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air"))
 			{
@@ -84,11 +92,11 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 			}
 			else if (s.startsWith("#"))
 			{
-				return TagIngredientJS.createTag(s.substring(1));
+				return TagIngredientJS.createTag(s.substring(1)).withCount(count);
 			}
 			else if (s.startsWith("@"))
 			{
-				return new ModIngredientJS(s.substring(1));
+				return new ModIngredientJS(s.substring(1)).withCount(count);
 			}
 			else if (s.startsWith("%"))
 			{
@@ -103,17 +111,17 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 					return MatchAllIngredientJS.INSTANCE;
 				}
 
-				return new GroupIngredientJS(group);
+				return new GroupIngredientJS(group).withCount(count);
 			}
 
 			Pattern reg = UtilsJS.parseRegex(s);
 
 			if (reg != null)
 			{
-				return new RegexIngredientJS(reg);
+				return new RegexIngredientJS(reg).withCount(count);
 			}
 
-			return ItemStackJS.of(KubeJS.appendModId(s));
+			return ItemStackJS.of(KubeJS.appendModId(s)).withCount(count);
 		}
 
 		List<Object> list = ListJS.of(o);

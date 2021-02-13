@@ -147,6 +147,11 @@ public class IngredientStackJS implements IngredientJS
 			}
 		}
 
+		if (countOverride == 1)
+		{
+			return ingredient.toJson();
+		}
+
 		JsonObject json = new JsonObject();
 		json.add(ingredientKey, ingredient.toJson());
 		json.addProperty(countKey, countOverride);

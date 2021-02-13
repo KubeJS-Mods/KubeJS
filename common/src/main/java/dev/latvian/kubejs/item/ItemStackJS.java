@@ -9,6 +9,7 @@ import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.kubejs.item.ingredient.IgnoreNBTIngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
 import dev.latvian.kubejs.item.ingredient.RegexIngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
@@ -109,7 +110,15 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		}
 		else if (o instanceof CharSequence)
 		{
-			String s = o.toString();
+			String s = o.toString().trim();
+			int count = 1;
+			int spaceIndex = s.indexOf(' ');
+
+			if (spaceIndex >= 2 && s.indexOf('x') == spaceIndex - 1)
+			{
+				count = Integer.parseInt(s.substring(0, spaceIndex - 1));
+				s = s.substring(spaceIndex + 1);
+			}
 
 			if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air"))
 			{
@@ -118,11 +127,11 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 			if (s.startsWith("#"))
 			{
-				return TagIngredientJS.createTag(s.substring(1)).getFirst();
+				return TagIngredientJS.createTag(s.substring(1)).getFirst().withCount(count);
 			}
 			else if (s.startsWith("@"))
 			{
-				return new ModIngredientJS(s.substring(1)).getFirst();
+				return new ModIngredientJS(s.substring(1)).getFirst().withCount(count);
 			}
 			else if (s.startsWith("%"))
 			{
@@ -133,17 +142,17 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 					return EmptyItemStackJS.INSTANCE;
 				}
 
-				return new GroupIngredientJS(group).getFirst();
+				return new GroupIngredientJS(group).getFirst().withCount(count);
 			}
 
 			Pattern reg = UtilsJS.parseRegex(s);
 
 			if (reg != null)
 			{
-				return new RegexIngredientJS(reg).getFirst();
+				return new RegexIngredientJS(reg).getFirst().withCount(count);
 			}
 
-			return new UnboundItemStackJS(new ResourceLocation(s));
+			return new UnboundItemStackJS(new ResourceLocation(s)).withCount(count);
 		}
 
 		MapJS map = MapJS.of(o);
@@ -800,21 +809,16 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	@Override
 	public JsonElement toJson()
 	{
-		JsonObject json = new JsonObject();
-		json.addProperty("item", getId());
+		int c = getCount();
 
-		if (getCount() > 1)
+		if (c == 1)
 		{
-			json.addProperty("count", getCount());
+			return new DummyItemStackJSIngredient(this).toJson();
 		}
-
-		if (!getNbt().isEmpty())
+		else
 		{
-			json.addProperty("type", "forge:nbt");
-			json.addProperty("nbt", getNbt().toNBT().toString());
+			return new IngredientStackJS(new DummyItemStackJSIngredient(this), c).toJson();
 		}
-
-		return json;
 	}
 
 	public JsonElement toResultJson()
