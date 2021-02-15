@@ -36,8 +36,8 @@
 	],
 	"depends": {
 		"fabric": "*",
-		"minecraft": "~1.16.2",
+		"minecraft": "~1.16.5",
 		"rhino": ">=1.7.13-build.14",
-		"architectury": ">=1.1.52"
+		"architectury": ">=1.5.112"
 	}
 }

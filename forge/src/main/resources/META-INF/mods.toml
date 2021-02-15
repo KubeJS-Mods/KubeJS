@@ -24,7 +24,7 @@ side = "BOTH"
 [[dependencies.kubejs]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.16,)"
+versionRange = "[1.16.4,)"
 ordering = "NONE"
 side = "BOTH"
 
@@ -38,7 +38,7 @@ side = "BOTH"
 [[dependencies.kubejs]]
 modId = "architectury"
 mandatory = true
-versionRange = "[1.1.52,)"
+versionRange = "[1.5.112,)"
 ordering = "AFTER"
 side = "BOTH"
 
