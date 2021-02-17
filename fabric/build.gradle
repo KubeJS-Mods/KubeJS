@@ -11,6 +11,7 @@ configurations {
 
 architectury {
 	platformSetupLoomIde()
+	fabric()
 }
 
 dependencies {
@@ -29,10 +30,10 @@ dependencies {
 	}
 	compile("curse.maven:rhino-416294:${rootProject.rhino_file}")
 
-	compileOnly(project(path: ":common")) {
+	implementation(project(path: ":common")) {
 		transitive = false
 	}
-	runtimeOnly(project(path: ":common", configuration: "transformDevelopmentFabric")) {
+	developmentFabric(project(path: ":common")) {
 		transitive = false
 	}
 	shadow(project(path: ":common", configuration: "transformProductionFabric")) {

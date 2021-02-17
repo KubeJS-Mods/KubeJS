@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-@Mixin(RecipeManager.class)
+@Mixin(value = RecipeManager.class, priority = 1100)
 public abstract class RecipeManagerMixin implements RecipeManagerKJS
 {
 	@Inject(method = "apply", at = @At("HEAD"), cancellable = true)
