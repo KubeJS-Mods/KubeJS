@@ -1,6 +1,8 @@
 package dev.latvian.kubejs.recipe;
 
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.recipe.minecraft.ShapedRecipeJS;
+import dev.latvian.kubejs.recipe.minecraft.ShapelessRecipeJS;
 import me.shedaniel.architectury.ForgeEvent;
 import me.shedaniel.architectury.event.Event;
 import me.shedaniel.architectury.event.EventFactory;
@@ -51,5 +53,15 @@ public class RegisterRecipeHandlersEvent
 	public void ignore(String id)
 	{
 		ignore(new ResourceLocation(id));
+	}
+
+	public void registerShaped(ResourceLocation id)
+	{
+		register(id, ShapedRecipeJS::new);
+	}
+
+	public void registerShapeless(ResourceLocation id)
+	{
+		register(id, ShapelessRecipeJS::new);
 	}
 }

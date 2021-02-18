@@ -2,6 +2,8 @@ package dev.latvian.kubejs.recipe;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.recipe.minecraft.ShapedRecipeJS;
+import dev.latvian.kubejs.recipe.minecraft.ShapelessRecipeJS;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -36,5 +38,15 @@ public class RecipeTypeRegistryEventJS extends EventJS
 	public void ignore(ResourceLocation id)
 	{
 		register(new IgnoredRecipeTypeJS(Objects.requireNonNull(Registry.RECIPE_SERIALIZER.get(id), "Cannot find recipe serializer: " + id)));
+	}
+
+	public void registerShaped(ResourceLocation id)
+	{
+		register(id, ShapedRecipeJS::new);
+	}
+
+	public void registerShapeless(ResourceLocation id)
+	{
+		register(id, ShapelessRecipeJS::new);
 	}
 }

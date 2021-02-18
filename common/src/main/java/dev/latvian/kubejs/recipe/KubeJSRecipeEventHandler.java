@@ -1,13 +1,12 @@
 package dev.latvian.kubejs.recipe;
 
 import dev.latvian.kubejs.recipe.minecraft.CookingRecipeJS;
-import dev.latvian.kubejs.recipe.minecraft.ShapedRecipeJS;
-import dev.latvian.kubejs.recipe.minecraft.ShapelessRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.SmithingRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.StonecuttingRecipeJS;
 import dev.latvian.kubejs.recipe.mod.BotanyPotsCropRecipeJS;
 import dev.latvian.kubejs.recipe.mod.MATagRecipeJS;
 import me.shedaniel.architectury.platform.Platform;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * @author LatvianModder
@@ -21,20 +20,20 @@ public class KubeJSRecipeEventHandler
 
 	private static void registerRecipeHandlers(RegisterRecipeHandlersEvent event)
 	{
-		event.register("minecraft:crafting_shaped", ShapedRecipeJS::new);
-		event.register("minecraft:crafting_shapeless", ShapelessRecipeJS::new);
-		event.register("minecraft:stonecutting", StonecuttingRecipeJS::new);
-		event.register("minecraft:smelting", CookingRecipeJS::new);
-		event.register("minecraft:blasting", CookingRecipeJS::new);
-		event.register("minecraft:smoking", CookingRecipeJS::new);
-		event.register("minecraft:campfire_cooking", CookingRecipeJS::new);
-		event.register("minecraft:smithing", SmithingRecipeJS::new);
+		event.registerShaped(new ResourceLocation("minecraft:crafting_shaped"));
+		event.registerShapeless(new ResourceLocation("minecraft:crafting_shapeless"));
+		event.register(new ResourceLocation("minecraft:stonecutting"), StonecuttingRecipeJS::new);
+		event.register(new ResourceLocation("minecraft:smelting"), CookingRecipeJS::new);
+		event.register(new ResourceLocation("minecraft:blasting"), CookingRecipeJS::new);
+		event.register(new ResourceLocation("minecraft:smoking"), CookingRecipeJS::new);
+		event.register(new ResourceLocation("minecraft:campfire_cooking"), CookingRecipeJS::new);
+		event.register(new ResourceLocation("minecraft:smithing"), SmithingRecipeJS::new);
 
 		// Mod recipe types that use vanilla syntax
 
 		if (Platform.isModLoaded("cucumber"))
 		{
-			event.register("cucumber:shaped_no_mirror", ShapedRecipeJS::new);
+			event.registerShaped(new ResourceLocation("cucumber:shaped_no_mirror"));
 		}
 
 		if (Platform.isModLoaded("mysticalagriculture"))
@@ -49,8 +48,13 @@ public class KubeJSRecipeEventHandler
 
 		if (Platform.isModLoaded("extendedcrafting"))
 		{
-			event.register("extendedcrafting:shaped_table", ShapedRecipeJS::new);
-			event.register("extendedcrafting:shapeless_table", ShapelessRecipeJS::new);
+			event.registerShaped(new ResourceLocation("extendedcrafting:shaped_table"));
+			event.registerShapeless(new ResourceLocation("extendedcrafting:shapeless_table"));
+		}
+
+		if (Platform.isModLoaded("dankstorage"))
+		{
+			event.registerShaped(new ResourceLocation("dankstorage:upgrade"));
 		}
 	}
 }
