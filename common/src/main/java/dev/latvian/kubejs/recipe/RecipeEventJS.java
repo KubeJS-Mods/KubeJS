@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -69,7 +70,7 @@ public class RecipeEventJS extends EventJS
 	private final Map<ResourceLocation, RecipeFunction> functionMap;
 
 	private final DynamicMap<DynamicMap<RecipeFunction>> recipeFunctions;
-	private MutableInt modifiedRecipes;
+	private AtomicInteger modifiedRecipes;
 
 	public RecipeEventJS(Map<ResourceLocation, RecipeTypeJS> t)
 	{
@@ -292,7 +293,7 @@ public class RecipeEventJS extends EventJS
 		}
 
 		MutableInt removed = new MutableInt(0), added = new MutableInt(0), failed = new MutableInt(0), fallbacked = new MutableInt(0);
-		modifiedRecipes = new MutableInt(0);
+		modifiedRecipes = new AtomicInteger(0);
 
 		ScriptType.SERVER.console.getLogger().info("Found {} recipes and {} failed recipes in {}", originalRecipes.size(), fallbackedRecipes.size(), timer.stop());
 		timer.reset().start();
@@ -405,7 +406,7 @@ public class RecipeEventJS extends EventJS
 		ScriptType.SERVER.console.getLogger().info("Added recipes in {}", timer.stop());
 		pingNewRecipes(newRecipeMap);
 		((RecipeManagerKJS) recipeManager).setRecipesKJS(newRecipeMap);
-		ScriptType.SERVER.console.getLogger().info("Added {} recipes, removed {} recipes, modified {} recipes, with {} failed recipes and {} fall-backed recipes", added.getValue(), removed.getValue(), modifiedRecipes.getValue(), failed.getValue(), fallbacked.getValue());
+		ScriptType.SERVER.console.getLogger().info("Added {} recipes, removed {} recipes, modified {} recipes, with {} failed recipes and {} fall-backed recipes", added.getValue(), removed.getValue(), modifiedRecipes.get(), failed.getValue(), fallbacked.getValue());
 	}
 
 	@ExpectPlatform
@@ -457,6 +458,18 @@ public class RecipeEventJS extends EventJS
 		}
 	}
 
+	public void forEachRecipeAsync(RecipeFilter filter, Consumer<RecipeJS> consumer)
+	{
+		if (filter == RecipeFilter.ALWAYS_TRUE)
+		{
+			originalRecipes.parallelStream().forEach(consumer);
+		}
+		else if (filter != RecipeFilter.ALWAYS_FALSE)
+		{
+			originalRecipes.parallelStream().filter(filter).forEach(consumer);
+		}
+	}
+
 	public int countRecipes(RecipeFilter filter)
 	{
 		if (filter == RecipeFilter.ALWAYS_TRUE)
@@ -495,15 +508,15 @@ public class RecipeEventJS extends EventJS
 
 	public int replaceInput(RecipeFilter filter, IngredientJS ingredient, IngredientJS with, boolean exact)
 	{
-		MutableInt count = new MutableInt();
+		AtomicInteger count = new AtomicInteger();
 		String is = ingredient.toString();
 		String ws = with.toString();
 
-		forEachRecipe(filter, r ->
+		forEachRecipeAsync(filter, r ->
 		{
 			if (r.replaceInput(ingredient, with, exact))
 			{
-				count.increment();
+				count.incrementAndGet();
 
 				if (ServerSettings.instance.logAddedRecipes || ServerSettings.instance.logRemovedRecipes)
 				{
@@ -516,8 +529,8 @@ public class RecipeEventJS extends EventJS
 			}
 		});
 
-		modifiedRecipes.add(count);
-		return count.getValue();
+		modifiedRecipes.addAndGet(count.get());
+		return count.get();
 	}
 
 	public int replaceInput(RecipeFilter filter, IngredientJS ingredient, IngredientJS with)
@@ -532,15 +545,15 @@ public class RecipeEventJS extends EventJS
 
 	public int replaceOutput(RecipeFilter filter, IngredientJS ingredient, ItemStackJS with, boolean exact)
 	{
-		MutableInt count = new MutableInt();
+		AtomicInteger count = new AtomicInteger();
 		String is = ingredient.toString();
 		String ws = with.toString();
 
-		forEachRecipe(filter, r ->
+		forEachRecipeAsync(filter, r ->
 		{
 			if (r.replaceOutput(ingredient, with, exact))
 			{
-				count.increment();
+				count.incrementAndGet();
 
 				if (ServerSettings.instance.logAddedRecipes || ServerSettings.instance.logRemovedRecipes)
 				{
@@ -553,8 +566,8 @@ public class RecipeEventJS extends EventJS
 			}
 		});
 
-		modifiedRecipes.add(count);
-		return count.getValue();
+		modifiedRecipes.addAndGet(count.get());
+		return count.get();
 	}
 
 	public int replaceOutput(RecipeFilter filter, IngredientJS ingredient, ItemStackJS with)
