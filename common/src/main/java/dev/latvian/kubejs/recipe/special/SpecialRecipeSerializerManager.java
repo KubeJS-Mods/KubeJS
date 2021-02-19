@@ -7,7 +7,6 @@ import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,14 +34,7 @@ public class SpecialRecipeSerializerManager extends EventJS
 
 	public boolean isSpecial(Recipe<?> recipe)
 	{
-		RecipeSerializer<?> serializer = recipe.getSerializer();
-		Boolean flag = data.getOrDefault(Registries.getId(serializer, Registry.RECIPE_SERIALIZER_REGISTRY), null);
-		if (flag == null)
-		{
-			return recipe.isSpecial();
-		}
-
-		return flag;
+		return data.getOrDefault(Registries.getId(recipe.getSerializer(), Registry.RECIPE_SERIALIZER_REGISTRY), recipe.isSpecial());
 	}
 
 	public void ignoreSpecialFlag(String id)
