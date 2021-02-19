@@ -1,7 +1,9 @@
 package dev.latvian.kubejs.recipe;
 
 import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.ComposterBlock;
 
 /**
@@ -9,9 +11,12 @@ import net.minecraft.world.level.block.ComposterBlock;
  */
 public class CompostablesRecipeEventJS extends EventJS
 {
-	public void remove(Object o)
+	public void remove(IngredientJS o)
 	{
-		ComposterBlock.COMPOSTABLES.removeFloat(ItemStackJS.of(o).getItem());
+		for (Item item : o.getVanillaItems())
+		{
+			ComposterBlock.COMPOSTABLES.removeFloat(item);
+		}
 	}
 
 	public void removeAll()
@@ -19,8 +24,11 @@ public class CompostablesRecipeEventJS extends EventJS
 		ComposterBlock.COMPOSTABLES.clear();
 	}
 
-	public void add(Object o, float f)
+	public void add(IngredientJS o, float f)
 	{
-		ComposterBlock.COMPOSTABLES.put(ItemStackJS.of(o).getItem(), Math.max(0F, Math.min(1F, f)));
+		for (Item item : o.getVanillaItems())
+		{
+			ComposterBlock.COMPOSTABLES.put(item, Mth.clamp(f, 0F, 1F));
+		}
 	}
 }
