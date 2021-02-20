@@ -23,6 +23,7 @@ public class KubeJSEvents
 	public static final String SERVER_TICK = "server.tick";
 	public static final String SERVER_DATAPACK_HIGH_PRIORITY = "server.datapack.high_priority";
 	public static final String SERVER_DATAPACK_LOW_PRIORITY = "server.datapack.low_priority";
+	public static final String SERVER_CUSTOM_COMMAND = "server.custom_command";
 	public static final String RECIPES = "recipes";
 	public static final String RECIPES_SERIALIZER_SPECIAL_FLAG = "recipes.serializer.special.flag";
 	public static final String RECIPES_COMPOSTABLES = "recipes.compostables";

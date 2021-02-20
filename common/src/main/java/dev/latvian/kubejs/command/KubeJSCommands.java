@@ -4,12 +4,15 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.server.CustomCommandEventJS;
 import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -19,6 +22,7 @@ import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -46,6 +50,11 @@ public class KubeJSCommands
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher)
 	{
 		dispatcher.register(Commands.literal("kubejs")
+				.then(Commands.literal("custom_command")
+						.then(Commands.argument("id", StringArgumentType.word())
+								.executes(context -> customCommand(context.getSource(), StringArgumentType.getString(context, "id")))
+						)
+				)
 				.then(Commands.literal("hand")
 						.executes(context -> hand(context.getSource().getPlayerOrException()))
 				)
@@ -109,6 +118,12 @@ public class KubeJSCommands
 		component.setStyle(component.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent(info + " (Click to copy)"))));
 		component.append(new TextComponent(s).withStyle(col));
 		return component;
+	}
+
+	private static int customCommand(CommandSourceStack source, String id)
+	{
+		new CustomCommandEventJS(source.getLevel(), source.getEntity(), new BlockPos(source.getPosition()), id).post(ScriptType.SERVER, KubeJSEvents.SERVER_CUSTOM_COMMAND, id);
+		return 1;
 	}
 
 	private static int hand(ServerPlayer player)
