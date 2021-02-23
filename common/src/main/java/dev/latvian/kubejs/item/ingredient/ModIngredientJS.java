@@ -2,6 +2,8 @@ package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.kubejs.recipe.RecipeJS;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -20,6 +22,11 @@ public class ModIngredientJS implements IngredientJS
 	public ModIngredientJS(String m)
 	{
 		mod = m;
+
+		if (RecipeJS.itemErrors && getFirst().isEmpty())
+		{
+			throw new RecipeExceptionJS("Mod '" + mod + "' doesn't have any items!").error();
+		}
 	}
 
 	public String getMod()

@@ -28,6 +28,7 @@ public class CommonProperties
 
 	public boolean hideServerScriptErrors;
 	public boolean serverOnly;
+	public boolean announceReload;
 
 	private CommonProperties()
 	{
@@ -52,6 +53,7 @@ public class CommonProperties
 
 			hideServerScriptErrors = get("hideServerScriptErrors", false);
 			serverOnly = get("serverOnly", false);
+			announceReload = get("announceReload", true);
 
 			if (writeProperties)
 			{

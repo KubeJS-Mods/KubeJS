@@ -3,12 +3,12 @@ package dev.latvian.kubejs.item.ingredient;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.UnboundItemStackJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.Copyable;
 import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.ListJS;
@@ -19,6 +19,7 @@ import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -82,6 +83,11 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 				s = s.substring(spaceIndex + 1);
 			}
 
+			if (RecipeJS.itemErrors && count <= 0)
+			{
+				throw new RecipeExceptionJS("Invalid count!").error();
+			}
+
 			if (s.equals("*"))
 			{
 				return MatchAllIngredientJS.INSTANCE.withCount(count);
@@ -104,11 +110,12 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 
 				if (group == null)
 				{
+					if (RecipeJS.itemErrors)
+					{
+						throw new RecipeExceptionJS("Item group '" + s.substring(1) + "' not found!").error();
+					}
+
 					return EmptyItemStackJS.INSTANCE;
-				}
-				else if (group == CreativeModeTab.TAB_SEARCH)
-				{
-					return MatchAllIngredientJS.INSTANCE;
 				}
 
 				return new GroupIngredientJS(group).withCount(count);
@@ -121,7 +128,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 				return new RegexIngredientJS(reg).withCount(count);
 			}
 
-			return ItemStackJS.of(KubeJS.appendModId(s)).withCount(count);
+			return new UnboundItemStackJS(new ResourceLocation(s)).withCount(count);
 		}
 
 		List<Object> list = ListJS.of(o);
@@ -161,7 +168,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 				}
 				catch (Exception ex)
 				{
-					throw new RecipeExceptionJS("Failed to parse custom ingredient (" + json.get("type") + ") from " + json + ": " + ex);
+					throw new RecipeExceptionJS("Failed to parse custom ingredient (" + json.get("type") + ") from " + json + ": " + ex).fallback();
 				}
 			}
 			else if (val || map.containsKey("ingredient"))

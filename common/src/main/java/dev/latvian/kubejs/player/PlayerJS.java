@@ -6,12 +6,12 @@ import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemHandlerUtils;
 import dev.latvian.kubejs.item.ItemStackJS;
-import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.AttachedData;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.WithAttachedData;
 import dev.latvian.kubejs.world.WorldJS;
 import me.shedaniel.architectury.hooks.PlayerHooks;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -130,9 +130,9 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 	}
 
 	@Override
-	public void setStatusMessage(Object message)
+	public void setStatusMessage(Component message)
 	{
-		minecraftPlayer.displayClientMessage(Text.of(message).component(), true);
+		minecraftPlayer.displayClientMessage(message, true);
 	}
 
 	public boolean isCreativeMode()

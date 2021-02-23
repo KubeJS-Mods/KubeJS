@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 public abstract class RecipeJS
 {
 	public static RecipeJS currentRecipe = null;
+	public static boolean itemErrors = false;
 
 	public ResourceLocation id;
 	public RecipeTypeJS type;

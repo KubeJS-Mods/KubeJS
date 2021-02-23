@@ -2,6 +2,8 @@ package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.kubejs.recipe.RecipeJS;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 
@@ -15,6 +17,11 @@ public class GroupIngredientJS implements IngredientJS
 	public GroupIngredientJS(CreativeModeTab m)
 	{
 		group = m;
+
+		if (RecipeJS.itemErrors && getFirst().isEmpty())
+		{
+			throw new RecipeExceptionJS("Group '" + getGroupId() + "' doesn't have any items!").error();
+		}
 	}
 
 	@MinecraftClass

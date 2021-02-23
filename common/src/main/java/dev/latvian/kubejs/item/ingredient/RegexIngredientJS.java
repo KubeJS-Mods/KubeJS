@@ -1,6 +1,8 @@
 package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
@@ -18,6 +20,11 @@ public class RegexIngredientJS implements IngredientJS
 	public RegexIngredientJS(Pattern p)
 	{
 		pattern = p;
+
+		if (RecipeJS.itemErrors && getFirst().isEmpty())
+		{
+			throw new RecipeExceptionJS("Regex '" + pattern + "' doesn't match any items!").error();
+		}
 	}
 
 	public Pattern getPattern()

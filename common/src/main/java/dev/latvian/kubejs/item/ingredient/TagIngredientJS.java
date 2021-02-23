@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.UnboundItemStackJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.core.Registry;
@@ -30,7 +31,14 @@ public class TagIngredientJS implements IngredientJS
 
 	public static TagIngredientJS createTag(String tag)
 	{
-		return tagIngredientCache.computeIfAbsent(tag, TagIngredientJS::new);
+		TagIngredientJS i = tagIngredientCache.computeIfAbsent(tag, TagIngredientJS::new);
+
+		if (RecipeJS.itemErrors && i.getActualTag().getValues().isEmpty())
+		{
+			throw new RecipeExceptionJS("Tag '#" + tag + "' doesn't contain any items!").error();
+		}
+
+		return i;
 	}
 
 	public static void clearTagCache()

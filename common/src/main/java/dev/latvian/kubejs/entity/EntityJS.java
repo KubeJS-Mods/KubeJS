@@ -20,6 +20,7 @@ import net.minecraft.Util;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -98,9 +99,9 @@ public class EntityJS implements MessageSender, WrappedJS
 	}
 
 	@Override
-	public void tell(Object message)
+	public void tell(Component message)
 	{
-		minecraftEntity.sendMessage(Text.of(message).component(), Util.NIL_UUID);
+		minecraftEntity.sendMessage(message, Util.NIL_UUID);
 	}
 
 	public String toString()
@@ -452,9 +453,9 @@ public class EntityJS implements MessageSender, WrappedJS
 		return team != null && minecraftEntity.isAlliedTo(team);
 	}
 
-	public void setCustomName(Text name)
+	public void setCustomName(Component name)
 	{
-		minecraftEntity.setCustomName(name.component());
+		minecraftEntity.setCustomName(name);
 	}
 
 	public Text getCustomName()

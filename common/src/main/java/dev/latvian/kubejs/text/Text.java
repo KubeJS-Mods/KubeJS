@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +30,24 @@ import java.util.Objects;
  */
 public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSerializable, WrappedJS
 {
+	public static Component componentOfObject(@Nullable Object o)
+	{
+		if (o == null)
+		{
+			return new TextComponent("null");
+		}
+		else if (o instanceof Component)
+		{
+			return (Component) o;
+		}
+		else if (o instanceof CharSequence)
+		{
+			return new TextComponent(o.toString());
+		}
+
+		return of(o).component();
+	}
+
 	public static Text of(@Nullable Object o)
 	{
 		return ofWrapped(UtilsJS.wrap(o, JSObjectType.ANY));

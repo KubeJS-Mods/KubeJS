@@ -27,6 +27,9 @@ import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -181,6 +184,8 @@ public class ScriptManager
 		context.getTypeWrappers().register(ListTag.class, o -> (ListTag) ListJS.nbt(o));
 		context.getTypeWrappers().register(UUID.class, UUIDUtilsJS::fromString);
 		context.getTypeWrappers().register(Pattern.class, UtilsJS::parseRegex);
+		context.getTypeWrappers().register(Component.class, Text::componentOfObject);
+		context.getTypeWrappers().register(MutableComponent.class, o -> new TextComponent("").append(Text.componentOfObject(o)));
 
 		context.getTypeWrappers().register(Item.class, o -> ItemStackJS.of(o).getItem());
 		// handle other registries here as well like blocks, potions, sounds etc

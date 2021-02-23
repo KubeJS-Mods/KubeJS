@@ -63,26 +63,22 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 	}
 
 	@Override
-	public void tell(Object message)
+	public void tell(Component message)
 	{
-		Component component = Text.of(message).component();
-
 		for (EntityJS entity : this)
 		{
-			entity.minecraftEntity.sendMessage(component, Util.NIL_UUID);
+			entity.minecraftEntity.sendMessage(message, Util.NIL_UUID);
 		}
 	}
 
 	@Override
-	public void setStatusMessage(Object message)
+	public void setStatusMessage(Component message)
 	{
-		Component component = Text.of(message).component();
-
 		for (EntityJS entity : this)
 		{
 			if (entity.minecraftEntity instanceof ServerPlayer)
 			{
-				((ServerPlayer) entity.minecraftEntity).displayClientMessage(component, true);
+				((ServerPlayer) entity.minecraftEntity).displayClientMessage(message, true);
 			}
 		}
 	}

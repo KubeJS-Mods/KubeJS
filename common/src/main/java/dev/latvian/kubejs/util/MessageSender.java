@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.util;
 
 import dev.latvian.kubejs.text.Text;
+import net.minecraft.network.chat.Component;
 
 /**
  * @author LatvianModder
@@ -14,9 +15,9 @@ public interface MessageSender
 		return getName();
 	}
 
-	void tell(Object message);
+	void tell(Component message);
 
-	default void setStatusMessage(Object message)
+	default void setStatusMessage(Component message)
 	{
 	}
 

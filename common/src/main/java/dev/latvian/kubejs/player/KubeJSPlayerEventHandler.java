@@ -51,7 +51,7 @@ public class KubeJSPlayerEventHandler
 
 		if (!ScriptType.SERVER.errors.isEmpty() && !CommonProperties.get().hideServerScriptErrors)
 		{
-			player.displayClientMessage(new TextComponent("KubeJS errors found! Run '/kubejs errors' for more info").withStyle(ChatFormatting.RED), false);
+			player.displayClientMessage(new TextComponent("KubeJS errors found [" + ScriptType.SERVER.errors.size() + "]! Run '/kubejs errors' for more info").withStyle(ChatFormatting.DARK_RED), false);
 		}
 	}
 

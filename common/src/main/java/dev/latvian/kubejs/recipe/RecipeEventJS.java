@@ -118,6 +118,7 @@ public class RecipeEventJS extends EventJS
 
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap)
 	{
+		RecipeJS.itemErrors = false;
 		ScriptType.SERVER.console.setLineNumber(true);
 		Stopwatch timer = Stopwatch.createStarted();
 
@@ -407,6 +408,7 @@ public class RecipeEventJS extends EventJS
 		pingNewRecipes(newRecipeMap);
 		((RecipeManagerKJS) recipeManager).setRecipesKJS(newRecipeMap);
 		ScriptType.SERVER.console.getLogger().info("Added {} recipes, removed {} recipes, modified {} recipes, with {} failed recipes and {} fall-backed recipes", added.getValue(), removed.getValue(), modifiedRecipes.get(), failed.getValue(), fallbacked.getValue());
+		RecipeJS.itemErrors = false;
 	}
 
 	@ExpectPlatform
@@ -671,6 +673,11 @@ public class RecipeEventJS extends EventJS
 			RecipeJS r = list.get(i);
 			ScriptType.SERVER.console.info("- " + r.id + ":\n" + JsonUtilsJS.toPrettyString(r.json));
 		}
+	}
+
+	public void setItemErrors(boolean b)
+	{
+		RecipeJS.itemErrors = b;
 	}
 
 	@ExpectPlatform

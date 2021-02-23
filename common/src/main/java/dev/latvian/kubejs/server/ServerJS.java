@@ -160,25 +160,22 @@ public class ServerJS implements MessageSender, WithAttachedData
 	}
 
 	@Override
-	public void tell(Object message)
+	public void tell(Component message)
 	{
-		Component component = Text.of(message).component();
-		getMinecraftServer().sendMessage(component, Util.NIL_UUID);
+		getMinecraftServer().sendMessage(message, Util.NIL_UUID);
 
 		for (ServerPlayer player : getMinecraftServer().getPlayerList().getPlayers())
 		{
-			player.sendMessage(component, Util.NIL_UUID);
+			player.sendMessage(message, Util.NIL_UUID);
 		}
 	}
 
 	@Override
-	public void setStatusMessage(Object message)
+	public void setStatusMessage(Component message)
 	{
-		Component component = Text.of(message).component();
-
 		for (ServerPlayer player : getMinecraftServer().getPlayerList().getPlayers())
 		{
-			player.displayClientMessage(component, true);
+			player.displayClientMessage(message, true);
 		}
 	}
 

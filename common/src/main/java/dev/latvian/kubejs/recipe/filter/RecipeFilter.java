@@ -1,7 +1,9 @@
 package dev.latvian.kubejs.recipe.filter;
 
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -75,38 +77,54 @@ public interface RecipeFilter extends Predicate<RecipeJS>
 			predicate.list.add(of(map.get("or")));
 		}
 
-		if (map.get("id") != null)
+		try
 		{
-			String s = map.get("id").toString();
-			Pattern pattern = UtilsJS.parseRegex(s);
-			predicate.list.add(pattern == null ? new IDFilter(UtilsJS.getMCID(s)) : new RegexIDFilter(pattern));
-		}
+			if (map.get("id") != null)
+			{
+				String s = map.get("id").toString();
+				Pattern pattern = UtilsJS.parseRegex(s);
+				predicate.list.add(pattern == null ? new IDFilter(UtilsJS.getMCID(s)) : new RegexIDFilter(pattern));
+			}
 
-		if (map.get("type") != null)
+			if (map.get("type") != null)
+			{
+				predicate.list.add(new TypeFilter(UtilsJS.getID(map.get("type").toString())));
+			}
+
+			if (map.get("group") != null)
+			{
+				predicate.list.add(new GroupFilter(map.get("group").toString()));
+			}
+
+			if (map.get("mod") != null)
+			{
+				predicate.list.add(new ModFilter(map.get("mod").toString()));
+			}
+
+			if (map.get("input") != null)
+			{
+				predicate.list.add(new InputFilter(IngredientJS.of(map.get("input")), exact));
+			}
+
+			if (map.get("output") != null)
+			{
+				predicate.list.add(new OutputFilter(IngredientJS.of(map.get("output")), exact));
+			}
+
+			return predicate.list.isEmpty() ? ALWAYS_TRUE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
+		}
+		catch (RecipeExceptionJS ex)
 		{
-			predicate.list.add(new TypeFilter(UtilsJS.getID(map.get("type").toString())));
-		}
+			if (ex.error)
+			{
+				ScriptType.SERVER.console.error(ex.getMessage());
+			}
+			else
+			{
+				ScriptType.SERVER.console.warn(ex.getMessage());
+			}
 
-		if (map.get("group") != null)
-		{
-			predicate.list.add(new GroupFilter(map.get("group").toString()));
+			return ALWAYS_FALSE;
 		}
-
-		if (map.get("mod") != null)
-		{
-			predicate.list.add(new ModFilter(map.get("mod").toString()));
-		}
-
-		if (map.get("input") != null)
-		{
-			predicate.list.add(new InputFilter(IngredientJS.of(map.get("input")), exact));
-		}
-
-		if (map.get("output") != null)
-		{
-			predicate.list.add(new OutputFilter(IngredientJS.of(map.get("output")), exact));
-		}
-
-		return predicate.list.isEmpty() ? ALWAYS_TRUE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
 	}
 }

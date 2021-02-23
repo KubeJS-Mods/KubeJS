@@ -14,6 +14,7 @@ import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
 import dev.latvian.kubejs.item.ingredient.RegexIngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.player.PlayerJS;
+import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.JSObjectType;
@@ -139,6 +140,11 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 				if (group == null)
 				{
+					if (RecipeJS.itemErrors)
+					{
+						throw new RecipeExceptionJS("Item group '" + s.substring(1) + "' not found!").error();
+					}
+
 					return EmptyItemStackJS.INSTANCE;
 				}
 

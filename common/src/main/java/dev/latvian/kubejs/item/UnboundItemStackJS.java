@@ -1,11 +1,11 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.MapJS;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -29,19 +29,17 @@ public class UnboundItemStackJS extends ItemStackJS
 		count = 1;
 		nbt = null;
 		cached = null;
+
+		if (RecipeJS.itemErrors && !Registry.ITEM.containsKey(i))
+		{
+			throw new RecipeExceptionJS("Item '" + item + "' not found!").error();
+		}
 	}
 
 	@Override
 	public Item getItem()
 	{
-		Item i = Registries.get(KubeJS.MOD_ID).get(Registry.ITEM_REGISTRY).get(new ResourceLocation(item));
-
-		if (i != null)
-		{
-			return i;
-		}
-
-		return Items.AIR;
+		return Registry.ITEM.get(new ResourceLocation(item));
 	}
 
 	@Override
@@ -92,7 +90,7 @@ public class UnboundItemStackJS extends ItemStackJS
 	@Override
 	public void setCount(int c)
 	{
-		count = Mth.clamp(c, 0, 64);
+		count = Math.max(c, 0);
 		cached = null;
 	}
 
