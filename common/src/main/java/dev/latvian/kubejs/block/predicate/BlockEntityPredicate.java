@@ -9,32 +9,27 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 /**
  * @author LatvianModder
  */
-public class BlockEntityPredicate implements BlockPredicate
-{
+public class BlockEntityPredicate implements BlockPredicate {
 	private final ResourceLocation id;
 	private BlockEntityPredicateDataCheck checkData;
 
-	public BlockEntityPredicate(ResourceLocation i)
-	{
+	public BlockEntityPredicate(ResourceLocation i) {
 		id = i;
 	}
 
-	public BlockEntityPredicate data(BlockEntityPredicateDataCheck cd)
-	{
+	public BlockEntityPredicate data(BlockEntityPredicateDataCheck cd) {
 		checkData = cd;
 		return this;
 	}
 
 	@Override
-	public boolean check(BlockContainerJS block)
-	{
+	public boolean check(BlockContainerJS block) {
 		BlockEntity tileEntity = block.getEntity();
 		return tileEntity != null && id.equals(Registries.getId(tileEntity.getType(), Registry.BLOCK_ENTITY_TYPE_REGISTRY)) && (checkData == null || checkData.checkData(block.getEntityData()));
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return "{entity=" + id + "}";
 	}
 }

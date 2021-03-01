@@ -13,8 +13,7 @@ import java.util.stream.Collectors;
 /**
  * @author LatvianModder
  */
-public class HideJEIEventJS<T> extends EventJS
-{
+public class HideJEIEventJS<T> extends EventJS {
 	private final IJeiRuntime runtime;
 	private final IIngredientType<T> type;
 	private final Function<Object, Predicate<T>> function;
@@ -22,8 +21,7 @@ public class HideJEIEventJS<T> extends EventJS
 	private final Predicate<T> isValid;
 	private final Collection<T> allIngredients;
 
-	public HideJEIEventJS(IJeiRuntime r, IIngredientType<T> t, Function<Object, Predicate<T>> f, Predicate<T> i)
-	{
+	public HideJEIEventJS(IJeiRuntime r, IIngredientType<T> t, Function<Object, Predicate<T>> f, Predicate<T> i) {
 		runtime = r;
 		type = t;
 		function = f;
@@ -32,34 +30,27 @@ public class HideJEIEventJS<T> extends EventJS
 		allIngredients = runtime.getIngredientManager().getAllIngredients(type);
 	}
 
-	public Collection<T> getAllIngredients()
-	{
+	public Collection<T> getAllIngredients() {
 		return allIngredients;
 	}
 
-	public void hide(Object o)
-	{
+	public void hide(Object o) {
 		Predicate<T> p = function.apply(o);
 
-		for (T value : allIngredients)
-		{
-			if (p.test(value))
-			{
+		for (T value : allIngredients) {
+			if (p.test(value)) {
 				hidden.add(value);
 			}
 		}
 	}
 
-	public void hideAll()
-	{
+	public void hideAll() {
 		hidden.addAll(allIngredients);
 	}
 
 	@Override
-	protected void afterPosted(boolean result)
-	{
-		if (!hidden.isEmpty())
-		{
+	protected void afterPosted(boolean result) {
+		if (!hidden.isEmpty()) {
 			runtime.getIngredientManager().removeIngredientsAtRuntime(type, hidden.stream().filter(isValid).collect(Collectors.toList()));
 		}
 	}

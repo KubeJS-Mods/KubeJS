@@ -12,10 +12,8 @@ import java.util.function.Function;
 /**
  * @author LatvianModder
  */
-public interface TagCollectionKJS<T>
-{
-	default void customTagsKJS(Map<ResourceLocation, Tag.Builder> map)
-	{
+public interface TagCollectionKJS<T> {
+	default void customTagsKJS(Map<ResourceLocation, Tag.Builder> map) {
 		TagIngredientJS.clearTagCache();
 		String c = getResourceLocationPrefixKJS().substring(5);
 		String t = getItemTypeNameKJS();

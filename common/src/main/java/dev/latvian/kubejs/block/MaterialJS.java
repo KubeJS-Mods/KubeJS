@@ -7,33 +7,28 @@ import net.minecraft.world.level.material.Material;
 /**
  * @author LatvianModder
  */
-public class MaterialJS
-{
+public class MaterialJS {
 	private final String id;
 	private final Material minecraftMaterial;
 	private final SoundType sound;
 
-	public MaterialJS(String i, Material m, SoundType s)
-	{
+	public MaterialJS(String i, Material m, SoundType s) {
 		id = i;
 		minecraftMaterial = m;
 		sound = s;
 	}
 
-	public String getId()
-	{
+	public String getId() {
 		return id;
 	}
 
 	@MinecraftClass
-	public Material getMinecraftMaterial()
-	{
+	public Material getMinecraftMaterial() {
 		return minecraftMaterial;
 	}
 
 	@MinecraftClass
-	public SoundType getSound()
-	{
+	public SoundType getSound() {
 		return sound;
 	}
 }

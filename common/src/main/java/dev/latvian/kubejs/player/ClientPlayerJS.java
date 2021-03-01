@@ -13,26 +13,21 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author LatvianModder
  */
-public class ClientPlayerJS extends PlayerJS<Player>
-{
+public class ClientPlayerJS extends PlayerJS<Player> {
 	private final boolean isSelf;
 
-	public ClientPlayerJS(ClientPlayerDataJS d, Player p, boolean s)
-	{
+	public ClientPlayerJS(ClientPlayerDataJS d, Player p, boolean s) {
 		super(d, d.getWorld(), p);
 		isSelf = s;
 	}
 
-	public boolean isSelf()
-	{
+	public boolean isSelf() {
 		return isSelf;
 	}
 
 	@Override
-	public PlayerStatsJS getStats()
-	{
-		if (!isSelf())
-		{
+	public PlayerStatsJS getStats() {
+		if (!isSelf()) {
 			throw new IllegalStateException("Can't access other player stats!");
 		}
 
@@ -40,34 +35,27 @@ public class ClientPlayerJS extends PlayerJS<Player>
 	}
 
 	@Override
-	public void openOverlay(Overlay overlay)
-	{
-		if (isSelf())
-		{
+	public void openOverlay(Overlay overlay) {
+		if (isSelf()) {
 			KubeJS.instance.proxy.openOverlay(overlay);
 		}
 	}
 
 	@Override
-	public void closeOverlay(String overlay)
-	{
-		if (isSelf())
-		{
+	public void closeOverlay(String overlay) {
+		if (isSelf()) {
 			KubeJS.instance.proxy.closeOverlay(overlay);
 		}
 	}
 
 	@Override
-	public boolean isMiningBlock()
-	{
+	public boolean isMiningBlock() {
 		return isSelf() && Minecraft.getInstance().gameMode.isDestroying();
 	}
 
 	@Override
-	public void sendData(String channel, @Nullable Object data)
-	{
-		if (!channel.isEmpty() && isSelf())
-		{
+	public void sendData(String channel, @Nullable Object data) {
+		if (!channel.isEmpty() && isSelf()) {
 			KubeJSNet.MAIN.sendToServer(new MessageSendDataFromClient(channel, MapJS.nbt(data)));
 		}
 	}

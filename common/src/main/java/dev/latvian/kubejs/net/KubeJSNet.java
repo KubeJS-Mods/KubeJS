@@ -7,12 +7,10 @@ import net.minecraft.resources.ResourceLocation;
 /**
  * @author LatvianModder
  */
-public class KubeJSNet
-{
+public class KubeJSNet {
 	public static final NetworkChannel MAIN = NetworkChannel.create(new ResourceLocation(KubeJS.MOD_ID, "main"));
 
-	public static void init()
-	{
+	public static void init() {
 		MAIN.register(MessageSendDataFromClient.class, MessageSendDataFromClient::write, MessageSendDataFromClient::new, MessageSendDataFromClient::handle);
 		MAIN.register(MessageSendDataFromServer.class, MessageSendDataFromServer::write, MessageSendDataFromServer::new, MessageSendDataFromServer::handle);
 		MAIN.register(MessageOpenOverlay.class, MessageOpenOverlay::write, MessageOpenOverlay::new, MessageOpenOverlay::handle);

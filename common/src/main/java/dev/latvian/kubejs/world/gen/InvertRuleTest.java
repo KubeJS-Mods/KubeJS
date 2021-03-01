@@ -9,24 +9,20 @@ import java.util.Random;
 /**
  * @author LatvianModder
  */
-public class InvertRuleTest extends RuleTest
-{
+public class InvertRuleTest extends RuleTest {
 	public final RuleTest ruleTest;
 
-	public InvertRuleTest(RuleTest t)
-	{
+	public InvertRuleTest(RuleTest t) {
 		ruleTest = t;
 	}
 
 	@Override
-	public boolean test(BlockState blockState, Random random)
-	{
+	public boolean test(BlockState blockState, Random random) {
 		return !ruleTest.test(blockState, random);
 	}
 
 	@Override
-	protected RuleTestType<?> getType()
-	{
+	protected RuleTestType<?> getType() {
 		return RuleTestType.ALWAYS_TRUE_TEST;
 	}
 }

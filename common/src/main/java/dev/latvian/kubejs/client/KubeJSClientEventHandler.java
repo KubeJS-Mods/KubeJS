@@ -56,24 +56,16 @@ import java.io.OutputStream;
 import java.nio.IntBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author LatvianModder
  */
-public class KubeJSClientEventHandler
-{
+public class KubeJSClientEventHandler {
 	private static final ResourceLocation RECIPE_BUTTON_TEXTURE = new ResourceLocation("textures/gui/recipe_button.png");
 	public static Map<Item, List<ItemTooltipEventJS.StaticTooltipHandler>> staticItemTooltips = null;
 
-	public void init()
-	{
+	public void init() {
 		setup();
 		GuiEvent.DEBUG_TEXT_LEFT.register(this::debugInfoLeft);
 		GuiEvent.DEBUG_TEXT_RIGHT.register(this::debugInfoRight);
@@ -90,12 +82,9 @@ public class KubeJSClientEventHandler
 		TextureStitchEvent.POST.register(this::postAtlasStitch);
 	}
 
-	private void setup()
-	{
-		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values())
-		{
-			switch (builder.renderType)
-			{
+	private void setup() {
+		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
+			switch (builder.renderType) {
 				case "cutout":
 					RenderTypes.register(RenderType.cutout(), builder.block);
 					break;
@@ -111,47 +100,37 @@ public class KubeJSClientEventHandler
 		}
 	}
 
-	private void debugInfoLeft(List<String> lines)
-	{
-		if (Minecraft.getInstance().player != null)
-		{
+	private void debugInfoLeft(List<String> lines) {
+		if (Minecraft.getInstance().player != null) {
 			new DebugInfoEventJS(lines).post(ScriptType.CLIENT, KubeJSEvents.CLIENT_DEBUG_INFO_LEFT);
 		}
 	}
 
-	private void debugInfoRight(List<String> lines)
-	{
-		if (Minecraft.getInstance().player != null)
-		{
+	private void debugInfoRight(List<String> lines) {
+		if (Minecraft.getInstance().player != null) {
 			new DebugInfoEventJS(lines).post(ScriptType.CLIENT, KubeJSEvents.CLIENT_DEBUG_INFO_RIGHT);
 		}
 	}
 
-	private void itemTooltip(ItemStack stack, List<Component> lines, TooltipFlag flag)
-	{
+	private void itemTooltip(ItemStack stack, List<Component> lines, TooltipFlag flag) {
 		boolean advanced = flag.isAdvanced();
 
-		if (advanced && ClientProperties.get().showTagNames && Screen.hasShiftDown())
-		{
-			for (ResourceLocation tag : Tags.byItemStack(stack))
-			{
+		if (advanced && ClientProperties.get().showTagNames && Screen.hasShiftDown()) {
+			for (ResourceLocation tag : Tags.byItemStack(stack)) {
 				lines.add(new TextComponent(" #" + tag).withStyle(ChatFormatting.DARK_GRAY));
 			}
 		}
 
-		if (staticItemTooltips == null)
-		{
+		if (staticItemTooltips == null) {
 			staticItemTooltips = new HashMap<>();
 			new ItemTooltipEventJS(staticItemTooltips).post(ScriptType.CLIENT, KubeJSEvents.ITEM_TOOLTIP);
 		}
 
-		for (ItemTooltipEventJS.StaticTooltipHandler h : staticItemTooltips.getOrDefault(Items.AIR, Collections.emptyList()))
-		{
+		for (ItemTooltipEventJS.StaticTooltipHandler h : staticItemTooltips.getOrDefault(Items.AIR, Collections.emptyList())) {
 			h.tooltip(stack, advanced, lines);
 		}
 
-		for (ItemTooltipEventJS.StaticTooltipHandler h : staticItemTooltips.getOrDefault(stack.getItem(), Collections.emptyList()))
-		{
+		for (ItemTooltipEventJS.StaticTooltipHandler h : staticItemTooltips.getOrDefault(stack.getItem(), Collections.emptyList())) {
 			h.tooltip(stack, advanced, lines);
 		}
 
@@ -159,26 +138,21 @@ public class KubeJSClientEventHandler
 		new OldItemTooltipEventJS(stack, lines, advanced).post(ScriptType.CLIENT, "client.item_tooltip");
 	}
 
-	private void clientTick(Minecraft minecraft)
-	{
-		if (Minecraft.getInstance().player != null)
-		{
+	private void clientTick(Minecraft minecraft) {
+		if (Minecraft.getInstance().player != null) {
 			new ClientTickEventJS(ClientWorldJS.instance.clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_TICK);
 		}
 	}
 
-	private void loggedIn(LocalPlayer player)
-	{
+	private void loggedIn(LocalPlayer player) {
 		ClientWorldJS.instance = new ClientWorldJS(Minecraft.getInstance(), player);
 		AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(ClientWorldJS.instance));
 		AttachPlayerDataEvent.EVENT.invoker().accept(new AttachPlayerDataEvent(ClientWorldJS.instance.clientPlayerData));
 		new ClientLoggedInEventJS(ClientWorldJS.instance.clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_LOGGED_IN);
 	}
 
-	private void loggedOut(LocalPlayer player)
-	{
-		if (ClientWorldJS.instance != null)
-		{
+	private void loggedOut(LocalPlayer player) {
+		if (ClientWorldJS.instance != null) {
 			new ClientLoggedInEventJS(ClientWorldJS.instance.clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_LOGGED_OUT);
 		}
 
@@ -186,32 +160,27 @@ public class KubeJSClientEventHandler
 		KubeJSClient.activeOverlays.clear();
 	}
 
-	private void respawn(LocalPlayer oldPlayer, LocalPlayer newPlayer)
-	{
+	private void respawn(LocalPlayer oldPlayer, LocalPlayer newPlayer) {
 		ClientWorldJS.instance = new ClientWorldJS(Minecraft.getInstance(), newPlayer);
 		AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(ClientWorldJS.instance));
 		AttachPlayerDataEvent.EVENT.invoker().accept(new AttachPlayerDataEvent(ClientWorldJS.instance.clientPlayerData));
 	}
 
-	private int drawOverlay(Minecraft mc, PoseStack matrixStack, int maxWidth, int x, int y, int p, Overlay o, boolean inv)
-	{
+	private int drawOverlay(Minecraft mc, PoseStack matrixStack, int maxWidth, int x, int y, int p, Overlay o, boolean inv) {
 		List<FormattedCharSequence> list = new ArrayList<>();
 		int l = 10;
 
-		for (Text t : o.text)
-		{
+		for (Text t : o.text) {
 			list.addAll(mc.font.split(t.component(), maxWidth));
 		}
 
 		int mw = 0;
 
-		for (FormattedCharSequence s : list)
-		{
+		for (FormattedCharSequence s : list) {
 			mw = Math.max(mw, mc.font.width(s));
 		}
 
-		if (mw == 0)
-		{
+		if (mw == 0) {
 			return 0;
 		}
 
@@ -229,16 +198,13 @@ public class KubeJSClientEventHandler
 
 		//o.color.withAlpha(200).draw(spx, spy, mw + p * 2, list.size() * l + p * 2 - 2);
 
-		if (inv)
-		{
+		if (inv) {
 			addRectToBuffer(buffer, x, y, w, h, r, g, b, 255);
 			addRectToBuffer(buffer, x, y + 1, 1, h - 2, 0, 0, 0, 80);
 			addRectToBuffer(buffer, x + w - 1, y + 1, 1, h - 2, 0, 0, 0, 80);
 			addRectToBuffer(buffer, x, y, w, 1, 0, 0, 0, 80);
 			addRectToBuffer(buffer, x, y + h - 1, w, 1, 0, 0, 0, 80);
-		}
-		else
-		{
+		} else {
 			addRectToBuffer(buffer, x, y, w, h, r, g, b, 200);
 			addRectToBuffer(buffer, x, y + 1, 1, h - 2, r, g, b, 255);
 			addRectToBuffer(buffer, x + w - 1, y + 1, 1, h - 2, r, g, b, 255);
@@ -249,33 +215,28 @@ public class KubeJSClientEventHandler
 		tessellator.end();
 		RenderSystem.enableTexture();
 
-		for (int i = 0; i < list.size(); i++)
-		{
+		for (int i = 0; i < list.size(); i++) {
 			mc.font.drawShadow(matrixStack, list.get(i), x + p, y + i * l + p, 0xFFFFFFFF);
 		}
 
 		return list.size() * l + p * 2 + (p - 2);
 	}
 
-	private void addRectToBuffer(BufferBuilder buffer, int x, int y, int w, int h, int r, int g, int b, int a)
-	{
+	private void addRectToBuffer(BufferBuilder buffer, int x, int y, int w, int h, int r, int g, int b, int a) {
 		buffer.vertex(x, y + h, 0D).color(r, g, b, a).endVertex();
 		buffer.vertex(x + w, y + h, 0D).color(r, g, b, a).endVertex();
 		buffer.vertex(x + w, y, 0D).color(r, g, b, a).endVertex();
 		buffer.vertex(x, y, 0D).color(r, g, b, a).endVertex();
 	}
 
-	private void inGameScreenDraw(PoseStack matrices, float delta)
-	{
-		if (KubeJSClient.activeOverlays.isEmpty())
-		{
+	private void inGameScreenDraw(PoseStack matrices, float delta) {
+		if (KubeJSClient.activeOverlays.isEmpty()) {
 			return;
 		}
 
 		Minecraft mc = Minecraft.getInstance();
 
-		if (mc.options.renderDebug || mc.screen != null)
-		{
+		if (mc.options.renderDebug || mc.screen != null) {
 			return;
 		}
 
@@ -290,16 +251,13 @@ public class KubeJSClientEventHandler
 		int spx = p;
 		int spy = p;
 
-		for (Overlay o : KubeJSClient.activeOverlays.values())
-		{
+		for (Overlay o : KubeJSClient.activeOverlays.values()) {
 			spy += drawOverlay(mc, matrixStack, maxWidth, spx, spy, p, o, false);
 		}
 	}
 
-	private void guiScreenDraw(Screen screen, PoseStack matrices, int mouseX, int mouseY, float delta)
-	{
-		if (KubeJSClient.activeOverlays.isEmpty())
-		{
+	private void guiScreenDraw(Screen screen, PoseStack matrices, int mouseX, int mouseY, float delta) {
+		if (KubeJSClient.activeOverlays.isEmpty()) {
 			return;
 		}
 
@@ -317,24 +275,19 @@ public class KubeJSClientEventHandler
 
 		List<AbstractWidget> buttons = ScreenHooks.getButtons(screen);
 
-		while (isOver(buttons, spx, spy))
-		{
+		while (isOver(buttons, spx, spy)) {
 			spy += 16;
 		}
 
-		for (Overlay o : KubeJSClient.activeOverlays.values())
-		{
-			if (o.alwaysOnTop)
-			{
+		for (Overlay o : KubeJSClient.activeOverlays.values()) {
+			if (o.alwaysOnTop) {
 				spy += drawOverlay(mc, matrixStack, maxWidth, spx, spy, p, o, true);
 			}
 		}
 	}
 
-	private boolean isOver(List<AbstractWidget> list, int x, int y)
-	{
-		for (AbstractWidget w : list)
-		{
+	private boolean isOver(List<AbstractWidget> list, int x, int y) {
+		for (AbstractWidget w : list) {
 			if (w.visible && x >= w.x && y >= w.y && x < w.x + w.getWidth() && y < w.y + w.getHeight()) //getWidth_CLASH = getHeight
 			{
 				return true;
@@ -344,16 +297,12 @@ public class KubeJSClientEventHandler
 		return false;
 	}
 
-	private void guiPostInit(Screen screen, List<AbstractWidget> widgets, List<GuiEventListener> children)
-	{
-		if (ClientProperties.get().disableRecipeBook && screen instanceof RecipeUpdateListener)
-		{
+	private void guiPostInit(Screen screen, List<AbstractWidget> widgets, List<GuiEventListener> children) {
+		if (ClientProperties.get().disableRecipeBook && screen instanceof RecipeUpdateListener) {
 			Iterator<GuiEventListener> iterator = children.iterator();
-			while (iterator.hasNext())
-			{
+			while (iterator.hasNext()) {
 				GuiEventListener listener = iterator.next();
-				if (listener instanceof AbstractWidget && listener instanceof ImageButtonKJS && RECIPE_BUTTON_TEXTURE.equals(((ImageButtonKJS) listener).getButtonTextureKJS()))
-				{
+				if (listener instanceof AbstractWidget && listener instanceof ImageButtonKJS && RECIPE_BUTTON_TEXTURE.equals(((ImageButtonKJS) listener).getButtonTextureKJS())) {
 					ScreenHooks.getButtons(screen).remove(listener);
 					iterator.remove();
 					return;
@@ -362,48 +311,36 @@ public class KubeJSClientEventHandler
 		}
 	}
 
-	private void itemColors()
-	{
-		for (ItemBuilder builder : KubeJSObjects.ITEMS.values())
-		{
-			if (!builder.color.isEmpty())
-			{
+	private void itemColors() {
+		for (ItemBuilder builder : KubeJSObjects.ITEMS.values()) {
+			if (!builder.color.isEmpty()) {
 				ColorHandlers.registerItemColors((stack, index) -> builder.color.get(index), Objects.requireNonNull(builder.item, "Item " + builder.id + " is null!"));
 			}
 		}
 
-		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values())
-		{
-			if (builder.itemBuilder != null && !builder.color.isEmpty())
-			{
+		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
+			if (builder.itemBuilder != null && !builder.color.isEmpty()) {
 				ColorHandlers.registerItemColors((stack, index) -> builder.color.get(index), Objects.requireNonNull(builder.itemBuilder.blockItem, "Block Item " + builder.id + " is null!"));
 			}
 		}
 
-		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values())
-		{
-			if (builder.bucketColor != 0xFFFFFFFF)
-			{
+		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values()) {
+			if (builder.bucketColor != 0xFFFFFFFF) {
 				ColorHandlers.registerItemColors((stack, index) -> index == 1 ? builder.bucketColor : 0xFFFFFFFF, Objects.requireNonNull(builder.bucketItem, "Bucket Item " + builder.id + " is null!"));
 			}
 		}
 	}
 
-	private void blockColors()
-	{
-		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values())
-		{
-			if (!builder.color.isEmpty())
-			{
+	private void blockColors() {
+		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
+			if (!builder.color.isEmpty()) {
 				ColorHandlers.registerBlockColors((state, world, pos, index) -> builder.color.get(index), builder.block);
 			}
 		}
 	}
 
-	private void postAtlasStitch(TextureAtlas atlas)
-	{
-		if (!ClientProperties.get().exportAtlases)
-		{
+	private void postAtlasStitch(TextureAtlas atlas) {
+		if (!ClientProperties.get().exportAtlases) {
 			return;
 		}
 
@@ -411,8 +348,7 @@ public class KubeJSClientEventHandler
 		int w = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH);
 		int h = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT);
 
-		if (w <= 0 || h <= 0)
-		{
+		if (w <= 0 || h <= 0) {
 			return;
 		}
 
@@ -427,38 +363,27 @@ public class KubeJSClientEventHandler
 
 		Path path = KubeJSPaths.EXPORTED.resolve(atlas.location().getNamespace() + "/" + atlas.location().getPath());
 
-		if (!Files.exists(path.getParent()))
-		{
-			try
-			{
+		if (!Files.exists(path.getParent())) {
+			try {
 				Files.createDirectories(path.getParent());
-			}
-			catch (Exception ex)
-			{
+			} catch (Exception ex) {
 				ex.printStackTrace();
 				return;
 			}
 		}
 
-		if (!Files.exists(path))
-		{
-			try
-			{
+		if (!Files.exists(path)) {
+			try {
 				Files.createFile(path);
-			}
-			catch (Exception ex)
-			{
+			} catch (Exception ex) {
 				ex.printStackTrace();
 				return;
 			}
 		}
 
-		try (OutputStream stream = Files.newOutputStream(path))
-		{
+		try (OutputStream stream = Files.newOutputStream(path)) {
 			ImageIO.write(image, "PNG", stream);
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}

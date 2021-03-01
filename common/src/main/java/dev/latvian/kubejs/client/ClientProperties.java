@@ -16,14 +16,11 @@ import java.util.Properties;
 /**
  * @author LatvianModder
  */
-public class ClientProperties
-{
+public class ClientProperties {
 	private static ClientProperties instance;
 
-	public static ClientProperties get()
-	{
-		if (instance == null)
-		{
+	public static ClientProperties get() {
+		if (instance == null) {
 			instance = new ClientProperties();
 		}
 
@@ -49,35 +46,28 @@ public class ClientProperties
 	public float[] fmlMemoryColor3f;
 	public float[] fmlLogColor3f;
 
-	private ClientProperties()
-	{
+	private ClientProperties() {
 		properties = new Properties();
 
-		try
-		{
+		try {
 			Path propertiesFile = KubeJSPaths.CONFIG.resolve("client.properties");
 
 			UtilsJS.tryIO(() ->
 			{
 				Path p0 = KubeJSPaths.DIRECTORY.resolve("client.properties");
 
-				if (Files.exists(p0))
-				{
+				if (Files.exists(p0)) {
 					Files.move(p0, propertiesFile);
 				}
 			});
 
 			writeProperties = false;
 
-			if (Files.exists(propertiesFile))
-			{
-				try (Reader reader = Files.newBufferedReader(propertiesFile))
-				{
+			if (Files.exists(propertiesFile)) {
+				try (Reader reader = Files.newBufferedReader(propertiesFile)) {
 					properties.load(reader);
 				}
-			}
-			else
-			{
+			} else {
 				writeProperties = true;
 			}
 
@@ -102,39 +92,31 @@ public class ClientProperties
 			{
 				Path p0 = KubeJSPaths.DIRECTORY.resolve("packicon.png");
 
-				if (Files.exists(p0))
-				{
+				if (Files.exists(p0)) {
 					Files.move(p0, iconFile);
 				}
 			});
 
-			if (Files.exists(iconFile))
-			{
+			if (Files.exists(iconFile)) {
 				icon = iconFile;
 			}
 
-			if (writeProperties)
-			{
-				try (Writer writer = Files.newBufferedWriter(propertiesFile))
-				{
+			if (writeProperties) {
+				try (Writer writer = Files.newBufferedWriter(propertiesFile)) {
 					properties.store(writer, "KubeJS Client Properties");
 				}
 			}
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 
 		KubeJS.LOGGER.info("Loaded client.properties");
 	}
 
-	private String get(String key, String def)
-	{
+	private String get(String key, String def) {
 		String s = properties.getProperty(key);
 
-		if (s == null)
-		{
+		if (s == null) {
 			properties.setProperty(key, def);
 			writeProperties = true;
 			return def;
@@ -143,33 +125,26 @@ public class ClientProperties
 		return s;
 	}
 
-	private boolean get(String key, boolean def)
-	{
+	private boolean get(String key, boolean def) {
 		return get(key, def ? "true" : "false").equals("true");
 	}
 
-	private int getColor(String key, int def)
-	{
+	private int getColor(String key, int def) {
 		String s = get(key, String.format("%06X", def & 0xFFFFFF));
 
-		if (s.isEmpty() || s.equals("default"))
-		{
+		if (s.isEmpty() || s.equals("default")) {
 			return def;
 		}
 
-		try
-		{
+		try {
 			return 0xFFFFFF & Integer.decode(s.startsWith("#") ? s : ("#" + s));
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			ex.printStackTrace();
 			return def;
 		}
 	}
 
-	private float[] getColor3f(int color)
-	{
+	private float[] getColor3f(int color) {
 		float[] c = new float[3];
 		c[0] = ((color >> 16) & 0xFF) / 255F;
 		c[1] = ((color >> 8) & 0xFF) / 255F;
@@ -178,48 +153,35 @@ public class ClientProperties
 	}
 
 	@Nullable
-	private float[] getColor3f(String key)
-	{
+	private float[] getColor3f(String key) {
 		String s = get(key, "default");
 
-		if (s.isEmpty() || s.equals("default"))
-		{
+		if (s.isEmpty() || s.equals("default")) {
 			return null;
 		}
 
-		try
-		{
+		try {
 			return getColor3f(Integer.decode(s));
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			ex.printStackTrace();
 			return null;
 		}
 	}
 
-	public boolean cancelIconUpdate()
-	{
-		if (tempIconCancel)
-		{
-			if (icon != null)
-			{
+	public boolean cancelIconUpdate() {
+		if (tempIconCancel) {
+			if (icon != null) {
 				try (InputStream stream16 = Files.newInputStream(icon);
-					 InputStream stream32 = Files.newInputStream(icon))
-				{
+				     InputStream stream32 = Files.newInputStream(icon)) {
 					tempIconCancel = false;
 					Minecraft.getInstance().getWindow().setIcon(stream16, stream32);
 					tempIconCancel = true;
-				}
-				catch (Exception ex)
-				{
+				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 
 				return true;
-			}
-			else
-			{
+			} else {
 				return false;
 			}
 		}
@@ -227,33 +189,27 @@ public class ClientProperties
 		return false;
 	}
 
-	public float[] getMemoryColor(float[] color)
-	{
+	public float[] getMemoryColor(float[] color) {
 		return overrideColors ? fmlMemoryColor3f : color;
 	}
 
-	public float[] getLogColor(float[] color)
-	{
+	public float[] getLogColor(float[] color) {
 		return overrideColors ? fmlLogColor3f : color;
 	}
 
-	public float getBackgroundColor(float c, int index)
-	{
+	public float getBackgroundColor(float c, int index) {
 		return overrideColors ? backgroundColor3f[index] : c;
 	}
 
-	public int getBackgroundColor(int color)
-	{
+	public int getBackgroundColor(int color) {
 		return overrideColors ? ((color & 0xFF000000) | backgroundColor) : color;
 	}
 
-	public int getBarColor(int color)
-	{
+	public int getBarColor(int color) {
 		return overrideColors ? ((color & 0xFF000000) | barColor) : color;
 	}
 
-	public int getBarBorderColor(int color)
-	{
+	public int getBarBorderColor(int color) {
 		return overrideColors ? ((color & 0xFF000000) | barBorderColor) : color;
 	}
 }

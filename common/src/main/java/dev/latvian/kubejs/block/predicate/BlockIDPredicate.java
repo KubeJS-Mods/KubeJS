@@ -1,29 +1,21 @@
 package dev.latvian.kubejs.block.predicate;
 
-import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
-import me.shedaniel.architectury.registry.Registries;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author LatvianModder
  */
-public class BlockIDPredicate implements BlockPredicate
-{
-	private static class PropertyObject
-	{
+public class BlockIDPredicate implements BlockPredicate {
+	private static class PropertyObject {
 		private Property<?> property;
 		private Object value;
 	}
@@ -33,16 +25,13 @@ public class BlockIDPredicate implements BlockPredicate
 	private Block cachedBlock;
 	private List<PropertyObject> cachedProperties;
 
-	public BlockIDPredicate(ResourceLocation i)
-	{
+	public BlockIDPredicate(ResourceLocation i) {
 		id = i;
 	}
 
 	@Override
-	public String toString()
-	{
-		if (properties == null || properties.isEmpty())
-		{
+	public String toString() {
+		if (properties == null || properties.isEmpty()) {
 			return id.toString();
 		}
 
@@ -51,14 +40,10 @@ public class BlockIDPredicate implements BlockPredicate
 
 		boolean first = true;
 
-		for (Map.Entry<String, String> entry : properties.entrySet())
-		{
-			if (first)
-			{
+		for (Map.Entry<String, String> entry : properties.entrySet()) {
+			if (first) {
 				first = false;
-			}
-			else
-			{
+			} else {
 				sb.append(',');
 			}
 
@@ -71,10 +56,8 @@ public class BlockIDPredicate implements BlockPredicate
 		return sb.toString();
 	}
 
-	public BlockIDPredicate with(String key, String value)
-	{
-		if (properties == null)
-		{
+	public BlockIDPredicate with(String key, String value) {
+		if (properties == null) {
 			properties = new HashMap<>();
 		}
 
@@ -84,14 +67,11 @@ public class BlockIDPredicate implements BlockPredicate
 		return this;
 	}
 
-	private Block getBlock()
-	{
-		if (cachedBlock == null)
-		{
-			cachedBlock = Registries.get(KubeJS.MOD_ID).get(Registry.BLOCK_REGISTRY).get(id);
+	private Block getBlock() {
+		if (cachedBlock == null) {
+			cachedBlock = KubeJSRegistries.blocks().get(id);
 
-			if (cachedBlock == null)
-			{
+			if (cachedBlock == null) {
 				cachedBlock = Blocks.AIR;
 			}
 		}
@@ -99,29 +79,23 @@ public class BlockIDPredicate implements BlockPredicate
 		return cachedBlock;
 	}
 
-	public List<PropertyObject> getBlockProperties()
-	{
-		if (cachedProperties == null)
-		{
+	public List<PropertyObject> getBlockProperties() {
+		if (cachedProperties == null) {
 			cachedProperties = new LinkedList<>();
 
 			Map<String, Property<?>> map = new HashMap<>();
 
-			for (Property<?> property : getBlock().defaultBlockState().getProperties())
-			{
+			for (Property<?> property : getBlock().defaultBlockState().getProperties()) {
 				map.put(property.getName(), property);
 			}
 
-			for (Map.Entry<String, String> entry : properties.entrySet())
-			{
+			for (Map.Entry<String, String> entry : properties.entrySet()) {
 				Property<?> property = map.get(entry.getKey());
 
-				if (property != null)
-				{
+				if (property != null) {
 					Optional<?> o = property.getValue(entry.getValue());
 
-					if (o.isPresent())
-					{
+					if (o.isPresent()) {
 						PropertyObject po = new PropertyObject();
 						po.property = property;
 						po.value = o.get();
@@ -134,12 +108,10 @@ public class BlockIDPredicate implements BlockPredicate
 		return cachedProperties;
 	}
 
-	public BlockState getBlockState()
-	{
+	public BlockState getBlockState() {
 		BlockState state = getBlock().defaultBlockState();
 
-		for (PropertyObject object : getBlockProperties())
-		{
+		for (PropertyObject object : getBlockProperties()) {
 			state = state.setValue(object.property, UtilsJS.cast(object.value));
 		}
 
@@ -147,27 +119,21 @@ public class BlockIDPredicate implements BlockPredicate
 	}
 
 	@Override
-	public boolean check(BlockContainerJS b)
-	{
+	public boolean check(BlockContainerJS b) {
 		return getBlock() != Blocks.AIR && checkState(b.getBlockState());
 	}
 
-	public boolean checkState(BlockState state)
-	{
-		if (state.getBlock() != getBlock())
-		{
+	public boolean checkState(BlockState state) {
+		if (state.getBlock() != getBlock()) {
 			return false;
 		}
 
-		if (properties == null || properties.isEmpty())
-		{
+		if (properties == null || properties.isEmpty()) {
 			return true;
 		}
 
-		for (PropertyObject object : getBlockProperties())
-		{
-			if (!state.getValue(object.property).equals(object.value))
-			{
+		for (PropertyObject object : getBlockProperties()) {
+			if (!state.getValue(object.property).equals(object.value)) {
 				return false;
 			}
 		}

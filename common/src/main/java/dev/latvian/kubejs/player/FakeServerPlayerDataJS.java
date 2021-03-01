@@ -8,26 +8,22 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author LatvianModder
  */
-public class FakeServerPlayerDataJS extends ServerPlayerDataJS
-{
+public class FakeServerPlayerDataJS extends ServerPlayerDataJS {
 	public ServerPlayer player;
 
-	public FakeServerPlayerDataJS(ServerJS s, ServerPlayer p)
-	{
+	public FakeServerPlayerDataJS(ServerJS s, ServerPlayer p) {
 		super(s, p.getUUID(), p.getGameProfile().getName(), true);
 		player = p;
 	}
 
 	@Override
-	public WorldJS getOverworld()
-	{
+	public WorldJS getOverworld() {
 		return getServer().getOverworld();
 	}
 
 	@Override
 	@Nullable
-	public ServerPlayer getMinecraftPlayer()
-	{
+	public ServerPlayer getMinecraftPlayer() {
 		return player;
 	}
 }

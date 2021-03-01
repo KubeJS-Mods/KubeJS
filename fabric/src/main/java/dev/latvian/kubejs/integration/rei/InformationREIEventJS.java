@@ -13,8 +13,7 @@ import net.minecraft.network.chat.Component;
 /**
  * @author shedaniel
  */
-public class InformationREIEventJS extends EventJS
-{
+public class InformationREIEventJS extends EventJS {
 	/**
 	 * Registers an information display.
 	 *
@@ -22,14 +21,12 @@ public class InformationREIEventJS extends EventJS
 	 * @param title       The title of the information display
 	 * @param description The information to be provided
 	 */
-	public void add(Object stacks, Component title, Object description)
-	{
+	public void add(Object stacks, Component title, Object description) {
 		BuiltinPlugin.getInstance().registerInformation(
 				EntryStack.ofItemStacks(CollectionUtils.map(IngredientJS.of(stacks).getStacks(), ItemStackJS::getItemStack)),
 				title,
 				components -> {
-					for (Object o : ListJS.orSelf(description))
-					{
+					for (Object o : ListJS.orSelf(description)) {
 						components.add(Text.of(o).component());
 					}
 					return components;

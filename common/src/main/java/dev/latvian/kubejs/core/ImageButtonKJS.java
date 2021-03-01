@@ -5,7 +5,6 @@ import net.minecraft.resources.ResourceLocation;
 /**
  * @author LatvianModder
  */
-public interface ImageButtonKJS
-{
+public interface ImageButtonKJS {
 	ResourceLocation getButtonTextureKJS();
 }

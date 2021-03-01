@@ -9,14 +9,11 @@ import java.util.Properties;
 /**
  * @author LatvianModder
  */
-public class CommonProperties
-{
+public class CommonProperties {
 	private static CommonProperties instance;
 
-	public static CommonProperties get()
-	{
-		if (instance == null)
-		{
+	public static CommonProperties get() {
+		if (instance == null) {
 			instance = new CommonProperties();
 		}
 
@@ -30,24 +27,18 @@ public class CommonProperties
 	public boolean serverOnly;
 	public boolean announceReload;
 
-	private CommonProperties()
-	{
+	private CommonProperties() {
 		properties = new Properties();
 
-		try
-		{
+		try {
 			Path propertiesFile = KubeJSPaths.CONFIG.resolve("common.properties");
 			writeProperties = false;
 
-			if (Files.exists(propertiesFile))
-			{
-				try (Reader reader = Files.newBufferedReader(propertiesFile))
-				{
+			if (Files.exists(propertiesFile)) {
+				try (Reader reader = Files.newBufferedReader(propertiesFile)) {
 					properties.load(reader);
 				}
-			}
-			else
-			{
+			} else {
 				writeProperties = true;
 			}
 
@@ -55,28 +46,22 @@ public class CommonProperties
 			serverOnly = get("serverOnly", false);
 			announceReload = get("announceReload", true);
 
-			if (writeProperties)
-			{
-				try (Writer writer = Files.newBufferedWriter(propertiesFile))
-				{
+			if (writeProperties) {
+				try (Writer writer = Files.newBufferedWriter(propertiesFile)) {
 					properties.store(writer, "KubeJS Common Properties");
 				}
 			}
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 
 		KubeJS.LOGGER.info("Loaded common.properties");
 	}
 
-	private String get(String key, String def)
-	{
+	private String get(String key, String def) {
 		String s = properties.getProperty(key);
 
-		if (s == null)
-		{
+		if (s == null) {
 			properties.setProperty(key, def);
 			writeProperties = true;
 			return def;
@@ -85,8 +70,7 @@ public class CommonProperties
 		return s;
 	}
 
-	private boolean get(String key, boolean def)
-	{
+	private boolean get(String key, boolean def) {
 		return get(key, def ? "true" : "false").equals("true");
 	}
 }

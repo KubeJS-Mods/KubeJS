@@ -6,11 +6,9 @@ import dev.latvian.kubejs.player.PlayerEventJS;
 /**
  * @author LatvianModder
  */
-public class BlockDropsEventJS extends PlayerEventJS
-{
+public class BlockDropsEventJS extends PlayerEventJS {
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return null;
 	}
 	

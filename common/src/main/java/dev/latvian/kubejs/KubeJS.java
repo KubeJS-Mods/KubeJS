@@ -12,11 +12,7 @@ import dev.latvian.kubejs.item.KubeJSItemEventHandler;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.player.KubeJSPlayerEventHandler;
 import dev.latvian.kubejs.recipe.KubeJSRecipeEventHandler;
-import dev.latvian.kubejs.script.ScriptFileInfo;
-import dev.latvian.kubejs.script.ScriptManager;
-import dev.latvian.kubejs.script.ScriptPack;
-import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.script.ScriptsLoadedEvent;
+import dev.latvian.kubejs.script.*;
 import dev.latvian.kubejs.server.KubeJSServerEventHandler;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
@@ -37,14 +33,12 @@ import java.util.Locale;
 /**
  * @author LatvianModder
  */
-public class KubeJS
-{
+public class KubeJS {
 	public static final String MOD_ID = "kubejs";
 	public static final String MOD_NAME = "KubeJS";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
 
-	public static ResourceLocation id(String path)
-	{
+	public static ResourceLocation id(String path) {
 		return new ResourceLocation(MOD_ID, path);
 	}
 
@@ -55,13 +49,11 @@ public class KubeJS
 
 	public static ScriptManager startupScriptManager, clientScriptManager;
 
-	public KubeJS() throws Throwable
-	{
+	public KubeJS() throws Throwable {
 		instance = this;
 		Locale.setDefault(Locale.US);
 
-		if (Files.notExists(KubeJSPaths.README))
-		{
+		if (Files.notExists(KubeJSPaths.README)) {
 			UtilsJS.tryIO(() -> {
 				List<String> list = new ArrayList<>();
 				list.add("Find more info on the website: https://kubejs.com/");
@@ -92,8 +84,7 @@ public class KubeJS
 
 		Path oldStartupFolder = KubeJSPaths.DIRECTORY.resolve("startup");
 
-		if (Files.exists(oldStartupFolder))
-		{
+		if (Files.exists(oldStartupFolder)) {
 			UtilsJS.tryIO(() -> Files.move(oldStartupFolder, KubeJSPaths.STARTUP_SCRIPTS));
 		}
 
@@ -118,10 +109,8 @@ public class KubeJS
 		proxy.init();
 	}
 
-	public static void loadScripts(ScriptPack pack, Path dir, String path)
-	{
-		if (!path.isEmpty() && !path.endsWith("/"))
-		{
+	public static void loadScripts(ScriptPack pack, Path dir, String path) {
+		if (!path.isEmpty() && !path.endsWith("/")) {
 			path += "/";
 		}
 
@@ -130,47 +119,39 @@ public class KubeJS
 		UtilsJS.tryIO(() -> Files.walk(dir, 10).filter(Files::isRegularFile).forEach(file -> {
 			String fileName = dir.relativize(file).toString().replace(File.separatorChar, '/');
 
-			if (fileName.endsWith(".js"))
-			{
+			if (fileName.endsWith(".js")) {
 				pack.info.scripts.add(new ScriptFileInfo(pack.info, pathPrefix + fileName));
 			}
 		}));
 	}
 
-	public static String appendModId(String id)
-	{
+	public static String appendModId(String id) {
 		return id.indexOf(':') == -1 ? (MOD_ID + ":" + id) : id;
 	}
 
-	public static Path getGameDirectory()
-	{
+	public static Path getGameDirectory() {
 		return Platform.getGameFolder();
 	}
 
-	public static Path verifyFilePath(Path path) throws IOException
-	{
-		if (!path.normalize().toAbsolutePath().startsWith(getGameDirectory()))
-		{
+	public static Path verifyFilePath(Path path) throws IOException {
+		if (!path.normalize().toAbsolutePath().startsWith(getGameDirectory())) {
 			throw new IOException("You can't access files outside Minecraft directory!");
 		}
 
 		return path;
 	}
 
-	public static void verifyFilePath(File file) throws IOException
-	{
+	public static void verifyFilePath(File file) throws IOException {
 		verifyFilePath(file.toPath());
 	}
 
-	public void setup()
-	{
+	public void setup() {
 		UtilsJS.init();
 		KubeJSNet.init();
 		new EventJS().post(ScriptType.STARTUP, KubeJSEvents.INIT);
 	}
 
-	public void loadComplete()
-	{
+	public void loadComplete() {
 		ScriptsLoadedEvent.EVENT.invoker().run();
 		new EventJS().post(ScriptType.STARTUP, KubeJSEvents.POSTINIT);
 		UtilsJS.postModificationEvents();

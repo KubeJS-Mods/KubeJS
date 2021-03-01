@@ -12,8 +12,7 @@ import java.util.List;
  * @author LatvianModder
  */
 @Mixin(Tag.Builder.class)
-public abstract class TagBuilderMixin implements TagBuilderKJS
-{
+public abstract class TagBuilderMixin implements TagBuilderKJS {
 	@Override
 	@Final
 	@Accessor(value = "entries")

@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.bindings.DefaultBindings;
 import dev.latvian.kubejs.block.BlockStatePredicate;
 import dev.latvian.kubejs.block.MaterialJS;
@@ -23,7 +24,10 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.ClassShutter;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.RhinoException;
+import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import me.shedaniel.architectury.registry.Registry;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -31,8 +35,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
@@ -40,6 +47,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -48,8 +56,7 @@ import java.util.regex.Pattern;
 /**
  * @author LatvianModder
  */
-public class ScriptManager
-{
+public class ScriptManager {
 	private static final Object2BooleanOpenHashMap<String> CLASS_WHITELIST_CACHE = new Object2BooleanOpenHashMap<>();
 
 	private static final String[] BLACKLISTED_PACKAGES = {
@@ -85,10 +92,8 @@ public class ScriptManager
 	};
 
 	private static final Predicate<String> CLASS_WHITELIST_FUNCTION = s -> {
-		for (String s1 : BLACKLISTED_PACKAGES)
-		{
-			if (s.startsWith(s1))
-			{
+		for (String s1 : BLACKLISTED_PACKAGES) {
+			if (s.startsWith(s1)) {
 				return false;
 			}
 		}
@@ -102,8 +107,7 @@ public class ScriptManager
 	public final EventsJS events;
 	public final Map<String, ScriptPack> packs;
 
-	public ScriptManager(ScriptType t, Path p, String e)
-	{
+	public ScriptManager(ScriptType t, Path p, String e) {
 		type = t;
 		directory = p;
 		exampleScript = e;
@@ -111,8 +115,7 @@ public class ScriptManager
 		packs = new LinkedHashMap<>();
 	}
 
-	public void unload()
-	{
+	public void unload() {
 		events.clear();
 		packs.clear();
 		type.errors.clear();
@@ -120,19 +123,14 @@ public class ScriptManager
 		type.console.resetFile();
 	}
 
-	public void loadFromDirectory()
-	{
-		if (Files.notExists(directory))
-		{
+	public void loadFromDirectory() {
+		if (Files.notExists(directory)) {
 			UtilsJS.tryIO(() -> Files.createDirectories(directory));
 
 			try (InputStream in = KubeJS.class.getResourceAsStream(exampleScript);
-				 OutputStream out = Files.newOutputStream(directory.resolve("script.js")))
-			{
+			     OutputStream out = Files.newOutputStream(directory.resolve("script.js"))) {
 				out.write(IOUtils.toByteArray(in));
-			}
-			catch (Exception ex)
-			{
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
@@ -140,23 +138,18 @@ public class ScriptManager
 		ScriptPack pack = new ScriptPack(this, new ScriptPackInfo(directory.getFileName().toString(), ""));
 		KubeJS.loadScripts(pack, directory, "");
 
-		for (ScriptFileInfo fileInfo : pack.info.scripts)
-		{
+		for (ScriptFileInfo fileInfo : pack.info.scripts) {
 			ScriptSource.FromPath scriptSource = info -> directory.resolve(info.file);
 
 			Throwable error = fileInfo.preload(scriptSource);
 
-			if (fileInfo.isIgnored())
-			{
+			if (fileInfo.isIgnored()) {
 				continue;
 			}
 
-			if (error == null)
-			{
+			if (error == null) {
 				pack.scripts.add(new ScriptFile(pack, fileInfo, scriptSource));
-			}
-			else
-			{
+			} else {
 				KubeJS.LOGGER.error("Failed to pre-load script file " + fileInfo.location + ": " + error);
 			}
 		}
@@ -165,8 +158,7 @@ public class ScriptManager
 		packs.put(pack.info.namespace, pack);
 	}
 
-	public void load()
-	{
+	public void load() {
 		Context context = Context.enter();
 		context.setLanguageVersion(Context.VERSION_ES6);
 		context.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || CLASS_WHITELIST_CACHE.computeBooleanIfAbsent(fullClassName, CLASS_WHITELIST_FUNCTION));
@@ -186,9 +178,20 @@ public class ScriptManager
 		context.getTypeWrappers().register(Pattern.class, UtilsJS::parseRegex);
 		context.getTypeWrappers().register(Component.class, Text::componentOfObject);
 		context.getTypeWrappers().register(MutableComponent.class, o -> new TextComponent("").append(Text.componentOfObject(o)));
+		context.getTypeWrappers().register(BlockPos.class, o -> {
+			if (o instanceof BlockPos) {
+				return (BlockPos) o;
+			} else if (o instanceof List && ((List<?>) o).size() >= 3) {
+				return new BlockPos(((Number) ((List<?>) o).get(0)).intValue(), ((Number) ((List<?>) o).get(1)).intValue(), ((Number) ((List<?>) o).get(2)).intValue());
+			}
+
+			return BlockPos.ZERO;
+		});
 
 		context.getTypeWrappers().register(Item.class, o -> ItemStackJS.of(o).getItem());
-		// handle other registries here as well like blocks, potions, sounds etc
+		wrapRegistry(context.getTypeWrappers(), Block.class, KubeJSRegistries.blocks());
+		wrapRegistry(context.getTypeWrappers(), Fluid.class, KubeJSRegistries.fluids());
+		wrapRegistry(context.getTypeWrappers(), SoundEvent.class, KubeJSRegistries.soundEvents());
 
 		// KubeJS //
 		context.getTypeWrappers().register(ItemStackJS.class, ItemStackJS::of);
@@ -205,10 +208,8 @@ public class ScriptManager
 		int i = 0;
 		int t = 0;
 
-		for (ScriptPack pack : packs.values())
-		{
-			try
-			{
+		for (ScriptPack pack : packs.values()) {
+			try {
 				pack.context = context;
 				pack.scope = context.initStandardObjects();
 
@@ -216,32 +217,23 @@ public class ScriptManager
 				BindingsEvent.EVENT.invoker().accept(event);
 				DefaultBindings.init(this, event);
 
-				for (ScriptFile file : pack.scripts)
-				{
+				for (ScriptFile file : pack.scripts) {
 					t++;
 					long start = System.currentTimeMillis();
 
-					if (file.load())
-					{
+					if (file.load()) {
 						i++;
 						type.console.info("Loaded script " + file.info.location + " in " + (System.currentTimeMillis() - start) / 1000D + " s");
-					}
-					else if (file.getError() != null)
-					{
-						if (file.getError() instanceof RhinoException)
-						{
+					} else if (file.getError() != null) {
+						if (file.getError() instanceof RhinoException) {
 							type.console.error("Error loading KubeJS script: " + file.getError().getMessage());
-						}
-						else
-						{
+						} else {
 							type.console.error("Error loading KubeJS script: " + file.info.location + ": " + file.getError());
 							file.getError().printStackTrace();
 						}
 					}
 				}
-			}
-			catch (Throwable ex)
-			{
+			} catch (Throwable ex) {
 				type.console.error("Failed to read script pack " + pack.info.namespace + ": ", ex);
 				ex.printStackTrace();
 			}
@@ -252,9 +244,20 @@ public class ScriptManager
 
 		events.postToHandlers(KubeJSEvents.LOADED, events.handlers(KubeJSEvents.LOADED), new EventJS());
 
-		if (i != t && type == ScriptType.STARTUP)
-		{
+		if (i != t && type == ScriptType.STARTUP) {
 			throw new RuntimeException("There were startup script syntax errors! See logs/kubejs/startup.txt for more info");
 		}
+	}
+
+	private static <T> void wrapRegistry(TypeWrappers typeWrappers, Class<T> c, Registry<T> registry) {
+		typeWrappers.register(c, o -> {
+			if (o == null) {
+				return null;
+			} else if (c.isAssignableFrom(o.getClass())) {
+				return (T) o;
+			}
+
+			return registry.get(new ResourceLocation(o.toString()));
+		});
 	}
 }

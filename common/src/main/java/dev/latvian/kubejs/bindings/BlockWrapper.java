@@ -1,15 +1,13 @@
 package dev.latvian.kubejs.bindings;
 
-import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.block.MaterialJS;
 import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.block.predicate.BlockEntityPredicate;
 import dev.latvian.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.kubejs.block.predicate.BlockPredicate;
 import dev.latvian.kubejs.docs.MinecraftClass;
-import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 
@@ -21,50 +19,40 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class BlockWrapper
-{
-	public Map<String, MaterialJS> getMaterial()
-	{
+public class BlockWrapper {
+	public Map<String, MaterialJS> getMaterial() {
 		return MaterialListJS.INSTANCE.map;
 	}
 
-	public BlockIDPredicate id(ResourceLocation id)
-	{
+	public BlockIDPredicate id(ResourceLocation id) {
 		return new BlockIDPredicate(id);
 	}
 
-	public BlockIDPredicate id(ResourceLocation id, Map<String, Object> properties)
-	{
+	public BlockIDPredicate id(ResourceLocation id, Map<String, Object> properties) {
 		BlockIDPredicate b = id(id);
 
-		for (Map.Entry<String, Object> entry : properties.entrySet())
-		{
+		for (Map.Entry<String, Object> entry : properties.entrySet()) {
 			b = b.with(entry.getKey(), entry.getValue().toString());
 		}
 
 		return b;
 	}
 
-	public BlockEntityPredicate entity(ResourceLocation id)
-	{
+	public BlockEntityPredicate entity(ResourceLocation id) {
 		return new BlockEntityPredicate(id);
 	}
 
-	public BlockPredicate custom(BlockPredicate predicate)
-	{
+	public BlockPredicate custom(BlockPredicate predicate) {
 		return predicate;
 	}
 
 	private Map<String, Direction> facingMap;
 
-	public Map<String, Direction> getFacing()
-	{
-		if (facingMap == null)
-		{
+	public Map<String, Direction> getFacing() {
+		if (facingMap == null) {
 			facingMap = new HashMap<>(6);
 
-			for (Direction facing : Direction.values())
-			{
+			for (Direction facing : Direction.values()) {
 				facingMap.put(facing.getSerializedName(), facing);
 			}
 		}
@@ -73,17 +61,14 @@ public class BlockWrapper
 	}
 
 	@MinecraftClass
-	public Block getBlock(ResourceLocation id)
-	{
-		return Registry.BLOCK.get(id);
+	public Block getBlock(ResourceLocation id) {
+		return KubeJSRegistries.blocks().get(id);
 	}
 
-	public List<String> getTypeList()
-	{
+	public List<String> getTypeList() {
 		List<String> list = new ArrayList<>();
 
-		for (ResourceLocation block : Registries.get(KubeJS.MOD_ID).get(Registry.BLOCK_REGISTRY).getIds())
-		{
+		for (ResourceLocation block : KubeJSRegistries.blocks().getIds()) {
 			list.add(block.toString());
 		}
 

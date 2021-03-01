@@ -1,7 +1,6 @@
 package dev.latvian.kubejs;
 
 @FunctionalInterface
-public interface KubeJSInitializer
-{
+public interface KubeJSInitializer {
 	void onKubeJSInitialization();
 }

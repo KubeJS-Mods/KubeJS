@@ -5,7 +5,6 @@ import dev.latvian.kubejs.world.BlockContainerJS;
 /**
  * @author LatvianModder
  */
-public interface BlockPredicate
-{
+public interface BlockPredicate {
 	boolean check(BlockContainerJS block);
 }

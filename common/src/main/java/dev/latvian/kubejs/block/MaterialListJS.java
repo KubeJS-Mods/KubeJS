@@ -9,16 +9,14 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class MaterialListJS
-{
+public class MaterialListJS {
 	public static final MaterialListJS INSTANCE = new MaterialListJS();
 
 	public final Map<String, MaterialJS> map;
 	public final MaterialJS air;
 	public final MaterialJS wood;
 
-	private MaterialListJS()
-	{
+	private MaterialListJS() {
 		map = new HashMap<>();
 		air = add("air", Material.AIR, SoundType.STONE);
 		wood = add("wood", Material.WOOD, SoundType.WOOD);
@@ -59,39 +57,31 @@ public class MaterialListJS
 		add("gourd", Material.VEGETABLE, SoundType.GRASS);
 	}
 
-	public MaterialJS of(Object o)
-	{
-		if (o instanceof MaterialJS)
-		{
+	public MaterialJS of(Object o) {
+		if (o instanceof MaterialJS) {
 			return (MaterialJS) o;
 		}
 
 		return map.getOrDefault(String.valueOf(o).toLowerCase(), wood);
 	}
 
-	public MaterialJS add(MaterialJS m)
-	{
+	public MaterialJS add(MaterialJS m) {
 		map.put(m.getId(), m);
 		return m;
 	}
 
-	public MaterialJS add(String s, Material m, SoundType e)
-	{
+	public MaterialJS add(String s, Material m, SoundType e) {
 		return add(new MaterialJS(s, m, e));
 	}
 
-	public MaterialJS get(String id)
-	{
+	public MaterialJS get(String id) {
 		MaterialJS m = map.get(id);
 		return m == null ? air : m;
 	}
 
-	public MaterialJS get(Material minecraftMaterial)
-	{
-		for (MaterialJS materialJS : map.values())
-		{
-			if (materialJS.getMinecraftMaterial() == minecraftMaterial)
-			{
+	public MaterialJS get(Material minecraftMaterial) {
+		for (MaterialJS materialJS : map.values()) {
+			if (materialJS.getMinecraftMaterial() == minecraftMaterial) {
 				return materialJS;
 			}
 		}

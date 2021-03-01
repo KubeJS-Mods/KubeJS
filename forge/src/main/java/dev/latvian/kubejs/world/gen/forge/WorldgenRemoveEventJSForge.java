@@ -15,21 +15,17 @@ import java.util.function.Predicate;
 /**
  * @author LatvianModder
  */
-public class WorldgenRemoveEventJSForge extends WorldgenRemoveEventJS
-{
+public class WorldgenRemoveEventJSForge extends WorldgenRemoveEventJS {
 	private final BiomeLoadingEvent event;
 
-	public WorldgenRemoveEventJSForge(BiomeLoadingEvent e)
-	{
+	public WorldgenRemoveEventJSForge(BiomeLoadingEvent e) {
 		event = e;
 	}
 
 	@Override
-	protected boolean verifyBiomes(WorldgenEntryList biomes)
-	{
+	protected boolean verifyBiomes(WorldgenEntryList biomes) {
 		return biomes.verify(s -> {
-			if (s.startsWith("#"))
-			{
+			if (s.startsWith("#")) {
 				return event.getCategory() == Biome.BiomeCategory.byName(s.substring(1));
 			}
 
@@ -38,46 +34,38 @@ public class WorldgenRemoveEventJSForge extends WorldgenRemoveEventJS
 	}
 
 	@Override
-	protected void removeFeature(GenerationStep.Decoration decoration, Predicate<FeatureConfiguration> predicate)
-	{
+	protected void removeFeature(GenerationStep.Decoration decoration, Predicate<FeatureConfiguration> predicate) {
 		event.getGeneration().getFeatures(decoration).removeIf(configuredFeatureSupplier -> checkTree(configuredFeatureSupplier.get(), predicate));
 	}
 
 	@Override
-	protected void removeSpawn(RemoveSpawnsByCategoryProperties properties)
-	{
+	protected void removeSpawn(RemoveSpawnsByCategoryProperties properties) {
 		event.getSpawns().getSpawnerTypes().forEach(category -> {
-			if (properties.categories.verifyIgnoreCase(category.getName()))
-			{
+			if (properties.categories.verifyIgnoreCase(category.getName())) {
 				event.getSpawns().getSpawner(category).clear();
 			}
 		});
 	}
 
 	@Override
-	protected void removeSpawn(RemoveSpawnsByIDProperties properties)
-	{
+	protected void removeSpawn(RemoveSpawnsByIDProperties properties) {
 		event.getSpawns().getSpawnerTypes().forEach(category -> event.getSpawns().getSpawner(category).removeIf(spawner -> properties.entities.verify(spawner.type.getDescriptionId())));
 	}
 
 	@Override
-	public void removeAllFeatures(String type)
-	{
+	public void removeAllFeatures(String type) {
 		event.getGeneration().getFeatures(GenerationStep.Decoration.valueOf(type.toUpperCase())).clear();
 	}
 
 	@Override
-	public void removeAllFeatures()
-	{
-		for (GenerationStep.Decoration decoration : GenerationStep.Decoration.values())
-		{
+	public void removeAllFeatures() {
+		for (GenerationStep.Decoration decoration : GenerationStep.Decoration.values()) {
 			event.getGeneration().getFeatures(decoration).clear();
 		}
 	}
 
 	@Override
-	public void removeAllSpawns()
-	{
+	public void removeAllSpawns() {
 		event.getSpawns().getSpawnerTypes().forEach(category -> event.getSpawns().getSpawner(category).clear());
 	}
 }

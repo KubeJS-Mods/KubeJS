@@ -7,24 +7,20 @@ import java.util.regex.Pattern;
 /**
  * @author LatvianModder
  */
-public class RegexIDFilter implements RecipeFilter
-{
+public class RegexIDFilter implements RecipeFilter {
 	private final Pattern pattern;
 
-	public RegexIDFilter(Pattern i)
-	{
+	public RegexIDFilter(Pattern i) {
 		pattern = i;
 	}
 
 	@Override
-	public boolean test(RecipeJS r)
-	{
+	public boolean test(RecipeJS r) {
 		return pattern.matcher(r.id.toString()).find();
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return "RegexIDFilter{" +
 				"pattern=" + pattern +
 				'}';

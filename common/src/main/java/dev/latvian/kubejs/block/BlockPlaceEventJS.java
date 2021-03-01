@@ -14,15 +14,13 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-public class BlockPlaceEventJS extends EntityEventJS
-{
+public class BlockPlaceEventJS extends EntityEventJS {
 	private final Entity entity;
 	private final Level world;
 	private final BlockPos pos;
 	private final BlockState state;
 
-	public BlockPlaceEventJS(@Nullable Entity entity, Level world, BlockPos pos, BlockState state)
-	{
+	public BlockPlaceEventJS(@Nullable Entity entity, Level world, BlockPos pos, BlockState state) {
 		this.entity = entity;
 		this.world = world;
 		this.pos = pos;
@@ -30,30 +28,24 @@ public class BlockPlaceEventJS extends EntityEventJS
 	}
 
 	@Override
-	public boolean canCancel()
-	{
+	public boolean canCancel() {
 		return true;
 	}
 
 	@Override
-	public WorldJS getWorld()
-	{
+	public WorldJS getWorld() {
 		return worldOf(world);
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entity == null ? null : entityOf(entity);
 	}
 
-	public BlockContainerJS getBlock()
-	{
-		return new BlockContainerJS(world, pos)
-		{
+	public BlockContainerJS getBlock() {
+		return new BlockContainerJS(world, pos) {
 			@Override
-			public BlockState getBlockState()
-			{
+			public BlockState getBlockState() {
 				return state;
 			}
 		};

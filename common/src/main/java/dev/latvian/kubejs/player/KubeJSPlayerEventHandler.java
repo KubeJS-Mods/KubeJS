@@ -23,10 +23,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author LatvianModder
  */
-public class KubeJSPlayerEventHandler
-{
-	public static void init()
-	{
+public class KubeJSPlayerEventHandler {
+	public static void init() {
 		PlayerEvent.PLAYER_JOIN.register(KubeJSPlayerEventHandler::loggedIn);
 		PlayerEvent.PLAYER_QUIT.register(KubeJSPlayerEventHandler::loggedOut);
 		PlayerEvent.PLAYER_CLONE.register(KubeJSPlayerEventHandler::cloned);
@@ -37,10 +35,8 @@ public class KubeJSPlayerEventHandler
 		PlayerEvent.CLOSE_MENU.register(KubeJSPlayerEventHandler::inventoryClosed);
 	}
 
-	public static void loggedIn(ServerPlayer player)
-	{
-		if (ServerJS.instance != null)
-		{
+	public static void loggedIn(ServerPlayer player) {
+		if (ServerJS.instance != null) {
 			ServerPlayerDataJS p = new ServerPlayerDataJS(ServerJS.instance, player.getUUID(), player.getGameProfile().getName(), KubeJS.nextClientHasClientMod);
 			KubeJS.nextClientHasClientMod = false;
 			p.getServer().playerMap.put(p.getId(), p);
@@ -49,16 +45,13 @@ public class KubeJSPlayerEventHandler
 			player.inventoryMenu.addSlotListener(new InventoryListener(player));
 		}
 
-		if (!ScriptType.SERVER.errors.isEmpty() && !CommonProperties.get().hideServerScriptErrors)
-		{
+		if (!ScriptType.SERVER.errors.isEmpty() && !CommonProperties.get().hideServerScriptErrors) {
 			player.displayClientMessage(new TextComponent("KubeJS errors found [" + ScriptType.SERVER.errors.size() + "]! Run '/kubejs errors' for more info").withStyle(ChatFormatting.DARK_RED), false);
 		}
 	}
 
-	public static void loggedOut(ServerPlayer player)
-	{
-		if (ServerJS.instance == null || !ServerJS.instance.playerMap.containsKey(player.getUUID()))
-		{
+	public static void loggedOut(ServerPlayer player) {
+		if (ServerJS.instance == null || !ServerJS.instance.playerMap.containsKey(player.getUUID())) {
 			return;
 		}
 
@@ -66,56 +59,45 @@ public class KubeJSPlayerEventHandler
 		ServerJS.instance.playerMap.remove(player.getUUID());
 	}
 
-	public static void cloned(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean wonGame)
-	{
+	public static void cloned(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean wonGame) {
 		newPlayer.inventoryMenu.addSlotListener(new InventoryListener(newPlayer));
 	}
 
-	public static void tick(Player player)
-	{
-		if (ServerJS.instance != null)
-		{
+	public static void tick(Player player) {
+		if (ServerJS.instance != null) {
 			new SimplePlayerEventJS(player).post(KubeJSEvents.PLAYER_TICK);
 		}
 	}
 
 	@NotNull
-	public static InteractionResultHolder<Component> chat(ServerPlayer player, String message, Component component)
-	{
+	public static InteractionResultHolder<Component> chat(ServerPlayer player, String message, Component component) {
 		PlayerChatEventJS event = new PlayerChatEventJS(player, message, component);
-		if (event.post(KubeJSEvents.PLAYER_CHAT))
-		{
+		if (event.post(KubeJSEvents.PLAYER_CHAT)) {
 			return InteractionResultHolder.fail(event.component);
 		}
 		return InteractionResultHolder.pass(event.component);
 	}
 
-	public static void advancement(ServerPlayer player, Advancement advancement)
-	{
+	public static void advancement(ServerPlayer player, Advancement advancement) {
 		new PlayerAdvancementEventJS(player, advancement).post(KubeJSEvents.PLAYER_ADVANCEMENT);
 	}
 
-	public static void inventoryOpened(Player player, AbstractContainerMenu menu)
-	{
-		if (player instanceof ServerPlayer && !(menu instanceof InventoryMenu))
-		{
+	public static void inventoryOpened(Player player, AbstractContainerMenu menu) {
+		if (player instanceof ServerPlayer && !(menu instanceof InventoryMenu)) {
 			menu.addSlotListener(new InventoryListener((ServerPlayer) player));
 		}
 
 		new InventoryEventJS(player, menu).post(KubeJSEvents.PLAYER_INVENTORY_OPENED);
 
-		if (menu instanceof ChestMenu)
-		{
+		if (menu instanceof ChestMenu) {
 			new ChestEventJS(player, menu).post(KubeJSEvents.PLAYER_CHEST_OPENED);
 		}
 	}
 
-	public static void inventoryClosed(Player player, AbstractContainerMenu menu)
-	{
+	public static void inventoryClosed(Player player, AbstractContainerMenu menu) {
 		new InventoryEventJS(player, menu).post(KubeJSEvents.PLAYER_INVENTORY_CLOSED);
 
-		if (menu instanceof ChestMenu)
-		{
+		if (menu instanceof ChestMenu) {
 			new ChestEventJS(player, menu).post(KubeJSEvents.PLAYER_CHEST_CLOSED);
 		}
 	}

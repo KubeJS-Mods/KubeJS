@@ -17,51 +17,41 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public class LivingEntityDropsEventJS extends LivingEntityEventJS
-{
+public class LivingEntityDropsEventJS extends LivingEntityEventJS {
 	private final LivingDropsEvent event;
 	public List<ItemEntityJS> eventDrops;
 
-	public LivingEntityDropsEventJS(LivingDropsEvent e)
-	{
+	public LivingEntityDropsEventJS(LivingDropsEvent e) {
 		event = e;
 	}
 
 	@Override
-	public boolean canCancel()
-	{
+	public boolean canCancel() {
 		return true;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(event.getEntity());
 	}
 
-	public DamageSourceJS getSource()
-	{
+	public DamageSourceJS getSource() {
 		return new DamageSourceJS(getWorld(), event.getSource());
 	}
 
-	public int getLootingLevel()
-	{
+	public int getLootingLevel() {
 		return event.getLootingLevel();
 	}
 
-	public boolean isRecentlyHit()
-	{
+	public boolean isRecentlyHit() {
 		return event.isRecentlyHit();
 	}
 
-	public List<ItemEntityJS> getDrops()
-	{
-		if (eventDrops == null)
-		{
+	public List<ItemEntityJS> getDrops() {
+		if (eventDrops == null) {
 			eventDrops = new ArrayList<>();
 
-			for (ItemEntity entity : event.getDrops())
-			{
+			for (ItemEntity entity : event.getDrops()) {
 				eventDrops.add(new ItemEntityJS(getWorld(), entity));
 			}
 		}
@@ -70,12 +60,10 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS
 	}
 
 	@Nullable
-	public ItemEntityJS addDrop(Object item)
-	{
+	public ItemEntityJS addDrop(Object item) {
 		ItemStack i = ItemStackJS.of(item).getItemStack();
 
-		if (!i.isEmpty())
-		{
+		if (!i.isEmpty()) {
 			Entity e = event.getEntity();
 			ItemEntity ei = new ItemEntity(e.level, e.getX(), e.getY(), e.getZ(), i);
 			ei.setPickUpDelay(10);
@@ -88,10 +76,8 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS
 	}
 
 	@Nullable
-	public ItemEntityJS addDrop(Object item, float chance)
-	{
-		if (chance >= 1F || event.getEntity().level.random.nextFloat() <= chance)
-		{
+	public ItemEntityJS addDrop(Object item, float chance) {
+		if (chance >= 1F || event.getEntity().level.random.nextFloat() <= chance) {
 			return addDrop(item);
 		}
 

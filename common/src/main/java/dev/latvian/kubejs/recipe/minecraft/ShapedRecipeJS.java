@@ -18,49 +18,39 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class ShapedRecipeJS extends RecipeJS
-{
+public class ShapedRecipeJS extends RecipeJS {
 	private final List<String> pattern = new ArrayList<>();
 	private final List<String> key = new ArrayList<>();
 
 	@Override
-	public void create(ListJS args)
-	{
-		if (args.size() < 3)
-		{
-			if (args.size() < 2)
-			{
+	public void create(ListJS args) {
+		if (args.size() < 3) {
+			if (args.size() < 2) {
 				throw new RecipeExceptionJS("Requires 3 arguments - result, pattern and keys!");
 			}
 
 			outputItems.add(parseResultItem(args.get(0)));
 			ListJS vertical = ListJS.orSelf(args.get(1));
 
-			if (vertical.isEmpty())
-			{
+			if (vertical.isEmpty()) {
 				throw new RecipeExceptionJS("Pattern is empty!");
 			}
 
 			int id = 0;
 
-			for (Object o : vertical)
-			{
+			for (Object o : vertical) {
 				StringBuilder horizontalPattern = new StringBuilder();
 				ListJS horizontal = ListJS.orSelf(o);
 
-				for (Object item : horizontal)
-				{
+				for (Object item : horizontal) {
 					IngredientJS ingredient = IngredientJS.of(item);
 
-					if (!ingredient.isEmpty())
-					{
+					if (!ingredient.isEmpty()) {
 						String currentId = String.valueOf((char) ('A' + (id++)));
 						horizontalPattern.append(currentId);
 						inputItems.add(ingredient);
 						key.add(currentId);
-					}
-					else
-					{
+					} else {
 						horizontalPattern.append(" ");
 					}
 				}
@@ -71,8 +61,7 @@ public class ShapedRecipeJS extends RecipeJS
 			int maxLength = pattern.stream().mapToInt(String::length).max().getAsInt();
 			ListIterator<String> iterator = pattern.listIterator();
 
-			while (iterator.hasNext())
-			{
+			while (iterator.hasNext()) {
 				iterator.set(StringUtils.rightPad(iterator.next(), maxLength));
 			}
 
@@ -83,61 +72,50 @@ public class ShapedRecipeJS extends RecipeJS
 
 		ListJS pattern1 = ListJS.orSelf(args.get(1));
 
-		if (pattern1.isEmpty())
-		{
+		if (pattern1.isEmpty()) {
 			throw new RecipeExceptionJS("Pattern is empty!");
 		}
 
-		for (Object p : pattern1)
-		{
+		for (Object p : pattern1) {
 			pattern.add(String.valueOf(p));
 		}
 
 		MapJS key1 = MapJS.of(args.get(2));
 
-		if (key1 == null || key1.isEmpty())
-		{
+		if (key1 == null || key1.isEmpty()) {
 			throw new RecipeExceptionJS("Key map is empty!");
 		}
 
-		for (String k : key1.keySet())
-		{
+		for (String k : key1.keySet()) {
 			inputItems.add(parseIngredientItem(key1.get(k), k));
 			key.add(k);
 		}
 	}
 
 	@Override
-	public void deserialize()
-	{
+	public void deserialize() {
 		outputItems.add(parseResultItem(json.get("result")));
 
-		for (JsonElement e : json.get("pattern").getAsJsonArray())
-		{
+		for (JsonElement e : json.get("pattern").getAsJsonArray()) {
 			pattern.add(e.getAsString());
 		}
 
-		for (Map.Entry<String, JsonElement> entry : json.get("key").getAsJsonObject().entrySet())
-		{
+		for (Map.Entry<String, JsonElement> entry : json.get("key").getAsJsonObject().entrySet()) {
 			inputItems.add(parseIngredientItem(entry.getValue(), entry.getKey()));
 			key.add(entry.getKey());
 		}
 	}
 
 	@Override
-	public void serialize()
-	{
-		if (serializeOutputs)
-		{
+	public void serialize() {
+		if (serializeOutputs) {
 			json.add("result", outputItems.get(0).toResultJson());
 		}
 
-		if (serializeInputs)
-		{
+		if (serializeInputs) {
 			JsonArray patternJson = new JsonArray();
 
-			for (String s : pattern)
-			{
+			for (String s : pattern) {
 				patternJson.add(s);
 			}
 
@@ -145,8 +123,7 @@ public class ShapedRecipeJS extends RecipeJS
 
 			JsonObject keyJson = new JsonObject();
 
-			for (int i = 0; i < key.size(); i++)
-			{
+			for (int i = 0; i < key.size(); i++) {
 				keyJson.add(key.get(i), inputItems.get(i).toJson());
 			}
 

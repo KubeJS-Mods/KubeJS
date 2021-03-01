@@ -7,18 +7,15 @@ import java.util.function.Predicate;
 /**
  * @author LatvianModder
  */
-public class VanillaPredicate implements Predicate<ItemStack>
-{
+public class VanillaPredicate implements Predicate<ItemStack> {
 	private final IngredientJS ingredient;
 
-	public VanillaPredicate(IngredientJS i)
-	{
+	public VanillaPredicate(IngredientJS i) {
 		ingredient = i;
 	}
 
 	@Override
-	public boolean test(ItemStack stack)
-	{
+	public boolean test(ItemStack stack) {
 		return ingredient.testVanilla(stack);
 	}
 }

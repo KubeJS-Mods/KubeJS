@@ -14,8 +14,7 @@ import java.util.function.Supplier;
 /**
  * @author LatvianModder
  */
-public class FoodBuilder
-{
+public class FoodBuilder {
 	private int hunger;
 	private float saturation;
 	private boolean meat;
@@ -24,71 +23,59 @@ public class FoodBuilder
 	private final List<Pair<Supplier<MobEffectInstance>, Float>> effects = Lists.newArrayList();
 	public Consumer<ItemFoodEatenEventJS> eaten;
 
-	public FoodBuilder hunger(int h)
-	{
+	public FoodBuilder hunger(int h) {
 		hunger = h;
 		return this;
 	}
 
-	public FoodBuilder saturation(float s)
-	{
+	public FoodBuilder saturation(float s) {
 		saturation = s;
 		return this;
 	}
 
-	public FoodBuilder meat()
-	{
+	public FoodBuilder meat() {
 		meat = true;
 		return this;
 	}
 
-	public FoodBuilder alwaysEdible()
-	{
+	public FoodBuilder alwaysEdible() {
 		alwaysEdible = true;
 		return this;
 	}
 
-	public FoodBuilder fastToEat()
-	{
+	public FoodBuilder fastToEat() {
 		fastToEat = true;
 		return this;
 	}
 
-	public FoodBuilder effect(ResourceLocation potion, int duration, int amplifier, float probability)
-	{
+	public FoodBuilder effect(ResourceLocation potion, int duration, int amplifier, float probability) {
 		effects.add(Pair.of(() -> new MobEffectInstance(UtilsJS.getPotion(potion), duration, amplifier), probability));
 		return this;
 	}
 
-	public FoodBuilder eaten(Consumer<ItemFoodEatenEventJS> e)
-	{
+	public FoodBuilder eaten(Consumer<ItemFoodEatenEventJS> e) {
 		eaten = e;
 		return this;
 	}
 
-	public FoodProperties build()
-	{
+	public FoodProperties build() {
 		FoodProperties.Builder b = new FoodProperties.Builder();
 		b.nutrition(hunger);
 		b.saturationMod(saturation);
 
-		if (meat)
-		{
+		if (meat) {
 			b.meat();
 		}
 
-		if (alwaysEdible)
-		{
+		if (alwaysEdible) {
 			b.alwaysEat();
 		}
 
-		if (fastToEat)
-		{
+		if (fastToEat) {
 			b.fast();
 		}
 
-		for (Pair<Supplier<MobEffectInstance>, Float> effect : effects)
-		{
+		for (Pair<Supplier<MobEffectInstance>, Float> effect : effects) {
 			b.effect(effect.getKey().get(), effect.getRight());
 		}
 

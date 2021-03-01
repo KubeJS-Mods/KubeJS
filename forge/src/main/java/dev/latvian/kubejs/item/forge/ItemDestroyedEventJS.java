@@ -8,35 +8,29 @@ import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 
 import javax.annotation.Nullable;
 
-public class ItemDestroyedEventJS extends PlayerEventJS
-{
+public class ItemDestroyedEventJS extends PlayerEventJS {
 	private final PlayerDestroyItemEvent event;
 
-	public ItemDestroyedEventJS(PlayerDestroyItemEvent e)
-	{
+	public ItemDestroyedEventJS(PlayerDestroyItemEvent e) {
 		event = e;
 	}
 
 	@Override
-	public boolean canCancel()
-	{
+	public boolean canCancel() {
 		return true;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(event.getEntity());
 	}
 
 	@Nullable
-	public InteractionHand getHand()
-	{
+	public InteractionHand getHand() {
 		return event.getHand();
 	}
 
-	public ItemStackJS getItem()
-	{
+	public ItemStackJS getItem() {
 		return ItemStackJS.of(event.getOriginal());
 	}
 }

@@ -9,8 +9,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
  * @author LatvianModder
  */
 @Mixin(FireworkRocketEntity.class)
-public abstract class FireworkRocketEntityMixin implements FireworkRocketEntityKJS
-{
+public abstract class FireworkRocketEntityMixin implements FireworkRocketEntityKJS {
 	@Override
 	@Accessor("lifetime")
 	public abstract void setLifetimeKJS(int lifetime);

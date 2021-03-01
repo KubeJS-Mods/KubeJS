@@ -10,50 +10,39 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class ItemModificationProperties
-{
+public class ItemModificationProperties {
 	public final ItemKJS item;
 
-	public ItemModificationProperties(ItemKJS i)
-	{
+	public ItemModificationProperties(ItemKJS i) {
 		item = i;
 	}
 
-	public void setMaxStackSize(int i)
-	{
+	public void setMaxStackSize(int i) {
 		item.setMaxStackSizeKJS(i);
 	}
 
-	public void setMaxDamage(int i)
-	{
+	public void setMaxDamage(int i) {
 		item.setMaxDamageKJS(i);
 	}
 
-	public void setCraftingReminder(Item i)
-	{
+	public void setCraftingReminder(Item i) {
 		item.setCraftingReminderKJS(i);
 	}
 
-	public void setFireResistant(boolean b)
-	{
+	public void setFireResistant(boolean b) {
 		item.setFireResistantKJS(b);
 	}
 
-	public void setRarity(RarityWrapper r)
-	{
+	public void setRarity(RarityWrapper r) {
 		item.setRarityKJS(r.rarity);
 	}
 
-	public void setTier(Consumer<ModifiedTier> c)
-	{
-		if (item instanceof TieredItemKJS)
-		{
+	public void setTier(Consumer<ModifiedTier> c) {
+		if (item instanceof TieredItemKJS) {
 			ModifiedTier t = new ModifiedTier(((TieredItemKJS) item).getTierKJS());
 			c.accept(t);
 			((TieredItemKJS) item).setTierKJS(t);
-		}
-		else
-		{
+		} else {
 			throw new IllegalArgumentException("Item is not a tool/tiered item!");
 		}
 	}

@@ -6,8 +6,7 @@ import net.minecraft.world.item.Rarity;
 /**
  * @author LatvianModder
  */
-public interface ItemKJS
-{
+public interface ItemKJS {
 	void setMaxStackSizeKJS(int i);
 
 	void setMaxDamageKJS(int i);

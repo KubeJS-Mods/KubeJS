@@ -12,8 +12,7 @@ import net.minecraft.world.entity.player.Player;
 /**
  * @author LatvianModder
  */
-public class ClientWorldJS extends WorldJS
-{
+public class ClientWorldJS extends WorldJS {
 	public static ClientWorldJS instance;
 
 	private final Minecraft minecraft;
@@ -21,8 +20,7 @@ public class ClientWorldJS extends WorldJS
 	public final LocalPlayer minecraftPlayer;
 	public final ClientPlayerDataJS clientPlayerData;
 
-	public ClientWorldJS(Minecraft mc, LocalPlayer e)
-	{
+	public ClientWorldJS(Minecraft mc, LocalPlayer e) {
 		super(e.level);
 		minecraft = mc;
 		minecraftPlayer = e;
@@ -30,39 +28,31 @@ public class ClientWorldJS extends WorldJS
 	}
 
 	@MinecraftClass
-	public Minecraft getMinecraft()
-	{
+	public Minecraft getMinecraft() {
 		return minecraft;
 	}
 
 	@Override
-	public ScriptType getSide()
-	{
+	public ScriptType getSide() {
 		return ScriptType.CLIENT;
 	}
 
 	@Override
-	public ClientPlayerDataJS getPlayerData(Player player)
-	{
-		if (player == minecraftPlayer || player.getUUID().equals(clientPlayerData.getId()))
-		{
+	public ClientPlayerDataJS getPlayerData(Player player) {
+		if (player == minecraftPlayer || player.getUUID().equals(clientPlayerData.getId())) {
 			return clientPlayerData;
-		}
-		else
-		{
+		} else {
 			return new ClientPlayerDataJS(this, player, false);
 		}
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return "ClientWorld:" + getDimension();
 	}
 
 	@Override
-	public EntityArrayList getEntities()
-	{
+	public EntityArrayList getEntities() {
 		return new EntityArrayList(this, ((ClientLevel) minecraftWorld).entitiesForRendering());
 	}
 }

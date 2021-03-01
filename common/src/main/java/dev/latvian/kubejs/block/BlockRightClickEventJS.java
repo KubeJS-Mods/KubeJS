@@ -12,8 +12,7 @@ import net.minecraft.world.entity.player.Player;
 /**
  * @author LatvianModder
  */
-public class BlockRightClickEventJS extends PlayerEventJS
-{
+public class BlockRightClickEventJS extends PlayerEventJS {
 	private final Player player;
 	private final InteractionHand hand;
 	private final BlockPos pos;
@@ -21,8 +20,7 @@ public class BlockRightClickEventJS extends PlayerEventJS
 	private BlockContainerJS block;
 	private ItemStackJS item;
 
-	public BlockRightClickEventJS(Player player, InteractionHand hand, BlockPos pos, Direction direction)
-	{
+	public BlockRightClickEventJS(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
 		this.player = player;
 		this.hand = hand;
 		this.pos = pos;
@@ -30,44 +28,36 @@ public class BlockRightClickEventJS extends PlayerEventJS
 	}
 
 	@Override
-	public boolean canCancel()
-	{
+	public boolean canCancel() {
 		return true;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(player);
 	}
 
-	public BlockContainerJS getBlock()
-	{
-		if (block == null)
-		{
+	public BlockContainerJS getBlock() {
+		if (block == null) {
 			block = new BlockContainerJS(player.level, pos);
 		}
 
 		return block;
 	}
 
-	public InteractionHand getHand()
-	{
+	public InteractionHand getHand() {
 		return hand;
 	}
 
-	public ItemStackJS getItem()
-	{
-		if (item == null)
-		{
+	public ItemStackJS getItem() {
+		if (item == null) {
 			item = ItemStackJS.of(player.getItemInHand(hand));
 		}
 
 		return item;
 	}
 
-	public Direction getFacing()
-	{
+	public Direction getFacing() {
 		return direction;
 	}
 }

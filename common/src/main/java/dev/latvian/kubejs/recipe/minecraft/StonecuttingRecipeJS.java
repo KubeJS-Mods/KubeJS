@@ -7,22 +7,18 @@ import dev.latvian.kubejs.util.ListJS;
 /**
  * @author LatvianModder
  */
-public class StonecuttingRecipeJS extends RecipeJS
-{
+public class StonecuttingRecipeJS extends RecipeJS {
 	@Override
-	public void create(ListJS args)
-	{
+	public void create(ListJS args) {
 		outputItems.add(parseResultItem(args.get(0)));
 		inputItems.add(parseIngredientItem(args.get(1)));
 	}
 
 	@Override
-	public void deserialize()
-	{
+	public void deserialize() {
 		ItemStackJS result = parseResultItem(json.get("result"));
 
-		if (json.has("count"))
-		{
+		if (json.has("count")) {
 			result.setCount(json.get("count").getAsInt());
 		}
 
@@ -31,16 +27,13 @@ public class StonecuttingRecipeJS extends RecipeJS
 	}
 
 	@Override
-	public void serialize()
-	{
-		if (serializeOutputs)
-		{
+	public void serialize() {
+		if (serializeOutputs) {
 			json.addProperty("result", outputItems.get(0).getId());
 			json.addProperty("count", outputItems.get(0).getCount());
 		}
 
-		if (serializeInputs)
-		{
+		if (serializeInputs) {
 			json.add("ingredient", inputItems.get(0).toJson());
 		}
 	}

@@ -9,15 +9,12 @@ import net.minecraft.world.item.crafting.RecipeType;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class RecipeEventJSImpl
-{
-	public static boolean processConditions(JsonObject json, String key)
-	{
+public class RecipeEventJSImpl {
+	public static boolean processConditions(JsonObject json, String key) {
 		return true;
 	}
 
-	public static void pingNewRecipes(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map)
-	{
+	public static void pingNewRecipes(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map) {
 		FabricLoader.getInstance().getEntrypoints("kubejs-set-recipes", Consumer.class).forEach(consumer -> consumer.accept(map));
 	}
 }

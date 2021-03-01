@@ -7,18 +7,15 @@ import dev.latvian.kubejs.player.PlayerEventJS;
 /**
  * @author LatvianModder
  */
-public class ClientLoggedInEventJS extends PlayerEventJS
-{
+public class ClientLoggedInEventJS extends PlayerEventJS {
 	private final ClientPlayerJS player;
 
-	public ClientLoggedInEventJS(ClientPlayerJS p)
-	{
+	public ClientLoggedInEventJS(ClientPlayerJS p) {
 		player = p;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return player;
 	}
 }

@@ -9,8 +9,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
  * @author LatvianModder
  */
 @Mixin(ResourceLocation.class)
-public abstract class ResourceLocationMixin
-{
+public abstract class ResourceLocationMixin {
 	@Accessor
 	@RemapForJS("getNamespace")
 	public abstract String getNamespace();

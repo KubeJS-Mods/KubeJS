@@ -13,33 +13,27 @@ import net.minecraftforge.event.world.BiomeLoadingEvent;
 /**
  * @author LatvianModder
  */
-public class WorldgenAddEventJSForge extends WorldgenAddEventJS
-{
+public class WorldgenAddEventJSForge extends WorldgenAddEventJS {
 	private final BiomeLoadingEvent event;
 
-	public WorldgenAddEventJSForge(BiomeLoadingEvent e)
-	{
+	public WorldgenAddEventJSForge(BiomeLoadingEvent e) {
 		event = e;
 	}
 
 	@Override
-	protected void addFeature(GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> configuredFeature)
-	{
+	protected void addFeature(GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> configuredFeature) {
 		event.getGeneration().addFeature(decoration, configuredFeature);
 	}
 
 	@Override
-	protected void addEntitySpawn(MobCategory category, MobSpawnSettings.SpawnerData spawnerData)
-	{
+	protected void addEntitySpawn(MobCategory category, MobSpawnSettings.SpawnerData spawnerData) {
 		event.getSpawns().addSpawn(category, spawnerData);
 	}
 
 	@Override
-	protected boolean verifyBiomes(WorldgenEntryList biomes)
-	{
+	protected boolean verifyBiomes(WorldgenEntryList biomes) {
 		return biomes.verify(s -> {
-			if (s.startsWith("#"))
-			{
+			if (s.startsWith("#")) {
 				return event.getCategory() == Biome.BiomeCategory.byName(s.substring(1));
 			}
 

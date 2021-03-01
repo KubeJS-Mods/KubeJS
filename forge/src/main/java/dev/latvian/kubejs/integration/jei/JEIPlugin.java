@@ -26,20 +26,17 @@ import java.util.Objects;
  * @author LatvianModder
  */
 @JeiPlugin
-public class JEIPlugin implements IModPlugin
-{
+public class JEIPlugin implements IModPlugin {
 	public static final ResourceLocation ID = new ResourceLocation(KubeJS.MOD_ID, "jei");
 	public IJeiRuntime runtime;
 
 	@Override
-	public ResourceLocation getPluginUid()
-	{
+	public ResourceLocation getPluginUid() {
 		return ID;
 	}
 
 	@Override
-	public void onRuntimeAvailable(IJeiRuntime r)
-	{
+	public void onRuntimeAvailable(IJeiRuntime r) {
 		runtime = r;
 		DefaultBindings.GLOBAL.put("jeiRuntime", runtime);
 
@@ -58,20 +55,17 @@ public class JEIPlugin implements IModPlugin
 		new AddJEIEventJS<>(runtime, VanillaTypes.FLUID, object -> fromArchitectury(FluidStackJS.of(object).getFluidStack())).post(ScriptType.CLIENT, JEIIntegration.JEI_ADD_FLUIDS);
 	}
 
-	private FluidStack fromArchitectury(me.shedaniel.architectury.fluid.FluidStack stack)
-	{
+	private FluidStack fromArchitectury(me.shedaniel.architectury.fluid.FluidStack stack) {
 		return new FluidStack(stack.getFluid(), stack.getAmount().intValue(), stack.getTag());
 	}
 
 	@Override
-	public void registerItemSubtypes(ISubtypeRegistration registration)
-	{
+	public void registerItemSubtypes(ISubtypeRegistration registration) {
 		new AddJEISubtypesEventJS(registration).post(ScriptType.CLIENT, JEIIntegration.JEI_SUBTYPES);
 	}
 
 	@Override
-	public void registerRecipes(IRecipeRegistration registration)
-	{
+	public void registerRecipes(IRecipeRegistration registration) {
 		List<IngredientInfoRecipe<?>> list = new ArrayList<>();
 		new InformationJEIEventJS(list).post(ScriptType.CLIENT, JEIIntegration.JEI_INFORMATION);
 		registration.addRecipes(list, VanillaRecipeCategoryUid.INFORMATION);

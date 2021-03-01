@@ -7,22 +7,17 @@ import java.util.function.Predicate;
 /**
  * @author LatvianModder
  */
-public class WorldgenEntryList
-{
+public class WorldgenEntryList {
 	public List<String> values = new ArrayList<>();
 	public boolean blacklist = false;
 
-	public boolean verify(Predicate<String> filter)
-	{
-		if (values.isEmpty())
-		{
+	public boolean verify(Predicate<String> filter) {
+		if (values.isEmpty()) {
 			return true;
 		}
 
-		for (String v : values)
-		{
-			if (filter.test(v))
-			{
+		for (String v : values) {
+			if (filter.test(v)) {
 				return !blacklist;
 			}
 		}
@@ -30,13 +25,11 @@ public class WorldgenEntryList
 		return blacklist;
 	}
 
-	public boolean verify(String contains)
-	{
+	public boolean verify(String contains) {
 		return verify(s -> s.equals(contains));
 	}
 
-	public boolean verifyIgnoreCase(String contains)
-	{
+	public boolean verifyIgnoreCase(String contains) {
 		return verify(s -> s.equalsIgnoreCase(contains));
 	}
 }

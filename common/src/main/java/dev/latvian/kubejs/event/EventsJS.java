@@ -12,14 +12,11 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class EventsJS
-{
-	private static class ScriptEventHandler
-	{
+public class EventsJS {
+	private static class ScriptEventHandler {
 		private final IEventHandler handler;
 
-		private ScriptEventHandler(IEventHandler h)
-		{
+		private ScriptEventHandler(IEventHandler h) {
 			handler = h;
 		}
 	}
@@ -27,18 +24,15 @@ public class EventsJS
 	public final ScriptManager scriptManager;
 	private final Map<String, List<ScriptEventHandler>> map;
 
-	public EventsJS(ScriptManager t)
-	{
+	public EventsJS(ScriptManager t) {
 		scriptManager = t;
 		map = new Object2ObjectOpenHashMap<>();
 	}
 
-	public void listen(String id, IEventHandler handler)
-	{
+	public void listen(String id, IEventHandler handler) {
 		List<ScriptEventHandler> list = map.get(id);
 
-		if (list == null)
-		{
+		if (list == null) {
 			list = new ObjectArrayList<>();
 			map.put(id, list);
 		}
@@ -46,38 +40,28 @@ public class EventsJS
 		list.add(new ScriptEventHandler(handler));
 	}
 
-	public List<ScriptEventHandler> handlers(String id)
-	{
+	public List<ScriptEventHandler> handlers(String id) {
 		List<ScriptEventHandler> list = map.get(id);
 		return list == null ? Collections.emptyList() : list;
 	}
 
-	public boolean postToHandlers(String id, List<ScriptEventHandler> list, EventJS event)
-	{
-		if (list.isEmpty())
-		{
+	public boolean postToHandlers(String id, List<ScriptEventHandler> list, EventJS event) {
+		if (list.isEmpty()) {
 			return false;
 		}
 
 		boolean c = event.canCancel();
 
-		for (ScriptEventHandler handler : list)
-		{
-			try
-			{
+		for (ScriptEventHandler handler : list) {
+			try {
 				handler.handler.onEvent(event);
 
-				if (c && event.isCancelled())
-				{
+				if (c && event.isCancelled()) {
 					return true;
 				}
-			}
-			catch (RhinoException ex)
-			{
+			} catch (RhinoException ex) {
 				scriptManager.type.console.error("Error occurred while handling event '" + id + "': " + ex.getMessage());
-			}
-			catch (Throwable ex)
-			{
+			} catch (Throwable ex) {
 				ex.printStackTrace();
 			}
 		}
@@ -86,8 +70,7 @@ public class EventsJS
 		return false;
 	}
 
-	public void clear()
-	{
+	public void clear() {
 		map.clear();
 	}
 }

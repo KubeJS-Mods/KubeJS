@@ -7,26 +7,21 @@ import net.minecraft.world.entity.Entity;
 /**
  * @author LatvianModder
  */
-public abstract class EntityEventJS extends WorldEventJS
-{
+public abstract class EntityEventJS extends WorldEventJS {
 	private EntityJS cachedEntity;
 
 	public abstract EntityJS getEntity();
 
 	@Override
-	public WorldJS getWorld()
-	{
+	public WorldJS getWorld() {
 		return getEntity().getWorld();
 	}
 
-	protected EntityJS entityOf(Entity entity)
-	{
-		if (cachedEntity == null)
-		{
+	protected EntityJS entityOf(Entity entity) {
+		if (cachedEntity == null) {
 			cachedEntity = worldOf(entity).getEntity(entity);
 
-			if (cachedEntity == null)
-			{
+			if (cachedEntity == null) {
 				throw new IllegalStateException("Entity can't be null!");
 			}
 		}

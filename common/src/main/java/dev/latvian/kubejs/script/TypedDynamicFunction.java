@@ -7,28 +7,23 @@ import dev.latvian.mods.rhino.util.DynamicFunction;
 /**
  * @author LatvianModder
  */
-public class TypedDynamicFunction extends DynamicFunction
-{
+public class TypedDynamicFunction extends DynamicFunction {
 	private final Class[] types;
 
-	public TypedDynamicFunction(Callback f, Class[] t)
-	{
+	public TypedDynamicFunction(Callback f, Class[] t) {
 		super(f);
 		types = t;
 	}
 
 	@Override
-	public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args)
-	{
-		if (args.length != types.length)
-		{
+	public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
+		if (args.length != types.length) {
 			throw new IllegalArgumentException("Argument length doesn't match required " + types.length + "!");
 		}
 
 		Object[] newArgs = new Object[types.length];
 
-		for (int i = 0; i < types.length; i++)
-		{
+		for (int i = 0; i < types.length; i++) {
 			newArgs[i] = (types[i] == null || types[i] == Object.class) ? args[i] : Context.jsToJava(args[i], types[i]);
 		}
 

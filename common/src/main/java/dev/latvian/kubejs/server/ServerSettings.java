@@ -3,12 +3,13 @@ package dev.latvian.kubejs.server;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJSPaths;
+import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.JsonUtilsJS;
+import me.shedaniel.architectury.registry.Registry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.core.Registry;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -19,8 +20,7 @@ import java.nio.file.Files;
 /**
  * @author LatvianModder
  */
-public class ServerSettings
-{
+public class ServerSettings {
 	public static ServerSettings instance;
 
 	public boolean dataPackOutput = false;
@@ -32,39 +32,33 @@ public class ServerSettings
 	public static transient CommandSourceStack source;
 	public static transient JsonObject dataExport;
 
-	public static void exportData()
-	{
-		if (dataExport != null)
-		{
+	public static void exportData() {
+		if (dataExport != null) {
 			Util.ioPool().execute(ServerSettings::exportDataBlocking);
 		}
 	}
 
-	private static <T> void addRegistry(JsonObject o, String name, Registry<T> r)
-	{
+	private static <T> void addRegistry(JsonObject o, String name, Registry<T> r) {
 		JsonArray a = new JsonArray();
 
-		for (ResourceLocation id : r.keySet())
-		{
+		for (ResourceLocation id : r.getIds()) {
 			a.add(id.toString());
 		}
 
 		o.add(name, a);
 	}
 
-	private static void exportDataBlocking()
-	{
+	private static void exportDataBlocking() {
 		JsonObject registries = new JsonObject();
-		addRegistry(registries, "items", Registry.ITEM);
-		addRegistry(registries, "blocks", Registry.BLOCK);
-		addRegistry(registries, "fluids", Registry.FLUID);
-		addRegistry(registries, "entity_types", Registry.ENTITY_TYPE);
+		addRegistry(registries, "items", KubeJSRegistries.items());
+		addRegistry(registries, "blocks", KubeJSRegistries.blocks());
+		addRegistry(registries, "fluids", KubeJSRegistries.fluids());
+		addRegistry(registries, "entity_types", KubeJSRegistries.entityTypes());
 		dataExport.add("registries", registries);
 
 		JsonArray errors = new JsonArray();
 
-		for (String s : ScriptType.SERVER.errors)
-		{
+		for (String s : ScriptType.SERVER.errors) {
 			errors.add(s);
 		}
 
@@ -72,19 +66,15 @@ public class ServerSettings
 
 		JsonArray warnings = new JsonArray();
 
-		for (String s : ScriptType.SERVER.warnings)
-		{
+		for (String s : ScriptType.SERVER.warnings) {
 			warnings.add(s);
 		}
 
 		dataExport.add("warnings", warnings);
 
-		try (BufferedWriter writer = Files.newBufferedWriter(KubeJSPaths.EXPORTED.resolve("kubejs-server-export.json")))
-		{
+		try (BufferedWriter writer = Files.newBufferedWriter(KubeJSPaths.EXPORTED.resolve("kubejs-server-export.json"))) {
 			JsonUtilsJS.GSON.toJson(dataExport, writer);
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 

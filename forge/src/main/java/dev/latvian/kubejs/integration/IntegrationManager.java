@@ -8,17 +8,13 @@ import net.minecraftforge.fml.ModList;
 /**
  * @author LatvianModder
  */
-public class IntegrationManager
-{
-	public static void init()
-	{
-		if (ModList.get().isLoaded("gamestages"))
-		{
+public class IntegrationManager {
+	public static void init() {
+		if (ModList.get().isLoaded("gamestages")) {
 			GameStagesIntegration.init();
 		}
 
-		if (ModList.get().isLoaded("silents_mechanisms") && !ModList.get().isLoaded("kubejs_silents_mechanisms"))
-		{
+		if (ModList.get().isLoaded("silents_mechanisms") && !ModList.get().isLoaded("kubejs_silents_mechanisms")) {
 			MinecraftForge.EVENT_BUS.register(SilentsMechanismsRecipes.class);
 		}
 	}

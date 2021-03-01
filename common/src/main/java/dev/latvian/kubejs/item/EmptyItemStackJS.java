@@ -21,220 +21,180 @@ import java.util.Set;
 /**
  * @author LatvianModder
  */
-public class EmptyItemStackJS extends ItemStackJS
-{
+public class EmptyItemStackJS extends ItemStackJS {
 	public static final EmptyItemStackJS INSTANCE = new EmptyItemStackJS();
 
-	private EmptyItemStackJS()
-	{
+	private EmptyItemStackJS() {
 	}
 
 	@Override
-	public String getId()
-	{
+	public String getId() {
 		return "minecraft:air";
 	}
 
 	@Override
-	public Item getItem()
-	{
+	public Item getItem() {
 		return Items.AIR;
 	}
 
 	@Override
-	public ItemStack getItemStack()
-	{
+	public ItemStack getItemStack() {
 		return ItemStack.EMPTY;
 	}
 
 	@Override
-	public ItemStackJS getCopy()
-	{
+	public ItemStackJS getCopy() {
 		return this;
 	}
 
 	@Override
-	public void setCount(int c)
-	{
+	public void setCount(int c) {
 	}
 
 	@Override
-	public int getCount()
-	{
+	public int getCount() {
 		return 0;
 	}
 
 	@Override
-	public boolean isEmpty()
-	{
+	public boolean isEmpty() {
 		return true;
 	}
 
 	@Override
-	public MapJS getNbt()
-	{
-		return new MapJS()
-		{
+	public MapJS getNbt() {
+		return new MapJS() {
 			@Override
-			protected boolean setChangeListener(@Nullable Object v)
-			{
+			protected boolean setChangeListener(@Nullable Object v) {
 				return false;
 			}
 		};
 	}
 
 	@Override
-	public void setChance(double c)
-	{
+	public void setChance(double c) {
 	}
 
 	@Override
-	public boolean hasChance()
-	{
+	public boolean hasChance() {
 		return false;
 	}
 
-	public String toString()
-	{
+	public String toString() {
 		return "item.empty";
 	}
 
 	@Override
-	public boolean test(ItemStackJS stack)
-	{
+	public boolean test(ItemStackJS stack) {
 		return false;
 	}
 
 	@Override
-	public boolean testVanilla(ItemStack stack)
-	{
+	public boolean testVanilla(ItemStack stack) {
 		return false;
 	}
 
 	@Override
-	public boolean testVanillaItem(Item item)
-	{
+	public boolean testVanillaItem(Item item) {
 		return false;
 	}
 
 	@Override
-	public Set<ItemStackJS> getStacks()
-	{
+	public Set<ItemStackJS> getStacks() {
 		return Collections.emptySet();
 	}
 
 	@Override
-	public Set<Item> getVanillaItems()
-	{
+	public Set<Item> getVanillaItems() {
 		return Collections.emptySet();
 	}
 
 	@Override
-	public ItemStackJS getFirst()
-	{
+	public ItemStackJS getFirst() {
 		return this;
 	}
 
 	@Override
-	public IngredientJS not()
-	{
+	public IngredientJS not() {
 		return MatchAllIngredientJS.INSTANCE;
 	}
 
 	@Override
-	public void setName(@Nullable Object displayName)
-	{
+	public void setName(@Nullable Object displayName) {
 	}
 
 	@Override
-	public MapJS getEnchantments()
-	{
-		return new MapJS()
-		{
+	public MapJS getEnchantments() {
+		return new MapJS() {
 			@Override
-			protected boolean setChangeListener(@Nullable Object v)
-			{
+			protected boolean setChangeListener(@Nullable Object v) {
 				return false;
 			}
 		};
 	}
 
 	@Override
-	public ItemStackJS enchant(Object map)
-	{
+	public ItemStackJS enchant(Object map) {
 		return this;
 	}
 
 	@Override
-	public String getMod()
-	{
+	public String getMod() {
 		return "minecraft";
 	}
 
 	@Override
-	public ListJS getLore()
-	{
-		return new ListJS()
-		{
+	public ListJS getLore() {
+		return new ListJS() {
 			@Override
-			protected boolean setChangeListener(@Nullable Object v)
-			{
+			protected boolean setChangeListener(@Nullable Object v) {
 				return false;
 			}
 		};
 	}
 
 	@Override
-	public boolean areItemsEqual(ItemStackJS stack)
-	{
+	public boolean areItemsEqual(ItemStackJS stack) {
 		return stack.isEmpty();
 	}
 
 	@Override
-	public boolean areItemsEqual(ItemStack stack)
-	{
+	public boolean areItemsEqual(ItemStack stack) {
 		return stack.isEmpty();
 	}
 
 	@Override
-	public boolean isNBTEqual(ItemStackJS stack)
-	{
+	public boolean isNBTEqual(ItemStackJS stack) {
 		return stack.getNbt().isEmpty();
 	}
 
 	@Override
-	public boolean isNBTEqual(ItemStack stack)
-	{
+	public boolean isNBTEqual(ItemStack stack) {
 		return !stack.hasTag();
 	}
 
 	@Override
-	public boolean equals(Object o)
-	{
+	public boolean equals(Object o) {
 		return ItemStackJS.of(o).isEmpty();
 	}
 
 	@Override
-	public boolean strongEquals(Object o)
-	{
+	public boolean strongEquals(Object o) {
 		return ItemStackJS.of(o).isEmpty();
 	}
 
 	@Override
-	public int getHarvestLevel(ToolType tool, @Nullable PlayerJS<?> player, @Nullable BlockContainerJS block)
-	{
+	public int getHarvestLevel(ToolType tool, @Nullable PlayerJS<?> player, @Nullable BlockContainerJS block) {
 		return -1;
 	}
 
 	@Override
-	public JsonElement toJson()
-	{
+	public JsonElement toJson() {
 		return new JsonArray();
 	}
 
 	@Override
-	public JsonElement toResultJson()
-	{
+	public JsonElement toResultJson() {
 		JsonObject json = new JsonObject();
 		json.addProperty("item", "minecraft:air");
 		json.addProperty("count", 1);

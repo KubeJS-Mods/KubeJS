@@ -8,43 +8,36 @@ import net.minecraft.server.level.ServerPlayer;
 /**
  * @author LatvianModder
  */
-public class PlayerChatEventJS extends PlayerEventJS
-{
+public class PlayerChatEventJS extends PlayerEventJS {
 	private final ServerPlayer player;
 	private final String message;
 	public Component component;
 
-	public PlayerChatEventJS(ServerPlayer player, String message, Component component)
-	{
+	public PlayerChatEventJS(ServerPlayer player, String message, Component component) {
 		this.player = player;
 		this.message = message;
 		this.component = component;
 	}
 
 	@Override
-	public boolean canCancel()
-	{
+	public boolean canCancel() {
 		return true;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(player);
 	}
 
-	public String getUsername()
-	{
+	public String getUsername() {
 		return player.getGameProfile().getName();
 	}
 
-	public String getMessage()
-	{
+	public String getMessage() {
 		return message;
 	}
 
-	public void setMessage(Text text)
-	{
+	public void setMessage(Text text) {
 		component = text.component();
 	}
 }

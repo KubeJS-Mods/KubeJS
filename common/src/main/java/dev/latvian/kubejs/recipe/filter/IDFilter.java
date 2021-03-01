@@ -6,24 +6,20 @@ import net.minecraft.resources.ResourceLocation;
 /**
  * @author LatvianModder
  */
-public class IDFilter implements RecipeFilter
-{
+public class IDFilter implements RecipeFilter {
 	private final ResourceLocation id;
 
-	public IDFilter(ResourceLocation i)
-	{
+	public IDFilter(ResourceLocation i) {
 		id = i;
 	}
 
 	@Override
-	public boolean test(RecipeJS r)
-	{
+	public boolean test(RecipeJS r) {
 		return r.id.equals(id);
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return "IDFilter{" +
 				"id=" + id +
 				'}';

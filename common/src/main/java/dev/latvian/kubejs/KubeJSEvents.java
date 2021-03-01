@@ -3,8 +3,7 @@ package dev.latvian.kubejs;
 /**
  * @author LatvianModder
  */
-public class KubeJSEvents
-{
+public class KubeJSEvents {
 	public static final String INIT = "init";
 	public static final String POSTINIT = "postinit";
 	public static final String LOADED = "loaded";

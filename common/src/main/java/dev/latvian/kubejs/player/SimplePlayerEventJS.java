@@ -6,18 +6,15 @@ import net.minecraft.world.entity.player.Player;
 /**
  * @author LatvianModder
  */
-public class SimplePlayerEventJS extends PlayerEventJS
-{
+public class SimplePlayerEventJS extends PlayerEventJS {
 	private final Player player;
 
-	public SimplePlayerEventJS(Player p)
-	{
+	public SimplePlayerEventJS(Player p) {
 		player = p;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(player);
 	}
 }

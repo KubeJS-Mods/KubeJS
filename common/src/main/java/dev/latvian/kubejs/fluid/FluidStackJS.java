@@ -3,13 +3,9 @@ package dev.latvian.kubejs.fluid;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
-import dev.latvian.kubejs.util.JSObjectType;
-import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.kubejs.util.WrappedJS;
-import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
+import dev.latvian.kubejs.util.*;
 import me.shedaniel.architectury.fluid.FluidStack;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
@@ -24,37 +20,23 @@ import java.util.Objects;
 /**
  * @author LatvianModder
  */
-public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeListener<MapJS>
-{
-	public static FluidStackJS of(@Nullable Object o)
-	{
-		if (o == null)
-		{
+public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeListener<MapJS> {
+	public static FluidStackJS of(@Nullable Object o) {
+		if (o == null) {
 			return EmptyFluidStackJS.INSTANCE;
-		}
-		else if (o instanceof FluidStackJS)
-		{
+		} else if (o instanceof FluidStackJS) {
 			return (FluidStackJS) o;
-		}
-		else if (o instanceof FluidStack)
-		{
+		} else if (o instanceof FluidStack) {
 			return new BoundFluidStackJS((FluidStack) o);
-		}
-		else if (o instanceof Fluid)
-		{
+		} else if (o instanceof Fluid) {
 			UnboundFluidStackJS f = new UnboundFluidStackJS(Registries.getId((Fluid) o, Registry.FLUID_REGISTRY));
 			return f.isEmpty() ? EmptyFluidStackJS.INSTANCE : f;
-		}
-		else if (o instanceof JsonElement)
-		{
+		} else if (o instanceof JsonElement) {
 			return fromJson((JsonElement) o);
-		}
-		else if (o instanceof CharSequence || o instanceof ResourceLocation)
-		{
+		} else if (o instanceof CharSequence || o instanceof ResourceLocation) {
 			String s = o.toString();
 
-			if (s.isEmpty() || s.equals("-") || s.equals("empty") || s.equals("minecraft:empty"))
-			{
+			if (s.isEmpty() || s.equals("-") || s.equals("empty") || s.equals("minecraft:empty")) {
 				return EmptyFluidStackJS.INSTANCE;
 			}
 
@@ -64,17 +46,14 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 
 		MapJS map = MapJS.of(o);
 
-		if (map != null && map.containsKey("fluid"))
-		{
+		if (map != null && map.containsKey("fluid")) {
 			FluidStackJS stack = new UnboundFluidStackJS(new ResourceLocation(map.get("fluid").toString()));
 
-			if (map.get("amount") instanceof Number)
-			{
+			if (map.get("amount") instanceof Number) {
 				stack.setAmount(((Number) map.get("amount")).intValue());
 			}
 
-			if (map.containsKey("nbt"))
-			{
+			if (map.containsKey("nbt")) {
 				stack.setNbt(map.get("nbt"));
 			}
 
@@ -84,35 +63,28 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 		return EmptyFluidStackJS.INSTANCE;
 	}
 
-	public static FluidStackJS of(@Nullable Object o, @Nullable Object amountOrNBT)
-	{
+	public static FluidStackJS of(@Nullable Object o, @Nullable Object amountOrNBT) {
 		FluidStackJS stack = of(o);
 		Object n = UtilsJS.wrap(amountOrNBT, JSObjectType.ANY);
 
-		if (n instanceof Number)
-		{
+		if (n instanceof Number) {
 			stack.setAmount(((Number) n).intValue());
-		}
-		else if (n instanceof MapJS)
-		{
+		} else if (n instanceof MapJS) {
 			stack.setNbt(n);
 		}
 
 		return stack;
 	}
 
-	public static FluidStackJS of(@Nullable Object o, int amount, @Nullable Object nbt)
-	{
+	public static FluidStackJS of(@Nullable Object o, int amount, @Nullable Object nbt) {
 		FluidStackJS stack = of(o);
 		stack.setAmount(amount);
 		stack.setNbt(nbt);
 		return stack;
 	}
 
-	public static FluidStackJS fromJson(JsonElement e)
-	{
-		if (!e.isJsonObject())
-		{
+	public static FluidStackJS fromJson(JsonElement e) {
+		if (!e.isJsonObject()) {
 			return of(e.getAsString());
 		}
 
@@ -120,37 +92,26 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 
 		FluidStackJS fluid = of(json.get("fluid").getAsString());
 
-		if (fluid.isEmpty())
-		{
+		if (fluid.isEmpty()) {
 			throw new RecipeExceptionJS(json + " is not a valid fluid!");
 		}
 
 		int amount = FluidStack.bucketAmount().intValue();
 		Object nbt = null;
 
-		if (json.has("amount"))
-		{
+		if (json.has("amount")) {
 			amount = json.get("amount").getAsInt();
-		}
-		else if (json.has("count"))
-		{
+		} else if (json.has("count")) {
 			amount = json.get("count").getAsInt();
 		}
 
-		if (json.has("nbt"))
-		{
-			if (json.get("nbt").isJsonObject())
-			{
+		if (json.has("nbt")) {
+			if (json.get("nbt").isJsonObject()) {
 				nbt = MapJS.of(json.get("nbt"));
-			}
-			else
-			{
-				try
-				{
+			} else {
+				try {
 					nbt = TagParser.parseTag(json.get("nbt").getAsString());
-				}
-				catch (CommandSyntaxException ex)
-				{
+				} catch (CommandSyntaxException ex) {
 					return EmptyFluidStackJS.INSTANCE;
 				}
 			}
@@ -161,16 +122,14 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 
 	public abstract String getId();
 
-	public Fluid getFluid()
-	{
-		Fluid f = Registries.get(KubeJS.MOD_ID).get(Registry.FLUID_REGISTRY).get(new ResourceLocation(getId()));
+	public Fluid getFluid() {
+		Fluid f = KubeJSRegistries.fluids().get(new ResourceLocation(getId()));
 		return f == null ? Fluids.EMPTY : f;
 	}
 
 	public abstract FluidStack getFluidStack();
 
-	public boolean isEmpty()
-	{
+	public boolean isEmpty() {
 		return getAmount() <= 0;
 	}
 
@@ -178,8 +137,7 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 
 	public abstract void setAmount(int amount);
 
-	public final FluidStackJS amount(int amount)
-	{
+	public final FluidStackJS amount(int amount) {
 		setAmount(amount);
 		return this;
 	}
@@ -189,8 +147,7 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 
 	public abstract void setNbt(@Nullable Object nbt);
 
-	public final FluidStackJS nbt(@Nullable Object nbt)
-	{
+	public final FluidStackJS nbt(@Nullable Object nbt) {
 		setNbt(nbt);
 		return this;
 	}
@@ -198,38 +155,32 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 	public abstract FluidStackJS copy();
 
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		return Objects.hash(getFluid(), getNbt());
 	}
 
 	@Override
-	public boolean equals(Object o)
-	{
+	public boolean equals(Object o) {
 		FluidStackJS f = FluidStackJS.of(o);
 
-		if (f.isEmpty())
-		{
+		if (f.isEmpty()) {
 			return false;
 		}
 
 		return getFluid() == f.getFluid() && Objects.equals(getNbt(), f.getNbt());
 	}
 
-	public boolean strongEquals(Object o)
-	{
+	public boolean strongEquals(Object o) {
 		FluidStackJS f = of(o);
 
-		if (f.isEmpty())
-		{
+		if (f.isEmpty()) {
 			return false;
 		}
 
 		return getAmount() == f.getAmount() && getFluid() == f.getFluid() && Objects.equals(getNbt(), f.getNbt());
 	}
 
-	public String toString()
-	{
+	public String toString() {
 		int amount = getAmount();
 		MapJS nbt = getNbt();
 
@@ -238,15 +189,13 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 		builder.append(getId());
 		builder.append("')");
 
-		if (amount != FluidStack.bucketAmount().intValue())
-		{
+		if (amount != FluidStack.bucketAmount().intValue()) {
 			builder.append(".amount(");
 			builder.append(amount);
 			builder.append(')');
 		}
 
-		if (nbt != null)
-		{
+		if (nbt != null) {
 			builder.append(".nbt(");
 			nbt.toString(builder);
 			builder.append(')');
@@ -255,18 +204,15 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 		return builder.toString();
 	}
 
-	public JsonObject toJson()
-	{
+	public JsonObject toJson() {
 		JsonObject o = new JsonObject();
 		o.addProperty("fluid", getId());
 
-		if (getAmount() != FluidStack.bucketAmount().intValue())
-		{
+		if (getAmount() != FluidStack.bucketAmount().intValue()) {
 			o.addProperty("amount", getAmount());
 		}
 
-		if (getNbt() != null)
-		{
+		if (getNbt() != null) {
 			o.add("nbt", getNbt().toJson());
 		}
 
@@ -274,7 +220,6 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 	}
 
 	@Override
-	public void onChanged(MapJS o)
-	{
+	public void onChanged(MapJS o) {
 	}
 }

@@ -16,10 +16,8 @@ import java.util.Set;
 /**
  * @author LatvianModder
  */
-public class IngredientStackJS implements IngredientJS
-{
-	public static IngredientStackJS stackOf(IngredientJS in)
-	{
+public class IngredientStackJS implements IngredientJS {
+	public static IngredientStackJS stackOf(IngredientJS in) {
 		return in instanceof IngredientStackJS ? (IngredientStackJS) in : new IngredientStackJS(in, 1);
 	}
 
@@ -28,34 +26,27 @@ public class IngredientStackJS implements IngredientJS
 	public String ingredientKey;
 	public String countKey;
 
-	public IngredientStackJS(IngredientJS i, int c)
-	{
+	public IngredientStackJS(IngredientJS i, int c) {
 		ingredient = i;
 		countOverride = c;
 		ingredientKey = "ingredient";
 		countKey = "count";
 	}
 
-	public IngredientJS getIngredient()
-	{
+	public IngredientJS getIngredient() {
 		return ingredient;
 	}
 
 	@Override
-	public int getCount()
-	{
+	public int getCount() {
 		return countOverride;
 	}
 
 	@Override
-	public IngredientJS withCount(int count)
-	{
-		if (count <= 0)
-		{
+	public IngredientJS withCount(int count) {
+		if (count <= 0) {
 			return EmptyItemStackJS.INSTANCE;
-		}
-		else if (count == 1)
-		{
+		} else if (count == 1) {
 			return ingredient.getCopy();
 		}
 
@@ -63,92 +54,76 @@ public class IngredientStackJS implements IngredientJS
 	}
 
 	@Override
-	public IngredientJS getCopy()
-	{
+	public IngredientJS getCopy() {
 		return new IngredientStackJS(ingredient.getCopy(), countOverride);
 	}
 
 	@Override
-	public boolean test(ItemStackJS stack)
-	{
+	public boolean test(ItemStackJS stack) {
 		return ingredient.test(stack);
 	}
 
 	@Override
-	public boolean testVanilla(ItemStack stack)
-	{
+	public boolean testVanilla(ItemStack stack) {
 		return ingredient.testVanilla(stack);
 	}
 
 	@Override
-	public boolean testVanillaItem(Item item)
-	{
+	public boolean testVanillaItem(Item item) {
 		return ingredient.testVanillaItem(item);
 	}
 
 	@Override
-	public boolean isEmpty()
-	{
+	public boolean isEmpty() {
 		return ingredient.isEmpty();
 	}
 
 	@Override
-	public boolean isInvalidRecipeIngredient()
-	{
+	public boolean isInvalidRecipeIngredient() {
 		return countOverride <= 0 || ingredient.isInvalidRecipeIngredient();
 	}
 
 	@Override
-	public Set<ItemStackJS> getStacks()
-	{
+	public Set<ItemStackJS> getStacks() {
 		return ingredient.getStacks();
 	}
 
 	@Override
-	public Set<Item> getVanillaItems()
-	{
+	public Set<Item> getVanillaItems() {
 		return ingredient.getVanillaItems();
 	}
 
 	@Override
-	public IngredientJS not()
-	{
+	public IngredientJS not() {
 		return new IngredientStackJS(ingredient.not(), countOverride);
 	}
 
 	@Override
-	public IngredientJS filter(IngredientJS filter)
-	{
+	public IngredientJS filter(IngredientJS filter) {
 		return new IngredientStackJS(ingredient.filter(filter), countOverride);
 	}
 
 	@Override
-	public ItemStackJS getFirst()
-	{
+	public ItemStackJS getFirst() {
 		return ingredient.getFirst().withCount(getCount());
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return getCount() == 1 ? ingredient.toString() : (getCount() + "x " + ingredient);
 	}
 
 	@Override
-	public JsonElement toJson()
-	{
-		if (RecipeJS.currentRecipe != null)
-		{
+	public JsonElement toJson() {
+		if (RecipeJS.currentRecipe != null) {
 			JsonElement e = RecipeJS.currentRecipe.serializeIngredientStack(this);
 
-			if (e != null)
-			{
+			if (e != null) {
 				return e;
 			}
 		}
 
-		if (countOverride == 1)
-		{
+		if (countOverride == 1) {
 			return ingredient.toJson();
 		}
 
@@ -159,23 +134,19 @@ public class IngredientStackJS implements IngredientJS
 	}
 
 	@Override
-	public IngredientStackJS asIngredientStack()
-	{
+	public IngredientStackJS asIngredientStack() {
 		return this;
 	}
 
 	@Override
-	public List<IngredientJS> unwrapStackIngredient()
-	{
-		if (countOverride <= 1)
-		{
+	public List<IngredientJS> unwrapStackIngredient() {
+		if (countOverride <= 1) {
 			return Collections.singletonList(ingredient.withCount(1));
 		}
 
 		List<IngredientJS> list = new ArrayList<>();
 
-		for (int i = 0; i < countOverride; i++)
-		{
+		for (int i = 0; i < countOverride; i++) {
 			list.add(ingredient.withCount(1));
 		}
 

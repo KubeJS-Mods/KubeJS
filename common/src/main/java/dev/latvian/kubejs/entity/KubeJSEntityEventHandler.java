@@ -13,37 +13,29 @@ import net.minecraft.world.level.Level;
 /**
  * @author LatvianModder
  */
-public class KubeJSEntityEventHandler
-{
-	public static void init()
-	{
+public class KubeJSEntityEventHandler {
+	public static void init() {
 		EntityEvent.LIVING_DEATH.register(KubeJSEntityEventHandler::livingDeath);
 		EntityEvent.LIVING_ATTACK.register(KubeJSEntityEventHandler::livingAttack);
 		EntityEvent.ADD.register(KubeJSEntityEventHandler::entitySpawned);
 	}
 
-	private static InteractionResult livingDeath(LivingEntity entity, DamageSource source)
-	{
-		if (new LivingEntityDeathEventJS(entity, source).post(KubeJSEvents.ENTITY_DEATH))
-		{
+	private static InteractionResult livingDeath(LivingEntity entity, DamageSource source) {
+		if (new LivingEntityDeathEventJS(entity, source).post(KubeJSEvents.ENTITY_DEATH)) {
 			return InteractionResult.FAIL;
 		}
 		return InteractionResult.PASS;
 	}
 
-	private static InteractionResult livingAttack(LivingEntity entity, DamageSource source, float amount)
-	{
-		if (amount > 0F && new LivingEntityAttackEventJS(entity, source, amount).post(KubeJSEvents.ENTITY_ATTACK))
-		{
+	private static InteractionResult livingAttack(LivingEntity entity, DamageSource source, float amount) {
+		if (amount > 0F && new LivingEntityAttackEventJS(entity, source, amount).post(KubeJSEvents.ENTITY_ATTACK)) {
 			return InteractionResult.FAIL;
 		}
 		return InteractionResult.PASS;
 	}
 
-	private static InteractionResult entitySpawned(Entity entity, Level world)
-	{
-		if (ServerJS.instance != null && ServerJS.instance.overworld != null && !world.isClientSide() && new EntitySpawnedEventJS(entity, world).post(ScriptType.SERVER, KubeJSEvents.ENTITY_SPAWNED))
-		{
+	private static InteractionResult entitySpawned(Entity entity, Level world) {
+		if (ServerJS.instance != null && ServerJS.instance.overworld != null && !world.isClientSide() && new EntitySpawnedEventJS(entity, world).post(ScriptType.SERVER, KubeJSEvents.ENTITY_SPAWNED)) {
 			return InteractionResult.FAIL;
 		}
 		return InteractionResult.PASS;

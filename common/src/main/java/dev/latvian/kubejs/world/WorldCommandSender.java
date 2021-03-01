@@ -11,10 +11,8 @@ import net.minecraft.world.phys.Vec3;
 /**
  * @author LatvianModder
  */
-public class WorldCommandSender extends CommandSourceStack
-{
-	public WorldCommandSender(ServerWorldJS w)
-	{
+public class WorldCommandSender extends CommandSourceStack {
+	public WorldCommandSender(ServerWorldJS w) {
 		super(CommandSource.NULL, Vec3.ZERO, Vec2.ZERO, (ServerLevel) w.minecraftWorld, 4, "World", new TextComponent("World"), w.getServer().getMinecraftServer(), null, true, (context, success, result) ->
 		{
 		}, EntityAnchorArgument.Anchor.FEET);

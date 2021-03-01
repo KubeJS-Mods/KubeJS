@@ -1,102 +1,102 @@
 plugins {
-	id "com.github.johnrengelman.shadow" version "5.0.0"
-	id "com.matthewprenger.cursegradle"
+    id "com.github.johnrengelman.shadow" version "5.0.0"
+    id "com.matthewprenger.cursegradle"
 }
 
 def ENV = System.getenv()
 
 configurations {
-	shadowCommon
+    shadowCommon
 }
 
 architectury {
-	platformSetupLoomIde()
-	forge()
+    platformSetupLoomIde()
+    forge()
 }
 
 loom {
-	mixinConfigs = ["kubejs.mixins.json", "kubejs-common.mixins.json"]
-	useFabricMixin = true
+    mixinConfigs = ["kubejs.mixins.json", "kubejs-common.mixins.json"]
+    useFabricMixin = true
 }
 
 dependencies {
-	minecraft("com.mojang:minecraft:${rootProject.architectury.minecraft}")
-	mappings(minecraft.officialMojangMappings())
-	forge("net.minecraftforge:forge:${rootProject.architectury.minecraft}-${rootProject.forge_version}")
-	modCompile("curse.maven:jei-238222:${rootProject.forge_jei_file}")
-	modCompile("curse.maven:bookshelf-228525:${rootProject.forge_bookshelf_file}")
-	modCompile("curse.maven:game-stages-268655:${rootProject.forge_gamestages_file}")
-	modCompile("me.shedaniel:architectury:${rootProject.architectury_version}:forge")
-	modCompile("curse.maven:rhino-416294:${rootProject.rhino_file}")
+    minecraft("com.mojang:minecraft:${rootProject.architectury.minecraft}")
+    mappings(minecraft.officialMojangMappings())
+    forge("net.minecraftforge:forge:${rootProject.architectury.minecraft}-${rootProject.forge_version}")
+    modCompile("curse.maven:jei-238222:${rootProject.forge_jei_file}")
+    modCompile("curse.maven:bookshelf-228525:${rootProject.forge_bookshelf_file}")
+    modCompile("curse.maven:game-stages-268655:${rootProject.forge_gamestages_file}")
+    modCompile("me.shedaniel:architectury-forge:${rootProject.architectury_version}")
+    modCompile("curse.maven:rhino-416294:${rootProject.rhino_file}")
 
-	implementation(project(path: ":common")) {
-		transitive = false
-	}
-	developmentForge(project(path: ":common")) {
-		transitive = false
-	}
-	shadowCommon(project(path: ":common", configuration: "transformProductionForge")) {
-		transitive = false
-	}
+    implementation(project(path: ":common")) {
+        transitive = false
+    }
+    developmentForge(project(path: ":common")) {
+        transitive = false
+    }
+    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) {
+        transitive = false
+    }
 }
 
 processResources {
-	inputs.property "version", project.version
+    inputs.property "version", project.version
 
-	filesMatching("META-INF/mods.toml") {
-		expand "version": project.version
-	}
+    filesMatching("META-INF/mods.toml") {
+        expand "version": project.version
+    }
 }
 
 shadowJar {
-	exclude "fabric.mod.json"
+    exclude "fabric.mod.json"
 
-	configurations = [project.configurations.shadowCommon]
-	classifier "dev-shadow"
+    configurations = [project.configurations.shadowCommon]
+    classifier "dev-shadow"
 }
 
 remapJar {
-	input.set shadowJar.archiveFile
-	dependsOn shadowJar
-	classifier "forge"
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    classifier "forge"
 }
 
 jar {
-	manifest {
-		attributes([
-				"Specification-Title"     : project.mod_id,
-				"Specification-Vendor"    : project.mod_author,
-				"Specification-Version"   : "1",
-				"Implementation-Title"    : project.name,
-				"Implementation-Version"  : version,
-				"Implementation-Vendor"   : project.mod_author,
-				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-		])
-	}
+    manifest {
+        attributes([
+                "Specification-Title"     : project.mod_id,
+                "Specification-Vendor"    : project.mod_author,
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : version,
+                "Implementation-Vendor"   : project.mod_author,
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
 
-	classifier "dev"
+    classifier "dev"
 }
 
 if (ENV.CURSEFORGE_KEY) {
-	curseforge {
-		apiKey = ENV.CURSEFORGE_KEY
-		project {
-			id = project.curseforge_id_forge
-			releaseType = "release"
-			addGameVersion "Forge"
-			addGameVersion "1.16.2"
-			addGameVersion "1.16.3"
-			addGameVersion "1.16.4"
-			addGameVersion "1.16.5"
-			mainArtifact(remapJar.archivePath)
-			relations {
-				requiredDependency 'rhino'
-				requiredDependency 'architectury-forge'
-				optionalDependency 'jei'
-				optionalDependency 'game-stages'
-			}
-			changelog = getGitChangelog
-			changelogType = 'markdown'
-		}
-	}
+    curseforge {
+        apiKey = ENV.CURSEFORGE_KEY
+        project {
+            id = project.curseforge_id_forge
+            releaseType = "release"
+            addGameVersion "Forge"
+            addGameVersion "1.16.2"
+            addGameVersion "1.16.3"
+            addGameVersion "1.16.4"
+            addGameVersion "1.16.5"
+            mainArtifact(remapJar.archivePath)
+            relations {
+                requiredDependency 'rhino'
+                requiredDependency 'architectury-forge'
+                optionalDependency 'jei'
+                optionalDependency 'game-stages'
+            }
+            changelog = getGitChangelog
+            changelogType = 'markdown'
+        }
+    }
 }

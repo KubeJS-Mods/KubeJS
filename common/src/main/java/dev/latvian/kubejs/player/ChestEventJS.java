@@ -13,25 +13,20 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author LatvianModder
  */
-public class ChestEventJS extends InventoryEventJS
-{
+public class ChestEventJS extends InventoryEventJS {
 	private InventoryJS inventory;
 
-	public ChestEventJS(Player player, AbstractContainerMenu menu)
-	{
+	public ChestEventJS(Player player, AbstractContainerMenu menu) {
 		super(player, menu);
 	}
 
 	@MinecraftClass
-	public Container getWrappedInventory()
-	{
+	public Container getWrappedInventory() {
 		return ((ChestMenu) getInventoryContainer()).getContainer();
 	}
 
-	public InventoryJS getInventory()
-	{
-		if (inventory == null)
-		{
+	public InventoryJS getInventory() {
+		if (inventory == null) {
 			inventory = new InventoryJS(getWrappedInventory());
 		}
 
@@ -39,10 +34,8 @@ public class ChestEventJS extends InventoryEventJS
 	}
 
 	@Nullable
-	public BlockContainerJS getBlock()
-	{
-		if (getWrappedInventory() instanceof BlockEntity)
-		{
+	public BlockContainerJS getBlock() {
+		if (getWrappedInventory() instanceof BlockEntity) {
 			return getWorld().getBlock((BlockEntity) getWrappedInventory());
 		}
 

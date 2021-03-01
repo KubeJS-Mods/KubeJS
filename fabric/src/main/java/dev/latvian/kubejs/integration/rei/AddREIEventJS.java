@@ -13,30 +13,23 @@ import java.util.function.Function;
 /**
  * @author shedaniel
  */
-public class AddREIEventJS extends EventJS
-{
+public class AddREIEventJS extends EventJS {
 	private final EntryRegistry registry;
 	private final Function<Object, Collection<EntryStack>> function;
 	private final List<EntryStack> added = Lists.newArrayList();
 
-	public AddREIEventJS(EntryRegistry registry, Function<Object, Collection<EntryStack>> function)
-	{
+	public AddREIEventJS(EntryRegistry registry, Function<Object, Collection<EntryStack>> function) {
 		this.registry = registry;
 		this.function = function;
 	}
 
-	public void add(Object o)
-	{
-		for (Object o1 : ListJS.orSelf(o))
-		{
+	public void add(Object o) {
+		for (Object o1 : ListJS.orSelf(o)) {
 			Collection<EntryStack> stacks = function.apply(o1);
 
-			if (stacks != null && !stacks.isEmpty())
-			{
-				for (EntryStack stack : stacks)
-				{
-					if (stack != null && !stack.isEmpty())
-					{
+			if (stacks != null && !stacks.isEmpty()) {
+				for (EntryStack stack : stacks) {
+					if (stack != null && !stack.isEmpty()) {
 						added.add(stack);
 					}
 				}
@@ -45,10 +38,8 @@ public class AddREIEventJS extends EventJS
 	}
 
 	@Override
-	protected void afterPosted(boolean result)
-	{
-		if (!added.isEmpty())
-		{
+	protected void afterPosted(boolean result) {
+		if (!added.isEmpty()) {
 			registry.registerEntries(added.toArray(new EntryStack[0]));
 		}
 	}

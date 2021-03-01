@@ -13,47 +13,38 @@ import java.io.IOException;
 /**
  * @author LatvianModder
  */
-public class JsonWrapper
-{
-	public JsonElement copy(JsonElement json)
-	{
+public class JsonWrapper {
+	public JsonElement copy(JsonElement json) {
 		return JsonUtilsJS.copy(json);
 	}
 
-	public String toString(JsonElement json)
-	{
+	public String toString(JsonElement json) {
 		return JsonUtilsJS.toString(json);
 	}
 
-	public String toPrettyString(JsonElement json)
-	{
+	public String toPrettyString(JsonElement json) {
 		return JsonUtilsJS.toPrettyString(json);
 	}
 
-	public Object parse(String string)
-	{
+	public Object parse(String string) {
 		return UtilsJS.wrap(JsonUtilsJS.fromString(string), JSObjectType.ANY);
 	}
 
 	@Nullable
-	public MapJS read(File file) throws IOException
-	{
+	public MapJS read(File file) throws IOException {
 		return JsonUtilsJS.read(file);
 	}
 
-	public void write(File file, Object json) throws IOException
-	{
+	public void write(File file, Object json) throws IOException {
 		JsonUtilsJS.write(file, MapJS.of(json));
 	}
 
 	@Nullable
-	public MapJS read(String file) throws IOException
-	{
+	public MapJS read(String file) throws IOException {
 		return JsonUtilsJS.read(file);
 	}
 
-	public void write(String file, Object json) throws IOException
-	{
+	public void write(String file, Object json) throws IOException {
 		JsonUtilsJS.write(file, MapJS.of(json));
 	}
 }

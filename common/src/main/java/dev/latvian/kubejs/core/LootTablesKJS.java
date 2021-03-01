@@ -17,23 +17,17 @@ import java.util.function.BiConsumer;
 /**
  * @author LatvianModder
  */
-public interface LootTablesKJS
-{
-	default void applyKJS0(Map<ResourceLocation, JsonElement> map, BiConsumer<ResourceLocation, JsonElement> action)
-	{
+public interface LootTablesKJS {
+	default void applyKJS0(Map<ResourceLocation, JsonElement> map, BiConsumer<ResourceLocation, JsonElement> action) {
 		Map<ResourceLocation, JsonElement> map1 = new HashMap<>(map);
 		new BlockLootEventJS(map1).post(ScriptType.SERVER, "block.loot_tables");
 		map1.forEach(action);
 		ServerSettings.exportData();
 
-		if (CommonProperties.get().announceReload && ServerJS.instance != null && !CommonProperties.get().hideServerScriptErrors)
-		{
-			if (ScriptType.SERVER.errors.isEmpty())
-			{
+		if (CommonProperties.get().announceReload && ServerJS.instance != null && !CommonProperties.get().hideServerScriptErrors) {
+			if (ScriptType.SERVER.errors.isEmpty()) {
 				ServerJS.instance.tell(new TextComponent("Reloaded with no KubeJS errors!").withStyle(ChatFormatting.GREEN));
-			}
-			else
-			{
+			} else {
 				ServerJS.instance.tell(new TextComponent("KubeJS errors found [" + ScriptType.SERVER.errors.size() + "]! Run '/kubejs errors' for more info").withStyle(ChatFormatting.DARK_RED));
 			}
 		}

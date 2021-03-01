@@ -7,31 +7,26 @@ import net.minecraft.server.level.ServerPlayer;
 /**
  * @author LatvianModder
  */
-public class PlayerAdvancementEventJS extends PlayerEventJS
-{
+public class PlayerAdvancementEventJS extends PlayerEventJS {
 	private final ServerPlayer player;
 	private final Advancement advancement;
 
-	public PlayerAdvancementEventJS(ServerPlayer player, Advancement advancement)
-	{
+	public PlayerAdvancementEventJS(ServerPlayer player, Advancement advancement) {
 		this.player = player;
 		this.advancement = advancement;
 	}
 
 	@Override
-	public boolean canCancel()
-	{
+	public boolean canCancel() {
 		return true;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(player);
 	}
 
-	public AdvancementJS getAdvancement()
-	{
+	public AdvancementJS getAdvancement() {
 		return new AdvancementJS(advancement);
 	}
 }

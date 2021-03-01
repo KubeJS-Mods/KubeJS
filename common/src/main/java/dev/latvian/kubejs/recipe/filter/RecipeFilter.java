@@ -16,44 +16,32 @@ import java.util.regex.Pattern;
  * @author LatvianModder
  */
 @FunctionalInterface
-public interface RecipeFilter extends Predicate<RecipeJS>
-{
+public interface RecipeFilter extends Predicate<RecipeJS> {
 	RecipeFilter ALWAYS_TRUE = r -> true;
 	RecipeFilter ALWAYS_FALSE = r -> false;
 
 	boolean test(RecipeJS r);
 
-	static RecipeFilter of(@Nullable Object o)
-	{
-		if (o == null || o == ALWAYS_TRUE)
-		{
+	static RecipeFilter of(@Nullable Object o) {
+		if (o == null || o == ALWAYS_TRUE) {
 			return ALWAYS_TRUE;
-		}
-		else if (o == ALWAYS_FALSE)
-		{
+		} else if (o == ALWAYS_FALSE) {
 			return ALWAYS_FALSE;
 		}
 
 		ListJS list = ListJS.orSelf(o);
 
-		if (list.isEmpty())
-		{
+		if (list.isEmpty()) {
 			return ALWAYS_TRUE;
-		}
-		else if (list.size() > 1)
-		{
+		} else if (list.size() > 1) {
 			OrFilter predicate = new OrFilter();
 
-			for (Object o1 : list)
-			{
+			for (Object o1 : list) {
 				RecipeFilter p = of(o1);
 
-				if (p == ALWAYS_TRUE)
-				{
+				if (p == ALWAYS_TRUE) {
 					return ALWAYS_TRUE;
-				}
-				else if (p != ALWAYS_FALSE)
-				{
+				} else if (p != ALWAYS_FALSE) {
 					predicate.list.add(p);
 				}
 			}
@@ -63,8 +51,7 @@ public interface RecipeFilter extends Predicate<RecipeJS>
 
 		MapJS map = MapJS.of(list.get(0));
 
-		if (map == null || map.isEmpty())
-		{
+		if (map == null || map.isEmpty()) {
 			return ALWAYS_TRUE;
 		}
 
@@ -72,55 +59,42 @@ public interface RecipeFilter extends Predicate<RecipeJS>
 
 		AndFilter predicate = new AndFilter();
 
-		if (map.get("or") != null)
-		{
+		if (map.get("or") != null) {
 			predicate.list.add(of(map.get("or")));
 		}
 
-		try
-		{
-			if (map.get("id") != null)
-			{
+		try {
+			if (map.get("id") != null) {
 				String s = map.get("id").toString();
 				Pattern pattern = UtilsJS.parseRegex(s);
 				predicate.list.add(pattern == null ? new IDFilter(UtilsJS.getMCID(s)) : new RegexIDFilter(pattern));
 			}
 
-			if (map.get("type") != null)
-			{
+			if (map.get("type") != null) {
 				predicate.list.add(new TypeFilter(UtilsJS.getID(map.get("type").toString())));
 			}
 
-			if (map.get("group") != null)
-			{
+			if (map.get("group") != null) {
 				predicate.list.add(new GroupFilter(map.get("group").toString()));
 			}
 
-			if (map.get("mod") != null)
-			{
+			if (map.get("mod") != null) {
 				predicate.list.add(new ModFilter(map.get("mod").toString()));
 			}
 
-			if (map.get("input") != null)
-			{
+			if (map.get("input") != null) {
 				predicate.list.add(new InputFilter(IngredientJS.of(map.get("input")), exact));
 			}
 
-			if (map.get("output") != null)
-			{
+			if (map.get("output") != null) {
 				predicate.list.add(new OutputFilter(IngredientJS.of(map.get("output")), exact));
 			}
 
 			return predicate.list.isEmpty() ? ALWAYS_TRUE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
-		}
-		catch (RecipeExceptionJS ex)
-		{
-			if (ex.error)
-			{
+		} catch (RecipeExceptionJS ex) {
+			if (ex.error) {
 				ScriptType.SERVER.console.error(ex.getMessage());
-			}
-			else
-			{
+			} else {
 				ScriptType.SERVER.console.warn(ex.getMessage());
 			}
 

@@ -5,8 +5,7 @@ import net.minecraft.world.level.material.Material;
 /**
  * @author LatvianModder
  */
-public interface BlockStateKJS
-{
+public interface BlockStateKJS {
 	void setMaterialKJS(Material v);
 
 	void setDestroySpeedKJS(float v);

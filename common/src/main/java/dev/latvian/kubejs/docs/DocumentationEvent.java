@@ -12,22 +12,18 @@ import java.util.function.Consumer;
  * @author LatvianModder
  */
 @ForgeEvent
-public class DocumentationEvent
-{
+public class DocumentationEvent {
 	public static final Event<Consumer<DocumentationEvent>> EVENT = EventFactory.createConsumerLoop(DocumentationEvent.class);
 	private final Map<Class<?>, TypeDefinition> types;
 
-	public DocumentationEvent()
-	{
+	public DocumentationEvent() {
 		types = new HashMap<>();
 	}
 
-	public TypeDefinition type(Class<?> c)
-	{
+	public TypeDefinition type(Class<?> c) {
 		return types.computeIfAbsent(c, c1 -> new TypeDefinition(this, c1));
 	}
 
-	public void createFile()
-	{
+	public void createFile() {
 	}
 }

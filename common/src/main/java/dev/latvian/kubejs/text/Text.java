@@ -3,133 +3,87 @@ package dev.latvian.kubejs.text;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.util.JSObjectType;
-import dev.latvian.kubejs.util.JsonSerializable;
-import dev.latvian.kubejs.util.ListJS;
-import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.kubejs.util.WrappedJS;
+import dev.latvian.kubejs.util.*;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author LatvianModder
  */
-public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSerializable, WrappedJS
-{
-	public static Component componentOfObject(@Nullable Object o)
-	{
-		if (o == null)
-		{
+public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSerializable, WrappedJS {
+	public static Component componentOfObject(@Nullable Object o) {
+		if (o == null) {
 			return new TextComponent("null");
-		}
-		else if (o instanceof Component)
-		{
+		} else if (o instanceof Component) {
 			return (Component) o;
-		}
-		else if (o instanceof CharSequence)
-		{
+		} else if (o instanceof CharSequence) {
 			return new TextComponent(o.toString());
 		}
 
 		return of(o).component();
 	}
 
-	public static Text of(@Nullable Object o)
-	{
+	public static Text of(@Nullable Object o) {
 		return ofWrapped(UtilsJS.wrap(o, JSObjectType.ANY));
 	}
 
-	private static Text ofWrapped(@Nullable Object o)
-	{
-		if (o == null)
-		{
+	private static Text ofWrapped(@Nullable Object o) {
+		if (o == null) {
 			return new TextString("null");
-		}
-		else if (o instanceof CharSequence || o instanceof Number || o instanceof Character)
-		{
+		} else if (o instanceof CharSequence || o instanceof Number || o instanceof Character) {
 			return new TextString(o.toString());
-		}
-		else if (o instanceof Enum)
-		{
+		} else if (o instanceof Enum) {
 			return new TextString(((Enum) o).name());
-		}
-		else if (o instanceof Text)
-		{
+		} else if (o instanceof Text) {
 			return (Text) o;
-		}
-		else if (o instanceof ListJS)
-		{
+		} else if (o instanceof ListJS) {
 			Text text = new TextString("");
 
-			for (Object e1 : (ListJS) o)
-			{
+			for (Object e1 : (ListJS) o) {
 				text.append(ofWrapped(e1));
 			}
 
 			return text;
-		}
-		else if (o instanceof MapJS)
-		{
+		} else if (o instanceof MapJS) {
 			MapJS map = (MapJS) o;
 
-			if (map.containsKey("text") || map.containsKey("translate"))
-			{
+			if (map.containsKey("text") || map.containsKey("translate")) {
 				Text text;
 
-				if (map.containsKey("text"))
-				{
+				if (map.containsKey("text")) {
 					text = new TextString(map.get("text").toString());
-				}
-				else
-				{
+				} else {
 					Object[] with;
 
-					if (map.containsKey("with"))
-					{
+					if (map.containsKey("with")) {
 						ListJS a = map.getOrNewList("with");
 						with = new Object[a.size()];
 						int i = 0;
 
-						for (Object e1 : a)
-						{
+						for (Object e1 : a) {
 							with[i] = e1;
 
-							if (with[i] instanceof MapJS || with[i] instanceof ListJS)
-							{
+							if (with[i] instanceof MapJS || with[i] instanceof ListJS) {
 								with[i] = ofWrapped(e1);
 							}
 
 							i++;
 						}
-					}
-					else
-					{
+					} else {
 						with = new Object[0];
 					}
 
 					text = new TextTranslate(map.get("translate").toString(), with);
 				}
 
-				if (map.containsKey("color"))
-				{
+				if (map.containsKey("color")) {
 					TextColor c = TextColor.MAP.get(map.get("color").toString());
 
-					if (c != null)
-					{
+					if (c != null) {
 						text.color = c.color;
 					}
 				}
@@ -146,10 +100,8 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 
 				text.siblings = null;
 
-				if (map.containsKey("extra"))
-				{
-					for (Object e : map.getOrNewList("extra"))
-					{
+				if (map.containsKey("extra")) {
+					for (Object e : map.getOrNewList("extra")) {
 						text.append(ofWrapped(e));
 					}
 				}
@@ -160,19 +112,14 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return new TextString(o.toString());
 	}
 
-	public static Text join(Text separator, Iterable<Text> texts)
-	{
+	public static Text join(Text separator, Iterable<Text> texts) {
 		Text text = new TextString("");
 		boolean first = true;
 
-		for (Text t : texts)
-		{
-			if (first)
-			{
+		for (Text t : texts) {
+			if (first) {
 				first = false;
-			}
-			else
-			{
+			} else {
 				text.append(separator);
 			}
 
@@ -182,8 +129,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return text;
 	}
 
-	public static Text read(FriendlyByteBuf buffer)
-	{
+	public static Text read(FriendlyByteBuf buffer) {
 		return Text.of(buffer.readComponent());
 	}
 
@@ -206,80 +152,60 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	@Override
 	public abstract JsonElement toJson();
 
-	public final Component component()
-	{
+	public final Component component() {
 		MutableComponent component = rawComponent();
 
-		if (color != -1 || bold != null || italic != null || underlined != null || strikethrough != null || obfuscated != null || insertion != null || font != null || click != null || hover != null)
-		{
+		if (color != -1 || bold != null || italic != null || underlined != null || strikethrough != null || obfuscated != null || insertion != null || font != null || click != null || hover != null) {
 			JsonObject json = new JsonObject();
 
-			if (color != -1)
-			{
+			if (color != -1) {
 				json.addProperty("color", String.format("#%06X", color));
 			}
 
-			if (bold != null)
-			{
+			if (bold != null) {
 				json.addProperty("bold", bold);
 			}
 
-			if (italic != null)
-			{
+			if (italic != null) {
 				json.addProperty("italic", italic);
 			}
 
-			if (underlined != null)
-			{
+			if (underlined != null) {
 				json.addProperty("underlined", underlined);
 			}
 
-			if (strikethrough != null)
-			{
+			if (strikethrough != null) {
 				json.addProperty("strikethrough", strikethrough);
 			}
 
-			if (obfuscated != null)
-			{
+			if (obfuscated != null) {
 				json.addProperty("obfuscated", obfuscated);
 			}
 
-			if (insertion != null)
-			{
+			if (insertion != null) {
 				json.addProperty("insertion", insertion);
 			}
 
-			if (font != null)
-			{
+			if (font != null) {
 				json.addProperty("font", font.toString());
 			}
 
-			if (click != null)
-			{
+			if (click != null) {
 				JsonObject o = new JsonObject();
 
-				if (click.startsWith("command:"))
-				{
+				if (click.startsWith("command:")) {
 					o.addProperty("action", "run_command");
 					o.addProperty("value", click.substring(8));
-				}
-				else if (click.startsWith("suggest_command:"))
-				{
+				} else if (click.startsWith("suggest_command:")) {
 					o.addProperty("action", "suggest_command");
 					o.addProperty("value", click.substring(16));
-				}
-				else if (click.startsWith("copy:"))
-				{
+				} else if (click.startsWith("copy:")) {
 					o.addProperty("action", "copy_to_clipboard");
 					o.addProperty("value", click.substring(5));
-				}
-				else if (click.startsWith("file:"))
-				{
+				} else if (click.startsWith("file:")) {
 					o.addProperty("action", "open_file");
 					o.addProperty("value", click.substring(5));
-				}
-				else
-				{
+				} else {
 					o.addProperty("action", "open_url");
 					o.addProperty("value", click);
 				}
@@ -287,29 +213,25 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 				json.add("clickEvent", o);
 			}
 
-			if (hover != null)
-			{
+			if (hover != null) {
 				json.add("hoverEvent", new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover.component()).serialize());
 			}
 
 			component.setStyle(new Style.Serializer().deserialize(json, Style.class, null));
 		}
 
-		for (Text text : getSiblings())
-		{
+		for (Text text : getSiblings()) {
 			component.append(text.component());
 		}
 
 		return component;
 	}
 
-	public final String getString()
-	{
+	public final String getString() {
 		return component().getString();
 	}
 
-	public final Text copy()
-	{
+	public final Text copy() {
 		Text t = rawCopy();
 		t.color = color;
 		t.bold = bold;
@@ -322,74 +244,60 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		t.click = click;
 		t.hover = hover == null ? null : hover.copy();
 
-		for (Text child : getSiblings())
-		{
+		for (Text child : getSiblings()) {
 			t.append(child.copy());
 		}
 
 		return t;
 	}
 
-	public final JsonObject getPropertiesAsJson()
-	{
+	public final JsonObject getPropertiesAsJson() {
 		JsonObject json = new JsonObject();
 
-		if (color != -1)
-		{
+		if (color != -1) {
 			json.addProperty("color", String.format("#%06X", color));
 		}
 
-		if (bold != null)
-		{
+		if (bold != null) {
 			json.addProperty("bold", bold);
 		}
 
-		if (italic != null)
-		{
+		if (italic != null) {
 			json.addProperty("italic", italic);
 		}
 
-		if (underlined != null)
-		{
+		if (underlined != null) {
 			json.addProperty("underlined", underlined);
 		}
 
-		if (strikethrough != null)
-		{
+		if (strikethrough != null) {
 			json.addProperty("strikethrough", strikethrough);
 		}
 
-		if (obfuscated != null)
-		{
+		if (obfuscated != null) {
 			json.addProperty("obfuscated", obfuscated);
 		}
 
-		if (insertion != null)
-		{
+		if (insertion != null) {
 			json.addProperty("insertion", insertion);
 		}
 
-		if (font != null)
-		{
+		if (font != null) {
 			json.addProperty("font", font.toString());
 		}
 
-		if (click != null)
-		{
+		if (click != null) {
 			json.addProperty("click", click);
 		}
 
-		if (hover != null)
-		{
+		if (hover != null) {
 			json.add("hover", hover.toJson());
 		}
 
-		if (!getSiblings().isEmpty())
-		{
+		if (!getSiblings().isEmpty()) {
 			JsonArray array = new JsonArray();
 
-			for (Text child : getSiblings())
-			{
+			for (Text child : getSiblings()) {
 				array.add(child.toJson());
 			}
 
@@ -400,20 +308,16 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	}
 
 	@Override
-	public final Iterator<Text> iterator()
-	{
-		if (getSiblings().isEmpty())
-		{
+	public final Iterator<Text> iterator() {
+		if (getSiblings().isEmpty()) {
 			return Collections.singleton(this).iterator();
 		}
 
 		List<Text> list = new ArrayList<>();
 		list.add(this);
 
-		for (Text child : getSiblings())
-		{
-			for (Text part : child)
-			{
+		for (Text child : getSiblings()) {
+			for (Text part : child) {
 				list.add(part);
 			}
 		}
@@ -421,203 +325,164 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return list.iterator();
 	}
 
-	public final Text color(TextColor value)
-	{
+	public final Text color(TextColor value) {
 		color = value.color & 0xFFFFFF;
 		return this;
 	}
 
-	public final Text color(String value)
-	{
+	public final Text color(String value) {
 		TextColor col = TextColor.MAP.get(value);
 
-		if (col != null)
-		{
+		if (col != null) {
 			color = col.color & 0xFFFFFF;
-		}
-		else if (value.startsWith("#"))
-		{
+		} else if (value.startsWith("#")) {
 			color = Integer.decode(value) & 0xFFFFFF;
 		}
 
 		return this;
 	}
 
-	public final Text color(int col)
-	{
+	public final Text color(int col) {
 		color = col & 0xFFFFFF;
 		return this;
 	}
 
-	public final Text black()
-	{
+	public final Text black() {
 		return color(TextColor.BLACK);
 	}
 
-	public final Text darkBlue()
-	{
+	public final Text darkBlue() {
 		return color(TextColor.DARK_BLUE);
 	}
 
-	public final Text darkGreen()
-	{
+	public final Text darkGreen() {
 		return color(TextColor.DARK_GREEN);
 	}
 
-	public final Text darkAqua()
-	{
+	public final Text darkAqua() {
 		return color(TextColor.DARK_AQUA);
 	}
 
-	public final Text darkRed()
-	{
+	public final Text darkRed() {
 		return color(TextColor.DARK_RED);
 	}
 
-	public final Text darkPurple()
-	{
+	public final Text darkPurple() {
 		return color(TextColor.DARK_PURPLE);
 	}
 
-	public final Text gold()
-	{
+	public final Text gold() {
 		return color(TextColor.GOLD);
 	}
 
-	public final Text gray()
-	{
+	public final Text gray() {
 		return color(TextColor.GRAY);
 	}
 
-	public final Text darkGray()
-	{
+	public final Text darkGray() {
 		return color(TextColor.DARK_GRAY);
 	}
 
-	public final Text blue()
-	{
+	public final Text blue() {
 		return color(TextColor.BLUE);
 	}
 
-	public final Text green()
-	{
+	public final Text green() {
 		return color(TextColor.GREEN);
 	}
 
-	public final Text aqua()
-	{
+	public final Text aqua() {
 		return color(TextColor.AQUA);
 	}
 
-	public final Text red()
-	{
+	public final Text red() {
 		return color(TextColor.RED);
 	}
 
-	public final Text lightPurple()
-	{
+	public final Text lightPurple() {
 		return color(TextColor.LIGHT_PURPLE);
 	}
 
-	public final Text yellow()
-	{
+	public final Text yellow() {
 		return color(TextColor.YELLOW);
 	}
 
-	public final Text white()
-	{
+	public final Text white() {
 		return color(TextColor.WHITE);
 	}
 
-	public final Text noColor()
-	{
+	public final Text noColor() {
 		color = -1;
 		return this;
 	}
 
-	public final Text bold(@Nullable Boolean value)
-	{
+	public final Text bold(@Nullable Boolean value) {
 		bold = value;
 		return this;
 	}
 
-	public final Text bold()
-	{
+	public final Text bold() {
 		return bold(true);
 	}
 
-	public final Text italic(@Nullable Boolean value)
-	{
+	public final Text italic(@Nullable Boolean value) {
 		italic = value;
 		return this;
 	}
 
-	public final Text italic()
-	{
+	public final Text italic() {
 		return italic(true);
 	}
 
-	public final Text underlined(@Nullable Boolean value)
-	{
+	public final Text underlined(@Nullable Boolean value) {
 		underlined = value;
 		return this;
 	}
 
-	public final Text underlined()
-	{
+	public final Text underlined() {
 		return underlined(true);
 	}
 
-	public final Text strikethrough(@Nullable Boolean value)
-	{
+	public final Text strikethrough(@Nullable Boolean value) {
 		strikethrough = value;
 		return this;
 	}
 
-	public final Text strikethrough()
-	{
+	public final Text strikethrough() {
 		return strikethrough(true);
 	}
 
-	public final Text obfuscated(@Nullable Boolean value)
-	{
+	public final Text obfuscated(@Nullable Boolean value) {
 		obfuscated = value;
 		return this;
 	}
 
-	public final Text obfuscated()
-	{
+	public final Text obfuscated() {
 		return obfuscated(true);
 	}
 
-	public final Text insertion(@Nullable String value)
-	{
+	public final Text insertion(@Nullable String value) {
 		insertion = value;
 		return this;
 	}
 
-	public final Text font(@Nullable String value)
-	{
+	public final Text font(@Nullable String value) {
 		font = value == null || value.isEmpty() ? null : new ResourceLocation(value);
 		return this;
 	}
 
-	public final Text click(@Nullable String value)
-	{
+	public final Text click(@Nullable String value) {
 		click = value;
 		return this;
 	}
 
-	public final Text hover(Object text)
-	{
+	public final Text hover(Object text) {
 		hover = of(text);
 		return this;
 	}
 
-	public final Text append(Object sibling)
-	{
-		if (siblings == null)
-		{
+	public final Text append(Object sibling) {
+		if (siblings == null) {
 			siblings = new LinkedList<>();
 		}
 
@@ -625,29 +490,22 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return this;
 	}
 
-	public final List<Text> getSiblings()
-	{
+	public final List<Text> getSiblings() {
 		return siblings == null ? Collections.emptyList() : siblings;
 	}
 
-	public final boolean hasSiblings()
-	{
+	public final boolean hasSiblings() {
 		return siblings != null && !siblings.isEmpty();
 	}
 
 	@Override
-	public boolean equals(Object obj)
-	{
-		if (obj == this)
-		{
+	public boolean equals(Object obj) {
+		if (obj == this) {
 			return true;
-		}
-		else if (obj instanceof Text)
-		{
+		} else if (obj instanceof Text) {
 			Text t = (Text) obj;
 
-			if (color == t.color && bold == t.bold && italic == t.italic && underlined == t.underlined && strikethrough == t.strikethrough && obfuscated == t.obfuscated)
-			{
+			if (color == t.color && bold == t.bold && italic == t.italic && underlined == t.underlined && strikethrough == t.strikethrough && obfuscated == t.obfuscated) {
 				return Objects.equals(insertion, t.insertion) && Objects.equals(font, t.font) && Objects.equals(click, t.click) && Objects.equals(hover, t.hover) && Objects.equals(siblings, t.siblings);
 			}
 		}
@@ -656,25 +514,21 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	}
 
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		return Objects.hash(color, bold, italic, underlined, strikethrough, obfuscated, insertion, font, click, hover, siblings);
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return component().getString();
 	}
 
 	@Override
-	public int compareTo(Text other)
-	{
+	public int compareTo(Text other) {
 		return toString().compareTo(other.toString());
 	}
 
-	public void write(FriendlyByteBuf buffer)
-	{
+	public void write(FriendlyByteBuf buffer) {
 		buffer.writeComponent(component());
 	}
 }

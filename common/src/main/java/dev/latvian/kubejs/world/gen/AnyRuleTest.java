@@ -11,22 +11,17 @@ import java.util.Random;
 /**
  * @author LatvianModder
  */
-public class AnyRuleTest extends RuleTest
-{
+public class AnyRuleTest extends RuleTest {
 	public final List<RuleTest> list;
 
-	public AnyRuleTest()
-	{
+	public AnyRuleTest() {
 		list = new ArrayList<>();
 	}
 
 	@Override
-	public boolean test(BlockState blockState, Random random)
-	{
-		for (RuleTest test : list)
-		{
-			if (test.test(blockState, random))
-			{
+	public boolean test(BlockState blockState, Random random) {
+		for (RuleTest test : list) {
+			if (test.test(blockState, random)) {
 				return true;
 			}
 		}
@@ -35,8 +30,7 @@ public class AnyRuleTest extends RuleTest
 	}
 
 	@Override
-	protected RuleTestType<?> getType()
-	{
+	protected RuleTestType<?> getType() {
 		return RuleTestType.ALWAYS_TRUE_TEST;
 	}
 }

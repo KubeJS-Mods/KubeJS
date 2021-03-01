@@ -11,8 +11,7 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public interface BlockKJS
-{
+public interface BlockKJS {
 	void setMaterialKJS(Material v);
 
 	void setHasCollisionKJS(boolean v);
@@ -29,10 +28,8 @@ public interface BlockKJS
 
 	void setJumpFactorKJS(float v);
 
-	default List<BlockState> getBlockStatesKJS()
-	{
-		if (!(this instanceof Block))
-		{
+	default List<BlockState> getBlockStatesKJS() {
+		if (!(this instanceof Block)) {
 			return Collections.emptyList();
 		}
 

@@ -10,16 +10,14 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author LatvianModder
  */
-public class UnboundFluidStackJS extends FluidStackJS
-{
+public class UnboundFluidStackJS extends FluidStackJS {
 	private final ResourceLocation fluidRL;
 	private final String fluid;
 	private int amount;
 	private MapJS nbt;
 	private FluidStack cached;
 
-	public UnboundFluidStackJS(ResourceLocation f)
-	{
+	public UnboundFluidStackJS(ResourceLocation f) {
 		fluidRL = f;
 		fluid = fluidRL.toString();
 		amount = FluidStack.bucketAmount().intValue();
@@ -28,22 +26,18 @@ public class UnboundFluidStackJS extends FluidStackJS
 	}
 
 	@Override
-	public String getId()
-	{
+	public String getId() {
 		return fluid;
 	}
 
 	@Override
-	public boolean isEmpty()
-	{
+	public boolean isEmpty() {
 		return super.isEmpty() || getFluid() == Fluids.EMPTY;
 	}
 
 	@Override
-	public FluidStack getFluidStack()
-	{
-		if (cached == null)
-		{
+	public FluidStack getFluidStack() {
+		if (cached == null) {
 			cached = FluidStack.create(this::getFluid, Fraction.ofWhole(amount), MapJS.nbt(nbt));
 		}
 
@@ -51,32 +45,27 @@ public class UnboundFluidStackJS extends FluidStackJS
 	}
 
 	@Override
-	public int getAmount()
-	{
+	public int getAmount() {
 		return amount;
 	}
 
 	@Override
-	public void setAmount(int a)
-	{
+	public void setAmount(int a) {
 		amount = a;
 		cached = null;
 	}
 
 	@Override
 	@Nullable
-	public MapJS getNbt()
-	{
+	public MapJS getNbt() {
 		return nbt;
 	}
 
 	@Override
-	public void setNbt(@Nullable Object n)
-	{
+	public void setNbt(@Nullable Object n) {
 		nbt = MapJS.of(n);
 
-		if (nbt != null)
-		{
+		if (nbt != null) {
 			nbt.changeListener = this;
 		}
 
@@ -84,14 +73,12 @@ public class UnboundFluidStackJS extends FluidStackJS
 	}
 
 	@Override
-	public FluidStackJS copy()
-	{
+	public FluidStackJS copy() {
 		return new UnboundFluidStackJS(fluidRL).amount(amount).nbt(nbt);
 	}
 
 	@Override
-	public void onChanged(@Nullable MapJS o)
-	{
+	public void onChanged(@Nullable MapJS o) {
 		cached = null;
 	}
 }

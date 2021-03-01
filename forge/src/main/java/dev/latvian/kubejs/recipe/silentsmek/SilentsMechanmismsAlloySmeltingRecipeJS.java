@@ -16,18 +16,15 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public class SilentsMechanmismsAlloySmeltingRecipeJS extends RecipeJS
-{
+public class SilentsMechanmismsAlloySmeltingRecipeJS extends RecipeJS {
 	public List<Integer> inputCount = new ArrayList<>();
 	public int processTime = 400;
 
 	@Override
-	public void create(ListJS args)
-	{
+	public void create(ListJS args) {
 		ItemStackJS output = ItemStackJS.of(args.get(0));
 
-		if (output.isEmpty())
-		{
+		if (output.isEmpty()) {
 			throw new RecipeExceptionJS("Silents Mechanisms alloy smelting recipe result can't be empty!");
 		}
 
@@ -35,50 +32,39 @@ public class SilentsMechanmismsAlloySmeltingRecipeJS extends RecipeJS
 
 		ListJS in = ListJS.orSelf(args.get(1));
 
-		for (Object o : in)
-		{
+		for (Object o : in) {
 			IngredientJS i = IngredientJS.of(o);
 
-			if (!i.isEmpty())
-			{
+			if (!i.isEmpty()) {
 				int c = i.getCount();
 
-				if (c > 1)
-				{
+				if (c > 1) {
 					inputItems.add(i.withCount(1));
 					inputCount.add(c);
-				}
-				else
-				{
+				} else {
 					inputItems.add(i);
 					inputCount.add(1);
 				}
 			}
 		}
 
-		if (inputItems.isEmpty())
-		{
+		if (inputItems.isEmpty()) {
 			throw new RecipeExceptionJS("Silents Mechanisms alloy smelting recipe ingredient " + args.get(1) + " is not a valid ingredient!");
 		}
 
-		if (args.size() >= 3 && args.get(2) instanceof Number)
-		{
+		if (args.size() >= 3 && args.get(2) instanceof Number) {
 			processTime(((Number) args.get(2)).intValue());
 		}
 	}
 
-	private static IngredientJS deserializeIngredient(JsonElement element)
-	{
-		if (element.isJsonObject())
-		{
+	private static IngredientJS deserializeIngredient(JsonElement element) {
+		if (element.isJsonObject()) {
 			JsonObject json = element.getAsJsonObject();
 
-			if (json.has("value"))
-			{
+			if (json.has("value")) {
 				return IngredientJS.ingredientFromRecipeJson(json.get("value"));
 			}
-			if (json.has("values"))
-			{
+			if (json.has("values")) {
 				return IngredientJS.ingredientFromRecipeJson(json.get("values"));
 			}
 		}
@@ -87,12 +73,10 @@ public class SilentsMechanmismsAlloySmeltingRecipeJS extends RecipeJS
 	}
 
 	@Override
-	public void deserialize()
-	{
+	public void deserialize() {
 		ItemStackJS result = ItemStackJS.resultFromRecipeJson(json.get("result"));
 
-		if (result.isEmpty())
-		{
+		if (result.isEmpty()) {
 			throw new RecipeExceptionJS("Silents Mechanisms alloy smelting recipe result can't be empty!");
 		}
 
@@ -100,51 +84,39 @@ public class SilentsMechanmismsAlloySmeltingRecipeJS extends RecipeJS
 
 		outputItems.add(result);
 
-		for (JsonElement e : json.get("ingredients").getAsJsonArray())
-		{
+		for (JsonElement e : json.get("ingredients").getAsJsonArray()) {
 			IngredientJS i = deserializeIngredient(e);
 
-			if (!i.isEmpty())
-			{
+			if (!i.isEmpty()) {
 				inputItems.add(i);
 
-				if (e.isJsonObject() && e.getAsJsonObject().has("count"))
-				{
+				if (e.isJsonObject() && e.getAsJsonObject().has("count")) {
 					inputCount.add(e.getAsJsonObject().get("count").getAsInt());
-				}
-				else
-				{
+				} else {
 					inputCount.add(1);
 				}
 			}
 		}
 
-		if (inputItems.isEmpty())
-		{
+		if (inputItems.isEmpty()) {
 			throw new RecipeExceptionJS("Silents Mechanisms alloy smelting recipe ingredient " + json.get("ingredient") + " is not a valid ingredient!");
 		}
 	}
 
 	@Override
-	public void serialize()
-	{
+	public void serialize() {
 		JsonArray ingredientsJson = new JsonArray();
 
-		for (int i = 0; i < inputItems.size(); i++)
-		{
+		for (int i = 0; i < inputItems.size(); i++) {
 			JsonObject ingredientJson = new JsonObject();
 
 			JsonArray valuesJson = new JsonArray();
 
-			if (inputItems.get(i) instanceof MatchAnyIngredientJS)
-			{
-				for (IngredientJS in : ((MatchAnyIngredientJS) inputItems.get(i)).ingredients)
-				{
+			if (inputItems.get(i) instanceof MatchAnyIngredientJS) {
+				for (IngredientJS in : ((MatchAnyIngredientJS) inputItems.get(i)).ingredients) {
 					valuesJson.add(in.toJson());
 				}
-			}
-			else
-			{
+			} else {
 				valuesJson.add(inputItems.get(i).toJson());
 			}
 
@@ -158,8 +130,7 @@ public class SilentsMechanmismsAlloySmeltingRecipeJS extends RecipeJS
 		json.addProperty("process_time", processTime);
 	}
 
-	public SilentsMechanmismsAlloySmeltingRecipeJS processTime(int t)
-	{
+	public SilentsMechanmismsAlloySmeltingRecipeJS processTime(int t) {
 		processTime = Math.max(0, t);
 		return this;
 	}

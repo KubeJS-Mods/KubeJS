@@ -9,14 +9,10 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class BlockModificationEventJS extends EventJS
-{
-	public void modify(BlockStatePredicate predicate, Consumer<BlockModificationProperties> c)
-	{
-		for (Block block : predicate.getBlocks())
-		{
-			if (block instanceof BlockKJS)
-			{
+public class BlockModificationEventJS extends EventJS {
+	public void modify(BlockStatePredicate predicate, Consumer<BlockModificationProperties> c) {
+		for (Block block : predicate.getBlocks()) {
+			if (block instanceof BlockKJS) {
 				c.accept(new BlockModificationProperties((BlockKJS) block));
 			}
 		}

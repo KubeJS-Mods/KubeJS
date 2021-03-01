@@ -9,79 +9,66 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author LatvianModder
  */
-public class EmptyFluidStackJS extends FluidStackJS
-{
+public class EmptyFluidStackJS extends FluidStackJS {
 	public static final EmptyFluidStackJS INSTANCE = new EmptyFluidStackJS();
 
 	@Override
-	public boolean isEmpty()
-	{
+	public boolean isEmpty() {
 		return true;
 	}
 
 	@Override
-	public String getId()
-	{
+	public String getId() {
 		return "minecraft:empty";
 	}
 
 	@Override
-	public Fluid getFluid()
-	{
+	public Fluid getFluid() {
 		return Fluids.EMPTY;
 	}
 
 	@Nullable
 	@Override
-	public FluidStack getFluidStack()
-	{
+	public FluidStack getFluidStack() {
 		return null;
 	}
 
 	@Override
-	public int getAmount()
-	{
+	public int getAmount() {
 		return 0;
 	}
 
 	@Override
-	public void setAmount(int amount)
-	{
+	public void setAmount(int amount) {
 	}
 
 	@Override
 	@Nullable
-	public MapJS getNbt()
-	{
+	public MapJS getNbt() {
 		return null;
 	}
 
 	@Override
-	public void setNbt(@Nullable Object nbt)
-	{
+	public void setNbt(@Nullable Object nbt) {
 	}
 
 	@Override
-	public FluidStackJS copy()
-	{
+	public FluidStackJS copy() {
 		return this;
 	}
 
 	@Override
-	public boolean equals(Object o)
-	{
+	public boolean equals(Object o) {
 		return FluidStackJS.of(o).isEmpty();
 	}
 
 	@Override
-	public boolean strongEquals(Object o)
-	{
+	public boolean strongEquals(Object o) {
 		return FluidStackJS.of(o).isEmpty();
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return "fluid.empty";
 	}
 }

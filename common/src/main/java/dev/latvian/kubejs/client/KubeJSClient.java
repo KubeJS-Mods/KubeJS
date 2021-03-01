@@ -24,13 +24,11 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class KubeJSClient extends KubeJSCommon
-{
+public class KubeJSClient extends KubeJSCommon {
 	public static final Map<String, Overlay> activeOverlays = new LinkedHashMap<>();
 
 	@Override
-	public void init()
-	{
+	public void init() {
 		if (Minecraft.getInstance() == null) // You'd think that this is impossible, but not when you use runData gradle task
 		{
 			return;
@@ -44,8 +42,7 @@ public class KubeJSClient extends KubeJSCommon
 		setup();
 	}
 
-	public static void reloadClientScripts()
-	{
+	public static void reloadClientScripts() {
 		KubeJSClientEventHandler.staticItemTooltips = null;
 		KubeJS.clientScriptManager.unload();
 		KubeJS.clientScriptManager.loadFromDirectory();
@@ -53,44 +50,37 @@ public class KubeJSClient extends KubeJSCommon
 	}
 
 	@Override
-	public void clientBindings(BindingsEvent event)
-	{
+	public void clientBindings(BindingsEvent event) {
 		event.add("client", new ClientWrapper());
 	}
 
-	private void setup()
-	{
+	private void setup() {
 		new EventJS().post(ScriptType.CLIENT, KubeJSEvents.CLIENT_INIT);
 	}
 
 	@Override
-	public void handleDataToClientPacket(String channel, @Nullable CompoundTag data)
-	{
+	public void handleDataToClientPacket(String channel, @Nullable CompoundTag data) {
 		new NetworkEventJS(Minecraft.getInstance().player, channel, MapJS.of(data)).post(KubeJSEvents.PLAYER_DATA_FROM_SERVER, channel);
 	}
 
 	@Override
 	@Nullable
-	public Player getClientPlayer()
-	{
+	public Player getClientPlayer() {
 		return Minecraft.getInstance().player;
 	}
 
 	@Override
-	public void openOverlay(Overlay o)
-	{
+	public void openOverlay(Overlay o) {
 		activeOverlays.put(o.id, o);
 	}
 
 	@Override
-	public void closeOverlay(String id)
-	{
+	public void closeOverlay(String id) {
 		activeOverlays.remove(id);
 	}
 
 	@Override
-	public WorldJS getClientWorld()
-	{
+	public WorldJS getClientWorld() {
 		return ClientWorldJS.instance;
 	}
 }

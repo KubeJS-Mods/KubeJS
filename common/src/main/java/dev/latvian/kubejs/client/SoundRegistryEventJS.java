@@ -10,17 +10,14 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class SoundRegistryEventJS extends EventJS
-{
+public class SoundRegistryEventJS extends EventJS {
 	private final Consumer<ResourceLocation> registry;
 
-	public SoundRegistryEventJS(Consumer<ResourceLocation> registry)
-	{
+	public SoundRegistryEventJS(Consumer<ResourceLocation> registry) {
 		this.registry = registry;
 	}
 
-	public void register(String id)
-	{
+	public void register(String id) {
 		ResourceLocation r = UtilsJS.getMCID(KubeJS.appendModId(id));
 		registry.accept(r);
 	}

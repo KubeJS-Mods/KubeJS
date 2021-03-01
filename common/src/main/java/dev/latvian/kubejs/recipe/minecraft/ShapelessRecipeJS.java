@@ -8,33 +8,26 @@ import dev.latvian.kubejs.util.ListJS;
 /**
  * @author LatvianModder
  */
-public class ShapelessRecipeJS extends RecipeJS
-{
+public class ShapelessRecipeJS extends RecipeJS {
 	@Override
-	public void create(ListJS args)
-	{
+	public void create(ListJS args) {
 		outputItems.add(parseResultItem(args.get(0)));
 		inputItems.addAll(parseIngredientItemList(args.get(1)));
 	}
 
 	@Override
-	public void deserialize()
-	{
+	public void deserialize() {
 		outputItems.add(parseResultItem(json.get("result")));
 		inputItems.addAll(parseIngredientItemList(json.get("ingredients")));
 	}
 
 	@Override
-	public void serialize()
-	{
-		if (serializeInputs)
-		{
+	public void serialize() {
+		if (serializeInputs) {
 			JsonArray ingredientsJson = new JsonArray();
 
-			for (IngredientJS in : inputItems)
-			{
-				for (IngredientJS in1 : in.unwrapStackIngredient())
-				{
+			for (IngredientJS in : inputItems) {
+				for (IngredientJS in1 : in.unwrapStackIngredient()) {
 					ingredientsJson.add(in1.toJson());
 				}
 			}
@@ -42,8 +35,7 @@ public class ShapelessRecipeJS extends RecipeJS
 			json.add("ingredients", ingredientsJson);
 		}
 
-		if (serializeOutputs)
-		{
+		if (serializeOutputs) {
 			json.add("result", outputItems.get(0).toResultJson());
 		}
 	}

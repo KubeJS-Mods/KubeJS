@@ -6,11 +6,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 /**
  * @author LatvianModder
  */
-public class SilentsMechanismsRecipes
-{
+public class SilentsMechanismsRecipes {
 	@SubscribeEvent
-	public static void registerRecipeHandlers(RegisterRecipeHandlersEvent event)
-	{
+	public static void registerRecipeHandlers(RegisterRecipeHandlersEvent event) {
 		event.register("silents_mechanisms:alloy_smelting", SilentsMechanmismsAlloySmeltingRecipeJS::new);
 	}
 }

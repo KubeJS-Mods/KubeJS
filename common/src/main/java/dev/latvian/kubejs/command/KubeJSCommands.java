@@ -23,12 +23,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.commands.ReloadCommand;
@@ -45,10 +40,8 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public class KubeJSCommands
-{
-	public static void register(CommandDispatcher<CommandSourceStack> dispatcher)
-	{
+public class KubeJSCommands {
+	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 		dispatcher.register(Commands.literal("kubejs")
 				.then(Commands.literal("custom_command")
 						.then(Commands.argument("id", StringArgumentType.word())
@@ -110,8 +103,7 @@ public class KubeJSCommands
 		);
 	}
 
-	private static Component copy(String s, ChatFormatting col, String info)
-	{
+	private static Component copy(String s, ChatFormatting col, String info) {
 		TextComponent component = new TextComponent("- ");
 		component.setStyle(component.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.GRAY)));
 		component.setStyle(component.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, s)));
@@ -120,14 +112,12 @@ public class KubeJSCommands
 		return component;
 	}
 
-	private static int customCommand(CommandSourceStack source, String id)
-	{
+	private static int customCommand(CommandSourceStack source, String id) {
 		new CustomCommandEventJS(source.getLevel(), source.getEntity(), new BlockPos(source.getPosition()), id).post(ScriptType.SERVER, KubeJSEvents.SERVER_CUSTOM_COMMAND, id);
 		return 1;
 	}
 
-	private static int hand(ServerPlayer player)
-	{
+	private static int hand(ServerPlayer player) {
 		player.sendMessage(new TextComponent("Item in hand:"), Util.NIL_UUID);
 		ItemStackJS stack = ItemStackJS.of(player.getMainHandItem());
 		player.sendMessage(copy(stack.toString(), ChatFormatting.GREEN, "Item ID"), Util.NIL_UUID);
@@ -135,67 +125,56 @@ public class KubeJSCommands
 		List<ResourceLocation> tags = new ArrayList<>(Tags.byItem(stack.getItem()));
 		tags.sort(null);
 
-		for (ResourceLocation id : tags)
-		{
+		for (ResourceLocation id : tags) {
 			player.sendMessage(copy("'#" + id + "'", ChatFormatting.YELLOW, "Item Tag [" + TagIngredientJS.createTag(id.toString()).getStacks().size() + " items]"), Util.NIL_UUID);
 		}
 
 		player.sendMessage(copy("'@" + stack.getMod() + "'", ChatFormatting.AQUA, "Mod [" + new ModIngredientJS(stack.getMod()).getStacks().size() + " items]"), Util.NIL_UUID);
 
-		if (stack.getItem().getItemCategory() != null)
-		{
+		if (stack.getItem().getItemCategory() != null) {
 			player.sendMessage(copy("'%" + stack.getItemGroup() + "'", ChatFormatting.LIGHT_PURPLE, "Item Group [" + new GroupIngredientJS(stack.getItem().getItemCategory()).getStacks().size() + " items]"), Util.NIL_UUID);
 		}
 
 		return 1;
 	}
 
-	private static int errors(CommandSourceStack source)
-	{
-		if (ScriptType.SERVER.errors.isEmpty())
-		{
+	private static int errors(CommandSourceStack source) {
+		if (ScriptType.SERVER.errors.isEmpty()) {
 			source.sendSuccess(new TextComponent("No errors found!").withStyle(ChatFormatting.GREEN), false);
 
-			if (!ScriptType.SERVER.warnings.isEmpty())
-			{
+			if (!ScriptType.SERVER.warnings.isEmpty()) {
 				source.sendSuccess(new TextComponent(ScriptType.SERVER.warnings.size() + " warnings found. Run /kubejs warnings to see them").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))), false);
 			}
 			return 1;
 		}
 
-		for (int i = 0; i < ScriptType.SERVER.errors.size(); i++)
-		{
+		for (int i = 0; i < ScriptType.SERVER.errors.size(); i++) {
 			source.sendSuccess(new TextComponent("[" + (i + 1) + "] " + ScriptType.SERVER.errors.get(i)).withStyle(ChatFormatting.RED), false);
 		}
 
 		source.sendSuccess(new TextComponent("More info in 'logs/kubejs/server.txt'").withStyle(ChatFormatting.DARK_RED), false);
 
-		if (!ScriptType.SERVER.warnings.isEmpty())
-		{
+		if (!ScriptType.SERVER.warnings.isEmpty()) {
 			source.sendSuccess(new TextComponent(ScriptType.SERVER.warnings.size() + " warnings found. Run '/kubejs warnings' to see them").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))), false);
 		}
 
 		return 1;
 	}
 
-	private static int warnings(CommandSourceStack source)
-	{
-		if (ScriptType.SERVER.warnings.isEmpty())
-		{
+	private static int warnings(CommandSourceStack source) {
+		if (ScriptType.SERVER.warnings.isEmpty()) {
 			source.sendSuccess(new TextComponent("No warnings found!").withStyle(ChatFormatting.GREEN), false);
 			return 1;
 		}
 
-		for (int i = 0; i < ScriptType.SERVER.warnings.size(); i++)
-		{
+		for (int i = 0; i < ScriptType.SERVER.warnings.size(); i++) {
 			source.sendSuccess(new TextComponent("[" + (i + 1) + "] " + ScriptType.SERVER.warnings.get(i)).withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))), false);
 		}
 
 		return 1;
 	}
 
-	private static int reloadStartup(CommandSourceStack source)
-	{
+	private static int reloadStartup(CommandSourceStack source) {
 		source.sendSuccess(new TextComponent("Reloading startup scripts..."), false);
 		KubeJS.startupScriptManager.unload();
 		KubeJS.startupScriptManager.loadFromDirectory();
@@ -204,10 +183,8 @@ public class KubeJSCommands
 		return 1;
 	}
 
-	private static int export(CommandSourceStack source)
-	{
-		if (ServerSettings.dataExport != null)
-		{
+	private static int export(CommandSourceStack source) {
+		if (ServerSettings.dataExport != null) {
 			return 0;
 		}
 
@@ -223,10 +200,8 @@ public class KubeJSCommands
 		Collection<String> collection2 = Lists.newArrayList(collection);
 		Collection<String> collection3 = worldData.getDataPackConfig().getDisabled();
 
-		for (String string : packRepository.getAvailableIds())
-		{
-			if (!collection3.contains(string) && !collection2.contains(string))
-			{
+		for (String string : packRepository.getAvailableIds()) {
+			if (!collection3.contains(string) && !collection2.contains(string)) {
 				collection2.add(string);
 			}
 		}
@@ -235,45 +210,36 @@ public class KubeJSCommands
 		return 1;
 	}
 
-	private static int outputRecipes(ServerPlayer player)
-	{
+	private static int outputRecipes(ServerPlayer player) {
 		player.sendMessage(new TextComponent("WIP!"), Util.NIL_UUID);
 		return Command.SINGLE_SUCCESS;
 	}
 
-	private static int inputRecipes(ServerPlayer player)
-	{
+	private static int inputRecipes(ServerPlayer player) {
 		player.sendMessage(new TextComponent("WIP!"), Util.NIL_UUID);
 		return Command.SINGLE_SUCCESS;
 	}
 
-	private static int checkRecipeConflicts(ServerPlayer player)
-	{
+	private static int checkRecipeConflicts(ServerPlayer player) {
 		player.sendMessage(new TextComponent("WIP!"), Util.NIL_UUID);
 		return Command.SINGLE_SUCCESS;
 	}
 
-	private static int tagObjects(ServerPlayer player, TagCollection<?> collection, ResourceLocation t)
-	{
+	private static int tagObjects(ServerPlayer player, TagCollection<?> collection, ResourceLocation t) {
 		Tag<?> tag = collection.getTag(t);
 
-		if (tag == null || tag.getValues().isEmpty())
-		{
+		if (tag == null || tag.getValues().isEmpty()) {
 			player.sendMessage(new TextComponent("Tag not found!"), Util.NIL_UUID);
 			return 0;
 		}
 
 		player.sendMessage(new TextComponent(t + ":"), Util.NIL_UUID);
 
-		for (Object o : tag.getValues())
-		{
+		for (Object o : tag.getValues()) {
 			ResourceLocation id = Registries.getRegistryName(o);
-			if (id == null)
-			{
+			if (id == null) {
 				player.sendMessage(new TextComponent("- " + o), Util.NIL_UUID);
-			}
-			else
-			{
+			} else {
 				player.sendMessage(new TextComponent("- " + id.toString()), Util.NIL_UUID);
 			}
 		}
@@ -282,8 +248,7 @@ public class KubeJSCommands
 		return Command.SINGLE_SUCCESS;
 	}
 
-	private static int wiki(CommandSourceStack source)
-	{
+	private static int wiki(CommandSourceStack source) {
 		source.sendSuccess(new TextComponent("Click here to open the Wiki").withStyle(ChatFormatting.BLUE).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://kubejs.com/"))), false);
 		return Command.SINGLE_SUCCESS;
 	}

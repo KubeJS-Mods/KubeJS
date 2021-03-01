@@ -11,8 +11,7 @@ import net.minecraft.world.level.material.FlowingFluid;
 /**
  * @author LatvianModder
  */
-public class FluidBuilder extends BuilderBase
-{
+public class FluidBuilder extends BuilderBase {
 	public String stillTexture;
 	public String flowingTexture;
 	public int color = 0xFFFFFFFF;
@@ -30,97 +29,81 @@ public class FluidBuilder extends BuilderBase
 	public BucketItem bucketItem;
 	public LiquidBlock block;
 
-	public FluidBuilder(String i)
-	{
+	public FluidBuilder(String i) {
 		super(i);
 		textureStill(KubeJS.id("fluid/fluid_thin"));
 		textureFlowing(KubeJS.id("fluid/fluid_thin_flow"));
 	}
 
 	@Override
-	public String getType()
-	{
+	public String getType() {
 		return "fluid";
 	}
 
-	public FluidBuilder color(int c)
-	{
+	public FluidBuilder color(int c) {
 		color = c;
 
-		if ((color & 0xFFFFFF) == color)
-		{
+		if ((color & 0xFFFFFF) == color) {
 			color |= 0xFF000000;
 		}
 
 		return bucketColor(color);
 	}
 
-	public FluidBuilder bucketColor(int c)
-	{
+	public FluidBuilder bucketColor(int c) {
 		bucketColor = c;
 
-		if ((bucketColor & 0xFFFFFF) == bucketColor)
-		{
+		if ((bucketColor & 0xFFFFFF) == bucketColor) {
 			bucketColor |= 0xFF000000;
 		}
 
 		return this;
 	}
 
-	public FluidBuilder textureStill(ResourceLocation id)
-	{
+	public FluidBuilder textureStill(ResourceLocation id) {
 		stillTexture = id.toString();
 		return this;
 	}
 
-	public FluidBuilder textureFlowing(ResourceLocation id)
-	{
+	public FluidBuilder textureFlowing(ResourceLocation id) {
 		flowingTexture = id.toString();
 		return this;
 	}
 
-	public FluidBuilder textureThick(int color)
-	{
+	public FluidBuilder textureThick(int color) {
 		return textureStill(KubeJS.id("fluid/fluid_thick")).textureFlowing(KubeJS.id("fluid/fluid_thick_flow")).color(color);
 	}
 
-	public FluidBuilder textureThin(int color)
-	{
+	public FluidBuilder textureThin(int color) {
 		return textureStill(KubeJS.id("fluid/fluid_thin")).textureFlowing(KubeJS.id("fluid/fluid_thin_flow")).color(color);
 	}
 
-	public FluidBuilder luminosity(int luminosity)
-	{
+	public FluidBuilder luminosity(int luminosity) {
 		this.luminosity = luminosity;
 		return this;
 	}
 
-	public FluidBuilder density(int density)
-	{
+	public FluidBuilder density(int density) {
 		this.density = density;
 		return this;
 	}
 
-	public FluidBuilder temperature(int temperature)
-	{
+	public FluidBuilder temperature(int temperature) {
 		this.temperature = temperature;
 		return this;
 	}
 
-	public FluidBuilder viscosity(int viscosity)
-	{
+	public FluidBuilder viscosity(int viscosity) {
 		this.viscosity = viscosity;
 		return this;
 	}
 
-	public FluidBuilder gaseous()
-	{
+	public FluidBuilder gaseous() {
 		isGaseous = true;
 		return this;
 	}
 
-	public FluidBuilder rarity(RarityWrapper rarity)
-	{
+	public FluidBuilder rarity(RarityWrapper rarity) {
 		this.rarity = rarity;
 		return this;
 	}

@@ -17,8 +17,7 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class BlockBuilder extends BuilderBase
-{
+public class BlockBuilder extends BuilderBase {
 	public static BlockBuilder current;
 
 	public MaterialJS material;
@@ -45,8 +44,7 @@ public class BlockBuilder extends BuilderBase
 
 	public BlockJS block;
 
-	public BlockBuilder(String i)
-	{
+	public BlockBuilder(String i) {
 		super(i);
 		material = MaterialListJS.INSTANCE.map.get("wood");
 		hardness = 0.5F;
@@ -73,88 +71,73 @@ public class BlockBuilder extends BuilderBase
 	}
 
 	@Override
-	public String getType()
-	{
+	public String getType() {
 		return "block";
 	}
 
-	public BlockBuilder material(MaterialJS m)
-	{
+	public BlockBuilder material(MaterialJS m) {
 		material = m;
 		return this;
 	}
 
-	public BlockBuilder hardness(float h)
-	{
+	public BlockBuilder hardness(float h) {
 		hardness = h;
 		return this;
 	}
 
-	public BlockBuilder resistance(float r)
-	{
+	public BlockBuilder resistance(float r) {
 		resistance = r;
 		return this;
 	}
 
-	public BlockBuilder unbreakable()
-	{
+	public BlockBuilder unbreakable() {
 		hardness = -1F;
 		resistance = Float.MAX_VALUE;
 		return this;
 	}
 
-	public BlockBuilder lightLevel(float light)
-	{
+	public BlockBuilder lightLevel(float light) {
 		lightLevel = light;
 		return this;
 	}
 
-	public BlockBuilder harvestTool(ToolType tool, int level)
-	{
+	public BlockBuilder harvestTool(ToolType tool, int level) {
 		harvestTool = tool;
 		harvestLevel = level;
 		return this;
 	}
 
-	public BlockBuilder harvestTool(String tool, int level)
-	{
+	public BlockBuilder harvestTool(String tool, int level) {
 		return harvestTool(ToolType.byName(tool), level);
 	}
 
-	public BlockBuilder opaque(boolean o)
-	{
+	public BlockBuilder opaque(boolean o) {
 		opaque = o;
 		return this;
 	}
 
-	public BlockBuilder fullBlock(boolean f)
-	{
+	public BlockBuilder fullBlock(boolean f) {
 		fullBlock = f;
 		return this;
 	}
 
-	public BlockBuilder requiresTool(boolean f)
-	{
+	public BlockBuilder requiresTool(boolean f) {
 		requiresTool = f;
 		return this;
 	}
 
-	public BlockBuilder renderType(String l)
-	{
+	public BlockBuilder renderType(String l) {
 		renderType = l;
 		return this;
 	}
 
-	public BlockBuilder color(int index, int c)
-	{
+	public BlockBuilder color(int index, int c) {
 		color.put(index, 0xFF000000 | c);
 		return this;
 	}
 
-	public BlockBuilder texture(String tex)
-	{
-		for (Direction direction : Direction.values())
-		{
+	public BlockBuilder texture(String tex) {
+		for (Direction direction : Direction.values()) {
 			textures.addProperty(direction.getSerializedName(), tex);
 		}
 
@@ -162,118 +145,95 @@ public class BlockBuilder extends BuilderBase
 		return this;
 	}
 
-	public BlockBuilder texture(String id, String tex)
-	{
+	public BlockBuilder texture(String id, String tex) {
 		textures.addProperty(id, tex);
 		return this;
 	}
 
-	public BlockBuilder texture(Direction direction, String tex)
-	{
+	public BlockBuilder texture(Direction direction, String tex) {
 		return texture(direction.getSerializedName(), tex);
 	}
 
-	public BlockBuilder model(String m)
-	{
+	public BlockBuilder model(String m) {
 		model = m;
 		itemBuilder.parentModel = model;
 		return this;
 	}
 
-	public BlockBuilder item(@Nullable Consumer<BlockItemBuilder> i)
-	{
-		if (i == null)
-		{
+	public BlockBuilder item(@Nullable Consumer<BlockItemBuilder> i) {
+		if (i == null) {
 			itemBuilder = null;
-		}
-		else
-		{
+		} else {
 			i.accept(itemBuilder);
 		}
 
 		return this;
 	}
 
-	public BlockBuilder noItem()
-	{
+	public BlockBuilder noItem() {
 		return item(null);
 	}
 
-	public BlockBuilder shapeCube(double x0, double y0, double z0, double x1, double y1, double z1)
-	{
+	public BlockBuilder shapeCube(double x0, double y0, double z0, double x1, double y1, double z1) {
 		customShape.add(Block.box(x0, y0, z0, x1, y1, z1));
 		return this;
 	}
 
-	public BlockBuilder notSolid()
-	{
+	public BlockBuilder notSolid() {
 		notSolid = true;
 		return this;
 	}
 
-	public BlockBuilder waterlogged()
-	{
+	public BlockBuilder waterlogged() {
 		waterlogged = true;
 		return this;
 	}
 
-	public BlockBuilder noDrops()
-	{
+	public BlockBuilder noDrops() {
 		noDrops = true;
 		return this;
 	}
 
-	public BlockBuilder slipperiness(float f)
-	{
+	public BlockBuilder slipperiness(float f) {
 		slipperiness = f;
 		return this;
 	}
 
-	public BlockBuilder speedFactor(float f)
-	{
+	public BlockBuilder speedFactor(float f) {
 		speedFactor = f;
 		return this;
 	}
 
-	public BlockBuilder jumpFactor(float f)
-	{
+	public BlockBuilder jumpFactor(float f) {
 		jumpFactor = f;
 		return this;
 	}
 
-	public Block.Properties createProperties()
-	{
+	public Block.Properties createProperties() {
 		BlockProperties properties = BlockProperties.of(material.getMinecraftMaterial());
 		properties.sound(material.getSound());
 
-		if (resistance >= 0F)
-		{
+		if (resistance >= 0F) {
 			properties.strength(hardness, resistance);
-		}
-		else
-		{
+		} else {
 			properties.strength(hardness);
 		}
 
 		properties.lightLevel(state -> (int) (lightLevel * 15F));
 
-		if (harvestTool != null && harvestLevel >= 0)
-		{
+		if (harvestTool != null && harvestLevel >= 0) {
 			properties.tool(harvestTool, harvestLevel);
 		}
 
-		if (notSolid)
-		{
+		if (notSolid) {
 			properties.noOcclusion();
 		}
 
-		if (requiresTool)
-		{
+		if (requiresTool) {
 			properties.requiresCorrectToolForDrops();
 		}
 
-		if (noDrops)
-		{
+		if (noDrops) {
 			properties.noDrops();
 		}
 

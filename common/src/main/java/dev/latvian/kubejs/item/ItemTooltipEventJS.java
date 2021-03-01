@@ -16,63 +16,51 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class ItemTooltipEventJS extends EventJS
-{
+public class ItemTooltipEventJS extends EventJS {
 	@FunctionalInterface
-	public interface StaticTooltipHandler
-	{
+	public interface StaticTooltipHandler {
 		void tooltip(ItemStack stack, boolean advanced, List<Component> components);
 	}
 
 	@FunctionalInterface
-	public interface StaticTooltipHandlerFromJS
-	{
+	public interface StaticTooltipHandlerFromJS {
 		void accept(ItemStackJS stack, boolean advanced, List<Object> text);
 	}
 
-	public static class StaticTooltipHandlerFromLines implements StaticTooltipHandler
-	{
+	public static class StaticTooltipHandlerFromLines implements StaticTooltipHandler {
 		public final List<Component> lines;
 
-		public StaticTooltipHandlerFromLines(List<Component> l)
-		{
+		public StaticTooltipHandlerFromLines(List<Component> l) {
 			lines = l;
 		}
 
-		public StaticTooltipHandlerFromLines(Object o)
-		{
+		public StaticTooltipHandlerFromLines(Object o) {
 			lines = new ArrayList<>();
 
-			for (Object o1 : ListJS.orSelf(o))
-			{
+			for (Object o1 : ListJS.orSelf(o)) {
 				lines.add(Text.of(o1).component());
 			}
 		}
 
 		@Override
-		public void tooltip(ItemStack stack, boolean advanced, List<Component> components)
-		{
+		public void tooltip(ItemStack stack, boolean advanced, List<Component> components) {
 			components.addAll(lines);
 		}
 	}
 
-	public static class StaticTooltipHandlerFromJSWrapper implements StaticTooltipHandler
-	{
+	public static class StaticTooltipHandlerFromJSWrapper implements StaticTooltipHandler {
 		private final StaticTooltipHandlerFromJS handler;
 
-		public StaticTooltipHandlerFromJSWrapper(StaticTooltipHandlerFromJS h)
-		{
+		public StaticTooltipHandlerFromJSWrapper(StaticTooltipHandlerFromJS h) {
 			handler = h;
 		}
 
 		@Override
-		public void tooltip(ItemStack stack, boolean advanced, List<Component> components)
-		{
+		public void tooltip(ItemStack stack, boolean advanced, List<Component> components) {
 			List<Object> text = new ArrayList<>();
 			handler.accept(ItemStackJS.of(stack), advanced, text);
 
-			for (Object o : text)
-			{
+			for (Object o : text) {
 				components.add(Text.of(o).component());
 			}
 		}
@@ -80,64 +68,51 @@ public class ItemTooltipEventJS extends EventJS
 
 	private final Map<Item, List<StaticTooltipHandler>> map;
 
-	public ItemTooltipEventJS(Map<Item, List<ItemTooltipEventJS.StaticTooltipHandler>> m)
-	{
+	public ItemTooltipEventJS(Map<Item, List<ItemTooltipEventJS.StaticTooltipHandler>> m) {
 		map = m;
 	}
 
-	public void add(Object item, Object text)
-	{
-		if ("*".equals(item))
-		{
+	public void add(Object item, Object text) {
+		if ("*".equals(item)) {
 			addToAll(text);
 			return;
 		}
 
 		StaticTooltipHandlerFromLines l = new StaticTooltipHandlerFromLines(text);
 
-		if (!l.lines.isEmpty())
-		{
-			for (Item i : IngredientJS.of(item).getVanillaItems())
-			{
-				if (i != Items.AIR)
-				{
+		if (!l.lines.isEmpty()) {
+			for (Item i : IngredientJS.of(item).getVanillaItems()) {
+				if (i != Items.AIR) {
 					map.computeIfAbsent(i, k -> new ArrayList<>()).add(l);
 				}
 			}
 		}
 	}
 
-	public void addToAll(Object text)
-	{
+	public void addToAll(Object text) {
 		StaticTooltipHandlerFromLines l = new StaticTooltipHandlerFromLines(text);
 
-		if (!l.lines.isEmpty())
-		{
+		if (!l.lines.isEmpty()) {
 			map.computeIfAbsent(Items.AIR, k -> new ArrayList<>()).add(l);
 		}
 	}
 
-	public void addAdvanced(Object item, StaticTooltipHandlerFromJS handler)
-	{
-		if ("*".equals(item))
-		{
+	public void addAdvanced(Object item, StaticTooltipHandlerFromJS handler) {
+		if ("*".equals(item)) {
 			addAdvancedToAll(handler);
 			return;
 		}
 
 		StaticTooltipHandlerFromJSWrapper l = new StaticTooltipHandlerFromJSWrapper(handler);
 
-		for (Item i : IngredientJS.of(item).getVanillaItems())
-		{
-			if (i != Items.AIR)
-			{
+		for (Item i : IngredientJS.of(item).getVanillaItems()) {
+			if (i != Items.AIR) {
 				map.computeIfAbsent(i, k -> new ArrayList<>()).add(l);
 			}
 		}
 	}
 
-	public void addAdvancedToAll(StaticTooltipHandlerFromJS handler)
-	{
+	public void addAdvancedToAll(StaticTooltipHandlerFromJS handler) {
 		map.computeIfAbsent(Items.AIR, k -> new ArrayList<>()).add(new StaticTooltipHandlerFromJSWrapper(handler));
 	}
 }

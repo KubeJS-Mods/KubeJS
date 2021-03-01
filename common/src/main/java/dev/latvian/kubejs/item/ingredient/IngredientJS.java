@@ -3,22 +3,17 @@ package dev.latvian.kubejs.item.ingredient;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.item.BoundItemStackJS;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.UnboundItemStackJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
-import dev.latvian.kubejs.util.Copyable;
-import dev.latvian.kubejs.util.JsonSerializable;
-import dev.latvian.kubejs.util.ListJS;
-import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.kubejs.util.WrappedJS;
+import dev.latvian.kubejs.util.*;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -27,11 +22,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -39,79 +30,53 @@ import java.util.regex.Pattern;
  * @author LatvianModder
  */
 @FunctionalInterface
-public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
-{
-	static IngredientJS of(@Nullable Object o)
-	{
-		if (o instanceof Wrapper)
-		{
+public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
+	static IngredientJS of(@Nullable Object o) {
+		if (o instanceof Wrapper) {
 			o = ((Wrapper) o).unwrap();
 		}
 
-		if (o == null)
-		{
+		if (o == null) {
 			return EmptyItemStackJS.INSTANCE;
-		}
-		else if (o instanceof IngredientJS)
-		{
+		} else if (o instanceof IngredientJS) {
 			return (IngredientJS) o;
-		}
-		else if (o instanceof Pattern || o instanceof NativeRegExp)
-		{
+		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
 			Pattern reg = UtilsJS.parseRegex(o);
 
-			if (reg != null)
-			{
+			if (reg != null) {
 				return new RegexIngredientJS(reg);
 			}
 
 			return EmptyItemStackJS.INSTANCE;
-		}
-		else if (o instanceof JsonElement)
-		{
+		} else if (o instanceof JsonElement) {
 			return ingredientFromRecipeJson((JsonElement) o);
-		}
-		else if (o instanceof CharSequence)
-		{
+		} else if (o instanceof CharSequence) {
 			String s = o.toString();
 			int count = 1;
 			int spaceIndex = s.indexOf(' ');
 
-			if (spaceIndex >= 2 && s.indexOf('x') == spaceIndex - 1)
-			{
+			if (spaceIndex >= 2 && s.indexOf('x') == spaceIndex - 1) {
 				count = Integer.parseInt(s.substring(0, spaceIndex - 1));
 				s = s.substring(spaceIndex + 1);
 			}
 
-			if (RecipeJS.itemErrors && count <= 0)
-			{
+			if (RecipeJS.itemErrors && count <= 0) {
 				throw new RecipeExceptionJS("Invalid count!").error();
 			}
 
-			if (s.equals("*"))
-			{
+			if (s.equals("*")) {
 				return MatchAllIngredientJS.INSTANCE.withCount(count);
-			}
-			else if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air"))
-			{
+			} else if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
 				return EmptyItemStackJS.INSTANCE;
-			}
-			else if (s.startsWith("#"))
-			{
+			} else if (s.startsWith("#")) {
 				return TagIngredientJS.createTag(s.substring(1)).withCount(count);
-			}
-			else if (s.startsWith("@"))
-			{
+			} else if (s.startsWith("@")) {
 				return new ModIngredientJS(s.substring(1)).withCount(count);
-			}
-			else if (s.startsWith("%"))
-			{
+			} else if (s.startsWith("%")) {
 				CreativeModeTab group = ItemStackJS.findGroup(s.substring(1));
 
-				if (group == null)
-				{
-					if (RecipeJS.itemErrors)
-					{
+				if (group == null) {
+					if (RecipeJS.itemErrors) {
 						throw new RecipeExceptionJS("Item group '" + s.substring(1) + "' not found!").error();
 					}
 
@@ -123,8 +88,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 
 			Pattern reg = UtilsJS.parseRegex(s);
 
-			if (reg != null)
-			{
+			if (reg != null) {
 				return new RegexIngredientJS(reg).withCount(count);
 			}
 
@@ -133,16 +97,13 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 
 		List<Object> list = ListJS.of(o);
 
-		if (list != null)
-		{
+		if (list != null) {
 			MatchAnyIngredientJS l = new MatchAnyIngredientJS();
 
-			for (Object o1 : list)
-			{
+			for (Object o1 : list) {
 				IngredientJS ingredient = of(o1);
 
-				if (ingredient != EmptyItemStackJS.INSTANCE)
-				{
+				if (ingredient != EmptyItemStackJS.INSTANCE) {
 					l.ingredients.add(ingredient);
 				}
 			}
@@ -152,54 +113,38 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 
 		MapJS map = MapJS.of(o);
 
-		if (map != null)
-		{
+		if (map != null) {
 			IngredientJS in = EmptyItemStackJS.INSTANCE;
 			boolean val = map.containsKey("value");
 
-			if (map.containsKey("type"))
-			{
+			if (map.containsKey("type")) {
 				JsonObject json = map.toJson();
 
-				try
-				{
+				try {
 					Ingredient ingredient = getCustomIngredient(json);
 					return new CustomIngredient(ingredient, json);
-				}
-				catch (Exception ex)
-				{
+				} catch (Exception ex) {
 					throw new RecipeExceptionJS("Failed to parse custom ingredient (" + json.get("type") + ") from " + json + ": " + ex).fallback();
 				}
-			}
-			else if (val || map.containsKey("ingredient"))
-			{
+			} else if (val || map.containsKey("ingredient")) {
 				in = of(val ? map.get("value") : map.get("ingredient"));
-			}
-			else if (map.containsKey("tag"))
-			{
+			} else if (map.containsKey("tag")) {
 				in = TagIngredientJS.createTag(map.get("tag").toString());
-			}
-			else if (map.containsKey("item"))
-			{
+			} else if (map.containsKey("item")) {
 				in = ItemStackJS.of(map);
 			}
 
-			if (map.containsKey("count"))
-			{
+			if (map.containsKey("count")) {
 				in = in.withCount(UtilsJS.parseInt(map.get("count"), 1));
-			}
-			else if (map.containsKey("amount"))
-			{
+			} else if (map.containsKey("amount")) {
 				in = in.withCount(UtilsJS.parseInt(map.get("amount"), 1));
 
-				if (in instanceof IngredientStackJS)
-				{
+				if (in instanceof IngredientStackJS) {
 					((IngredientStackJS) in).countKey = "amount";
 				}
 			}
 
-			if (val && in instanceof IngredientStackJS)
-			{
+			if (val && in instanceof IngredientStackJS) {
 				((IngredientStackJS) in).ingredientKey = "value";
 			}
 
@@ -210,75 +155,52 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 	}
 
 	@ExpectPlatform
-	static Ingredient getCustomIngredient(JsonObject object)
-	{
+	static Ingredient getCustomIngredient(JsonObject object) {
 		throw new AssertionError();
 	}
 
-	static IngredientJS ingredientFromRecipeJson(JsonElement json)
-	{
-		if (json.isJsonArray())
-		{
+	static IngredientJS ingredientFromRecipeJson(JsonElement json) {
+		if (json.isJsonArray()) {
 			MatchAnyIngredientJS any = new MatchAnyIngredientJS();
 
-			for (JsonElement e : json.getAsJsonArray())
-			{
+			for (JsonElement e : json.getAsJsonArray()) {
 				any.ingredients.add(ingredientFromRecipeJson(e));
 			}
 
 			return any;
-		}
-		else if (json.isJsonPrimitive())
-		{
+		} else if (json.isJsonPrimitive()) {
 			return of(json.getAsString());
-		}
-		else if (json.isJsonObject())
-		{
+		} else if (json.isJsonObject()) {
 			JsonObject o = json.getAsJsonObject();
 			IngredientJS in = EmptyItemStackJS.INSTANCE;
 			boolean val = o.has("value");
 
-			if (o.has("type"))
-			{
-				try
-				{
+			if (o.has("type")) {
+				try {
 					Ingredient ingredient = getCustomIngredient(o);
 					return new CustomIngredient(ingredient, o);
-				}
-				catch (Exception ex)
-				{
+				} catch (Exception ex) {
 					throw new RecipeExceptionJS("Failed to parse custom ingredient (" + o.get("type") + ") from " + o + ": " + ex);
 				}
-			}
-			else if (val || o.has("ingredient"))
-			{
+			} else if (val || o.has("ingredient")) {
 				in = ingredientFromRecipeJson(val ? o.get("value") : o.get("ingredient"));
-			}
-			else if (o.has("tag"))
-			{
+			} else if (o.has("tag")) {
 				in = TagIngredientJS.createTag(o.get("tag").getAsString());
-			}
-			else if (o.has("item"))
-			{
+			} else if (o.has("item")) {
 				in = ItemStackJS.of(o.get("item").getAsString());
 			}
 
-			if (o.has("count"))
-			{
+			if (o.has("count")) {
 				in = in.withCount(o.get("count").getAsInt());
-			}
-			else if (o.has("amount"))
-			{
+			} else if (o.has("amount")) {
 				in = in.withCount(o.get("amount").getAsInt());
 
-				if (in instanceof IngredientStackJS)
-				{
+				if (in instanceof IngredientStackJS) {
 					((IngredientStackJS) in).countKey = "amount";
 				}
 			}
 
-			if (val && in instanceof IngredientStackJS)
-			{
+			if (val && in instanceof IngredientStackJS) {
 				((IngredientStackJS) in).ingredientKey = "value";
 			}
 
@@ -290,39 +212,31 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 
 	boolean test(ItemStackJS stack);
 
-	default boolean testVanilla(ItemStack stack)
-	{
+	default boolean testVanilla(ItemStack stack) {
 		return test(new BoundItemStackJS(stack));
 	}
 
-	default boolean testVanillaItem(Item item)
-	{
-		return test(new UnboundItemStackJS(Registry.ITEM.getKey(item)));
+	default boolean testVanillaItem(Item item) {
+		return test(new UnboundItemStackJS(KubeJSRegistries.items().getId(item)));
 	}
 
-	default Predicate<ItemStack> getVanillaPredicate()
-	{
+	default Predicate<ItemStack> getVanillaPredicate() {
 		return new VanillaPredicate(this);
 	}
 
-	default boolean isEmpty()
-	{
+	default boolean isEmpty() {
 		return getFirst().isEmpty();
 	}
 
-	default boolean isInvalidRecipeIngredient()
-	{
+	default boolean isInvalidRecipeIngredient() {
 		return false;
 	}
 
-	default Set<ItemStackJS> getStacks()
-	{
+	default Set<ItemStackJS> getStacks() {
 		Set<ItemStackJS> set = new LinkedHashSet<>();
 
-		for (ItemStackJS stack : ItemStackJS.getList())
-		{
-			if (test(stack))
-			{
+		for (ItemStackJS stack : ItemStackJS.getList()) {
+			if (test(stack)) {
 				set.add(stack.getCopy());
 			}
 		}
@@ -330,14 +244,11 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 		return set;
 	}
 
-	default Set<Item> getVanillaItems()
-	{
+	default Set<Item> getVanillaItems() {
 		Set<Item> set = new LinkedHashSet<>();
 
-		for (Item item : Registry.ITEM)
-		{
-			if (item != Items.AIR && testVanillaItem(item))
-			{
+		for (Item item : KubeJSRegistries.items()) {
+			if (item != Items.AIR && testVanillaItem(item)) {
 				set.add(item);
 			}
 		}
@@ -345,22 +256,17 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 		return set;
 	}
 
-	default IngredientJS filter(IngredientJS filter)
-	{
+	default IngredientJS filter(IngredientJS filter) {
 		return new FilteredIngredientJS(this, filter);
 	}
 
-	default IngredientJS not()
-	{
+	default IngredientJS not() {
 		return new NotIngredientJS(this);
 	}
 
-	default ItemStackJS getFirst()
-	{
-		for (ItemStackJS stack : getStacks())
-		{
-			if (!stack.isEmpty())
-			{
+	default ItemStackJS getFirst() {
+		for (ItemStackJS stack : getStacks()) {
+			if (!stack.isEmpty()) {
 				return stack.withCount(getCount());
 			}
 		}
@@ -368,58 +274,47 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 		return EmptyItemStackJS.INSTANCE;
 	}
 
-	default IngredientJS withCount(int count)
-	{
-		if (count <= 0)
-		{
+	default IngredientJS withCount(int count) {
+		if (count <= 0) {
 			return EmptyItemStackJS.INSTANCE;
 		}
 
 		return count == 1 ? getCopy() : new IngredientStackJS(getCopy(), count);
 	}
 
-	default IngredientJS x(int c)
-	{
+	default IngredientJS x(int c) {
 		return withCount(c);
 	}
 
 	@Override
-	default IngredientJS getCopy()
-	{
+	default IngredientJS getCopy() {
 		return this;
 	}
 
-	default int getCount()
-	{
+	default int getCount() {
 		return 1;
 	}
 
 	@Override
-	default JsonElement toJson()
-	{
+	default JsonElement toJson() {
 		Set<ItemStackJS> set = getStacks();
 
-		if (set.size() == 1)
-		{
+		if (set.size() == 1) {
 			return set.iterator().next().toJson();
 		}
 
 		JsonArray array = new JsonArray();
 
-		for (ItemStackJS stackJS : set)
-		{
+		for (ItemStackJS stackJS : set) {
 			array.add(stackJS.toJson());
 		}
 
 		return array;
 	}
 
-	default boolean anyStackMatches(IngredientJS ingredient)
-	{
-		for (ItemStackJS stack : getStacks())
-		{
-			if (ingredient.test(stack))
-			{
+	default boolean anyStackMatches(IngredientJS ingredient) {
+		for (ItemStackJS stack : getStacks()) {
+			if (ingredient.test(stack)) {
 				return true;
 			}
 		}
@@ -427,32 +322,27 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable
 		return false;
 	}
 
-	default IngredientStackJS asIngredientStack()
-	{
+	default IngredientStackJS asIngredientStack() {
 		return new IngredientStackJS(withCount(1), getCount());
 	}
 
-	default List<IngredientJS> unwrapStackIngredient()
-	{
+	default List<IngredientJS> unwrapStackIngredient() {
 		int count = getCount();
 
-		if (count <= 0)
-		{
+		if (count <= 0) {
 			return Collections.singletonList(withCount(1));
 		}
 
 		List<IngredientJS> list = new ArrayList<>();
 
-		for (int i = 0; i < count; i++)
-		{
+		for (int i = 0; i < count; i++) {
 			list.add(withCount(1));
 		}
 
 		return list;
 	}
 
-	default Ingredient createVanillaIngredient()
-	{
+	default Ingredient createVanillaIngredient() {
 		return Ingredient.of(getStacks().stream().map(ItemStackJS::getItemStack));
 	}
 }

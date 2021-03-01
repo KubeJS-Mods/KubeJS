@@ -10,115 +10,92 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class TextWrapper
-{
-	public Text of(Object object)
-	{
+public class TextWrapper {
+	public Text of(Object object) {
 		return Text.of(object);
 	}
 
-	public Text join(Text separator, Iterable<Text> texts)
-	{
+	public Text join(Text separator, Iterable<Text> texts) {
 		return Text.join(separator, texts);
 	}
 
-	public Text string(Object text)
-	{
+	public Text string(Object text) {
 		return new TextString(text);
 	}
 
-	public Text translate(String key)
-	{
+	public Text translate(String key) {
 		return new TextTranslate(key, new Object[0]);
 	}
 
-	public Text translate(String key, Object... objects)
-	{
+	public Text translate(String key, Object... objects) {
 		return new TextTranslate(key, objects);
 	}
 
-	public Text black(Object text)
-	{
+	public Text black(Object text) {
 		return of(text).black();
 	}
 
-	public Text darkBlue(Object text)
-	{
+	public Text darkBlue(Object text) {
 		return of(text).darkBlue();
 	}
 
-	public Text darkGreen(Object text)
-	{
+	public Text darkGreen(Object text) {
 		return of(text).darkGreen();
 	}
 
-	public Text darkAqua(Object text)
-	{
+	public Text darkAqua(Object text) {
 		return of(text).darkAqua();
 	}
 
-	public Text darkRed(Object text)
-	{
+	public Text darkRed(Object text) {
 		return of(text).darkRed();
 	}
 
-	public Text darkPurple(Object text)
-	{
+	public Text darkPurple(Object text) {
 		return of(text).darkPurple();
 	}
 
-	public Text gold(Object text)
-	{
+	public Text gold(Object text) {
 		return of(text).gold();
 	}
 
-	public Text gray(Object text)
-	{
+	public Text gray(Object text) {
 		return of(text).gray();
 	}
 
-	public Text darkGray(Object text)
-	{
+	public Text darkGray(Object text) {
 		return of(text).darkGray();
 	}
 
-	public Text blue(Object text)
-	{
+	public Text blue(Object text) {
 		return of(text).blue();
 	}
 
-	public Text green(Object text)
-	{
+	public Text green(Object text) {
 		return of(text).green();
 	}
 
-	public Text aqua(Object text)
-	{
+	public Text aqua(Object text) {
 		return of(text).aqua();
 	}
 
-	public Text red(Object text)
-	{
+	public Text red(Object text) {
 		return of(text).red();
 	}
 
-	public Text lightPurple(Object text)
-	{
+	public Text lightPurple(Object text) {
 		return of(text).lightPurple();
 	}
 
-	public Text yellow(Object text)
-	{
+	public Text yellow(Object text) {
 		return of(text).yellow();
 	}
 
-	public Text white(Object text)
-	{
+	public Text white(Object text) {
 		return of(text).white();
 	}
 
-	public Map<String, TextColor> getColors()
-	{
+	public Map<String, TextColor> getColors() {
 		return TextColor.MAP;
 	}
 }

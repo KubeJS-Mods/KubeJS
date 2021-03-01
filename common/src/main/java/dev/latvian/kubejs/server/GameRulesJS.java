@@ -12,28 +12,22 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class GameRulesJS
-{
+public class GameRulesJS {
 	private GameRules rules;
 	private Map<String, GameRules.Key> cache;
 
-	public GameRulesJS(GameRules r)
-	{
+	public GameRulesJS(GameRules r) {
 		rules = r;
 	}
 
 	@Nullable
-	private GameRules.Key getKey(String rule)
-	{
-		if (cache == null)
-		{
+	private GameRules.Key getKey(String rule) {
+		if (cache == null) {
 			cache = new HashMap<>();
 
-			GameRules.visitGameRuleTypes(new GameRules.GameRuleTypeVisitor()
-			{
+			GameRules.visitGameRuleTypes(new GameRules.GameRuleTypeVisitor() {
 				@Override
-				public <T extends GameRules.Value<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type)
-				{
+				public <T extends GameRules.Value<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
 					cache.put(key.toString(), key);
 				}
 			});
@@ -43,32 +37,27 @@ public class GameRulesJS
 	}
 
 	@Nullable
-	private Object get(String rule)
-	{
+	private Object get(String rule) {
 		GameRules.Key key = getKey(rule);
 		return key == null ? null : rules.getRule(key);
 	}
 
-	public String getString(String rule)
-	{
+	public String getString(String rule) {
 		Object o = get(rule);
 		return o == null ? "" : String.valueOf(o);
 	}
 
-	public boolean getBoolean(String rule)
-	{
+	public boolean getBoolean(String rule) {
 		Object o = get(rule);
 		return o instanceof Boolean && (Boolean) o;
 	}
 
-	public int getInt(String rule)
-	{
+	public int getInt(String rule) {
 		Object o = get(rule);
 		return o instanceof Number ? ((Number) o).intValue() : 0;
 	}
 
-	public void set(String rule, Object value)
-	{
+	public void set(String rule, Object value) {
 		CompoundTag nbt = rules.createTag();
 		nbt.putString(rule, String.valueOf(value));
 		rules = new GameRules(new Dynamic<>(NbtOps.INSTANCE, nbt)); //TODO: Check if works

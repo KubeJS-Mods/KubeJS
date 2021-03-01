@@ -29,10 +29,8 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public class KubeJSServerEventHandler
-{
-	public static void init()
-	{
+public class KubeJSServerEventHandler {
+	public static void init() {
 		LifecycleEvent.SERVER_BEFORE_START.register(KubeJSServerEventHandler::serverAboutToStart);
 		CommandRegistrationEvent.EVENT.register(KubeJSServerEventHandler::registerCommands);
 		LifecycleEvent.SERVER_STARTED.register(KubeJSServerEventHandler::serverStarted);
@@ -41,32 +39,26 @@ public class KubeJSServerEventHandler
 		CommandPerformEvent.EVENT.register(KubeJSServerEventHandler::command);
 	}
 
-	public static void serverAboutToStart(MinecraftServer server)
-	{
-		if (ServerJS.instance != null)
-		{
+	public static void serverAboutToStart(MinecraftServer server) {
+		if (ServerJS.instance != null) {
 			destroyServer();
 		}
 
 		ServerJS.instance = new ServerJS(server, ServerScriptManager.instance);
 	}
 
-	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection selection)
-	{
+	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection selection) {
 		KubeJSCommands.register(dispatcher);
 		//		new CommandRegistryEventJS(dispatcher, selection).post(ScriptType.SERVER, KubeJSEvents.COMMAND_REGISTRY);
 	}
 
-	public static void serverStarted(MinecraftServer server)
-	{
+	public static void serverStarted(MinecraftServer server) {
 		ServerJS.instance.overworld = new ServerWorldJS(ServerJS.instance, server.getLevel(Level.OVERWORLD));
 		ServerJS.instance.worldMap.put("minecraft:overworld", ServerJS.instance.overworld);
 		ServerJS.instance.worlds.add(ServerJS.instance.overworld);
 
-		for (ServerLevel world : server.getAllLevels())
-		{
-			if (world != ServerJS.instance.overworld.minecraftWorld)
-			{
+		for (ServerLevel world : server.getAllLevels()) {
+			if (world != ServerJS.instance.overworld.minecraftWorld) {
 				ServerWorldJS w = new ServerWorldJS(ServerJS.instance, world);
 				ServerJS.instance.worldMap.put(world.dimension().location().toString(), w);
 			}
@@ -77,29 +69,24 @@ public class KubeJSServerEventHandler
 		AttachServerDataEvent.EVENT.invoker().accept(new AttachServerDataEvent(ServerJS.instance));
 		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_LOAD);
 
-		for (ServerWorldJS world : ServerJS.instance.worlds)
-		{
+		for (ServerWorldJS world : ServerJS.instance.worlds) {
 			AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(ServerJS.instance.getOverworld()));
 			new SimpleWorldEventJS(ServerJS.instance.getOverworld()).post(KubeJSEvents.WORLD_LOAD);
 		}
 	}
 
-	public static void serverStopping(MinecraftServer server)
-	{
+	public static void serverStopping(MinecraftServer server) {
 		destroyServer();
 	}
 
-	public static void destroyServer()
-	{
+	public static void destroyServer() {
 		ServerJS s = ServerJS.instance;
 
-		for (PlayerDataJS<?, ?> p : s.playerMap.values())
-		{
+		for (PlayerDataJS<?, ?> p : s.playerMap.values()) {
 			new SimplePlayerEventJS(p.getMinecraftPlayer()).post(KubeJSEvents.PLAYER_LOGGED_OUT);
 		}
 
-		for (WorldJS w : s.worldMap.values())
-		{
+		for (WorldJS w : s.worldMap.values()) {
 			new SimpleWorldEventJS(w).post(KubeJSEvents.WORLD_UNLOAD);
 		}
 
@@ -108,73 +95,54 @@ public class KubeJSServerEventHandler
 		ServerJS.instance = null;
 	}
 
-	public static void serverTick(MinecraftServer server)
-	{
+	public static void serverTick(MinecraftServer server) {
 		ServerJS s = ServerJS.instance;
 
-		if (!s.scheduledEvents.isEmpty())
-		{
+		if (!s.scheduledEvents.isEmpty()) {
 			long now = System.currentTimeMillis();
 			Iterator<ScheduledEvent> eventIterator = s.scheduledEvents.iterator();
 			List<ScheduledEvent> list = new ArrayList<>();
 
-			while (eventIterator.hasNext())
-			{
+			while (eventIterator.hasNext()) {
 				ScheduledEvent e = eventIterator.next();
 
-				if (now >= e.getEndTime())
-				{
+				if (now >= e.getEndTime()) {
 					list.add(e);
 					eventIterator.remove();
 				}
 			}
 
-			for (ScheduledEvent e : list)
-			{
-				try
-				{
+			for (ScheduledEvent e : list) {
+				try {
 					e.call();
-				}
-				catch (RhinoException ex)
-				{
+				} catch (RhinoException ex) {
 					ScriptType.SERVER.console.error("Error occurred while handling scheduled event callback: " + ex.getMessage());
-				}
-				catch (Throwable ex)
-				{
+				} catch (Throwable ex) {
 					ex.printStackTrace();
 				}
 			}
 		}
 
-		if (!s.scheduledTickEvents.isEmpty())
-		{
+		if (!s.scheduledTickEvents.isEmpty()) {
 			long now = s.getOverworld().getTime();
 			Iterator<ScheduledEvent> eventIterator = s.scheduledTickEvents.iterator();
 			List<ScheduledEvent> list = new ArrayList<>();
 
-			while (eventIterator.hasNext())
-			{
+			while (eventIterator.hasNext()) {
 				ScheduledEvent e = eventIterator.next();
 
-				if (now >= e.getEndTime())
-				{
+				if (now >= e.getEndTime()) {
 					list.add(e);
 					eventIterator.remove();
 				}
 			}
 
-			for (ScheduledEvent e : list)
-			{
-				try
-				{
+			for (ScheduledEvent e : list) {
+				try {
 					e.call();
-				}
-				catch (RhinoException ex)
-				{
+				} catch (RhinoException ex) {
 					ScriptType.SERVER.console.error("Error occurred while handling scheduled event callback: " + ex.getMessage());
-				}
-				catch (Throwable ex)
-				{
+				} catch (Throwable ex) {
 					ex.printStackTrace();
 				}
 			}
@@ -183,10 +151,8 @@ public class KubeJSServerEventHandler
 		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_TICK);
 	}
 
-	public static InteractionResult command(CommandPerformEvent event)
-	{
-		if (new CommandEventJS(event).post(ScriptType.SERVER, KubeJSEvents.COMMAND_RUN))
-		{
+	public static InteractionResult command(CommandPerformEvent event) {
+		if (new CommandEventJS(event).post(ScriptType.SERVER, KubeJSEvents.COMMAND_RUN)) {
 			return InteractionResult.FAIL;
 		}
 		return InteractionResult.PASS;

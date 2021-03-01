@@ -8,17 +8,13 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public class AndFilter implements RecipeFilter
-{
+public class AndFilter implements RecipeFilter {
 	public final List<RecipeFilter> list = new ArrayList<>(2);
 
 	@Override
-	public boolean test(RecipeJS r)
-	{
-		for (RecipeFilter p : list)
-		{
-			if (!p.test(r))
-			{
+	public boolean test(RecipeJS r) {
+		for (RecipeFilter p : list) {
+			if (!p.test(r)) {
 				return false;
 			}
 		}
@@ -27,8 +23,7 @@ public class AndFilter implements RecipeFilter
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return "AndFilter[" + list + ']';
 	}
 }

@@ -20,19 +20,16 @@ import java.util.function.Function;
 /**
  * @author shedaniel
  */
-public class REIPlugin implements REIPluginV0
-{
+public class REIPlugin implements REIPluginV0 {
 	private final Set<ResourceLocation> categoriesYeeted = new HashSet<>();
 
 	@Override
-	public ResourceLocation getPluginIdentifier()
-	{
+	public ResourceLocation getPluginIdentifier() {
 		return new ResourceLocation(KubeJS.MOD_ID, "rei");
 	}
 
 	@Override
-	public void registerEntries(EntryRegistry entryRegistry)
-	{
+	public void registerEntries(EntryRegistry entryRegistry) {
 		Function<Object, Collection<EntryStack>> itemSerializer = o -> EntryStack.ofItemStacks(CollectionUtils.map(IngredientJS.of(o).getStacks(), ItemStackJS::getItemStack));
 
 		new HideREIEventJS<>(entryRegistry, EntryStack.Type.ITEM, itemSerializer).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_ITEMS);
@@ -40,22 +37,19 @@ public class REIPlugin implements REIPluginV0
 	}
 
 	@Override
-	public void registerRecipeDisplays(RecipeHelper recipeHelper)
-	{
+	public void registerRecipeDisplays(RecipeHelper recipeHelper) {
 		new InformationREIEventJS().post(ScriptType.CLIENT, REIIntegration.REI_INFORMATION);
 	}
 
 	@Override
-	public void registerOthers(RecipeHelper recipeHelper)
-	{
+	public void registerOthers(RecipeHelper recipeHelper) {
 		recipeHelper.registerRecipeVisibilityHandler((category, display) -> {
 			return categoriesYeeted.contains(category.getIdentifier()) ? InteractionResult.FAIL : InteractionResult.PASS;
 		});
 	}
 
 	@Override
-	public void postRegister()
-	{
+	public void postRegister() {
 		categoriesYeeted.clear();
 		new YeetREICategoryEventJS(categoriesYeeted).post(ScriptType.CLIENT, REIIntegration.REI_YEET_CATEGORIES);
 	}

@@ -8,36 +8,30 @@ import net.minecraft.world.entity.player.Player;
 /**
  * @author LatvianModder
  */
-public class ItemRightClickEventJS extends PlayerEventJS
-{
+public class ItemRightClickEventJS extends PlayerEventJS {
 	private final Player player;
 	private final InteractionHand hand;
 
-	public ItemRightClickEventJS(Player player, InteractionHand hand)
-	{
+	public ItemRightClickEventJS(Player player, InteractionHand hand) {
 		this.player = player;
 		this.hand = hand;
 	}
 
 	@Override
-	public boolean canCancel()
-	{
+	public boolean canCancel() {
 		return true;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(player);
 	}
 
-	public InteractionHand getHand()
-	{
+	public InteractionHand getHand() {
 		return hand;
 	}
 
-	public ItemStackJS getItem()
-	{
+	public ItemStackJS getItem() {
 		return ItemStackJS.of(player.getItemInHand(hand));
 	}
 }

@@ -11,67 +11,56 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author LatvianModder
  */
-public class BoundFluidStackJS extends FluidStackJS
-{
+public class BoundFluidStackJS extends FluidStackJS {
 	private final FluidStack fluidStack;
 
-	public BoundFluidStackJS(FluidStack fs)
-	{
+	public BoundFluidStackJS(FluidStack fs) {
 		fluidStack = fs;
 	}
 
 	@Override
-	public String getId()
-	{
+	public String getId() {
 		return Registries.getId(fluidStack.getFluid(), Registry.FLUID_REGISTRY).toString();
 	}
 
 	@Override
-	public Fluid getFluid()
-	{
+	public Fluid getFluid() {
 		return fluidStack.getFluid();
 	}
 
 	@Override
-	public FluidStack getFluidStack()
-	{
+	public FluidStack getFluidStack() {
 		return fluidStack;
 	}
 
 	@Override
-	public int getAmount()
-	{
+	public int getAmount() {
 		return fluidStack.getAmount().intValue();
 	}
 
 	@Override
-	public void setAmount(int amount)
-	{
+	public void setAmount(int amount) {
 		fluidStack.setAmount(Fraction.ofWhole(amount));
 	}
 
 	@Override
 	@Nullable
-	public MapJS getNbt()
-	{
+	public MapJS getNbt() {
 		return MapJS.of(fluidStack.getTag());
 	}
 
 	@Override
-	public void setNbt(@Nullable Object nbt)
-	{
+	public void setNbt(@Nullable Object nbt) {
 		fluidStack.setTag(MapJS.nbt(nbt));
 	}
 
 	@Override
-	public FluidStackJS copy()
-	{
+	public FluidStackJS copy() {
 		return new BoundFluidStackJS(fluidStack.copy());
 	}
 
 	@Override
-	public void onChanged(@Nullable MapJS o)
-	{
+	public void onChanged(@Nullable MapJS o) {
 		setNbt(o);
 	}
 }

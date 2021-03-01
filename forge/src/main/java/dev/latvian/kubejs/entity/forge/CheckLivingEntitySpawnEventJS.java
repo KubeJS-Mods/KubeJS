@@ -11,50 +11,41 @@ import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 /**
  * @author LatvianModder
  */
-public class CheckLivingEntitySpawnEventJS extends LivingEntityEventJS
-{
+public class CheckLivingEntitySpawnEventJS extends LivingEntityEventJS {
 	private final LivingSpawnEvent.CheckSpawn event;
 
-	public CheckLivingEntitySpawnEventJS(LivingSpawnEvent.CheckSpawn e)
-	{
+	public CheckLivingEntitySpawnEventJS(LivingSpawnEvent.CheckSpawn e) {
 		event = e;
 	}
 
 	@Override
-	public boolean canCancel()
-	{
+	public boolean canCancel() {
 		return true;
 	}
 
 	@Override
-	public WorldJS getWorld()
-	{
+	public WorldJS getWorld() {
 		return worldOf((Level) event.getWorld());
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(event.getEntity());
 	}
 
-	public double getX()
-	{
+	public double getX() {
 		return event.getX();
 	}
 
-	public double getY()
-	{
+	public double getY() {
 		return event.getY();
 	}
 
-	public double getZ()
-	{
+	public double getZ() {
 		return event.getZ();
 	}
 
-	public BlockContainerJS getBlock()
-	{
+	public BlockContainerJS getBlock() {
 		return new BlockContainerJS(event.getWorld(), new BlockPos(getX(), getY(), getZ()));
 	}
 }

@@ -7,7 +7,6 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public interface TagBuilderKJS
-{
+public interface TagBuilderKJS {
 	List<Tag.BuilderEntry> getProxyListKJS();
 }

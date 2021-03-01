@@ -34,120 +34,93 @@ import java.util.Collection;
 /**
  * @author LatvianModder
  */
-public abstract class WorldJS implements WithAttachedData
-{
+public abstract class WorldJS implements WithAttachedData {
 	@MinecraftClass
 	public Level minecraftWorld;
 
 	private AttachedData data;
 
-	public WorldJS(Level w)
-	{
+	public WorldJS(Level w) {
 		minecraftWorld = w;
 	}
 
 	public abstract ScriptType getSide();
 
 	@Override
-	public AttachedData getData()
-	{
-		if (data == null)
-		{
+	public AttachedData getData() {
+		if (data == null) {
 			data = new AttachedData(this);
 		}
 
 		return data;
 	}
 
-	public GameRulesJS getGameRules()
-	{
+	public GameRulesJS getGameRules() {
 		return new GameRulesJS(minecraftWorld.getGameRules());
 	}
 
 	@Nullable
-	public ServerJS getServer()
-	{
+	public ServerJS getServer() {
 		return null;
 	}
 
-	public long getTime()
-	{
+	public long getTime() {
 		return minecraftWorld.getGameTime();
 	}
 
-	public long getLocalTime()
-	{
+	public long getLocalTime() {
 		return minecraftWorld.getDayTime();
 	}
 
-	public String getDimension()
-	{
+	public String getDimension() {
 		return minecraftWorld.dimension().location().toString();
 	}
 
-	public boolean isOverworld()
-	{
+	public boolean isOverworld() {
 		return minecraftWorld.dimension() == Level.OVERWORLD;
 	}
 
-	public boolean isDaytime()
-	{
+	public boolean isDaytime() {
 		return minecraftWorld.isDay();
 	}
 
-	public boolean isRaining()
-	{
+	public boolean isRaining() {
 		return minecraftWorld.isRaining();
 	}
 
-	public boolean isThundering()
-	{
+	public boolean isThundering() {
 		return minecraftWorld.isThundering();
 	}
 
-	public void setRainStrength(float strength)
-	{
+	public void setRainStrength(float strength) {
 		minecraftWorld.setRainLevel(strength);
 	}
 
-	public BlockContainerJS getBlock(int x, int y, int z)
-	{
+	public BlockContainerJS getBlock(int x, int y, int z) {
 		return getBlock(new BlockPos(x, y, z));
 	}
 
-	public BlockContainerJS getBlock(BlockPos pos)
-	{
+	public BlockContainerJS getBlock(BlockPos pos) {
 		return new BlockContainerJS(minecraftWorld, pos);
 	}
 
-	public BlockContainerJS getBlock(BlockEntity blockEntity)
-	{
+	public BlockContainerJS getBlock(BlockEntity blockEntity) {
 		return getBlock(blockEntity.getBlockPos());
 	}
 
 	public abstract PlayerDataJS getPlayerData(Player player);
 
 	@Nullable
-	public EntityJS getEntity(@Nullable Entity e)
-	{
-		if (e == null)
-		{
+	public EntityJS getEntity(@Nullable Entity e) {
+		if (e == null) {
 			return null;
-		}
-		else if (e instanceof Player)
-		{
+		} else if (e instanceof Player) {
 			return getPlayerData((Player) e).getPlayer();
-		}
-		else if (e instanceof LivingEntity)
-		{
+		} else if (e instanceof LivingEntity) {
 			return new LivingEntityJS(this, (LivingEntity) e);
-		}
-		else if (e instanceof ItemEntity)
-		{
+		} else if (e instanceof ItemEntity) {
 			return new ItemEntityJS(this, (ItemEntity) e);
-		}
-		else if (e instanceof ItemFrame)
-		{
+		} else if (e instanceof ItemFrame) {
 			return new ItemFrameEntityJS(this, (ItemFrame) e);
 		}
 
@@ -155,56 +128,46 @@ public abstract class WorldJS implements WithAttachedData
 	}
 
 	@Nullable
-	public LivingEntityJS getLivingEntity(@Nullable Entity entity)
-	{
+	public LivingEntityJS getLivingEntity(@Nullable Entity entity) {
 		EntityJS e = getEntity(entity);
 		return e instanceof LivingEntityJS ? (LivingEntityJS) e : null;
 	}
 
 	@Nullable
-	public PlayerJS getPlayer(@Nullable Entity entity)
-	{
+	public PlayerJS getPlayer(@Nullable Entity entity) {
 		EntityJS e = getEntity(entity);
 		return e instanceof PlayerJS ? (PlayerJS) e : null;
 	}
 
-	public EntityArrayList createEntityList(Collection<? extends Entity> entities)
-	{
+	public EntityArrayList createEntityList(Collection<? extends Entity> entities) {
 		return new EntityArrayList(this, entities);
 	}
 
-	public EntityArrayList getPlayers()
-	{
+	public EntityArrayList getPlayers() {
 		return createEntityList(minecraftWorld.players());
 	}
 
-	public EntityArrayList getEntities()
-	{
+	public EntityArrayList getEntities() {
 		return new EntityArrayList(this, 0);
 	}
 
-	public ExplosionJS createExplosion(double x, double y, double z)
-	{
+	public ExplosionJS createExplosion(double x, double y, double z) {
 		return new ExplosionJS(minecraftWorld, x, y, z);
 	}
 
 	@Nullable
-	public EntityJS createEntity(ResourceLocation id)
-	{
+	public EntityJS createEntity(ResourceLocation id) {
 		EntityType<?> type = Registry.ENTITY_TYPE.get(id);
 
-		if (type == null)
-		{
+		if (type == null) {
 			return null;
 		}
 
 		return getEntity(type.create(minecraftWorld));
 	}
 
-	public void spawnLightning(double x, double y, double z, boolean effectOnly, @Nullable EntityJS player)
-	{
-		if (minecraftWorld instanceof ServerLevel)
-		{
+	public void spawnLightning(double x, double y, double z, boolean effectOnly, @Nullable EntityJS player) {
+		if (minecraftWorld instanceof ServerLevel) {
 			LightningBolt e = EntityType.LIGHTNING_BOLT.create(minecraftWorld);
 			e.moveTo(x, y, z);
 			e.setCause(player instanceof ServerPlayerJS ? ((ServerPlayerJS) player).minecraftPlayer : null);
@@ -212,13 +175,11 @@ public abstract class WorldJS implements WithAttachedData
 		}
 	}
 
-	public void spawnLightning(double x, double y, double z, boolean effectOnly)
-	{
+	public void spawnLightning(double x, double y, double z, boolean effectOnly) {
 		spawnLightning(x, y, z, effectOnly, null);
 	}
 
-	public void spawnFireworks(double x, double y, double z, FireworksJS f)
-	{
+	public void spawnFireworks(double x, double y, double z, FireworksJS f) {
 		minecraftWorld.addFreshEntity(f.createFireworkRocket(minecraftWorld, x, y, z));
 	}
 }

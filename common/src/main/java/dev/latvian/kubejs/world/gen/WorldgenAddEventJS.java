@@ -28,56 +28,44 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class WorldgenAddEventJS extends EventJS
-{
-	protected void addFeature(GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> configuredFeature)
-	{
+public class WorldgenAddEventJS extends EventJS {
+	protected void addFeature(GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> configuredFeature) {
 	}
 
-	protected void addEntitySpawn(MobCategory category, MobSpawnSettings.SpawnerData spawnerData)
-	{
+	protected void addEntitySpawn(MobCategory category, MobSpawnSettings.SpawnerData spawnerData) {
 	}
 
-	protected boolean verifyBiomes(WorldgenEntryList biomes)
-	{
+	protected boolean verifyBiomes(WorldgenEntryList biomes) {
 		return true;
 	}
 
-	public void addOre(Consumer<AddOreProperties> p)
-	{
+	public void addOre(Consumer<AddOreProperties> p) {
 		AddOreProperties properties = new AddOreProperties();
 		p.accept(properties);
 
-		if (properties._block == Blocks.AIR.defaultBlockState())
-		{
+		if (properties._block == Blocks.AIR.defaultBlockState()) {
 			return;
 		}
 
-		if (!verifyBiomes(properties.biomes))
-		{
+		if (!verifyBiomes(properties.biomes)) {
 			return;
 		}
 
 		AnyRuleTest ruleTest = new AnyRuleTest();
 
-		for (Object o : ListJS.orSelf(properties.spawnsIn.values))
-		{
+		for (Object o : ListJS.orSelf(properties.spawnsIn.values)) {
 			String s = String.valueOf(o);
 			boolean invert = false;
 
-			while (s.startsWith("!"))
-			{
+			while (s.startsWith("!")) {
 				s = s.substring(1);
 				invert = !invert;
 			}
 
-			if (s.startsWith("#"))
-			{
+			if (s.startsWith("#")) {
 				RuleTest tagTest = new TagMatchTest(SerializationTags.getInstance().getBlocks().getTag(new ResourceLocation(s.substring(1))));
 				ruleTest.list.add(invert ? new InvertRuleTest(tagTest) : tagTest);
-			}
-			else
-			{
+			} else {
 				BlockState bs = UtilsJS.parseBlockState(s);
 				RuleTest tagTest = s.indexOf('[') != -1 ? new BlockStateMatchTest(bs) : new BlockMatchTest(bs.getBlock());
 				ruleTest.list.add(invert ? new InvertRuleTest(tagTest) : tagTest);
@@ -91,49 +79,41 @@ public class WorldgenAddEventJS extends EventJS
 		oreConfig = UtilsJS.cast(oreConfig.decorated(FeatureDecorator.RANGE.configured(new RangeDecoratorConfiguration(properties.minHeight, 0, properties.maxHeight))));
 		oreConfig = UtilsJS.cast(oreConfig.count(UniformInt.of(properties.clusterMinCount, properties.clusterMaxCount - properties.clusterMinCount)));
 
-		if (properties.chance > 0)
-		{
+		if (properties.chance > 0) {
 			oreConfig = UtilsJS.cast(oreConfig.chance(properties.chance));
 		}
 
-		if (properties.squared)
-		{
+		if (properties.squared) {
 			oreConfig = UtilsJS.cast(oreConfig.squared());
 		}
 
 		addFeature(properties._worldgenLayer, oreConfig);
 	}
 
-	public void addLake(Consumer<AddLakeProperties> p)
-	{
+	public void addLake(Consumer<AddLakeProperties> p) {
 		AddLakeProperties properties = new AddLakeProperties();
 		p.accept(properties);
 
-		if (properties._block == Blocks.AIR.defaultBlockState())
-		{
+		if (properties._block == Blocks.AIR.defaultBlockState()) {
 			return;
 		}
 
-		if (!verifyBiomes(properties.biomes))
-		{
+		if (!verifyBiomes(properties.biomes)) {
 			return;
 		}
 
 		addFeature(properties._worldgenLayer, Feature.LAKE.configured(new BlockStateConfiguration(properties._block)).decorated((FeatureDecorator.WATER_LAKE).configured(new ChanceDecoratorConfiguration(properties.chance))));
 	}
 
-	public void addSpawn(Consumer<AddSpawnProperties> p)
-	{
+	public void addSpawn(Consumer<AddSpawnProperties> p) {
 		AddSpawnProperties properties = new AddSpawnProperties();
 		p.accept(properties);
 
-		if (properties._entity == null || properties._category == null)
-		{
+		if (properties._entity == null || properties._category == null) {
 			return;
 		}
 
-		if (!verifyBiomes(properties.biomes))
-		{
+		if (!verifyBiomes(properties.biomes)) {
 			return;
 		}
 

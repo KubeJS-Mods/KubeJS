@@ -11,28 +11,23 @@ import java.nio.file.Path;
  * @author LatvianModder
  */
 @FunctionalInterface
-public interface ScriptSource
-{
+public interface ScriptSource {
 	InputStream createStream(ScriptFileInfo info) throws IOException;
 
-	interface FromPath extends ScriptSource
-	{
+	interface FromPath extends ScriptSource {
 		Path getPath(ScriptFileInfo info);
 
 		@Override
-		default InputStream createStream(ScriptFileInfo info) throws IOException
-		{
+		default InputStream createStream(ScriptFileInfo info) throws IOException {
 			return Files.newInputStream(getPath(info));
 		}
 	}
 
-	interface FromResource extends ScriptSource
-	{
+	interface FromResource extends ScriptSource {
 		Resource getResource(ScriptFileInfo info) throws IOException;
 
 		@Override
-		default InputStream createStream(ScriptFileInfo info) throws IOException
-		{
+		default InputStream createStream(ScriptFileInfo info) throws IOException {
 			return getResource(info).getInputStream();
 		}
 	}

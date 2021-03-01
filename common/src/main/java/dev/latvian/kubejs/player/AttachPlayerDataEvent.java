@@ -10,12 +10,10 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class AttachPlayerDataEvent extends AttachDataEvent<PlayerDataJS>
-{
+public class AttachPlayerDataEvent extends AttachDataEvent<PlayerDataJS> {
 	public static final Event<Consumer<AttachPlayerDataEvent>> EVENT = EventFactory.createConsumerLoop(AttachPlayerDataEvent.class);
 
-	public AttachPlayerDataEvent(PlayerDataJS p)
-	{
+	public AttachPlayerDataEvent(PlayerDataJS p) {
 		super(DataType.PLAYER, p);
 	}
 }

@@ -2,17 +2,9 @@ package dev.latvian.kubejs.server;
 
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageSendDataFromServer;
-import dev.latvian.kubejs.player.AdvancementJS;
-import dev.latvian.kubejs.player.EntityArrayList;
-import dev.latvian.kubejs.player.FakeServerPlayerDataJS;
-import dev.latvian.kubejs.player.ServerPlayerDataJS;
-import dev.latvian.kubejs.player.ServerPlayerJS;
+import dev.latvian.kubejs.player.*;
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.util.AttachedData;
-import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.MessageSender;
-import dev.latvian.kubejs.util.UUIDUtilsJS;
-import dev.latvian.kubejs.util.WithAttachedData;
+import dev.latvian.kubejs.util.*;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
@@ -29,18 +21,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author LatvianModder
  */
-public class ServerJS implements MessageSender, WithAttachedData
-{
+public class ServerJS implements MessageSender, WithAttachedData {
 	public static ServerJS instance;
 
 	private MinecraftServer minecraftServer;
@@ -55,8 +41,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 	public ServerWorldJS overworld;
 	private AttachedData data;
 
-	public ServerJS(MinecraftServer ms, ServerScriptManager m)
-	{
+	public ServerJS(MinecraftServer ms, ServerScriptManager m) {
 		minecraftServer = ms;
 		serverScriptManager = m;
 		scheduledEvents = new LinkedList<>();
@@ -67,8 +52,7 @@ public class ServerJS implements MessageSender, WithAttachedData
 		worlds = new ArrayList<>();
 	}
 
-	public void release()
-	{
+	public void release() {
 		minecraftServer = null;
 		scheduledEvents.clear();
 		scheduledTickEvents.clear();
@@ -80,123 +64,100 @@ public class ServerJS implements MessageSender, WithAttachedData
 		data = null;
 	}
 
-	public void updateWorldList()
-	{
+	public void updateWorldList() {
 		worlds.clear();
 		worlds.addAll(worldMap.values());
 	}
 
 	@Override
-	public AttachedData getData()
-	{
-		if (data == null)
-		{
+	public AttachedData getData() {
+		if (data == null) {
 			data = new AttachedData(this);
 		}
 
 		return data;
 	}
 
-	public List<ServerWorldJS> getWorlds()
-	{
+	public List<ServerWorldJS> getWorlds() {
 		return worlds;
 	}
 
-	public ServerWorldJS getOverworld()
-	{
+	public ServerWorldJS getOverworld() {
 		return overworld;
 	}
 
-	public MinecraftServer getMinecraftServer()
-	{
+	public MinecraftServer getMinecraftServer() {
 		return minecraftServer;
 	}
 
-	public boolean isRunning()
-	{
+	public boolean isRunning() {
 		return getMinecraftServer().isRunning();
 	}
 
-	public boolean getHardcore()
-	{
+	public boolean getHardcore() {
 		return getMinecraftServer().isHardcore();
 	}
 
-	public boolean isSinglePlayer()
-	{
+	public boolean isSinglePlayer() {
 		return getMinecraftServer().isSingleplayer();
 	}
 
-	public boolean isDedicated()
-	{
+	public boolean isDedicated() {
 		return getMinecraftServer().isDedicatedServer();
 	}
 
-	public String getMotd()
-	{
+	public String getMotd() {
 		return getMinecraftServer().getMotd();
 	}
 
-	public void setMotd(Object text)
-	{
+	public void setMotd(Object text) {
 		getMinecraftServer().setMotd(Text.of(text).component().getString());
 	}
 
-	public void stop()
-	{
+	public void stop() {
 		getMinecraftServer().close();
 	}
 
 	@Override
-	public Text getName()
-	{
+	public Text getName() {
 		return Text.of(getMinecraftServer().name());
 	}
 
 	@Override
-	public Text getDisplayName()
-	{
+	public Text getDisplayName() {
 		return Text.of(getMinecraftServer().createCommandSourceStack().getDisplayName());
 	}
 
 	@Override
-	public void tell(Component message)
-	{
+	public void tell(Component message) {
 		getMinecraftServer().sendMessage(message, Util.NIL_UUID);
 
-		for (ServerPlayer player : getMinecraftServer().getPlayerList().getPlayers())
-		{
+		for (ServerPlayer player : getMinecraftServer().getPlayerList().getPlayers()) {
 			player.sendMessage(message, Util.NIL_UUID);
 		}
 	}
 
 	@Override
-	public void setStatusMessage(Component message)
-	{
-		for (ServerPlayer player : getMinecraftServer().getPlayerList().getPlayers())
-		{
+	public void setStatusMessage(Component message) {
+		for (ServerPlayer player : getMinecraftServer().getPlayerList().getPlayers()) {
 			player.displayClientMessage(message, true);
 		}
 	}
 
 	@Override
-	public int runCommand(String command)
-	{
+	public int runCommand(String command) {
 		return getMinecraftServer().getCommands().performCommand(getMinecraftServer().createCommandSourceStack(), command);
 	}
 
 	@Override
-	public int runCommandSilent(String command)
-	{
+	public int runCommandSilent(String command) {
 		return getMinecraftServer().getCommands().performCommand(getMinecraftServer().createCommandSourceStack().withSuppressedOutput(), command);
 	}
 
-	public WorldJS getWorld(String dimension)
-	{
+	public WorldJS getWorld(String dimension) {
 		ServerWorldJS world = worldMap.get(dimension);
 
-		if (world == null)
-		{
+		if (world == null) {
 			world = new ServerWorldJS(this, getMinecraftServer().getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(dimension))));
 			worldMap.put(dimension, world);
 			updateWorldList();
@@ -206,12 +167,10 @@ public class ServerJS implements MessageSender, WithAttachedData
 		return world;
 	}
 
-	public WorldJS getWorld(Level minecraftWorld)
-	{
+	public WorldJS getWorld(Level minecraftWorld) {
 		ServerWorldJS world = worldMap.get(minecraftWorld.dimension().location().toString());
 
-		if (world == null)
-		{
+		if (world == null) {
 			world = new ServerWorldJS(this, (ServerLevel) minecraftWorld);
 			worldMap.put(minecraftWorld.dimension().location().toString(), world);
 			updateWorldList();
@@ -222,12 +181,10 @@ public class ServerJS implements MessageSender, WithAttachedData
 	}
 
 	@Nullable
-	public ServerPlayerJS getPlayer(UUID uuid)
-	{
+	public ServerPlayerJS getPlayer(UUID uuid) {
 		ServerPlayerDataJS p = playerMap.get(uuid);
 
-		if (p == null)
-		{
+		if (p == null) {
 			return null;
 		}
 
@@ -235,34 +192,27 @@ public class ServerJS implements MessageSender, WithAttachedData
 	}
 
 	@Nullable
-	public ServerPlayerJS getPlayer(String name)
-	{
+	public ServerPlayerJS getPlayer(String name) {
 		name = name.trim().toLowerCase();
 
-		if (name.isEmpty())
-		{
+		if (name.isEmpty()) {
 			return null;
 		}
 
 		UUID uuid = UUIDUtilsJS.fromString(name);
 
-		if (uuid != null)
-		{
+		if (uuid != null) {
 			return getPlayer(uuid);
 		}
 
-		for (ServerPlayerDataJS p : playerMap.values())
-		{
-			if (p.getName().equalsIgnoreCase(name))
-			{
+		for (ServerPlayerDataJS p : playerMap.values()) {
+			if (p.getName().equalsIgnoreCase(name)) {
 				return p.getPlayer();
 			}
 		}
 
-		for (ServerPlayerDataJS p : playerMap.values())
-		{
-			if (p.getName().toLowerCase().contains(name))
-			{
+		for (ServerPlayerDataJS p : playerMap.values()) {
+			if (p.getName().toLowerCase().contains(name)) {
 				return p.getPlayer();
 			}
 		}
@@ -271,79 +221,66 @@ public class ServerJS implements MessageSender, WithAttachedData
 	}
 
 	@Nullable
-	public ServerPlayerJS getPlayer(Player minecraftPlayer)
-	{
+	public ServerPlayerJS getPlayer(Player minecraftPlayer) {
 		return getPlayer(minecraftPlayer.getUUID());
 	}
 
-	public EntityArrayList getPlayers()
-	{
+	public EntityArrayList getPlayers() {
 		return new EntityArrayList(overworld, getMinecraftServer().getPlayerList().getPlayers());
 	}
 
-	public EntityArrayList getEntities()
-	{
+	public EntityArrayList getEntities() {
 		EntityArrayList list = new EntityArrayList(overworld, 10);
 
-		for (ServerWorldJS world : worlds)
-		{
+		for (ServerWorldJS world : worlds) {
 			list.addAll(world.getEntities());
 		}
 
 		return list;
 	}
 
-	public EntityArrayList getEntities(String filter)
-	{
+	public EntityArrayList getEntities(String filter) {
 		EntityArrayList list = new EntityArrayList(overworld, 10);
 
-		for (ServerWorldJS world : worlds)
-		{
+		for (ServerWorldJS world : worlds) {
 			list.addAll(world.getEntities(filter));
 		}
 
 		return list;
 	}
 
-	public ScheduledEvent schedule(long timer, @Nullable Object data, IScheduledEventCallback event)
-	{
+	public ScheduledEvent schedule(long timer, @Nullable Object data, IScheduledEventCallback event) {
 		ScheduledEvent e = new ScheduledEvent(this, false, timer, System.currentTimeMillis() + timer, data, event);
 		scheduledEvents.add(e);
 		return e;
 	}
 
-	public ScheduledEvent schedule(long timer, IScheduledEventCallback event)
-	{
+	public ScheduledEvent schedule(long timer, IScheduledEventCallback event) {
 		return schedule(timer, null, event);
 	}
 
-	public ScheduledEvent scheduleInTicks(long ticks, @Nullable Object data, IScheduledEventCallback event)
-	{
+	public ScheduledEvent scheduleInTicks(long ticks, @Nullable Object data, IScheduledEventCallback event) {
 		ScheduledEvent e = new ScheduledEvent(this, true, ticks, overworld.getTime() + ticks, data, event);
 		scheduledEvents.add(e);
 		return e;
 	}
 
-	public ScheduledEvent scheduleInTicks(long ticks, IScheduledEventCallback event)
-	{
+	public ScheduledEvent scheduleInTicks(long ticks, IScheduledEventCallback event) {
 		return scheduleInTicks(ticks, null, event);
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return "Server";
 	}
 
 	@Nullable
-	public AdvancementJS getAdvancement(ResourceLocation id)
-	{
+	public AdvancementJS getAdvancement(ResourceLocation id) {
 		Advancement a = getMinecraftServer().getAdvancements().getAdvancement(id);
 		return a == null ? null : new AdvancementJS(a);
 	}
 
-	public void sendDataToAll(String channel, @Nullable Object data)
-	{
+	public void sendDataToAll(String channel, @Nullable Object data) {
 		KubeJSNet.MAIN.sendToPlayers(getMinecraftServer().getPlayerList().getPlayers(), new MessageSendDataFromServer(channel, MapJS.nbt(data)));
 	}
 }

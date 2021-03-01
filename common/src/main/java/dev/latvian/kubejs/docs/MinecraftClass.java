@@ -13,6 +13,5 @@ import java.lang.annotation.RetentionPolicy;
 @Documented
 @TypeQualifierDefault({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MinecraftClass
-{
+public @interface MinecraftClass {
 }

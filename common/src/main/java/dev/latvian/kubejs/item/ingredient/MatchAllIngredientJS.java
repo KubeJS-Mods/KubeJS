@@ -13,39 +13,32 @@ import java.util.Set;
 /**
  * @author LatvianModder
  */
-public class MatchAllIngredientJS implements IngredientJS
-{
+public class MatchAllIngredientJS implements IngredientJS {
 	public static MatchAllIngredientJS INSTANCE = new MatchAllIngredientJS();
 
-	private MatchAllIngredientJS()
-	{
+	private MatchAllIngredientJS() {
 	}
 
 	@Override
-	public boolean test(ItemStackJS stack)
-	{
+	public boolean test(ItemStackJS stack) {
 		return !stack.isEmpty();
 	}
 
 	@Override
-	public boolean testVanilla(ItemStack stack)
-	{
+	public boolean testVanilla(ItemStack stack) {
 		return !stack.isEmpty();
 	}
 
 	@Override
-	public boolean testVanillaItem(Item item)
-	{
+	public boolean testVanillaItem(Item item) {
 		return item != Items.AIR;
 	}
 
 	@Override
-	public Set<ItemStackJS> getStacks()
-	{
+	public Set<ItemStackJS> getStacks() {
 		Set<ItemStackJS> set = new LinkedHashSet<>();
 
-		for (ItemStackJS stack : ItemStackJS.getList())
-		{
+		for (ItemStackJS stack : ItemStackJS.getList()) {
 			set.add(stack.getCopy());
 		}
 
@@ -53,21 +46,18 @@ public class MatchAllIngredientJS implements IngredientJS
 	}
 
 	@Override
-	public ItemStackJS getFirst()
-	{
+	public ItemStackJS getFirst() {
 		List<ItemStackJS> list = ItemStackJS.getList();
 		return list.isEmpty() ? EmptyItemStackJS.INSTANCE : list.get(0).getCopy();
 	}
 
 	@Override
-	public IngredientJS not()
-	{
+	public IngredientJS not() {
 		return EmptyItemStackJS.INSTANCE;
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return "'*'";
 	}
 }

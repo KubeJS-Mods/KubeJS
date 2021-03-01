@@ -12,8 +12,7 @@ import java.util.OptionalInt;
 /**
  * @author LatvianModder
  */
-public class ModifiedTier implements Tier
-{
+public class ModifiedTier implements Tier {
 	public final Tier parent;
 	private OptionalInt uses = OptionalInt.empty();
 	private OptionalDouble speed = OptionalDouble.empty();
@@ -22,80 +21,67 @@ public class ModifiedTier implements Tier
 	private OptionalInt enchantmentValue = OptionalInt.empty();
 	private Optional<Ingredient> repairIngredient = Optional.empty();
 
-	public ModifiedTier(Tier p)
-	{
+	public ModifiedTier(Tier p) {
 		parent = p;
 	}
 
 	@Override
 	@RemapForJS("getUses")
-	public int getUses()
-	{
+	public int getUses() {
 		return uses.orElse(parent.getUses());
 	}
 
-	public void setUses(int i)
-	{
+	public void setUses(int i) {
 		uses = OptionalInt.of(i);
 	}
 
 	@Override
 	@RemapForJS("getSpeed")
-	public float getSpeed()
-	{
+	public float getSpeed() {
 		return (float) speed.orElse(parent.getSpeed());
 	}
 
-	public void setSpeed(float f)
-	{
+	public void setSpeed(float f) {
 		speed = OptionalDouble.of(f);
 	}
 
 	@Override
 	@RemapForJS("getAttackDamageBonus")
-	public float getAttackDamageBonus()
-	{
+	public float getAttackDamageBonus() {
 		return (float) attackDamageBonus.orElse(parent.getAttackDamageBonus());
 	}
 
-	public void setAttackDamageBonus(float f)
-	{
+	public void setAttackDamageBonus(float f) {
 		attackDamageBonus = OptionalDouble.of(f);
 	}
 
 	@Override
 	@RemapForJS("getLevel")
-	public int getLevel()
-	{
+	public int getLevel() {
 		return level.orElse(parent.getLevel());
 	}
 
-	public void setLevel(int i)
-	{
+	public void setLevel(int i) {
 		level = OptionalInt.of(i);
 	}
 
 	@Override
 	@RemapForJS("getEnchantmentValue")
-	public int getEnchantmentValue()
-	{
+	public int getEnchantmentValue() {
 		return enchantmentValue.orElse(parent.getEnchantmentValue());
 	}
 
-	public void setEnchantmentValue(int i)
-	{
+	public void setEnchantmentValue(int i) {
 		enchantmentValue = OptionalInt.of(i);
 	}
 
 	@Override
 	@RemapForJS("getVanillaRepairIngredient")
-	public Ingredient getRepairIngredient()
-	{
+	public Ingredient getRepairIngredient() {
 		return repairIngredient.orElse(parent.getRepairIngredient());
 	}
 
-	public void setRepairIngredient(IngredientJS in)
-	{
+	public void setRepairIngredient(IngredientJS in) {
 		repairIngredient = Optional.of(in.createVanillaIngredient());
 	}
 }

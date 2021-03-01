@@ -23,8 +23,7 @@ import java.util.stream.Collectors;
 /**
  * @author LatvianModder
  */
-public abstract class RecipeJS
-{
+public abstract class RecipeJS {
 	public static RecipeJS currentRecipe = null;
 	public static boolean itemErrors = false;
 
@@ -43,34 +42,28 @@ public abstract class RecipeJS
 
 	public abstract void serialize();
 
-	public final void deserializeJson()
-	{
+	public final void deserializeJson() {
 		currentRecipe = this;
 		deserialize();
 		currentRecipe = null;
 	}
 
-	public final void serializeJson()
-	{
+	public final void serializeJson() {
 		currentRecipe = this;
 		json.addProperty("type", type.getId());
 		serialize();
 		currentRecipe = null;
 	}
 
-	public final void save()
-	{
+	public final void save() {
 		originalRecipe = null;
 	}
 
-	public RecipeJS merge(Object data)
-	{
+	public RecipeJS merge(Object data) {
 		JsonObject j = MapJS.json(data);
 
-		if (j != null)
-		{
-			for (Map.Entry<String, JsonElement> entry : j.entrySet())
-			{
+		if (j != null) {
+			for (Map.Entry<String, JsonElement> entry : j.entrySet()) {
 				json.add(entry.getKey(), entry.getValue());
 			}
 
@@ -81,38 +74,31 @@ public abstract class RecipeJS
 	}
 
 	@Deprecated
-	public RecipeJS set(Object data)
-	{
+	public RecipeJS set(Object data) {
 		return merge(data);
 	}
 
-	public RecipeJS id(ResourceLocation _id)
-	{
+	public RecipeJS id(ResourceLocation _id) {
 		id = _id;
 		save();
 		return this;
 	}
 
-	public RecipeJS group(String g)
-	{
+	public RecipeJS group(String g) {
 		setGroup(g);
 		save();
 		return this;
 	}
 
-	public final boolean hasInput(IngredientJS ingredient, boolean exact)
-	{
+	public final boolean hasInput(IngredientJS ingredient, boolean exact) {
 		return getInputIndex(ingredient, exact) != -1;
 	}
 
-	public final int getInputIndex(IngredientJS ingredient, boolean exact)
-	{
-		for (int i = 0; i < inputItems.size(); i++)
-		{
+	public final int getInputIndex(IngredientJS ingredient, boolean exact) {
+		for (int i = 0; i < inputItems.size(); i++) {
 			IngredientJS in = inputItems.get(i);
 
-			if (exact ? in.equals(ingredient) : in.anyStackMatches(ingredient))
-			{
+			if (exact ? in.equals(ingredient) : in.anyStackMatches(ingredient)) {
 				return i;
 			}
 		}
@@ -120,19 +106,15 @@ public abstract class RecipeJS
 		return -1;
 	}
 
-	public final boolean replaceInput(IngredientJS i, IngredientJS with, boolean exact)
-	{
+	public final boolean replaceInput(IngredientJS i, IngredientJS with, boolean exact) {
 		return replaceInput(i, with, exact, (in, original) -> in.withCount(original.getCount()));
 	}
 
-	public final boolean replaceInput(IngredientJS i, IngredientJS with, boolean exact, BiFunction<IngredientJS, IngredientJS, IngredientJS> func)
-	{
+	public final boolean replaceInput(IngredientJS i, IngredientJS with, boolean exact, BiFunction<IngredientJS, IngredientJS, IngredientJS> func) {
 		boolean changed = false;
 
-		for (int j = 0; j < inputItems.size(); j++)
-		{
-			if (exact ? inputItems.get(j).equals(i) : inputItems.get(j).anyStackMatches(i))
-			{
+		for (int j = 0; j < inputItems.size(); j++) {
+			if (exact ? inputItems.get(j).equals(i) : inputItems.get(j).anyStackMatches(i)) {
 				inputItems.set(j, convertReplacedInput(j, inputItems.get(j), func.apply(with.getCopy(), inputItems.get(j))));
 				changed = true;
 				serializeInputs = true;
@@ -143,19 +125,15 @@ public abstract class RecipeJS
 		return changed;
 	}
 
-	public final boolean hasOutput(IngredientJS ingredient, boolean exact)
-	{
+	public final boolean hasOutput(IngredientJS ingredient, boolean exact) {
 		return getOutputIndex(ingredient, exact) != -1;
 	}
 
-	public final int getOutputIndex(IngredientJS ingredient, boolean exact)
-	{
-		for (int i = 0; i < outputItems.size(); i++)
-		{
+	public final int getOutputIndex(IngredientJS ingredient, boolean exact) {
+		for (int i = 0; i < outputItems.size(); i++) {
 			ItemStackJS out = outputItems.get(i);
 
-			if (exact ? ingredient.equals(out) : ingredient.test(out))
-			{
+			if (exact ? ingredient.equals(out) : ingredient.test(out)) {
 				return i;
 			}
 		}
@@ -163,19 +141,15 @@ public abstract class RecipeJS
 		return -1;
 	}
 
-	public final boolean replaceOutput(IngredientJS i, ItemStackJS with, boolean exact)
-	{
+	public final boolean replaceOutput(IngredientJS i, ItemStackJS with, boolean exact) {
 		return replaceOutput(i, with, exact, (out, original) -> out.withCount(original.getCount()).withChance(original.getChance()));
 	}
 
-	public final boolean replaceOutput(IngredientJS i, ItemStackJS with, boolean exact, BiFunction<ItemStackJS, ItemStackJS, ItemStackJS> func)
-	{
+	public final boolean replaceOutput(IngredientJS i, ItemStackJS with, boolean exact, BiFunction<ItemStackJS, ItemStackJS, ItemStackJS> func) {
 		boolean changed = false;
 
-		for (int j = 0; j < outputItems.size(); j++)
-		{
-			if (exact ? i.equals(outputItems.get(j)) : i.test(outputItems.get(j)))
-			{
+		for (int j = 0; j < outputItems.size(); j++) {
+			if (exact ? i.equals(outputItems.get(j)) : i.test(outputItems.get(j))) {
 				outputItems.set(j, convertReplacedOutput(j, outputItems.get(j), func.apply(with.getCopy(), outputItems.get(j))));
 				changed = true;
 				serializeOutputs = true;
@@ -186,20 +160,15 @@ public abstract class RecipeJS
 		return changed;
 	}
 
-	public String getGroup()
-	{
+	public String getGroup() {
 		JsonElement e = json.get("group");
 		return e instanceof JsonPrimitive ? e.getAsString() : "";
 	}
 
-	public void setGroup(String g)
-	{
-		if (g.isEmpty())
-		{
+	public void setGroup(String g) {
+		if (g.isEmpty()) {
 			json.remove("group");
-		}
-		else
-		{
+		} else {
 			json.addProperty("group", g);
 		}
 
@@ -207,71 +176,57 @@ public abstract class RecipeJS
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return id + "[" + type + "]";
 	}
 
-	public String getId()
-	{
+	public String getId() {
 		return id.toString();
 	}
 
-	public String getMod()
-	{
+	public String getMod() {
 		return id.getNamespace();
 	}
 
-	public String getPath()
-	{
+	public String getPath() {
 		return id.getPath();
 	}
 
-	public String getType()
-	{
+	public String getType() {
 		return type.toString();
 	}
 
-	public IngredientJS convertReplacedInput(int index, IngredientJS oldIngredient, IngredientJS newIngredient)
-	{
+	public IngredientJS convertReplacedInput(int index, IngredientJS oldIngredient, IngredientJS newIngredient) {
 		return newIngredient;
 	}
 
-	public ItemStackJS convertReplacedOutput(int index, ItemStackJS oldStack, ItemStackJS newStack)
-	{
+	public ItemStackJS convertReplacedOutput(int index, ItemStackJS oldStack, ItemStackJS newStack) {
 		return newStack;
 	}
 
 	@Nullable
-	public ItemStackJS resultFromRecipeJson(JsonObject json)
-	{
+	public ItemStackJS resultFromRecipeJson(JsonObject json) {
 		return null;
 	}
 
 	@Nullable
-	public JsonElement serializeIngredientStack(IngredientStackJS in)
-	{
+	public JsonElement serializeIngredientStack(IngredientStackJS in) {
 		return null;
 	}
 
 	@Nullable
-	public JsonElement serializeItemStack(ItemStackJS stack)
-	{
+	public JsonElement serializeItemStack(ItemStackJS stack) {
 		return null;
 	}
 
-	public IngredientJS parseIngredientItem(@Nullable Object o, String key)
-	{
+	public IngredientJS parseIngredientItem(@Nullable Object o, String key) {
 		IngredientJS ingredient = IngredientJS.of(o);
 
 		if (ingredient.isInvalidRecipeIngredient() && !Platform.isFabric()) // This is stupid >:(
 		{
-			if (key.isEmpty())
-			{
+			if (key.isEmpty()) {
 				throw new RecipeExceptionJS(o + " is not a valid ingredient!");
-			}
-			else
-			{
+			} else {
 				throw new RecipeExceptionJS(o + " with key '" + key + "' is not a valid ingredient!");
 			}
 		}
@@ -279,13 +234,11 @@ public abstract class RecipeJS
 		return ingredient;
 	}
 
-	public IngredientJS parseIngredientItem(@Nullable Object o)
-	{
+	public IngredientJS parseIngredientItem(@Nullable Object o) {
 		return parseIngredientItem(o, "");
 	}
 
-	public ItemStackJS parseResultItem(@Nullable Object o)
-	{
+	public ItemStackJS parseResultItem(@Nullable Object o) {
 		ItemStackJS result = ItemStackJS.of(o);
 
 		if (result.isInvalidRecipeIngredient() && !Platform.isFabric()) // This is stupid >:(
@@ -296,33 +249,24 @@ public abstract class RecipeJS
 		return result;
 	}
 
-	public List<IngredientJS> parseIngredientItemList(@Nullable Object o)
-	{
+	public List<IngredientJS> parseIngredientItemList(@Nullable Object o) {
 		List<IngredientJS> list = new ArrayList<>();
 
-		if (o instanceof JsonElement)
-		{
+		if (o instanceof JsonElement) {
 			JsonArray array;
 
-			if (o instanceof JsonArray)
-			{
+			if (o instanceof JsonArray) {
 				array = ((JsonArray) o).getAsJsonArray();
-			}
-			else
-			{
+			} else {
 				array = new JsonArray();
 				array.add((JsonElement) o);
 			}
 
-			for (JsonElement e : array)
-			{
+			for (JsonElement e : array) {
 				list.add(parseIngredientItem(e));
 			}
-		}
-		else
-		{
-			for (Object o1 : ListJS.orSelf(o))
-			{
+		} else {
+			for (Object o1 : ListJS.orSelf(o)) {
 				list.add(parseIngredientItem(o1));
 			}
 		}
@@ -330,38 +274,28 @@ public abstract class RecipeJS
 		return list;
 	}
 
-	public List<IngredientStackJS> parseIngredientItemStackList(@Nullable Object o)
-	{
+	public List<IngredientStackJS> parseIngredientItemStackList(@Nullable Object o) {
 		return parseIngredientItemList(o).stream().map(IngredientJS::asIngredientStack).collect(Collectors.toList());
 	}
 
-	public List<ItemStackJS> parseResultItemList(@Nullable Object o)
-	{
+	public List<ItemStackJS> parseResultItemList(@Nullable Object o) {
 		List<ItemStackJS> list = new ArrayList<>();
 
-		if (o instanceof JsonElement)
-		{
+		if (o instanceof JsonElement) {
 			JsonArray array;
 
-			if (o instanceof JsonArray)
-			{
+			if (o instanceof JsonArray) {
 				array = ((JsonArray) o).getAsJsonArray();
-			}
-			else
-			{
+			} else {
 				array = new JsonArray();
 				array.add((JsonElement) o);
 			}
 
-			for (JsonElement e : array)
-			{
+			for (JsonElement e : array) {
 				list.add(parseResultItem(e));
 			}
-		}
-		else
-		{
-			for (Object o1 : ListJS.orSelf(o))
-			{
+		} else {
+			for (Object o1 : ListJS.orSelf(o)) {
 				list.add(parseResultItem(o1));
 			}
 		}

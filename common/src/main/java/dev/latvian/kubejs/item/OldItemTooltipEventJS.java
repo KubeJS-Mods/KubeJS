@@ -10,31 +10,26 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public class OldItemTooltipEventJS extends EventJS
-{
+public class OldItemTooltipEventJS extends EventJS {
 	private final ItemStack stack;
 	private final List<Component> lines;
 	private final boolean advanced;
 
-	public OldItemTooltipEventJS(ItemStack stack, List<Component> lines, boolean a)
-	{
+	public OldItemTooltipEventJS(ItemStack stack, List<Component> lines, boolean a) {
 		this.stack = stack;
 		this.lines = lines;
 		this.advanced = a;
 	}
 
-	public ItemStackJS getItem()
-	{
+	public ItemStackJS getItem() {
 		return ItemStackJS.of(stack);
 	}
 
-	public boolean isAdvanced()
-	{
+	public boolean isAdvanced() {
 		return advanced;
 	}
 
-	public void add(Object text)
-	{
+	public void add(Object text) {
 		lines.add(Text.of(text).component());
 	}
 }

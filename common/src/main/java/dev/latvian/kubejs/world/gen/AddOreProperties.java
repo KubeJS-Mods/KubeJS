@@ -8,8 +8,7 @@ import net.minecraft.world.level.levelgen.GenerationStep;
 /**
  * @author LatvianModder
  */
-public class AddOreProperties
-{
+public class AddOreProperties {
 	public GenerationStep.Decoration _worldgenLayer = GenerationStep.Decoration.UNDERGROUND_ORES;
 	public BlockState _block = Blocks.AIR.defaultBlockState();
 	public boolean noSurface = false;
@@ -25,18 +24,15 @@ public class AddOreProperties
 	public final WorldgenEntryList biomes = new WorldgenEntryList();
 	public final WorldgenEntryList spawnsIn = new WorldgenEntryList();
 
-	public void setWorldgenLayer(String id)
-	{
+	public void setWorldgenLayer(String id) {
 		_worldgenLayer = GenerationStep.Decoration.valueOf(id.toUpperCase());
 	}
 
-	public void setBlock(String id)
-	{
+	public void setBlock(String id) {
 		_block = UtilsJS.parseBlockState(id);
 	}
 
-	public void setClusterCount(int c)
-	{
+	public void setClusterCount(int c) {
 		clusterMinCount = c;
 		clusterMaxCount = c;
 	}

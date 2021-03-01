@@ -7,19 +7,16 @@ import net.minecraft.world.item.ItemStack;
 /**
  * @author LatvianModder
  */
-public class BlockItemJS extends BlockItem
-{
+public class BlockItemJS extends BlockItem {
 	public final BlockItemBuilder properties;
 
-	public BlockItemJS(BlockItemBuilder p)
-	{
+	public BlockItemJS(BlockItemBuilder p) {
 		super(p.blockBuilder.block, p.createItemProperties());
 		properties = p;
 	}
 
 	@Override
-	public boolean isFoil(ItemStack stack)
-	{
+	public boolean isFoil(ItemStack stack) {
 		return properties.glow || super.isFoil(stack);
 	}
 }

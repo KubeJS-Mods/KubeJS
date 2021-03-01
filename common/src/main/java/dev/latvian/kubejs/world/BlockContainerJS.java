@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.world;
 
+import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.block.MaterialJS;
 import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.docs.MinecraftClass;
@@ -35,8 +36,7 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class BlockContainerJS
-{
+public class BlockContainerJS {
 	private static final ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
 
 	public final LevelAccessor minecraftWorld;
@@ -45,98 +45,79 @@ public class BlockContainerJS
 	private BlockState cachedState;
 	private BlockEntity cachedEntity;
 
-	public BlockContainerJS(LevelAccessor w, BlockPos p)
-	{
+	public BlockContainerJS(LevelAccessor w, BlockPos p) {
 		minecraftWorld = w;
 		pos = p;
 	}
 
-	public void clearCache()
-	{
+	public void clearCache() {
 		cachedState = null;
 		cachedEntity = null;
 	}
 
-	public WorldJS getWorld()
-	{
+	public WorldJS getWorld() {
 		return UtilsJS.getWorld((Level) minecraftWorld);
 	}
 
-	public BlockPos getPos()
-	{
+	public BlockPos getPos() {
 		return pos;
 	}
 
-	public String getDimension()
-	{
+	public String getDimension() {
 		return ((Level) minecraftWorld).dimension().location().toString();
 	}
 
-	public int getX()
-	{
+	public int getX() {
 		return getPos().getX();
 	}
 
-	public int getY()
-	{
+	public int getY() {
 		return getPos().getY();
 	}
 
-	public int getZ()
-	{
+	public int getZ() {
 		return getPos().getZ();
 	}
 
-	public BlockContainerJS offset(Direction f, int d)
-	{
+	public BlockContainerJS offset(Direction f, int d) {
 		return new BlockContainerJS(minecraftWorld, getPos().relative(f, d));
 	}
 
-	public BlockContainerJS offset(Direction f)
-	{
+	public BlockContainerJS offset(Direction f) {
 		return offset(f, 1);
 	}
 
-	public BlockContainerJS offset(int x, int y, int z)
-	{
+	public BlockContainerJS offset(int x, int y, int z) {
 		return new BlockContainerJS(minecraftWorld, getPos().offset(x, y, z));
 	}
 
-	public BlockContainerJS getDown()
-	{
+	public BlockContainerJS getDown() {
 		return offset(Direction.DOWN);
 	}
 
-	public BlockContainerJS getUp()
-	{
+	public BlockContainerJS getUp() {
 		return offset(Direction.UP);
 	}
 
-	public BlockContainerJS getNorth()
-	{
+	public BlockContainerJS getNorth() {
 		return offset(Direction.NORTH);
 	}
 
-	public BlockContainerJS getSouth()
-	{
+	public BlockContainerJS getSouth() {
 		return offset(Direction.SOUTH);
 	}
 
-	public BlockContainerJS getWest()
-	{
+	public BlockContainerJS getWest() {
 		return offset(Direction.WEST);
 	}
 
-	public BlockContainerJS getEast()
-	{
+	public BlockContainerJS getEast() {
 		return offset(Direction.EAST);
 	}
 
 	@MinecraftClass
-	public BlockState getBlockState()
-	{
-		if (cachedState == null)
-		{
+	public BlockState getBlockState() {
+		if (cachedState == null) {
 			cachedState = minecraftWorld.getBlockState(getPos());
 		}
 
@@ -144,37 +125,30 @@ public class BlockContainerJS
 	}
 
 	@MinecraftClass
-	public void setBlockState(BlockState state, int flags)
-	{
+	public void setBlockState(BlockState state, int flags) {
 		minecraftWorld.setBlock(getPos(), state, flags);
 		clearCache();
 	}
 
-	public String getId()
-	{
+	public String getId() {
 		return Registries.getId(getBlockState().getBlock(), Registry.BLOCK_REGISTRY).toString();
 	}
 
-	public void set(ResourceLocation id, Map<?, ?> properties, int flags)
-	{
-		Block block = Registry.BLOCK.get(id);
+	public void set(ResourceLocation id, Map<?, ?> properties, int flags) {
+		Block block = KubeJSRegistries.blocks().get(id);
 		BlockState state = block.defaultBlockState();
 
-		if (!properties.isEmpty() && state.getBlock() != Blocks.AIR)
-		{
+		if (!properties.isEmpty() && state.getBlock() != Blocks.AIR) {
 			Map<String, Property> pmap = new HashMap<>();
 
-			for (Property property : state.getProperties())
-			{
+			for (Property property : state.getProperties()) {
 				pmap.put(property.getName(), property);
 			}
 
-			for (Map.Entry entry : properties.entrySet())
-			{
+			for (Map.Entry entry : properties.entrySet()) {
 				Property<?> property = pmap.get(String.valueOf(entry.getKey()));
 
-				if (property != null)
-				{
+				if (property != null) {
 					state = state.setValue(property, UtilsJS.cast(property.getValue(String.valueOf(entry.getValue())).get()));
 				}
 			}
@@ -183,23 +157,19 @@ public class BlockContainerJS
 		setBlockState(state, flags);
 	}
 
-	public void set(ResourceLocation id, Map<?, ?> properties)
-	{
+	public void set(ResourceLocation id, Map<?, ?> properties) {
 		set(id, properties, 3);
 	}
 
-	public void set(ResourceLocation id)
-	{
+	public void set(ResourceLocation id) {
 		set(id, Collections.emptyMap());
 	}
 
-	public Map<String, String> getProperties()
-	{
+	public Map<String, String> getProperties() {
 		Map<String, String> map = new HashMap<>();
 		BlockState state = getBlockState();
 
-		for (Property property : state.getProperties())
-		{
+		for (Property property : state.getProperties()) {
 			map.put(property.getName(), property.getName(state.getValue(property)));
 		}
 
@@ -208,33 +178,27 @@ public class BlockContainerJS
 
 	@Nullable
 	@MinecraftClass
-	public BlockEntity getEntity()
-	{
-		if (cachedEntity == null || cachedEntity.isRemoved())
-		{
+	public BlockEntity getEntity() {
+		if (cachedEntity == null || cachedEntity.isRemoved()) {
 			cachedEntity = minecraftWorld.getBlockEntity(pos);
 		}
 
 		return cachedEntity;
 	}
 
-	public String getEntityId()
-	{
+	public String getEntityId() {
 		BlockEntity entity = getEntity();
 		return entity == null ? "minecraft:air" : Registries.getId(entity.getType(), Registry.BLOCK_ENTITY_TYPE_REGISTRY).toString();
 	}
 
 	@Nullable
-	public MapJS getEntityData()
-	{
+	public MapJS getEntityData() {
 		final BlockEntity entity = getEntity();
 
-		if (entity != null)
-		{
+		if (entity != null) {
 			MapJS entityData = MapJS.of(entity.save(new CompoundTag()));
 
-			if (entityData != null)
-			{
+			if (entityData != null) {
 				entityData.changeListener = o -> entity.load(entity.getBlockState(), MapJS.nbt(o));
 				return entityData;
 			}
@@ -243,24 +207,20 @@ public class BlockContainerJS
 		return null;
 	}
 
-	public int getLight()
-	{
+	public int getLight() {
 		return minecraftWorld.getMaxLocalRawBrightness(pos);
 	}
 
-	public boolean getCanSeeSky()
-	{
+	public boolean getCanSeeSky() {
 		return minecraftWorld.canSeeSkyFromBelowWater(pos);
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		String id = getId();
 		Map<String, String> properties = getProperties();
 
-		if (properties.isEmpty())
-		{
+		if (properties.isEmpty()) {
 			return id;
 		}
 
@@ -269,14 +229,10 @@ public class BlockContainerJS
 
 		boolean first = true;
 
-		for (Map.Entry<String, String> entry : properties.entrySet())
-		{
-			if (first)
-			{
+		for (Map.Entry<String, String> entry : properties.entrySet()) {
+			if (first) {
 				first = false;
-			}
-			else
-			{
+			} else {
 				builder.append(',');
 			}
 
@@ -289,28 +245,23 @@ public class BlockContainerJS
 		return builder.toString();
 	}
 
-	public ExplosionJS createExplosion()
-	{
+	public ExplosionJS createExplosion() {
 		return new ExplosionJS(minecraftWorld, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D);
 	}
 
 	@Nullable
-	public EntityJS createEntity(ResourceLocation id)
-	{
+	public EntityJS createEntity(ResourceLocation id) {
 		EntityJS entity = getWorld().createEntity(id);
 
-		if (entity != null)
-		{
+		if (entity != null) {
 			entity.setPosition(this);
 		}
 
 		return entity;
 	}
 
-	public void spawnLightning(boolean effectOnly, @Nullable EntityJS player)
-	{
-		if (minecraftWorld instanceof ServerLevel)
-		{
+	public void spawnLightning(boolean effectOnly, @Nullable EntityJS player) {
+		if (minecraftWorld instanceof ServerLevel) {
 			LightningBolt e = EntityType.LIGHTNING_BOLT.create((ServerLevel) minecraftWorld);
 			e.moveTo(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D);
 			e.setCause(player instanceof ServerPlayerJS ? ((ServerPlayerJS) player).minecraftPlayer : null);
@@ -318,26 +269,21 @@ public class BlockContainerJS
 		}
 	}
 
-	public void spawnLightning(boolean effectOnly)
-	{
+	public void spawnLightning(boolean effectOnly) {
 		spawnLightning(effectOnly, null);
 	}
 
-	public void spawnFireworks(FireworksJS fireworks)
-	{
-		if (minecraftWorld instanceof Level)
-		{
+	public void spawnFireworks(FireworksJS fireworks) {
+		if (minecraftWorld instanceof Level) {
 			minecraftWorld.addFreshEntity(fireworks.createFireworkRocket((Level) minecraftWorld, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D));
 		}
 	}
 
 	@Nullable
-	public InventoryJS getInventory(Direction facing)
-	{
+	public InventoryJS getInventory(Direction facing) {
 		BlockEntity tileEntity = getEntity();
 
-		if (tileEntity != null)
-		{
+		if (tileEntity != null) {
 			return getInventoryFromBlockEntity(tileEntity, facing);
 		}
 
@@ -345,31 +291,24 @@ public class BlockContainerJS
 	}
 
 	@ExpectPlatform
-	private static InventoryJS getInventoryFromBlockEntity(BlockEntity tileEntity, Direction facing)
-	{
+	private static InventoryJS getInventoryFromBlockEntity(BlockEntity tileEntity, Direction facing) {
 		throw new AssertionError();
 	}
 
-	public MaterialJS getMaterial()
-	{
+	public MaterialJS getMaterial() {
 		return MaterialListJS.INSTANCE.get(getBlockState().getMaterial());
 	}
 
-	public ItemStackJS getItem()
-	{
+	public ItemStackJS getItem() {
 		BlockState state = getBlockState();
 		return ItemStackJS.of(state.getBlock().getCloneItemStack(minecraftWorld, pos, state));
 	}
 
 	@Override
-	public boolean equals(Object obj)
-	{
-		if (obj == this)
-		{
+	public boolean equals(Object obj) {
+		if (obj == this) {
 			return true;
-		}
-		else if (obj instanceof CharSequence || obj instanceof ResourceLocation)
-		{
+		} else if (obj instanceof CharSequence || obj instanceof ResourceLocation) {
 			return getId().equals(obj.toString());
 		}
 

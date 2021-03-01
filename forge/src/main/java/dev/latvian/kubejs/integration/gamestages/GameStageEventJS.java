@@ -7,23 +7,19 @@ import net.darkhax.gamestages.event.GameStageEvent;
 /**
  * @author LatvianModder
  */
-public class GameStageEventJS extends PlayerEventJS
-{
+public class GameStageEventJS extends PlayerEventJS {
 	private final GameStageEvent event;
 
-	public GameStageEventJS(GameStageEvent e)
-	{
+	public GameStageEventJS(GameStageEvent e) {
 		event = e;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(event.getEntity());
 	}
 
-	public String getStage()
-	{
+	public String getStage() {
 		return event.getStageName();
 	}
 }

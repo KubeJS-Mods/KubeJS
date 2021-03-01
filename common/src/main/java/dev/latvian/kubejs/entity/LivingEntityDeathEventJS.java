@@ -6,31 +6,26 @@ import net.minecraft.world.entity.LivingEntity;
 /**
  * @author LatvianModder
  */
-public class LivingEntityDeathEventJS extends LivingEntityEventJS
-{
+public class LivingEntityDeathEventJS extends LivingEntityEventJS {
 	private final LivingEntity entity;
 	private final DamageSource source;
 
-	public LivingEntityDeathEventJS(LivingEntity entity, DamageSource source)
-	{
+	public LivingEntityDeathEventJS(LivingEntity entity, DamageSource source) {
 		this.entity = entity;
 		this.source = source;
 	}
 
 	@Override
-	public boolean canCancel()
-	{
+	public boolean canCancel() {
 		return true;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(entity);
 	}
 
-	public DamageSourceJS getSource()
-	{
+	public DamageSourceJS getSource() {
 		return new DamageSourceJS(getWorld(), source);
 	}
 }

@@ -13,45 +13,37 @@ import java.util.Set;
 /**
  * @author LatvianModder
  */
-public class PlatformWrapper
-{
+public class PlatformWrapper {
 	private static PlatformWrapper instance;
 
-	public static PlatformWrapper getInstance()
-	{
-		if (instance == null)
-		{
+	public static PlatformWrapper getInstance() {
+		if (instance == null) {
 			instance = new PlatformWrapper();
 		}
 
 		return instance;
 	}
 
-	public static class ModInfo
-	{
+	public static class ModInfo {
 		private final String id;
 		private String name;
 		private String version;
 
-		public ModInfo(String i)
-		{
+		public ModInfo(String i) {
 			id = i;
 			name = id;
 			version = "0.0.0";
 		}
 
-		public String getId()
-		{
+		public String getId() {
 			return id;
 		}
 
-		public String getName()
-		{
+		public String getName() {
 			return name;
 		}
 
-		public String getVersion()
-		{
+		public String getVersion() {
 			return version;
 		}
 	}
@@ -59,12 +51,10 @@ public class PlatformWrapper
 	private final Set<String> list;
 	private final Map<String, ModInfo> map;
 
-	public PlatformWrapper()
-	{
+	public PlatformWrapper() {
 		map = new LinkedHashMap<>();
 
-		for (Mod mod : Platform.getMods())
-		{
+		for (Mod mod : Platform.getMods()) {
 			ModInfo info = new ModInfo(mod.getModId());
 			info.name = mod.getName();
 			info.version = mod.getVersion();
@@ -74,64 +64,52 @@ public class PlatformWrapper
 		list = map.keySet();
 	}
 
-	public String getName()
-	{
+	public String getName() {
 		return Platform.getModLoader();
 	}
 
-	public boolean isForge()
-	{
+	public boolean isForge() {
 		return Platform.isForge();
 	}
 
-	public boolean isFabric()
-	{
+	public boolean isFabric() {
 		return Platform.isFabric();
 	}
 
 	@Deprecated
-	public String getType()
-	{
+	public String getType() {
 		return Platform.getModLoader();
 	}
 
-	public String getMcVersion()
-	{
+	public String getMcVersion() {
 		return SharedConstants.getCurrentVersion().getName();
 	}
 
-	public Set<String> getList()
-	{
+	public Set<String> getList() {
 		return list;
 	}
 
-	public String getModVersion()
-	{
+	public String getModVersion() {
 		return getInfo(KubeJS.MOD_ID).version;
 	}
 
-	public boolean isLoaded(String modId)
-	{
+	public boolean isLoaded(String modId) {
 		return map.containsKey(modId);
 	}
 
-	public ModInfo getInfo(String modID)
-	{
+	public ModInfo getInfo(String modID) {
 		return map.get(modID);
 	}
 
-	public Map<String, ModInfo> getMods()
-	{
+	public Map<String, ModInfo> getMods() {
 		return map;
 	}
 
-	public boolean isDevelopmentEnvironment()
-	{
+	public boolean isDevelopmentEnvironment() {
 		return Platform.isDevelopmentEnvironment();
 	}
 
-	public boolean isClientEnvironment()
-	{
+	public boolean isClientEnvironment() {
 		return Platform.getEnvironment() == Env.CLIENT;
 	}
 }

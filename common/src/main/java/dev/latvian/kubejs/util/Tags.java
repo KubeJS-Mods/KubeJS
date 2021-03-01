@@ -15,41 +15,32 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class Tags
-{
-	public static TagCollection<Item> items()
-	{
+public class Tags {
+	public static TagCollection<Item> items() {
 		return SerializationTags.getInstance().getItems();
 	}
 
-	public static TagCollection<Block> blocks()
-	{
+	public static TagCollection<Block> blocks() {
 		return SerializationTags.getInstance().getBlocks();
 	}
 
-	public static TagCollection<Fluid> fluids()
-	{
+	public static TagCollection<Fluid> fluids() {
 		return SerializationTags.getInstance().getFluids();
 	}
 
-	public static TagCollection<EntityType<?>> entityTypes()
-	{
+	public static TagCollection<EntityType<?>> entityTypes() {
 		return SerializationTags.getInstance().getEntityTypes();
 	}
 
-	public static Collection<ResourceLocation> byItemStack(ItemStack stack)
-	{
+	public static Collection<ResourceLocation> byItemStack(ItemStack stack) {
 		return byItem(stack.getItem());
 	}
 
-	public static Collection<ResourceLocation> byItem(Item item)
-	{
+	public static Collection<ResourceLocation> byItem(Item item) {
 		List<ResourceLocation> list = Lists.newArrayList();
 
-		for (Map.Entry<ResourceLocation, Tag<Item>> entry : items().getAllTags().entrySet())
-		{
-			if (entry.getValue().contains(item))
-			{
+		for (Map.Entry<ResourceLocation, Tag<Item>> entry : items().getAllTags().entrySet()) {
+			if (entry.getValue().contains(item)) {
 				list.add(entry.getKey());
 			}
 		}

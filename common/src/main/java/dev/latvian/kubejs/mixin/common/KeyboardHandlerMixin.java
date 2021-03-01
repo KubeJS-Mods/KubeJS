@@ -11,11 +11,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * @author LatvianModder
  */
 @Mixin(KeyboardHandler.class)
-public abstract class KeyboardHandlerMixin
-{
+public abstract class KeyboardHandlerMixin {
 	@Inject(method = "handleDebugKeys", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;reloadResourcePacks()Ljava/util/concurrent/CompletableFuture;", shift = At.Shift.BEFORE))
-	private void reloadResources(int i, CallbackInfoReturnable<Boolean> ci)
-	{
+	private void reloadResources(int i, CallbackInfoReturnable<Boolean> ci) {
 		KubeJSClient.reloadClientScripts();
 	}
 }

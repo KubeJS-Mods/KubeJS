@@ -10,31 +10,25 @@ import net.minecraft.resources.ResourceLocation;
 /**
  * @author LatvianModder
  */
-public class DataPackEventJS extends ServerEventJS
-{
+public class DataPackEventJS extends ServerEventJS {
 	private final VirtualKubeJSDataPack virtualDataPack;
 
-	public DataPackEventJS(VirtualKubeJSDataPack d)
-	{
+	public DataPackEventJS(VirtualKubeJSDataPack d) {
 		virtualDataPack = d;
 	}
 
-	public void add(ResourceLocation id, String content)
-	{
+	public void add(ResourceLocation id, String content) {
 		virtualDataPack.addData(id, content);
 	}
 
-	public void addJson(ResourceLocation id, Object json)
-	{
+	public void addJson(ResourceLocation id, Object json) {
 		JsonElement j = MapJS.json(json);
 
-		if (j == null)
-		{
+		if (j == null) {
 			j = ListJS.json(json);
 		}
 
-		if (j != null)
-		{
+		if (j != null) {
 			add(id, JsonUtilsJS.toString(j));
 		}
 	}

@@ -11,25 +11,20 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author LatvianModder
  */
-public class ClientWrapper
-{
+public class ClientWrapper {
 	@MinecraftClass
-	public Minecraft getMinecraft()
-	{
+	public Minecraft getMinecraft() {
 		return Minecraft.getInstance();
 	}
 
 	@Nullable
-	public ClientWorldJS getWorld()
-	{
+	public ClientWorldJS getWorld() {
 		return ClientWorldJS.instance;
 	}
 
 	@Nullable
-	public ClientPlayerJS getPlayer()
-	{
-		if (ClientWorldJS.instance == null)
-		{
+	public ClientPlayerJS getPlayer() {
+		if (ClientWorldJS.instance == null) {
 			return null;
 		}
 
@@ -37,34 +32,28 @@ public class ClientWrapper
 	}
 
 	@Nullable
-	public Screen getCurrentGui()
-	{
+	public Screen getCurrentGui() {
 		return getMinecraft().screen;
 	}
 
-	public void setCurrentGui(Screen gui)
-	{
+	public void setCurrentGui(Screen gui) {
 		getMinecraft().setScreen(gui);
 	}
 
-	public void setTitle(String t)
-	{
+	public void setTitle(String t) {
 		ClientProperties.get().title = t.trim();
 		getMinecraft().updateTitle();
 	}
 
-	public String getCurrentWorldName()
-	{
-		if (getMinecraft().getCurrentServer() != null)
-		{
+	public String getCurrentWorldName() {
+		if (getMinecraft().getCurrentServer() != null) {
 			return getMinecraft().getCurrentServer().name;
 		}
 
 		return "Singleplayer";
 	}
 
-	public boolean isKeyDown(int key)
-	{
+	public boolean isKeyDown(int key) {
 		return InputConstants.isKeyDown(getMinecraft().getWindow().getWindow(), key);
 	}
 }

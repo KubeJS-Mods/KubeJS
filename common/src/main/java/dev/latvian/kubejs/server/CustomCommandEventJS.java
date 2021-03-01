@@ -13,15 +13,13 @@ import javax.annotation.Nullable;
 /**
  * @author LatvianModder
  */
-public class CustomCommandEventJS extends PlayerEventJS
-{
+public class CustomCommandEventJS extends PlayerEventJS {
 	private final Level level;
 	private final Entity entity;
 	private final BlockPos blockPos;
 	private final String id;
 
-	public CustomCommandEventJS(Level l, @Nullable Entity e, BlockPos p, String i)
-	{
+	public CustomCommandEventJS(Level l, @Nullable Entity e, BlockPos p, String i) {
 		level = l;
 		entity = e;
 		blockPos = p;
@@ -29,30 +27,25 @@ public class CustomCommandEventJS extends PlayerEventJS
 	}
 
 	@Override
-	public boolean canCancel()
-	{
+	public boolean canCancel() {
 		return true;
 	}
 
-	public String getId()
-	{
+	public String getId() {
 		return id;
 	}
 
 	@Override
-	public WorldJS getWorld()
-	{
+	public WorldJS getWorld() {
 		return worldOf(level);
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(entity);
 	}
 
-	public BlockContainerJS getBlock()
-	{
+	public BlockContainerJS getBlock() {
 		return getWorld().getBlock(blockPos);
 	}
 }

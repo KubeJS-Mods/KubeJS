@@ -13,34 +13,28 @@ import java.util.function.Predicate;
 /**
  * @author LatvianModder
  */
-public class YeetJEICategoriesEvent extends EventJS
-{
+public class YeetJEICategoriesEvent extends EventJS {
 	private final IJeiRuntime runtime;
 	private final HashSet<ResourceLocation> categoriesYeeted;
 	private final Collection<IRecipeCategory<?>> allCategories;
 
-	public YeetJEICategoriesEvent(IJeiRuntime r)
-	{
+	public YeetJEICategoriesEvent(IJeiRuntime r) {
 		runtime = r;
 		categoriesYeeted = new HashSet<>();
 		allCategories = runtime.getRecipeManager().getRecipeCategories();
 	}
 
-	public Collection<IRecipeCategory<?>> getCategories()
-	{
+	public Collection<IRecipeCategory<?>> getCategories() {
 		return allCategories;
 	}
 
-	public void yeet(String... categoriesToYeet)
-	{
-		for (String toYeet : categoriesToYeet)
-		{
+	public void yeet(String... categoriesToYeet) {
+		for (String toYeet : categoriesToYeet) {
 			categoriesYeeted.add(new ResourceLocation(toYeet));
 		}
 	}
 
-	public void yeetIf(Predicate<IRecipeCategory<?>> filter)
-	{
+	public void yeetIf(Predicate<IRecipeCategory<?>> filter) {
 		allCategories.stream()
 				.filter(filter)
 				.map(IRecipeCategory::getUid)
@@ -49,16 +43,11 @@ public class YeetJEICategoriesEvent extends EventJS
 	}
 
 	@Override
-	protected void afterPosted(boolean result)
-	{
-		for (ResourceLocation category : categoriesYeeted)
-		{
-			try
-			{
+	protected void afterPosted(boolean result) {
+		for (ResourceLocation category : categoriesYeeted) {
+			try {
 				runtime.getRecipeManager().hideRecipeCategory(category);
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				KubeJS.LOGGER.warn("Failed to yeet recipe category {}!", category);
 			}
 		}

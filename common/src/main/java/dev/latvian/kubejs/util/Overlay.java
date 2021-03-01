@@ -10,16 +10,14 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public class Overlay
-{
+public class Overlay {
 	public final String id;
 	public final List<Text> text;
 	public int color;
 	public boolean alwaysOnTop;
 	public ItemStackJS icon;
 
-	public Overlay(String i)
-	{
+	public Overlay(String i) {
 		id = i;
 		text = new ArrayList<>(1);
 		color = 0x101010;
@@ -27,31 +25,26 @@ public class Overlay
 		icon = EmptyItemStackJS.INSTANCE;
 	}
 
-	public Overlay add(Object o)
-	{
+	public Overlay add(Object o) {
 		text.add(Text.of(o));
 		return this;
 	}
 
-	public Overlay alwaysOnTop()
-	{
+	public Overlay alwaysOnTop() {
 		alwaysOnTop = true;
 		return this;
 	}
 
-	public Overlay color(int col)
-	{
+	public Overlay color(int col) {
 		color = col;
 		return this;
 	}
 
-	public Overlay color(String col)
-	{
+	public Overlay color(String col) {
 		return color(Long.decode(col).intValue());
 	}
 
-	public Overlay icon(Object o)
-	{
+	public Overlay icon(Object o) {
 		icon = ItemStackJS.of(o);
 		return this;
 	}

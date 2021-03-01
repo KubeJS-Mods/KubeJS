@@ -19,11 +19,9 @@ import java.util.function.Function;
  * @author LatvianModder
  */
 @Mixin(TagLoader.class)
-public abstract class TagCollectionReaderMixin<T> implements TagCollectionKJS<T>
-{
+public abstract class TagCollectionReaderMixin<T> implements TagCollectionKJS<T> {
 	@Inject(method = "load", at = @At("HEAD"))
-	private void customTags(Map<ResourceLocation, Tag.Builder> map, CallbackInfoReturnable<TagCollection<T>> ci)
-	{
+	private void customTags(Map<ResourceLocation, Tag.Builder> map, CallbackInfoReturnable<TagCollection<T>> ci) {
 		customTagsKJS(map);
 	}
 

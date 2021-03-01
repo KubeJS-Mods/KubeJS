@@ -7,38 +7,31 @@ import net.minecraft.commands.CommandSourceStack;
 /**
  * @author LatvianModder
  */
-public class CommandEventJS extends ServerEventJS
-{
+public class CommandEventJS extends ServerEventJS {
 	private final CommandPerformEvent event;
 
-	public CommandEventJS(CommandPerformEvent e)
-	{
+	public CommandEventJS(CommandPerformEvent e) {
 		event = e;
 	}
 
 	@Override
-	public boolean canCancel()
-	{
+	public boolean canCancel() {
 		return true;
 	}
 
-	public ParseResults<CommandSourceStack> getParseResults()
-	{
+	public ParseResults<CommandSourceStack> getParseResults() {
 		return event.getResults();
 	}
 
-	public void setParseResults(ParseResults<CommandSourceStack> parse)
-	{
+	public void setParseResults(ParseResults<CommandSourceStack> parse) {
 		event.setResults(parse);
 	}
 
-	public Throwable getException()
-	{
+	public Throwable getException() {
 		return event.getThrowable();
 	}
 
-	public void setException(Throwable exception)
-	{
+	public void setException(Throwable exception) {
 		event.setThrowable(exception);
 	}
 }

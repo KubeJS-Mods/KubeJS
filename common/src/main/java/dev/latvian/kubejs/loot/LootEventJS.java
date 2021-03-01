@@ -13,15 +13,13 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public abstract class LootEventJS<LB extends LootBuilder<?, ?>> extends EventJS
-{
+public abstract class LootEventJS<LB extends LootBuilder<?, ?>> extends EventJS {
 	private final Map<ResourceLocation, JsonElement> lootMap;
 	final Gson gsonConditions;
 	final Gson gsonFunctions;
 	final Gson gsonLootTables;
 
-	public LootEventJS(Map<ResourceLocation, JsonElement> c)
-	{
+	public LootEventJS(Map<ResourceLocation, JsonElement> c) {
 		lootMap = c;
 		gsonConditions = Deserializers.createConditionSerializer().create();
 		gsonFunctions = Deserializers.createFunctionSerializer().create();
@@ -30,13 +28,11 @@ public abstract class LootEventJS<LB extends LootBuilder<?, ?>> extends EventJS
 
 	public abstract LB newLootBuilder();
 
-	public void addJson(ResourceLocation id, Object json)
-	{
+	public void addJson(ResourceLocation id, Object json) {
 		lootMap.put(id, MapJS.json(json));
 	}
 
-	public void build(ResourceLocation id, Consumer<LB> lb)
-	{
+	public void build(ResourceLocation id, Consumer<LB> lb) {
 		LB lootBuilder = newLootBuilder();
 		lb.accept(lootBuilder);
 		addJson(id, lootBuilder.toJson(this));

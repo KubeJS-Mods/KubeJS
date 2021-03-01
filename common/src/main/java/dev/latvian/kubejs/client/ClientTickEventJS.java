@@ -7,18 +7,15 @@ import dev.latvian.kubejs.player.PlayerEventJS;
 /**
  * @author LatvianModder
  */
-public class ClientTickEventJS extends PlayerEventJS
-{
+public class ClientTickEventJS extends PlayerEventJS {
 	private final ClientPlayerJS player;
 
-	public ClientTickEventJS(ClientPlayerJS p)
-	{
+	public ClientTickEventJS(ClientPlayerJS p) {
 		player = p;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return player;
 	}
 }

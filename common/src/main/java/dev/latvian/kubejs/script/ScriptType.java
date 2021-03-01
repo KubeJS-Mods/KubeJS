@@ -16,14 +16,12 @@ import java.util.function.Supplier;
 /**
  * @author LatvianModder
  */
-public enum ScriptType
-{
+public enum ScriptType {
 	STARTUP("startup", "KubeJS Startup", () -> KubeJS.startupScriptManager),
 	SERVER("server", "KubeJS Server", () -> ServerScriptManager.instance.scriptManager),
 	CLIENT("client", "KubeJS Client", () -> KubeJS.clientScriptManager);
 
-	public static ScriptType of(LevelReader world)
-	{
+	public static ScriptType of(LevelReader world) {
 		return world.isClientSide() ? CLIENT : SERVER;
 	}
 
@@ -33,8 +31,7 @@ public enum ScriptType
 	public final ConsoleJS console;
 	public final Supplier<ScriptManager> manager;
 
-	ScriptType(String n, String cname, Supplier<ScriptManager> m)
-	{
+	ScriptType(String n, String cname, Supplier<ScriptManager> m) {
 		name = n;
 		errors = new ArrayList<>();
 		warnings = new ArrayList<>();
@@ -42,25 +39,19 @@ public enum ScriptType
 		manager = m;
 	}
 
-	public Path getLogFile()
-	{
+	public Path getLogFile() {
 		Path dir = Platform.getGameFolder().resolve("logs/kubejs");
 		Path file = dir.resolve(name + ".txt");
 
-		try
-		{
-			if (!Files.exists(dir))
-			{
+		try {
+			if (!Files.exists(dir)) {
 				Files.createDirectories(dir);
 			}
 
-			if (!Files.exists(file))
-			{
+			if (!Files.exists(file)) {
 				Files.createFile(file);
 			}
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 

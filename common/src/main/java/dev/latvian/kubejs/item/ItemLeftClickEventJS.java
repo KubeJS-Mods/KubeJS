@@ -8,25 +8,21 @@ import net.minecraft.world.entity.player.Player;
 /**
  * @author LatvianModder
  */
-public class ItemLeftClickEventJS extends PlayerEventJS
-{
+public class ItemLeftClickEventJS extends PlayerEventJS {
 	private final Player player;
 	private final InteractionHand hand;
 
-	public ItemLeftClickEventJS(Player player, InteractionHand hand)
-	{
+	public ItemLeftClickEventJS(Player player, InteractionHand hand) {
 		this.player = player;
 		this.hand = hand;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(player);
 	}
 
-	public ItemStackJS getItem()
-	{
+	public ItemStackJS getItem() {
 		return ItemStackJS.of(player.getItemInHand(hand));
 	}
 }

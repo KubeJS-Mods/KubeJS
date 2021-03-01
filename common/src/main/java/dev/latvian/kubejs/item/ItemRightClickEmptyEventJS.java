@@ -8,30 +8,25 @@ import net.minecraft.world.entity.player.Player;
 /**
  * @author LatvianModder
  */
-public class ItemRightClickEmptyEventJS extends PlayerEventJS
-{
+public class ItemRightClickEmptyEventJS extends PlayerEventJS {
 	private final Player player;
 	private final InteractionHand hand;
 
-	public ItemRightClickEmptyEventJS(Player player, InteractionHand hand)
-	{
+	public ItemRightClickEmptyEventJS(Player player, InteractionHand hand) {
 		this.player = player;
 		this.hand = hand;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(player);
 	}
 
-	public InteractionHand getHand()
-	{
+	public InteractionHand getHand() {
 		return hand;
 	}
 
-	public ItemStackJS getItem()
-	{
+	public ItemStackJS getItem() {
 		return EmptyItemStackJS.INSTANCE;
 	}
 }

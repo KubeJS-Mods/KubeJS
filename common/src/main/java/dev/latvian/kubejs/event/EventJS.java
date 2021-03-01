@@ -5,33 +5,26 @@ import dev.latvian.kubejs.script.ScriptType;
 /**
  * @author LatvianModder
  */
-public class EventJS
-{
+public class EventJS {
 	private boolean cancelled = false;
 
-	public boolean canCancel()
-	{
+	public boolean canCancel() {
 		return false;
 	}
 
-	public final void cancel()
-	{
+	public final void cancel() {
 		cancelled = true;
 	}
 
-	public final boolean isCancelled()
-	{
+	public final boolean isCancelled() {
 		return cancelled;
 	}
 
-	protected void afterPosted(boolean result)
-	{
+	protected void afterPosted(boolean result) {
 	}
 
-	public final boolean post(ScriptType t, String id)
-	{
-		if (t != ScriptType.STARTUP && post(ScriptType.STARTUP, id) && canCancel())
-		{
+	public final boolean post(ScriptType t, String id) {
+		if (t != ScriptType.STARTUP && post(ScriptType.STARTUP, id) && canCancel()) {
 			return true;
 		}
 
@@ -41,15 +34,12 @@ public class EventJS
 		return b;
 	}
 
-	public final boolean post(ScriptType t, String id, String sub)
-	{
+	public final boolean post(ScriptType t, String id, String sub) {
 		String id1 = id + '.' + sub;
 
-		if (t != ScriptType.STARTUP)
-		{
+		if (t != ScriptType.STARTUP) {
 			EventsJS e = ScriptType.STARTUP.manager.get().events;
-			if ((e.postToHandlers(id1, e.handlers(id1), this) || e.postToHandlers(id, e.handlers(id), this)) && canCancel())
-			{
+			if ((e.postToHandlers(id1, e.handlers(id1), this) || e.postToHandlers(id, e.handlers(id), this)) && canCancel()) {
 				afterPosted(true);
 				return true;
 			}

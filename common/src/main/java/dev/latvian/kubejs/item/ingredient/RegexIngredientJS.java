@@ -13,40 +13,33 @@ import java.util.regex.Pattern;
 /**
  * @author LatvianModder
  */
-public class RegexIngredientJS implements IngredientJS
-{
+public class RegexIngredientJS implements IngredientJS {
 	private final Pattern pattern;
 
-	public RegexIngredientJS(Pattern p)
-	{
+	public RegexIngredientJS(Pattern p) {
 		pattern = p;
 
-		if (RecipeJS.itemErrors && getFirst().isEmpty())
-		{
+		if (RecipeJS.itemErrors && getFirst().isEmpty()) {
 			throw new RecipeExceptionJS("Regex '" + pattern + "' doesn't match any items!").error();
 		}
 	}
 
-	public Pattern getPattern()
-	{
+	public Pattern getPattern() {
 		return pattern;
 	}
 
 	@Override
-	public boolean test(ItemStackJS stack)
-	{
+	public boolean test(ItemStackJS stack) {
 		return !stack.isEmpty() && pattern.matcher(stack.getId()).find();
 	}
 
 	@Override
-	public boolean testVanilla(ItemStack stack)
-	{
+	public boolean testVanilla(ItemStack stack) {
 		return !stack.isEmpty() && pattern.matcher(Registries.getId(stack.getItem(), Registry.ITEM_REGISTRY).toString()).find();
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return UtilsJS.toRegexString(pattern);
 	}
 }

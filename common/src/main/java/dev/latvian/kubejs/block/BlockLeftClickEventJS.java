@@ -13,15 +13,13 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author LatvianModder
  */
-public class BlockLeftClickEventJS extends PlayerEventJS
-{
+public class BlockLeftClickEventJS extends PlayerEventJS {
 	private final Player player;
 	private final InteractionHand hand;
 	private final BlockPos pos;
 	private final Direction direction;
 
-	public BlockLeftClickEventJS(Player player, InteractionHand hand, BlockPos pos, Direction direction)
-	{
+	public BlockLeftClickEventJS(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
 		this.player = player;
 		this.hand = hand;
 		this.pos = pos;
@@ -29,30 +27,25 @@ public class BlockLeftClickEventJS extends PlayerEventJS
 	}
 
 	@Override
-	public boolean canCancel()
-	{
+	public boolean canCancel() {
 		return true;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(player);
 	}
 
-	public BlockContainerJS getBlock()
-	{
+	public BlockContainerJS getBlock() {
 		return new BlockContainerJS(player.level, pos);
 	}
 
-	public ItemStackJS getItem()
-	{
+	public ItemStackJS getItem() {
 		return ItemStackJS.of(player.getItemInHand(hand));
 	}
 
 	@Nullable
-	public Direction getFacing()
-	{
+	public Direction getFacing() {
 		return direction;
 	}
 }

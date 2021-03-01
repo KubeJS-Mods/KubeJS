@@ -15,11 +15,9 @@ import java.util.function.BiConsumer;
  * @author LatvianModder
  */
 @Mixin(LootTables.class)
-public abstract class LootTablesMixin implements LootTablesKJS
-{
+public abstract class LootTablesMixin implements LootTablesKJS {
 	@Redirect(method = "apply", at = @At(value = "INVOKE", target = "Ljava/util/Map;forEach(Ljava/util/function/BiConsumer;)V", ordinal = 0))
-	private void applyKJS(Map<ResourceLocation, JsonElement> map, BiConsumer<ResourceLocation, JsonElement> action)
-	{
+	private void applyKJS(Map<ResourceLocation, JsonElement> map, BiConsumer<ResourceLocation, JsonElement> action) {
 		applyKJS0(map, action);
 	}
 }

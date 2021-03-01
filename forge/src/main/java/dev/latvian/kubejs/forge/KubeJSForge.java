@@ -33,10 +33,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 @Mod(KubeJS.MOD_ID)
-public class KubeJSForge
-{
-	public KubeJSForge() throws Throwable
-	{
+public class KubeJSForge {
+	public KubeJSForge() throws Throwable {
 		EventBuses.registerModEventBus(KubeJS.MOD_ID, FMLJavaModLoadingContext.get().getModEventBus());
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(KubeJSForge::loadComplete);
 		KubeJS.instance = new KubeJS();
@@ -51,71 +49,54 @@ public class KubeJSForge
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::livingDrops);
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::checkLivingSpawn);
 
-		if (!CommonProperties.get().serverOnly)
-		{
+		if (!CommonProperties.get().serverOnly) {
 			// Yes this is stupid but for now I will do this until more mods update to 1.16.5 properly, because we never know how many mods hardcode [.4]. Use ForgeMod.enableMilkFluid(); after a while
 
-			try
-			{
+			try {
 				ForgeMod.class.getDeclaredMethod("enableMilkFluid").invoke(null);
-			}
-			catch (Throwable ex)
-			{
+			} catch (Throwable ex) {
 			}
 		}
 	}
 
-	private static void loadComplete(FMLLoadCompleteEvent event)
-	{
+	private static void loadComplete(FMLLoadCompleteEvent event) {
 		KubeJS.instance.loadComplete();
 	}
 
-	private static void missingBlockMappings(RegistryEvent.MissingMappings<Block> event)
-	{
+	private static void missingBlockMappings(RegistryEvent.MissingMappings<Block> event) {
 		new MissingMappingEventJS<>(event, ForgeRegistries.BLOCKS::getValue).post(ScriptType.STARTUP, KubeJSEvents.BLOCK_MISSING_MAPPINGS);
 	}
 
-	private static void missingItemMappings(RegistryEvent.MissingMappings<Item> event)
-	{
+	private static void missingItemMappings(RegistryEvent.MissingMappings<Item> event) {
 		new MissingMappingEventJS<>(event, ForgeRegistries.ITEMS::getValue).post(ScriptType.STARTUP, KubeJSEvents.ITEM_MISSING_MAPPINGS);
 	}
 
-	private static void itemDestroyed(PlayerDestroyItemEvent event)
-	{
-		if (event.getPlayer() instanceof ServerPlayer)
-		{
+	private static void itemDestroyed(PlayerDestroyItemEvent event) {
+		if (event.getPlayer() instanceof ServerPlayer) {
 			new ItemDestroyedEventJS(event).post(KubeJSEvents.ITEM_DESTROYED);
 		}
 	}
 
-	private static void livingDrops(LivingDropsEvent event)
-	{
-		if (event.getEntity().level.isClientSide())
-		{
+	private static void livingDrops(LivingDropsEvent event) {
+		if (event.getEntity().level.isClientSide()) {
 			return;
 		}
 
 		LivingEntityDropsEventJS e = new LivingEntityDropsEventJS(event);
 
-		if (e.post(KubeJSEvents.ENTITY_DROPS))
-		{
+		if (e.post(KubeJSEvents.ENTITY_DROPS)) {
 			event.setCanceled(true);
-		}
-		else if (e.eventDrops != null)
-		{
+		} else if (e.eventDrops != null) {
 			event.getDrops().clear();
 
-			for (ItemEntityJS ie : e.eventDrops)
-			{
+			for (ItemEntityJS ie : e.eventDrops) {
 				event.getDrops().add((ItemEntity) ie.minecraftEntity);
 			}
 		}
 	}
 
-	private static void checkLivingSpawn(LivingSpawnEvent.CheckSpawn event)
-	{
-		if (ServerJS.instance != null && ServerJS.instance.overworld != null && !event.getWorld().isClientSide() && new CheckLivingEntitySpawnEventJS(event).post(ScriptType.SERVER, KubeJSEvents.ENTITY_CHECK_SPAWN))
-		{
+	private static void checkLivingSpawn(LivingSpawnEvent.CheckSpawn event) {
+		if (ServerJS.instance != null && ServerJS.instance.overworld != null && !event.getWorld().isClientSide() && new CheckLivingEntitySpawnEventJS(event).post(ScriptType.SERVER, KubeJSEvents.ENTITY_CHECK_SPAWN)) {
 			event.setResult(Event.Result.DENY);
 		}
 	}

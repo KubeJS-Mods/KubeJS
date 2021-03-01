@@ -10,8 +10,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
  * @author LatvianModder
  */
 @Mixin(TieredItem.class)
-public abstract class TieredItemMixin implements TieredItemKJS
-{
+public abstract class TieredItemMixin implements TieredItemKJS {
 	@Override
 	@Accessor("tier")
 	public abstract Tier getTierKJS();

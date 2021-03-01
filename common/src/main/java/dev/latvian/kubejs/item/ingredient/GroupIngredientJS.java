@@ -10,46 +10,38 @@ import net.minecraft.world.item.ItemStack;
 /**
  * @author LatvianModder
  */
-public class GroupIngredientJS implements IngredientJS
-{
+public class GroupIngredientJS implements IngredientJS {
 	private final CreativeModeTab group;
 
-	public GroupIngredientJS(CreativeModeTab m)
-	{
+	public GroupIngredientJS(CreativeModeTab m) {
 		group = m;
 
-		if (RecipeJS.itemErrors && getFirst().isEmpty())
-		{
+		if (RecipeJS.itemErrors && getFirst().isEmpty()) {
 			throw new RecipeExceptionJS("Group '" + getGroupId() + "' doesn't have any items!").error();
 		}
 	}
 
 	@MinecraftClass
-	public CreativeModeTab getGroup()
-	{
+	public CreativeModeTab getGroup() {
 		return group;
 	}
 
-	public String getGroupId()
-	{
+	public String getGroupId() {
 		return group.getRecipeFolderName();
 	}
 
 	@Override
-	public boolean test(ItemStackJS stack)
-	{
+	public boolean test(ItemStackJS stack) {
 		return !stack.isEmpty() && stack.getItem().getItemCategory() == group;
 	}
 
 	@Override
-	public boolean testVanilla(ItemStack stack)
-	{
+	public boolean testVanilla(ItemStack stack) {
 		return !stack.isEmpty() && stack.getItem().getItemCategory() == group;
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return "'%" + group.getRecipeFolderName() + "'";
 	}
 }

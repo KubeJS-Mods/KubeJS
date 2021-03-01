@@ -9,40 +9,32 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author LatvianModder
  */
-public class ScriptEventsWrapper
-{
+public class ScriptEventsWrapper {
 	private final EventsJS events;
 
-	public ScriptEventsWrapper(EventsJS e)
-	{
+	public ScriptEventsWrapper(EventsJS e) {
 		events = e;
 	}
 
-	public void listen(Object id, IEventHandler handler)
-	{
-		for (Object o : ListJS.orSelf(id))
-		{
+	public void listen(Object id, IEventHandler handler) {
+		for (Object o : ListJS.orSelf(id)) {
 			events.listen(String.valueOf(o), handler);
 		}
 	}
 
-	public void post(String id, @Nullable Object data)
-	{
+	public void post(String id, @Nullable Object data) {
 		events.postToHandlers(id, events.handlers(id), new DataEvent(false, data));
 	}
 
-	public void post(String id)
-	{
+	public void post(String id) {
 		post(id, null);
 	}
 
-	public boolean postCancellable(String id, @Nullable Object data)
-	{
+	public boolean postCancellable(String id, @Nullable Object data) {
 		return events.postToHandlers(id, events.handlers(id), new DataEvent(true, data));
 	}
 
-	public boolean postCancellable(String id)
-	{
+	public boolean postCancellable(String id) {
 		return postCancellable(id, null);
 	}
 }

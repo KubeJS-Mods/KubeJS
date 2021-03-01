@@ -14,25 +14,19 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class BotanyPotsCropRecipeJS extends RecipeJS
-{
+public class BotanyPotsCropRecipeJS extends RecipeJS {
 	public final List<Integer> minRolls = new ArrayList<>();
 	public final List<Integer> maxRolls = new ArrayList<>();
 
 	@Override
-	public void create(ListJS args)
-	{
-		for (Object o : ListJS.orSelf(args.get(0)))
-		{
-			if (o instanceof Map)
-			{
+	public void create(ListJS args) {
+		for (Object o : ListJS.orSelf(args.get(0))) {
+			if (o instanceof Map) {
 				Map<String, Object> m = (Map<String, Object>) o;
 				outputItems.add(parseResultItem(m.get("item")));
 				minRolls.add(((Number) m.getOrDefault("minRolls", 1)).intValue());
 				maxRolls.add(((Number) m.getOrDefault("maxRolls", 1)).intValue());
-			}
-			else
-			{
+			} else {
 				outputItems.add(parseResultItem(o));
 				minRolls.add(1);
 				maxRolls.add(1);
@@ -52,17 +46,14 @@ public class BotanyPotsCropRecipeJS extends RecipeJS
 	}
 
 	@Override
-	public void deserialize()
-	{
+	public void deserialize() {
 		inputItems.add(parseIngredientItem(json.get("seed")));
 
-		for (JsonElement e : json.get("results").getAsJsonArray())
-		{
+		for (JsonElement e : json.get("results").getAsJsonArray()) {
 			JsonObject o = e.getAsJsonObject();
 			ItemStackJS is = parseResultItem(o.get("output"));
 
-			if (o.has("chance"))
-			{
+			if (o.has("chance")) {
 				is.setChance(o.get("chance").getAsDouble());
 			}
 
@@ -72,19 +63,16 @@ public class BotanyPotsCropRecipeJS extends RecipeJS
 		}
 	}
 
-	public BotanyPotsCropRecipeJS growthTicks(int t)
-	{
+	public BotanyPotsCropRecipeJS growthTicks(int t) {
 		json.addProperty("growthTicks", t);
 		save();
 		return this;
 	}
 
-	public BotanyPotsCropRecipeJS categories(String[] c)
-	{
+	public BotanyPotsCropRecipeJS categories(String[] c) {
 		JsonArray categories = new JsonArray();
 
-		for (String s : c)
-		{
+		for (String s : c) {
 			categories.add(s);
 		}
 
@@ -93,8 +81,7 @@ public class BotanyPotsCropRecipeJS extends RecipeJS
 		return this;
 	}
 
-	public BotanyPotsCropRecipeJS displayBlock(String b)
-	{
+	public BotanyPotsCropRecipeJS displayBlock(String b) {
 		JsonObject display = new JsonObject();
 		display.addProperty("block", b);
 		json.add("display", display);
@@ -103,14 +90,12 @@ public class BotanyPotsCropRecipeJS extends RecipeJS
 	}
 
 	@Override
-	public void serialize()
-	{
+	public void serialize() {
 		json.add("seed", inputItems.get(0).toJson());
 
 		JsonArray array = new JsonArray();
 
-		for (int i = 0; i < outputItems.size(); i++)
-		{
+		for (int i = 0; i < outputItems.size(); i++) {
 			ItemStackJS is = outputItems.get(i);
 			JsonObject o = new JsonObject();
 			o.addProperty("chance", is.hasChance() ? is.getChance() : 1D);

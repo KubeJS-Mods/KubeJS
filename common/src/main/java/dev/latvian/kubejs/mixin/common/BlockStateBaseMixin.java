@@ -10,8 +10,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
  * @author LatvianModder
  */
 @Mixin(BlockBehaviour.BlockStateBase.class)
-public abstract class BlockStateBaseMixin implements BlockStateKJS
-{
+public abstract class BlockStateBaseMixin implements BlockStateKJS {
 	@Override
 	@Accessor("material")
 	public abstract void setMaterialKJS(Material v);

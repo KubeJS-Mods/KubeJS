@@ -5,15 +5,12 @@ import dev.latvian.kubejs.event.EventJS;
 /**
  * @author LatvianModder
  */
-public class KubeJSDocs
-{
-	public static void init()
-	{
+public class KubeJSDocs {
+	public static void init() {
 		DocumentationEvent.EVENT.register(KubeJSDocs::documentation);
 	}
 
-	public static void documentation(DocumentationEvent event)
-	{
+	public static void documentation(DocumentationEvent event) {
 		event.type(Object.class)
 				.field("class", f -> f
 						.type(Class.class)

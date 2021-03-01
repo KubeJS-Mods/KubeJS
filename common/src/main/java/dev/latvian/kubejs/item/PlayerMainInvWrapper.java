@@ -25,33 +25,25 @@ import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
-public class PlayerMainInvWrapper extends RangedWrapper
-{
+public class PlayerMainInvWrapper extends RangedWrapper {
 	private final Inventory inventoryPlayer;
 
-	public PlayerMainInvWrapper(Inventory inv)
-	{
+	public PlayerMainInvWrapper(Inventory inv) {
 		super(new ContainerInventory(inv), 0, inv.items.size());
 		inventoryPlayer = inv;
 	}
 
 	@Override
 	@Nonnull
-	public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate)
-	{
+	public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
 		ItemStack rest = super.insertItem(slot, stack, simulate);
-		if (rest.getCount() != stack.getCount())
-		{
+		if (rest.getCount() != stack.getCount()) {
 			// the stack in the slot changed, animate it
 			ItemStack inSlot = getStackInSlot(slot);
-			if (!inSlot.isEmpty())
-			{
-				if (getInventoryPlayer().player.level.isClientSide)
-				{
+			if (!inSlot.isEmpty()) {
+				if (getInventoryPlayer().player.level.isClientSide) {
 					inSlot.setPopTime(5);
-				}
-				else if (getInventoryPlayer().player instanceof ServerPlayer)
-				{
+				} else if (getInventoryPlayer().player instanceof ServerPlayer) {
 					getInventoryPlayer().player.containerMenu.broadcastChanges();
 				}
 			}
@@ -59,8 +51,7 @@ public class PlayerMainInvWrapper extends RangedWrapper
 		return rest;
 	}
 
-	public Inventory getInventoryPlayer()
-	{
+	public Inventory getInventoryPlayer() {
 		return inventoryPlayer;
 	}
 }

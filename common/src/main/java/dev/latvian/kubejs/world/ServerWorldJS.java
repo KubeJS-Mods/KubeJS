@@ -18,57 +18,47 @@ import net.minecraft.world.level.storage.ServerLevelData;
 /**
  * @author LatvianModder
  */
-public class ServerWorldJS extends WorldJS
-{
+public class ServerWorldJS extends WorldJS {
 	private final ServerJS server;
 
-	public ServerWorldJS(ServerJS s, ServerLevel w)
-	{
+	public ServerWorldJS(ServerJS s, ServerLevel w) {
 		super(w);
 		server = s;
 	}
 
 	@Override
-	public ScriptType getSide()
-	{
+	public ScriptType getSide() {
 		return ScriptType.SERVER;
 	}
 
 	@Override
-	public ServerJS getServer()
-	{
+	public ServerJS getServer() {
 		return server;
 	}
 
-	public long getSeed()
-	{
+	public long getSeed() {
 		return ((ServerLevel) minecraftWorld).getSeed();
 	}
 
-	public void setTime(long time)
-	{
+	public void setTime(long time) {
 		((ServerLevelData) minecraftWorld.getLevelData()).setGameTime(time);
 	}
 
-	public void setLocalTime(long time)
-	{
+	public void setLocalTime(long time) {
 		((ServerLevelData) minecraftWorld.getLevelData()).setDayTime(time);
 	}
 
 	@Override
-	public ServerPlayerDataJS getPlayerData(Player player)
-	{
+	public ServerPlayerDataJS getPlayerData(Player player) {
 		ServerPlayerDataJS data = server.playerMap.get(player.getUUID());
 
-		if (data != null)
-		{
+		if (data != null) {
 			return data;
 		}
 
 		FakeServerPlayerDataJS fakeData = server.fakePlayerMap.get(player.getUUID());
 
-		if (fakeData == null)
-		{
+		if (fakeData == null) {
 			fakeData = new FakeServerPlayerDataJS(server, (ServerPlayer) player);
 			AttachPlayerDataEvent.EVENT.invoker().accept(new AttachPlayerDataEvent(fakeData));
 		}
@@ -78,34 +68,25 @@ public class ServerWorldJS extends WorldJS
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return "ServerWorld:" + getDimension();
 	}
 
 	@Override
-	public EntityArrayList getEntities()
-	{
+	public EntityArrayList getEntities() {
 		return new EntityArrayList(this, Lists.newArrayList(((ServerLevel) minecraftWorld).getAllEntities()));
 	}
 
-	public EntityArrayList getEntities(String filter)
-	{
-		if (filter.equals("@e"))
-		{
+	public EntityArrayList getEntities(String filter) {
+		if (filter.equals("@e")) {
 			return getEntities();
-		}
-		else if (filter.equals("@a"))
-		{
+		} else if (filter.equals("@a")) {
 			return getPlayers();
 		}
 
-		try
-		{
+		try {
 			return createEntityList(new EntitySelectorParser(new StringReader(filter), true).parse().findEntities(new WorldCommandSender(this)));
-		}
-		catch (CommandSyntaxException e)
-		{
+		} catch (CommandSyntaxException e) {
 			return new EntityArrayList(this, 0);
 		}
 	}

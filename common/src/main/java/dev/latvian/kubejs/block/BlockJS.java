@@ -22,64 +22,53 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public class BlockJS extends Block
-{
+public class BlockJS extends Block {
 	public final BlockBuilder properties;
 	public VoxelShape shape;
 
-	public BlockJS(BlockBuilder p)
-	{
+	public BlockJS(BlockBuilder p) {
 		super(p.createProperties());
 		properties = p;
 		shape = Shapes.block();
 
-		if (!properties.customShape.isEmpty())
-		{
+		if (!properties.customShape.isEmpty()) {
 			List<VoxelShape> s = new ArrayList<>(properties.customShape);
 			shape = s.get(0);
 
-			if (s.size() > 1)
-			{
+			if (s.size() > 1) {
 				s.remove(0);
 				shape = Shapes.or(shape, s.toArray(new VoxelShape[0]));
 			}
 		}
 
-		if (properties.waterlogged)
-		{
+		if (properties.waterlogged) {
 			registerDefaultState(stateDefinition.any().setValue(BlockStateProperties.WATERLOGGED, false));
 		}
 	}
 
 	@Override
 	@Deprecated
-	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
-	{
+	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
 		return shape;
 	}
 
 	@Override
-	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
-	{
-		if (BlockBuilder.current.waterlogged)
-		{
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+		if (BlockBuilder.current.waterlogged) {
 			builder.add(BlockStateProperties.WATERLOGGED);
 		}
 	}
 
 	@Override
 	@Deprecated
-	public FluidState getFluidState(BlockState state)
-	{
+	public FluidState getFluidState(BlockState state) {
 		return properties.waterlogged && state.getValue(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
 	}
 
 	@Nullable
 	@Override
-	public BlockState getStateForPlacement(BlockPlaceContext context)
-	{
-		if (!properties.waterlogged)
-		{
+	public BlockState getStateForPlacement(BlockPlaceContext context) {
+		if (!properties.waterlogged) {
 			return defaultBlockState();
 		}
 
@@ -88,10 +77,8 @@ public class BlockJS extends Block
 
 	@Override
 	@Deprecated
-	public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor world, BlockPos pos, BlockPos facingPos)
-	{
-		if (properties.waterlogged && state.getValue(BlockStateProperties.WATERLOGGED))
-		{
+	public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor world, BlockPos pos, BlockPos facingPos) {
+		if (properties.waterlogged && state.getValue(BlockStateProperties.WATERLOGGED)) {
 			world.getLiquidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
 		}
 
@@ -99,8 +86,7 @@ public class BlockJS extends Block
 	}
 
 	@Override
-	public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos)
-	{
+	public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
 		return !(properties.waterlogged && state.getValue(BlockStateProperties.WATERLOGGED));
 	}
 }

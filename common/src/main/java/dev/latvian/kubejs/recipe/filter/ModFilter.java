@@ -5,24 +5,20 @@ import dev.latvian.kubejs.recipe.RecipeJS;
 /**
  * @author LatvianModder
  */
-public class ModFilter implements RecipeFilter
-{
+public class ModFilter implements RecipeFilter {
 	private final String mod;
 
-	public ModFilter(String m)
-	{
+	public ModFilter(String m) {
 		mod = m;
 	}
 
 	@Override
-	public boolean test(RecipeJS r)
-	{
+	public boolean test(RecipeJS r) {
 		return r.getMod().equals(mod);
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return "ModFilter{" +
 				"mod='" + mod + '\'' +
 				'}';

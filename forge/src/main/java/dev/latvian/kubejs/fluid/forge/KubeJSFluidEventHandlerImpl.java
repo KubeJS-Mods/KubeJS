@@ -6,24 +6,17 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
-public class KubeJSFluidEventHandlerImpl
-{
-	public static FlowingFluid buildFluid(boolean source, FluidBuilder builder)
-	{
-		if (source)
-		{
+public class KubeJSFluidEventHandlerImpl {
+	public static FlowingFluid buildFluid(boolean source, FluidBuilder builder) {
+		if (source) {
 			return new ForgeFlowingFluid.Source(createProperties(builder));
-		}
-		else
-		{
+		} else {
 			return new ForgeFlowingFluid.Flowing(createProperties(builder));
 		}
 	}
 
-	public static ForgeFlowingFluid.Properties createProperties(FluidBuilder fluidBuilder)
-	{
-		if (fluidBuilder.extraPlatformInfo != null)
-		{
+	public static ForgeFlowingFluid.Properties createProperties(FluidBuilder fluidBuilder) {
+		if (fluidBuilder.extraPlatformInfo != null) {
 			return (ForgeFlowingFluid.Properties) fluidBuilder.extraPlatformInfo;
 		}
 		FluidAttributes.Builder builder = FluidAttributes.builder(
@@ -37,8 +30,7 @@ public class KubeJSFluidEventHandlerImpl
 				.luminosity(fluidBuilder.luminosity)
 				.temperature(fluidBuilder.temperature);
 
-		if (fluidBuilder.isGaseous)
-		{
+		if (fluidBuilder.isGaseous) {
 			builder.gaseous();
 		}
 

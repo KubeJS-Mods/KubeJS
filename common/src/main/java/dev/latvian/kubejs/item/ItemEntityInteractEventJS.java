@@ -9,14 +9,12 @@ import net.minecraft.world.entity.player.Player;
 /**
  * @author LatvianModder
  */
-public class ItemEntityInteractEventJS extends PlayerEventJS
-{
+public class ItemEntityInteractEventJS extends PlayerEventJS {
 	private final Player player;
 	private final Entity entity;
 	private final InteractionHand hand;
 
-	public ItemEntityInteractEventJS(Player player, Entity entity, InteractionHand hand)
-	{
+	public ItemEntityInteractEventJS(Player player, Entity entity, InteractionHand hand) {
 
 		this.player = player;
 		this.entity = entity;
@@ -24,29 +22,24 @@ public class ItemEntityInteractEventJS extends PlayerEventJS
 	}
 
 	@Override
-	public boolean canCancel()
-	{
+	public boolean canCancel() {
 		return true;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(player);
 	}
 
-	public InteractionHand getHand()
-	{
+	public InteractionHand getHand() {
 		return hand;
 	}
 
-	public ItemStackJS getItem()
-	{
+	public ItemStackJS getItem() {
 		return ItemStackJS.of(player.getItemInHand(hand));
 	}
 
-	public EntityJS getTarget()
-	{
+	public EntityJS getTarget() {
 		return getWorld().getEntity(entity);
 	}
 }

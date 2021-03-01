@@ -3,7 +3,6 @@ package dev.latvian.kubejs.core;
 /**
  * @author LatvianModder
  */
-public interface PlayerInteractionManagerKJS
-{
+public interface PlayerInteractionManagerKJS {
 	boolean isDestroyingBlockKJS();
 }

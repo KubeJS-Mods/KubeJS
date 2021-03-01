@@ -13,60 +13,46 @@ import java.util.function.Predicate;
 /**
  * @author LatvianModder
  */
-public class WorldgenRemoveEventJS extends EventJS
-{
-	protected boolean verifyBiomes(WorldgenEntryList biomes)
-	{
+public class WorldgenRemoveEventJS extends EventJS {
+	protected boolean verifyBiomes(WorldgenEntryList biomes) {
 		return true;
 	}
 
-	protected static boolean checkTree(ConfiguredFeature<?, ?> configuredFeature, Predicate<FeatureConfiguration> predicate)
-	{
+	protected static boolean checkTree(ConfiguredFeature<?, ?> configuredFeature, Predicate<FeatureConfiguration> predicate) {
 		return predicate.test(configuredFeature.config) || configuredFeature.config.getFeatures().anyMatch(cf -> checkTree(cf, predicate));
 	}
 
-	protected void removeFeature(GenerationStep.Decoration decoration, Predicate<FeatureConfiguration> predicate)
-	{
+	protected void removeFeature(GenerationStep.Decoration decoration, Predicate<FeatureConfiguration> predicate) {
 	}
 
-	protected void removeSpawn(RemoveSpawnsByCategoryProperties properties)
-	{
+	protected void removeSpawn(RemoveSpawnsByCategoryProperties properties) {
 	}
 
-	protected void removeSpawn(RemoveSpawnsByIDProperties properties)
-	{
+	protected void removeSpawn(RemoveSpawnsByIDProperties properties) {
 	}
 
-	public void removeAllFeatures(String type)
-	{
+	public void removeAllFeatures(String type) {
 		removeFeature(GenerationStep.Decoration.valueOf(type.toUpperCase()), configuredFeature -> true);
 	}
 
-	public void removeAllFeatures()
-	{
-		for (GenerationStep.Decoration decoration : GenerationStep.Decoration.values())
-		{
+	public void removeAllFeatures() {
+		for (GenerationStep.Decoration decoration : GenerationStep.Decoration.values()) {
 			removeFeature(decoration, configuredFeature -> true);
 		}
 	}
 
-	public void removeOres(Consumer<RemoveOresProperties> p)
-	{
+	public void removeOres(Consumer<RemoveOresProperties> p) {
 		RemoveOresProperties properties = new RemoveOresProperties();
 		p.accept(properties);
 
-		if (!verifyBiomes(properties.biomes))
-		{
+		if (!verifyBiomes(properties.biomes)) {
 			return;
 		}
 
 		removeFeature(properties._worldgenLayer, featureConfiguration -> {
-			if (featureConfiguration instanceof OreConfiguration)
-			{
+			if (featureConfiguration instanceof OreConfiguration) {
 				return properties._blocks.check(((OreConfiguration) featureConfiguration).state);
-			}
-			else if (featureConfiguration instanceof ReplaceBlockConfiguration)
-			{
+			} else if (featureConfiguration instanceof ReplaceBlockConfiguration) {
 				return properties._blocks.check(((ReplaceBlockConfiguration) featureConfiguration).state);
 			}
 
@@ -74,29 +60,24 @@ public class WorldgenRemoveEventJS extends EventJS
 		});
 	}
 
-	public void removeSpawnsByCategory(Consumer<RemoveSpawnsByCategoryProperties> p)
-	{
+	public void removeSpawnsByCategory(Consumer<RemoveSpawnsByCategoryProperties> p) {
 		RemoveSpawnsByCategoryProperties properties = new RemoveSpawnsByCategoryProperties();
 		p.accept(properties);
 
-		if (verifyBiomes(properties.biomes))
-		{
+		if (verifyBiomes(properties.biomes)) {
 			removeSpawn(properties);
 		}
 	}
 
-	public void removeSpawnsByID(Consumer<RemoveSpawnsByIDProperties> p)
-	{
+	public void removeSpawnsByID(Consumer<RemoveSpawnsByIDProperties> p) {
 		RemoveSpawnsByIDProperties properties = new RemoveSpawnsByIDProperties();
 		p.accept(properties);
 
-		if (verifyBiomes(properties.biomes))
-		{
+		if (verifyBiomes(properties.biomes)) {
 			removeSpawn(properties);
 		}
 	}
 
-	public void removeAllSpawns()
-	{
+	public void removeAllSpawns() {
 	}
 }

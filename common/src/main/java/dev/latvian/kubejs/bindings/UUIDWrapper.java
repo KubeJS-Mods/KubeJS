@@ -8,16 +8,13 @@ import java.util.UUID;
 /**
  * @author LatvianModder
  */
-public class UUIDWrapper
-{
-	public String toString(UUID id)
-	{
+public class UUIDWrapper {
+	public String toString(UUID id) {
 		return UUIDUtilsJS.toString(id);
 	}
 
 	@Nullable
-	public UUID fromString(Object string)
-	{
+	public UUID fromString(Object string) {
 		return UUIDUtilsJS.fromString(String.valueOf(string));
 	}
 }

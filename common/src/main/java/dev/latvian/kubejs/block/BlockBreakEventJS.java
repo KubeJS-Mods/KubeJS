@@ -13,8 +13,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author LatvianModder
  */
-public class BlockBreakEventJS extends PlayerEventJS
-{
+public class BlockBreakEventJS extends PlayerEventJS {
 	private final ServerPlayer entity;
 	private final Level world;
 	private final BlockPos pos;
@@ -22,8 +21,7 @@ public class BlockBreakEventJS extends PlayerEventJS
 	@Nullable
 	private final IntValue xp;
 
-	public BlockBreakEventJS(ServerPlayer entity, Level world, BlockPos pos, BlockState state, @Nullable IntValue xp)
-	{
+	public BlockBreakEventJS(ServerPlayer entity, Level world, BlockPos pos, BlockState state, @Nullable IntValue xp) {
 		this.entity = entity;
 		this.world = world;
 		this.pos = pos;
@@ -32,42 +30,33 @@ public class BlockBreakEventJS extends PlayerEventJS
 	}
 
 	@Override
-	public boolean canCancel()
-	{
+	public boolean canCancel() {
 		return true;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(entity);
 	}
 
-	public BlockContainerJS getBlock()
-	{
-		return new BlockContainerJS(world, pos)
-		{
+	public BlockContainerJS getBlock() {
+		return new BlockContainerJS(world, pos) {
 			@Override
-			public BlockState getBlockState()
-			{
+			public BlockState getBlockState() {
 				return state;
 			}
 		};
 	}
 
-	public int getXp()
-	{
-		if (xp == null)
-		{
+	public int getXp() {
+		if (xp == null) {
 			return 0;
 		}
 		return xp.getAsInt();
 	}
 
-	public void setXp(int xp)
-	{
-		if (this.xp != null)
-		{
+	public void setXp(int xp) {
+		if (this.xp != null) {
 			this.xp.accept(xp);
 		}
 	}

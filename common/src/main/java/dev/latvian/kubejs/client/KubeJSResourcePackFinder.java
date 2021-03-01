@@ -20,34 +20,25 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class KubeJSResourcePackFinder implements RepositorySource
-{
+public class KubeJSResourcePackFinder implements RepositorySource {
 	@Override
-	public void loadPacks(Consumer<Pack> nameToPackMap, Pack.PackConstructor packInfoFactory)
-	{
-		if (Files.notExists(KubeJSPaths.ASSETS))
-		{
+	public void loadPacks(Consumer<Pack> nameToPackMap, Pack.PackConstructor packInfoFactory) {
+		if (Files.notExists(KubeJSPaths.ASSETS)) {
 			UtilsJS.tryIO(() -> Files.createDirectories(KubeJSPaths.ASSETS));
 			UtilsJS.tryIO(() -> Files.createDirectories(KubeJSPaths.ASSETS.resolve("kubejs/textures/block")));
 			UtilsJS.tryIO(() -> Files.createDirectories(KubeJSPaths.ASSETS.resolve("kubejs/textures/item")));
 
 			try (InputStream in = KubeJS.class.getResourceAsStream("/data/kubejs/example_block_texture.png");
-				 OutputStream out = Files.newOutputStream(KubeJSPaths.ASSETS.resolve("kubejs/textures/block/example_block.png")))
-			{
+			     OutputStream out = Files.newOutputStream(KubeJSPaths.ASSETS.resolve("kubejs/textures/block/example_block.png"))) {
 				out.write(IOUtils.toByteArray(in));
-			}
-			catch (Exception ex)
-			{
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 
 			try (InputStream in = KubeJS.class.getResourceAsStream("/data/kubejs/example_item_texture.png");
-				 OutputStream out = Files.newOutputStream(KubeJSPaths.ASSETS.resolve("kubejs/textures/item/example_item.png")))
-			{
+			     OutputStream out = Files.newOutputStream(KubeJSPaths.ASSETS.resolve("kubejs/textures/item/example_item.png"))) {
 				out.write(IOUtils.toByteArray(in));
-			}
-			catch (Exception ex)
-			{
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}

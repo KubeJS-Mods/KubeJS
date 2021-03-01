@@ -15,22 +15,20 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.GenerationStep;
 
 import java.util.HashMap;
 
 /**
  * @author LatvianModder
  */
-public class DefaultBindings
-{
+public class DefaultBindings {
 	public static final HashMap<String, Object> GLOBAL = new HashMap<>();
 
-	public static void init(ScriptManager manager, BindingsEvent event)
-	{
+	public static void init(ScriptManager manager, BindingsEvent event) {
 		event.add("global", GLOBAL);
 
-		if (event.type == ScriptType.SERVER)
-		{
+		if (event.type == ScriptType.SERVER) {
 			ServerSettings.instance = new ServerSettings();
 			event.add("settings", ServerSettings.instance);
 		}
@@ -41,8 +39,7 @@ public class DefaultBindings
 		event.add("events", new ScriptEventsWrapper(event.type.manager.get().events));
 
 		event.addFunction("onEvent", args -> {
-			for (Object o : ListJS.orSelf(args[0]))
-			{
+			for (Object o : ListJS.orSelf(args[0])) {
 				event.type.manager.get().events.listen(String.valueOf(o), (IEventHandler) args[1]);
 			}
 
@@ -73,8 +70,7 @@ public class DefaultBindings
 
 		event.add("TextColor", TextColor.class);
 
-		for (TextColor color : TextColor.MAP.values())
-		{
+		for (TextColor color : TextColor.MAP.values()) {
 			event.addConstant(color.name.toUpperCase(), color);
 		}
 
@@ -104,6 +100,9 @@ public class DefaultBindings
 		event.add("Hand", InteractionHand.class);
 		event.addConstant("MAIN_HAND", InteractionHand.MAIN_HAND);
 		event.addConstant("OFF_HAND", InteractionHand.OFF_HAND);
+
+		event.add("DecorationGenerationStep", GenerationStep.Decoration.class);
+		event.add("CarvingGenerationStep", GenerationStep.Carving.class);
 
 		KubeJS.instance.proxy.clientBindings(event);
 	}

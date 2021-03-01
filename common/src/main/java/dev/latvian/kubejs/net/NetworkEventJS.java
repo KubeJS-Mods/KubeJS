@@ -9,39 +9,33 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author LatvianModder
  */
-public class NetworkEventJS extends PlayerEventJS
-{
+public class NetworkEventJS extends PlayerEventJS {
 	private final Player player;
 	private final String channel;
 	private final MapJS data;
 
-	public NetworkEventJS(Player p, String c, @Nullable MapJS d)
-	{
+	public NetworkEventJS(Player p, String c, @Nullable MapJS d) {
 		player = p;
 		channel = c;
 		data = d;
 	}
 
 	@Override
-	public boolean canCancel()
-	{
+	public boolean canCancel() {
 		return true;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(player);
 	}
 
-	public String getChannel()
-	{
+	public String getChannel() {
 		return channel;
 	}
 
 	@Nullable
-	public MapJS getData()
-	{
+	public MapJS getData() {
 		return data;
 	}
 }

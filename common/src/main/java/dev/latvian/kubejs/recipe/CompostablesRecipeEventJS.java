@@ -9,25 +9,19 @@ import net.minecraft.world.level.block.ComposterBlock;
 /**
  * @author LatvianModder
  */
-public class CompostablesRecipeEventJS extends EventJS
-{
-	public void remove(IngredientJS o)
-	{
-		for (Item item : o.getVanillaItems())
-		{
+public class CompostablesRecipeEventJS extends EventJS {
+	public void remove(IngredientJS o) {
+		for (Item item : o.getVanillaItems()) {
 			ComposterBlock.COMPOSTABLES.removeFloat(item);
 		}
 	}
 
-	public void removeAll()
-	{
+	public void removeAll() {
 		ComposterBlock.COMPOSTABLES.clear();
 	}
 
-	public void add(IngredientJS o, float f)
-	{
-		for (Item item : o.getVanillaItems())
-		{
+	public void add(IngredientJS o, float f) {
+		for (Item item : o.getVanillaItems()) {
 			ComposterBlock.COMPOSTABLES.put(item, Mth.clamp(f, 0F, 1F));
 		}
 	}

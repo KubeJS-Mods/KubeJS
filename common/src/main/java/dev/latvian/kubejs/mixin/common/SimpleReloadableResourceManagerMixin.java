@@ -14,8 +14,7 @@ import java.util.Map;
  * @author LatvianModder
  */
 @Mixin(SimpleReloadableResourceManager.class)
-public abstract class SimpleReloadableResourceManagerMixin implements SimpleReloadableResourceManagerKJS
-{
+public abstract class SimpleReloadableResourceManagerMixin implements SimpleReloadableResourceManagerKJS {
 	@Override
 	@Accessor("namespacedPacks")
 	public abstract Map<String, FallbackResourceManager> getNamespaceResourceManagersKJS();

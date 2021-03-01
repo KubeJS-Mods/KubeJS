@@ -6,38 +6,32 @@ import net.minecraft.world.entity.LivingEntity;
 /**
  * @author LatvianModder
  */
-public class LivingEntityAttackEventJS extends LivingEntityEventJS
-{
+public class LivingEntityAttackEventJS extends LivingEntityEventJS {
 	private final LivingEntity entity;
 	private final DamageSource source;
 	private final float amount;
 
-	public LivingEntityAttackEventJS(LivingEntity entity, DamageSource source, float amount)
-	{
+	public LivingEntityAttackEventJS(LivingEntity entity, DamageSource source, float amount) {
 		this.entity = entity;
 		this.source = source;
 		this.amount = amount;
 	}
 
 	@Override
-	public boolean canCancel()
-	{
+	public boolean canCancel() {
 		return true;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(entity);
 	}
 
-	public DamageSourceJS getSource()
-	{
+	public DamageSourceJS getSource() {
 		return new DamageSourceJS(getWorld(), source);
 	}
 
-	public float getDamage()
-	{
+	public float getDamage() {
 		return amount;
 	}
 }

@@ -7,8 +7,7 @@ import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public interface ItemHandler extends Iterable<ItemStack>
-{
+public interface ItemHandler extends Iterable<ItemStack> {
 	int getSlots();
 
 	@NotNull
@@ -26,24 +25,19 @@ public interface ItemHandler extends Iterable<ItemStack>
 
 	@NotNull
 	@Override
-	default Iterator<ItemStack> iterator()
-	{
-		return new Iterator<ItemStack>()
-		{
+	default Iterator<ItemStack> iterator() {
+		return new Iterator<ItemStack>() {
 			private int cursor;
 
 			@Override
-			public boolean hasNext()
-			{
+			public boolean hasNext() {
 				return cursor < getSlots();
 			}
 
 			@Override
-			public ItemStack next()
-			{
+			public ItemStack next() {
 				int i = cursor;
-				if (i >= getSlots())
-				{
+				if (i >= getSlots()) {
 					throw new NoSuchElementException();
 				}
 				cursor = i + 1;
@@ -52,8 +46,7 @@ public interface ItemHandler extends Iterable<ItemStack>
 		};
 	}
 
-	interface Mutable extends ItemHandler
-	{
+	interface Mutable extends ItemHandler {
 		void setStackInSlot(int slot, @Nonnull ItemStack stack);
 	}
 }

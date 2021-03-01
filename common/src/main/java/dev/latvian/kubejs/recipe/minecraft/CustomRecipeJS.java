@@ -14,15 +14,13 @@ import dev.latvian.kubejs.util.ListJS;
 /**
  * @author LatvianModder
  */
-public class CustomRecipeJS extends RecipeJS
-{
+public class CustomRecipeJS extends RecipeJS {
 	private String inputKey;
 	private int inputType;
 	private String outputKey;
 	private int outputType;
 
-	public CustomRecipeJS()
-	{
+	public CustomRecipeJS() {
 		inputKey = "";
 		inputType = -1;
 		outputKey = "";
@@ -30,28 +28,22 @@ public class CustomRecipeJS extends RecipeJS
 	}
 
 	@Override
-	public void create(ListJS args)
-	{
+	public void create(ListJS args) {
 		throw new RecipeExceptionJS("Can't create custom recipe for type " + id + "!");
 	}
 
-	private boolean addInput(String k)
-	{
+	private boolean addInput(String k) {
 		JsonElement e = json.get(k);
 
-		if (e == null || e.isJsonNull())
-		{
+		if (e == null || e.isJsonNull()) {
 			return false;
 		}
 
-		if (e.isJsonArray())
-		{
-			for (JsonElement e1 : e.getAsJsonArray())
-			{
+		if (e.isJsonArray()) {
+			for (JsonElement e1 : e.getAsJsonArray()) {
 				IngredientJS i = IngredientJS.ingredientFromRecipeJson(e1);
 
-				if (!i.isEmpty())
-				{
+				if (!i.isEmpty()) {
 					inputItems.add(i);
 				}
 			}
@@ -63,8 +55,7 @@ public class CustomRecipeJS extends RecipeJS
 
 		IngredientJS i = IngredientJS.ingredientFromRecipeJson(e);
 
-		if (!i.isEmpty())
-		{
+		if (!i.isEmpty()) {
 			inputItems.add(i);
 			inputKey = k;
 			inputType = 0;
@@ -74,23 +65,18 @@ public class CustomRecipeJS extends RecipeJS
 		return false;
 	}
 
-	private boolean addOutput(String k)
-	{
+	private boolean addOutput(String k) {
 		JsonElement e = json.get(k);
 
-		if (e == null || e.isJsonNull())
-		{
+		if (e == null || e.isJsonNull()) {
 			return false;
 		}
 
-		if (e.isJsonArray())
-		{
-			for (JsonElement e1 : e.getAsJsonArray())
-			{
+		if (e.isJsonArray()) {
+			for (JsonElement e1 : e.getAsJsonArray()) {
 				ItemStackJS i = ItemStackJS.of(e1);
 
-				if (!i.isEmpty())
-				{
+				if (!i.isEmpty()) {
 					outputItems.add(i);
 				}
 			}
@@ -102,19 +88,14 @@ public class CustomRecipeJS extends RecipeJS
 
 		ItemStackJS i = ItemStackJS.of(e);
 
-		if (!i.isEmpty())
-		{
-			if (e.isJsonPrimitive())
-			{
+		if (!i.isEmpty()) {
+			if (e.isJsonPrimitive()) {
 				outputType = 2;
 
-				if (json.has("count"))
-				{
+				if (json.has("count")) {
 					i.withCount(json.get("count").getAsInt());
 				}
-			}
-			else
-			{
+			} else {
 				outputType = 0;
 			}
 
@@ -127,8 +108,7 @@ public class CustomRecipeJS extends RecipeJS
 	}
 
 	@Override
-	public void deserialize()
-	{
+	public void deserialize() {
 		inputItems.clear();
 		outputItems.clear();
 		inputKey = "";
@@ -136,14 +116,12 @@ public class CustomRecipeJS extends RecipeJS
 		outputKey = "";
 		outputType = -1;
 
-		if (originalRecipe != null && SpecialRecipeSerializerManager.INSTANCE.isSpecial(originalRecipe))
-		{
+		if (originalRecipe != null && SpecialRecipeSerializerManager.INSTANCE.isSpecial(originalRecipe)) {
 			ScriptType.SERVER.console.debug("Skipped " + this + " as custom recipe because it is dynamic.");
 			return;
 		}
 
-		try
-		{
+		try {
 			if (!addInput("ingredient")
 					&& !addInput("ingredients")
 					&& !addInput("in")
@@ -153,17 +131,13 @@ public class CustomRecipeJS extends RecipeJS
 					&& !addInput("item_input")
 					&& !addInput("item_inputs")
 					&& !addInput("infusionInput")
-			)
-			{
+			) {
 				ScriptType.SERVER.console.debug("! " + this + ": Couldn't find any input items!");
 			}
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 		}
 
-		try
-		{
+		try {
 			if (!addOutput("result")
 					&& !addOutput("results")
 					&& !addOutput("out")
@@ -174,58 +148,42 @@ public class CustomRecipeJS extends RecipeJS
 					&& !addOutput("item_outputs")
 					&& !addOutput("mainOutput")
 					&& !addOutput("secondaryOutput")
-			)
-			{
+			) {
 				ScriptType.SERVER.console.debug("! " + this + ": Couldn't find any output items!");
 			}
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 		}
 	}
 
 	@Override
-	public void serialize()
-	{
-		if (serializeOutputs && outputType != -1 && !outputKey.isEmpty())
-		{
-			if (outputType == 1)
-			{
+	public void serialize() {
+		if (serializeOutputs && outputType != -1 && !outputKey.isEmpty()) {
+			if (outputType == 1) {
 				JsonArray a = new JsonArray();
 
-				for (ItemStackJS in : outputItems)
-				{
+				for (ItemStackJS in : outputItems) {
 					a.add(in.toResultJson());
 				}
 
 				json.add(outputKey, a);
-			}
-			else if (outputType == 2)
-			{
+			} else if (outputType == 2) {
 				json.addProperty(outputKey, (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).getId());
 				json.addProperty("count", (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).getCount());
-			}
-			else if (outputType == 0)
-			{
+			} else if (outputType == 0) {
 				json.add(outputKey, (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).toResultJson());
 			}
 		}
 
-		if (serializeInputs && inputType != -1 && !inputKey.isEmpty())
-		{
-			if (inputType == 1)
-			{
+		if (serializeInputs && inputType != -1 && !inputKey.isEmpty()) {
+			if (inputType == 1) {
 				JsonArray a = new JsonArray();
 
-				for (IngredientJS in : inputItems)
-				{
+				for (IngredientJS in : inputItems) {
 					a.add(in.toJson());
 				}
 
 				json.add(inputKey, a);
-			}
-			else if (inputType == 0)
-			{
+			} else if (inputType == 0) {
 				json.add(inputKey, (inputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : inputItems.get(0)).toJson());
 			}
 		}

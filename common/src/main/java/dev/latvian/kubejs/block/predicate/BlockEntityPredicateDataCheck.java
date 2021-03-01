@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
  * @author LatvianModder
  */
 @FunctionalInterface
-public interface BlockEntityPredicateDataCheck
-{
+public interface BlockEntityPredicateDataCheck {
 	boolean checkData(@Nullable MapJS data);
 }

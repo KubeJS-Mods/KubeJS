@@ -7,34 +7,28 @@ import net.minecraft.stats.StatsCounter;
 /**
  * @author LatvianModder
  */
-public class PlayerStatsJS
-{
+public class PlayerStatsJS {
 	private final PlayerJS<?> player;
 	private final StatsCounter statFile;
 
-	public PlayerStatsJS(PlayerJS<?> p, StatsCounter s)
-	{
+	public PlayerStatsJS(PlayerJS<?> p, StatsCounter s) {
 		player = p;
 		statFile = s;
 	}
 
-	public PlayerJS<?> getPlayer()
-	{
+	public PlayerJS<?> getPlayer() {
 		return player;
 	}
 
-	public int get(ResourceLocation id)
-	{
+	public int get(ResourceLocation id) {
 		return statFile.getValue(UtilsJS.getStat(id));
 	}
 
-	public void set(ResourceLocation id, int value)
-	{
+	public void set(ResourceLocation id, int value) {
 		statFile.setValue(player.minecraftPlayer, UtilsJS.getStat(id), value);
 	}
 
-	public void add(ResourceLocation id, int value)
-	{
+	public void add(ResourceLocation id, int value) {
 		statFile.increment(player.minecraftPlayer, UtilsJS.getStat(id), value);
 	}
 }

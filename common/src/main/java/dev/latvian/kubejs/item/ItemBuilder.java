@@ -1,12 +1,12 @@
 package dev.latvian.kubejs.item;
 
+import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.bindings.RarityWrapper;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.BuilderBase;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.registry.ToolType;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -21,8 +21,7 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class ItemBuilder extends BuilderBase
-{
+public class ItemBuilder extends BuilderBase {
 	public int maxStackSize;
 	public int maxDamage;
 	public String containerItem;
@@ -41,8 +40,7 @@ public class ItemBuilder extends BuilderBase
 
 	public ItemJS item;
 
-	public ItemBuilder(String i)
-	{
+	public ItemBuilder(String i) {
 		super(i);
 		maxStackSize = 64;
 		maxDamage = 0;
@@ -62,87 +60,71 @@ public class ItemBuilder extends BuilderBase
 	}
 
 	@Override
-	public String getType()
-	{
+	public String getType() {
 		return "item";
 	}
 
-	public ItemBuilder maxStackSize(int v)
-	{
+	public ItemBuilder maxStackSize(int v) {
 		maxStackSize = v;
 		return this;
 	}
 
-	public ItemBuilder unstackable()
-	{
+	public ItemBuilder unstackable() {
 		return maxStackSize(1);
 	}
 
-	public ItemBuilder maxDamage(int v)
-	{
+	public ItemBuilder maxDamage(int v) {
 		maxDamage = v;
 		return this;
 	}
 
-	public ItemBuilder containerItem(String id)
-	{
+	public ItemBuilder containerItem(String id) {
 		containerItem = id;
 		return this;
 	}
 
-	public ItemBuilder tool(String type, int level)
-	{
+	public ItemBuilder tool(String type, int level) {
 		return tool(ToolType.byName(type), level);
 	}
 
-	public ItemBuilder tool(ToolType type, int level)
-	{
+	public ItemBuilder tool(ToolType type, int level) {
 		tools.put(type, level);
 		return this;
 	}
 
-	public ItemBuilder miningSpeed(float miningSpeed)
-	{
+	public ItemBuilder miningSpeed(float miningSpeed) {
 		this.miningSpeed = miningSpeed;
 		return this;
 	}
 
-	public ItemBuilder attackDamage(float attackDamage)
-	{
+	public ItemBuilder attackDamage(float attackDamage) {
 		this.attackDamage = attackDamage;
 		return this;
 	}
 
-	public ItemBuilder attackSpeed(float attackSpeed)
-	{
+	public ItemBuilder attackSpeed(float attackSpeed) {
 		this.attackSpeed = attackSpeed;
 		return this;
 	}
 
-	public ItemBuilder rarity(RarityWrapper v)
-	{
+	public ItemBuilder rarity(RarityWrapper v) {
 		rarity = v;
 		return this;
 	}
 
-	public ItemBuilder glow(boolean v)
-	{
+	public ItemBuilder glow(boolean v) {
 		glow = v;
 		return this;
 	}
 
-	public ItemBuilder tooltip(Object text)
-	{
+	public ItemBuilder tooltip(Object text) {
 		tooltip.add(Text.of(text));
 		return this;
 	}
 
-	public ItemBuilder group(String g)
-	{
-		for (CreativeModeTab ig : CreativeModeTab.TABS)
-		{
-			if (ig.getRecipeFolderName().equals(g))
-			{
+	public ItemBuilder group(String g) {
+		for (CreativeModeTab ig : CreativeModeTab.TABS) {
+			if (ig.getRecipeFolderName().equals(g)) {
 				group = ig;
 				return this;
 			}
@@ -151,82 +133,67 @@ public class ItemBuilder extends BuilderBase
 		return this;
 	}
 
-	public ItemBuilder color(int index, int c)
-	{
+	public ItemBuilder color(int index, int c) {
 		color.put(index, 0xFF000000 | c);
 		return this;
 	}
 
-	public ItemBuilder texture(String tex)
-	{
+	public ItemBuilder texture(String tex) {
 		texture = tex;
 		return this;
 	}
 
-	public ItemBuilder parentModel(String m)
-	{
+	public ItemBuilder parentModel(String m) {
 		parentModel = m;
 		return this;
 	}
 
-	public ItemBuilder food(Consumer<FoodBuilder> b)
-	{
+	public ItemBuilder food(Consumer<FoodBuilder> b) {
 		foodBuilder = new FoodBuilder();
 		b.accept(foodBuilder);
 		return this;
 	}
 
-	public Map<ToolType, Integer> getToolsMap()
-	{
+	public Map<ToolType, Integer> getToolsMap() {
 		return tools;
 	}
 
-	public float getMiningSpeed()
-	{
+	public float getMiningSpeed() {
 		return miningSpeed;
 	}
 
-	public Float getAttackDamage()
-	{
+	public Float getAttackDamage() {
 		return attackDamage;
 	}
 
-	public Float getAttackSpeed()
-	{
+	public Float getAttackSpeed() {
 		return attackSpeed;
 	}
 
-	public Item.Properties createItemProperties()
-	{
+	public Item.Properties createItemProperties() {
 		Item.Properties properties = new Item.Properties();
 
 		properties.tab(group);
 
-		if (maxDamage > 0)
-		{
+		if (maxDamage > 0) {
 			properties.durability(maxDamage);
-		}
-		else
-		{
+		} else {
 			properties.stacksTo(maxStackSize);
 		}
 
 		properties.rarity(rarity.rarity);
 
-		for (Map.Entry<ToolType, Integer> entry : tools.entrySet())
-		{
+		for (Map.Entry<ToolType, Integer> entry : tools.entrySet()) {
 			appendToolType(properties, entry.getKey(), entry.getValue());
 		}
 
-		Item item = Registry.ITEM.get(new ResourceLocation(containerItem));
+		Item item = KubeJSRegistries.items().get(new ResourceLocation(containerItem));
 
-		if (item != Items.AIR)
-		{
+		if (item != Items.AIR) {
 			properties.craftRemainder(item);
 		}
 
-		if (foodBuilder != null)
-		{
+		if (foodBuilder != null) {
 			properties.food(foodBuilder.build());
 		}
 
@@ -234,8 +201,7 @@ public class ItemBuilder extends BuilderBase
 	}
 
 	@ExpectPlatform
-	private static void appendToolType(Item.Properties properties, ToolType type, Integer level)
-	{
+	private static void appendToolType(Item.Properties properties, ToolType type, Integer level) {
 		throw new AssertionError();
 	}
 }

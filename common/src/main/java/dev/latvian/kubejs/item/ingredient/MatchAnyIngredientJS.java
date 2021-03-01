@@ -17,26 +17,21 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS>
-{
+public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS> {
 	public final List<IngredientJS> ingredients = new ArrayList<>();
 
-	public MatchAnyIngredientJS add(@Nullable Object ingredient)
-	{
+	public MatchAnyIngredientJS add(@Nullable Object ingredient) {
 		IngredientJS i = IngredientJS.of(ingredient);
 
-		if (i != EmptyItemStackJS.INSTANCE)
-		{
+		if (i != EmptyItemStackJS.INSTANCE) {
 			ingredients.add(i);
 		}
 
 		return this;
 	}
 
-	public MatchAnyIngredientJS addAll(Object ingredients)
-	{
-		for (Object o : ListJS.orSelf(ingredients))
-		{
+	public MatchAnyIngredientJS addAll(Object ingredients) {
+		for (Object o : ListJS.orSelf(ingredients)) {
 			add(o);
 		}
 
@@ -44,17 +39,13 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	}
 
 	@Override
-	public boolean test(ItemStackJS stack)
-	{
-		if (stack.isEmpty())
-		{
+	public boolean test(ItemStackJS stack) {
+		if (stack.isEmpty()) {
 			return false;
 		}
 
-		for (IngredientJS ingredient : ingredients)
-		{
-			if (ingredient.test(stack))
-			{
+		for (IngredientJS ingredient : ingredients) {
+			if (ingredient.test(stack)) {
 				return true;
 			}
 		}
@@ -63,17 +54,13 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	}
 
 	@Override
-	public boolean testVanilla(ItemStack stack)
-	{
-		if (stack.isEmpty())
-		{
+	public boolean testVanilla(ItemStack stack) {
+		if (stack.isEmpty()) {
 			return false;
 		}
 
-		for (IngredientJS ingredient : ingredients)
-		{
-			if (ingredient.testVanilla(stack))
-			{
+		for (IngredientJS ingredient : ingredients) {
+			if (ingredient.testVanilla(stack)) {
 				return true;
 			}
 		}
@@ -82,17 +69,13 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	}
 
 	@Override
-	public boolean testVanillaItem(Item item)
-	{
-		if (item == Items.AIR)
-		{
+	public boolean testVanillaItem(Item item) {
+		if (item == Items.AIR) {
 			return false;
 		}
 
-		for (IngredientJS ingredient : ingredients)
-		{
-			if (ingredient.testVanillaItem(item))
-			{
+		for (IngredientJS ingredient : ingredients) {
+			if (ingredient.testVanillaItem(item)) {
 				return true;
 			}
 		}
@@ -101,12 +84,10 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	}
 
 	@Override
-	public Set<ItemStackJS> getStacks()
-	{
+	public Set<ItemStackJS> getStacks() {
 		Set<ItemStackJS> set = new LinkedHashSet<>();
 
-		for (IngredientJS ingredient : ingredients)
-		{
+		for (IngredientJS ingredient : ingredients) {
 			set.addAll(ingredient.getStacks());
 		}
 
@@ -114,12 +95,10 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	}
 
 	@Override
-	public Set<Item> getVanillaItems()
-	{
+	public Set<Item> getVanillaItems() {
 		Set<Item> set = new LinkedHashSet<>();
 
-		for (IngredientJS ingredient : ingredients)
-		{
+		for (IngredientJS ingredient : ingredients) {
 			set.addAll(ingredient.getVanillaItems());
 		}
 
@@ -127,12 +106,9 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	}
 
 	@Override
-	public boolean isEmpty()
-	{
-		for (IngredientJS i : ingredients)
-		{
-			if (!i.isEmpty())
-			{
+	public boolean isEmpty() {
+		for (IngredientJS i : ingredients) {
+			if (!i.isEmpty()) {
 				return false;
 			}
 		}
@@ -141,18 +117,15 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	}
 
 	@Override
-	public void accept(IngredientJS ingredient)
-	{
+	public void accept(IngredientJS ingredient) {
 		ingredients.add(ingredient);
 	}
 
 	@Override
-	public IngredientJS getCopy()
-	{
+	public IngredientJS getCopy() {
 		MatchAnyIngredientJS i = new MatchAnyIngredientJS();
 
-		for (IngredientJS in : ingredients)
-		{
+		for (IngredientJS in : ingredients) {
 			i.ingredients.add(in.getCopy());
 		}
 
@@ -160,18 +133,14 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	}
 
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return ingredients.toString();
 	}
 
 	@Override
-	public boolean isInvalidRecipeIngredient()
-	{
-		for (IngredientJS i : ingredients)
-		{
-			if (i.isInvalidRecipeIngredient())
-			{
+	public boolean isInvalidRecipeIngredient() {
+		for (IngredientJS i : ingredients) {
+			if (i.isInvalidRecipeIngredient()) {
 				return true;
 			}
 		}

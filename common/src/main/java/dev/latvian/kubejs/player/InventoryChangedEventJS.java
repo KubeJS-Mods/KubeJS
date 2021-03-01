@@ -8,32 +8,27 @@ import net.minecraft.world.item.ItemStack;
 /**
  * @author LatvianModder
  */
-public class InventoryChangedEventJS extends PlayerEventJS
-{
+public class InventoryChangedEventJS extends PlayerEventJS {
 	private final ServerPlayer player;
 	private final ItemStack item;
 	private final int slot;
 
-	public InventoryChangedEventJS(ServerPlayer p, ItemStack is, int s)
-	{
+	public InventoryChangedEventJS(ServerPlayer p, ItemStack is, int s) {
 		player = p;
 		item = is;
 		slot = s;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(player);
 	}
 
-	public ItemStackJS getItem()
-	{
+	public ItemStackJS getItem() {
 		return ItemStackJS.of(item);
 	}
 
-	public int getSlot()
-	{
+	public int getSlot() {
 		return slot;
 	}
 }

@@ -12,29 +12,23 @@ import java.util.function.Function;
 /**
  * @author LatvianModder
  */
-public class AddJEISubtypesEventJS extends EventJS
-{
+public class AddJEISubtypesEventJS extends EventJS {
 	@FunctionalInterface
-	public interface Interpreter extends Function<ItemStackJS, Object>
-	{
+	public interface Interpreter extends Function<ItemStackJS, Object> {
 	}
 
-	private static class NBTKeyInterpreter implements ISubtypeInterpreter
-	{
+	private static class NBTKeyInterpreter implements ISubtypeInterpreter {
 		private final String key;
 
-		private NBTKeyInterpreter(String k)
-		{
+		private NBTKeyInterpreter(String k) {
 			key = k;
 		}
 
 		@Override
-		public String apply(ItemStack stack)
-		{
+		public String apply(ItemStack stack) {
 			CompoundTag nbt = stack.getTag();
 
-			if (nbt == null || !nbt.contains(key))
-			{
+			if (nbt == null || !nbt.contains(key)) {
 				return "";
 			}
 
@@ -44,26 +38,22 @@ public class AddJEISubtypesEventJS extends EventJS
 
 	private final ISubtypeRegistration registration;
 
-	public AddJEISubtypesEventJS(ISubtypeRegistration r)
-	{
+	public AddJEISubtypesEventJS(ISubtypeRegistration r) {
 		registration = r;
 	}
 
-	public void registerInterpreter(Object id, Interpreter interpreter)
-	{
+	public void registerInterpreter(Object id, Interpreter interpreter) {
 		registration.registerSubtypeInterpreter(ItemStackJS.of(id).getItem(), stack -> {
 			Object o = interpreter.apply(ItemStackJS.of(stack));
 			return o == null ? "" : o.toString();
 		});
 	}
 
-	public void useNBT(Object id)
-	{
+	public void useNBT(Object id) {
 		registration.useNbtForSubtypes(ItemStackJS.of(id).getItem());
 	}
 
-	public void useNBTKey(Object id, String key)
-	{
+	public void useNBTKey(Object id, String key) {
 		registration.registerSubtypeInterpreter(ItemStackJS.of(id).getItem(), new NBTKeyInterpreter(key));
 	}
 }

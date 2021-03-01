@@ -10,14 +10,10 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class ItemModificationEventJS extends EventJS
-{
-	public void modify(IngredientJS in, Consumer<ItemModificationProperties> c)
-	{
-		for (Item item : in.getVanillaItems())
-		{
-			if (item instanceof ItemKJS)
-			{
+public class ItemModificationEventJS extends EventJS {
+	public void modify(IngredientJS in, Consumer<ItemModificationProperties> c) {
+		for (Item item : in.getVanillaItems()) {
+			if (item instanceof ItemKJS) {
 				c.accept(new ItemModificationProperties((ItemKJS) item));
 			}
 		}

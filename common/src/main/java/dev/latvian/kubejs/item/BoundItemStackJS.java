@@ -12,56 +12,46 @@ import java.util.Objects;
 /**
  * @author LatvianModder
  */
-public class BoundItemStackJS extends ItemStackJS
-{
+public class BoundItemStackJS extends ItemStackJS {
 	private final ItemStack stack;
 
-	public BoundItemStackJS(ItemStack is)
-	{
+	public BoundItemStackJS(ItemStack is) {
 		stack = is;
 	}
 
 	@Override
-	public Item getItem()
-	{
+	public Item getItem() {
 		return stack.getItem();
 	}
 
 	@Override
-	public ItemStack getItemStack()
-	{
+	public ItemStack getItemStack() {
 		return stack;
 	}
 
 	@Override
-	public ItemStackJS getCopy()
-	{
+	public ItemStackJS getCopy() {
 		return new BoundItemStackJS(stack.copy()).withChance(getChance());
 	}
 
 	@Override
-	public void setCount(int c)
-	{
+	public void setCount(int c) {
 		stack.setCount(c);
 	}
 
 	@Override
-	public int getCount()
-	{
+	public int getCount() {
 		return stack.getCount();
 	}
 
 	@Override
-	public boolean isEmpty()
-	{
+	public boolean isEmpty() {
 		return stack.isEmpty();
 	}
 
 	@Override
-	public ItemStackJS withCount(int c)
-	{
-		if (c <= 0)
-		{
+	public ItemStackJS withCount(int c) {
+		if (c <= 0) {
 			return EmptyItemStackJS.INSTANCE;
 		}
 
@@ -71,12 +61,10 @@ public class BoundItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public MapJS getNbt()
-	{
+	public MapJS getNbt() {
 		MapJS nbt = MapJS.of(stack.getTag());
 
-		if (nbt == null)
-		{
+		if (nbt == null) {
 			nbt = new MapJS();
 		}
 
@@ -85,12 +73,10 @@ public class BoundItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public ItemStackJS withNBT(@Nullable Object o)
-	{
+	public ItemStackJS withNBT(@Nullable Object o) {
 		CompoundTag tag = MapJS.nbt(o);
 
-		if (tag != null)
-		{
+		if (tag != null) {
 			ItemStack is = stack.copy();
 
 			return new BoundItemStackJS(is).withChance(getChance());
@@ -100,22 +86,18 @@ public class BoundItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public void setName(@Nullable Object displayName)
-	{
+	public void setName(@Nullable Object displayName) {
 		stack.setHoverName(Text.of(displayName).component());
 	}
 
 	@Override
-	public boolean test(ItemStackJS stack)
-	{
+	public boolean test(ItemStackJS stack) {
 		return stack instanceof BoundItemStackJS ? testVanilla(((BoundItemStackJS) stack).stack) : super.test(stack);
 	}
 
 	@Override
-	public boolean testVanilla(ItemStack stack2)
-	{
-		if (stack.getItem() == stack2.getItem())
-		{
+	public boolean testVanilla(ItemStack stack2) {
+		if (stack.getItem() == stack2.getItem()) {
 			CompoundTag nbt = stack.getTag();
 			CompoundTag nbt2 = stack2.getTag();
 			return Objects.equals(nbt, nbt2);
@@ -125,24 +107,21 @@ public class BoundItemStackJS extends ItemStackJS
 	}
 
 	@Override
-	public boolean isNBTEqual(ItemStackJS stack2)
-	{
+	public boolean isNBTEqual(ItemStackJS stack2) {
 		CompoundTag nbt = stack.getTag();
 		CompoundTag nbt2 = MapJS.nbt(stack2.getNbt());
 		return Objects.equals(nbt, nbt2);
 	}
 
 	@Override
-	public boolean isNBTEqual(ItemStack stack2)
-	{
+	public boolean isNBTEqual(ItemStack stack2) {
 		CompoundTag nbt = stack.getTag();
 		CompoundTag nbt2 = stack2.getTag();
 		return Objects.equals(nbt, nbt2);
 	}
 
 	@Override
-	public void onChanged(@Nullable MapJS o)
-	{
+	public void onChanged(@Nullable MapJS o) {
 		stack.setTag(MapJS.nbt(o));
 	}
 }

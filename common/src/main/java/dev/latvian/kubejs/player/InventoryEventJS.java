@@ -8,26 +8,22 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 /**
  * @author LatvianModder
  */
-public class InventoryEventJS extends PlayerEventJS
-{
+public class InventoryEventJS extends PlayerEventJS {
 	private final Player player;
 	private final AbstractContainerMenu menu;
 
-	public InventoryEventJS(Player player, AbstractContainerMenu menu)
-	{
+	public InventoryEventJS(Player player, AbstractContainerMenu menu) {
 		this.player = player;
 		this.menu = menu;
 	}
 
 	@Override
-	public EntityJS getEntity()
-	{
+	public EntityJS getEntity() {
 		return entityOf(player);
 	}
 
 	@MinecraftClass
-	public AbstractContainerMenu getInventoryContainer()
-	{
+	public AbstractContainerMenu getInventoryContainer() {
 		return menu;
 	}
 }
