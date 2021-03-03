@@ -139,7 +139,7 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void clientTick(Minecraft minecraft) {
-		if (Minecraft.getInstance().player != null) {
+		if (Minecraft.getInstance().player != null && ClientWorldJS.instance != null) {
 			new ClientTickEventJS(ClientWorldJS.instance.clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_TICK);
 		}
 	}
