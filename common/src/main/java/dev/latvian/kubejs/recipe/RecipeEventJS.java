@@ -9,7 +9,6 @@ import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.core.RecipeManagerKJS;
 import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.filter.RecipeFilter;
@@ -19,7 +18,6 @@ import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.DynamicMap;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.platform.Platform;
@@ -192,7 +190,7 @@ public class RecipeEventJS extends EventJS {
 					if (SpecialRecipeSerializerManager.INSTANCE.isSpecial(recipe.originalRecipe)) {
 						ScriptType.SERVER.console.debug("Loaded recipe " + recipeIdAndType + ": <dynamic>");
 					} else {
-						ScriptType.SERVER.console.debug("Loaded recipe " + recipeIdAndType + ": " + recipe.inputItems + " -> " + recipe.outputItems);
+						ScriptType.SERVER.console.debug("Loaded recipe " + recipeIdAndType + ": " + recipe.getFromToString());
 					}
 				}
 
@@ -309,10 +307,13 @@ public class RecipeEventJS extends EventJS {
 					try {
 						recipe.serializeJson();
 						Recipe<?> resultRecipe = Objects.requireNonNull(recipe.type.serializer.fromJson(recipe.id, recipe.json));
-						if (recipe.type.serializer.getClass().getName().contains("RebornRecipeType")) {
-							MethodHandle constructor = getTRRecipeConstructor(resultRecipe, recipe);
-							resultRecipe = (Recipe<?>) constructor.invoke(recipe.type.serializer, recipe.id);
-							getTRRecipeSerializer(resultRecipe).invoke(resultRecipe, recipe.json);
+						if (Platform.isFabric()) {
+							// Fabric: we love tech reborn
+							if (recipe.type.serializer.getClass().getName().contains("RebornRecipeType")) {
+								MethodHandle constructor = getTRRecipeConstructor(resultRecipe, recipe);
+								resultRecipe = (Recipe<?>) constructor.invoke(recipe.type.serializer, recipe.id);
+								getTRRecipeSerializer(resultRecipe).invoke(resultRecipe, recipe.json);
+							}
 						}
 						recipe.originalRecipe = resultRecipe;
 					} catch (Throwable ex) {
@@ -360,15 +361,10 @@ public class RecipeEventJS extends EventJS {
 	public RecipeJS addRecipe(RecipeJS r, RecipeTypeJS type, ListJS args1) {
 		addedRecipes.add(r);
 
-		if (r.id == null) {
-			ResourceLocation itemId = UtilsJS.getMCID(r.outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE.getId() : r.outputItems.get(0).getId());
-			r.id = new ResourceLocation(Registries.getId(type.serializer, Registry.RECIPE_SERIALIZER_REGISTRY).getNamespace(), "kubejs_generated_" + addedRecipes.size() + "_" + itemId.getNamespace() + "_" + itemId.getPath().replace('/', '_'));
-		}
-
 		if (ServerSettings.instance.logAddedRecipes) {
-			ScriptType.SERVER.console.info("+ " + r + ": " + r.inputItems + " -> " + r.outputItems);
+			ScriptType.SERVER.console.info("+ " + r.getType() + ": " + r.getFromToString());
 		} else if (ScriptType.SERVER.console.shouldPrintDebug()) {
-			ScriptType.SERVER.console.debug("+ " + r + ": " + r.inputItems + " -> " + r.outputItems);
+			ScriptType.SERVER.console.debug("+ " + r.getType() + ": " + r.getFromToString());
 		}
 
 		return r;
@@ -410,9 +406,9 @@ public class RecipeEventJS extends EventJS {
 		{
 			if (removedRecipes.add(r)) {
 				if (ServerSettings.instance.logRemovedRecipes) {
-					ScriptType.SERVER.console.info("- " + r + ": " + r.inputItems + " -> " + r.outputItems);
+					ScriptType.SERVER.console.info("- " + r + ": " + r.getFromToString());
 				} else if (ScriptType.SERVER.console.shouldPrintDebug()) {
-					ScriptType.SERVER.console.debug("- " + r + ": " + r.inputItems + " -> " + r.outputItems);
+					ScriptType.SERVER.console.debug("- " + r + ": " + r.getFromToString());
 				}
 
 				count.increment();

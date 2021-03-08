@@ -12,8 +12,15 @@ import dev.latvian.kubejs.util.MapJS;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
+import org.apache.commons.codec.binary.Hex;
 
 import javax.annotation.Nullable;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +33,7 @@ import java.util.stream.Collectors;
 public abstract class RecipeJS {
 	public static RecipeJS currentRecipe = null;
 	public static boolean itemErrors = false;
+	private static MessageDigest messageDigest;
 
 	public ResourceLocation id;
 	public RecipeTypeJS type;
@@ -301,5 +309,68 @@ public abstract class RecipeJS {
 		}
 
 		return list;
+	}
+
+	public String getFromToString() {
+		return inputItems + " -> " + outputItems;
+	}
+
+	private static void writeJsonHash(DataOutputStream stream, @Nullable JsonElement element) throws IOException {
+		if (element == null || element.isJsonNull()) {
+			stream.writeByte('-');
+		} else if (element instanceof JsonArray) {
+			stream.writeByte('[');
+			for (JsonElement e : (JsonArray) element) {
+				writeJsonHash(stream, e);
+			}
+		} else if (element instanceof JsonObject) {
+			stream.writeByte('{');
+			for (Map.Entry<String, JsonElement> e : ((JsonObject) element).entrySet()) {
+				stream.writeBytes(e.getKey());
+				writeJsonHash(stream, e.getValue());
+			}
+		} else if (element instanceof JsonPrimitive) {
+			stream.writeByte('=');
+			if (((JsonPrimitive) element).isBoolean()) {
+				stream.writeBoolean(element.getAsBoolean());
+			} else if (((JsonPrimitive) element).isNumber()) {
+				stream.writeDouble(element.getAsDouble());
+			} else {
+				stream.writeBytes(element.getAsString());
+			}
+		} else {
+			stream.writeByte('?');
+			stream.writeInt(element.hashCode());
+		}
+	}
+
+	public byte[] getJsonHashBytes() {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
+			writeJsonHash(new DataOutputStream(baos), json);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			int h = json.hashCode();
+			return new byte[]{(byte) (h >> 24), (byte) (h >> 16), (byte) (h >> 8), (byte) (h >> 0)};
+		}
+
+		return baos.toByteArray();
+	}
+
+	public String getUniqueId() {
+		if (messageDigest == null) {
+			try {
+				messageDigest = MessageDigest.getInstance("MD5");
+			} catch (NoSuchAlgorithmException nsae) {
+				throw new InternalError("MD5 not supported", nsae);
+			}
+		}
+
+		if (messageDigest == null) {
+			return new BigInteger(Hex.encodeHexString(getJsonHashBytes()), 16).toString(36);
+		} else {
+			messageDigest.reset();
+			return new BigInteger(Hex.encodeHexString(messageDigest.digest(getJsonHashBytes())), 16).toString(36);
+		}
 	}
 }
