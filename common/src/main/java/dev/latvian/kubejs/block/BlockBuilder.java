@@ -2,6 +2,7 @@ package dev.latvian.kubejs.block;
 
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.util.BuilderBase;
+import dev.latvian.mods.rhino.util.DynamicFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import me.shedaniel.architectury.registry.BlockProperties;
 import me.shedaniel.architectury.registry.ToolType;
@@ -41,6 +42,7 @@ public class BlockBuilder extends BuilderBase {
 	public float slipperiness = 0.6F;
 	public float speedFactor = 1.0F;
 	public float jumpFactor = 1.0F;
+	public DynamicFunction.Callback randomTickCallback;
 
 	public BlockJS block;
 
@@ -68,6 +70,7 @@ public class BlockBuilder extends BuilderBase {
 		notSolid = false;
 		waterlogged = false;
 		noDrops = false;
+		randomTickCallback = null;
 	}
 
 	@Override
@@ -206,6 +209,16 @@ public class BlockBuilder extends BuilderBase {
 
 	public BlockBuilder jumpFactor(float f) {
 		jumpFactor = f;
+		return this;
+	}
+
+	/**
+	 * Parameters for callback are BlockContainerJS and java.util.Random.
+	 *
+	 * @param randomTickCallback
+	 */
+	public BlockBuilder randomTick(@Nullable DynamicFunction.Callback randomTickCallback) {
+		this.randomTickCallback = randomTickCallback;
 		return this;
 	}
 
