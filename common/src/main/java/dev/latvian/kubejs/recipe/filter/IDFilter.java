@@ -15,7 +15,7 @@ public class IDFilter implements RecipeFilter {
 
 	@Override
 	public boolean test(RecipeJS r) {
-		return r.id.equals(id);
+		return r.getOrCreateId().equals(id);
 	}
 
 	@Override

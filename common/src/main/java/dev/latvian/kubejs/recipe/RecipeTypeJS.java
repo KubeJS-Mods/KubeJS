@@ -2,6 +2,7 @@ package dev.latvian.kubejs.recipe;
 
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 import java.util.function.Supplier;
@@ -12,12 +13,14 @@ import java.util.function.Supplier;
 public class RecipeTypeJS {
 	public final RecipeSerializer<?> serializer;
 	public final Supplier<RecipeJS> factory;
+	private final ResourceLocation id;
 	private final String string;
 
 	public RecipeTypeJS(RecipeSerializer<?> s, Supplier<RecipeJS> f) {
 		serializer = s;
 		factory = f;
-		string = Registries.getId(s, Registry.RECIPE_SERIALIZER_REGISTRY).toString();
+		id = Registries.getId(s, Registry.RECIPE_SERIALIZER_REGISTRY);
+		string = id.toString();
 	}
 
 	public boolean isCustom() {
@@ -31,6 +34,10 @@ public class RecipeTypeJS {
 
 	public String getId() {
 		return string;
+	}
+
+	public ResourceLocation getIdRL() {
+		return id;
 	}
 
 	@Override

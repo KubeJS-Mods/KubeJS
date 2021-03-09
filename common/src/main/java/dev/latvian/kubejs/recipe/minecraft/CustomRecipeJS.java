@@ -29,7 +29,7 @@ public class CustomRecipeJS extends RecipeJS {
 
 	@Override
 	public void create(ListJS args) {
-		throw new RecipeExceptionJS("Can't create custom recipe for type " + id + "!");
+		throw new RecipeExceptionJS("Can't create custom recipe for type " + getOrCreateId() + "!");
 	}
 
 	private boolean addInput(String k) {

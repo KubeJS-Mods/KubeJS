@@ -266,12 +266,12 @@ public class RecipeEventJS extends EventJS {
 				.map(recipe -> {
 					try {
 						recipe.serializeJson();
-						Recipe<?> resultRecipe = Objects.requireNonNull(recipe.type.serializer.fromJson(recipe.id, recipe.json));
+						Recipe<?> resultRecipe = Objects.requireNonNull(recipe.type.serializer.fromJson(recipe.getOrCreateId(), recipe.json));
 						if (Platform.isFabric()) {
 							// Fabric: we love tech reborn
 							if (recipe.type.serializer.getClass().getName().contains("RebornRecipeType")) {
 								MethodHandle constructor = getTRRecipeConstructor(resultRecipe, recipe);
-								resultRecipe = (Recipe<?>) constructor.invoke(recipe.type.serializer, recipe.id);
+								resultRecipe = (Recipe<?>) constructor.invoke(recipe.type.serializer, recipe.getOrCreateId());
 								getTRRecipeSerializer(resultRecipe).invoke(resultRecipe, recipe.json);
 							}
 						}
@@ -306,12 +306,12 @@ public class RecipeEventJS extends EventJS {
 				.map(recipe -> {
 					try {
 						recipe.serializeJson();
-						Recipe<?> resultRecipe = Objects.requireNonNull(recipe.type.serializer.fromJson(recipe.id, recipe.json));
+						Recipe<?> resultRecipe = Objects.requireNonNull(recipe.type.serializer.fromJson(recipe.getOrCreateId(), recipe.json));
 						if (Platform.isFabric()) {
 							// Fabric: we love tech reborn
 							if (recipe.type.serializer.getClass().getName().contains("RebornRecipeType")) {
 								MethodHandle constructor = getTRRecipeConstructor(resultRecipe, recipe);
-								resultRecipe = (Recipe<?>) constructor.invoke(recipe.type.serializer, recipe.id);
+								resultRecipe = (Recipe<?>) constructor.invoke(recipe.type.serializer, recipe.getOrCreateId());
 								getTRRecipeSerializer(resultRecipe).invoke(resultRecipe, recipe.json);
 							}
 						}
@@ -549,7 +549,7 @@ public class RecipeEventJS extends EventJS {
 
 		for (int i = 0; i < Math.min(list.size(), 5); i++) {
 			RecipeJS r = list.get(i);
-			ScriptType.SERVER.console.info("- " + r.id + ":\n" + JsonUtilsJS.toPrettyString(r.json));
+			ScriptType.SERVER.console.info("- " + r.getOrCreateId() + ":\n" + JsonUtilsJS.toPrettyString(r.json));
 		}
 	}
 

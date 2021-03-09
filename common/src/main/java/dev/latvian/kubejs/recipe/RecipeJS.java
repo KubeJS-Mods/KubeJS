@@ -185,23 +185,31 @@ public abstract class RecipeJS {
 
 	@Override
 	public String toString() {
-		return id + "[" + type + "]";
+		return getOrCreateId() + "[" + type + "]";
 	}
 
 	public String getId() {
-		return id.toString();
+		return getOrCreateId().toString();
 	}
 
 	public String getMod() {
-		return id.getNamespace();
+		return getOrCreateId().getNamespace();
 	}
 
 	public String getPath() {
-		return id.getPath();
+		return getOrCreateId().getPath();
 	}
 
 	public String getType() {
 		return type.toString();
+	}
+
+	public ResourceLocation getOrCreateId() {
+		if (id == null) {
+			id = new ResourceLocation(type.getIdRL().getNamespace() + ":kjs_" + getUniqueId());
+		}
+
+		return id;
 	}
 
 	public IngredientJS convertReplacedInput(int index, IngredientJS oldIngredient, IngredientJS newIngredient) {
