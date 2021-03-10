@@ -97,7 +97,11 @@ public class BlockJS extends Block {
 	public void randomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, Random random) {
 		if(properties.randomTickCallback != null) {
 			BlockContainerJS containerJS = new BlockContainerJS(serverLevel, blockPos);
-			properties.randomTickCallback.call(new Object[]{containerJS, random});
+			try {
+				properties.randomTickCallback.accept(containerJS, random);
+			} catch(Exception e){
+				LOGGER.error(e);
+			}
 		}
 	}
 
