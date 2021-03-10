@@ -74,11 +74,15 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static void rightClickEmpty(Player player, InteractionHand hand) {
-		new ItemRightClickEmptyEventJS(player, hand).post(KubeJSEvents.ITEM_RIGHT_CLICK_EMPTY);
+		if (player != null && player.level != null) {
+			new ItemRightClickEmptyEventJS(player, hand).post(KubeJSEvents.ITEM_RIGHT_CLICK_EMPTY);
+		}
 	}
 
 	private static void leftClickEmpty(Player player, InteractionHand hand) {
-		new ItemLeftClickEventJS(player, hand).post(KubeJSEvents.ITEM_LEFT_CLICK);
+		if (player != null && player.level != null) {
+			new ItemLeftClickEventJS(player, hand).post(KubeJSEvents.ITEM_LEFT_CLICK);
+		}
 	}
 
 	private static InteractionResult pickup(Player player, ItemEntity entity, ItemStack stack) {
@@ -96,7 +100,7 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static InteractionResult entityInteract(Player player, Entity entity, InteractionHand hand) {
-		if (new ItemEntityInteractEventJS(player, entity, hand).post(KubeJSEvents.ITEM_ENTITY_INTERACT)) {
+		if (player != null && player.level != null && new ItemEntityInteractEventJS(player, entity, hand).post(KubeJSEvents.ITEM_ENTITY_INTERACT)) {
 			return InteractionResult.FAIL;
 		}
 		return InteractionResult.PASS;
