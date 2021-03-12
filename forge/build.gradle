@@ -84,8 +84,6 @@ if (ENV.CURSEFORGE_KEY) {
             id = project.curseforge_id_forge
             releaseType = "release"
             addGameVersion "Forge"
-            addGameVersion "1.16.2"
-            addGameVersion "1.16.3"
             addGameVersion "1.16.4"
             addGameVersion "1.16.5"
             mainArtifact(remapJar.archivePath)
@@ -100,3 +98,26 @@ if (ENV.CURSEFORGE_KEY) {
         }
     }
 }
+
+publishing {
+    publications {
+        mavenForge(MavenPublication) {
+            artifactId = rootProject.archivesBaseName + "-forge"
+            artifact(remapJar.archivePath) {
+                builtBy build
+                classifier null
+            }
+        }
+    }
+
+    repositories {
+        if (ENV.LOCAL_MAVEN) {
+            maven {
+                // upload to local maven repo
+                url = "file://${ENV.LOCAL_MAVEN}"
+            }
+        }
+    }
+}
+
+rootProject.tasks.getByName("curseforgePublish").dependsOn tasks.getByName("curseforge")

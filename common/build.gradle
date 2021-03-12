@@ -9,6 +9,28 @@ dependencies {
     compileOnly "com.google.code.findbugs:jsr305:3.+"
 }
 
+def ENV = System.getenv()
+
 architectury {
     common()
+}
+
+publishing {
+    publications {
+        mavenCommon(MavenPublication) {
+            artifactId = rootProject.archivesBaseName
+            artifact(file("${project.buildDir}/libs/${project.archivesBaseName}-${project.version}.jar")) {
+                builtBy build
+            }
+        }
+    }
+
+    repositories {
+        if (ENV.LOCAL_MAVEN) {
+            maven {
+                // upload to local maven repo
+                url = "file://${ENV.LOCAL_MAVEN}"
+            }
+        }
+    }
 }
