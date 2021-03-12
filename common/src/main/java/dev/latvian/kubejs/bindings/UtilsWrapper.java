@@ -3,7 +3,12 @@ package dev.latvian.kubejs.bindings;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
-import dev.latvian.kubejs.util.*;
+import dev.latvian.kubejs.util.ConsoleJS;
+import dev.latvian.kubejs.util.CountingMap;
+import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.Overlay;
+import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import me.shedaniel.architectury.registry.ToolType;
@@ -15,7 +20,12 @@ import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 /**

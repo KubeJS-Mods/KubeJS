@@ -1,6 +1,13 @@
 package dev.latvian.kubejs.util;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -8,7 +15,14 @@ import com.google.gson.stream.JsonWriter;
 import dev.latvian.kubejs.KubeJS;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -181,7 +195,7 @@ public class JsonUtilsJS {
 		}
 
 		try (FileReader fileReader = new FileReader(file);
-		     JsonReader jsonReader = new JsonReader(fileReader)) {
+			 JsonReader jsonReader = new JsonReader(fileReader)) {
 			JsonElement element;
 			boolean lenient = jsonReader.isLenient();
 			jsonReader.setLenient(true);
@@ -206,7 +220,7 @@ public class JsonUtilsJS {
 		JsonObject json = o.toJson();
 
 		try (Writer fileWriter = new FileWriter(file);
-		     JsonWriter jsonWriter = new JsonWriter(new BufferedWriter(fileWriter))) {
+			 JsonWriter jsonWriter = new JsonWriter(new BufferedWriter(fileWriter))) {
 			jsonWriter.setIndent("\t");
 			jsonWriter.setSerializeNulls(true);
 			jsonWriter.setLenient(true);

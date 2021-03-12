@@ -3,7 +3,14 @@ package dev.latvian.kubejs.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import me.shedaniel.architectury.utils.NbtType;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.ByteArrayTag;
+import net.minecraft.nbt.CollectionTag;
+import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.LongArrayTag;
+import net.minecraft.nbt.NumericTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagParser;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;

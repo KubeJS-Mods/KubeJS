@@ -1,109 +1,109 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "5.0.0"
-    id "com.matthewprenger.cursegradle"
+	id "com.github.johnrengelman.shadow" version "5.0.0"
+	id "com.matthewprenger.cursegradle"
 }
 
 def ENV = System.getenv()
 
 configurations {
-    shadowCommon
+	shadowCommon
 }
 
 architectury {
-    platformSetupLoomIde()
-    fabric()
+	platformSetupLoomIde()
+	fabric()
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:${rootProject.architectury.minecraft}")
-    mappings(minecraft.officialMojangMappings())
-    modCompile("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
-    modCompile("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
-    modCompile("me.shedaniel:architectury-fabric:${rootProject.architectury_version}")
-    modCompileOnly("me.shedaniel:RoughlyEnoughItems-api:${rootProject.fabric_rei_version}") {
-        exclude group: "net.fabricmc.fabric-api"
-        exclude group: "net.fabricmc"
-    }
-    modRuntime("me.shedaniel:RoughlyEnoughItems:${rootProject.fabric_rei_version}") {
-        exclude group: "net.fabricmc.fabric-api"
-        exclude group: "net.fabricmc"
-    }
-    compile("curse.maven:rhino-416294:${rootProject.rhino_file}")
+	minecraft("com.mojang:minecraft:${rootProject.architectury.minecraft}")
+	mappings(minecraft.officialMojangMappings())
+	modCompile("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
+	modCompile("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
+	modCompile("me.shedaniel:architectury-fabric:${rootProject.architectury_version}")
+	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api:${rootProject.fabric_rei_version}") {
+		exclude group: "net.fabricmc.fabric-api"
+		exclude group: "net.fabricmc"
+	}
+	modRuntime("me.shedaniel:RoughlyEnoughItems:${rootProject.fabric_rei_version}") {
+		exclude group: "net.fabricmc.fabric-api"
+		exclude group: "net.fabricmc"
+	}
+	compile("curse.maven:rhino-416294:${rootProject.rhino_file}")
 
-    implementation(project(path: ":common")) {
-        transitive = false
-    }
-    developmentFabric(project(path: ":common")) {
-        transitive = false
-    }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) {
-        transitive = false
-    }
+	implementation(project(path: ":common")) {
+		transitive = false
+	}
+	developmentFabric(project(path: ":common")) {
+		transitive = false
+	}
+	shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) {
+		transitive = false
+	}
 }
 
 processResources {
-    inputs.property "version", project.version
+	inputs.property "version", project.version
 
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
-    }
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
 }
 
 shadowJar {
-    configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
+	configurations = [project.configurations.shadowCommon]
+	classifier "dev-shadow"
 }
 
 remapJar {
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
-    classifier "fabric"
+	input.set shadowJar.archiveFile
+	dependsOn shadowJar
+	classifier "fabric"
 }
 
 jar {
-    classifier "dev"
+	classifier "dev"
 }
 
 if (ENV.CURSEFORGE_KEY) {
-    curseforge {
-        apiKey = ENV.CURSEFORGE_KEY
-        project {
-            id = project.curseforge_id_fabric
-            releaseType = "release"
-            addGameVersion "Fabric"
-            addGameVersion "1.16.4"
-            addGameVersion "1.16.5"
-            mainArtifact(remapJar.archivePath)
-            relations {
-                requiredDependency 'rhino'
-                requiredDependency 'architectury-fabric'
-                requiredDependency 'fabric-api'
-            }
-            changelog = getGitChangelog
-            changelogType = 'markdown'
-        }
-    }
+	curseforge {
+		apiKey = ENV.CURSEFORGE_KEY
+		project {
+			id = project.curseforge_id_fabric
+			releaseType = "release"
+			addGameVersion "Fabric"
+			addGameVersion "1.16.4"
+			addGameVersion "1.16.5"
+			mainArtifact(remapJar.archivePath)
+			relations {
+				requiredDependency 'rhino'
+				requiredDependency 'architectury-fabric'
+				requiredDependency 'fabric-api'
+			}
+			changelog = getGitChangelog
+			changelogType = 'markdown'
+		}
+	}
 }
 
 publishing {
-    publications {
-        mavenFabric(MavenPublication) {
-            artifactId = rootProject.archivesBaseName + "-fabric"
-            artifact(remapJar.archivePath) {
-                builtBy build
-                classifier null
-            }
-        }
-    }
+	publications {
+		mavenFabric(MavenPublication) {
+			artifactId = rootProject.archivesBaseName + "-fabric"
+			artifact(remapJar.archivePath) {
+				builtBy build
+				classifier null
+			}
+		}
+	}
 
-    repositories {
-        if (ENV.LOCAL_MAVEN) {
-            maven {
-                // upload to local maven repo
-                url = "file://${ENV.LOCAL_MAVEN}"
-            }
-        }
-    }
+	repositories {
+		if (ENV.LOCAL_MAVEN) {
+			maven {
+				// upload to local maven repo
+				url = "file://${ENV.LOCAL_MAVEN}"
+			}
+		}
+	}
 }
 
 rootProject.tasks.getByName("curseforgePublish").dependsOn tasks.getByName("curseforge")

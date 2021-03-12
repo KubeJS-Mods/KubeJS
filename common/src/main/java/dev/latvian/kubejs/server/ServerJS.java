@@ -2,9 +2,17 @@ package dev.latvian.kubejs.server;
 
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageSendDataFromServer;
-import dev.latvian.kubejs.player.*;
+import dev.latvian.kubejs.player.AdvancementJS;
+import dev.latvian.kubejs.player.EntityArrayList;
+import dev.latvian.kubejs.player.FakeServerPlayerDataJS;
+import dev.latvian.kubejs.player.ServerPlayerDataJS;
+import dev.latvian.kubejs.player.ServerPlayerJS;
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.util.*;
+import dev.latvian.kubejs.util.AttachedData;
+import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.MessageSender;
+import dev.latvian.kubejs.util.UUIDUtilsJS;
+import dev.latvian.kubejs.util.WithAttachedData;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
@@ -21,7 +29,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author LatvianModder
