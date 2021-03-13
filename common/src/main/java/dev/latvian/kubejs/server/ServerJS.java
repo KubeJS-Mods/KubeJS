@@ -274,7 +274,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 
 	public ScheduledEvent scheduleInTicks(long ticks, @Nullable Object data, IScheduledEventCallback event) {
 		ScheduledEvent e = new ScheduledEvent(this, true, ticks, overworld.getTime() + ticks, data, event);
-		scheduledEvents.add(e);
+		scheduledTickEvents.add(e);
 		return e;
 	}
 
