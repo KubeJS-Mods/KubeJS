@@ -2,7 +2,6 @@ package dev.latvian.kubejs.block;
 
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.util.BuilderBase;
-import dev.latvian.kubejs.world.BlockContainerJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import me.shedaniel.architectury.registry.BlockProperties;
 import me.shedaniel.architectury.registry.ToolType;
@@ -13,8 +12,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -44,7 +41,7 @@ public class BlockBuilder extends BuilderBase {
 	public float slipperiness = 0.6F;
 	public float speedFactor = 1.0F;
 	public float jumpFactor = 1.0F;
-	public BiConsumer<BlockContainerJS, Random> randomTickCallback;
+	public Consumer<RandomTickCallbackJS> randomTickCallback;
 
 	public BlockJS block;
 
@@ -215,11 +212,10 @@ public class BlockBuilder extends BuilderBase {
 	}
 
 	/**
-	 * Parameters for callback are BlockContainerJS and java.util.Random.
-	 *
-	 * @param randomTickCallback
+	 * Sets random tick callback for this black.
+	 * @param randomTickCallback A callback using a block container and a random.
 	 */
-	public BlockBuilder randomTick(@Nullable BiConsumer<BlockContainerJS, Random> randomTickCallback) {
+	public BlockBuilder randomTick(@Nullable Consumer<RandomTickCallbackJS> randomTickCallback) {
 		this.randomTickCallback = randomTickCallback;
 		return this;
 	}

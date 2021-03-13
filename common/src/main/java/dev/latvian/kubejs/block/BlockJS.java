@@ -98,9 +98,9 @@ public class BlockJS extends Block {
 		if(properties.randomTickCallback != null) {
 			BlockContainerJS containerJS = new BlockContainerJS(serverLevel, blockPos);
 			try {
-				properties.randomTickCallback.accept(containerJS, random);
+				properties.randomTickCallback.accept(new RandomTickCallbackJS(containerJS, random));
 			} catch(Exception e){
-				LOGGER.error(e);
+				LOGGER.error("Error while random ticking custom block {}: {}", this, e);
 			}
 		}
 	}
