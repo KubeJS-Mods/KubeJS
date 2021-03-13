@@ -1,7 +1,9 @@
 package dev.latvian.kubejs.block;
 
+import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
@@ -18,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author LatvianModder
@@ -88,5 +91,23 @@ public class BlockJS extends Block {
 	@Override
 	public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
 		return !(properties.waterlogged && state.getValue(BlockStateProperties.WATERLOGGED));
+	}
+
+	@Override
+	public void randomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, Random random) {
+		if(properties.randomTickCallback != null) {
+			BlockContainerJS containerJS = new BlockContainerJS(serverLevel, blockPos);
+			try {
+				properties.randomTickCallback.accept(new RandomTickCallbackJS(containerJS, random));
+			} catch(Exception e){
+				LOGGER.error("Error while random ticking custom block {}: {}", this, e);
+			}
+		}
+	}
+
+	@Override
+	public boolean isRandomlyTicking(BlockState blockState)
+	{
+		return properties.randomTickCallback != null;
 	}
 }
