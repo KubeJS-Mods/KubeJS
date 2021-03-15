@@ -43,13 +43,13 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	public static ServerJS instance;
 
 	private MinecraftServer minecraftServer;
-	public final ServerScriptManager serverScriptManager;
-	public final List<ScheduledEvent> scheduledEvents;
-	public final List<ScheduledEvent> scheduledTickEvents;
-	public final Map<String, ServerWorldJS> worldMap;
-	public final Map<UUID, ServerPlayerDataJS> playerMap;
-	public final Map<UUID, FakeServerPlayerDataJS> fakePlayerMap;
-	public final List<ServerWorldJS> worlds;
+	public final transient ServerScriptManager serverScriptManager;
+	public final transient List<ScheduledEvent> scheduledEvents;
+	public final transient List<ScheduledEvent> scheduledTickEvents;
+	public final transient Map<String, ServerWorldJS> worldMap;
+	public final transient Map<UUID, ServerPlayerDataJS> playerMap;
+	public final transient Map<UUID, FakeServerPlayerDataJS> fakePlayerMap;
+	public final transient List<ServerWorldJS> worlds;
 
 	public ServerWorldJS overworld;
 	private AttachedData data;

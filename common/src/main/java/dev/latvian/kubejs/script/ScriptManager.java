@@ -209,6 +209,8 @@ public class ScriptManager {
 		wrapRegistry(context.getTypeWrappers(), SoundEvent.class, KubeJSRegistries.soundEvents());
 
 		// KubeJS //
+		context.getTypeWrappers().register(MapJS.class, MapJS::of);
+		context.getTypeWrappers().register(ListJS.class, ListJS::of);
 		context.getTypeWrappers().register(ItemStackJS.class, ItemStackJS::of);
 		context.getTypeWrappers().register(IngredientJS.class, IngredientJS::of);
 		context.getTypeWrappers().register(IngredientStackJS.class, o -> IngredientJS.of(o).asIngredientStack());

@@ -21,21 +21,21 @@ public class KubeJSEntityEventHandler {
 	}
 
 	private static InteractionResult livingDeath(LivingEntity entity, DamageSource source) {
-		if (new LivingEntityDeathEventJS(entity, source).post(KubeJSEvents.ENTITY_DEATH)) {
+		if (entity != null && new LivingEntityDeathEventJS(entity, source).post(KubeJSEvents.ENTITY_DEATH)) {
 			return InteractionResult.FAIL;
 		}
 		return InteractionResult.PASS;
 	}
 
 	private static InteractionResult livingAttack(LivingEntity entity, DamageSource source, float amount) {
-		if (amount > 0F && new LivingEntityAttackEventJS(entity, source, amount).post(KubeJSEvents.ENTITY_ATTACK)) {
+		if (entity != null && amount > 0F && new LivingEntityAttackEventJS(entity, source, amount).post(KubeJSEvents.ENTITY_ATTACK)) {
 			return InteractionResult.FAIL;
 		}
 		return InteractionResult.PASS;
 	}
 
 	private static InteractionResult entitySpawned(Entity entity, Level world) {
-		if (ServerJS.instance != null && ServerJS.instance.overworld != null && !world.isClientSide() && new EntitySpawnedEventJS(entity, world).post(ScriptType.SERVER, KubeJSEvents.ENTITY_SPAWNED)) {
+		if (entity != null && ServerJS.instance != null && ServerJS.instance.overworld != null && !world.isClientSide() && new EntitySpawnedEventJS(entity, world).post(ScriptType.SERVER, KubeJSEvents.ENTITY_SPAWNED)) {
 			return InteractionResult.FAIL;
 		}
 		return InteractionResult.PASS;

@@ -142,7 +142,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 				}
 
 				if (map.containsKey("nbt")) {
-					stack = stack.withNBT(map.get("nbt"));
+					stack = stack.withNBT(map.getOrNewMap("nbt"));
 				}
 
 				return stack;
@@ -160,21 +160,20 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return EmptyItemStackJS.INSTANCE;
 	}
 
-	public static ItemStackJS of(@Nullable Object o, @Nullable Object countOrNBT) {
-		ItemStackJS stack = of(o);
+	public static ItemStackJS of(ItemStackJS stack, @Nullable Object countOrNBT) {
 		Object n = UtilsJS.wrap(countOrNBT, JSObjectType.ANY);
 
 		if (n instanceof Number) {
 			stack.setCount(((Number) n).intValue());
 		} else if (n instanceof MapJS) {
-			stack = stack.withNBT(n);
+			stack = stack.withNBT((MapJS) n);
 		}
 
 		return stack;
 	}
 
-	public static ItemStackJS of(@Nullable Object o, int count, @Nullable Object nbt) {
-		return of(o).withCount(count).withNBT(nbt);
+	public static ItemStackJS of(ItemStackJS stack, int count, MapJS nbt) {
+		return stack.withCount(count).withNBT(nbt);
 	}
 
 	// Use ItemStackJS.of(object)
@@ -205,10 +204,10 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 					JsonElement element = o.get("nbt");
 
 					if (element.isJsonObject()) {
-						stack = stack.withNBT(element);
+						stack = stack.withNBT(MapJS.of(element));
 					} else {
 						try {
-							stack = stack.withNBT(TagParser.parseTag(GsonHelper.convertToString(element, "nbt")));
+							stack = stack.withNBT(MapJS.of(TagParser.parseTag(GsonHelper.convertToString(element, "nbt"))));
 						} catch (CommandSyntaxException ex) {
 							ex.printStackTrace();
 						}
@@ -350,12 +349,10 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public abstract MapJS getNbt();
 
-	public ItemStackJS withNBT(@Nullable Object o) {
+	public ItemStackJS withNBT(MapJS nbt) {
 		if (isEmpty()) {
 			return this;
 		}
-
-		MapJS nbt = MapJS.of(o instanceof Map ? o : MapJS.nbt(o));
 
 		if (nbt != null) {
 			ItemStackJS is = getCopy();
@@ -367,8 +364,8 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	}
 
 	@Deprecated
-	public final ItemStackJS nbt(@Nullable Object o) {
-		return withNBT(o);
+	public final ItemStackJS nbt(MapJS nbt) {
+		return withNBT(nbt);
 	}
 
 	public boolean hasChance() {
