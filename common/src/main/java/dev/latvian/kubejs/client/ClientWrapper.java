@@ -19,16 +19,16 @@ public class ClientWrapper {
 
 	@Nullable
 	public ClientWorldJS getWorld() {
-		return ClientWorldJS.instance;
+		return ClientWorldJS.getInstance();
 	}
 
 	@Nullable
 	public ClientPlayerJS getPlayer() {
-		if (ClientWorldJS.instance == null) {
+		if (ClientWorldJS.getInstance() == null) {
 			return null;
 		}
 
-		return ClientWorldJS.instance.clientPlayerData.getPlayer();
+		return ClientWorldJS.getInstance().clientPlayerData.getPlayer();
 	}
 
 	@Nullable
