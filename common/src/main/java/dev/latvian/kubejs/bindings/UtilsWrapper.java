@@ -118,7 +118,7 @@ public class UtilsWrapper {
 	}
 
 	public WorldJS getClientWorld() {
-		return ClientWorldJS.instance;
+		return ClientWorldJS.getInstance();
 	}
 
 	@Nullable
