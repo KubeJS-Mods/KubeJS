@@ -119,6 +119,7 @@ public class ScriptManager {
 	public final EventsJS events;
 	public final Map<String, ScriptPack> packs;
 	private final Object2BooleanOpenHashMap<String> classWhitelistCache;
+	public boolean firstLoad;
 
 	public ScriptManager(ScriptType t, Path p, String e) {
 		type = t;
@@ -127,6 +128,7 @@ public class ScriptManager {
 		events = new EventsJS(this);
 		packs = new LinkedHashMap<>();
 		classWhitelistCache = new Object2BooleanOpenHashMap<>();
+		firstLoad = true;
 	}
 
 	public void unload() {
@@ -264,6 +266,8 @@ public class ScriptManager {
 		if (i != t && type == ScriptType.STARTUP) {
 			throw new RuntimeException("There were startup script syntax errors! See logs/kubejs/startup.txt for more info");
 		}
+
+		firstLoad = false;
 	}
 
 	private static <T> void wrapRegistry(TypeWrappers typeWrappers, Class<T> c, Registry<T> registry) {

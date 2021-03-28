@@ -186,11 +186,11 @@ public class KubeJSCommands {
 	}
 
 	private static int reloadStartup(CommandSourceStack source) {
-		source.sendSuccess(new TextComponent("Reloading startup scripts..."), false);
 		KubeJS.startupScriptManager.unload();
 		KubeJS.startupScriptManager.loadFromDirectory();
 		KubeJS.startupScriptManager.load();
 		UtilsJS.postModificationEvents();
+		source.sendSuccess(new TextComponent("Done!"), false);
 		return 1;
 	}
 
