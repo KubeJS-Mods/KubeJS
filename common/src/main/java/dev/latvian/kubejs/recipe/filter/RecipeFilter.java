@@ -63,6 +63,10 @@ public interface RecipeFilter extends Predicate<RecipeJS> {
 			predicate.list.add(of(map.get("or")));
 		}
 
+		if (map.get("not") != null) {
+			predicate.list.add(new NotFilter(of(map.get("not"))));
+		}
+
 		try {
 			if (map.get("id") != null) {
 				String s = map.get("id").toString();
