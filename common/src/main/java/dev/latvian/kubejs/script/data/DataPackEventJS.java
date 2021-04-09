@@ -14,10 +14,10 @@ import net.minecraft.resources.ResourceLocation;
  */
 @KubeJSEvent(
 		server = {
+				KubeJSEvents.SERVER_DATAPACK_LAST_PRIORITY,
 				KubeJSEvents.SERVER_DATAPACK_LOW_PRIORITY,
-				KubeJSEvents.SERVER_DATAPACK_HIGH_PRIORITY,
-				"server.datapack.first",
-				"server.datapack.last"
+				KubeJSEvents.SERVER_DATAPACK_FIRST_PRIORITY,
+				KubeJSEvents.SERVER_DATAPACK_HIGH_PRIORITY
 		}
 )
 public class DataPackEventJS extends ServerEventJS {

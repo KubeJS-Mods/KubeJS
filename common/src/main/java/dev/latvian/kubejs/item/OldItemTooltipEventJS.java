@@ -12,9 +12,7 @@ import java.util.List;
  * @author LatvianModder
  */
 @Deprecated
-@KubeJSEvent(
-		client = { "client.item_tooltip" }
-)
+@KubeJSEvent
 public class OldItemTooltipEventJS extends EventJS {
 	private final ItemStack stack;
 	private final List<Component> lines;
