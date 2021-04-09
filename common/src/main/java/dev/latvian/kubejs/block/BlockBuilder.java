@@ -41,6 +41,7 @@ public class BlockBuilder extends BuilderBase {
 	public float slipperiness = 0.6F;
 	public float speedFactor = 1.0F;
 	public float jumpFactor = 1.0F;
+	public Consumer<RandomTickCallbackJS> randomTickCallback;
 
 	public BlockJS block;
 
@@ -68,6 +69,7 @@ public class BlockBuilder extends BuilderBase {
 		notSolid = false;
 		waterlogged = false;
 		noDrops = false;
+		randomTickCallback = null;
 	}
 
 	@Override
@@ -206,6 +208,15 @@ public class BlockBuilder extends BuilderBase {
 
 	public BlockBuilder jumpFactor(float f) {
 		jumpFactor = f;
+		return this;
+	}
+
+	/**
+	 * Sets random tick callback for this black.
+	 * @param randomTickCallback A callback using a block container and a random.
+	 */
+	public BlockBuilder randomTick(@Nullable Consumer<RandomTickCallbackJS> randomTickCallback) {
+		this.randomTickCallback = randomTickCallback;
 		return this;
 	}
 

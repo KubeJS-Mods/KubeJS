@@ -10,7 +10,6 @@ import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.core.RecipeManagerKJS;
 import dev.latvian.kubejs.docs.KubeJSEvent;
 import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.filter.RecipeFilter;
@@ -20,7 +19,6 @@ import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.DynamicMap;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.platform.Platform;
@@ -38,7 +36,14 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -196,7 +201,7 @@ public class RecipeEventJS extends EventJS {
 					if (SpecialRecipeSerializerManager.INSTANCE.isSpecial(recipe.originalRecipe)) {
 						ScriptType.SERVER.console.debug("Loaded recipe " + recipeIdAndType + ": <dynamic>");
 					} else {
-						ScriptType.SERVER.console.debug("Loaded recipe " + recipeIdAndType + ": " + recipe.inputItems + " -> " + recipe.outputItems);
+						ScriptType.SERVER.console.debug("Loaded recipe " + recipeIdAndType + ": " + recipe.getFromToString());
 					}
 				}
 
@@ -272,12 +277,12 @@ public class RecipeEventJS extends EventJS {
 				.map(recipe -> {
 					try {
 						recipe.serializeJson();
-						Recipe<?> resultRecipe = Objects.requireNonNull(recipe.type.serializer.fromJson(recipe.id, recipe.json));
+						Recipe<?> resultRecipe = Objects.requireNonNull(recipe.type.serializer.fromJson(recipe.getOrCreateId(), recipe.json));
 						if (Platform.isFabric()) {
 							// Fabric: we love tech reborn
 							if (recipe.type.serializer.getClass().getName().contains("RebornRecipeType")) {
 								MethodHandle constructor = getTRRecipeConstructor(resultRecipe, recipe);
-								resultRecipe = (Recipe<?>) constructor.invoke(recipe.type.serializer, recipe.id);
+								resultRecipe = (Recipe<?>) constructor.invoke(recipe.type.serializer, recipe.getOrCreateId());
 								getTRRecipeSerializer(resultRecipe).invoke(resultRecipe, recipe.json);
 							}
 						}
@@ -312,11 +317,14 @@ public class RecipeEventJS extends EventJS {
 				.map(recipe -> {
 					try {
 						recipe.serializeJson();
-						Recipe<?> resultRecipe = Objects.requireNonNull(recipe.type.serializer.fromJson(recipe.id, recipe.json));
-						if (recipe.type.serializer.getClass().getName().contains("RebornRecipeType")) {
-							MethodHandle constructor = getTRRecipeConstructor(resultRecipe, recipe);
-							resultRecipe = (Recipe<?>) constructor.invoke(recipe.type.serializer, recipe.id);
-							getTRRecipeSerializer(resultRecipe).invoke(resultRecipe, recipe.json);
+						Recipe<?> resultRecipe = Objects.requireNonNull(recipe.type.serializer.fromJson(recipe.getOrCreateId(), recipe.json));
+						if (Platform.isFabric()) {
+							// Fabric: we love tech reborn
+							if (recipe.type.serializer.getClass().getName().contains("RebornRecipeType")) {
+								MethodHandle constructor = getTRRecipeConstructor(resultRecipe, recipe);
+								resultRecipe = (Recipe<?>) constructor.invoke(recipe.type.serializer, recipe.getOrCreateId());
+								getTRRecipeSerializer(resultRecipe).invoke(resultRecipe, recipe.json);
+							}
 						}
 						recipe.originalRecipe = resultRecipe;
 					} catch (Throwable ex) {
@@ -364,15 +372,10 @@ public class RecipeEventJS extends EventJS {
 	public RecipeJS addRecipe(RecipeJS r, RecipeTypeJS type, ListJS args1) {
 		addedRecipes.add(r);
 
-		if (r.id == null) {
-			ResourceLocation itemId = UtilsJS.getMCID(r.outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE.getId() : r.outputItems.get(0).getId());
-			r.id = new ResourceLocation(Registries.getId(type.serializer, Registry.RECIPE_SERIALIZER_REGISTRY).getNamespace(), "kubejs_generated_" + addedRecipes.size() + "_" + itemId.getNamespace() + "_" + itemId.getPath().replace('/', '_'));
-		}
-
 		if (ServerSettings.instance.logAddedRecipes) {
-			ScriptType.SERVER.console.info("+ " + r + ": " + r.inputItems + " -> " + r.outputItems);
+			ScriptType.SERVER.console.info("+ " + r.getType() + ": " + r.getFromToString());
 		} else if (ScriptType.SERVER.console.shouldPrintDebug()) {
-			ScriptType.SERVER.console.debug("+ " + r + ": " + r.inputItems + " -> " + r.outputItems);
+			ScriptType.SERVER.console.debug("+ " + r.getType() + ": " + r.getFromToString());
 		}
 
 		return r;
@@ -414,9 +417,9 @@ public class RecipeEventJS extends EventJS {
 		{
 			if (removedRecipes.add(r)) {
 				if (ServerSettings.instance.logRemovedRecipes) {
-					ScriptType.SERVER.console.info("- " + r + ": " + r.inputItems + " -> " + r.outputItems);
+					ScriptType.SERVER.console.info("- " + r + ": " + r.getFromToString());
 				} else if (ScriptType.SERVER.console.shouldPrintDebug()) {
-					ScriptType.SERVER.console.debug("- " + r + ": " + r.inputItems + " -> " + r.outputItems);
+					ScriptType.SERVER.console.debug("- " + r + ": " + r.getFromToString());
 				}
 
 				count.increment();
@@ -557,7 +560,7 @@ public class RecipeEventJS extends EventJS {
 
 		for (int i = 0; i < Math.min(list.size(), 5); i++) {
 			RecipeJS r = list.get(i);
-			ScriptType.SERVER.console.info("- " + r.id + ":\n" + JsonUtilsJS.toPrettyString(r.json));
+			ScriptType.SERVER.console.info("- " + r.getOrCreateId() + ":\n" + JsonUtilsJS.toPrettyString(r.json));
 		}
 	}
 

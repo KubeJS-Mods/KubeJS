@@ -5,6 +5,7 @@ import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.world.FireworksJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -17,16 +18,24 @@ import java.util.Map;
  * @author LatvianModder
  */
 public class ItemWrapper {
-	public ItemStackJS of(Object object) {
-		return ItemStackJS.of(object);
+	public ItemStackJS of(ItemStackJS in) {
+		return in;
 	}
 
-	public ItemStackJS of(Object object, Object countOrNBT) {
-		return ItemStackJS.of(object, countOrNBT);
+	public ItemStackJS of(ItemStackJS in, Object countOrNBT) {
+		return ItemStackJS.of(in, countOrNBT);
 	}
 
-	public ItemStackJS of(Object object, int count, Object nbt) {
-		return ItemStackJS.of(object, count, nbt);
+	public ItemStackJS of(ItemStackJS in, int count, MapJS nbt) {
+		return ItemStackJS.of(in, count, nbt);
+	}
+
+	public ItemStackJS withNBT(ItemStackJS in, MapJS nbt) {
+		return in.withNBT(nbt);
+	}
+
+	public ItemStackJS withChance(ItemStackJS in, double c) {
+		return in.withChance(c);
 	}
 
 	public ListJS getList() {

@@ -7,6 +7,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.docs.DocumentationEvent;
+import dev.latvian.kubejs.docs.TypeDefinition;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
@@ -23,7 +25,12 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.commands.ReloadCommand;
@@ -31,11 +38,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagCollection;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.WorldData;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -49,7 +59,16 @@ public class KubeJSCommands {
 						)
 				)
 				.then(Commands.literal("hand")
-						.executes(context -> hand(context.getSource().getPlayerOrException()))
+						.executes(context -> hand(context.getSource().getPlayerOrException(), InteractionHand.MAIN_HAND))
+				)
+				.then(Commands.literal("offhand")
+						.executes(context -> hand(context.getSource().getPlayerOrException(), InteractionHand.OFF_HAND))
+				)
+				.then(Commands.literal("inventory")
+						.executes(context -> inventory(context.getSource().getPlayerOrException()))
+				)
+				.then(Commands.literal("hotbar")
+						.executes(context -> hotbar(context.getSource().getPlayerOrException()))
 				)
 				.then(Commands.literal("errors")
 						.executes(context -> errors(context.getSource()))
@@ -96,10 +115,13 @@ public class KubeJSCommands {
 				.then(Commands.literal("wiki")
 						.executes(context -> wiki(context.getSource()))
 				)
+				.then(Commands.literal("generate_docs")
+						.executes(context -> generateDocs(context.getSource()))
+				)
 		);
 
 		dispatcher.register(Commands.literal("kjs_hand")
-				.executes(context -> hand(context.getSource().getPlayerOrException()))
+				.executes(context -> hand(context.getSource().getPlayerOrException(), InteractionHand.MAIN_HAND))
 		);
 	}
 
@@ -117,9 +139,9 @@ public class KubeJSCommands {
 		return 1;
 	}
 
-	private static int hand(ServerPlayer player) {
+	private static int hand(ServerPlayer player, InteractionHand hand) {
 		player.sendMessage(new TextComponent("Item in hand:"), Util.NIL_UUID);
-		ItemStackJS stack = ItemStackJS.of(player.getMainHandItem());
+		ItemStackJS stack = ItemStackJS.of(player.getItemInHand(hand));
 		player.sendMessage(copy(stack.toString(), ChatFormatting.GREEN, "Item ID"), Util.NIL_UUID);
 
 		List<ResourceLocation> tags = new ArrayList<>(Tags.byItem(stack.getItem()));
@@ -135,6 +157,26 @@ public class KubeJSCommands {
 			player.sendMessage(copy("'%" + stack.getItemGroup() + "'", ChatFormatting.LIGHT_PURPLE, "Item Group [" + new GroupIngredientJS(stack.getItem().getItemCategory()).getStacks().size() + " items]"), Util.NIL_UUID);
 		}
 
+		return 1;
+	}
+
+	private static int inventory(ServerPlayer player) {
+		return dump(player.inventory.items, player, "Inventory");
+	}
+
+	private static int hotbar(ServerPlayer player) {
+		return dump(player.inventory.items.subList(0, 8), player, "Hotbar");
+	}
+
+	private static int dump(List<ItemStack> stacks, ServerPlayer player, String name) {
+		List<ItemStackJS> stackList = new ArrayList<>(stacks.size());
+		for (ItemStack stack : stacks) {
+			if (!stack.isEmpty()) {
+				stackList.add(ItemStackJS.of(stack));
+			}
+		}
+		String dump = stackList.toString();
+		player.sendMessage(copy(dump, ChatFormatting.WHITE, name + " Item List"), Util.NIL_UUID);
 		return 1;
 	}
 
@@ -175,11 +217,11 @@ public class KubeJSCommands {
 	}
 
 	private static int reloadStartup(CommandSourceStack source) {
-		source.sendSuccess(new TextComponent("Reloading startup scripts..."), false);
 		KubeJS.startupScriptManager.unload();
 		KubeJS.startupScriptManager.loadFromDirectory();
 		KubeJS.startupScriptManager.load();
 		UtilsJS.postModificationEvents();
+		source.sendSuccess(new TextComponent("Done!"), false);
 		return 1;
 	}
 
@@ -250,6 +292,13 @@ public class KubeJSCommands {
 
 	private static int wiki(CommandSourceStack source) {
 		source.sendSuccess(new TextComponent("Click here to open the Wiki").withStyle(ChatFormatting.BLUE).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://kubejs.com/"))), false);
+		return Command.SINGLE_SUCCESS;
+	}
+
+	private static int generateDocs(CommandSourceStack source) {
+		Map<Class<?>, TypeDefinition> map = DocumentationEvent.collectDocs();
+
+		source.sendSuccess(new TextComponent("Docs generated"), false);
 		return Command.SINGLE_SUCCESS;
 	}
 }

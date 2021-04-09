@@ -56,7 +56,13 @@ import java.io.OutputStream;
 import java.nio.IntBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author LatvianModder
@@ -139,31 +145,31 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void clientTick(Minecraft minecraft) {
-		if (Minecraft.getInstance().player != null && ClientWorldJS.instance != null) {
-			new ClientTickEventJS(ClientWorldJS.instance.clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_TICK);
+		if (Minecraft.getInstance().player != null && ClientWorldJS.getInstance() != null) {
+			new ClientTickEventJS(ClientWorldJS.getInstance().clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_TICK);
 		}
 	}
 
 	private void loggedIn(LocalPlayer player) {
-		ClientWorldJS.instance = new ClientWorldJS(Minecraft.getInstance(), player);
-		AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(ClientWorldJS.instance));
-		AttachPlayerDataEvent.EVENT.invoker().accept(new AttachPlayerDataEvent(ClientWorldJS.instance.clientPlayerData));
-		new ClientLoggedInEventJS(ClientWorldJS.instance.clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_LOGGED_IN);
+		ClientWorldJS.setInstance(new ClientWorldJS(Minecraft.getInstance(), player));
+		AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(ClientWorldJS.getInstance()));
+		AttachPlayerDataEvent.EVENT.invoker().accept(new AttachPlayerDataEvent(ClientWorldJS.getInstance().clientPlayerData));
+		new ClientLoggedInEventJS(ClientWorldJS.getInstance().clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_LOGGED_IN);
 	}
 
 	private void loggedOut(LocalPlayer player) {
-		if (ClientWorldJS.instance != null) {
-			new ClientLoggedInEventJS(ClientWorldJS.instance.clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_LOGGED_OUT);
+		if (ClientWorldJS.getInstance() != null) {
+			new ClientLoggedInEventJS(ClientWorldJS.getInstance().clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_LOGGED_OUT);
 		}
 
-		ClientWorldJS.instance = null;
+		ClientWorldJS.setInstance(null);
 		KubeJSClient.activeOverlays.clear();
 	}
 
 	private void respawn(LocalPlayer oldPlayer, LocalPlayer newPlayer) {
-		ClientWorldJS.instance = new ClientWorldJS(Minecraft.getInstance(), newPlayer);
-		AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(ClientWorldJS.instance));
-		AttachPlayerDataEvent.EVENT.invoker().accept(new AttachPlayerDataEvent(ClientWorldJS.instance.clientPlayerData));
+		ClientWorldJS.setInstance(new ClientWorldJS(Minecraft.getInstance(), newPlayer));
+		AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(ClientWorldJS.getInstance()));
+		AttachPlayerDataEvent.EVENT.invoker().accept(new AttachPlayerDataEvent(ClientWorldJS.getInstance().clientPlayerData));
 	}
 
 	private int drawOverlay(Minecraft mc, PoseStack matrixStack, int maxWidth, int x, int y, int p, Overlay o, boolean inv) {

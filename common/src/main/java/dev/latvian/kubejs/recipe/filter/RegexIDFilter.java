@@ -16,7 +16,7 @@ public class RegexIDFilter implements RecipeFilter {
 
 	@Override
 	public boolean test(RecipeJS r) {
-		return pattern.matcher(r.id.toString()).find();
+		return pattern.matcher(r.getOrCreateId().toString()).find();
 	}
 
 	@Override

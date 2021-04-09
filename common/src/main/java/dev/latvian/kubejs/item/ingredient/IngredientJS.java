@@ -10,7 +10,12 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.UnboundItemStackJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
-import dev.latvian.kubejs.util.*;
+import dev.latvian.kubejs.util.Copyable;
+import dev.latvian.kubejs.util.JsonSerializable;
+import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
@@ -22,7 +27,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 

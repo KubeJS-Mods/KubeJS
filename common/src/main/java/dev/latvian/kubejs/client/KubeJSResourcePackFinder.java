@@ -29,14 +29,14 @@ public class KubeJSResourcePackFinder implements RepositorySource {
 			UtilsJS.tryIO(() -> Files.createDirectories(KubeJSPaths.ASSETS.resolve("kubejs/textures/item")));
 
 			try (InputStream in = KubeJS.class.getResourceAsStream("/data/kubejs/example_block_texture.png");
-			     OutputStream out = Files.newOutputStream(KubeJSPaths.ASSETS.resolve("kubejs/textures/block/example_block.png"))) {
+				 OutputStream out = Files.newOutputStream(KubeJSPaths.ASSETS.resolve("kubejs/textures/block/example_block.png"))) {
 				out.write(IOUtils.toByteArray(in));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 
 			try (InputStream in = KubeJS.class.getResourceAsStream("/data/kubejs/example_item_texture.png");
-			     OutputStream out = Files.newOutputStream(KubeJSPaths.ASSETS.resolve("kubejs/textures/item/example_item.png"))) {
+				 OutputStream out = Files.newOutputStream(KubeJSPaths.ASSETS.resolve("kubejs/textures/item/example_item.png"))) {
 				out.write(IOUtils.toByteArray(in));
 			} catch (Exception ex) {
 				ex.printStackTrace();

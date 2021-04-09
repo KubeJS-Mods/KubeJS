@@ -73,7 +73,7 @@ public class BoundItemStackJS extends ItemStackJS {
 	}
 
 	@Override
-	public ItemStackJS withNBT(@Nullable Object o) {
+	public ItemStackJS withNBT(MapJS o) {
 		CompoundTag tag = MapJS.nbt(o);
 
 		if (tag != null) {

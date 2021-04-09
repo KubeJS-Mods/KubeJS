@@ -11,12 +11,14 @@ public class TypeDefinition {
 	public final Class<?> type;
 	public final List<MemberDefinition<?>> members;
 	public final List<TypeDefinition> parents;
+	private boolean scanned;
 
 	TypeDefinition(DocumentationEvent e, Class<?> c) {
 		event = e;
 		type = c;
 		members = new ArrayList<>();
 		parents = new ArrayList<>();
+		scanned = false;
 
 		if (c != Object.class) {
 			parents.add(e.type(c.getSuperclass()));
@@ -25,6 +27,14 @@ public class TypeDefinition {
 				parents.add(e.type(i));
 			}
 		}
+	}
+
+	public TypeDefinition scan() {
+		if (!scanned) {
+			scanned = true;
+		}
+
+		return this;
 	}
 
 	public TypeDefinition field(String name, FieldDefinition.Factory method) {

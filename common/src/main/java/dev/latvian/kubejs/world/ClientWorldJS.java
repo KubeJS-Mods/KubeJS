@@ -13,18 +13,15 @@ import net.minecraft.world.entity.player.Player;
  * @author LatvianModder
  */
 public class ClientWorldJS extends WorldJS {
-	public static ClientWorldJS instance;
+	private static ClientWorldJS instance;
 
 	private final Minecraft minecraft;
-	@MinecraftClass
-	public final LocalPlayer minecraftPlayer;
 	public final ClientPlayerDataJS clientPlayerData;
 
 	public ClientWorldJS(Minecraft mc, LocalPlayer e) {
-		super(e.level);
+		super(mc.level);
 		minecraft = mc;
-		minecraftPlayer = e;
-		clientPlayerData = new ClientPlayerDataJS(this, minecraftPlayer, true);
+		clientPlayerData = new ClientPlayerDataJS(this, e, true);
 	}
 
 	@MinecraftClass
@@ -39,7 +36,7 @@ public class ClientWorldJS extends WorldJS {
 
 	@Override
 	public ClientPlayerDataJS getPlayerData(Player player) {
-		if (player == minecraftPlayer || player.getUUID().equals(clientPlayerData.getId())) {
+		if (player == minecraft.player || player.getUUID().equals(clientPlayerData.getId())) {
 			return clientPlayerData;
 		} else {
 			return new ClientPlayerDataJS(this, player, false);
@@ -54,5 +51,24 @@ public class ClientWorldJS extends WorldJS {
 	@Override
 	public EntityArrayList getEntities() {
 		return new EntityArrayList(this, ((ClientLevel) minecraftWorld).entitiesForRendering());
+	}
+	
+	public LocalPlayer getMinecraftPlayer() {
+		return minecraft.player;
+	}
+	
+	public static ClientWorldJS getInstance() {
+		ClientLevel level = Minecraft.getInstance().level;
+		if (level == null) {
+			return instance = null;
+		} if (instance != null && instance.minecraftWorld == level) {
+			return instance;
+		}
+		
+		return instance = new ClientWorldJS(Minecraft.getInstance(), Minecraft.getInstance().player);
+	}
+
+	public static void setInstance(ClientWorldJS instance) {
+		ClientWorldJS.instance = instance;
 	}
 }

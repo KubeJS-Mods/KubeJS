@@ -10,6 +10,7 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.util.ListJS;
+import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -38,13 +39,7 @@ public class DefaultBindings {
 		event.add("console", manager.type.console);
 		event.add("events", new ScriptEventsWrapper(event.type.manager.get().events));
 
-		event.addFunction("onEvent", args -> {
-			for (Object o : ListJS.orSelf(args[0])) {
-				event.type.manager.get().events.listen(String.valueOf(o), (IEventHandler) args[1]);
-			}
-
-			return null;
-		}, null, IEventHandler.class);
+		event.addFunction("onEvent", args -> onEvent(event, args), null, IEventHandler.class);
 
 		event.add("Utils", new UtilsWrapper());
 		event.add("utils", new UtilsWrapper());
@@ -105,5 +100,19 @@ public class DefaultBindings {
 		event.add("CarvingGenerationStep", GenerationStep.Carving.class);
 
 		KubeJS.instance.proxy.clientBindings(event);
+		registerPlatformEvents(event);
+	}
+
+	private static Object onEvent(BindingsEvent event, Object[] args) {
+		for (Object o : ListJS.orSelf(args[0])) {
+			event.type.manager.get().events.listen(String.valueOf(o), (IEventHandler) args[1]);
+		}
+
+		return null;
+	}
+
+	@ExpectPlatform
+	private static void registerPlatformEvents(BindingsEvent event) {
+		throw new AssertionError();
 	}
 }

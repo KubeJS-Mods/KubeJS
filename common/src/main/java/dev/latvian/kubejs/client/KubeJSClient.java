@@ -81,6 +81,6 @@ public class KubeJSClient extends KubeJSCommon {
 
 	@Override
 	public WorldJS getClientWorld() {
-		return ClientWorldJS.instance;
+		return ClientWorldJS.getInstance();
 	}
 }

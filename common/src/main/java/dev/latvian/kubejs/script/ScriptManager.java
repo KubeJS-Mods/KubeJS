@@ -57,42 +57,54 @@ import java.util.regex.Pattern;
  * @author LatvianModder
  */
 public class ScriptManager {
-	private static final Object2BooleanOpenHashMap<String> CLASS_WHITELIST_CACHE = new Object2BooleanOpenHashMap<>();
-
 	private static final String[] BLACKLISTED_PACKAGES = {
-			"java.io.", // IO and network
-			"java.nio.",
-			"java.net.",
-			"sun.",
-			"com.sun.",
-			"io.netty.",
-			"java.lang.reflect.",
+			"java.io", // IO and network
+			"java.nio",
+			"java.net",
+			"sun",
+			"com.sun",
+			"io.netty",
+			"java.lang",
 
-			"dev.latvian.mods.rhino.", // Rhino itself
-			"dev.latvian.kubejs.script.", // KubeJS itself
+			"dev.latvian.mods.rhino", // Rhino itself
+			"dev.latvian.kubejs.script", // KubeJS itself
 
-			"cpw.mods.modlauncher.", // Forge / FML internal stuff
-			"cpw.mods.gross.",
-			"net.minecraftforge.fml.",
-			"net.minecraftforge.accesstransformer.",
-			"net.minecraftforge.coremod.",
-			"org.openjdk.nashorn.",
-			"jdk.nashorn.",
+			"cpw.mods.modlauncher", // Forge / FML internal stuff
+			"cpw.mods.gross",
+			"net.minecraftforge.fml",
+			"net.minecraftforge.accesstransformer",
+			"net.minecraftforge.coremod",
+			"org.openjdk.nashorn",
+			"jdk.nashorn",
 
-			"net.fabricmc.accesswidener.", // Fabric internal stuff
-			"net.fabricmc.devlaunchinjector.",
-			"net.fabricmc.loader.",
-			"net.fabricmc.tinyremapper.",
+			"net.fabricmc.accesswidener", // Fabric internal stuff
+			"net.fabricmc.devlaunchinjector",
+			"net.fabricmc.loader",
+			"net.fabricmc.tinyremapper",
 
-			"org.objectweb.asm.", // ASM
-			"org.spongepowered.asm.", // Sponge ASM
-			"me.shedaniel.architectury.", // Architectury
+			"org.objectweb.asm", // ASM
+			"org.spongepowered.asm", // Sponge ASM
+			"me.shedaniel.architectury", // Architectury
 
-			"com.chocohead.mm.", // Manningham Mills
+			"com.chocohead.mm", // Manningham Mills
 	};
+
+	private static final String[] BLACKLISTED_PACKAGES_START = new String[BLACKLISTED_PACKAGES.length];
+
+	static {
+		for (int i = 0; i < BLACKLISTED_PACKAGES.length; i++) {
+			BLACKLISTED_PACKAGES_START[i] = BLACKLISTED_PACKAGES[i] + ".";
+		}
+	}
 
 	private static final Predicate<String> CLASS_WHITELIST_FUNCTION = s -> {
 		for (String s1 : BLACKLISTED_PACKAGES) {
+			if (s.equals(s1)) {
+				return false;
+			}
+		}
+
+		for (String s1 : BLACKLISTED_PACKAGES_START) {
 			if (s.startsWith(s1)) {
 				return false;
 			}
@@ -106,6 +118,8 @@ public class ScriptManager {
 	public final String exampleScript;
 	public final EventsJS events;
 	public final Map<String, ScriptPack> packs;
+	private final Object2BooleanOpenHashMap<String> classWhitelistCache;
+	public boolean firstLoad;
 
 	public ScriptManager(ScriptType t, Path p, String e) {
 		type = t;
@@ -113,6 +127,8 @@ public class ScriptManager {
 		exampleScript = e;
 		events = new EventsJS(this);
 		packs = new LinkedHashMap<>();
+		classWhitelistCache = new Object2BooleanOpenHashMap<>();
+		firstLoad = true;
 	}
 
 	public void unload() {
@@ -128,7 +144,7 @@ public class ScriptManager {
 			UtilsJS.tryIO(() -> Files.createDirectories(directory));
 
 			try (InputStream in = KubeJS.class.getResourceAsStream(exampleScript);
-			     OutputStream out = Files.newOutputStream(directory.resolve("script.js"))) {
+				 OutputStream out = Files.newOutputStream(directory.resolve("script.js"))) {
 				out.write(IOUtils.toByteArray(in));
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -159,9 +175,10 @@ public class ScriptManager {
 	}
 
 	public void load() {
+		classWhitelistCache.clear();
 		Context context = Context.enter();
 		context.setLanguageVersion(Context.VERSION_ES6);
-		context.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || CLASS_WHITELIST_CACHE.computeBooleanIfAbsent(fullClassName, CLASS_WHITELIST_FUNCTION));
+		context.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || classWhitelistCache.computeBooleanIfAbsent(fullClassName, CLASS_WHITELIST_FUNCTION));
 		context.getTypeWrappers().removeAll();
 
 		// Java / Minecraft //
@@ -194,6 +211,8 @@ public class ScriptManager {
 		wrapRegistry(context.getTypeWrappers(), SoundEvent.class, KubeJSRegistries.soundEvents());
 
 		// KubeJS //
+		context.getTypeWrappers().register(MapJS.class, MapJS::of);
+		context.getTypeWrappers().register(ListJS.class, ListJS::of);
 		context.getTypeWrappers().register(ItemStackJS.class, ItemStackJS::of);
 		context.getTypeWrappers().register(IngredientJS.class, IngredientJS::of);
 		context.getTypeWrappers().register(IngredientStackJS.class, o -> IngredientJS.of(o).asIngredientStack());
@@ -247,6 +266,8 @@ public class ScriptManager {
 		if (i != t && type == ScriptType.STARTUP) {
 			throw new RuntimeException("There were startup script syntax errors! See logs/kubejs/startup.txt for more info");
 		}
+
+		firstLoad = false;
 	}
 
 	private static <T> void wrapRegistry(TypeWrappers typeWrappers, Class<T> c, Registry<T> registry) {

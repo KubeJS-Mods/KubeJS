@@ -1,46 +1,48 @@
 plugins {
-    id "architectury-plugin" version "3.0.86"
-    id "forgified-fabric-loom" version "0.6.70" apply false
-    id "com.matthewprenger.cursegradle" version "1.4.0" apply false
-    id "maven-publish"
+	id "architectury-plugin" version "3.0.97"
+	id "forgified-fabric-loom" version "0.6.78" apply false
+	id "com.matthewprenger.cursegradle" version "1.4.0" apply false
+	id "maven-publish"
 }
 
 architectury {
-    minecraft = rootProject.minecraft_version
+	minecraft = rootProject.minecraft_version
 }
 
 subprojects {
-    apply plugin: "forgified-fabric-loom"
+	apply plugin: "forgified-fabric-loom"
 
-    loom {
-        silentMojangMappingsLicense()
-        useFabricMixin = true
-    }
+	loom {
+		silentMojangMappingsLicense()
+		useFabricMixin = true
+	}
 }
 
 allprojects {
-    apply plugin: "java"
-    apply plugin: "architectury-plugin"
-    apply from: "https://files.latmod.com/public/markdown-git-changelog.gradle"
+	apply plugin: "java"
+	apply plugin: "architectury-plugin"
+	apply from: "https://files.latmod.com/public/markdown-git-changelog.gradle"
 
-    def ENV = System.getenv()
-    version = "${mod_version}-build.${ENV.BUILD_NUMBER ?: 9999}"
-    group = project.mod_package
-    archivesBaseName = project.mod_name
+	def ENV = System.getenv()
+	version = "${mod_version}-build.${ENV.BUILD_NUMBER ?: 9999}"
+	group = project.mod_package
+	archivesBaseName = project.mod_name
 
-    tasks.withType(JavaCompile) {
-        options.encoding = "UTF-8"
-    }
+	tasks.withType(JavaCompile) {
+		options.encoding = "UTF-8"
+	}
 
-    repositories {
-        maven {
-            url = "https://maven.shedaniel.me/"
-        }
-        maven {
-            url "https://www.cursemaven.com"
-            content {
-                includeGroup "curse.maven"
-            }
-        }
-    }
+	repositories {
+		maven {
+			url = "https://maven.shedaniel.me/"
+		}
+		maven {
+			url "https://www.cursemaven.com"
+			content {
+				includeGroup "curse.maven"
+			}
+		}
+	}
 }
+
+task curseforgePublish

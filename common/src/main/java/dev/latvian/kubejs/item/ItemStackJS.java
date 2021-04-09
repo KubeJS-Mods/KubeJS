@@ -7,12 +7,23 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.docs.MinecraftClass;
-import dev.latvian.kubejs.item.ingredient.*;
+import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
+import dev.latvian.kubejs.item.ingredient.IgnoreNBTIngredientJS;
+import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
+import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
+import dev.latvian.kubejs.item.ingredient.RegexIngredientJS;
+import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.util.*;
+import dev.latvian.kubejs.util.JSObjectType;
+import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.NBTSerializable;
+import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
@@ -26,11 +37,21 @@ import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -121,7 +142,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 				}
 
 				if (map.containsKey("nbt")) {
-					stack = stack.withNBT(map.get("nbt"));
+					stack = stack.withNBT(map.getOrNewMap("nbt"));
 				}
 
 				return stack;
@@ -139,21 +160,20 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return EmptyItemStackJS.INSTANCE;
 	}
 
-	public static ItemStackJS of(@Nullable Object o, @Nullable Object countOrNBT) {
-		ItemStackJS stack = of(o);
+	public static ItemStackJS of(ItemStackJS stack, @Nullable Object countOrNBT) {
 		Object n = UtilsJS.wrap(countOrNBT, JSObjectType.ANY);
 
 		if (n instanceof Number) {
 			stack.setCount(((Number) n).intValue());
 		} else if (n instanceof MapJS) {
-			stack = stack.withNBT(n);
+			stack = stack.withNBT((MapJS) n);
 		}
 
 		return stack;
 	}
 
-	public static ItemStackJS of(@Nullable Object o, int count, @Nullable Object nbt) {
-		return of(o).withCount(count).withNBT(nbt);
+	public static ItemStackJS of(ItemStackJS stack, int count, MapJS nbt) {
+		return stack.withCount(count).withNBT(nbt);
 	}
 
 	// Use ItemStackJS.of(object)
@@ -184,10 +204,10 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 					JsonElement element = o.get("nbt");
 
 					if (element.isJsonObject()) {
-						stack = stack.withNBT(element);
+						stack = stack.withNBT(MapJS.of(element));
 					} else {
 						try {
-							stack = stack.withNBT(TagParser.parseTag(GsonHelper.convertToString(element, "nbt")));
+							stack = stack.withNBT(MapJS.of(TagParser.parseTag(GsonHelper.convertToString(element, "nbt"))));
 						} catch (CommandSyntaxException ex) {
 							ex.printStackTrace();
 						}
@@ -329,12 +349,10 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public abstract MapJS getNbt();
 
-	public ItemStackJS withNBT(@Nullable Object o) {
+	public ItemStackJS withNBT(MapJS nbt) {
 		if (isEmpty()) {
 			return this;
 		}
-
-		MapJS nbt = MapJS.of(o instanceof Map ? o : MapJS.nbt(o));
 
 		if (nbt != null) {
 			ItemStackJS is = getCopy();
@@ -346,8 +364,8 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	}
 
 	@Deprecated
-	public final ItemStackJS nbt(@Nullable Object o) {
-		return withNBT(o);
+	public final ItemStackJS nbt(MapJS nbt) {
+		return withNBT(nbt);
 	}
 
 	public boolean hasChance() {
