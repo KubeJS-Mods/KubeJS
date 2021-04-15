@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.integration.jei;
 
+import dev.latvian.kubejs.BuiltinKubeJSPlugin;
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.bindings.DefaultBindings;
 import dev.latvian.kubejs.fluid.FluidStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
@@ -38,7 +38,7 @@ public class JEIPlugin implements IModPlugin {
 	@Override
 	public void onRuntimeAvailable(IJeiRuntime r) {
 		runtime = r;
-		DefaultBindings.GLOBAL.put("jeiRuntime", runtime);
+		BuiltinKubeJSPlugin.GLOBAL.put("jeiRuntime", runtime);
 
 		new HideJEIEventJS<>(runtime, VanillaTypes.ITEM, object -> IngredientJS.of(object)::testVanilla, stack -> !stack.isEmpty()).post(ScriptType.CLIENT, JEIIntegration.JEI_HIDE_ITEMS);
 

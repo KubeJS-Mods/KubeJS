@@ -1,5 +1,7 @@
 package dev.latvian.kubejs;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dev.latvian.kubejs.block.BlockRegistryEventJS;
 import dev.latvian.kubejs.block.KubeJSBlockEventHandler;
 import dev.latvian.kubejs.docs.KubeJSDocs;
@@ -18,8 +20,10 @@ import dev.latvian.kubejs.script.ScriptPack;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.kubejs.server.KubeJSServerEventHandler;
+import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
+import me.shedaniel.architectury.platform.Mod;
 import me.shedaniel.architectury.platform.Platform;
 import net.fabricmc.api.EnvType;
 import net.minecraft.resources.ResourceLocation;
@@ -48,7 +52,7 @@ public class KubeJS {
 
 	public static KubeJS instance;
 
-	public final KubeJSCommon proxy;
+	public static KubeJSCommon PROXY;
 	public static boolean nextClientHasClientMod = false;
 
 	public static ScriptManager startupScriptManager, clientScriptManager;
@@ -82,7 +86,7 @@ public class KubeJS {
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS, "/data/kubejs/example_startup_script.js");
 		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS, "/data/kubejs/example_client_script.js");
 		String proxyClass = Platform.getEnv() == EnvType.CLIENT ? "dev.latvian.kubejs.client.KubeJSClient" : "dev.latvian.kubejs.KubeJSCommon";
-		proxy = (KubeJSCommon) Class.forName(proxyClass).getDeclaredConstructor().newInstance();
+		PROXY = (KubeJSCommon) Class.forName(proxyClass).getDeclaredConstructor().newInstance();
 
 		KubeJSDocs.init();
 
@@ -90,6 +94,24 @@ public class KubeJS {
 
 		if (Files.exists(oldStartupFolder)) {
 			UtilsJS.tryIO(() -> Files.move(oldStartupFolder, KubeJSPaths.STARTUP_SCRIPTS));
+		}
+
+		Gson modGson = new GsonBuilder().disableHtmlEscaping().setLenient().create();
+		long now = System.currentTimeMillis();
+		LOGGER.info("Looking for KubeJS plugins...");
+
+		for (Mod mod : Platform.getMods()) {
+			try {
+				KubeJSPlugins.load(mod.getModId(), mod.getFilePath());
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		LOGGER.info("Done in " + (System.currentTimeMillis() - now) / 1000L + " s");
+
+		for (KubeJSPlugin plugin : KubeJSPlugins.LIST) {
+			plugin.init();
 		}
 
 		startupScriptManager.unload();
@@ -110,7 +132,7 @@ public class KubeJS {
 		KubeJSFluidEventHandler.init();
 		KubeJSServerEventHandler.init();
 
-		proxy.init();
+		PROXY.init();
 	}
 
 	public static void loadScripts(ScriptPack pack, Path dir, String path) {
@@ -156,6 +178,10 @@ public class KubeJS {
 	}
 
 	public void loadComplete() {
+		for (KubeJSPlugin plugin : KubeJSPlugins.LIST) {
+			plugin.afterInit();
+		}
+
 		ScriptsLoadedEvent.EVENT.invoker().run();
 		new EventJS().post(ScriptType.STARTUP, KubeJSEvents.POSTINIT);
 		UtilsJS.postModificationEvents();

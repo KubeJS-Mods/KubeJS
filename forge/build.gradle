@@ -1,6 +1,6 @@
 plugins {
 	id "com.github.johnrengelman.shadow" version "5.0.0"
-	id "com.matthewprenger.cursegradle"
+	id "com.matthewprenger.cursegradle" version "1.4.0"
 }
 
 def ENV = System.getenv()
@@ -20,14 +20,12 @@ loom {
 }
 
 dependencies {
-	minecraft("com.mojang:minecraft:${rootProject.architectury.minecraft}")
-	mappings(minecraft.officialMojangMappings())
 	forge("net.minecraftforge:forge:${rootProject.architectury.minecraft}-${rootProject.forge_version}")
 	modCompile("curse.maven:jei-238222:${rootProject.forge_jei_file}")
 	modCompile("curse.maven:bookshelf-228525:${rootProject.forge_bookshelf_file}")
 	modCompile("curse.maven:game-stages-268655:${rootProject.forge_gamestages_file}")
 	modCompile("me.shedaniel:architectury-forge:${rootProject.architectury_version}")
-	modCompile("curse.maven:rhino-416294:${rootProject.rhino_file}")
+	modCompile "dev.latvian.mods:rhino:${rootProject.rhino_version}"
 
 	implementation(project(path: ":common")) {
 		transitive = false
@@ -102,10 +100,12 @@ if (ENV.CURSEFORGE_KEY) {
 publishing {
 	publications {
 		mavenForge(MavenPublication) {
-			artifactId = rootProject.archivesBaseName + "-forge"
-			artifact(remapJar.archivePath) {
-				builtBy build
+			artifactId = rootProject.archivesBaseName + "-" + project.name
+			artifact(remapJar) {
 				classifier null
+			}
+			artifact(sourcesJar) {
+				builtBy remapSourcesJar
 			}
 		}
 	}
@@ -113,8 +113,17 @@ publishing {
 	repositories {
 		if (ENV.LOCAL_MAVEN) {
 			maven {
-				// upload to local maven repo
 				url = "file://${ENV.LOCAL_MAVEN}"
+			}
+		}
+
+		if (ENV.SAPS_TOKEN) {
+			maven {
+				url "https://maven.saps.dev/minecraft"
+				credentials {
+					username = "latvian"
+					password = "${ENV.SAPS_TOKEN}"
+				}
 			}
 		}
 	}

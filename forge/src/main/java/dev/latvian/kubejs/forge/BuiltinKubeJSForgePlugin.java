@@ -1,13 +1,17 @@
-package dev.latvian.kubejs.bindings.forge;
+package dev.latvian.kubejs.forge;
 
+import dev.latvian.kubejs.BuiltinKubeJSPlugin;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 
-public class DefaultBindingsImpl {
-	public static void registerPlatformEvents(BindingsEvent event) {
+public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
+	@Override
+	public void addBindings(BindingsEvent event) {
+		super.addBindings(event);
+
 		if (event.type == ScriptType.STARTUP) {
 			event.addFunction("onForgeEvent", args -> onPlatformEvent(event, args), null, KubeJSForgeEventHandlerWrapper.class);
 		}

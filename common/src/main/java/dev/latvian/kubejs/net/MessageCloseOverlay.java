@@ -25,6 +25,6 @@ public class MessageCloseOverlay {
 	}
 
 	void handle(Supplier<PacketContext> context) {
-		context.get().queue(() -> KubeJS.instance.proxy.closeOverlay(overlay));
+		context.get().queue(() -> KubeJS.PROXY.closeOverlay(overlay));
 	}
 }

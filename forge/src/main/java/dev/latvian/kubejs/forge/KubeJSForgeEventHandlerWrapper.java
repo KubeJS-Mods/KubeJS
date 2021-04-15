@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.bindings.forge;
+package dev.latvian.kubejs.forge;
 
 import net.minecraftforge.eventbus.api.Event;
 
