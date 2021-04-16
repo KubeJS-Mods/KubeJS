@@ -42,4 +42,8 @@ public class FluidWrapper {
 	public FluidStackJS getEmpty() {
 		return EmptyFluidStackJS.INSTANCE;
 	}
+
+	public boolean exists(ResourceLocation id) {
+		return KubeJSRegistries.fluids().contains(id);
+	}
 }
