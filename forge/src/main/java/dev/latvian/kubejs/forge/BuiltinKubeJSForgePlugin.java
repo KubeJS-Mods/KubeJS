@@ -4,10 +4,21 @@ import dev.latvian.kubejs.BuiltinKubeJSPlugin;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.util.ClassList;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 
 public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
+	@Override
+	public void addClasses(ScriptType type, ClassList list) {
+		super.addClasses(type, list);
+
+		list.allow("net.minecraftforge");
+		list.deny("net.minecraftforge.fml");
+		list.deny("net.minecraftforge.accesstransformer");
+		list.deny("net.minecraftforge.coremod");
+	}
+
 	@Override
 	public void addBindings(BindingsEvent event) {
 		super.addBindings(event);

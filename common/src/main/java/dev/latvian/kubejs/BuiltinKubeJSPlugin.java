@@ -66,49 +66,43 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 	@Override
 	public void addClasses(ScriptType type, ClassList list) {
-		list.deny("java.lang");
-		list.deny("java.io"); // IO and network
-		list.deny("java.nio");
-		list.deny("java.net");
-		list.deny("sun");
-		list.deny("com.sun");
-		list.deny("io.netty");
+		list.allow(java.lang.Number.class);
+		list.allow(java.lang.String.class);
+		list.allow(java.lang.Character.class);
+		list.allow(java.lang.Byte.class);
+		list.allow(java.lang.Short.class);
+		list.allow(java.lang.Integer.class);
+		list.allow(java.lang.Long.class);
+		list.allow(java.lang.Float.class);
+		list.allow(java.lang.Double.class);
+		list.allow(java.lang.Boolean.class);
+		list.allow(java.lang.Runnable.class);
+		list.allow(java.lang.Iterable.class);
+		list.allow(java.lang.Comparable.class);
+		list.allow(java.lang.CharSequence.class);
+
+		list.allow(java.math.BigInteger.class);
+		list.allow(java.math.BigDecimal.class);
+
+		list.allow(java.io.Closeable.class);
+		list.allow(java.io.Serializable.class);
+
+		list.allow(java.nio.ByteOrder.class);
 
 		list.allow("java.util");
 		list.deny("java.util.jar");
 		list.deny("java.util.zip");
-		list.allow("it.unimi.dsi.fastutil"); // FastUtil
 
-		list.deny("dev.latvian.mods.rhino"); // Rhino itself
-		list.deny("dev.latvian.kubejs.script"); // KubeJS itself
-
-		list.allow("net.minecraft");
-		list.allow("com.mojang.authlib.GameProfile");
-		list.allow("com.mojang.util.UUIDTypeAdapter");
-
-		list.allow("net.minecraftforge"); // Forge / FML internal stuff
-		list.deny("cpw.mods.modlauncher");
-		list.deny("cpw.mods.gross");
-		list.deny("net.minecraftforge.fml");
-		list.deny("net.minecraftforge.accesstransformer");
-		list.deny("net.minecraftforge.coremod");
-		list.deny("org.openjdk.nashorn");
-		list.deny("jdk.nashorn");
-
-		list.allow("net.fabricmc"); // Fabric internal stuff
-		list.deny("net.fabricmc.accesswidener");
-		list.deny("net.fabricmc.devlaunchinjector");
-		list.deny("net.fabricmc.loader");
-		list.deny("net.fabricmc.tinyremapper");
-
-		list.deny("org.objectweb.asm"); // ASM
-		list.deny("org.spongepowered.asm"); // Sponge ASM
-		list.deny("me.shedaniel.architectury"); // Architectury
-
-		list.deny("com.chocohead.mm"); // Manningham Mills
+		list.allow("it.unimi.dsi.fastutil");
 
 		list.allow("dev.latvian.kubejs");
+		list.deny("dev.latvian.kubejs.script");
 		list.deny("dev.latvian.kubejs.mixin");
+
+		list.allow("net.minecraft");
+		list.allow(com.mojang.authlib.GameProfile.class);
+		list.allow(com.mojang.util.UUIDTypeAdapter.class);
+		list.allow("com.mojang.brigadier");
 	}
 
 	@Override
@@ -126,6 +120,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		event.add("events", new ScriptEventsWrapper(event.type.manager.get().events));
 
 		event.addFunction("onEvent", args -> onEvent(event, args), null, IEventHandler.class);
+		event.addFunction("java", args -> event.manager.loadJavaClass(event.scope, args), new Class[]{null});
 
 		event.add("Utils", new UtilsWrapper());
 		event.add("utils", new UtilsWrapper());

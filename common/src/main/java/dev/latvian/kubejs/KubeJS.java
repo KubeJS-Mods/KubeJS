@@ -1,9 +1,8 @@
 package dev.latvian.kubejs;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import dev.latvian.kubejs.block.BlockRegistryEventJS;
 import dev.latvian.kubejs.block.KubeJSBlockEventHandler;
+import dev.latvian.kubejs.client.KubeJSClient;
 import dev.latvian.kubejs.docs.KubeJSDocs;
 import dev.latvian.kubejs.entity.KubeJSEntityEventHandler;
 import dev.latvian.kubejs.event.EventJS;
@@ -25,7 +24,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
 import me.shedaniel.architectury.platform.Mod;
 import me.shedaniel.architectury.platform.Platform;
-import net.fabricmc.api.EnvType;
+import me.shedaniel.architectury.utils.EnvExecutor;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -83,20 +82,8 @@ public class KubeJS {
 			});
 		}
 
-		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS, "/data/kubejs/example_startup_script.js");
-		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS, "/data/kubejs/example_client_script.js");
-		String proxyClass = Platform.getEnv() == EnvType.CLIENT ? "dev.latvian.kubejs.client.KubeJSClient" : "dev.latvian.kubejs.KubeJSCommon";
-		PROXY = (KubeJSCommon) Class.forName(proxyClass).getDeclaredConstructor().newInstance();
+		PROXY = EnvExecutor.getEnvSpecific(() -> KubeJSClient::new, () -> KubeJSCommon::new);
 
-		KubeJSDocs.init();
-
-		Path oldStartupFolder = KubeJSPaths.DIRECTORY.resolve("startup");
-
-		if (Files.exists(oldStartupFolder)) {
-			UtilsJS.tryIO(() -> Files.move(oldStartupFolder, KubeJSPaths.STARTUP_SCRIPTS));
-		}
-
-		Gson modGson = new GsonBuilder().disableHtmlEscaping().setLenient().create();
 		long now = System.currentTimeMillis();
 		LOGGER.info("Looking for KubeJS plugins...");
 
@@ -109,6 +96,17 @@ public class KubeJS {
 		}
 
 		LOGGER.info("Done in " + (System.currentTimeMillis() - now) / 1000L + " s");
+
+		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS, "/data/kubejs/example_startup_script.js");
+		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS, "/data/kubejs/example_client_script.js");
+
+		KubeJSDocs.init();
+
+		Path oldStartupFolder = KubeJSPaths.DIRECTORY.resolve("startup");
+
+		if (Files.exists(oldStartupFolder)) {
+			UtilsJS.tryIO(() -> Files.move(oldStartupFolder, KubeJSPaths.STARTUP_SCRIPTS));
+		}
 
 		for (KubeJSPlugin plugin : KubeJSPlugins.LIST) {
 			plugin.init();

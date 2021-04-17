@@ -10,7 +10,9 @@ import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.ClassShutter;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.NativeJavaClass;
 import dev.latvian.mods.rhino.RhinoException;
+import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import org.apache.commons.io.IOUtils;
 
@@ -18,8 +20,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author LatvianModder
@@ -32,6 +36,7 @@ public class ScriptManager {
 	public final Map<String, ScriptPack> packs;
 	private final ClassList classList;
 	public boolean firstLoad;
+	private Map<String, Optional<NativeJavaClass>> javaClassCache;
 
 	public ScriptManager(ScriptType t, Path p, String e) {
 		type = t;
@@ -53,6 +58,7 @@ public class ScriptManager {
 		type.errors.clear();
 		type.warnings.clear();
 		type.console.resetFile();
+		javaClassCache = null;
 	}
 
 	public void loadFromDirectory() {
@@ -90,10 +96,14 @@ public class ScriptManager {
 		packs.put(pack.info.namespace, pack);
 	}
 
+	public boolean isClassAllowed(String name) {
+		return classList.isAllowed(name);
+	}
+
 	public void load() {
 		Context context = Context.enter();
 		context.setLanguageVersion(Context.VERSION_ES6);
-		context.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || classList.isAllowed(fullClassName));
+		context.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || isClassAllowed(fullClassName));
 		TypeWrappers typeWrappers = context.getTypeWrappers();
 		typeWrappers.removeAll();
 
@@ -111,7 +121,7 @@ public class ScriptManager {
 				pack.context = context;
 				pack.scope = context.initStandardObjects();
 
-				BindingsEvent event = new BindingsEvent(type, pack.scope);
+				BindingsEvent event = new BindingsEvent(this, pack.context, pack.scope);
 				BindingsEvent.EVENT.invoker().accept(event);
 
 				for (KubeJSPlugin plugin : KubeJSPlugins.LIST) {
@@ -150,5 +160,42 @@ public class ScriptManager {
 		}
 
 		firstLoad = false;
+	}
+
+	public NativeJavaClass loadJavaClass(Scriptable scope, Object[] args) {
+		String name = args[0].toString();
+
+		if (name.isEmpty()) {
+			throw Context.reportRuntimeError("Class name can't be empty!");
+		}
+
+		if (javaClassCache == null) {
+			javaClassCache = new HashMap<>();
+		}
+
+		Optional<NativeJavaClass> ch = javaClassCache.get(name);
+
+		if (ch == null) {
+			javaClassCache.put(name, Optional.empty());
+
+			try {
+				if (!isClassAllowed(name)) {
+					throw Context.reportRuntimeError("Class '" + name + "' is not allowed!");
+				}
+
+				Class<?> c = Class.forName(name);
+				NativeJavaClass njc = new NativeJavaClass(scope, c);
+				javaClassCache.put(name, Optional.of(njc));
+				return njc;
+			} catch (Throwable ex) {
+				throw Context.reportRuntimeError("Class '" + name + "' is not allowed!");
+			}
+		}
+
+		if (ch.isPresent()) {
+			return ch.get();
+		}
+
+		throw Context.reportRuntimeError("Class '" + name + "' is not allowed!");
 	}
 }
