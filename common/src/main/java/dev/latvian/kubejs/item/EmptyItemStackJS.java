@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.item;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
@@ -190,7 +189,9 @@ public class EmptyItemStackJS extends ItemStackJS {
 
 	@Override
 	public JsonElement toJson() {
-		return new JsonArray();
+		JsonObject json = new JsonObject();
+		json.addProperty("item", "minecraft:air");
+		return json;
 	}
 
 	@Override
