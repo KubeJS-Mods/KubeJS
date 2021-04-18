@@ -11,10 +11,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class GameStagesIntegration {
 	public static void init() {
 		MinecraftForge.EVENT_BUS.register(GameStagesIntegration.class);
+		AttachPlayerDataEvent.EVENT.register(GameStagesIntegration::attachPlayerData);
 	}
 
 	// Just ignore when it says that it is not an Event
-	@SubscribeEvent
 	public static void attachPlayerData(AttachPlayerDataEvent event) {
 		event.add("gamestages", new GameStagesPlayerData(event.getParent()));
 	}

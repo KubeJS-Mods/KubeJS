@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.mixin.common;
 
 import dev.latvian.kubejs.client.KubeJSClient;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,8 +17,8 @@ public class OptionsMixin {
 	@Final
 	private File optionsFile;
 
-	@Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Options;load()V", shift = At.Shift.BEFORE))
-	private void test(Minecraft minecraft, File file, CallbackInfo ci) {
+	@Inject(method = "load", at = @At("HEAD"))
+	private void loadKJS(CallbackInfo ci) {
 		KubeJSClient.copyDefaultOptionsFile(optionsFile);
 	}
 }
