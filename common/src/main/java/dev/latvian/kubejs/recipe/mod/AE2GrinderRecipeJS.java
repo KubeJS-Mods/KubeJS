@@ -15,7 +15,7 @@ public class AE2GrinderRecipeJS extends RecipeJS {
 		inputItems.add(parseIngredientItem(args.get(1)));
 
 		if (args.size() >= 3) {
-			inputItems.addAll(parseIngredientItemList(args.get(2)));
+			outputItems.addAll(parseResultItemList(args.get(2)));
 		}
 
 		json.addProperty("turns", args.size() >= 4 ? (Number) args.get(3) : 8);
