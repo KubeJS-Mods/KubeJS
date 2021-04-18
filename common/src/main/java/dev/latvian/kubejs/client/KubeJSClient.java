@@ -3,6 +3,7 @@ package dev.latvian.kubejs.client;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSCommon;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.net.NetworkEventJS;
 import dev.latvian.kubejs.script.BindingsEvent;
@@ -18,6 +19,10 @@ import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -49,8 +54,24 @@ public class KubeJSClient extends KubeJSCommon {
 		KubeJS.clientScriptManager.load();
 	}
 
+	public static void copyDefaultOptionsFile(File optionsFile) {
+		if (!optionsFile.exists()) {
+			Path defOptions = KubeJSPaths.CONFIG.resolve("defaultoptions.txt");
+
+			if (Files.exists(defOptions)) {
+				try {
+					KubeJS.LOGGER.info("Loaded default options from kubejs/config/defaultoptions.txt");
+					Files.copy(defOptions, optionsFile.toPath());
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+	}
+
 	@Override
 	public void clientBindings(BindingsEvent event) {
+		event.add("Client", new ClientWrapper());
 		event.add("client", new ClientWrapper());
 	}
 

@@ -24,6 +24,7 @@
 		"KeyboardHandlerMixin",
 		"MainWindowMixin",
 		"MinecraftMixin",
+		"OptionsMixin",
 		"ResourceLoadProgressGuiMixin"
 	],
 	"injectors": {
