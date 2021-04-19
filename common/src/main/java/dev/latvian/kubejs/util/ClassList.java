@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.util;
 
+import dev.latvian.kubejs.CommonProperties;
 import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
 
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class ClassList {
 			}
 		}
 
-		return V_DENY;
+		return CommonProperties.get().invertClassLoader ? V_ALLOW : V_DENY;
 	}
 
 	public boolean isAllowed(String s) {

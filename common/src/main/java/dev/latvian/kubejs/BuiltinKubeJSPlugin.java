@@ -66,7 +66,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 	@Override
 	public void addClasses(ScriptType type, ClassList list) {
-		list.allow(java.lang.Number.class);
+		list.allow(java.lang.Number.class); // java.lang
 		list.allow(java.lang.String.class);
 		list.allow(java.lang.Character.class);
 		list.allow(java.lang.Byte.class);
@@ -81,28 +81,42 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		list.allow(java.lang.Comparable.class);
 		list.allow(java.lang.CharSequence.class);
 
-		list.allow(java.math.BigInteger.class);
+		list.allow(java.math.BigInteger.class); // java.math
 		list.allow(java.math.BigDecimal.class);
 
+		list.deny("java.io"); // IO
 		list.allow(java.io.Closeable.class);
 		list.allow(java.io.Serializable.class);
 
+		list.deny("java.nio"); // NIO
 		list.allow(java.nio.ByteOrder.class);
 
-		list.allow("java.util");
+		list.allow("java.util"); // Utils
 		list.deny("java.util.jar");
 		list.deny("java.util.zip");
 
-		list.allow("it.unimi.dsi.fastutil");
+		list.allow("it.unimi.dsi.fastutil"); // FastUtil
 
-		list.allow("dev.latvian.kubejs");
+		list.allow("dev.latvian.kubejs"); // KubeJS
 		list.deny("dev.latvian.kubejs.script");
 		list.deny("dev.latvian.kubejs.mixin");
 
-		list.allow("net.minecraft");
+		list.allow("net.minecraft"); // Minecraft
 		list.allow(com.mojang.authlib.GameProfile.class);
 		list.allow(com.mojang.util.UUIDTypeAdapter.class);
 		list.allow("com.mojang.brigadier");
+
+		list.allow("me.shedaniel.architectury"); // Architectury
+
+		// Misc
+		list.deny("java.net"); // Networks
+		list.deny("sun"); // Sun
+		list.deny("com.sun"); // Sun
+		list.deny("io.netty"); // Netty
+		list.deny("org.objectweb.asm"); // ASM
+		list.deny("org.spongepowered.asm"); // Sponge ASM
+		list.deny("org.openjdk.nashorn"); // Nashorn
+		list.deny("jdk.nashorn"); // Nashorn
 	}
 
 	@Override
@@ -136,6 +150,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		event.add("ingredient", new IngredientWrapper());
 		event.add("NBT", new NBTWrapper());
 		event.add("nbt", new NBTWrapper());
+		event.add("Facing", new FacingWrapper());
 		event.add("facing", new FacingWrapper());
 
 		event.add("Fluid", new FluidWrapper());

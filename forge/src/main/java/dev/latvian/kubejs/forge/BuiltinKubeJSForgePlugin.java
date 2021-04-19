@@ -13,10 +13,13 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 	public void addClasses(ScriptType type, ClassList list) {
 		super.addClasses(type, list);
 
-		list.allow("net.minecraftforge");
+		list.allow("net.minecraftforge"); // Forge
 		list.deny("net.minecraftforge.fml");
 		list.deny("net.minecraftforge.accesstransformer");
 		list.deny("net.minecraftforge.coremod");
+
+		list.deny("cpw.mods.modlauncher"); // FML
+		list.deny("cpw.mods.gross");
 	}
 
 	@Override

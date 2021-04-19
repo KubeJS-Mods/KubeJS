@@ -14,5 +14,7 @@ public class BuiltinKubeJSFabricPlugin extends BuiltinKubeJSPlugin {
 		list.deny("net.fabricmc.devlaunchinjector");
 		list.deny("net.fabricmc.loader");
 		list.deny("net.fabricmc.tinyremapper");
+
+		list.deny("com.chocohead.mm"); // Manningham Mills
 	}
 }
