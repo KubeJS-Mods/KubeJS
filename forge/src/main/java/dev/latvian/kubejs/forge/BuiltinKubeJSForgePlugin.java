@@ -4,22 +4,22 @@ import dev.latvian.kubejs.BuiltinKubeJSPlugin;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.util.ClassList;
+import dev.latvian.kubejs.util.ClassFilter;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 
 public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 	@Override
-	public void addClasses(ScriptType type, ClassList list) {
-		super.addClasses(type, list);
+	public void addClasses(ScriptType type, ClassFilter filter) {
+		super.addClasses(type, filter);
 
-		list.allow("net.minecraftforge"); // Forge
-		list.deny("net.minecraftforge.fml");
-		list.deny("net.minecraftforge.accesstransformer");
-		list.deny("net.minecraftforge.coremod");
+		filter.allow("net.minecraftforge"); // Forge
+		filter.deny("net.minecraftforge.fml");
+		filter.deny("net.minecraftforge.accesstransformer");
+		filter.deny("net.minecraftforge.coremod");
 
-		list.deny("cpw.mods.modlauncher"); // FML
-		list.deny("cpw.mods.gross");
+		filter.deny("cpw.mods.modlauncher"); // FML
+		filter.deny("cpw.mods.gross");
 	}
 
 	@Override

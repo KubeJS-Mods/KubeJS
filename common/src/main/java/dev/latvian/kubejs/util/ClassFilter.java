@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ClassList {
+public class ClassFilter {
 	private static final byte V_DEF = -1;
 	private static final byte V_DENY = 0;
 	private static final byte V_ALLOW = 1;
@@ -19,7 +19,7 @@ public class ClassList {
 	private final List<String> allowWeak;
 	private final Object2ByteOpenHashMap<String> cache;
 
-	public ClassList() {
+	public ClassFilter() {
 		denyStrong = new HashSet<>();
 		denyWeak = new ArrayList<>();
 		allowStrong = new HashSet<>();
@@ -29,6 +29,10 @@ public class ClassList {
 	}
 
 	public void deny(String s) {
+		if ((s = s.trim()).isEmpty()) {
+			return;
+		}
+
 		denyStrong.add(s);
 
 		if (!denyWeak.contains(s)) {
@@ -41,6 +45,10 @@ public class ClassList {
 	}
 
 	public void allow(String s) {
+		if ((s = s.trim()).isEmpty()) {
+			return;
+		}
+
 		allowStrong.add(s);
 
 		if (!allowWeak.contains(s)) {

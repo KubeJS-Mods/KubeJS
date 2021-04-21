@@ -5,7 +5,7 @@ import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSPlugin;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.event.EventsJS;
-import dev.latvian.kubejs.util.ClassList;
+import dev.latvian.kubejs.util.ClassFilter;
 import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.ClassShutter;
@@ -34,7 +34,7 @@ public class ScriptManager {
 	public final String exampleScript;
 	public final EventsJS events;
 	public final Map<String, ScriptPack> packs;
-	private final ClassList classList;
+	private final ClassFilter classFilter;
 	public boolean firstLoad;
 	private Map<String, Optional<NativeJavaClass>> javaClassCache;
 
@@ -45,11 +45,7 @@ public class ScriptManager {
 		events = new EventsJS(this);
 		packs = new LinkedHashMap<>();
 		firstLoad = true;
-		classList = new ClassList();
-
-		for (KubeJSPlugin plugin : KubeJSPlugins.LIST) {
-			plugin.addClasses(type, classList);
-		}
+		classFilter = KubeJSPlugins.createClassFilter(type);
 	}
 
 	public void unload() {
@@ -97,7 +93,7 @@ public class ScriptManager {
 	}
 
 	public boolean isClassAllowed(String name) {
-		return classList.isAllowed(name);
+		return classFilter.isAllowed(name);
 	}
 
 	public void load() {

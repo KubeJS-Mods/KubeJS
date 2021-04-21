@@ -29,7 +29,7 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextColor;
-import dev.latvian.kubejs.util.ClassList;
+import dev.latvian.kubejs.util.ClassFilter;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UUIDUtilsJS;
@@ -61,62 +61,62 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-public class BuiltinKubeJSPlugin implements KubeJSPlugin {
+public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	public static final HashMap<String, Object> GLOBAL = new HashMap<>();
 
 	@Override
-	public void addClasses(ScriptType type, ClassList list) {
-		list.allow(java.lang.Number.class); // java.lang
-		list.allow(java.lang.String.class);
-		list.allow(java.lang.Character.class);
-		list.allow(java.lang.Byte.class);
-		list.allow(java.lang.Short.class);
-		list.allow(java.lang.Integer.class);
-		list.allow(java.lang.Long.class);
-		list.allow(java.lang.Float.class);
-		list.allow(java.lang.Double.class);
-		list.allow(java.lang.Boolean.class);
-		list.allow(java.lang.Runnable.class);
-		list.allow(java.lang.Iterable.class);
-		list.allow(java.lang.Comparable.class);
-		list.allow(java.lang.CharSequence.class);
+	public void addClasses(ScriptType type, ClassFilter filter) {
+		filter.allow("java.lang.Number"); // java.lang
+		filter.allow("java.lang.String");
+		filter.allow("java.lang.Character");
+		filter.allow("java.lang.Byte");
+		filter.allow("java.lang.Short");
+		filter.allow("java.lang.Integer");
+		filter.allow("java.lang.Long");
+		filter.allow("java.lang.Float");
+		filter.allow("java.lang.Double");
+		filter.allow("java.lang.Boolean");
+		filter.allow("java.lang.Runnable");
+		filter.allow("java.lang.Iterable");
+		filter.allow("java.lang.Comparable");
+		filter.allow("java.lang.CharSequence");
 
-		list.allow(java.math.BigInteger.class); // java.math
-		list.allow(java.math.BigDecimal.class);
+		filter.allow("java.math.BigInteger"); // java.math
+		filter.allow("java.math.BigDecimal");
 
-		list.deny("java.io"); // IO
-		list.allow(java.io.Closeable.class);
-		list.allow(java.io.Serializable.class);
+		filter.deny("java.io"); // IO
+		filter.allow("java.io.Closeable");
+		filter.allow("java.io.Serializable");
 
-		list.deny("java.nio"); // NIO
-		list.allow(java.nio.ByteOrder.class);
+		filter.deny("java.nio"); // NIO
+		filter.allow("java.nio.ByteOrder");
 
-		list.allow("java.util"); // Utils
-		list.deny("java.util.jar");
-		list.deny("java.util.zip");
+		filter.allow("java.util"); // Utils
+		filter.deny("java.util.jar");
+		filter.deny("java.util.zip");
 
-		list.allow("it.unimi.dsi.fastutil"); // FastUtil
+		filter.allow("it.unimi.dsi.fastutil"); // FastUtil
 
-		list.allow("dev.latvian.kubejs"); // KubeJS
-		list.deny("dev.latvian.kubejs.script");
-		list.deny("dev.latvian.kubejs.mixin");
+		filter.allow("dev.latvian.kubejs"); // KubeJS
+		filter.deny("dev.latvian.kubejs.script");
+		filter.deny("dev.latvian.kubejs.mixin");
 
-		list.allow("net.minecraft"); // Minecraft
-		list.allow(com.mojang.authlib.GameProfile.class);
-		list.allow(com.mojang.util.UUIDTypeAdapter.class);
-		list.allow("com.mojang.brigadier");
+		filter.allow("net.minecraft"); // Minecraft
+		filter.allow("com.mojang.authlib.GameProfile");
+		filter.allow("com.mojang.util.UUIDTypeAdapter");
+		filter.allow("com.mojang.brigadier");
 
-		list.allow("me.shedaniel.architectury"); // Architectury
+		filter.allow("me.shedaniel.architectury"); // Architectury
 
 		// Misc
-		list.deny("java.net"); // Networks
-		list.deny("sun"); // Sun
-		list.deny("com.sun"); // Sun
-		list.deny("io.netty"); // Netty
-		list.deny("org.objectweb.asm"); // ASM
-		list.deny("org.spongepowered.asm"); // Sponge ASM
-		list.deny("org.openjdk.nashorn"); // Nashorn
-		list.deny("jdk.nashorn"); // Nashorn
+		filter.deny("java.net"); // Networks
+		filter.deny("sun"); // Sun
+		filter.deny("com.sun"); // Sun
+		filter.deny("io.netty"); // Netty
+		filter.deny("org.objectweb.asm"); // ASM
+		filter.deny("org.spongepowered.asm"); // Sponge ASM
+		filter.deny("org.openjdk.nashorn"); // Nashorn
+		filter.deny("jdk.nashorn"); // Nashorn
 	}
 
 	@Override
