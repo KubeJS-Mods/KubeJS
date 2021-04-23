@@ -7,6 +7,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
 
 import static net.minecraft.core.Registry.*;
@@ -16,6 +17,10 @@ public class KubeJSRegistries {
 
 	public static Registry<Block> blocks() {
 		return REGISTRIES.get(BLOCK_REGISTRY);
+	}
+
+	public static Registry<BlockEntityType<?>> blockEntities() {
+		return REGISTRIES.get(BLOCK_ENTITY_TYPE_REGISTRY);
 	}
 
 	public static Registry<Item> items() {

@@ -1,5 +1,7 @@
 package dev.latvian.kubejs.item;
 
+import com.google.gson.JsonObject;
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.bindings.RarityWrapper;
 import dev.latvian.kubejs.text.Text;
@@ -40,6 +42,8 @@ public class ItemBuilder extends BuilderBase {
 
 	public ItemJS item;
 
+	private JsonObject modelJson;
+
 	public ItemBuilder(String i) {
 		super(i);
 		maxStackSize = 64;
@@ -50,7 +54,7 @@ public class ItemBuilder extends BuilderBase {
 		rarity = RarityWrapper.COMMON;
 		glow = false;
 		tooltip = new ArrayList<>();
-		group = CreativeModeTab.TAB_MISC;
+		group = KubeJS.tab;
 		color = new Int2IntOpenHashMap();
 		color.defaultReturnValue(0xFFFFFFFF);
 		texture = id.getNamespace() + ":item/" + id.getPath();
@@ -203,5 +207,24 @@ public class ItemBuilder extends BuilderBase {
 	@ExpectPlatform
 	private static void appendToolType(Item.Properties properties, ToolType type, Integer level) {
 		throw new AssertionError();
+	}
+
+	public void setModelJson(JsonObject o) {
+		modelJson = o;
+	}
+
+	public JsonObject getModelJson() {
+		if (modelJson == null) {
+			modelJson = new JsonObject();
+			modelJson.addProperty("parent", parentModel);
+
+			if (parentModel.equals("item/generated")) {
+				JsonObject textures = new JsonObject();
+				textures.addProperty("layer0", texture);
+				modelJson.add("textures", textures);
+			}
+		}
+
+		return modelJson;
 	}
 }

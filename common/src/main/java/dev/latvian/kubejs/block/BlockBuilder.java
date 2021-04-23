@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.block;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.util.BuilderBase;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -42,6 +43,9 @@ public class BlockBuilder extends BuilderBase {
 	public float speedFactor = 1.0F;
 	public float jumpFactor = 1.0F;
 	public Consumer<RandomTickCallbackJS> randomTickCallback;
+	private JsonObject lootTableJson;
+	private JsonObject blockstateJson;
+	private JsonObject modelJson;
 
 	public BlockJS block;
 
@@ -213,11 +217,121 @@ public class BlockBuilder extends BuilderBase {
 
 	/**
 	 * Sets random tick callback for this black.
+	 *
 	 * @param randomTickCallback A callback using a block container and a random.
 	 */
 	public BlockBuilder randomTick(@Nullable Consumer<RandomTickCallbackJS> randomTickCallback) {
 		this.randomTickCallback = randomTickCallback;
 		return this;
+	}
+
+	public void setLootTableJson(JsonObject o) {
+		lootTableJson = o;
+	}
+
+	public JsonObject getLootTableJson() {
+		if (lootTableJson == null) {
+			lootTableJson = new JsonObject();
+			lootTableJson.addProperty("type", "minecraft:block");
+			JsonArray pools = new JsonArray();
+			JsonObject pool = new JsonObject();
+			pool.addProperty("rolls", 1);
+			JsonArray entries = new JsonArray();
+			JsonObject entry = new JsonObject();
+			entry.addProperty("type", "minecraft:item");
+			entry.addProperty("name", id.toString());
+			entries.add(entry);
+			pool.add("entries", entries);
+			JsonArray conditions = new JsonArray();
+			JsonObject condition = new JsonObject();
+			condition.addProperty("condition", "minecraft:survives_explosion");
+			conditions.add(condition);
+			pool.add("conditions", conditions);
+			pools.add(pool);
+			lootTableJson.add("pools", pools);
+		}
+
+		return lootTableJson;
+	}
+
+	public void setBlockstateJson(JsonObject o) {
+		blockstateJson = o;
+	}
+
+	public JsonObject getBlockstateJson() {
+		if (blockstateJson == null) {
+			blockstateJson = new JsonObject();
+			JsonObject variants = new JsonObject();
+			JsonObject modelo = new JsonObject();
+			modelo.addProperty("model", model);
+			variants.add("", modelo);
+			blockstateJson.add("variants", variants);
+		}
+
+		return blockstateJson;
+	}
+
+	public void setModelJson(JsonObject o) {
+		modelJson = o;
+	}
+
+	public JsonObject getModelJson() {
+		if (modelJson == null) {
+			modelJson = new JsonObject();
+
+			String particle = textures.get("particle").getAsString();
+
+			if (areAllTexturesEqual(textures, particle)) {
+				modelJson.addProperty("parent", "block/cube_all");
+				JsonObject textures = new JsonObject();
+				textures.addProperty("all", particle);
+				modelJson.add("textures", textures);
+			} else {
+				modelJson.addProperty("parent", "block/cube");
+				modelJson.add("textures", textures);
+			}
+
+			if (!color.isEmpty()) {
+				JsonObject cube = new JsonObject();
+				JsonArray from = new JsonArray();
+				from.add(0);
+				from.add(0);
+				from.add(0);
+				cube.add("from", from);
+				JsonArray to = new JsonArray();
+				to.add(16);
+				to.add(16);
+				to.add(16);
+				cube.add("to", to);
+				JsonObject faces = new JsonObject();
+
+				for (Direction direction : Direction.values()) {
+					JsonObject f = new JsonObject();
+					f.addProperty("texture", "#" + direction.getSerializedName());
+					f.addProperty("cullface", direction.getSerializedName());
+					f.addProperty("tintindex", 0);
+					faces.add(direction.getSerializedName(), f);
+				}
+
+				cube.add("faces", faces);
+
+				JsonArray elements = new JsonArray();
+				elements.add(cube);
+				modelJson.add("elements", elements);
+			}
+		}
+
+		return modelJson;
+	}
+
+	private boolean areAllTexturesEqual(JsonObject tex, String t) {
+		for (Direction direction : Direction.values()) {
+			if (!tex.get(direction.getSerializedName()).getAsString().equals(t)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public Block.Properties createProperties() {

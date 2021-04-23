@@ -1,16 +1,17 @@
 package dev.latvian.kubejs.block;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.fluid.FluidBuilder;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
-import me.shedaniel.architectury.event.events.EntityEvent;
+import me.shedaniel.architectury.event.events.BlockEvent;
 import me.shedaniel.architectury.event.events.InteractionEvent;
-import me.shedaniel.architectury.event.events.PlayerEvent;
 import me.shedaniel.architectury.utils.IntValue;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -28,13 +29,13 @@ import org.jetbrains.annotations.Nullable;
  * @author LatvianModder
  */
 public class KubeJSBlockEventHandler {
+
 	public static void init() {
 		registry();
 		InteractionEvent.RIGHT_CLICK_BLOCK.register(KubeJSBlockEventHandler::rightClick);
 		InteractionEvent.LEFT_CLICK_BLOCK.register(KubeJSBlockEventHandler::leftClick);
-		PlayerEvent.BREAK_BLOCK.register(KubeJSBlockEventHandler::blockBreak);
-		EntityEvent.PLACE_BLOCK.register(KubeJSBlockEventHandler::blockPlace);
-		//MinecraftForge.EVENT_BUS.addListener(this::blockDrops);
+		BlockEvent.BREAK.register(KubeJSBlockEventHandler::blockBreak);
+		BlockEvent.PLACE.register(KubeJSBlockEventHandler::blockPlace);
 	}
 
 	@ExpectPlatform
@@ -54,6 +55,10 @@ public class KubeJSBlockEventHandler {
 		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values()) {
 			builder.block = buildFluidBlock(builder, Block.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops());
 			KubeJSRegistries.blocks().register(builder.id, () -> builder.block);
+		}
+
+		for (DetectorInstance detector : KubeJSObjects.DETECTORS.values()) {
+			detector.block = KubeJSRegistries.blocks().register(new ResourceLocation(KubeJS.MOD_ID, "detector_" + detector.id), () -> new DetectorBlock(detector.id));
 		}
 	}
 

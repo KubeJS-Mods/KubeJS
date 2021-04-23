@@ -1,9 +1,11 @@
 package dev.latvian.kubejs.item;
 
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.block.BlockBuilder;
+import dev.latvian.kubejs.block.DetectorInstance;
 import dev.latvian.kubejs.fluid.FluidBuilder;
 import dev.latvian.kubejs.player.InventoryChangedEventJS;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
@@ -18,7 +20,9 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -63,6 +67,10 @@ public class KubeJSItemEventHandler {
 		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values()) {
 			builder.bucketItem = buildBucket(builder);
 			KubeJSRegistries.items().register(new ResourceLocation(builder.id.getNamespace(), builder.id.getPath() + "_bucket"), () -> builder.bucketItem);
+		}
+
+		for (DetectorInstance detector : KubeJSObjects.DETECTORS.values()) {
+			detector.item = KubeJSRegistries.items().register(new ResourceLocation(KubeJS.MOD_ID, "detector_" + detector.id), () -> new BlockItem(detector.block.get(), new Item.Properties().tab(KubeJS.tab)));
 		}
 	}
 

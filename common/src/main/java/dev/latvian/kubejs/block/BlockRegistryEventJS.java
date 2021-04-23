@@ -13,4 +13,12 @@ public class BlockRegistryEventJS extends EventJS {
 		KubeJSObjects.ALL.add(builder);
 		return builder;
 	}
+
+	public void addDetector(String id) {
+		if (id.isEmpty() || !id.equals(id.toLowerCase()) || id.matches("\\W")) {
+			throw new IllegalArgumentException("Detector ID can only contain a-z _ and 0-9!");
+		}
+
+		KubeJSObjects.DETECTORS.put(id, new DetectorInstance(id));
+	}
 }

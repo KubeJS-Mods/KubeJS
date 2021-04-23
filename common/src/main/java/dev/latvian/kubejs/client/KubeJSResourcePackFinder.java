@@ -2,10 +2,8 @@ package dev.latvian.kubejs.client;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSPaths;
-import dev.latvian.kubejs.script.data.KubeJSResourcePack;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
@@ -43,7 +41,7 @@ public class KubeJSResourcePackFinder implements RepositorySource {
 			}
 		}
 
-		KubeJSResourcePack pack = new KubeJSResourcePack(PackType.CLIENT_RESOURCES);
+		KubeJSClientResourcePack pack = new KubeJSClientResourcePack();
 		PackMetadataSection metadataSection = new PackMetadataSection(new TextComponent("./kubejs/assets/"), 6);
 		nameToPackMap.accept(new Pack("kubejs:resource_pack", true, () -> pack, pack, metadataSection, Pack.Position.TOP, PackSource.BUILT_IN));
 	}

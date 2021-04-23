@@ -24,8 +24,12 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
 import me.shedaniel.architectury.platform.Mod;
 import me.shedaniel.architectury.platform.Platform;
+import me.shedaniel.architectury.registry.CreativeTabs;
 import me.shedaniel.architectury.utils.EnvExecutor;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -53,6 +57,7 @@ public class KubeJS {
 
 	public static KubeJSCommon PROXY;
 	public static boolean nextClientHasClientMod = false;
+	public static CreativeModeTab tab = CreativeModeTab.TAB_MISC;
 
 	public static ScriptManager startupScriptManager, clientScriptManager;
 
@@ -110,6 +115,10 @@ public class KubeJS {
 
 		for (KubeJSPlugin plugin : KubeJSPlugins.LIST) {
 			plugin.init();
+		}
+
+		if (!CommonProperties.get().serverOnly) {
+			tab = CreativeTabs.create(new ResourceLocation(KubeJS.MOD_ID, KubeJS.MOD_ID), () -> new ItemStack(Items.PURPLE_DYE));
 		}
 
 		startupScriptManager.unload();

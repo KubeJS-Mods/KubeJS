@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.fluid;
 
+import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.bindings.RarityWrapper;
 import dev.latvian.kubejs.util.BuilderBase;
@@ -28,6 +29,9 @@ public class FluidBuilder extends BuilderBase {
 	public FlowingFluid flowingFluid;
 	public BucketItem bucketItem;
 	public LiquidBlock block;
+
+	private JsonObject blockstateJson;
+	private JsonObject blockModelJson;
 
 	public FluidBuilder(String i) {
 		super(i);
@@ -106,5 +110,38 @@ public class FluidBuilder extends BuilderBase {
 	public FluidBuilder rarity(RarityWrapper rarity) {
 		this.rarity = rarity;
 		return this;
+	}
+
+	public void setBlockstateJson(JsonObject o) {
+		blockstateJson = o;
+	}
+
+	public JsonObject getBlockstateJson() {
+		if (blockstateJson == null) {
+			blockstateJson = new JsonObject();
+			JsonObject variants = new JsonObject();
+			JsonObject modelo = new JsonObject();
+			modelo.addProperty("model", id.getNamespace() + ":block/" + id.getPath());
+			variants.add("", modelo);
+			blockstateJson.add("variants", variants);
+		}
+
+		return blockstateJson;
+	}
+
+	public void setBlockModelJson(JsonObject o) {
+		blockModelJson = o;
+	}
+
+	public JsonObject getBlockModelJson() {
+		if (blockModelJson == null) {
+			blockModelJson = new JsonObject();
+			JsonObject textures = new JsonObject();
+			textures.addProperty("particle", stillTexture);
+			blockModelJson.add("textures", textures);
+			return blockModelJson;
+		}
+
+		return blockModelJson;
 	}
 }
