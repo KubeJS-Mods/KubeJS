@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.script;
 
+import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSPlugin;
@@ -77,7 +78,8 @@ public class ScriptManager {
 
 			Throwable error = fileInfo.preload(scriptSource);
 
-			if (fileInfo.isIgnored()) {
+			String packMode = fileInfo.getPackMode();
+			if (fileInfo.isIgnored() || (!packMode.equals("default") && !packMode.equals(CommonProperties.get().packMode))) {
 				continue;
 			}
 
