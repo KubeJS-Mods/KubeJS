@@ -78,8 +78,8 @@ public class ScriptManager {
 
 			Throwable error = fileInfo.preload(scriptSource);
 
-			String mode = fileInfo.getMode();
-			if (fileInfo.isIgnored() || (!mode.equals("default") && !mode.equals(CommonProperties.get().mode))) {
+			String packMode = fileInfo.getPackMode();
+			if (fileInfo.isIgnored() || (!packMode.equals("default") && !packMode.equals(CommonProperties.get().packMode))) {
 				continue;
 			}
 
