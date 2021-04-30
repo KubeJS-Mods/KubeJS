@@ -24,6 +24,7 @@ public class ScriptFileInfo {
 	private final Map<String, String> properties;
 	private int priority;
 	private boolean ignored;
+	private String mode;
 
 	public ScriptFileInfo(ScriptPackInfo p, String f) {
 		pack = p;
@@ -33,6 +34,7 @@ public class ScriptFileInfo {
 		properties = new HashMap<>();
 		priority = 0;
 		ignored = false;
+		mode = "default";
 	}
 
 	@Nullable
@@ -60,6 +62,7 @@ public class ScriptFileInfo {
 
 			priority = Integer.parseInt(getProperty("priority", "0"));
 			ignored = getProperty("ignored", "false").equals("true");
+			mode = getProperty("mode", "default");
 			return null;
 		} catch (Throwable ex) {
 			return ex;
@@ -76,5 +79,9 @@ public class ScriptFileInfo {
 
 	public boolean isIgnored() {
 		return ignored;
+	}
+
+	public String getMode() {
+		return mode;
 	}
 }
