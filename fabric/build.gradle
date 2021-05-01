@@ -15,18 +15,23 @@ architectury {
 }
 
 dependencies {
-	modCompile("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
-	modCompile("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
-	modCompile("me.shedaniel:architectury-fabric:${rootProject.architectury_version}")
-	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api:${rootProject.fabric_rei_version}") {
+
+	modImplementation("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
+	modImplementation("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
+
+	modApi("me.shedaniel:architectury-fabric:${rootProject.architectury_version}")
+
+	modApi("dev.latvian.mods:rhino:${rootProject.rhino_version}")
+
+	modImplementation("me.shedaniel:RoughlyEnoughItems-api:${rootProject.fabric_rei_version}") {
 		exclude group: "net.fabricmc.fabric-api"
 		exclude group: "net.fabricmc"
 	}
+
 	modRuntime("me.shedaniel:RoughlyEnoughItems:${rootProject.fabric_rei_version}") {
 		exclude group: "net.fabricmc.fabric-api"
 		exclude group: "net.fabricmc"
 	}
-	modCompile "dev.latvian.mods:rhino:${rootProject.rhino_version}"
 
 	implementation(project(path: ":common")) {
 		transitive = false

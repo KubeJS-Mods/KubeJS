@@ -1,8 +1,10 @@
 dependencies {
-	modCompile "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-	modCompile "me.shedaniel:architectury:${rootProject.architectury_version}"
-	modCompile "dev.latvian.mods:rhino:${rootProject.rhino_version}"
-	compileOnly "com.google.code.findbugs:jsr305:3.+"
+	modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+
+	modApi "me.shedaniel:architectury:${rootProject.architectury_version}"
+	modApi "dev.latvian.mods:rhino:${rootProject.rhino_version}"
+
+	implementation "com.google.code.findbugs:jsr305:3.+"
 }
 
 def ENV = System.getenv()
