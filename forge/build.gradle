@@ -19,13 +19,28 @@ loom {
 	useFabricMixin = true
 }
 
+repositories {
+	maven {
+		name "ModMaven (JEI, Bookshelf, Game Stages)"
+		url "https://modmaven.dev/"
+		content {
+			includeGroup "mezz.jei"
+			includeGroup "net.darkhax.bookshelf"
+			includeGroup "net.darkhax.gamestages"
+		}
+	}
+}
+
 dependencies {
 	forge("net.minecraftforge:forge:${rootProject.architectury.minecraft}-${rootProject.forge_version}")
-	modCompile("curse.maven:jei-238222:${rootProject.forge_jei_file}")
-	modCompile("curse.maven:bookshelf-228525:${rootProject.forge_bookshelf_file}")
-	modCompile("curse.maven:game-stages-268655:${rootProject.forge_gamestages_file}")
-	modCompile("me.shedaniel:architectury-forge:${rootProject.architectury_version}")
-	modCompile "dev.latvian.mods:rhino:${rootProject.rhino_version}"
+
+	modApi("me.shedaniel:architectury-forge:${rootProject.architectury_version}")
+
+	modApi("dev.latvian.mods:rhino:${rootProject.rhino_version}")
+
+	modImplementation("mezz.jei:jei-1.16.4:${rootProject.forge_jei_version}")
+	modImplementation("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
+	modImplementation("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
 
 	implementation(project(path: ":common")) {
 		transitive = false
