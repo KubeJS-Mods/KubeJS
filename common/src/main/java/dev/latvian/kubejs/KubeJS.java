@@ -10,6 +10,8 @@ import dev.latvian.kubejs.fluid.FluidRegistryEventJS;
 import dev.latvian.kubejs.fluid.KubeJSFluidEventHandler;
 import dev.latvian.kubejs.item.ItemRegistryEventJS;
 import dev.latvian.kubejs.item.KubeJSItemEventHandler;
+import dev.latvian.kubejs.item.custom.ItemArmorTierEventJS;
+import dev.latvian.kubejs.item.custom.ItemToolTierEventJS;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.player.KubeJSPlayerEventHandler;
 import dev.latvian.kubejs.recipe.KubeJSRecipeEventHandler;
@@ -124,6 +126,9 @@ public class KubeJS {
 		startupScriptManager.unload();
 		startupScriptManager.loadFromDirectory();
 		startupScriptManager.load();
+
+		new ItemToolTierEventJS().post(ScriptType.STARTUP, KubeJSEvents.ITEM_REGISTRY_TOOL_TIERS);
+		new ItemArmorTierEventJS().post(ScriptType.STARTUP, KubeJSEvents.ITEM_REGISTRY_ARMOR_TIERS);
 
 		new BlockRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.BLOCK_REGISTRY);
 		new ItemRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.ITEM_REGISTRY);

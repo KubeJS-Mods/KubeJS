@@ -2,8 +2,6 @@ package dev.latvian.kubejs.item.forge;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.fluid.FluidBuilder;
-import dev.latvian.kubejs.item.ItemBuilder;
-import dev.latvian.kubejs.item.ItemJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
@@ -12,10 +10,6 @@ import net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper;
 import org.jetbrains.annotations.Nullable;
 
 public class KubeJSItemEventHandlerImpl {
-	public static ItemJS buildItem(ItemBuilder builder) {
-		return new ItemJS(builder);
-	}
-
 	public static BucketItem buildBucket(FluidBuilder builder) {
 		return new BucketItemJS(builder);
 	}

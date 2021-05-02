@@ -15,7 +15,7 @@ public class BlockItemBuilder extends ItemBuilder {
 	}
 
 	@Override
-	public String getType() {
+	public String getBuilderType() {
 		return "block";
 	}
 }

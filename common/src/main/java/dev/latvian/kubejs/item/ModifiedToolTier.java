@@ -6,73 +6,77 @@ import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
 
 /**
  * @author LatvianModder
  */
-public class ModifiedTier implements Tier {
+public class ModifiedToolTier implements Tier {
 	public final Tier parent;
-	private OptionalInt uses = OptionalInt.empty();
-	private OptionalDouble speed = OptionalDouble.empty();
-	private OptionalDouble attackDamageBonus = OptionalDouble.empty();
-	private OptionalInt level = OptionalInt.empty();
-	private OptionalInt enchantmentValue = OptionalInt.empty();
-	private Optional<Ingredient> repairIngredient = Optional.empty();
+	private int uses;
+	private float speed;
+	private float attackDamageBonus;
+	private int level;
+	private int enchantmentValue;
+	private Optional<Ingredient> repairIngredient;
 
-	public ModifiedTier(Tier p) {
+	public ModifiedToolTier(Tier p) {
 		parent = p;
+		uses = parent.getUses();
+		speed = parent.getSpeed();
+		attackDamageBonus = parent.getAttackDamageBonus();
+		level = parent.getLevel();
+		enchantmentValue = parent.getEnchantmentValue();
+		repairIngredient = Optional.empty();
 	}
 
 	@Override
 	@RemapForJS("getUses")
 	public int getUses() {
-		return uses.orElse(parent.getUses());
+		return uses;
 	}
 
 	public void setUses(int i) {
-		uses = OptionalInt.of(i);
+		uses = i;
 	}
 
 	@Override
 	@RemapForJS("getSpeed")
 	public float getSpeed() {
-		return (float) speed.orElse(parent.getSpeed());
+		return speed;
 	}
 
 	public void setSpeed(float f) {
-		speed = OptionalDouble.of(f);
+		speed = f;
 	}
 
 	@Override
 	@RemapForJS("getAttackDamageBonus")
 	public float getAttackDamageBonus() {
-		return (float) attackDamageBonus.orElse(parent.getAttackDamageBonus());
+		return attackDamageBonus;
 	}
 
 	public void setAttackDamageBonus(float f) {
-		attackDamageBonus = OptionalDouble.of(f);
+		attackDamageBonus = f;
 	}
 
 	@Override
 	@RemapForJS("getLevel")
 	public int getLevel() {
-		return level.orElse(parent.getLevel());
+		return level;
 	}
 
 	public void setLevel(int i) {
-		level = OptionalInt.of(i);
+		level = i;
 	}
 
 	@Override
 	@RemapForJS("getEnchantmentValue")
 	public int getEnchantmentValue() {
-		return enchantmentValue.orElse(parent.getEnchantmentValue());
+		return enchantmentValue;
 	}
 
 	public void setEnchantmentValue(int i) {
-		enchantmentValue = OptionalInt.of(i);
+		enchantmentValue = i;
 	}
 
 	@Override

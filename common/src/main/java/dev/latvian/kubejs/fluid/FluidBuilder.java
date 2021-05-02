@@ -40,7 +40,7 @@ public class FluidBuilder extends BuilderBase {
 	}
 
 	@Override
-	public String getType() {
+	public String getBuilderType() {
 		return "fluid";
 	}
 

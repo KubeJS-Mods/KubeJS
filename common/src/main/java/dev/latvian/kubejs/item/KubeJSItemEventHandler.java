@@ -42,18 +42,13 @@ public class KubeJSItemEventHandler {
 	}
 
 	@ExpectPlatform
-	private static ItemJS buildItem(ItemBuilder builder) {
-		throw new AssertionError();
-	}
-
-	@ExpectPlatform
 	private static BucketItem buildBucket(FluidBuilder builder) {
 		throw new AssertionError();
 	}
 
 	private static void registry() {
 		for (ItemBuilder builder : KubeJSObjects.ITEMS.values()) {
-			builder.item = new ItemJS(builder);
+			builder.item = builder.type.itemFactory.apply(builder);
 			KubeJSRegistries.items().register(builder.id, () -> builder.item);
 		}
 

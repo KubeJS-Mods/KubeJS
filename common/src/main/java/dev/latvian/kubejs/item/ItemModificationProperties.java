@@ -37,9 +37,9 @@ public class ItemModificationProperties {
 		item.setRarityKJS(r.rarity);
 	}
 
-	public void setTier(Consumer<ModifiedTier> c) {
+	public void setTier(Consumer<ModifiedToolTier> c) {
 		if (item instanceof TieredItemKJS) {
-			ModifiedTier t = new ModifiedTier(((TieredItemKJS) item).getTierKJS());
+			ModifiedToolTier t = new ModifiedToolTier(((TieredItemKJS) item).getTierKJS());
 			c.accept(t);
 			((TieredItemKJS) item).setTierKJS(t);
 		} else {

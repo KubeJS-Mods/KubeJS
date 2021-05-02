@@ -77,7 +77,7 @@ public class BlockBuilder extends BuilderBase {
 	}
 
 	@Override
-	public String getType() {
+	public String getBuilderType() {
 		return "block";
 	}
 
