@@ -38,9 +38,9 @@ dependencies {
 
 	modApi("dev.latvian.mods:rhino:${rootProject.rhino_version}")
 
-	modImplementation("mezz.jei:jei-1.16.4:${rootProject.forge_jei_version}")
-	modImplementation("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
-	modImplementation("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
+	modOptional("mezz.jei:jei-1.16.4:${rootProject.forge_jei_version}")
+	modOptional("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
+	modOptional("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
 
 	implementation(project(path: ":common")) {
 		transitive = false

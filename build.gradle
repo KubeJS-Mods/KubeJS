@@ -34,6 +34,16 @@ allprojects {
 
 	sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
+	configurations {
+		modOptional
+		modCompileOnly.extendsFrom(modOptional)
+		modRuntime.extendsFrom(modOptional)
+
+		optional
+		compileOnly.extendsFrom(optional)
+		runtime.extendsFrom(optional)
+	}
+
 	tasks.withType(JavaCompile) {
 		options.encoding = "UTF-8"
 

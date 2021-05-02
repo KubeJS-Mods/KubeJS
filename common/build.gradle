@@ -4,7 +4,7 @@ dependencies {
 	modApi "me.shedaniel:architectury:${rootProject.architectury_version}"
 	modApi "dev.latvian.mods:rhino:${rootProject.rhino_version}"
 
-	implementation "com.google.code.findbugs:jsr305:3.+"
+	compileOnly "com.google.code.findbugs:jsr305:3.+"
 }
 
 def ENV = System.getenv()
