@@ -149,4 +149,25 @@ A newer, more convenient way to add bindings, set class filters and even add **N
 
 ## Contributing to KubeJS
 
-### WIP
+### Getting Started
+
+If you want to contribute to KubeJS, you will first need to set up a development environment, which should be fairly simple. Just clone the repository using Git:
+
+```sh
+git clone https://github.com/KubeJS-Mods/KubeJS.git
+```
+
+and import the gradle project using an IDE of your choice! (Note: Eclipse *may* have some problems with Architectury's runs, but IDEA and VS Code should work fine.)
+
+### Building
+
+Building KubeJS from source should be rather straightforward, as well, just run `gradlew build` in the root project, and the corresponding jars for Forge and Fabric should be in the respective module's `build/libs` directory (`kubejs-<loader>-<version>.jar`). The project will also produce a common jar; that one however should not be used in production.
+
+### Creating Pull Requests
+
+When creating a pull request to KubeJS, please make sure you acknowledge the following:
+
+- We will *usually* not accept pull requests that add mod-specific support; those things are better suited as KubeJS plugins (optimally within the target mods themselves) or integration mods.
+- Please be sure to test your feature **before** creating a pull request. We are a rather small team and as such, can't spend all too much time on reviewing pull requests.
+- While not *strictly* required, please try to adhere by the repository's code style and conventions. A sample `.editorconfig` file exists to make this even easier for you to achieve (see the relevant EditorConfig plugin for your IDE)
+- If you are unsure whether your feature fits into KubeJS and would like to hear additional opinions on the matter, feel free to open an `issue` or a `discussion` to discuss it further with us first!
