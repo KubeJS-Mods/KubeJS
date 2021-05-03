@@ -260,6 +260,7 @@ public class RecipeEventJS extends EventJS {
 		ScriptType.SERVER.console.getLogger().info("Posted recipe events in {}", timer.stop());
 
 		Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> newRecipeMap = new HashMap<>();
+		Map<ResourceLocation, RecipeType<?>> existingRecipes = new HashMap<>();
 
 		timer.reset().start();
 		originalRecipes.stream()
@@ -272,6 +273,7 @@ public class RecipeEventJS extends EventJS {
 				})
 				.map(recipe -> {
 					try {
+						// TODO: fix shit here
 						recipe.serializeJson();
 						Recipe<?> resultRecipe = Objects.requireNonNull(recipe.type.serializer.fromJson(recipe.getOrCreateId(), recipe.json));
 						if (Platform.isFabric()) {
@@ -287,6 +289,9 @@ public class RecipeEventJS extends EventJS {
 						ScriptType.SERVER.console.warn("Error parsing recipe " + recipe + ": " + recipe.json, ex);
 						failed.increment();
 					}
+					if(recipe.originalRecipe != null) {
+						existingRecipes.put(recipe.id, recipe.originalRecipe.getType());
+					}
 					return recipe.originalRecipe;
 				})
 				.filter(Objects::nonNull)
@@ -299,6 +304,7 @@ public class RecipeEventJS extends EventJS {
 				});
 		fallbackedRecipes.stream()
 				.filter(Objects::nonNull)
+				.peek(recipe -> existingRecipes.put(recipe.getId(), recipe.getType()))
 				.collect(Collectors.groupingBy(Recipe::getType,
 						Collectors.groupingBy(Recipe::getId,
 								Collectors.reducing(null, Function.identity(), (recipe, recipe2) -> recipe2))))
@@ -326,6 +332,16 @@ public class RecipeEventJS extends EventJS {
 					} catch (Throwable ex) {
 						ScriptType.SERVER.console.warn("Error creating recipe " + recipe + ": " + recipe.json, ex);
 						failed.increment();
+					}
+					if(recipe.originalRecipe != null) {
+						ResourceLocation id = recipe.getOrCreateId();
+						RecipeType<?> t = existingRecipes.remove(id);
+						if(t != null) {
+							newRecipeMap.get(t).remove(id);
+							if(ServerSettings.instance.logOverrides) {
+								ScriptType.SERVER.console.info("Overriding existing recipe with ID " + id + "(" + t + " => " + recipe.getType() + ")");
+							}
+						}
 					}
 					return recipe.originalRecipe;
 				})

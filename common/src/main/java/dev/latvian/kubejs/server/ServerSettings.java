@@ -26,6 +26,7 @@ public class ServerSettings {
 	public boolean dataPackOutput = false;
 	public boolean logAddedRecipes = false;
 	public boolean logRemovedRecipes = false;
+	public boolean logOverrides = false;
 	public boolean logSkippedRecipes = false;
 	public boolean logErroringRecipes = true;
 
