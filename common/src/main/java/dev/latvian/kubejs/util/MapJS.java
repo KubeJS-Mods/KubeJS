@@ -120,7 +120,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 
 			if (entry.getValue() instanceof CharSequence) {
 				builder.append('"');
-				builder.append(entry.getValue());
+				builder.append(entry.getValue().toString().replace("\"", "\\\""));
 				builder.append('"');
 			} else {
 				Object o = entry.getValue();
