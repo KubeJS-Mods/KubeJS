@@ -2,7 +2,7 @@
 
 **Note: If you are a script developer (i.e. pack dev, server admin, etc.), you likely want to visit our [website](https://kubejs.com) or the [wiki](https://mods.latvian.dev/books/kubejs) instead.**
 
-(For a Table Of Contents, click the <img src="https://raw.githubusercontent.com/primer/octicons/main/icons/list-unordered-16.svg?sanitize=true" alt="menu"> icon in the top left!)
+(For a Table Of Contents, click the menu icon in the top left!)
 
 ## Introduction
 
@@ -61,7 +61,7 @@ Just replace `<version>` with the latest version of KubeJS, which you also find 
 
 <p align="center">
     <a href="https://maven.saps.dev/versions">
-        <img src="https://img.shields.io/maven-metadata/v?color=%23fcb95b&label=KubeJS&metadataUrl=https%3A%2F%2Fmvn.saps.dev%2Fminecraft%2Fdev%2Flatvian%2Fmods%2Fkubejs%2Fmaven-metadata.xml&style=flat-square" alt="KubeJS Latest Version">
+        <img src="https://flat.badgen.net/maven/v/metadata-url/https/mvn.saps.dev/minecraft/dev/latvian/mods/kubejs/maven-metadata.xml?color=C186E6&label=KubeJS" alt="KubeJS Latest Version">
     </a>
 </p>
 
