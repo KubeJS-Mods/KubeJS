@@ -51,17 +51,17 @@ You can then declare KubeJS as a regular `compile`-time dependency in your `depe
 
 ```groovy
 // Fabric/Quilt Loom and Architectury's "forgeloom"
-modImplementation("dev.latvian.mods:kubejs-<loader>:<kubejs_version>")
+modImplementation("dev.latvian.mods:kubejs-<loader>:${kubejs_version}")
 
 // ForgeGradle
-implementation fg.deobf("dev.latvian.mods:kubejs-forge:<kubejs_version>")
+implementation fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
 
 // these two are unfortunately needed since fg.deobf doesn't respect transitive dependencies as of yet
-implementation "dev.latvian.mods:rhino:<rhino_version>"
-implementation fg.deobf("me.shedaniel:architectury-forge:<architectury_version>")
+implementation "dev.latvian.mods:rhino:${rhino_version}"
+implementation fg.deobf("me.shedaniel:architectury-forge:${architectury_version}")
 ```
 
-Just replace the `<version>`s with most up-to-date version of the required mod(s), which you also find using the following badges:
+Just set the versions with most up-to-date version of the required mod(s), which you also find using these badges:
 
 <p align="center">
     <a href="https://maven.saps.dev/versions">
