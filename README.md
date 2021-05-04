@@ -51,17 +51,27 @@ You can then declare KubeJS as a regular `compile`-time dependency in your `depe
 
 ```groovy
 // Fabric/Quilt Loom and Architectury's "forgeloom"
-modImplementation("dev.latvian.mods:kubejs-<loader>:<version>")
+modImplementation("dev.latvian.mods:kubejs-<loader>:<kubejs_version>")
 
 // ForgeGradle
-implementation fg.deobf("dev.latvian.mods:kubejs-<loader>:<version>")
+implementation fg.deobf("dev.latvian.mods:kubejs-forge:<kubejs_version>")
+
+// these two are unfortunately needed since fg.deobf doesn't respect transitive dependencies as of yet
+implementation "dev.latvian.mods:rhino:<rhino_version>"
+implementation fg.deobf("me.shedaniel:architectury-forge:<architectury_version>")
 ```
 
-Just replace `<version>` with the latest version of KubeJS, which you also find using this badge:
+Just replace the `<version>`s with most up-to-date version of the required mod(s), which you also find using the following badges:
 
 <p align="center">
     <a href="https://maven.saps.dev/versions">
         <img src="https://flat.badgen.net/maven/v/metadata-url/https/mvn.saps.dev/minecraft/dev/latvian/mods/kubejs/maven-metadata.xml?color=C186E6&label=KubeJS" alt="KubeJS Latest Version">
+    </a>
+	<a href="https://maven.saps.dev/versions">
+        <img src="https://flat.badgen.net/maven/v/metadata-url/https/mvn.saps.dev/minecraft/dev/latvian/mods/rhino/maven-metadata.xml?color=3498DB&label=Rhino" alt="Rhino Latest Version">
+    </a>
+		<a href="https://niceme.me">
+        <img src="https://flat.badgen.net/maven/v/metadata-url/https/maven.architectury.dev/me/shedaniel/architectury/maven-metadata.xml?color=F95F1E&label=Architectury" alt="Architectury Latest Version">
     </a>
 </p>
 
