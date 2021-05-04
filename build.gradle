@@ -1,6 +1,6 @@
 plugins {
 	id "architectury-plugin" version "3.1-SNAPSHOT"
-	id "forgified-fabric-loom" version "0.6-SNAPSHOT" apply false
+	id "dev.architectury.loom" version "0.7.1-SNAPSHOT" apply false
 }
 
 architectury {
@@ -8,7 +8,7 @@ architectury {
 }
 
 subprojects {
-	apply plugin: "forgified-fabric-loom"
+	apply plugin: "dev.architectury.loom"
 
 	loom {
 		silentMojangMappingsLicense()
