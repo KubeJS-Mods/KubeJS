@@ -67,7 +67,7 @@ public class JEIPlugin implements IModPlugin {
 	@Override
 	public void registerRecipes(IRecipeRegistration registration) {
 		List<IngredientInfoRecipe<?>> list = new ArrayList<>();
-		new InformationJEIEventJS(list).post(ScriptType.CLIENT, JEIIntegration.JEI_INFORMATION);
+		new InformationJEIEventJS(registration.getIngredientManager(), list).post(ScriptType.CLIENT, JEIIntegration.JEI_INFORMATION);
 		registration.addRecipes(list, VanillaRecipeCategoryUid.INFORMATION);
 	}
 }
