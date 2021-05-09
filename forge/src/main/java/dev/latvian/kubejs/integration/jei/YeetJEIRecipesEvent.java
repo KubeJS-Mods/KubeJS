@@ -77,6 +77,7 @@ public class YeetJEIRecipesEvent extends EventJS {
 				}
 			} catch (NullPointerException | IllegalStateException e) {
 				KubeJS.LOGGER.warn("Failed to yeet recipes for category {}: Category doesn't exist!", cat);
+				KubeJS.LOGGER.info("Available categories: " + getCategoryIds());
 			}
 		}
 	}
