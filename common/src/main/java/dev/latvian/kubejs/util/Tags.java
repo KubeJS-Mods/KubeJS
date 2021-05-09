@@ -1,18 +1,19 @@
 package dev.latvian.kubejs.util;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.SerializationTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagCollection;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 public class Tags {
@@ -37,14 +38,36 @@ public class Tags {
 	}
 
 	public static Collection<ResourceLocation> byItem(Item item) {
-		List<ResourceLocation> list = Lists.newArrayList();
+		return forType(item, items());
+	}
 
-		for (Map.Entry<ResourceLocation, Tag<Item>> entry : items().getAllTags().entrySet()) {
+	public static Collection<ResourceLocation> byBlockState(BlockState state) {
+		return forType(state.getBlock(), blocks());
+	}
+
+	public static Collection<ResourceLocation> byBlock(Block block) {
+		return forType(block, blocks());
+	}
+
+	public static Collection<ResourceLocation> byFluid(Fluid fluid) {
+		return forType(fluid, fluids());
+	}
+
+	public static Collection<ResourceLocation> byEntity(Entity entity) {
+		return forType(entity.getType(), entityTypes());
+	}
+
+	public static Collection<ResourceLocation> byEntityType(EntityType<?> entityType) {
+		return forType(entityType, entityTypes());
+	}
+
+	public static <T> Collection<ResourceLocation> forType(T item, TagCollection<T> tags) {
+		Collection<ResourceLocation> list = Sets.newHashSet();
+		for (Map.Entry<ResourceLocation, Tag<T>> entry : tags.getAllTags().entrySet()) {
 			if (entry.getValue().contains(item)) {
 				list.add(entry.getKey());
 			}
 		}
-
 		return list;
 	}
 }

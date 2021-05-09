@@ -7,6 +7,7 @@ import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -125,6 +127,14 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 	}
 
 	public abstract String getId();
+
+	public Collection<ResourceLocation> getTags() {
+		return Tags.byFluid(getFluid());
+	}
+
+	public boolean hasTag(ResourceLocation tag) {
+		return Tags.fluids().getTagOrEmpty(tag).contains(getFluid());
+	}
 
 	public Fluid getFluid() {
 		Fluid f = KubeJSRegistries.fluids().get(new ResourceLocation(getId()));

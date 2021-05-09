@@ -11,6 +11,7 @@ import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.player.ServerPlayerJS;
 import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.hooks.PlayerHooks;
@@ -34,6 +35,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -137,6 +139,14 @@ public class BlockContainerJS {
 
 	public String getId() {
 		return Registries.getId(getBlockState().getBlock(), Registry.BLOCK_REGISTRY).toString();
+	}
+
+	public Collection<ResourceLocation> getTags() {
+		return Tags.byBlockState(getBlockState());
+	}
+
+	public boolean hasTag(ResourceLocation tag) {
+		return Tags.blocks().getTagOrEmpty(tag).contains(getBlockState().getBlock());
 	}
 
 	public void set(ResourceLocation id, Map<?, ?> properties, int flags) {
