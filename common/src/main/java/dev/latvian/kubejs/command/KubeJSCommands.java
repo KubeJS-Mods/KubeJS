@@ -165,7 +165,7 @@ public class KubeJSCommands {
 	}
 
 	private static int hotbar(ServerPlayer player) {
-		return dump(player.inventory.items.subList(0, 8), player, "Hotbar");
+		return dump(player.inventory.items.subList(0, 9), player, "Hotbar");
 	}
 
 	private static int dump(List<ItemStack> stacks, ServerPlayer player, String name) {
