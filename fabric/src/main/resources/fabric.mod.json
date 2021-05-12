@@ -38,6 +38,6 @@
 		"fabric": "*",
 		"minecraft": "~1.16.4",
 		"rhino": ">=1.7.13-build.23",
-		"architectury": ">=1.5.112"
+		"architectury": ">=1.13"
 	}
 }

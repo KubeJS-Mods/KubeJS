@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.core;
 
+import dev.latvian.mods.rhino.util.RemapForJS;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 
@@ -16,4 +17,5 @@ public interface ItemKJS {
 	void setFireResistantKJS(boolean b);
 
 	void setRarityKJS(Rarity r);
+	void setBurnTimeKJS(int i);
 }

@@ -38,7 +38,7 @@ side = "BOTH"
 [[dependencies.kubejs]]
 modId = "architectury"
 mandatory = true
-versionRange = "[1.5.112,)"
+versionRange = "[1.13,)"
 ordering = "AFTER"
 side = "BOTH"
 

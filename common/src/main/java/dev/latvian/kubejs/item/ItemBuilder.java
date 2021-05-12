@@ -46,6 +46,7 @@ public class ItemBuilder extends BuilderBase {
 	public transient ItemType type;
 	public transient int maxStackSize;
 	public transient int maxDamage;
+	public transient int burnTime;
 	public transient String containerItem;
 	public transient Map<ToolType, Integer> tools;
 	public transient float miningSpeed;
@@ -77,6 +78,7 @@ public class ItemBuilder extends BuilderBase {
 		type = ItemType.BASIC;
 		maxStackSize = 64;
 		maxDamage = 0;
+		burnTime = 0;
 		containerItem = "minecraft:air";
 		tools = new HashMap<>();
 		miningSpeed = 1.0F;
@@ -134,6 +136,11 @@ public class ItemBuilder extends BuilderBase {
 
 	public ItemBuilder maxDamage(int v) {
 		maxDamage = v;
+		return this;
+	}
+
+	public ItemBuilder burnTime(int v) {
+		burnTime = v;
 		return this;
 	}
 

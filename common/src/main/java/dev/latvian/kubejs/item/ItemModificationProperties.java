@@ -3,6 +3,7 @@ package dev.latvian.kubejs.item;
 import dev.latvian.kubejs.bindings.RarityWrapper;
 import dev.latvian.kubejs.core.ItemKJS;
 import dev.latvian.kubejs.core.TieredItemKJS;
+import me.shedaniel.architectury.registry.fuel.FuelRegistry;
 import net.minecraft.world.item.Item;
 
 import java.util.function.Consumer;
@@ -23,6 +24,10 @@ public class ItemModificationProperties {
 
 	public void setMaxDamage(int i) {
 		item.setMaxDamageKJS(i);
+	}
+
+	public void setBurnTime(int i) {
+		item.setBurnTimeKJS(i);
 	}
 
 	public void setCraftingReminder(Item i) {
