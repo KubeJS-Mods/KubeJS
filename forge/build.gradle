@@ -29,6 +29,12 @@ repositories {
 			includeGroup "net.darkhax.gamestages"
 		}
 	}
+	maven {
+		url "https://nexus.resourcefulbees.com/repository/maven-releases/"
+		content {
+			includeGroup "com.resourcefulbees"
+		}
+	}
 }
 
 dependencies {
@@ -41,6 +47,9 @@ dependencies {
 	modOptional("mezz.jei:jei-1.16.4:${rootProject.forge_jei_version}")
 	modOptional("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
 	modOptional("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
+
+	// test mods, these are included at runtime only
+	modRuntime("com.resourcefulbees:ResourcefulBees:1.16.5-0.6.4b")
 
 	implementation(project(path: ":common")) {
 		transitive = false
