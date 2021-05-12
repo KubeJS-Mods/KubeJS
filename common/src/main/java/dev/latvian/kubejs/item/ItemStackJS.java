@@ -22,6 +22,7 @@ import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.NBTSerializable;
+import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import dev.latvian.kubejs.world.BlockContainerJS;
@@ -46,6 +47,7 @@ import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -307,6 +309,14 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public String getId() {
 		return Registries.getId(getItem(), Registry.ITEM_REGISTRY).toString();
+	}
+
+	public Collection<ResourceLocation> getTags() {
+		return Tags.byItem(getItem());
+	}
+
+	public boolean hasTag(ResourceLocation tag) {
+		return Tags.items().getTagOrEmpty(tag).contains(getItem());
 	}
 
 	@Override
@@ -677,7 +687,11 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		MapJS nbt = getNbt();
 
 		if (!nbt.isEmpty()) {
-			json.addProperty("nbt", nbt.toNBT().toString());
+			if (RecipeJS.currentRecipe != null && RecipeJS.currentRecipe.getMod().equals("techreborn")) {
+				json.add("nbt", nbt.toJson());
+			} else {
+				json.addProperty("nbt", nbt.toNBT().toString());
+			}
 		}
 
 		if (hasChance()) {

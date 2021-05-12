@@ -1,11 +1,9 @@
 dependencies {
-	minecraft "com.mojang:minecraft:${rootProject.architectury.minecraft}"
-	mappings minecraft.officialMojangMappings()
-	// We depend on fabric loader here to use the fabric @Environment annotations
-	// Do NOT use other classes from fabric loader
-	modCompile "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-	modCompile "me.shedaniel:architectury:${rootProject.architectury_version}"
-	compile "curse.maven:rhino-416294:${rootProject.rhino_file}"
+	modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+
+	modApi "me.shedaniel:architectury:${rootProject.architectury_version}"
+	modApi "dev.latvian.mods:rhino:${rootProject.rhino_version}"
+
 	compileOnly "com.google.code.findbugs:jsr305:3.+"
 }
 
@@ -15,12 +13,17 @@ architectury {
 	common()
 }
 
+java {
+	withSourcesJar()
+}
+
 publishing {
 	publications {
 		mavenCommon(MavenPublication) {
 			artifactId = rootProject.archivesBaseName
-			artifact(file("${project.buildDir}/libs/${project.archivesBaseName}-${project.version}.jar")) {
-				builtBy build
+			artifact remapJar
+			artifact(sourcesJar) {
+				builtBy remapSourcesJar
 			}
 		}
 	}
@@ -28,8 +31,17 @@ publishing {
 	repositories {
 		if (ENV.LOCAL_MAVEN) {
 			maven {
-				// upload to local maven repo
 				url = "file://${ENV.LOCAL_MAVEN}"
+			}
+		}
+
+		if (ENV.SAPS_TOKEN) {
+			maven {
+				url "https://maven.saps.dev/minecraft"
+				credentials {
+					username = "latvian"
+					password = "${ENV.SAPS_TOKEN}"
+				}
 			}
 		}
 	}

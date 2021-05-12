@@ -32,7 +32,7 @@ public class MessageSendDataFromServer {
 
 	void handle(Supplier<PacketContext> context) {
 		if (!channel.isEmpty()) {
-			context.get().queue(() -> KubeJS.instance.proxy.handleDataToClientPacket(channel, data));
+			context.get().queue(() -> KubeJS.PROXY.handleDataToClientPacket(channel, data));
 		}
 	}
 }

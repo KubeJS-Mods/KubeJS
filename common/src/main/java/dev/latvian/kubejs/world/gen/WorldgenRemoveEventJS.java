@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.world.gen;
 
-import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.event.StartupEventJS;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 /**
  * @author LatvianModder
  */
-public class WorldgenRemoveEventJS extends EventJS {
+public class WorldgenRemoveEventJS extends StartupEventJS {
 	protected boolean verifyBiomes(WorldgenEntryList biomes) {
 		return true;
 	}

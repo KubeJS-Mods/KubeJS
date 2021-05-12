@@ -15,7 +15,6 @@ import dev.latvian.kubejs.script.ScriptPackInfo;
 import dev.latvian.kubejs.script.ScriptSource;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.data.DataPackEventJS;
-import dev.latvian.kubejs.script.data.KubeJSResourcePack;
 import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
@@ -54,7 +53,7 @@ public class ServerScriptManager {
 		List<PackResources> list = new ArrayList<>();
 		list.add(virtualDataPackLow);
 		list.addAll(list0);
-		list.add(new KubeJSResourcePack(PackType.SERVER_DATA));
+		list.add(new KubeJSServerResourcePack());
 		list.add(virtualDataPackHigh);
 
 		SimpleReloadableResourceManager resourceManager = new SimpleReloadableResourceManager(PackType.SERVER_DATA);

@@ -3,6 +3,7 @@ package dev.latvian.kubejs.mixin.common;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.core.ItemKJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
+import me.shedaniel.architectury.registry.fuel.FuelRegistry;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,6 +33,12 @@ public abstract class ItemMixin implements ItemKJS {
 	@Override
 	@Accessor("rarity")
 	public abstract void setRarityKJS(Rarity r);
+
+	@Override
+	@RemapForJS("setBurnTime")
+	public void setBurnTimeKJS(int i) {
+		FuelRegistry.register(i, (Item) (Object) this);
+	}
 
 	@RemapForJS("getId")
 	public String getIdKJS() {

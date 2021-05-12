@@ -116,4 +116,9 @@ public class UnboundItemStackJS extends ItemStackJS {
 	public void onChanged(@Nullable MapJS o) {
 		cached = null;
 	}
+
+	@Override
+	public String getMod() {
+		return itemRL.getNamespace();
+	}
 }

@@ -3,6 +3,7 @@ package dev.latvian.kubejs.item;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import dev.latvian.kubejs.text.Text;
+import me.shedaniel.architectury.registry.fuel.FuelRegistry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -29,6 +30,10 @@ public class ItemJS extends Item {
 		properties = p;
 		Float attackDamage = p.getAttackDamage();
 		Float attackSpeed = p.getAttackSpeed();
+
+		if(p.burnTime > 0) {
+			FuelRegistry.register(p.burnTime, this);
+		}
 
 		ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
 		if (attackDamage != null) {

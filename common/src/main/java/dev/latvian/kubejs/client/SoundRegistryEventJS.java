@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.client;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.event.StartupEventJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 
@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class SoundRegistryEventJS extends EventJS {
+public class SoundRegistryEventJS extends StartupEventJS {
 	private final Consumer<ResourceLocation> registry;
 
 	public SoundRegistryEventJS(Consumer<ResourceLocation> registry) {

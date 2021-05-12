@@ -37,14 +37,14 @@ public class ClientPlayerJS extends PlayerJS<Player> {
 	@Override
 	public void openOverlay(Overlay overlay) {
 		if (isSelf()) {
-			KubeJS.instance.proxy.openOverlay(overlay);
+			KubeJS.PROXY.openOverlay(overlay);
 		}
 	}
 
 	@Override
 	public void closeOverlay(String overlay) {
 		if (isSelf()) {
-			KubeJS.instance.proxy.closeOverlay(overlay);
+			KubeJS.PROXY.closeOverlay(overlay);
 		}
 	}
 

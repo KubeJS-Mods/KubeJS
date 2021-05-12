@@ -14,16 +14,16 @@ public abstract class BuilderBase {
 
 	public BuilderBase(String s) {
 		id = UtilsJS.getMCID(KubeJS.appendModId(s));
-		translationKey = getType() + "." + id.getNamespace() + "." + id.getPath();
+		translationKey = getBuilderType() + "." + id.getNamespace() + "." + id.getPath();
 		displayName = "";
 	}
 
-	public abstract String getType();
+	public abstract String getBuilderType();
 
 	@Deprecated
 	public void add() {
 		ScriptType.STARTUP.console.setLineNumber(true);
-		ScriptType.STARTUP.console.log("You no longer need to use .add() at end of " + getType() + " builder!");
+		ScriptType.STARTUP.console.log("You no longer need to use .add() at end of " + getBuilderType() + " builder!");
 		ScriptType.STARTUP.console.setLineNumber(false);
 	}
 

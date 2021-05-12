@@ -66,6 +66,8 @@ public class KubeJSEvents {
 	public static final String BLOCK_MODIFICATION = "block.modification";
 
 	public static final String ITEM_REGISTRY = "item.registry";
+	public static final String ITEM_REGISTRY_TOOL_TIERS = "item.registry.tool_tiers";
+	public static final String ITEM_REGISTRY_ARMOR_TIERS = "item.registry.armor_tiers";
 	public static final String ITEM_MISSING_MAPPINGS = "item.missing_mappings";
 	public static final String ITEM_TAGS = "item.tags";
 	public static final String ITEM_RIGHT_CLICK = "item.right_click";

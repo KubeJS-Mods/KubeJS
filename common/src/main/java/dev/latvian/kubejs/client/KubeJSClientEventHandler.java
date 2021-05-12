@@ -146,7 +146,7 @@ public class KubeJSClientEventHandler {
 
 	private void clientTick(Minecraft minecraft) {
 		if (Minecraft.getInstance().player != null && ClientWorldJS.getInstance() != null) {
-			new ClientTickEventJS(ClientWorldJS.getInstance().clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_TICK);
+			new ClientTickEventJS().post(KubeJSEvents.CLIENT_TICK);
 		}
 	}
 
@@ -154,12 +154,12 @@ public class KubeJSClientEventHandler {
 		ClientWorldJS.setInstance(new ClientWorldJS(Minecraft.getInstance(), player));
 		AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(ClientWorldJS.getInstance()));
 		AttachPlayerDataEvent.EVENT.invoker().accept(new AttachPlayerDataEvent(ClientWorldJS.getInstance().clientPlayerData));
-		new ClientLoggedInEventJS(ClientWorldJS.getInstance().clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_LOGGED_IN);
+		new ClientLoggedInEventJS().post(KubeJSEvents.CLIENT_LOGGED_IN);
 	}
 
 	private void loggedOut(LocalPlayer player) {
 		if (ClientWorldJS.getInstance() != null) {
-			new ClientLoggedInEventJS(ClientWorldJS.getInstance().clientPlayerData.getPlayer()).post(KubeJSEvents.CLIENT_LOGGED_OUT);
+			new ClientLoggedInEventJS().post(KubeJSEvents.CLIENT_LOGGED_OUT);
 		}
 
 		ClientWorldJS.setInstance(null);

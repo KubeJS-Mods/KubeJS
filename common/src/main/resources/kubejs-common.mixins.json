@@ -17,13 +17,15 @@
 		"SimpleReloadableResourceManagerMixin",
 		"TagBuilderMixin",
 		"TagCollectionReaderMixin",
-		"TieredItemMixin"
+		"TieredItemMixin",
+		"Vec3iMixin"
 	],
 	"client": [
 		"ImageButtonMixin",
 		"KeyboardHandlerMixin",
 		"MainWindowMixin",
 		"MinecraftMixin",
+		"OptionsMixin",
 		"ResourceLoadProgressGuiMixin"
 	],
 	"injectors": {

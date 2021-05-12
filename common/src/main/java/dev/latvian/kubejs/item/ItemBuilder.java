@@ -1,16 +1,24 @@
 package dev.latvian.kubejs.item;
 
+import com.google.gson.JsonObject;
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.bindings.RarityWrapper;
+import dev.latvian.kubejs.item.custom.ItemType;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.BuilderBase;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.Tiers;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,46 +30,99 @@ import java.util.function.Consumer;
  * @author LatvianModder
  */
 public class ItemBuilder extends BuilderBase {
-	public int maxStackSize;
-	public int maxDamage;
-	public String containerItem;
-	public Map<ToolType, Integer> tools;
-	public float miningSpeed;
-	public Float attackDamage;
-	public Float attackSpeed;
-	public RarityWrapper rarity;
-	public boolean glow;
-	public final List<Text> tooltip;
-	public CreativeModeTab group;
-	public Int2IntOpenHashMap color;
-	public String texture;
-	public String parentModel;
-	public FoodBuilder foodBuilder;
+	public static final Map<String, Tier> TOOL_TIERS = new HashMap<>();
+	public static final Map<String, ArmorMaterial> ARMOR_TIERS = new HashMap<>();
 
-	public ItemJS item;
+	static {
+		for (Tier tier : Tiers.values()) {
+			TOOL_TIERS.put(tier.toString().toLowerCase(), tier);
+		}
+
+		for (ArmorMaterial tier : ArmorMaterials.values()) {
+			ARMOR_TIERS.put(tier.toString().toLowerCase(), tier);
+		}
+	}
+
+	public transient ItemType type;
+	public transient int maxStackSize;
+	public transient int maxDamage;
+	public transient int burnTime;
+	public transient String containerItem;
+	public transient Map<ToolType, Integer> tools;
+	public transient float miningSpeed;
+	public transient Float attackDamage;
+	public transient Float attackSpeed;
+	public transient RarityWrapper rarity;
+	public transient boolean glow;
+	public transient final List<Text> tooltip;
+	public transient CreativeModeTab group;
+	public transient Int2IntOpenHashMap color;
+	public transient String texture;
+	public transient String parentModel;
+	public transient FoodBuilder foodBuilder;
+
+	// Tools //
+	public transient Tier toolTier;
+	public transient float attackDamageBaseline;
+	public transient float attackSpeedBaseline;
+
+	// Armor //
+	public transient ArmorMaterial armorTier;
+
+	public transient Item item;
+
+	private JsonObject modelJson;
 
 	public ItemBuilder(String i) {
 		super(i);
+		type = ItemType.BASIC;
 		maxStackSize = 64;
 		maxDamage = 0;
+		burnTime = 0;
 		containerItem = "minecraft:air";
 		tools = new HashMap<>();
 		miningSpeed = 1.0F;
 		rarity = RarityWrapper.COMMON;
 		glow = false;
 		tooltip = new ArrayList<>();
-		group = CreativeModeTab.TAB_MISC;
+		group = KubeJS.tab;
 		color = new Int2IntOpenHashMap();
 		color.defaultReturnValue(0xFFFFFFFF);
 		texture = id.getNamespace() + ":item/" + id.getPath();
 		parentModel = "item/generated";
 		foodBuilder = null;
+		toolTier = Tiers.IRON;
+		armorTier = ArmorMaterials.IRON;
 		displayName = "";
 	}
 
 	@Override
-	public String getType() {
+	public String getBuilderType() {
 		return "item";
+	}
+
+	public ItemBuilder type(String t) {
+		type = ItemType.MAP.getOrDefault(t, ItemType.BASIC);
+		type.applyDefaults(this);
+		return this;
+	}
+
+	public ItemBuilder tier(String t) {
+		if (type == ItemType.BASIC) {
+			return this;
+		}
+
+		switch (type) {
+			case HELMET:
+			case CHESTPLATE:
+			case LEGGINGS:
+			case BOOTS:
+				armorTier = ARMOR_TIERS.getOrDefault(t, ArmorMaterials.IRON);
+				return this;
+		}
+
+		toolTier = TOOL_TIERS.getOrDefault(t, Tiers.IRON);
+		return this;
 	}
 
 	public ItemBuilder maxStackSize(int v) {
@@ -75,6 +136,11 @@ public class ItemBuilder extends BuilderBase {
 
 	public ItemBuilder maxDamage(int v) {
 		maxDamage = v;
+		return this;
+	}
+
+	public ItemBuilder burnTime(int v) {
+		burnTime = v;
 		return this;
 	}
 
@@ -162,10 +228,12 @@ public class ItemBuilder extends BuilderBase {
 		return miningSpeed;
 	}
 
+	@Nullable
 	public Float getAttackDamage() {
 		return attackDamage;
 	}
 
+	@Nullable
 	public Float getAttackSpeed() {
 		return attackSpeed;
 	}
@@ -203,5 +271,22 @@ public class ItemBuilder extends BuilderBase {
 	@ExpectPlatform
 	private static void appendToolType(Item.Properties properties, ToolType type, Integer level) {
 		throw new AssertionError();
+	}
+
+	public void setModelJson(JsonObject o) {
+		modelJson = o;
+	}
+
+	public JsonObject getModelJson() {
+		if (modelJson == null) {
+			modelJson = new JsonObject();
+			modelJson.addProperty("parent", parentModel);
+
+			JsonObject textures = new JsonObject();
+			textures.addProperty("layer0", texture);
+			modelJson.add("textures", textures);
+		}
+
+		return modelJson;
 	}
 }

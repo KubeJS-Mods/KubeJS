@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.world.gen;
 
-import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.event.StartupEventJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class WorldgenAddEventJS extends EventJS {
+public class WorldgenAddEventJS extends StartupEventJS {
 	protected void addFeature(GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> configuredFeature) {
 	}
 

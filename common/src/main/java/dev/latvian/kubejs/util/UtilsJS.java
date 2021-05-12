@@ -403,7 +403,7 @@ public class UtilsJS {
 	}
 
 	public static WorldJS getClientWorld() {
-		return KubeJS.instance.proxy.getClientWorld();
+		return KubeJS.PROXY.getClientWorld();
 	}
 
 	@Nullable

@@ -26,6 +26,8 @@ public class CommonProperties {
 	public boolean hideServerScriptErrors;
 	public boolean serverOnly;
 	public boolean announceReload;
+	public boolean invertClassLoader;
+	public String packMode;
 
 	private CommonProperties() {
 		properties = new Properties();
@@ -45,6 +47,8 @@ public class CommonProperties {
 			hideServerScriptErrors = get("hideServerScriptErrors", false);
 			serverOnly = get("serverOnly", false);
 			announceReload = get("announceReload", true);
+			packMode = get("packmode", "default");
+			invertClassLoader = "true".equals(properties.getProperty("invertClassLoader")); // Advanced option, not recommended to be set to true
 
 			if (writeProperties) {
 				try (Writer writer = Files.newBufferedWriter(propertiesFile)) {

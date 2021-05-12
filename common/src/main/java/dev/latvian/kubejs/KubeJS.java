@@ -2,6 +2,7 @@ package dev.latvian.kubejs;
 
 import dev.latvian.kubejs.block.BlockRegistryEventJS;
 import dev.latvian.kubejs.block.KubeJSBlockEventHandler;
+import dev.latvian.kubejs.client.KubeJSClient;
 import dev.latvian.kubejs.docs.KubeJSDocs;
 import dev.latvian.kubejs.entity.KubeJSEntityEventHandler;
 import dev.latvian.kubejs.event.EventJS;
@@ -9,6 +10,8 @@ import dev.latvian.kubejs.fluid.FluidRegistryEventJS;
 import dev.latvian.kubejs.fluid.KubeJSFluidEventHandler;
 import dev.latvian.kubejs.item.ItemRegistryEventJS;
 import dev.latvian.kubejs.item.KubeJSItemEventHandler;
+import dev.latvian.kubejs.item.custom.ItemArmorTierEventJS;
+import dev.latvian.kubejs.item.custom.ItemToolTierEventJS;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.player.KubeJSPlayerEventHandler;
 import dev.latvian.kubejs.recipe.KubeJSRecipeEventHandler;
@@ -18,11 +21,17 @@ import dev.latvian.kubejs.script.ScriptPack;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.kubejs.server.KubeJSServerEventHandler;
+import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
+import me.shedaniel.architectury.platform.Mod;
 import me.shedaniel.architectury.platform.Platform;
-import net.fabricmc.api.EnvType;
+import me.shedaniel.architectury.registry.CreativeTabs;
+import me.shedaniel.architectury.utils.EnvExecutor;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,8 +57,9 @@ public class KubeJS {
 
 	public static KubeJS instance;
 
-	public final KubeJSCommon proxy;
+	public static KubeJSCommon PROXY;
 	public static boolean nextClientHasClientMod = false;
+	public static CreativeModeTab tab = CreativeModeTab.TAB_MISC;
 
 	public static ScriptManager startupScriptManager, clientScriptManager;
 
@@ -79,10 +89,23 @@ public class KubeJS {
 			});
 		}
 
+		PROXY = EnvExecutor.getEnvSpecific(() -> KubeJSClient::new, () -> KubeJSCommon::new);
+
+		long now = System.currentTimeMillis();
+		LOGGER.info("Looking for KubeJS plugins...");
+
+		for (Mod mod : Platform.getMods()) {
+			try {
+				KubeJSPlugins.load(mod.getModId(), mod.getFilePath());
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		LOGGER.info("Done in " + (System.currentTimeMillis() - now) / 1000L + " s");
+
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS, "/data/kubejs/example_startup_script.js");
 		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS, "/data/kubejs/example_client_script.js");
-		String proxyClass = Platform.getEnv() == EnvType.CLIENT ? "dev.latvian.kubejs.client.KubeJSClient" : "dev.latvian.kubejs.KubeJSCommon";
-		proxy = (KubeJSCommon) Class.forName(proxyClass).getDeclaredConstructor().newInstance();
 
 		KubeJSDocs.init();
 
@@ -92,9 +115,20 @@ public class KubeJS {
 			UtilsJS.tryIO(() -> Files.move(oldStartupFolder, KubeJSPaths.STARTUP_SCRIPTS));
 		}
 
+		for (KubeJSPlugin plugin : KubeJSPlugins.LIST) {
+			plugin.init();
+		}
+
+		if (!CommonProperties.get().serverOnly) {
+			tab = CreativeTabs.create(new ResourceLocation(KubeJS.MOD_ID, KubeJS.MOD_ID), () -> new ItemStack(Items.PURPLE_DYE));
+		}
+
 		startupScriptManager.unload();
 		startupScriptManager.loadFromDirectory();
 		startupScriptManager.load();
+
+		new ItemToolTierEventJS().post(ScriptType.STARTUP, KubeJSEvents.ITEM_REGISTRY_TOOL_TIERS);
+		new ItemArmorTierEventJS().post(ScriptType.STARTUP, KubeJSEvents.ITEM_REGISTRY_ARMOR_TIERS);
 
 		new BlockRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.BLOCK_REGISTRY);
 		new ItemRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.ITEM_REGISTRY);
@@ -110,7 +144,7 @@ public class KubeJS {
 		KubeJSFluidEventHandler.init();
 		KubeJSServerEventHandler.init();
 
-		proxy.init();
+		PROXY.init();
 	}
 
 	public static void loadScripts(ScriptPack pack, Path dir, String path) {
@@ -156,6 +190,10 @@ public class KubeJS {
 	}
 
 	public void loadComplete() {
+		for (KubeJSPlugin plugin : KubeJSPlugins.LIST) {
+			plugin.afterInit();
+		}
+
 		ScriptsLoadedEvent.EVENT.invoker().run();
 		new EventJS().post(ScriptType.STARTUP, KubeJSEvents.POSTINIT);
 		UtilsJS.postModificationEvents();

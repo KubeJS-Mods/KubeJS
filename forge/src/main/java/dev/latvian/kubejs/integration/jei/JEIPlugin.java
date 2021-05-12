@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.integration.jei;
 
+import dev.latvian.kubejs.BuiltinKubeJSPlugin;
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.bindings.DefaultBindings;
 import dev.latvian.kubejs.fluid.FluidStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
@@ -38,7 +38,7 @@ public class JEIPlugin implements IModPlugin {
 	@Override
 	public void onRuntimeAvailable(IJeiRuntime r) {
 		runtime = r;
-		DefaultBindings.GLOBAL.put("jeiRuntime", runtime);
+		BuiltinKubeJSPlugin.GLOBAL.put("jeiRuntime", runtime);
 
 		new HideJEIEventJS<>(runtime, VanillaTypes.ITEM, object -> IngredientJS.of(object)::testVanilla, stack -> !stack.isEmpty()).post(ScriptType.CLIENT, JEIIntegration.JEI_HIDE_ITEMS);
 
@@ -50,6 +50,7 @@ public class JEIPlugin implements IModPlugin {
 		new HideCustomJEIEventJS(runtime).post(ScriptType.CLIENT, JEIIntegration.JEI_HIDE_CUSTOM);
 
 		new YeetJEICategoriesEvent(runtime).post(ScriptType.CLIENT, JEIIntegration.JEI_YEET_CATEGORIES);
+		new YeetJEIRecipesEvent(runtime).post(ScriptType.CLIENT, JEIIntegration.JEI_YEET_RECIPES);
 
 		new AddJEIEventJS<>(runtime, VanillaTypes.ITEM, object -> ItemStackJS.of(object).getItemStack()).post(ScriptType.CLIENT, JEIIntegration.JEI_ADD_ITEMS);
 		new AddJEIEventJS<>(runtime, VanillaTypes.FLUID, object -> fromArchitectury(FluidStackJS.of(object).getFluidStack())).post(ScriptType.CLIENT, JEIIntegration.JEI_ADD_FLUIDS);
@@ -67,7 +68,7 @@ public class JEIPlugin implements IModPlugin {
 	@Override
 	public void registerRecipes(IRecipeRegistration registration) {
 		List<IngredientInfoRecipe<?>> list = new ArrayList<>();
-		new InformationJEIEventJS(list).post(ScriptType.CLIENT, JEIIntegration.JEI_INFORMATION);
+		new InformationJEIEventJS(registration.getIngredientManager(), list).post(ScriptType.CLIENT, JEIIntegration.JEI_INFORMATION);
 		registration.addRecipes(list, VanillaRecipeCategoryUid.INFORMATION);
 	}
 }

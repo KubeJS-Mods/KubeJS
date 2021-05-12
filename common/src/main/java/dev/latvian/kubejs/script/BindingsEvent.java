@@ -18,11 +18,15 @@ import java.util.function.Consumer;
 @ForgeEvent
 public class BindingsEvent {
 	public static final Event<Consumer<BindingsEvent>> EVENT = EventFactory.createConsumerLoop(BindingsEvent.class);
+	public final ScriptManager manager;
 	public final ScriptType type;
-	public Scriptable scope;
+	public final Context context;
+	public final Scriptable scope;
 
-	public BindingsEvent(ScriptType t, Scriptable s) {
-		type = t;
+	public BindingsEvent(ScriptManager m, Context cx, Scriptable s) {
+		manager = m;
+		type = manager.type;
+		context = cx;
 		scope = s;
 	}
 

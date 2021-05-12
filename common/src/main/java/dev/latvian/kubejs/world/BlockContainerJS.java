@@ -7,10 +7,14 @@ import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.player.EntityArrayList;
+import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.player.ServerPlayerJS;
 import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
+import me.shedaniel.architectury.hooks.PlayerHooks;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -20,6 +24,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -27,8 +32,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -132,6 +139,14 @@ public class BlockContainerJS {
 
 	public String getId() {
 		return Registries.getId(getBlockState().getBlock(), Registry.BLOCK_REGISTRY).toString();
+	}
+
+	public Collection<ResourceLocation> getTags() {
+		return Tags.byBlockState(getBlockState());
+	}
+
+	public boolean hasTag(ResourceLocation tag) {
+		return Tags.blocks().getTagOrEmpty(tag).contains(getBlockState().getBlock());
 	}
 
 	public void set(ResourceLocation id, Map<?, ?> properties, int flags) {
@@ -313,5 +328,27 @@ public class BlockContainerJS {
 		}
 
 		return super.equals(obj);
+	}
+
+	private static boolean isReal(Player p) {
+		return !PlayerHooks.isFake(p);
+	}
+
+	public EntityArrayList getPlayersInRadius(double radius) {
+		EntityArrayList list = new EntityArrayList(getWorld(), 1);
+
+		for (Player player : minecraftWorld.getEntitiesOfClass(Player.class, new AABB(pos.getX() - radius, pos.getY() - radius, pos.getZ() - radius, pos.getX() + 1D + radius, pos.getY() + 1D + radius, pos.getZ() + 1D + radius), BlockContainerJS::isReal)) {
+			PlayerJS<?> p = getWorld().getPlayer(player);
+
+			if (p != null) {
+				list.add(p);
+			}
+		}
+
+		return list;
+	}
+
+	public EntityArrayList getPlayersInRadius() {
+		return getPlayersInRadius(8D);
 	}
 }

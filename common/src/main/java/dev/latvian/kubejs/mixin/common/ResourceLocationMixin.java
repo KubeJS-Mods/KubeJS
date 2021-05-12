@@ -10,11 +10,11 @@ import org.spongepowered.asm.mixin.gen.Accessor;
  */
 @Mixin(ResourceLocation.class)
 public abstract class ResourceLocationMixin {
-	@Accessor
+	@Accessor("namespace")
 	@RemapForJS("getNamespace")
-	public abstract String getNamespace();
+	public abstract String kjs_getNamespace();
 
-	@Accessor
+	@Accessor("path")
 	@RemapForJS("getPath")
-	public abstract String getPath();
+	public abstract String kjs_getPath();
 }
