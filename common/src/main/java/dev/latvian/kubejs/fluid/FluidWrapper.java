@@ -12,6 +12,9 @@ import java.util.List;
  * @author LatvianModder
  */
 public class FluidWrapper {
+	public static final ResourceLocation WATER_ID = new ResourceLocation("minecraft:water");
+	public static final ResourceLocation LAVA_ID = new ResourceLocation("minecraft:lava");
+
 	public FluidStackJS of(ResourceLocation o) {
 		return FluidStackJS.of(o);
 	}
@@ -22,6 +25,26 @@ public class FluidWrapper {
 
 	public FluidStackJS of(ResourceLocation o, int amount, Object nbt) {
 		return FluidStackJS.of(o, amount, nbt);
+	}
+
+	public FluidStackJS water() {
+		return new UnboundFluidStackJS(WATER_ID);
+	}
+
+	public FluidStackJS lava() {
+		return new UnboundFluidStackJS(LAVA_ID);
+	}
+
+	public FluidStackJS water(int amount) {
+		FluidStackJS fs = new UnboundFluidStackJS(WATER_ID);
+		fs.withAmount(amount);
+		return fs;
+	}
+
+	public FluidStackJS lava(int amount) {
+		FluidStackJS fs = new UnboundFluidStackJS(LAVA_ID);
+		fs.withAmount(amount);
+		return fs;
 	}
 
 	@MinecraftClass

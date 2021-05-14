@@ -47,7 +47,7 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 			}
 
 			String[] s1 = s.split(" ", 2);
-			return new UnboundFluidStackJS(new ResourceLocation(s1[0])).amount(UtilsJS.parseInt(s1.length == 2 ? s1[1] : "", FluidStack.bucketAmount().intValue()));
+			return new UnboundFluidStackJS(new ResourceLocation(s1[0])).withAmount(UtilsJS.parseInt(s1.length == 2 ? s1[1] : "", FluidStack.bucketAmount().intValue()));
 		}
 
 		MapJS map = MapJS.of(o);
@@ -151,9 +151,19 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 
 	public abstract void setAmount(int amount);
 
+	public final FluidStackJS withAmount(int amount) {
+		if (amount <= 0) {
+			return EmptyFluidStackJS.INSTANCE;
+		}
+
+		FluidStackJS fs = copy();
+		fs.setAmount(amount);
+		return fs;
+	}
+
+	@Deprecated
 	public final FluidStackJS amount(int amount) {
-		setAmount(amount);
-		return this;
+		return withAmount(amount);
 	}
 
 	@Nullable

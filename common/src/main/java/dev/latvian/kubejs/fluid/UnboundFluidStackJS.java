@@ -74,7 +74,7 @@ public class UnboundFluidStackJS extends FluidStackJS {
 
 	@Override
 	public FluidStackJS copy() {
-		return new UnboundFluidStackJS(fluidRL).amount(amount).nbt(nbt);
+		return new UnboundFluidStackJS(fluidRL).withAmount(amount).nbt(nbt);
 	}
 
 	@Override
