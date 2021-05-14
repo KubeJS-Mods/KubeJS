@@ -12,20 +12,20 @@ import java.io.IOException;
  */
 public class NBTWrapper {
 	@Nullable
-	public MapJS read(File file) throws IOException {
+	public static MapJS read(File file) throws IOException {
 		return NBTUtilsJS.read(file);
 	}
 
-	public void write(File file, Object nbt) throws IOException {
+	public static void write(File file, Object nbt) throws IOException {
 		NBTUtilsJS.write(file, MapJS.of(nbt));
 	}
 
 	@Nullable
-	public Object read(String file) throws IOException {
+	public static Object read(String file) throws IOException {
 		return NBTUtilsJS.read(file);
 	}
 
-	public void write(String file, Object nbt) throws IOException {
+	public static void write(String file, Object nbt) throws IOException {
 		NBTUtilsJS.write(file, MapJS.of(nbt));
 	}
 }

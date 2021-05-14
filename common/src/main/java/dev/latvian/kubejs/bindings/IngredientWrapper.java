@@ -12,27 +12,27 @@ import java.util.function.Predicate;
  * @author LatvianModder
  */
 public class IngredientWrapper {
-	public IngredientJS getNone() {
+	public static IngredientJS getNone() {
 		return EmptyItemStackJS.INSTANCE;
 	}
 
-	public IngredientJS getAll() {
+	public static IngredientJS getAll() {
 		return MatchAllIngredientJS.INSTANCE;
 	}
 
-	public IngredientJS of(Object object) {
+	public static IngredientJS of(Object object) {
 		return IngredientJS.of(object);
 	}
 
-	public IngredientJS of(Object object, int count) {
+	public static IngredientJS of(Object object, int count) {
 		return of(object).withCount(Math.max(1, count));
 	}
 
-	public IngredientJS custom(Predicate<ItemStackJS> predicate) {
+	public static IngredientJS custom(Predicate<ItemStackJS> predicate) {
 		return predicate::test;
 	}
 
-	public IngredientJS matchAny(Object objects) {
+	public static IngredientJS matchAny(Object objects) {
 		MatchAnyIngredientJS ingredient = new MatchAnyIngredientJS();
 		ingredient.addAll(objects);
 		return ingredient;

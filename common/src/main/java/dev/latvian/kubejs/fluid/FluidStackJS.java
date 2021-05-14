@@ -14,6 +14,7 @@ import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import me.shedaniel.architectury.fluid.FluidStack;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
@@ -171,9 +172,15 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 
 	public abstract void setNbt(@Nullable Object nbt);
 
+	public final FluidStackJS withNBT(@Nullable Object nbt) {
+		FluidStackJS fs = copy();
+		fs.setNbt(nbt);
+		return fs;
+	}
+
+	@Deprecated
 	public final FluidStackJS nbt(@Nullable Object nbt) {
-		setNbt(nbt);
-		return this;
+		return withNBT(nbt);
 	}
 
 	public abstract FluidStackJS copy();
@@ -211,20 +218,18 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 		StringBuilder builder = new StringBuilder();
 		builder.append("Fluid.of('");
 		builder.append(getId());
-		builder.append("')");
 
 		if (amount != FluidStack.bucketAmount().intValue()) {
-			builder.append(".amount(");
+			builder.append(", ");
 			builder.append(amount);
-			builder.append(')');
 		}
 
 		if (nbt != null) {
-			builder.append(".nbt(");
+			builder.append(", ");
 			nbt.toString(builder);
-			builder.append(')');
 		}
 
+		builder.append("')");
 		return builder.toString();
 	}
 
@@ -241,6 +246,12 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 		}
 
 		return o;
+	}
+
+	public CompoundTag toNBT() {
+		CompoundTag tag = new CompoundTag();
+		getFluidStack().write(tag);
+		return tag;
 	}
 
 	@Override

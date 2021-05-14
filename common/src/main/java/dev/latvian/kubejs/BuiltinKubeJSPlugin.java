@@ -128,33 +128,30 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 			event.add("settings", ServerSettings.instance);
 		}
 
-		event.add("Platform", PlatformWrapper.getInstance());
-		event.add("mod", PlatformWrapper.getInstance());
+		event.addClass("Platform", PlatformWrapper.class);
 		event.add("console", event.type.console);
 		event.add("events", new ScriptEventsWrapper(event.type.manager.get().events));
 
 		event.addFunction("onEvent", args -> onEvent(event, args), null, IEventHandler.class);
 		event.addFunction("java", args -> event.manager.loadJavaClass(event.scope, args), new Class[]{null});
 
-		event.add("Utils", new UtilsWrapper());
-		event.add("utils", new UtilsWrapper());
-		event.add("Text", new TextWrapper());
-		event.add("text", new TextWrapper());
-		event.add("uuid", new UUIDWrapper());
-		event.add("json", new JsonWrapper());
-		event.add("Block", new BlockWrapper());
-		event.add("block", new BlockWrapper());
-		event.add("Item", new ItemWrapper());
-		event.add("item", new ItemWrapper());
-		event.add("Ingredient", new IngredientWrapper());
-		event.add("ingredient", new IngredientWrapper());
-		event.add("NBT", new NBTWrapper());
-		event.add("nbt", new NBTWrapper());
+		event.addClass("Utils", UtilsWrapper.class);
+		event.addClass("utils", UtilsWrapper.class);
+		event.addClass("Text", TextWrapper.class);
+		event.addClass("text", TextWrapper.class);
+		event.addClass("uuid", UUIDWrapper.class);
+		event.addClass("json", JsonWrapper.class);
+		event.addClass("Block", BlockWrapper.class);
+		event.addClass("block", BlockWrapper.class);
+		event.addClass("Item", ItemWrapper.class);
+		event.addClass("item", ItemWrapper.class);
+		event.addClass("Ingredient", IngredientWrapper.class);
+		event.addClass("ingredient", IngredientWrapper.class);
+		event.addClass("NBT", NBTWrapper.class);
 		event.add("Facing", new FacingWrapper());
-		event.add("facing", new FacingWrapper());
 
-		event.add("Fluid", new FluidWrapper());
-		event.add("fluid", new FluidWrapper());
+		event.addClass("Fluid", FluidWrapper.class);
+		event.addClass("fluid", FluidWrapper.class);
 
 		event.addConstant("SECOND", 1000L);
 		event.addConstant("MINUTE", 60000L);

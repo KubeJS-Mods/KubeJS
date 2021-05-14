@@ -9,12 +9,12 @@ import java.util.UUID;
  * @author LatvianModder
  */
 public class UUIDWrapper {
-	public String toString(UUID id) {
+	public static String toString(UUID id) {
 		return UUIDUtilsJS.toString(id);
 	}
 
 	@Nullable
-	public UUID fromString(Object string) {
+	public static UUID fromString(Object string) {
 		return UUIDUtilsJS.fromString(String.valueOf(string));
 	}
 }

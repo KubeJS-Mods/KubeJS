@@ -14,37 +14,37 @@ import java.io.IOException;
  * @author LatvianModder
  */
 public class JsonWrapper {
-	public JsonElement copy(JsonElement json) {
+	public static JsonElement copy(JsonElement json) {
 		return JsonUtilsJS.copy(json);
 	}
 
-	public String toString(JsonElement json) {
+	public static String toString(JsonElement json) {
 		return JsonUtilsJS.toString(json);
 	}
 
-	public String toPrettyString(JsonElement json) {
+	public static String toPrettyString(JsonElement json) {
 		return JsonUtilsJS.toPrettyString(json);
 	}
 
-	public Object parse(String string) {
+	public static Object parse(String string) {
 		return UtilsJS.wrap(JsonUtilsJS.fromString(string), JSObjectType.ANY);
 	}
 
 	@Nullable
-	public MapJS read(File file) throws IOException {
+	public static MapJS read(File file) throws IOException {
 		return JsonUtilsJS.read(file);
 	}
 
-	public void write(File file, Object json) throws IOException {
+	public static void write(File file, Object json) throws IOException {
 		JsonUtilsJS.write(file, MapJS.of(json));
 	}
 
 	@Nullable
-	public MapJS read(String file) throws IOException {
+	public static MapJS read(String file) throws IOException {
 		return JsonUtilsJS.read(file);
 	}
 
-	public void write(String file, Object json) throws IOException {
+	public static void write(String file, Object json) throws IOException {
 		JsonUtilsJS.write(file, MapJS.of(json));
 	}
 }

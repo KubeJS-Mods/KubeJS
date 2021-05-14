@@ -20,15 +20,15 @@ import java.util.Map;
  * @author LatvianModder
  */
 public class BlockWrapper {
-	public Map<String, MaterialJS> getMaterial() {
+	public static Map<String, MaterialJS> getMaterial() {
 		return MaterialListJS.INSTANCE.map;
 	}
 
-	public BlockIDPredicate id(ResourceLocation id) {
+	public static BlockIDPredicate id(ResourceLocation id) {
 		return new BlockIDPredicate(id);
 	}
 
-	public BlockIDPredicate id(ResourceLocation id, Map<String, Object> properties) {
+	public static BlockIDPredicate id(ResourceLocation id, Map<String, Object> properties) {
 		BlockIDPredicate b = id(id);
 
 		for (Map.Entry<String, Object> entry : properties.entrySet()) {
@@ -38,17 +38,17 @@ public class BlockWrapper {
 		return b;
 	}
 
-	public BlockEntityPredicate entity(ResourceLocation id) {
+	public static BlockEntityPredicate entity(ResourceLocation id) {
 		return new BlockEntityPredicate(id);
 	}
 
-	public BlockPredicate custom(BlockPredicate predicate) {
+	public static BlockPredicate custom(BlockPredicate predicate) {
 		return predicate;
 	}
 
-	private Map<String, Direction> facingMap;
+	private static Map<String, Direction> facingMap;
 
-	public Map<String, Direction> getFacing() {
+	public static Map<String, Direction> getFacing() {
 		if (facingMap == null) {
 			facingMap = new HashMap<>(6);
 
@@ -61,11 +61,11 @@ public class BlockWrapper {
 	}
 
 	@MinecraftClass
-	public Block getBlock(ResourceLocation id) {
+	public static Block getBlock(ResourceLocation id) {
 		return KubeJSRegistries.blocks().get(id);
 	}
 
-	public List<String> getTypeList() {
+	public static List<String> getTypeList() {
 		List<String> list = new ArrayList<>();
 
 		for (ResourceLocation block : KubeJSRegistries.blocks().getIds()) {

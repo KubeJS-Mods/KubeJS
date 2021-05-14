@@ -3,10 +3,12 @@ package dev.latvian.kubejs.script;
 import dev.latvian.kubejs.KubeJS;
 import me.shedaniel.architectury.platform.Mod;
 import me.shedaniel.architectury.platform.Platform;
+import me.shedaniel.architectury.targets.ArchitecturyTarget;
 import me.shedaniel.architectury.utils.Env;
 import net.minecraft.SharedConstants;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,16 +16,6 @@ import java.util.Set;
  * @author LatvianModder
  */
 public class PlatformWrapper {
-	private static PlatformWrapper instance;
-
-	public static PlatformWrapper getInstance() {
-		if (instance == null) {
-			instance = new PlatformWrapper();
-		}
-
-		return instance;
-	}
-
 	public static class ModInfo {
 		private final String id;
 		private String name;
@@ -48,68 +40,60 @@ public class PlatformWrapper {
 		}
 	}
 
-	private final Set<String> list;
-	private final Map<String, ModInfo> map;
+	private static final Set<String> MOD_LIST = new LinkedHashSet<>();
+	private static final Map<String, ModInfo> MOD_MAP = new LinkedHashMap<>();
 
-	public PlatformWrapper() {
-		map = new LinkedHashMap<>();
-
+	static {
 		for (Mod mod : Platform.getMods()) {
 			ModInfo info = new ModInfo(mod.getModId());
 			info.name = mod.getName();
 			info.version = mod.getVersion();
-			map.put(info.id, info);
+			MOD_LIST.add(info.id);
+			MOD_MAP.put(info.id, info);
 		}
-
-		list = map.keySet();
 	}
 
-	public String getName() {
-		return Platform.getModLoader();
+	public static String getName() {
+		return ArchitecturyTarget.getCurrentTarget();
 	}
 
-	public boolean isForge() {
+	public static boolean isForge() {
 		return Platform.isForge();
 	}
 
-	public boolean isFabric() {
+	public static boolean isFabric() {
 		return Platform.isFabric();
 	}
 
-	@Deprecated
-	public String getType() {
-		return Platform.getModLoader();
-	}
-
-	public String getMcVersion() {
+	public static String getMcVersion() {
 		return SharedConstants.getCurrentVersion().getName();
 	}
 
-	public Set<String> getList() {
-		return list;
+	public static Set<String> getList() {
+		return MOD_LIST;
 	}
 
-	public String getModVersion() {
+	public static String getModVersion() {
 		return getInfo(KubeJS.MOD_ID).version;
 	}
 
-	public boolean isLoaded(String modId) {
-		return map.containsKey(modId);
+	public static boolean isLoaded(String modId) {
+		return MOD_MAP.containsKey(modId);
 	}
 
-	public ModInfo getInfo(String modID) {
-		return map.get(modID);
+	public static ModInfo getInfo(String modID) {
+		return MOD_MAP.get(modID);
 	}
 
-	public Map<String, ModInfo> getMods() {
-		return map;
+	public static Map<String, ModInfo> getMods() {
+		return MOD_MAP;
 	}
 
-	public boolean isDevelopmentEnvironment() {
+	public static boolean isDevelopmentEnvironment() {
 		return Platform.isDevelopmentEnvironment();
 	}
 
-	public boolean isClientEnvironment() {
+	public static boolean isClientEnvironment() {
 		return Platform.getEnvironment() == Env.CLIENT;
 	}
 }
