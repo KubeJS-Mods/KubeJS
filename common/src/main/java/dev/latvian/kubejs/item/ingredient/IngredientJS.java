@@ -246,7 +246,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 
 		for (ItemStackJS stack : ItemStackJS.getList()) {
 			if (test(stack)) {
-				set.add(stack.getCopy());
+				set.add(stack.copy());
 			}
 		}
 
@@ -288,7 +288,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			return EmptyItemStackJS.INSTANCE;
 		}
 
-		return count == 1 ? getCopy() : new IngredientStackJS(getCopy(), count);
+		return count == 1 ? copy() : new IngredientStackJS(copy(), count);
 	}
 
 	default IngredientJS x(int c) {
@@ -296,8 +296,14 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 	}
 
 	@Override
-	default IngredientJS getCopy() {
+	default IngredientJS copy() {
 		return this;
+	}
+
+	@Override
+	@Deprecated
+	default IngredientJS getCopy() {
+		return copy();
 	}
 
 	default int getCount() {

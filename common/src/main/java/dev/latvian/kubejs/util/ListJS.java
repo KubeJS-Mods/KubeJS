@@ -328,7 +328,7 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 	}
 
 	@Override
-	public ListJS getCopy() {
+	public ListJS copy() {
 		ListJS list = new ListJS(size());
 
 		for (Object object : this) {

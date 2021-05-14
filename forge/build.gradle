@@ -49,7 +49,7 @@ dependencies {
 	modOptional("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
 
 	// test mods, these are included at runtime only
-	modRuntime("com.resourcefulbees:ResourcefulBees:1.16.5-0.6.4b")
+	// modRuntime("com.resourcefulbees:ResourcefulBees:1.16.5-0.6.4b")
 
 	implementation(project(path: ":common")) {
 		transitive = false

@@ -43,7 +43,7 @@ public final class IgnoreNBTIngredientJS implements IngredientJS {
 	}
 
 	@Override
-	public IngredientJS getCopy() {
-		return new IgnoreNBTIngredientJS(item.getCopy());
+	public IngredientJS copy() {
+		return new IgnoreNBTIngredientJS(item.copy());
 	}
 }

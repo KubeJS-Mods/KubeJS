@@ -62,7 +62,7 @@ public class ModIngredientJS implements IngredientJS {
 	public ItemStackJS getFirst() {
 		for (ItemStackJS stack : ItemStackJS.getList()) {
 			if (mod.equals(stack.getMod())) {
-				return stack.getCopy();
+				return stack.copy();
 			}
 		}
 

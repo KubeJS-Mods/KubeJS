@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.kubejs.util.Copyable;
 import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Tags;
@@ -27,7 +28,7 @@ import java.util.Objects;
 /**
  * @author LatvianModder
  */
-public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeListener<MapJS> {
+public abstract class FluidStackJS implements WrappedJS, Copyable, WrappedJSObjectChangeListener<MapJS> {
 	public static FluidStackJS of(@Nullable Object o) {
 		if (o == null) {
 			return EmptyFluidStackJS.INSTANCE;
@@ -183,6 +184,7 @@ public abstract class FluidStackJS implements WrappedJS, WrappedJSObjectChangeLi
 		return withNBT(nbt);
 	}
 
+	@Override
 	public abstract FluidStackJS copy();
 
 	@Override

@@ -47,15 +47,15 @@ public class IngredientStackJS implements IngredientJS {
 		if (count <= 0) {
 			return EmptyItemStackJS.INSTANCE;
 		} else if (count == 1) {
-			return ingredient.getCopy();
+			return ingredient.copy();
 		}
 
-		return count == countOverride ? getCopy() : new IngredientStackJS(ingredient, count);
+		return count == countOverride ? copy() : new IngredientStackJS(ingredient, count);
 	}
 
 	@Override
-	public IngredientJS getCopy() {
-		return new IngredientStackJS(ingredient.getCopy(), countOverride);
+	public IngredientJS copy() {
+		return new IngredientStackJS(ingredient.copy(), countOverride);
 	}
 
 	@Override

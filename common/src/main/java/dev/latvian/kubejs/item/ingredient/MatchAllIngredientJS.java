@@ -39,7 +39,7 @@ public class MatchAllIngredientJS implements IngredientJS {
 		Set<ItemStackJS> set = new LinkedHashSet<>();
 
 		for (ItemStackJS stack : ItemStackJS.getList()) {
-			set.add(stack.getCopy());
+			set.add(stack.copy());
 		}
 
 		return set;
@@ -48,7 +48,7 @@ public class MatchAllIngredientJS implements IngredientJS {
 	@Override
 	public ItemStackJS getFirst() {
 		List<ItemStackJS> list = ItemStackJS.getList();
-		return list.isEmpty() ? EmptyItemStackJS.INSTANCE : list.get(0).getCopy();
+		return list.isEmpty() ? EmptyItemStackJS.INSTANCE : list.get(0).copy();
 	}
 
 	@Override

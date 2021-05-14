@@ -29,8 +29,8 @@ public final class NotIngredientJS implements IngredientJS {
 	}
 
 	@Override
-	public IngredientJS getCopy() {
-		return new NotIngredientJS(ingredientJS.getCopy());
+	public IngredientJS copy() {
+		return new NotIngredientJS(ingredientJS.copy());
 	}
 
 	@Override

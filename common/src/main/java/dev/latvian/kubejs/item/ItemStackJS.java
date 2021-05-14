@@ -256,7 +256,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 		for (ItemStack stack : stackList) {
 			if (!stack.isEmpty()) {
-				set.add(new BoundItemStackJS(stack).getCopy().withCount(1));
+				set.add(new BoundItemStackJS(stack).copy().withCount(1));
 			}
 		}
 
@@ -320,7 +320,13 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	}
 
 	@Override
-	public abstract ItemStackJS getCopy();
+	public abstract ItemStackJS copy();
+
+	@Override
+	@Deprecated
+	public final ItemStackJS getCopy() {
+		return copy();
+	}
 
 	public abstract void setCount(int count);
 
@@ -333,7 +339,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 			return EmptyItemStackJS.INSTANCE;
 		}
 
-		ItemStackJS is = getCopy();
+		ItemStackJS is = copy();
 		is.setCount(c);
 		return is;
 	}
@@ -365,7 +371,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		}
 
 		if (nbt != null) {
-			ItemStackJS is = getCopy();
+			ItemStackJS is = copy();
 			is.getNbt().putAll(nbt);
 			return is;
 		}
@@ -399,7 +405,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 			return this;
 		}
 
-		ItemStackJS is = getCopy();
+		ItemStackJS is = copy();
 		is.setChance(c);
 		return is;
 	}
@@ -492,7 +498,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	@Override
 	public ItemStackJS getFirst() {
-		return getCopy();
+		return copy();
 	}
 
 	@Override

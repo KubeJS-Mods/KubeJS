@@ -198,7 +198,7 @@ public class UtilsJS {
 	@Nullable
 	public static Object copy(@Nullable Object o) {
 		if (o instanceof Copyable) {
-			return ((Copyable) o).getCopy();
+			return ((Copyable) o).copy();
 		} else if (o instanceof JsonElement) {
 			return JsonUtilsJS.copy((JsonElement) o);
 		} else if (o instanceof Tag) {

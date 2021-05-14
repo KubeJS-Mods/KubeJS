@@ -122,11 +122,11 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	}
 
 	@Override
-	public IngredientJS getCopy() {
+	public IngredientJS copy() {
 		MatchAnyIngredientJS i = new MatchAnyIngredientJS();
 
 		for (IngredientJS in : ingredients) {
-			i.ingredients.add(in.getCopy());
+			i.ingredients.add(in.copy());
 		}
 
 		return i;

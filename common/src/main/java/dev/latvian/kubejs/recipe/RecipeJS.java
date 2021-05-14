@@ -123,7 +123,7 @@ public abstract class RecipeJS {
 
 		for (int j = 0; j < inputItems.size(); j++) {
 			if (exact ? inputItems.get(j).equals(i) : inputItems.get(j).anyStackMatches(i)) {
-				inputItems.set(j, convertReplacedInput(j, inputItems.get(j), func.apply(with.getCopy(), inputItems.get(j))));
+				inputItems.set(j, convertReplacedInput(j, inputItems.get(j), func.apply(with.copy(), inputItems.get(j))));
 				changed = true;
 				serializeInputs = true;
 				save();
@@ -158,7 +158,7 @@ public abstract class RecipeJS {
 
 		for (int j = 0; j < outputItems.size(); j++) {
 			if (exact ? i.equals(outputItems.get(j)) : i.test(outputItems.get(j))) {
-				outputItems.set(j, convertReplacedOutput(j, outputItems.get(j), func.apply(with.getCopy(), outputItems.get(j))));
+				outputItems.set(j, convertReplacedOutput(j, outputItems.get(j), func.apply(with.copy(), outputItems.get(j))));
 				changed = true;
 				serializeOutputs = true;
 				save();

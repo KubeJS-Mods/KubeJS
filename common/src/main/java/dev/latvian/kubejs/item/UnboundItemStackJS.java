@@ -69,10 +69,10 @@ public class UnboundItemStackJS extends ItemStackJS {
 	}
 
 	@Override
-	public ItemStackJS getCopy() {
+	public ItemStackJS copy() {
 		UnboundItemStackJS stack = new UnboundItemStackJS(itemRL);
 		stack.count = count;
-		stack.nbt = nbt == null ? null : nbt.getCopy();
+		stack.nbt = nbt == null ? null : nbt.copy();
 		stack.setChance(getChance());
 		return stack;
 	}

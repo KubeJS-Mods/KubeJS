@@ -61,8 +61,8 @@ public final class FilteredIngredientJS implements IngredientJS {
 	}
 
 	@Override
-	public IngredientJS getCopy() {
-		return new FilteredIngredientJS(ingredient.getCopy(), filter.getCopy());
+	public IngredientJS copy() {
+		return new FilteredIngredientJS(ingredient.copy(), filter.copy());
 	}
 
 	@Override

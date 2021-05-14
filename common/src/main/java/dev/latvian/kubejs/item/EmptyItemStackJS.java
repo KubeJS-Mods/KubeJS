@@ -42,7 +42,7 @@ public class EmptyItemStackJS extends ItemStackJS {
 	}
 
 	@Override
-	public ItemStackJS getCopy() {
+	public ItemStackJS copy() {
 		return this;
 	}
 
