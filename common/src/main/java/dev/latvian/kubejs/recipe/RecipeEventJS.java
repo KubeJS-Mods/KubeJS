@@ -32,9 +32,6 @@ import net.minecraft.world.item.crafting.RecipeType;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -53,8 +49,6 @@ import java.util.stream.Collectors;
  * @author LatvianModder
  */
 public class RecipeEventJS extends EventJS {
-	private static final Map<Class, MethodHandle> TR_CONSTRUCTORS = new ConcurrentHashMap<>();
-	private static final Map<Class, MethodHandle> TR_DESERIALIZERS = new ConcurrentHashMap<>();
 	public static final ResourceLocation FORGE_CONDITIONAL = new ResourceLocation("forge:conditional");
 
 	public static RecipeEventJS instance;
@@ -82,30 +76,6 @@ public class RecipeEventJS extends EventJS {
 
 		SpecialRecipeSerializerManager.INSTANCE.reset();
 		SpecialRecipeSerializerManager.INSTANCE.post(ScriptType.SERVER, KubeJSEvents.RECIPES_SERIALIZER_SPECIAL_FLAG);
-	}
-
-	private static MethodHandle getTRRecipeConstructor(Recipe<?> resultRecipe, RecipeJS recipe) throws NoSuchMethodException, IllegalAccessException {
-		Class<? extends Recipe> recipeClass = resultRecipe.getClass();
-		MethodHandle handle = TR_CONSTRUCTORS.get(recipeClass);
-		if (handle != null) {
-			return handle;
-		}
-
-		handle = MethodHandles.lookup().findConstructor(recipeClass, MethodType.methodType(void.class, recipe.type.serializer.getClass(), ResourceLocation.class));
-		TR_CONSTRUCTORS.put(recipeClass, handle);
-		return handle;
-	}
-
-	private static MethodHandle getTRRecipeSerializer(Recipe<?> resultRecipe) throws NoSuchMethodException, IllegalAccessException {
-		Class<? extends Recipe> recipeClass = resultRecipe.getClass();
-		MethodHandle handle = TR_DESERIALIZERS.get(recipeClass);
-		if (handle != null) {
-			return handle;
-		}
-
-		handle = MethodHandles.lookup().findVirtual(resultRecipe.getClass(), "deserialize", MethodType.methodType(void.class, JsonObject.class));
-		TR_DESERIALIZERS.put(recipeClass, handle);
-		return handle;
 	}
 
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap) {
@@ -273,23 +243,12 @@ public class RecipeEventJS extends EventJS {
 				})
 				.map(recipe -> {
 					try {
-						// TODO: fix shit here
-						recipe.serializeJson();
-						Recipe<?> resultRecipe = Objects.requireNonNull(recipe.type.serializer.fromJson(recipe.getOrCreateId(), recipe.json));
-						if (Platform.isFabric()) {
-							// Fabric: we love tech reborn
-							if (recipe.type.serializer.getClass().getName().contains("RebornRecipeType")) {
-								MethodHandle constructor = getTRRecipeConstructor(resultRecipe, recipe);
-								resultRecipe = (Recipe<?>) constructor.invoke(recipe.type.serializer, recipe.getOrCreateId());
-								getTRRecipeSerializer(resultRecipe).invoke(resultRecipe, recipe.json);
-							}
-						}
-						recipe.originalRecipe = resultRecipe;
+						recipe.originalRecipe = recipe.createRecipe();
 					} catch (Throwable ex) {
 						ScriptType.SERVER.console.warn("Error parsing recipe " + recipe + ": " + recipe.json, ex);
 						failed.increment();
 					}
-					if(recipe.originalRecipe != null) {
+					if (recipe.originalRecipe != null) {
 						existingRecipes.put(recipe.id, recipe.originalRecipe.getType());
 					}
 					return recipe.originalRecipe;
@@ -318,27 +277,17 @@ public class RecipeEventJS extends EventJS {
 		addedRecipes.stream()
 				.map(recipe -> {
 					try {
-						recipe.serializeJson();
-						Recipe<?> resultRecipe = Objects.requireNonNull(recipe.type.serializer.fromJson(recipe.getOrCreateId(), recipe.json));
-						if (Platform.isFabric()) {
-							// Fabric: we love tech reborn
-							if (recipe.type.serializer.getClass().getName().contains("RebornRecipeType")) {
-								MethodHandle constructor = getTRRecipeConstructor(resultRecipe, recipe);
-								resultRecipe = (Recipe<?>) constructor.invoke(recipe.type.serializer, recipe.getOrCreateId());
-								getTRRecipeSerializer(resultRecipe).invoke(resultRecipe, recipe.json);
-							}
-						}
-						recipe.originalRecipe = resultRecipe;
+						recipe.originalRecipe = recipe.createRecipe();
 					} catch (Throwable ex) {
 						ScriptType.SERVER.console.warn("Error creating recipe " + recipe + ": " + recipe.json, ex);
 						failed.increment();
 					}
-					if(recipe.originalRecipe != null) {
+					if (recipe.originalRecipe != null) {
 						ResourceLocation id = recipe.getOrCreateId();
 						RecipeType<?> t = existingRecipes.remove(id);
-						if(t != null) {
+						if (t != null) {
 							newRecipeMap.get(t).remove(id);
-							if(ServerSettings.instance.logOverrides) {
+							if (ServerSettings.instance.logOverrides) {
 								ScriptType.SERVER.console.info("Overriding existing recipe with ID " + id + "(" + t + " => " + recipe.getType() + ")");
 							}
 						}

@@ -4,26 +4,32 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
+import dev.latvian.kubejs.recipe.mod.TechRebornCompat;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.apache.commons.codec.binary.Hex;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.invoke.MethodHandle;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -43,6 +49,7 @@ public abstract class RecipeJS {
 	public final List<IngredientJS> inputItems = new ArrayList<>(1);
 	public boolean serializeOutputs;
 	public boolean serializeInputs;
+	private String recipeStage = "";
 
 	public abstract void create(ListJS args);
 
@@ -380,5 +387,43 @@ public abstract class RecipeJS {
 			messageDigest.reset();
 			return new BigInteger(Hex.encodeHexString(messageDigest.digest(getJsonHashBytes())), 16).toString(36);
 		}
+	}
+
+	public RecipeJS stage(String s) {
+		recipeStage = s;
+		save();
+
+		if (!Platform.isModLoaded("recipestages")) {
+			ScriptType.SERVER.console.warn("Recipe requires stage '" + recipeStage + "' but Recipe Stages mod isn't installed!");
+		}
+
+		return this;
+	}
+
+	public Recipe<?> createRecipe() throws Throwable {
+		serializeJson();
+
+		if (!recipeStage.isEmpty()) {
+			if (Platform.isModLoaded("recipestages")) {
+				RecipeSerializer<?> stageSerializer = KubeJSRegistries.recipeSerializers().get(new ResourceLocation("recipestages:stage"));
+				JsonObject o = new JsonObject();
+				o.addProperty("stage", recipeStage);
+				o.add("recipe", json);
+				return stageSerializer.fromJson(getOrCreateId(), o);
+			}
+		}
+
+		Recipe<?> resultRecipe = Objects.requireNonNull(type.serializer.fromJson(getOrCreateId(), json));
+
+		if (Platform.isFabric()) {
+			// Fabric: we love tech reborn
+			if (type.serializer.getClass().getName().contains("RebornRecipeType")) {
+				MethodHandle constructor = TechRebornCompat.getTRRecipeConstructor(resultRecipe, this);
+				resultRecipe = (Recipe<?>) constructor.invoke(type.serializer, getOrCreateId());
+				TechRebornCompat.getTRRecipeSerializer(resultRecipe).invoke(resultRecipe, json);
+			}
+		}
+
+		return resultRecipe;
 	}
 }
