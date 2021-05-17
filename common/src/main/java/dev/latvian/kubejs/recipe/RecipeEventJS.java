@@ -529,6 +529,10 @@ public class RecipeEventJS extends EventJS {
 		RecipeJS.itemErrors = b;
 	}
 
+	public void stage(RecipeFilter filter, String stage) {
+		forEachRecipe(filter, r -> r.stage(stage));
+	}
+
 	@ExpectPlatform
 	private static boolean processConditions(JsonObject json, String key) {
 		throw new AssertionError();
