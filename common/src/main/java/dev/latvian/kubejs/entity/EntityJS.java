@@ -129,6 +129,10 @@ public class EntityJS implements MessageSender, WrappedJS {
 		return minecraftEntity.isSprinting();
 	}
 
+	public boolean isSwimming() {
+		return minecraftEntity.isSwimming();
+	}
+
 	public boolean isGlowing() {
 		return minecraftEntity.isGlowing();
 	}
