@@ -28,7 +28,7 @@ allprojects {
 	apply from: "https://files.latmod.com/public/markdown-git-changelog.gradle"
 
 	def ENV = System.getenv()
-	version = "${mod_version}-build.${ENV.BUILD_NUMBER ?: 9999}"
+	version = "${mod_version}-build.${ENV.GITHUB_RUN_NUMBER ?: 9999}"
 	group = project.mod_package
 	archivesBaseName = project.mod_name
 
