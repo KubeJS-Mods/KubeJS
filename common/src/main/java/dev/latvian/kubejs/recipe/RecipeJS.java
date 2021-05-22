@@ -8,12 +8,14 @@ import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
+import dev.latvian.kubejs.recipe.minecraft.CustomRecipeJS;
 import dev.latvian.kubejs.recipe.mod.TechRebornCompat;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.apache.commons.codec.binary.Hex;
@@ -106,7 +108,23 @@ public abstract class RecipeJS {
 	}
 
 	public final boolean hasInput(IngredientJS ingredient, boolean exact) {
-		return getInputIndex(ingredient, exact) != -1;
+		if (getInputIndex(ingredient, exact) != -1) {
+			return true;
+		}
+
+		if (originalRecipe != null && this instanceof CustomRecipeJS) {
+			for (Ingredient in0 : originalRecipe.getIngredients()) {
+				if (!in0.isEmpty()) {
+					IngredientJS in = IngredientJS.of(in0);
+
+					if (exact ? in.equals(ingredient) : in.anyStackMatches(ingredient)) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 
 	public final int getInputIndex(IngredientJS ingredient, boolean exact) {
@@ -141,7 +159,16 @@ public abstract class RecipeJS {
 	}
 
 	public final boolean hasOutput(IngredientJS ingredient, boolean exact) {
-		return getOutputIndex(ingredient, exact) != -1;
+		if (getOutputIndex(ingredient, exact) != -1) {
+			return true;
+		}
+
+		if (originalRecipe != null && this instanceof CustomRecipeJS && !originalRecipe.getResultItem().isEmpty()) {
+			ItemStackJS out = ItemStackJS.of(originalRecipe.getResultItem());
+			return exact ? ingredient.equals(out) : ingredient.test(out);
+		}
+
+		return false;
 	}
 
 	public final int getOutputIndex(IngredientJS ingredient, boolean exact) {

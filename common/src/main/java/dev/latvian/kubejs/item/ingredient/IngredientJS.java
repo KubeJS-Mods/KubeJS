@@ -102,6 +102,20 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			}
 
 			return new UnboundItemStackJS(new ResourceLocation(s)).withCount(count);
+		} else if (o instanceof Ingredient) {
+			if (((Ingredient) o).isEmpty()) {
+				return EmptyItemStackJS.INSTANCE;
+			}
+
+			List<IngredientJS> in = new ArrayList<>();
+
+			for (ItemStack stack : ((Ingredient) o).getItems()) {
+				if (!stack.isEmpty()) {
+					in.add(ItemStackJS.of(stack));
+				}
+			}
+
+			return of(in);
 		}
 
 		List<Object> list = ListJS.of(o);
