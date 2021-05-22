@@ -137,7 +137,7 @@ publishing {
 	repositories {
 		if (ENV.LOCAL_MAVEN) {
 			maven {
-				url = "file://${ENV.LOCAL_MAVEN}"
+				url "file://${ENV.LOCAL_MAVEN}"
 			}
 		}
 
