@@ -113,14 +113,17 @@ public abstract class RecipeJS {
 		}
 
 		if (originalRecipe != null && this instanceof CustomRecipeJS) {
-			for (Ingredient in0 : originalRecipe.getIngredients()) {
-				if (!in0.isEmpty()) {
-					IngredientJS in = IngredientJS.of(in0);
+			try {
+				for (Ingredient in0 : originalRecipe.getIngredients()) {
+					if (!in0.isEmpty()) {
+						IngredientJS in = IngredientJS.of(in0);
 
-					if (exact ? in.equals(ingredient) : in.anyStackMatches(ingredient)) {
-						return true;
+						if (exact ? in.equals(ingredient) : in.anyStackMatches(ingredient)) {
+							return true;
+						}
 					}
 				}
+			} catch (Exception ex) {
 			}
 		}
 
@@ -163,9 +166,14 @@ public abstract class RecipeJS {
 			return true;
 		}
 
-		if (originalRecipe != null && this instanceof CustomRecipeJS && !originalRecipe.getResultItem().isEmpty()) {
-			ItemStackJS out = ItemStackJS.of(originalRecipe.getResultItem());
-			return exact ? ingredient.equals(out) : ingredient.test(out);
+		if (originalRecipe != null && this instanceof CustomRecipeJS) {
+			try {
+				if (!originalRecipe.getResultItem().isEmpty()) {
+					ItemStackJS out = ItemStackJS.of(originalRecipe.getResultItem());
+					return exact ? ingredient.equals(out) : ingredient.test(out);
+				}
+			} catch (Exception ex) {
+			}
 		}
 
 		return false;
