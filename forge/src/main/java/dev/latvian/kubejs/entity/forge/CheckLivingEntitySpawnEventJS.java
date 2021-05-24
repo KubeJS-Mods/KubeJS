@@ -46,6 +46,6 @@ public class CheckLivingEntitySpawnEventJS extends LivingEntityEventJS {
 	}
 
 	public BlockContainerJS getBlock() {
-		return new BlockContainerJS(event.getWorld(), new BlockPos(getX(), getY(), getZ()));
+		return new BlockContainerJS((Level) event.getWorld(), new BlockPos(getX(), getY(), getZ()));
 	}
 }

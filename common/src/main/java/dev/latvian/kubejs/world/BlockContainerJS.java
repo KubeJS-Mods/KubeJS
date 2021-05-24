@@ -27,7 +27,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -49,13 +48,13 @@ import java.util.Optional;
 public class BlockContainerJS {
 	private static final ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
 
-	public final LevelAccessor minecraftWorld;
+	public final Level minecraftWorld;
 	private final BlockPos pos;
 
 	private BlockState cachedState;
 	private BlockEntity cachedEntity;
 
-	public BlockContainerJS(LevelAccessor w, BlockPos p) {
+	public BlockContainerJS(Level w, BlockPos p) {
 		minecraftWorld = w;
 		pos = p;
 	}
@@ -66,7 +65,7 @@ public class BlockContainerJS {
 	}
 
 	public WorldJS getWorld() {
-		return UtilsJS.getWorld((Level) minecraftWorld);
+		return UtilsJS.getWorld(minecraftWorld);
 	}
 
 	public BlockPos getPos() {
@@ -74,7 +73,7 @@ public class BlockContainerJS {
 	}
 
 	public String getDimension() {
-		return ((Level) minecraftWorld).dimension().location().toString();
+		return minecraftWorld.dimension().location().toString();
 	}
 
 	public int getX() {
@@ -280,7 +279,7 @@ public class BlockContainerJS {
 
 	public void spawnLightning(boolean effectOnly, @Nullable EntityJS player) {
 		if (minecraftWorld instanceof ServerLevel) {
-			LightningBolt e = EntityType.LIGHTNING_BOLT.create((ServerLevel) minecraftWorld);
+			LightningBolt e = EntityType.LIGHTNING_BOLT.create(minecraftWorld);
 			e.moveTo(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D);
 			e.setCause(player instanceof ServerPlayerJS ? ((ServerPlayerJS) player).minecraftPlayer : null);
 			minecraftWorld.addFreshEntity(e);
@@ -292,9 +291,7 @@ public class BlockContainerJS {
 	}
 
 	public void spawnFireworks(FireworksJS fireworks) {
-		if (minecraftWorld instanceof Level) {
-			minecraftWorld.addFreshEntity(fireworks.createFireworkRocket((Level) minecraftWorld, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D));
-		}
+		minecraftWorld.addFreshEntity(fireworks.createFireworkRocket(minecraftWorld, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D));
 	}
 
 	@Nullable
