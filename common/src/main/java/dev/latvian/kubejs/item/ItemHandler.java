@@ -3,7 +3,6 @@ package dev.latvian.kubejs.item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -47,6 +46,6 @@ public interface ItemHandler extends Iterable<ItemStack> {
 	}
 
 	interface Mutable extends ItemHandler {
-		void setStackInSlot(int slot, @Nonnull ItemStack stack);
+		void setStackInSlot(int slot, @NotNull ItemStack stack);
 	}
 }

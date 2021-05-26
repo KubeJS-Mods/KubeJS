@@ -60,7 +60,8 @@ shadowJar {
 remapJar {
 	input.set shadowJar.archiveFile
 	dependsOn shadowJar
-	classifier "fabric"
+	archiveBaseName.set "${rootProject.mod_name}-${project.name}"
+	archiveClassifier.set null
 }
 
 jar {
@@ -91,10 +92,8 @@ if (ENV.CURSEFORGE_KEY) {
 publishing {
 	publications {
 		mavenFabric(MavenPublication) {
-			artifactId = rootProject.archivesBaseName + "-" + project.name
-			artifact(remapJar) {
-				classifier null
-			}
+			artifactId = "${rootProject.mod_name}-${project.name}"
+			artifact(remapJar)
 			artifact(sourcesJar) {
 				builtBy remapSourcesJar
 			}
@@ -102,12 +101,6 @@ publishing {
 	}
 
 	repositories {
-		if (ENV.LOCAL_MAVEN) {
-			maven {
-				url = "file://${ENV.LOCAL_MAVEN}"
-			}
-		}
-
 		if (ENV.SAPS_TOKEN) {
 			maven {
 				url "https://maven.saps.dev/minecraft"

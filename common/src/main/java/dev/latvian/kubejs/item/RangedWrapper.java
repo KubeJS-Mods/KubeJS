@@ -21,8 +21,7 @@ package dev.latvian.kubejs.item;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.world.item.ItemStack;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class RangedWrapper implements ItemHandler.Mutable {
 
@@ -43,7 +42,7 @@ public class RangedWrapper implements ItemHandler.Mutable {
 	}
 
 	@Override
-	@Nonnull
+	@NotNull
 	public ItemStack getStackInSlot(int slot) {
 		if (checkSlot(slot)) {
 			return compose.getStackInSlot(slot + minSlot);
@@ -53,8 +52,8 @@ public class RangedWrapper implements ItemHandler.Mutable {
 	}
 
 	@Override
-	@Nonnull
-	public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+	@NotNull
+	public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
 		if (checkSlot(slot)) {
 			return compose.insertItem(slot + minSlot, stack, simulate);
 		}
@@ -63,7 +62,7 @@ public class RangedWrapper implements ItemHandler.Mutable {
 	}
 
 	@Override
-	@Nonnull
+	@NotNull
 	public ItemStack extractItem(int slot, int amount, boolean simulate) {
 		if (checkSlot(slot)) {
 			return compose.extractItem(slot + minSlot, amount, simulate);
@@ -73,7 +72,7 @@ public class RangedWrapper implements ItemHandler.Mutable {
 	}
 
 	@Override
-	public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
+	public void setStackInSlot(int slot, @NotNull ItemStack stack) {
 		if (checkSlot(slot)) {
 			compose.setStackInSlot(slot + minSlot, stack);
 		}
@@ -89,7 +88,7 @@ public class RangedWrapper implements ItemHandler.Mutable {
 	}
 
 	@Override
-	public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+	public boolean isItemValid(int slot, @NotNull ItemStack stack) {
 		if (checkSlot(slot)) {
 			return compose.isItemValid(slot + minSlot, stack);
 		}

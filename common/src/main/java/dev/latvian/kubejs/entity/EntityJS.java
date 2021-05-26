@@ -521,4 +521,12 @@ public class EntityJS implements MessageSender, WrappedJS {
 	private static MapJS getPersistentData(Entity entity) {
 		throw new AssertionError();
 	}
+
+	public boolean isInWater() {
+		return minecraftEntity.isInWater();
+	}
+
+	public boolean isUnderWater() {
+		return minecraftEntity.isUnderWater();
+	}
 }

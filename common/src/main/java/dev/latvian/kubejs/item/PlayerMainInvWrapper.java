@@ -22,8 +22,7 @@ package dev.latvian.kubejs.item;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerMainInvWrapper extends RangedWrapper {
 	private final Inventory inventoryPlayer;
@@ -34,8 +33,8 @@ public class PlayerMainInvWrapper extends RangedWrapper {
 	}
 
 	@Override
-	@Nonnull
-	public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+	@NotNull
+	public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
 		ItemStack rest = super.insertItem(slot, stack, simulate);
 		if (rest.getCount() != stack.getCount()) {
 			// the stack in the slot changed, animate it

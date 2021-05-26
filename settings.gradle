@@ -1,15 +1,12 @@
 pluginManagement {
 	repositories {
-		maven { url "https://maven.minecraftforge.net/" }
+		maven { url "https://forge.modpacks.ch/maven/" }
 		maven { url "https://maven.fabricmc.net/" }
 		maven { url "https://maven.architectury.dev/" }
-		maven { url "https://forge.modpacks.ch/maven/" }
 		gradlePluginPortal()
 	}
 }
 
-include "common"
-include "fabric"
-include "forge"
+include "common", "fabric", "forge"
 
-rootProject.name = "KubeJS-1.16.5"
+rootProject.name = 'KubeJS-1.16.5'

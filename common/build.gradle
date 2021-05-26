@@ -3,8 +3,6 @@ dependencies {
 
 	modApi "me.shedaniel:architectury:${rootProject.architectury_version}"
 	modApi "dev.latvian.mods:rhino:${rootProject.rhino_version}"
-
-	compileOnly "com.google.code.findbugs:jsr305:3.+"
 }
 
 def ENV = System.getenv()
@@ -29,12 +27,6 @@ publishing {
 	}
 
 	repositories {
-		if (ENV.LOCAL_MAVEN) {
-			maven {
-				url = "file://${ENV.LOCAL_MAVEN}"
-			}
-		}
-
 		if (ENV.SAPS_TOKEN) {
 			maven {
 				url "https://maven.saps.dev/minecraft"

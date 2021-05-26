@@ -27,10 +27,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
-
 public class ItemHandlerUtils {
-	public static void giveItemToPlayer(Player player, @Nonnull ItemStack stack, int preferredSlot) {
+	public static void giveItemToPlayer(Player player, @NotNull ItemStack stack, int preferredSlot) {
 		if (stack.isEmpty()) {
 			return;
 		}
@@ -65,8 +63,8 @@ public class ItemHandlerUtils {
 		}
 	}
 
-	@Nonnull
-	public static ItemStack insertItemStacked(ItemHandler inventory, @Nonnull ItemStack stack, boolean simulate) {
+	@NotNull
+	public static ItemStack insertItemStacked(ItemHandler inventory, @NotNull ItemStack stack, boolean simulate) {
 		if (inventory == null || stack.isEmpty()) {
 			return stack;
 		}
@@ -106,8 +104,8 @@ public class ItemHandlerUtils {
 		return stack;
 	}
 
-	@Nonnull
-	public static ItemStack insertItem(ItemHandler dest, @Nonnull ItemStack stack, boolean simulate) {
+	@NotNull
+	public static ItemStack insertItem(ItemHandler dest, @NotNull ItemStack stack, boolean simulate) {
 		if (dest == null || stack.isEmpty()) {
 			return stack;
 		}
@@ -122,7 +120,7 @@ public class ItemHandlerUtils {
 		return stack;
 	}
 
-	public static boolean canItemStacksStackRelaxed(@Nonnull ItemStack a, @Nonnull ItemStack b) {
+	public static boolean canItemStacksStackRelaxed(@NotNull ItemStack a, @NotNull ItemStack b) {
 		if (a.isEmpty() || b.isEmpty() || a.getItem() != b.getItem()) {
 			return false;
 		}
