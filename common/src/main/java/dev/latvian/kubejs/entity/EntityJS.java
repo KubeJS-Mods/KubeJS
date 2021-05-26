@@ -25,8 +25,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Team;
@@ -482,39 +480,19 @@ public class EntityJS implements MessageSender, WrappedJS {
 		minecraftEntity.hurt(DamageSource.GENERIC, hp);
 	}
 
-	public HitResult rayTraceResult(double distance) {
-		double f = minecraftEntity.xRot;
-		double f1 = minecraftEntity.yRot;
-		Vec3 vec3d = minecraftEntity.getEyePosition(1);
-		double f2 = Math.cos(-f1 * (Math.PI / 180D) - (float) Math.PI);
-		double f3 = Math.sin(-f1 * (Math.PI / 180D) - (float) Math.PI);
-		double f4 = -Math.cos(-f * (Math.PI / 180D));
-		double f5 = Math.sin(-f * (Math.PI / 180D));
-		double f6 = f3 * f4;
-		double f7 = f2 * f4;
-		Vec3 vec3d1 = vec3d.add(f6 * distance, f5 * distance, f7 * distance);
-		return minecraftEntity.level.clip(new ClipContext(vec3d, vec3d1, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, minecraftEntity));
-	}
-
-	@Nullable
-	public Map<String, Object> rayTrace(double distance) {
-		Map<String, Object> map = new HashMap<>();
-		HitResult ray = rayTraceResult(distance);
-
-		if (ray.getType() != HitResult.Type.MISS) {
-			map.put("hitX", ray.getLocation().x);
-			map.put("hitY", ray.getLocation().y);
-			map.put("hitZ", ray.getLocation().z);
-
-			if (ray instanceof BlockHitResult) {
-				map.put("block", new BlockContainerJS(getWorld().minecraftWorld, ((BlockHitResult) ray).getBlockPos()));
-				map.put("facing", ((BlockHitResult) ray).getDirection());
-			} else if (ray instanceof EntityHitResult) {
-				map.put("entity", getWorld().getEntity(((EntityHitResult) ray).getEntity()));
-			}
-		}
-
-		return map;
+	public RayTraceResultJS rayTrace(double distance) {
+		double xRot = minecraftEntity.xRot;
+		double yRot = minecraftEntity.yRot;
+		Vec3 fromPos = minecraftEntity.getEyePosition(1);
+		double x0 = Math.sin(-yRot * (Math.PI / 180D) - (float) Math.PI);
+		double z0 = Math.cos(-yRot * (Math.PI / 180D) - (float) Math.PI);
+		double y0 = -Math.cos(-xRot * (Math.PI / 180D));
+		double y = Math.sin(-xRot * (Math.PI / 180D));
+		double x = x0 * y0;
+		double z = z0 * y0;
+		Vec3 toPos = fromPos.add(x * distance, y * distance, z * distance);
+		HitResult hitResult = minecraftEntity.level.clip(new ClipContext(fromPos, toPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, minecraftEntity));
+		return new RayTraceResultJS(this, hitResult, distance);
 	}
 
 	@ExpectPlatform

@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.entity.RayTraceResultJS;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageSendDataFromClient;
 import dev.latvian.kubejs.util.MapJS;
@@ -58,5 +59,10 @@ public class ClientPlayerJS extends PlayerJS<Player> {
 		if (!channel.isEmpty() && isSelf()) {
 			KubeJSNet.MAIN.sendToServer(new MessageSendDataFromClient(channel, MapJS.nbt(data)));
 		}
+	}
+
+	@Override
+	public RayTraceResultJS rayTrace(double distance) {
+		return isSelf ? new RayTraceResultJS(this, Minecraft.getInstance().hitResult, distance) : super.rayTrace(distance);
 	}
 }

@@ -37,6 +37,17 @@ public class EntityPotionEffectsJS {
 		return p != null && entity.hasEffect(p);
 	}
 
+	public int getDuration(ResourceLocation potion) {
+		MobEffect p = UtilsJS.getPotion(potion);
+
+		if (p != null) {
+			MobEffectInstance i = entity.getActiveEffectsMap().get(p);
+			return i == null ? 0 : i.getDuration();
+		}
+
+		return 0;
+	}
+
 	@Nullable
 	public MobEffectInstance getActive(ResourceLocation potion) {
 		MobEffect p = UtilsJS.getPotion(potion);
@@ -44,7 +55,7 @@ public class EntityPotionEffectsJS {
 	}
 
 	public void add(ResourceLocation potion) {
-		add(potion, 0, 0);
+		add(potion, 200);
 	}
 
 	public void add(ResourceLocation potion, int duration) {

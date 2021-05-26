@@ -12,7 +12,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -120,44 +119,89 @@ public class LivingEntityJS extends EntityJS {
 		return ItemStackJS.of(minecraftLivingEntity.getItemBySlot(slot));
 	}
 
-	public void setEquipment(EquipmentSlot slot, Object item) {
-		minecraftLivingEntity.setItemSlot(slot, ItemStackJS.of(item).getItemStack());
+	public void setEquipment(EquipmentSlot slot, ItemStackJS item) {
+		minecraftLivingEntity.setItemSlot(slot, item.getItemStack());
 	}
 
 	public ItemStackJS getHeldItem(InteractionHand hand) {
 		return ItemStackJS.of(minecraftLivingEntity.getItemInHand(hand));
 	}
 
-	public void setHeldItem(InteractionHand hand, Object item) {
-		minecraftLivingEntity.setItemInHand(hand, ItemStackJS.of(item).getItemStack());
+	public void setHeldItem(InteractionHand hand, ItemStackJS item) {
+		minecraftLivingEntity.setItemInHand(hand, item.getItemStack());
 	}
 
 	public ItemStackJS getMainHandItem() {
-		return getHeldItem(InteractionHand.MAIN_HAND);
+		return getEquipment(EquipmentSlot.MAINHAND);
 	}
 
-	public void setMainHandItem(Object item) {
-		setHeldItem(InteractionHand.MAIN_HAND, item);
+	public void setMainHandItem(ItemStackJS item) {
+		setEquipment(EquipmentSlot.MAINHAND, item);
 	}
 
 	public ItemStackJS getOffHandItem() {
-		return getHeldItem(InteractionHand.OFF_HAND);
+		return getEquipment(EquipmentSlot.OFFHAND);
 	}
 
-	public void setOffHandItem(Object item) {
-		setHeldItem(InteractionHand.OFF_HAND, item);
+	public void setOffHandItem(ItemStackJS item) {
+		setEquipment(EquipmentSlot.OFFHAND, item);
 	}
 
-	public void damageHeldItem(InteractionHand hand, int amount, Consumer<ItemStackJS> onBroken) {
-		ItemStack stack = minecraftLivingEntity.getItemInHand(hand);
+	public ItemStackJS getHeadArmorItem() {
+		return getEquipment(EquipmentSlot.HEAD);
+	}
+
+	public void setHeadArmorItem(ItemStackJS item) {
+		setEquipment(EquipmentSlot.HEAD, item);
+	}
+
+	public ItemStackJS getChestArmorItem() {
+		return getEquipment(EquipmentSlot.CHEST);
+	}
+
+	public void setChestArmorItem(ItemStackJS item) {
+		setEquipment(EquipmentSlot.CHEST, item);
+	}
+
+	public ItemStackJS getLegsArmorItem() {
+		return getEquipment(EquipmentSlot.LEGS);
+	}
+
+	public void setLegsArmorItem(ItemStackJS item) {
+		setEquipment(EquipmentSlot.LEGS, item);
+	}
+
+	public ItemStackJS getFeetArmorItem() {
+		return getEquipment(EquipmentSlot.FEET);
+	}
+
+	public void setFeetArmorItem(ItemStackJS item) {
+		setEquipment(EquipmentSlot.FEET, item);
+	}
+
+	public void damageEquipment(EquipmentSlot slot, int amount, Consumer<ItemStackJS> onBroken) {
+		ItemStack stack = minecraftLivingEntity.getItemBySlot(slot);
 
 		if (!stack.isEmpty()) {
 			stack.hurtAndBreak(amount, minecraftLivingEntity, livingEntity -> onBroken.accept(ItemStackJS.of(stack)));
 
 			if (stack.isEmpty()) {
-				minecraftLivingEntity.setItemInHand(hand, ItemStack.EMPTY);
+				minecraftLivingEntity.setItemSlot(slot, ItemStack.EMPTY);
 			}
 		}
+	}
+
+	public void damageEquipment(EquipmentSlot slot, int amount) {
+		damageEquipment(slot, amount, stack -> {
+		});
+	}
+
+	public void damageEquipment(EquipmentSlot slot) {
+		damageEquipment(slot, 1);
+	}
+
+	public void damageHeldItem(InteractionHand hand, int amount, Consumer<ItemStackJS> onBroken) {
+		damageEquipment(hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND, amount, onBroken);
 	}
 
 	public void damageHeldItem(InteractionHand hand, int amount) {
@@ -198,8 +242,7 @@ public class LivingEntityJS extends EntityJS {
 		return getReachDistance(minecraftLivingEntity);
 	}
 
-	@Nullable
-	public Map<String, Object> rayTrace() {
+	public RayTraceResultJS rayTrace() {
 		return rayTrace(getReachDistance());
 	}
 
