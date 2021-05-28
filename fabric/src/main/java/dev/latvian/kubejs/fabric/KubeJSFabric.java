@@ -4,7 +4,7 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSInitializer;
 import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.world.gen.fabric.WorldgenAddEventJSFabric;
+import dev.latvian.kubejs.world.gen.WorldgenAddEventJS;
 import dev.latvian.kubejs.world.gen.fabric.WorldgenRemoveEventJSFabric;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.DedicatedServerModInitializer;
@@ -27,8 +27,8 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 			});
 			KubeJS.instance.setup();
 
+			new WorldgenAddEventJS().post(ScriptType.STARTUP, KubeJSEvents.WORLDGEN_ADD);
 			BiomeModifications.create(new ResourceLocation("kubejs", "worldgen_removals")).add(ModificationPhase.REMOVALS, BiomeSelectors.all(), (s, m) -> new WorldgenRemoveEventJSFabric(s, m).post(ScriptType.STARTUP, KubeJSEvents.WORLDGEN_REMOVE));
-			BiomeModifications.create(new ResourceLocation("kubejs", "worldgen_additions")).add(ModificationPhase.REPLACEMENTS, BiomeSelectors.all(), (s, m) -> new WorldgenAddEventJSFabric(s, m).post(ScriptType.STARTUP, KubeJSEvents.WORLDGEN_ADD));
 		} catch (Throwable throwable) {
 			throw new RuntimeException(throwable);
 		}

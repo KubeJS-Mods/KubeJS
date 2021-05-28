@@ -1,13 +1,18 @@
 package dev.latvian.kubejs.world.gen;
 
 import dev.latvian.kubejs.event.StartupEventJS;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.world.gen.filter.BiomeFilter;
+import me.shedaniel.architectury.registry.BiomeModifications;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.SerializationTags;
+import net.minecraft.tags.Tag;
 import net.minecraft.util.UniformInt;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.GenerationStep;
@@ -25,18 +30,22 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
 
 import java.util.function.Consumer;
 
+// TODO: MAJOR cleanup needed!
+
 /**
  * @author LatvianModder
  */
 public class WorldgenAddEventJS extends StartupEventJS {
-	protected void addFeature(GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> configuredFeature) {
+	protected void addFeature(BiomeFilter filter, GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> feature) {
+		BiomeModifications.addProperties(filter, (ctx, properties) -> {
+			properties.getGenerationProperties().addFeature(decoration, feature);
+		});
 	}
 
-	protected void addEntitySpawn(MobCategory category, MobSpawnSettings.SpawnerData spawnerData) {
-	}
-
-	protected boolean verifyBiomes(WorldgenEntryList biomes) {
-		return true;
+	protected void addEntitySpawn(BiomeFilter filter, MobCategory category, MobSpawnSettings.SpawnerData spawnerData) {
+		BiomeModifications.addProperties(filter, (ctx, properties) -> {
+			properties.getSpawnProperties().addSpawn(category, spawnerData);
+		});
 	}
 
 	public void addOre(Consumer<AddOreProperties> p) {
@@ -44,10 +53,6 @@ public class WorldgenAddEventJS extends StartupEventJS {
 		p.accept(properties);
 
 		if (properties._block == Blocks.AIR.defaultBlockState()) {
-			return;
-		}
-
-		if (!verifyBiomes(properties.biomes)) {
 			return;
 		}
 
@@ -63,12 +68,18 @@ public class WorldgenAddEventJS extends StartupEventJS {
 			}
 
 			if (s.startsWith("#")) {
-				RuleTest tagTest = new TagMatchTest(SerializationTags.getInstance().getBlocks().getTag(new ResourceLocation(s.substring(1))));
-				ruleTest.list.add(invert ? new InvertRuleTest(tagTest) : tagTest);
+				ResourceLocation id = new ResourceLocation(s.substring(1));
+				Tag<Block> tag = Tags.blocks().getTag(id);
+				if (tag != null) {
+					RuleTest tagTest = new TagMatchTest(tag);
+					ruleTest.list.add(invert ? new InvertRuleTest(tagTest) : tagTest);
+				} else {
+					ScriptType.STARTUP.console.warn("Skipped tag rule test as tag " + id + " doesn't exist!");
+				}
 			} else {
 				BlockState bs = UtilsJS.parseBlockState(s);
-				RuleTest tagTest = s.indexOf('[') != -1 ? new BlockStateMatchTest(bs) : new BlockMatchTest(bs.getBlock());
-				ruleTest.list.add(invert ? new InvertRuleTest(tagTest) : tagTest);
+				RuleTest blockTest = s.indexOf('[') != -1 ? new BlockStateMatchTest(bs) : new BlockMatchTest(bs.getBlock());
+				ruleTest.list.add(invert ? new InvertRuleTest(blockTest) : blockTest);
 			}
 		}
 
@@ -87,7 +98,7 @@ public class WorldgenAddEventJS extends StartupEventJS {
 			oreConfig = UtilsJS.cast(oreConfig.squared());
 		}
 
-		addFeature(properties._worldgenLayer, oreConfig);
+		addFeature(properties.biomes, properties._worldgenLayer, oreConfig);
 	}
 
 	public void addLake(Consumer<AddLakeProperties> p) {
@@ -98,11 +109,7 @@ public class WorldgenAddEventJS extends StartupEventJS {
 			return;
 		}
 
-		if (!verifyBiomes(properties.biomes)) {
-			return;
-		}
-
-		addFeature(properties._worldgenLayer, Feature.LAKE.configured(new BlockStateConfiguration(properties._block)).decorated((FeatureDecorator.WATER_LAKE).configured(new ChanceDecoratorConfiguration(properties.chance))));
+		addFeature(properties.biomes, properties._worldgenLayer, Feature.LAKE.configured(new BlockStateConfiguration(properties._block)).decorated((FeatureDecorator.WATER_LAKE).configured(new ChanceDecoratorConfiguration(properties.chance))));
 	}
 
 	public void addSpawn(Consumer<AddSpawnProperties> p) {
@@ -113,10 +120,6 @@ public class WorldgenAddEventJS extends StartupEventJS {
 			return;
 		}
 
-		if (!verifyBiomes(properties.biomes)) {
-			return;
-		}
-
-		addEntitySpawn(properties._category, new MobSpawnSettings.SpawnerData(properties._entity, properties.weight, properties.minCount, properties.maxCount));
+		addEntitySpawn(properties.biomes, properties._category, new MobSpawnSettings.SpawnerData(properties._entity, properties.weight, properties.minCount, properties.maxCount));
 	}
 }

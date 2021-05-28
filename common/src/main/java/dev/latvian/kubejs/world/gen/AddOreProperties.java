@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.world.gen;
 
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.world.gen.filter.BiomeFilter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.GenerationStep;
@@ -21,7 +22,8 @@ public class AddOreProperties {
 	public int maxHeight = 64;
 	public int retrogen = 0;
 	public boolean squared = true;
-	public final WorldgenEntryList biomes = new WorldgenEntryList();
+	// TODO: should this be ALWAYS_TRUE instead?
+	public BiomeFilter biomes = BiomeFilter.ALWAYS_FALSE;
 	public final WorldgenEntryList spawnsIn = new WorldgenEntryList();
 
 	public void setWorldgenLayer(String id) {

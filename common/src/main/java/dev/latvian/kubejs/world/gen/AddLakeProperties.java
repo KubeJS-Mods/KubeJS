@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.world.gen;
 
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.world.gen.filter.BiomeFilter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.GenerationStep;
@@ -13,7 +14,7 @@ public class AddLakeProperties {
 	public BlockState _block = Blocks.AIR.defaultBlockState();
 	public int chance = 20;
 	public int retrogen = 0;
-	public final WorldgenEntryList biomes = new WorldgenEntryList();
+	public BiomeFilter biomes = BiomeFilter.ALWAYS_FALSE;
 
 	public void setBlock(String id) {
 		_block = UtilsJS.parseBlockState(id);
