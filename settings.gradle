@@ -1,7 +1,6 @@
 pluginManagement {
 	repositories {
-		maven { url "https://forge.modpacks.ch/maven/" }
-		maven { url "https://maven.fabricmc.net/" }
+		maven { url "https://maven.creeperhost.net/" }
 		maven { url "https://maven.architectury.dev/" }
 		gradlePluginPortal()
 	}

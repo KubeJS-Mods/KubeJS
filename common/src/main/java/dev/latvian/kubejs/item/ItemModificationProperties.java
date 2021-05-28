@@ -3,7 +3,6 @@ package dev.latvian.kubejs.item;
 import dev.latvian.kubejs.bindings.RarityWrapper;
 import dev.latvian.kubejs.core.ItemKJS;
 import dev.latvian.kubejs.core.TieredItemKJS;
-import me.shedaniel.architectury.registry.fuel.FuelRegistry;
 import net.minecraft.world.item.Item;
 
 import java.util.function.Consumer;

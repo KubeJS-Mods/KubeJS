@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.core.PlayerInteractionManagerKJS;
+import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageCloseOverlay;
 import dev.latvian.kubejs.net.MessageOpenOverlay;
@@ -19,7 +20,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.UserBanListEntry;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
@@ -78,7 +78,12 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 		}
 	}
 
+	@Deprecated
 	public boolean isOP() {
+		return isOp();
+	}
+
+	public boolean isOp() {
 		return server.getMinecraftServer().getPlayerList().isOp(minecraftPlayer.getGameProfile());
 	}
 
@@ -97,7 +102,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 		kick(new TextTranslate("multiplayer.disconnect.banned"));
 	}
 
-	public boolean hasClientMod() {
+	public boolean getHasClientMod() {
 		return hasClientMod;
 	}
 
@@ -144,7 +149,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	}
 
 	@Override
-	public void setMouseItem(Object item) {
+	public void setMouseItem(ItemStackJS item) {
 		super.setMouseItem(item);
 
 		if (minecraftPlayer.connection != null) {
@@ -166,8 +171,6 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	}
 
 	public void setSpawnLocation(BlockContainerJS c) {
-		if (c.minecraftWorld instanceof Level) {
-			minecraftPlayer.setRespawnPosition(((Level) c.minecraftWorld).dimension(), c.getPos(), 0F, true, false);
-		}
+		minecraftPlayer.setRespawnPosition(c.minecraftWorld.dimension(), c.getPos(), 0F, true, false);
 	}
 }

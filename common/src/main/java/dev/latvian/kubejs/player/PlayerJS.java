@@ -77,12 +77,12 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 		minecraftPlayer.inventoryMenu.broadcastChanges();
 	}
 
-	public void give(Object item) {
-		ItemHandlerUtils.giveItemToPlayer(minecraftPlayer, ItemStackJS.of(item).getItemStack(), -1);
+	public void give(ItemStackJS item) {
+		ItemHandlerUtils.giveItemToPlayer(minecraftPlayer, item.getItemStack(), -1);
 	}
 
-	public void giveInHand(Object item) {
-		ItemHandlerUtils.giveItemToPlayer(minecraftPlayer, ItemStackJS.of(item).getItemStack(), getSelectedSlot());
+	public void giveInHand(ItemStackJS item) {
+		ItemHandlerUtils.giveItemToPlayer(minecraftPlayer, item.getItemStack(), getSelectedSlot());
 	}
 
 	public int getSelectedSlot() {
@@ -97,8 +97,8 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 		return ItemStackJS.of(minecraftPlayer.inventory.getCarried());
 	}
 
-	public void setMouseItem(Object item) {
-		minecraftPlayer.inventory.setCarried(ItemStackJS.of(item).getItemStack());
+	public void setMouseItem(ItemStackJS item) {
+		minecraftPlayer.inventory.setCarried(item.getItemStack());
 	}
 
 	@Override
