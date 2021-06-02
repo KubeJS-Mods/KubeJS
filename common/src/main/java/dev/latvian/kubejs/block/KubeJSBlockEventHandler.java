@@ -63,9 +63,10 @@ public class KubeJSBlockEventHandler {
 	}
 
 	private static InteractionResult rightClick(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
-		if (player != null && player.level != null && new BlockRightClickEventJS(player, hand, pos, direction).post(KubeJSEvents.BLOCK_RIGHT_CLICK)) {
+		if (player != null && player.level != null && !player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem()) && new BlockRightClickEventJS(player, hand, pos, direction).post(KubeJSEvents.BLOCK_RIGHT_CLICK)) {
 			return InteractionResult.FAIL;
 		}
+
 		return InteractionResult.PASS;
 	}
 
@@ -73,6 +74,7 @@ public class KubeJSBlockEventHandler {
 		if (player != null && player.level != null && new BlockLeftClickEventJS(player, hand, pos, direction).post(KubeJSEvents.BLOCK_LEFT_CLICK)) {
 			return InteractionResult.FAIL;
 		}
+
 		return InteractionResult.PASS;
 	}
 
@@ -80,6 +82,7 @@ public class KubeJSBlockEventHandler {
 		if (player != null && player.level != null && new BlockBreakEventJS(player, world, pos, state, xp).post(KubeJSEvents.BLOCK_BREAK)) {
 			return InteractionResult.FAIL;
 		}
+
 		return InteractionResult.PASS;
 	}
 
@@ -87,6 +90,7 @@ public class KubeJSBlockEventHandler {
 		if (world != null && (placer == null || placer.level != null) && new BlockPlaceEventJS(placer, world, pos, state).post(KubeJSEvents.BLOCK_PLACE)) {
 			return InteractionResult.FAIL;
 		}
+
 		return InteractionResult.PASS;
 	}
 

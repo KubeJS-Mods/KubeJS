@@ -70,9 +70,10 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static InteractionResultHolder<ItemStack> rightClick(Player player, InteractionHand hand) {
-		if (new ItemRightClickEventJS(player, hand).post(KubeJSEvents.ITEM_RIGHT_CLICK)) {
+		if (!player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem()) && new ItemRightClickEventJS(player, hand).post(KubeJSEvents.ITEM_RIGHT_CLICK)) {
 			return InteractionResultHolder.success(player.getItemInHand(hand));
 		}
+
 		return InteractionResultHolder.pass(ItemStack.EMPTY);
 	}
 
@@ -92,6 +93,7 @@ public class KubeJSItemEventHandler {
 		if (player != null && entity != null && player.level != null && new ItemPickupEventJS(player, entity, stack).post(KubeJSEvents.ITEM_PICKUP)) {
 			return InteractionResult.FAIL;
 		}
+
 		return InteractionResult.PASS;
 	}
 
@@ -99,6 +101,7 @@ public class KubeJSItemEventHandler {
 		if (player != null && entity != null && player.level != null && new ItemTossEventJS(player, entity).post(KubeJSEvents.ITEM_TOSS)) {
 			return InteractionResult.FAIL;
 		}
+
 		return InteractionResult.PASS;
 	}
 
@@ -106,6 +109,7 @@ public class KubeJSItemEventHandler {
 		if (player != null && entity != null && player.level != null && new ItemEntityInteractEventJS(player, entity, hand).post(KubeJSEvents.ITEM_ENTITY_INTERACT)) {
 			return InteractionResult.FAIL;
 		}
+
 		return InteractionResult.PASS;
 	}
 
