@@ -3,6 +3,7 @@ package dev.latvian.kubejs.recipe.minecraft;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
@@ -76,9 +77,7 @@ public class ShapedRecipeJS extends RecipeJS {
 			throw new RecipeExceptionJS("Pattern is empty!");
 		}
 
-		for (Object p : pattern1) {
-			pattern.add(String.valueOf(p));
-		}
+		List<String> airs = new ArrayList<>(1);
 
 		MapJS key1 = MapJS.of(args.get(2));
 
@@ -87,8 +86,24 @@ public class ShapedRecipeJS extends RecipeJS {
 		}
 
 		for (String k : key1.keySet()) {
-			inputItems.add(parseIngredientItem(key1.get(k), k));
-			key.add(k);
+			Object o = key1.get(k);
+
+			if (o == EmptyItemStackJS.INSTANCE || o.equals("minecraft:air")) {
+				airs.add(k);
+			} else {
+				inputItems.add(parseIngredientItem(o, k));
+				key.add(k);
+			}
+		}
+
+		for (Object p : pattern1) {
+			String s = String.valueOf(p);
+
+			for (String s1 : airs) {
+				s = s.replace(s1, " ");
+			}
+
+			pattern.add(s);
 		}
 	}
 
