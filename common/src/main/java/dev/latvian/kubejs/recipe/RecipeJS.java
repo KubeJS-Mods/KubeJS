@@ -11,6 +11,7 @@ import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.kubejs.recipe.minecraft.CustomRecipeJS;
 import dev.latvian.kubejs.recipe.mod.TechRebornCompat;
 import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import me.shedaniel.architectury.platform.Platform;
@@ -112,15 +113,13 @@ public abstract class RecipeJS {
 			return true;
 		}
 
-		if (originalRecipe != null && this instanceof CustomRecipeJS) {
+		if (originalRecipe != null && this instanceof CustomRecipeJS && ServerSettings.instance.useOriginalRecipeForFilters) {
 			try {
 				for (Ingredient in0 : originalRecipe.getIngredients()) {
-					if (!in0.isEmpty()) {
-						IngredientJS in = IngredientJS.of(in0);
+					IngredientJS in = IngredientJS.of(in0);
 
-						if (exact ? in.equals(ingredient) : in.anyStackMatches(ingredient)) {
-							return true;
-						}
+					if (!in.isEmpty() && (exact ? in.equals(ingredient) : in.anyStackMatches(ingredient))) {
+						return true;
 					}
 				}
 			} catch (Exception ex) {
@@ -166,10 +165,11 @@ public abstract class RecipeJS {
 			return true;
 		}
 
-		if (originalRecipe != null && this instanceof CustomRecipeJS) {
+		if (originalRecipe != null && this instanceof CustomRecipeJS && ServerSettings.instance.useOriginalRecipeForFilters) {
 			try {
-				if (!originalRecipe.getResultItem().isEmpty()) {
-					ItemStackJS out = ItemStackJS.of(originalRecipe.getResultItem());
+				ItemStackJS out = ItemStackJS.of(originalRecipe.getResultItem());
+
+				if (!out.isEmpty()) {
 					return exact ? ingredient.equals(out) : ingredient.test(out);
 				}
 			} catch (Exception ex) {
