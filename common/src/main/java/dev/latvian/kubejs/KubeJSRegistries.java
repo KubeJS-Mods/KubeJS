@@ -1,5 +1,6 @@
 package dev.latvian.kubejs;
 
+import com.mojang.serialization.Codec;
 import me.shedaniel.architectury.registry.Registries;
 import me.shedaniel.architectury.registry.Registry;
 import net.minecraft.sounds.SoundEvent;
@@ -8,6 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.material.Fluid;
 
 import static net.minecraft.core.Registry.*;
@@ -41,5 +43,9 @@ public class KubeJSRegistries {
 
 	public static Registry<RecipeSerializer<?>> recipeSerializers() {
 		return REGISTRIES.get(RECIPE_SERIALIZER_REGISTRY);
+	}
+
+	public static Registry<Codec<? extends ChunkGenerator>> chunkGenerators() {
+		return REGISTRIES.get(CHUNK_GENERATOR_REGISTRY);
 	}
 }
