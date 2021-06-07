@@ -210,4 +210,16 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 	public void addItemCooldown(Item item, int ticks) {
 		minecraftPlayer.getCooldowns().addCooldown(item, ticks);
 	}
+
+	public int getAirSupply() {
+		return minecraftPlayer.getAirSupply();
+	}
+
+	public void setAirSupply(int air) {
+		minecraftPlayer.setAirSupply(air);
+	}
+
+	public int getMaxAirSupply() {
+		return minecraftPlayer.getMaxAirSupply();
+	}
 }

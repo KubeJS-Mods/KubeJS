@@ -46,4 +46,4 @@ jobs:
           CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
         run: |
           chmod +x ./gradlew
-          ./gradlew build curseforge --stacktrace --no-daemon
+          ./gradlew build curseforgePublish --stacktrace --no-daemon

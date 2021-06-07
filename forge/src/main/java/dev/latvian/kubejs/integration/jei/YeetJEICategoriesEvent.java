@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 
 /**
@@ -32,6 +33,15 @@ public class YeetJEICategoriesEvent extends EventJS {
 		for (String toYeet : categoriesToYeet) {
 			categoriesYeeted.add(new ResourceLocation(toYeet));
 		}
+	}
+
+	public Collection<ResourceLocation> getCategoryIds() {
+		Set<ResourceLocation> set = new HashSet<>();
+		for (IRecipeCategory<?> allCategory : allCategories) {
+			ResourceLocation uid = allCategory.getUid();
+			set.add(uid);
+		}
+		return set;
 	}
 
 	public void yeetIf(Predicate<IRecipeCategory<?>> filter) {

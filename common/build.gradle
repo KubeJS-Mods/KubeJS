@@ -11,10 +11,6 @@ architectury {
 	common()
 }
 
-java {
-	withSourcesJar()
-}
-
 publishing {
 	publications {
 		mavenCommon(MavenPublication) {
