@@ -14,7 +14,7 @@ public class AddLakeProperties {
 	public BlockState _block = Blocks.AIR.defaultBlockState();
 	public int chance = 20;
 	public int retrogen = 0;
-	public BiomeFilter biomes = BiomeFilter.ALWAYS_FALSE;
+	public BiomeFilter biomes = BiomeFilter.ALWAYS_TRUE;
 
 	public void setBlock(String id) {
 		_block = UtilsJS.parseBlockState(id);

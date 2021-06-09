@@ -13,7 +13,7 @@ public class AddSpawnProperties {
 	public EntityType<?> _entity = null;
 	public int minCount = 4;
 	public int maxCount = 4;
-	public BiomeFilter biomes = BiomeFilter.ALWAYS_FALSE;
+	public BiomeFilter biomes = BiomeFilter.ALWAYS_TRUE;
 
 	public void setCategory(String s) {
 		_category = MobCategory.byName(s);
