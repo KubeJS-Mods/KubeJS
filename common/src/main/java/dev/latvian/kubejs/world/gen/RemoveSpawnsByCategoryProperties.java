@@ -8,5 +8,9 @@ import dev.latvian.kubejs.world.gen.filter.BiomeFilter;
 public class RemoveSpawnsByCategoryProperties {
 	public final WorldgenEntryList categories = new WorldgenEntryList();
 
-	public BiomeFilter biomes = BiomeFilter.ALWAYS_TRUE;
+	public BiomeFilter _biomes = BiomeFilter.ALWAYS_TRUE;
+
+	public void setBiomes(Object filter) {
+		_biomes = BiomeFilter.of(filter);
+	}
 }
