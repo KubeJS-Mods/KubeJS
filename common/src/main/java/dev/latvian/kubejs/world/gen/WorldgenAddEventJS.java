@@ -13,6 +13,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.gen.filter.BiomeFilter;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.registry.BiomeModifications;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.UniformInt;
@@ -56,12 +57,14 @@ public class WorldgenAddEventJS extends StartupEventJS {
 
 	protected void addFeature(BiomeFilter filter, GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> feature) {
 		ResourceLocation id = new ResourceLocation("kjs_" + getUniqueId(feature));
-		registerFeature0(id, feature);
+		BuiltinRegistries.register(BuiltinRegistries.CONFIGURED_FEATURE, id, feature);
 		BiomeModifications.postProcessProperties(filter, (ctx, properties) -> {
 			properties.getGenerationProperties().addFeature(decoration, feature);
 		});
 	}
 
+	// FIXME: we'll probably need to use this weirdness down the line,
+	//  for now i'm content with just registering to BuiltinRegistries directly tho
 	@ExpectPlatform
 	public static void registerFeature0(ResourceLocation id, ConfiguredFeature<?,?> feature) {
 	}
