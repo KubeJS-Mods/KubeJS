@@ -194,6 +194,10 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, WrappedJSObje
 
 	@Override
 	public boolean equals(Object o) {
+		if (o instanceof CharSequence) {
+			return getId().equals(o.toString());
+		}
+
 		FluidStackJS f = FluidStackJS.of(o);
 
 		if (f.isEmpty()) {

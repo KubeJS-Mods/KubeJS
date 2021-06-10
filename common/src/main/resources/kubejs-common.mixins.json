@@ -15,6 +15,7 @@
 		"LootTablesMixin",
 		"PlayerInteractionManagerMixin",
 		"RecipeManagerMixin",
+		"ResourceKeyMixin",
 		"ResourceLocationMixin",
 		"SimpleReloadableResourceManagerMixin",
 		"TagBuilderMixin",
