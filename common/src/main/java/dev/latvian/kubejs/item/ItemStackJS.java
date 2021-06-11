@@ -28,6 +28,7 @@ import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
+import dev.latvian.mods.rhino.util.SpecialEquality;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.registry.Registries;
 import me.shedaniel.architectury.registry.ToolType;
@@ -59,7 +60,7 @@ import java.util.regex.Pattern;
 /**
  * @author LatvianModder
  */
-public abstract class ItemStackJS implements IngredientJS, NBTSerializable, WrappedJSObjectChangeListener<MapJS> {
+public abstract class ItemStackJS implements IngredientJS, NBTSerializable, WrappedJSObjectChangeListener<MapJS>, SpecialEquality {
 	private static List<ItemStackJS> cachedItemList;
 	private static ListJS cachedItemListJS;
 	private static ListJS cachedItemTypeListJS;
