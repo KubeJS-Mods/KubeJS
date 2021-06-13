@@ -166,11 +166,47 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 		}
 	}
 
-	@Override
-	public Object put(String key, Object value) {
+	@Nullable
+	@SuppressWarnings("RedundantIfStatement")
+	private Object withChangeListener(Object value) {
 		Object v = UtilsJS.wrap(value, JSObjectType.ANY);
 
+		if (v instanceof Double) {
+			double d = (Double) v;
+
+			if (Double.isNaN(d) || Double.isInfinite(d)) {
+				return d;
+			}
+
+			if (d <= Integer.MAX_VALUE && d >= Integer.MIN_VALUE) {
+				int i = (int) d;
+
+				if (i == d) {
+					return i;
+				}
+			} else if (d <= Long.MAX_VALUE && d >= Long.MIN_VALUE) {
+				long i = (long) d;
+
+				if (i == d) {
+					return i;
+				}
+			}
+
+			return d;
+		}
+
 		if (setChangeListener(v)) {
+			return v;
+		}
+
+		return null;
+	}
+
+	@Override
+	public Object put(String key, Object value) {
+		Object v = withChangeListener(value);
+
+		if (v != null) {
 			Object o = super.put(key, v);
 			onChanged(null);
 			return o;
@@ -186,9 +222,9 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 		}
 
 		for (Map.Entry<?, ?> entry : m.entrySet()) {
-			Object v = UtilsJS.wrap(entry.getValue(), JSObjectType.ANY);
+			Object v = withChangeListener(entry.getValue());
 
-			if (setChangeListener(v)) {
+			if (v != null) {
 				super.put(entry.getKey().toString(), v);
 			}
 		}
