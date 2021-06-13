@@ -11,6 +11,8 @@ import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.gen.filter.BiomeFilter;
+import dev.latvian.kubejs.world.gen.ruletest.AnyRuleTest;
+import dev.latvian.kubejs.world.gen.ruletest.InvertRuleTest;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.registry.BiomeModifications;
 import net.minecraft.data.BuiltinRegistries;
@@ -99,18 +101,18 @@ public class WorldgenAddEventJS extends StartupEventJS {
 				Tag<Block> tag = Tags.blocks().getTagOrEmpty(id);
 				if (tag != null) {
 					RuleTest tagTest = new TagMatchTest(tag);
-					ruleTest.list.add(invert ? new InvertRuleTest(tagTest) : tagTest);
+					ruleTest.rules.add(invert ? new InvertRuleTest(tagTest) : tagTest);
 				} else {
 					ScriptType.STARTUP.console.warn("Skipped tag rule test as tag " + id + " doesn't exist!");
 				}
 			} else {
 				BlockState bs = UtilsJS.parseBlockState(s);
 				RuleTest blockTest = s.indexOf('[') != -1 ? new BlockStateMatchTest(bs) : new BlockMatchTest(bs.getBlock());
-				ruleTest.list.add(invert ? new InvertRuleTest(blockTest) : blockTest);
+				ruleTest.rules.add(invert ? new InvertRuleTest(blockTest) : blockTest);
 			}
 		}
 
-		RuleTest ruleTest1 = ruleTest.list.isEmpty() ? OreConfiguration.Predicates.NATURAL_STONE : ruleTest;
+		RuleTest ruleTest1 = ruleTest.rules.isEmpty() ? OreConfiguration.Predicates.NATURAL_STONE : ruleTest;
 
 		ConfiguredFeature<OreConfiguration, ?> oreConfig = (properties.noSurface ? Feature.NO_SURFACE_ORE : Feature.ORE).configured(new OreConfiguration(properties.spawnsIn.blacklist ? new InvertRuleTest(ruleTest1) : ruleTest1, properties._block, properties.clusterMaxSize));
 
