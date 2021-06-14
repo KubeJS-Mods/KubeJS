@@ -1,5 +1,6 @@
-package dev.latvian.kubejs.world.gen.filter;
+package dev.latvian.kubejs.world.gen.filter.biome;
 
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -64,15 +65,24 @@ public interface BiomeFilter extends Predicate<BiomeModifications.BiomeContext> 
 			predicate.list.add(new NotFilter(of(map.get("not"))));
 		}
 
-		if (map.get("type") != null) {
-			predicate.list.add(idFilter(map.get("type").toString()));
-		}
+		try {
+			if (map.get("id") != null) {
+				predicate.list.add(idFilter(map.get("id").toString()));
+			}
 
-		if (map.get("category") != null) {
-			predicate.list.add(new CategoryFilter(BiomeCategory.byName(map.get("category").toString())));
-		}
+			if (map.get("type") != null) {
+				predicate.list.add(idFilter(map.get("type").toString()));
+			}
 
-		// TODO: Add other biome property filters
+			if (map.get("category") != null) {
+				predicate.list.add(new CategoryFilter(BiomeCategory.byName(map.get("category").toString())));
+			}
+
+			// TODO: Add other biome property filters
+		} catch (Exception ex) {
+			ScriptType.STARTUP.console.error("Error trying to create BiomeFilter: " + ex.getMessage());
+			return ALWAYS_FALSE;
+		}
 
 		return predicate.list.isEmpty() ? ALWAYS_TRUE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
 	}

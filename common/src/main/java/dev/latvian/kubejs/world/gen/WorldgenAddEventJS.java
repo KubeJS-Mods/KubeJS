@@ -7,7 +7,7 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.kubejs.world.gen.filter.BiomeFilter;
+import dev.latvian.kubejs.world.gen.filter.biome.BiomeFilter;
 import dev.latvian.kubejs.world.gen.ruletest.AnyRuleTest;
 import dev.latvian.kubejs.world.gen.ruletest.InvertRuleTest;
 import me.shedaniel.architectury.registry.BiomeModifications;

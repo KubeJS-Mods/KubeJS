@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.world.gen.filter;
+package dev.latvian.kubejs.world.gen.filter.biome;
 
 import me.shedaniel.architectury.registry.BiomeModifications;
 

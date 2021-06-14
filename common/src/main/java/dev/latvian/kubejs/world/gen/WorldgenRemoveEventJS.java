@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.world.gen;
 
 import dev.latvian.kubejs.event.StartupEventJS;
-import dev.latvian.kubejs.world.gen.filter.BiomeFilter;
+import dev.latvian.kubejs.world.gen.filter.biome.BiomeFilter;
 import me.shedaniel.architectury.registry.BiomeModifications;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
@@ -40,14 +40,6 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 		});
 	}
 
-	private void removeSpawn(BiomeFilter filter, RemoveSpawnsByCategoryProperties spawns) {
-		removeSpawn(filter, (category, spawnerData) -> spawns.categories.verifyIgnoreCase(category.getName()));
-	}
-
-	private void removeSpawn(BiomeFilter filter, RemoveSpawnsByIDProperties spawns) {
-		removeSpawn(filter, (category, spawnerData) -> spawns.entities.verify(spawnerData.type.getDescriptionId()));
-	}
-
 	public void removeAllFeatures(String type) {
 		removeFeature(BiomeFilter.ALWAYS_TRUE, GenerationStep.Decoration.valueOf(type.toUpperCase()), configuredFeature -> true);
 	}
@@ -75,18 +67,11 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 		});
 	}
 
-	public void removeSpawnsByCategory(Consumer<RemoveSpawnsByCategoryProperties> p) {
-		RemoveSpawnsByCategoryProperties properties = new RemoveSpawnsByCategoryProperties();
+	public void removeSpawns(Consumer<RemoveSpawnsProperties> p) {
+		RemoveSpawnsProperties properties = new RemoveSpawnsProperties();
 		p.accept(properties);
 
-		removeSpawn(properties._biomes, properties);
-	}
-
-	public void removeSpawnsByID(Consumer<RemoveSpawnsByIDProperties> p) {
-		RemoveSpawnsByIDProperties properties = new RemoveSpawnsByIDProperties();
-		p.accept(properties);
-
-		removeSpawn(properties._biomes, properties);
+		removeSpawn(properties._biomes, properties._mobs);
 	}
 
 	public void removeAllSpawns() {
