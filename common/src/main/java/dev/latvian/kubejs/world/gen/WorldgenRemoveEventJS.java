@@ -21,11 +21,11 @@ import java.util.function.Predicate;
  */
 public class WorldgenRemoveEventJS extends StartupEventJS {
 
-	protected static boolean checkTree(ConfiguredFeature<?, ?> configuredFeature, Predicate<FeatureConfiguration> predicate) {
+	private static boolean checkTree(ConfiguredFeature<?, ?> configuredFeature, Predicate<FeatureConfiguration> predicate) {
 		return predicate.test(configuredFeature.config) || configuredFeature.config.getFeatures().anyMatch(cf -> checkTree(cf, predicate));
 	}
 
-	protected void removeFeature(BiomeFilter filter, GenerationStep.Decoration decoration, Predicate<FeatureConfiguration> predicate) {
+	private void removeFeature(BiomeFilter filter, GenerationStep.Decoration decoration, Predicate<FeatureConfiguration> predicate) {
 		BiomeModifications.replaceProperties(filter, (ctx, properties) -> {
 			properties.getGenerationProperties()
 					.getFeatures()
@@ -34,17 +34,17 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 		});
 	}
 
-	protected void removeSpawn(BiomeFilter filter, BiPredicate<MobCategory, MobSpawnSettings.SpawnerData> predicate) {
+	private void removeSpawn(BiomeFilter filter, BiPredicate<MobCategory, MobSpawnSettings.SpawnerData> predicate) {
 		BiomeModifications.replaceProperties(filter, (ctx, properties) -> {
 			properties.getSpawnProperties().removeSpawns(predicate);
 		});
 	}
 
-	protected void removeSpawn(BiomeFilter filter, RemoveSpawnsByCategoryProperties spawns) {
+	private void removeSpawn(BiomeFilter filter, RemoveSpawnsByCategoryProperties spawns) {
 		removeSpawn(filter, (category, spawnerData) -> spawns.categories.verifyIgnoreCase(category.getName()));
 	}
 
-	protected void removeSpawn(BiomeFilter filter, RemoveSpawnsByIDProperties spawns) {
+	private void removeSpawn(BiomeFilter filter, RemoveSpawnsByIDProperties spawns) {
 		removeSpawn(filter, (category, spawnerData) -> spawns.entities.verify(spawnerData.type.getDescriptionId()));
 	}
 
