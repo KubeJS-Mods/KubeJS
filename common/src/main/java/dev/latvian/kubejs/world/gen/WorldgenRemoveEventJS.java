@@ -56,7 +56,7 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 		RemoveOresProperties properties = new RemoveOresProperties();
 		p.accept(properties);
 
-		removeFeature(properties._biomes, properties._worldgenLayer, featureConfiguration -> {
+		removeFeature(properties.biomes, properties._worldgenLayer, featureConfiguration -> {
 			if (featureConfiguration instanceof OreConfiguration) {
 				return properties._blocks.check(((OreConfiguration) featureConfiguration).state);
 			} else if (featureConfiguration instanceof ReplaceBlockConfiguration) {
@@ -71,7 +71,7 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 		RemoveSpawnsProperties properties = new RemoveSpawnsProperties();
 		p.accept(properties);
 
-		removeSpawn(properties._biomes, properties._mobs);
+		removeSpawn(properties.biomes, properties.mobs);
 	}
 
 	public void removeAllSpawns() {

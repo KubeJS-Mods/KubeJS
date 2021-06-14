@@ -114,7 +114,7 @@ public class WorldgenAddEventJS extends StartupEventJS {
 			oreConfig = UtilsJS.cast(oreConfig.squared());
 		}
 
-		addFeature(properties._biomes, properties._worldgenLayer, oreConfig);
+		addFeature(properties.biomes, properties._worldgenLayer, oreConfig);
 	}
 
 	public void addLake(Consumer<AddLakeProperties> p) {
@@ -125,7 +125,7 @@ public class WorldgenAddEventJS extends StartupEventJS {
 			return;
 		}
 
-		addFeature(properties._biomes, properties._worldgenLayer, Feature.LAKE.configured(new BlockStateConfiguration(properties._block)).decorated((FeatureDecorator.WATER_LAKE).configured(new ChanceDecoratorConfiguration(properties.chance))));
+		addFeature(properties.biomes, properties._worldgenLayer, Feature.LAKE.configured(new BlockStateConfiguration(properties._block)).decorated((FeatureDecorator.WATER_LAKE).configured(new ChanceDecoratorConfiguration(properties.chance))));
 	}
 
 	public void addSpawn(Consumer<AddSpawnProperties> p) {
@@ -136,7 +136,7 @@ public class WorldgenAddEventJS extends StartupEventJS {
 			return;
 		}
 
-		addEntitySpawn(properties._biomes, properties._category, new MobSpawnSettings.SpawnerData(properties._entity, properties.weight, properties.minCount, properties.maxCount));
+		addEntitySpawn(properties.biomes, properties._category, new MobSpawnSettings.SpawnerData(properties._entity, properties.weight, properties.minCount, properties.maxCount));
 	}
 
 	public static String getUniqueId(ConfiguredFeature<?, ?> feature) {

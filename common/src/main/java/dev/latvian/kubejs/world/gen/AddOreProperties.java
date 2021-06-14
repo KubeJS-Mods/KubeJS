@@ -12,7 +12,7 @@ import net.minecraft.world.level.levelgen.GenerationStep;
 public class AddOreProperties {
 	public GenerationStep.Decoration _worldgenLayer = GenerationStep.Decoration.UNDERGROUND_ORES;
 	public BlockState _block = Blocks.AIR.defaultBlockState();
-	public BiomeFilter _biomes = BiomeFilter.ALWAYS_TRUE;
+	public BiomeFilter biomes = BiomeFilter.ALWAYS_TRUE;
 	public boolean noSurface = false;
 	public int clusterMinSize = 5;
 	public int clusterMaxSize = 9;
@@ -31,10 +31,6 @@ public class AddOreProperties {
 
 	public void setBlock(String id) {
 		_block = UtilsJS.parseBlockState(id);
-	}
-
-	public void setBiomes(Object filter) {
-		_biomes = BiomeFilter.of(filter);
 	}
 
 	public void setClusterCount(int c) {

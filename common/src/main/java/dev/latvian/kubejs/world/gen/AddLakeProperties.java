@@ -12,16 +12,12 @@ import net.minecraft.world.level.levelgen.GenerationStep;
 public class AddLakeProperties {
 	public GenerationStep.Decoration _worldgenLayer = GenerationStep.Decoration.LAKES;
 	public BlockState _block = Blocks.AIR.defaultBlockState();
-	public BiomeFilter _biomes = BiomeFilter.ALWAYS_TRUE;
+	public BiomeFilter biomes = BiomeFilter.ALWAYS_TRUE;
 	public int chance = 20;
 	public int retrogen = 0;
 
 	public void setBlock(String id) {
 		_block = UtilsJS.parseBlockState(id);
-	}
-
-	public void setBiomes(Object filter) {
-		_biomes = BiomeFilter.of(filter);
 	}
 
 	public void setWorldgenLayer(String id) {
