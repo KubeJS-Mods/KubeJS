@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.world.gen.ruletest;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.kubejs.world.gen.ruletest.type.KubeJSRuleTests;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
@@ -16,12 +15,11 @@ import java.util.Random;
  */
 public class AnyRuleTest extends RuleTest {
 
-	public static final Codec<AnyRuleTest> CODEC = RecordCodecBuilder.create(instance ->
-			instance.group(
-					RuleTest.CODEC.listOf()
-							.fieldOf("rules")
-							.forGetter((o) -> o.rules)
-			).apply(instance, AnyRuleTest::new));
+	public static final Codec<AnyRuleTest> CODEC = RuleTest.CODEC
+			.listOf()
+			.fieldOf("rules")
+			.xmap(AnyRuleTest::new, (t) -> t.rules)
+			.codec();
 
 	public final List<RuleTest> rules;
 
