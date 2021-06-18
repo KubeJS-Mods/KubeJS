@@ -40,10 +40,10 @@ public class YeetJEIRecipesEvent extends EventJS {
 		return set;
 	}
 
-	public void yeet(String category, String... recipesToYeet) {
+	public void yeet(String category, ResourceLocation[] recipesToYeet) {
 		ResourceLocation cat = new ResourceLocation(category);
-		for (String toYeet : recipesToYeet) {
-			recipesYeeted.computeIfAbsent(cat, _0 -> new HashSet<>()).add(new ResourceLocation(toYeet));
+		for (ResourceLocation toYeet : recipesToYeet) {
+			recipesYeeted.computeIfAbsent(cat, _0 -> new HashSet<>()).add(toYeet);
 		}
 	}
 
