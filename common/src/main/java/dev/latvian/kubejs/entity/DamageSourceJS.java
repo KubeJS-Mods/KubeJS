@@ -31,6 +31,6 @@ public class DamageSourceJS {
 
 	@Nullable
 	public EntityJS getActual() {
-		return getWorld().getEntity(source.getDirectEntity());
+		return getWorld().getEntity(source.getEntity());
 	}
 }
