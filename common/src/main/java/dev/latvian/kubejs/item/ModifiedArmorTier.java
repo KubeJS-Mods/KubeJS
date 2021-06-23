@@ -27,14 +27,14 @@ public class ModifiedArmorTier implements ArmorMaterial {
 	private Optional<Ingredient> repairIngredient;
 	private String name;
 
-	public ModifiedArmorTier(ArmorMaterial p) {
+	public ModifiedArmorTier(String id, ArmorMaterial p) {
 		parent = p;
 		enchantmentValue = p.getEnchantmentValue();
 		sound = p.getEquipSound();
 		repairIngredient = Optional.empty();
 		toughness = p.getToughness();
 		knockbackResistance = p.getKnockbackResistance();
-		name = p.getName();
+		name = id;
 	}
 
 	@Override
