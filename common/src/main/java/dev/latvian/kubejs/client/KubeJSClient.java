@@ -13,9 +13,11 @@ import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import me.shedaniel.architectury.hooks.PackRepositoryHooks;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author LatvianModder
@@ -45,6 +48,11 @@ public class KubeJSClient extends KubeJSCommon {
 		PackRepository list = Minecraft.getInstance().getResourcePackRepository();
 		PackRepositoryHooks.addSource(list, new KubeJSResourcePackFinder());
 		setup();
+	}
+
+	@Override
+	public void reloadClientInternal() {
+		reloadClientScripts();
 	}
 
 	public static void reloadClientScripts() {
@@ -103,5 +111,15 @@ public class KubeJSClient extends KubeJSCommon {
 	@Override
 	public WorldJS getClientWorld() {
 		return ClientWorldJS.getInstance();
+	}
+
+	@Override
+	public void reloadTextures() {
+		Minecraft.getInstance().getTextureManager().reload(CompletableFuture::completedFuture, Minecraft.getInstance().getResourceManager(), InactiveProfiler.INSTANCE, InactiveProfiler.INSTANCE, Util.backgroundExecutor(), Minecraft.getInstance());
+	}
+
+	@Override
+	public void reloadLang() {
+		Minecraft.getInstance().getLanguageManager().reload(CompletableFuture::completedFuture, Minecraft.getInstance().getResourceManager(), InactiveProfiler.INSTANCE, InactiveProfiler.INSTANCE, Util.backgroundExecutor(), Minecraft.getInstance());
 	}
 }

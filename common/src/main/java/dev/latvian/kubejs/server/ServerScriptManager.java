@@ -21,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ServerResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleReloadableResourceManager;
 
 import java.nio.file.Files;
@@ -47,21 +48,7 @@ public class ServerScriptManager {
 		}
 	}
 
-	public List<PackResources> resourcePackList(List<PackResources> list0) {
-		VirtualKubeJSDataPack virtualDataPackLow = new VirtualKubeJSDataPack(false);
-		VirtualKubeJSDataPack virtualDataPackHigh = new VirtualKubeJSDataPack(true);
-		List<PackResources> list = new ArrayList<>();
-		list.add(virtualDataPackLow);
-		list.addAll(list0);
-		list.add(new KubeJSServerResourcePack());
-		list.add(virtualDataPackHigh);
-
-		SimpleReloadableResourceManager resourceManager = new SimpleReloadableResourceManager(PackType.SERVER_DATA);
-
-		for (PackResources p : list) {
-			resourceManager.add(p);
-		}
-
+	public void reloadScriptManager(ResourceManager resourceManager) {
 		scriptManager.unload();
 		scriptManager.loadFromDirectory();
 
@@ -98,6 +85,24 @@ public class ServerScriptManager {
 		}
 
 		scriptManager.load();
+	}
+
+	public List<PackResources> resourcePackList(List<PackResources> list0) {
+		VirtualKubeJSDataPack virtualDataPackLow = new VirtualKubeJSDataPack(false);
+		VirtualKubeJSDataPack virtualDataPackHigh = new VirtualKubeJSDataPack(true);
+		List<PackResources> list = new ArrayList<>();
+		list.add(virtualDataPackLow);
+		list.addAll(list0);
+		list.add(new KubeJSServerResourcePack());
+		list.add(virtualDataPackHigh);
+
+		SimpleReloadableResourceManager resourceManager = new SimpleReloadableResourceManager(PackType.SERVER_DATA);
+
+		for (PackResources p : list) {
+			resourceManager.add(p);
+		}
+
+		reloadScriptManager(resourceManager);
 
 		ScriptType.SERVER.console.setLineNumber(true);
 		new DataPackEventJS(virtualDataPackLow).post(ScriptType.SERVER, "server.datapack.last");

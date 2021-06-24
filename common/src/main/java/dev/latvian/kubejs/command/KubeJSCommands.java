@@ -7,6 +7,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.core.MinecraftServerKJS;
 import dev.latvian.kubejs.docs.DocumentationEvent;
 import dev.latvian.kubejs.docs.TypeDefinition;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -15,7 +16,9 @@ import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.CustomCommandEventJS;
+import dev.latvian.kubejs.server.ServerScriptManager;
 import dev.latvian.kubejs.server.ServerSettings;
+import dev.latvian.kubejs.stages.Stages;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
 import me.shedaniel.architectury.registry.Registries;
@@ -23,6 +26,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -78,9 +82,27 @@ public class KubeJSCommands {
 				.then(Commands.literal("warnings")
 						.executes(context -> warnings(context.getSource()))
 				)
-				.then(Commands.literal("reload_startup_scripts")
-						.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
-						.executes(context -> reloadStartup(context.getSource()))
+				.then(Commands.literal("reload")
+						.then(Commands.literal("startup_scripts")
+								.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
+								.executes(context -> reloadStartup(context.getSource()))
+						)
+						.then(Commands.literal("server_scripts")
+								.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
+								.executes(context -> reloadServer(context.getSource()))
+						)
+						.then(Commands.literal("client_scripts")
+								.requires(source -> true)
+								.executes(context -> reloadClient(context.getSource()))
+						)
+						.then(Commands.literal("textures")
+								.requires(source -> true)
+								.executes(context -> reloadTextures(context.getSource()))
+						)
+						.then(Commands.literal("lang")
+								.requires(source -> true)
+								.executes(context -> reloadLang(context.getSource()))
+						)
 				)
 				.then(Commands.literal("export")
 						.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
@@ -119,6 +141,32 @@ public class KubeJSCommands {
 				)
 				.then(Commands.literal("generate_docs")
 						.executes(context -> generateDocs(context.getSource()))
+				)
+				.then(Commands.literal("stages")
+						.then(Commands.literal("add")
+								.then(Commands.argument("player", EntityArgument.players())
+										.then(Commands.argument("stage", StringArgumentType.string())
+												.executes(context -> addStage(context.getSource(), EntityArgument.getPlayers(context, "player"), StringArgumentType.getString(context, "stage")))
+										)
+								)
+						)
+						.then(Commands.literal("remove")
+								.then(Commands.argument("player", EntityArgument.players())
+										.then(Commands.argument("stage", StringArgumentType.string())
+												.executes(context -> removeStage(context.getSource(), EntityArgument.getPlayers(context, "player"), StringArgumentType.getString(context, "stage")))
+										)
+								)
+						)
+						.then(Commands.literal("clear")
+								.then(Commands.argument("player", EntityArgument.players())
+										.executes(context -> clearStages(context.getSource(), EntityArgument.getPlayers(context, "player")))
+								)
+						)
+						.then(Commands.literal("list")
+								.then(Commands.argument("player", EntityArgument.players())
+										.executes(context -> listStages(context.getSource(), EntityArgument.getPlayers(context, "player")))
+								)
+						)
 				)
 		);
 
@@ -227,6 +275,31 @@ public class KubeJSCommands {
 		return 1;
 	}
 
+	private static int reloadServer(CommandSourceStack source) {
+		ServerScriptManager.instance.reloadScriptManager(((MinecraftServerKJS) source.getServer()).getServerResourcesKJS().getResourceManager());
+		UtilsJS.postModificationEvents();
+		source.sendSuccess(new TextComponent("Done! To reload recipes, tags, loot tables and other datapack things, run /reload"), false);
+		return 1;
+	}
+
+	private static int reloadClient(CommandSourceStack source) {
+		KubeJS.PROXY.reloadClientInternal();
+		source.sendSuccess(new TextComponent("Done! To reload textures, models and other assets, press F3 + T"), false);
+		return 1;
+	}
+
+	private static int reloadTextures(CommandSourceStack source) {
+		KubeJS.PROXY.reloadTextures();
+		source.sendSuccess(new TextComponent("Done! You still may have to reload all assets with F3 + T"), false);
+		return 1;
+	}
+
+	private static int reloadLang(CommandSourceStack source) {
+		KubeJS.PROXY.reloadLang();
+		source.sendSuccess(new TextComponent("Done!"), false);
+		return 1;
+	}
+
 	private static int export(CommandSourceStack source) {
 		if (ServerSettings.dataExport != null) {
 			return 0;
@@ -284,7 +357,7 @@ public class KubeJSCommands {
 			if (id == null) {
 				player.sendMessage(new TextComponent("- " + item), Util.NIL_UUID);
 			} else {
-				player.sendMessage(new TextComponent("- " + id.toString()), Util.NIL_UUID);
+				player.sendMessage(new TextComponent("- " + id), Util.NIL_UUID);
 			}
 		}
 
@@ -302,5 +375,44 @@ public class KubeJSCommands {
 
 		source.sendSuccess(new TextComponent("Docs generated"), false);
 		return Command.SINGLE_SUCCESS;
+	}
+
+	private static int addStage(CommandSourceStack source, Collection<ServerPlayer> players, String stage) {
+		for (ServerPlayer p : players) {
+			if (Stages.get(p).add(stage)) {
+				source.sendSuccess(new TextComponent("Added '" + stage + "' stage to " + p.getScoreboardName()), false);
+			}
+		}
+
+		return 1;
+	}
+
+	private static int removeStage(CommandSourceStack source, Collection<ServerPlayer> players, String stage) {
+		for (ServerPlayer p : players) {
+			if (Stages.get(p).remove(stage)) {
+				source.sendSuccess(new TextComponent("Removed '" + stage + "' stage from " + p.getScoreboardName()), false);
+			}
+		}
+
+		return 1;
+	}
+
+	private static int clearStages(CommandSourceStack source, Collection<ServerPlayer> players) {
+		for (ServerPlayer p : players) {
+			if (Stages.get(p).clear()) {
+				source.sendSuccess(new TextComponent("Cleared stages from " + p.getScoreboardName()), false);
+			}
+		}
+
+		return 1;
+	}
+
+	private static int listStages(CommandSourceStack source, Collection<ServerPlayer> players) {
+		for (ServerPlayer p : players) {
+			source.sendSuccess(new TextComponent(p.getScoreboardName() + " stages:"), false);
+			Stages.get(p).getAll().stream().sorted().forEach(s -> source.sendSuccess(new TextComponent("- " + s), false));
+		}
+
+		return 1;
 	}
 }

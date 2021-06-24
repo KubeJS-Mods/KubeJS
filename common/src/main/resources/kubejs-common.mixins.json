@@ -13,6 +13,7 @@
 		"LevelMixin",
 		"LivingEntityMixin",
 		"LootTablesMixin",
+		"MinecraftServerMixin",
 		"PlayerInteractionManagerMixin",
 		"RecipeManagerMixin",
 		"ResourceKeyMixin",
