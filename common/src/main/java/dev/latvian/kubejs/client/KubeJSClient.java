@@ -15,6 +15,8 @@ import dev.latvian.kubejs.world.WorldJS;
 import me.shedaniel.architectury.hooks.PackRepositoryHooks;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.util.profiling.InactiveProfiler;
@@ -121,5 +123,10 @@ public class KubeJSClient extends KubeJSCommon {
 	@Override
 	public void reloadLang() {
 		Minecraft.getInstance().getLanguageManager().reload(CompletableFuture::completedFuture, Minecraft.getInstance().getResourceManager(), InactiveProfiler.INSTANCE, InactiveProfiler.INSTANCE, Util.backgroundExecutor(), Minecraft.getInstance());
+	}
+
+	@Override
+	public boolean isClientButNotSelf(Player player) {
+		return player instanceof AbstractClientPlayer && !(player instanceof LocalPlayer);
 	}
 }

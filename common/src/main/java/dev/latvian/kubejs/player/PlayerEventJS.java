@@ -2,9 +2,7 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.LivingEntityEventJS;
-import me.shedaniel.architectury.annotations.ExpectPlatform;
-import me.shedaniel.architectury.platform.Platform;
-import net.minecraft.server.level.ServerPlayer;
+import dev.latvian.kubejs.stages.Stages;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,48 +21,21 @@ public abstract class PlayerEventJS extends LivingEntityEventJS {
 		return null;
 	}
 
-	// Helper methods for Game Stages
+	@Nullable
+	public Player getMinecraftPlayer() {
+		PlayerJS<?> p = getPlayer();
+		return p == null ? null : p.minecraftPlayer;
+	}
 
 	public boolean hasGameStage(String stage) {
-		if (getPlayer() != null && Platform.isModLoaded("gamestages")) {
-			return hasStage(getPlayer().minecraftPlayer, stage);
-		}
-
-		return false;
+		return Stages.get(getMinecraftPlayer()).has(stage);
 	}
 
 	public void addGameStage(String stage) {
-		if (Platform.isModLoaded("gamestages")) {
-			if (getPlayer() instanceof ServerPlayerJS) {
-				addStage((ServerPlayer) getPlayer().minecraftPlayer, stage);
-			}
-		} else {
-			getWorld().getSide().console.error("Can't add gamestage " + stage + ", GameStages mod isn't loaded!");
-		}
+		Stages.get(getMinecraftPlayer()).add(stage);
 	}
 
 	public void removeGameStage(String stage) {
-		if (Platform.isModLoaded("gamestages")) {
-			if (getPlayer() instanceof ServerPlayerJS) {
-				removeStage((ServerPlayer) getPlayer().minecraftPlayer, stage);
-			}
-		} else {
-			getWorld().getSide().console.error("Can't remove gamestage " + stage + ", GameStages mod isn't loaded!");
-		}
-	}
-
-	@ExpectPlatform
-	private static boolean hasStage(Player player, String stage) {
-		throw new AssertionError();
-	}
-
-	@ExpectPlatform
-	private static void addStage(ServerPlayer player, String stage) {
-		throw new AssertionError();
-	}
-
-	@ExpectPlatform
-	private static void removeStage(ServerPlayer player, String stage) {
-		throw new AssertionError();
+		Stages.get(getMinecraftPlayer()).remove(stage);
 	}
 }

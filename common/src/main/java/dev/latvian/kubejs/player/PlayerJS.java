@@ -1,11 +1,13 @@
 package dev.latvian.kubejs.player;
 
 import com.mojang.authlib.GameProfile;
+import dev.latvian.kubejs.core.PlayerKJS;
 import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemHandlerUtils;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.stages.Stages;
 import dev.latvian.kubejs.util.AttachedData;
 import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.WithAttachedData;
@@ -221,5 +223,9 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 
 	public int getMaxAirSupply() {
 		return minecraftPlayer.getMaxAirSupply();
+	}
+
+	public Stages getStages() {
+		return ((PlayerKJS) minecraftPlayer).getStagesKJS();
 	}
 }

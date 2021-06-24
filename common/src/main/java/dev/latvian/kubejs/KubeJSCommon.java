@@ -53,4 +53,8 @@ public class KubeJSCommon {
 
 	public void reloadLang() {
 	}
+
+	public boolean isClientButNotSelf(Player player) {
+		return false;
+	}
 }
