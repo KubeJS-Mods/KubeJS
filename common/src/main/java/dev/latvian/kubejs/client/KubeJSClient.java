@@ -18,7 +18,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
@@ -115,14 +117,32 @@ public class KubeJSClient extends KubeJSCommon {
 		return ClientWorldJS.getInstance();
 	}
 
+	private void reload(PreparableReloadListener listener) {
+		long start = System.currentTimeMillis();
+		Minecraft mc = Minecraft.getInstance();
+		listener.reload(CompletableFuture::completedFuture, mc.getResourceManager(), InactiveProfiler.INSTANCE, InactiveProfiler.INSTANCE, Util.backgroundExecutor(), mc).thenAccept(unused -> {
+			/*
+			long ms = System.currentTimeMillis() - start;
+
+			if (ms < 1000L) {
+				mc.player.sendMessage(new TextComponent("Reloaded in " + ms + "ms! You still may have to reload all assets with F3 + T"), Util.NIL_UUID);
+			} else {
+				mc.player.sendMessage(new TextComponent("Reloaded in " + Mth.ceil(ms / 1000D) + "s! You still may have to reload all assets with F3 + T"), Util.NIL_UUID);
+			}
+			 */
+
+			mc.player.sendMessage(new TextComponent("Done! You still may have to reload all assets with F3 + T"), Util.NIL_UUID);
+		});
+	}
+
 	@Override
 	public void reloadTextures() {
-		Minecraft.getInstance().getTextureManager().reload(CompletableFuture::completedFuture, Minecraft.getInstance().getResourceManager(), InactiveProfiler.INSTANCE, InactiveProfiler.INSTANCE, Util.backgroundExecutor(), Minecraft.getInstance());
+		reload(Minecraft.getInstance().getTextureManager());
 	}
 
 	@Override
 	public void reloadLang() {
-		Minecraft.getInstance().getLanguageManager().reload(CompletableFuture::completedFuture, Minecraft.getInstance().getResourceManager(), InactiveProfiler.INSTANCE, InactiveProfiler.INSTANCE, Util.backgroundExecutor(), Minecraft.getInstance());
+		reload(Minecraft.getInstance().getLanguageManager());
 	}
 
 	@Override

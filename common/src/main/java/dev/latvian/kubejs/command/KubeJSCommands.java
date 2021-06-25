@@ -290,13 +290,11 @@ public class KubeJSCommands {
 
 	private static int reloadTextures(CommandSourceStack source) {
 		KubeJS.PROXY.reloadTextures();
-		source.sendSuccess(new TextComponent("Done! You still may have to reload all assets with F3 + T"), false);
 		return 1;
 	}
 
 	private static int reloadLang(CommandSourceStack source) {
 		KubeJS.PROXY.reloadLang();
-		source.sendSuccess(new TextComponent("Done!"), false);
 		return 1;
 	}
 
