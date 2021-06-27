@@ -1,10 +1,9 @@
 package dev.latvian.kubejs.integration.gamestages;
 
+import dev.latvian.kubejs.core.PlayerKJS;
 import dev.latvian.kubejs.player.PlayerDataJS;
-import net.darkhax.gamestages.GameStageHelper;
-import net.minecraft.server.level.ServerPlayer;
+import dev.latvian.kubejs.stages.Stages;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -17,49 +16,39 @@ public class GameStagesPlayerData {
 		playerData = d;
 	}
 
+	public Stages getStages() {
+		return ((PlayerKJS) playerData.getMinecraftPlayer()).getStagesKJS();
+	}
+
 	public boolean has(String stage) {
-		return GameStageKJSHelper.hasStage(playerData.getMinecraftPlayer(), stage);
+		return getStages().has(stage);
 	}
 
-	public void add(String stage) {
-		if (playerData.getMinecraftPlayer() instanceof ServerPlayer) {
-			GameStageHelper.addStage((ServerPlayer) playerData.getMinecraftPlayer(), stage);
-		}
+	public boolean add(String stage) {
+		return getStages().add(stage);
 	}
 
-	public void remove(String stage) {
-		if (playerData.getMinecraftPlayer() instanceof ServerPlayer) {
-			GameStageHelper.removeStage((ServerPlayer) playerData.getMinecraftPlayer(), stage);
-		}
+	public boolean remove(String stage) {
+		return getStages().remove(stage);
 	}
 
 	public boolean set(String stage, boolean value) {
-		if (value) {
-			add(stage);
-			return true;
-		} else {
-			remove(stage);
-			return false;
-		}
+		return getStages().set(stage, value);
 	}
 
 	public boolean toggle(String stage) {
-		return set(stage, !has(stage));
+		return getStages().toggle(stage);
 	}
 
 	public Collection<String> getList() {
-		return GameStageHelper.getPlayerData(playerData.getMinecraftPlayer()).getStages();
+		return getStages().getAll();
 	}
 
-	public void clear() {
-		for (String s : new ArrayList<>(getList())) {
-			remove(s);
-		}
+	public boolean clear() {
+		return getStages().clear();
 	}
 
 	public void sync() {
-		if (playerData.getMinecraftPlayer() instanceof ServerPlayer) {
-			GameStageHelper.syncPlayer((ServerPlayer) playerData.getMinecraftPlayer());
-		}
+		getStages().sync();
 	}
 }

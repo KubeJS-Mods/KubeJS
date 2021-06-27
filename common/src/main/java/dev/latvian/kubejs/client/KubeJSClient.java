@@ -13,9 +13,15 @@ import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import me.shedaniel.architectury.hooks.PackRepositoryHooks;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author LatvianModder
@@ -45,6 +52,11 @@ public class KubeJSClient extends KubeJSCommon {
 		PackRepository list = Minecraft.getInstance().getResourcePackRepository();
 		PackRepositoryHooks.addSource(list, new KubeJSResourcePackFinder());
 		setup();
+	}
+
+	@Override
+	public void reloadClientInternal() {
+		reloadClientScripts();
 	}
 
 	public static void reloadClientScripts() {
@@ -103,5 +115,38 @@ public class KubeJSClient extends KubeJSCommon {
 	@Override
 	public WorldJS getClientWorld() {
 		return ClientWorldJS.getInstance();
+	}
+
+	private void reload(PreparableReloadListener listener) {
+		long start = System.currentTimeMillis();
+		Minecraft mc = Minecraft.getInstance();
+		listener.reload(CompletableFuture::completedFuture, mc.getResourceManager(), InactiveProfiler.INSTANCE, InactiveProfiler.INSTANCE, Util.backgroundExecutor(), mc).thenAccept(unused -> {
+			/*
+			long ms = System.currentTimeMillis() - start;
+
+			if (ms < 1000L) {
+				mc.player.sendMessage(new TextComponent("Reloaded in " + ms + "ms! You still may have to reload all assets with F3 + T"), Util.NIL_UUID);
+			} else {
+				mc.player.sendMessage(new TextComponent("Reloaded in " + Mth.ceil(ms / 1000D) + "s! You still may have to reload all assets with F3 + T"), Util.NIL_UUID);
+			}
+			 */
+
+			mc.player.sendMessage(new TextComponent("Done! You still may have to reload all assets with F3 + T"), Util.NIL_UUID);
+		});
+	}
+
+	@Override
+	public void reloadTextures() {
+		reload(Minecraft.getInstance().getTextureManager());
+	}
+
+	@Override
+	public void reloadLang() {
+		reload(Minecraft.getInstance().getLanguageManager());
+	}
+
+	@Override
+	public boolean isClientButNotSelf(Player player) {
+		return player instanceof AbstractClientPlayer && !(player instanceof LocalPlayer);
 	}
 }

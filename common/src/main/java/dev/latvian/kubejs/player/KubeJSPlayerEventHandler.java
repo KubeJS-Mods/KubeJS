@@ -5,6 +5,7 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.stages.Stages;
 import me.shedaniel.architectury.event.events.ChatEvent;
 import me.shedaniel.architectury.event.events.PlayerEvent;
 import me.shedaniel.architectury.event.events.TickEvent;
@@ -27,6 +28,7 @@ public class KubeJSPlayerEventHandler {
 	public static void init() {
 		PlayerEvent.PLAYER_JOIN.register(KubeJSPlayerEventHandler::loggedIn);
 		PlayerEvent.PLAYER_QUIT.register(KubeJSPlayerEventHandler::loggedOut);
+		PlayerEvent.PLAYER_RESPAWN.register(KubeJSPlayerEventHandler::respawn);
 		PlayerEvent.PLAYER_CLONE.register(KubeJSPlayerEventHandler::cloned);
 		TickEvent.PLAYER_POST.register(KubeJSPlayerEventHandler::tick);
 		ChatEvent.SERVER.register(KubeJSPlayerEventHandler::chat);
@@ -48,6 +50,12 @@ public class KubeJSPlayerEventHandler {
 		if (!ScriptType.SERVER.errors.isEmpty() && !CommonProperties.get().hideServerScriptErrors) {
 			player.displayClientMessage(new TextComponent("KubeJS errors found [" + ScriptType.SERVER.errors.size() + "]! Run '/kubejs errors' for more info").withStyle(ChatFormatting.DARK_RED), false);
 		}
+
+		Stages.get(player).sync();
+	}
+
+	private static void respawn(ServerPlayer player, boolean b) {
+		Stages.get(player).sync();
 	}
 
 	public static void loggedOut(ServerPlayer player) {

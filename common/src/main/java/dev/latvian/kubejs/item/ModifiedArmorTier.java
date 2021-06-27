@@ -25,14 +25,16 @@ public class ModifiedArmorTier implements ArmorMaterial {
 	private float toughness;
 	private float knockbackResistance;
 	private Optional<Ingredient> repairIngredient;
+	private String name;
 
-	public ModifiedArmorTier(ArmorMaterial p) {
+	public ModifiedArmorTier(String id, ArmorMaterial p) {
 		parent = p;
 		enchantmentValue = p.getEnchantmentValue();
 		sound = p.getEquipSound();
 		repairIngredient = Optional.empty();
 		toughness = p.getToughness();
 		knockbackResistance = p.getKnockbackResistance();
+		name = id;
 	}
 
 	@Override
@@ -86,7 +88,11 @@ public class ModifiedArmorTier implements ArmorMaterial {
 	@Override
 	@Environment(EnvType.CLIENT)
 	public String getName() {
-		return parent.getName();
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override

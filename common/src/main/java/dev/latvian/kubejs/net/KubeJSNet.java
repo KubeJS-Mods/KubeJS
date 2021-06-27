@@ -15,5 +15,8 @@ public class KubeJSNet {
 		MAIN.register(MessageSendDataFromServer.class, MessageSendDataFromServer::write, MessageSendDataFromServer::new, MessageSendDataFromServer::handle);
 		MAIN.register(MessageOpenOverlay.class, MessageOpenOverlay::write, MessageOpenOverlay::new, MessageOpenOverlay::handle);
 		MAIN.register(MessageCloseOverlay.class, MessageCloseOverlay::write, MessageCloseOverlay::new, MessageCloseOverlay::handle);
+		MAIN.register(MessageAddStage.class, MessageAddStage::write, MessageAddStage::new, MessageAddStage::handle);
+		MAIN.register(MessageRemoveStage.class, MessageRemoveStage::write, MessageRemoveStage::new, MessageRemoveStage::handle);
+		MAIN.register(MessageSyncStages.class, MessageSyncStages::write, MessageSyncStages::new, MessageSyncStages::handle);
 	}
 }

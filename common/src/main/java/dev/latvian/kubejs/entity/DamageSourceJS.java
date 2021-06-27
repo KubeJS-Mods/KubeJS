@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.entity;
 
+import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.world.damagesource.DamageSource;
 import org.jetbrains.annotations.Nullable;
@@ -31,6 +32,11 @@ public class DamageSourceJS {
 
 	@Nullable
 	public EntityJS getActual() {
-		return getWorld().getEntity(source.getDirectEntity());
+		return getWorld().getEntity(source.getEntity());
+	}
+
+	@Nullable
+	public PlayerJS<?> getPlayer() {
+		return getWorld().getPlayer(source.getEntity());
 	}
 }

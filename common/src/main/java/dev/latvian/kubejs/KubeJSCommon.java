@@ -16,6 +16,9 @@ public class KubeJSCommon {
 	public void init() {
 	}
 
+	public void reloadClientInternal() {
+	}
+
 	public void clientBindings(BindingsEvent event) {
 	}
 
@@ -43,5 +46,15 @@ public class KubeJSCommon {
 		}
 
 		return ServerJS.instance.getWorld(level);
+	}
+
+	public void reloadTextures() {
+	}
+
+	public void reloadLang() {
+	}
+
+	public boolean isClientButNotSelf(Player player) {
+		return false;
 	}
 }

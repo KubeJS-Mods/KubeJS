@@ -135,6 +135,10 @@ public abstract class WorldJS implements WithAttachedData {
 
 	@Nullable
 	public PlayerJS getPlayer(@Nullable Entity entity) {
+		if (!(entity instanceof Player)) {
+			return null;
+		}
+
 		EntityJS e = getEntity(entity);
 		return e instanceof PlayerJS ? (PlayerJS) e : null;
 	}
