@@ -40,6 +40,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.function.Consumer;
 
 import static dev.latvian.kubejs.util.UtilsJS.getJsonHashBytes;
+import static net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration.Predicates.NATURAL_STONE;
 
 /**
  * @author LatvianModder
@@ -50,8 +51,7 @@ public class WorldgenAddEventJS extends StartupEventJS {
 
 	// TODO: we may need to use some platform weirdness down the line,
 	//  for now i'm content with just registering to BuiltinRegistries directly tho
-	private void addFeature(BiomeFilter filter, GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> feature) {
-		ResourceLocation id = new ResourceLocation("kjs_" + getUniqueId(feature));
+	private void addFeature(ResourceLocation id, BiomeFilter filter, GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> feature) {
 		BuiltinRegistries.register(BuiltinRegistries.CONFIGURED_FEATURE, id, feature);
 		BiomeModifications.postProcessProperties(filter, (ctx, properties) -> {
 			properties.getGenerationProperties().addFeature(decoration, feature);
@@ -99,22 +99,24 @@ public class WorldgenAddEventJS extends StartupEventJS {
 			}
 		}
 
-		RuleTest ruleTest1 = ruleTest.rules.isEmpty() ? OreConfiguration.Predicates.NATURAL_STONE : ruleTest;
+		RuleTest ruleTest1 = ruleTest.rules.isEmpty() ? NATURAL_STONE : ruleTest;
 
 		ConfiguredFeature<OreConfiguration, ?> oreConfig = (properties.noSurface ? Feature.NO_SURFACE_ORE : Feature.ORE).configured(new OreConfiguration(properties.spawnsIn.blacklist ? new InvertRuleTest(ruleTest1) : ruleTest1, properties._block, properties.clusterMaxSize));
 
 		oreConfig = UtilsJS.cast(oreConfig.decorated(FeatureDecorator.RANGE.configured(new RangeDecoratorConfiguration(properties.minHeight, 0, properties.maxHeight))));
+
+		if (properties.squared) {
+			oreConfig = UtilsJS.cast(oreConfig.squared());
+		}
+
 		oreConfig = UtilsJS.cast(oreConfig.count(UniformInt.of(properties.clusterMinCount, properties.clusterMaxCount - properties.clusterMinCount)));
 
 		if (properties.chance > 0) {
 			oreConfig = UtilsJS.cast(oreConfig.chance(properties.chance));
 		}
 
-		if (properties.squared) {
-			oreConfig = UtilsJS.cast(oreConfig.squared());
-		}
-
-		addFeature(properties.biomes, properties._worldgenLayer, oreConfig);
+		ResourceLocation id = properties.id == null ? new ResourceLocation("kjs_" + getUniqueId(oreConfig)) : properties.id;
+		addFeature(id, properties.biomes, properties._worldgenLayer, oreConfig);
 	}
 
 	public void addLake(Consumer<AddLakeProperties> p) {
@@ -125,7 +127,10 @@ public class WorldgenAddEventJS extends StartupEventJS {
 			return;
 		}
 
-		addFeature(properties.biomes, properties._worldgenLayer, Feature.LAKE.configured(new BlockStateConfiguration(properties._block)).decorated((FeatureDecorator.WATER_LAKE).configured(new ChanceDecoratorConfiguration(properties.chance))));
+		ConfiguredFeature<?, ?> lake = Feature.LAKE.configured(new BlockStateConfiguration(properties._block)).decorated((FeatureDecorator.WATER_LAKE).configured(new ChanceDecoratorConfiguration(properties.chance)));
+
+		ResourceLocation id = properties.id == null ? new ResourceLocation("kjs_" + getUniqueId(lake)) : properties.id;
+		addFeature(id, properties.biomes, properties._worldgenLayer, lake);
 	}
 
 	public void addSpawn(Consumer<AddSpawnProperties> p) {

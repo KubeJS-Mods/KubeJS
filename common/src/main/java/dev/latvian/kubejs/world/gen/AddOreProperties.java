@@ -2,6 +2,7 @@ package dev.latvian.kubejs.world.gen;
 
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.gen.filter.biome.BiomeFilter;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.GenerationStep;
@@ -24,6 +25,7 @@ public class AddOreProperties {
 	public int retrogen = 0;
 	public boolean squared = true;
 	public final WorldgenEntryList spawnsIn = new WorldgenEntryList();
+	public ResourceLocation id = null;
 
 	public void setWorldgenLayer(String id) {
 		_worldgenLayer = GenerationStep.Decoration.valueOf(id.toUpperCase());
