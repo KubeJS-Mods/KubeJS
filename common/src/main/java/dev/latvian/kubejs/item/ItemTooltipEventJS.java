@@ -4,6 +4,7 @@ import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.ListJS;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -115,4 +116,17 @@ public class ItemTooltipEventJS extends EventJS {
 	public void addAdvancedToAll(StaticTooltipHandlerFromJS handler) {
 		map.computeIfAbsent(Items.AIR, k -> new ArrayList<>()).add(new StaticTooltipHandlerFromJSWrapper(handler));
 	}
+
+	public boolean isShift() {
+		return Screen.hasShiftDown();
+	}
+
+	public boolean isCtrl() {
+		return Screen.hasControlDown();
+	}
+
+	public boolean isAlt() {
+		return Screen.hasAltDown();
+	}
+
 }

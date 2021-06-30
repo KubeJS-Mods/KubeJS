@@ -17,16 +17,4 @@ public class ItemToolTierEventJS extends EventJS {
 		tier.accept(t);
 		ItemBuilder.TOOL_TIERS.put(id, t);
 	}
-
-	public boolean isShift() {
-		return Screen.hasShiftDown();
-	}
-
-	public boolean isCtrl() {
-		return Screen.hasControlDown();
-	}
-
-	public boolean isAlt() {
-		return Screen.hasAltDown();
-	}
 }
