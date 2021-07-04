@@ -2,6 +2,7 @@ package dev.latvian.kubejs.item;
 
 import com.google.common.collect.Lists;
 import dev.latvian.kubejs.util.UtilsJS;
+import me.shedaniel.architectury.hooks.FoodPropertiesHooks;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -117,7 +118,7 @@ public class FoodBuilder {
 		}
 
 		for (Pair<Supplier<MobEffectInstance>, Float> effect : effects) {
-			b.effect(effect.getKey().get(), effect.getRight());
+			FoodPropertiesHooks.effect(b, effect.getLeft(), effect.getRight());
 		}
 
 		return b.build();
