@@ -55,11 +55,7 @@ public class ItemModificationProperties {
 	public void setFoodProperties(Consumer<FoodBuilder> consumer) {
 		Item originalItem = (Item)item;
 		FoodProperties fp = originalItem.getFoodProperties();
-		if(fp == null) {
-			throw new RuntimeException(String.format("Food %s is not edible food.", originalItem));
-		}
-
-		FoodBuilder builder = new FoodBuilder(fp);
+		FoodBuilder builder = fp == null ? new FoodBuilder() : new FoodBuilder(fp);
 		consumer.accept(builder);
 		item.setFoodPropertiesKJS(builder.build());
 	}
