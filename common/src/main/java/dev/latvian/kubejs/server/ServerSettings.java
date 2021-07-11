@@ -29,6 +29,7 @@ public class ServerSettings {
 	public boolean logOverrides = false;
 	public boolean logSkippedRecipes = false;
 	public boolean logErroringRecipes = true;
+	public boolean logInvalidRecipeHandlers = true;
 	public boolean useOriginalRecipeForFilters = true;
 
 	public static transient CommandSourceStack source;

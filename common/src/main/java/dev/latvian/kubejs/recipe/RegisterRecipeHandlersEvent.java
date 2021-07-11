@@ -4,12 +4,15 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.recipe.minecraft.ShapedRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.ShapelessRecipeJS;
+import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.server.ServerSettings;
 import me.shedaniel.architectury.ForgeEvent;
 import me.shedaniel.architectury.event.Event;
 import me.shedaniel.architectury.event.EventFactory;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 
 import java.util.Map;
 import java.util.Objects;
@@ -34,7 +37,13 @@ public class RegisterRecipeHandlersEvent {
 	}
 
 	public void register(ResourceLocation id, Supplier<RecipeJS> f) {
-		register(new RecipeTypeJS(Objects.requireNonNull(KubeJSRegistries.recipeSerializers().get(id), "Cannot find recipe serializer: " + id), f));
+		try {
+			register(new RecipeTypeJS(Objects.requireNonNull(KubeJSRegistries.recipeSerializers().get(id)), f));
+		} catch (NullPointerException e) {
+			if (ServerSettings.instance.logErroringRecipes) {
+				ScriptType.SERVER.console.warn("Failed to register handler for recipe type " + id + " as it doesn't exist!");
+			}
+		}
 	}
 
 	public void register(String id, Supplier<RecipeJS> f) {
@@ -42,7 +51,13 @@ public class RegisterRecipeHandlersEvent {
 	}
 
 	public void ignore(ResourceLocation id) {
-		register(new IgnoredRecipeTypeJS(Objects.requireNonNull(KubeJSRegistries.recipeSerializers().get(id), "Cannot find recipe serializer: " + id)));
+		try {
+			register(new IgnoredRecipeTypeJS(Objects.requireNonNull(KubeJSRegistries.recipeSerializers().get(id))));
+		} catch (NullPointerException e) {
+			if (ServerSettings.instance.logErroringRecipes) {
+				ScriptType.SERVER.console.warn("Failed to ignore recipe type " + id + " as it doesn't exist!");
+			}
+		}
 	}
 
 	public void ignore(String id) {
@@ -55,5 +70,13 @@ public class RegisterRecipeHandlersEvent {
 
 	public void registerShapeless(ResourceLocation id) {
 		register(id, ShapelessRecipeJS::new);
+	}
+
+	private void handleMissingSerializer(ResourceLocation id) {
+		if (ServerSettings.instance.logInvalidRecipeHandlers) {
+			throw new NullPointerException("Cannot find recipe serializer: " + id);
+		} else if (ServerSettings.instance.logErroringRecipes) {
+			KubeJS.LOGGER.warn("Skipping recipe handler for serializer " + id + " as it does not exist!");
+		}
 	}
 }
