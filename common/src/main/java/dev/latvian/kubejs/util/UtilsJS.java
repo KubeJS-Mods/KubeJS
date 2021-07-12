@@ -8,7 +8,9 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.block.BlockModificationEventJS;
+import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.ItemModificationEventJS;
+import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
@@ -29,13 +31,22 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.LootTables;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -477,6 +488,31 @@ public class UtilsJS {
 		}
 
 		return state;
+	}
+
+	public static ListJS rollChestLoot(ResourceLocation id, @Nullable EntityJS entity) {
+		ListJS list = new ListJS();
+		if (ServerJS.instance != null) {
+			MinecraftServer server = ServerJS.instance.getMinecraftServer();
+			LootTables tables = ServerJS.instance.getMinecraftServer().getLootTables();
+			LootTable table = tables.get(id);
+
+			LootContext.Builder builder;
+
+			if (entity != null) {
+				Entity mcEntity = entity.minecraftEntity;
+				builder = new LootContext.Builder((ServerLevel) mcEntity.level)
+						.withOptionalParameter(LootContextParams.THIS_ENTITY, mcEntity)
+						.withParameter(LootContextParams.ORIGIN, mcEntity.position());
+			} else {
+				builder = new LootContext.Builder(server.overworld())
+						.withOptionalParameter(LootContextParams.THIS_ENTITY, null)
+						.withParameter(LootContextParams.ORIGIN, Vec3.ZERO);
+			}
+
+			table.getRandomItems(builder.create(LootContextParamSets.CHEST), (stack) -> list.add(ItemStackJS.of(stack)));
+		}
+		return list;
 	}
 
 	public static void postModificationEvents() {
