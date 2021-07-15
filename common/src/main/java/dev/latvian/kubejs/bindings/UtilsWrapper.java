@@ -1,6 +1,8 @@
 package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.KubeJSRegistries;
+import dev.latvian.kubejs.entity.EntityJS;
+import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.ConsoleJS;
@@ -155,6 +157,14 @@ public class UtilsWrapper {
 	@Nullable
 	public static MobEffect getPotion(ResourceLocation id) {
 		return UtilsJS.getPotion(id);
+	}
+
+	public static ListJS rollChestLoot(ResourceLocation id) {
+		return rollChestLoot(id, null);
+	}
+
+	public static ListJS rollChestLoot(ResourceLocation id, @Nullable EntityJS entity) {
+		return UtilsJS.rollChestLoot(id, entity);
 	}
 
 	@Nullable
