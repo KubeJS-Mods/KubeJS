@@ -694,7 +694,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		MapJS nbt = getNbt();
 
 		if (!nbt.isEmpty()) {
-			if (RecipeJS.currentRecipe != null && RecipeJS.currentRecipe.id != null && RecipeJS.currentRecipe.getMod().equals("techreborn")) {
+			if (RecipeJS.currentRecipe != null && RecipeJS.currentRecipe.type != null && RecipeJS.currentRecipe.type.getIdRL().getNamespace().equals("techreborn")) {
 				json.add("nbt", nbt.toJson());
 			} else {
 				json.addProperty("nbt", nbt.toNBT().toString());
