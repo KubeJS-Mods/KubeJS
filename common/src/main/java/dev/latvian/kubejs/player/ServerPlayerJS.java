@@ -2,7 +2,6 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.core.PlayerInteractionManagerKJS;
 import dev.latvian.kubejs.item.ItemStackJS;
-import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageCloseOverlay;
 import dev.latvian.kubejs.net.MessageOpenOverlay;
 import dev.latvian.kubejs.net.MessageSendDataFromServer;
@@ -44,12 +43,12 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 
 	@Override
 	public void openOverlay(Overlay overlay) {
-		KubeJSNet.MAIN.sendToPlayer(minecraftPlayer, new MessageOpenOverlay(overlay));
+		new MessageOpenOverlay(overlay).sendTo(minecraftPlayer);
 	}
 
 	@Override
 	public void closeOverlay(String overlay) {
-		KubeJSNet.MAIN.sendToPlayer(minecraftPlayer, new MessageCloseOverlay(overlay));
+		new MessageCloseOverlay(overlay).sendTo(minecraftPlayer);
 	}
 
 	@Override
@@ -160,7 +159,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	@Override
 	public void sendData(String channel, @Nullable Object data) {
 		if (!channel.isEmpty()) {
-			KubeJSNet.MAIN.sendToPlayer(minecraftPlayer, new MessageSendDataFromServer(channel, MapJS.nbt(data)));
+			new MessageSendDataFromServer(channel, MapJS.nbt(data)).sendTo(minecraftPlayer);
 		}
 	}
 

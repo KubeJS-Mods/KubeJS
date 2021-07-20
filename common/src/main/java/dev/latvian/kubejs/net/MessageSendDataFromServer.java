@@ -2,16 +2,16 @@ package dev.latvian.kubejs.net;
 
 import dev.latvian.kubejs.KubeJS;
 import me.shedaniel.architectury.networking.NetworkManager.PacketContext;
+import me.shedaniel.architectury.networking.simple.BaseS2CMessage;
+import me.shedaniel.architectury.networking.simple.MessageType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
-
 /**
  * @author LatvianModder
  */
-public class MessageSendDataFromServer {
+public class MessageSendDataFromServer extends BaseS2CMessage {
 	private final String channel;
 	private final CompoundTag data;
 
@@ -25,14 +25,21 @@ public class MessageSendDataFromServer {
 		data = buf.readNbt();
 	}
 
-	void write(FriendlyByteBuf buf) {
+	@Override
+	public MessageType getType() {
+		return KubeJSNet.SEND_DATA_FROM_SERVER;
+	}
+
+	@Override
+	public void write(FriendlyByteBuf buf) {
 		buf.writeUtf(channel, 120);
 		buf.writeNbt(data);
 	}
 
-	void handle(Supplier<PacketContext> context) {
+	@Override
+	public void handle(PacketContext context) {
 		if (!channel.isEmpty()) {
-			context.get().queue(() -> KubeJS.PROXY.handleDataToClientPacket(channel, data));
+			KubeJS.PROXY.handleDataToClientPacket(channel, data);
 		}
 	}
 }

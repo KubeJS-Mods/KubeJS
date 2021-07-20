@@ -3,17 +3,17 @@ package dev.latvian.kubejs.net;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.util.MapJS;
 import me.shedaniel.architectury.networking.NetworkManager.PacketContext;
+import me.shedaniel.architectury.networking.simple.BaseC2SMessage;
+import me.shedaniel.architectury.networking.simple.MessageType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
-
 /**
  * @author LatvianModder
  */
-public class MessageSendDataFromClient {
+public class MessageSendDataFromClient extends BaseC2SMessage {
 	private final String channel;
 	private final CompoundTag data;
 
@@ -27,17 +27,24 @@ public class MessageSendDataFromClient {
 		data = buf.readNbt();
 	}
 
-	void write(FriendlyByteBuf buf) {
+	@Override
+	public MessageType getType() {
+		return KubeJSNet.SEND_DATA_FROM_CLIENT;
+	}
+
+	@Override
+	public void write(FriendlyByteBuf buf) {
 		buf.writeUtf(channel, 120);
 		buf.writeNbt(data);
 	}
 
-	void handle(Supplier<PacketContext> context) {
+	@Override
+	public void handle(PacketContext context) {
 		if (!channel.isEmpty()) {
-			final Player player = context.get().getPlayer();
+			final Player player = context.getPlayer();
 
 			if (player != null) {
-				context.get().queue(() -> new NetworkEventJS(player, channel, MapJS.of(data)).post(KubeJSEvents.PLAYER_DATA_FROM_CLIENT, channel));
+				new NetworkEventJS(player, channel, MapJS.of(data)).post(KubeJSEvents.PLAYER_DATA_FROM_CLIENT, channel);
 			}
 		}
 	}

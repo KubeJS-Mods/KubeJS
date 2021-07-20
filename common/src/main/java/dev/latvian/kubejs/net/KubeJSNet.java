@@ -1,22 +1,23 @@
 package dev.latvian.kubejs.net;
 
 import dev.latvian.kubejs.KubeJS;
-import me.shedaniel.architectury.networking.NetworkChannel;
-import net.minecraft.resources.ResourceLocation;
+import me.shedaniel.architectury.networking.simple.MessageType;
+import me.shedaniel.architectury.networking.simple.SimpleNetworkManager;
 
 /**
  * @author LatvianModder
  */
-public class KubeJSNet {
-	public static final NetworkChannel MAIN = NetworkChannel.create(new ResourceLocation(KubeJS.MOD_ID, "main"));
+public interface KubeJSNet {
+	SimpleNetworkManager NET = SimpleNetworkManager.create(KubeJS.MOD_ID);
 
-	public static void init() {
-		MAIN.register(MessageSendDataFromClient.class, MessageSendDataFromClient::write, MessageSendDataFromClient::new, MessageSendDataFromClient::handle);
-		MAIN.register(MessageSendDataFromServer.class, MessageSendDataFromServer::write, MessageSendDataFromServer::new, MessageSendDataFromServer::handle);
-		MAIN.register(MessageOpenOverlay.class, MessageOpenOverlay::write, MessageOpenOverlay::new, MessageOpenOverlay::handle);
-		MAIN.register(MessageCloseOverlay.class, MessageCloseOverlay::write, MessageCloseOverlay::new, MessageCloseOverlay::handle);
-		MAIN.register(MessageAddStage.class, MessageAddStage::write, MessageAddStage::new, MessageAddStage::handle);
-		MAIN.register(MessageRemoveStage.class, MessageRemoveStage::write, MessageRemoveStage::new, MessageRemoveStage::handle);
-		MAIN.register(MessageSyncStages.class, MessageSyncStages::write, MessageSyncStages::new, MessageSyncStages::handle);
+	MessageType SEND_DATA_FROM_CLIENT = NET.registerC2S("send_data_from_client", MessageSendDataFromClient::new);
+	MessageType SEND_DATA_FROM_SERVER = NET.registerS2C("send_data_from_server", MessageSendDataFromServer::new);
+	MessageType OPEN_OVERLAY = NET.registerS2C("open_overlay", MessageOpenOverlay::new);
+	MessageType CLOSE_OVERLAY = NET.registerS2C("close_overlay", MessageCloseOverlay::new);
+	MessageType ADD_STAGE = NET.registerS2C("add_stage", MessageAddStage::new);
+	MessageType REMOVE_STAGE = NET.registerS2C("remove_stage", MessageRemoveStage::new);
+	MessageType SYNC_STAGES = NET.registerS2C("sync_stages", MessageSyncStages::new);
+
+	static void init() {
 	}
 }
