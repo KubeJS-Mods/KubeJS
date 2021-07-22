@@ -16,6 +16,7 @@ import dev.latvian.kubejs.script.ScriptSource;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.data.DataPackEventJS;
 import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
+import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ServerResources;
@@ -117,7 +118,9 @@ public class ServerScriptManager {
 		ScriptType.SERVER.console.info("Scripts loaded");
 
 		Map<ResourceLocation, RecipeTypeJS> typeMap = new HashMap<>();
-		RegisterRecipeHandlersEvent.EVENT.invoker().accept(new RegisterRecipeHandlersEvent(typeMap));
+		RegisterRecipeHandlersEvent modEvent = new RegisterRecipeHandlersEvent(typeMap);
+		KubeJSPlugins.forEachPlugin(plugin -> plugin.addRecipes(modEvent));
+		RegisterRecipeHandlersEvent.EVENT.invoker().accept(modEvent);
 		new RecipeTypeRegistryEventJS(typeMap).post(ScriptType.SERVER, KubeJSEvents.RECIPES_TYPE_REGISTRY);
 		RecipeEventJS.instance = new RecipeEventJS(typeMap);
 		return list;

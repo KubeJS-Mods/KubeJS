@@ -2,16 +2,17 @@ package dev.latvian.kubejs.net;
 
 import dev.latvian.kubejs.stages.Stages;
 import me.shedaniel.architectury.networking.NetworkManager.PacketContext;
+import me.shedaniel.architectury.networking.simple.BaseS2CMessage;
+import me.shedaniel.architectury.networking.simple.MessageType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.UUID;
-import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
  */
-public class MessageRemoveStage {
+public class MessageRemoveStage extends BaseS2CMessage {
 	private final UUID player;
 	private final String stage;
 
@@ -25,19 +26,24 @@ public class MessageRemoveStage {
 		stage = buf.readUtf(Short.MAX_VALUE);
 	}
 
-	void write(FriendlyByteBuf buf) {
+	@Override
+	public MessageType getType() {
+		return KubeJSNet.REMOVE_STAGE;
+	}
+
+	@Override
+	public void write(FriendlyByteBuf buf) {
 		buf.writeUUID(player);
 		buf.writeUtf(stage, Short.MAX_VALUE);
 	}
 
-	void handle(Supplier<PacketContext> context) {
-		context.get().queue(() -> {
-			Player p0 = context.get().getPlayer();
-			Player p = player.equals(p0.getUUID()) ? p0 : p0.level.getPlayerByUUID(player);
+	@Override
+	public void handle(PacketContext context) {
+		Player p0 = context.getPlayer();
+		Player p = player.equals(p0.getUUID()) ? p0 : p0.level.getPlayerByUUID(player);
 
-			if (p != null) {
-				Stages.get(p).remove(stage);
-			}
-		});
+		if (p != null) {
+			Stages.get(p).remove(stage);
+		}
 	}
 }

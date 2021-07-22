@@ -2,18 +2,19 @@ package dev.latvian.kubejs.net;
 
 import dev.latvian.kubejs.stages.Stages;
 import me.shedaniel.architectury.networking.NetworkManager.PacketContext;
+import me.shedaniel.architectury.networking.simple.BaseS2CMessage;
+import me.shedaniel.architectury.networking.simple.MessageType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
  */
-public class MessageSyncStages {
+public class MessageSyncStages extends BaseS2CMessage {
 	private final UUID player;
 	private final Collection<String> stages;
 
@@ -33,7 +34,13 @@ public class MessageSyncStages {
 		}
 	}
 
-	void write(FriendlyByteBuf buf) {
+	@Override
+	public MessageType getType() {
+		return KubeJSNet.SYNC_STAGES;
+	}
+
+	@Override
+	public void write(FriendlyByteBuf buf) {
 		buf.writeUUID(player);
 		buf.writeVarInt(stages.size());
 
@@ -42,14 +49,13 @@ public class MessageSyncStages {
 		}
 	}
 
-	void handle(Supplier<PacketContext> context) {
-		context.get().queue(() -> {
-			Player p0 = context.get().getPlayer();
-			Player p = player.equals(p0.getUUID()) ? p0 : p0.level.getPlayerByUUID(player);
+	@Override
+	public void handle(PacketContext context) {
+		Player p0 = context.getPlayer();
+		Player p = player.equals(p0.getUUID()) ? p0 : p0.level.getPlayerByUUID(player);
 
-			if (p != null) {
-				Stages.get(p).replace(stages);
-			}
-		});
+		if (p != null) {
+			Stages.get(p).replace(stages);
+		}
 	}
 }

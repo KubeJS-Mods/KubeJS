@@ -22,7 +22,14 @@ import dev.latvian.kubejs.fluid.FluidWrapper;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
+import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
 import dev.latvian.kubejs.recipe.filter.RecipeFilter;
+import dev.latvian.kubejs.recipe.minecraft.CookingRecipeJS;
+import dev.latvian.kubejs.recipe.minecraft.SmithingRecipeJS;
+import dev.latvian.kubejs.recipe.minecraft.StonecuttingRecipeJS;
+import dev.latvian.kubejs.recipe.mod.AE2GrinderRecipeJS;
+import dev.latvian.kubejs.recipe.mod.BotanyPotsCropRecipeJS;
+import dev.latvian.kubejs.recipe.mod.MATagRecipeJS;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.PlatformWrapper;
 import dev.latvian.kubejs.script.ScriptType;
@@ -30,11 +37,13 @@ import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.util.ClassFilter;
+import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UUIDUtilsJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
+import me.shedaniel.architectury.platform.Platform;
 import me.shedaniel.architectury.registry.Registry;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.core.BlockPos;
@@ -100,6 +109,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		filter.allow("dev.latvian.kubejs"); // KubeJS
 		filter.deny("dev.latvian.kubejs.script");
 		filter.deny("dev.latvian.kubejs.mixin");
+		filter.deny(KubeJSPlugin.class);
+		filter.deny(KubeJSPlugins.class);
 
 		filter.allow("net.minecraft"); // Minecraft
 		filter.allow("com.mojang.authlib.GameProfile");
@@ -258,5 +269,44 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 			return registry.get(new ResourceLocation(o.toString()));
 		});
+	}
+
+	@Override
+	public void addRecipes(RegisterRecipeHandlersEvent event) {
+		event.registerShaped(new ResourceLocation("minecraft:crafting_shaped"));
+		event.registerShapeless(new ResourceLocation("minecraft:crafting_shapeless"));
+		event.register(new ResourceLocation("minecraft:stonecutting"), StonecuttingRecipeJS::new);
+		event.register(new ResourceLocation("minecraft:smelting"), CookingRecipeJS::new);
+		event.register(new ResourceLocation("minecraft:blasting"), CookingRecipeJS::new);
+		event.register(new ResourceLocation("minecraft:smoking"), CookingRecipeJS::new);
+		event.register(new ResourceLocation("minecraft:campfire_cooking"), CookingRecipeJS::new);
+		event.register(new ResourceLocation("minecraft:smithing"), SmithingRecipeJS::new);
+
+		// Mod recipe types that use vanilla syntax
+
+		if (Platform.isModLoaded("cucumber")) {
+			event.registerShaped(new ResourceLocation("cucumber:shaped_no_mirror"));
+		}
+
+		if (Platform.isModLoaded("mysticalagriculture")) {
+			event.register("mysticalagriculture:tag", MATagRecipeJS::new);
+		}
+
+		if (Platform.isModLoaded("botanypots")) {
+			event.register("botanypots:crop", BotanyPotsCropRecipeJS::new);
+		}
+
+		if (Platform.isModLoaded("extendedcrafting")) {
+			event.registerShaped(new ResourceLocation("extendedcrafting:shaped_table"));
+			event.registerShapeless(new ResourceLocation("extendedcrafting:shapeless_table"));
+		}
+
+		if (Platform.isModLoaded("dankstorage")) {
+			event.registerShaped(new ResourceLocation("dankstorage:upgrade"));
+		}
+
+		if (Platform.isModLoaded("appliedenergistics2")) {
+			event.register("appliedenergistics2:grinder", AE2GrinderRecipeJS::new);
+		}
 	}
 }

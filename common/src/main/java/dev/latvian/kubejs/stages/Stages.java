@@ -2,7 +2,6 @@ package dev.latvian.kubejs.stages;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.core.PlayerKJS;
-import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageAddStage;
 import dev.latvian.kubejs.net.MessageRemoveStage;
 import dev.latvian.kubejs.net.MessageSyncStages;
@@ -100,7 +99,7 @@ public abstract class Stages {
 	public boolean add(String stage) {
 		if (addNoUpdate(stage)) {
 			if (player instanceof ServerPlayer) {
-				KubeJSNet.MAIN.sendToPlayers(((ServerPlayer) player).server.getPlayerList().getPlayers(), new MessageAddStage(player.getUUID(), stage));
+				new MessageAddStage(player.getUUID(), stage).sendToAll(((ServerPlayer) player).server);
 			}
 
 			invokeAdded(this, stage);
@@ -113,7 +112,7 @@ public abstract class Stages {
 	public boolean remove(String stage) {
 		if (removeNoUpdate(stage)) {
 			if (player instanceof ServerPlayer) {
-				KubeJSNet.MAIN.sendToPlayers(((ServerPlayer) player).server.getPlayerList().getPlayers(), new MessageRemoveStage(player.getUUID(), stage));
+				new MessageRemoveStage(player.getUUID(), stage).sendToAll(((ServerPlayer) player).server);
 			}
 
 			invokeRemoved(this, stage);
@@ -147,7 +146,7 @@ public abstract class Stages {
 
 	public void sync() {
 		if (player instanceof ServerPlayer) {
-			KubeJSNet.MAIN.sendToPlayers(((ServerPlayer) player).server.getPlayerList().getPlayers(), new MessageSyncStages(player.getUUID(), getAll()));
+			new MessageSyncStages(player.getUUID(), getAll()).sendToAll(((ServerPlayer) player).server);
 		}
 	}
 

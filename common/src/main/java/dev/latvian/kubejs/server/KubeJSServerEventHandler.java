@@ -66,11 +66,11 @@ public class KubeJSServerEventHandler {
 
 		ServerJS.instance.updateWorldList();
 
-		AttachServerDataEvent.EVENT.invoker().accept(new AttachServerDataEvent(ServerJS.instance));
+		new AttachServerDataEvent(ServerJS.instance).invoke();
 		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_LOAD);
 
 		for (ServerWorldJS world : ServerJS.instance.worlds) {
-			AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(ServerJS.instance.getOverworld()));
+			new AttachWorldDataEvent(ServerJS.instance.getOverworld()).invoke();
 			new SimpleWorldEventJS(ServerJS.instance.getOverworld()).post(KubeJSEvents.WORLD_LOAD);
 		}
 	}

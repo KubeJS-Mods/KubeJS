@@ -152,8 +152,8 @@ public class KubeJSClientEventHandler {
 
 	private void loggedIn(LocalPlayer player) {
 		ClientWorldJS.setInstance(new ClientWorldJS(Minecraft.getInstance(), player));
-		AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(ClientWorldJS.getInstance()));
-		AttachPlayerDataEvent.EVENT.invoker().accept(new AttachPlayerDataEvent(ClientWorldJS.getInstance().clientPlayerData));
+		new AttachWorldDataEvent(ClientWorldJS.getInstance()).invoke();
+		new AttachPlayerDataEvent(ClientWorldJS.getInstance().clientPlayerData).invoke();
 		new ClientLoggedInEventJS().post(KubeJSEvents.CLIENT_LOGGED_IN);
 	}
 
@@ -168,8 +168,8 @@ public class KubeJSClientEventHandler {
 
 	private void respawn(LocalPlayer oldPlayer, LocalPlayer newPlayer) {
 		ClientWorldJS.setInstance(new ClientWorldJS(Minecraft.getInstance(), newPlayer));
-		AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(ClientWorldJS.getInstance()));
-		AttachPlayerDataEvent.EVENT.invoker().accept(new AttachPlayerDataEvent(ClientWorldJS.getInstance().clientPlayerData));
+		new AttachWorldDataEvent(ClientWorldJS.getInstance()).invoke();
+		new AttachPlayerDataEvent(ClientWorldJS.getInstance().clientPlayerData).invoke();
 	}
 
 	private int drawOverlay(Minecraft mc, PoseStack matrixStack, int maxWidth, int x, int y, int p, Overlay o, boolean inv) {

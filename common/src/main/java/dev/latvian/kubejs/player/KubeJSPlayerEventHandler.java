@@ -42,7 +42,7 @@ public class KubeJSPlayerEventHandler {
 			ServerPlayerDataJS p = new ServerPlayerDataJS(ServerJS.instance, player.getUUID(), player.getGameProfile().getName(), KubeJS.nextClientHasClientMod);
 			KubeJS.nextClientHasClientMod = false;
 			p.getServer().playerMap.put(p.getId(), p);
-			AttachPlayerDataEvent.EVENT.invoker().accept(new AttachPlayerDataEvent(p));
+			new AttachPlayerDataEvent(p).invoke();
 			new SimplePlayerEventJS(player).post(KubeJSEvents.PLAYER_LOGGED_IN);
 			player.inventoryMenu.addSlotListener(new InventoryListener(player));
 		}

@@ -2,6 +2,7 @@ package dev.latvian.kubejs.world;
 
 import dev.latvian.kubejs.script.AttachDataEvent;
 import dev.latvian.kubejs.script.DataType;
+import dev.latvian.kubejs.util.KubeJSPlugins;
 import me.shedaniel.architectury.event.Event;
 import me.shedaniel.architectury.event.EventFactory;
 
@@ -15,5 +16,10 @@ public class AttachWorldDataEvent extends AttachDataEvent<WorldJS> {
 
 	public AttachWorldDataEvent(WorldJS w) {
 		super(DataType.WORLD, w);
+	}
+
+	public void invoke() {
+		KubeJSPlugins.forEachPlugin(plugin -> plugin.attachWorldData(this));
+		EVENT.invoker().accept(this);
 	}
 }

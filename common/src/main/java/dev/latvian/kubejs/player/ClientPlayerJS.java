@@ -2,7 +2,6 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.entity.RayTraceResultJS;
-import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageSendDataFromClient;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Overlay;
@@ -57,7 +56,7 @@ public class ClientPlayerJS extends PlayerJS<Player> {
 	@Override
 	public void sendData(String channel, @Nullable Object data) {
 		if (!channel.isEmpty() && isSelf()) {
-			KubeJSNet.MAIN.sendToServer(new MessageSendDataFromClient(channel, MapJS.nbt(data)));
+			new MessageSendDataFromClient(channel, MapJS.nbt(data)).sendToServer();
 		}
 	}
 

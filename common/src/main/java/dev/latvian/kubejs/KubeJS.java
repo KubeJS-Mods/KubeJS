@@ -14,7 +14,6 @@ import dev.latvian.kubejs.item.custom.ItemArmorTierEventJS;
 import dev.latvian.kubejs.item.custom.ItemToolTierEventJS;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.player.KubeJSPlayerEventHandler;
-import dev.latvian.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.kubejs.script.ScriptFileInfo;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.script.ScriptPack;
@@ -117,9 +116,7 @@ public class KubeJS {
 			UtilsJS.tryIO(() -> Files.move(oldStartupFolder, KubeJSPaths.STARTUP_SCRIPTS));
 		}
 
-		for (KubeJSPlugin plugin : KubeJSPlugins.LIST) {
-			plugin.init();
-		}
+		KubeJSPlugins.forEachPlugin(KubeJSPlugin::init);
 
 		if (!CommonProperties.get().serverOnly) {
 			tab = CreativeTabs.create(new ResourceLocation(KubeJS.MOD_ID, KubeJS.MOD_ID), () -> new ItemStack(Items.PURPLE_DYE));
@@ -142,7 +139,6 @@ public class KubeJS {
 		KubeJSEntityEventHandler.init();
 		KubeJSBlockEventHandler.init();
 		KubeJSItemEventHandler.init();
-		KubeJSRecipeEventHandler.init();
 		KubeJSFluidEventHandler.init();
 		KubeJSServerEventHandler.init();
 
@@ -194,10 +190,7 @@ public class KubeJS {
 	}
 
 	public void loadComplete() {
-		for (KubeJSPlugin plugin : KubeJSPlugins.LIST) {
-			plugin.afterInit();
-		}
-
+		KubeJSPlugins.forEachPlugin(KubeJSPlugin::afterInit);
 		ScriptsLoadedEvent.EVENT.invoker().run();
 		new EventJS().post(ScriptType.STARTUP, KubeJSEvents.POSTINIT);
 		UtilsJS.postModificationEvents();

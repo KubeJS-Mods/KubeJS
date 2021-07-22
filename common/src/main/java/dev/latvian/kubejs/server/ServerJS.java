@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.net.MessageSendDataFromServer;
 import dev.latvian.kubejs.player.AdvancementJS;
 import dev.latvian.kubejs.player.EntityArrayList;
@@ -174,7 +173,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 			world = new ServerWorldJS(this, getMinecraftServer().getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(dimension))));
 			worldMap.put(dimension, world);
 			updateWorldList();
-			AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(world));
+			new AttachWorldDataEvent(world).invoke();
 		}
 
 		return world;
@@ -187,7 +186,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 			world = new ServerWorldJS(this, (ServerLevel) minecraftWorld);
 			worldMap.put(minecraftWorld.dimension().location().toString(), world);
 			updateWorldList();
-			AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(world));
+			new AttachWorldDataEvent(world).invoke();
 		}
 
 		return world;
@@ -294,6 +293,6 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	}
 
 	public void sendDataToAll(String channel, @Nullable Object data) {
-		KubeJSNet.MAIN.sendToPlayers(getMinecraftServer().getPlayerList().getPlayers(), new MessageSendDataFromServer(channel, MapJS.nbt(data)));
+		new MessageSendDataFromServer(channel, MapJS.nbt(data)).sendToAll(getMinecraftServer());
 	}
 }

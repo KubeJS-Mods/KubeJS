@@ -13,6 +13,7 @@ import dev.latvian.kubejs.player.ServerPlayerJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.util.SpecialEquality;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.hooks.PlayerHooks;
 import me.shedaniel.architectury.registry.Registries;
@@ -45,7 +46,7 @@ import java.util.Optional;
 /**
  * @author LatvianModder
  */
-public class BlockContainerJS {
+public class BlockContainerJS implements SpecialEquality {
 	private static final ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
 
 	public final Level minecraftWorld;
@@ -355,5 +356,14 @@ public class BlockContainerJS {
 	public String getBiomeId() {
 		Optional<ResourceKey<Biome>> key = minecraftWorld.getBiomeName(pos);
 		return key.isPresent() ? key.get().location().toString() : "";
+	}
+
+	@Override
+	public boolean specialEquals(Object o, boolean shallow) {
+		if (o instanceof CharSequence || o instanceof ResourceLocation) {
+			return getId().equals(o.toString());
+		}
+
+		return equals(o);
 	}
 }
