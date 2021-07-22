@@ -13,11 +13,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class KubeJSPlugins {
-	public static final List<KubeJSPlugin> LIST = new ArrayList<>();
+	private static final List<KubeJSPlugin> LIST = new ArrayList<>();
 	private static final List<String> GLOBAL_CLASS_FILTER = new ArrayList<>();
 
 	public static void load(String id, Path path) throws Exception {
@@ -78,7 +79,7 @@ public class KubeJSPlugins {
 				Class<?> c = Class.forName(s);
 
 				if (KubeJSPlugin.class.isAssignableFrom(c)) {
-					LIST.add((KubeJSPlugin) c.newInstance());
+					LIST.add((KubeJSPlugin) c.getDeclaredConstructor().newInstance());
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -88,10 +89,7 @@ public class KubeJSPlugins {
 
 	public static ClassFilter createClassFilter(ScriptType type) {
 		ClassFilter filter = new ClassFilter();
-
-		for (KubeJSPlugin plugin : LIST) {
-			plugin.addClasses(type, filter);
-		}
+		forEachPlugin(plugin -> plugin.addClasses(type, filter));
 
 		for (String s : GLOBAL_CLASS_FILTER) {
 			if (s.length() >= 2) {
@@ -104,5 +102,9 @@ public class KubeJSPlugins {
 		}
 
 		return filter;
+	}
+
+	public static void forEachPlugin(Consumer<KubeJSPlugin> callback) {
+		LIST.forEach(callback);
 	}
 }

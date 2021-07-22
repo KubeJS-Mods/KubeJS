@@ -173,7 +173,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 			world = new ServerWorldJS(this, getMinecraftServer().getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(dimension))));
 			worldMap.put(dimension, world);
 			updateWorldList();
-			AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(world));
+			new AttachWorldDataEvent(world).invoke();
 		}
 
 		return world;
@@ -186,7 +186,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 			world = new ServerWorldJS(this, (ServerLevel) minecraftWorld);
 			worldMap.put(minecraftWorld.dimension().location().toString(), world);
 			updateWorldList();
-			AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(world));
+			new AttachWorldDataEvent(world).invoke();
 		}
 
 		return world;

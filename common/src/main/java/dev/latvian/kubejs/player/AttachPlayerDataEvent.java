@@ -2,6 +2,7 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.script.AttachDataEvent;
 import dev.latvian.kubejs.script.DataType;
+import dev.latvian.kubejs.util.KubeJSPlugins;
 import me.shedaniel.architectury.event.Event;
 import me.shedaniel.architectury.event.EventFactory;
 
@@ -15,5 +16,10 @@ public class AttachPlayerDataEvent extends AttachDataEvent<PlayerDataJS> {
 
 	public AttachPlayerDataEvent(PlayerDataJS p) {
 		super(DataType.PLAYER, p);
+	}
+
+	public void invoke() {
+		KubeJSPlugins.forEachPlugin(plugin -> plugin.attachPlayerData(this));
+		EVENT.invoker().accept(this);
 	}
 }

@@ -31,7 +31,7 @@ public class KubeJSWorldEventHandler {
 			ServerWorldJS w = new ServerWorldJS(ServerJS.instance, level);
 			ServerJS.instance.worldMap.put(level.dimension().location().toString(), w);
 			ServerJS.instance.updateWorldList();
-			AttachWorldDataEvent.EVENT.invoker().accept(new AttachWorldDataEvent(w));
+			new AttachWorldDataEvent(w).invoke();
 			new SimpleWorldEventJS(w).post(ScriptType.SERVER, KubeJSEvents.WORLD_LOAD);
 		}
 	}

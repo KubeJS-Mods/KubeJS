@@ -60,7 +60,7 @@ public class ServerWorldJS extends WorldJS {
 
 		if (fakeData == null) {
 			fakeData = new FakeServerPlayerDataJS(server, (ServerPlayer) player);
-			AttachPlayerDataEvent.EVENT.invoker().accept(new AttachPlayerDataEvent(fakeData));
+			new AttachPlayerDataEvent(fakeData).invoke();
 		}
 
 		fakeData.player = (ServerPlayer) player;

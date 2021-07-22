@@ -3,7 +3,6 @@ package dev.latvian.kubejs.script;
 import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.KubeJSPlugin;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.util.ClassFilter;
@@ -100,14 +99,10 @@ public class ScriptManager {
 
 	public void load() {
 		Context context = Context.enter();
-		context.setLanguageVersion(Context.VERSION_ES6);
 		context.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || isClassAllowed(fullClassName));
 		TypeWrappers typeWrappers = context.getTypeWrappers();
 		typeWrappers.removeAll();
-
-		for (KubeJSPlugin plugin : KubeJSPlugins.LIST) {
-			plugin.addTypeWrappers(type, typeWrappers);
-		}
+		KubeJSPlugins.forEachPlugin(plugin -> plugin.addTypeWrappers(type, typeWrappers));
 
 		long startAll = System.currentTimeMillis();
 
@@ -120,11 +115,8 @@ public class ScriptManager {
 				pack.scope = context.initStandardObjects();
 
 				BindingsEvent event = new BindingsEvent(this, pack.context, pack.scope);
+				KubeJSPlugins.forEachPlugin(plugin -> plugin.addBindings(event));
 				BindingsEvent.EVENT.invoker().accept(event);
-
-				for (KubeJSPlugin plugin : KubeJSPlugins.LIST) {
-					plugin.addBindings(event);
-				}
 
 				for (ScriptFile file : pack.scripts) {
 					t++;
