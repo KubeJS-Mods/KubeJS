@@ -461,4 +461,11 @@ public abstract class RecipeJS {
 
 		return resultRecipe;
 	}
+
+	/**
+	 * Only used when a recipe has sub-recipes, e.g. create:sequenced_assembly
+	 */
+	public void dontAdd() {
+		RecipeEventJS.instance.addedRecipes.remove(this);
+	}
 }
