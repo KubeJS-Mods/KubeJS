@@ -81,7 +81,7 @@ public class ServerSettings {
 			ex.printStackTrace();
 		}
 
-		source.sendSuccess(new TextComponent("Done! Export in kubejs/exports/server.json"), false);
+		source.sendSuccess(new TextComponent("Done! Export in kubejs/exported/kubejs-server-export.json"), false);
 		source.sendSuccess(new TextComponent("You can now upload it on ").append(new TextComponent("https://export.kubejs.com/").withStyle(ChatFormatting.BLUE, ChatFormatting.UNDERLINE).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://export.kubejs.com/")))), false);
 		source = null;
 		dataExport = null;
