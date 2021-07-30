@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.core;
 
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.kubejs.item.ItemFoodEatenEventJS;
-import dev.latvian.kubejs.item.ItemJS;
 import dev.latvian.kubejs.script.ScriptType;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
@@ -17,11 +17,11 @@ public interface LivingEntityKJS {
 			ItemFoodEatenEventJS event = new ItemFoodEatenEventJS((ServerPlayer) this, is);
 			Item i = is.getItem();
 
-			if (i instanceof ItemJS) {
-				ItemJS j = (ItemJS) i;
+			if (i instanceof ItemKJS) {
+				ItemBuilder b = ((ItemKJS) i).getItemBuilderKJS();
 
-				if (j.properties.foodBuilder != null && j.properties.foodBuilder.eaten != null) {
-					j.properties.foodBuilder.eaten.accept(event);
+				if (b.foodBuilder != null && b.foodBuilder.eaten != null) {
+					b.foodBuilder.eaten.accept(event);
 				}
 			}
 

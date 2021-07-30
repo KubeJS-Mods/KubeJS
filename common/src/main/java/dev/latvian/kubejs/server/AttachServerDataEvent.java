@@ -12,6 +12,10 @@ import java.util.function.Consumer;
  * @author LatvianModder
  */
 public class AttachServerDataEvent extends AttachDataEvent<ServerJS> {
+	/**
+	 * @deprecated Use {@link dev.latvian.kubejs.KubeJSPlugin#attachServerData(AttachServerDataEvent)} instead
+	 */
+	@Deprecated
 	public static final Event<Consumer<AttachServerDataEvent>> EVENT = EventFactory.createConsumerLoop(AttachServerDataEvent.class);
 
 	public AttachServerDataEvent(ServerJS s) {

@@ -4,12 +4,16 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.bindings.RarityWrapper;
+import dev.latvian.kubejs.item.custom.ArmorItemType;
+import dev.latvian.kubejs.item.custom.BasicItemType;
 import dev.latvian.kubejs.item.custom.ItemType;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.BuilderBase;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.registry.ToolType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ArmorMaterials;
@@ -54,7 +58,7 @@ public class ItemBuilder extends BuilderBase {
 	public transient Float attackSpeed;
 	public transient RarityWrapper rarity;
 	public transient boolean glow;
-	public transient final List<Text> tooltip;
+	public transient final List<Component> tooltip;
 	public transient CreativeModeTab group;
 	public transient Int2IntOpenHashMap color;
 	public transient String texture;
@@ -75,7 +79,7 @@ public class ItemBuilder extends BuilderBase {
 
 	public ItemBuilder(String i) {
 		super(i);
-		type = ItemType.BASIC;
+		type = BasicItemType.INSTANCE;
 		maxStackSize = 64;
 		maxDamage = 0;
 		burnTime = 0;
@@ -101,24 +105,18 @@ public class ItemBuilder extends BuilderBase {
 		return "item";
 	}
 
-	public ItemBuilder type(String t) {
-		type = ItemType.MAP.getOrDefault(t, ItemType.BASIC);
+	public ItemBuilder type(ItemType t) {
+		type = t;
 		type.applyDefaults(this);
 		return this;
 	}
 
 	public ItemBuilder tier(String t) {
-		if (type == ItemType.BASIC) {
+		if (type == BasicItemType.INSTANCE) {
 			return this;
-		}
-
-		switch (type) {
-			case HELMET:
-			case CHESTPLATE:
-			case LEGGINGS:
-			case BOOTS:
-				armorTier = ARMOR_TIERS.getOrDefault(t, ArmorMaterials.IRON);
-				return this;
+		} else if (type instanceof ArmorItemType) {
+			armorTier = ARMOR_TIERS.getOrDefault(t, ArmorMaterials.IRON);
+			return this;
 		}
 
 		toolTier = TOOL_TIERS.getOrDefault(t, Tiers.IRON);
@@ -158,18 +156,21 @@ public class ItemBuilder extends BuilderBase {
 		return this;
 	}
 
-	public ItemBuilder miningSpeed(float miningSpeed) {
-		this.miningSpeed = miningSpeed;
+	public ItemBuilder miningSpeed(float f) {
+		miningSpeed = f;
+		ScriptType.STARTUP.console.warn("You should be using a 'pickaxe' or other tool type item if you want to modify mining speed!");
 		return this;
 	}
 
-	public ItemBuilder attackDamage(float attackDamage) {
-		this.attackDamage = attackDamage;
+	public ItemBuilder attackDamage(float f) {
+		attackDamage = f;
+		ScriptType.STARTUP.console.warn("You should be using a 'sword' type item if you want to modify attack damage!");
 		return this;
 	}
 
-	public ItemBuilder attackSpeed(float attackSpeed) {
-		this.attackSpeed = attackSpeed;
+	public ItemBuilder attackSpeed(float f) {
+		attackSpeed = f;
+		ScriptType.STARTUP.console.warn("You should be using a 'sword' type item if you want to modify attack speed!");
 		return this;
 	}
 
@@ -184,7 +185,7 @@ public class ItemBuilder extends BuilderBase {
 	}
 
 	public ItemBuilder tooltip(Object text) {
-		tooltip.add(Text.of(text));
+		tooltip.add(Text.of(text).component());
 		return this;
 	}
 

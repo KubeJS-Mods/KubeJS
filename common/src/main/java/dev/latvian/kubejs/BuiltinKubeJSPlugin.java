@@ -20,6 +20,11 @@ import dev.latvian.kubejs.event.IEventHandler;
 import dev.latvian.kubejs.fluid.FluidStackJS;
 import dev.latvian.kubejs.fluid.FluidWrapper;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.item.custom.ArmorItemType;
+import dev.latvian.kubejs.item.custom.BasicItemType;
+import dev.latvian.kubejs.item.custom.ItemType;
+import dev.latvian.kubejs.item.custom.ItemTypes;
+import dev.latvian.kubejs.item.custom.ToolItemType;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
@@ -42,6 +47,7 @@ import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UUIDUtilsJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import me.shedaniel.architectury.platform.Platform;
 import me.shedaniel.architectury.registry.Registry;
@@ -72,6 +78,20 @@ import java.util.regex.Pattern;
 
 public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	public static final HashMap<String, Object> GLOBAL = new HashMap<>();
+
+	@Override
+	public void init() {
+		ItemTypes.register(BasicItemType.INSTANCE);
+		ItemTypes.register(ToolItemType.SWORD);
+		ItemTypes.register(ToolItemType.PICKAXE);
+		ItemTypes.register(ToolItemType.AXE);
+		ItemTypes.register(ToolItemType.SHOVEL);
+		ItemTypes.register(ToolItemType.HOE);
+		ItemTypes.register(ArmorItemType.HELMET);
+		ItemTypes.register(ArmorItemType.CHESTPLATE);
+		ItemTypes.register(ArmorItemType.LEGGINGS);
+		ItemTypes.register(ArmorItemType.BOOTS);
+	}
 
 	@Override
 	public void addClasses(ScriptType type, ClassFilter filter) {
@@ -234,6 +254,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(BlockPos.class, o -> {
 			if (o instanceof BlockPos) {
 				return (BlockPos) o;
+			} else if (o instanceof BlockContainerJS) {
+				return ((BlockContainerJS) o).getPos();
 			} else if (o instanceof List && ((List<?>) o).size() >= 3) {
 				return new BlockPos(((Number) ((List<?>) o).get(0)).intValue(), ((Number) ((List<?>) o).get(1)).intValue(), ((Number) ((List<?>) o).get(2)).intValue());
 			}
@@ -257,6 +279,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(FluidStackJS.class, FluidStackJS::of);
 		typeWrappers.register(RecipeFilter.class, RecipeFilter::of);
 		typeWrappers.register(MaterialJS.class, MaterialListJS.INSTANCE::of);
+		typeWrappers.register(ItemType.class, ItemTypes::get);
 	}
 
 	private static <T> void wrapRegistry(TypeWrappers typeWrappers, Class<T> c, Registry<T> registry) {

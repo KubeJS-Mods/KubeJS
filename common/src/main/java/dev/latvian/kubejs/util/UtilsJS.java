@@ -409,7 +409,7 @@ public class UtilsJS {
 		if (world.isClientSide()) {
 			return getClientWorld();
 		} else {
-			return ServerJS.instance.getWorld(world);
+			return ServerJS.instance.getLevel(world);
 		}
 	}
 

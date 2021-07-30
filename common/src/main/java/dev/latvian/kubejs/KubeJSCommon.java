@@ -45,7 +45,7 @@ public class KubeJSCommon {
 			return getClientWorld();
 		}
 
-		return ServerJS.instance.getWorld(level);
+		return ServerJS.instance.getLevel(level);
 	}
 
 	public void reloadTextures() {

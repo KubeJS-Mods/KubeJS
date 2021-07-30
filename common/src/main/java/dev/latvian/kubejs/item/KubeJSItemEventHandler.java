@@ -6,6 +6,7 @@ import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.block.DetectorInstance;
+import dev.latvian.kubejs.core.ItemKJS;
 import dev.latvian.kubejs.fluid.FluidBuilder;
 import dev.latvian.kubejs.player.InventoryChangedEventJS;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
@@ -48,13 +49,23 @@ public class KubeJSItemEventHandler {
 
 	private static void registry() {
 		for (ItemBuilder builder : KubeJSObjects.ITEMS.values()) {
-			builder.item = builder.type.itemFactory.apply(builder);
+			builder.item = builder.type.createItem(builder);
+
+			if (builder.item instanceof ItemKJS) {
+				((ItemKJS) builder.item).setItemBuilderKJS(builder);
+			}
+
 			KubeJSRegistries.items().register(builder.id, () -> builder.item);
 		}
 
 		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
 			if (builder.itemBuilder != null) {
 				builder.itemBuilder.blockItem = new BlockItemJS(builder.itemBuilder);
+
+				if (builder.itemBuilder.blockItem instanceof ItemKJS) {
+					((ItemKJS) builder.itemBuilder.blockItem).setItemBuilderKJS(builder.itemBuilder);
+				}
+
 				KubeJSRegistries.items().register(builder.id, () -> builder.itemBuilder.blockItem);
 			}
 		}
