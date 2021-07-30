@@ -34,6 +34,7 @@ jobs:
           java-version: '11'
       - name: Build with Gradle
         env:
+          FTB_MAVEN_TOKEN: ${{ secrets.FTB_MAVEN_TOKEN}}
           SAPS_TOKEN: ${{ secrets.SAPS_TOKEN }}
         run: |
           chmod +x ./gradlew
