@@ -20,7 +20,7 @@ public interface LivingEntityKJS {
 			if (i instanceof ItemKJS) {
 				ItemBuilder b = ((ItemKJS) i).getItemBuilderKJS();
 
-				if (b.foodBuilder != null && b.foodBuilder.eaten != null) {
+				if (b != null && b.foodBuilder != null && b.foodBuilder.eaten != null) {
 					b.foodBuilder.eaten.accept(event);
 				}
 			}

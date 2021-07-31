@@ -9,6 +9,7 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -25,6 +26,7 @@ public abstract class ItemMixin implements ItemKJS {
 	private ItemBuilder itemBuilderKJS;
 
 	@Override
+	@Nullable
 	public ItemBuilder getItemBuilderKJS() {
 		return itemBuilderKJS;
 	}
