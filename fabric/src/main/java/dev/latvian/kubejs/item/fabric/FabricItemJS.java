@@ -20,12 +20,15 @@ public class FabricItemJS extends ItemJS implements DynamicAttributeTool {
 	public FabricItemJS(ItemBuilder p) {
 		super(p);
 		toolsMap = new HashMap<>();
+
 		p.getToolsMap().forEach((type, level) -> {
 			Tag<Item> tag = type.fabricTag.get();
+
 			if (tag instanceof Tag.Named) {
 				toolsMap.put(((Tag.Named<Item>) tag).getName(), level);
 			}
 		});
+
 		miningSpeed = p.getMiningSpeed();
 	}
 
@@ -34,6 +37,7 @@ public class FabricItemJS extends ItemJS implements DynamicAttributeTool {
 		if (tag instanceof Tag.Named) {
 			Tag.Named<Item> identified = (Tag.Named<Item>) tag;
 			Integer level = toolsMap.get(identified.getName());
+
 			if (level != null) {
 				return level;
 			}
@@ -46,6 +50,7 @@ public class FabricItemJS extends ItemJS implements DynamicAttributeTool {
 		if (toolsMap.isEmpty()) {
 			return miningSpeed;
 		}
+
 		return super.getDestroySpeed(stack, state);
 	}
 
@@ -54,10 +59,12 @@ public class FabricItemJS extends ItemJS implements DynamicAttributeTool {
 		if (tag instanceof Tag.Named) {
 			Tag.Named<Item> identified = (Tag.Named<Item>) tag;
 			Integer level = toolsMap.get(identified.getName());
+
 			if (level != null) {
 				return miningSpeed;
 			}
 		}
+
 		return 1.0F;
 	}
 }

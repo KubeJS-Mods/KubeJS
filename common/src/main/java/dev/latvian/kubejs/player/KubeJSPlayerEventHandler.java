@@ -72,7 +72,7 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	public static void tick(Player player) {
-		if (ServerJS.instance != null) {
+		if (ServerJS.instance != null && player instanceof ServerPlayer) {
 			new SimplePlayerEventJS(player).post(KubeJSEvents.PLAYER_TICK);
 		}
 	}

@@ -12,7 +12,6 @@ import me.shedaniel.architectury.event.EventFactory;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 
 import java.util.Map;
 import java.util.Objects;
@@ -24,6 +23,10 @@ import java.util.function.Supplier;
  */
 @ForgeEvent
 public class RegisterRecipeHandlersEvent {
+	/**
+	 * @deprecated Use {@link dev.latvian.kubejs.KubeJSPlugin#addRecipes(RegisterRecipeHandlersEvent)} instead
+	 */
+	@Deprecated
 	public static final Event<Consumer<RegisterRecipeHandlersEvent>> EVENT = EventFactory.createConsumerLoop(RegisterRecipeHandlersEvent.class);
 	private final Map<ResourceLocation, RecipeTypeJS> map;
 

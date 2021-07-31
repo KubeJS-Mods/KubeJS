@@ -54,13 +54,13 @@ public class KubeJSServerEventHandler {
 
 	public static void serverStarted(MinecraftServer server) {
 		ServerJS.instance.overworld = new ServerWorldJS(ServerJS.instance, server.getLevel(Level.OVERWORLD));
-		ServerJS.instance.worldMap.put("minecraft:overworld", ServerJS.instance.overworld);
+		ServerJS.instance.levelMap.put("minecraft:overworld", ServerJS.instance.overworld);
 		ServerJS.instance.worlds.add(ServerJS.instance.overworld);
 
 		for (ServerLevel world : server.getAllLevels()) {
 			if (world != ServerJS.instance.overworld.minecraftWorld) {
 				ServerWorldJS w = new ServerWorldJS(ServerJS.instance, world);
-				ServerJS.instance.worldMap.put(world.dimension().location().toString(), w);
+				ServerJS.instance.levelMap.put(world.dimension().location().toString(), w);
 			}
 		}
 
@@ -86,7 +86,7 @@ public class KubeJSServerEventHandler {
 			new SimplePlayerEventJS(p.getMinecraftPlayer()).post(KubeJSEvents.PLAYER_LOGGED_OUT);
 		}
 
-		for (WorldJS w : s.worldMap.values()) {
+		for (WorldJS w : s.levelMap.values()) {
 			new SimpleWorldEventJS(w).post(KubeJSEvents.WORLD_UNLOAD);
 		}
 

@@ -27,9 +27,9 @@ public class KubeJSWorldEventHandler {
 	}
 
 	private static void worldLoaded(ServerLevel level) {
-		if (ServerJS.instance != null && ServerJS.instance.overworld != null && !ServerJS.instance.worldMap.containsKey(level.dimension().location().toString())) {
+		if (ServerJS.instance != null && ServerJS.instance.overworld != null && !ServerJS.instance.levelMap.containsKey(level.dimension().location().toString())) {
 			ServerWorldJS w = new ServerWorldJS(ServerJS.instance, level);
-			ServerJS.instance.worldMap.put(level.dimension().location().toString(), w);
+			ServerJS.instance.levelMap.put(level.dimension().location().toString(), w);
 			ServerJS.instance.updateWorldList();
 			new AttachWorldDataEvent(w).invoke();
 			new SimpleWorldEventJS(w).post(ScriptType.SERVER, KubeJSEvents.WORLD_LOAD);
@@ -37,16 +37,16 @@ public class KubeJSWorldEventHandler {
 	}
 
 	private static void worldUnloaded(ServerLevel level) {
-		if (ServerJS.instance != null && ServerJS.instance.overworld != null && ServerJS.instance.worldMap.containsKey(level.dimension().location().toString())) {
-			WorldJS w = ServerJS.instance.getWorld(level);
+		if (ServerJS.instance != null && ServerJS.instance.overworld != null && ServerJS.instance.levelMap.containsKey(level.dimension().location().toString())) {
+			WorldJS w = ServerJS.instance.getLevel(level);
 			new SimpleWorldEventJS(w).post(ScriptType.SERVER, KubeJSEvents.WORLD_UNLOAD);
-			ServerJS.instance.worldMap.remove(w.getDimension());
+			ServerJS.instance.levelMap.remove(w.getDimension());
 			ServerJS.instance.updateWorldList();
 		}
 	}
 
 	private static void worldTick(ServerLevel level) {
-		WorldJS w = ServerJS.instance.getWorld(level);
+		WorldJS w = ServerJS.instance.getLevel(level);
 		new SimpleWorldEventJS(w).post(ScriptType.SERVER, KubeJSEvents.WORLD_TICK);
 	}
 

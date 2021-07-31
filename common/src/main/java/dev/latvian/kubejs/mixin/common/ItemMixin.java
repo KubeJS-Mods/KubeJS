@@ -2,20 +2,45 @@ package dev.latvian.kubejs.mixin.common;
 
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.core.ItemKJS;
+import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import me.shedaniel.architectury.registry.fuel.FuelRegistry;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
 
 /**
  * @author LatvianModder
  */
 @Mixin(Item.class)
 public abstract class ItemMixin implements ItemKJS {
+	@Unique
+	private ItemBuilder itemBuilderKJS;
+
+	@Override
+	public ItemBuilder getItemBuilderKJS() {
+		return itemBuilderKJS;
+	}
+
+	@Override
+	public void setItemBuilderKJS(ItemBuilder b) {
+		itemBuilderKJS = b;
+	}
+
 	@Override
 	@Accessor("maxStackSize")
 	public abstract void setMaxStackSizeKJS(int i);
@@ -50,4 +75,18 @@ public abstract class ItemMixin implements ItemKJS {
 	@Override
 	@Accessor("foodProperties")
 	public abstract void setFoodPropertiesKJS(FoodProperties properties);
+
+	@Inject(method = "isFoil", at = @At("HEAD"), cancellable = true)
+	private void isFoilKJS(ItemStack itemStack, CallbackInfoReturnable<Boolean> ci) {
+		if (itemBuilderKJS != null && itemBuilderKJS.glow) {
+			ci.setReturnValue(true);
+		}
+	}
+
+	@Inject(method = "appendHoverText", at = @At("RETURN"))
+	private void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn, CallbackInfo ci) {
+		if (itemBuilderKJS != null && !itemBuilderKJS.tooltip.isEmpty()) {
+			tooltip.addAll(itemBuilderKJS.tooltip);
+		}
+	}
 }

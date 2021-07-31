@@ -12,6 +12,10 @@ import java.util.function.Consumer;
  * @author LatvianModder
  */
 public class AttachWorldDataEvent extends AttachDataEvent<WorldJS> {
+	/**
+	 * @deprecated Use {@link dev.latvian.kubejs.KubeJSPlugin#attachWorldData(AttachWorldDataEvent)} instead
+	 */
+	@Deprecated
 	public static final Event<Consumer<AttachWorldDataEvent>> EVENT = EventFactory.createConsumerLoop(AttachWorldDataEvent.class);
 
 	public AttachWorldDataEvent(WorldJS w) {

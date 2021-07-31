@@ -45,7 +45,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	public final transient ServerScriptManager serverScriptManager;
 	public final transient List<ScheduledEvent> scheduledEvents;
 	public final transient List<ScheduledEvent> scheduledTickEvents;
-	public final transient Map<String, ServerWorldJS> worldMap;
+	public final transient Map<String, ServerWorldJS> levelMap;
 	public final transient Map<UUID, ServerPlayerDataJS> playerMap;
 	public final transient Map<UUID, FakeServerPlayerDataJS> fakePlayerMap;
 	public final transient List<ServerWorldJS> worlds;
@@ -58,7 +58,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		serverScriptManager = m;
 		scheduledEvents = new LinkedList<>();
 		scheduledTickEvents = new LinkedList<>();
-		worldMap = new HashMap<>();
+		levelMap = new HashMap<>();
 		playerMap = new HashMap<>();
 		fakePlayerMap = new HashMap<>();
 		worlds = new ArrayList<>();
@@ -71,14 +71,14 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		playerMap.clear();
 		fakePlayerMap.clear();
 		overworld = null;
-		worldMap.clear();
+		levelMap.clear();
 		worlds.clear();
 		data = null;
 	}
 
 	public void updateWorldList() {
 		worlds.clear();
-		worlds.addAll(worldMap.values());
+		worlds.addAll(levelMap.values());
 	}
 
 	@Override
@@ -166,12 +166,12 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		return getMinecraftServer().getCommands().performCommand(getMinecraftServer().createCommandSourceStack().withSuppressedOutput(), command);
 	}
 
-	public WorldJS getWorld(String dimension) {
-		ServerWorldJS world = worldMap.get(dimension);
+	public WorldJS getLevel(String dimension) {
+		ServerWorldJS world = levelMap.get(dimension);
 
 		if (world == null) {
 			world = new ServerWorldJS(this, getMinecraftServer().getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(dimension))));
-			worldMap.put(dimension, world);
+			levelMap.put(dimension, world);
 			updateWorldList();
 			new AttachWorldDataEvent(world).invoke();
 		}
@@ -179,17 +179,27 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		return world;
 	}
 
-	public WorldJS getWorld(Level minecraftWorld) {
-		ServerWorldJS world = worldMap.get(minecraftWorld.dimension().location().toString());
+	@Deprecated
+	public WorldJS getWorld(String dimension) {
+		return getLevel(dimension);
+	}
+
+	public WorldJS getLevel(Level minecraftLevel) {
+		ServerWorldJS world = levelMap.get(minecraftLevel.dimension().location().toString());
 
 		if (world == null) {
-			world = new ServerWorldJS(this, (ServerLevel) minecraftWorld);
-			worldMap.put(minecraftWorld.dimension().location().toString(), world);
+			world = new ServerWorldJS(this, (ServerLevel) minecraftLevel);
+			levelMap.put(minecraftLevel.dimension().location().toString(), world);
 			updateWorldList();
 			new AttachWorldDataEvent(world).invoke();
 		}
 
 		return world;
+	}
+
+	@Deprecated
+	public WorldJS getWorld(Level minecraftLevel) {
+		return getLevel(minecraftLevel);
 	}
 
 	@Nullable

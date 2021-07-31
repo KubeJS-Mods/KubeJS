@@ -2,7 +2,6 @@ package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.entity.EntityJS;
-import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.util.ConsoleJS;
@@ -115,7 +114,7 @@ public class UtilsWrapper {
 		if (world.isClientSide()) {
 			return getClientWorld();
 		} else {
-			return ServerJS.instance.getWorld(world);
+			return ServerJS.instance.getLevel(world);
 		}
 	}
 

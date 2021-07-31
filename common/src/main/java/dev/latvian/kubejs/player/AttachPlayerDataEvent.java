@@ -12,6 +12,10 @@ import java.util.function.Consumer;
  * @author LatvianModder
  */
 public class AttachPlayerDataEvent extends AttachDataEvent<PlayerDataJS> {
+	/**
+	 * @deprecated Use {@link dev.latvian.kubejs.KubeJSPlugin#attachPlayerData(AttachPlayerDataEvent)} instead
+	 */
+	@Deprecated
 	public static final Event<Consumer<AttachPlayerDataEvent>> EVENT = EventFactory.createConsumerLoop(AttachPlayerDataEvent.class);
 
 	public AttachPlayerDataEvent(PlayerDataJS p) {

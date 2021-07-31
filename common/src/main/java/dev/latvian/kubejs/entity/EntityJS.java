@@ -16,6 +16,7 @@ import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.hooks.EntityHooks;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -506,5 +507,21 @@ public class EntityJS implements MessageSender, WrappedJS {
 
 	public boolean isUnderWater() {
 		return minecraftEntity.isUnderWater();
+	}
+
+	public double getDistanceSq(double x, double y, double z) {
+		return minecraftEntity.distanceToSqr(x, y, z);
+	}
+
+	public double getDistance(double x, double y, double z) {
+		return Math.sqrt(getDistanceSq(x, y, z));
+	}
+
+	public double getDistanceSq(BlockPos pos) {
+		return getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
+	}
+
+	public double getDistance(BlockPos pos) {
+		return Math.sqrt(getDistanceSq(pos));
 	}
 }
