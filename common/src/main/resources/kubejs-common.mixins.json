@@ -27,6 +27,7 @@
 	],
 	"client": [
 		"ImageButtonMixin",
+		"ItemClientMixin",
 		"KeyboardHandlerMixin",
 		"MainWindowMixin",
 		"MinecraftMixin",
