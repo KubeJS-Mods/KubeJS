@@ -50,6 +50,8 @@ dependencies {
 
 	// test mods, these are included at runtime only
 	// modRuntime("com.resourcefulbees:ResourcefulBees:1.16.5-0.6.4b")
+	// modRuntime("curse.maven:athenaeum-1-16-437531:3188454")
+	// modRuntime("curse.maven:artisan-worktables-1-16-437529:3277959")
 
 	implementation(project(path: ":common")) {
 		transitive = false
