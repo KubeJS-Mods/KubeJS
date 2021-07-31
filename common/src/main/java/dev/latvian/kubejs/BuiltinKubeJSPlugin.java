@@ -35,6 +35,8 @@ import dev.latvian.kubejs.recipe.minecraft.StonecuttingRecipeJS;
 import dev.latvian.kubejs.recipe.mod.AE2GrinderRecipeJS;
 import dev.latvian.kubejs.recipe.mod.BotanyPotsCropRecipeJS;
 import dev.latvian.kubejs.recipe.mod.MATagRecipeJS;
+import dev.latvian.kubejs.recipe.mod.ShapedArtisanRecipeJS;
+import dev.latvian.kubejs.recipe.mod.ShapelessArtisanRecipeJS;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.PlatformWrapper;
 import dev.latvian.kubejs.script.ScriptType;
@@ -312,11 +314,11 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		}
 
 		if (Platform.isModLoaded("mysticalagriculture")) {
-			event.register("mysticalagriculture:tag", MATagRecipeJS::new);
+			event.register(new ResourceLocation("mysticalagriculture:tag"), MATagRecipeJS::new);
 		}
 
 		if (Platform.isModLoaded("botanypots")) {
-			event.register("botanypots:crop", BotanyPotsCropRecipeJS::new);
+			event.register(new ResourceLocation("botanypots:crop"), BotanyPotsCropRecipeJS::new);
 		}
 
 		if (Platform.isModLoaded("extendedcrafting")) {
@@ -329,7 +331,32 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		}
 
 		if (Platform.isModLoaded("appliedenergistics2")) {
-			event.register("appliedenergistics2:grinder", AE2GrinderRecipeJS::new);
+			event.register(new ResourceLocation("appliedenergistics2:grinder"), AE2GrinderRecipeJS::new);
+		}
+
+		if (Platform.isModLoaded("artisanworktables")) {
+			String[] types = {
+					"basic",
+					"blacksmith",
+					"carpenter",
+					"chef",
+					"chemist",
+					"designer",
+					"engineer",
+					"farmer",
+					"jeweler",
+					"mage",
+					"mason",
+					"potter",
+					"scribe",
+					"tailor",
+					"tanner"
+			};
+
+			for (String t : types) {
+				event.register(new ResourceLocation("artisanworktables:" + t + "_shaped"), ShapedArtisanRecipeJS::new);
+				event.register(new ResourceLocation("artisanworktables:" + t + "_shapeless"), ShapelessArtisanRecipeJS::new);
+			}
 		}
 	}
 }
