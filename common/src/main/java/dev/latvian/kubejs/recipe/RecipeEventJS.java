@@ -506,10 +506,17 @@ public class RecipeEventJS extends EventJS {
 	}
 
 	public void printTypes() {
-		ScriptType.SERVER.console.info("== All recipe types ==");
+		ScriptType.SERVER.console.info("== All recipe types [used] ==");
 		HashSet<String> list = new HashSet<>();
 		originalRecipes.forEach(r -> list.add(r.type.toString()));
 		list.stream().sorted().forEach(ScriptType.SERVER.console::info);
+		ScriptType.SERVER.console.info(list.size() + " types");
+	}
+
+	public void printAllTypes() {
+		ScriptType.SERVER.console.info("== All recipe types [available] ==");
+		List<String> list = KubeJSRegistries.recipeSerializers().entrySet().stream().map(e -> e.getKey().location().toString()).sorted().collect(Collectors.toList());
+		list.forEach(ScriptType.SERVER.console::info);
 		ScriptType.SERVER.console.info(list.size() + " types");
 	}
 
