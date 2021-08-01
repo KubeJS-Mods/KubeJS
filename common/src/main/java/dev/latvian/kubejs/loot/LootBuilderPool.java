@@ -12,7 +12,7 @@ import net.minecraft.world.level.storage.loot.RandomValueBounds;
 /**
  * @author LatvianModder
  */
-public class LootBuilderPool {
+public class LootBuilderPool  {
 	private RandomIntGenerator rolls = new ConstantIntValue(1);
 	private final JsonArray conditions = new JsonArray();
 	private final JsonArray entries = new JsonArray();

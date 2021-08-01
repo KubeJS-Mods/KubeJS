@@ -3,6 +3,7 @@ package dev.latvian.kubejs.core;
 import com.google.gson.JsonElement;
 import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.loot.BlockLootEventJS;
+import dev.latvian.kubejs.loot.LootTableEventJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.server.ServerSettings;
@@ -21,6 +22,7 @@ public interface LootTablesKJS {
 	default void applyKJS0(Map<ResourceLocation, JsonElement> map, BiConsumer<ResourceLocation, JsonElement> action) {
 		Map<ResourceLocation, JsonElement> map1 = new HashMap<>(map);
 		new BlockLootEventJS(map1).post(ScriptType.SERVER, "block.loot_tables");
+		new LootTableEventJS(map1).post(ScriptType.SERVER, "loot_tables");
 		map1.forEach(action);
 		ServerSettings.exportData();
 

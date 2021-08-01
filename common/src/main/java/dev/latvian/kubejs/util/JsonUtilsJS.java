@@ -6,6 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.internal.Streams;
@@ -236,5 +237,16 @@ public class JsonUtilsJS {
 
 	public static void write(String file, @Nullable MapJS json) throws IOException {
 		write(KubeJS.getGameDirectory().resolve(file).toFile(), json);
+	}
+
+	public static boolean equal(JsonElement a, JsonElement b) {
+		String aStr = a.toString();
+		String bStr = b.toString();
+
+		JsonParser parser = new JsonParser();
+		JsonElement newA = parser.parse(aStr);
+		JsonElement newB = parser.parse(bStr);
+
+		return newA.equals(newB);
 	}
 }

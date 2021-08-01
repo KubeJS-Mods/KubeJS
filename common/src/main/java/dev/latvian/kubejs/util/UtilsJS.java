@@ -95,6 +95,46 @@ public class UtilsJS {
 		return (T) o;
 	}
 
+	public static boolean matchRegexOrEquals(Object checks, String str) {
+		ListJS list = ListJS.orSelf(checks);
+
+		if(matchRegex(checks, str)) {
+			return true;
+		}
+
+		for (Object o : list) {
+			if(o instanceof CharSequence) {
+				if(o.toString().equals(str)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public static boolean matchRegex(Object regex, String str) {
+		ListJS list = ListJS.orSelf(regex);
+
+		for (Object o : list) {
+			Pattern pattern = parseRegex(o);
+			if(pattern != null) {
+				Matcher matcher = pattern.matcher(str);
+				if(matcher.matches()) {
+					return true;
+				}
+			}
+
+			if(o instanceof CharSequence) {
+				if(o.toString().equals(str)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	@Nullable
 	public static Pattern parseRegex(Object o) {
 		if (o instanceof CharSequence || o instanceof NativeRegExp) {
