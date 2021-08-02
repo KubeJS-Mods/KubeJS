@@ -9,6 +9,7 @@ import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.block.BlockBuilder;
+import dev.latvian.kubejs.core.BucketItemKJS;
 import dev.latvian.kubejs.core.ImageButtonKJS;
 import dev.latvian.kubejs.fluid.FluidBuilder;
 import dev.latvian.kubejs.item.ItemBuilder;
@@ -42,6 +43,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -123,7 +125,19 @@ public class KubeJSClientEventHandler {
 
 		if (advanced && ClientProperties.get().showTagNames && Screen.hasShiftDown()) {
 			for (ResourceLocation tag : Tags.byItemStack(stack)) {
-				lines.add(new TextComponent(" #" + tag).withStyle(ChatFormatting.DARK_GRAY));
+				lines.add(new TextComponent(" #" + tag + " [item]").withStyle(ChatFormatting.DARK_GRAY));
+			}
+
+			if (stack.getItem() instanceof BlockItem) {
+				for (ResourceLocation tag : Tags.byBlock(((BlockItem) stack.getItem()).getBlock())) {
+					lines.add(new TextComponent(" #" + tag + " [block]").withStyle(ChatFormatting.DARK_GRAY));
+				}
+			}
+
+			if (stack.getItem() instanceof BucketItemKJS) {
+				for (ResourceLocation tag : Tags.byFluid(((BucketItemKJS) stack.getItem()).getFluidKJS())) {
+					lines.add(new TextComponent(" #" + tag + " [fluid]").withStyle(ChatFormatting.DARK_GRAY));
+				}
 			}
 		}
 

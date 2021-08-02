@@ -6,6 +6,7 @@
 		"BlockBehaviourMixin",
 		"BlockMixin",
 		"BlockStateBaseMixin",
+		"BucketItemMixin",
 		"DataPackRegistriesMixin",
 		"EntityMixin",
 		"FireworkRocketEntityMixin",
