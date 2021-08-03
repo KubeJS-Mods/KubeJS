@@ -50,6 +50,12 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,12 +65,15 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.google.gson.internal.$Gson$Preconditions.checkArgument;
+
 /**
  * @author LatvianModder
  */
 public class UtilsJS {
 	public static final Random RANDOM = new Random();
 	public static final Pattern REGEX_PATTERN = Pattern.compile("\\/(.*)\\/([a-z]*)");
+	public static final ResourceLocation AIR_LOCATION = new ResourceLocation("minecraft:air");
 
 	public interface TryIO {
 		void run() throws IOException;
@@ -434,9 +443,15 @@ public class UtilsJS {
 		return s;
 	}
 
-	public static ResourceLocation getMCID(@Nullable String s) {
+	public static ResourceLocation getMCID(@Nullable Object o) {
+		if (o == null) {
+			return AIR_LOCATION;
+		}
+
+		String s = o.toString();
+
 		if (s == null || s.isEmpty()) {
-			return new ResourceLocation("minecraft:air");
+			return AIR_LOCATION;
 		}
 
 		return new ResourceLocation(s);
@@ -518,5 +533,31 @@ public class UtilsJS {
 	public static void postModificationEvents() {
 		new BlockModificationEventJS().post(ScriptType.STARTUP, KubeJSEvents.BLOCK_MODIFICATION);
 		new ItemModificationEventJS().post(ScriptType.STARTUP, KubeJSEvents.ITEM_MODIFICATION);
+	}
+
+	public static Class<?> getRawType(Type type) {
+		if (type instanceof Class<?>) {
+			return (Class<?>) type;
+
+		} else if (type instanceof ParameterizedType) {
+			ParameterizedType parameterizedType = (ParameterizedType) type;
+
+			Type rawType = parameterizedType.getRawType();
+			checkArgument(rawType instanceof Class);
+			return (Class<?>) rawType;
+
+		} else if (type instanceof GenericArrayType) {
+			Type componentType = ((GenericArrayType) type).getGenericComponentType();
+			return Array.newInstance(getRawType(componentType), 0).getClass();
+
+		} else if (type instanceof TypeVariable) {
+			return Object.class;
+
+		} else if (type instanceof WildcardType) {
+			return getRawType(((WildcardType) type).getUpperBounds()[0]);
+		} else {
+			String className = type == null ? "null" : type.getClass().getName();
+			throw new IllegalArgumentException("Expected a Class, ParameterizedType, or GenericArrayType, but <" + type + "> is of type " + className);
+		}
 	}
 }

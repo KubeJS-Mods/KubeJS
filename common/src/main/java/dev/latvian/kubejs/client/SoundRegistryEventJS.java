@@ -1,8 +1,6 @@
 package dev.latvian.kubejs.client;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.event.StartupEventJS;
-import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Consumer;
@@ -17,8 +15,7 @@ public class SoundRegistryEventJS extends StartupEventJS {
 		this.registry = registry;
 	}
 
-	public void register(String id) {
-		ResourceLocation r = UtilsJS.getMCID(KubeJS.appendModId(id));
+	public void register(ResourceLocation r) {
 		registry.accept(r);
 	}
 }

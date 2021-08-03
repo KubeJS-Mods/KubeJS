@@ -52,7 +52,6 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import me.shedaniel.architectury.platform.Platform;
-import me.shedaniel.architectury.registry.Registry;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CollectionTag;
@@ -62,16 +61,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.world.level.material.Fluid;
 
 import java.util.HashMap;
 import java.util.List;
@@ -242,7 +238,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		// Java / Minecraft //
 		typeWrappers.register(String.class, String::valueOf);
 		typeWrappers.register(CharSequence.class, String::valueOf);
-		typeWrappers.register(ResourceLocation.class, o -> UtilsJS.getMCID(o == null ? null : o.toString()));
+		typeWrappers.register(ResourceLocation.class, UtilsJS::getMCID);
 		typeWrappers.register(JsonObject.class, MapJS::json);
 		typeWrappers.register(JsonArray.class, ListJS::json);
 		typeWrappers.register(ItemStack.class, o -> ItemStackJS.of(o).getItemStack());
@@ -265,10 +261,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 			return BlockPos.ZERO;
 		});
 
-		typeWrappers.register(Item.class, o -> ItemStackJS.of(o).getItem());
-		wrapRegistry(typeWrappers, Block.class, KubeJSRegistries.blocks());
-		wrapRegistry(typeWrappers, Fluid.class, KubeJSRegistries.fluids());
-		wrapRegistry(typeWrappers, SoundEvent.class, KubeJSRegistries.soundEvents());
+		typeWrappers.register(Item.class, ItemStackJS::getRawItem);
 
 		// KubeJS //
 		typeWrappers.register(MapJS.class, MapJS::of);
@@ -282,18 +275,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(RecipeFilter.class, RecipeFilter::of);
 		typeWrappers.register(MaterialJS.class, MaterialListJS.INSTANCE::of);
 		typeWrappers.register(ItemType.class, ItemTypes::get);
-	}
-
-	private static <T> void wrapRegistry(TypeWrappers typeWrappers, Class<T> c, Registry<T> registry) {
-		typeWrappers.register(c, o -> {
-			if (o == null) {
-				return null;
-			} else if (c.isAssignableFrom(o.getClass())) {
-				return (T) o;
-			}
-
-			return registry.get(new ResourceLocation(o.toString()));
-		});
 	}
 
 	@Override

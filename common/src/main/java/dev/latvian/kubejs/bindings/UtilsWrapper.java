@@ -73,11 +73,8 @@ public class UtilsWrapper {
 		return new ResourceLocation(namespace, path);
 	}
 
-	public static ResourceLocation id(String id) {
-		return UtilsJS.getMCID(id);
-	}
-
 	public static ResourceLocation id(ResourceLocation id) {
+		// TypeWrapper will convert any object into RL
 		return id;
 	}
 
