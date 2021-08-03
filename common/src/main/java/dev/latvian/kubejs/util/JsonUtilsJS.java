@@ -249,4 +249,17 @@ public class JsonUtilsJS {
 
 		return newA.equals(newB);
 	}
+
+	@Nullable
+	public static JsonElement extract(String key, JsonObject origin) {
+		if(!origin.isJsonObject()) {
+			throw new IllegalArgumentException("Extract just works for JsonObject or JsonArray");
+		}
+
+		JsonElement element = origin.getAsJsonObject().get(key);
+		if(element != null) {
+			origin.getAsJsonObject().remove(key);
+		}
+		return element;
+	}
 }

@@ -5,14 +5,20 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
+import dev.latvian.kubejs.loot.AdditionalLootTableDataOwner;
+import dev.latvian.kubejs.loot.condition.LootCondition;
+import dev.latvian.kubejs.loot.condition.LootConditionImpl;
 import dev.latvian.kubejs.loot.condition.LootConditionList;
+import dev.latvian.kubejs.loot.function.LootFunction;
+import dev.latvian.kubejs.loot.function.LootFunctionImpl;
 import dev.latvian.kubejs.loot.function.LootFunctionList;
 import dev.latvian.kubejs.util.JsonSerializable;
+import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 
 import java.util.function.Consumer;
 
-public class LootEntry implements JsonSerializable {
+public class LootEntry implements JsonSerializable, AdditionalLootTableDataOwner, LootConditionImpl, LootFunctionImpl {
 	public final LootConditionList conditions = new LootConditionList();
 	public final LootFunctionList functions = new LootFunctionList();
 	public final LootEntryList children = new LootEntryList();
@@ -50,28 +56,20 @@ public class LootEntry implements JsonSerializable {
 
 	@HideFromJS
 	public LootEntry(JsonObject object) {
-		putByKey("type", object);
-		putByKey("name", object);
-		putByKey("weight", object);
-		putByKey("quality", object);
-		putByKey("expand", object);
+		JsonObject copiedEntryJson = (JsonObject) JsonUtilsJS.copy(object);
 
-		conditions.fill(object.getAsJsonArray("conditions"));
-		functions.fill(object.getAsJsonArray("functions"));
+		conditions.fill((JsonArray) JsonUtilsJS.extract("conditions", copiedEntryJson));
+		functions.fill((JsonArray) JsonUtilsJS.extract("functions", copiedEntryJson));
 
-		JsonArray childrenArray = object.getAsJsonArray("children");
+		JsonArray childrenArray = (JsonArray) JsonUtilsJS.extract("children", copiedEntryJson);
 		if (childrenArray != null) {
 			childrenArray.forEach(entry -> {
 				JsonObject entryAsObject = entry.getAsJsonObject();
 				children.add(new LootEntry(entryAsObject));
 			});
 		}
-	}
 
-	private void putByKey(String key, JsonObject original) {
-		if (original.has(key)) {
-			data.add(key, original.get(key));
-		}
+		setAdditionalData(copiedEntryJson);
 	}
 
 	public void setType(String type) {
@@ -167,17 +165,29 @@ public class LootEntry implements JsonSerializable {
 	public JsonElement toJson() {
 		JsonObject object = new JsonObject();
 
-		data.entrySet().forEach(entry -> {
-			object.add(entry.getKey(), entry.getValue());
-		});
+		fillAdditionalData(object);
 
 		functions.fillJson(object);
 		conditions.fillJson(object);
-
-		if (!children.isEmpty()) {
-			object.add("children", children.toJson());
-		}
+		children.fillJson("children", object);
 
 		return object;
+	}
+
+	@Override
+	public JsonObject getAdditionalData() {
+		return data;
+	}
+
+	@Override
+	@HideFromJS
+	public void handleNewConditionImpl(LootCondition condition) {
+		conditions.handleNewConditionImpl(condition);
+	}
+
+	@Override
+	@HideFromJS
+	public LootFunction handleNewFunctionImpl(LootFunction lootFunction) {
+		return functions.handleNewFunctionImpl(lootFunction);
 	}
 }

@@ -127,7 +127,7 @@ public interface LootFunctionImpl extends JsonSerializable {
 		return handleNewFunctionImpl(lootFunction);
 	}
 
-	default LootFunction custom(MapJS function) {
+	default LootFunction customFunction(MapJS function) {
 		LootFunction lootFunction = LootFunction.of(function);
 		return handleNewFunctionImpl(lootFunction);
 	}

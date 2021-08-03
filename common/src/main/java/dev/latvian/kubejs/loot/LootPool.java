@@ -5,16 +5,23 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.loot.condition.LootCondition;
+import dev.latvian.kubejs.loot.condition.LootConditionImpl;
 import dev.latvian.kubejs.loot.condition.LootConditionList;
 import dev.latvian.kubejs.loot.entry.LootEntry;
 import dev.latvian.kubejs.loot.entry.LootEntryList;
+import dev.latvian.kubejs.loot.function.LootFunction;
+import dev.latvian.kubejs.loot.function.LootFunctionImpl;
 import dev.latvian.kubejs.loot.function.LootFunctionList;
+import dev.latvian.kubejs.util.JsonSerializable;
+import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 
 import java.util.function.Consumer;
 
-public class LootPool {
+public class LootPool implements AdditionalLootTableDataOwner, JsonSerializable, LootConditionImpl, LootFunctionImpl {
 	private JsonElement rolls = new JsonObject();
+	private final JsonObject additionalData = new JsonObject();
 	public final LootConditionList conditions = new LootConditionList();
 	public final LootFunctionList functions = new LootFunctionList();
 	public final LootEntryList entries = new LootEntryList();
@@ -25,18 +32,22 @@ public class LootPool {
 
 	@HideFromJS
 	public LootPool(JsonObject object) {
-		conditions.fill(object.getAsJsonArray("conditions"));
-		functions.fill(object.getAsJsonArray("functions"));
+		JsonObject copiedJsonPool = (JsonObject) JsonUtilsJS.copy(object);
 
-		rolls = object.get("rolls");
+		conditions.fill((JsonArray) JsonUtilsJS.extract("conditions", copiedJsonPool));
+		functions.fill((JsonArray) JsonUtilsJS.extract("functions", copiedJsonPool));
 
-		JsonElement entriesArray = object.get("entries");
+		rolls = JsonUtilsJS.extract("rolls", copiedJsonPool);
+
+		JsonElement entriesArray = JsonUtilsJS.extract("entries", copiedJsonPool);
 		if (entriesArray instanceof JsonArray) {
 			((JsonArray) entriesArray).forEach(entry -> {
 				JsonObject entryAsObject = entry.getAsJsonObject();
 				entries.add(new LootEntry(entryAsObject));
 			});
 		}
+
+		setAdditionalData(copiedJsonPool);
 	}
 
 	public void setRolls(int r) {
@@ -60,11 +71,9 @@ public class LootPool {
 
 		functions.fillJson(object);
 		conditions.fillJson(object);
+		entries.fillJson("entries", object);
 
-		if (!entries.isEmpty()) {
-			object.add("entries", entries.toJson());
-		}
-
+		fillAdditionalData(object);
 		return object;
 	}
 
@@ -88,5 +97,23 @@ public class LootPool {
 		LootEntry entry = addLootingEntry(ingredientJS, minCount, maxCount);
 		entry.functions.lootingEnchant(minLooting, maxLooting);
 		return entry;
+	}
+
+	@Override
+	@HideFromJS
+	public JsonObject getAdditionalData() {
+		return additionalData;
+	}
+
+	@Override
+	@HideFromJS
+	public void handleNewConditionImpl(LootCondition condition) {
+		conditions.handleNewConditionImpl(condition);
+	}
+
+	@Override
+	@HideFromJS
+	public LootFunction handleNewFunctionImpl(LootFunction lootFunction) {
+		return functions.handleNewFunctionImpl(lootFunction);
 	}
 }

@@ -1,6 +1,8 @@
 package dev.latvian.kubejs.loot.function;
 
 import com.google.gson.JsonObject;
+import dev.latvian.kubejs.loot.condition.LootCondition;
+import dev.latvian.kubejs.loot.condition.LootConditionImpl;
 import dev.latvian.kubejs.loot.condition.LootConditionList;
 import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.MapJS;
@@ -9,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public class LootFunction implements JsonSerializable {
+public class LootFunction implements JsonSerializable, LootConditionImpl {
 	public static LootFunction of(@Nullable Object o) {
 		MapJS map = MapJS.of(o);
 		if (map == null) {
@@ -85,5 +87,10 @@ public class LootFunction implements JsonSerializable {
 		});
 
 		return result;
+	}
+
+	@Override
+	public void handleNewConditionImpl(LootCondition condition) {
+		conditions.handleNewConditionImpl(condition);
 	}
 }

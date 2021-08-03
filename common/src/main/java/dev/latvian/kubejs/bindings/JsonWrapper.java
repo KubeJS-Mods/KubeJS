@@ -2,6 +2,7 @@ package dev.latvian.kubejs.bindings;
 
 import com.google.gson.JsonElement;
 import dev.latvian.kubejs.util.JSObjectType;
+import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -20,6 +21,10 @@ public class JsonWrapper {
 
 	public static String toString(JsonElement json) {
 		return JsonUtilsJS.toString(json);
+	}
+
+	public static String toPrettyString(JsonSerializable json) {
+		return JsonUtilsJS.toPrettyString(json.toJson());
 	}
 
 	public static String toPrettyString(JsonElement json) {
