@@ -7,6 +7,7 @@ import dev.latvian.kubejs.block.forge.MissingMappingEventJS;
 import dev.latvian.kubejs.entity.ItemEntityJS;
 import dev.latvian.kubejs.entity.forge.CheckLivingEntitySpawnEventJS;
 import dev.latvian.kubejs.entity.forge.LivingEntityDropsEventJS;
+import dev.latvian.kubejs.entity.forge.LivingEntityDropsExperienceEventJS;
 import dev.latvian.kubejs.integration.IntegrationManager;
 import dev.latvian.kubejs.item.forge.ItemDestroyedEventJS;
 import dev.latvian.kubejs.script.ScriptType;
@@ -20,6 +21,7 @@ import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -47,6 +49,7 @@ public class KubeJSForge {
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::itemDestroyed);
 
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::livingDrops);
+		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::livingDropsExperience);
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::checkLivingSpawn);
 
 		if (!CommonProperties.get().serverOnly) {
@@ -92,6 +95,18 @@ public class KubeJSForge {
 			for (ItemEntityJS ie : e.eventDrops) {
 				event.getDrops().add((ItemEntity) ie.minecraftEntity);
 			}
+		}
+	}
+
+	private static void livingDropsExperience(LivingExperienceDropEvent event) {
+		if(event.getEntity().level.isClientSide()) {
+			return;
+		}
+
+		LivingEntityDropsExperienceEventJS e = new LivingEntityDropsExperienceEventJS(event);
+		boolean result = e.post(KubeJSEvents.ENTITY_DROPS_EXPERIENCE);
+		if(result) {
+			event.setCanceled(true);
 		}
 	}
 
