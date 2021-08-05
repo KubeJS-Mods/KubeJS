@@ -21,13 +21,9 @@ public class AlternativeCondition implements LootCondition {
 		}
 
 		((ListJS) o).forEach(element -> {
-			LootCondition condition = LootCondition.of(element);
-
-			if (condition == null) {
-				throw new IllegalStateException(String.format("Given condition element in 'terms' are corrupt: %s", element));
+			if(element instanceof MapJS) {
+				terms.customCondition((MapJS) element);
 			}
-
-			terms.add(condition);
 		});
 	}
 

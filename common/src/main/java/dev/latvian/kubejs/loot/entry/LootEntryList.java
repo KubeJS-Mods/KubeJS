@@ -1,67 +1,42 @@
 package dev.latvian.kubejs.loot.entry;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.loot.AbstractLootElementList;
 import dev.latvian.kubejs.util.JsonSerializable;
-import dev.latvian.mods.rhino.util.HideFromJS;
 
-import java.util.ArrayList;
-import java.util.function.Consumer;
+public class LootEntryList extends AbstractLootElementList<AbstractLootEntry> implements JsonSerializable, Iterable<AbstractLootEntry> {
 
-public class LootEntryList extends ArrayList<LootEntry> implements JsonSerializable {
-	public boolean add(IngredientJS ingredientJS) {
-		LootEntry entry = new LootEntry(ingredientJS);
-		return super.add(entry);
+	private final String serializeKey;
+
+	public LootEntryList(String key) {
+		this.serializeKey = key;
 	}
 
-	public void add(int index, IngredientJS ingredientJS) {
-		LootEntry entry = new LootEntry(ingredientJS);
-		super.add(index, entry);
+	public AbstractLootEntry add(AbstractLootEntry lootEntry) {
+		elements.add(lootEntry);
+		return lootEntry;
 	}
 
-	public LootEntry set(int index, IngredientJS ingredientJS) {
-		LootEntry entry = new LootEntry(ingredientJS);
-		return super.set(index, entry);
+	public AbstractLootEntry add(IngredientJS ingredientJS) {
+		AbstractLootEntry entry = AbstractLootEntry.of(ingredientJS);
+		elements.add(entry);
+		return entry;
 	}
 
-	public boolean add(IngredientJS ingredientJS, Consumer<LootEntry> consumer) {
-		LootEntry entry = new LootEntry(ingredientJS);
-		consumer.accept(entry);
-		return super.add(entry);
+	public AbstractLootEntry add(int index, IngredientJS ingredientJS) {
+		AbstractLootEntry entry = AbstractLootEntry.of(ingredientJS);
+		elements.add(index, entry);
+		return entry;
 	}
 
-	public void add(int index, IngredientJS ingredientJS, Consumer<LootEntry> consumer) {
-		LootEntry entry = new LootEntry(ingredientJS);
-		consumer.accept(entry);
-		super.add(index, entry);
-	}
-
-	public LootEntry set(int index, IngredientJS ingredientJS, Consumer<LootEntry> consumer) {
-		LootEntry entry = new LootEntry(ingredientJS);
-		consumer.accept(entry);
-		return super.set(index, entry);
-	}
-
-	@HideFromJS
-	public void fillJson(String key, JsonObject into) {
-		if(isEmpty()) {
-			return;
-		}
-
-		into.add(key, toJson());
+	public AbstractLootEntry set(int index, IngredientJS ingredientJS) {
+		AbstractLootEntry entry = AbstractLootEntry.of(ingredientJS);
+		elements.set(index, entry);
+		return entry;
 	}
 
 	@Override
-	public JsonArray toJson() {
-		JsonArray array = new JsonArray();
-
-		forEach(child -> {
-			JsonElement element = child.toJson();
-			array.add(element);
-		});
-
-		return array;
+	protected String getSerializeKey() {
+		return serializeKey;
 	}
 }

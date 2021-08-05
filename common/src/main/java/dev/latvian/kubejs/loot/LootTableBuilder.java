@@ -4,7 +4,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.loot.entry.LootEntry;
+import dev.latvian.kubejs.loot.entry.AbstractLootEntry;
 import dev.latvian.kubejs.loot.function.LootFunction;
 import dev.latvian.kubejs.loot.function.LootFunctionImpl;
 import dev.latvian.kubejs.loot.function.LootFunctionList;
@@ -18,11 +18,14 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class LootTableBuilder implements JsonSerializable, AdditionalLootTableDataOwner, LootFunctionImpl {
-	public final String type;
+	public String type;
 
 	public final LootFunctionList functions = new LootFunctionList();
 	public final List<LootPool> pools = new ArrayList<>();
 	private final JsonObject additionalData = new JsonObject();
+
+	public LootTableBuilder() {
+	}
 
 	public LootTableBuilder(String type) {
 		this.type = type;
@@ -35,7 +38,7 @@ public class LootTableBuilder implements JsonSerializable, AdditionalLootTableDa
 		JsonElement rawType = JsonUtilsJS.extract("type", copiedJsonTable);
 		this.type = rawType != null ? rawType.getAsString() : null;
 
-		functions.fill((JsonArray) JsonUtilsJS.extract("functions", copiedJsonTable));
+		functions.addAll((JsonArray) JsonUtilsJS.extract("functions", copiedJsonTable));
 
 		JsonArray pools = (JsonArray) JsonUtilsJS.extract("pools", copiedJsonTable);
 		if (pools != null) {
@@ -58,6 +61,14 @@ public class LootTableBuilder implements JsonSerializable, AdditionalLootTableDa
 		getPools().add(p);
 	}
 
+	public String getType() {
+		return type == null ? "" : type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	public JsonObject toJson() {
 		JsonObject result = new JsonObject();
 
@@ -65,7 +76,7 @@ public class LootTableBuilder implements JsonSerializable, AdditionalLootTableDa
 			result.addProperty("type", type);
 		}
 
-		functions.fillJson(result);
+		functions.serializeInto(result);
 
 		if (!getPools().isEmpty()) {
 			JsonArray poolsArray = new JsonArray();
@@ -86,14 +97,18 @@ public class LootTableBuilder implements JsonSerializable, AdditionalLootTableDa
 	 * @return the first accessible entry in the loot table
 	 */
 	@Nullable
-	public LootEntry getFirstEntry() {
+	public AbstractLootEntry getFirstEntry() {
 		for (LootPool pool : getPools()) {
-			for (LootEntry entry : pool.entries) {
+			for (AbstractLootEntry entry : pool.entries) {
 				return entry;
 			}
 		}
 
 		return null;
+	}
+
+	public void replaceEntry() {
+
 	}
 
 	public void clear() {
@@ -114,6 +129,12 @@ public class LootTableBuilder implements JsonSerializable, AdditionalLootTableDa
 	@Override
 	public JsonObject getAdditionalData() {
 		return additionalData;
+	}
+
+	public void merge(LootTableBuilder builder) {
+		builder.pools.forEach(lootPool -> {
+			pools.add(new LootPool(lootPool.toJson()));
+		});
 	}
 
 	@Override

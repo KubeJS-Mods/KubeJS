@@ -5,24 +5,31 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.block.BlockStatePredicate;
 import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.JsonUtilsJS;
+import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class LootTableEventJS extends EventJS {
 	private static final ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
 	private static final String TYPE_BLOCK = "minecraft:block";
+	private static final String TYPE_ENTITY = "minecraft:entity";
+	private static final String TYPE_CHEST = "minecraft:chest";
 
 	private final Map<ResourceLocation, JsonElement> lootTables;
 
@@ -52,7 +59,7 @@ public class LootTableEventJS extends EventJS {
 
 	public void testSelfBuild(ResourceLocation resourceLocation) {
 		LootTableBuilder builder = get(resourceLocation);
-		testSelfBuild(builder, resourceLocation);
+		testSelfBuild(Objects.requireNonNull(builder), resourceLocation);
 	}
 
 	public void forEachTables(Consumer<ResourceLocation> consumer) {
@@ -66,7 +73,7 @@ public class LootTableEventJS extends EventJS {
 	}
 
 	public void raw(ResourceLocation id, Consumer<MapJS> consumer) {
-		JsonObject jsonObject = (JsonObject) lootTables.get(id);
+		JsonObject jsonObject = (JsonObject) lootTables.get(tryGetResourceLocation(id));
 		if (jsonObject == null) {
 			throw new IllegalArgumentException(String.format("No loot table for resource '%s'.", id));
 		}
@@ -93,13 +100,16 @@ public class LootTableEventJS extends EventJS {
 		modify(id, LootTableBuilder::clear);
 	}
 
-	public LootTableBuilder get(ResourceLocation id) {
-		JsonObject jsonObject = (JsonObject) lootTables.get(id);
-		if (jsonObject == null) {
-			throw new IllegalArgumentException(String.format("No loot table for resource '%s'.", id));
-		}
+	public LootTableBuilder create(String type) {
+		return new LootTableBuilder(type);
+	}
 
-		return new LootTableBuilder(jsonObject);
+	@Nullable
+	public LootTableBuilder get(ResourceLocation id) {
+		JsonObject jsonObject = (JsonObject) lootTables.get(tryGetResourceLocation(id));
+		return jsonObject != null
+				? new LootTableBuilder(jsonObject)
+				: null;
 	}
 
 	public void modify(ResourceLocation id, Consumer<LootTableBuilder> consumer) {
@@ -113,97 +123,141 @@ public class LootTableEventJS extends EventJS {
 		addIfContains(id, builder.toJson());
 	}
 
-	public void modifyBlock(ResourceLocation block, Consumer<LootTableBuilder> consumer) {
-		ResourceLocation tableLocation = getBlockResourceLocation(block);
-		modify(tableLocation, consumer);
+	public void merge(ResourceLocation id, Consumer<LootTableBuilder> consumer) {
+		LootTableBuilder builder = new LootTableBuilder("");
+		consumer.accept(builder);
+
+		modify(id, originBuilder -> {
+			originBuilder.merge(builder);
+		});
 	}
 
-	public void replaceBlocks(Object blocks, Consumer<LootTableBuilder> consumer) {
+	public void merge(ResourceLocation id, LootTableBuilder builder) {
+		merge(id, lootTableBuilder -> {
+			lootTableBuilder.merge(builder);
+		});
+	}
+
+	public void addBlock(Object blocks, Consumer<LootTableBuilder> consumer) {
 		LootTableBuilder builder = new LootTableBuilder(TYPE_BLOCK);
 		consumer.accept(builder);
 
-		getValidBlocks(blocks).forEach(resourceLocation -> {
-			if(addIfContains(getBlockResourceLocation(resourceLocation), builder.toJson())) {
+		getValidBlockLocations(blocks).forEach(resourceLocation -> {
+			if (addIfContains(getBlockResourceLocation(resourceLocation), builder.toJson())) {
 				ScriptType.SERVER.console.info(String.format("'%s' was replaced with the new loot table.", resourceLocation));
 			}
 		});
 	}
 
-	public void addBlock() {
-	}
-
-	public void modifyEntity(ResourceLocation entity, Consumer<LootTableBuilder> consumer) {
-		ResourceLocation tableLocation = getEntityResourceLocation(entity);
-		modify(tableLocation, consumer);
-	}
-
-	public void modifyChest(ResourceLocation chest, Consumer<LootTableBuilder> consumer) {
-		ResourceLocation tableLocation = getChestResourceLocation(chest);
-		modify(tableLocation, consumer);
-	}
-
-	private List<ResourceLocation> getValidBlocks(Object blocks) {
-		List<ResourceLocation> collect = BlockStatePredicate.of(blocks).getBlocks()
-				.stream()
-				.map(block -> KubeJSRegistries.blocks().getId(block))
-				.filter(rl -> rl != null && !rl.equals(AIR_ID))
-				.collect(Collectors.toList());
-
-		return collect;
-	}
-
-	/*
-	public void modifyBlock(ResourceLocation block, Consumer<LootTableBuilder> consumer) {
-		modify(getBlockResourceLocation(block), consumer);
-	}
-
-	public void buildBlock(Object blocks, Consumer<LootTableBuilder> consumer) {
-		LootTableBuilder builder = new LootTableBuilder("minecraft:block");
-		consumer.accept(builder);
-
-		for (Block block : BlockStatePredicate.of(blocks).getBlocks()) {
-			ResourceLocation blockId = KubeJSRegistries.blocks().getId(block);
-			if (blockId != null && !blockId.equals(AIR_ID)) {
-				lootTables.put(getBlockResourceLocation(blockId), builder.toJson());
-			}
-		}
-	}
-
-	public void simpleBlockDrop(Object blocks) {
-		for (Block block : BlockStatePredicate.of(blocks).getBlocks()) {
-			ResourceLocation itemId = KubeJSRegistries.items().getId(block.asItem());
-			ResourceLocation blockId = KubeJSRegistries.blocks().getId(block);
-			if (blockId != null && itemId != null && !itemId.equals(AIR_ID) && !blockId.equals(AIR_ID)) {
-				simpleBlockDrop(block, itemId);
-			}
-		}
-	}
-
-	public void simpleBlockDrop(Object blocks, Object ingredient) {
-		IngredientJS ingredientJS = IngredientJS.of(ingredient);
-
-		buildBlock(blocks, table -> {
-			table.pool(pool -> {
-				pool.addEntry(ingredientJS);
-				pool.conditions.survivesExplosion();
+	public void addSimpleBlock(Object blocks, IngredientJS ingredient) {
+		addBlock(blocks, lootTableBuilder -> {
+			lootTableBuilder.pool(lootPool -> {
+				lootPool.addEntry(ingredient);
 			});
 		});
 	}
 
-	public void modifyEntity(ResourceLocation entity, Consumer<LootTableBuilder> consumer) {
-		modify(getEntityResourceLocation(entity), consumer);
+	public void addSimpleBlock(Object blocks) {
+		getValidBlockLocations(blocks).forEach(resourceLocation -> {
+			Item item = KubeJSRegistries.items().get(resourceLocation);
+			if (item != null) {
+				addSimpleBlock(resourceLocation, IngredientJS.of(resourceLocation));
+			}
+		});
 	}
 
-	public void buildEntity(Object entities, Consumer<LootTableBuilder> consumer) {
-		LootTableBuilder builder = new LootTableBuilder("minecraft:entity");
+	public void mergeBlock(Object blocks, Consumer<LootTableBuilder> consumer) {
+		LootTableBuilder builder = new LootTableBuilder(TYPE_BLOCK);
 		consumer.accept(builder);
 
-		ArrayList<EntityType<?>> entityTypes = getFilteredEntityTypes(entities);
-		entityTypes.forEach(entityType -> {
+		getValidBlockLocations(blocks).forEach(resourceLocation -> {
+			modify(getBlockResourceLocation(resourceLocation), originBuilder -> {
+				originBuilder.merge(builder);
+			});
+		});
+	}
+
+	public void mergeBlock(Object blocks, LootTableBuilder builder) {
+		mergeBlock(blocks, lootTableBuilder -> {
+			lootTableBuilder.merge(builder);
+		});
+	}
+
+	public void addEntity(Object entities, Consumer<LootTableBuilder> consumer) {
+		LootTableBuilder builder = new LootTableBuilder(TYPE_ENTITY);
+		consumer.accept(builder);
+
+		getValidEntityTypes(entities).forEach(entityType -> {
 			lootTables.put(entityType.getDefaultLootTable(), builder.toJson());
 		});
 	}
-*/
+
+	public void mergeEntity(Object entities, Consumer<LootTableBuilder> consumer) {
+		LootTableBuilder builder = new LootTableBuilder(TYPE_ENTITY);
+		consumer.accept(builder);
+
+		getValidEntityTypes(entities).forEach(entityType -> {
+			modify(entityType.getDefaultLootTable(), originBuilder -> {
+				originBuilder.merge(builder);
+			});
+		});
+	}
+
+	public void mergeEntity(Object entities, LootTableBuilder builder) {
+		mergeEntity(entities, lootTableBuilder -> {
+			lootTableBuilder.merge(builder);
+		});
+	}
+
+	public void addChest(Object chests, Consumer<LootTableBuilder> consumer) {
+		Set<ResourceLocation> rlSet = getValidChestLocations(chests);
+
+		LootTableBuilder builder = new LootTableBuilder(TYPE_CHEST);
+		consumer.accept(builder);
+
+		rlSet.forEach(resourceLocation -> {
+			addIfContains(resourceLocation, builder.toJson());
+		});
+	}
+
+	public void mergeChest(Object chests, Consumer<LootTableBuilder> consumer) {
+		LootTableBuilder builder = new LootTableBuilder(TYPE_CHEST);
+		consumer.accept(builder);
+
+		Set<ResourceLocation> rlSet = getValidChestLocations(chests);
+		rlSet.forEach(resourceLocation -> {
+			modify(resourceLocation, originBuilder -> {
+				originBuilder.merge(builder);
+			});
+		});
+	}
+
+	public void mergeChest(Object chests, LootTableBuilder builder) {
+		mergeChest(chests, lootTableBuilder -> {
+			lootTableBuilder.merge(builder);
+		});
+	}
+
+	private ResourceLocation tryGetResourceLocation(ResourceLocation rl) {
+		if (lootTables.containsKey(rl)) {
+			return rl;
+		}
+
+		Set<ResourceLocation> locations = new HashSet<>();
+
+		locations.add(rl);
+		locations.add(getBlockResourceLocation(rl));
+		locations.add(getEntityResourceLocation(rl));
+		locations.add(getChestResourceLocation(rl));
+
+		locations = locations.stream().filter(lootTables::containsKey).collect(Collectors.toSet());
+		if (locations.size() > 1) {
+			throw new RuntimeException(String.format("Multiple tables found for '%s'. Try to be more specific. Found tables with given id: [%s]", rl, locations));
+		}
+
+		return locations.stream().findFirst().orElse(AIR_ID);
+	}
+
 	private ResourceLocation getBlockResourceLocation(ResourceLocation block) {
 		return new ResourceLocation(block.getNamespace(), "blocks/" + block.getPath());
 	}
@@ -213,17 +267,42 @@ public class LootTableEventJS extends EventJS {
 	}
 
 	private ResourceLocation getChestResourceLocation(ResourceLocation chest) {
+		if(chest.getPath().startsWith("chests/") && lootTables.containsKey(chest)) {
+			return chest;
+		}
+
+		if (chest.getPath().startsWith("village")) {
+			return new ResourceLocation(chest.getNamespace(), "chests/village/" + chest.getPath());
+		}
+
 		return new ResourceLocation(chest.getNamespace(), "chests/" + chest.getPath());
 	}
 
-//	private ArrayList<EntityType<?>> getFilteredEntityTypes(Object filters) {
-//		ArrayList<EntityType<?>> result = new ArrayList<>();
-//		KubeJSRegistries.entityTypes().entrySet().forEach(entry -> {
-//			boolean matchedFull = UtilsJS.matchRegex(filters, entry.getKey().location().toString());
-//			if (matchedFull) {
-//				result.add(entry.getValue());
-//			}
-//		});
-//		return result;
-//	}
+	private List<EntityType<?>> getValidEntityTypes(Object filters) {
+		ArrayList<EntityType<?>> result = new ArrayList<>();
+		KubeJSRegistries.entityTypes().entrySet().forEach(entry -> {
+			boolean matchedFull = UtilsJS.matchRegex(filters, entry.getKey().location().toString());
+			if (matchedFull) {
+				result.add(entry.getValue());
+			}
+		});
+		return result;
+	}
+
+	private Set<ResourceLocation> getValidChestLocations(Object chests) {
+		return ListJS.orSelf(chests)
+				.stream()
+				.filter(o -> o instanceof CharSequence)
+				.map(o -> new ResourceLocation(o.toString()))
+				.map(this::getChestResourceLocation)
+				.collect(Collectors.toSet());
+	}
+
+	private List<ResourceLocation> getValidBlockLocations(Object blocks) {
+		return BlockStatePredicate.of(blocks).getBlocks()
+				.stream()
+				.map(block -> KubeJSRegistries.blocks().getId(block))
+				.filter(rl -> rl != null && !rl.equals(AIR_ID))
+				.collect(Collectors.toList());
+	}
 }

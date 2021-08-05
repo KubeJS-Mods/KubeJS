@@ -133,8 +133,12 @@ public interface LootConditionImpl extends JsonSerializable {
 		consumer.accept(alternativeCondition);
 	}
 
-	default void customCondition(MapJS condition) {
+	default void customCondition(Object condition) {
 		LootCondition lootCondition = LootCondition.of(condition);
+		if(lootCondition == null) {
+			throw new IllegalArgumentException(String.format("Condition '%s' could not be created. Wrong format!", condition));
+		}
+
 		handleNewConditionImpl(lootCondition);
 	}
 }
