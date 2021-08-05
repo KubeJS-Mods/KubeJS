@@ -9,18 +9,22 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
-public class YeetREICategoryEventJS extends EventJS {
-	private final Set<ResourceLocation> categoriesYeeted;
+public class RemoveREICategoryEventJS extends EventJS {
+	private final Set<ResourceLocation> categoriesRemoved;
 
-	public YeetREICategoryEventJS(Set<ResourceLocation> categoriesYeeted) {
-		this.categoriesYeeted = categoriesYeeted;
+	public RemoveREICategoryEventJS(Set<ResourceLocation> categoriesRemoved) {
+		this.categoriesRemoved = categoriesRemoved;
 	}
 
 	public Collection<String> getCategories() {
 		return CollectionUtils.map(RecipeHelper.getInstance().getAllCategories(), category -> category.getIdentifier().toString());
 	}
 
+	public void remove(ResourceLocation[] categoriesToYeet) {
+		categoriesRemoved.addAll(Arrays.asList(categoriesToYeet));
+	}
+
 	public void yeet(ResourceLocation[] categoriesToYeet) {
-		categoriesYeeted.addAll(Arrays.asList(categoriesToYeet));
+		remove(categoriesToYeet);
 	}
 }

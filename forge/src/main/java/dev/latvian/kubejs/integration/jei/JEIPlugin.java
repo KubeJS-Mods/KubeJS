@@ -49,8 +49,8 @@ public class JEIPlugin implements IModPlugin {
 
 		new HideCustomJEIEventJS(runtime).post(ScriptType.CLIENT, JEIIntegration.JEI_HIDE_CUSTOM);
 
-		new YeetJEICategoriesEvent(runtime).post(ScriptType.CLIENT, JEIIntegration.JEI_YEET_CATEGORIES);
-		new YeetJEIRecipesEvent(runtime).post(ScriptType.CLIENT, JEIIntegration.JEI_YEET_RECIPES);
+		new RemoveJEICategoriesEvent(runtime).post(ScriptType.CLIENT, JEIIntegration.JEI_REMOVE_CATEGORIES);
+		new RemoveJEIRecipesEvent(runtime).post(ScriptType.CLIENT, JEIIntegration.JEI_REMOVE_RECIPES);
 
 		new AddJEIEventJS<>(runtime, VanillaTypes.ITEM, object -> ItemStackJS.of(object).getItemStack(), stack -> !stack.isEmpty()).post(ScriptType.CLIENT, JEIIntegration.JEI_ADD_ITEMS);
 		new AddJEIEventJS<>(runtime, VanillaTypes.FLUID, object -> fromArchitectury(FluidStackJS.of(object).getFluidStack()), stack -> !stack.isEmpty()).post(ScriptType.CLIENT, JEIIntegration.JEI_ADD_FLUIDS);

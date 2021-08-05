@@ -52,7 +52,6 @@ public class RecipeEventJS extends EventJS {
 
 	public static RecipeEventJS instance;
 
-	private final Map<ResourceLocation, RecipeTypeJS> typeMap;
 	private final List<Recipe<?>> fallbackedRecipes = new ArrayList<>();
 	private final List<RecipeJS> originalRecipes;
 	final List<RecipeJS> addedRecipes;
@@ -70,7 +69,6 @@ public class RecipeEventJS extends EventJS {
 	public final RecipeFunction smithing;
 
 	public RecipeEventJS(Map<ResourceLocation, RecipeTypeJS> t) {
-		typeMap = t;
 		originalRecipes = new ArrayList<>();
 
 		ScriptType.SERVER.console.info("Scanning recipes...");
@@ -91,7 +89,7 @@ public class RecipeEventJS extends EventJS {
 
 			for (Map.Entry<String, RecipeSerializer<?>> entry1 : entry.getValue().entrySet()) {
 				ResourceLocation location = new ResourceLocation(entry.getKey(), entry1.getKey());
-				RecipeTypeJS typeJS = typeMap.get(location);
+				RecipeTypeJS typeJS = t.get(location);
 				RecipeFunction func = new RecipeFunction(this, location, typeJS != null ? typeJS : new CustomRecipeTypeJS(entry1.getValue()));
 				funcs.put(UtilsJS.convertSnakeCaseToCamelCase(entry1.getKey()), func);
 				funcs.put(entry1.getKey(), func);

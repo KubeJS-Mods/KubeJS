@@ -16,14 +16,14 @@ import java.util.Set;
 /**
  * @author LatvianModder
  */
-public class YeetJEIRecipesEvent extends EventJS {
+public class RemoveJEIRecipesEvent extends EventJS {
 	private final IJeiRuntime runtime;
-	private final HashMap<ResourceLocation, Collection<ResourceLocation>> recipesYeeted;
+	private final HashMap<ResourceLocation, Collection<ResourceLocation>> recipesRemoved;
 	private final Collection<IRecipeCategory<?>> allCategories;
 
-	public YeetJEIRecipesEvent(IJeiRuntime r) {
+	public RemoveJEIRecipesEvent(IJeiRuntime r) {
 		runtime = r;
-		recipesYeeted = new HashMap<>();
+		recipesRemoved = new HashMap<>();
 		allCategories = runtime.getRecipeManager().getRecipeCategories();
 	}
 
@@ -34,27 +34,30 @@ public class YeetJEIRecipesEvent extends EventJS {
 	public Collection<ResourceLocation> getCategoryIds() {
 		Set<ResourceLocation> set = new HashSet<>();
 		for (IRecipeCategory<?> allCategory : allCategories) {
-			ResourceLocation uid = allCategory.getUid();
-			set.add(uid);
+			set.add(allCategory.getUid());
 		}
 		return set;
 	}
 
-	public void yeet(String category, ResourceLocation[] recipesToYeet) {
+	public void remove(String category, ResourceLocation[] recipesToRemove) {
 		ResourceLocation cat = new ResourceLocation(category);
-		for (ResourceLocation toYeet : recipesToYeet) {
-			recipesYeeted.computeIfAbsent(cat, _0 -> new HashSet<>()).add(toYeet);
+		for (ResourceLocation toRemove : recipesToRemove) {
+			recipesRemoved.computeIfAbsent(cat, _0 -> new HashSet<>()).add(toRemove);
 		}
+	}
+
+	public void yeet(String category, ResourceLocation[] recipesToYeet) {
+		remove(category, recipesToYeet);
 	}
 
 	@Override
 	protected void afterPosted(boolean result) {
 		IRecipeManager rm = runtime.getRecipeManager();
-		for (ResourceLocation cat : recipesYeeted.keySet()) {
+		for (ResourceLocation cat : recipesRemoved.keySet()) {
 			try {
 				IRecipeCategory<?> category = rm.getRecipeCategory(cat);
 				if (Recipe.class.isAssignableFrom(category.getRecipeClass())) {
-					for (ResourceLocation id : recipesYeeted.get(cat)) {
+					for (ResourceLocation id : recipesRemoved.get(cat)) {
 						try {
 							boolean found = false;
 							for (Object o : rm.getRecipes(category)) {
@@ -66,17 +69,17 @@ public class YeetJEIRecipesEvent extends EventJS {
 								}
 							}
 							if (!found) {
-								KubeJS.LOGGER.warn("Failed to yeet recipe {} for category {}: Recipe doesn't exist!", id, cat);
+								KubeJS.LOGGER.warn("Failed to remove recipe {} for category {}: Recipe doesn't exist!", id, cat);
 							}
 						} catch (Exception e) {
-							KubeJS.LOGGER.warn("Failed to yeet recipe {} for category {}: An unexpected error was thrown!", id, cat);
+							KubeJS.LOGGER.warn("Failed to remove recipe {} for category {}: An unexpected error was thrown!", id, cat);
 						}
 					}
 				} else {
-					KubeJS.LOGGER.warn("Failed to yeet recipes for category {}: Recipe type is unsupported!", cat);
+					KubeJS.LOGGER.warn("Failed to remove recipes for category {}: Recipe type is unsupported!", cat);
 				}
 			} catch (NullPointerException | IllegalStateException e) {
-				KubeJS.LOGGER.warn("Failed to yeet recipes for category {}: Category doesn't exist!", cat);
+				KubeJS.LOGGER.warn("Failed to remove recipes for category {}: Category doesn't exist!", cat);
 				KubeJS.LOGGER.info("Available categories: " + getCategoryIds());
 			}
 		}
