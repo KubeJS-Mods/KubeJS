@@ -74,6 +74,7 @@ public class UtilsJS {
 	public static final Random RANDOM = new Random();
 	public static final Pattern REGEX_PATTERN = Pattern.compile("\\/(.*)\\/([a-z]*)");
 	public static final ResourceLocation AIR_LOCATION = new ResourceLocation("minecraft:air");
+	public static final Pattern SNAKE_CASE_SPLIT = Pattern.compile("[_/]");
 
 	public interface TryIO {
 		void run() throws IOException;
@@ -559,5 +560,26 @@ public class UtilsJS {
 			String className = type == null ? "null" : type.getClass().getName();
 			throw new IllegalArgumentException("Expected a Class, ParameterizedType, or GenericArrayType, but <" + type + "> is of type " + className);
 		}
+	}
+
+	public static String convertSnakeCaseToCamelCase(String string) {
+		String[] s = SNAKE_CASE_SPLIT.split(string, 0);
+
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+
+		for (String value : s) {
+			if (!value.isEmpty()) {
+				if (first) {
+					first = false;
+					sb.append(value);
+				} else {
+					sb.append(Character.toUpperCase(value.charAt(0)));
+					sb.append(value, 1, value.length());
+				}
+			}
+		}
+
+		return sb.toString();
 	}
 }

@@ -18,11 +18,10 @@ import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.mods.rhino.util.DynamicMap;
+import dev.latvian.kubejs.util.UtilsJS;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.platform.Platform;
-import me.shedaniel.architectury.registry.Registries;
-import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.Recipe;
@@ -49,7 +48,7 @@ import java.util.stream.Collectors;
  * @author LatvianModder
  */
 public class RecipeEventJS extends EventJS {
-	public static final ResourceLocation FORGE_CONDITIONAL = new ResourceLocation("forge:conditional");
+	public static final String FORGE_CONDITIONAL = "forge:conditional";
 
 	public static RecipeEventJS instance;
 
@@ -58,10 +57,17 @@ public class RecipeEventJS extends EventJS {
 	private final List<RecipeJS> originalRecipes;
 	final List<RecipeJS> addedRecipes;
 	private final Set<RecipeJS> removedRecipes;
-	private final Map<ResourceLocation, RecipeFunction> functionMap;
-
-	private final DynamicMap<DynamicMap<RecipeFunction>> recipeFunctions;
+	private final Map<String, Object> recipeFunctions;
 	private AtomicInteger modifiedRecipes;
+
+	public final RecipeFunction shaped;
+	public final RecipeFunction shapeless;
+	public final RecipeFunction smelting;
+	public final RecipeFunction blasting;
+	public final RecipeFunction smoking;
+	public final RecipeFunction campfireCooking;
+	public final RecipeFunction stonecutting;
+	public final RecipeFunction smithing;
 
 	public RecipeEventJS(Map<ResourceLocation, RecipeTypeJS> t) {
 		typeMap = t;
@@ -71,11 +77,44 @@ public class RecipeEventJS extends EventJS {
 
 		addedRecipes = new ArrayList<>();
 		removedRecipes = new HashSet<>();
-		functionMap = new HashMap<>();
-		recipeFunctions = new DynamicMap<>(n -> new DynamicMap<>(p -> getRecipeFunction(new ResourceLocation(n, p))));
+
+		recipeFunctions = new HashMap<>();
+
+		Map<String, Map<String, RecipeSerializer<?>>> serializers = new HashMap<>();
+
+		for (Map.Entry<ResourceKey<RecipeSerializer<?>>, RecipeSerializer<?>> entry : KubeJSRegistries.recipeSerializers().entrySet()) {
+			serializers.computeIfAbsent(entry.getKey().location().getNamespace(), n -> new HashMap<>()).put(entry.getKey().location().getPath(), entry.getValue());
+		}
+
+		for (Map.Entry<String, Map<String, RecipeSerializer<?>>> entry : serializers.entrySet()) {
+			Map<String, RecipeFunction> funcs = new HashMap<>();
+
+			for (Map.Entry<String, RecipeSerializer<?>> entry1 : entry.getValue().entrySet()) {
+				ResourceLocation location = new ResourceLocation(entry.getKey(), entry1.getKey());
+				RecipeTypeJS typeJS = typeMap.get(location);
+				RecipeFunction func = new RecipeFunction(this, location, typeJS != null ? typeJS : new CustomRecipeTypeJS(entry1.getValue()));
+				funcs.put(UtilsJS.convertSnakeCaseToCamelCase(entry1.getKey()), func);
+				funcs.put(entry1.getKey(), func);
+
+				recipeFunctions.put(UtilsJS.convertSnakeCaseToCamelCase(entry.getKey() + "_" + entry1.getKey()), func);
+				recipeFunctions.put(entry.getKey() + "_" + entry1.getKey(), func);
+			}
+
+			recipeFunctions.put(UtilsJS.convertSnakeCaseToCamelCase(entry.getKey()), funcs);
+			recipeFunctions.put(entry.getKey(), funcs);
+		}
 
 		SpecialRecipeSerializerManager.INSTANCE.reset();
 		SpecialRecipeSerializerManager.INSTANCE.post(ScriptType.SERVER, KubeJSEvents.RECIPES_SERIALIZER_SPECIAL_FLAG);
+
+		shaped = getRecipeFunction("minecraft:crafting_shaped");
+		shapeless = getRecipeFunction("minecraft:crafting_shapeless");
+		smelting = getRecipeFunction("minecraft:smelting");
+		blasting = getRecipeFunction("minecraft:blasting");
+		smoking = getRecipeFunction("minecraft:smoking");
+		campfireCooking = getRecipeFunction("minecraft:campfire_cooking");
+		stonecutting = getRecipeFunction("minecraft:stonecutting");
+		smithing = getRecipeFunction("minecraft:smithing");
 	}
 
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap) {
@@ -97,7 +136,7 @@ public class RecipeEventJS extends EventJS {
 			try {
 				JsonObject json = entry.getValue();
 
-				ResourceLocation type = new ResourceLocation(GsonHelper.getAsString(json, "type"));
+				String type = GsonHelper.getAsString(json, "type");
 
 				recipeIdAndType = recipeId + "[" + type + "]";
 
@@ -124,7 +163,7 @@ public class RecipeEventJS extends EventJS {
 
 						if (processConditions(o, "conditions")) {
 							json = o.get("recipe").getAsJsonObject();
-							type = new ResourceLocation(GsonHelper.getAsString(json, "type"));
+							type = GsonHelper.getAsString(json, "type");
 							recipeIdAndType = recipeId + "[" + type + "]";
 							skip = false;
 							break;
@@ -326,7 +365,7 @@ public class RecipeEventJS extends EventJS {
 	private static void pingNewRecipes(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map) {
 	}
 
-	public DynamicMap<DynamicMap<RecipeFunction>> getRecipes() {
+	public Map<String, Object> getRecipes() {
 		return recipeFunctions;
 	}
 
@@ -449,60 +488,34 @@ public class RecipeEventJS extends EventJS {
 		return replaceOutput(RecipeFilter.ALWAYS_TRUE, ingredient, with);
 	}
 
-	public RecipeFunction getRecipeFunction(@Nullable ResourceLocation id) {
-		if (id == null) {
+	public RecipeFunction getRecipeFunction(@Nullable String id) {
+		if (id == null || id.isEmpty()) {
 			throw new NullPointerException("Recipe type is null!");
 		}
 
-		return functionMap.computeIfAbsent(id, location ->
-		{
-			RecipeSerializer<?> serializer = KubeJSRegistries.recipeSerializers().get(location);
+		String namespace = UtilsJS.getNamespace(id);
+		String path = UtilsJS.getPath(id);
 
-			if (serializer != null) {
-				RecipeTypeJS typeJS = typeMap.get(location);
-				return new RecipeFunction(this, location, typeJS != null ? typeJS : new CustomRecipeTypeJS(serializer));
-			} else {
-				return new RecipeFunction(this, location, null);
-			}
-		});
-	}
+		Object func0 = recipeFunctions.get(namespace);
 
-	public RecipeFunction getShaped() {
-		return getRecipeFunction(Registries.getId(RecipeSerializer.SHAPED_RECIPE, Registry.RECIPE_SERIALIZER_REGISTRY));
-	}
+		if (func0 instanceof RecipeFunction) {
+			return (RecipeFunction) func0;
+		} else if (!(func0 instanceof Map)) {
+			throw new NullPointerException("Unknown recipe type: " + id);
+		}
 
-	public RecipeFunction getShapeless() {
-		return getRecipeFunction(Registries.getId(RecipeSerializer.SHAPELESS_RECIPE, Registry.RECIPE_SERIALIZER_REGISTRY));
-	}
+		RecipeFunction func = ((Map<String, RecipeFunction>) func0).get(path);
 
-	public RecipeFunction getSmelting() {
-		return getRecipeFunction(Registries.getId(RecipeSerializer.SMELTING_RECIPE, Registry.RECIPE_SERIALIZER_REGISTRY));
-	}
+		if (func == null) {
+			throw new NullPointerException("Unknown recipe type: " + id);
+		}
 
-	public RecipeFunction getBlasting() {
-		return getRecipeFunction(Registries.getId(RecipeSerializer.BLASTING_RECIPE, Registry.RECIPE_SERIALIZER_REGISTRY));
-	}
-
-	public RecipeFunction getSmoking() {
-		return getRecipeFunction(Registries.getId(RecipeSerializer.SMOKING_RECIPE, Registry.RECIPE_SERIALIZER_REGISTRY));
-	}
-
-	public RecipeFunction getCampfireCooking() {
-		return getRecipeFunction(Registries.getId(RecipeSerializer.CAMPFIRE_COOKING_RECIPE, Registry.RECIPE_SERIALIZER_REGISTRY));
-	}
-
-	public RecipeFunction getStonecutting() {
-		return getRecipeFunction(Registries.getId(RecipeSerializer.STONECUTTER, Registry.RECIPE_SERIALIZER_REGISTRY));
-	}
-
-	public RecipeFunction getSmithing() {
-		return getRecipeFunction(Registries.getId(RecipeSerializer.SMITHING, Registry.RECIPE_SERIALIZER_REGISTRY));
+		return func;
 	}
 
 	public RecipeJS custom(Object o) {
-		MapJS json = MapJS.of(o);
-		ResourceLocation id = new ResourceLocation(json.getOrDefault("type", "").toString());
-		return getRecipeFunction(id).createRecipe(new Object[]{json});
+		MapJS json = Objects.requireNonNull(MapJS.of(o));
+		return getRecipeFunction(json.getOrDefault("type", "").toString()).createRecipe(new Object[]{json});
 	}
 
 	public void printTypes() {
