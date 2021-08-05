@@ -14,14 +14,14 @@ import java.util.function.Predicate;
 /**
  * @author LatvianModder
  */
-public class YeetJEICategoriesEvent extends EventJS {
+public class RemoveJEICategoriesEvent extends EventJS {
 	private final IJeiRuntime runtime;
-	private final HashSet<ResourceLocation> categoriesYeeted;
+	private final HashSet<ResourceLocation> categoriesRemoved;
 	private final Collection<IRecipeCategory<?>> allCategories;
 
-	public YeetJEICategoriesEvent(IJeiRuntime r) {
+	public RemoveJEICategoriesEvent(IJeiRuntime r) {
 		runtime = r;
-		categoriesYeeted = new HashSet<>();
+		categoriesRemoved = new HashSet<>();
 		allCategories = runtime.getRecipeManager().getRecipeCategories();
 	}
 
@@ -31,7 +31,7 @@ public class YeetJEICategoriesEvent extends EventJS {
 
 	public void yeet(String... categoriesToYeet) {
 		for (String toYeet : categoriesToYeet) {
-			categoriesYeeted.add(new ResourceLocation(toYeet));
+			categoriesRemoved.add(new ResourceLocation(toYeet));
 		}
 	}
 
@@ -54,7 +54,7 @@ public class YeetJEICategoriesEvent extends EventJS {
 
 	@Override
 	protected void afterPosted(boolean result) {
-		for (ResourceLocation category : categoriesYeeted) {
+		for (ResourceLocation category : categoriesRemoved) {
 			try {
 				runtime.getRecipeManager().hideRecipeCategory(category);
 			} catch (Exception e) {

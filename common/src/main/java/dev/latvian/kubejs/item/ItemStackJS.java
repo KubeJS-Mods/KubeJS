@@ -179,6 +179,24 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return stack.withCount(count).withNBT(nbt);
 	}
 
+	public static Item getRawItem(@Nullable Object o) {
+		if (o == null) {
+			return Items.AIR;
+		} else if (o instanceof Item) {
+			return (Item) o;
+		} else if (o instanceof CharSequence) {
+			String s = o.toString();
+
+			if (s == null || s.isEmpty()) {
+				return Items.AIR;
+			} else if (s.charAt(0) != '#') {
+				return KubeJSRegistries.items().get(UtilsJS.getMCID(s));
+			}
+		}
+
+		return ItemStackJS.of(o).getItem();
+	}
+
 	// Use ItemStackJS.of(object)
 	public static ItemStackJS resultFromRecipeJson(@Nullable JsonElement json) {
 		if (json == null || json.isJsonNull()) {

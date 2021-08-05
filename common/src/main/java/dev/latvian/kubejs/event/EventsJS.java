@@ -30,6 +30,7 @@ public class EventsJS {
 	}
 
 	public void listen(String id, IEventHandler handler) {
+		id = id.replace("yeet", "remove");
 		List<ScriptEventHandler> list = map.get(id);
 
 		if (list == null) {

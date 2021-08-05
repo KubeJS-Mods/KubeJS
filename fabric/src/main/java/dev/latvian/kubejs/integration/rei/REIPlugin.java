@@ -21,7 +21,7 @@ import java.util.function.Function;
  * @author shedaniel
  */
 public class REIPlugin implements REIPluginV0 {
-	private final Set<ResourceLocation> categoriesYeeted = new HashSet<>();
+	private final Set<ResourceLocation> categoriesRemoved = new HashSet<>();
 
 	@Override
 	public ResourceLocation getPluginIdentifier() {
@@ -44,13 +44,13 @@ public class REIPlugin implements REIPluginV0 {
 	@Override
 	public void registerOthers(RecipeHelper recipeHelper) {
 		recipeHelper.registerRecipeVisibilityHandler((category, display) -> {
-			return categoriesYeeted.contains(category.getIdentifier()) ? InteractionResult.FAIL : InteractionResult.PASS;
+			return categoriesRemoved.contains(category.getIdentifier()) ? InteractionResult.FAIL : InteractionResult.PASS;
 		});
 	}
 
 	@Override
 	public void postRegister() {
-		categoriesYeeted.clear();
-		new YeetREICategoryEventJS(categoriesYeeted).post(ScriptType.CLIENT, REIIntegration.REI_YEET_CATEGORIES);
+		categoriesRemoved.clear();
+		new RemoveREICategoryEventJS(categoriesRemoved).post(ScriptType.CLIENT, REIIntegration.REI_REMOVE_CATEGORIES);
 	}
 }
