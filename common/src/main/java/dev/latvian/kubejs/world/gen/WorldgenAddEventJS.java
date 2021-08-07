@@ -25,6 +25,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.BlockStateMat
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -44,6 +45,20 @@ public class WorldgenAddEventJS extends StartupEventJS {
 
 	protected boolean verifyBiomes(WorldgenEntryList biomes) {
 		return true;
+	}
+
+	public boolean isInBiomes(String[] filter) {
+		WorldgenEntryList list = new WorldgenEntryList();
+		list.blacklist = false;
+		list.values.addAll(Arrays.asList(filter));
+		return verifyBiomes(list);
+	}
+
+	public boolean isNotInBiomes(String[] filter) {
+		WorldgenEntryList list = new WorldgenEntryList();
+		list.blacklist = true;
+		list.values.addAll(Arrays.asList(filter));
+		return verifyBiomes(list);
 	}
 
 	public void addOre(Consumer<AddOreProperties> p) {
@@ -127,7 +142,7 @@ public class WorldgenAddEventJS extends StartupEventJS {
 		addEntitySpawn(properties._category, new MobSpawnSettings.SpawnerData(properties._entity, properties.weight, properties.minCount, properties.maxCount));
 	}
 
-	public void addSpawn(MobCategory category, String spawn) {
+	public void addSpawn(String[] biomes, MobCategory category, String spawn) {
 		Matcher matcher = SPAWN_PATTERN.matcher(spawn);
 
 		if (matcher.matches()) {

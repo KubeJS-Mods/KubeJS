@@ -10,6 +10,7 @@ import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguratio
 import net.minecraft.world.level.levelgen.feature.configurations.ReplaceBlockConfiguration;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -19,6 +20,20 @@ import java.util.function.Predicate;
 public class WorldgenRemoveEventJS extends StartupEventJS {
 	protected boolean verifyBiomes(WorldgenEntryList biomes) {
 		return true;
+	}
+
+	public boolean isInBiomes(String[] filter) {
+		WorldgenEntryList list = new WorldgenEntryList();
+		list.blacklist = false;
+		list.values.addAll(Arrays.asList(filter));
+		return verifyBiomes(list);
+	}
+
+	public boolean isNotInBiomes(String[] filter) {
+		WorldgenEntryList list = new WorldgenEntryList();
+		list.blacklist = true;
+		list.values.addAll(Arrays.asList(filter));
+		return verifyBiomes(list);
 	}
 
 	protected static boolean checkTree(ConfiguredFeature<?, ?> configuredFeature, Predicate<FeatureConfiguration> predicate) {
