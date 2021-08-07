@@ -3,6 +3,7 @@
 	"package": "dev.latvian.kubejs.mixin.forge",
 	"compatibilityLevel": "JAVA_8",
 	"mixins": [
+		"ForgeHooksMixin"
 	],
 	"client": [
 		"EarlyLoaderGUIMixin"
