@@ -24,6 +24,10 @@ import java.util.stream.Collectors;
  * @author LatvianModder
  */
 public class ConsoleJS {
+	public static ConsoleJS STARTUP;
+	public static ConsoleJS SERVER;
+	public static ConsoleJS CLIENT;
+
 	private final ScriptType type;
 	private final Logger logger;
 	private final Path logFile;

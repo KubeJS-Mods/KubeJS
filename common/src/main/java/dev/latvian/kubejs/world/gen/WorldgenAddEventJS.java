@@ -1,6 +1,8 @@
 package dev.latvian.kubejs.world.gen;
 
+import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.event.StartupEventJS;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
@@ -23,12 +25,17 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.BlockStateMat
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
 
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
  */
 public class WorldgenAddEventJS extends StartupEventJS {
+	private static final Pattern SPAWN_PATTERN = Pattern.compile("(\\w+:\\w+)\\*\\((\\d+)-(\\d+)\\):(\\d+)");
+
 	protected void addFeature(GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> configuredFeature) {
 	}
 
@@ -118,5 +125,21 @@ public class WorldgenAddEventJS extends StartupEventJS {
 		}
 
 		addEntitySpawn(properties._category, new MobSpawnSettings.SpawnerData(properties._entity, properties.weight, properties.minCount, properties.maxCount));
+	}
+
+	public void addSpawn(MobCategory category, String spawn) {
+		Matcher matcher = SPAWN_PATTERN.matcher(spawn);
+
+		if (matcher.matches()) {
+			try {
+				addEntitySpawn(category, new MobSpawnSettings.SpawnerData(Objects.requireNonNull(KubeJSRegistries.entityTypes().get(new ResourceLocation(matcher.group(1)))), Integer.parseInt(matcher.group(4)), Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3))));
+			} catch (Exception ex) {
+				ScriptType.STARTUP.console.info("Failed to add spawn: " + ex);
+			}
+		} else {
+			ScriptType.STARTUP.console.info("Invalid spawn syntax! Must be mod:entity_type*(minCount-maxCount):weight");
+		}
+
+		//minecraft:ghast*(4-4):50
 	}
 }

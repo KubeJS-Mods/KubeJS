@@ -1,11 +1,14 @@
 package dev.latvian.kubejs.world.gen;
 
 import dev.latvian.kubejs.event.StartupEventJS;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.ReplaceBlockConfiguration;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -31,8 +34,14 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 	protected void removeSpawn(RemoveSpawnsByIDProperties properties) {
 	}
 
-	public void removeAllFeatures(String type) {
-		removeFeature(GenerationStep.Decoration.valueOf(type.toUpperCase()), configuredFeature -> true);
+	public void printFeatures(@Nullable GenerationStep.Decoration type) {
+	}
+
+	public void removeFeatureById(GenerationStep.Decoration type, ResourceLocation id) {
+	}
+
+	public void removeAllFeatures(GenerationStep.Decoration type) {
+		removeFeature(type, configuredFeature -> true);
 	}
 
 	public void removeAllFeatures() {
@@ -58,6 +67,9 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 
 			return false;
 		});
+	}
+
+	public void printSpawns(MobCategory category) {
 	}
 
 	public void removeSpawnsByCategory(Consumer<RemoveSpawnsByCategoryProperties> p) {

@@ -21,6 +21,12 @@ public enum ScriptType {
 	SERVER("server", "KubeJS Server", () -> ServerScriptManager.instance.scriptManager),
 	CLIENT("client", "KubeJS Client", () -> KubeJS.clientScriptManager);
 
+	static {
+		ConsoleJS.STARTUP = STARTUP.console;
+		ConsoleJS.SERVER = SERVER.console;
+		ConsoleJS.CLIENT = CLIENT.console;
+	}
+
 	public static ScriptType of(LevelReader world) {
 		return world.isClientSide() ? CLIENT : SERVER;
 	}

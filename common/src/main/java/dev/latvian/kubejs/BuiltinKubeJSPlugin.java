@@ -63,6 +63,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -238,15 +239,16 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		// Java / Minecraft //
 		typeWrappers.register(String.class, String::valueOf);
 		typeWrappers.register(CharSequence.class, String::valueOf);
-		typeWrappers.register(ResourceLocation.class, UtilsJS::getMCID);
+		typeWrappers.register(UUID.class, UUIDUtilsJS::fromString);
+		typeWrappers.register(Pattern.class, UtilsJS::parseRegex);
 		typeWrappers.register(JsonObject.class, MapJS::json);
 		typeWrappers.register(JsonArray.class, ListJS::json);
+
+		typeWrappers.register(ResourceLocation.class, UtilsJS::getMCID);
 		typeWrappers.register(ItemStack.class, o -> ItemStackJS.of(o).getItemStack());
 		typeWrappers.register(CompoundTag.class, MapJS::nbt);
 		typeWrappers.register(CollectionTag.class, ListJS::nbt);
 		typeWrappers.register(ListTag.class, o -> (ListTag) ListJS.nbt(o));
-		typeWrappers.register(UUID.class, UUIDUtilsJS::fromString);
-		typeWrappers.register(Pattern.class, UtilsJS::parseRegex);
 		typeWrappers.register(Component.class, Text::componentOfObject);
 		typeWrappers.register(MutableComponent.class, o -> new TextComponent("").append(Text.componentOfObject(o)));
 		typeWrappers.register(BlockPos.class, o -> {
@@ -262,6 +264,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		});
 
 		typeWrappers.register(Item.class, ItemStackJS::getRawItem);
+		typeWrappers.register(GenerationStep.Decoration.class, o -> o == null || o.toString().isEmpty() ? null : GenerationStep.Decoration.valueOf(o.toString().toUpperCase()));
+		typeWrappers.register(MobCategory.class, o -> o == null ? null : MobCategory.byName(o.toString()));
 
 		// KubeJS //
 		typeWrappers.register(MapJS.class, MapJS::of);

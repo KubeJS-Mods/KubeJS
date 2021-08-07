@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.world.gen.fabric;
 
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.gen.RemoveSpawnsByCategoryProperties;
 import dev.latvian.kubejs.world.gen.RemoveSpawnsByIDProperties;
@@ -10,13 +11,18 @@ import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
@@ -77,11 +83,45 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 	}
 
 	@Override
-	public void removeAllFeatures(String type) {
-		GenerationStep.Decoration decoration = GenerationStep.Decoration.valueOf(type.toUpperCase());
+	public void printFeatures(@Nullable GenerationStep.Decoration type) {
+		if (type == null) {
+			for (GenerationStep.Decoration decoration : GenerationStep.Decoration.values()) {
+				printFeatures(decoration);
+			}
+		} else {
+			ScriptType.STARTUP.console.info("Features with type '" + type.name().toLowerCase() + "' in biome '" + selectionContext.getBiomeKey().location() + "':");
+			int unknown = 0;
 
+			List<List<Supplier<ConfiguredFeature<?, ?>>>> list = selectionContext.getBiome().getGenerationSettings().features();
+
+			if (list.size() > type.ordinal()) {
+				for (Supplier<ConfiguredFeature<?, ?>> cfs : list.get(type.ordinal())) {
+					ConfiguredFeature<?, ?> cf = cfs.get();
+					ResourceLocation id = getFeatureRegistry().getKey(cf);
+
+					if (id == null) {
+						unknown++;
+					} else {
+						ScriptType.STARTUP.console.info("- " + id);
+					}
+				}
+			}
+
+			if (unknown > 0) {
+				ScriptType.STARTUP.console.info("- " + unknown + " features with unknown id");
+			}
+		}
+	}
+
+	@Override
+	public void removeFeatureById(GenerationStep.Decoration type, ResourceLocation id) {
+		modificationContext.getGenerationSettings().removeFeature(type, ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id));
+	}
+
+	@Override
+	public void removeAllFeatures(GenerationStep.Decoration type) {
 		for (ResourceLocation key : getFeatureRegistry().keySet()) {
-			modificationContext.getGenerationSettings().removeFeature(decoration, ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, key));
+			modificationContext.getGenerationSettings().removeFeature(type, ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, key));
 		}
 	}
 
@@ -93,6 +133,15 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 			for (GenerationStep.Decoration decoration : decorations) {
 				modificationContext.getGenerationSettings().removeFeature(decoration, ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, key));
 			}
+		}
+	}
+
+	@Override
+	public void printSpawns(MobCategory category) {
+		ScriptType.STARTUP.console.info("Mod spawns with type '" + category.getName() + "' in biome '" + selectionContext.getBiomeKey().location() + "':");
+
+		for (MobSpawnSettings.SpawnerData data : selectionContext.getBiome().getMobSettings().getMobs(category)) {
+			ScriptType.STARTUP.console.info("- " + data.toString());
 		}
 	}
 
