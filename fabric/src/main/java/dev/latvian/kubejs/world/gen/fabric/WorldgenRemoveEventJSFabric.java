@@ -12,7 +12,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -53,10 +52,16 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 	}
 
 	@Override
+	@Nullable
+	public ResourceLocation getConfiguredFeatureKey(ConfiguredFeature<?, ?> feature) {
+		return getFeatureRegistry().getKey(feature);
+	}
+
+	@Override
 	protected boolean verifyBiomes(WorldgenEntryList biomes) {
 		return biomes.verify(s -> {
 			if (s.startsWith("#")) {
-				return selectionContext.getBiome().getBiomeCategory() == Biome.BiomeCategory.byName(s.substring(1));
+				return selectionContext.getBiome().getBiomeCategory().getName().equals(s.substring(1));
 			}
 
 			return selectionContext.getBiomeKey().location().equals(new ResourceLocation(s));
@@ -96,8 +101,7 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 
 			if (list.size() > type.ordinal()) {
 				for (Supplier<ConfiguredFeature<?, ?>> cfs : list.get(type.ordinal())) {
-					ConfiguredFeature<?, ?> cf = cfs.get();
-					ResourceLocation id = getFeatureRegistry().getKey(cf);
+					ResourceLocation id = getConfiguredFeatureKey(cfs.get());
 
 					if (id == null) {
 						unknown++;
@@ -116,6 +120,13 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 	@Override
 	public void removeFeatureById(GenerationStep.Decoration type, ResourceLocation id) {
 		modificationContext.getGenerationSettings().removeFeature(type, ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id));
+	}
+
+	@Override
+	public void removeFeatureById(GenerationStep.Decoration type, ResourceLocation[] ids) {
+		for (ResourceLocation id : ids) {
+			modificationContext.getGenerationSettings().removeFeature(type, ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id));
+		}
 	}
 
 	@Override

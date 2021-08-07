@@ -25,6 +25,11 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 		return predicate.test(configuredFeature.config) || configuredFeature.config.getFeatures().anyMatch(cf -> checkTree(cf, predicate));
 	}
 
+	@Nullable
+	public ResourceLocation getConfiguredFeatureKey(ConfiguredFeature<?, ?> feature) {
+		return null;
+	}
+
 	protected void removeFeature(GenerationStep.Decoration decoration, Predicate<FeatureConfiguration> predicate) {
 	}
 
@@ -38,6 +43,10 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 	}
 
 	public void removeFeatureById(GenerationStep.Decoration type, ResourceLocation id) {
+		removeFeatureById(type, new ResourceLocation[]{id});
+	}
+
+	public void removeFeatureById(GenerationStep.Decoration type, ResourceLocation[] id) {
 	}
 
 	public void removeAllFeatures(GenerationStep.Decoration type) {
