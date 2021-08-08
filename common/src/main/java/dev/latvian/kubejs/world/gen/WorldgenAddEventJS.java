@@ -142,7 +142,7 @@ public class WorldgenAddEventJS extends StartupEventJS {
 		addEntitySpawn(properties._category, new MobSpawnSettings.SpawnerData(properties._entity, properties.weight, properties.minCount, properties.maxCount));
 	}
 
-	public void addSpawn(String[] biomes, MobCategory category, String spawn) {
+	public void addSpawn(MobCategory category, String spawn) {
 		Matcher matcher = SPAWN_PATTERN.matcher(spawn);
 
 		if (matcher.matches()) {
