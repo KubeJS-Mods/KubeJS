@@ -1,32 +1,61 @@
 package dev.latvian.kubejs.world.gen.forge;
 
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.world.gen.RemoveSpawnsByCategoryProperties;
 import dev.latvian.kubejs.world.gen.RemoveSpawnsByIDProperties;
 import dev.latvian.kubejs.world.gen.WorldgenEntryList;
 import dev.latvian.kubejs.world.gen.WorldgenRemoveEventJS;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
  */
 public class WorldgenRemoveEventJSForge extends WorldgenRemoveEventJS {
 	private final BiomeLoadingEvent event;
+	private final Map<ConfiguredFeature<?, ?>, Optional<ResourceLocation>> featureRegistry = new HashMap<>();
 
 	public WorldgenRemoveEventJSForge(BiomeLoadingEvent e) {
 		event = e;
 	}
 
 	@Override
+	@Nullable
+	public ResourceLocation getConfiguredFeatureKey(ConfiguredFeature<?, ?> feature) {
+		return featureRegistry.computeIfAbsent(feature, f -> {
+			ResourceLocation id = BuiltinRegistries.CONFIGURED_FEATURE.getKey(f);
+
+			if (id != null) {
+				return Optional.of(id);
+			}
+
+			// me.shedaniel.architectury.registry.Registry<ConfiguredFeature<?, ?>> reg = KubeJSRegistries.genericRegistry(Registry.CONFIGURED_FEATURE_REGISTRY);
+			// return reg.getKey(f).map(ResourceKey::location);
+			return Optional.empty();
+		}).orElse(null);
+	}
+
+	@Override
 	protected boolean verifyBiomes(WorldgenEntryList biomes) {
 		return biomes.verify(s -> {
 			if (s.startsWith("#")) {
-				return event.getCategory() == Biome.BiomeCategory.byName(s.substring(1));
+				return event.getCategory().getName().equals(s.substring(1));
 			}
 
 			return new ResourceLocation(s).equals(event.getName());
@@ -53,14 +82,59 @@ public class WorldgenRemoveEventJSForge extends WorldgenRemoveEventJS {
 	}
 
 	@Override
-	public void removeAllFeatures(String type) {
-		event.getGeneration().getFeatures(GenerationStep.Decoration.valueOf(type.toUpperCase())).clear();
+	public void printFeatures(@Nullable GenerationStep.Decoration type) {
+		if (type == null) {
+			for (GenerationStep.Decoration decoration : GenerationStep.Decoration.values()) {
+				printFeatures(decoration);
+			}
+		} else {
+			ScriptType.STARTUP.console.info("Features with type '" + type.name().toLowerCase() + "' in biome '" + event.getName() + "':");
+			int unknown = 0;
+
+			for (Supplier<ConfiguredFeature<?, ?>> cfs : event.getGeneration().getFeatures(type)) {
+				ConfiguredFeature<?, ?> cf = cfs.get();
+				ResourceLocation id = getConfiguredFeatureKey(cf);
+
+				if (id == null) {
+					unknown++;
+				} else {
+					ScriptType.STARTUP.console.info("- " + id);
+				}
+			}
+
+			if (unknown > 0) {
+				ScriptType.STARTUP.console.info("- " + unknown + " features with unknown id");
+			}
+		}
+	}
+
+	@Override
+	public void removeFeatureById(GenerationStep.Decoration type, ResourceLocation[] ids) {
+		Set<ResourceLocation> set = Arrays.stream(ids).collect(Collectors.toSet());
+		event.getGeneration().getFeatures(type).removeIf(cf -> {
+			ResourceLocation id = getConfiguredFeatureKey(cf.get());
+			return id != null && set.contains(id);
+		});
+	}
+
+	@Override
+	public void removeAllFeatures(GenerationStep.Decoration type) {
+		event.getGeneration().getFeatures(type).clear();
 	}
 
 	@Override
 	public void removeAllFeatures() {
 		for (GenerationStep.Decoration decoration : GenerationStep.Decoration.values()) {
 			event.getGeneration().getFeatures(decoration).clear();
+		}
+	}
+
+	@Override
+	public void printSpawns(MobCategory category) {
+		ScriptType.STARTUP.console.info("Mod spawns with type '" + category.getName() + "' in biome '" + event.getName() + "':");
+
+		for (MobSpawnSettings.SpawnerData data : event.getSpawns().getSpawner(category)) {
+			ScriptType.STARTUP.console.info("- " + data.toString());
 		}
 	}
 
