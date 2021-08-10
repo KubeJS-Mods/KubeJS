@@ -130,7 +130,15 @@ public class WorldgenRemoveEventJSForge extends WorldgenRemoveEventJS {
 	}
 
 	@Override
-	public void printSpawns(MobCategory category) {
+	public void printSpawns(@Nullable MobCategory category) {
+		if (category == null) {
+			for (MobCategory c : MobCategory.values()) {
+				printSpawns(c);
+			}
+
+			return;
+		}
+
 		ScriptType.STARTUP.console.info("Mod spawns with type '" + category.getName() + "' in biome '" + event.getName() + "':");
 
 		for (MobSpawnSettings.SpawnerData data : event.getSpawns().getSpawner(category)) {

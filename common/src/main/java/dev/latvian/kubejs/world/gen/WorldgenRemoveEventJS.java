@@ -57,6 +57,10 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 	public void printFeatures(@Nullable GenerationStep.Decoration type) {
 	}
 
+	public void printFeatures() {
+		printFeatures(null);
+	}
+
 	public void removeFeatureById(GenerationStep.Decoration type, ResourceLocation[] id) {
 	}
 
@@ -89,7 +93,11 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 		});
 	}
 
-	public void printSpawns(MobCategory category) {
+	public void printSpawns(@Nullable MobCategory category) {
+	}
+
+	public void printSpawns() {
+		printSpawns(null);
 	}
 
 	public void removeSpawnsByCategory(Consumer<RemoveSpawnsByCategoryProperties> p) {
