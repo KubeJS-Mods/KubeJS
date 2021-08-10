@@ -57,10 +57,6 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 	public void printFeatures(@Nullable GenerationStep.Decoration type) {
 	}
 
-	public void removeFeatureById(GenerationStep.Decoration type, ResourceLocation id) {
-		removeFeatureById(type, new ResourceLocation[]{id});
-	}
-
 	public void removeFeatureById(GenerationStep.Decoration type, ResourceLocation[] id) {
 	}
 

@@ -118,11 +118,6 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 	}
 
 	@Override
-	public void removeFeatureById(GenerationStep.Decoration type, ResourceLocation id) {
-		modificationContext.getGenerationSettings().removeFeature(type, ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id));
-	}
-
-	@Override
 	public void removeFeatureById(GenerationStep.Decoration type, ResourceLocation[] ids) {
 		for (ResourceLocation id : ids) {
 			modificationContext.getGenerationSettings().removeFeature(type, ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id));
