@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author LatvianModder
@@ -300,5 +301,39 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 		}
 
 		return list;
+	}
+
+	public boolean containsAll(Map<?, ?> map) {
+		if (map.isEmpty()) {
+			return true;
+		}
+
+		for (Object k : map.entrySet()) {
+			Object o1 = map.get(k);
+			Object o2 = get(String.valueOf(k));
+
+			if (!Objects.equals(o1, o2)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public boolean containsAny(Map<?, ?> map) {
+		if (map.isEmpty()) {
+			return false;
+		}
+
+		for (Object k : map.entrySet()) {
+			Object o1 = map.get(k);
+			Object o2 = get(String.valueOf(k));
+
+			if (Objects.equals(o1, o2)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
