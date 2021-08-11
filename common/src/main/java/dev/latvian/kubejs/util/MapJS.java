@@ -308,11 +308,8 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 			return true;
 		}
 
-		for (Object k : map.entrySet()) {
-			Object o1 = map.get(k);
-			Object o2 = get(String.valueOf(k));
-
-			if (!Objects.equals(o1, o2)) {
+		for (Map.Entry<?, ?> entry : map.entrySet()) {
+			if (!Objects.equals(entry.getValue(), get(String.valueOf(entry.getKey())))) {
 				return false;
 			}
 		}
@@ -325,11 +322,8 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 			return false;
 		}
 
-		for (Object k : map.entrySet()) {
-			Object o1 = map.get(k);
-			Object o2 = get(String.valueOf(k));
-
-			if (Objects.equals(o1, o2)) {
+		for (Map.Entry<?, ?> entry : map.entrySet()) {
+			if (Objects.equals(entry.getValue(), get(String.valueOf(entry.getKey())))) {
 				return true;
 			}
 		}
