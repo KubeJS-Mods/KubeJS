@@ -118,11 +118,6 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 	}
 
 	@Override
-	public void removeFeatureById(GenerationStep.Decoration type, ResourceLocation id) {
-		modificationContext.getGenerationSettings().removeFeature(type, ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id));
-	}
-
-	@Override
 	public void removeFeatureById(GenerationStep.Decoration type, ResourceLocation[] ids) {
 		for (ResourceLocation id : ids) {
 			modificationContext.getGenerationSettings().removeFeature(type, ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id));
@@ -148,7 +143,15 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 	}
 
 	@Override
-	public void printSpawns(MobCategory category) {
+	public void printSpawns(@Nullable MobCategory category) {
+		if (category == null) {
+			for (MobCategory c : MobCategory.values()) {
+				printSpawns(c);
+			}
+
+			return;
+		}
+
 		ScriptType.STARTUP.console.info("Mod spawns with type '" + category.getName() + "' in biome '" + selectionContext.getBiomeKey().location() + "':");
 
 		for (MobSpawnSettings.SpawnerData data : selectionContext.getBiome().getMobSettings().getMobs(category)) {

@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.text.Text;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
@@ -29,7 +28,7 @@ public class OldItemTooltipEventJS extends EventJS {
 		return advanced;
 	}
 
-	public void add(Object text) {
-		lines.add(Text.of(text).component());
+	public void add(Component text) {
+		lines.add(text);
 	}
 }

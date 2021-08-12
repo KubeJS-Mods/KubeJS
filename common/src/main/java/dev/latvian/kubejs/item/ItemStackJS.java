@@ -14,6 +14,7 @@ import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
 import dev.latvian.kubejs.item.ingredient.RegexIngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
+import dev.latvian.kubejs.item.ingredient.WeakNBTIngredientJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
@@ -30,6 +31,7 @@ import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
+import me.shedaniel.architectury.platform.Platform;
 import me.shedaniel.architectury.registry.Registries;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.core.NonNullList;
@@ -169,7 +171,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		if (n instanceof Number) {
 			stack.setCount(((Number) n).intValue());
 		} else if (n instanceof MapJS) {
-			stack = stack.withNBT((MapJS) n);
+			stack = stack.withNBT(n);
 		}
 
 		return stack;
@@ -384,14 +386,22 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public abstract MapJS getNbt();
 
-	public ItemStackJS withNBT(MapJS nbt) {
+	public boolean hasNBT() {
+		return !getNbt().isEmpty();
+	}
+
+	public String getNbtString() {
+		return hasNBT() ? getNbt().toNBT().toString() : "null";
+	}
+
+	public ItemStackJS withNBT(Object nbt) {
 		if (isEmpty()) {
 			return this;
 		}
 
 		if (nbt != null) {
 			ItemStackJS is = copy();
-			is.getNbt().putAll(nbt);
+			is.getNbt().putAll(MapJS.of(nbt));
 			return is;
 		}
 
@@ -438,17 +448,16 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return Text.of(getItemStack().getHoverName());
 	}
 
-	public void setName(@Nullable Object displayName) {
-		if (displayName == null || displayName instanceof String && displayName.toString().isEmpty()) {
+	public void setName(@Nullable Component displayName) {
+		if (displayName == null) {
 			return;
 		}
 
-		Text t = Text.of(displayName);
 		MapJS nbt = getNbt();
-		nbt.getOrNewMap("display").put("Name", t.toJson());
+		nbt.getOrNewMap("display").put("Name", Component.Serializer.toJsonTree(displayName));
 	}
 
-	public final ItemStackJS name(String displayName) {
+	public final ItemStackJS name(Component displayName) {
 		setName(displayName);
 		return this;
 	}
@@ -457,9 +466,8 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		StringBuilder builder = new StringBuilder();
 
 		int count = getCount();
-		MapJS nbt = getNbt();
 
-		if (count > 1 || hasChance() || !nbt.isEmpty()) {
+		if (count > 1 || hasChance() || !hasNBT()) {
 			builder.append("Item.of('");
 			builder.append(getId());
 			builder.append('\'');
@@ -469,9 +477,9 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 				builder.append(count);
 			}
 
-			if (!nbt.isEmpty()) {
+			if (hasNBT()) {
 				builder.append(", ");
-				nbt.toString(builder);
+				getNbt().toString(builder);
 			}
 
 			builder.append(')');
@@ -522,7 +530,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(getItem(), getNbt());
+		return Objects.hash(getItem(), hasNBT() ? getNbt() : 0);
 	}
 
 	@Override
@@ -590,8 +598,8 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return enchantments;
 	}
 
-	public ItemStackJS enchant(Object enchantments) {
-		getEnchantments().putAll(MapJS.of(enchantments));
+	public ItemStackJS enchant(MapJS enchantments) {
+		getEnchantments().putAll(enchantments);
 		return this;
 	}
 
@@ -616,7 +624,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 				ListJS lore1 = new ListJS(lore.size());
 
 				for (Object o1 : lore) {
-					lore1.add(Component.Serializer.toJson(Text.of(o1).component()));
+					lore1.add(Component.Serializer.toJson(Text.componentOf(o1)));
 				}
 
 				nbt.put("Lore", lore1);
@@ -641,6 +649,14 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return new IgnoreNBTIngredientJS(this);
 	}
 
+	public WeakNBTIngredientJS weakNBT() {
+		if (!Platform.isModLoaded("nbt_ingredient_predicate")) {
+			throw new IllegalStateException("weakNBT() requires 'NBT Ingredient Predicate' mod to be installed!");
+		}
+
+		return new WeakNBTIngredientJS(this);
+	}
+
 	public boolean areItemsEqual(ItemStackJS stack) {
 		return getItem() == stack.getItem();
 	}
@@ -650,18 +666,17 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	}
 
 	public boolean isNBTEqual(ItemStackJS stack) {
-		return Objects.equals(getNbt(), stack.getNbt());
+		return hasNBT() == stack.hasNBT() && Objects.equals(getNbt(), stack.getNbt());
 	}
 
 	public boolean isNBTEqual(ItemStack stack) {
-		MapJS nbt = getNbt();
 		CompoundTag nbt1 = stack.getTag();
 
 		if (nbt1 == null) {
-			return nbt.isEmpty();
+			return !hasNBT();
 		}
 
-		return Objects.equals(MapJS.nbt(nbt), nbt1);
+		return Objects.equals(MapJS.nbt(getNbt()), nbt1);
 	}
 
 	public int getHarvestLevel(ToolType tool, @Nullable PlayerJS<?> player, @Nullable BlockContainerJS block) {
@@ -709,9 +724,9 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		json.addProperty("item", getId());
 		json.addProperty("count", getCount());
 
-		MapJS nbt = getNbt();
+		if (hasNBT()) {
+			MapJS nbt = getNbt();
 
-		if (!nbt.isEmpty()) {
 			if (RecipeJS.currentRecipe != null && RecipeJS.currentRecipe.type != null && RecipeJS.currentRecipe.type.getIdRL().getNamespace().equals("techreborn")) {
 				json.add("nbt", nbt.toJson());
 			} else {

@@ -2,18 +2,17 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.core.PlayerInteractionManagerKJS;
 import dev.latvian.kubejs.item.ItemStackJS;
-import dev.latvian.kubejs.net.MessageCloseOverlay;
-import dev.latvian.kubejs.net.MessageOpenOverlay;
-import dev.latvian.kubejs.net.MessageSendDataFromServer;
+import dev.latvian.kubejs.net.PaintMessage;
+import dev.latvian.kubejs.net.SendDataFromServerMessage;
 import dev.latvian.kubejs.server.ServerJS;
-import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,13 +41,8 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	}
 
 	@Override
-	public void openOverlay(Overlay overlay) {
-		new MessageOpenOverlay(overlay).sendTo(minecraftPlayer);
-	}
-
-	@Override
-	public void closeOverlay(String overlay) {
-		new MessageCloseOverlay(overlay).sendTo(minecraftPlayer);
+	public void paint(CompoundTag renderer) {
+		new PaintMessage(renderer).sendTo(minecraftPlayer);
 	}
 
 	@Override
@@ -86,19 +80,19 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 		return server.getMinecraftServer().getPlayerList().isOp(minecraftPlayer.getGameProfile());
 	}
 
-	public void kick(Object reason) {
-		minecraftPlayer.connection.disconnect(Text.of(reason).component());
+	public void kick(Component reason) {
+		minecraftPlayer.connection.disconnect(reason);
 	}
 
 	public void kick() {
-		kick(new TextTranslate("multiplayer.disconnect.kicked"));
+		kick(new TranslatableComponent("multiplayer.disconnect.kicked"));
 	}
 
 	public void ban(String banner, String reason, long expiresInMillis) {
 		Date date = new Date();
 		UserBanListEntry userlistbansentry = new UserBanListEntry(minecraftPlayer.getGameProfile(), date, banner, new Date(date.getTime() + (expiresInMillis <= 0L ? 315569260000L : expiresInMillis)), reason);
 		server.getMinecraftServer().getPlayerList().getBans().add(userlistbansentry);
-		kick(new TextTranslate("multiplayer.disconnect.banned"));
+		kick(new TranslatableComponent("multiplayer.disconnect.banned"));
 	}
 
 	public boolean getHasClientMod() {
@@ -159,7 +153,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	@Override
 	public void sendData(String channel, @Nullable Object data) {
 		if (!channel.isEmpty()) {
-			new MessageSendDataFromServer(channel, MapJS.nbt(data)).sendTo(minecraftPlayer);
+			new SendDataFromServerMessage(channel, MapJS.nbt(data)).sendTo(minecraftPlayer);
 		}
 	}
 

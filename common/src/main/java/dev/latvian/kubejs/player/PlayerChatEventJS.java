@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.entity.EntityJS;
-import dev.latvian.kubejs.text.Text;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -37,7 +36,7 @@ public class PlayerChatEventJS extends PlayerEventJS {
 		return message;
 	}
 
-	public void setMessage(Text text) {
-		component = text.component();
+	public void setMessage(Component text) {
+		component = text;
 	}
 }

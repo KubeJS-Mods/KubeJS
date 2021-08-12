@@ -4,12 +4,18 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSCommon;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSPaths;
+import dev.latvian.kubejs.client.painter.Painter;
+import dev.latvian.kubejs.client.painter.screen.AtlasTextureObject;
+import dev.latvian.kubejs.client.painter.screen.GradientObject;
+import dev.latvian.kubejs.client.painter.screen.OverlayObject;
+import dev.latvian.kubejs.client.painter.screen.RectangleObject;
+import dev.latvian.kubejs.client.painter.screen.ScreenGroup;
+import dev.latvian.kubejs.client.painter.screen.TextObject;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.net.NetworkEventJS;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import me.shedaniel.architectury.hooks.PackRepositoryHooks;
@@ -29,16 +35,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * @author LatvianModder
  */
 public class KubeJSClient extends KubeJSCommon {
-	public static final Map<String, Overlay> activeOverlays = new LinkedHashMap<>();
-
 	@Override
 	public void init() {
 		if (Minecraft.getInstance() == null) // You'd think that this is impossible, but not when you use runData gradle task
@@ -52,6 +54,13 @@ public class KubeJSClient extends KubeJSCommon {
 		PackRepository list = Minecraft.getInstance().getResourcePackRepository();
 		PackRepositoryHooks.addSource(list, new KubeJSResourcePackFinder());
 		setup();
+
+		Painter.INSTANCE.registerObject("screen_group", ScreenGroup::new);
+		Painter.INSTANCE.registerObject("rectangle", RectangleObject::new);
+		Painter.INSTANCE.registerObject("text", TextObject::new);
+		Painter.INSTANCE.registerObject("atlas_texture", AtlasTextureObject::new);
+		Painter.INSTANCE.registerObject("overlay", OverlayObject::new);
+		Painter.INSTANCE.registerObject("gradient", GradientObject::new);
 	}
 
 	@Override
@@ -85,6 +94,7 @@ public class KubeJSClient extends KubeJSCommon {
 	public void clientBindings(BindingsEvent event) {
 		event.add("Client", new ClientWrapper());
 		event.add("client", new ClientWrapper());
+		event.add("Painter", Painter.INSTANCE);
 	}
 
 	private void setup() {
@@ -103,13 +113,8 @@ public class KubeJSClient extends KubeJSCommon {
 	}
 
 	@Override
-	public void openOverlay(Overlay o) {
-		activeOverlays.put(o.id, o);
-	}
-
-	@Override
-	public void closeOverlay(String id) {
-		activeOverlays.remove(id);
+	public void paint(CompoundTag tag) {
+		Painter.INSTANCE.paint(tag);
 	}
 
 	@Override

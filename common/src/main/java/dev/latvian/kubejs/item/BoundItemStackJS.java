@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.MapJS;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -73,7 +73,17 @@ public class BoundItemStackJS extends ItemStackJS {
 	}
 
 	@Override
-	public ItemStackJS withNBT(MapJS o) {
+	public boolean hasNBT() {
+		return stack.hasTag();
+	}
+
+	@Override
+	public String getNbtString() {
+		return String.valueOf(stack.getTag());
+	}
+
+	@Override
+	public ItemStackJS withNBT(Object o) {
 		CompoundTag tag = MapJS.nbt(o);
 
 		if (tag != null) {
@@ -86,8 +96,8 @@ public class BoundItemStackJS extends ItemStackJS {
 	}
 
 	@Override
-	public void setName(@Nullable Object displayName) {
-		stack.setHoverName(Text.of(displayName).component());
+	public void setName(@Nullable Component displayName) {
+		stack.setHoverName(displayName);
 	}
 
 	@Override
@@ -108,16 +118,24 @@ public class BoundItemStackJS extends ItemStackJS {
 
 	@Override
 	public boolean isNBTEqual(ItemStackJS stack2) {
-		CompoundTag nbt = stack.getTag();
-		CompoundTag nbt2 = MapJS.nbt(stack2.getNbt());
-		return Objects.equals(nbt, nbt2);
+		if (hasNBT() == stack2.hasNBT()) {
+			CompoundTag nbt = stack.getTag();
+			CompoundTag nbt2 = MapJS.nbt(stack2.getNbt());
+			return Objects.equals(nbt, nbt2);
+		}
+
+		return false;
 	}
 
 	@Override
 	public boolean isNBTEqual(ItemStack stack2) {
-		CompoundTag nbt = stack.getTag();
-		CompoundTag nbt2 = stack2.getTag();
-		return Objects.equals(nbt, nbt2);
+		if (hasNBT() == stack2.hasTag()) {
+			CompoundTag nbt = stack.getTag();
+			CompoundTag nbt2 = stack2.getTag();
+			return Objects.equals(nbt, nbt2);
+		}
+
+		return false;
 	}
 
 	@Override

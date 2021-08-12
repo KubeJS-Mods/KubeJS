@@ -1,14 +1,16 @@
 package dev.latvian.kubejs.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.block.BlockBuilder;
+import dev.latvian.kubejs.client.painter.Painter;
+import dev.latvian.kubejs.client.painter.screen.ScreenPaintEventJS;
+import dev.latvian.kubejs.client.painter.screen.ScreenPainterObject;
+import dev.latvian.kubejs.client.painter.world.WorldPaintEventJS;
+import dev.latvian.kubejs.client.painter.world.WorldPainterObject;
 import dev.latvian.kubejs.core.BucketItemKJS;
 import dev.latvian.kubejs.core.ImageButtonKJS;
 import dev.latvian.kubejs.fluid.FluidBuilder;
@@ -17,8 +19,6 @@ import dev.latvian.kubejs.item.ItemTooltipEventJS;
 import dev.latvian.kubejs.item.OldItemTooltipEventJS;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.ClientWorldJS;
@@ -42,7 +42,6 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -58,7 +57,6 @@ import java.io.OutputStream;
 import java.nio.IntBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -177,7 +175,7 @@ public class KubeJSClientEventHandler {
 		}
 
 		ClientWorldJS.setInstance(null);
-		KubeJSClient.activeOverlays.clear();
+		Painter.INSTANCE.clear();
 	}
 
 	private void respawn(LocalPlayer oldPlayer, LocalPlayer newPlayer) {
@@ -186,122 +184,54 @@ public class KubeJSClientEventHandler {
 		new AttachPlayerDataEvent(ClientWorldJS.getInstance().clientPlayerData).invoke();
 	}
 
-	private int drawOverlay(Minecraft mc, PoseStack matrixStack, int maxWidth, int x, int y, int p, Overlay o, boolean inv) {
-		List<FormattedCharSequence> list = new ArrayList<>();
-		int l = 10;
-
-		for (Text t : o.text) {
-			list.addAll(mc.font.split(t.component(), maxWidth));
-		}
-
-		int mw = 0;
-
-		for (FormattedCharSequence s : list) {
-			mw = Math.max(mw, mc.font.width(s));
-		}
-
-		if (mw == 0) {
-			return 0;
-		}
-
-		int w = mw + p * 2;
-		int h = list.size() * l + p * 2 - 2;
-		int col = 0xFF000000 | o.color;
-		int r = (col >> 16) & 0xFF;
-		int g = (col >> 8) & 0xFF;
-		int b = col & 0xFF;
-
-		RenderSystem.disableTexture();
-		Tesselator tessellator = Tesselator.getInstance();
-		BufferBuilder buffer = tessellator.getBuilder();
-		buffer.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_COLOR);
-
-		//o.color.withAlpha(200).draw(spx, spy, mw + p * 2, list.size() * l + p * 2 - 2);
-
-		if (inv) {
-			addRectToBuffer(buffer, x, y, w, h, r, g, b, 255);
-			addRectToBuffer(buffer, x, y + 1, 1, h - 2, 0, 0, 0, 80);
-			addRectToBuffer(buffer, x + w - 1, y + 1, 1, h - 2, 0, 0, 0, 80);
-			addRectToBuffer(buffer, x, y, w, 1, 0, 0, 0, 80);
-			addRectToBuffer(buffer, x, y + h - 1, w, 1, 0, 0, 0, 80);
-		} else {
-			addRectToBuffer(buffer, x, y, w, h, r, g, b, 200);
-			addRectToBuffer(buffer, x, y + 1, 1, h - 2, r, g, b, 255);
-			addRectToBuffer(buffer, x + w - 1, y + 1, 1, h - 2, r, g, b, 255);
-			addRectToBuffer(buffer, x, y, w, 1, r, g, b, 255);
-			addRectToBuffer(buffer, x, y + h - 1, w, 1, r, g, b, 255);
-		}
-
-		tessellator.end();
-		RenderSystem.enableTexture();
-
-		for (int i = 0; i < list.size(); i++) {
-			mc.font.drawShadow(matrixStack, list.get(i), x + p, y + i * l + p, 0xFFFFFFFF);
-		}
-
-		return list.size() * l + p * 2 + (p - 2);
-	}
-
-	private void addRectToBuffer(BufferBuilder buffer, int x, int y, int w, int h, int r, int g, int b, int a) {
-		buffer.vertex(x, y + h, 0D).color(r, g, b, a).endVertex();
-		buffer.vertex(x + w, y + h, 0D).color(r, g, b, a).endVertex();
-		buffer.vertex(x + w, y, 0D).color(r, g, b, a).endVertex();
-		buffer.vertex(x, y, 0D).color(r, g, b, a).endVertex();
-	}
-
 	private void inGameScreenDraw(PoseStack matrices, float delta) {
-		if (KubeJSClient.activeOverlays.isEmpty()) {
-			return;
-		}
-
 		Minecraft mc = Minecraft.getInstance();
 
-		if (mc.options.renderDebug || mc.screen != null) {
+		if (mc.player == null || mc.options.renderDebug || mc.screen != null) {
 			return;
 		}
-
-		PoseStack matrixStack = new PoseStack();
-		matrixStack.translate(0, 0, 800);
 
 		RenderSystem.enableBlend();
 		//RenderSystem.disableLighting();
 
-		int maxWidth = mc.getWindow().getGuiScaledWidth() / 4;
-		int p = 4;
-		int spx = p;
-		int spy = p;
+		ScreenPaintEventJS event = new ScreenPaintEventJS(mc, matrices, delta);
+		event.post(KubeJSEvents.CLIENT_PAINT_SCREEN);
 
-		for (Overlay o : KubeJSClient.activeOverlays.values()) {
-			spy += drawOverlay(mc, matrixStack, maxWidth, spx, spy, p, o, false);
+		for (ScreenPainterObject object : Painter.INSTANCE.getScreenObjects()) {
+			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
+				object.preDraw(event);
+			}
+		}
+
+		for (ScreenPainterObject object : Painter.INSTANCE.getScreenObjects()) {
+			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
+				object.draw(event);
+			}
 		}
 	}
 
 	private void guiScreenDraw(Screen screen, PoseStack matrices, int mouseX, int mouseY, float delta) {
-		if (KubeJSClient.activeOverlays.isEmpty()) {
+		Minecraft mc = Minecraft.getInstance();
+
+		if (mc.player == null) {
 			return;
 		}
-
-		Minecraft mc = Minecraft.getInstance();
-		PoseStack matrixStack = new PoseStack();
-		matrixStack.translate(0, 0, 800);
 
 		RenderSystem.enableBlend();
 		//RenderSystem.disableLighting();
 
-		int maxWidth = mc.getWindow().getGuiScaledWidth() / 4;
-		int p = 4;
-		int spx = p;
-		int spy = p;
+		ScreenPaintEventJS event = new ScreenPaintEventJS(mc, screen, matrices, mouseX, mouseY, delta);
+		event.post(KubeJSEvents.CLIENT_PAINT_SCREEN);
 
-		List<AbstractWidget> buttons = ScreenHooks.getButtons(screen);
-
-		while (isOver(buttons, spx, spy)) {
-			spy += 16;
+		for (ScreenPainterObject object : Painter.INSTANCE.getScreenObjects()) {
+			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
+				object.preDraw(event);
+			}
 		}
 
-		for (Overlay o : KubeJSClient.activeOverlays.values()) {
-			if (o.alwaysOnTop) {
-				spy += drawOverlay(mc, matrixStack, maxWidth, spx, spy, p, o, true);
+		for (ScreenPainterObject object : Painter.INSTANCE.getScreenObjects()) {
+			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
+				object.draw(event);
 			}
 		}
 	}
@@ -405,6 +335,32 @@ public class KubeJSClientEventHandler {
 			ImageIO.write(image, "PNG", stream);
 		} catch (Exception ex) {
 			ex.printStackTrace();
+		}
+	}
+
+	private void renderWorldLast(PoseStack ps, float delta) {
+		Minecraft mc = Minecraft.getInstance();
+
+		if (mc.player == null) {
+			return;
+		}
+
+		// RenderSystem.enableBlend();
+		// RenderSystem.disableLighting();
+
+		WorldPaintEventJS event = new WorldPaintEventJS(mc, ps, delta);
+		event.post(KubeJSEvents.CLIENT_PAINT_WORLD);
+
+		for (WorldPainterObject object : Painter.INSTANCE.getWorldObjects()) {
+			if (object.visible) {
+				object.preDraw(event);
+			}
+		}
+
+		for (WorldPainterObject object : Painter.INSTANCE.getWorldObjects()) {
+			if (object.visible) {
+				object.draw(event);
+			}
 		}
 	}
 }

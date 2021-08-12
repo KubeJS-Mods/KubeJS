@@ -16,6 +16,9 @@ public class KubeJSEvents {
 	public static final String CLIENT_LOGGED_IN = "client.logged_in";
 	public static final String CLIENT_LOGGED_OUT = "client.logged_out";
 	public static final String CLIENT_TICK = "client.tick";
+	public static final String CLIENT_PAINT_SCREEN = "client.paint_screen";
+	public static final String CLIENT_PAINT_WORLD = "client.paint_world";
+	public static final String CLIENT_PAINTER_UPDATED = "client.painter_updated";
 
 	public static final String SERVER_LOAD = "server.load";
 	public static final String SERVER_UNLOAD = "server.unload";
@@ -48,6 +51,7 @@ public class KubeJSEvents {
 	public static final String PLAYER_INVENTORY_CHANGED = "player.inventory.changed";
 	public static final String PLAYER_CHEST_OPENED = "player.chest.opened";
 	public static final String PLAYER_CHEST_CLOSED = "player.chest.closed";
+	public static final String PLAYER_CHECK_LOGIN = "player.check_login";
 
 	public static final String ENTITY_DEATH = "entity.death";
 	public static final String ENTITY_ATTACK = "entity.attack";

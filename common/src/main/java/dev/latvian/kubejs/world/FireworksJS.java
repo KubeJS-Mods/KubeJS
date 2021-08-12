@@ -1,15 +1,13 @@
 package dev.latvian.kubejs.world;
 
+import dev.latvian.kubejs.bindings.ColorWrapper;
 import dev.latvian.kubejs.core.FireworkRocketEntityKJS;
-import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import me.shedaniel.architectury.hooks.DyeColorHooks;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -61,30 +59,18 @@ public class FireworksJS {
 
 				if (m.containsKey("colors")) {
 					for (Object o2 : ListJS.orSelf(m.get("colors"))) {
-						if (o2 instanceof Number) {
-							e.colors.add(((Number) o2).intValue());
-						} else if (o2 instanceof TextColor) {
-							e.colors.add(((TextColor) o2).color);
-						} else if (o2 instanceof String) {
-							e.colors.add(DyeColorHooks.getColorValue(DyeColor.valueOf(o2.toString())));
-						}
+						e.colors.add(ColorWrapper.of(o2).getFireworkColorKJS());
 					}
 				}
 
 				if (m.containsKey("fadeColors")) {
 					for (Object o2 : ListJS.orSelf(m.get("fadeColors"))) {
-						if (o2 instanceof Number) {
-							e.fadeColors.add(((Number) o2).intValue());
-						} else if (o2 instanceof TextColor) {
-							e.fadeColors.add(((TextColor) o2).color);
-						} else if (o2 instanceof String) {
-							e.fadeColors.add(DyeColorHooks.getColorValue(DyeColor.valueOf(o2.toString())));
-						}
+						e.fadeColors.add(ColorWrapper.of(o2).getFireworkColorKJS());
 					}
 				}
 
 				if (e.colors.isEmpty()) {
-					e.colors.add(TextColor.YELLOW.color);
+					e.colors.add(ColorWrapper.YELLOW_DYE.getFireworkColorKJS());
 				}
 
 				fireworks.explosions.add(e);
@@ -93,7 +79,7 @@ public class FireworksJS {
 
 		if (fireworks.explosions.isEmpty()) {
 			Explosion e = new Explosion();
-			e.colors.add(TextColor.YELLOW.color);
+			e.colors.add(ColorWrapper.YELLOW_DYE.getFireworkColorKJS());
 			fireworks.explosions.add(e);
 		}
 

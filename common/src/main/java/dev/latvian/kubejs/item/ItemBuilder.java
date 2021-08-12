@@ -8,7 +8,6 @@ import dev.latvian.kubejs.item.custom.ArmorItemType;
 import dev.latvian.kubejs.item.custom.BasicItemType;
 import dev.latvian.kubejs.item.custom.ItemType;
 import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.BuilderBase;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
@@ -184,8 +183,8 @@ public class ItemBuilder extends BuilderBase {
 		return this;
 	}
 
-	public ItemBuilder tooltip(Object text) {
-		tooltip.add(Text.of(text).component());
+	public ItemBuilder tooltip(Component text) {
+		tooltip.add(text);
 		return this;
 	}
 
