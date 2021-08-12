@@ -14,6 +14,7 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
+import dev.latvian.kubejs.net.PaintMessage;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.CustomCommandEventJS;
 import dev.latvian.kubejs.server.ServerScriptManager;
@@ -26,10 +27,12 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.CompoundTagArgument;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -165,6 +168,13 @@ public class KubeJSCommands {
 						.then(Commands.literal("list")
 								.then(Commands.argument("player", EntityArgument.players())
 										.executes(context -> listStages(context.getSource(), EntityArgument.getPlayers(context, "player")))
+								)
+						)
+				)
+				.then(Commands.literal("painter")
+						.then(Commands.argument("player", EntityArgument.players())
+								.then(Commands.argument("object", CompoundTagArgument.compoundTag())
+										.executes(context -> painter(context.getSource(), EntityArgument.getPlayers(context, "player"), CompoundTagArgument.getCompoundTag(context, "object")))
 								)
 						)
 				)
@@ -378,7 +388,7 @@ public class KubeJSCommands {
 	private static int addStage(CommandSourceStack source, Collection<ServerPlayer> players, String stage) {
 		for (ServerPlayer p : players) {
 			if (Stages.get(p).add(stage)) {
-				source.sendSuccess(new TextComponent("Added '" + stage + "' stage to " + p.getScoreboardName()), false);
+				source.sendSuccess(new TextComponent("Added '" + stage + "' stage for " + p.getScoreboardName()), false);
 			}
 		}
 
@@ -388,7 +398,7 @@ public class KubeJSCommands {
 	private static int removeStage(CommandSourceStack source, Collection<ServerPlayer> players, String stage) {
 		for (ServerPlayer p : players) {
 			if (Stages.get(p).remove(stage)) {
-				source.sendSuccess(new TextComponent("Removed '" + stage + "' stage from " + p.getScoreboardName()), false);
+				source.sendSuccess(new TextComponent("Removed '" + stage + "' stage for " + p.getScoreboardName()), false);
 			}
 		}
 
@@ -398,7 +408,7 @@ public class KubeJSCommands {
 	private static int clearStages(CommandSourceStack source, Collection<ServerPlayer> players) {
 		for (ServerPlayer p : players) {
 			if (Stages.get(p).clear()) {
-				source.sendSuccess(new TextComponent("Cleared stages from " + p.getScoreboardName()), false);
+				source.sendSuccess(new TextComponent("Cleared stages for " + p.getScoreboardName()), false);
 			}
 		}
 
@@ -411,6 +421,11 @@ public class KubeJSCommands {
 			Stages.get(p).getAll().stream().sorted().forEach(s -> source.sendSuccess(new TextComponent("- " + s), false));
 		}
 
+		return 1;
+	}
+
+	private static int painter(CommandSourceStack source, Collection<ServerPlayer> players, CompoundTag object) {
+		new PaintMessage(object).sendTo(players);
 		return 1;
 	}
 }

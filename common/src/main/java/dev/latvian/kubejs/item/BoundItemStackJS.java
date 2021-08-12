@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.MapJS;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -73,7 +73,7 @@ public class BoundItemStackJS extends ItemStackJS {
 	}
 
 	@Override
-	public ItemStackJS withNBT(MapJS o) {
+	public ItemStackJS withNBT(Object o) {
 		CompoundTag tag = MapJS.nbt(o);
 
 		if (tag != null) {
@@ -86,8 +86,8 @@ public class BoundItemStackJS extends ItemStackJS {
 	}
 
 	@Override
-	public void setName(@Nullable Object displayName) {
-		stack.setHoverName(Text.of(displayName).component());
+	public void setName(@Nullable Component displayName) {
+		stack.setHoverName(displayName);
 	}
 
 	@Override

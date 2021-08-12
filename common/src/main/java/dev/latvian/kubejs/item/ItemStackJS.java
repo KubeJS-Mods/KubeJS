@@ -169,7 +169,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		if (n instanceof Number) {
 			stack.setCount(((Number) n).intValue());
 		} else if (n instanceof MapJS) {
-			stack = stack.withNBT((MapJS) n);
+			stack = stack.withNBT(n);
 		}
 
 		return stack;
@@ -384,14 +384,14 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public abstract MapJS getNbt();
 
-	public ItemStackJS withNBT(MapJS nbt) {
+	public ItemStackJS withNBT(Object nbt) {
 		if (isEmpty()) {
 			return this;
 		}
 
 		if (nbt != null) {
 			ItemStackJS is = copy();
-			is.getNbt().putAll(nbt);
+			is.getNbt().putAll(MapJS.of(nbt));
 			return is;
 		}
 
@@ -438,17 +438,16 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return Text.of(getItemStack().getHoverName());
 	}
 
-	public void setName(@Nullable Object displayName) {
-		if (displayName == null || displayName instanceof String && displayName.toString().isEmpty()) {
+	public void setName(@Nullable Component displayName) {
+		if (displayName == null) {
 			return;
 		}
 
-		Text t = Text.of(displayName);
 		MapJS nbt = getNbt();
-		nbt.getOrNewMap("display").put("Name", t.toJson());
+		nbt.getOrNewMap("display").put("Name", Component.Serializer.toJsonTree(displayName));
 	}
 
-	public final ItemStackJS name(String displayName) {
+	public final ItemStackJS name(Component displayName) {
 		setName(displayName);
 		return this;
 	}
@@ -590,8 +589,8 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return enchantments;
 	}
 
-	public ItemStackJS enchant(Object enchantments) {
-		getEnchantments().putAll(MapJS.of(enchantments));
+	public ItemStackJS enchant(MapJS enchantments) {
+		getEnchantments().putAll(enchantments);
 		return this;
 	}
 
@@ -616,7 +615,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 				ListJS lore1 = new ListJS(lore.size());
 
 				for (Object o1 : lore) {
-					lore1.add(Component.Serializer.toJson(Text.of(o1).component()));
+					lore1.add(Component.Serializer.toJson(Text.componentOf(o1)));
 				}
 
 				nbt.put("Lore", lore1);

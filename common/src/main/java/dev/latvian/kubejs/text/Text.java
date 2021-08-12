@@ -3,12 +3,15 @@ package dev.latvian.kubejs.text;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.kubejs.bindings.ColorWrapper;
+import dev.latvian.kubejs.util.ColorKJS;
 import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -29,13 +32,25 @@ import java.util.Objects;
  * @author LatvianModder
  */
 public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSerializable, WrappedJS {
-	public static Component componentOfObject(@Nullable Object o) {
+	public static Component componentOf(@Nullable Object o) {
 		if (o == null) {
 			return new TextComponent("null");
 		} else if (o instanceof Component) {
 			return (Component) o;
 		} else if (o instanceof CharSequence) {
 			return new TextComponent(o.toString());
+		} else if (o instanceof StringTag) {
+			String s = ((StringTag) o).getAsString();
+
+			if (s.startsWith("{") && s.endsWith("}")) {
+				try {
+					return Component.Serializer.fromJson(s);
+				} catch (Exception ex) {
+					return new TextComponent("Error: " + ex);
+				}
+			} else {
+				return new TextComponent(s);
+			}
 		}
 
 		return of(o).component();
@@ -95,11 +110,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 				}
 
 				if (map.containsKey("color")) {
-					TextColor c = TextColor.MAP.get(map.get("color").toString());
-
-					if (c != null) {
-						text.color = c.color;
-					}
+					text.color = ColorWrapper.of(map.get("color")).getRgbKJS();
 				}
 
 				text.bold = (Boolean) map.getOrDefault("bold", null);
@@ -169,69 +180,8 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	public final Component component() {
 		MutableComponent component = rawComponent();
 
-		if (color != -1 || bold != null || italic != null || underlined != null || strikethrough != null || obfuscated != null || insertion != null || font != null || click != null || hover != null) {
-			JsonObject json = new JsonObject();
-
-			if (color != -1) {
-				json.addProperty("color", String.format("#%06X", color));
-			}
-
-			if (bold != null) {
-				json.addProperty("bold", bold);
-			}
-
-			if (italic != null) {
-				json.addProperty("italic", italic);
-			}
-
-			if (underlined != null) {
-				json.addProperty("underlined", underlined);
-			}
-
-			if (strikethrough != null) {
-				json.addProperty("strikethrough", strikethrough);
-			}
-
-			if (obfuscated != null) {
-				json.addProperty("obfuscated", obfuscated);
-			}
-
-			if (insertion != null) {
-				json.addProperty("insertion", insertion);
-			}
-
-			if (font != null) {
-				json.addProperty("font", font.toString());
-			}
-
-			if (click != null) {
-				JsonObject o = new JsonObject();
-
-				if (click.startsWith("command:")) {
-					o.addProperty("action", "run_command");
-					o.addProperty("value", click.substring(8));
-				} else if (click.startsWith("suggest_command:")) {
-					o.addProperty("action", "suggest_command");
-					o.addProperty("value", click.substring(16));
-				} else if (click.startsWith("copy:")) {
-					o.addProperty("action", "copy_to_clipboard");
-					o.addProperty("value", click.substring(5));
-				} else if (click.startsWith("file:")) {
-					o.addProperty("action", "open_file");
-					o.addProperty("value", click.substring(5));
-				} else {
-					o.addProperty("action", "open_url");
-					o.addProperty("value", click);
-				}
-
-				json.add("clickEvent", o);
-			}
-
-			if (hover != null) {
-				json.add("hoverEvent", new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover.component()).serialize());
-			}
-
-			component.setStyle(new Style.Serializer().deserialize(json, Style.class, null));
+		if (hasStyle()) {
+			component.setStyle(createStyle());
 		}
 
 		for (Text text : getSiblings()) {
@@ -265,7 +215,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return t;
 	}
 
-	public final JsonObject getPropertiesAsJson() {
+	public final JsonObject createStyleJson() {
 		JsonObject json = new JsonObject();
 
 		if (color != -1) {
@@ -301,12 +251,45 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		}
 
 		if (click != null) {
-			json.addProperty("click", click);
+			JsonObject o = new JsonObject();
+
+			if (click.startsWith("command:")) {
+				o.addProperty("action", "run_command");
+				o.addProperty("value", click.substring(8));
+			} else if (click.startsWith("suggest_command:")) {
+				o.addProperty("action", "suggest_command");
+				o.addProperty("value", click.substring(16));
+			} else if (click.startsWith("copy:")) {
+				o.addProperty("action", "copy_to_clipboard");
+				o.addProperty("value", click.substring(5));
+			} else if (click.startsWith("file:")) {
+				o.addProperty("action", "open_file");
+				o.addProperty("value", click.substring(5));
+			} else {
+				o.addProperty("action", "open_url");
+				o.addProperty("value", click);
+			}
+
+			json.add("clickEvent", o);
 		}
 
 		if (hover != null) {
-			json.add("hover", hover.toJson());
+			json.add("hoverEvent", new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover.component()).serialize());
 		}
+
+		return json;
+	}
+
+	public boolean hasStyle() {
+		return color != -1 || bold != null || italic != null || underlined != null || strikethrough != null || obfuscated != null || insertion != null || font != null || click != null || hover != null;
+	}
+
+	public Style createStyle() {
+		return new Style.Serializer().deserialize(createStyleJson(), Style.class, null);
+	}
+
+	public JsonObject getStyleAndSiblingJson() {
+		JsonObject json = createStyleJson();
 
 		if (!getSiblings().isEmpty()) {
 			JsonArray array = new JsonArray();
@@ -339,90 +322,73 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return list.iterator();
 	}
 
-	public final Text color(TextColor value) {
-		color = value.color & 0xFFFFFF;
-		return this;
-	}
-
-	public final Text color(String value) {
-		TextColor col = TextColor.MAP.get(value);
-
-		if (col != null) {
-			color = col.color & 0xFFFFFF;
-		} else if (value.startsWith("#")) {
-			color = Integer.decode(value) & 0xFFFFFF;
-		}
-
-		return this;
-	}
-
-	public final Text color(int col) {
-		color = col & 0xFFFFFF;
+	public final Text color(ColorKJS c) {
+		color = c.getRgbKJS() & 0xFFFFFF;
 		return this;
 	}
 
 	public final Text black() {
-		return color(TextColor.BLACK);
+		return color(ColorWrapper.BLACK);
 	}
 
 	public final Text darkBlue() {
-		return color(TextColor.DARK_BLUE);
+		return color(ColorWrapper.DARK_BLUE);
 	}
 
 	public final Text darkGreen() {
-		return color(TextColor.DARK_GREEN);
+		return color(ColorWrapper.DARK_GREEN);
 	}
 
 	public final Text darkAqua() {
-		return color(TextColor.DARK_AQUA);
+		return color(ColorWrapper.DARK_AQUA);
 	}
 
 	public final Text darkRed() {
-		return color(TextColor.DARK_RED);
+		return color(ColorWrapper.DARK_RED);
 	}
 
 	public final Text darkPurple() {
-		return color(TextColor.DARK_PURPLE);
+		return color(ColorWrapper.DARK_PURPLE);
 	}
 
 	public final Text gold() {
-		return color(TextColor.GOLD);
+		return color(ColorWrapper.GOLD);
 	}
 
 	public final Text gray() {
-		return color(TextColor.GRAY);
+		return color(ColorWrapper.GRAY);
 	}
 
 	public final Text darkGray() {
-		return color(TextColor.DARK_GRAY);
+		return color(ColorWrapper.DARK_GRAY);
 	}
 
 	public final Text blue() {
-		return color(TextColor.BLUE);
+		return color(ColorWrapper.BLUE);
 	}
 
 	public final Text green() {
-		return color(TextColor.GREEN);
+		return color(ColorWrapper.GREEN);
 	}
 
 	public final Text aqua() {
-		return color(TextColor.AQUA);
+		return color(ColorWrapper.AQUA);
 	}
 
 	public final Text red() {
-		return color(TextColor.RED);
+		return color(ColorWrapper.RED);
 	}
 
 	public final Text lightPurple() {
-		return color(TextColor.LIGHT_PURPLE);
+		return color(ColorWrapper.LIGHT_PURPLE);
 	}
 
 	public final Text yellow() {
-		return color(TextColor.YELLOW);
+		return color(ColorWrapper.YELLOW);
 	}
 
 	public final Text white() {
-		return color(TextColor.WHITE);
+		return color(ColorWrapper.WHITE);
 	}
 
 	public final Text noColor() {

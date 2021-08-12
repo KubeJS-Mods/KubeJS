@@ -9,6 +9,7 @@ import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import me.shedaniel.architectury.registry.ToolType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -119,7 +120,7 @@ public class EmptyItemStackJS extends ItemStackJS {
 	}
 
 	@Override
-	public void setName(@Nullable Object displayName) {
+	public void setName(@Nullable Component displayName) {
 	}
 
 	@Override
@@ -133,7 +134,7 @@ public class EmptyItemStackJS extends ItemStackJS {
 	}
 
 	@Override
-	public ItemStackJS enchant(Object map) {
+	public ItemStackJS enchant(MapJS map) {
 		return this;
 	}
 

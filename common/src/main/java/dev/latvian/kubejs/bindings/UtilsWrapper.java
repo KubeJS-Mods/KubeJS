@@ -8,7 +8,6 @@ import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.CountingMap;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
@@ -138,16 +137,6 @@ public class UtilsWrapper {
 
 	public static long getSystemTime() {
 		return System.currentTimeMillis();
-	}
-
-	public static Overlay overlay(String id, Object[] text) {
-		Overlay o = new Overlay(id);
-
-		for (Object o1 : text) {
-			o.add(o1);
-		}
-
-		return o;
 	}
 
 	@Nullable

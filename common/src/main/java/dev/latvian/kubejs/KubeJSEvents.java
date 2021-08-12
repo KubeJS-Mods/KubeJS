@@ -16,6 +16,9 @@ public class KubeJSEvents {
 	public static final String CLIENT_LOGGED_IN = "client.logged_in";
 	public static final String CLIENT_LOGGED_OUT = "client.logged_out";
 	public static final String CLIENT_TICK = "client.tick";
+	public static final String CLIENT_PAINT_SCREEN = "client.paint_screen";
+	public static final String CLIENT_PAINT_WORLD = "client.paint_world";
+	public static final String CLIENT_PAINTER_UPDATED = "client.painter_updated";
 
 	public static final String SERVER_LOAD = "server.load";
 	public static final String SERVER_UNLOAD = "server.unload";

@@ -39,7 +39,7 @@ public class ItemTooltipEventJS extends EventJS {
 			lines = new ArrayList<>();
 
 			for (Object o1 : ListJS.orSelf(o)) {
-				lines.add(Text.of(o1).component());
+				lines.add(Text.componentOf(o1));
 			}
 		}
 
@@ -62,7 +62,7 @@ public class ItemTooltipEventJS extends EventJS {
 			handler.accept(ItemStackJS.of(stack), advanced, text);
 
 			for (Object o : text) {
-				components.add(Text.of(o).component());
+				components.add(Text.componentOf(o));
 			}
 		}
 	}

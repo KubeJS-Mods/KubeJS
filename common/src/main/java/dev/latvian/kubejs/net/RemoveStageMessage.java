@@ -12,16 +12,16 @@ import java.util.UUID;
 /**
  * @author LatvianModder
  */
-public class MessageRemoveStage extends BaseS2CMessage {
+public class RemoveStageMessage extends BaseS2CMessage {
 	private final UUID player;
 	private final String stage;
 
-	public MessageRemoveStage(UUID p, String s) {
+	public RemoveStageMessage(UUID p, String s) {
 		player = p;
 		stage = s;
 	}
 
-	MessageRemoveStage(FriendlyByteBuf buf) {
+	RemoveStageMessage(FriendlyByteBuf buf) {
 		player = buf.readUUID();
 		stage = buf.readUtf(Short.MAX_VALUE);
 	}

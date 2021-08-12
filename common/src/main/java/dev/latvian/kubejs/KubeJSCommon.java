@@ -2,7 +2,6 @@ package dev.latvian.kubejs;
 
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.server.ServerJS;
-import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -30,10 +29,7 @@ public class KubeJSCommon {
 		return null;
 	}
 
-	public void openOverlay(Overlay o) {
-	}
-
-	public void closeOverlay(String id) {
+	public void paint(CompoundTag tag) {
 	}
 
 	public WorldJS getClientWorld() {

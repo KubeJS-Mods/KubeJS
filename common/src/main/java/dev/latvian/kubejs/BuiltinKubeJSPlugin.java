@@ -3,6 +3,7 @@ package dev.latvian.kubejs;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.bindings.BlockWrapper;
+import dev.latvian.kubejs.bindings.ColorWrapper;
 import dev.latvian.kubejs.bindings.FacingWrapper;
 import dev.latvian.kubejs.bindings.IngredientWrapper;
 import dev.latvian.kubejs.bindings.ItemWrapper;
@@ -42,8 +43,8 @@ import dev.latvian.kubejs.script.PlatformWrapper;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.util.ClassFilter;
+import dev.latvian.kubejs.util.ColorKJS;
 import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
@@ -53,6 +54,7 @@ import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import me.shedaniel.architectury.platform.Platform;
 import me.shedaniel.architectury.registry.ToolType;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.CompoundTag;
@@ -187,11 +189,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.addConstant("MINUTE", 60000L);
 		event.addConstant("HOUR", 3600000L);
 
-		event.add("TextColor", TextColor.class);
-
-		for (TextColor color : TextColor.MAP.values()) {
-			event.addConstant(color.name.toUpperCase(), color);
-		}
+		event.add("Color", ColorWrapper.class);
+		event.add("TextColor", ColorWrapper.class);
 
 		event.add("EquipmentSlot", EquipmentSlot.class);
 		event.addConstant("SLOT_MAINHAND", EquipmentSlot.MAINHAND);
@@ -223,6 +222,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("DecorationGenerationStep", GenerationStep.Decoration.class);
 		event.add("CarvingGenerationStep", GenerationStep.Carving.class);
 
+		event.add("Color", ColorWrapper.class);
+
 		KubeJS.PROXY.clientBindings(event);
 	}
 
@@ -249,8 +250,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(CompoundTag.class, MapJS::nbt);
 		typeWrappers.register(CollectionTag.class, ListJS::nbt);
 		typeWrappers.register(ListTag.class, o -> (ListTag) ListJS.nbt(o));
-		typeWrappers.register(Component.class, Text::componentOfObject);
-		typeWrappers.register(MutableComponent.class, o -> new TextComponent("").append(Text.componentOfObject(o)));
+		typeWrappers.register(Component.class, Text::componentOf);
+		typeWrappers.register(MutableComponent.class, o -> new TextComponent("").append(Text.componentOf(o)));
 		typeWrappers.register(BlockPos.class, o -> {
 			if (o instanceof BlockPos) {
 				return (BlockPos) o;
@@ -266,6 +267,15 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(Item.class, ItemStackJS::getRawItem);
 		typeWrappers.register(GenerationStep.Decoration.class, o -> o == null || o.toString().isEmpty() ? null : GenerationStep.Decoration.valueOf(o.toString().toUpperCase()));
 		typeWrappers.register(MobCategory.class, o -> o == null ? null : MobCategory.byName(o.toString()));
+		typeWrappers.register(net.minecraft.network.chat.TextColor.class, o -> {
+			if (o instanceof Number) {
+				return net.minecraft.network.chat.TextColor.fromRgb(((Number) o).intValue() & 0xFFFFFF);
+			} else if (o instanceof ChatFormatting) {
+				return net.minecraft.network.chat.TextColor.fromLegacyFormat((ChatFormatting) o);
+			}
+
+			return net.minecraft.network.chat.TextColor.parseColor(o.toString());
+		});
 
 		// KubeJS //
 		typeWrappers.register(MapJS.class, MapJS::of);
@@ -279,6 +289,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(RecipeFilter.class, RecipeFilter::of);
 		typeWrappers.register(MaterialJS.class, MaterialListJS.INSTANCE::of);
 		typeWrappers.register(ItemType.class, ItemTypes::get);
+		typeWrappers.register(ColorKJS.class, ColorWrapper::of);
 	}
 
 	@Override

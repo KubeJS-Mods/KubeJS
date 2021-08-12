@@ -2,11 +2,11 @@ package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.entity.RayTraceResultJS;
-import dev.latvian.kubejs.net.MessageSendDataFromClient;
+import dev.latvian.kubejs.net.SendDataFromClientMessage;
 import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.Overlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,16 +35,9 @@ public class ClientPlayerJS extends PlayerJS<Player> {
 	}
 
 	@Override
-	public void openOverlay(Overlay overlay) {
+	public void paint(CompoundTag tag) {
 		if (isSelf()) {
-			KubeJS.PROXY.openOverlay(overlay);
-		}
-	}
-
-	@Override
-	public void closeOverlay(String overlay) {
-		if (isSelf()) {
-			KubeJS.PROXY.closeOverlay(overlay);
+			KubeJS.PROXY.paint(tag);
 		}
 	}
 
@@ -56,7 +49,7 @@ public class ClientPlayerJS extends PlayerJS<Player> {
 	@Override
 	public void sendData(String channel, @Nullable Object data) {
 		if (!channel.isEmpty() && isSelf()) {
-			new MessageSendDataFromClient(channel, MapJS.nbt(data)).sendToServer();
+			new SendDataFromClientMessage(channel, MapJS.nbt(data)).sendToServer();
 		}
 	}
 

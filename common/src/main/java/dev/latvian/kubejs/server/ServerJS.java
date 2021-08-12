@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.server;
 
-import dev.latvian.kubejs.net.MessageSendDataFromServer;
+import dev.latvian.kubejs.net.SendDataFromServerMessage;
 import dev.latvian.kubejs.player.AdvancementJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.FakeServerPlayerDataJS;
@@ -122,8 +122,8 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		return getMinecraftServer().getMotd();
 	}
 
-	public void setMotd(Object text) {
-		getMinecraftServer().setMotd(Text.of(text).component().getString());
+	public void setMotd(Component text) {
+		getMinecraftServer().setMotd(text.getString());
 	}
 
 	public void stop() {
@@ -303,6 +303,6 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	}
 
 	public void sendDataToAll(String channel, @Nullable Object data) {
-		new MessageSendDataFromServer(channel, MapJS.nbt(data)).sendToAll(getMinecraftServer());
+		new SendDataFromServerMessage(channel, MapJS.nbt(data)).sendToAll(getMinecraftServer());
 	}
 }

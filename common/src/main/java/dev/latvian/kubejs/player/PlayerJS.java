@@ -9,10 +9,10 @@ import dev.latvian.kubejs.item.ItemHandlerUtils;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.stages.Stages;
 import dev.latvian.kubejs.util.AttachedData;
-import dev.latvian.kubejs.util.Overlay;
 import dev.latvian.kubejs.util.WithAttachedData;
 import dev.latvian.kubejs.world.WorldJS;
 import me.shedaniel.architectury.hooks.PlayerHooks;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -180,13 +180,7 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 		return minecraftPlayer.experienceLevel;
 	}
 
-	public abstract void openOverlay(Overlay overlay);
-
-	public abstract void closeOverlay(String overlay);
-
-	public void closeOverlay(Overlay overlay) {
-		closeOverlay(overlay.id);
-	}
+	public abstract void paint(CompoundTag renderer);
 
 	public void boostElytraFlight() {
 		if (minecraftPlayer.isFallFlying()) {

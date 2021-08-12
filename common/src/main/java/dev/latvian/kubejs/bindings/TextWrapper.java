@@ -1,11 +1,8 @@
 package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.text.TextColor;
 import dev.latvian.kubejs.text.TextString;
 import dev.latvian.kubejs.text.TextTranslate;
-
-import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -93,9 +90,5 @@ public class TextWrapper {
 
 	public static Text white(Object text) {
 		return of(text).white();
-	}
-
-	public static Map<String, TextColor> getColors() {
-		return TextColor.MAP;
 	}
 }

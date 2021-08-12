@@ -162,7 +162,7 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 			return (CollectionTag<?>) list;
 		} else if (list instanceof CharSequence) {
 			try {
-				return (CollectionTag<?>) TagParser.parseTag("{a:" + list.toString() + "}").get("a");
+				return (CollectionTag<?>) TagParser.parseTag("{a:" + list + "}").get("a");
 			} catch (Exception ex) {
 				return null;
 			}

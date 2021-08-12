@@ -303,13 +303,13 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 		return list;
 	}
 
-	public boolean containsAll(Map<?, ?> map) {
-		if (map.isEmpty()) {
+	public boolean containsAll(@Nullable MapJS other) {
+		if (other == null || other.isEmpty()) {
 			return true;
 		}
 
-		for (Map.Entry<?, ?> entry : map.entrySet()) {
-			if (!Objects.equals(entry.getValue(), get(String.valueOf(entry.getKey())))) {
+		for (Map.Entry<String, Object> entry : other.entrySet()) {
+			if (!Objects.equals(entry.getValue(), get(entry.getKey()))) {
 				return false;
 			}
 		}
@@ -317,13 +317,13 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 		return true;
 	}
 
-	public boolean containsAny(Map<?, ?> map) {
-		if (map.isEmpty()) {
+	public boolean containsAny(@Nullable MapJS other) {
+		if (other == null || other.isEmpty()) {
 			return false;
 		}
 
-		for (Map.Entry<?, ?> entry : map.entrySet()) {
-			if (Objects.equals(entry.getValue(), get(String.valueOf(entry.getKey())))) {
+		for (Map.Entry<String, Object> entry : other.entrySet()) {
+			if (Objects.equals(entry.getValue(), get(entry.getKey()))) {
 				return true;
 			}
 		}

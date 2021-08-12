@@ -27,7 +27,7 @@ public class InformationREIEventJS extends EventJS {
 				title,
 				components -> {
 					for (Object o : ListJS.orSelf(description)) {
-						components.add(Text.of(o).component());
+						components.add(Text.componentOf(o));
 					}
 					return components;
 				}

@@ -4,34 +4,35 @@ import dev.latvian.kubejs.KubeJS;
 import me.shedaniel.architectury.networking.NetworkManager.PacketContext;
 import me.shedaniel.architectury.networking.simple.BaseS2CMessage;
 import me.shedaniel.architectury.networking.simple.MessageType;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 
 /**
  * @author LatvianModder
  */
-public class MessageCloseOverlay extends BaseS2CMessage {
-	private final String overlay;
+public class PaintMessage extends BaseS2CMessage {
+	private final CompoundTag tag;
 
-	public MessageCloseOverlay(String o) {
-		overlay = o;
+	public PaintMessage(CompoundTag c) {
+		tag = c;
 	}
 
-	MessageCloseOverlay(FriendlyByteBuf buf) {
-		overlay = buf.readUtf(5000);
+	PaintMessage(FriendlyByteBuf buffer) {
+		tag = buffer.readAnySizeNbt();
 	}
 
 	@Override
 	public MessageType getType() {
-		return KubeJSNet.CLOSE_OVERLAY;
+		return KubeJSNet.PAINT;
 	}
 
 	@Override
-	public void write(FriendlyByteBuf buf) {
-		buf.writeUtf(overlay, 5000);
+	public void write(FriendlyByteBuf buffer) {
+		buffer.writeNbt(tag);
 	}
 
 	@Override
 	public void handle(PacketContext context) {
-		KubeJS.PROXY.closeOverlay(overlay);
+		KubeJS.PROXY.paint(tag);
 	}
 }
