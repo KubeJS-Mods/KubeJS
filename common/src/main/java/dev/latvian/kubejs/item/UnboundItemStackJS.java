@@ -99,6 +99,11 @@ public class UnboundItemStackJS extends ItemStackJS {
 	}
 
 	@Override
+	public boolean hasNBT() {
+		return nbt != null;
+	}
+
+	@Override
 	public boolean areItemsEqual(ItemStackJS stack) {
 		if (stack instanceof UnboundItemStackJS) {
 			return itemRL.equals(((UnboundItemStackJS) stack).itemRL);

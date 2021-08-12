@@ -73,6 +73,16 @@ public class BoundItemStackJS extends ItemStackJS {
 	}
 
 	@Override
+	public boolean hasNBT() {
+		return stack.hasTag();
+	}
+
+	@Override
+	public String getNbtString() {
+		return String.valueOf(stack.getTag());
+	}
+
+	@Override
 	public ItemStackJS withNBT(Object o) {
 		CompoundTag tag = MapJS.nbt(o);
 

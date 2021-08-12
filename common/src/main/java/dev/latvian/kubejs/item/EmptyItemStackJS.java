@@ -72,6 +72,16 @@ public class EmptyItemStackJS extends ItemStackJS {
 	}
 
 	@Override
+	public boolean hasNBT() {
+		return false;
+	}
+
+	@Override
+	public String getNbtString() {
+		return "null";
+	}
+
+	@Override
 	public void setChance(double c) {
 	}
 

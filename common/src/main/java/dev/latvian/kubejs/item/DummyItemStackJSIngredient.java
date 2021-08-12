@@ -37,7 +37,7 @@ public class DummyItemStackJSIngredient implements IngredientJS {
 
 		if (!itemStack.getNbt().isEmpty()) {
 			json.addProperty("type", "forge:nbt");
-			json.addProperty("nbt", itemStack.getNbt().toNBT().toString());
+			json.addProperty("nbt", itemStack.getNbtString());
 		}
 
 		return json;

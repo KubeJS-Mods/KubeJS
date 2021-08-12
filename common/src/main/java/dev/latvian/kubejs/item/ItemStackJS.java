@@ -14,6 +14,7 @@ import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
 import dev.latvian.kubejs.item.ingredient.RegexIngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
+import dev.latvian.kubejs.item.ingredient.WeakNBTIngredientJS;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
@@ -30,6 +31,7 @@ import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
+import me.shedaniel.architectury.platform.Platform;
 import me.shedaniel.architectury.registry.Registries;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.core.NonNullList;
@@ -384,6 +386,14 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public abstract MapJS getNbt();
 
+	public boolean hasNBT() {
+		return !getNbt().isEmpty();
+	}
+
+	public String getNbtString() {
+		return hasNBT() ? getNbt().toNBT().toString() : "null";
+	}
+
 	public ItemStackJS withNBT(Object nbt) {
 		if (isEmpty()) {
 			return this;
@@ -638,6 +648,14 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public IgnoreNBTIngredientJS ignoreNBT() {
 		return new IgnoreNBTIngredientJS(this);
+	}
+
+	public WeakNBTIngredientJS weakNBT() {
+		if (!Platform.isModLoaded("nbt_ingredient_predicate")) {
+			throw new IllegalStateException("weakNBT() requires 'NBT Ingredient Predicate' mod to be installed!");
+		}
+
+		return new WeakNBTIngredientJS(this);
 	}
 
 	public boolean areItemsEqual(ItemStackJS stack) {
