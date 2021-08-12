@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.client.painter.screen;
 
-import dev.latvian.kubejs.client.painter.RenderObjectProperties;
+import dev.latvian.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.kubejs.text.Text;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -14,7 +14,7 @@ public class TextObject extends ScreenPainterObject {
 	private float textWidth;
 
 	@Override
-	protected void load(RenderObjectProperties properties) {
+	protected void load(PainterObjectProperties properties) {
 		super.load(properties);
 
 		text = Text.componentOf(properties.tag.get("text")).getVisualOrderText();

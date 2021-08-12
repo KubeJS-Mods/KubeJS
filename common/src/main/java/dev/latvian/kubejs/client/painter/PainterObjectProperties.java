@@ -9,10 +9,10 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
-public class RenderObjectProperties {
+public class PainterObjectProperties {
 	public final CompoundTag tag;
 
-	public RenderObjectProperties(CompoundTag t) {
+	public PainterObjectProperties(CompoundTag t) {
 		tag = t;
 	}
 

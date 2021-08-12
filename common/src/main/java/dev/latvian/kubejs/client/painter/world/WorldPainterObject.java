@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.client.painter.world;
 
 import dev.latvian.kubejs.client.painter.PainterObject;
-import dev.latvian.kubejs.client.painter.RenderObjectProperties;
+import dev.latvian.kubejs.client.painter.PainterObjectProperties;
 
 public abstract class WorldPainterObject extends PainterObject {
 	public double x = 0F;
@@ -17,7 +17,7 @@ public abstract class WorldPainterObject extends PainterObject {
 	public abstract void draw(WorldPaintEventJS event);
 
 	@Override
-	protected void load(RenderObjectProperties properties) {
+	protected void load(PainterObjectProperties properties) {
 		super.load(properties);
 
 		x = properties.getDouble("x", x);

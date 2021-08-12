@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.client.painter.screen;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import dev.latvian.kubejs.client.painter.RenderObjectProperties;
+import dev.latvian.kubejs.client.painter.PainterObjectProperties;
 import net.minecraft.resources.ResourceLocation;
 
 public class RectangleObject extends ScreenPainterObject {
@@ -13,7 +13,7 @@ public class RectangleObject extends ScreenPainterObject {
 	private float v1 = 1F;
 
 	@Override
-	protected void load(RenderObjectProperties properties) {
+	protected void load(PainterObjectProperties properties) {
 		super.load(properties);
 
 		color = properties.getARGB("color", color);

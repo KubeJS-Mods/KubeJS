@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.client.painter.screen;
 
 import dev.latvian.kubejs.client.painter.PainterObject;
+import dev.latvian.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.kubejs.client.painter.PainterObjectStorage;
-import dev.latvian.kubejs.client.painter.RenderObjectProperties;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 
@@ -15,7 +15,7 @@ public class ScreenGroup extends ScreenPainterObject {
 	private float paddingH = 0F;
 
 	@Override
-	protected void load(RenderObjectProperties properties) {
+	protected void load(PainterObjectProperties properties) {
 		super.load(properties);
 
 		Tag c = properties.tag.get("children");

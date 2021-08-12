@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.client.painter.screen;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import dev.latvian.kubejs.client.painter.RenderObjectProperties;
+import dev.latvian.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.kubejs.util.ColorKJS;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -17,7 +17,7 @@ public class AtlasTextureObject extends ScreenPainterObject {
 	}
 
 	@Override
-	protected void load(RenderObjectProperties properties) {
+	protected void load(PainterObjectProperties properties) {
 		super.load(properties);
 
 		color = properties.getARGB("color", color);

@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.client.painter.screen;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import dev.latvian.kubejs.client.painter.RenderObjectProperties;
+import dev.latvian.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.kubejs.text.Text;
 import me.shedaniel.architectury.utils.NbtType;
 import net.minecraft.nbt.ListTag;
@@ -27,7 +27,7 @@ public class OverlayObject extends ScreenPainterObject {
 	}
 
 	@Override
-	protected void load(RenderObjectProperties properties) {
+	protected void load(PainterObjectProperties properties) {
 		super.load(properties);
 
 		if (properties.hasString("text")) {

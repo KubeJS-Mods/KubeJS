@@ -51,6 +51,7 @@ public class KubeJSEvents {
 	public static final String PLAYER_INVENTORY_CHANGED = "player.inventory.changed";
 	public static final String PLAYER_CHEST_OPENED = "player.chest.opened";
 	public static final String PLAYER_CHEST_CLOSED = "player.chest.closed";
+	public static final String PLAYER_CHECK_LOGIN = "player.check_login";
 
 	public static final String ENTITY_DEATH = "entity.death";
 	public static final String ENTITY_ATTACK = "entity.attack";

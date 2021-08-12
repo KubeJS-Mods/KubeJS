@@ -3,7 +3,7 @@ package dev.latvian.kubejs.client.painter.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.math.Matrix4f;
-import dev.latvian.kubejs.client.painter.RenderObjectProperties;
+import dev.latvian.kubejs.client.painter.PainterObjectProperties;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
@@ -19,7 +19,7 @@ public class GradientObject extends ScreenPainterObject {
 	private float v1 = 1F;
 
 	@Override
-	protected void load(RenderObjectProperties properties) {
+	protected void load(PainterObjectProperties properties) {
 		super.load(properties);
 		colorTL = properties.getARGB("colorTL", colorTL);
 		colorTR = properties.getARGB("colorTR", colorTR);

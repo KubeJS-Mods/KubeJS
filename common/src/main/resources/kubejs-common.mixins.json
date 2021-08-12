@@ -18,6 +18,7 @@
 		"LootTablesMixin",
 		"MinecraftServerMixin",
 		"PlayerInteractionManagerMixin",
+		"PlayerListMixin",
 		"PlayerMixin",
 		"RecipeManagerMixin",
 		"ResourceKeyMixin",

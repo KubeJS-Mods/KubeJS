@@ -14,7 +14,7 @@ public abstract class PainterObject implements SpecialEquality {
 		return this;
 	}
 
-	protected void load(RenderObjectProperties properties) {
+	protected void load(PainterObjectProperties properties) {
 		visible = properties.getBoolean("visible", visible);
 	}
 
@@ -25,7 +25,7 @@ public abstract class PainterObject implements SpecialEquality {
 			}
 		} else {
 			try {
-				load(new RenderObjectProperties(tag));
+				load(new PainterObjectProperties(tag));
 			} catch (Exception ex) {
 				ConsoleJS.CLIENT.error("Failed to update Painter object " + id + "/" + getClass().getSimpleName() + ": " + ex);
 			}

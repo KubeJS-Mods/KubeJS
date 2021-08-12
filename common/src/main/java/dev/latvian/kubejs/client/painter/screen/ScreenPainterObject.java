@@ -2,7 +2,7 @@ package dev.latvian.kubejs.client.painter.screen;
 
 import dev.latvian.kubejs.client.painter.Painter;
 import dev.latvian.kubejs.client.painter.PainterObject;
-import dev.latvian.kubejs.client.painter.RenderObjectProperties;
+import dev.latvian.kubejs.client.painter.PainterObjectProperties;
 import org.intellij.lang.annotations.MagicConstant;
 
 public abstract class ScreenPainterObject extends PainterObject {
@@ -27,7 +27,7 @@ public abstract class ScreenPainterObject extends PainterObject {
 	public abstract void draw(ScreenPaintEventJS event);
 
 	@Override
-	protected void load(RenderObjectProperties properties) {
+	protected void load(PainterObjectProperties properties) {
 		super.load(properties);
 
 		x = properties.getFloat("x", x);
