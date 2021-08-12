@@ -118,16 +118,24 @@ public class BoundItemStackJS extends ItemStackJS {
 
 	@Override
 	public boolean isNBTEqual(ItemStackJS stack2) {
-		CompoundTag nbt = stack.getTag();
-		CompoundTag nbt2 = MapJS.nbt(stack2.getNbt());
-		return Objects.equals(nbt, nbt2);
+		if (hasNBT() == stack2.hasNBT()) {
+			CompoundTag nbt = stack.getTag();
+			CompoundTag nbt2 = MapJS.nbt(stack2.getNbt());
+			return Objects.equals(nbt, nbt2);
+		}
+
+		return false;
 	}
 
 	@Override
 	public boolean isNBTEqual(ItemStack stack2) {
-		CompoundTag nbt = stack.getTag();
-		CompoundTag nbt2 = stack2.getTag();
-		return Objects.equals(nbt, nbt2);
+		if (hasNBT() == stack2.hasTag()) {
+			CompoundTag nbt = stack.getTag();
+			CompoundTag nbt2 = stack2.getTag();
+			return Objects.equals(nbt, nbt2);
+		}
+
+		return false;
 	}
 
 	@Override

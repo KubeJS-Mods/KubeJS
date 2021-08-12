@@ -466,9 +466,8 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		StringBuilder builder = new StringBuilder();
 
 		int count = getCount();
-		MapJS nbt = getNbt();
 
-		if (count > 1 || hasChance() || !nbt.isEmpty()) {
+		if (count > 1 || hasChance() || !hasNBT()) {
 			builder.append("Item.of('");
 			builder.append(getId());
 			builder.append('\'');
@@ -478,9 +477,9 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 				builder.append(count);
 			}
 
-			if (!nbt.isEmpty()) {
+			if (hasNBT()) {
 				builder.append(", ");
-				nbt.toString(builder);
+				getNbt().toString(builder);
 			}
 
 			builder.append(')');
@@ -531,7 +530,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(getItem(), getNbt());
+		return Objects.hash(getItem(), hasNBT() ? getNbt() : 0);
 	}
 
 	@Override
@@ -667,18 +666,17 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	}
 
 	public boolean isNBTEqual(ItemStackJS stack) {
-		return Objects.equals(getNbt(), stack.getNbt());
+		return hasNBT() == stack.hasNBT() && Objects.equals(getNbt(), stack.getNbt());
 	}
 
 	public boolean isNBTEqual(ItemStack stack) {
-		MapJS nbt = getNbt();
 		CompoundTag nbt1 = stack.getTag();
 
 		if (nbt1 == null) {
-			return nbt.isEmpty();
+			return !hasNBT();
 		}
 
-		return Objects.equals(MapJS.nbt(nbt), nbt1);
+		return Objects.equals(MapJS.nbt(getNbt()), nbt1);
 	}
 
 	public int getHarvestLevel(ToolType tool, @Nullable PlayerJS<?> player, @Nullable BlockContainerJS block) {
@@ -726,9 +724,9 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		json.addProperty("item", getId());
 		json.addProperty("count", getCount());
 
-		MapJS nbt = getNbt();
+		if (hasNBT()) {
+			MapJS nbt = getNbt();
 
-		if (!nbt.isEmpty()) {
 			if (RecipeJS.currentRecipe != null && RecipeJS.currentRecipe.type != null && RecipeJS.currentRecipe.type.getIdRL().getNamespace().equals("techreborn")) {
 				json.add("nbt", nbt.toJson());
 			} else {

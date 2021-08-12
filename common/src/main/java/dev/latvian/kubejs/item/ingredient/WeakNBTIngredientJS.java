@@ -54,7 +54,7 @@ public final class WeakNBTIngredientJS implements IngredientJS {
 		JsonObject json = new JsonObject();
 		json.addProperty("item", item.getId());
 
-		if (!item.getNbt().isEmpty()) {
+		if (item.hasNBT()) {
 			json.addProperty("type", "nbt_ingredient_predicate:nbt_includes");
 			json.addProperty("nbt", item.getNbtString());
 		}

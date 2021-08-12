@@ -175,7 +175,7 @@ public class EmptyItemStackJS extends ItemStackJS {
 
 	@Override
 	public boolean isNBTEqual(ItemStackJS stack) {
-		return stack.getNbt().isEmpty();
+		return !stack.hasNBT();
 	}
 
 	@Override
