@@ -9,10 +9,12 @@ import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import me.shedaniel.architectury.registry.ToolType;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -82,6 +84,17 @@ public class EmptyItemStackJS extends ItemStackJS {
 	}
 
 	@Override
+	@Nullable
+	public CompoundTag getMinecraftNbt() {
+		return null;
+	}
+
+	@Override
+	public ItemStackJS removeNBT() {
+		return this;
+	}
+
+	@Override
 	public void setChance(double c) {
 	}
 
@@ -145,6 +158,11 @@ public class EmptyItemStackJS extends ItemStackJS {
 
 	@Override
 	public ItemStackJS enchant(MapJS map) {
+		return this;
+	}
+
+	@Override
+	public ItemStackJS enchant(Enchantment enchantment, int level) {
 		return this;
 	}
 

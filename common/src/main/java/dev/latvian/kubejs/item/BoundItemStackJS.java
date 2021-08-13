@@ -1,12 +1,16 @@
 package dev.latvian.kubejs.item;
 
+import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -78,21 +82,35 @@ public class BoundItemStackJS extends ItemStackJS {
 	}
 
 	@Override
-	public String getNbtString() {
-		return String.valueOf(stack.getTag());
+	@Nullable
+	public CompoundTag getMinecraftNbt() {
+		return stack.getTag();
+	}
+
+	@Override
+	public ItemStackJS removeNBT() {
+		ItemStack is = stack.copy();
+		is.setTag(null);
+		return new BoundItemStackJS(is).withChance(getChance());
 	}
 
 	@Override
 	public ItemStackJS withNBT(Object o) {
-		CompoundTag tag = MapJS.nbt(o);
+		ItemStack is = stack.copy();
 
-		if (tag != null) {
-			ItemStack is = stack.copy();
+		if (is.getTag() == null) {
+			is.setTag(MapJS.nbt(o));
+		} else {
+			CompoundTag c = MapJS.nbt(o);
 
-			return new BoundItemStackJS(is).withChance(getChance());
+			if (c != null && !c.isEmpty()) {
+				for (String key : c.getAllKeys()) {
+					is.getTag().put(key, c.get(key));
+				}
+			}
 		}
 
-		return this;
+		return new BoundItemStackJS(is).withChance(getChance());
 	}
 
 	@Override
@@ -141,5 +159,24 @@ public class BoundItemStackJS extends ItemStackJS {
 	@Override
 	public void onChanged(@Nullable MapJS o) {
 		stack.setTag(MapJS.nbt(o));
+	}
+
+	@Override
+	public ItemStackJS enchant(MapJS enchantments) {
+		for (Map.Entry<String, Object> entry : enchantments.entrySet()) {
+			Enchantment enchantment = KubeJSRegistries.enchantments().get(UtilsJS.getMCID(entry.getKey()));
+
+			if (enchantment != null && entry.getValue() instanceof Number) {
+				stack.enchant(enchantment, ((Number) entry.getValue()).intValue());
+			}
+		}
+
+		return this;
+	}
+
+	@Override
+	public ItemStackJS enchant(Enchantment enchantment, int level) {
+		stack.enchant(enchantment, level);
+		return this;
 	}
 }

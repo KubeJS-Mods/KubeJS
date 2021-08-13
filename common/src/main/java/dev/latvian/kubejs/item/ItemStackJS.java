@@ -19,10 +19,10 @@ import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.NBTSerializable;
+import dev.latvian.kubejs.util.NBTUtilsJS;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
@@ -34,9 +34,11 @@ import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.platform.Platform;
 import me.shedaniel.architectury.registry.Registries;
 import me.shedaniel.architectury.registry.ToolType;
+import me.shedaniel.architectury.utils.NbtType;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -46,9 +48,12 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Blocks;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -166,18 +171,18 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	}
 
 	public static ItemStackJS of(ItemStackJS stack, @Nullable Object countOrNBT) {
-		Object n = UtilsJS.wrap(countOrNBT, JSObjectType.ANY);
+		Object n = Wrapper.unwrapped(countOrNBT);
 
 		if (n instanceof Number) {
 			stack.setCount(((Number) n).intValue());
-		} else if (n instanceof MapJS) {
+		} else if (n instanceof MapJS || n instanceof String) {
 			stack = stack.withNBT(n);
 		}
 
 		return stack;
 	}
 
-	public static ItemStackJS of(ItemStackJS stack, int count, MapJS nbt) {
+	public static ItemStackJS of(ItemStackJS stack, int count, Object nbt) {
 		return stack.withCount(count).withNBT(nbt);
 	}
 
@@ -391,15 +396,27 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	}
 
 	public String getNbtString() {
-		return hasNBT() ? getNbt().toNBT().toString() : "null";
+		return String.valueOf(getMinecraftNbt());
 	}
+
+	@Nullable
+	public CompoundTag getMinecraftNbt() {
+		return hasNBT() ? getNbt().toNBT() : null;
+	}
+
+	public abstract ItemStackJS removeNBT();
 
 	public ItemStackJS withNBT(Object nbt) {
 		if (isEmpty()) {
 			return this;
 		}
 
-		if (nbt != null) {
+		if (nbt instanceof String) {
+			CompoundTag tag = MapJS.nbt(nbt);
+			ItemStackJS is = copy();
+			is.getNbt().putAll(MapJS.of(tag));
+			return is;
+		} else if (nbt != null) {
 			ItemStackJS is = copy();
 			is.getNbt().putAll(MapJS.of(nbt));
 			return is;
@@ -462,15 +479,24 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return this;
 	}
 
+	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 
 		int count = getCount();
+		boolean hasChanceOrNbt = hasChance() || hasNBT();
 
-		if (count > 1 || hasChance() || !hasNBT()) {
+		if (count > 1 && !hasChanceOrNbt) {
+			builder.append('\'');
+			builder.append(count);
+			builder.append("x ");
+			builder.append(getId());
+			builder.append('\'');
+		} else if (hasChanceOrNbt) {
 			builder.append("Item.of('");
 			builder.append(getId());
 			builder.append('\'');
+			List<Pair<String, Integer>> enchants = null;
 
 			if (count > 1) {
 				builder.append(", ");
@@ -478,14 +504,49 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 			}
 
 			if (hasNBT()) {
-				builder.append(", ");
-				getNbt().toString(builder);
+				CompoundTag t = getMinecraftNbt();
+
+				if (t != null && !t.isEmpty()) {
+					String key = getItem() == Items.ENCHANTED_BOOK ? "StoredEnchantments" : "Enchantments";
+
+					if (t.contains(key, NbtType.LIST)) {
+						ListTag l = t.getList(key, NbtType.COMPOUND);
+						enchants = new ArrayList<>(l.size());
+
+						for (int i = 0; i < l.size(); i++) {
+							CompoundTag t1 = l.getCompound(i);
+							enchants.add(Pair.of(t1.getString("id"), t1.getInt("lvl")));
+						}
+
+						t = t.copy();
+						t.remove(key);
+
+						if (t.isEmpty()) {
+							t = null;
+						}
+					}
+				}
+
+				if (t != null) {
+					builder.append(", ");
+					NBTUtilsJS.quoteAndEscapeForJS(builder, t.toString());
+				}
 			}
 
 			builder.append(')');
 
+			if (enchants != null) {
+				for (Pair<String, Integer> e : enchants) {
+					builder.append(".enchant('");
+					builder.append(e.getKey());
+					builder.append("', ");
+					builder.append(e.getValue());
+					builder.append(')');
+				}
+			}
+
 			if (hasChance()) {
-				builder.append(".chance(");
+				builder.append(".withChance(");
 				builder.append(getChance());
 				builder.append(')');
 			}
@@ -603,8 +664,8 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 		return this;
 	}
 
-	public ItemStackJS enchant(String id, int level) {
-		getEnchantments().put(id, level);
+	public ItemStackJS enchant(Enchantment enchantment, int level) {
+		getEnchantments().put(String.valueOf(Registries.getId(enchantment, Registry.ENCHANTMENT_REGISTRY)), level);
 		return this;
 	}
 
