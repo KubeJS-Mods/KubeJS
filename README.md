@@ -12,11 +12,11 @@ KubeJS is a multi-modloader Minecraft mod which lets you create scripts in the J
 
 If you think you've found a bug with the mod or want to ask for a new feature, feel free to [open an issue](https://github.com/KubeJS-Mods/KubeJS/issues) here on GitHub, we'll try to get on it as soon as we can! Alternatively, you can also discuss your feature requests and suggestions with others using the [Discussions](https://github.com/KubeJS-Mods/KubeJS/discussions) tab.
 
-And if you're just looking for help with KubeJS overall and the wiki didn't have the answer for what you were looking for, you can join our [Discord server](https://discord.gg/bPFfH6P) and ask for help in the `#kubejs-and-code` channel, as well!
+And if you're just looking for help with KubeJS overall and the wiki didn't have the answer for what you were looking for, you can join our [Discord server](https://discord.gg/bPFfH6P) and ask for help in the support channels, as well!
 
 ## License
 
-KubeJS is distributed under the GNU Lesser General Public License v3.0, or LGPLv3. See our [LICENSE](https://github.com/KubeJS-Mods/KubeJS/blob/master/LICENSE.txt) file for more information.
+KubeJS is distributed under the GNU Lesser General Public License v3.0, or LGPLv3. See our [LICENSE](https://github.com/KubeJS-Mods/KubeJS/blob/main/LICENSE.txt) file for more information.
 
 ## Creating addons
 
@@ -50,7 +50,7 @@ repositories {
 You can then declare KubeJS as a regular `compile`-time dependency in your `dependencies` block:
 
 ```groovy
-// Fabric/Quilt Loom and Architectury's "forgeloom"
+// Loom (Fabric / Quilt / Architectury)
 modImplementation("dev.latvian.mods:kubejs-<loader>:${kubejs_version}")
 
 // ForgeGradle
@@ -93,53 +93,65 @@ minecraft {
 }
 ```
 
+### Creating a plugin
+
+KubeJS [plugins](https://github.com/KubeJS-Mods/KubeJS/blob/main/common/src/main/java/dev/latvian/kubejs/KubeJSPlugin.java) are a new feature introduced in KubeJS `1605.3.7` designed to ease the process of adding KubeJS integration to mods. They contain convenient hooks for addon developers to:
+
+- perform certain actions during or after plugin initialisation (`init` / `afterInit` - [Example](https://github.com/FTBTeam/FTB-Chunks/blob/main/common/src/main/java/dev/ftb/mods/ftbchunks/integration/kubejs/FTBChunksKubeJSPlugin.java#L15-L24))
+- add custom recipe handlers for modded recipe types (`addRecipes` - [Example](https://github.com/KubeJS-Mods/KubeJS-Create/blob/main/src/main/java/dev/latvian/kubejs/create/KubeJSCreatePlugin.java#L19-L29)) *(this replaces `RegisterRecipeHandlersEvent` listeners)*
+- add classes to the class filter (with the option to add to the filter for a certain script type only, as well as to add `Class` objects directly rather than using strings) (`addClasses` - [Example](https://github.com/KubeJS-Mods/KubeJS/blob/main/common/src/main/java/dev/latvian/kubejs/BuiltinKubeJSPlugin.java#L68-L120))
+- add global bindings (`addBindings` - [Example](https://github.com/KubeJS-Mods/KubeJS/blob/main/forge/src/main/java/dev/latvian/kubejs/forge/BuiltinKubeJSForgePlugin.java#L27-L31)) *(this replaces `BindingsEvent` listeners)* 
+- add type wrappers for automatic native type conversion, for example to allow `String`s to be automatically converted to `ResourceLocation`s. (`addTypeWrappers` - [Example](https://github.com/KubeJS-Mods/KubeJS/blob/main/common/src/main/java/dev/latvian/kubejs/BuiltinKubeJSPlugin.java#L211-L252))
+- attach data to [players](https://github.com/KubeJS-Mods/KubeJS/blob/main/common/src/main/java/dev/latvian/kubejs/player/AttachPlayerDataEvent.java), [worlds](https://github.com/KubeJS-Mods/KubeJS/blob/main/common/src/main/java/dev/latvian/kubejs/world/AttachWorldDataEvent.java) or the [server](https://github.com/KubeJS-Mods/KubeJS/blob/main/common/src/main/java/dev/latvian/kubejs/server/AttachServerDataEvent.java) that may then be used by script makers (`attach(Player|World|Server)Data` - [Example](https://github.com/FTBTeam/FTB-Quests/blob/main/common/src/main/java/dev/ftb/mods/ftbquests/integration/kubejs/KubeJSIntegration.java#L40-L42), please note this example currently uses the deprecated way of listening to `AttachPlayerDataEvent` itself)
+
+A newer, more convenient way to add bindings, set class filters and even add **Native Type Wrappers** (which can convert an untyped JavaScript input (most likely a String) to a corresponding Java object automatically) comes in the form of KubeJS , which is a very simple class you can extend in your own mod to:
+
 ### Adding recipe handlers
 
-To add custom recipe handlers for your own modded recipe types, use the [`RegisterRecipeHandlersEvent`](https://github.com/KubeJS-Mods/KubeJS/blob/master/common/src/main/java/dev/latvian/kubejs/recipe/RegisterRecipeHandlersEvent.java). A concrete example of this can be found [here](https://github.com/KubeJS-Mods/KubeJS-Thermal/blob/main/src/main/java/dev/latvian/kubejs/thermal/KubeJSThermal.java) for integration with the Thermal series, but we'll give you a simple outline of the process here as well:
+To add custom recipe handlers for your own modded recipe types, use KubeJS plugins as noted above. A concrete example of this can be found [here](https://github.com/KubeJS-Mods/KubeJS-Thermal/blob/main/src/main/java/dev/latvian/kubejs/thermal/KubeJSThermalPlugin.java) for integration with the Thermal series, but we'll give you a simple outline of the process here as well:
 
 ```java
-// You may also use Forge's event bus here
-RegisterRecipeHandlers.EVENT.register(event -> {
+public class MyExamplePlugin extends KubeJSPlugin {
     // for custom recipe types based on shaped recipes, like non-mirrored or copying NBT
     event.registerShaped("mymod:shapedbutbetter");        // analogue: registerShapeless
 
     // this is what you usually want to use for custom machine recipe types and the like
     event.register("mymod:customtype", MyRecipeJS::new);
-});
-
-// in MyRecipeJS.java (which extends RecipeJS)
-
-// Input is an IngredientStackJS, return value should be the
-// serialised JSON variant used in your recipe 
-@Override
-public JsonElement serializeIngredientStack(IngredientStackJS stack);
-
-// say your recipe had processing time, you would use builder
-// methods like these to add these properties to the JSON
-public MyRecipeJS time(int ticks) {
-    json.addProperty("time", ticks);
-    save();
-    return this;
 }
 
-// Similar to inputs, if you use custom parsing to determine your
-// result item, use this method to override the parsing of said item.
-@Override
-public ItemStackJS parseResultItem(@Nullable Object o) {
-    if(o instanceof JsonObject) {
-        // parse the item yourself if it's a JsonObject
+public class MyRecipeJS extends RecipeJS {
+    // Input is an IngredientStackJS, return value should be the
+    // serialised JSON variant used in your recipe 
+    @Override
+    public JsonElement serializeIngredientStack(IngredientStackJS stack);
+
+    // say your recipe had processing time, you would use builder
+    // methods like these to add these properties to the JSON
+    public MyRecipeJS time(int ticks) {
+        json.addProperty("time", ticks);
+        save();
+        return this;
     }
-    return super.parseResultItem(o); // fallback to default parsing otherwise
+
+    // Similar to inputs, if you use custom parsing to determine your
+    // result item, use this method to override the parsing of said item.
+    @Override
+    public ItemStackJS parseResultItem(@Nullable Object o) {
+        if(o instanceof JsonObject) {
+            // parse the item yourself if it's a JsonObject
+        }
+        return super.parseResultItem(o); // fallback to default parsing otherwise
+    }
 }
 ```
 
 ### Adding bindings
 
-Similarly to adding custom recipe types, there is a [`BindingsEvent`](https://github.com/KubeJS-Mods/KubeJS/blob/master/common/src/main/java/dev/latvian/kubejs/script/BindingsEvent.java) which you can use to add custom bindings to KubeJS (see [FTBQuests](https://github.com/FTBTeam/FTB-Quests/blob/master/common/src/main/java/dev/ftb/mods/ftbquests/integration/kubejs/KubeJSIntegration.java) for a simple example). Bindings can be anything from single value constants to Java class and method wrappers, and can be constrained to individual scopes, contexts and script types, as well!
+Similarly to adding custom recipe types, you may also add **custom bindings** to KubeJS (see [Simply Seasons](https://github.com/Harvest-Festival/Simply-Seasons/blob/main/src/main/java/uk/joshiejack/simplyseasons/plugins/KubeJSPlugin.java#L17-L21) for a *very* simple example). Bindings can be anything from [single value constants](https://github.com/KubeJS-Mods/KubeJS/blob/main/common/src/main/java/dev/latvian/kubejs/BuiltinKubeJSPlugin.java#L188) to Java [class](https://github.com/KubeJS-Mods/KubeJS/blob/main/common/src/main/java/dev/latvian/kubejs/BuiltinKubeJSPlugin.java#L170) and [method wrappers](https://github.com/KubeJS-Mods/KubeJS/blob/main/common/src/main/java/dev/latvian/kubejs/BuiltinKubeJSPlugin.java#L167), and can be constrained to individual scopes, contexts and script types, as well!
 
 ### Setting class filters
 
-KubeJS offers native Java type access in script files, meaning that basic Java types can be referenced directly by using for example `java("package.class")`. This access is by default limited to only specifically allowed classes, with the default setting being to deny **anything else** unless [explicitly specified](https://github.com/KubeJS-Mods/KubeJS/blob/master/common/src/main/java/dev/latvian/kubejs/CommonProperties.java#L51) by the user, however you may still want to explicitly allow (or explicitly deny, to prevent users from using it even with the above setting toggled on) access to certain classes in your mod. To do this, you may either provide a class filter using a KubeJS plugin (more on that later!) *or* you can avoid adding KubeJS as a dependency entirely by providing a simple `kubejs.classfilter.txt` file in your mod's `resources` with the following format (Note that comments aren't allowed in the actual file):
+KubeJS offers native Java type access in script files, meaning that basic Java types can be referenced directly by using for example `java("package.class")`. This access is by default limited to only specifically allowed classes, with the default setting being to deny **anything else** unless [explicitly specified](https://github.com/KubeJS-Mods/KubeJS/blob/main/common/src/main/java/dev/latvian/kubejs/CommonProperties.java#L51) by the user, however you may still want to explicitly allow (or explicitly deny, to prevent users from using it even with the above setting toggled on) access to certain classes in your mod. To do this, you may either provide a class filter using a KubeJS plugin (more on that later!) *or* you can avoid adding KubeJS as a dependency entirely by providing a simple `kubejs.classfilter.txt` file in your mod's `resources` with the following format (Note that comments aren't allowed in the actual file):
 
 ```diff
 +mymod.api.MyModAPI // This will *explicitly allow* your class to be used in KubeJS
@@ -147,15 +159,6 @@ KubeJS offers native Java type access in script files, meaning that basic Java t
 ```
 
 For any unset classes, the default setting is once again determined by the user.
-
-### **NEW!** KubeJS plugins
-
-A newer, more convenient way to add bindings, set class filters and even add **Native Type Wrappers** (which can convert an untyped JavaScript input (most likely a String) to a corresponding Java object automatically) comes in the form of KubeJS [plugins](https://github.com/KubeJS-Mods/KubeJS/blob/master/common/src/main/java/dev/latvian/kubejs/KubeJSPlugin.java), which is a very simple class you can extend in your own mod to:
-
-- perform certain actions during or after plugin initialisation (`init` / `afterInit` - [Example](https://github.com/FTBTeam/FTB-Chunks/blob/master/common/src/main/java/dev/ftb/mods/ftbchunks/integration/kubejs/FTBChunksKubeJSPlugin.java#L15-L24))
-- add classes to the class filter (with the option to add to the filter for a certain script type only, as well as to add `Class` objects directly rather than using strings) (`addClasses` - [Example](https://github.com/KubeJS-Mods/KubeJS/blob/master/common/src/main/java/dev/latvian/kubejs/BuiltinKubeJSPlugin.java#L68-L120))
-- add global bindings (basically an alternative to listening to `BindingsEvent`) (`addBindings` - [Example](https://github.com/KubeJS-Mods/KubeJS/blob/master/forge/src/main/java/dev/latvian/kubejs/forge/BuiltinKubeJSForgePlugin.java#L27-L31))
-- add type wrappers for automatic native type conversion, for example to allow `String`s to be automatically converted to `ResourceLocation`s. (`addTypeWrappers` - [Example](https://github.com/KubeJS-Mods/KubeJS/blob/master/common/src/main/java/dev/latvian/kubejs/BuiltinKubeJSPlugin.java#L211-L252))
 
 ## Contributing to KubeJS
 
