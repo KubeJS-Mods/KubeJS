@@ -447,6 +447,8 @@ public class UtilsJS {
 	public static ResourceLocation getMCID(@Nullable Object o) {
 		if (o == null) {
 			return AIR_LOCATION;
+		} else if (o instanceof ResourceLocation) {
+			return (ResourceLocation) o;
 		}
 
 		String s = o.toString();

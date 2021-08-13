@@ -99,6 +99,15 @@ public class UnboundItemStackJS extends ItemStackJS {
 	}
 
 	@Override
+	public ItemStackJS removeNBT() {
+		UnboundItemStackJS stack = new UnboundItemStackJS(itemRL);
+		stack.count = count;
+		stack.nbt = null;
+		stack.setChance(getChance());
+		return stack;
+	}
+
+	@Override
 	public boolean hasNBT() {
 		return nbt != null;
 	}

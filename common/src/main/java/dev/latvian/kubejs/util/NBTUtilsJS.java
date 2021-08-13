@@ -110,4 +110,34 @@ public class NBTUtilsJS {
 
 		return null;
 	}
+
+	public static void quoteAndEscapeForJS(StringBuilder stringBuilder, String string) {
+		int start = stringBuilder.length();
+		stringBuilder.append(' ');
+		char c = 0;
+
+		for (int i = 0; i < string.length(); ++i) {
+			char d = string.charAt(i);
+			if (d == '\\') {
+				stringBuilder.append('\\');
+			} else if (d == '"' || d == '\'') {
+				if (c == 0) {
+					c = d == '\'' ? '"' : '\'';
+				}
+
+				if (c == d) {
+					stringBuilder.append('\\');
+				}
+			}
+
+			stringBuilder.append(d);
+		}
+
+		if (c == 0) {
+			c = '\'';
+		}
+
+		stringBuilder.setCharAt(start, c);
+		stringBuilder.append(c);
+	}
 }
