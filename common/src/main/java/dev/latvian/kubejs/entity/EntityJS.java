@@ -148,6 +148,14 @@ public class EntityJS implements MessageSender, WrappedJS {
 		minecraftEntity.setInvisible(invisible);
 	}
 
+	public boolean isInvulnerable() {
+		return minecraftEntity.isInvulnerable();
+	}
+
+	public void setInvulnerable(boolean invulnerable) {
+		minecraftEntity.setInvulnerable(invulnerable);
+	}
+
 	public boolean isBoss() {
 		return !minecraftEntity.canChangeDimensions();
 	}
