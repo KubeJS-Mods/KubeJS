@@ -30,6 +30,12 @@ public class AtlasTextureObject extends ScreenPainterObject {
 			return;
 		}
 
+		float aw = w.get();
+		float ah = h.get();
+		float ax = event.alignX(x.get(), aw, alignX);
+		float ay = event.alignY(y.get(), ah, alignY);
+		float az = z.get();
+
 		TextureAtlasSprite sprite = event.getTextureAtlas().getSprite(texture);
 
 		float u0 = sprite.getU0();
@@ -38,7 +44,7 @@ public class AtlasTextureObject extends ScreenPainterObject {
 		float v1 = sprite.getV1();
 		event.bindTexture(TextureAtlas.LOCATION_BLOCKS);
 		event.beginQuads(DefaultVertexFormat.POSITION_COLOR_TEX);
-		event.rectangle(x, y, z, w, h, color, u0, v0, u1, v1);
+		event.rectangle(ax, ay, az, aw, ah, color, u0, v0, u1, v1);
 		event.end();
 	}
 }

@@ -3,6 +3,7 @@ package dev.latvian.kubejs;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.world.WorldJS;
+import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -19,6 +20,9 @@ public class KubeJSCommon {
 	}
 
 	public void clientBindings(BindingsEvent event) {
+	}
+
+	public void clientTypeWrappers(TypeWrappers typeWrappers) {
 	}
 
 	public void handleDataToClientPacket(String channel, @Nullable CompoundTag data) {

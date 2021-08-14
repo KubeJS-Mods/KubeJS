@@ -26,19 +26,22 @@ public class RectangleObject extends ScreenPainterObject {
 
 	@Override
 	public void draw(ScreenPaintEventJS event) {
-		float ax = event.alignX(x, w, alignX);
-		float ay = event.alignY(y, h, alignY);
+		float aw = w.get();
+		float ah = h.get();
+		float ax = event.alignX(x.get(), aw, alignX);
+		float ay = event.alignY(y.get(), ah, alignY);
+		float az = z.get();
 
 		if (texture == null) {
 			event.setTextureEnabled(false);
 			event.beginQuads(DefaultVertexFormat.POSITION_COLOR);
-			event.rectangle(ax, ay, z, w, h, color);
+			event.rectangle(ax, ay, az, aw, ah, color);
 			event.end();
 			event.setTextureEnabled(true);
 		} else {
 			event.bindTexture(texture);
 			event.beginQuads(DefaultVertexFormat.POSITION_COLOR_TEX);
-			event.rectangle(ax, ay, z, w, h, color, u0, v0, u1, v1);
+			event.rectangle(ax, ay, az, aw, ah, color, u0, v0, u1, v1);
 			event.end();
 		}
 	}

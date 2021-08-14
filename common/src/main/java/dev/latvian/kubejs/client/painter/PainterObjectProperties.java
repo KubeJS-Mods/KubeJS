@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.client.painter;
 
 import dev.latvian.kubejs.bindings.ColorWrapper;
+import dev.latvian.mods.rhino.util.unit.Unit;
 import me.shedaniel.architectury.utils.NbtType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NumericTag;
@@ -77,6 +78,16 @@ public class PainterObjectProperties {
 			return ColorWrapper.of(t.getAsString()).getArgbNormalizedKJS();
 		} else if (t instanceof NumericTag) {
 			return ColorWrapper.of(((NumericTag) t).getAsInt()).getArgbNormalizedKJS();
+		}
+
+		return def;
+	}
+
+	public Unit getUnit(String key, Unit def) {
+		if (hasString(key)) {
+			return Unit.parse(tag.getString(key), Painter.INSTANCE.unitVariables);
+		} else if (hasNumber(key)) {
+			return Unit.fixed(((NumericTag) tag.get(key)).getAsFloat());
 		}
 
 		return def;

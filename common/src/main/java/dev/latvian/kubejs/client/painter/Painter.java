@@ -5,6 +5,9 @@ import dev.latvian.kubejs.client.painter.screen.ScreenPainterObject;
 import dev.latvian.kubejs.client.painter.world.WorldPainterObject;
 import dev.latvian.kubejs.net.PainterUpdatedEventJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import dev.latvian.mods.rhino.util.unit.MutableUnit;
+import dev.latvian.mods.rhino.util.unit.Unit;
+import dev.latvian.mods.rhino.util.unit.UnitVariables;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,13 +31,30 @@ public class Painter {
 	public static final int TOP = -1;
 	public static final int BOTTOM = 1;
 
-	private final Object lock = new Object();
-	private final Map<String, Supplier<PainterObject>> objectRegistry = new HashMap<>();
-	private final PainterObjectStorage storage = new PainterObjectStorage();
-	private ScreenPainterObject[] screenObjects = null;
-	private WorldPainterObject[] worldObjects = null;
+	private final Object lock;
+	private final Map<String, Supplier<PainterObject>> objectRegistry;
+	private final PainterObjectStorage storage;
+	private ScreenPainterObject[] screenObjects;
+	private WorldPainterObject[] worldObjects;
+	public final UnitVariables unitVariables;
+	public final MutableUnit deltaUnit;
+	public final MutableUnit screenWidthUnit;
+	public final MutableUnit screenHeightUnit;
+	public final MutableUnit mouseXUnit;
+	public final MutableUnit mouseYUnit;
 
 	private Painter() {
+		lock = new Object();
+		objectRegistry = new HashMap<>();
+		storage = new PainterObjectStorage();
+		screenObjects = null;
+		worldObjects = null;
+		unitVariables = new UnitVariables();
+		unitVariables.set("delta", deltaUnit = new MutableUnit(1F));
+		unitVariables.set("screenW", screenWidthUnit = new MutableUnit(1F));
+		unitVariables.set("screenH", screenHeightUnit = new MutableUnit(1F));
+		unitVariables.set("mouseX", mouseXUnit = new MutableUnit(0F));
+		unitVariables.set("mouseY", mouseYUnit = new MutableUnit(0F));
 	}
 
 	@HideFromJS
@@ -93,5 +113,9 @@ public class Painter {
 		}
 
 		return worldObjects;
+	}
+
+	public void setVariable(String key, Unit variable) {
+		unitVariables.set(key, variable);
 	}
 }
