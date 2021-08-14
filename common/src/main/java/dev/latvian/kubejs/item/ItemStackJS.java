@@ -31,7 +31,6 @@ import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
-import me.shedaniel.architectury.platform.Platform;
 import me.shedaniel.architectury.registry.Registries;
 import me.shedaniel.architectury.registry.ToolType;
 import me.shedaniel.architectury.utils.NbtType;
@@ -175,7 +174,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 		if (n instanceof Number) {
 			stack.setCount(((Number) n).intValue());
-		} else if (n instanceof MapJS || n instanceof String) {
+		} else {
 			stack = stack.withNBT(n);
 		}
 
@@ -711,10 +710,6 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 	}
 
 	public WeakNBTIngredientJS weakNBT() {
-		if (!Platform.isModLoaded("nbt_ingredient_predicate")) {
-			throw new IllegalStateException("weakNBT() requires 'NBT Ingredient Predicate' mod to be installed!");
-		}
-
 		return new WeakNBTIngredientJS(this);
 	}
 
