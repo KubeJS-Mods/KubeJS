@@ -3,6 +3,8 @@ package dev.latvian.kubejs.item.ingredient;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.util.ConsoleJS;
+import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -83,7 +85,15 @@ public final class WeakNBTIngredientJS implements IngredientJS {
 		json.addProperty("item", item.getId());
 
 		if (item.hasNBT()) {
-			json.addProperty("type", "nbt_ingredient_predicate:nbt_includes");
+			if (Platform.isModLoaded("nbt_ingredient_predicate")) {
+				json.addProperty("type", "nbt_ingredient_predicate:nbt_includes");
+			} else {
+				json.addProperty("type", "forge:nbt");
+				ConsoleJS.SERVER.setLineNumber(true);
+				ConsoleJS.SERVER.error("weakNBT() requires 'NBT Ingredient Predicate' mod to be installed! Defaulting to exact match");
+				ConsoleJS.SERVER.setLineNumber(false);
+			}
+
 			json.addProperty("nbt", item.getNbtString());
 		}
 
