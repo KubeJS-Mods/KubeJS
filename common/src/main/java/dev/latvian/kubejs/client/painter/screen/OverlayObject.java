@@ -3,6 +3,7 @@ package dev.latvian.kubejs.client.painter.screen;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import dev.latvian.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.kubejs.text.Text;
+import dev.latvian.mods.rhino.util.unit.Unit;
 import me.shedaniel.architectury.utils.NbtType;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -22,8 +23,8 @@ public class OverlayObject extends ScreenPainterObject {
 	public OverlayObject() {
 		text = new ArrayList<>(1);
 		color = 0x101010;
-		w = Integer.MAX_VALUE;
-		h = Integer.MAX_VALUE;
+		w = Unit.fixed(Integer.MAX_VALUE);
+		h = Unit.fixed(Integer.MAX_VALUE);
 	}
 
 	@Override
@@ -46,7 +47,7 @@ public class OverlayObject extends ScreenPainterObject {
 
 	@Override
 	public void draw(ScreenPaintEventJS event) {
-		int maxWidth = (int) Math.min(w, event.width / 4F);
+		int maxWidth = (int) Math.min(w.get(), event.width / 4F);
 
 		List<FormattedCharSequence> list = new ArrayList<>(text.size());
 		int l = 10;
@@ -68,8 +69,9 @@ public class OverlayObject extends ScreenPainterObject {
 		int p = 3;
 		int aw = mw + p * 2;
 		int ah = list.size() * l + p * 2 - 2;
-		float ax = event.alignX(x, aw, alignX);
-		float ay = event.alignY(y, ah, alignY);
+		float ax = event.alignX(x.get(), aw, alignX);
+		float ay = event.alignY(y.get(), ah, alignY);
+		float az = z.get();
 
 		int colFull = color | 0xFF000000;
 
@@ -77,24 +79,24 @@ public class OverlayObject extends ScreenPainterObject {
 		event.beginQuads(DefaultVertexFormat.POSITION_COLOR);
 
 		if (event.inventory) {
-			event.rectangle(ax, ay, z, aw, ah, colFull);
-			event.rectangle(ax, ay + 1, z, 1, ah - 2, 0x50000000);
-			event.rectangle(ax + aw - 1, ay + 1, z, 1, ah - 2, 0x50000000);
-			event.rectangle(ax, ay, z, aw, 1, 0x50000000);
-			event.rectangle(ax, ay + ah - 1, z, aw, 1, 0x50000000);
+			event.rectangle(ax, ay, az, aw, ah, colFull);
+			event.rectangle(ax, ay + 1, az, 1, ah - 2, 0x50000000);
+			event.rectangle(ax + aw - 1, ay + 1, az, 1, ah - 2, 0x50000000);
+			event.rectangle(ax, ay, az, aw, 1, 0x50000000);
+			event.rectangle(ax, ay + ah - 1, az, aw, 1, 0x50000000);
 		} else {
-			event.rectangle(ax, ay, z, aw, ah, color | 0xC8000000);
-			event.rectangle(ax, ay + 1, z, 1, ah - 2, colFull);
-			event.rectangle(ax + aw - 1, ay + 1, z, 1, ah - 2, colFull);
-			event.rectangle(ax, ay, z, aw, 1, colFull);
-			event.rectangle(ax, ay + ah - 1, z, aw, 1, colFull);
+			event.rectangle(ax, ay, az, aw, ah, color | 0xC8000000);
+			event.rectangle(ax, ay + 1, az, 1, ah - 2, colFull);
+			event.rectangle(ax + aw - 1, ay + 1, az, 1, ah - 2, colFull);
+			event.rectangle(ax, ay, az, aw, 1, colFull);
+			event.rectangle(ax, ay + ah - 1, az, aw, 1, colFull);
 		}
 
 		event.end();
 		event.setTextureEnabled(true);
 
 		for (int i = 0; i < list.size(); i++) {
-			event.rawText(list.get(i), x + p, y + i * l + p, 0xFFFFFFFF, true);
+			event.rawText(list.get(i), ax + p, ay + i * l + p, 0xFFFFFFFF, true);
 		}
 	}
 }

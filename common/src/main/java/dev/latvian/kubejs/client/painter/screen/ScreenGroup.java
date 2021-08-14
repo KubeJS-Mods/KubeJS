@@ -3,6 +3,8 @@ package dev.latvian.kubejs.client.painter.screen;
 import dev.latvian.kubejs.client.painter.PainterObject;
 import dev.latvian.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.kubejs.client.painter.PainterObjectStorage;
+import dev.latvian.mods.rhino.util.unit.FixedUnit;
+import dev.latvian.mods.rhino.util.unit.Unit;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 
@@ -11,8 +13,8 @@ public class ScreenGroup extends ScreenPainterObject {
 	private float scaleX = 1F;
 	private float scaleY = 1F;
 	private float scaleZ = 1F;
-	private float paddingW = 0F;
-	private float paddingH = 0F;
+	private Unit paddingW = Unit.ZERO;
+	private Unit paddingH = Unit.ZERO;
 
 	@Override
 	protected void load(PainterObjectProperties properties) {
@@ -27,8 +29,8 @@ public class ScreenGroup extends ScreenPainterObject {
 		scaleX = properties.getFloat("scaleX", scaleX);
 		scaleY = properties.getFloat("scaleY", scaleY);
 		scaleZ = properties.getFloat("scaleZ", scaleZ);
-		paddingW = properties.getFloat("paddingW", paddingW);
-		paddingH = properties.getFloat("paddingH", paddingH);
+		paddingW = properties.getUnit("paddingW", paddingW);
+		paddingH = properties.getUnit("paddingH", paddingH);
 
 		if (properties.hasNumber("scale")) {
 			scaleX = scaleY = properties.getFloat("scale", 1F);
@@ -37,29 +39,30 @@ public class ScreenGroup extends ScreenPainterObject {
 
 	@Override
 	public void preDraw(ScreenPaintEventJS event) {
-		w = 0F;
-		h = 0F;
+		w = FixedUnit.ZERO;
+		h = FixedUnit.ZERO;
 
 		for (PainterObject object : storage.getObjects()) {
 			if (object instanceof ScreenPainterObject) {
 				ScreenPainterObject s = (ScreenPainterObject) object;
 				s.preDraw(event);
-				w = Math.max(w, s.x + s.w);
-				h = Math.max(h, s.y + s.h);
+				w = w.max(s.x.add(s.w));
+				h = h.max(s.y.add(s.h));
 			}
 		}
 
-		w += paddingW;
-		h += paddingH;
+		w = w.add(paddingW);
+		h = w.add(paddingH);
 	}
 
 	@Override
 	public void draw(ScreenPaintEventJS event) {
-		float ax = event.alignX(x, w, alignX);
-		float ay = event.alignY(y, h, alignY);
+		float ax = event.alignX(x.get(), w.get(), alignX);
+		float ay = event.alignY(y.get(), h.get(), alignY);
+		float az = z.get();
 
 		event.push();
-		event.translate(ax, ay, z);
+		event.translate(ax, ay, az);
 		event.scale(scaleX, scaleY, scaleZ);
 
 		for (PainterObject object : storage.getObjects()) {

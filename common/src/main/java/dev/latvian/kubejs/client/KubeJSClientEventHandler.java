@@ -195,6 +195,11 @@ public class KubeJSClientEventHandler {
 		//RenderSystem.disableLighting();
 
 		ScreenPaintEventJS event = new ScreenPaintEventJS(mc, matrices, delta);
+		Painter.INSTANCE.deltaUnit.set(delta);
+		Painter.INSTANCE.screenWidthUnit.set(event.width);
+		Painter.INSTANCE.screenHeightUnit.set(event.height);
+		Painter.INSTANCE.mouseXUnit.set(event.mouseX);
+		Painter.INSTANCE.mouseYUnit.set(event.mouseY);
 		event.post(KubeJSEvents.CLIENT_PAINT_SCREEN);
 
 		for (ScreenPainterObject object : Painter.INSTANCE.getScreenObjects()) {

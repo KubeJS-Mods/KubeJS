@@ -18,6 +18,8 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
+import dev.latvian.mods.rhino.util.unit.Unit;
+import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import me.shedaniel.architectury.hooks.PackRepositoryHooks;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -95,6 +97,21 @@ public class KubeJSClient extends KubeJSCommon {
 		event.add("Client", new ClientWrapper());
 		event.add("client", new ClientWrapper());
 		event.add("Painter", Painter.INSTANCE);
+	}
+
+	@Override
+	public void clientTypeWrappers(TypeWrappers typeWrappers) {
+		typeWrappers.register(Unit.class, o -> {
+			if (o instanceof Unit) {
+				return (Unit) o;
+			} else if (o instanceof Number) {
+				return Unit.fixed(((Number) o).floatValue());
+			} else if (o instanceof String) {
+				return Unit.parse(o.toString(), Painter.INSTANCE.unitVariables);
+			}
+
+			return Unit.ZERO;
+		});
 	}
 
 	private void setup() {

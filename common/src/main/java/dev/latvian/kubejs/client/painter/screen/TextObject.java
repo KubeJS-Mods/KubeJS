@@ -2,6 +2,7 @@ package dev.latvian.kubejs.client.painter.screen;
 
 import dev.latvian.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.kubejs.text.Text;
+import dev.latvian.mods.rhino.util.unit.Unit;
 import net.minecraft.util.FormattedCharSequence;
 
 public class TextObject extends ScreenPainterObject {
@@ -27,16 +28,19 @@ public class TextObject extends ScreenPainterObject {
 	@Override
 	public void preDraw(ScreenPaintEventJS event) {
 		textWidth = event.font.getSplitter().stringWidth(text);
-		w = textWidth * scale;
-		h = 9F * scale;
+		w = Unit.fixed(textWidth * scale);
+		h = Unit.fixed(9F * scale);
 	}
 
 	@Override
 	public void draw(ScreenPaintEventJS event) {
-		float ax = event.alignX(x, w, alignX);
-		float ay = event.alignY(y, h, alignY);
+		float aw = w.get();
+		float ah = h.get();
+		float ax = event.alignX(x.get(), aw, alignX);
+		float ay = event.alignY(y.get(), ah, alignY);
+		float az = z.get();
 
-		if (scale == 1F && z == 0) {
+		if (scale == 1F && az == 0F) {
 			if (centered) {
 				event.rawText(text, ax - textWidth / 2F, ay, color, shadow);
 			} else {
@@ -44,7 +48,7 @@ public class TextObject extends ScreenPainterObject {
 			}
 		} else {
 			event.push();
-			event.translate(ax, ay, z);
+			event.translate(ax, ay, az);
 			event.scale(scale);
 
 			if (centered) {
