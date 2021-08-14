@@ -25,7 +25,7 @@ public interface ColorWrapper {
 			}
 
 			if (s.startsWith("#")) {
-				return new SimpleColorKJS(Integer.decode(s));
+				return new SimpleColorKJS(Long.decode(s).intValue());
 			}
 
 			return NONE;
@@ -50,6 +50,10 @@ public interface ColorWrapper {
 		}
 
 		return c;
+	}
+
+	static ColorKJS rgba(int r, int g, int b, int a) {
+		return new SimpleColorKJS((r << 16) | (g << 8) | b | (a << 24));
 	}
 
 	ColorKJS NONE = createMapped(new NoColorKJS(), "NONE", "none", "", "-", "transparent");
