@@ -98,10 +98,10 @@ public class ScriptManager {
 	}
 
 	public void load() {
-		Context context = Context.enter();
+		Context context = Context.enterWithNewFactory();
 		context.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || isClassAllowed(fullClassName));
 		TypeWrappers typeWrappers = context.getTypeWrappers();
-		typeWrappers.removeAll();
+		// typeWrappers.removeAll();
 		KubeJSPlugins.forEachPlugin(plugin -> plugin.addTypeWrappers(type, typeWrappers));
 
 		for (RegistryTypeWrapperFactory<?> registryTypeWrapperFactory : RegistryTypeWrapperFactory.getAll()) {
