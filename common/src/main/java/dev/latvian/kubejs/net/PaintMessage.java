@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.net;
 
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.util.NBTUtilsJS;
 import me.shedaniel.architectury.networking.NetworkManager.PacketContext;
 import me.shedaniel.architectury.networking.simple.BaseS2CMessage;
 import me.shedaniel.architectury.networking.simple.MessageType;
@@ -18,7 +19,7 @@ public class PaintMessage extends BaseS2CMessage {
 	}
 
 	PaintMessage(FriendlyByteBuf buffer) {
-		tag = buffer.readAnySizeNbt();
+		tag = NBTUtilsJS.read(buffer);
 	}
 
 	@Override

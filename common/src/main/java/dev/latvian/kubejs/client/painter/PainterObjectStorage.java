@@ -43,9 +43,9 @@ public class PainterObjectStorage {
 			} else if (key.equals("$")) {
 				for (String k : tag.getAllKeys()) {
 					if (tag.contains(k, NbtType.NUMBER)) {
-						Painter.INSTANCE.unitStorage.setVariable(k, FixedUnit.of(tag.getFloat(k)));
+						Painter.INSTANCE.setVariable(k, FixedUnit.of(tag.getFloat(k)));
 					} else {
-						Painter.INSTANCE.unitStorage.setVariable(k, Painter.INSTANCE.unitStorage.parse(tag.getString(k)));
+						Painter.INSTANCE.setVariable(k, Painter.INSTANCE.unitStorage.parse(tag.getString(k)));
 					}
 				}
 			} else {
