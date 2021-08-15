@@ -2,25 +2,20 @@ package dev.latvian.kubejs.client.painter.screen;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import dev.latvian.kubejs.client.painter.PainterObjectProperties;
-import dev.latvian.kubejs.util.ColorKJS;
+import dev.latvian.mods.rhino.util.unit.Unit;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 
 public class AtlasTextureObject extends ScreenPainterObject {
-	private int color = 0xFFFFFFFF;
+	private Unit color = PainterObjectProperties.WHITE_COLOR;
 	private ResourceLocation texture = null;
-
-	public AtlasTextureObject color(ColorKJS col) {
-		color = col.getArgbKJS();
-		return this;
-	}
 
 	@Override
 	protected void load(PainterObjectProperties properties) {
 		super.load(properties);
 
-		color = properties.getARGB("color", color);
+		color = properties.getColor("color", color);
 		texture = properties.getResourceLocation("texture", texture);
 	}
 
@@ -44,7 +39,7 @@ public class AtlasTextureObject extends ScreenPainterObject {
 		float v1 = sprite.getV1();
 		event.bindTexture(TextureAtlas.LOCATION_BLOCKS);
 		event.beginQuads(DefaultVertexFormat.POSITION_COLOR_TEX);
-		event.rectangle(ax, ay, az, aw, ah, color, u0, v0, u1, v1);
+		event.rectangle(ax, ay, az, aw, ah, color.getAsInt(), u0, v0, u1, v1);
 		event.end();
 	}
 }

@@ -8,11 +8,11 @@ import dev.latvian.mods.rhino.util.unit.Unit;
 import org.intellij.lang.annotations.MagicConstant;
 
 public abstract class ScreenPainterObject extends PainterObject {
-	private static final Unit DEFAULT_SIZE = Unit.fixed(16F);
+	private static final Unit DEFAULT_SIZE = FixedUnit.of(16F);
 
-	public Unit x = Unit.ZERO;
-	public Unit y = Unit.ZERO;
-	public Unit z = Unit.ZERO;
+	public Unit x = FixedUnit.ZERO;
+	public Unit y = FixedUnit.ZERO;
+	public Unit z = FixedUnit.ZERO;
 	public Unit w = DEFAULT_SIZE;
 	public Unit h = DEFAULT_SIZE;
 

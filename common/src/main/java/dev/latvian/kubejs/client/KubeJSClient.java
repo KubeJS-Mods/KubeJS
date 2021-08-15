@@ -7,7 +7,6 @@ import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.client.painter.Painter;
 import dev.latvian.kubejs.client.painter.screen.AtlasTextureObject;
 import dev.latvian.kubejs.client.painter.screen.GradientObject;
-import dev.latvian.kubejs.client.painter.screen.OverlayObject;
 import dev.latvian.kubejs.client.painter.screen.RectangleObject;
 import dev.latvian.kubejs.client.painter.screen.ScreenGroup;
 import dev.latvian.kubejs.client.painter.screen.TextObject;
@@ -18,6 +17,7 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
+import dev.latvian.mods.rhino.util.unit.FixedUnit;
 import dev.latvian.mods.rhino.util.unit.Unit;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import me.shedaniel.architectury.hooks.PackRepositoryHooks;
@@ -61,7 +61,6 @@ public class KubeJSClient extends KubeJSCommon {
 		Painter.INSTANCE.registerObject("rectangle", RectangleObject::new);
 		Painter.INSTANCE.registerObject("text", TextObject::new);
 		Painter.INSTANCE.registerObject("atlas_texture", AtlasTextureObject::new);
-		Painter.INSTANCE.registerObject("overlay", OverlayObject::new);
 		Painter.INSTANCE.registerObject("gradient", GradientObject::new);
 	}
 
@@ -105,12 +104,12 @@ public class KubeJSClient extends KubeJSCommon {
 			if (o instanceof Unit) {
 				return (Unit) o;
 			} else if (o instanceof Number) {
-				return Unit.fixed(((Number) o).floatValue());
+				return FixedUnit.of(((Number) o).floatValue());
 			} else if (o instanceof String) {
-				return Unit.parse(o.toString(), Painter.INSTANCE.unitVariables);
+				return Painter.INSTANCE.unitStorage.parse(o.toString());
 			}
 
-			return Unit.ZERO;
+			return FixedUnit.ZERO;
 		});
 	}
 

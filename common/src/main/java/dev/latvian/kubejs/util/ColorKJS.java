@@ -7,12 +7,6 @@ import net.minecraft.network.chat.TextColor;
 public interface ColorKJS extends SpecialEquality {
 	int getArgbKJS();
 
-	default int getArgbNormalizedKJS() {
-		int c = getArgbKJS();
-		int a = (c >> 24) & 0xFF;
-		return (a == 0) ? (0xFF000000 | c) : c;
-	}
-
 	default int getRgbKJS() {
 		return getArgbKJS() & 0xFFFFFF;
 	}
@@ -22,9 +16,7 @@ public interface ColorKJS extends SpecialEquality {
 	}
 
 	default String getHexKJS() {
-		int c = getArgbKJS();
-		int a = (c >> 24) & 0xFF;
-		return a > 0 && a < 255 ? String.format("#%08X", c) : String.format("#%06X", c & 0xFFFFFF);
+		return String.format("#%08X", getArgbKJS());
 	}
 
 	default String getSerializeKJS() {
