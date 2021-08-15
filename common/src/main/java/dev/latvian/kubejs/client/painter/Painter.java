@@ -5,6 +5,7 @@ import dev.latvian.kubejs.client.painter.screen.ScreenPainterObject;
 import dev.latvian.kubejs.client.painter.world.WorldPainterObject;
 import dev.latvian.kubejs.net.PainterUpdatedEventJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import dev.latvian.mods.rhino.util.unit.FixedUnit;
 import dev.latvian.mods.rhino.util.unit.MutableUnit;
 import dev.latvian.mods.rhino.util.unit.Unit;
 import dev.latvian.mods.rhino.util.unit.UnitStorage;
@@ -116,6 +117,14 @@ public class Painter {
 	}
 
 	public void setVariable(String key, Unit variable) {
-		unitStorage.setVariable(key, variable);
+		Unit original = unitStorage.getVariable(key);
+
+		if (original instanceof MutableUnit) {
+			((MutableUnit) original).set(variable.get());
+		} else if (variable instanceof FixedUnit) {
+			unitStorage.setVariable(key, new MutableUnit(variable.get()));
+		} else {
+			unitStorage.setVariable(key, variable);
+		}
 	}
 }

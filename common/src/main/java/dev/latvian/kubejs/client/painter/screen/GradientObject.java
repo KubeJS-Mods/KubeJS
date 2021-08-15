@@ -56,6 +56,15 @@ public class GradientObject extends ScreenPainterObject {
 
 	@Override
 	public void draw(ScreenPaintEventJS event) {
+		int colBL = colorBL.getAsInt();
+		int colBR = colorBR.getAsInt();
+		int colTR = colorTR.getAsInt();
+		int colTL = colorTL.getAsInt();
+
+		if (((colBL >> 24) & 0xFF) < 2 && ((colBR >> 24) & 0xFF) < 2 && ((colTR >> 24) & 0xFF) < 2 && ((colTL >> 24) & 0xFF) < 2) {
+			return;
+		}
+
 		float aw = w.get();
 		float ah = h.get();
 		float ax = event.alignX(x.get(), aw, alignX);
@@ -64,24 +73,24 @@ public class GradientObject extends ScreenPainterObject {
 		Matrix4f m = event.getMatrix();
 
 		event.setSmoothShade(true);
-		RenderSystem.alphaFunc(GL11.GL_GREATER, 0.001F);
+		RenderSystem.alphaFunc(GL11.GL_GREATER, 0.003F);
 
 		if (texture == null) {
 			event.setTextureEnabled(false);
 			event.beginQuads(DefaultVertexFormat.POSITION_COLOR);
-			event.vertex(m, ax, ay + ah, az, colorBL.getAsInt());
-			event.vertex(m, ax + aw, ay + ah, az, colorBR.getAsInt());
-			event.vertex(m, ax + aw, ay, az, colorTR.getAsInt());
-			event.vertex(m, ax, ay, az, colorTL.getAsInt());
+			event.vertex(m, ax, ay + ah, az, colBL);
+			event.vertex(m, ax + aw, ay + ah, az, colBR);
+			event.vertex(m, ax + aw, ay, az, colTR);
+			event.vertex(m, ax, ay, az, colTL);
 			event.end();
 			event.setTextureEnabled(true);
 		} else {
 			event.bindTexture(texture);
 			event.beginQuads(DefaultVertexFormat.POSITION_COLOR_TEX);
-			event.vertex(m, ax, ay + ah, az, colorBL.getAsInt(), u0, v1);
-			event.vertex(m, ax + aw, ay + ah, az, colorBR.getAsInt(), u1, v1);
-			event.vertex(m, ax + aw, ay, az, colorTR.getAsInt(), u1, v0);
-			event.vertex(m, ax, ay, az, colorTL.getAsInt(), u0, v0);
+			event.vertex(m, ax, ay + ah, az, colBL, u0, v1);
+			event.vertex(m, ax + aw, ay + ah, az, colBR, u1, v1);
+			event.vertex(m, ax + aw, ay, az, colTR, u1, v0);
+			event.vertex(m, ax, ay, az, colTL, u0, v0);
 			event.end();
 		}
 
