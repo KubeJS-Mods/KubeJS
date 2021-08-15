@@ -1,16 +1,18 @@
 package dev.latvian.kubejs.client.painter;
 
 import dev.latvian.kubejs.bindings.ColorWrapper;
+import dev.latvian.kubejs.util.ColorKJS;
+import dev.latvian.mods.rhino.util.unit.ColorUnit;
+import dev.latvian.mods.rhino.util.unit.FixedUnit;
 import dev.latvian.mods.rhino.util.unit.Unit;
 import me.shedaniel.architectury.utils.NbtType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NumericTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 public class PainterObjectProperties {
+	public static final Unit WHITE_COLOR = new ColorUnit(FixedUnit.of(255F), FixedUnit.of(255F), FixedUnit.of(255F), FixedUnit.of(255F));
+
 	public final CompoundTag tag;
 
 	public PainterObjectProperties(CompoundTag t) {
@@ -59,37 +61,26 @@ public class PainterObjectProperties {
 		return hasNumber(key) ? tag.getBoolean(key) : def;
 	}
 
-	public int getRGB(String key, int def) {
-		Tag t = tag.get(key);
-
-		if (t instanceof StringTag) {
-			return ColorWrapper.of(t.getAsString()).getRgbKJS();
-		} else if (t instanceof NumericTag) {
-			return ColorWrapper.of(((NumericTag) t).getAsInt()).getRgbKJS();
-		}
-
-		return def;
-	}
-
-	public int getARGB(String key, int def) {
-		Tag t = tag.get(key);
-
-		if (t instanceof StringTag) {
-			return ColorWrapper.of(t.getAsString()).getArgbNormalizedKJS();
-		} else if (t instanceof NumericTag) {
-			return ColorWrapper.of(((NumericTag) t).getAsInt()).getArgbNormalizedKJS();
-		}
-
-		return def;
-	}
-
 	public Unit getUnit(String key, Unit def) {
 		if (hasString(key)) {
-			return Unit.parse(tag.getString(key), Painter.INSTANCE.unitVariables);
+			return Painter.INSTANCE.unitStorage.parse(tag.getString(key));
 		} else if (hasNumber(key)) {
-			return Unit.fixed(((NumericTag) tag.get(key)).getAsFloat());
+			return FixedUnit.of(tag.getFloat(key));
 		}
 
 		return def;
+	}
+
+	public Unit getColor(String key, Unit def) {
+		if (hasString(key)) {
+			ColorKJS col = ColorWrapper.MAP.get(getString(key, ""));
+
+			if (col != null) {
+				int i = col.getArgbKJS();
+				return new ColorUnit(FixedUnit.of((i >> 16) & 0xFF), FixedUnit.of((i >> 8) & 0xFF), FixedUnit.of(i & 0xFF), FixedUnit.of((i >> 24) & 0xFF));
+			}
+		}
+
+		return getUnit(key, def);
 	}
 }

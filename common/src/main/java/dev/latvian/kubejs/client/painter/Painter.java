@@ -7,7 +7,7 @@ import dev.latvian.kubejs.net.PainterUpdatedEventJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.unit.MutableUnit;
 import dev.latvian.mods.rhino.util.unit.Unit;
-import dev.latvian.mods.rhino.util.unit.UnitVariables;
+import dev.latvian.mods.rhino.util.unit.UnitStorage;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +36,7 @@ public class Painter {
 	private final PainterObjectStorage storage;
 	private ScreenPainterObject[] screenObjects;
 	private WorldPainterObject[] worldObjects;
-	public final UnitVariables unitVariables;
+	public final UnitStorage unitStorage;
 	public final MutableUnit deltaUnit;
 	public final MutableUnit screenWidthUnit;
 	public final MutableUnit screenHeightUnit;
@@ -49,12 +49,12 @@ public class Painter {
 		storage = new PainterObjectStorage();
 		screenObjects = null;
 		worldObjects = null;
-		unitVariables = new UnitVariables();
-		unitVariables.set("delta", deltaUnit = new MutableUnit(1F));
-		unitVariables.set("screenW", screenWidthUnit = new MutableUnit(1F));
-		unitVariables.set("screenH", screenHeightUnit = new MutableUnit(1F));
-		unitVariables.set("mouseX", mouseXUnit = new MutableUnit(0F));
-		unitVariables.set("mouseY", mouseYUnit = new MutableUnit(0F));
+		unitStorage = new UnitStorage();
+		unitStorage.setVariable("delta", deltaUnit = new MutableUnit(1F));
+		unitStorage.setVariable("screenW", screenWidthUnit = new MutableUnit(1F));
+		unitStorage.setVariable("screenH", screenHeightUnit = new MutableUnit(1F));
+		unitStorage.setVariable("mouseX", mouseXUnit = new MutableUnit(0F));
+		unitStorage.setVariable("mouseY", mouseYUnit = new MutableUnit(0F));
 	}
 
 	@HideFromJS
@@ -116,6 +116,6 @@ public class Painter {
 	}
 
 	public void setVariable(String key, Unit variable) {
-		unitVariables.set(key, variable);
+		unitStorage.setVariable(key, variable);
 	}
 }

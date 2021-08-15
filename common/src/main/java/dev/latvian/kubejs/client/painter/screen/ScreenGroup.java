@@ -13,8 +13,8 @@ public class ScreenGroup extends ScreenPainterObject {
 	private float scaleX = 1F;
 	private float scaleY = 1F;
 	private float scaleZ = 1F;
-	private Unit paddingW = Unit.ZERO;
-	private Unit paddingH = Unit.ZERO;
+	private Unit paddingW = FixedUnit.ZERO;
+	private Unit paddingH = FixedUnit.ZERO;
 
 	@Override
 	protected void load(PainterObjectProperties properties) {

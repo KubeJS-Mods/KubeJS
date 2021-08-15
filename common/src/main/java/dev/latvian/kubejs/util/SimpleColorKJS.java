@@ -10,12 +10,22 @@ public class SimpleColorKJS implements ColorKJS {
 	private TextColor textColor;
 
 	public SimpleColorKJS(int v) {
-		value = v;
+		value = 0xFF000000 | v;
 	}
 
 	@Override
 	public int getArgbKJS() {
 		return value;
+	}
+
+	@Override
+	public String getHexKJS() {
+		return String.format("#%06X", getRgbKJS());
+	}
+
+	@Override
+	public String toString() {
+		return getHexKJS();
 	}
 
 	@Override

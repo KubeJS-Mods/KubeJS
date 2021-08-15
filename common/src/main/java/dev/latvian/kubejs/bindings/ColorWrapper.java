@@ -3,6 +3,7 @@ package dev.latvian.kubejs.bindings;
 import dev.latvian.kubejs.util.ColorKJS;
 import dev.latvian.kubejs.util.NoColorKJS;
 import dev.latvian.kubejs.util.SimpleColorKJS;
+import dev.latvian.kubejs.util.SimpleColorWithAlphaKJS;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.world.item.DyeColor;
@@ -25,7 +26,8 @@ public interface ColorWrapper {
 			}
 
 			if (s.startsWith("#")) {
-				return new SimpleColorKJS(Long.decode(s).intValue());
+				int col = Long.decode(s).intValue();
+				return s.length() == 7 ? new SimpleColorKJS(col) : new SimpleColorWithAlphaKJS(col);
 			}
 
 			return NONE;
