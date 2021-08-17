@@ -2,6 +2,7 @@ package dev.latvian.kubejs.util;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.rhino.Undefined;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
@@ -22,7 +23,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 	}
 
 	public static boolean isNbt(Object o) {
-		return o == null || o instanceof CompoundTag || o instanceof CharSequence || o instanceof Map;
+		return o == null || Undefined.isUndefined(o) || o instanceof CompoundTag || o instanceof CharSequence || o instanceof Map;
 	}
 
 	@Nullable
