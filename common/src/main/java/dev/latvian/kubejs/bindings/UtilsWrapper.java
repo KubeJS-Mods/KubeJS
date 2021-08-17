@@ -15,7 +15,6 @@ import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stat;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
@@ -137,11 +136,6 @@ public class UtilsWrapper {
 
 	public static long getSystemTime() {
 		return System.currentTimeMillis();
-	}
-
-	@Nullable
-	public static MobEffect getPotion(ResourceLocation id) {
-		return UtilsJS.getPotion(id);
 	}
 
 	public static ListJS rollChestLoot(ResourceLocation id) {

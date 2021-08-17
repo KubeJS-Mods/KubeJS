@@ -279,6 +279,20 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 		return set;
 	}
 
+	default Set<String> getItemIds() {
+		Set<String> ids = new LinkedHashSet<>();
+
+		for (Item item : getVanillaItems()) {
+			ResourceLocation id = KubeJSRegistries.items().getId(item);
+
+			if (id != null) {
+				ids.add(id.toString());
+			}
+		}
+
+		return ids;
+	}
+
 	default IngredientJS filter(IngredientJS filter) {
 		return new FilteredIngredientJS(this, filter);
 	}

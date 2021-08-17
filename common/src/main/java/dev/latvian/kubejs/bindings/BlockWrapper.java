@@ -7,11 +7,14 @@ import dev.latvian.kubejs.block.predicate.BlockEntityPredicate;
 import dev.latvian.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.kubejs.block.predicate.BlockPredicate;
 import dev.latvian.kubejs.docs.MinecraftClass;
+import dev.latvian.kubejs.util.Tags;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.Tag;
 import net.minecraft.world.level.block.Block;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,5 +76,25 @@ public class BlockWrapper {
 		}
 
 		return list;
+	}
+
+	public static List<String> getTaggedIds(ResourceLocation tag) {
+		Tag<Block> t = Tags.blocks().getTag(tag);
+
+		if (t != null && t.getValues().size() > 0) {
+			List<String> list = new ArrayList<>();
+
+			for (Block b : t.getValues()) {
+				ResourceLocation id = KubeJSRegistries.blocks().getId(b);
+
+				if (id != null) {
+					list.add(id.toString());
+				}
+			}
+
+			return list;
+		}
+
+		return Collections.emptyList();
 	}
 }

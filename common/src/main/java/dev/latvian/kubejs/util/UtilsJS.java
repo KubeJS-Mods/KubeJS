@@ -20,7 +20,6 @@ import dev.latvian.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import me.shedaniel.architectury.registry.ToolType;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
 import net.minecraft.nbt.NumericTag;
@@ -35,7 +34,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -425,11 +423,6 @@ public class UtilsJS {
 
 	public static WorldJS getClientWorld() {
 		return KubeJS.PROXY.getClientWorld();
-	}
-
-	@Nullable
-	public static MobEffect getPotion(ResourceLocation id) {
-		return Registry.MOB_EFFECT.get(id);
 	}
 
 	public static String getID(@Nullable String s) {

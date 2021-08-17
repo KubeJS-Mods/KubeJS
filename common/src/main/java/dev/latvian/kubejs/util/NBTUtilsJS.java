@@ -22,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.DataInput;
 import java.io.DataInputStream;
-import java.io.DataOutput;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -64,34 +63,6 @@ public class NBTUtilsJS {
 
 	public static void write(String file, @Nullable MapJS nbt) throws IOException {
 		write(KubeJS.getGameDirectory().resolve(file).toFile(), nbt);
-	}
-
-	public static class OrderedCompoundTag extends CompoundTag {
-		private final Map<String, Tag> tags;
-
-		public OrderedCompoundTag(Map<String, Tag> map) {
-			super(map);
-			tags = map;
-		}
-
-		public OrderedCompoundTag() {
-			this(new LinkedHashMap<>());
-		}
-
-		@Override
-		public void write(DataOutput dataOutput) throws IOException {
-			for (Map.Entry<String, Tag> entry : tags.entrySet()) {
-				Tag tag = entry.getValue();
-				dataOutput.writeByte(tag.getId());
-
-				if (tag.getId() != 0) {
-					dataOutput.writeUTF(entry.getKey());
-					tag.write(dataOutput);
-				}
-			}
-
-			dataOutput.writeByte(0);
-		}
 	}
 
 	@Nullable

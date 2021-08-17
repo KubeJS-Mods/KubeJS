@@ -149,6 +149,9 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		filter.deny("org.spongepowered.asm"); // Sponge ASM
 		filter.deny("org.openjdk.nashorn"); // Nashorn
 		filter.deny("jdk.nashorn"); // Nashorn
+
+		// Mods
+		filter.allow("mezz.jei"); // JEI
 	}
 
 	@Override
@@ -247,7 +250,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		typeWrappers.register(ResourceLocation.class, UtilsJS::getMCID);
 		typeWrappers.register(ItemStack.class, o -> ItemStackJS.of(o).getItemStack());
-		typeWrappers.register(CompoundTag.class, MapJS::nbt);
+		typeWrappers.register(CompoundTag.class, MapJS::isNbt, MapJS::nbt);
 		typeWrappers.register(CollectionTag.class, ListJS::nbt);
 		typeWrappers.register(ListTag.class, o -> (ListTag) ListJS.nbt(o));
 		typeWrappers.register(Component.class, Text::componentOf);
