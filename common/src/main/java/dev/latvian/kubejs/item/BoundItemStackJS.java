@@ -1,16 +1,18 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.KubeJSRegistries;
-import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.CompoundTagWrapper;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -65,15 +67,15 @@ public class BoundItemStackJS extends ItemStackJS {
 	}
 
 	@Override
-	public MapJS getNbt() {
-		MapJS nbt = MapJS.of(stack.getTag());
-
-		if (nbt == null) {
-			nbt = new MapJS();
+	@Nullable
+	public CompoundTagWrapper getNbt() {
+		if (stack.getTag() != null) {
+			CompoundTagWrapper wrapper = new CompoundTagWrapper(stack.getTag());
+			wrapper.listener = this;
+			return wrapper;
 		}
 
-		nbt.changeListener = this;
-		return nbt;
+		return null;
 	}
 
 	@Override
@@ -95,17 +97,15 @@ public class BoundItemStackJS extends ItemStackJS {
 	}
 
 	@Override
-	public ItemStackJS withNBT(Object o) {
+	public ItemStackJS withNBT(CompoundTag o) {
 		ItemStack is = stack.copy();
 
 		if (is.getTag() == null) {
-			is.setTag(MapJS.nbt(o));
+			is.setTag(o);
 		} else {
-			CompoundTag c = MapJS.nbt(o);
-
-			if (c != null && !c.isEmpty()) {
-				for (String key : c.getAllKeys()) {
-					is.getTag().put(key, c.get(key));
+			if (o != null && !o.isEmpty()) {
+				for (String key : o.getAllKeys()) {
+					is.getTag().put(key, o.get(key));
 				}
 			}
 		}
@@ -114,8 +114,16 @@ public class BoundItemStackJS extends ItemStackJS {
 	}
 
 	@Override
-	public void setName(@Nullable Component displayName) {
-		stack.setHoverName(displayName);
+	public ItemStackJS withName(@Nullable Component displayName) {
+		ItemStack is = stack.copy();
+
+		if (displayName != null) {
+			is.setHoverName(displayName);
+		} else {
+			is.resetHoverName();
+		}
+
+		return new BoundItemStackJS(is);
 	}
 
 	@Override
@@ -138,7 +146,7 @@ public class BoundItemStackJS extends ItemStackJS {
 	public boolean isNBTEqual(ItemStackJS stack2) {
 		if (hasNBT() == stack2.hasNBT()) {
 			CompoundTag nbt = stack.getTag();
-			CompoundTag nbt2 = MapJS.nbt(stack2.getNbt());
+			CompoundTag nbt2 = stack2.getMinecraftNbt();
 			return Objects.equals(nbt, nbt2);
 		}
 
@@ -157,26 +165,26 @@ public class BoundItemStackJS extends ItemStackJS {
 	}
 
 	@Override
-	public void onChanged(@Nullable MapJS o) {
-		stack.setTag(MapJS.nbt(o));
+	public void onChanged(@Nullable Tag o) {
+		if (o == null || o instanceof CompoundTag) {
+			stack.setTag((CompoundTag) o);
+		}
 	}
 
 	@Override
-	public ItemStackJS enchant(MapJS enchantments) {
-		for (Map.Entry<String, Object> entry : enchantments.entrySet()) {
-			Enchantment enchantment = KubeJSRegistries.enchantments().get(UtilsJS.getMCID(entry.getKey()));
-
-			if (enchantment != null && entry.getValue() instanceof Number) {
-				stack.enchant(enchantment, ((Number) entry.getValue()).intValue());
-			}
-		}
-
-		return this;
+	public boolean hasEnchantment(Enchantment enchantment, int level) {
+		return EnchantmentHelper.getItemEnchantmentLevel(enchantment, stack) >= level;
 	}
 
 	@Override
 	public ItemStackJS enchant(Enchantment enchantment, int level) {
-		stack.enchant(enchantment, level);
-		return this;
+		ItemStack is = stack.copy();
+
+		if (is.getItem() == Items.ENCHANTED_BOOK) {
+			EnchantedBookItem.addEnchantment(is, new EnchantmentInstance(enchantment, level));
+		} else {
+			is.enchant(enchantment, level);
+		}
+		return new BoundItemStackJS(is).withChance(getChance());
 	}
 }

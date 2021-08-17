@@ -5,8 +5,8 @@ import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.util.ListJS;
-import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.world.FireworksJS;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -22,15 +22,22 @@ public class ItemWrapper {
 		return in;
 	}
 
-	public static ItemStackJS of(ItemStackJS in, Object countOrNBT) {
-		return ItemStackJS.of(in, countOrNBT);
+	public static ItemStackJS of(ItemStackJS in, int count) {
+		in.setCount(count);
+		return in;
 	}
 
-	public static ItemStackJS of(ItemStackJS in, int count, MapJS nbt) {
-		return ItemStackJS.of(in, count, nbt);
+	public static ItemStackJS of(ItemStackJS in, CompoundTag tag) {
+		return in.withNBT(tag);
 	}
 
-	public static ItemStackJS withNBT(ItemStackJS in, MapJS nbt) {
+	public static ItemStackJS of(ItemStackJS in, int count, CompoundTag nbt) {
+		ItemStackJS is = in.withNBT(nbt);
+		is.setCount(count);
+		return is;
+	}
+
+	public static ItemStackJS withNBT(ItemStackJS in, CompoundTag nbt) {
 		return in.withNBT(nbt);
 	}
 

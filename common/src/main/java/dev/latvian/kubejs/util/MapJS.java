@@ -21,6 +21,10 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 		return o1 instanceof MapJS ? (MapJS) o1 : null;
 	}
 
+	public static boolean isNbt(Object o) {
+		return o == null || o instanceof CompoundTag || o instanceof CharSequence || o instanceof Map;
+	}
+
 	@Nullable
 	public static CompoundTag nbt(@Nullable Object map) {
 		if (map instanceof CompoundTag) {
@@ -268,7 +272,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 
 	@Override
 	public CompoundTag toNBT() {
-		CompoundTag nbt = new NBTUtilsJS.OrderedCompoundTag();
+		CompoundTag nbt = new OrderedCompoundTag();
 
 		for (Map.Entry<String, Object> entry : entrySet()) {
 			Tag nbt1 = NBTUtilsJS.toNBT(entry.getValue());

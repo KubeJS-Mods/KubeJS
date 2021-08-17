@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
 import dev.latvian.kubejs.player.PlayerJS;
-import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.CompoundTagWrapper;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import me.shedaniel.architectury.registry.ToolType;
@@ -64,13 +64,9 @@ public class EmptyItemStackJS extends ItemStackJS {
 	}
 
 	@Override
-	public MapJS getNbt() {
-		return new MapJS() {
-			@Override
-			protected boolean setChangeListener(@Nullable Object v) {
-				return false;
-			}
-		};
+	@Nullable
+	public CompoundTagWrapper getNbt() {
+		return null;
 	}
 
 	@Override
@@ -91,6 +87,11 @@ public class EmptyItemStackJS extends ItemStackJS {
 
 	@Override
 	public ItemStackJS removeNBT() {
+		return this;
+	}
+
+	@Override
+	public ItemStackJS withNBT(CompoundTag nbt) {
 		return this;
 	}
 
@@ -143,7 +144,8 @@ public class EmptyItemStackJS extends ItemStackJS {
 	}
 
 	@Override
-	public void setName(@Nullable Component displayName) {
+	public ItemStackJS withName(@Nullable Component displayName) {
+		return this;
 	}
 
 	@Override
@@ -154,6 +156,11 @@ public class EmptyItemStackJS extends ItemStackJS {
 				return false;
 			}
 		};
+	}
+
+	@Override
+	public boolean hasEnchantment(Enchantment enchantment, int level) {
+		return false;
 	}
 
 	@Override
@@ -169,16 +176,6 @@ public class EmptyItemStackJS extends ItemStackJS {
 	@Override
 	public String getMod() {
 		return "minecraft";
-	}
-
-	@Override
-	public ListJS getLore() {
-		return new ListJS() {
-			@Override
-			protected boolean setChangeListener(@Nullable Object v) {
-				return false;
-			}
-		};
 	}
 
 	@Override

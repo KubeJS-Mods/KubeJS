@@ -17,6 +17,8 @@ import java.util.Set;
  * @author LatvianModder
  */
 public final class WeakNBTIngredientJS implements IngredientJS {
+	private static final boolean NBTIP_INSTALLED = Platform.isModLoaded("nbt_ingredient_predicate");
+
 	private final ItemStackJS item;
 
 	public WeakNBTIngredientJS(ItemStackJS i) {
@@ -27,8 +29,8 @@ public final class WeakNBTIngredientJS implements IngredientJS {
 	public boolean test(ItemStackJS stack) {
 		if (item.areItemsEqual(stack) && item.hasNBT() == stack.hasNBT()) {
 			if (item.hasNBT()) {
-				for (String key : item.getNbt().keySet()) {
-					if (!Objects.equals(item.getNbt().get(key), stack.getNbt().get(key))) {
+				for (String key : item.getNbt().keysML()) {
+					if (!Objects.equals(item.getNbt().getML(key), stack.getNbt().getML(key))) {
 						return false;
 					}
 				}
@@ -85,7 +87,7 @@ public final class WeakNBTIngredientJS implements IngredientJS {
 		json.addProperty("item", item.getId());
 
 		if (item.hasNBT()) {
-			if (Platform.isModLoaded("nbt_ingredient_predicate")) {
+			if (NBTIP_INSTALLED) {
 				json.addProperty("type", "nbt_ingredient_predicate:nbt_includes");
 			} else {
 				json.addProperty("type", "forge:nbt");

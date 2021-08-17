@@ -1,7 +1,5 @@
 package dev.latvian.kubejs.entity;
 
-import dev.latvian.kubejs.util.UtilsJS;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -32,16 +30,13 @@ public class EntityPotionEffectsJS {
 		return entity.getActiveEffectsMap();
 	}
 
-	public boolean isActive(ResourceLocation potion) {
-		MobEffect p = UtilsJS.getPotion(potion);
-		return p != null && entity.hasEffect(p);
+	public boolean isActive(MobEffect mobEffect) {
+		return mobEffect != null && entity.hasEffect(mobEffect);
 	}
 
-	public int getDuration(ResourceLocation potion) {
-		MobEffect p = UtilsJS.getPotion(potion);
-
-		if (p != null) {
-			MobEffectInstance i = entity.getActiveEffectsMap().get(p);
+	public int getDuration(MobEffect mobEffect) {
+		if (mobEffect != null) {
+			MobEffectInstance i = entity.getActiveEffectsMap().get(mobEffect);
 			return i == null ? 0 : i.getDuration();
 		}
 
@@ -49,28 +44,25 @@ public class EntityPotionEffectsJS {
 	}
 
 	@Nullable
-	public MobEffectInstance getActive(ResourceLocation potion) {
-		MobEffect p = UtilsJS.getPotion(potion);
-		return p == null ? null : entity.getEffect(p);
+	public MobEffectInstance getActive(MobEffect mobEffect) {
+		return mobEffect == null ? null : entity.getEffect(mobEffect);
 	}
 
-	public void add(ResourceLocation potion) {
-		add(potion, 200);
+	public void add(MobEffect mobEffect) {
+		add(mobEffect, 200);
 	}
 
-	public void add(ResourceLocation potion, int duration) {
-		add(potion, duration, 0);
+	public void add(MobEffect mobEffect, int duration) {
+		add(mobEffect, duration, 0);
 	}
 
-	public void add(ResourceLocation potion, int duration, int amplifier) {
-		add(potion, duration, amplifier, false, true);
+	public void add(MobEffect mobEffect, int duration, int amplifier) {
+		add(mobEffect, duration, amplifier, false, true);
 	}
 
-	public void add(ResourceLocation potion, int duration, int amplifier, boolean ambient, boolean showParticles) {
-		MobEffect p = UtilsJS.getPotion(potion);
-
-		if (p != null) {
-			entity.addEffect(new MobEffectInstance(p, duration, amplifier, ambient, showParticles));
+	public void add(MobEffect mobEffect, int duration, int amplifier, boolean ambient, boolean showParticles) {
+		if (mobEffect != null) {
+			entity.addEffect(new MobEffectInstance(mobEffect, duration, amplifier, ambient, showParticles));
 		}
 	}
 

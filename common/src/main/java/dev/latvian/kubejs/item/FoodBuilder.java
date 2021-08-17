@@ -1,9 +1,7 @@
 package dev.latvian.kubejs.item;
 
 import com.google.common.collect.Lists;
-import dev.latvian.kubejs.util.UtilsJS;
 import me.shedaniel.architectury.hooks.FoodPropertiesHooks;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.food.FoodProperties;
@@ -25,7 +23,8 @@ public class FoodBuilder {
 	private final List<Pair<Supplier<MobEffectInstance>, Float>> effects = Lists.newArrayList();
 	public Consumer<ItemFoodEatenEventJS> eaten;
 
-	public FoodBuilder() {}
+	public FoodBuilder() {
+	}
 
 	public FoodBuilder(FoodProperties properties) {
 		hunger = properties.getNutrition();
@@ -76,20 +75,19 @@ public class FoodBuilder {
 		return fastToEat(true);
 	}
 
-	public FoodBuilder effect(ResourceLocation potion, int duration, int amplifier, float probability) {
-		effects.add(Pair.of(() -> new MobEffectInstance(UtilsJS.getPotion(potion), duration, amplifier), probability));
+	public FoodBuilder effect(MobEffect mobEffect, int duration, int amplifier, float probability) {
+		effects.add(Pair.of(() -> new MobEffectInstance(mobEffect, duration, amplifier), probability));
 		return this;
 	}
 
-	public FoodBuilder removeEffect(ResourceLocation potion) {
-		MobEffect toFindEffect = UtilsJS.getPotion(potion);
-		if(toFindEffect == null) {
+	public FoodBuilder removeEffect(MobEffect mobEffect) {
+		if (mobEffect == null) {
 			return this;
 		}
 
 		effects.removeIf(pair -> {
 			MobEffectInstance effectInstance = pair.getKey().get();
-			return effectInstance.getDescriptionId().equals(toFindEffect.getDescriptionId());
+			return effectInstance.getDescriptionId().equals(mobEffect.getDescriptionId());
 		});
 
 		return this;
