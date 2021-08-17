@@ -1,9 +1,10 @@
 package dev.latvian.kubejs.loot.entry;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
-import net.minecraft.util.GsonHelper;
+import dev.latvian.kubejs.util.JsonUtilsJS;
 import org.jetbrains.annotations.Nullable;
 
 public class SingleLootEntry extends AbstractLootEntry {
@@ -31,21 +32,27 @@ public class SingleLootEntry extends AbstractLootEntry {
 	SingleLootEntry(JsonObject json) {
 		super(json);
 
-		if(json.has("name")) {
-			setName(GsonHelper.getAsString(json, "name"));
+		JsonElement name = JsonUtilsJS.extract("name", json);
+		if(name != null) {
+			setName(name.getAsString());
 		}
 
-		if(json.has("weight")) {
-			setWeight(GsonHelper.getAsInt(json, "weight"));
+		JsonElement weight = JsonUtilsJS.extract("weight", json);
+		if(weight != null) {
+			setWeight(weight.getAsInt());
 		}
 
-		if(json.has("quality")) {
-			setQuality(GsonHelper.getAsInt(json, "quality"));
+		JsonElement quality = JsonUtilsJS.extract("quality", json);
+		if(quality != null) {
+			setQuality(quality.getAsInt());
 		}
 
-		if(json.has("expand")) {
-			setExpand(GsonHelper.getAsBoolean(json, "expand"));
+		JsonElement expand = JsonUtilsJS.extract("expand", json);
+		if(expand != null) {
+			setExpand(expand.getAsBoolean());
 		}
+
+		setCustomData(json);
 	}
 
 	@Override
@@ -67,7 +74,7 @@ public class SingleLootEntry extends AbstractLootEntry {
 		return weight == null ? 1 : weight;
 	}
 
-	public void setWeight(int weight) {
+	public void setWeight(Integer weight) {
 		this.weight = weight;
 	}
 
@@ -75,7 +82,7 @@ public class SingleLootEntry extends AbstractLootEntry {
 		return quality == null ? 0 : quality;
 	}
 
-	public void setQuality(int quality) {
+	public void setQuality(Integer quality) {
 		this.quality = quality;
 	}
 
@@ -83,7 +90,7 @@ public class SingleLootEntry extends AbstractLootEntry {
 		return expand == null || expand;
 	}
 
-	public void setExpand(boolean expand) {
+	public void setExpand(Boolean expand) {
 		this.expand = expand;
 	}
 
@@ -106,6 +113,8 @@ public class SingleLootEntry extends AbstractLootEntry {
 		if (getType().equals("minecraft:tag")) {
 			json.addProperty("expand", isExpand());
 		}
+
+		serializeCustomData(json);
 
 		return json;
 	}

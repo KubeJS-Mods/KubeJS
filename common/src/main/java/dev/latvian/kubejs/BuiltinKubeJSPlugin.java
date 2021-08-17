@@ -175,6 +175,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		event.addFunction("onEvent", args -> onEvent(event, args), null, IEventHandler.class);
 		event.addFunction("java", args -> event.manager.loadJavaClass(event.scope, args), new Class[]{null});
+		event.addFunction("assertTrue", args -> assertTrue(event, args), Object.class, String.class);
+		event.addFunction("assertFalse", args -> assertFalse(event, args), Object.class, String.class);
 
 		event.add("Utils", UtilsWrapper.class);
 		event.add("utils", UtilsWrapper.class);
@@ -239,6 +241,22 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("BlockPos", BlockPos.class);
 
 		KubeJS.PROXY.clientBindings(event);
+	}
+
+	private Object assertTrue(BindingsEvent event, Object[] args) {
+		if(Boolean.FALSE.equals(args[0]) || args[0] == null) {
+			event.type.console.error((String) args[1], new AssertionError());
+		}
+
+		return null;
+	}
+
+	private Object assertFalse(BindingsEvent event, Object[] args) {
+		if(!(Boolean.FALSE.equals(args[0]) || args[0] == null)) {
+			event.type.console.error((String) args[1], new AssertionError());
+		}
+
+		return null;
 	}
 
 	private static Object onEvent(BindingsEvent event, Object[] args) {

@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.loot.condition.LootCondition;
 import dev.latvian.kubejs.loot.condition.LootConditionImpl;
 import dev.latvian.kubejs.loot.condition.LootConditionList;
@@ -13,13 +12,14 @@ import dev.latvian.kubejs.loot.entry.LootEntryList;
 import dev.latvian.kubejs.loot.function.LootFunction;
 import dev.latvian.kubejs.loot.function.LootFunctionImpl;
 import dev.latvian.kubejs.loot.function.LootFunctionList;
+import dev.latvian.kubejs.util.CustomDataOwner;
 import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 
 import java.util.function.Consumer;
 
-public class LootPool implements AdditionalLootTableDataOwner, JsonSerializable, LootConditionImpl, LootFunctionImpl {
+public class LootPool implements CustomDataOwner, JsonSerializable, LootConditionImpl, LootFunctionImpl {
 	private JsonElement rolls = new JsonObject();
 	private final JsonObject additionalData = new JsonObject();
 	public final LootConditionList conditions = new LootConditionList();
@@ -47,7 +47,7 @@ public class LootPool implements AdditionalLootTableDataOwner, JsonSerializable,
 			});
 		}
 
-		setAdditionalData(copiedJsonPool);
+		setCustomData(copiedJsonPool);
 	}
 
 	public void setRolls(int r) {
@@ -73,7 +73,7 @@ public class LootPool implements AdditionalLootTableDataOwner, JsonSerializable,
 		conditions.serializeInto(object);
 		entries.serializeInto(object);
 
-		fillAdditionalData(object);
+		serializeCustomData(object);
 		return object;
 	}
 
@@ -87,21 +87,15 @@ public class LootPool implements AdditionalLootTableDataOwner, JsonSerializable,
 		return entry;
 	}
 
-	public AbstractLootEntry addEntry(IngredientJS ingredientJS, float minCount, float maxCount) {
-		AbstractLootEntry entry = addEntry(ingredientJS.withCount(1));
-		entry.functions.setUniformCount(minCount, maxCount);
-		return entry;
-	}
-
-	public AbstractLootEntry addEntry(IngredientJS ingredientJS, float minCount, float maxCount, float minLooting, float maxLooting) {
-		AbstractLootEntry entry = addEntry(ingredientJS, minCount, maxCount);
-		entry.functions.lootingEnchant(minLooting, maxLooting);
-		return entry;
+	public void addEntry(Object o, Consumer<AbstractLootEntry> action) {
+		AbstractLootEntry entry = AbstractLootEntry.of(o);
+		entries.add(entry);
+		action.accept(entry);
 	}
 
 	@Override
 	@HideFromJS
-	public JsonObject getAdditionalData() {
+	public JsonObject getCustomData() {
 		return additionalData;
 	}
 

@@ -252,14 +252,48 @@ public class JsonUtilsJS {
 
 	@Nullable
 	public static JsonElement extract(String key, JsonObject origin) {
-		if(!origin.isJsonObject()) {
+		if (!origin.isJsonObject()) {
 			throw new IllegalArgumentException("Extract just works for JsonObject or JsonArray");
 		}
 
 		JsonElement element = origin.getAsJsonObject().get(key);
-		if(element != null) {
+		if (element != null) {
 			origin.getAsJsonObject().remove(key);
 		}
 		return element;
+	}
+
+	@Nullable
+	public static Object get(JsonObject json, String[] path) {
+		JsonElement currentElement = json;
+
+		for (String s : path) {
+			if (currentElement == null) {
+				return null;
+			}
+
+			if (currentElement.isJsonObject()) {
+				currentElement = currentElement.getAsJsonObject().get(s);
+			} else if (currentElement.isJsonArray() && s.matches("^\\d+$")) {
+				int index = Integer.parseInt(s);
+
+				currentElement = currentElement.getAsJsonArray().size() > index
+						? currentElement.getAsJsonArray().get(Integer.parseInt(s))
+						: null;
+			} else {
+				return null;
+			}
+		}
+
+		if(currentElement != null && currentElement.isJsonPrimitive()) {
+			return toPrimitive(currentElement);
+		}
+
+		return currentElement;
+	}
+
+	@Nullable
+	public static Object get(JsonObject json, String path) {
+		return get(json, path.split("\\."));
 	}
 }

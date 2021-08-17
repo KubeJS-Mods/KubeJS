@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.bindings;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.JsonUtilsJS;
@@ -51,5 +52,17 @@ public class JsonWrapper {
 
 	public static void write(String file, Object json) throws IOException {
 		JsonUtilsJS.write(file, MapJS.of(json));
+	}
+
+	public static Object get(JsonObject json, String[] path) {
+		if(path.length == 1) {
+			return JsonUtilsJS.get(json, path[0].split("\\."));
+		}
+
+		return JsonUtilsJS.get(json, path);
+	}
+
+	public static boolean equals(JsonObject a, JsonObject b) {
+		return JsonUtilsJS.equal(a, b);
 	}
 }

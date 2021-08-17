@@ -2,10 +2,10 @@ package dev.latvian.kubejs.loot.function;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.loot.AbstractLootElementList;
+import dev.latvian.kubejs.util.NamedObjectList;
 import dev.latvian.mods.rhino.util.HideFromJS;
 
-public class LootFunctionList extends AbstractLootElementList<LootFunction> implements LootFunctionImpl {
+public class LootFunctionList extends NamedObjectList<LootFunction> implements LootFunctionImpl {
 
 	@Override
 	protected String getSerializeKey() {
@@ -21,13 +21,13 @@ public class LootFunctionList extends AbstractLootElementList<LootFunction> impl
 		array.forEach(element -> {
 			JsonObject jsonObject = element.getAsJsonObject();
 			LootFunction function = LootFunction.of(jsonObject);
-			elements.add(function);
+			add(function);
 		});
 	}
 
 	@HideFromJS
 	public LootFunction handleNewFunctionImpl(LootFunction lootFunction) {
-		elements.add(lootFunction);
+		add(lootFunction);
 		return lootFunction;
 	}
 }

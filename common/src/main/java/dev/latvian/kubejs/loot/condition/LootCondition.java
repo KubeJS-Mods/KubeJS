@@ -1,13 +1,13 @@
 package dev.latvian.kubejs.loot.condition;
 
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.loot.LootElement;
 import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.NamedObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public interface LootCondition extends LootElement {
+public interface LootCondition extends NamedObject {
 	static LootCondition of(@Nullable Object o) {
 		MapJS map = MapJS.of(o);
 

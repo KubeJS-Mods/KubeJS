@@ -1,17 +1,17 @@
 package dev.latvian.kubejs.loot.function;
 
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.loot.LootElement;
 import dev.latvian.kubejs.loot.condition.LootCondition;
 import dev.latvian.kubejs.loot.condition.LootConditionImpl;
 import dev.latvian.kubejs.loot.condition.LootConditionList;
 import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.NamedObject;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public class LootFunction implements LootElement, LootConditionImpl {
+public class LootFunction implements NamedObject, LootConditionImpl {
 	public static LootFunction of(@Nullable Object o) {
 		MapJS map = MapJS.of(o);
 		if (map == null) {

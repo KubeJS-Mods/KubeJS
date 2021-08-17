@@ -5,21 +5,22 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
-import dev.latvian.kubejs.loot.LootElement;
 import dev.latvian.kubejs.loot.condition.LootCondition;
 import dev.latvian.kubejs.loot.condition.LootConditionImpl;
 import dev.latvian.kubejs.loot.condition.LootConditionList;
 import dev.latvian.kubejs.loot.function.LootFunction;
 import dev.latvian.kubejs.loot.function.LootFunctionImpl;
 import dev.latvian.kubejs.loot.function.LootFunctionList;
+import dev.latvian.kubejs.util.CustomDataOwner;
 import dev.latvian.kubejs.util.JsonUtilsJS;
+import dev.latvian.kubejs.util.NamedObject;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
 import java.util.function.Consumer;
 
-public abstract class AbstractLootEntry implements LootElement, LootConditionImpl, LootFunctionImpl {
+public abstract class AbstractLootEntry implements NamedObject, CustomDataOwner, LootConditionImpl, LootFunctionImpl {
 	protected static ImmutableList<String> VALID_ENTRY_TYPES = ImmutableList.of("minecraft:empty", "minecraft:item", "minecraft:empty", "minecraft:loot_table", "minecraft:dynamic");
 	protected static ImmutableList<String> VALID_GROUP_ENTRY_TYPES = ImmutableList.of("minecraft:group", "minecraft:sequence", "minecraft:alternatives");
 
@@ -27,6 +28,7 @@ public abstract class AbstractLootEntry implements LootElement, LootConditionImp
 	public final LootFunctionList functions = new LootFunctionList();
 
 	protected String type;
+	private final JsonObject additionalData = new JsonObject();
 
 	public static AbstractLootEntry of(Object o) {
 		if(o instanceof AbstractLootEntry) {
@@ -147,5 +149,11 @@ public abstract class AbstractLootEntry implements LootElement, LootConditionImp
 	@HideFromJS
 	public LootFunction handleNewFunctionImpl(LootFunction lootFunction) {
 		return functions.handleNewFunctionImpl(lootFunction);
+	}
+
+	@Override
+	@HideFromJS
+	public JsonObject getCustomData() {
+		return additionalData;
 	}
 }

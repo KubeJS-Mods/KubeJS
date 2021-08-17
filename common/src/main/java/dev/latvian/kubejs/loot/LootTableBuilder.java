@@ -4,20 +4,19 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.loot.entry.AbstractLootEntry;
 import dev.latvian.kubejs.loot.function.LootFunction;
 import dev.latvian.kubejs.loot.function.LootFunctionImpl;
 import dev.latvian.kubejs.loot.function.LootFunctionList;
+import dev.latvian.kubejs.util.CustomDataOwner;
 import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class LootTableBuilder implements JsonSerializable, AdditionalLootTableDataOwner, LootFunctionImpl {
+public class LootTableBuilder implements JsonSerializable, CustomDataOwner, LootFunctionImpl {
 	public String type;
 
 	public final LootFunctionList functions = new LootFunctionList();
@@ -48,7 +47,7 @@ public class LootTableBuilder implements JsonSerializable, AdditionalLootTableDa
 			});
 		}
 
-		setAdditionalData(copiedJsonTable);
+		setCustomData(copiedJsonTable);
 	}
 
 	public List<LootPool> getPools() {
@@ -86,35 +85,14 @@ public class LootTableBuilder implements JsonSerializable, AdditionalLootTableDa
 			result.add("pools", poolsArray);
 		}
 
-		fillAdditionalData(result);
+		serializeCustomData(result);
 		return result;
-	}
-
-	/**
-	 * Most loot tables contains just one pool with one entry which holds
-	 * all information through drop, conditions & functions.
-	 *
-	 * @return the first accessible entry in the loot table
-	 */
-	@Nullable
-	public AbstractLootEntry getFirstEntry() {
-		for (LootPool pool : getPools()) {
-			for (AbstractLootEntry entry : pool.entries) {
-				return entry;
-			}
-		}
-
-		return null;
-	}
-
-	public void replaceEntry() {
-
 	}
 
 	public void clear() {
 		functions.clear();
 		pools.clear();
-		clearAdditionalData();
+		clearCustomData();
 	}
 
 	@Override
@@ -127,7 +105,7 @@ public class LootTableBuilder implements JsonSerializable, AdditionalLootTableDa
 	}
 
 	@Override
-	public JsonObject getAdditionalData() {
+	public JsonObject getCustomData() {
 		return additionalData;
 	}
 

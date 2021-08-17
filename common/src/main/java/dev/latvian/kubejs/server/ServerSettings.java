@@ -31,6 +31,7 @@ public class ServerSettings {
 	public boolean logErroringRecipes = true;
 	public boolean logInvalidRecipeHandlers = true;
 	public boolean useOriginalRecipeForFilters = true;
+	public boolean logChangingLootTables = true;
 
 	public static transient CommandSourceStack source;
 	public static transient JsonObject dataExport;

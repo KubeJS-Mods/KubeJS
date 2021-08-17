@@ -41,6 +41,11 @@ public class BasicCondition implements LootCondition {
 		if (key.equals("condition")) {
 			throw new IllegalArgumentException("Key 'condition' is not allowed to be set from outside");
 		}
+
+		if(value == null) {
+			throw new NullPointerException(String.format("Value for key '%s' cannot be null. Check for correct spelling.", key));
+		}
+
 		data.put(key, value);
 	}
 

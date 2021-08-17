@@ -7,8 +7,8 @@ import dev.latvian.kubejs.util.MapJS;
 
 import java.util.function.Consumer;
 
-public class AlternativeCondition implements LootCondition {
-	private final LootConditionList terms = new LootConditionList();
+public class AlternativeCondition implements LootCondition, LootConditionImpl {
+	public final LootConditionList terms = new LootConditionList();
 
 	public AlternativeCondition(MapJS data) {
 		if (!getName().equals(data.get("condition"))) {
@@ -58,5 +58,10 @@ public class AlternativeCondition implements LootCondition {
 	@Override
 	public void clear() {
 		terms.clear();
+	}
+
+	@Override
+	public void handleNewConditionImpl(LootCondition condition) {
+		terms.handleNewConditionImpl(condition);
 	}
 }

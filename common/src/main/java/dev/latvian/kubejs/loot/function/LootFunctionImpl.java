@@ -1,13 +1,31 @@
 package dev.latvian.kubejs.loot.function;
 
+import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.loot.LootTableUtils;
 import dev.latvian.kubejs.util.JsonSerializable;
+import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.block.Block;
 
 public interface LootFunctionImpl extends JsonSerializable {
 	@HideFromJS
 	LootFunction handleNewFunctionImpl(LootFunction lootFunction);
+
+	default LootFunction copyState(Block block, String[] properties) {
+		LootFunction lootFunction = new LootFunction("minecraft:copy_state");
+		lootFunction.put("block", KubeJSRegistries.blocks().getId(block));
+		lootFunction.put("properties", ListJS.of(properties));
+		return handleNewFunctionImpl(lootFunction);
+	}
+
+	default LootFunction copyNbt(String source, ListJS ops) {
+		LootFunction lootFunction = new LootFunction("minecraft:copy_nbt");
+		lootFunction.put("source", source);
+		lootFunction.put("ops", ops.copy());
+		return handleNewFunctionImpl(lootFunction);
+	}
 
 	@SuppressWarnings("UnusedReturnValue")
 	default LootFunction setNbt(MapJS nbt) {
@@ -89,32 +107,36 @@ public interface LootFunctionImpl extends JsonSerializable {
 		return handleNewFunctionImpl(lootFunction);
 	}
 
-	default LootFunction applyBonus(String enchantment) {
+	default LootFunction applyBonus(Enchantment enchantment, String formula) {
+		return applyBonus(enchantment, formula, null);
+	}
+
+	default LootFunction applyBonus(Enchantment enchantment, String formula, MapJS parameters) {
 		LootFunction lootFunction = new LootFunction("minecraft:apply_bonus");
-		lootFunction.put("enchantment", enchantment);
-		lootFunction.put("formula", "minecraft:ore_drops");
+		lootFunction.put("enchantment", KubeJSRegistries.enchantments().getId(enchantment));
+		lootFunction.put("formula", formula);
+		if(parameters != null && !parameters.isEmpty()) {
+			lootFunction.put("parameters", parameters);
+		}
+
 		return handleNewFunctionImpl(lootFunction);
 	}
 
-	default LootFunction applyBonus(String enchantment, int extra, float probability) {
-		LootFunction lootFunction = new LootFunction("minecraft:apply_bonus");
-		lootFunction.put("enchantment", enchantment);
-		lootFunction.put("formula", "minecraft:binomial_with_bonus_count");
+	default LootFunction applyOreDropsBonus(Enchantment enchantment) {
+		return applyBonus(enchantment, "minecraft:ore_drops");
+	}
+
+	default LootFunction applyBinomialBonus(Enchantment enchantment, int extra, float probability) {
 		MapJS parameters = new MapJS();
 		parameters.put("extra", extra);
 		parameters.put("probability", probability);
-		lootFunction.put("parameters", parameters);
-		return handleNewFunctionImpl(lootFunction);
+		return applyBonus(enchantment, "minecraft:binomial_with_bonus_count", parameters);
 	}
 
-	default LootFunction applyBonus(String enchantment, int bonusMultiplier) {
-		LootFunction lootFunction = new LootFunction("minecraft:apply_bonus");
-		lootFunction.put("enchantment", enchantment);
-		lootFunction.put("formula", "minecraft:uniform_bonus_count");
+	default LootFunction applyMultiplierBonus(Enchantment enchantment, int bonusMultiplier) {
 		MapJS parameters = new MapJS();
 		parameters.put("bonusMultiplier", bonusMultiplier);
-		lootFunction.put("parameters", parameters);
-		return handleNewFunctionImpl(lootFunction);
+		return applyBonus(enchantment, "minecraft:uniform_bonus_count", parameters);
 	}
 
 	default LootFunction explorationMap(MapJS data) {

@@ -4,7 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.util.JsonUtilsJS;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 public class CompositeLootEntry extends AbstractLootEntry {
 
@@ -34,6 +35,8 @@ public class CompositeLootEntry extends AbstractLootEntry {
 				children.add(child);
 			});
 		}
+
+		setCustomData(json);
 	}
 
 	@Override
@@ -42,15 +45,27 @@ public class CompositeLootEntry extends AbstractLootEntry {
 	}
 
 	@Override
-	@Nullable
 	public String getName() {
-		return null;
+		throw new UnsupportedOperationException(String.format("Loot table entries with type '%s' cannot be access by name", AbstractLootEntry.VALID_GROUP_ENTRY_TYPES));
 	}
 
 	@Override
 	public JsonObject toJson() {
 		JsonObject json = super.toJson();
 		children.serializeInto(json);
+		serializeCustomData(json);
 		return json;
+	}
+
+	public AbstractLootEntry addEntry(Object o) {
+		AbstractLootEntry entry = AbstractLootEntry.of(o);
+		children.add(entry);
+		return entry;
+	}
+
+	public void addEntry(Object o, Consumer<AbstractLootEntry> action) {
+		AbstractLootEntry entry = AbstractLootEntry.of(o);
+		children.add(entry);
+		action.accept(entry);
 	}
 }

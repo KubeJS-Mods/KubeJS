@@ -54,11 +54,8 @@ dependencies {
 	// modRuntime("curse.maven:artisan-worktables-1-16-437529:3277959")
 
 	// these mods are used for loot table testing
-	modRuntime("curse.maven:simplefarming-327554:3400041") // adds chest loot, loot modifiers & entity drops like meat to horses
-	modRuntime("curse.maven:dungeon-mobs-428883:3316063") // adds new mobs
-
-	modRuntime("curse.maven:yung-api-421850:3412585")
-	modRuntime("curse.maven:yung-better-dungeons-510089:3413766")
+//	modRuntime("curse.maven:simplefarming-327554:3400041") 	// adds chest loot, loot modifiers & entity drops like meat to horses
+//	modRuntime("curse.maven:reliquary-241319:3361285")		// reliquary dont use loot_modifiers to inject loot. They use a custom way.
 
 
 	implementation(project(path: ":common")) {

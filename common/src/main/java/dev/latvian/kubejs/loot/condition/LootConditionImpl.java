@@ -1,9 +1,15 @@
 package dev.latvian.kubejs.loot.condition;
 
+import dev.latvian.kubejs.KubeJSRegistries;
+import dev.latvian.kubejs.NonnullByDefault;
+import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.block.Block;
 
 import java.util.function.Consumer;
 
@@ -36,19 +42,31 @@ public interface LootConditionImpl extends JsonSerializable {
 		handleNewConditionImpl(condition);
 	}
 
-	default void matchTool(String item) {
+	default void matchTool(IngredientJS item) {
 		BasicCondition condition = new BasicCondition("minecraft:match_tool");
-		MapJS predicate = new MapJS();
-		predicate.put("item", item);
+		ItemPredicate itemPredicate = ItemPredicate.fromJson(item.toJson());
+		MapJS predicate = MapJS.of(itemPredicate.serializeToJson());
 		condition.put("predicate", predicate);
 		handleNewConditionImpl(condition);
 	}
 
-	default void matchToolEnchantment(ListJS enchantments) {
+	default void matchToolEnchantment(@NonnullByDefault Enchantment enchantment) {
+		MapJS levels = new MapJS();
+		levels.put("min", 1);
+		matchToolEnchantment(enchantment, levels);
+	}
+
+	default void matchToolEnchantment(@NonnullByDefault Enchantment enchantment, @NonnullByDefault MapJS levels) {
 		BasicCondition condition = new BasicCondition("minecraft:match_tool");
+
+		MapJS enchantmentMap = new MapJS();
+		enchantmentMap.put("enchantment", KubeJSRegistries.enchantments().getId(enchantment));
+		enchantmentMap.put("levels", levels);
+
 		MapJS predicate = new MapJS();
-		predicate.put("enchantments", enchantments);
+		predicate.put("enchantments", ListJS.orSelf(enchantmentMap));
 		condition.put("predicate", predicate);
+
 		handleNewConditionImpl(condition);
 	}
 
@@ -65,15 +83,16 @@ public interface LootConditionImpl extends JsonSerializable {
 		handleNewConditionImpl(condition);
 	}
 
-	default void isOnFire() {
-		BasicCondition condition = new BasicCondition("minecraft:entity_properties");
+	default void isOnFlag(String thisOrKiller, String flag, boolean active) {
 		MapJS predicate = new MapJS();
 		MapJS flags = new MapJS();
-		flags.put("in_on_fire", true);
+		flags.put(flag, active);
 		predicate.put("flags", flags);
-		condition.put("predicate", predicate);
-		condition.put("entity", "this");
-		handleNewConditionImpl(condition);
+		entityProperties(thisOrKiller, predicate);
+	}
+
+	default void isOnFire(boolean onFire) {
+		isOnFlag("this","is_on_fire", onFire);
 	}
 
 	default void killedByPlayer() {
@@ -81,9 +100,9 @@ public interface LootConditionImpl extends JsonSerializable {
 		handleNewConditionImpl(condition);
 	}
 
-	default void blockState(String block, MapJS predicate) {
+	default void blockState(Block block, MapJS predicate) {
 		BasicCondition condition = new BasicCondition("minecraft:block_state_property");
-		condition.put("block", block);
+		condition.put("block", KubeJSRegistries.blocks().getId(block));
 		condition.put("predicate", predicate);
 		handleNewConditionImpl(condition);
 	}
@@ -93,7 +112,7 @@ public interface LootConditionImpl extends JsonSerializable {
 	}
 
 	default void location(MapJS offset, MapJS predicate) {
-		BasicCondition condition = new BasicCondition("minecraft:killed_by_player");
+		BasicCondition condition = new BasicCondition("minecraft:location_check");
 		condition.putByKey("offsetX", offset);
 		condition.putByKey("offsetY", offset);
 		condition.putByKey("offsetZ", offset);
@@ -107,15 +126,15 @@ public interface LootConditionImpl extends JsonSerializable {
 		location(predicate);
 	}
 
-	default void tableBonus(String enchantment, float[] chances) {
+	default void tableBonus(Enchantment enchantment, float[] chances) {
 		BasicCondition condition = new BasicCondition("minecraft:table_bonus");
-		condition.put("enchantment", enchantment);
+		condition.put("enchantment", KubeJSRegistries.enchantments().getId(enchantment));
 		condition.put("chances", ListJS.of(chances));
 		handleNewConditionImpl(condition);
 	}
 
 	default void damageSource(MapJS predicate) {
-		BasicCondition condition = new BasicCondition("minecraft:damage_source_properties ");
+		BasicCondition condition = new BasicCondition("minecraft:damage_source_properties");
 		condition.put("predicate", predicate);
 		handleNewConditionImpl(condition);
 	}
