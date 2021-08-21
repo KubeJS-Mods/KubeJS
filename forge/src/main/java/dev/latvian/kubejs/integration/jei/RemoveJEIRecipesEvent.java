@@ -39,14 +39,13 @@ public class RemoveJEIRecipesEvent extends EventJS {
 		return set;
 	}
 
-	public void remove(String category, ResourceLocation[] recipesToRemove) {
-		ResourceLocation cat = new ResourceLocation(category);
+	public void remove(ResourceLocation category, ResourceLocation[] recipesToRemove) {
 		for (ResourceLocation toRemove : recipesToRemove) {
-			recipesRemoved.computeIfAbsent(cat, _0 -> new HashSet<>()).add(toRemove);
+			recipesRemoved.computeIfAbsent(category, _0 -> new HashSet<>()).add(toRemove);
 		}
 	}
 
-	public void yeet(String category, ResourceLocation[] recipesToYeet) {
+	public void yeet(ResourceLocation category, ResourceLocation[] recipesToYeet) {
 		remove(category, recipesToYeet);
 	}
 
