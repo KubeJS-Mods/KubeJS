@@ -31,11 +31,11 @@ jobs:
           chmod +x ./gradlew
           ./gradlew javadoc aggregateJavadoc --stacktrace
           ls ./
-          cd docs/javadoc/
+          cd build/docs/javadoc/
           echo "Creating .nojekyll to have Github pages deploy html as is:"
           touch .nojekyll
       - name: Deploy Javadocs
         uses: JamesIves/github-pages-deploy-action@4.0.0
         with:
           branch: gh-pages # The branch the action should deploy to.
-          folder: docs/javadoc/ # The folder the action should deploy.
+          folder: build/docs/javadoc/ # The folder the action should deploy.
