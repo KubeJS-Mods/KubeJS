@@ -12,6 +12,7 @@ architectury {
 subprojects {
 	apply plugin: "dev.architectury.loom"
 	apply plugin: "io.github.juuxel.loom-quiltflower"
+	apply plugin: "io.freefair.aggregate-javadoc"
 
 	loom {
 		silentMojangMappingsLicense()
@@ -21,6 +22,7 @@ subprojects {
 	dependencies {
 		minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
 		mappings loom.officialMojangMappings()
+		classpath "io.freefair.gradle:maven-plugin:6.1.0-m2"
 	}
 }
 
