@@ -47,7 +47,7 @@ allprojects {
 	}
 
 	javadoc {
-		destinationDir = ${rootProject.projectDir}/javadoc
+		destinationDir = "${rootProject.projectDir}/javadoc"
 	}
 
 	tasks.withType(JavaCompile) {
