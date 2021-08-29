@@ -30,7 +30,7 @@ jobs:
         run: |
           echo "Building javadocs with gradle"
           chmod +x ./gradlew
-          ./gradlew javadoc aggregateJavadoc
+          ./gradlew javadoc aggregateJavadoc --debug
           echo "Moving to javadocs directory:"
           cd docs/javadoc/
           echo "Creating .nojekyll to have Github pages deploy html as is:"
