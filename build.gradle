@@ -58,6 +58,10 @@ allprojects {
 		}
 	}
 
+	javadoc {
+		source = sourceSets.main.allJava
+	}
+
 	java {
 		withSourcesJar()
 	}
