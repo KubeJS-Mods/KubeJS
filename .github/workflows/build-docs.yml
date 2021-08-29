@@ -29,8 +29,7 @@ jobs:
       - name: Build Javadocs with Gradle
         run: |
           chmod +x ./gradlew
-          ./gradlew javadoc aggregateJavadoc --stacktrace
-          ls ./
+          ./gradlew javadoc aggregateJavadoc
           cd build/docs/javadoc/
           echo "Creating .nojekyll to have Github pages deploy html as is:"
           touch .nojekyll
