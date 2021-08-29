@@ -2,7 +2,6 @@ plugins {
 	id "architectury-plugin" version "3.1-SNAPSHOT"
 	id "dev.architectury.loom" version "0.7.3-SNAPSHOT" apply false
 	id "io.github.juuxel.loom-quiltflower" version "1.1.1" apply false
-	id 'org.ajoberstar.git-publish' version '3.0.0'
 }
 
 architectury {
@@ -23,15 +22,6 @@ subprojects {
 		mappings loom.officialMojangMappings()
 	}
 }
-
-gitPublish {
-	repoUri = 'git@github.com:ralphschuler/KubeJS.git' // defaults to this project's origin URI
-	branch = 'gh-pages' // defaults to gh-pages  
-	content {
-		from(javadoc)
-	}
-}
-
 
 allprojects {
 	apply plugin: "java"
