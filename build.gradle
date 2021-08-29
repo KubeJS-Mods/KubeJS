@@ -2,7 +2,7 @@ plugins {
 	id "architectury-plugin" version "3.1-SNAPSHOT"
 	id "dev.architectury.loom" version "0.7.3-SNAPSHOT" apply false
 	id "io.github.juuxel.loom-quiltflower" version "1.1.1" apply false
-	//id "io.freefair.aggregate-javadoc" version "6.1.0-m2"
+	id "io.freefair.aggregate-javadoc" version "6.1.0"
 }
 
 architectury {
@@ -12,7 +12,6 @@ architectury {
 subprojects {
 	apply plugin: "dev.architectury.loom"
 	apply plugin: "io.github.juuxel.loom-quiltflower"
-	apply plugin: "io.freefair.aggregate-javadoc"
 
 	loom {
 		silentMojangMappingsLicense()
@@ -22,7 +21,6 @@ subprojects {
 	dependencies {
 		minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
 		mappings loom.officialMojangMappings()
-		classpath "io.freefair.gradle:maven-plugin:6.1.0-m2"
 	}
 }
 
