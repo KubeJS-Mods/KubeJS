@@ -63,6 +63,10 @@ allprojects {
 		withSourcesJar()
 	}
 
+	javadoc {
+		source = sourceSets.main.allJava
+	}
+
 	repositories {
 		maven {
 			url "https://maven.architectury.dev/"
