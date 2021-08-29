@@ -11,6 +11,7 @@ architectury {
 subprojects {
 	apply plugin: "dev.architectury.loom"
 	apply plugin: "io.github.juuxel.loom-quiltflower"
+	apply plugin: 'nebula-aggregate-javadocs'
 
 	loom {
 		silentMojangMappingsLicense()
@@ -20,6 +21,7 @@ subprojects {
 	dependencies {
 		minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
 		mappings loom.officialMojangMappings()
+		classpath 'com.netflix.nebula:gradle-aggregate-javadocs-plugin:2.2.+'
 	}
 }
 
@@ -47,7 +49,7 @@ allprojects {
 	}
 
 	javadoc {
-		destinationDir = "${rootProject.projectDir}/javadoc"
+		destinationDir = file("${rootProject.projectDir}/javadoc")
 	}
 
 	tasks.withType(JavaCompile) {
