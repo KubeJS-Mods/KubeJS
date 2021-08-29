@@ -24,17 +24,6 @@ subprojects {
 	}
 }
 
-gitPublish {
-  repoUri = 'git@github.com:ralphschuler/KubeJS.git' // defaults to this project's origin URI
-  branch = 'gh-pages' // defaults to gh-pages  
-  content {
-    from(javadoc)
-    // by default this will copy into the root of the gh-pages branch and delete any previous files
-    // customizing the destination will only delete files within that target dir
-    into "docs/${version}"
-  }
-}
-
 allprojects {
 	apply plugin: "java"
 	apply plugin: "architectury-plugin"
@@ -72,6 +61,14 @@ allprojects {
 
 	javadoc {
 		source = sourceSets.main.allJava
+	}
+
+	gitPublish {
+		repoUri = 'git@github.com:ralphschuler/KubeJS.git' // defaults to this project's origin URI
+		branch = 'gh-pages' // defaults to gh-pages  
+		content {
+			from(javadoc)
+		}
 	}
 
 	java {
