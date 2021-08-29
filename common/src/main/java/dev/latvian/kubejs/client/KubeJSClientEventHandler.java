@@ -121,7 +121,7 @@ public class KubeJSClientEventHandler {
 	private void itemTooltip(ItemStack stack, List<Component> lines, TooltipFlag flag) {
 		boolean advanced = flag.isAdvanced();
 
-		if (advanced && ClientProperties.get().showTagNames && Screen.hasShiftDown()) {
+		if (advanced && ClientProperties.get().getShowTagNames() && Screen.hasShiftDown()) {
 			for (ResourceLocation tag : Tags.byItemStack(stack)) {
 				lines.add(new TextComponent(" #" + tag + " [item]").withStyle(ChatFormatting.DARK_GRAY));
 			}
@@ -253,7 +253,7 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void guiPostInit(Screen screen, List<AbstractWidget> widgets, List<GuiEventListener> children) {
-		if (ClientProperties.get().disableRecipeBook && screen instanceof RecipeUpdateListener) {
+		if (ClientProperties.get().getDisableRecipeBook() && screen instanceof RecipeUpdateListener) {
 			Iterator<GuiEventListener> iterator = children.iterator();
 			while (iterator.hasNext()) {
 				GuiEventListener listener = iterator.next();
@@ -295,7 +295,7 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void postAtlasStitch(TextureAtlas atlas) {
-		if (!ClientProperties.get().exportAtlases) {
+		if (!ClientProperties.get().getExportAtlases()) {
 			return;
 		}
 

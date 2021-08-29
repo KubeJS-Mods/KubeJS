@@ -31,13 +31,15 @@
 		"Vec3iMixin"
 	],
 	"client": [
+		"AbstractSelectionListMixin",
 		"ImageButtonMixin",
 		"ItemClientMixin",
 		"KeyboardHandlerMixin",
 		"MainWindowMixin",
 		"MinecraftMixin",
 		"OptionsMixin",
-		"ResourceLoadProgressGuiMixin"
+		"ResourceLoadProgressGuiMixin",
+		"ScreenMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
