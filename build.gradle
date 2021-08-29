@@ -25,6 +25,7 @@ subprojects {
 
 allprojects {
 	apply plugin: "java"
+	apply plugin: JavadocPlugin
 	apply plugin: "architectury-plugin"
 	apply plugin: "maven-publish"
 	apply from: "https://files.latmod.com/public/markdown-git-changelog.gradle"
@@ -44,6 +45,10 @@ allprojects {
 		optional
 		compileOnly.extendsFrom(optional)
 		runtime.extendsFrom(optional)
+	}
+
+	javadoc {
+		destinationDir = ${rootProject.projectDir}/javadoc
 	}
 
 	tasks.withType(JavaCompile) {
