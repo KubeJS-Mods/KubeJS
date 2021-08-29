@@ -39,6 +39,10 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew build publish --stacktrace --no-daemon
+      - name: Build Docs with Gradle
+        run: |
+          chmod +x ./gradlew
+          ./gradlew javadoc
       - name: Release to CurseForge
         if: |
           github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '[norelease]') && github.event.inputs.norelease != 'true'
