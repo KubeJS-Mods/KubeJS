@@ -12,7 +12,6 @@ architectury {
 subprojects {
 	apply plugin: "dev.architectury.loom"
 	apply plugin: "io.github.juuxel.loom-quiltflower"
-	apply plugin: 'nebula-aggregate-javadocs'
 
 	loom {
 		silentMojangMappingsLicense()
