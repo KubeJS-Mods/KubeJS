@@ -24,6 +24,15 @@ subprojects {
 	}
 }
 
+gitPublish {
+	repoUri = 'git@github.com:ralphschuler/KubeJS.git' // defaults to this project's origin URI
+	branch = 'gh-pages' // defaults to gh-pages  
+	content {
+		from(javadoc)
+	}
+}
+
+
 allprojects {
 	apply plugin: "java"
 	apply plugin: "architectury-plugin"
@@ -56,18 +65,6 @@ allprojects {
 		def targetVersion = 8
 		if (JavaVersion.current().isJava9Compatible()) {
 			options.release = targetVersion
-		}
-	}
-
-	javadoc {
-		source = sourceSets.main.allJava
-	}
-
-	gitPublish {
-		repoUri = 'git@github.com:ralphschuler/KubeJS.git' // defaults to this project's origin URI
-		branch = 'gh-pages' // defaults to gh-pages  
-		content {
-			from(javadoc)
 		}
 	}
 
