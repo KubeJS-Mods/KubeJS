@@ -5,7 +5,7 @@ on:
     branches: [ docs ]
 
 jobs:
-  build:
+  build-docs:
     runs-on: ubuntu-latest
     if: |
       !contains(github.event.head_commit.message, '[ciskip]')
@@ -26,11 +26,16 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '11'
-      - name: Build Docs with Gradle
+      - name: Build Javadocs with Gradle
         run: |
+          echo "Building javadocs with gradle"
           chmod +x ./gradlew
-          ./gradlew javadoc 
-      - name: Deploy
+          ./gradlew javadoc
+          echo "Moving to javadocs directory:"
+          cd build/docs/javadoc/
+          echo "Creating .nojekyll to have Github pages deploy html as is:"
+          touch .nojekyll
+      - name: Deploy Javadocs
         uses: JamesIves/github-pages-deploy-action@4.0.0
         with:
           branch: gh-pages # The branch the action should deploy to.
