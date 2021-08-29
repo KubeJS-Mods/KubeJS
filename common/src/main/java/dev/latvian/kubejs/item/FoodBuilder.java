@@ -1,15 +1,20 @@
 package dev.latvian.kubejs.item;
 
 import com.google.common.collect.Lists;
+import dev.latvian.kubejs.KubeJSRegistries;
+import dev.latvian.kubejs.script.ScriptType;
 import me.shedaniel.architectury.hooks.FoodPropertiesHooks;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.food.FoodProperties;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
@@ -75,8 +80,8 @@ public class FoodBuilder {
 		return fastToEat(true);
 	}
 
-	public FoodBuilder effect(MobEffect mobEffect, int duration, int amplifier, float probability) {
-		effects.add(Pair.of(() -> new MobEffectInstance(mobEffect, duration, amplifier), probability));
+	public FoodBuilder effect(ResourceLocation mobEffectId, int duration, int amplifier, float probability) {
+		effects.add(Pair.of(new EffectSupplier(mobEffectId, duration, amplifier), probability));
 		return this;
 	}
 
@@ -120,5 +125,32 @@ public class FoodBuilder {
 		}
 
 		return b.build();
+	}
+
+	private static class EffectSupplier implements Supplier<MobEffectInstance> {
+		private final ResourceLocation id;
+		private final int duration;
+		private final int amplifier;
+
+		private MobEffect cachedEffect;
+
+		public EffectSupplier(ResourceLocation id, int duration, int amplifier) {
+			this.id = id;
+			this.duration = duration;
+			this.amplifier = amplifier;
+		}
+
+		@Override
+		public MobEffectInstance get() {
+			if(cachedEffect == null) {
+				cachedEffect = KubeJSRegistries.mobEffects().get(id);
+				if(cachedEffect == null) {
+					Set<ResourceLocation> effectIds = KubeJSRegistries.mobEffects().entrySet().stream().map(entry -> entry.getKey().location()).collect(Collectors.toSet());
+					throw new RuntimeException(String.format("Missing effect '%s'. Check spelling or maybe potion id was used instead of effect id. Possible ids: %s", id, effectIds));
+				}
+			}
+
+			return new MobEffectInstance(cachedEffect, duration, amplifier);
+		}
 	}
 }

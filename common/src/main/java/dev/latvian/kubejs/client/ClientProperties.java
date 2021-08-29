@@ -4,6 +4,7 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
@@ -33,18 +34,19 @@ public class ClientProperties {
 	private boolean tempIconCancel = true;
 
 	public String title;
-	public boolean showTagNames;
-	public boolean disableRecipeBook;
-	public boolean exportAtlases;
-	public boolean overrideColors;
-	public int backgroundColor;
-	public int barColor;
-	public int barBorderColor;
-	public int fmlMemoryColor;
-	public int fmlLogColor;
-	public float[] backgroundColor3f;
-	public float[] fmlMemoryColor3f;
-	public float[] fmlLogColor3f;
+	private boolean showTagNames;
+	private boolean disableRecipeBook;
+	private boolean exportAtlases;
+	private boolean overrideColors;
+	private int backgroundColor;
+	private int barColor;
+	private int barBorderColor;
+	private float[] backgroundColor3f;
+	private float[] fmlMemoryColor3f;
+	private float[] fmlLogColor3f;
+	private int menuBackgroundBrightness;
+	private int menuInnerBackgroundBrightness;
+	private float menuBackgroundScale;
 
 	private ClientProperties() {
 		properties = new Properties();
@@ -79,12 +81,13 @@ public class ClientProperties {
 			backgroundColor = getColor("backgroundColor", 0x2E3440);
 			barColor = getColor("barColor", 0xECEFF4);
 			barBorderColor = getColor("barBorderColor", 0xECEFF4);
-			fmlMemoryColor = getColor("fmlMemoryColor", 0xECEFF4);
-			fmlLogColor = getColor("fmlLogColor", 0xECEFF4);
-
 			backgroundColor3f = getColor3f(backgroundColor);
-			fmlMemoryColor3f = getColor3f(fmlMemoryColor);
-			fmlLogColor3f = getColor3f(fmlLogColor);
+			fmlMemoryColor3f = getColor3f(getColor("fmlMemoryColor", 0xECEFF4));
+			fmlLogColor3f = getColor3f(getColor("fmlLogColor", 0xECEFF4));
+
+			menuBackgroundBrightness = Mth.clamp(get("menuBackgroundBrightness", 64), 0, 255);
+			menuInnerBackgroundBrightness = Mth.clamp(get("menuInnerBackgroundBrightness", 32), 0, 255);
+			menuBackgroundScale = (float) Mth.clamp(get("menuBackgroundScale", 32D), 0.0625D, 1024D);
 
 			Path iconFile = KubeJSPaths.CONFIG.resolve("packicon.png");
 
@@ -127,6 +130,14 @@ public class ClientProperties {
 
 	private boolean get(String key, boolean def) {
 		return get(key, def ? "true" : "false").equals("true");
+	}
+
+	private int get(String key, int def) {
+		return Integer.parseInt(get(key, Integer.toString(def)));
+	}
+
+	private double get(String key, double def) {
+		return Double.parseDouble(get(key, Double.toString(def)));
 	}
 
 	private int getColor(String key, int def) {
@@ -189,6 +200,18 @@ public class ClientProperties {
 		return false;
 	}
 
+	public boolean getShowTagNames() {
+		return showTagNames;
+	}
+
+	public boolean getDisableRecipeBook() {
+		return disableRecipeBook;
+	}
+
+	public boolean getExportAtlases() {
+		return exportAtlases;
+	}
+
 	public float[] getMemoryColor(float[] color) {
 		return overrideColors ? fmlMemoryColor3f : color;
 	}
@@ -211,5 +234,17 @@ public class ClientProperties {
 
 	public int getBarBorderColor(int color) {
 		return overrideColors ? ((color & 0xFF000000) | barBorderColor) : color;
+	}
+
+	public int getMenuBackgroundBrightness() {
+		return menuBackgroundBrightness;
+	}
+
+	public int getMenuInnerBackgroundBrightness() {
+		return menuInnerBackgroundBrightness;
+	}
+
+	public float getMenuBackgroundScale() {
+		return menuBackgroundScale;
 	}
 }
