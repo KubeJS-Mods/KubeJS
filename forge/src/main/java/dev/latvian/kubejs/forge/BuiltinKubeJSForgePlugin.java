@@ -33,7 +33,7 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 			event.addFunction("onForgeEvent", args -> onPlatformEvent(event, args), null, KubeJSForgeEventHandlerWrapper.class);
 		}
 
-		event.addClass("BiomeDictionary", BiomeDictionaryWrapper.class);
+		event.add("BiomeDictionary", BiomeDictionaryWrapper.class);
 	}
 
 	@Override
