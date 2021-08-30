@@ -17,6 +17,7 @@ import dev.latvian.kubejs.bindings.UtilsWrapper;
 import dev.latvian.kubejs.block.BlockStatePredicate;
 import dev.latvian.kubejs.block.MaterialJS;
 import dev.latvian.kubejs.block.MaterialListJS;
+import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.event.IEventHandler;
 import dev.latvian.kubejs.fluid.FluidStackJS;
 import dev.latvian.kubejs.fluid.FluidWrapper;
@@ -72,6 +73,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.List;
@@ -164,69 +166,68 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 			event.add("settings", ServerSettings.instance);
 		}
 
-		event.addClass("Platform", PlatformWrapper.class);
+		event.add("Platform", PlatformWrapper.class);
 		event.add("console", event.type.console);
 		event.add("events", new ScriptEventsWrapper(event.type.manager.get().events));
 
 		event.addFunction("onEvent", args -> onEvent(event, args), null, IEventHandler.class);
 		event.addFunction("java", args -> event.manager.loadJavaClass(event.scope, args), new Class[]{null});
 
-		event.addClass("Utils", UtilsWrapper.class);
-		event.addClass("utils", UtilsWrapper.class);
-		event.addClass("Text", TextWrapper.class);
-		event.addClass("text", TextWrapper.class);
-		event.addClass("uuid", UUIDWrapper.class);
-		event.addClass("json", JsonWrapper.class);
-		event.addClass("Block", BlockWrapper.class);
-		event.addClass("block", BlockWrapper.class);
-		event.addClass("Item", ItemWrapper.class);
-		event.addClass("item", ItemWrapper.class);
-		event.addClass("Ingredient", IngredientWrapper.class);
-		event.addClass("ingredient", IngredientWrapper.class);
-		event.addClass("NBT", NBTWrapper.class);
-		event.add("Facing", new FacingWrapper());
+		event.add("Utils", UtilsWrapper.class);
+		event.add("utils", UtilsWrapper.class);
+		event.add("Text", TextWrapper.class);
+		event.add("text", TextWrapper.class);
+		event.add("UUID", UUIDWrapper.class);
+		event.add("uuid", UUIDWrapper.class);
+		event.add("JsonUtils", JsonWrapper.class);
+		event.add("json", JsonWrapper.class);
+		event.add("Block", BlockWrapper.class);
+		event.add("block", BlockWrapper.class);
+		event.add("Item", ItemWrapper.class);
+		event.add("item", ItemWrapper.class);
+		event.add("Ingredient", IngredientWrapper.class);
+		event.add("ingredient", IngredientWrapper.class);
+		event.add("NBT", NBTWrapper.class);
+		event.add("Facing", FacingWrapper.class);
 
-		event.addClass("Fluid", FluidWrapper.class);
-		event.addClass("fluid", FluidWrapper.class);
+		event.add("Fluid", FluidWrapper.class);
+		event.add("fluid", FluidWrapper.class);
 
-		event.addConstant("SECOND", 1000L);
-		event.addConstant("MINUTE", 60000L);
-		event.addConstant("HOUR", 3600000L);
+		event.add("SECOND", 1000L);
+		event.add("MINUTE", 60000L);
+		event.add("HOUR", 3600000L);
 
 		event.add("Color", ColorWrapper.class);
-		event.add("TextColor", ColorWrapper.class);
 
 		event.add("EquipmentSlot", EquipmentSlot.class);
-		event.addConstant("SLOT_MAINHAND", EquipmentSlot.MAINHAND);
-		event.addConstant("SLOT_OFFHAND", EquipmentSlot.OFFHAND);
-		event.addConstant("SLOT_FEET", EquipmentSlot.FEET);
-		event.addConstant("SLOT_LEGS", EquipmentSlot.LEGS);
-		event.addConstant("SLOT_CHEST", EquipmentSlot.CHEST);
-		event.addConstant("SLOT_HEAD", EquipmentSlot.HEAD);
+		event.add("SLOT_MAINHAND", EquipmentSlot.MAINHAND);
+		event.add("SLOT_OFFHAND", EquipmentSlot.OFFHAND);
+		event.add("SLOT_FEET", EquipmentSlot.FEET);
+		event.add("SLOT_LEGS", EquipmentSlot.LEGS);
+		event.add("SLOT_CHEST", EquipmentSlot.CHEST);
+		event.add("SLOT_HEAD", EquipmentSlot.HEAD);
 
 		event.add("Rarity", RarityWrapper.class);
-		event.addConstant("RARITY_COMMON", RarityWrapper.COMMON);
-		event.addConstant("RARITY_UNCOMMON", RarityWrapper.UNCOMMON);
-		event.addConstant("RARITY_RARE", RarityWrapper.RARE);
-		event.addConstant("RARITY_EPIC", RarityWrapper.EPIC);
+		event.add("RARITY_COMMON", RarityWrapper.COMMON);
+		event.add("RARITY_UNCOMMON", RarityWrapper.UNCOMMON);
+		event.add("RARITY_RARE", RarityWrapper.RARE);
+		event.add("RARITY_EPIC", RarityWrapper.EPIC);
 
-		event.addConstant("AIR_ITEM", Items.AIR);
-		event.addConstant("AIR_BLOCK", Blocks.AIR);
+		event.add("AIR_ITEM", Items.AIR);
+		event.add("AIR_BLOCK", Blocks.AIR);
 
 		event.add("ToolType", ToolType.class);
-		event.addConstant("TOOL_TYPE_AXE", ToolType.AXE);
-		event.addConstant("TOOL_TYPE_PICKAXE", ToolType.PICKAXE);
-		event.addConstant("TOOL_TYPE_SHOVEL", ToolType.SHOVEL);
-		event.addConstant("TOOL_TYPE_HOE", ToolType.HOE);
+		event.add("TOOL_TYPE_AXE", ToolType.AXE);
+		event.add("TOOL_TYPE_PICKAXE", ToolType.PICKAXE);
+		event.add("TOOL_TYPE_SHOVEL", ToolType.SHOVEL);
+		event.add("TOOL_TYPE_HOE", ToolType.HOE);
 
 		event.add("Hand", InteractionHand.class);
-		event.addConstant("MAIN_HAND", InteractionHand.MAIN_HAND);
-		event.addConstant("OFF_HAND", InteractionHand.OFF_HAND);
+		event.add("MAIN_HAND", InteractionHand.MAIN_HAND);
+		event.add("OFF_HAND", InteractionHand.OFF_HAND);
 
 		event.add("DecorationGenerationStep", GenerationStep.Decoration.class);
 		event.add("CarvingGenerationStep", GenerationStep.Carving.class);
-
-		event.add("Color", ColorWrapper.class);
 
 		KubeJS.PROXY.clientBindings(event);
 	}
@@ -256,6 +257,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(ListTag.class, o -> (ListTag) ListJS.nbt(o));
 		typeWrappers.register(Component.class, Text::componentOf);
 		typeWrappers.register(MutableComponent.class, o -> new TextComponent("").append(Text.componentOf(o)));
+
 		typeWrappers.register(BlockPos.class, o -> {
 			if (o instanceof BlockPos) {
 				return (BlockPos) o;
@@ -266,6 +268,24 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 			}
 
 			return BlockPos.ZERO;
+		});
+
+		typeWrappers.register(Vec3.class, o -> {
+			if (o instanceof Vec3) {
+				return (Vec3) o;
+			} else if (o instanceof EntityJS) {
+				return ((EntityJS) o).minecraftEntity.position();
+			} else if (o instanceof List && ((List<?>) o).size() >= 3) {
+				return new Vec3(((Number) ((List<?>) o).get(0)).doubleValue(), ((Number) ((List<?>) o).get(1)).doubleValue(), ((Number) ((List<?>) o).get(2)).doubleValue());
+			} else if (o instanceof BlockPos) {
+				BlockPos bp = (BlockPos) o;
+				return new Vec3(bp.getX() + 0.5D, bp.getY() + 0.5D, bp.getZ() + 0.5D);
+			} else if (o instanceof BlockContainerJS) {
+				BlockPos bp = ((BlockContainerJS) o).getPos();
+				return new Vec3(bp.getX() + 0.5D, bp.getY() + 0.5D, bp.getZ() + 0.5D);
+			}
+
+			return Vec3.ZERO;
 		});
 
 		typeWrappers.register(Item.class, ItemStackJS::getRawItem);

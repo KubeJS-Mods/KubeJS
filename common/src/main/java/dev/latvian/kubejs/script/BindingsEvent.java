@@ -35,11 +35,16 @@ public class BindingsEvent {
 	}
 
 	public void add(String name, Object value) {
-		ScriptableObject.putProperty(scope, name, Context.javaToJS(value, scope));
+		if (value.getClass() == Class.class) {
+			ScriptableObject.putProperty(scope, name, new NativeJavaClass(scope, (Class<?>) value));
+		} else {
+			ScriptableObject.putProperty(scope, name, Context.javaToJS(value, scope));
+		}
 	}
 
+	@Deprecated
 	public void addClass(String name, Class<?> clazz) {
-		add(name, new NativeJavaClass(scope, clazz));
+		add(name, clazz);
 	}
 
 	public void addFunction(String name, DynamicFunction.Callback callback) {
@@ -50,6 +55,7 @@ public class BindingsEvent {
 		add(name, new TypedDynamicFunction(callback, types));
 	}
 
+	@Deprecated
 	public void addConstant(String name, Object value) {
 		add(name, value);
 	}
