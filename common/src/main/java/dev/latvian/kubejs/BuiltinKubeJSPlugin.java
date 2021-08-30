@@ -2,6 +2,7 @@ package dev.latvian.kubejs;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dev.latvian.kubejs.bindings.AABBWrapper;
 import dev.latvian.kubejs.bindings.BlockWrapper;
 import dev.latvian.kubejs.bindings.ColorWrapper;
 import dev.latvian.kubejs.bindings.FacingWrapper;
@@ -73,6 +74,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
@@ -189,6 +191,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("ingredient", IngredientWrapper.class);
 		event.add("NBT", NBTWrapper.class);
 		event.add("Facing", FacingWrapper.class);
+		event.add("AABB", AABBWrapper.class);
 
 		event.add("Fluid", FluidWrapper.class);
 		event.add("fluid", FluidWrapper.class);
@@ -300,6 +303,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 			return net.minecraft.network.chat.TextColor.parseColor(o.toString());
 		});
+
+		typeWrappers.register(AABB.class, AABBWrapper::wrap);
 
 		// KubeJS //
 		typeWrappers.register(MapJS.class, MapJS::of);
