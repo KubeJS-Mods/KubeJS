@@ -9,6 +9,7 @@
 		"BucketItemMixin",
 		"ChatFormattingMixin",
 		"DataPackRegistriesMixin",
+		"DirectionMixin",
 		"DyeColorMixin",
 		"EntityMixin",
 		"FireworkRocketEntityMixin",
@@ -28,7 +29,8 @@
 		"TagCollectionReaderMixin",
 		"TextColorMixin",
 		"TieredItemMixin",
-		"Vec3iMixin"
+		"Vec3iMixin",
+		"Vec3Mixin"
 	],
 	"client": [
 		"AbstractSelectionListMixin",
