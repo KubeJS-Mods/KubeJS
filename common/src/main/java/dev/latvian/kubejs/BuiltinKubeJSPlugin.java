@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.bindings.AABBWrapper;
 import dev.latvian.kubejs.bindings.BlockWrapper;
 import dev.latvian.kubejs.bindings.ColorWrapper;
-import dev.latvian.kubejs.bindings.FacingWrapper;
+import dev.latvian.kubejs.bindings.DirectionWrapper;
 import dev.latvian.kubejs.bindings.IngredientWrapper;
 import dev.latvian.kubejs.bindings.ItemWrapper;
 import dev.latvian.kubejs.bindings.JsonWrapper;
@@ -59,6 +59,8 @@ import me.shedaniel.architectury.platform.Platform;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -190,7 +192,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("Ingredient", IngredientWrapper.class);
 		event.add("ingredient", IngredientWrapper.class);
 		event.add("NBT", NBTWrapper.class);
-		event.add("Facing", FacingWrapper.class);
+		event.add("Direction", DirectionWrapper.class);
+		event.add("Facing", DirectionWrapper.class);
 		event.add("AABB", AABBWrapper.class);
 
 		event.add("Fluid", FluidWrapper.class);
@@ -231,6 +234,10 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		event.add("DecorationGenerationStep", GenerationStep.Decoration.class);
 		event.add("CarvingGenerationStep", GenerationStep.Carving.class);
+		event.add("Vec3", Vec3.class);
+		event.add("Vec3d", Vec3.class);
+		event.add("Vec3i", Vec3i.class);
+		event.add("BlockPos", BlockPos.class);
 
 		KubeJS.PROXY.clientBindings(event);
 	}
@@ -305,6 +312,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		});
 
 		typeWrappers.register(AABB.class, AABBWrapper::wrap);
+		typeWrappers.register(Direction.class, o -> o instanceof Direction ? (Direction) o : DirectionWrapper.ALL.get(o.toString().toLowerCase()));
 
 		// KubeJS //
 		typeWrappers.register(MapJS.class, MapJS::of);
