@@ -5,7 +5,6 @@ import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -161,22 +160,6 @@ public class ClientProperties {
 		c[1] = ((color >> 8) & 0xFF) / 255F;
 		c[2] = ((color >> 0) & 0xFF) / 255F;
 		return c;
-	}
-
-	@Nullable
-	private float[] getColor3f(String key) {
-		String s = get(key, "default");
-
-		if (s.isEmpty() || s.equals("default")) {
-			return null;
-		}
-
-		try {
-			return getColor3f(Integer.decode(s));
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			return null;
-		}
 	}
 
 	public boolean cancelIconUpdate() {

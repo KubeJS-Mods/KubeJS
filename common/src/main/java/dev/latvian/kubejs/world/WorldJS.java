@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.world;
 
-import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.ItemEntityJS;
 import dev.latvian.kubejs.entity.ItemFrameEntityJS;
@@ -35,7 +34,6 @@ import java.util.Collection;
  * @author LatvianModder
  */
 public abstract class WorldJS implements WithAttachedData {
-	@MinecraftClass
 	public Level minecraftWorld;
 
 	private AttachedData data;

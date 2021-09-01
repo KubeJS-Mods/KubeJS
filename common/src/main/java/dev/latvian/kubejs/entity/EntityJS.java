@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.entity;
 
 import com.mojang.authlib.GameProfile;
-import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.server.ServerJS;
@@ -46,7 +45,6 @@ public class EntityJS implements MessageSender, WrappedJS {
 
 	private final WorldJS world;
 
-	@MinecraftClass
 	public final Entity minecraftEntity;
 
 	public EntityJS(WorldJS w, Entity e) {
@@ -76,7 +74,6 @@ public class EntityJS implements MessageSender, WrappedJS {
 		return Text.of(minecraftEntity.getName());
 	}
 
-	@MinecraftClass
 	public GameProfile getProfile() {
 		return new GameProfile(getId(), EntityHooks.getEncodeId(minecraftEntity));
 	}

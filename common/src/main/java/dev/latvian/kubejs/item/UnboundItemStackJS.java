@@ -3,7 +3,7 @@ package dev.latvian.kubejs.item;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
-import dev.latvian.kubejs.util.CompoundTagWrapper;
+import dev.latvian.mods.rhino.mod.util.CompoundTagWrapper;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;

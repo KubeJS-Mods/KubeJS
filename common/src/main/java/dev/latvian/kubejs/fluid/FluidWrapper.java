@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.fluid;
 
 import dev.latvian.kubejs.KubeJSRegistries;
-import dev.latvian.kubejs.docs.MinecraftClass;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 
@@ -47,7 +46,6 @@ public class FluidWrapper {
 		return fs;
 	}
 
-	@MinecraftClass
 	public static Fluid getType(ResourceLocation id) {
 		return KubeJSRegistries.fluids().get(id);
 	}

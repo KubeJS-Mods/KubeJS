@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.util.CompoundTagWrapper;
+import dev.latvian.mods.rhino.mod.util.CompoundTagWrapper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;

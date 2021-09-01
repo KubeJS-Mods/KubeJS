@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.item.ingredient;
 
-import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
@@ -21,7 +20,6 @@ public class GroupIngredientJS implements IngredientJS {
 		}
 	}
 
-	@MinecraftClass
 	public CreativeModeTab getGroup() {
 		return group;
 	}

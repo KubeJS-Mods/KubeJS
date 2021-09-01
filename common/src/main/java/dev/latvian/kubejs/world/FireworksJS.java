@@ -1,9 +1,9 @@
 package dev.latvian.kubejs.world;
 
-import dev.latvian.kubejs.bindings.ColorWrapper;
 import dev.latvian.kubejs.core.FireworkRocketEntityKJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

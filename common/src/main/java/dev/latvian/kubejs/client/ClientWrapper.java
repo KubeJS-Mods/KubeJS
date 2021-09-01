@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.player.ClientPlayerJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import net.minecraft.client.Minecraft;
@@ -12,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
  * @author LatvianModder
  */
 public class ClientWrapper {
-	@MinecraftClass
 	public Minecraft getMinecraft() {
 		return Minecraft.getInstance();
 	}

@@ -42,7 +42,7 @@ dependencies {
 
 	modApi("me.shedaniel:architectury-forge:${rootProject.architectury_version}")
 
-	modApi("dev.latvian.mods:rhino:${rootProject.rhino_version}")
+	modApi("dev.latvian.mods:rhino-forge:${rootProject.rhino_version}")
 
 	modOptional("mezz.jei:jei-1.16.4:${rootProject.forge_jei_version}")
 	modOptional("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")

@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSRegistries;
-import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.kubejs.item.ingredient.IgnoreNBTIngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
@@ -17,16 +16,16 @@ import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.util.CompoundTagWrapper;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.NBTSerializable;
-import dev.latvian.kubejs.util.NBTUtilsJS;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.mods.rhino.Wrapper;
+import dev.latvian.mods.rhino.mod.util.ChangeListener;
+import dev.latvian.mods.rhino.mod.util.CompoundTagWrapper;
+import dev.latvian.mods.rhino.mod.util.NBTSerializable;
+import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
@@ -65,7 +64,7 @@ import java.util.regex.Pattern;
 /**
  * @author LatvianModder
  */
-public abstract class ItemStackJS implements IngredientJS, NBTSerializable, WrappedJSObjectChangeListener<Tag>, SpecialEquality {
+public abstract class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListener<Tag>, SpecialEquality {
 	private static List<ItemStackJS> cachedItemList;
 	private static ListJS cachedItemListJS;
 	private static ListJS cachedItemTypeListJS;
@@ -308,7 +307,6 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	public abstract Item getItem();
 
-	@MinecraftClass
 	public abstract ItemStack getItemStack();
 
 	public String getId() {
@@ -325,12 +323,6 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 	@Override
 	public abstract ItemStackJS copy();
-
-	@Override
-	@Deprecated
-	public final ItemStackJS getCopy() {
-		return copy();
-	}
 
 	public abstract void setCount(int count);
 
@@ -474,7 +466,7 @@ public abstract class ItemStackJS implements IngredientJS, NBTSerializable, Wrap
 
 				if (t != null) {
 					builder.append(", ");
-					NBTUtilsJS.quoteAndEscapeForJS(builder, t.toString());
+					NBTUtils.quoteAndEscapeForJS(builder, t.toString());
 				}
 			}
 

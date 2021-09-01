@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.KubeJSRegistries;
-import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.util.ListJS;
@@ -65,13 +64,11 @@ public class ItemWrapper {
 		return FireworksJS.of(properties);
 	}
 
-	@MinecraftClass
 	public static Item getItem(ResourceLocation id) {
 		return KubeJSRegistries.items().get(id);
 	}
 
 	@Nullable
-	@MinecraftClass
 	public static CreativeModeTab findGroup(String id) {
 		return ItemStackJS.findGroup(id);
 	}

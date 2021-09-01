@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.entity;
 
-import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.world.WorldJS;
@@ -18,7 +17,6 @@ import java.util.function.Consumer;
  * @author LatvianModder
  */
 public class LivingEntityJS extends EntityJS {
-	@MinecraftClass
 	public final LivingEntity minecraftLivingEntity;
 
 	public LivingEntityJS(WorldJS w, LivingEntity e) {

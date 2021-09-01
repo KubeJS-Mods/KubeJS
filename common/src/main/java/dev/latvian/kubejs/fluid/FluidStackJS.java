@@ -5,13 +5,13 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
-import dev.latvian.kubejs.util.Copyable;
 import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
-import dev.latvian.kubejs.util.WrappedJSObjectChangeListener;
+import dev.latvian.mods.rhino.mod.util.ChangeListener;
+import dev.latvian.mods.rhino.mod.util.Copyable;
 import me.shedaniel.architectury.fluid.FluidStack;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
@@ -28,7 +28,7 @@ import java.util.Objects;
 /**
  * @author LatvianModder
  */
-public abstract class FluidStackJS implements WrappedJS, Copyable, WrappedJSObjectChangeListener<MapJS> {
+public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListener<MapJS> {
 	public static FluidStackJS of(@Nullable Object o) {
 		if (o == null) {
 			return EmptyFluidStackJS.INSTANCE;
@@ -232,7 +232,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, WrappedJSObje
 
 		if (nbt != null) {
 			builder.append(", ");
-			nbt.toString(builder);
+			nbt.appendString(builder);
 		}
 
 		builder.append("')");

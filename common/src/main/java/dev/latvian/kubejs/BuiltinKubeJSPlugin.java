@@ -2,10 +2,7 @@ package dev.latvian.kubejs;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.bindings.AABBWrapper;
 import dev.latvian.kubejs.bindings.BlockWrapper;
-import dev.latvian.kubejs.bindings.ColorWrapper;
-import dev.latvian.kubejs.bindings.DirectionWrapper;
 import dev.latvian.kubejs.bindings.IngredientWrapper;
 import dev.latvian.kubejs.bindings.ItemWrapper;
 import dev.latvian.kubejs.bindings.JsonWrapper;
@@ -13,7 +10,6 @@ import dev.latvian.kubejs.bindings.NBTWrapper;
 import dev.latvian.kubejs.bindings.RarityWrapper;
 import dev.latvian.kubejs.bindings.ScriptEventsWrapper;
 import dev.latvian.kubejs.bindings.TextWrapper;
-import dev.latvian.kubejs.bindings.UUIDWrapper;
 import dev.latvian.kubejs.bindings.UtilsWrapper;
 import dev.latvian.kubejs.block.BlockStatePredicate;
 import dev.latvian.kubejs.block.MaterialJS;
@@ -47,13 +43,16 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.ClassFilter;
-import dev.latvian.kubejs.util.ColorKJS;
 import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.UUIDUtilsJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
+import dev.latvian.mods.rhino.mod.util.color.Color;
+import dev.latvian.mods.rhino.mod.wrapper.AABBWrapper;
+import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
+import dev.latvian.mods.rhino.mod.wrapper.DirectionWrapper;
+import dev.latvian.mods.rhino.mod.wrapper.UUIDWrapper;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import me.shedaniel.architectury.platform.Platform;
 import me.shedaniel.architectury.registry.ToolType;
@@ -255,7 +254,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		// Java / Minecraft //
 		typeWrappers.register(String.class, String::valueOf);
 		typeWrappers.register(CharSequence.class, String::valueOf);
-		typeWrappers.register(UUID.class, UUIDUtilsJS::fromString);
+		typeWrappers.register(UUID.class, UUIDWrapper::fromString);
 		typeWrappers.register(Pattern.class, UtilsJS::parseRegex);
 		typeWrappers.register(JsonObject.class, MapJS::json);
 		typeWrappers.register(JsonArray.class, ListJS::json);
@@ -326,7 +325,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(RecipeFilter.class, RecipeFilter::of);
 		typeWrappers.register(MaterialJS.class, MaterialListJS.INSTANCE::of);
 		typeWrappers.register(ItemType.class, ItemTypes::get);
-		typeWrappers.register(ColorKJS.class, ColorWrapper::of);
+		typeWrappers.register(Color.class, ColorWrapper::of);
 
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
 	}

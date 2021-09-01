@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.block;
 
-import dev.latvian.kubejs.docs.MinecraftClass;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
 
@@ -22,12 +21,10 @@ public class MaterialJS {
 		return id;
 	}
 
-	@MinecraftClass
 	public Material getMinecraftMaterial() {
 		return minecraftMaterial;
 	}
 
-	@MinecraftClass
 	public SoundType getSound() {
 		return sound;
 	}

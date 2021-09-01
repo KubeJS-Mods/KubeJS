@@ -3,7 +3,6 @@ package dev.latvian.kubejs.world;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.block.MaterialJS;
 import dev.latvian.kubejs.block.MaterialListJS;
-import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -125,7 +124,6 @@ public class BlockContainerJS implements SpecialEquality {
 		return offset(Direction.EAST);
 	}
 
-	@MinecraftClass
 	public BlockState getBlockState() {
 		if (cachedState == null) {
 			cachedState = minecraftWorld.getBlockState(getPos());
@@ -134,7 +132,6 @@ public class BlockContainerJS implements SpecialEquality {
 		return cachedState;
 	}
 
-	@MinecraftClass
 	public void setBlockState(BlockState state, int flags) {
 		minecraftWorld.setBlock(getPos(), state, flags);
 		clearCache();
@@ -195,7 +192,6 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	@Nullable
-	@MinecraftClass
 	public BlockEntity getEntity() {
 		if (cachedEntity == null || cachedEntity.isRemoved()) {
 			cachedEntity = minecraftWorld.getBlockEntity(pos);
