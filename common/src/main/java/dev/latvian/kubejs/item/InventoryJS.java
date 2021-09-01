@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
@@ -16,7 +15,6 @@ import java.util.LinkedList;
  * @author LatvianModder
  */
 public class InventoryJS {
-	@MinecraftClass
 	public final ItemHandler minecraftInventory;
 
 	public InventoryJS(ItemHandler h) {

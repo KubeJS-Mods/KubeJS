@@ -8,8 +8,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.core.MinecraftServerKJS;
-import dev.latvian.kubejs.docs.DocumentationEvent;
-import dev.latvian.kubejs.docs.TypeDefinition;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
@@ -54,7 +52,6 @@ import net.minecraft.world.level.storage.WorldData;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -141,9 +138,6 @@ public class KubeJSCommands {
 				)
 				.then(Commands.literal("wiki")
 						.executes(context -> wiki(context.getSource()))
-				)
-				.then(Commands.literal("generate_docs")
-						.executes(context -> generateDocs(context.getSource()))
 				)
 				.then(Commands.literal("stages")
 						.then(Commands.literal("add")
@@ -375,13 +369,6 @@ public class KubeJSCommands {
 
 	private static int wiki(CommandSourceStack source) {
 		source.sendSuccess(new TextComponent("Click here to open the Wiki").withStyle(ChatFormatting.BLUE).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://kubejs.com/"))), false);
-		return Command.SINGLE_SUCCESS;
-	}
-
-	private static int generateDocs(CommandSourceStack source) {
-		Map<Class<?>, TypeDefinition> map = DocumentationEvent.collectDocs();
-
-		source.sendSuccess(new TextComponent("Docs generated"), false);
 		return Command.SINGLE_SUCCESS;
 	}
 

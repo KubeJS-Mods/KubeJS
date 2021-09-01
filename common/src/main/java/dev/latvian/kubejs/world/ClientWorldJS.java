@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.world;
 
-import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.player.ClientPlayerDataJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.script.ScriptType;
@@ -24,7 +23,6 @@ public class ClientWorldJS extends WorldJS {
 		clientPlayerData = new ClientPlayerDataJS(this, e, true);
 	}
 
-	@MinecraftClass
 	public Minecraft getMinecraft() {
 		return minecraft;
 	}
@@ -52,19 +50,20 @@ public class ClientWorldJS extends WorldJS {
 	public EntityArrayList getEntities() {
 		return new EntityArrayList(this, ((ClientLevel) minecraftWorld).entitiesForRendering());
 	}
-	
+
 	public LocalPlayer getMinecraftPlayer() {
 		return minecraft.player;
 	}
-	
+
 	public static ClientWorldJS getInstance() {
 		ClientLevel level = Minecraft.getInstance().level;
 		if (level == null) {
 			return instance = null;
-		} if (instance != null && instance.minecraftWorld == level) {
+		}
+		if (instance != null && instance.minecraftWorld == level) {
 			return instance;
 		}
-		
+
 		return instance = new ClientWorldJS(Minecraft.getInstance(), Minecraft.getInstance().player);
 	}
 

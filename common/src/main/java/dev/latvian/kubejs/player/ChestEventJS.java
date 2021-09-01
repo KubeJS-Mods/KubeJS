@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.player;
 
-import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.world.Container;
@@ -20,7 +19,6 @@ public class ChestEventJS extends InventoryEventJS {
 		super(player, menu);
 	}
 
-	@MinecraftClass
 	public Container getWrappedInventory() {
 		return ((ChestMenu) getInventoryContainer()).getContainer();
 	}

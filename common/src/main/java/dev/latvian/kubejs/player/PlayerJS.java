@@ -2,7 +2,6 @@ package dev.latvian.kubejs.player;
 
 import com.mojang.authlib.GameProfile;
 import dev.latvian.kubejs.core.PlayerKJS;
-import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
 import dev.latvian.kubejs.item.ItemHandlerUtils;
@@ -26,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
  * @author LatvianModder
  */
 public abstract class PlayerJS<E extends Player> extends LivingEntityJS implements WithAttachedData {
-	@MinecraftClass
 	public final E minecraftPlayer;
 
 	private final PlayerDataJS playerData;
@@ -196,7 +194,6 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 		PlayerHooks.closeContainer(minecraftPlayer);
 	}
 
-	@MinecraftClass
 	public AbstractContainerMenu getOpenInventory() {
 		return minecraftPlayer.containerMenu;
 	}

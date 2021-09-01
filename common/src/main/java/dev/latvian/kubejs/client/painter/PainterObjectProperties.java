@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.client.painter;
 
-import dev.latvian.kubejs.bindings.ColorWrapper;
-import dev.latvian.kubejs.util.ColorKJS;
+import dev.latvian.mods.rhino.mod.util.color.Color;
+import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import dev.latvian.mods.rhino.util.unit.ColorUnit;
 import dev.latvian.mods.rhino.util.unit.FixedUnit;
 import dev.latvian.mods.rhino.util.unit.Unit;
@@ -73,7 +73,7 @@ public class PainterObjectProperties {
 
 	public Unit getColor(String key, Unit def) {
 		if (hasString(key)) {
-			ColorKJS col = ColorWrapper.MAP.get(getString(key, ""));
+			Color col = ColorWrapper.MAP.get(getString(key, ""));
 
 			if (col != null) {
 				int i = col.getArgbKJS();

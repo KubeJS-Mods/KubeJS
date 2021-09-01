@@ -3,6 +3,13 @@ package dev.latvian.kubejs.util;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.rhino.Undefined;
+import dev.latvian.mods.rhino.mod.util.ChangeListener;
+import dev.latvian.mods.rhino.mod.util.Copyable;
+import dev.latvian.mods.rhino.mod.util.JsonSerializable;
+import dev.latvian.mods.rhino.mod.util.NBTSerializable;
+import dev.latvian.mods.rhino.mod.util.NBTUtils;
+import dev.latvian.mods.rhino.mod.util.OrderedCompoundTag;
+import dev.latvian.mods.rhino.mod.util.StringBuilderAppendable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
@@ -15,7 +22,7 @@ import java.util.Objects;
 /**
  * @author LatvianModder
  */
-public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObject, WrappedJSObjectChangeListener<Object>, Copyable, JsonSerializable, NBTSerializable {
+public class MapJS extends LinkedHashMap<String, Object> implements StringBuilderAppendable, ChangeListener<Object>, Copyable, JsonSerializable, NBTSerializable {
 	@Nullable
 	public static MapJS of(@Nullable Object o) {
 		Object o1 = UtilsJS.wrap(o, JSObjectType.MAP);
@@ -58,7 +65,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 		return m == null ? null : m.toJson();
 	}
 
-	public WrappedJSObjectChangeListener<MapJS> changeListener;
+	public ChangeListener<MapJS> changeListener;
 
 	public MapJS() {
 		this(0);
@@ -79,7 +86,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 		}
 
 		StringBuilder builder = new StringBuilder();
-		toString(builder);
+		appendString(builder);
 		return builder.toString();
 	}
 
@@ -98,7 +105,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 	}
 
 	@Override
-	public void toString(StringBuilder builder) {
+	public void appendString(StringBuilder builder) {
 		if (isEmpty()) {
 			builder.append("{}");
 			return;
@@ -131,8 +138,8 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 			} else {
 				Object o = entry.getValue();
 
-				if (o instanceof WrappedJSObject) {
-					((WrappedJSObject) o).toString(builder);
+				if (o instanceof StringBuilderAppendable) {
+					((StringBuilderAppendable) o).appendString(builder);
 				} else {
 					builder.append(o);
 				}
@@ -276,7 +283,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements WrappedJSObj
 		CompoundTag nbt = new OrderedCompoundTag();
 
 		for (Map.Entry<String, Object> entry : entrySet()) {
-			Tag nbt1 = NBTUtilsJS.toNBT(entry.getValue());
+			Tag nbt1 = NBTUtils.toNBT(entry.getValue());
 
 			if (nbt1 != null) {
 				nbt.put(entry.getKey(), nbt1);

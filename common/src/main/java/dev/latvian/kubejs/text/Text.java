@@ -3,14 +3,14 @@ package dev.latvian.kubejs.text;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.bindings.ColorWrapper;
-import dev.latvian.kubejs.util.ColorKJS;
 import dev.latvian.kubejs.util.JSObjectType;
-import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
+import dev.latvian.mods.rhino.mod.util.JsonSerializable;
+import dev.latvian.mods.rhino.mod.util.color.Color;
+import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -322,7 +322,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return list.iterator();
 	}
 
-	public final Text color(ColorKJS c) {
+	public final Text color(Color c) {
 		color = c.getRgbKJS() & 0xFFFFFF;
 		return this;
 	}

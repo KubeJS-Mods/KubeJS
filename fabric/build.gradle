@@ -21,7 +21,7 @@ dependencies {
 
 	modApi("me.shedaniel:architectury-fabric:${rootProject.architectury_version}")
 
-	modApi("dev.latvian.mods:rhino:${rootProject.rhino_version}")
+	modApi("dev.latvian.mods:rhino-fabric:${rootProject.rhino_version}")
 
 	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api:${rootProject.fabric_rei_version}") {
 		exclude group: "net.fabricmc.fabric-api"

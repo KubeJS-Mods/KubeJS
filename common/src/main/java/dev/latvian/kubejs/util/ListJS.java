@@ -2,6 +2,12 @@ package dev.latvian.kubejs.util;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import dev.latvian.mods.rhino.mod.util.ChangeListener;
+import dev.latvian.mods.rhino.mod.util.Copyable;
+import dev.latvian.mods.rhino.mod.util.JsonSerializable;
+import dev.latvian.mods.rhino.mod.util.NBTSerializable;
+import dev.latvian.mods.rhino.mod.util.NBTUtils;
+import dev.latvian.mods.rhino.mod.util.StringBuilderAppendable;
 import me.shedaniel.architectury.utils.NbtType;
 import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.CollectionTag;
@@ -23,7 +29,7 @@ import java.util.function.Predicate;
 /**
  * @author LatvianModder
  */
-public class ListJS extends ArrayList<Object> implements WrappedJSObject, WrappedJSObjectChangeListener<Object>, Copyable, JsonSerializable, NBTSerializable {
+public class ListJS extends ArrayList<Object> implements StringBuilderAppendable, ChangeListener<Object>, Copyable, JsonSerializable, NBTSerializable {
 	@Nullable
 	public static ListJS of(@Nullable Object o) {
 		Object o1 = UtilsJS.wrap(o, JSObjectType.LIST);
@@ -172,7 +178,7 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 		return l == null ? null : l.toNBT();
 	}
 
-	public WrappedJSObjectChangeListener<ListJS> changeListener;
+	public ChangeListener<ListJS> changeListener;
 
 	public ListJS() {
 		this(0);
@@ -297,12 +303,12 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 		}
 
 		StringBuilder builder = new StringBuilder();
-		toString(builder);
+		appendString(builder);
 		return builder.toString();
 	}
 
 	@Override
-	public void toString(StringBuilder builder) {
+	public void appendString(StringBuilder builder) {
 		if (isEmpty()) {
 			builder.append("[]");
 			return;
@@ -317,8 +323,8 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 
 			Object o = get(i);
 
-			if (o instanceof WrappedJSObject) {
-				((WrappedJSObject) o).toString(builder);
+			if (o instanceof StringBuilderAppendable) {
+				((StringBuilderAppendable) o).appendString(builder);
 			} else {
 				builder.append(o);
 			}
@@ -461,7 +467,7 @@ public class ListJS extends ArrayList<Object> implements WrappedJSObject, Wrappe
 		byte commmonId = -1;
 
 		for (Object o : this) {
-			values[s] = NBTUtilsJS.toNBT(o);
+			values[s] = NBTUtils.toNBT(o);
 
 			if (values[s] != null) {
 				if (commmonId == -1) {

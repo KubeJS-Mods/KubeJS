@@ -6,7 +6,6 @@ import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.block.predicate.BlockEntityPredicate;
 import dev.latvian.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.kubejs.block.predicate.BlockPredicate;
-import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.util.Tags;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -63,7 +62,6 @@ public class BlockWrapper {
 		return facingMap;
 	}
 
-	@MinecraftClass
 	public static Block getBlock(ResourceLocation id) {
 		return KubeJSRegistries.blocks().get(id);
 	}

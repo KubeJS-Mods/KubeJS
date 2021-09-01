@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.player;
 
-import dev.latvian.kubejs.docs.MinecraftClass;
 import dev.latvian.kubejs.entity.EntityJS;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -22,7 +21,6 @@ public class InventoryEventJS extends PlayerEventJS {
 		return entityOf(player);
 	}
 
-	@MinecraftClass
 	public AbstractContainerMenu getInventoryContainer() {
 		return menu;
 	}

@@ -3,7 +3,6 @@ package dev.latvian.kubejs;
 import dev.latvian.kubejs.block.BlockRegistryEventJS;
 import dev.latvian.kubejs.block.KubeJSBlockEventHandler;
 import dev.latvian.kubejs.client.KubeJSClient;
-import dev.latvian.kubejs.docs.KubeJSDocs;
 import dev.latvian.kubejs.entity.KubeJSEntityEventHandler;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.fluid.FluidRegistryEventJS;
@@ -107,8 +106,6 @@ public class KubeJS {
 
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS, "/data/kubejs/example_startup_script.js");
 		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS, "/data/kubejs/example_client_script.js");
-
-		KubeJSDocs.init();
 
 		Path oldStartupFolder = KubeJSPaths.DIRECTORY.resolve("startup");
 
