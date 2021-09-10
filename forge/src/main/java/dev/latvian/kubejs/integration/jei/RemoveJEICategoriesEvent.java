@@ -29,10 +29,14 @@ public class RemoveJEICategoriesEvent extends EventJS {
 		return allCategories;
 	}
 
-	public void yeet(String... categoriesToYeet) {
+	public void remove(String... categoriesToYeet) {
 		for (String toYeet : categoriesToYeet) {
 			categoriesRemoved.add(new ResourceLocation(toYeet));
 		}
+	}
+
+	public void yeet(String... categoriesToRemove) {
+		remove(categoriesToRemove);
 	}
 
 	public Collection<ResourceLocation> getCategoryIds() {
@@ -44,12 +48,16 @@ public class RemoveJEICategoriesEvent extends EventJS {
 		return set;
 	}
 
-	public void yeetIf(Predicate<IRecipeCategory<?>> filter) {
+	public void removeIf(Predicate<IRecipeCategory<?>> filter) {
 		allCategories.stream()
 				.filter(filter)
 				.map(IRecipeCategory::getUid)
 				.map(ResourceLocation::toString)
 				.forEach(this::yeet);
+	}
+
+	public void yeetIf(Predicate<IRecipeCategory<?>> filter) {
+		removeIf(filter);
 	}
 
 	@Override
