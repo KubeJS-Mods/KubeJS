@@ -3,9 +3,9 @@ package dev.latvian.kubejs.loot.condition;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.NonnullByDefault;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -92,7 +92,7 @@ public interface LootConditionImpl extends JsonSerializable {
 	}
 
 	default void isOnFire(boolean onFire) {
-		isOnFlag("this","is_on_fire", onFire);
+		isOnFlag("this", "is_on_fire", onFire);
 	}
 
 	default void killedByPlayer() {
@@ -154,7 +154,7 @@ public interface LootConditionImpl extends JsonSerializable {
 
 	default void customCondition(Object condition) {
 		LootCondition lootCondition = LootCondition.of(condition);
-		if(lootCondition == null) {
+		if (lootCondition == null) {
 			throw new IllegalArgumentException(String.format("Condition '%s' could not be created. Wrong format!", condition));
 		}
 

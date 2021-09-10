@@ -13,8 +13,8 @@ import dev.latvian.kubejs.loot.function.LootFunction;
 import dev.latvian.kubejs.loot.function.LootFunctionImpl;
 import dev.latvian.kubejs.loot.function.LootFunctionList;
 import dev.latvian.kubejs.util.CustomDataOwner;
-import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.JsonUtilsJS;
+import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.util.HideFromJS;
 
 import java.util.function.Consumer;

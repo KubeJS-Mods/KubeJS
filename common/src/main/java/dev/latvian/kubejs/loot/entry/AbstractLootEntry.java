@@ -13,6 +13,7 @@ import dev.latvian.kubejs.loot.function.LootFunctionImpl;
 import dev.latvian.kubejs.loot.function.LootFunctionList;
 import dev.latvian.kubejs.util.CustomDataOwner;
 import dev.latvian.kubejs.util.JsonUtilsJS;
+import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.NamedObject;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.resources.ResourceLocation;
@@ -31,7 +32,7 @@ public abstract class AbstractLootEntry implements NamedObject, CustomDataOwner,
 	private final JsonObject additionalData = new JsonObject();
 
 	public static AbstractLootEntry of(Object o) {
-		if(o instanceof AbstractLootEntry) {
+		if (o instanceof AbstractLootEntry) {
 			return (AbstractLootEntry) o;
 		}
 
@@ -83,7 +84,7 @@ public abstract class AbstractLootEntry implements NamedObject, CustomDataOwner,
 		}
 
 		String type = GsonHelper.getAsString(copiedEntryJson, "type");
-		if(VALID_GROUP_ENTRY_TYPES.contains(type)) {
+		if (VALID_GROUP_ENTRY_TYPES.contains(type)) {
 			return new CompositeLootEntry(copiedEntryJson);
 		}
 
@@ -107,7 +108,10 @@ public abstract class AbstractLootEntry implements NamedObject, CustomDataOwner,
 		if (ingredient.getCount() != 1) {
 			functions.setCount(ingredient.getCount());
 		}
-		functions.setNbt(ingredient.getFirst().getNbt());
+		MapJS nbt = MapJS.of(ingredient.getFirst().getNbt());
+		if (nbt != null) {
+			functions.setNbt(nbt);
+		}
 	}
 
 	protected abstract boolean isValidEntryType(String type);

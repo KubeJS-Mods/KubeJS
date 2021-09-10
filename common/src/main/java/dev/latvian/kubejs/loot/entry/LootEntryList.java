@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.loot.entry;
 
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.NamedObjectList;
+import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 
 public class LootEntryList extends NamedObjectList<AbstractLootEntry> implements JsonSerializable, Iterable<AbstractLootEntry> {
 

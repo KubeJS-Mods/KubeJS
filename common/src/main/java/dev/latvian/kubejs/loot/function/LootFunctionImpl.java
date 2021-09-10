@@ -2,9 +2,9 @@ package dev.latvian.kubejs.loot.function;
 
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.loot.LootTableUtils;
-import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
@@ -115,7 +115,7 @@ public interface LootFunctionImpl extends JsonSerializable {
 		LootFunction lootFunction = new LootFunction("minecraft:apply_bonus");
 		lootFunction.put("enchantment", KubeJSRegistries.enchantments().getId(enchantment));
 		lootFunction.put("formula", formula);
-		if(parameters != null && !parameters.isEmpty()) {
+		if (parameters != null && !parameters.isEmpty()) {
 			lootFunction.put("parameters", parameters);
 		}
 

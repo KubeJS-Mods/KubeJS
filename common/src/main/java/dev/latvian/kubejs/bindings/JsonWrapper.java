@@ -3,10 +3,10 @@ package dev.latvian.kubejs.bindings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.util.JSObjectType;
-import dev.latvian.kubejs.util.JsonSerializable;
 import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;

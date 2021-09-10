@@ -3,6 +3,7 @@ package dev.latvian.kubejs.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.util.HideFromJS;
 
 import java.util.ArrayList;
