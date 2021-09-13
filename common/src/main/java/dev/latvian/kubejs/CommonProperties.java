@@ -47,8 +47,8 @@ public class CommonProperties {
 			hideServerScriptErrors = get("hideServerScriptErrors", false);
 			serverOnly = get("serverOnly", false);
 			announceReload = get("announceReload", true);
-			packMode = get("packmode", "default");
 			invertClassLoader = "true".equals(properties.getProperty("invertClassLoader")); // Advanced option, not recommended to be set to true
+			packMode = get("packmode", "default");
 
 			if (writeProperties) {
 				try (Writer writer = Files.newBufferedWriter(propertiesFile)) {
@@ -60,6 +60,15 @@ public class CommonProperties {
 		}
 
 		KubeJS.LOGGER.info("Loaded common.properties");
+	}
+
+	private void remove(String key) {
+		String s = properties.getProperty(key);
+
+		if (s != null) {
+			properties.remove(key);
+			writeProperties = true;
+		}
 	}
 
 	private String get(String key, String def) {
