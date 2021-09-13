@@ -2,9 +2,7 @@ package dev.latvian.kubejs.item.ingredient;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.item.ItemStackJS;
-import dev.latvian.kubejs.item.UnboundItemStackJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.Tags;
@@ -88,7 +86,7 @@ public class TagIngredientJS implements IngredientJS {
 			Set<ItemStackJS> set = new LinkedHashSet<>();
 
 			for (Item item : t.getValues()) {
-				set.add(new UnboundItemStackJS(KubeJSRegistries.items().getId(item)));
+				set.add(new ItemStackJS(new ItemStack(item)));
 			}
 
 			return set;
@@ -114,7 +112,7 @@ public class TagIngredientJS implements IngredientJS {
 
 		if (t.getValues().size() > 0) {
 			for (Item item : t.getValues()) {
-				return new UnboundItemStackJS(KubeJSRegistries.items().getId(item));
+				return new ItemStackJS(new ItemStack(item));
 			}
 		}
 

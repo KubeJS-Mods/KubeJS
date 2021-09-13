@@ -33,16 +33,16 @@ public class InventoryJS {
 		return ItemStackJS.of(minecraftInventory.getStackInSlot(slot));
 	}
 
-	public void set(int slot, Object item) {
+	public void set(int slot, ItemStack item) {
 		if (minecraftInventory instanceof ItemHandler.Mutable) {
-			((ItemHandler.Mutable) minecraftInventory).setStackInSlot(slot, ItemStackJS.of(item).getItemStack());
+			((ItemHandler.Mutable) minecraftInventory).setStackInSlot(slot, item);
 		} else {
 			throw new IllegalStateException("This inventory can't be modified directly! Use insert/extract methods!");
 		}
 	}
 
-	public ItemStackJS insert(int slot, Object item, boolean simulate) {
-		return ItemStackJS.of(minecraftInventory.insertItem(slot, ItemStackJS.of(item).getItemStack(), simulate));
+	public ItemStackJS insert(int slot, ItemStack item, boolean simulate) {
+		return ItemStackJS.of(minecraftInventory.insertItem(slot, item, simulate));
 	}
 
 	public ItemStackJS extract(int slot, int amount, boolean simulate) {
@@ -53,8 +53,8 @@ public class InventoryJS {
 		return minecraftInventory.getSlotLimit(slot);
 	}
 
-	public boolean isItemValid(int slot, Object item) {
-		return minecraftInventory.isItemValid(slot, ItemStackJS.of(item).getItemStack());
+	public boolean isItemValid(int slot, ItemStack item) {
+		return minecraftInventory.isItemValid(slot, item);
 	}
 
 	public void clear() {
@@ -69,9 +69,7 @@ public class InventoryJS {
 		}
 	}
 
-	public void clear(Object o) {
-		IngredientJS ingredient = IngredientJS.of(o);
-
+	public void clear(IngredientJS ingredient) {
 		if (ingredient == MatchAllIngredientJS.INSTANCE) {
 			clear();
 		}
@@ -101,9 +99,7 @@ public class InventoryJS {
 		return -1;
 	}
 
-	public int find(Object o) {
-		IngredientJS ingredient = IngredientJS.of(o);
-
+	public int find(IngredientJS ingredient) {
 		if (ingredient == MatchAllIngredientJS.INSTANCE) {
 			return find();
 		}
@@ -129,9 +125,7 @@ public class InventoryJS {
 		return count;
 	}
 
-	public int count(Object o) {
-		IngredientJS ingredient = IngredientJS.of(o);
-
+	public int count(IngredientJS ingredient) {
 		if (ingredient == MatchAllIngredientJS.INSTANCE) {
 			return count();
 		}
@@ -161,9 +155,7 @@ public class InventoryJS {
 		return count;
 	}
 
-	public int countNonEmpty(Object o) {
-		IngredientJS ingredient = IngredientJS.of(o);
-
+	public int countNonEmpty(IngredientJS ingredient) {
 		if (ingredient == MatchAllIngredientJS.INSTANCE) {
 			return countNonEmpty();
 		}

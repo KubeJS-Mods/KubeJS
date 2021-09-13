@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.bindings;
 
-import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
@@ -13,7 +12,7 @@ import java.util.function.Predicate;
  */
 public class IngredientWrapper {
 	public static IngredientJS getNone() {
-		return EmptyItemStackJS.INSTANCE;
+		return ItemStackJS.EMPTY;
 	}
 
 	public static IngredientJS getAll() {

@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.item.ingredient;
 
-import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -48,12 +47,12 @@ public class MatchAllIngredientJS implements IngredientJS {
 	@Override
 	public ItemStackJS getFirst() {
 		List<ItemStackJS> list = ItemStackJS.getList();
-		return list.isEmpty() ? EmptyItemStackJS.INSTANCE : list.get(0).copy();
+		return list.isEmpty() ? ItemStackJS.EMPTY : list.get(0).copy();
 	}
 
 	@Override
 	public IngredientJS not() {
-		return EmptyItemStackJS.INSTANCE;
+		return ItemStackJS.EMPTY;
 	}
 
 	@Override

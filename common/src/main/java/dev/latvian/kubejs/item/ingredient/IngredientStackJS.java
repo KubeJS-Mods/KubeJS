@@ -2,7 +2,6 @@ package dev.latvian.kubejs.item.ingredient;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import net.minecraft.world.item.Item;
@@ -45,7 +44,7 @@ public class IngredientStackJS implements IngredientJS {
 	@Override
 	public IngredientJS withCount(int count) {
 		if (count <= 0) {
-			return EmptyItemStackJS.INSTANCE;
+			return ItemStackJS.EMPTY;
 		} else if (count == 1) {
 			return ingredient.copy();
 		}

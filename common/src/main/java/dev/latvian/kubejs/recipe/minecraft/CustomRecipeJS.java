@@ -2,7 +2,6 @@ package dev.latvian.kubejs.recipe.minecraft;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
@@ -167,10 +166,10 @@ public class CustomRecipeJS extends RecipeJS {
 
 				json.add(outputKey, a);
 			} else if (outputType == 2) {
-				json.addProperty(outputKey, (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).getId());
-				json.addProperty("count", (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).getCount());
+				json.addProperty(outputKey, (outputItems.isEmpty() ? ItemStackJS.EMPTY : outputItems.get(0)).getId());
+				json.addProperty("count", (outputItems.isEmpty() ? ItemStackJS.EMPTY : outputItems.get(0)).getCount());
 			} else if (outputType == 0) {
-				json.add(outputKey, (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).toResultJson());
+				json.add(outputKey, (outputItems.isEmpty() ? ItemStackJS.EMPTY : outputItems.get(0)).toResultJson());
 			}
 		}
 
@@ -184,7 +183,7 @@ public class CustomRecipeJS extends RecipeJS {
 
 				json.add(inputKey, a);
 			} else if (inputType == 0) {
-				json.add(inputKey, (inputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : inputItems.get(0)).toJson());
+				json.add(inputKey, (inputItems.isEmpty() ? ItemStackJS.EMPTY : inputItems.get(0)).toJson());
 			}
 		}
 	}

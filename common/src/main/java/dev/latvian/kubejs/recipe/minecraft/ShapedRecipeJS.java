@@ -3,7 +3,7 @@ package dev.latvian.kubejs.recipe.minecraft;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.item.EmptyItemStackJS;
+import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
@@ -88,7 +88,7 @@ public class ShapedRecipeJS extends RecipeJS {
 		for (String k : key1.keySet()) {
 			Object o = key1.get(k);
 
-			if (o == EmptyItemStackJS.INSTANCE || o.equals("minecraft:air")) {
+			if (o == ItemStackJS.EMPTY || o.equals("minecraft:air")) {
 				airs.add(k);
 			} else {
 				inputItems.add(parseIngredientItem(o, k));

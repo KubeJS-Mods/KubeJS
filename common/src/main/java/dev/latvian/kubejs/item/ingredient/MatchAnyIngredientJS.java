@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.item.ingredient;
 
-import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.util.ListJS;
 import net.minecraft.world.item.Item;
@@ -23,7 +22,7 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	public MatchAnyIngredientJS add(@Nullable Object ingredient) {
 		IngredientJS i = IngredientJS.of(ingredient);
 
-		if (i != EmptyItemStackJS.INSTANCE) {
+		if (i != ItemStackJS.EMPTY) {
 			ingredients.add(i);
 		}
 
