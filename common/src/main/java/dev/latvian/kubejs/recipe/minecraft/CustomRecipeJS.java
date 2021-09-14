@@ -7,7 +7,7 @@ import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.recipe.special.SpecialRecipeSerializerManager;
-import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.ListJS;
 
 /**
@@ -116,7 +116,7 @@ public class CustomRecipeJS extends RecipeJS {
 		outputType = -1;
 
 		if (originalRecipe != null && SpecialRecipeSerializerManager.INSTANCE.isSpecial(originalRecipe)) {
-			ScriptType.SERVER.console.debug("Skipped " + this + " as custom recipe because it is dynamic.");
+			ConsoleJS.SERVER.debug("Skipped " + this + " as custom recipe because it is dynamic.");
 			return;
 		}
 
@@ -131,7 +131,7 @@ public class CustomRecipeJS extends RecipeJS {
 					&& !addInput("item_inputs")
 					&& !addInput("infusionInput")
 			) {
-				ScriptType.SERVER.console.debug("! " + this + ": Couldn't find any input items!");
+				ConsoleJS.SERVER.debug("! " + this + ": Couldn't find any input items!");
 			}
 		} catch (Exception ex) {
 		}
@@ -148,7 +148,7 @@ public class CustomRecipeJS extends RecipeJS {
 					&& !addOutput("mainOutput")
 					&& !addOutput("secondaryOutput")
 			) {
-				ScriptType.SERVER.console.debug("! " + this + ": Couldn't find any output items!");
+				ConsoleJS.SERVER.debug("! " + this + ": Couldn't find any output items!");
 			}
 		} catch (Exception ex) {
 		}

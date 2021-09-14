@@ -8,6 +8,7 @@ import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.core.TagBuilderKJS;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
@@ -95,8 +96,8 @@ public class TagEventJS<T> extends EventJS {
 					builder.addTag(w.id, KubeJS.MOD_ID);
 					event.addedCount += w.proxyList.size();
 
-					if (ScriptType.SERVER.console.shouldPrintDebug()) {
-						ScriptType.SERVER.console.debug("+ " + this + " // " + w.id);
+					if (ConsoleJS.SERVER.shouldPrintDebug()) {
+						ConsoleJS.SERVER.debug("+ " + this + " // " + w.id);
 					}
 				} else {
 					Pattern pattern = UtilsJS.parseRegex(s);
@@ -110,11 +111,11 @@ public class TagEventJS<T> extends EventJS {
 									builder.addElement(sid, KubeJS.MOD_ID);
 									event.addedCount++;
 
-									if (ScriptType.SERVER.console.shouldPrintDebug()) {
-										ScriptType.SERVER.console.debug("+ " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
+									if (ConsoleJS.SERVER.shouldPrintDebug()) {
+										ConsoleJS.SERVER.debug("+ " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
 									}
 								} else {
-									ScriptType.SERVER.console.error("+ " + this + " // " + s + " [Not found!]");
+									ConsoleJS.SERVER.error("+ " + this + " // " + s + " [Not found!]");
 								}
 							}
 						}
@@ -126,11 +127,11 @@ public class TagEventJS<T> extends EventJS {
 							builder.addElement(sid, KubeJS.MOD_ID);
 							event.addedCount++;
 
-							if (ScriptType.SERVER.console.shouldPrintDebug()) {
-								ScriptType.SERVER.console.debug("+ " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
+							if (ConsoleJS.SERVER.shouldPrintDebug()) {
+								ConsoleJS.SERVER.debug("+ " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
 							}
 						} else {
-							ScriptType.SERVER.console.error("+ " + this + " // " + s + " [Not found!]");
+							ConsoleJS.SERVER.error("+ " + this + " // " + s + " [Not found!]");
 						}
 					}
 				}
@@ -152,13 +153,13 @@ public class TagEventJS<T> extends EventJS {
 
 					if (removedCount == 0) {
 						if (ServerSettings.instance.logSkippedRecipes) {
-							ScriptType.SERVER.console.warn(s + " didn't contain tag " + this + ", skipped");
+							ConsoleJS.SERVER.warn(s + " didn't contain tag " + this + ", skipped");
 						}
 					} else {
 						event.removedCount -= removedCount;
 
-						if (ScriptType.SERVER.console.shouldPrintDebug()) {
-							ScriptType.SERVER.console.debug("- " + this + " // " + w.id);
+						if (ConsoleJS.SERVER.shouldPrintDebug()) {
+							ConsoleJS.SERVER.debug("- " + this + " // " + w.id);
 						}
 					}
 				} else {
@@ -176,17 +177,17 @@ public class TagEventJS<T> extends EventJS {
 
 									if (removedCount == 0) {
 										if (ServerSettings.instance.logSkippedRecipes) {
-											ScriptType.SERVER.console.warn(s + " didn't contain tag " + id + ", skipped");
+											ConsoleJS.SERVER.warn(s + " didn't contain tag " + id + ", skipped");
 										}
 									} else {
 										event.removedCount -= removedCount;
 
-										if (ScriptType.SERVER.console.shouldPrintDebug()) {
-											ScriptType.SERVER.console.debug("- " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
+										if (ConsoleJS.SERVER.shouldPrintDebug()) {
+											ConsoleJS.SERVER.debug("- " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
 										}
 									}
 								} else {
-									ScriptType.SERVER.console.error("- " + this + " // " + s + " [Not found!]");
+									ConsoleJS.SERVER.error("- " + this + " // " + s + " [Not found!]");
 								}
 							}
 						}
@@ -201,17 +202,17 @@ public class TagEventJS<T> extends EventJS {
 
 							if (removedCount == 0) {
 								if (ServerSettings.instance.logSkippedRecipes) {
-									ScriptType.SERVER.console.warn(s + " didn't contain tag " + id + ", skipped");
+									ConsoleJS.SERVER.warn(s + " didn't contain tag " + id + ", skipped");
 								}
 							} else {
 								event.removedCount -= removedCount;
 
-								if (ScriptType.SERVER.console.shouldPrintDebug()) {
-									ScriptType.SERVER.console.debug("- " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
+								if (ConsoleJS.SERVER.shouldPrintDebug()) {
+									ConsoleJS.SERVER.debug("- " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
 								}
 							}
 						} else {
-							ScriptType.SERVER.console.error("- " + this + " // " + s + " [Not found!]");
+							ConsoleJS.SERVER.error("- " + this + " // " + s + " [Not found!]");
 						}
 					}
 				}
@@ -221,15 +222,15 @@ public class TagEventJS<T> extends EventJS {
 		}
 
 		public TagWrapper<T> removeAll() {
-			if (ScriptType.SERVER.console.shouldPrintDebug()) {
-				ScriptType.SERVER.console.debug("- " + this + " // (all)");
+			if (ConsoleJS.SERVER.shouldPrintDebug()) {
+				ConsoleJS.SERVER.debug("- " + this + " // (all)");
 			}
 
 			if (!proxyList.isEmpty()) {
 				event.removedCount += proxyList.size();
 				proxyList.clear();
 			} else if (ServerSettings.instance.logSkippedRecipes) {
-				ScriptType.SERVER.console.warn("Tag " + this + " didn't contain any elements, skipped");
+				ConsoleJS.SERVER.warn("Tag " + this + " didn't contain any elements, skipped");
 			}
 
 			return this;
@@ -293,8 +294,8 @@ public class TagEventJS<T> extends EventJS {
 			}
 
 			if (!proxyList0.equals(proxyList)) {
-				if (ScriptType.SERVER.console.shouldPrintDebug()) {
-					ScriptType.SERVER.console.debug("* Re-arranged " + this);
+				if (ConsoleJS.SERVER.shouldPrintDebug()) {
+					ConsoleJS.SERVER.debug("* Re-arranged " + this);
 				}
 
 				return true;
@@ -372,12 +373,12 @@ public class TagEventJS<T> extends EventJS {
 		for (Map.Entry<ResourceLocation, SetTag.Builder> entry : map.entrySet()) {
 			TagWrapper<T> w = new TagWrapper<>(this, entry.getKey(), entry.getValue());
 			tags.put(entry.getKey(), w);
-			ScriptType.SERVER.console.debug(type + "/#" + entry.getKey() + "; " + w.proxyList.size());
+			ConsoleJS.SERVER.debug(type + "/#" + entry.getKey() + "; " + w.proxyList.size());
 		}
 
-		ScriptType.SERVER.console.setLineNumber(true);
+		ConsoleJS.SERVER.setLineNumber(true);
 		post(ScriptType.SERVER, event);
-		ScriptType.SERVER.console.setLineNumber(false);
+		ConsoleJS.SERVER.setLineNumber(false);
 
 		int reordered = 0;
 
@@ -413,7 +414,7 @@ public class TagEventJS<T> extends EventJS {
 			}
 		}
 
-		ScriptType.SERVER.console.info("[" + type + "] Found " + tags.size() + " tags, added " + addedCount + " objects, removed " + removedCount + " objects"/*, reordered " + reordered + " tags"*/);
+		ConsoleJS.SERVER.info("[" + type + "] Found " + tags.size() + " tags, added " + addedCount + " objects, removed " + removedCount + " objects"/*, reordered " + reordered + " tags"*/);
 	}
 
 	public TagWrapper<T> get(ResourceLocation id) {

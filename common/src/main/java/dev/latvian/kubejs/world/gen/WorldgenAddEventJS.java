@@ -2,7 +2,7 @@ package dev.latvian.kubejs.world.gen;
 
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.event.StartupEventJS;
-import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
@@ -149,10 +149,10 @@ public class WorldgenAddEventJS extends StartupEventJS {
 			try {
 				addEntitySpawn(category, new MobSpawnSettings.SpawnerData(Objects.requireNonNull(KubeJSRegistries.entityTypes().get(new ResourceLocation(matcher.group(1)))), Integer.parseInt(matcher.group(4)), Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3))));
 			} catch (Exception ex) {
-				ScriptType.STARTUP.console.info("Failed to add spawn: " + ex);
+				ConsoleJS.STARTUP.info("Failed to add spawn: " + ex);
 			}
 		} else {
-			ScriptType.STARTUP.console.info("Invalid spawn syntax! Must be mod:entity_type*(minCount-maxCount):weight");
+			ConsoleJS.STARTUP.info("Invalid spawn syntax! Must be mod:entity_type*(minCount-maxCount):weight");
 		}
 
 		//minecraft:ghast*(4-4):50

@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.block.forge;
 
 import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
@@ -37,7 +37,7 @@ public class MissingMappingEventJS<T extends IForgeRegistryEntry<T>> extends Eve
 			T to = valueProvider.apply(value);
 
 			if (to != null) {
-				ScriptType.STARTUP.console.info("Remapping " + mapping.key + " to " + value + " (" + to.getClass() + ")");
+				ConsoleJS.STARTUP.info("Remapping " + mapping.key + " to " + value + " (" + to.getClass() + ")");
 				mapping.remap(UtilsJS.cast(to));
 			}
 		});

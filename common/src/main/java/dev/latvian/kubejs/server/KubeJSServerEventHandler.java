@@ -6,6 +6,7 @@ import dev.latvian.kubejs.command.KubeJSCommands;
 import dev.latvian.kubejs.player.PlayerDataJS;
 import dev.latvian.kubejs.player.SimplePlayerEventJS;
 import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.SimpleWorldEventJS;
@@ -116,7 +117,7 @@ public class KubeJSServerEventHandler {
 				try {
 					e.call();
 				} catch (RhinoException ex) {
-					ScriptType.SERVER.console.error("Error occurred while handling scheduled event callback: " + ex.getMessage());
+					ConsoleJS.SERVER.error("Error occurred while handling scheduled event callback: " + ex.getMessage());
 				} catch (Throwable ex) {
 					ex.printStackTrace();
 				}
@@ -141,7 +142,7 @@ public class KubeJSServerEventHandler {
 				try {
 					e.call();
 				} catch (RhinoException ex) {
-					ScriptType.SERVER.console.error("Error occurred while handling scheduled event callback: " + ex.getMessage());
+					ConsoleJS.SERVER.error("Error occurred while handling scheduled event callback: " + ex.getMessage());
 				} catch (Throwable ex) {
 					ex.printStackTrace();
 				}

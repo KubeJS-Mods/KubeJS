@@ -7,8 +7,8 @@ import dev.latvian.kubejs.bindings.RarityWrapper;
 import dev.latvian.kubejs.item.custom.ArmorItemType;
 import dev.latvian.kubejs.item.custom.BasicItemType;
 import dev.latvian.kubejs.item.custom.ItemType;
-import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.BuilderBase;
+import dev.latvian.kubejs.util.ConsoleJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.registry.ToolType;
@@ -157,19 +157,19 @@ public class ItemBuilder extends BuilderBase {
 
 	public ItemBuilder miningSpeed(float f) {
 		miningSpeed = f;
-		ScriptType.STARTUP.console.warn("You should be using a 'pickaxe' or other tool type item if you want to modify mining speed!");
+		ConsoleJS.STARTUP.warn("You should be using a 'pickaxe' or other tool type item if you want to modify mining speed!");
 		return this;
 	}
 
 	public ItemBuilder attackDamage(float f) {
 		attackDamage = f;
-		ScriptType.STARTUP.console.warn("You should be using a 'sword' type item if you want to modify attack damage!");
+		ConsoleJS.STARTUP.warn("You should be using a 'sword' type item if you want to modify attack damage!");
 		return this;
 	}
 
 	public ItemBuilder attackSpeed(float f) {
 		attackSpeed = f;
-		ScriptType.STARTUP.console.warn("You should be using a 'sword' type item if you want to modify attack speed!");
+		ConsoleJS.STARTUP.warn("You should be using a 'sword' type item if you want to modify attack speed!");
 		return this;
 	}
 

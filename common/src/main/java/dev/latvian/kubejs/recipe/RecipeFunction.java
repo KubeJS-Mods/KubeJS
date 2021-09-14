@@ -5,7 +5,7 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.kubejs.recipe.minecraft.CustomRecipeJS;
-import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.WrappedJS;
@@ -77,7 +77,7 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 			return event.addRecipe(recipe, type, args);
 		} catch (RecipeExceptionJS ex) {
 			ex.error();
-			ScriptType.SERVER.console.error("Failed to create recipe for type '" + typeID + "'", ex);
+			ConsoleJS.SERVER.error("Failed to create recipe for type '" + typeID + "'", ex);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

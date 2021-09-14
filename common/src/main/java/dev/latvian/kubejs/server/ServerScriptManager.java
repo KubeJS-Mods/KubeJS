@@ -16,6 +16,7 @@ import dev.latvian.kubejs.script.ScriptSource;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.data.DataPackEventJS;
 import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
+import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
@@ -105,7 +106,7 @@ public class ServerScriptManager {
 
 		reloadScriptManager(resourceManager);
 
-		ScriptType.SERVER.console.setLineNumber(true);
+		ConsoleJS.SERVER.setLineNumber(true);
 		new DataPackEventJS(virtualDataPackLow).post(ScriptType.SERVER, "server.datapack.last");
 		new DataPackEventJS(virtualDataPackLow).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_LOW_PRIORITY);
 		new DataPackEventJS(virtualDataPackHigh).post(ScriptType.SERVER, "server.datapack.first");
@@ -113,9 +114,8 @@ public class ServerScriptManager {
 
 		UtilsJS.postModificationEvents();
 
-		ScriptType.SERVER.console.setLineNumber(false);
-
-		ScriptType.SERVER.console.info("Scripts loaded");
+		ConsoleJS.SERVER.setLineNumber(false);
+		ConsoleJS.SERVER.info("Scripts loaded");
 
 		Map<ResourceLocation, RecipeTypeJS> typeMap = new HashMap<>();
 		RegisterRecipeHandlersEvent modEvent = new RegisterRecipeHandlersEvent(typeMap);

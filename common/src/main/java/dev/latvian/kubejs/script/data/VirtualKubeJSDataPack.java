@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.script.data;
 
 import com.google.common.collect.Lists;
-import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
+import dev.latvian.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.PackType;
@@ -46,7 +46,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 		namespaces.add(id.getNamespace());
 
 		if (ServerSettings.instance.dataPackOutput) {
-			ScriptType.SERVER.console.info("Registered virtual file [" + (high ? "high" : "low") + " priority] '" + id + "': " + data);
+			ConsoleJS.SERVER.info("Registered virtual file [" + (high ? "high" : "low") + " priority] '" + id + "': " + data);
 		}
 	}
 
@@ -56,7 +56,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 
 		if (s != null) {
 			if (ServerSettings.instance.dataPackOutput) {
-				ScriptType.SERVER.console.info("Served virtual file [" + (high ? "high" : "low") + " priority] '" + path + "': " + s);
+				ConsoleJS.SERVER.info("Served virtual file [" + (high ? "high" : "low") + " priority] '" + path + "': " + s);
 			}
 
 			return new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
@@ -71,7 +71,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 
 		if (s != null) {
 			if (ServerSettings.instance.dataPackOutput) {
-				ScriptType.SERVER.console.info("Served virtual file [" + (high ? "high" : "low") + " priority] '" + location + "': " + s);
+				ConsoleJS.SERVER.info("Served virtual file [" + (high ? "high" : "low") + " priority] '" + location + "': " + s);
 			}
 
 			return new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));

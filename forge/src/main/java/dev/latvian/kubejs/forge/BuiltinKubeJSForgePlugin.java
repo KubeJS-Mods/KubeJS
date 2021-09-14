@@ -5,6 +5,7 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ClassFilter;
+import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.world.gen.forge.BiomeDictionaryWrapper;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.minecraftforge.common.BiomeDictionary;
@@ -46,7 +47,7 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 		if (args.length < 2 || !(args[0] instanceof CharSequence)) {
 			throw new RuntimeException("Invalid syntax! onPlatformEvent(string, function) required event class and handler");
 		} else if (!KubeJS.startupScriptManager.firstLoad) {
-			ScriptType.STARTUP.console.warn("onPlatformEvent() can't be reloaded! You will have to restart the game for changes to take effect.");
+			ConsoleJS.STARTUP.warn("onPlatformEvent() can't be reloaded! You will have to restart the game for changes to take effect.");
 			return null;
 		}
 
