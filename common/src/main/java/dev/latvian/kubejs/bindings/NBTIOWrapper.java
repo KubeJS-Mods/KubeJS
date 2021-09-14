@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  * @author LatvianModder
  */
-public class NBTWrapper {
+public class NBTIOWrapper {
 	@Nullable
 	public static MapJS read(File file) throws IOException {
 		return NBTUtilsJS.read(file);

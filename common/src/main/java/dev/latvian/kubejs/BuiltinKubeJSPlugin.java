@@ -6,7 +6,7 @@ import dev.latvian.kubejs.bindings.BlockWrapper;
 import dev.latvian.kubejs.bindings.IngredientWrapper;
 import dev.latvian.kubejs.bindings.ItemWrapper;
 import dev.latvian.kubejs.bindings.JsonWrapper;
-import dev.latvian.kubejs.bindings.NBTWrapper;
+import dev.latvian.kubejs.bindings.NBTIOWrapper;
 import dev.latvian.kubejs.bindings.RarityWrapper;
 import dev.latvian.kubejs.bindings.ScriptEventsWrapper;
 import dev.latvian.kubejs.bindings.TextWrapper;
@@ -190,7 +190,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("item", ItemWrapper.class);
 		event.add("Ingredient", IngredientWrapper.class);
 		event.add("ingredient", IngredientWrapper.class);
-		event.add("NBT", NBTWrapper.class);
+		event.add("NBTIO", NBTIOWrapper.class);
 		event.add("Direction", DirectionWrapper.class);
 		event.add("Facing", DirectionWrapper.class);
 		event.add("AABB", AABBWrapper.class);
