@@ -9,7 +9,6 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.player.ServerPlayerJS;
-import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
@@ -206,19 +205,38 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	@Nullable
-	public MapJS getEntityData() {
-		final BlockEntity entity = getEntity();
+	public CompoundTag getEntityData() {
+		BlockEntity entity = getEntity();
 
 		if (entity != null) {
-			MapJS entityData = MapJS.of(entity.save(new CompoundTag()));
-
-			if (entityData != null) {
-				entityData.changeListener = o -> entity.load(entity.getBlockState(), MapJS.nbt(o));
-				return entityData;
-			}
+			return entity.save(new CompoundTag());
 		}
 
 		return null;
+	}
+
+	public void setEntityData(@Nullable CompoundTag tag) {
+		if (tag != null) {
+			BlockEntity entity = getEntity();
+
+			if (entity != null) {
+				entity.load(entity.getBlockState(), tag);
+			}
+		}
+	}
+
+	public void mergeEntityData(@Nullable CompoundTag tag) {
+		CompoundTag t = getEntityData();
+
+		if (t == null) {
+			setEntityData(tag);
+		} else if (tag != null && !tag.isEmpty()) {
+			for (String s : tag.getAllKeys()) {
+				t.put(s, tag.get(s));
+			}
+		}
+
+		setEntityData(t);
 	}
 
 	public int getLight() {

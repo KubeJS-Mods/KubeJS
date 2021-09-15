@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.KubeJSRegistries;
-import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.world.FireworksJS;
@@ -53,7 +52,7 @@ public class ItemWrapper {
 	}
 
 	public static ItemStackJS getEmpty() {
-		return EmptyItemStackJS.INSTANCE;
+		return ItemStackJS.EMPTY;
 	}
 
 	public static void clearListCache() {

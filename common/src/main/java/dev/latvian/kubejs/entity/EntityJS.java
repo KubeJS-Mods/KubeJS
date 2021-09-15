@@ -19,6 +19,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.EndTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -431,18 +433,37 @@ public class EntityJS implements MessageSender, WrappedJS {
 		minecraftEntity.clearFire();
 	}
 
-	public MapJS getFullNBT() {
+	public CompoundTag getFullNBT() {
 		CompoundTag nbt = new CompoundTag();
 		minecraftEntity.saveWithoutId(nbt);
-		return MapJS.of(nbt);
+		return nbt;
 	}
 
-	public void setFullNBT(Object n) {
-		CompoundTag nbt = MapJS.nbt(n);
-
+	public void setFullNBT(@Nullable CompoundTag nbt) {
 		if (nbt != null) {
 			minecraftEntity.load(nbt);
 		}
+	}
+
+	public EntityJS mergeFullNBT(@Nullable CompoundTag tag) {
+		if (tag == null || tag.isEmpty()) {
+			return this;
+		}
+
+		CompoundTag nbt = getFullNBT();
+
+		for (String k : tag.getAllKeys()) {
+			Tag t = tag.get(k);
+
+			if (t == null || t == EndTag.INSTANCE) {
+				nbt.remove(k);
+			} else {
+				nbt.put(k, tag.get(k));
+			}
+		}
+
+		setFullNBT(nbt);
+		return this;
 	}
 
 	public MapJS getNbt() {

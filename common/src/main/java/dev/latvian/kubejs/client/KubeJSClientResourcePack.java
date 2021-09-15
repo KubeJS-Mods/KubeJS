@@ -80,6 +80,6 @@ public class KubeJSClientResourcePack extends KubeJSResourcePack {
 			}
 		}
 
-		map.put(new ResourceLocation(KubeJS.MOD_ID, "lang/en_us"), lang);
+		map.put(new ResourceLocation("kubejs_generated:lang/en_us"), lang);
 	}
 }

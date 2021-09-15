@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.util;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.script.ScriptType;
 import net.minecraft.resources.ResourceLocation;
 
 /**
@@ -22,9 +21,9 @@ public abstract class BuilderBase {
 
 	@Deprecated
 	public void add() {
-		ScriptType.STARTUP.console.setLineNumber(true);
-		ScriptType.STARTUP.console.log("You no longer need to use .add() at end of " + getBuilderType() + " builder!");
-		ScriptType.STARTUP.console.setLineNumber(false);
+		ConsoleJS.STARTUP.setLineNumber(true);
+		ConsoleJS.STARTUP.log("You no longer need to use .add() at end of " + getBuilderType() + " builder!");
+		ConsoleJS.STARTUP.setLineNumber(false);
 	}
 
 	public BuilderBase translationKey(String key) {

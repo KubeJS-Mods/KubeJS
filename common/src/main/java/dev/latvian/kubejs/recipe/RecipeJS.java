@@ -10,8 +10,8 @@ import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.kubejs.recipe.minecraft.CustomRecipeJS;
 import dev.latvian.kubejs.recipe.mod.TechRebornCompat;
-import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
+import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import me.shedaniel.architectury.platform.Platform;
@@ -429,7 +429,7 @@ public abstract class RecipeJS {
 		save();
 
 		if (!Platform.isModLoaded("recipestages")) {
-			ScriptType.SERVER.console.warn("Recipe requires stage '" + recipeStage + "' but Recipe Stages mod isn't installed!");
+			ConsoleJS.SERVER.warn("Recipe requires stage '" + recipeStage + "' but Recipe Stages mod isn't installed!");
 		}
 
 		return this;

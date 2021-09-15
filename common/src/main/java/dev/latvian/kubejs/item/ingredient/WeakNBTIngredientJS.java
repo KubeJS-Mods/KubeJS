@@ -29,8 +29,8 @@ public final class WeakNBTIngredientJS implements IngredientJS {
 	public boolean test(ItemStackJS stack) {
 		if (item.areItemsEqual(stack) && item.hasNBT() == stack.hasNBT()) {
 			if (item.hasNBT()) {
-				for (String key : item.getNbt().keysML()) {
-					if (!Objects.equals(item.getNbt().getML(key), stack.getNbt().getML(key))) {
+				for (String key : item.getNbt().getAllKeys()) {
+					if (!Objects.equals(item.getNbt().get(key), stack.getNbt().get(key))) {
 						return false;
 					}
 				}
@@ -46,7 +46,7 @@ public final class WeakNBTIngredientJS implements IngredientJS {
 	public boolean testVanilla(ItemStack stack) {
 		if (item.areItemsEqual(stack) && item.hasNBT() == stack.hasTag()) {
 			if (item.hasNBT()) {
-				CompoundTag t = item.getMinecraftNbt();
+				CompoundTag t = item.getNbt();
 
 				for (String key : t.getAllKeys()) {
 					if (!Objects.equals(t.get(key), stack.getTag().get(key))) {

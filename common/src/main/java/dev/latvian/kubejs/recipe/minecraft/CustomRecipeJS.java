@@ -2,13 +2,12 @@ package dev.latvian.kubejs.recipe.minecraft;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.recipe.special.SpecialRecipeSerializerManager;
-import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.ListJS;
 
 /**
@@ -117,7 +116,7 @@ public class CustomRecipeJS extends RecipeJS {
 		outputType = -1;
 
 		if (originalRecipe != null && SpecialRecipeSerializerManager.INSTANCE.isSpecial(originalRecipe)) {
-			ScriptType.SERVER.console.debug("Skipped " + this + " as custom recipe because it is dynamic.");
+			ConsoleJS.SERVER.debug("Skipped " + this + " as custom recipe because it is dynamic.");
 			return;
 		}
 
@@ -132,7 +131,7 @@ public class CustomRecipeJS extends RecipeJS {
 					&& !addInput("item_inputs")
 					&& !addInput("infusionInput")
 			) {
-				ScriptType.SERVER.console.debug("! " + this + ": Couldn't find any input items!");
+				ConsoleJS.SERVER.debug("! " + this + ": Couldn't find any input items!");
 			}
 		} catch (Exception ex) {
 		}
@@ -149,7 +148,7 @@ public class CustomRecipeJS extends RecipeJS {
 					&& !addOutput("mainOutput")
 					&& !addOutput("secondaryOutput")
 			) {
-				ScriptType.SERVER.console.debug("! " + this + ": Couldn't find any output items!");
+				ConsoleJS.SERVER.debug("! " + this + ": Couldn't find any output items!");
 			}
 		} catch (Exception ex) {
 		}
@@ -167,10 +166,10 @@ public class CustomRecipeJS extends RecipeJS {
 
 				json.add(outputKey, a);
 			} else if (outputType == 2) {
-				json.addProperty(outputKey, (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).getId());
-				json.addProperty("count", (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).getCount());
+				json.addProperty(outputKey, (outputItems.isEmpty() ? ItemStackJS.EMPTY : outputItems.get(0)).getId());
+				json.addProperty("count", (outputItems.isEmpty() ? ItemStackJS.EMPTY : outputItems.get(0)).getCount());
 			} else if (outputType == 0) {
-				json.add(outputKey, (outputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : outputItems.get(0)).toResultJson());
+				json.add(outputKey, (outputItems.isEmpty() ? ItemStackJS.EMPTY : outputItems.get(0)).toResultJson());
 			}
 		}
 
@@ -184,7 +183,7 @@ public class CustomRecipeJS extends RecipeJS {
 
 				json.add(inputKey, a);
 			} else if (inputType == 0) {
-				json.add(inputKey, (inputItems.isEmpty() ? EmptyItemStackJS.INSTANCE : inputItems.get(0)).toJson());
+				json.add(inputKey, (inputItems.isEmpty() ? ItemStackJS.EMPTY : inputItems.get(0)).toJson());
 			}
 		}
 	}

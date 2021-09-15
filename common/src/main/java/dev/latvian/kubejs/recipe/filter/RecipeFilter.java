@@ -3,7 +3,7 @@ package dev.latvian.kubejs.recipe.filter;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
-import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -97,9 +97,9 @@ public interface RecipeFilter extends Predicate<RecipeJS> {
 			return predicate.list.isEmpty() ? ALWAYS_TRUE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
 		} catch (RecipeExceptionJS ex) {
 			if (ex.error) {
-				ScriptType.SERVER.console.error(ex.getMessage());
+				ConsoleJS.SERVER.error(ex.getMessage());
 			} else {
-				ScriptType.SERVER.console.warn(ex.getMessage());
+				ConsoleJS.SERVER.warn(ex.getMessage());
 			}
 
 			return ALWAYS_FALSE;

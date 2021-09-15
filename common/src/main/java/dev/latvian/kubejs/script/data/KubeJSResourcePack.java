@@ -162,6 +162,7 @@ public abstract class KubeJSResourcePack implements PackResources {
 		}
 
 		HashSet<String> namespaces = new HashSet<>();
+		namespaces.add("kubejs_generated");
 		namespaces.add(KubeJS.MOD_ID);
 
 		for (BuilderBase builder : KubeJSObjects.ALL) {

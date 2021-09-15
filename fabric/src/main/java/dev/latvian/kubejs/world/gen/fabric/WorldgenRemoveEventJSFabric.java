@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.world.gen.fabric;
 
-import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.gen.RemoveSpawnsByCategoryProperties;
 import dev.latvian.kubejs.world.gen.RemoveSpawnsByIDProperties;
@@ -94,7 +94,7 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 				printFeatures(decoration);
 			}
 		} else {
-			ScriptType.STARTUP.console.info("Features with type '" + type.name().toLowerCase() + "' in biome '" + selectionContext.getBiomeKey().location() + "':");
+			ConsoleJS.STARTUP.info("Features with type '" + type.name().toLowerCase() + "' in biome '" + selectionContext.getBiomeKey().location() + "':");
 			int unknown = 0;
 
 			List<List<Supplier<ConfiguredFeature<?, ?>>>> list = selectionContext.getBiome().getGenerationSettings().features();
@@ -106,13 +106,13 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 					if (id == null) {
 						unknown++;
 					} else {
-						ScriptType.STARTUP.console.info("- " + id);
+						ConsoleJS.STARTUP.info("- " + id);
 					}
 				}
 			}
 
 			if (unknown > 0) {
-				ScriptType.STARTUP.console.info("- " + unknown + " features with unknown id");
+				ConsoleJS.STARTUP.info("- " + unknown + " features with unknown id");
 			}
 		}
 	}
@@ -152,10 +152,10 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 			return;
 		}
 
-		ScriptType.STARTUP.console.info("Mod spawns with type '" + category.getName() + "' in biome '" + selectionContext.getBiomeKey().location() + "':");
+		ConsoleJS.STARTUP.info("Mod spawns with type '" + category.getName() + "' in biome '" + selectionContext.getBiomeKey().location() + "':");
 
 		for (MobSpawnSettings.SpawnerData data : selectionContext.getBiome().getMobSettings().getMobs(category)) {
-			ScriptType.STARTUP.console.info("- " + data.toString());
+			ConsoleJS.STARTUP.info("- " + data.toString());
 		}
 	}
 

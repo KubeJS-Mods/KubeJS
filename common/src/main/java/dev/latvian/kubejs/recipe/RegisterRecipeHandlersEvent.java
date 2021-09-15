@@ -4,8 +4,8 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.recipe.minecraft.ShapedRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.ShapelessRecipeJS;
-import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
+import dev.latvian.kubejs.util.ConsoleJS;
 import me.shedaniel.architectury.ForgeEvent;
 import me.shedaniel.architectury.event.Event;
 import me.shedaniel.architectury.event.EventFactory;
@@ -44,7 +44,7 @@ public class RegisterRecipeHandlersEvent {
 			register(new RecipeTypeJS(Objects.requireNonNull(KubeJSRegistries.recipeSerializers().get(id)), f));
 		} catch (NullPointerException e) {
 			if (ServerSettings.instance.logErroringRecipes) {
-				ScriptType.SERVER.console.warn("Failed to register handler for recipe type " + id + " as it doesn't exist!");
+				ConsoleJS.SERVER.warn("Failed to register handler for recipe type " + id + " as it doesn't exist!");
 			}
 		}
 	}
@@ -58,7 +58,7 @@ public class RegisterRecipeHandlersEvent {
 			register(new IgnoredRecipeTypeJS(Objects.requireNonNull(KubeJSRegistries.recipeSerializers().get(id))));
 		} catch (NullPointerException e) {
 			if (ServerSettings.instance.logErroringRecipes) {
-				ScriptType.SERVER.console.warn("Failed to ignore recipe type " + id + " as it doesn't exist!");
+				ConsoleJS.SERVER.warn("Failed to ignore recipe type " + id + " as it doesn't exist!");
 			}
 		}
 	}

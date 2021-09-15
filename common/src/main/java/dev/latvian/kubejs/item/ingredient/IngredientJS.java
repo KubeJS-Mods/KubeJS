@@ -4,10 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJSRegistries;
-import dev.latvian.kubejs.item.BoundItemStackJS;
-import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
-import dev.latvian.kubejs.item.UnboundItemStackJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.ListJS;
@@ -45,8 +42,8 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			o = ((Wrapper) o).unwrap();
 		}
 
-		if (o == null) {
-			return EmptyItemStackJS.INSTANCE;
+		if (o == null || o == ItemStack.EMPTY || o == Items.AIR) {
+			return ItemStackJS.EMPTY;
 		} else if (o instanceof IngredientJS) {
 			return (IngredientJS) o;
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
@@ -56,7 +53,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 				return new RegexIngredientJS(reg);
 			}
 
-			return EmptyItemStackJS.INSTANCE;
+			return ItemStackJS.EMPTY;
 		} else if (o instanceof JsonElement) {
 			return ingredientFromRecipeJson((JsonElement) o);
 		} else if (o instanceof CharSequence) {
@@ -76,7 +73,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			if (s.equals("*")) {
 				return MatchAllIngredientJS.INSTANCE.withCount(count);
 			} else if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
-				return EmptyItemStackJS.INSTANCE;
+				return ItemStackJS.EMPTY;
 			} else if (s.startsWith("#")) {
 				return TagIngredientJS.createTag(s.substring(1)).withCount(count);
 			} else if (s.startsWith("@")) {
@@ -89,7 +86,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 						throw new RecipeExceptionJS("Item group '" + s.substring(1) + "' not found!").error();
 					}
 
-					return EmptyItemStackJS.INSTANCE;
+					return ItemStackJS.EMPTY;
 				}
 
 				return new GroupIngredientJS(group).withCount(count);
@@ -101,10 +98,16 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 				return new RegexIngredientJS(reg).withCount(count);
 			}
 
-			return new UnboundItemStackJS(new ResourceLocation(s)).withCount(count);
+			Item item = KubeJSRegistries.items().get(new ResourceLocation(s));
+
+			if (item == Items.AIR) {
+				return ItemStackJS.EMPTY;
+			}
+
+			return new ItemStackJS(new ItemStack(item, count));
 		} else if (o instanceof Ingredient) {
 			if (((Ingredient) o).isEmpty()) {
-				return EmptyItemStackJS.INSTANCE;
+				return ItemStackJS.EMPTY;
 			}
 
 			List<IngredientJS> in = new ArrayList<>();
@@ -126,18 +129,18 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			for (Object o1 : list) {
 				IngredientJS ingredient = of(o1);
 
-				if (ingredient != EmptyItemStackJS.INSTANCE) {
+				if (ingredient != ItemStackJS.EMPTY) {
 					l.ingredients.add(ingredient);
 				}
 			}
 
-			return l.ingredients.isEmpty() ? EmptyItemStackJS.INSTANCE : l;
+			return l.ingredients.isEmpty() ? ItemStackJS.EMPTY : l;
 		}
 
 		MapJS map = MapJS.of(o);
 
 		if (map != null) {
-			IngredientJS in = EmptyItemStackJS.INSTANCE;
+			IngredientJS in = ItemStackJS.EMPTY;
 			boolean val = map.containsKey("value");
 
 			if (map.containsKey("type")) {
@@ -195,7 +198,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			return of(json.getAsString());
 		} else if (json.isJsonObject()) {
 			JsonObject o = json.getAsJsonObject();
-			IngredientJS in = EmptyItemStackJS.INSTANCE;
+			IngredientJS in = ItemStackJS.EMPTY;
 			boolean val = o.has("value");
 
 			if (o.has("type")) {
@@ -230,17 +233,17 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			return in;
 		}
 
-		return EmptyItemStackJS.INSTANCE;
+		return ItemStackJS.EMPTY;
 	}
 
 	boolean test(ItemStackJS stack);
 
 	default boolean testVanilla(ItemStack stack) {
-		return test(new BoundItemStackJS(stack));
+		return test(new ItemStackJS(stack));
 	}
 
 	default boolean testVanillaItem(Item item) {
-		return test(new UnboundItemStackJS(KubeJSRegistries.items().getId(item)));
+		return test(new ItemStackJS(new ItemStack(item)));
 	}
 
 	default Predicate<ItemStack> getVanillaPredicate() {
@@ -308,12 +311,12 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			}
 		}
 
-		return EmptyItemStackJS.INSTANCE;
+		return ItemStackJS.EMPTY;
 	}
 
 	default IngredientJS withCount(int count) {
 		if (count <= 0) {
-			return EmptyItemStackJS.INSTANCE;
+			return ItemStackJS.EMPTY;
 		}
 
 		return count == 1 ? copy() : new IngredientStackJS(copy(), count);

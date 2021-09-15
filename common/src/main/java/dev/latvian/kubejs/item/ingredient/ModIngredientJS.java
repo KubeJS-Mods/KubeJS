@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.KubeJSRegistries;
-import dev.latvian.kubejs.item.EmptyItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
@@ -66,7 +65,7 @@ public class ModIngredientJS implements IngredientJS {
 			}
 		}
 
-		return EmptyItemStackJS.INSTANCE;
+		return ItemStackJS.EMPTY;
 	}
 
 	@Override
