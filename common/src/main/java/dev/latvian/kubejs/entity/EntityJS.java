@@ -11,7 +11,6 @@ import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
-import dev.latvian.mods.rhino.mod.util.CompoundTagWrapper;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.hooks.EntityHooks;
 import me.shedaniel.architectury.registry.Registries;
@@ -434,10 +433,10 @@ public class EntityJS implements MessageSender, WrappedJS {
 		minecraftEntity.clearFire();
 	}
 
-	public CompoundTagWrapper getFullNBT() {
+	public CompoundTag getFullNBT() {
 		CompoundTag nbt = new CompoundTag();
 		minecraftEntity.saveWithoutId(nbt);
-		return new CompoundTagWrapper(nbt);
+		return nbt;
 	}
 
 	public void setFullNBT(@Nullable CompoundTag nbt) {
@@ -451,8 +450,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 			return this;
 		}
 
-		CompoundTag nbt = new CompoundTag();
-		minecraftEntity.saveWithoutId(nbt);
+		CompoundTag nbt = getFullNBT();
 
 		for (String k : tag.getAllKeys()) {
 			Tag t = tag.get(k);
@@ -464,7 +462,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 			}
 		}
 
-		minecraftEntity.load(nbt);
+		setFullNBT(nbt);
 		return this;
 	}
 

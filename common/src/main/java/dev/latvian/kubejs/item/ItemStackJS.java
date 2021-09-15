@@ -116,8 +116,12 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 		@Override
 		@Nullable
-		public CompoundTagWrapper getNbt() {
+		public CompoundTag getNbt() {
 			return null;
+		}
+
+		@Override
+		public void setNbt(@Nullable CompoundTag tag) {
 		}
 
 		@Override
@@ -128,12 +132,6 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		@Override
 		public String getNbtString() {
 			return "null";
-		}
-
-		@Override
-		@Nullable
-		public CompoundTag getMinecraftNbt() {
-			return null;
 		}
 
 		@Override
@@ -638,14 +636,12 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	}
 
 	@Nullable
-	public CompoundTagWrapper getNbt() {
-		if (stack.getTag() != null) {
-			CompoundTagWrapper wrapper = new CompoundTagWrapper(stack.getTag());
-			wrapper.listener = this;
-			return wrapper;
-		}
+	public CompoundTag getNbt() {
+		return stack.getTag();
+	}
 
-		return null;
+	public void setNbt(@Nullable CompoundTag tag) {
+		stack.setTag(tag);
 	}
 
 	public boolean hasNBT() {
@@ -653,12 +649,13 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	}
 
 	public String getNbtString() {
-		return String.valueOf(getMinecraftNbt());
+		return String.valueOf(getNbt());
 	}
 
 	@Nullable
+	@Deprecated
 	public CompoundTag getMinecraftNbt() {
-		return stack.getTag();
+		return getNbt();
 	}
 
 	public ItemStackJS removeNBT() {
@@ -755,7 +752,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			}
 
 			if (hasNBT()) {
-				CompoundTag t = getMinecraftNbt();
+				CompoundTag t = getNbt();
 
 				if (t != null && !t.isEmpty()) {
 					String key = getItem() == Items.ENCHANTED_BOOK ? "StoredEnchantments" : "Enchantments";
@@ -978,7 +975,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	public boolean isNBTEqual(ItemStackJS other) {
 		if (hasNBT() == other.hasNBT()) {
 			CompoundTag nbt = stack.getTag();
-			CompoundTag nbt2 = other.getMinecraftNbt();
+			CompoundTag nbt2 = other.getNbt();
 			return Objects.equals(nbt, nbt2);
 		}
 
@@ -1040,13 +1037,13 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		json.addProperty("item", getId());
 		json.addProperty("count", getCount());
 
-		CompoundTagWrapper nbt = getNbt();
+		CompoundTag nbt = getNbt();
 
 		if (nbt != null) {
 			if (RecipeJS.currentRecipe != null && RecipeJS.currentRecipe.type != null && RecipeJS.currentRecipe.type.getIdRL().getNamespace().equals("techreborn")) {
-				json.add("nbt", nbt.toJson());
+				json.add("nbt", new CompoundTagWrapper(nbt).toJson());
 			} else {
-				json.addProperty("nbt", nbt.minecraftTag.toString());
+				json.addProperty("nbt", nbt.toString());
 			}
 		}
 

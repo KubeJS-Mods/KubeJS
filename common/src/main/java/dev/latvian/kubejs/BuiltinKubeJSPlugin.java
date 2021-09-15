@@ -48,6 +48,7 @@ import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
+import dev.latvian.mods.rhino.mod.util.NBTWrapper;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.wrapper.AABBWrapper;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
@@ -176,6 +177,9 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.addFunction("onEvent", args -> onEvent(event, args), null, IEventHandler.class);
 		event.addFunction("java", args -> event.manager.loadJavaClass(event.scope, args), new Class[]{null});
 
+		event.add("JavaMath", Math.class);
+		event.add("ResourceLocation", ResourceLocation.class);
+
 		event.add("Utils", UtilsWrapper.class);
 		event.add("utils", UtilsWrapper.class);
 		event.add("Text", TextWrapper.class);
@@ -190,6 +194,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("item", ItemWrapper.class);
 		event.add("Ingredient", IngredientWrapper.class);
 		event.add("ingredient", IngredientWrapper.class);
+		event.add("NBT", NBTWrapper.class);
 		event.add("NBTIO", NBTIOWrapper.class);
 		event.add("Direction", DirectionWrapper.class);
 		event.add("Facing", DirectionWrapper.class);

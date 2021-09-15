@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.block.predicate;
 
-import dev.latvian.kubejs.util.MapJS;
+import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -8,5 +8,5 @@ import org.jetbrains.annotations.Nullable;
  */
 @FunctionalInterface
 public interface BlockEntityPredicateDataCheck {
-	boolean checkData(@Nullable MapJS data);
+	boolean checkData(@Nullable CompoundTag data);
 }
