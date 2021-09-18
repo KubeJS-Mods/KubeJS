@@ -25,6 +25,7 @@ import dev.latvian.kubejs.world.ClientWorldJS;
 import me.shedaniel.architectury.event.events.GuiEvent;
 import me.shedaniel.architectury.event.events.TextureStitchEvent;
 import me.shedaniel.architectury.event.events.TooltipEvent;
+import me.shedaniel.architectury.event.events.client.ClientLifecycleEvent;
 import me.shedaniel.architectury.event.events.client.ClientPlayerEvent;
 import me.shedaniel.architectury.event.events.client.ClientTickEvent;
 import me.shedaniel.architectury.hooks.ScreenHooks;
@@ -72,6 +73,7 @@ public class KubeJSClientEventHandler {
 	public static Map<Item, List<ItemTooltipEventJS.StaticTooltipHandler>> staticItemTooltips = null;
 
 	public void init() {
+		ClientLifecycleEvent.CLIENT_SETUP.register(this::clientSetup);
 		GuiEvent.DEBUG_TEXT_LEFT.register(this::debugInfoLeft);
 		GuiEvent.DEBUG_TEXT_RIGHT.register(this::debugInfoRight);
 		TooltipEvent.ITEM.register(this::itemTooltip);
@@ -82,10 +84,13 @@ public class KubeJSClientEventHandler {
 		GuiEvent.RENDER_HUD.register(this::inGameScreenDraw);
 		GuiEvent.RENDER_POST.register(this::guiScreenDraw);
 		GuiEvent.INIT_POST.register(this::guiPostInit);
+		TextureStitchEvent.POST.register(this::postAtlasStitch);
+	}
+
+	private void clientSetup(Minecraft minecraft) {
 		renderLayers();
 		blockColors();
 		itemColors();
-		TextureStitchEvent.POST.register(this::postAtlasStitch);
 	}
 
 	private void renderLayers() {
