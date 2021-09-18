@@ -2,8 +2,8 @@ package dev.latvian.kubejs.loot;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.util.MapJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.Deserializers;
 
@@ -28,8 +28,8 @@ public abstract class LootEventJS<LB extends LootBuilder<?, ?>> extends EventJS 
 
 	public abstract LB newLootBuilder();
 
-	public void addJson(ResourceLocation id, Object json) {
-		lootMap.put(id, MapJS.json(json));
+	public void addJson(ResourceLocation id, JsonObject json) {
+		lootMap.put(id, json);
 	}
 
 	public void build(ResourceLocation id, Consumer<LB> lb) {
