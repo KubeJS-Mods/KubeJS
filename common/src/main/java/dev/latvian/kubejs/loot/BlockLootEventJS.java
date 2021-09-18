@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.block.BlockStatePredicate;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 
 import java.util.Map;
@@ -26,11 +27,11 @@ public class BlockLootEventJS extends LootEventJS<BlockLootBuilder> {
 	}
 
 	@Override
-	public void addJson(ResourceLocation id, Object json) {
+	public void addJson(ResourceLocation id, JsonObject json) {
 		super.addJson(new ResourceLocation(id.getNamespace(), "blocks/" + id.getPath()), json);
 	}
 
-	public void addBlock(Object blocks, Consumer<BlockLootBuilder> b) {
+	public void addBlock(BlockStatePredicate blocks, Consumer<BlockLootBuilder> b) {
 		BlockLootBuilder builder = new BlockLootBuilder();
 		b.accept(builder);
 		JsonObject json = builder.toJson(this);
@@ -44,19 +45,24 @@ public class BlockLootEventJS extends LootEventJS<BlockLootBuilder> {
 		}
 	}
 
-	public void addSimpleBlock(Object blocks) {
-		addSimpleBlock(blocks, "");
+	public void addSimpleBlock(BlockStatePredicate blocks) {
+		addSimpleBlock(blocks, ItemStack.EMPTY);
 	}
 
-	public void addSimpleBlock(Object blocks, String item) {
-		for (Block block : BlockStatePredicate.of(blocks).getBlocks()) {
-			ResourceLocation id = item.isEmpty() ? KubeJSRegistries.items().getId(block.asItem()) : new ResourceLocation(item);
+	public void addSimpleBlock(BlockStatePredicate blocks, ItemStack item) {
+		for (Block block : blocks.getBlocks()) {
+			ItemStack item1 = item.isEmpty() ? new ItemStack(block.asItem()) : item;
+
+			if (item1.isEmpty()) {
+				continue;
+			}
+
 			ResourceLocation blockId = KubeJSRegistries.blocks().getId(block);
 
-			if (blockId != null && !id.equals(AIR_ID) && !blockId.equals(AIR_ID)) {
+			if (blockId != null && !blockId.equals(AIR_ID)) {
 				build(blockId, loot -> {
 					loot.pool(pool -> {
-						pool.addItem(id);
+						pool.addItem(item1);
 						pool.survivesExplosion();
 					});
 				});

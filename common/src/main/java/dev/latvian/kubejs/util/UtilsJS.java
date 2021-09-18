@@ -40,9 +40,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.storage.loot.BinomialDistributionGenerator;
+import net.minecraft.world.level.storage.loot.ConstantIntValue;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.LootTables;
+import net.minecraft.world.level.storage.loot.RandomIntGenerator;
+import net.minecraft.world.level.storage.loot.RandomValueBounds;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
@@ -577,5 +581,27 @@ public class UtilsJS {
 		}
 
 		return sb.toString();
+	}
+
+	public static RandomIntGenerator randomIntGeneratorOf(Object o) {
+		if (o instanceof Number) {
+			return ConstantIntValue.exactly(((Number) o).intValue());
+		} else if (o instanceof List && ((List<?>) o).size() == 2) {
+			List<Object> l = (List<Object>) o;
+
+			return RandomValueBounds.between(((Number) l.get(0)).floatValue(), ((Number) l.get(1)).floatValue());
+		} else if (o instanceof Map) {
+			Map<String, Object> m = (Map<String, Object>) o;
+
+			if (m.containsKey("min") && m.containsKey("max")) {
+				return RandomValueBounds.between(((Number) m.get("min")).intValue(), ((Number) m.get("max")).floatValue());
+			} else if (m.containsKey("n") && m.containsKey("p")) {
+				return BinomialDistributionGenerator.binomial(((Number) m.get("n")).intValue(), ((Number) m.get("p")).floatValue());
+			} else if (m.containsKey("value")) {
+				return ConstantIntValue.exactly(((Number) m.get("value")).intValue());
+			}
+		}
+
+		return ConstantIntValue.exactly(0);
 	}
 }
