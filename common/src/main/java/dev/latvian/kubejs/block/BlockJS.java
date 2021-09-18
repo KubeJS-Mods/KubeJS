@@ -1,6 +1,8 @@
 package dev.latvian.kubejs.block;
 
 import dev.latvian.kubejs.world.BlockContainerJS;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -89,25 +91,45 @@ public class BlockJS extends Block {
 	}
 
 	@Override
-	public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
-		return !(properties.waterlogged && state.getValue(BlockStateProperties.WATERLOGGED));
+	public boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+		return properties.transparent || !(properties.waterlogged && state.getValue(BlockStateProperties.WATERLOGGED));
 	}
 
 	@Override
-	public void randomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, Random random) {
-		if(properties.randomTickCallback != null) {
-			BlockContainerJS containerJS = new BlockContainerJS(serverLevel, blockPos);
+	@Deprecated
+	public void randomTick(BlockState state, ServerLevel level, BlockPos pos, Random random) {
+		if (properties.randomTickCallback != null) {
+			BlockContainerJS containerJS = new BlockContainerJS(level, pos);
 			try {
 				properties.randomTickCallback.accept(new RandomTickCallbackJS(containerJS, random));
-			} catch(Exception e){
+			} catch (Exception e) {
 				LOGGER.error("Error while random ticking custom block {}: {}", this, e);
 			}
 		}
 	}
 
 	@Override
-	public boolean isRandomlyTicking(BlockState blockState)
-	{
+	public boolean isRandomlyTicking(BlockState state) {
 		return properties.randomTickCallback != null;
+	}
+
+	@Override
+	@Deprecated
+	public VoxelShape getVisualShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
+		return properties.transparent ? Shapes.empty() : super.getVisualShape(state, level, pos, ctx);
+	}
+
+	@Override
+	@Deprecated
+	@Environment(EnvType.CLIENT)
+	public float getShadeBrightness(BlockState state, BlockGetter level, BlockPos pos) {
+		return properties.transparent ? 1F : super.getShadeBrightness(state, level, pos);
+	}
+
+	@Override
+	@Deprecated
+	@Environment(EnvType.CLIENT)
+	public boolean skipRendering(BlockState state, BlockState state2, Direction direction) {
+		return properties.transparent ? (state2.is(this) || super.skipRendering(state, state2, direction)) : super.skipRendering(state, state2, direction);
 	}
 }

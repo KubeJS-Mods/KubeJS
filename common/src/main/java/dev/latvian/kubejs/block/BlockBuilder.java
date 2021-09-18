@@ -8,6 +8,7 @@ import me.shedaniel.architectury.registry.BlockProperties;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,6 +47,11 @@ public class BlockBuilder extends BuilderBase {
 	private JsonObject lootTableJson;
 	private JsonObject blockstateJson;
 	private JsonObject modelJson;
+	public boolean noValidSpawns;
+	public boolean suffocating;
+	public boolean viewBlocking;
+	public boolean redstoneConductor;
+	public boolean transparent;
 
 	public BlockJS block;
 
@@ -74,6 +80,11 @@ public class BlockBuilder extends BuilderBase {
 		waterlogged = false;
 		noDrops = false;
 		randomTickCallback = null;
+		noValidSpawns = false;
+		suffocating = true;
+		viewBlocking = true;
+		redstoneConductor = true;
+		transparent = false;
 	}
 
 	@Override
@@ -180,8 +191,18 @@ public class BlockBuilder extends BuilderBase {
 		return item(null);
 	}
 
+	@Deprecated
 	public BlockBuilder shapeCube(double x0, double y0, double z0, double x1, double y1, double z1) {
-		customShape.add(Block.box(x0, y0, z0, x1, y1, z1));
+		return box(x0, y0, z0, x1, y1, z1, true);
+	}
+
+	public BlockBuilder box(double x0, double y0, double z0, double x1, double y1, double z1, boolean scale16) {
+		if (scale16) {
+			customShape.add(Shapes.box(x0 * 16D, y0 * 16D, z0 * 16D, x1 * 16D, y1 * 16D, z1 * 16D));
+		} else {
+			customShape.add(Shapes.box(x0, y0, z0, x1, y1, z1));
+		}
+
 		return this;
 	}
 
@@ -334,6 +355,39 @@ public class BlockBuilder extends BuilderBase {
 		return true;
 	}
 
+	public BlockBuilder noValidSpawns(boolean b) {
+		noValidSpawns = b;
+		return this;
+	}
+
+	public BlockBuilder suffocating(boolean b) {
+		suffocating = b;
+		return this;
+	}
+
+	public BlockBuilder viewBlocking(boolean b) {
+		viewBlocking = b;
+		return this;
+	}
+
+	public BlockBuilder redstoneConductor(boolean b) {
+		redstoneConductor = b;
+		return this;
+	}
+
+	public BlockBuilder transparent(boolean b) {
+		transparent = b;
+		return this;
+	}
+
+	public BlockBuilder defaultCutout() {
+		return renderType("cutout").notSolid().noValidSpawns(true).suffocating(false).viewBlocking(false).redstoneConductor(false).transparent(true);
+	}
+
+	public BlockBuilder defaultTranslucent() {
+		return defaultCutout().renderType("translucent");
+	}
+
 	public Block.Properties createProperties() {
 		BlockProperties properties = BlockProperties.of(material.getMinecraftMaterial());
 		properties.sound(material.getSound());
@@ -365,6 +419,23 @@ public class BlockBuilder extends BuilderBase {
 		properties.friction(slipperiness);
 		properties.speedFactor(speedFactor);
 		properties.jumpFactor(jumpFactor);
+
+		if (noValidSpawns) {
+			properties.isValidSpawn((blockState, blockGetter, blockPos, object) -> false);
+		}
+
+		if (!suffocating) {
+			properties.isSuffocating((blockState, blockGetter, blockPos) -> false);
+		}
+
+		if (!viewBlocking) {
+			properties.isViewBlocking((blockState, blockGetter, blockPos) -> false);
+		}
+
+		if (!redstoneConductor) {
+			properties.isRedstoneConductor((blockState, blockGetter, blockPos) -> false);
+		}
+
 		return properties;
 	}
 }

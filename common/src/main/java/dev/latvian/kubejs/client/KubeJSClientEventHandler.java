@@ -72,7 +72,6 @@ public class KubeJSClientEventHandler {
 	public static Map<Item, List<ItemTooltipEventJS.StaticTooltipHandler>> staticItemTooltips = null;
 
 	public void init() {
-		setup();
 		GuiEvent.DEBUG_TEXT_LEFT.register(this::debugInfoLeft);
 		GuiEvent.DEBUG_TEXT_RIGHT.register(this::debugInfoRight);
 		TooltipEvent.ITEM.register(this::itemTooltip);
@@ -83,12 +82,13 @@ public class KubeJSClientEventHandler {
 		GuiEvent.RENDER_HUD.register(this::inGameScreenDraw);
 		GuiEvent.RENDER_POST.register(this::guiScreenDraw);
 		GuiEvent.INIT_POST.register(this::guiPostInit);
+		renderLayers();
 		blockColors();
 		itemColors();
 		TextureStitchEvent.POST.register(this::postAtlasStitch);
 	}
 
-	private void setup() {
+	private void renderLayers() {
 		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
 			switch (builder.renderType) {
 				case "cutout":
