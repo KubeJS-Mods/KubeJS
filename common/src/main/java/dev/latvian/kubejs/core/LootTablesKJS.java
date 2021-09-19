@@ -3,7 +3,11 @@ package dev.latvian.kubejs.core;
 import com.google.gson.JsonElement;
 import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.loot.BlockLootEventJS;
+import dev.latvian.kubejs.loot.ChestLootEventJS;
 import dev.latvian.kubejs.loot.EntityLootEventJS;
+import dev.latvian.kubejs.loot.FishingLootEventJS;
+import dev.latvian.kubejs.loot.GenericLootEventJS;
+import dev.latvian.kubejs.loot.GiftLootEventJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.server.ServerSettings;
@@ -22,8 +26,12 @@ import java.util.function.BiConsumer;
 public interface LootTablesKJS {
 	default void applyKJS0(Map<ResourceLocation, JsonElement> map, BiConsumer<ResourceLocation, JsonElement> action) {
 		Map<ResourceLocation, JsonElement> map1 = new HashMap<>(map);
+		new GenericLootEventJS(map1).post(ScriptType.SERVER, "generic.loot_tables");
 		new BlockLootEventJS(map1).post(ScriptType.SERVER, "block.loot_tables");
 		new EntityLootEventJS(map1).post(ScriptType.SERVER, "entity.loot_tables");
+		new GiftLootEventJS(map1).post(ScriptType.SERVER, "gift.loot_tables");
+		new FishingLootEventJS(map1).post(ScriptType.SERVER, "fishing.loot_tables");
+		new ChestLootEventJS(map1).post(ScriptType.SERVER, "chest.loot_tables");
 
 		for (Map.Entry<ResourceLocation, JsonElement> entry : map1.entrySet()) {
 			try {

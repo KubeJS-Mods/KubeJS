@@ -1,55 +1,56 @@
 package dev.latvian.kubejs.loot;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.util.ConsoleJS;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
  */
-public abstract class LootBuilder {
-	public final List<LootBuilderPool> pools = new ArrayList<>();
-	public final List<JsonObject> functions = new ArrayList<>();
-	public final List<JsonObject> conditions = new ArrayList<>();
+public class LootBuilder {
+	public String type = "minecraft:generic";
+	public ResourceLocation customId = null;
+	public JsonArray pools = new JsonArray();
+	public JsonArray functions = new JsonArray();
+	public JsonArray conditions = new JsonArray();
 
-	public abstract String getType();
+	public LootBuilder(@Nullable JsonElement prev) {
+		if (prev instanceof JsonObject) {
+			JsonObject o = (JsonObject) prev;
 
-	public JsonObject toJson(LootEventJS event) {
+			if (o.has("pools")) {
+				pools = o.get("pools").getAsJsonArray();
+			}
+
+			if (o.has("functions")) {
+				functions = o.get("functions").getAsJsonArray();
+			}
+
+			if (o.has("conditions")) {
+				conditions = o.get("conditions").getAsJsonArray();
+			}
+		}
+	}
+
+	public JsonObject toJson() {
 		JsonObject json = new JsonObject();
-		json.addProperty("type", getType());
+		json.addProperty("type", type);
 
-		if (!pools.isEmpty()) {
-			JsonArray p = new JsonArray();
-
-			for (LootBuilderPool pool : pools) {
-				pool.toJson(event, p);
-			}
-
-			json.add("pools", p);
+		if (pools.size() > 0) {
+			json.add("pools", pools);
 		}
 
-		if (!functions.isEmpty()) {
-			JsonArray f = new JsonArray();
-
-			for (JsonObject o : functions) {
-				f.add(o);
-			}
-
-			json.add("functions", f);
+		if (functions.size() > 0) {
+			json.add("functions", functions);
 		}
 
-		if (!conditions.isEmpty()) {
-			JsonArray f = new JsonArray();
-
-			for (JsonObject o : conditions) {
-				f.add(o);
-			}
-
-			json.add("conditions", f);
+		if (conditions.size() > 0) {
+			json.add("conditions", conditions);
 		}
 
 		return json;
@@ -58,7 +59,7 @@ public abstract class LootBuilder {
 	public void addPool(Consumer<LootBuilderPool> p) {
 		LootBuilderPool pool = new LootBuilderPool();
 		p.accept(pool);
-		pools.add(pool);
+		pools.add(pool.toJson());
 	}
 
 	public void pool(Consumer<LootBuilderPool> p) {
@@ -74,5 +75,17 @@ public abstract class LootBuilder {
 
 	public void addCondition(JsonObject o) {
 		conditions.add(o);
+	}
+
+	public void clearPools() {
+		pools = new JsonArray();
+	}
+
+	public void clearFunctions() {
+		functions = new JsonArray();
+	}
+
+	public void clearConditions() {
+		conditions = new JsonArray();
 	}
 }

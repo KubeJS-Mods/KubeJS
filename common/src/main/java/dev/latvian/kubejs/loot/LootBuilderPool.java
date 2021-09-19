@@ -17,12 +17,15 @@ import org.jetbrains.annotations.Nullable;
  */
 public class LootBuilderPool {
 	public RandomIntGenerator rolls = new ConstantIntValue(1);
-	private final JsonArray conditions = new JsonArray();
-	private final JsonArray entries = new JsonArray();
+	public final JsonArray conditions = new JsonArray();
+	public final JsonArray entries = new JsonArray();
 
-	public void toJson(LootEventJS event, JsonArray array) {
+	public JsonObject toJson() {
 		JsonObject json = new JsonObject();
-		json.add("rolls", event.gsonConditions.toJsonTree(rolls));
+
+		if (rolls instanceof JsonSerializableKJS) {
+			json.add("rolls", ((JsonSerializableKJS) rolls).toJsonKJS());
+		}
 
 		if (conditions.size() > 0) {
 			json.add("conditions", conditions);
@@ -32,7 +35,7 @@ public class LootBuilderPool {
 			json.add("entries", entries);
 		}
 
-		array.add(json);
+		return json;
 	}
 
 	public void setUniformRolls(float min, float max) {

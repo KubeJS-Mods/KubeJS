@@ -22,7 +22,7 @@ public class BlockLootEventJS extends LootEventJS {
 		super(c);
 	}
 
-	public void build(BlockStatePredicate blocks, Consumer<BlockLootBuilder> b) {
+	public void build(BlockStatePredicate blocks, Consumer<LootBuilder> b) {
 		addBlock(blocks, b);
 		ConsoleJS.SERVER.setLineNumber(true);
 		ConsoleJS.SERVER.warn("This method is no longer supported! Use event.addBlock(blockPredicate, loot => {...})");
@@ -30,17 +30,21 @@ public class BlockLootEventJS extends LootEventJS {
 	}
 
 	@Override
+	public String getType() {
+		return "minecraft:block";
+	}
+
+	@Override
 	public String getDirectory() {
 		return "blocks";
 	}
 
-	public void addBlock(BlockStatePredicate blocks, Consumer<BlockLootBuilder> b) {
-		BlockLootBuilder builder = new BlockLootBuilder();
-		b.accept(builder);
-		JsonObject json = builder.toJson(this);
+	public void addBlock(BlockStatePredicate blocks, Consumer<LootBuilder> b) {
+		LootBuilder builder = createLootBuilder(null, b);
+		JsonObject json = builder.toJson();
 
 		for (Block block : blocks.getBlocks()) {
-			ResourceLocation blockId = KubeJSRegistries.blocks().getId(block);
+			ResourceLocation blockId = builder.customId == null ? KubeJSRegistries.blocks().getId(block) : builder.customId;
 
 			if (blockId != null && !blockId.equals(AIR_ID)) {
 				addJson(blockId, json);

@@ -13,10 +13,13 @@ import java.util.function.Consumer;
  * @author LatvianModder
  */
 public class EntityLootEventJS extends LootEventJS {
-	private static final ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
-
 	public EntityLootEventJS(Map<ResourceLocation, JsonElement> c) {
 		super(c);
+	}
+
+	@Override
+	public String getType() {
+		return "minecraft:entity";
 	}
 
 	@Override
@@ -24,13 +27,12 @@ public class EntityLootEventJS extends LootEventJS {
 		return "entities";
 	}
 
-	public void addEntity(EntityType<?> type, Consumer<EntityLootBuilder> b) {
-		EntityLootBuilder builder = new EntityLootBuilder();
-		b.accept(builder);
-		JsonObject json = builder.toJson(this);
-		ResourceLocation entityId = KubeJSRegistries.entityTypes().getId(type);
+	public void addEntity(EntityType<?> type, Consumer<LootBuilder> b) {
+		LootBuilder builder = createLootBuilder(null, b);
+		JsonObject json = builder.toJson();
+		ResourceLocation entityId = builder.customId == null ? KubeJSRegistries.entityTypes().getId(type) : builder.customId;
 
-		if (entityId != null && !entityId.equals(AIR_ID)) {
+		if (entityId != null) {
 			addJson(entityId, json);
 		}
 	}
