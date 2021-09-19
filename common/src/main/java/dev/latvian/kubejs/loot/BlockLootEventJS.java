@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.block.BlockStatePredicate;
+import dev.latvian.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -14,30 +15,36 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class BlockLootEventJS extends LootEventJS<BlockLootBuilder> {
+public class BlockLootEventJS extends LootEventJS {
 	private static final ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
 
 	public BlockLootEventJS(Map<ResourceLocation, JsonElement> c) {
 		super(c);
 	}
 
-	@Override
-	public BlockLootBuilder newLootBuilder() {
-		return new BlockLootBuilder();
+	public void build(BlockStatePredicate blocks, Consumer<LootBuilder> b) {
+		addBlock(blocks, b);
+		ConsoleJS.SERVER.setLineNumber(true);
+		ConsoleJS.SERVER.warn("This method is no longer supported! Use event.addBlock(blockPredicate, loot => {...})");
+		ConsoleJS.SERVER.setLineNumber(false);
 	}
 
 	@Override
-	public void addJson(ResourceLocation id, JsonObject json) {
-		super.addJson(new ResourceLocation(id.getNamespace(), "blocks/" + id.getPath()), json);
+	public String getType() {
+		return "minecraft:block";
 	}
 
-	public void addBlock(BlockStatePredicate blocks, Consumer<BlockLootBuilder> b) {
-		BlockLootBuilder builder = new BlockLootBuilder();
-		b.accept(builder);
-		JsonObject json = builder.toJson(this);
+	@Override
+	public String getDirectory() {
+		return "blocks";
+	}
 
-		for (Block block : BlockStatePredicate.of(blocks).getBlocks()) {
-			ResourceLocation blockId = KubeJSRegistries.blocks().getId(block);
+	public void addBlock(BlockStatePredicate blocks, Consumer<LootBuilder> b) {
+		LootBuilder builder = createLootBuilder(null, b);
+		JsonObject json = builder.toJson();
+
+		for (Block block : blocks.getBlocks()) {
+			ResourceLocation blockId = builder.customId == null ? KubeJSRegistries.blocks().getId(block) : builder.customId;
 
 			if (blockId != null && !blockId.equals(AIR_ID)) {
 				addJson(blockId, json);
@@ -53,14 +60,8 @@ public class BlockLootEventJS extends LootEventJS<BlockLootBuilder> {
 		for (Block block : blocks.getBlocks()) {
 			ItemStack item1 = item.isEmpty() ? new ItemStack(block.asItem()) : item;
 
-			if (item1.isEmpty()) {
-				continue;
-			}
-
-			ResourceLocation blockId = KubeJSRegistries.blocks().getId(block);
-
-			if (blockId != null && !blockId.equals(AIR_ID)) {
-				build(blockId, loot -> {
+			if (!item1.isEmpty()) {
+				addBlock(new BlockStatePredicate.FromID(block), loot -> {
 					loot.pool(pool -> {
 						pool.addItem(item1);
 						pool.survivesExplosion();

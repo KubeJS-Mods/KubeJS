@@ -16,13 +16,16 @@ import org.jetbrains.annotations.Nullable;
  * @author LatvianModder
  */
 public class LootBuilderPool {
-	private RandomIntGenerator rolls = new ConstantIntValue(1);
-	private final JsonArray conditions = new JsonArray();
-	private final JsonArray entries = new JsonArray();
+	public RandomIntGenerator rolls = new ConstantIntValue(1);
+	public final JsonArray conditions = new JsonArray();
+	public final JsonArray entries = new JsonArray();
 
-	public void toJson(LootEventJS<?> event, JsonArray array) {
+	public JsonObject toJson() {
 		JsonObject json = new JsonObject();
-		json.add("rolls", event.gsonConditions.toJsonTree(rolls));
+
+		if (rolls instanceof JsonSerializableKJS) {
+			json.add("rolls", ((JsonSerializableKJS) rolls).toJsonKJS());
+		}
 
 		if (conditions.size() > 0) {
 			json.add("conditions", conditions);
@@ -32,11 +35,7 @@ public class LootBuilderPool {
 			json.add("entries", entries);
 		}
 
-		array.add(json);
-	}
-
-	public void setRolls(int r) {
-		rolls = new ConstantIntValue(r);
+		return json;
 	}
 
 	public void setUniformRolls(float min, float max) {
@@ -99,5 +98,29 @@ public class LootBuilderPool {
 
 	public void addItem(ItemStack item) {
 		addItem(item, -1, null);
+	}
+
+	public void addTag(String tag, boolean expand) {
+		JsonObject json = new JsonObject();
+		json.addProperty("type", "minecraft:tag");
+		json.addProperty("name", tag);
+		json.addProperty("expand", expand);
+		addEntry(json);
+	}
+
+	// Block
+	public void survivesExplosion() {
+		JsonObject json = new JsonObject();
+		json.addProperty("condition", "minecraft:survives_explosion");
+		addCondition(json);
+	}
+
+	// Entity
+	public void killer(JsonObject properties) {
+		JsonObject json = new JsonObject();
+		json.addProperty("condition", "minecraft:entity_properties");
+		json.addProperty("entity", "killer");
+		json.add("predicate", properties);
+		addCondition(json);
 	}
 }
