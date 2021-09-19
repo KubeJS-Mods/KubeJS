@@ -8,12 +8,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.Deserializers;
 
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
  */
-public abstract class LootEventJS<LB extends LootBuilder<?, ?>> extends EventJS {
+public abstract class LootEventJS extends EventJS {
 	private final Map<ResourceLocation, JsonElement> lootMap;
 	final Gson gsonConditions;
 	final Gson gsonFunctions;
@@ -26,15 +25,9 @@ public abstract class LootEventJS<LB extends LootBuilder<?, ?>> extends EventJS 
 		gsonLootTables = Deserializers.createLootTableSerializer().create();
 	}
 
-	public abstract LB newLootBuilder();
-
 	public void addJson(ResourceLocation id, JsonObject json) {
-		lootMap.put(id, json);
+		lootMap.put(new ResourceLocation(id.getNamespace(), getDirectory() + "/" + id.getPath()), json);
 	}
 
-	public void build(ResourceLocation id, Consumer<LB> lb) {
-		LB lootBuilder = newLootBuilder();
-		lb.accept(lootBuilder);
-		addJson(id, lootBuilder.toJson(this));
-	}
+	public abstract String getDirectory();
 }
