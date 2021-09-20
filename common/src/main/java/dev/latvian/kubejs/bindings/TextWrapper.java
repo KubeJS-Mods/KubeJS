@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.bindings;
 
 import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.text.TextKeybind;
 import dev.latvian.kubejs.text.TextString;
 import dev.latvian.kubejs.text.TextTranslate;
 
@@ -26,6 +27,10 @@ public class TextWrapper {
 
 	public static Text translate(String key, Object... objects) {
 		return new TextTranslate(key, objects);
+	}
+
+	public static Text keybind(String keybind) {
+		return new TextKeybind(keybind);
 	}
 
 	public static Text black(Object text) {
