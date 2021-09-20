@@ -36,4 +36,12 @@ public class EntityLootEventJS extends LootEventJS {
 			addJson(entityId, json);
 		}
 	}
+
+	public void modifyEntity(EntityType<?> type, Consumer<LootBuilder> b) {
+		ResourceLocation entityId = KubeJSRegistries.entityTypes().getId(type);
+
+		if (entityId != null) {
+			modify(entityId, b);
+		}
+	}
 }

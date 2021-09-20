@@ -76,7 +76,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.RandomIntGenerator;
+import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -319,6 +321,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(AABB.class, AABBWrapper::wrap);
 		typeWrappers.register(Direction.class, o -> o instanceof Direction ? (Direction) o : DirectionWrapper.ALL.get(o.toString().toLowerCase()));
 		typeWrappers.register(RandomIntGenerator.class, UtilsJS::randomIntGeneratorOf);
+		typeWrappers.register(LootContext.EntityTarget.class, o -> o == null ? null : LootContext.EntityTarget.getByName(o.toString().toLowerCase()));
+		typeWrappers.register(CopyNameFunction.NameSource.class, o -> o == null ? null : CopyNameFunction.NameSource.getByName(o.toString().toLowerCase()));
 
 		// KubeJS //
 		typeWrappers.register(MapJS.class, MapJS::of);
