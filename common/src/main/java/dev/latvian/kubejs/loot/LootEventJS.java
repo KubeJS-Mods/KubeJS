@@ -38,7 +38,7 @@ public abstract class LootEventJS extends EventJS {
 		return builder;
 	}
 
-	public void loadExisting(ResourceLocation id, Consumer<LootBuilder> b) {
+	public void modify(ResourceLocation id, Consumer<LootBuilder> b) {
 		LootBuilder builder = createLootBuilder(getDirectory().isEmpty() ? id : new ResourceLocation(id.getNamespace(), getDirectory() + "/" + id.getPath()), b);
 		addJson(id, builder.toJson());
 	}

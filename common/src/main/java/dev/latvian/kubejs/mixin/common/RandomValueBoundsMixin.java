@@ -2,6 +2,7 @@ package dev.latvian.kubejs.mixin.common;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import dev.latvian.kubejs.core.JsonSerializableKJS;
 import net.minecraft.world.level.storage.loot.RandomIntGenerator;
 import net.minecraft.world.level.storage.loot.RandomValueBounds;
@@ -21,6 +22,10 @@ public abstract class RandomValueBoundsMixin implements JsonSerializableKJS {
 
 	@Override
 	public JsonElement toJsonKJS() {
+		if (min == max) {
+			return new JsonPrimitive(min);
+		}
+
 		JsonObject o = new JsonObject();
 		o.addProperty("type", RandomIntGenerator.UNIFORM.toString());
 		o.addProperty("min", min);

@@ -2,7 +2,6 @@ package dev.latvian.kubejs.loot;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.block.BlockStatePredicate;
 import dev.latvian.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
@@ -16,8 +15,6 @@ import java.util.function.Consumer;
  * @author LatvianModder
  */
 public class BlockLootEventJS extends LootEventJS {
-	private static final ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
-
 	public BlockLootEventJS(Map<ResourceLocation, JsonElement> c) {
 		super(c);
 	}
@@ -43,10 +40,10 @@ public class BlockLootEventJS extends LootEventJS {
 		LootBuilder builder = createLootBuilder(null, b);
 		JsonObject json = builder.toJson();
 
-		for (Block block : blocks.getBlocks()) {
-			ResourceLocation blockId = builder.customId == null ? KubeJSRegistries.blocks().getId(block) : builder.customId;
+		for (ResourceLocation id : blocks.getBlockIds()) {
+			ResourceLocation blockId = builder.customId == null ? id : builder.customId;
 
-			if (blockId != null && !blockId.equals(AIR_ID)) {
+			if (blockId != null && !blockId.equals(BlockStatePredicate.AIR_ID)) {
 				addJson(blockId, json);
 			}
 		}
@@ -62,11 +59,19 @@ public class BlockLootEventJS extends LootEventJS {
 
 			if (!item1.isEmpty()) {
 				addBlock(new BlockStatePredicate.FromID(block), loot -> {
-					loot.pool(pool -> {
+					loot.addPool(pool -> {
 						pool.addItem(item1);
 						pool.survivesExplosion();
 					});
 				});
+			}
+		}
+	}
+
+	public void modifyBlock(BlockStatePredicate blocks, Consumer<LootBuilder> b) {
+		for (ResourceLocation blockId : blocks.getBlockIds()) {
+			if (blockId != null && !blockId.equals(BlockStatePredicate.AIR_ID)) {
+				modify(blockId, b);
 			}
 		}
 	}

@@ -8,6 +8,7 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.block.BlockModificationEventJS;
+import dev.latvian.kubejs.core.JsonSerializableKJS;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.ItemModificationEventJS;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -583,13 +584,18 @@ public class UtilsJS {
 		return sb.toString();
 	}
 
+	@SuppressWarnings("unchecked")
 	public static RandomIntGenerator randomIntGeneratorOf(Object o) {
 		if (o instanceof Number) {
-			return ConstantIntValue.exactly(((Number) o).intValue());
+			float f = ((Number) o).floatValue();
+			return RandomValueBounds.between(f, f);
 		} else if (o instanceof List && ((List<?>) o).size() == 2) {
 			List<Object> l = (List<Object>) o;
 
 			return RandomValueBounds.between(((Number) l.get(0)).floatValue(), ((Number) l.get(1)).floatValue());
+		} else if (o instanceof List && ((List<?>) o).size() == 1) {
+			List<Object> l = (List<Object>) o;
+			return RandomValueBounds.between(((Number) l.get(0)).floatValue(), ((Number) l.get(0)).floatValue());
 		} else if (o instanceof Map) {
 			Map<String, Object> m = (Map<String, Object>) o;
 
@@ -598,10 +604,19 @@ public class UtilsJS {
 			} else if (m.containsKey("n") && m.containsKey("p")) {
 				return BinomialDistributionGenerator.binomial(((Number) m.get("n")).intValue(), ((Number) m.get("p")).floatValue());
 			} else if (m.containsKey("value")) {
-				return ConstantIntValue.exactly(((Number) m.get("value")).intValue());
+				float f = ((Number) m.get("value")).floatValue();
+				return RandomValueBounds.between(f, f);
 			}
 		}
 
 		return ConstantIntValue.exactly(0);
+	}
+
+	public static JsonElement randomIntGeneratorJson(RandomIntGenerator gen) {
+		if (gen instanceof JsonSerializableKJS) {
+			return ((JsonSerializableKJS) gen).toJsonKJS();
+		}
+
+		throw new IllegalArgumentException("Unknown gen type: " + gen.getClass().getName());
 	}
 }

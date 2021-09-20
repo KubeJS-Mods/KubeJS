@@ -18,12 +18,15 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
  */
 public abstract class BlockStatePredicate {
+	public static final ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
+
 	public static class Empty extends BlockStatePredicate {
 		public static final Empty INSTANCE = new Empty();
 
@@ -35,6 +38,11 @@ public abstract class BlockStatePredicate {
 		@Override
 		public Collection<Block> getBlocks() {
 			return Collections.emptyList();
+		}
+
+		@Override
+		public Set<ResourceLocation> getBlockIds() {
+			return Collections.emptySet();
 		}
 	}
 
@@ -59,6 +67,12 @@ public abstract class BlockStatePredicate {
 		public Collection<BlockState> getBlockStates() {
 			return block.getStateDefinition().getPossibleStates();
 		}
+
+		@Override
+		public Set<ResourceLocation> getBlockIds() {
+			ResourceLocation blockId = KubeJSRegistries.blocks().getId(block);
+			return blockId == null ? Collections.emptySet() : Collections.singleton(blockId);
+		}
 	}
 
 	public static class FromState extends BlockStatePredicate {
@@ -81,6 +95,12 @@ public abstract class BlockStatePredicate {
 		@Override
 		public Collection<BlockState> getBlockStates() {
 			return Collections.singleton(state);
+		}
+
+		@Override
+		public Set<ResourceLocation> getBlockIds() {
+			ResourceLocation blockId = KubeJSRegistries.blocks().getId(state.getBlock());
+			return blockId == null ? Collections.emptySet() : Collections.singleton(blockId);
 		}
 	}
 
@@ -163,6 +183,17 @@ public abstract class BlockStatePredicate {
 
 			return set;
 		}
+
+		@Override
+		public Set<ResourceLocation> getBlockIds() {
+			Set<ResourceLocation> set = new LinkedHashSet<>();
+
+			for (BlockStatePredicate predicate : list) {
+				set.addAll(predicate.getBlockIds());
+			}
+
+			return set;
+		}
 	}
 
 	public static BlockStatePredicate parse(String s) {
@@ -228,5 +259,19 @@ public abstract class BlockStatePredicate {
 		}
 
 		return states;
+	}
+
+	public Set<ResourceLocation> getBlockIds() {
+		Set<ResourceLocation> set = new LinkedHashSet<>();
+
+		for (Block block : getBlocks()) {
+			ResourceLocation blockId = KubeJSRegistries.blocks().getId(block);
+
+			if (blockId != null) {
+				set.add(blockId);
+			}
+		}
+
+		return set;
 	}
 }

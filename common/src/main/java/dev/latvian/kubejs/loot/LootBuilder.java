@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class LootBuilder {
+public class LootBuilder implements FunctionContainer, ConditionContainer {
 	public String type = "minecraft:generic";
 	public ResourceLocation customId = null;
 	public JsonArray pools = new JsonArray();
@@ -62,6 +62,7 @@ public class LootBuilder {
 		pools.add(pool.toJson());
 	}
 
+	@Deprecated
 	public void pool(Consumer<LootBuilderPool> p) {
 		addPool(p);
 		ConsoleJS.SERVER.setLineNumber(true);
@@ -69,12 +70,14 @@ public class LootBuilder {
 		ConsoleJS.SERVER.setLineNumber(false);
 	}
 
-	public void addFunction(JsonObject o) {
+	public LootBuilder addFunction(JsonObject o) {
 		functions.add(o);
+		return this;
 	}
 
-	public void addCondition(JsonObject o) {
+	public LootBuilder addCondition(JsonObject o) {
 		conditions.add(o);
+		return this;
 	}
 
 	public void clearPools() {
