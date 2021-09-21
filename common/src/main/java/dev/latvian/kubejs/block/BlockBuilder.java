@@ -198,7 +198,7 @@ public class BlockBuilder extends BuilderBase {
 
 	public BlockBuilder box(double x0, double y0, double z0, double x1, double y1, double z1, boolean scale16) {
 		if (scale16) {
-			customShape.add(Shapes.box(x0 * 16D, y0 * 16D, z0 * 16D, x1 * 16D, y1 * 16D, z1 * 16D));
+			customShape.add(Shapes.box(x0 / 16D, y0 / 16D, z0 / 16D, x1 / 16D, y1 / 16D, z1 / 16D));
 		} else {
 			customShape.add(Shapes.box(x0, y0, z0, x1, y1, z1));
 		}
