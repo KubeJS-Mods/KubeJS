@@ -6,12 +6,21 @@ import dev.latvian.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.kubejs.script.data.KubeJSResourcePack;
 import dev.latvian.kubejs.util.KubeJSPlugins;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class KubeJSClientResourcePack extends KubeJSResourcePack {
+	public static List<PackResources> inject(List<PackResources> packs) {
+		List<PackResources> injected = new ArrayList<>(packs);
+		injected.add(new KubeJSClientResourcePack());
+		return injected;
+	}
+
 	public KubeJSClientResourcePack() {
 		super(PackType.CLIENT_RESOURCES);
 	}

@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.item.custom;
 
+import dev.latvian.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.kubejs.item.ItemBuilder;
 import net.minecraft.world.item.Item;
 
@@ -36,5 +37,18 @@ public class ToolItemType extends ItemType {
 		builder.attackSpeedBaseline = attackSpeedBaseline;
 		builder.unstackable();
 		builder.maxDamage(300);
+	}
+
+	@Override
+	public void generateAssets(ItemBuilder builder, AssetJsonGenerator generator) {
+		generator.itemModel(builder.id, m -> {
+			if (!builder.parentModel.isEmpty()) {
+				m.parent(builder.parentModel);
+			} else {
+				m.parent("minecraft:item/handheld");
+			}
+
+			m.texture("layer0", builder.texture.isEmpty() ? builder.newID("item/", "").toString() : builder.texture);
+		});
 	}
 }

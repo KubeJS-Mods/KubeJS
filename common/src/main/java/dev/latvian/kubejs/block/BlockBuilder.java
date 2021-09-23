@@ -44,6 +44,7 @@ public class BlockBuilder extends BuilderBase {
 	public transient String model;
 	public transient BlockItemBuilder itemBuilder;
 	public transient List<AABB> customShape;
+	public transient boolean noCollission;
 	public transient boolean notSolid;
 	public transient boolean waterlogged;
 	public transient float slipperiness = 0.6F;
@@ -83,6 +84,7 @@ public class BlockBuilder extends BuilderBase {
 		itemBuilder = new BlockItemBuilder(i);
 		itemBuilder.blockBuilder = this;
 		customShape = new ArrayList<>();
+		noCollission = false;
 		notSolid = false;
 		waterlogged = false;
 		randomTickCallback = null;
@@ -242,6 +244,11 @@ public class BlockBuilder extends BuilderBase {
 		return shape;
 	}
 
+	public BlockBuilder noCollission() {
+		noCollission = true;
+		return this;
+	}
+
 	public BlockBuilder notSolid() {
 		notSolid = true;
 		return this;
@@ -320,6 +327,12 @@ public class BlockBuilder extends BuilderBase {
 		return this;
 	}
 
+	public BlockBuilder tagBlockAndItem(String tag) {
+		defaultTags.add(tag);
+		itemBuilder.defaultTags.add(tag);
+		return this;
+	}
+
 	public Block.Properties createProperties() {
 		BlockProperties properties = BlockProperties.of(material.getMinecraftMaterial());
 		properties.sound(material.getSound());
@@ -334,6 +347,10 @@ public class BlockBuilder extends BuilderBase {
 
 		if (harvestTool != null && harvestLevel >= 0) {
 			properties.tool(harvestTool, harvestLevel);
+		}
+
+		if (noCollission) {
+			properties.noCollission();
 		}
 
 		if (notSolid) {

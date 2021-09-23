@@ -2,6 +2,7 @@ package dev.latvian.kubejs.block.custom;
 
 import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
+import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.world.level.block.Block;
 
 import java.util.function.Function;
@@ -44,11 +45,39 @@ public class ShapedBlockType extends BlockType {
 			}
 		}
 
-		if (this == FENCE) {
-			builder.defaultTags.add("minecraft:fences");
-			builder.defaultTags.add("minecraft:wooden_fences");
+		if (this == SLAB) {
+			builder.tagBlockAndItem("minecraft:slabs");
+		} else if (this == STAIRS) {
+			builder.tagBlockAndItem("minecraft:stairs");
+		} else if (this == FENCE) {
+			builder.tagBlockAndItem("minecraft:fences");
+
+			if (Platform.isForge()) {
+				builder.tagBlockAndItem("forge:fences");
+			}
+		} else if (this == FENCE_GATE) {
+			builder.tagBlockAndItem("minecraft:fence_gates");
+
+			if (Platform.isForge()) {
+				builder.tagBlockAndItem("forge:fence_gates");
+			}
 		} else if (this == WALL) {
-			builder.defaultTags.add("minecraft:walls");
+			builder.tagBlockAndItem("minecraft:walls");
+		} else if (this == WOODEN_PRESSURE_PLATE) {
+			builder.noCollission();
+			builder.tagBlockAndItem("minecraft:pressure_plates");
+			builder.tagBlockAndItem("minecraft:wooden_pressure_plates");
+		} else if (this == STONE_PRESSURE_PLATE) {
+			builder.noCollission();
+			builder.tagBlockAndItem("minecraft:pressure_plates");
+			builder.tagBlockAndItem("minecraft:stone_pressure_plates");
+		} else if (this == WOODEN_BUTTON) {
+			builder.noCollission();
+			builder.tagBlockAndItem("minecraft:buttons");
+			builder.tagBlockAndItem("minecraft:wooden_buttons");
+		} else if (this == STONE_BUTTON) {
+			builder.noCollission();
+			builder.tagBlockAndItem("minecraft:buttons");
 		}
 	}
 
