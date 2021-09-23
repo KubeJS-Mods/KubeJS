@@ -3,10 +3,13 @@ package dev.latvian.kubejs.server;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.KubeJSRegistries;
+import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.core.TagBuilderKJS;
 import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.ListJS;
@@ -374,6 +377,20 @@ public class TagEventJS<T> extends EventJS {
 			TagWrapper<T> w = new TagWrapper<>(this, entry.getKey(), entry.getValue());
 			tags.put(entry.getKey(), w);
 			ConsoleJS.SERVER.debug(type + "/#" + entry.getKey() + "; " + w.proxyList.size());
+		}
+
+		if (type.equals("items")) {
+			for (ItemBuilder item : KubeJSObjects.ITEMS.values()) {
+				for (String s : item.defaultTags) {
+					add(new ResourceLocation(s), item.id);
+				}
+			}
+		} else if (type.equals("blocks")) {
+			for (BlockBuilder block : KubeJSObjects.BLOCKS.values()) {
+				for (String s : block.defaultTags) {
+					add(new ResourceLocation(s), block.id);
+				}
+			}
 		}
 
 		ConsoleJS.SERVER.setLineNumber(true);

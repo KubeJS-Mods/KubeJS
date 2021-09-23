@@ -1,5 +1,7 @@
-package dev.latvian.kubejs.block;
+package dev.latvian.kubejs.block.custom;
 
+import dev.latvian.kubejs.block.BlockBuilder;
+import dev.latvian.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -20,31 +22,19 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 /**
  * @author LatvianModder
  */
-public class BlockJS extends Block {
+public class BasicBlockJS extends Block {
 	public final BlockBuilder properties;
-	public VoxelShape shape;
+	public final VoxelShape shape;
 
-	public BlockJS(BlockBuilder p) {
+	public BasicBlockJS(BlockBuilder p) {
 		super(p.createProperties());
 		properties = p;
-		shape = Shapes.block();
-
-		if (!properties.customShape.isEmpty()) {
-			List<VoxelShape> s = new ArrayList<>(properties.customShape);
-			shape = s.get(0);
-
-			if (s.size() > 1) {
-				s.remove(0);
-				shape = Shapes.or(shape, s.toArray(new VoxelShape[0]));
-			}
-		}
+		shape = p.createShape();
 
 		if (properties.waterlogged) {
 			registerDefaultState(stateDefinition.any().setValue(BlockStateProperties.WATERLOGGED, false));

@@ -5,19 +5,30 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.bindings.BlockWrapper;
 import dev.latvian.kubejs.bindings.IngredientWrapper;
 import dev.latvian.kubejs.bindings.ItemWrapper;
+import dev.latvian.kubejs.bindings.JsonIOWrapper;
 import dev.latvian.kubejs.bindings.JsonWrapper;
 import dev.latvian.kubejs.bindings.NBTIOWrapper;
 import dev.latvian.kubejs.bindings.RarityWrapper;
 import dev.latvian.kubejs.bindings.ScriptEventsWrapper;
 import dev.latvian.kubejs.bindings.TextWrapper;
 import dev.latvian.kubejs.bindings.UtilsWrapper;
+import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.block.BlockStatePredicate;
+import dev.latvian.kubejs.block.DetectorInstance;
 import dev.latvian.kubejs.block.MaterialJS;
 import dev.latvian.kubejs.block.MaterialListJS;
+import dev.latvian.kubejs.block.custom.BasicBlockType;
+import dev.latvian.kubejs.block.custom.BlockType;
+import dev.latvian.kubejs.block.custom.BlockTypes;
+import dev.latvian.kubejs.block.custom.ShapedBlockType;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.event.IEventHandler;
+import dev.latvian.kubejs.fluid.FluidBuilder;
 import dev.latvian.kubejs.fluid.FluidStackJS;
 import dev.latvian.kubejs.fluid.FluidWrapper;
+import dev.latvian.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.kubejs.generator.DataJsonGenerator;
+import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.custom.ArmorItemType;
 import dev.latvian.kubejs.item.custom.BasicItemType;
@@ -26,6 +37,7 @@ import dev.latvian.kubejs.item.custom.ItemTypes;
 import dev.latvian.kubejs.item.custom.ToolItemType;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
+import dev.latvian.kubejs.loot.LootBuilder;
 import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
 import dev.latvian.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.kubejs.recipe.minecraft.CookingRecipeJS;
@@ -42,6 +54,7 @@ import dev.latvian.kubejs.script.PlatformWrapper;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.util.BuilderBase;
 import dev.latvian.kubejs.util.ClassFilter;
 import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.kubejs.util.ListJS;
@@ -84,6 +97,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -92,6 +106,17 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void init() {
+		BlockTypes.register(BasicBlockType.INSTANCE);
+		BlockTypes.register(ShapedBlockType.SLAB);
+		BlockTypes.register(ShapedBlockType.STAIRS);
+		BlockTypes.register(ShapedBlockType.FENCE);
+		BlockTypes.register(ShapedBlockType.FENCE_GATE);
+		BlockTypes.register(ShapedBlockType.WALL);
+		BlockTypes.register(ShapedBlockType.WOODEN_PRESSURE_PLATE);
+		BlockTypes.register(ShapedBlockType.STONE_PRESSURE_PLATE);
+		BlockTypes.register(ShapedBlockType.WOODEN_BUTTON);
+		BlockTypes.register(ShapedBlockType.STONE_BUTTON);
+
 		ItemTypes.register(BasicItemType.INSTANCE);
 		ItemTypes.register(ToolItemType.SWORD);
 		ItemTypes.register(ToolItemType.PICKAXE);
@@ -190,7 +215,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("UUID", UUIDWrapper.class);
 		event.add("uuid", UUIDWrapper.class);
 		event.add("JsonUtils", JsonWrapper.class);
-		event.add("json", JsonWrapper.class);
+		event.add("JsonIO", JsonIOWrapper.class);
 		event.add("Block", BlockWrapper.class);
 		event.add("block", BlockWrapper.class);
 		event.add("Item", ItemWrapper.class);
@@ -336,6 +361,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(RecipeFilter.class, RecipeFilter::of);
 		typeWrappers.register(MaterialJS.class, MaterialListJS.INSTANCE::of);
 		typeWrappers.register(ItemType.class, ItemTypes::get);
+		typeWrappers.register(BlockType.class, BlockTypes::get);
 		typeWrappers.register(Color.class, ColorWrapper::of);
 
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
@@ -406,6 +432,76 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		if (Platform.isModLoaded("botania")) {
 			event.register(new ResourceLocation("botania:runic_altar"), BotaniaRunicAltarRecipeJS::new);
+		}
+	}
+
+	@Override
+	public void generateDataJsons(DataJsonGenerator generator) {
+		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
+			if (builder.lootTable != null) {
+				LootBuilder lootBuilder = new LootBuilder(null);
+				lootBuilder.type = "minecraft:block";
+				builder.lootTable.accept(lootBuilder);
+				generator.json(builder.newID("loot_tables/blocks/", ""), lootBuilder.toJson());
+			}
+
+			builder.type.generateData(builder, generator);
+		}
+
+		for (ItemBuilder builder : KubeJSObjects.ITEMS.values()) {
+			builder.type.generateData(builder, generator);
+		}
+	}
+
+	@Override
+	public void generateAssetJsons(AssetJsonGenerator generator) {
+		for (DetectorInstance detector : KubeJSObjects.DETECTORS.values()) {
+			generator.blockState(new ResourceLocation(KubeJS.MOD_ID, "detector_" + detector.id), bs -> {
+				bs.variant("powered=false", "kubejs:block/detector");
+				bs.variant("powered=true", "kubejs:block/detector_on");
+			});
+
+			generator.itemModel(new ResourceLocation(KubeJS.MOD_ID, "detector_" + detector.id), m -> {
+				m.parent(KubeJS.MOD_ID + ":block/detector");
+			});
+		}
+
+		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
+			builder.type.generateAssets(builder, generator);
+		}
+
+		for (ItemBuilder builder : KubeJSObjects.ITEMS.values()) {
+			builder.type.generateAssets(builder, generator);
+		}
+
+		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values()) {
+			generator.json(builder.newID("blockstates/", ""), builder.getBlockstateJson());
+			generator.json(builder.newID("models/block/", ""), builder.getBlockModelJson());
+
+			JsonObject bucketModel = new JsonObject();
+			bucketModel.addProperty("parent", "kubejs:item/generated_bucket");
+			generator.json(builder.newID("models/item/", "_bucket"), bucketModel);
+		}
+	}
+
+	@Override
+	public void generateLang(Map<String, String> lang) {
+		lang.put("itemGroup.kubejs.kubejs", "KubeJS");
+
+		for (BuilderBase builder : KubeJSObjects.ALL) {
+			if (!builder.displayName.isEmpty()) {
+				lang.put(builder.translationKey, builder.displayName);
+			}
+		}
+
+		for (DetectorInstance detector : KubeJSObjects.DETECTORS.values()) {
+			lang.put("block.kubejs.detector_" + detector.id, "KubeJS Detector [" + detector.id + "]");
+		}
+
+		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values()) {
+			if (!builder.displayName.isEmpty()) {
+				lang.put(builder.bucketItem.getDescriptionId(), builder.displayName + " Bucket");
+			}
 		}
 	}
 }

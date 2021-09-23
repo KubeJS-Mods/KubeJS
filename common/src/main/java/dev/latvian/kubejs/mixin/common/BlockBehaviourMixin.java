@@ -1,10 +1,13 @@
 package dev.latvian.kubejs.mixin.common;
 
+import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.core.BlockKJS;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 /**
@@ -12,6 +15,20 @@ import org.spongepowered.asm.mixin.gen.Accessor;
  */
 @Mixin(BlockBehaviour.class)
 public abstract class BlockBehaviourMixin implements BlockKJS {
+	@Unique
+	private BlockBuilder blockBuilderKJS;
+
+	@Override
+	@Nullable
+	public BlockBuilder getBlockBuilderKJS() {
+		return blockBuilderKJS;
+	}
+
+	@Override
+	public void setBlockBuilderKJS(BlockBuilder b) {
+		blockBuilderKJS = b;
+	}
+
 	@Override
 	@Accessor("material")
 	public abstract void setMaterialKJS(Material v);

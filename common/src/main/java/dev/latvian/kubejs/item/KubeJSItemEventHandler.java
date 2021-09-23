@@ -72,7 +72,7 @@ public class KubeJSItemEventHandler {
 
 		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values()) {
 			builder.bucketItem = buildBucket(builder);
-			KubeJSRegistries.items().register(new ResourceLocation(builder.id.getNamespace(), builder.id.getPath() + "_bucket"), () -> builder.bucketItem);
+			KubeJSRegistries.items().register(builder.newID("", "_bucket"), () -> builder.bucketItem);
 		}
 
 		for (DetectorInstance detector : KubeJSObjects.DETECTORS.values()) {

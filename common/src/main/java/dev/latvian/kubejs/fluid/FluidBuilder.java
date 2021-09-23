@@ -121,7 +121,7 @@ public class FluidBuilder extends BuilderBase {
 			blockstateJson = new JsonObject();
 			JsonObject variants = new JsonObject();
 			JsonObject modelo = new JsonObject();
-			modelo.addProperty("model", id.getNamespace() + ":block/" + id.getPath());
+			modelo.addProperty("model", newID("block/", "").toString());
 			variants.add("", modelo);
 			blockstateJson.add("variants", variants);
 		}

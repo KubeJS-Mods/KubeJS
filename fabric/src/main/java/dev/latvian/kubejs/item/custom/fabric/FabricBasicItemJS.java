@@ -1,7 +1,7 @@
-package dev.latvian.kubejs.item.fabric;
+package dev.latvian.kubejs.item.custom.fabric;
 
 import dev.latvian.kubejs.item.ItemBuilder;
-import dev.latvian.kubejs.item.ItemJS;
+import dev.latvian.kubejs.item.custom.BasicItemJS;
 import net.fabricmc.fabric.api.tool.attribute.v1.DynamicAttributeTool;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.Tag;
@@ -13,11 +13,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FabricItemJS extends ItemJS implements DynamicAttributeTool {
+public class FabricBasicItemJS extends BasicItemJS implements DynamicAttributeTool {
 	private final Map<ResourceLocation, Integer> toolsMap;
 	private final float miningSpeed;
 
-	public FabricItemJS(ItemBuilder p) {
+	public FabricBasicItemJS(ItemBuilder p) {
 		super(p);
 		toolsMap = new HashMap<>();
 

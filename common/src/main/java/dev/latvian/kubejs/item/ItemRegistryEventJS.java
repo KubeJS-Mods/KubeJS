@@ -1,16 +1,16 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSObjects;
-import dev.latvian.kubejs.block.BlockItemBuilder;
 import dev.latvian.kubejs.event.EventJS;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
  */
 public class ItemRegistryEventJS extends EventJS {
+	@Deprecated
 	public ItemBuilder create(String name) {
 		ItemBuilder builder = new ItemBuilder(name);
 		KubeJSObjects.ITEMS.put(builder.id, builder);
@@ -18,10 +18,11 @@ public class ItemRegistryEventJS extends EventJS {
 		return builder;
 	}
 
-	@Deprecated
-	public BlockItemBuilder createBlockItem(String name) {
-		KubeJS.LOGGER.error("This method is deprecated! Replaced by block registry .item(function(item) { /*chained item functions here*/ }) or .noItem()");
-		return new BlockItemBuilder(name);
+	public void create(String name, Consumer<ItemBuilder> callback) {
+		ItemBuilder builder = new ItemBuilder(name);
+		callback.accept(builder);
+		KubeJSObjects.ITEMS.put(builder.id, builder);
+		KubeJSObjects.ALL.add(builder);
 	}
 
 	public Supplier<FoodBuilder> createFood(Supplier<FoodBuilder> builder) {

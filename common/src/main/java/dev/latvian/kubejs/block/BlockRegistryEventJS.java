@@ -3,15 +3,25 @@ package dev.latvian.kubejs.block;
 import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.event.EventJS;
 
+import java.util.function.Consumer;
+
 /**
  * @author LatvianModder
  */
 public class BlockRegistryEventJS extends EventJS {
+	@Deprecated
 	public BlockBuilder create(String name) {
 		BlockBuilder builder = new BlockBuilder(name);
 		KubeJSObjects.BLOCKS.put(builder.id, builder);
 		KubeJSObjects.ALL.add(builder);
 		return builder;
+	}
+
+	public void create(String name, Consumer<BlockBuilder> callback) {
+		BlockBuilder builder = new BlockBuilder(name);
+		callback.accept(builder);
+		KubeJSObjects.BLOCKS.put(builder.id, builder);
+		KubeJSObjects.ALL.add(builder);
 	}
 
 	public void addDetector(String id) {
