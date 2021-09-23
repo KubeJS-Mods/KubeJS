@@ -31,7 +31,6 @@ import me.shedaniel.architectury.event.events.client.ClientTickEvent;
 import me.shedaniel.architectury.hooks.ScreenHooks;
 import me.shedaniel.architectury.registry.ColorHandlers;
 import me.shedaniel.architectury.registry.RenderTypes;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -41,12 +40,12 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.TooltipFlag;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -61,6 +60,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -71,6 +71,7 @@ import java.util.Objects;
 public class KubeJSClientEventHandler {
 	private static final ResourceLocation RECIPE_BUTTON_TEXTURE = new ResourceLocation("textures/gui/recipe_button.png");
 	public static Map<Item, List<ItemTooltipEventJS.StaticTooltipHandler>> staticItemTooltips = null;
+	private final Map<ResourceLocation, TagInstance> tempTagNames = new LinkedHashMap<>();
 
 	public void init() {
 		ClientLifecycleEvent.CLIENT_SETUP.register(this::clientSetup);
@@ -128,20 +129,32 @@ public class KubeJSClientEventHandler {
 
 		if (advanced && ClientProperties.get().getShowTagNames() && Screen.hasShiftDown()) {
 			for (ResourceLocation tag : Tags.byItemStack(stack)) {
-				lines.add(new TextComponent(" #" + tag + " [item]").withStyle(ChatFormatting.DARK_GRAY));
+				tempTagNames.computeIfAbsent(tag, TagInstance::new).item = true;
 			}
 
 			if (stack.getItem() instanceof BlockItem) {
 				for (ResourceLocation tag : Tags.byBlock(((BlockItem) stack.getItem()).getBlock())) {
-					lines.add(new TextComponent(" #" + tag + " [block]").withStyle(ChatFormatting.DARK_GRAY));
+					tempTagNames.computeIfAbsent(tag, TagInstance::new).block = true;
 				}
 			}
 
 			if (stack.getItem() instanceof BucketItemKJS) {
 				for (ResourceLocation tag : Tags.byFluid(((BucketItemKJS) stack.getItem()).getFluidKJS())) {
-					lines.add(new TextComponent(" #" + tag + " [fluid]").withStyle(ChatFormatting.DARK_GRAY));
+					tempTagNames.computeIfAbsent(tag, TagInstance::new).fluid = true;
 				}
 			}
+
+			if (stack.getItem() instanceof SpawnEggItem) {
+				for (ResourceLocation tag : Tags.byEntityType(((SpawnEggItem) stack.getItem()).getType(stack.getTag()))) {
+					tempTagNames.computeIfAbsent(tag, TagInstance::new).entity = true;
+				}
+			}
+
+			for (TagInstance instance : tempTagNames.values()) {
+				lines.add(instance.toText());
+			}
+
+			tempTagNames.clear();
 		}
 
 		if (staticItemTooltips == null) {
