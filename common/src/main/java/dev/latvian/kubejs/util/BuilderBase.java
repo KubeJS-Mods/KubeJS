@@ -35,4 +35,12 @@ public abstract class BuilderBase {
 		displayName = name;
 		return this;
 	}
+
+	public ResourceLocation newID(String pre, String post) {
+		if (pre.isEmpty() && post.isEmpty()) {
+			return id;
+		}
+
+		return new ResourceLocation(id.getNamespace() + ':' + pre + id.getPath() + post);
+	}
 }

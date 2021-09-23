@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.item.custom;
 
 import dev.latvian.kubejs.item.ItemBuilder;
-import dev.latvian.kubejs.item.ItemJS;
 import net.minecraft.world.item.Item;
 
 public class BasicItemType extends ItemType {
@@ -13,6 +12,6 @@ public class BasicItemType extends ItemType {
 
 	@Override
 	public Item createItem(ItemBuilder builder) {
-		return new ItemJS(builder);
+		return BasicItemUtil.createBasicItem(builder);
 	}
 }

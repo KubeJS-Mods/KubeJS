@@ -71,8 +71,7 @@ public abstract class KubeJSResourcePack implements PackResources {
 			return Files.newInputStream(file);
 		} else {
 			if (location.getPath().endsWith(".json")) {
-				String p = location.getPath().substring(0, location.getPath().length() - 5);
-				JsonElement json = generateJsonFile(location.getNamespace(), p);
+				JsonElement json = getCachedResources().get(location);
 
 				if (json != null) {
 					return new ByteArrayInputStream(json.toString().getBytes(StandardCharsets.UTF_8));
@@ -86,8 +85,7 @@ public abstract class KubeJSResourcePack implements PackResources {
 	@Override
 	public boolean hasResource(PackType type, ResourceLocation location) {
 		if (location.getPath().endsWith(".json")) {
-			String p = location.getPath().substring(0, location.getPath().length() - 5);
-			JsonElement json = generateJsonFile(location.getNamespace(), p);
+			JsonElement json = getCachedResources().get(location);
 
 			if (json != null) {
 				return true;
@@ -99,19 +97,20 @@ public abstract class KubeJSResourcePack implements PackResources {
 
 	public Map<ResourceLocation, JsonElement> getCachedResources() {
 		if (cachedResources == null) {
+			Map<ResourceLocation, JsonElement> map = new HashMap<>();
+			generateJsonFiles(map);
+
 			cachedResources = new HashMap<>();
-			generateJsonFiles(cachedResources);
+
+			for (Map.Entry<ResourceLocation, JsonElement> entry : map.entrySet()) {
+				cachedResources.put(new ResourceLocation(entry.getKey().getNamespace(), entry.getKey().getPath() + ".json"), entry.getValue());
+			}
 		}
 
 		return cachedResources;
 	}
 
 	public void generateJsonFiles(Map<ResourceLocation, JsonElement> map) {
-	}
-
-	@Nullable
-	public JsonElement generateJsonFile(String namespace, String path) {
-		return getCachedResources().get(new ResourceLocation(namespace, path));
 	}
 
 	@Override

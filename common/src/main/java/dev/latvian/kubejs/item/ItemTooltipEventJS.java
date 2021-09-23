@@ -58,8 +58,10 @@ public class ItemTooltipEventJS extends EventJS {
 
 		@Override
 		public void tooltip(ItemStack stack, boolean advanced, List<Component> components) {
-			List<Object> text = new ArrayList<>();
+			List<Object> text = new ArrayList<>(components);
 			handler.accept(ItemStackJS.of(stack), advanced, text);
+
+			components.clear();
 
 			for (Object o : text) {
 				components.add(Text.componentOf(o));

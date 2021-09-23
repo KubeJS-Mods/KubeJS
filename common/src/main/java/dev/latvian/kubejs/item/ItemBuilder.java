@@ -25,8 +25,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -60,9 +62,10 @@ public class ItemBuilder extends BuilderBase {
 	public transient final List<Component> tooltip;
 	public transient CreativeModeTab group;
 	public transient Int2IntOpenHashMap color;
-	public transient String texture;
-	public transient String parentModel;
+	public String texture;
+	public String parentModel;
 	public transient FoodBuilder foodBuilder;
+	public transient Set<String> defaultTags;
 
 	// Tools //
 	public transient Tier toolTier;
@@ -74,7 +77,7 @@ public class ItemBuilder extends BuilderBase {
 
 	public transient Item item;
 
-	private JsonObject modelJson;
+	public JsonObject modelJson;
 
 	public ItemBuilder(String i) {
 		super(i);
@@ -91,12 +94,14 @@ public class ItemBuilder extends BuilderBase {
 		group = KubeJS.tab;
 		color = new Int2IntOpenHashMap();
 		color.defaultReturnValue(0xFFFFFFFF);
-		texture = id.getNamespace() + ":item/" + id.getPath();
-		parentModel = "item/generated";
+		texture = "";
+		parentModel = "";
 		foodBuilder = null;
+		defaultTags = new HashSet<>();
 		toolTier = Tiers.IRON;
 		armorTier = ArmorMaterials.IRON;
 		displayName = "";
+		modelJson = null;
 	}
 
 	@Override
@@ -238,6 +243,11 @@ public class ItemBuilder extends BuilderBase {
 		return attackSpeed;
 	}
 
+	public ItemBuilder tag(String tag) {
+		defaultTags.add(tag);
+		return this;
+	}
+
 	public Item.Properties createItemProperties() {
 		Item.Properties properties = new Item.Properties();
 
@@ -271,22 +281,5 @@ public class ItemBuilder extends BuilderBase {
 	@ExpectPlatform
 	private static void appendToolType(Item.Properties properties, ToolType type, Integer level) {
 		throw new AssertionError();
-	}
-
-	public void setModelJson(JsonObject o) {
-		modelJson = o;
-	}
-
-	public JsonObject getModelJson() {
-		if (modelJson == null) {
-			modelJson = new JsonObject();
-			modelJson.addProperty("parent", parentModel);
-
-			JsonObject textures = new JsonObject();
-			textures.addProperty("layer0", texture);
-			modelJson.add("textures", textures);
-		}
-
-		return modelJson;
 	}
 }

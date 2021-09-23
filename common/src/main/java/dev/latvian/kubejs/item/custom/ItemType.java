@@ -1,5 +1,7 @@
 package dev.latvian.kubejs.item.custom;
 
+import dev.latvian.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.kubejs.generator.DataJsonGenerator;
 import dev.latvian.kubejs.item.ItemBuilder;
 import net.minecraft.world.item.Item;
 
@@ -13,5 +15,20 @@ public abstract class ItemType {
 	public abstract Item createItem(ItemBuilder builder);
 
 	public void applyDefaults(ItemBuilder builder) {
+	}
+
+	public void generateAssets(ItemBuilder builder, AssetJsonGenerator generator) {
+		generator.itemModel(builder.id, m -> {
+			if (!builder.parentModel.isEmpty()) {
+				m.parent(builder.parentModel);
+			} else {
+				m.parent("minecraft:item/generated");
+			}
+
+			m.texture("layer0", builder.texture.isEmpty() ? builder.newID("item/", "").toString() : builder.texture);
+		});
+	}
+
+	public void generateData(ItemBuilder builder, DataJsonGenerator generator) {
 	}
 }

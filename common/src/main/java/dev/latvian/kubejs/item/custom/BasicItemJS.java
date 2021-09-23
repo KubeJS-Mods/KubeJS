@@ -1,7 +1,8 @@
-package dev.latvian.kubejs.item;
+package dev.latvian.kubejs.item.custom;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import dev.latvian.kubejs.item.ItemBuilder;
 import me.shedaniel.architectury.registry.fuel.FuelRegistry;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -13,11 +14,11 @@ import net.minecraft.world.item.ItemStack;
 /**
  * @author LatvianModder
  */
-public class ItemJS extends Item {
+public class BasicItemJS extends Item {
 	private final ImmutableMultimap<Attribute, AttributeModifier> attributes;
 	private ItemStack containerItem;
 
-	public ItemJS(ItemBuilder p) {
+	public BasicItemJS(ItemBuilder p) {
 		super(p.createItemProperties());
 		Float attackDamage = p.getAttackDamage();
 		Float attackSpeed = p.getAttackSpeed();

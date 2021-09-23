@@ -1,19 +1,25 @@
 package dev.latvian.kubejs.block;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dev.latvian.kubejs.block.custom.BasicBlockType;
+import dev.latvian.kubejs.block.custom.BlockType;
+import dev.latvian.kubejs.loot.LootBuilder;
 import dev.latvian.kubejs.util.BuilderBase;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import me.shedaniel.architectury.registry.BlockProperties;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -22,41 +28,43 @@ import java.util.function.Consumer;
 public class BlockBuilder extends BuilderBase {
 	public static BlockBuilder current;
 
-	public MaterialJS material;
-	public float hardness;
-	public float resistance;
-	public float lightLevel;
-	public ToolType harvestTool;
-	public int harvestLevel;
-	public boolean opaque;
-	public boolean fullBlock;
-	public boolean requiresTool;
-	public String renderType;
-	public Int2IntOpenHashMap color;
-	public final JsonObject textures;
-	public String model;
-	public BlockItemBuilder itemBuilder;
-	public List<VoxelShape> customShape;
-	public boolean notSolid;
-	public boolean waterlogged;
-	public boolean noDrops;
-	public float slipperiness = 0.6F;
-	public float speedFactor = 1.0F;
-	public float jumpFactor = 1.0F;
+	public transient BlockType type;
+	public transient MaterialJS material;
+	public transient float hardness;
+	public transient float resistance;
+	public transient float lightLevel;
+	public transient ToolType harvestTool;
+	public transient int harvestLevel;
+	public transient boolean opaque;
+	public transient boolean fullBlock;
+	public transient boolean requiresTool;
+	public transient String renderType;
+	public transient Int2IntOpenHashMap color;
+	public transient final JsonObject textures;
+	public transient String model;
+	public transient BlockItemBuilder itemBuilder;
+	public transient List<AABB> customShape;
+	public transient boolean notSolid;
+	public transient boolean waterlogged;
+	public transient float slipperiness = 0.6F;
+	public transient float speedFactor = 1.0F;
+	public transient float jumpFactor = 1.0F;
 	public Consumer<RandomTickCallbackJS> randomTickCallback;
-	private JsonObject lootTableJson;
-	private JsonObject blockstateJson;
-	private JsonObject modelJson;
-	public boolean noValidSpawns;
-	public boolean suffocating;
-	public boolean viewBlocking;
-	public boolean redstoneConductor;
-	public boolean transparent;
+	public Consumer<LootBuilder> lootTable;
+	public JsonObject blockstateJson;
+	public JsonObject modelJson;
+	public transient boolean noValidSpawns;
+	public transient boolean suffocating;
+	public transient boolean viewBlocking;
+	public transient boolean redstoneConductor;
+	public transient boolean transparent;
+	public transient Set<String> defaultTags;
 
-	public BlockJS block;
+	public transient Block block;
 
 	public BlockBuilder(String i) {
 		super(i);
+		type = BasicBlockType.INSTANCE;
 		material = MaterialListJS.INSTANCE.map.get("wood");
 		hardness = 0.5F;
 		resistance = -1F;
@@ -71,25 +79,38 @@ public class BlockBuilder extends BuilderBase {
 		color.defaultReturnValue(0xFFFFFFFF);
 		textures = new JsonObject();
 		texture(id.getNamespace() + ":block/" + id.getPath());
-		model = id.getNamespace() + ":block/" + id.getPath();
+		model = "";
 		itemBuilder = new BlockItemBuilder(i);
 		itemBuilder.blockBuilder = this;
-		itemBuilder.parentModel = model;
 		customShape = new ArrayList<>();
 		notSolid = false;
 		waterlogged = false;
-		noDrops = false;
 		randomTickCallback = null;
+
+		lootTable = loot -> loot.addPool(pool -> {
+			pool.survivesExplosion();
+			pool.addItem(new ItemStack(block));
+		});
+
+		blockstateJson = null;
+		modelJson = null;
 		noValidSpawns = false;
 		suffocating = true;
 		viewBlocking = true;
 		redstoneConductor = true;
 		transparent = false;
+		defaultTags = new HashSet<>();
 	}
 
 	@Override
 	public String getBuilderType() {
 		return "block";
+	}
+
+	public BlockBuilder type(BlockType t) {
+		type = t;
+		type.applyDefaults(this);
+		return this;
 	}
 
 	public BlockBuilder material(MaterialJS m) {
@@ -180,6 +201,7 @@ public class BlockBuilder extends BuilderBase {
 	public BlockBuilder item(@Nullable Consumer<BlockItemBuilder> i) {
 		if (i == null) {
 			itemBuilder = null;
+			lootTable = null;
 		} else {
 			i.accept(itemBuilder);
 		}
@@ -198,12 +220,26 @@ public class BlockBuilder extends BuilderBase {
 
 	public BlockBuilder box(double x0, double y0, double z0, double x1, double y1, double z1, boolean scale16) {
 		if (scale16) {
-			customShape.add(Shapes.box(x0 * 16D, y0 * 16D, z0 * 16D, x1 * 16D, y1 * 16D, z1 * 16D));
+			customShape.add(new AABB(x0 / 16D, y0 / 16D, z0 / 16D, x1 / 16D, y1 / 16D, z1 / 16D));
 		} else {
-			customShape.add(Shapes.box(x0, y0, z0, x1, y1, z1));
+			customShape.add(new AABB(x0, y0, z0, x1, y1, z1));
 		}
 
 		return this;
+	}
+
+	public VoxelShape createShape() {
+		if (customShape.isEmpty()) {
+			return Shapes.block();
+		}
+
+		VoxelShape shape = Shapes.create(customShape.get(0));
+
+		for (int i = 1; i < customShape.size(); i++) {
+			shape = Shapes.or(shape, Shapes.create(customShape.get(i)));
+		}
+
+		return shape;
 	}
 
 	public BlockBuilder notSolid() {
@@ -217,7 +253,7 @@ public class BlockBuilder extends BuilderBase {
 	}
 
 	public BlockBuilder noDrops() {
-		noDrops = true;
+		lootTable = null;
 		return this;
 	}
 
@@ -244,115 +280,6 @@ public class BlockBuilder extends BuilderBase {
 	public BlockBuilder randomTick(@Nullable Consumer<RandomTickCallbackJS> randomTickCallback) {
 		this.randomTickCallback = randomTickCallback;
 		return this;
-	}
-
-	public void setLootTableJson(JsonObject o) {
-		lootTableJson = o;
-	}
-
-	public JsonObject getLootTableJson() {
-		if (lootTableJson == null) {
-			lootTableJson = new JsonObject();
-			lootTableJson.addProperty("type", "minecraft:block");
-			JsonArray pools = new JsonArray();
-			JsonObject pool = new JsonObject();
-			pool.addProperty("rolls", 1);
-			JsonArray entries = new JsonArray();
-			JsonObject entry = new JsonObject();
-			entry.addProperty("type", "minecraft:item");
-			entry.addProperty("name", id.toString());
-			entries.add(entry);
-			pool.add("entries", entries);
-			JsonArray conditions = new JsonArray();
-			JsonObject condition = new JsonObject();
-			condition.addProperty("condition", "minecraft:survives_explosion");
-			conditions.add(condition);
-			pool.add("conditions", conditions);
-			pools.add(pool);
-			lootTableJson.add("pools", pools);
-		}
-
-		return lootTableJson;
-	}
-
-	public void setBlockstateJson(JsonObject o) {
-		blockstateJson = o;
-	}
-
-	public JsonObject getBlockstateJson() {
-		if (blockstateJson == null) {
-			blockstateJson = new JsonObject();
-			JsonObject variants = new JsonObject();
-			JsonObject modelo = new JsonObject();
-			modelo.addProperty("model", model);
-			variants.add("", modelo);
-			blockstateJson.add("variants", variants);
-		}
-
-		return blockstateJson;
-	}
-
-	public void setModelJson(JsonObject o) {
-		modelJson = o;
-	}
-
-	public JsonObject getModelJson() {
-		if (modelJson == null) {
-			modelJson = new JsonObject();
-
-			String particle = textures.get("particle").getAsString();
-
-			if (areAllTexturesEqual(textures, particle)) {
-				modelJson.addProperty("parent", "block/cube_all");
-				JsonObject textures = new JsonObject();
-				textures.addProperty("all", particle);
-				modelJson.add("textures", textures);
-			} else {
-				modelJson.addProperty("parent", "block/cube");
-				modelJson.add("textures", textures);
-			}
-
-			if (!color.isEmpty()) {
-				JsonObject cube = new JsonObject();
-				JsonArray from = new JsonArray();
-				from.add(0);
-				from.add(0);
-				from.add(0);
-				cube.add("from", from);
-				JsonArray to = new JsonArray();
-				to.add(16);
-				to.add(16);
-				to.add(16);
-				cube.add("to", to);
-				JsonObject faces = new JsonObject();
-
-				for (Direction direction : Direction.values()) {
-					JsonObject f = new JsonObject();
-					f.addProperty("texture", "#" + direction.getSerializedName());
-					f.addProperty("cullface", direction.getSerializedName());
-					f.addProperty("tintindex", 0);
-					faces.add(direction.getSerializedName(), f);
-				}
-
-				cube.add("faces", faces);
-
-				JsonArray elements = new JsonArray();
-				elements.add(cube);
-				modelJson.add("elements", elements);
-			}
-		}
-
-		return modelJson;
-	}
-
-	private boolean areAllTexturesEqual(JsonObject tex, String t) {
-		for (Direction direction : Direction.values()) {
-			if (!tex.get(direction.getSerializedName()).getAsString().equals(t)) {
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	public BlockBuilder noValidSpawns(boolean b) {
@@ -388,6 +315,11 @@ public class BlockBuilder extends BuilderBase {
 		return defaultCutout().renderType("translucent");
 	}
 
+	public BlockBuilder tag(String tag) {
+		defaultTags.add(tag);
+		return this;
+	}
+
 	public Block.Properties createProperties() {
 		BlockProperties properties = BlockProperties.of(material.getMinecraftMaterial());
 		properties.sound(material.getSound());
@@ -412,7 +344,7 @@ public class BlockBuilder extends BuilderBase {
 			properties.requiresCorrectToolForDrops();
 		}
 
-		if (noDrops) {
+		if (lootTable == null) {
 			properties.noDrops();
 		}
 
@@ -434,6 +366,10 @@ public class BlockBuilder extends BuilderBase {
 
 		if (!redstoneConductor) {
 			properties.isRedstoneConductor((blockState, blockGetter, blockPos) -> false);
+		}
+
+		if (randomTickCallback != null) {
+			properties.randomTicks();
 		}
 
 		return properties;

@@ -1,5 +1,7 @@
 package dev.latvian.kubejs;
 
+import dev.latvian.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.kubejs.generator.DataJsonGenerator;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
 import dev.latvian.kubejs.script.BindingsEvent;
@@ -8,6 +10,8 @@ import dev.latvian.kubejs.server.AttachServerDataEvent;
 import dev.latvian.kubejs.util.ClassFilter;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
+
+import java.util.Map;
 
 public class KubeJSPlugin {
 	public void init() {
@@ -35,5 +39,14 @@ public class KubeJSPlugin {
 	}
 
 	public void attachPlayerData(AttachPlayerDataEvent event) {
+	}
+
+	public void generateDataJsons(DataJsonGenerator generator) {
+	}
+
+	public void generateAssetJsons(AssetJsonGenerator generator) {
+	}
+
+	public void generateLang(Map<String, String> lang) {
 	}
 }

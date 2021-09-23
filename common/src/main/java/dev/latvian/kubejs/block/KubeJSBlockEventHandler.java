@@ -4,6 +4,7 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.KubeJSRegistries;
+import dev.latvian.kubejs.core.BlockKJS;
 import dev.latvian.kubejs.fluid.FluidBuilder;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.event.events.BlockEvent;
@@ -46,7 +47,13 @@ public class KubeJSBlockEventHandler {
 	private static void registry() {
 		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
 			BlockBuilder.current = builder;
-			builder.block = new BlockJS(builder);
+
+			builder.block = builder.type.createBlock(builder);
+
+			if (builder.block instanceof BlockKJS) {
+				((BlockKJS) builder.block).setBlockBuilderKJS(builder);
+			}
+
 			KubeJSRegistries.blocks().register(builder.id, () -> builder.block);
 		}
 
