@@ -26,6 +26,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -183,5 +184,9 @@ public abstract class WorldJS implements WithAttachedData {
 
 	public void spawnFireworks(double x, double y, double z, FireworksJS f) {
 		minecraftWorld.addFreshEntity(f.createFireworkRocket(minecraftWorld, x, y, z));
+	}
+
+	public EntityArrayList getEntitiesWithin(AABB aabb) {
+		return new EntityArrayList(this, minecraftWorld.getEntities(null, aabb));
 	}
 }
