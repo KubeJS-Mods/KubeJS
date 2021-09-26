@@ -10,11 +10,17 @@ import dev.latvian.kubejs.server.AttachServerDataEvent;
 import dev.latvian.kubejs.util.ClassFilter;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.util.Map;
 
 public class KubeJSPlugin {
 	public void init() {
+	}
+
+	@Environment(EnvType.CLIENT)
+	public void clientInit() {
 	}
 
 	public void afterInit() {

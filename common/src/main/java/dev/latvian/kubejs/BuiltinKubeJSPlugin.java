@@ -13,6 +13,7 @@ import dev.latvian.kubejs.bindings.ScriptEventsWrapper;
 import dev.latvian.kubejs.bindings.TextWrapper;
 import dev.latvian.kubejs.bindings.UtilsWrapper;
 import dev.latvian.kubejs.block.BlockBuilder;
+import dev.latvian.kubejs.block.BlockRegistryEventJS;
 import dev.latvian.kubejs.block.BlockStatePredicate;
 import dev.latvian.kubejs.block.DetectorInstance;
 import dev.latvian.kubejs.block.MaterialJS;
@@ -21,17 +22,27 @@ import dev.latvian.kubejs.block.custom.BasicBlockType;
 import dev.latvian.kubejs.block.custom.BlockType;
 import dev.latvian.kubejs.block.custom.BlockTypes;
 import dev.latvian.kubejs.block.custom.ShapedBlockType;
+import dev.latvian.kubejs.client.painter.Painter;
+import dev.latvian.kubejs.client.painter.screen.AtlasTextureObject;
+import dev.latvian.kubejs.client.painter.screen.GradientObject;
+import dev.latvian.kubejs.client.painter.screen.RectangleObject;
+import dev.latvian.kubejs.client.painter.screen.ScreenGroup;
+import dev.latvian.kubejs.client.painter.screen.TextObject;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.event.IEventHandler;
 import dev.latvian.kubejs.fluid.FluidBuilder;
+import dev.latvian.kubejs.fluid.FluidRegistryEventJS;
 import dev.latvian.kubejs.fluid.FluidStackJS;
 import dev.latvian.kubejs.fluid.FluidWrapper;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.kubejs.generator.DataJsonGenerator;
 import dev.latvian.kubejs.item.ItemBuilder;
+import dev.latvian.kubejs.item.ItemRegistryEventJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.custom.ArmorItemType;
 import dev.latvian.kubejs.item.custom.BasicItemType;
+import dev.latvian.kubejs.item.custom.ItemArmorTierEventJS;
+import dev.latvian.kubejs.item.custom.ItemToolTierEventJS;
 import dev.latvian.kubejs.item.custom.ItemType;
 import dev.latvian.kubejs.item.custom.ItemTypes;
 import dev.latvian.kubejs.item.custom.ToolItemType;
@@ -70,6 +81,8 @@ import dev.latvian.mods.rhino.mod.wrapper.UUIDWrapper;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import me.shedaniel.architectury.platform.Platform;
 import me.shedaniel.architectury.registry.ToolType;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -127,6 +140,23 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		ItemTypes.register(ArmorItemType.CHESTPLATE);
 		ItemTypes.register(ArmorItemType.LEGGINGS);
 		ItemTypes.register(ArmorItemType.BOOTS);
+
+		new ItemToolTierEventJS().post(KubeJSEvents.ITEM_REGISTRY_TOOL_TIERS);
+		new ItemArmorTierEventJS().post(KubeJSEvents.ITEM_REGISTRY_ARMOR_TIERS);
+
+		new BlockRegistryEventJS().post(KubeJSEvents.BLOCK_REGISTRY);
+		new ItemRegistryEventJS().post(KubeJSEvents.ITEM_REGISTRY);
+		new FluidRegistryEventJS().post(KubeJSEvents.FLUID_REGISTRY);
+	}
+
+	@Override
+	@Environment(EnvType.CLIENT)
+	public void clientInit() {
+		Painter.INSTANCE.registerObject("screen_group", ScreenGroup::new);
+		Painter.INSTANCE.registerObject("rectangle", RectangleObject::new);
+		Painter.INSTANCE.registerObject("text", TextObject::new);
+		Painter.INSTANCE.registerObject("atlas_texture", AtlasTextureObject::new);
+		Painter.INSTANCE.registerObject("gradient", GradientObject::new);
 	}
 
 	@Override

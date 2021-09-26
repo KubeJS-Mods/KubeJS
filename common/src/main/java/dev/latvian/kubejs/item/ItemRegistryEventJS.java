@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.KubeJSObjects;
-import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.event.StartupEventJS;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 /**
  * @author LatvianModder
  */
-public class ItemRegistryEventJS extends EventJS {
+public class ItemRegistryEventJS extends StartupEventJS {
 	@Deprecated
 	public ItemBuilder create(String name) {
 		ItemBuilder builder = new ItemBuilder(name);

@@ -1,16 +1,11 @@
 package dev.latvian.kubejs;
 
-import dev.latvian.kubejs.block.BlockRegistryEventJS;
 import dev.latvian.kubejs.block.KubeJSBlockEventHandler;
 import dev.latvian.kubejs.client.KubeJSClient;
 import dev.latvian.kubejs.entity.KubeJSEntityEventHandler;
-import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.fluid.FluidRegistryEventJS;
+import dev.latvian.kubejs.event.StartupEventJS;
 import dev.latvian.kubejs.fluid.KubeJSFluidEventHandler;
-import dev.latvian.kubejs.item.ItemRegistryEventJS;
 import dev.latvian.kubejs.item.KubeJSItemEventHandler;
-import dev.latvian.kubejs.item.custom.ItemArmorTierEventJS;
-import dev.latvian.kubejs.item.custom.ItemToolTierEventJS;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.player.KubeJSPlayerEventHandler;
 import dev.latvian.kubejs.script.ScriptFileInfo;
@@ -123,13 +118,6 @@ public class KubeJS {
 		startupScriptManager.loadFromDirectory();
 		startupScriptManager.load();
 
-		new ItemToolTierEventJS().post(ScriptType.STARTUP, KubeJSEvents.ITEM_REGISTRY_TOOL_TIERS);
-		new ItemArmorTierEventJS().post(ScriptType.STARTUP, KubeJSEvents.ITEM_REGISTRY_ARMOR_TIERS);
-
-		new BlockRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.BLOCK_REGISTRY);
-		new ItemRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.ITEM_REGISTRY);
-		new FluidRegistryEventJS().post(ScriptType.STARTUP, KubeJSEvents.FLUID_REGISTRY);
-
 		KubeJSOtherEventHandler.init();
 		KubeJSWorldEventHandler.init();
 		KubeJSPlayerEventHandler.init();
@@ -181,7 +169,7 @@ public class KubeJS {
 	public void setup() {
 		UtilsJS.init();
 		KubeJSNet.init();
-		new EventJS().post(ScriptType.STARTUP, KubeJSEvents.INIT);
+		new StartupEventJS().post(ScriptType.STARTUP, KubeJSEvents.INIT);
 		Registry.register(Registry.CHUNK_GENERATOR, new ResourceLocation(KubeJS.MOD_ID, "flat"), FlatChunkGeneratorKJS.CODEC);
 		//KubeJSRegistries.chunkGenerators().register(new ResourceLocation(KubeJS.MOD_ID, "flat"), () -> FlatChunkGeneratorKJS.CODEC);
 	}
@@ -189,7 +177,7 @@ public class KubeJS {
 	public void loadComplete() {
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::afterInit);
 		ScriptsLoadedEvent.EVENT.invoker().run();
-		new EventJS().post(ScriptType.STARTUP, KubeJSEvents.POSTINIT);
+		new StartupEventJS().post(ScriptType.STARTUP, KubeJSEvents.POSTINIT);
 		UtilsJS.postModificationEvents();
 	}
 }

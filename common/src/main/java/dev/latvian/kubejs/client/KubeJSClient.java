@@ -4,16 +4,11 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSCommon;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSPaths;
+import dev.latvian.kubejs.KubeJSPlugin;
 import dev.latvian.kubejs.client.painter.Painter;
-import dev.latvian.kubejs.client.painter.screen.AtlasTextureObject;
-import dev.latvian.kubejs.client.painter.screen.GradientObject;
-import dev.latvian.kubejs.client.painter.screen.RectangleObject;
-import dev.latvian.kubejs.client.painter.screen.ScreenGroup;
-import dev.latvian.kubejs.client.painter.screen.TextObject;
-import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.net.NetworkEventJS;
 import dev.latvian.kubejs.script.BindingsEvent;
-import dev.latvian.kubejs.script.ScriptType;
+import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
@@ -57,11 +52,7 @@ public class KubeJSClient extends KubeJSCommon {
 		PackRepositoryHooks.addSource(list, new KubeJSResourcePackFinder());
 		setup();
 
-		Painter.INSTANCE.registerObject("screen_group", ScreenGroup::new);
-		Painter.INSTANCE.registerObject("rectangle", RectangleObject::new);
-		Painter.INSTANCE.registerObject("text", TextObject::new);
-		Painter.INSTANCE.registerObject("atlas_texture", AtlasTextureObject::new);
-		Painter.INSTANCE.registerObject("gradient", GradientObject::new);
+		KubeJSPlugins.forEachPlugin(KubeJSPlugin::clientInit);
 	}
 
 	@Override
@@ -114,7 +105,7 @@ public class KubeJSClient extends KubeJSCommon {
 	}
 
 	private void setup() {
-		new EventJS().post(ScriptType.CLIENT, KubeJSEvents.CLIENT_INIT);
+		new ClientEventJS().post(KubeJSEvents.CLIENT_INIT);
 	}
 
 	@Override

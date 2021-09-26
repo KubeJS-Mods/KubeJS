@@ -1,9 +1,8 @@
 package dev.latvian.kubejs.item.custom;
 
-import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.event.StartupEventJS;
 import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.kubejs.item.ModifiedToolTier;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.Tiers;
 
 import java.util.function.Consumer;
@@ -11,7 +10,7 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class ItemToolTierEventJS extends EventJS {
+public class ItemToolTierEventJS extends StartupEventJS {
 	public void add(String id, Consumer<ModifiedToolTier> tier) {
 		ModifiedToolTier t = new ModifiedToolTier(Tiers.IRON);
 		tier.accept(t);
