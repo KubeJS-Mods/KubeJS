@@ -1,14 +1,14 @@
 package dev.latvian.kubejs.block;
 
 import dev.latvian.kubejs.KubeJSObjects;
-import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.event.StartupEventJS;
 
 import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
  */
-public class BlockRegistryEventJS extends EventJS {
+public class BlockRegistryEventJS extends StartupEventJS {
 	@Deprecated
 	public BlockBuilder create(String name) {
 		BlockBuilder builder = new BlockBuilder(name);
