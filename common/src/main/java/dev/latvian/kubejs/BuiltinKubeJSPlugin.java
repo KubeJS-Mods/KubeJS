@@ -140,7 +140,10 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		ItemTypes.register(ArmorItemType.CHESTPLATE);
 		ItemTypes.register(ArmorItemType.LEGGINGS);
 		ItemTypes.register(ArmorItemType.BOOTS);
+	}
 
+	@Override
+	public void initStartup() {
 		new ItemToolTierEventJS().post(KubeJSEvents.ITEM_REGISTRY_TOOL_TIERS);
 		new ItemArmorTierEventJS().post(KubeJSEvents.ITEM_REGISTRY_ARMOR_TIERS);
 
