@@ -57,6 +57,7 @@ import dev.latvian.kubejs.recipe.minecraft.StonecuttingRecipeJS;
 import dev.latvian.kubejs.recipe.mod.AE2GrinderRecipeJS;
 import dev.latvian.kubejs.recipe.mod.BotaniaRunicAltarRecipeJS;
 import dev.latvian.kubejs.recipe.mod.BotanyPotsCropRecipeJS;
+import dev.latvian.kubejs.recipe.mod.IDSqueezerRecipeJS;
 import dev.latvian.kubejs.recipe.mod.MATagRecipeJS;
 import dev.latvian.kubejs.recipe.mod.ShapedArtisanRecipeJS;
 import dev.latvian.kubejs.recipe.mod.ShapelessArtisanRecipeJS;
@@ -465,6 +466,10 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		if (Platform.isModLoaded("botania")) {
 			event.register(new ResourceLocation("botania:runic_altar"), BotaniaRunicAltarRecipeJS::new);
+		}
+
+		if (Platform.isModLoaded("integrateddynamics") && !Platform.isModLoaded("kubejs_integrated_dynamics")) {
+			event.register(new ResourceLocation("integrateddynamics:squeezer"), IDSqueezerRecipeJS::new);
 		}
 	}
 
