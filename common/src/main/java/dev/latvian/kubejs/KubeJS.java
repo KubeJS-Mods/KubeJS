@@ -118,6 +118,8 @@ public class KubeJS {
 		startupScriptManager.loadFromDirectory();
 		startupScriptManager.load();
 
+		KubeJSPlugins.forEachPlugin(KubeJSPlugin::initStartup);
+
 		KubeJSOtherEventHandler.init();
 		KubeJSWorldEventHandler.init();
 		KubeJSPlayerEventHandler.init();

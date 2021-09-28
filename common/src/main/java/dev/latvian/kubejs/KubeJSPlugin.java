@@ -19,6 +19,9 @@ public class KubeJSPlugin {
 	public void init() {
 	}
 
+	public void initStartup() {
+	}
+
 	@Environment(EnvType.CLIENT)
 	public void clientInit() {
 	}
