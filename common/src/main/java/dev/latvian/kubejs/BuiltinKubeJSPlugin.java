@@ -520,6 +520,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	@Override
 	public void generateLang(Map<String, String> lang) {
 		lang.put("itemGroup.kubejs.kubejs", "KubeJS");
+		lang.put("item.kubejs.dummy_fluid_item", "Dummy Fluid Item");
 
 		for (BuilderBase builder : KubeJSObjects.ALL) {
 			if (!builder.displayName.isEmpty()) {

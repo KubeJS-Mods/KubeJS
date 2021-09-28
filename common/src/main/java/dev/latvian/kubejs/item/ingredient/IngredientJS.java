@@ -4,6 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJSRegistries;
+import dev.latvian.kubejs.fluid.FluidStackJS;
+import dev.latvian.kubejs.item.DummyFluidItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
@@ -46,6 +48,8 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			return ItemStackJS.EMPTY;
 		} else if (o instanceof IngredientJS) {
 			return (IngredientJS) o;
+		} else if (o instanceof FluidStackJS) {
+			return new DummyFluidItemStackJS((FluidStackJS) o);
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
 			Pattern reg = UtilsJS.parseRegex(o);
 
@@ -158,6 +162,8 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 				in = TagIngredientJS.createTag(map.get("tag").toString());
 			} else if (map.containsKey("item")) {
 				in = ItemStackJS.of(map);
+			} else if (map.containsKey("fluid")) {
+				return new DummyFluidItemStackJS(FluidStackJS.of(map));
 			}
 
 			if (map.containsKey("count")) {

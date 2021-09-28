@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.item;
 
+import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSObjects;
@@ -12,7 +13,6 @@ import dev.latvian.kubejs.player.InventoryChangedEventJS;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.event.events.InteractionEvent;
 import me.shedaniel.architectury.event.events.PlayerEvent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
@@ -25,11 +25,16 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
+import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
  */
 public class KubeJSItemEventHandler {
+	public static Supplier<Item> DUMMY_FLUID_ITEM = () -> Items.STRUCTURE_VOID;
+
 	public static void init() {
 		registry();
 		InteractionEvent.RIGHT_CLICK_ITEM.register(KubeJSItemEventHandler::rightClick);
@@ -76,7 +81,11 @@ public class KubeJSItemEventHandler {
 		}
 
 		for (DetectorInstance detector : KubeJSObjects.DETECTORS.values()) {
-			detector.item = KubeJSRegistries.items().register(new ResourceLocation(KubeJS.MOD_ID, "detector_" + detector.id), () -> new BlockItem(detector.block.get(), new Item.Properties().tab(KubeJS.tab)));
+			detector.item = KubeJSRegistries.items().register(KubeJS.id("detector_" + detector.id), () -> new BlockItem(detector.block.get(), new Item.Properties().tab(KubeJS.tab)));
+		}
+
+		if (!CommonProperties.get().serverOnly) {
+			DUMMY_FLUID_ITEM = KubeJSRegistries.items().register(KubeJS.id("dummy_fluid_item"), () -> new Item(new Item.Properties().stacksTo(1).tab(KubeJS.tab)));
 		}
 	}
 
