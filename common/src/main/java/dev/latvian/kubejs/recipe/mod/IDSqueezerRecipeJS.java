@@ -1,10 +1,12 @@
 package dev.latvian.kubejs.recipe.mod;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.ListJS;
+import org.jetbrains.annotations.Nullable;
 
 public class IDSqueezerRecipeJS extends RecipeJS {
 	@Override
@@ -60,5 +62,37 @@ public class IDSqueezerRecipeJS extends RecipeJS {
 		json.addProperty("duration", i);
 		save();
 		return this;
+	}
+
+	@Override
+	public ItemStackJS parseResultItem(@Nullable Object o) {
+		if (o instanceof JsonObject) {
+			JsonElement e = ((JsonObject) o).get("item");
+
+			if (e instanceof JsonObject) {
+				ItemStackJS i = super.parseResultItem(e);
+
+				if (((JsonObject) o).has("chance")) {
+					i.setChance(((JsonObject) o).get("chance").getAsDouble());
+				}
+
+				return i;
+			}
+		}
+
+		return super.parseResultItem(o);
+	}
+
+	@Override
+	@Nullable
+	public JsonElement serializeItemStack(ItemStackJS stack) {
+		if (stack.hasChance()) {
+			JsonObject o = new JsonObject();
+			o.add("item", stack.toResultJson());
+			o.addProperty("chance", stack.getChance());
+			return o;
+		}
+
+		return super.serializeItemStack(stack);
 	}
 }
