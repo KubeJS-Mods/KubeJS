@@ -23,7 +23,7 @@ public class DummyFluidItemStackJS extends ItemStackJS {
 	}
 
 	@Override
-	public JsonElement toResultJson() {
+	public JsonElement toRawResultJson() {
 		return fluid.toJson();
 	}
 

@@ -84,15 +84,14 @@ public class IDSqueezerRecipeJS extends RecipeJS {
 	}
 
 	@Override
-	@Nullable
 	public JsonElement serializeItemStack(ItemStackJS stack) {
+		JsonObject o = new JsonObject();
+		o.add("item", stack.toRawResultJson());
+
 		if (stack.hasChance()) {
-			JsonObject o = new JsonObject();
-			o.add("item", stack.toResultJson());
 			o.addProperty("chance", stack.getChance());
-			return o;
 		}
 
-		return super.serializeItemStack(stack);
+		return o;
 	}
 }

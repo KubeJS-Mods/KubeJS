@@ -276,7 +276,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		}
 
 		@Override
-		public JsonElement toResultJson() {
+		public JsonElement toRawResultJson() {
 			JsonObject json = new JsonObject();
 			json.addProperty("item", "minecraft:air");
 			json.addProperty("count", 1);
@@ -1038,6 +1038,10 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			}
 		}
 
+		return toRawResultJson();
+	}
+
+	public JsonElement toRawResultJson() {
 		JsonObject json = new JsonObject();
 		json.addProperty("item", getId());
 		json.addProperty("count", getCount());
