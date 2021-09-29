@@ -470,6 +470,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		if (Platform.isModLoaded("integrateddynamics") && !Platform.isModLoaded("kubejs_integrated_dynamics")) {
 			event.register(new ResourceLocation("integrateddynamics:squeezer"), IDSqueezerRecipeJS::new);
+			event.register(new ResourceLocation("integrateddynamics:mechanical_squeezer"), IDSqueezerRecipeJS::new);
 		}
 	}
 
