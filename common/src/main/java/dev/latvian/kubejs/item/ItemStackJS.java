@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSRegistries;
+import dev.latvian.kubejs.fluid.FluidStackJS;
 import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.kubejs.item.ingredient.IgnoreNBTIngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
@@ -275,7 +276,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		}
 
 		@Override
-		public JsonElement toResultJson() {
+		public JsonElement toRawResultJson() {
 			JsonObject json = new JsonObject();
 			json.addProperty("item", "minecraft:air");
 			json.addProperty("count", 1);
@@ -305,6 +306,8 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			return EMPTY;
 		} else if (o instanceof ItemStackJS) {
 			return (ItemStackJS) o;
+		} else if (o instanceof FluidStackJS) {
+			return new DummyFluidItemStackJS((FluidStackJS) o);
 		} else if (o instanceof IngredientJS) {
 			return ((IngredientJS) o).getFirst();
 		} else if (o instanceof ItemStack) {
@@ -419,6 +422,8 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 				}
 
 				return stack;
+			} else if (map.get("fluid") instanceof CharSequence) {
+				return new DummyFluidItemStackJS(FluidStackJS.of(map));
 			}
 		}
 
@@ -1033,6 +1038,10 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			}
 		}
 
+		return toRawResultJson();
+	}
+
+	public JsonElement toRawResultJson() {
 		JsonObject json = new JsonObject();
 		json.addProperty("item", getId());
 		json.addProperty("count", getCount());
@@ -1077,5 +1086,10 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	@Override
 	public Set<String> getItemIds() {
 		return Collections.singleton(getId());
+	}
+
+	@Nullable
+	public FluidStackJS getFluidStack() {
+		return null;
 	}
 }

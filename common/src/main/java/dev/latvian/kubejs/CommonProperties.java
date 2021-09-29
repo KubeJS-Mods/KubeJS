@@ -28,6 +28,7 @@ public class CommonProperties {
 	public boolean announceReload;
 	public boolean invertClassLoader;
 	public String packMode;
+	public boolean debugInfo;
 
 	private CommonProperties() {
 		properties = new Properties();
@@ -49,6 +50,7 @@ public class CommonProperties {
 			announceReload = get("announceReload", true);
 			invertClassLoader = "true".equals(properties.getProperty("invertClassLoader")); // Advanced option, not recommended to be set to true
 			packMode = get("packmode", "default");
+			debugInfo = get("debugInfo", false);
 
 			if (writeProperties) {
 				try (Writer writer = Files.newBufferedWriter(propertiesFile)) {

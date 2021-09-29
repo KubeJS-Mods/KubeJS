@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.core.RecipeManagerKJS;
@@ -20,6 +21,7 @@ import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.resources.ResourceKey;
@@ -43,6 +45,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +53,7 @@ import java.util.stream.Collectors;
  */
 public class RecipeEventJS extends EventJS {
 	public static final String FORGE_CONDITIONAL = "forge:conditional";
+	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.kubejs.recipe.RecipeEventJS.post");
 
 	public static RecipeEventJS instance;
 
@@ -57,8 +61,9 @@ public class RecipeEventJS extends EventJS {
 	private final List<RecipeJS> originalRecipes;
 	final List<RecipeJS> addedRecipes;
 	private final Set<RecipeJS> removedRecipes;
+	private final Set<RecipeJS> modifiedRecipes;
 	private final Map<String, Object> recipeFunctions;
-	private AtomicInteger modifiedRecipes;
+	private AtomicInteger modifiedRecipesCount;
 
 	public final RecipeFunction shaped;
 	public final RecipeFunction shapeless;
@@ -76,6 +81,7 @@ public class RecipeEventJS extends EventJS {
 
 		addedRecipes = new ArrayList<>();
 		removedRecipes = new HashSet<>();
+		modifiedRecipes = new HashSet<>();
 
 		recipeFunctions = new HashMap<>();
 
@@ -116,6 +122,7 @@ public class RecipeEventJS extends EventJS {
 		smithing = getRecipeFunction("minecraft:smithing");
 	}
 
+	@HideFromJS
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap) {
 		RecipeJS.itemErrors = false;
 		ConsoleJS.SERVER.setLineNumber(true);
@@ -238,27 +245,27 @@ public class RecipeEventJS extends EventJS {
 			} catch (Throwable ex) {
 				if (!(ex instanceof RecipeExceptionJS) || ((RecipeExceptionJS) ex).fallback) {
 					if (ServerSettings.instance.logErroringRecipes) {
-						ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'! Falling back to vanilla", ex);
+						ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'! Falling back to vanilla", ex, SKIP_ERROR);
 					}
 
 					try {
 						fallbackedRecipes.add(Objects.requireNonNull(RecipeManager.fromJson(recipeId, entry.getValue())));
 					} catch (NullPointerException | IllegalArgumentException | JsonParseException ex2) {
 						if (ServerSettings.instance.logErroringRecipes) {
-							ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType, ex2);
+							ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType, ex2, SKIP_ERROR);
 						}
 					} catch (Exception ex3) {
 						ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType + ":");
-						ex3.printStackTrace();
+						ConsoleJS.SERVER.printStackTrace(ex3, SKIP_ERROR);
 					}
 				} else if (ServerSettings.instance.logErroringRecipes) {
-					ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'", ex);
+					ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'", ex, SKIP_ERROR);
 				}
 			}
 		}
 
 		MutableInt removed = new MutableInt(0), added = new MutableInt(0), failed = new MutableInt(0), fallbacked = new MutableInt(0);
-		modifiedRecipes = new AtomicInteger(0);
+		modifiedRecipesCount = new AtomicInteger(0);
 
 		ConsoleJS.SERVER.info("Found " + originalRecipes.size() + " recipes and " + fallbackedRecipes.size() + " failed recipes in " + timer.stop());
 		timer.reset().start();
@@ -317,7 +324,7 @@ public class RecipeEventJS extends EventJS {
 					try {
 						recipe.originalRecipe = recipe.createRecipe();
 					} catch (Throwable ex) {
-						ConsoleJS.SERVER.warn("Error creating recipe " + recipe + ": " + recipe.json, ex);
+						ConsoleJS.SERVER.warn("Error creating recipe " + recipe + ": " + recipe.json, ex, SKIP_ERROR);
 						failed.increment();
 					}
 					if (recipe.originalRecipe != null) {
@@ -356,8 +363,28 @@ public class RecipeEventJS extends EventJS {
 		ConsoleJS.SERVER.info("Added recipes in " + timer.stop());
 		pingNewRecipes(newRecipeMap);
 		((RecipeManagerKJS) recipeManager).setRecipesKJS(newRecipeMap);
-		ConsoleJS.SERVER.info("Added " + added.getValue() + " recipes, removed " + removed.getValue() + " recipes, modified " + modifiedRecipes.get() + " recipes, with " + failed.getValue() + " failed recipes and " + fallbacked.getValue() + " fall-backed recipes");
+		ConsoleJS.SERVER.info("Added " + added.getValue() + " recipes, removed " + removed.getValue() + " recipes, modified " + modifiedRecipesCount.get() + " recipes, with " + failed.getValue() + " failed recipes and " + fallbacked.getValue() + " fall-backed recipes");
 		RecipeJS.itemErrors = false;
+
+		if (CommonProperties.get().debugInfo) {
+			ConsoleJS.SERVER.info("======== Debug output of all added recipes ========");
+
+			for (RecipeJS r : addedRecipes) {
+				ConsoleJS.SERVER.info(r.id + ": " + r.json);
+			}
+
+			ConsoleJS.SERVER.info("======== Debug output of all modified recipes ========");
+
+			for (RecipeJS r : modifiedRecipes) {
+				ConsoleJS.SERVER.info(r.id + ": " + r.json);
+			}
+
+			ConsoleJS.SERVER.info("======== Debug output of all removed recipes ========");
+
+			for (RecipeJS r : removedRecipes) {
+				ConsoleJS.SERVER.info(r.id + ": " + r.json);
+			}
+		}
 	}
 
 	@ExpectPlatform
@@ -436,6 +463,7 @@ public class RecipeEventJS extends EventJS {
 		{
 			if (r.replaceInput(ingredient, with, exact)) {
 				count.incrementAndGet();
+				modifiedRecipes.add(r);
 
 				if (ServerSettings.instance.logAddedRecipes || ServerSettings.instance.logRemovedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + ": IN " + is + " -> " + ws);
@@ -445,7 +473,7 @@ public class RecipeEventJS extends EventJS {
 			}
 		});
 
-		modifiedRecipes.addAndGet(count.get());
+		modifiedRecipesCount.addAndGet(count.get());
 		return count.get();
 	}
 
@@ -466,6 +494,7 @@ public class RecipeEventJS extends EventJS {
 		{
 			if (r.replaceOutput(ingredient, with, exact)) {
 				count.incrementAndGet();
+				modifiedRecipes.add(r);
 
 				if (ServerSettings.instance.logAddedRecipes || ServerSettings.instance.logRemovedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + ": OUT " + is + " -> " + ws);
@@ -475,7 +504,7 @@ public class RecipeEventJS extends EventJS {
 			}
 		});
 
-		modifiedRecipes.addAndGet(count.get());
+		modifiedRecipesCount.addAndGet(count.get());
 		return count.get();
 	}
 

@@ -42,4 +42,8 @@ public abstract class LootEventJS extends EventJS {
 		LootBuilder builder = createLootBuilder(getDirectory().isEmpty() ? id : new ResourceLocation(id.getNamespace(), getDirectory() + "/" + id.getPath()), b);
 		addJson(id, builder.toJson());
 	}
+
+	public void removeAll() {
+		lootMap.clear();
+	}
 }

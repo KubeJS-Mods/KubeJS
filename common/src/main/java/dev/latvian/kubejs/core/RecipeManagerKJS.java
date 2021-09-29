@@ -16,6 +16,8 @@ import java.util.Map;
  * @author LatvianModder
  */
 public interface RecipeManagerKJS {
+	Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> getRecipesKJS();
+
 	void setRecipesKJS(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map);
 
 	default void customRecipesKJS(Map<ResourceLocation, JsonObject> jsonMap) {

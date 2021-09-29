@@ -1,11 +1,13 @@
 package dev.latvian.kubejs.util;
 
+import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.Util;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -18,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -27,6 +30,42 @@ public class ConsoleJS {
 	public static ConsoleJS STARTUP;
 	public static ConsoleJS SERVER;
 	public static ConsoleJS CLIENT;
+
+	private static class StackTracePrintStream extends PrintStream {
+		private final ConsoleJS console;
+		private boolean first;
+		private final Pattern skipString;
+		private boolean skip;
+
+		private StackTracePrintStream(ConsoleJS c, @Nullable Pattern ca) {
+			super(System.err);
+			console = c;
+			first = true;
+			skipString = ca;
+			skip = false;
+		}
+
+		@Override
+		public void println(@Nullable Object x) {
+			println(String.valueOf(x));
+		}
+
+		@Override
+		public void println(@Nullable String x) {
+			if (skip) {
+				return;
+			} else if (first && x != null) {
+				console.type.errors.add(x);
+				first = false;
+			}
+
+			if (x != null && skipString != null && skipString.matcher(x).find()) {
+				skip = true;
+			} else {
+				console.log(console.logger::error, "ERR ", x);
+			}
+		}
+	}
 
 	private final ScriptType type;
 	private final Logger logger;
@@ -208,17 +247,21 @@ public class ConsoleJS {
 		}, "WARN", message);
 	}
 
-	public void warn(String message, Throwable throwable) {
+	public void warn(String message, Throwable throwable, @Nullable Pattern skip) {
 		if (shouldPrint()) {
 			String s = throwable.toString();
 
-			if (s.equals("java.lang.NullPointerException")) {
+			if (CommonProperties.get().debugInfo || s.equals("java.lang.NullPointerException")) {
 				warn(message + ":");
-				throwable.printStackTrace();
+				printStackTrace(throwable, skip);
 			} else {
 				warn(message + ": " + s);
 			}
 		}
+	}
+
+	public void warn(String message, Throwable throwable) {
+		warn(message, throwable, null);
 	}
 
 	public void warnf(String message, Object... args) {
@@ -235,17 +278,21 @@ public class ConsoleJS {
 		}, "ERR ", message);
 	}
 
-	public void error(String message, Throwable throwable) {
+	public void error(String message, Throwable throwable, @Nullable Pattern skip) {
 		if (shouldPrint()) {
 			String s = throwable.toString();
 
-			if (s.equals("java.lang.NullPointerException")) {
+			if (CommonProperties.get().debugInfo || s.equals("java.lang.NullPointerException")) {
 				error(message + ":");
-				throwable.printStackTrace();
+				printStackTrace(throwable, skip);
 			} else {
 				error(message + ": " + s);
 			}
 		}
+	}
+
+	public void error(String message, Throwable throwable) {
+		error(message, throwable, null);
 	}
 
 	public void errorf(String message, Object... args) {
@@ -414,6 +461,10 @@ public class ConsoleJS {
 
 	public void printObject(@Nullable Object o) {
 		printObject(o, false);
+	}
+
+	public void printStackTrace(Throwable throwable, @Nullable Pattern skip) {
+		throwable.printStackTrace(new StackTracePrintStream(this, skip));
 	}
 
 	private static final class VarFunc implements Comparable<VarFunc> {

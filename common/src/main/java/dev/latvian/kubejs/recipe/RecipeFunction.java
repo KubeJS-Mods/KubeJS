@@ -16,11 +16,14 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
  */
 public class RecipeFunction extends BaseFunction implements WrappedJS {
+	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.kubejs.recipe.RecipeFunction.call");
+
 	private final RecipeEventJS event;
 	public final ResourceLocation typeID;
 	public final RecipeTypeJS type;
@@ -77,9 +80,9 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 			return event.addRecipe(recipe, type, args);
 		} catch (RecipeExceptionJS ex) {
 			ex.error();
-			ConsoleJS.SERVER.error("Failed to create recipe for type '" + typeID + "'", ex);
+			ConsoleJS.SERVER.error("Failed to create recipe for type '" + typeID + "'", ex, SKIP_ERROR);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			ConsoleJS.SERVER.printStackTrace(ex, SKIP_ERROR);
 		}
 
 		return new CustomRecipeJS();
