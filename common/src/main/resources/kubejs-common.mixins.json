@@ -23,6 +23,7 @@
 		"PlayerMixin",
 		"RandomValueBoundsMixin",
 		"RecipeManagerMixin",
+		"ServerResourcesMixin",
 		"SimpleReloadableResourceManagerMixin",
 		"TagBuilderMixin",
 		"TagCollectionReaderMixin",

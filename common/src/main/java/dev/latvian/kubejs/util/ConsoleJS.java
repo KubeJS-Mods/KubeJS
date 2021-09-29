@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.util;
 
+import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.Util;
@@ -212,7 +213,7 @@ public class ConsoleJS {
 		if (shouldPrint()) {
 			String s = throwable.toString();
 
-			if (s.equals("java.lang.NullPointerException")) {
+			if (CommonProperties.get().debugInfo || s.equals("java.lang.NullPointerException")) {
 				warn(message + ":");
 				throwable.printStackTrace();
 			} else {
@@ -239,7 +240,7 @@ public class ConsoleJS {
 		if (shouldPrint()) {
 			String s = throwable.toString();
 
-			if (s.equals("java.lang.NullPointerException")) {
+			if (CommonProperties.get().debugInfo || s.equals("java.lang.NullPointerException")) {
 				error(message + ":");
 				throwable.printStackTrace();
 			} else {

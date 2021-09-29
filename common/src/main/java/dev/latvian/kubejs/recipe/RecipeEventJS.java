@@ -20,6 +20,7 @@ import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.resources.ResourceKey;
@@ -116,6 +117,7 @@ public class RecipeEventJS extends EventJS {
 		smithing = getRecipeFunction("minecraft:smithing");
 	}
 
+	@HideFromJS
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap) {
 		RecipeJS.itemErrors = false;
 		ConsoleJS.SERVER.setLineNumber(true);

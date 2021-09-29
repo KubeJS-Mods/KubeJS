@@ -11,7 +11,7 @@ public class IDSqueezerRecipeJS extends RecipeJS {
 	public void create(ListJS args) {
 		outputItems.addAll(parseResultItemList(args.get(0)));
 		inputItems.add(parseIngredientItem(args.get(1)));
-		json.addProperty("duration", 15);
+		json.addProperty("duration", 40);
 	}
 
 	@Override

@@ -28,11 +28,4 @@ public abstract class DataPackRegistriesMixin {
 	private static List<PackResources> resourcePackList(List<PackResources> list) {
 		return ServerScriptManager.instance.resourcePackList(list);
 	}
-
-	/*
-	@Inject(method = "loadResources", at = @At(value = "INVOKE", target = "Lnet/minecraft/resources/IReloadableResourceManager;reload(Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;Ljava/util/List;Ljava/util/concurrent/CompletableFuture;)Ljava/util/concurrent/CompletableFuture;", shift = At.Shift.BEFORE), cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD)
-	private static void doThing(List<IResourcePack> list, Commands.EnvironmentType environmentType, int permissionLevel, Executor executor1, Executor executor2, CallbackInfoReturnable<CompletableFuture> cir, DataPackRegistries dataPackRegistries)
-	{
-	}
-	 */
 }
