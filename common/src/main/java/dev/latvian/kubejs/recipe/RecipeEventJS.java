@@ -45,6 +45,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -52,6 +53,7 @@ import java.util.stream.Collectors;
  */
 public class RecipeEventJS extends EventJS {
 	public static final String FORGE_CONDITIONAL = "forge:conditional";
+	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.kubejs.recipe.RecipeEventJS.post");
 
 	public static RecipeEventJS instance;
 
@@ -243,21 +245,21 @@ public class RecipeEventJS extends EventJS {
 			} catch (Throwable ex) {
 				if (!(ex instanceof RecipeExceptionJS) || ((RecipeExceptionJS) ex).fallback) {
 					if (ServerSettings.instance.logErroringRecipes) {
-						ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'! Falling back to vanilla", ex);
+						ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'! Falling back to vanilla", ex, SKIP_ERROR);
 					}
 
 					try {
 						fallbackedRecipes.add(Objects.requireNonNull(RecipeManager.fromJson(recipeId, entry.getValue())));
 					} catch (NullPointerException | IllegalArgumentException | JsonParseException ex2) {
 						if (ServerSettings.instance.logErroringRecipes) {
-							ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType, ex2);
+							ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType, ex2, SKIP_ERROR);
 						}
 					} catch (Exception ex3) {
 						ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType + ":");
-						ex3.printStackTrace();
+						ConsoleJS.SERVER.printStackTrace(ex3, SKIP_ERROR);
 					}
 				} else if (ServerSettings.instance.logErroringRecipes) {
-					ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'", ex);
+					ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'", ex, SKIP_ERROR);
 				}
 			}
 		}
@@ -322,7 +324,7 @@ public class RecipeEventJS extends EventJS {
 					try {
 						recipe.originalRecipe = recipe.createRecipe();
 					} catch (Throwable ex) {
-						ConsoleJS.SERVER.warn("Error creating recipe " + recipe + ": " + recipe.json, ex);
+						ConsoleJS.SERVER.warn("Error creating recipe " + recipe + ": " + recipe.json, ex, SKIP_ERROR);
 						failed.increment();
 					}
 					if (recipe.originalRecipe != null) {

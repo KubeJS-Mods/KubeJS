@@ -143,7 +143,6 @@ public class ScriptManager {
 				}
 			} catch (Throwable ex) {
 				type.console.error("Failed to read script pack " + pack.info.namespace + ": ", ex);
-				ex.printStackTrace();
 			}
 		}
 
