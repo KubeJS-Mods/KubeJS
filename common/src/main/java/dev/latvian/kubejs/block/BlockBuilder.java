@@ -230,6 +230,10 @@ public class BlockBuilder extends BuilderBase {
 		return this;
 	}
 
+	public BlockBuilder box(double x0, double y0, double z0, double x1, double y1, double z1) {
+		return box(x0, y0, z0, x1, y1, z1, true);
+	}
+
 	public VoxelShape createShape() {
 		if (customShape.isEmpty()) {
 			return Shapes.block();
