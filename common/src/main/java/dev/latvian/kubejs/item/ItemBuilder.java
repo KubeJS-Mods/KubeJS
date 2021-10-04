@@ -24,12 +24,14 @@ import net.minecraft.world.item.Tiers;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @author LatvianModder
@@ -53,6 +55,7 @@ public class ItemBuilder extends BuilderBase {
 	public transient int maxDamage;
 	public transient int burnTime;
 	public transient String containerItem;
+	public transient Function<ItemStackJS, Collection<ItemStackJS>> subtypes;
 	public transient Map<ToolType, Integer> tools;
 	public transient float miningSpeed;
 	public transient Float attackDamage;
@@ -86,6 +89,7 @@ public class ItemBuilder extends BuilderBase {
 		maxDamage = 0;
 		burnTime = 0;
 		containerItem = "minecraft:air";
+		subtypes = null;
 		tools = new HashMap<>();
 		miningSpeed = 1.0F;
 		rarity = RarityWrapper.COMMON;
@@ -148,6 +152,11 @@ public class ItemBuilder extends BuilderBase {
 
 	public ItemBuilder containerItem(String id) {
 		containerItem = id;
+		return this;
+	}
+
+	public ItemBuilder subtypes(Function<ItemStackJS, Collection<ItemStackJS>> fn) {
+		subtypes = fn;
 		return this;
 	}
 

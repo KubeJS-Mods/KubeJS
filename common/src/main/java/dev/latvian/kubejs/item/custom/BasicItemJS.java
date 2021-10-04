@@ -3,13 +3,19 @@ package dev.latvian.kubejs.item.custom;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import dev.latvian.kubejs.item.ItemBuilder;
+import dev.latvian.kubejs.item.ItemStackJS;
 import me.shedaniel.architectury.registry.fuel.FuelRegistry;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.Collection;
+import java.util.function.Function;
 
 /**
  * @author LatvianModder
@@ -17,6 +23,7 @@ import net.minecraft.world.item.ItemStack;
 public class BasicItemJS extends Item {
 	private final ImmutableMultimap<Attribute, AttributeModifier> attributes;
 	private ItemStack containerItem;
+	private Function<ItemStackJS, Collection<ItemStackJS>> subtypes;
 
 	public BasicItemJS(ItemBuilder p) {
 		super(p.createItemProperties());
@@ -26,6 +33,8 @@ public class BasicItemJS extends Item {
 		if (p.burnTime > 0) {
 			FuelRegistry.register(p.burnTime, this);
 		}
+
+		subtypes = p.subtypes;
 
 		ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
 
@@ -38,6 +47,17 @@ public class BasicItemJS extends Item {
 		}
 
 		attributes = builder.build();
+	}
+
+	@Override
+	public void fillItemCategory(CreativeModeTab category, NonNullList<ItemStack> stacks) {
+		if (subtypes != null) {
+			for (ItemStackJS stack : subtypes.apply(ItemStackJS.of(this))) {
+				stacks.add(stack.getItemStack());
+			}
+		} else {
+			super.fillItemCategory(category, stacks);
+		}
 	}
 
 	@Override
