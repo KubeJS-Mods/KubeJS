@@ -6,18 +6,18 @@ import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.BinomialDistributionGenerator;
-import net.minecraft.world.level.storage.loot.ConstantIntValue;
-import net.minecraft.world.level.storage.loot.RandomIntGenerator;
-import net.minecraft.world.level.storage.loot.RandomValueBounds;
+import net.minecraft.world.level.storage.loot.providers.number.BinomialDistributionGenerator;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * @author LatvianModder
  */
 public class LootBuilderPool implements FunctionContainer, ConditionContainer {
-	public RandomIntGenerator rolls = new ConstantIntValue(1);
-	public RandomIntGenerator bonusRolls = null;
+	public NumberProvider rolls = ConstantValue.exactly(1);
+	public NumberProvider bonusRolls = null;
 	public final JsonArray conditions = new JsonArray();
 	public final JsonArray functions = new JsonArray();
 	public final JsonArray entries = new JsonArray();
@@ -25,10 +25,10 @@ public class LootBuilderPool implements FunctionContainer, ConditionContainer {
 	public JsonObject toJson() {
 		JsonObject json = new JsonObject();
 
-		json.add("rolls", UtilsJS.randomIntGeneratorJson(rolls));
+		json.add("rolls", UtilsJS.numberProviderJson(rolls));
 
 		if (bonusRolls != null) {
-			json.add("bonus_rolls", UtilsJS.randomIntGeneratorJson(bonusRolls));
+			json.add("bonus_rolls", UtilsJS.numberProviderJson(bonusRolls));
 		}
 
 		if (conditions.size() > 0) {
@@ -47,11 +47,11 @@ public class LootBuilderPool implements FunctionContainer, ConditionContainer {
 	}
 
 	public void setUniformRolls(float min, float max) {
-		rolls = new RandomValueBounds(min, max);
+		rolls = UniformGenerator.between(min, max);
 	}
 
 	public void setBinomialRolls(int n, float p) {
-		rolls = new BinomialDistributionGenerator(n, p);
+		rolls = BinomialDistributionGenerator.binomial(n, p);
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class LootBuilderPool implements FunctionContainer, ConditionContainer {
 		return addEntry(json);
 	}
 
-	public LootTableEntry addItem(ItemStack item, int weight, @Nullable RandomIntGenerator count) {
+	public LootTableEntry addItem(ItemStack item, int weight, @Nullable NumberProvider count) {
 		ResourceLocation id = KubeJSRegistries.items().getId(item.getItem());
 
 		if (id == null || item.isEmpty()) {
@@ -102,7 +102,7 @@ public class LootBuilderPool implements FunctionContainer, ConditionContainer {
 		}
 
 		if (count == null && item.getCount() > 1) {
-			count = ConstantIntValue.exactly(item.getCount());
+			count = ConstantValue.exactly(item.getCount());
 		}
 
 		if (count != null) {

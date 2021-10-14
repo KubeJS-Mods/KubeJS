@@ -61,7 +61,7 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 
 	public InventoryJS getInventory() {
 		if (inventory == null) {
-			inventory = new InventoryJS(minecraftPlayer.inventory) {
+			inventory = new InventoryJS(minecraftPlayer.getInventory()) {
 				@Override
 				public void markDirty() {
 					sendInventoryUpdate();
@@ -73,7 +73,7 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 	}
 
 	public void sendInventoryUpdate() {
-		minecraftPlayer.inventory.setChanged();
+		minecraftPlayer.getInventory().setChanged();
 		minecraftPlayer.inventoryMenu.broadcastChanges();
 	}
 
@@ -86,20 +86,21 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 	}
 
 	public int getSelectedSlot() {
-		return minecraftPlayer.inventory.selected;
+		return minecraftPlayer.getInventory().selected;
 	}
 
 	public void setSelectedSlot(int index) {
-		minecraftPlayer.inventory.selected = Mth.clamp(index, 0, 8);
+		minecraftPlayer.getInventory().selected = Mth.clamp(index, 0, 8);
 	}
 
-	public ItemStackJS getMouseItem() {
+	// FIXME: carried
+	/*public ItemStackJS getMouseItem() {
 		return ItemStackJS.of(minecraftPlayer.inventory.getCarried());
 	}
 
 	public void setMouseItem(ItemStackJS item) {
 		minecraftPlayer.inventory.setCarried(item.getItemStack());
-	}
+	}*/
 
 	@Override
 	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {

@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
+// FIXME: rendering code :help_me:
 public class PaintEventJS extends ClientEventJS {
 	public final Minecraft mc;
 	public final Font font;
@@ -57,7 +58,7 @@ public class PaintEventJS extends ClientEventJS {
 	}
 
 	public void bindTexture(ResourceLocation tex) {
-		mc.getTextureManager().bind(tex);
+		mc.getTextureManager().bindForSetup(tex);
 	}
 
 	public void begin(int type, VertexFormat format) {

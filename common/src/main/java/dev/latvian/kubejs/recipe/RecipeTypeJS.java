@@ -19,7 +19,7 @@ public class RecipeTypeJS {
 	public RecipeTypeJS(RecipeSerializer<?> s, Supplier<RecipeJS> f) {
 		serializer = s;
 		factory = f;
-		id = Registrar.getId(s, Registry.RECIPE_SERIALIZER_REGISTRY);
+		id = Registries.getId(s, Registry.RECIPE_SERIALIZER_REGISTRY);
 		string = id.toString();
 	}
 

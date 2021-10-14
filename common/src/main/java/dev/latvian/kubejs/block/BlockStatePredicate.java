@@ -2,10 +2,10 @@ package dev.latvian.kubejs.block;
 
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.SerializationTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -198,7 +198,7 @@ public abstract class BlockStatePredicate {
 
 	public static BlockStatePredicate parse(String s) {
 		if (s.startsWith("#")) {
-			Tag<Block> tag = SerializationTags.getInstance().getBlocks().getTag(new ResourceLocation(s.substring(1)));
+			Tag<Block> tag = Tags.blocks().getTag(new ResourceLocation(s.substring(1)));
 
 			if (tag != null) {
 				return new FromTag(tag);

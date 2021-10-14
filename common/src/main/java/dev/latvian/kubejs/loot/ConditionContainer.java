@@ -57,7 +57,7 @@ public interface ConditionContainer {
 		JsonObject s = new JsonObject();
 
 		for (Map.Entry<String, Object> entry : scores.entrySet()) {
-			s.add(entry.getKey(), UtilsJS.randomIntGeneratorJson(UtilsJS.randomIntGeneratorOf(entry.getValue())));
+			s.add(entry.getKey(), UtilsJS.numberProviderJson(UtilsJS.numberProviderOf(entry.getValue())));
 		}
 
 		json.add("scores", s);

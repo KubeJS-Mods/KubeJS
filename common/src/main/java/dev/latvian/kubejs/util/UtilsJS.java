@@ -40,6 +40,10 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.storage.loot.*;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.providers.number.BinomialDistributionGenerator;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -586,38 +590,30 @@ public class UtilsJS {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static RandomIntGenerator randomIntGeneratorOf(Object o) {
-		if (o instanceof Number) {
-			float f = ((Number) o).floatValue();
-			return RandomValueBounds.between(f, f);
-		} else if (o instanceof List && ((List<?>) o).size() == 2) {
-			List<Object> l = (List<Object>) o;
-
-			return RandomValueBounds.between(((Number) l.get(0)).floatValue(), ((Number) l.get(1)).floatValue());
-		} else if (o instanceof List && ((List<?>) o).size() == 1) {
-			List<Object> l = (List<Object>) o;
-			return RandomValueBounds.between(((Number) l.get(0)).floatValue(), ((Number) l.get(0)).floatValue());
+	public static NumberProvider numberProviderOf(Object o) {
+		if (o instanceof Number n) {
+			float f = n.floatValue();
+			return UniformGenerator.between(f, f);
+		} else if (o instanceof List l && !l.isEmpty()) {
+			var min = (Number) l.get(0);
+			var max = l.size() >= 2 ? (Number) l.get(1) : min;
+			return UniformGenerator.between(min.floatValue(), max.floatValue());
 		} else if (o instanceof Map) {
 			Map<String, Object> m = (Map<String, Object>) o;
-
 			if (m.containsKey("min") && m.containsKey("max")) {
-				return RandomValueBounds.between(((Number) m.get("min")).intValue(), ((Number) m.get("max")).floatValue());
+				return UniformGenerator.between(((Number) m.get("min")).intValue(), ((Number) m.get("max")).floatValue());
 			} else if (m.containsKey("n") && m.containsKey("p")) {
 				return BinomialDistributionGenerator.binomial(((Number) m.get("n")).intValue(), ((Number) m.get("p")).floatValue());
 			} else if (m.containsKey("value")) {
 				float f = ((Number) m.get("value")).floatValue();
-				return RandomValueBounds.between(f, f);
+				return UniformGenerator.between(f, f);
 			}
 		}
 
-		return ConstantIntValue.exactly(0);
+		return ConstantValue.exactly(0);
 	}
 
-	public static JsonElement randomIntGeneratorJson(RandomIntGenerator gen) {
-		if (gen instanceof JsonSerializableKJS) {
-			return ((JsonSerializableKJS) gen).toJsonKJS();
-		}
-
-		throw new IllegalArgumentException("Unknown gen type: " + gen.getClass().getName());
+	public static JsonElement numberProviderJson(NumberProvider gen) {
+		return Deserializers.createConditionSerializer().create().toJsonTree(gen);
 	}
 }

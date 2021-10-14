@@ -1,39 +1,18 @@
 package dev.latvian.kubejs.world.gen;
 
-import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.event.StartupEventJS;
-import dev.latvian.kubejs.util.ConsoleJS;
-import dev.latvian.kubejs.util.ListJS;
-import dev.latvian.kubejs.util.UtilsJS;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.SerializationTags;
-import net.minecraft.util.UniformInt;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.configurations.BlockStateConfiguration;
-import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
-import net.minecraft.world.level.levelgen.feature.configurations.RangeDecoratorConfiguration;
-import net.minecraft.world.level.levelgen.placement.ChanceDecoratorConfiguration;
-import net.minecraft.world.level.levelgen.placement.FeatureDecorator;
-import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
-import net.minecraft.world.level.levelgen.structure.templatesystem.BlockStateMatchTest;
-import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
-import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
 
 import java.util.Arrays;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
  */
+// FIXME
 public class WorldgenAddEventJS extends StartupEventJS {
 	private static final Pattern SPAWN_PATTERN = Pattern.compile("(\\w+:\\w+)\\*\\((\\d+)-(\\d+)\\):(\\d+)");
 
@@ -61,6 +40,7 @@ public class WorldgenAddEventJS extends StartupEventJS {
 		return verifyBiomes(list);
 	}
 
+	/*
 	public void addOre(Consumer<AddOreProperties> p) {
 		AddOreProperties properties = new AddOreProperties();
 		p.accept(properties);
@@ -85,7 +65,7 @@ public class WorldgenAddEventJS extends StartupEventJS {
 			}
 
 			if (s.startsWith("#")) {
-				RuleTest tagTest = new TagMatchTest(SerializationTags.getInstance().getBlocks().getTag(new ResourceLocation(s.substring(1))));
+				RuleTest tagTest = new TagMatchTest(Tags.blocks().getTag(new ResourceLocation(s.substring(1))));
 				ruleTest.list.add(invert ? new InvertRuleTest(tagTest) : tagTest);
 			} else {
 				BlockState bs = UtilsJS.parseBlockState(s);
@@ -157,4 +137,5 @@ public class WorldgenAddEventJS extends StartupEventJS {
 
 		//minecraft:ghast*(4-4):50
 	}
+	*/
 }

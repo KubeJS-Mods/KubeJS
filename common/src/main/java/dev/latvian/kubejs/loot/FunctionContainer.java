@@ -9,8 +9,8 @@ import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.RandomIntGenerator;
 import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -30,21 +30,21 @@ public interface FunctionContainer {
 		return this;
 	}
 
-	default FunctionContainer count(RandomIntGenerator count) {
+	default FunctionContainer count(NumberProvider count) {
 		if (count instanceof JsonSerializableKJS) {
 			JsonObject o = new JsonObject();
 			o.addProperty("function", "minecraft:set_count");
-			o.add("count", UtilsJS.randomIntGeneratorJson(count));
+			o.add("count", UtilsJS.numberProviderJson(count));
 			return addFunction(o);
 		}
 
 		return this;
 	}
 
-	default FunctionContainer enchantWithLevels(RandomIntGenerator levels, boolean treasure) {
+	default FunctionContainer enchantWithLevels(NumberProvider levels, boolean treasure) {
 		JsonObject o = new JsonObject();
 		o.addProperty("function", "minecraft:enchant_with_levels");
-		o.add("levels", UtilsJS.randomIntGeneratorJson(levels));
+		o.add("levels", UtilsJS.numberProviderJson(levels));
 		o.addProperty("treasure", treasure);
 		return addFunction(o);
 	}
@@ -76,18 +76,18 @@ public interface FunctionContainer {
 		return addFunction(o);
 	}
 
-	default FunctionContainer lootingEnchant(RandomIntGenerator count, int limit) {
+	default FunctionContainer lootingEnchant(NumberProvider count, int limit) {
 		JsonObject o = new JsonObject();
 		o.addProperty("function", "minecraft:looting_enchant");
-		o.add("count", UtilsJS.randomIntGeneratorJson(count));
+		o.add("count", UtilsJS.numberProviderJson(count));
 		o.addProperty("limit", limit);
 		return addFunction(o);
 	}
 
-	default FunctionContainer damage(RandomIntGenerator damage) {
+	default FunctionContainer damage(NumberProvider damage) {
 		JsonObject o = new JsonObject();
 		o.addProperty("function", "minecraft:set_damage");
-		o.add("damage", UtilsJS.randomIntGeneratorJson(damage));
+		o.add("damage", UtilsJS.numberProviderJson(damage));
 		return addFunction(o);
 	}
 

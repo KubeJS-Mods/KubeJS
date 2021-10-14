@@ -51,22 +51,22 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	}
 
 	public void setCreativeMode(boolean mode) {
-		minecraftPlayer.gameMode.setGameModeForPlayer(mode ? GameType.CREATIVE : GameType.SURVIVAL);
+		minecraftPlayer.setGameMode(mode ? GameType.CREATIVE : GameType.SURVIVAL);
 	}
 
 	public void setGameMode(String mode) {
 		switch (mode) {
 			case "survival":
-				minecraftPlayer.gameMode.setGameModeForPlayer(GameType.SURVIVAL);
+				minecraftPlayer.setGameMode(GameType.SURVIVAL);
 				break;
 			case "creative":
-				minecraftPlayer.gameMode.setGameModeForPlayer(GameType.CREATIVE);
+				minecraftPlayer.setGameMode(GameType.CREATIVE);
 				break;
 			case "adventure":
-				minecraftPlayer.gameMode.setGameModeForPlayer(GameType.ADVENTURE);
+				minecraftPlayer.setGameMode(GameType.ADVENTURE);
 				break;
 			case "spectator":
-				minecraftPlayer.gameMode.setGameModeForPlayer(GameType.SPECTATOR);
+				minecraftPlayer.setGameMode(GameType.SPECTATOR);
 				break;
 		}
 	}
@@ -141,14 +141,15 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 		}
 	}
 
-	@Override
+	// FIXME: carried
+	/*@Override
 	public void setMouseItem(ItemStackJS item) {
 		super.setMouseItem(item);
 
 		if (minecraftPlayer.connection != null) {
 			minecraftPlayer.broadcastCarriedItem();
 		}
-	}
+	}*/
 
 	@Override
 	public void sendData(String channel, @Nullable Object data) {

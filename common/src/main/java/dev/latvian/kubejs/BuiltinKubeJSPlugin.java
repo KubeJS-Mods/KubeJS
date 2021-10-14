@@ -2,6 +2,8 @@ package dev.latvian.kubejs;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dev.architectury.platform.Platform;
+import dev.architectury.registry.block.ToolType;
 import dev.latvian.kubejs.bindings.BlockWrapper;
 import dev.latvian.kubejs.bindings.IngredientWrapper;
 import dev.latvian.kubejs.bindings.ItemWrapper;
@@ -54,7 +56,6 @@ import dev.latvian.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.kubejs.recipe.minecraft.CookingRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.SmithingRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.StonecuttingRecipeJS;
-import dev.latvian.kubejs.recipe.mod.AE2GrinderRecipeJS;
 import dev.latvian.kubejs.recipe.mod.BotaniaRunicAltarRecipeJS;
 import dev.latvian.kubejs.recipe.mod.BotanyPotsCropRecipeJS;
 import dev.latvian.kubejs.recipe.mod.IDSqueezerRecipeJS;
@@ -80,8 +81,6 @@ import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import dev.latvian.mods.rhino.mod.wrapper.DirectionWrapper;
 import dev.latvian.mods.rhino.mod.wrapper.UUIDWrapper;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
-import dev.architectury.platform.Platform;
-import dev.architectury.registry.block.ToolType;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
@@ -104,8 +103,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.RandomIntGenerator;
 import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -379,7 +378,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		typeWrappers.register(AABB.class, AABBWrapper::wrap);
 		typeWrappers.register(Direction.class, o -> o instanceof Direction ? (Direction) o : DirectionWrapper.ALL.get(o.toString().toLowerCase()));
-		typeWrappers.register(RandomIntGenerator.class, UtilsJS::randomIntGeneratorOf);
+		typeWrappers.register(NumberProvider.class, UtilsJS::numberProviderOf);
 		typeWrappers.register(LootContext.EntityTarget.class, o -> o == null ? null : LootContext.EntityTarget.getByName(o.toString().toLowerCase()));
 		typeWrappers.register(CopyNameFunction.NameSource.class, o -> o == null ? null : CopyNameFunction.NameSource.getByName(o.toString().toLowerCase()));
 
@@ -433,10 +432,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		if (Platform.isModLoaded("dankstorage")) {
 			event.registerShaped(new ResourceLocation("dankstorage:upgrade"));
-		}
-
-		if (Platform.isModLoaded("appliedenergistics2")) {
-			event.register(new ResourceLocation("appliedenergistics2:grinder"), AE2GrinderRecipeJS::new);
 		}
 
 		if (Platform.isModLoaded("artisanworktables")) {

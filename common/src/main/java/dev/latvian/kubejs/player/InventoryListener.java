@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.KubeJSEvents;
-import net.minecraft.core.NonNullList;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerListener;
@@ -17,19 +16,22 @@ public class InventoryListener implements ContainerListener {
 		player = p;
 	}
 
+	// TODO: re-add?
+	/*
 	@Override
 	public void refreshContainer(AbstractContainerMenu container, NonNullList<ItemStack> itemsList) {
 		new InventoryChangedEventJS(player, ItemStack.EMPTY, -1).post(KubeJSEvents.PLAYER_INVENTORY_CHANGED);
 	}
+	*/
 
 	@Override
 	public void slotChanged(AbstractContainerMenu container, int index, ItemStack stack) {
-		if (!stack.isEmpty() && container.getSlot(index).container == player.inventory) {
+		if (!stack.isEmpty() && container.getSlot(index).container == player.getInventory()) {
 			new InventoryChangedEventJS(player, stack, index).post(KubeJSEvents.PLAYER_INVENTORY_CHANGED);
 		}
 	}
 
 	@Override
-	public void setContainerData(AbstractContainerMenu container, int id, int value) {
+	public void dataChanged(AbstractContainerMenu container, int id, int value) {
 	}
 }

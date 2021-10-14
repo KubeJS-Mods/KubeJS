@@ -33,7 +33,6 @@ public class MaterialListJS {
 		add("sand", Material.SAND, SoundType.SAND);
 		add("glass", Material.GLASS, SoundType.GLASS);
 		add("explosive", Material.EXPLOSIVE, SoundType.GRASS);
-		add("coral", Material.CORAL, SoundType.CORAL_BLOCK);
 		add("ice", Material.ICE, SoundType.GLASS);
 		add("snow", Material.TOP_SNOW, SoundType.SNOW);
 		add("clay", Material.CLAY, SoundType.GRAVEL);

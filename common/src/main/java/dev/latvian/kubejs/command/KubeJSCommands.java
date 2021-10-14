@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import dev.architectury.registry.registries.Registries;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.core.MinecraftServerKJS;
@@ -20,7 +21,6 @@ import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.stages.Stages;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
-import dev.architectury.registry.registries.Registries;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
@@ -215,11 +215,11 @@ public class KubeJSCommands {
 	}
 
 	private static int inventory(ServerPlayer player) {
-		return dump(player.inventory.items, player, "Inventory");
+		return dump(player.getInventory().items, player, "Inventory");
 	}
 
 	private static int hotbar(ServerPlayer player) {
-		return dump(player.inventory.items.subList(0, 9), player, "Hotbar");
+		return dump(player.getInventory().items.subList(0, 9), player, "Hotbar");
 	}
 
 	private static int dump(List<ItemStack> stacks, ServerPlayer player, String name) {

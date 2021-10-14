@@ -34,12 +34,12 @@ public class EmptyFluidStackJS extends FluidStackJS {
 	}
 
 	@Override
-	public int getAmount() {
+	public long getAmount() {
 		return 0;
 	}
 
 	@Override
-	public void setAmount(int amount) {
+	public void setAmount(long amount) {
 	}
 
 	@Override

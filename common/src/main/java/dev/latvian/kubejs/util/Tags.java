@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.util;
 
 import com.google.common.collect.Sets;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.SerializationTags;
 import net.minecraft.tags.Tag;
@@ -18,19 +19,19 @@ import java.util.Map;
 
 public class Tags {
 	public static TagCollection<Item> items() {
-		return SerializationTags.getInstance().getItems();
+		return SerializationTags.getInstance().getOrEmpty(Registry.ITEM_REGISTRY);
 	}
 
 	public static TagCollection<Block> blocks() {
-		return SerializationTags.getInstance().getBlocks();
+		return SerializationTags.getInstance().getOrEmpty(Registry.BLOCK_REGISTRY);
 	}
 
 	public static TagCollection<Fluid> fluids() {
-		return SerializationTags.getInstance().getFluids();
+		return SerializationTags.getInstance().getOrEmpty(Registry.FLUID_REGISTRY);
 	}
 
 	public static TagCollection<EntityType<?>> entityTypes() {
-		return SerializationTags.getInstance().getEntityTypes();
+		return SerializationTags.getInstance().getOrEmpty(Registry.ENTITY_TYPE_REGISTRY);
 	}
 
 	public static Collection<ResourceLocation> byItemStack(ItemStack stack) {

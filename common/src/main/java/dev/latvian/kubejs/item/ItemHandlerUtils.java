@@ -33,7 +33,7 @@ public class ItemHandlerUtils {
 			return;
 		}
 
-		ItemHandler inventory = new PlayerMainInvWrapper(player.inventory);
+		ItemHandler inventory = new PlayerMainInvWrapper(player.getInventory());
 		Level world = player.level;
 
 		// try adding it into the inventory
