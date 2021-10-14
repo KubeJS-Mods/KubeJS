@@ -15,7 +15,7 @@ import dev.latvian.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.util.unit.FixedUnit;
 import dev.latvian.mods.rhino.util.unit.Unit;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
-import dev.architectury.architectury.hooks.PackRepositoryHooks;
+import dev.architectury.hooks.PackRepositoryHooks;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;

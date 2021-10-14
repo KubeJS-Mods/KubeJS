@@ -2,7 +2,7 @@ package dev.latvian.kubejs.item.fabric;
 
 import dev.latvian.kubejs.player.PlayerJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
-import dev.architectury.architectury.registry.ToolType;
+import dev.architectury.registry.block.ToolType;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 

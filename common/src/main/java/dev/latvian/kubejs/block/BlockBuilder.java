@@ -1,13 +1,13 @@
 package dev.latvian.kubejs.block;
 
 import com.google.gson.JsonObject;
+import dev.architectury.registry.block.BlockProperties;
+import dev.architectury.registry.block.ToolType;
 import dev.latvian.kubejs.block.custom.BasicBlockType;
 import dev.latvian.kubejs.block.custom.BlockType;
 import dev.latvian.kubejs.loot.LootBuilder;
 import dev.latvian.kubejs.util.BuilderBase;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import dev.architectury.architectury.registry.BlockProperties;
-import dev.architectury.architectury.registry.ToolType;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;

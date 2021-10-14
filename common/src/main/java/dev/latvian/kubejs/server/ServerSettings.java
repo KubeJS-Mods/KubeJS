@@ -2,11 +2,11 @@ package dev.latvian.kubejs.server;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dev.architectury.registry.registries.Registrar;
 import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.JsonUtilsJS;
-import dev.architectury.architectury.registry.Registry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
@@ -41,7 +41,7 @@ public class ServerSettings {
 		}
 	}
 
-	private static <T> void addRegistry(JsonObject o, String name, Registry<T> r) {
+	private static <T> void addRegistry(JsonObject o, String name, Registrar<T> r) {
 		JsonArray a = new JsonArray();
 
 		for (ResourceLocation id : r.getIds()) {

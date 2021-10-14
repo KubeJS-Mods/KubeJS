@@ -24,5 +24,6 @@ public interface TagCollectionKJS<T> {
 
 	String getResourceLocationPrefixKJS();
 
+	// TODO: remove
 	String getItemTypeNameKJS();
 }

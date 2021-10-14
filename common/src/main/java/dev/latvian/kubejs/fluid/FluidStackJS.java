@@ -12,8 +12,8 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.mod.util.ChangeListener;
 import dev.latvian.mods.rhino.mod.util.Copyable;
-import dev.architectury.architectury.fluid.FluidStack;
-import dev.architectury.architectury.registry.Registries;
+import dev.architectury.fluid.FluidStack;
+import dev.architectury.registry.registries.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
@@ -49,7 +49,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 			}
 
 			String[] s1 = s.split(" ", 2);
-			return new UnboundFluidStackJS(new ResourceLocation(s1[0])).withAmount(UtilsJS.parseInt(s1.length == 2 ? s1[1] : "", FluidStack.bucketAmount().intValue()));
+			return new UnboundFluidStackJS(new ResourceLocation(s1[0])).withAmount(UtilsJS.parseLong(s1.length == 2 ? s1[1] : "", FluidStack.bucketAmount()));
 		}
 
 		MapJS map = MapJS.of(o);
@@ -58,7 +58,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 			FluidStackJS stack = new UnboundFluidStackJS(new ResourceLocation(map.get("fluid").toString()));
 
 			if (map.get("amount") instanceof Number) {
-				stack.setAmount(((Number) map.get("amount")).intValue());
+				stack.setAmount(((Number) map.get("amount")).longValue());
 			}
 
 			if (map.containsKey("nbt")) {
@@ -76,7 +76,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 		Object n = UtilsJS.wrap(amountOrNBT, JSObjectType.ANY);
 
 		if (n instanceof Number) {
-			stack.setAmount(((Number) n).intValue());
+			stack.setAmount(((Number) n).longValue());
 		} else if (n instanceof MapJS) {
 			stack.setNbt(n);
 		}
@@ -84,7 +84,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 		return stack;
 	}
 
-	public static FluidStackJS of(@Nullable Object o, int amount, @Nullable Object nbt) {
+	public static FluidStackJS of(@Nullable Object o, long amount, @Nullable Object nbt) {
 		FluidStackJS stack = of(o);
 		stack.setAmount(amount);
 		stack.setNbt(nbt);
@@ -104,7 +104,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 			throw new RecipeExceptionJS(json + " is not a valid fluid!");
 		}
 
-		int amount = FluidStack.bucketAmount().intValue();
+		long amount = FluidStack.bucketAmount();
 		Object nbt = null;
 
 		if (json.has("amount")) {
@@ -149,11 +149,11 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 		return getAmount() <= 0;
 	}
 
-	public abstract int getAmount();
+	public abstract long getAmount();
 
-	public abstract void setAmount(int amount);
+	public abstract void setAmount(long amount);
 
-	public final FluidStackJS withAmount(int amount) {
+	public final FluidStackJS withAmount(long amount) {
 		if (amount <= 0) {
 			return EmptyFluidStackJS.INSTANCE;
 		}
@@ -164,7 +164,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 	}
 
 	@Deprecated
-	public final FluidStackJS amount(int amount) {
+	public final FluidStackJS amount(long amount) {
 		return withAmount(amount);
 	}
 
@@ -218,14 +218,14 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 	}
 
 	public String toString() {
-		int amount = getAmount();
+		long amount = getAmount();
 		MapJS nbt = getNbt();
 
 		StringBuilder builder = new StringBuilder();
 		builder.append("Fluid.of('");
 		builder.append(getId());
 
-		if (amount != FluidStack.bucketAmount().intValue()) {
+		if (amount != FluidStack.bucketAmount()) {
 			builder.append(", ");
 			builder.append(amount);
 		}
@@ -243,7 +243,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 		JsonObject o = new JsonObject();
 		o.addProperty("fluid", getId());
 
-		if (getAmount() != FluidStack.bucketAmount().intValue()) {
+		if (getAmount() != FluidStack.bucketAmount()) {
 			o.addProperty("amount", getAmount());
 		}
 

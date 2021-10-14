@@ -33,7 +33,7 @@ public abstract class MinecraftMixin {
 		}
 	}
 
-	@Redirect(method = {"reloadResourcePacks", "<init>"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;"))
+	@Redirect(method = {"reloadResourcePacks(Z)Ljava/util/concurrent/CompletableFuture;", "<init>"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;"))
 	private List<PackResources> loadPacksKJS(PackRepository repository) {
 		return KubeJSClientResourcePack.inject(repository.openAllSelected());
 	}

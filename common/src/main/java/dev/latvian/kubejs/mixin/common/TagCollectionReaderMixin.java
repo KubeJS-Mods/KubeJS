@@ -2,6 +2,7 @@ package dev.latvian.kubejs.mixin.common;
 
 import dev.latvian.kubejs.core.TagCollectionKJS;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagCollection;
 import net.minecraft.tags.TagLoader;
@@ -20,9 +21,9 @@ import java.util.function.Function;
  */
 @Mixin(TagLoader.class)
 public abstract class TagCollectionReaderMixin<T> implements TagCollectionKJS<T> {
-	@Inject(method = "load", at = @At("HEAD"))
-	private void customTags(Map<ResourceLocation, Tag.Builder> map, CallbackInfoReturnable<TagCollection<T>> ci) {
-		customTagsKJS(map);
+	@Inject(method = "load", at = @At("RETURN"))
+	private void customTags(ResourceManager resourceManager, CallbackInfoReturnable<Map<ResourceLocation, Tag.Builder>> cir) {
+		customTagsKJS(cir.getReturnValue());
 	}
 
 	@Override
@@ -32,8 +33,4 @@ public abstract class TagCollectionReaderMixin<T> implements TagCollectionKJS<T>
 	@Override
 	@Accessor("directory")
 	public abstract String getResourceLocationPrefixKJS();
-
-	@Override
-	@Accessor("name")
-	public abstract String getItemTypeNameKJS();
 }

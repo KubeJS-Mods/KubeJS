@@ -1,5 +1,8 @@
 package dev.latvian.kubejs.world;
 
+import dev.architectury.hooks.level.entity.PlayerHooks;
+import dev.architectury.injectables.annotations.ExpectPlatform;
+import dev.architectury.registry.registries.Registries;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.block.MaterialJS;
 import dev.latvian.kubejs.block.MaterialListJS;
@@ -12,9 +15,6 @@ import dev.latvian.kubejs.player.ServerPlayerJS;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
-import dev.architectury.architectury.annotations.ExpectPlatform;
-import dev.architectury.architectury.hooks.PlayerHooks;
-import dev.architectury.architectury.registry.Registries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
@@ -220,7 +220,7 @@ public class BlockContainerJS implements SpecialEquality {
 			BlockEntity entity = getEntity();
 
 			if (entity != null) {
-				entity.load(entity.getBlockState(), tag);
+				entity.load(tag);
 			}
 		}
 	}

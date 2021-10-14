@@ -16,6 +16,11 @@ configurations {
 	compileClasspath.extendsFrom common
 	runtimeClasspath.extendsFrom common
 	developmentFabric.extendsFrom common
+	dev
+}
+
+artifacts {
+	dev(jar)
 }
 
 dependencies {
@@ -25,7 +30,7 @@ dependencies {
 
 	modApi("dev.architectury:architectury-fabric:${rootProject.architectury_version}")
 
-	modApi("dev.latvian.mods:rhino-fabric:${rootProject.rhino_version}")
+	modApi("dev.latvian.mods:rhino-fabric:${rootProject.rhino_version}") { transitive false }
 
 	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${rootProject.fabric_rei_version}") {
 		exclude group: "net.fabricmc.fabric-api"
@@ -37,12 +42,8 @@ dependencies {
 		exclude group: "net.fabricmc"
 	}
 
-	common(project(path: ":common", configuration: "dev")) {
-		transitive = false
-	}
-	shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) {
-		transitive = false
-	}
+	common(project(path: ":common", configuration: "dev")) { transitive false }
+	shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
 
 processResources {

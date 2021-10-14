@@ -4,21 +4,21 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.kubejs.core.JsonSerializableKJS;
-import net.minecraft.world.level.storage.loot.RandomIntGenerator;
-import net.minecraft.world.level.storage.loot.RandomValueBounds;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
+import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(RandomValueBounds.class)
+@Mixin(UniformGenerator.class)
 public abstract class RandomValueBoundsMixin implements JsonSerializableKJS {
 	@Shadow
 	@Final
-	private float min;
-
+	private NumberProvider min;
 	@Shadow
 	@Final
-	private float max;
+	private NumberProvider max;
 
 	@Override
 	public JsonElement toJsonKJS() {
@@ -27,7 +27,8 @@ public abstract class RandomValueBoundsMixin implements JsonSerializableKJS {
 		}
 
 		JsonObject o = new JsonObject();
-		o.addProperty("type", RandomIntGenerator.UNIFORM.toString());
+		// FIXME!
+		o.addProperty("type", NumberProviders.UNIFORM.toString());
 		o.addProperty("min", min);
 		o.addProperty("max", max);
 		return o;

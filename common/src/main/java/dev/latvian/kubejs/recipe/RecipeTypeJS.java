@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.recipe;
 
-import dev.architectury.architectury.registry.Registries;
+import dev.architectury.registry.registries.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -19,7 +19,7 @@ public class RecipeTypeJS {
 	public RecipeTypeJS(RecipeSerializer<?> s, Supplier<RecipeJS> f) {
 		serializer = s;
 		factory = f;
-		id = Registries.getId(s, Registry.RECIPE_SERIALIZER_REGISTRY);
+		id = Registrar.getId(s, Registry.RECIPE_SERIALIZER_REGISTRY);
 		string = id.toString();
 	}
 

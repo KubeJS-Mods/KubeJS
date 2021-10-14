@@ -56,7 +56,7 @@ public class JEIPlugin implements IModPlugin {
 		new AddJEIEventJS<>(runtime, VanillaTypes.FLUID, object -> fromArchitectury(FluidStackJS.of(object).getFluidStack()), stack -> !stack.isEmpty()).post(ScriptType.CLIENT, JEIIntegration.JEI_ADD_FLUIDS);
 	}
 
-	private FluidStack fromArchitectury(dev.architectury.architectury.fluid.FluidStack stack) {
+	private FluidStack fromArchitectury(dev.architectury.fluid.FluidStack stack) {
 		return new FluidStack(stack.getFluid(), stack.getAmount().intValue(), stack.getTag());
 	}
 

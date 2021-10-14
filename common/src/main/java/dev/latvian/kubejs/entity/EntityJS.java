@@ -1,6 +1,9 @@
 package dev.latvian.kubejs.entity;
 
 import com.mojang.authlib.GameProfile;
+import dev.architectury.hooks.level.entity.EntityHooks;
+import dev.architectury.injectables.annotations.ExpectPlatform;
+import dev.architectury.registry.registries.Registries;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.server.ServerJS;
@@ -11,9 +14,6 @@ import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
-import dev.architectury.architectury.annotations.ExpectPlatform;
-import dev.architectury.architectury.hooks.EntityHooks;
-import dev.architectury.architectury.registry.Registries;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -132,11 +132,11 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public boolean isGlowing() {
-		return minecraftEntity.isGlowing();
+		return minecraftEntity.isCurrentlyGlowing();
 	}
 
 	public void setGlowing(boolean glowing) {
-		minecraftEntity.setGlowing(glowing);
+		minecraftEntity.setGlowingTag(glowing);
 	}
 
 	public boolean isInvisible() {
@@ -248,19 +248,19 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public float getYaw() {
-		return minecraftEntity.yRot;
+		return minecraftEntity.getYRot();
 	}
 
 	public void setYaw(float yaw) {
-		minecraftEntity.yRot = yaw;
+		minecraftEntity.setYRot(yaw);
 	}
 
 	public float getPitch() {
-		return minecraftEntity.xRot;
+		return minecraftEntity.getXRot();
 	}
 
 	public void setPitch(float pitch) {
-		minecraftEntity.xRot = pitch;
+		minecraftEntity.setXRot(pitch);
 	}
 
 	public double getMotionX() {
@@ -508,8 +508,8 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public RayTraceResultJS rayTrace(double distance) {
-		double xRot = minecraftEntity.xRot;
-		double yRot = minecraftEntity.yRot;
+		double xRot = minecraftEntity.getXRot();
+		double yRot = minecraftEntity.getYRot();
 		Vec3 fromPos = minecraftEntity.getEyePosition(1);
 		double x0 = Math.sin(-yRot * (Math.PI / 180D) - (float) Math.PI);
 		double z0 = Math.cos(-yRot * (Math.PI / 180D) - (float) Math.PI);

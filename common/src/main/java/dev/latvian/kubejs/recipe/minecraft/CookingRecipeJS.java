@@ -2,7 +2,7 @@ package dev.latvian.kubejs.recipe.minecraft;
 
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.ListJS;
-import dev.architectury.architectury.platform.Platform;
+import dev.architectury.platform.Platform;
 
 /**
  * @author LatvianModder

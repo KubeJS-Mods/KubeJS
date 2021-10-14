@@ -5,7 +5,7 @@ import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.recipe.minecraft.ShapedRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.ShapelessRecipeJS;
-import dev.architectury.architectury.registry.Registries;
+import dev.architectury.registry.registries.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 

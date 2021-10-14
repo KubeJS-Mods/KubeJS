@@ -1,13 +1,13 @@
 package dev.latvian.kubejs.world;
 
+import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.ExplosionEvent;
+import dev.architectury.event.events.common.LifecycleEvent;
+import dev.architectury.event.events.common.TickEvent;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
-import dev.architectury.architectury.event.events.ExplosionEvent;
-import dev.architectury.architectury.event.events.LifecycleEvent;
-import dev.architectury.architectury.event.events.TickEvent;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
@@ -19,9 +19,9 @@ import java.util.List;
  */
 public class KubeJSWorldEventHandler {
 	public static void init() {
-		LifecycleEvent.SERVER_WORLD_LOAD.register(KubeJSWorldEventHandler::worldLoaded);
-		LifecycleEvent.SERVER_WORLD_UNLOAD.register(KubeJSWorldEventHandler::worldUnloaded);
-		TickEvent.SERVER_WORLD_POST.register(KubeJSWorldEventHandler::worldTick);
+		LifecycleEvent.SERVER_LEVEL_LOAD.register(KubeJSWorldEventHandler::worldLoaded);
+		LifecycleEvent.SERVER_LEVEL_UNLOAD.register(KubeJSWorldEventHandler::worldUnloaded);
+		TickEvent.SERVER_LEVEL_POST.register(KubeJSWorldEventHandler::worldTick);
 		ExplosionEvent.PRE.register(KubeJSWorldEventHandler::explosionStart);
 		ExplosionEvent.DETONATE.register(KubeJSWorldEventHandler::explosionDetonate);
 	}
@@ -50,11 +50,11 @@ public class KubeJSWorldEventHandler {
 		new SimpleWorldEventJS(w).post(ScriptType.SERVER, KubeJSEvents.WORLD_TICK);
 	}
 
-	private static InteractionResult explosionStart(Level world, Explosion explosion) {
+	private static EventResult explosionStart(Level world, Explosion explosion) {
 		if (new ExplosionEventJS.Pre(world, explosion).post(KubeJSEvents.WORLD_EXPLOSION_PRE)) {
-			return InteractionResult.FAIL;
+			return EventResult.interruptFalse();
 		}
-		return InteractionResult.PASS;
+		return EventResult.pass();
 	}
 
 	private static void explosionDetonate(Level world, Explosion explosion, List<Entity> affectedEntities) {

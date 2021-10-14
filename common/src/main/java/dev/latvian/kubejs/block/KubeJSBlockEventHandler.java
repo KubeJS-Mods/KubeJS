@@ -1,21 +1,21 @@
 package dev.latvian.kubejs.block;
 
+import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.BlockEvent;
+import dev.architectury.event.events.common.InteractionEvent;
+import dev.architectury.injectables.annotations.ExpectPlatform;
+import dev.architectury.utils.value.IntValue;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.core.BlockKJS;
 import dev.latvian.kubejs.fluid.FluidBuilder;
-import dev.architectury.architectury.annotations.ExpectPlatform;
-import dev.architectury.architectury.event.events.BlockEvent;
-import dev.architectury.architectury.event.events.InteractionEvent;
-import dev.architectury.architectury.utils.IntValue;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -69,36 +69,36 @@ public class KubeJSBlockEventHandler {
 		}
 	}
 
-	private static InteractionResult rightClick(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
+	private static EventResult rightClick(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
 		if (player != null && player.level != null && !player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem()) && new BlockRightClickEventJS(player, hand, pos, direction).post(KubeJSEvents.BLOCK_RIGHT_CLICK)) {
-			return InteractionResult.FAIL;
+			return EventResult.interruptFalse();
 		}
 
-		return InteractionResult.PASS;
+		return EventResult.pass();
 	}
 
-	private static InteractionResult leftClick(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
+	private static EventResult leftClick(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
 		if (player != null && player.level != null && new BlockLeftClickEventJS(player, hand, pos, direction).post(KubeJSEvents.BLOCK_LEFT_CLICK)) {
-			return InteractionResult.FAIL;
+			return EventResult.interruptFalse();
 		}
 
-		return InteractionResult.PASS;
+		return EventResult.pass();
 	}
 
-	private static InteractionResult blockBreak(Level world, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp) {
+	private static EventResult blockBreak(Level world, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp) {
 		if (player != null && player.level != null && new BlockBreakEventJS(player, world, pos, state, xp).post(KubeJSEvents.BLOCK_BREAK)) {
-			return InteractionResult.FAIL;
+			return EventResult.interruptFalse();
 		}
 
-		return InteractionResult.PASS;
+		return EventResult.pass();
 	}
 
-	private static InteractionResult blockPlace(Level world, BlockPos pos, BlockState state, @Nullable Entity placer) {
+	private static EventResult blockPlace(Level world, BlockPos pos, BlockState state, @Nullable Entity placer) {
 		if (world != null && (placer == null || placer.level != null) && new BlockPlaceEventJS(placer, world, pos, state).post(KubeJSEvents.BLOCK_PLACE)) {
-			return InteractionResult.FAIL;
+			return EventResult.interruptFalse();
 		}
 
-		return InteractionResult.PASS;
+		return EventResult.pass();
 	}
 
 	/*

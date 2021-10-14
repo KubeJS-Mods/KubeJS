@@ -8,7 +8,7 @@ import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.mod.util.NBTSerializable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.mod.util.StringBuilderAppendable;
-import dev.architectury.architectury.utils.NbtType;
+import dev.architectury.utils.NbtType;
 import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.IntArrayTag;

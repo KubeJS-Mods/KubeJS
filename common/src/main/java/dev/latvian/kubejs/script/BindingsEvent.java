@@ -1,14 +1,14 @@
 package dev.latvian.kubejs.script;
 
+import dev.architectury.annotations.ForgeEvent;
+import dev.architectury.event.Event;
+import dev.architectury.event.EventFactory;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaClass;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.ScriptableObject;
 import dev.latvian.mods.rhino.util.DynamicFunction;
-import dev.architectury.architectury.ForgeEvent;
-import dev.architectury.architectury.event.Event;
-import dev.architectury.architectury.event.EventFactory;
 
 import java.util.function.Consumer;
 

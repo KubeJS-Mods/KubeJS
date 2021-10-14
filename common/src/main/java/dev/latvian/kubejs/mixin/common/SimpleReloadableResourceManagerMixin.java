@@ -20,6 +20,7 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
+// FIXME!
 @Mixin(SimpleReloadableResourceManager.class)
 public abstract class SimpleReloadableResourceManagerMixin implements SimpleReloadableResourceManagerKJS {
 	@Shadow
@@ -34,7 +35,7 @@ public abstract class SimpleReloadableResourceManagerMixin implements SimpleRelo
 	@Accessor("listeners")
 	public abstract List<PreparableReloadListener> getReloadListenersKJS();
 
-	@Override
+	/*@Override
 	@Accessor("recentlyRegistered")
 	public abstract List<PreparableReloadListener> getInitTaskQueueKJS();
 
@@ -47,5 +48,5 @@ public abstract class SimpleReloadableResourceManagerMixin implements SimpleRelo
 		}
 
 		return old;
-	}
+	}*/
 }

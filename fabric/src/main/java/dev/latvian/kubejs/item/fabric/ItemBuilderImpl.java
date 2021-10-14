@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.item.fabric;
 
-import dev.architectury.architectury.registry.ToolType;
+import dev.architectury.registry.block.ToolType;
 import net.minecraft.world.item.Item;
 
 public class ItemBuilderImpl {

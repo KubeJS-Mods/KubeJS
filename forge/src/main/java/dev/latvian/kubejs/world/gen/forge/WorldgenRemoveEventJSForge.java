@@ -45,7 +45,7 @@ public class WorldgenRemoveEventJSForge extends WorldgenRemoveEventJS {
 				return Optional.of(id);
 			}
 
-			// dev.architectury.architectury.registry.Registry<ConfiguredFeature<?, ?>> reg = KubeJSRegistries.genericRegistry(Registry.CONFIGURED_FEATURE_REGISTRY);
+			// dev.architectury.registry.Registry<ConfiguredFeature<?, ?>> reg = KubeJSRegistries.genericRegistry(Registry.CONFIGURED_FEATURE_REGISTRY);
 			// return reg.getKey(f).map(ResourceKey::location);
 			return Optional.empty();
 		}).orElse(null);

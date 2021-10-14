@@ -16,6 +16,11 @@ configurations {
 	compileClasspath.extendsFrom common
 	runtimeClasspath.extendsFrom common
 	developmentForge.extendsFrom common
+	dev
+}
+
+artifacts {
+	dev(jar)
 }
 
 loom {
@@ -39,16 +44,13 @@ dependencies {
 
 	modApi("dev.architectury:architectury-forge:${rootProject.architectury_version}")
 
-	modApi("dev.latvian.mods:rhino-forge:${rootProject.rhino_version}")
+	modApi("dev.latvian.mods:rhino-forge:${rootProject.rhino_version}") { transitive false }
 
-	modOptional("mezz.jei:jei-1.17.1:${rootProject.forge_jei_version}")
+	modCompileOnly("mezz.jei:jei-1.17.1:${rootProject.forge_jei_version}")
+	modRuntimeOnly("mezz.jei:jei-1.17.1:${rootProject.forge_jei_version}")
 
-	common(project(path: ":common", configuration: "dev")) {
-		transitive = false
-	}
-	shadowCommon(project(path: ":common", configuration: "transformProductionForge")) {
-		transitive = false
-	}
+	common(project(path: ":common", configuration: "dev")) { transitive false }
+	shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
 }
 
 processResources {

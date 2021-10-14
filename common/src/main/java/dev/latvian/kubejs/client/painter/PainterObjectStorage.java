@@ -4,7 +4,7 @@ import dev.latvian.kubejs.client.painter.screen.ScreenPainterObject;
 import dev.latvian.kubejs.client.painter.world.WorldPainterObject;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.unit.FixedUnit;
-import dev.architectury.architectury.utils.NbtType;
+import dev.architectury.utils.NbtType;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 

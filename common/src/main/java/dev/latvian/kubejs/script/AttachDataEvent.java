@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.script;
 
 import dev.latvian.kubejs.util.WithAttachedData;
-import dev.architectury.architectury.ForgeEvent;
+import dev.architectury.annotations.ForgeEvent;
 
 /**
  * @author LatvianModder

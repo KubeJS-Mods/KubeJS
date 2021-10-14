@@ -20,7 +20,7 @@ import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.stages.Stages;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
-import dev.architectury.architectury.registry.Registries;
+import dev.architectury.registry.registries.Registries;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;

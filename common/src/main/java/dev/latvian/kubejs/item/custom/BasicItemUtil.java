@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.item.custom;
 
 import dev.latvian.kubejs.item.ItemBuilder;
-import dev.architectury.architectury.annotations.ExpectPlatform;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 
 public class BasicItemUtil {
 	@ExpectPlatform

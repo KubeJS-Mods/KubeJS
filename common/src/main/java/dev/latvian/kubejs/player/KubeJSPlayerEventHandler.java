@@ -1,20 +1,20 @@
 package dev.latvian.kubejs.player;
 
+import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.ChatEvent;
+import dev.architectury.event.events.common.PlayerEvent;
+import dev.architectury.event.events.common.TickEvent;
 import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.stages.Stages;
-import dev.architectury.architectury.event.events.ChatEvent;
-import dev.architectury.architectury.event.events.PlayerEvent;
-import dev.architectury.architectury.event.events.TickEvent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.server.network.TextFilter;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
@@ -78,12 +78,13 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	@NotNull
-	public static InteractionResultHolder<Component> chat(ServerPlayer player, String message, Component component) {
-		PlayerChatEventJS event = new PlayerChatEventJS(player, message, component);
+	public static EventResult chat(ServerPlayer player, TextFilter.FilteredText message, ChatEvent.ChatComponent component) {
+		PlayerChatEventJS event = new PlayerChatEventJS(player, message.getRaw(), component.getRaw());
+		component.setRaw(event.component);
 		if (event.post(KubeJSEvents.PLAYER_CHAT)) {
-			return InteractionResultHolder.fail(event.component);
+			return EventResult.interruptFalse();
 		}
-		return InteractionResultHolder.pass(event.component);
+		return EventResult.pass();
 	}
 
 	public static void advancement(ServerPlayer player, Advancement advancement) {

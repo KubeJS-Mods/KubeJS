@@ -3,7 +3,7 @@ package dev.latvian.kubejs.script;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.server.ServerScriptManager;
 import dev.latvian.kubejs.util.ConsoleJS;
-import dev.architectury.architectury.platform.Platform;
+import dev.architectury.platform.Platform;
 import net.minecraft.world.level.LevelReader;
 import org.apache.logging.log4j.LogManager;
 

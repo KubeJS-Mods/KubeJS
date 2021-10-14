@@ -4,7 +4,7 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.kubejs.recipe.RecipeJS;
 import dev.latvian.kubejs.util.UtilsJS;
-import dev.architectury.architectury.registry.Registries;
+import dev.architectury.registry.registries.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.ItemStack;
 

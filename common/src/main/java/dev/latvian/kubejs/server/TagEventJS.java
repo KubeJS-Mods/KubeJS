@@ -2,6 +2,7 @@ package dev.latvian.kubejs.server;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dev.architectury.registry.registries.Registrar;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.KubeJSPaths;
@@ -105,8 +106,8 @@ public class TagEventJS<T> extends EventJS {
 				} else {
 					Pattern pattern = UtilsJS.parseRegex(s);
 
-					if (pattern != null && event.actualRegistry != null) {
-						for (ResourceLocation sid : event.actualRegistry.getIds()) {
+					if (pattern != null && event.registrar != null) {
+						for (ResourceLocation sid : event.registrar.getIds()) {
 							if (pattern.matcher(sid.toString()).find()) {
 								Optional<T> v = event.registry.apply(sid);
 
@@ -168,8 +169,8 @@ public class TagEventJS<T> extends EventJS {
 				} else {
 					Pattern pattern = UtilsJS.parseRegex(s);
 
-					if (pattern != null && event.actualRegistry != null) {
-						for (ResourceLocation sid : event.actualRegistry.getIds()) {
+					if (pattern != null && event.registrar != null) {
+						for (ResourceLocation sid : event.registrar.getIds()) {
 							if (pattern.matcher(sid.toString()).find()) {
 								Optional<T> v = event.registry.apply(sid);
 
@@ -315,7 +316,7 @@ public class TagEventJS<T> extends EventJS {
 	private int addedCount;
 	private int removedCount;
 	private List<Predicate<String>> globalPriorityList;
-	private dev.architectury.architectury.registry.Registry<T> actualRegistry;
+	private Registrar<T> registrar;
 
 	public TagEventJS(String t, Map<ResourceLocation, SetTag.Builder> m, Function<ResourceLocation, Optional<T>> r) {
 		type = t;
@@ -324,20 +325,20 @@ public class TagEventJS<T> extends EventJS {
 		addedCount = 0;
 		removedCount = 0;
 		globalPriorityList = null;
-		actualRegistry = null;
+		registrar = null;
 
 		switch (type) {
 			case "items":
-				actualRegistry = UtilsJS.cast(KubeJSRegistries.items());
+				registrar = UtilsJS.cast(KubeJSRegistries.items());
 				break;
 			case "blocks":
-				actualRegistry = UtilsJS.cast(KubeJSRegistries.blocks());
+				registrar = UtilsJS.cast(KubeJSRegistries.blocks());
 				break;
 			case "fluids":
-				actualRegistry = UtilsJS.cast(KubeJSRegistries.fluids());
+				registrar = UtilsJS.cast(KubeJSRegistries.fluids());
 				break;
 			case "entity_types":
-				actualRegistry = UtilsJS.cast(KubeJSRegistries.entityTypes());
+				registrar = UtilsJS.cast(KubeJSRegistries.entityTypes());
 				break;
 		}
 	}
@@ -417,7 +418,7 @@ public class TagEventJS<T> extends EventJS {
 			}
 		}
 
-		if (ServerSettings.dataExport != null && actualRegistry != null) {
+		if (ServerSettings.dataExport != null && registrar != null) {
 			JsonObject tj = ServerSettings.dataExport.getAsJsonObject("tags");
 
 			if (tj == null) {

@@ -1,9 +1,8 @@
 package dev.latvian.kubejs.fluid;
 
+import dev.architectury.fluid.FluidStack;
+import dev.architectury.registry.registries.Registries;
 import dev.latvian.kubejs.util.MapJS;
-import dev.architectury.architectury.fluid.FluidStack;
-import dev.architectury.architectury.registry.Registries;
-import dev.architectury.architectury.utils.Fraction;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
@@ -34,13 +33,13 @@ public class BoundFluidStackJS extends FluidStackJS {
 	}
 
 	@Override
-	public int getAmount() {
-		return fluidStack.getAmount().intValue();
+	public long getAmount() {
+		return fluidStack.getAmount();
 	}
 
 	@Override
-	public void setAmount(int amount) {
-		fluidStack.setAmount(Fraction.ofWhole(amount));
+	public void setAmount(long amount) {
+		fluidStack.setAmount(amount);
 	}
 
 	@Override

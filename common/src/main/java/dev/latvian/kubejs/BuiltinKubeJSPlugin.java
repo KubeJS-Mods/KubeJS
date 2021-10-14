@@ -80,8 +80,8 @@ import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import dev.latvian.mods.rhino.mod.wrapper.DirectionWrapper;
 import dev.latvian.mods.rhino.mod.wrapper.UUIDWrapper;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
-import dev.architectury.architectury.platform.Platform;
-import dev.architectury.architectury.registry.ToolType;
+import dev.architectury.platform.Platform;
+import dev.architectury.registry.block.ToolType;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
@@ -207,7 +207,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		filter.allow("com.mojang.util.UUIDTypeAdapter");
 		filter.allow("com.mojang.brigadier");
 
-		filter.allow("dev.architectury.architectury"); // Architectury
+		filter.allow("dev.architectury"); // Architectury
 
 		// Misc
 		filter.deny("java.net"); // Networks

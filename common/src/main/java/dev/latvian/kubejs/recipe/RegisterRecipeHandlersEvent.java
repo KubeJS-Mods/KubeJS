@@ -6,10 +6,10 @@ import dev.latvian.kubejs.recipe.minecraft.ShapedRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.ShapelessRecipeJS;
 import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.util.ConsoleJS;
-import dev.architectury.architectury.ForgeEvent;
-import dev.architectury.architectury.event.Event;
-import dev.architectury.architectury.event.EventFactory;
-import dev.architectury.architectury.registry.Registries;
+import dev.architectury.annotations.ForgeEvent;
+import dev.architectury.event.Event;
+import dev.architectury.event.EventFactory;
+import dev.architectury.registry.registries.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 

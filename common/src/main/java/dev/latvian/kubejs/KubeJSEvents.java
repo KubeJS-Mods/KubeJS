@@ -55,7 +55,7 @@ public class KubeJSEvents {
 	public static final String PLAYER_CHECK_LOGIN = "player.check_login";
 
 	public static final String ENTITY_DEATH = "entity.death";
-	public static final String ENTITY_ATTACK = "entity.attack";
+	public static final String ENTITY_HURT = "entity.hurt";
 	public static final String ENTITY_DROPS = "entity.drops";
 	public static final String ENTITY_CHECK_SPAWN = "entity.check_spawn";
 	public static final String ENTITY_SPAWNED = "entity.spawned";

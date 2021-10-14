@@ -1,11 +1,11 @@
 package dev.latvian.kubejs.script;
 
 import com.mojang.serialization.Codec;
+import dev.architectury.registry.registries.Registrar;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
-import dev.architectury.architectury.registry.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -59,10 +59,10 @@ public class RegistryTypeWrapperFactory<T> implements TypeWrapperFactory<T> {
 	}
 
 	public final Class<T> type;
-	public final Registry<T> registry;
+	public final Registrar<T> registry;
 	public final String name;
 
-	private RegistryTypeWrapperFactory(Class<T> t, Registry<T> r, String n) {
+	private RegistryTypeWrapperFactory(Class<T> t, Registrar<T> r, String n) {
 		type = t;
 		registry = r;
 		name = n;

@@ -1,5 +1,10 @@
 package dev.latvian.kubejs.item;
 
+import dev.architectury.event.CompoundEventResult;
+import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.InteractionEvent;
+import dev.architectury.event.events.common.PlayerEvent;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
@@ -10,14 +15,10 @@ import dev.latvian.kubejs.block.DetectorInstance;
 import dev.latvian.kubejs.core.ItemKJS;
 import dev.latvian.kubejs.fluid.FluidBuilder;
 import dev.latvian.kubejs.player.InventoryChangedEventJS;
-import dev.architectury.architectury.annotations.ExpectPlatform;
-import dev.architectury.architectury.event.events.InteractionEvent;
-import dev.architectury.architectury.event.events.PlayerEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -89,12 +90,12 @@ public class KubeJSItemEventHandler {
 		}
 	}
 
-	private static InteractionResultHolder<ItemStack> rightClick(Player player, InteractionHand hand) {
+	private static CompoundEventResult<ItemStack> rightClick(Player player, InteractionHand hand) {
 		if (!player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem()) && new ItemRightClickEventJS(player, hand).post(KubeJSEvents.ITEM_RIGHT_CLICK)) {
-			return InteractionResultHolder.success(player.getItemInHand(hand));
+			return CompoundEventResult.interruptTrue(player.getItemInHand(hand));
 		}
 
-		return InteractionResultHolder.pass(ItemStack.EMPTY);
+		return CompoundEventResult.pass();
 	}
 
 	private static void rightClickEmpty(Player player, InteractionHand hand) {
@@ -109,28 +110,28 @@ public class KubeJSItemEventHandler {
 		}
 	}
 
-	private static InteractionResult pickup(Player player, ItemEntity entity, ItemStack stack) {
+	private static EventResult pickup(Player player, ItemEntity entity, ItemStack stack) {
 		if (player != null && entity != null && player.level != null && new ItemPickupEventJS(player, entity, stack).post(KubeJSEvents.ITEM_PICKUP)) {
-			return InteractionResult.FAIL;
+			return EventResult.interruptFalse();
 		}
 
-		return InteractionResult.PASS;
+		return EventResult.pass();
 	}
 
-	private static InteractionResult drop(Player player, ItemEntity entity) {
+	private static EventResult drop(Player player, ItemEntity entity) {
 		if (player != null && entity != null && player.level != null && new ItemTossEventJS(player, entity).post(KubeJSEvents.ITEM_TOSS)) {
-			return InteractionResult.FAIL;
+			return EventResult.interruptFalse();
 		}
 
-		return InteractionResult.PASS;
+		return EventResult.pass();
 	}
 
-	private static InteractionResult entityInteract(Player player, Entity entity, InteractionHand hand) {
+	private static EventResult entityInteract(Player player, Entity entity, InteractionHand hand) {
 		if (player != null && entity != null && player.level != null && new ItemEntityInteractEventJS(player, entity, hand).post(KubeJSEvents.ITEM_ENTITY_INTERACT)) {
-			return InteractionResult.FAIL;
+			return EventResult.interruptFalse();
 		}
 
-		return InteractionResult.PASS;
+		return EventResult.pass();
 	}
 
 	private static void crafted(Player player, ItemStack crafted, Container grid) {

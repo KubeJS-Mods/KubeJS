@@ -1,9 +1,8 @@
 package dev.latvian.kubejs.item;
 
 import com.google.common.collect.Lists;
+import dev.architectury.hooks.item.food.FoodPropertiesHooks;
 import dev.latvian.kubejs.KubeJSRegistries;
-import dev.latvian.kubejs.script.ScriptType;
-import dev.architectury.architectury.hooks.FoodPropertiesHooks;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -20,137 +19,137 @@ import java.util.stream.Collectors;
  * @author LatvianModder
  */
 public class FoodBuilder {
-	private int hunger;
-	private float saturation;
-	private boolean meat;
-	private boolean alwaysEdible;
-	private boolean fastToEat;
-	private final List<Pair<Supplier<MobEffectInstance>, Float>> effects = Lists.newArrayList();
-	public Consumer<ItemFoodEatenEventJS> eaten;
+    private int hunger;
+    private float saturation;
+    private boolean meat;
+    private boolean alwaysEdible;
+    private boolean fastToEat;
+    private final List<Pair<Supplier<MobEffectInstance>, Float>> effects = Lists.newArrayList();
+    public Consumer<ItemFoodEatenEventJS> eaten;
 
-	public FoodBuilder() {
-	}
+    public FoodBuilder() {
+    }
 
-	public FoodBuilder(FoodProperties properties) {
-		hunger = properties.getNutrition();
-		saturation = properties.getSaturationModifier();
-		meat = properties.isMeat();
-		alwaysEdible = properties.canAlwaysEat();
-		fastToEat = properties.isFastFood();
+    public FoodBuilder(FoodProperties properties) {
+        hunger = properties.getNutrition();
+        saturation = properties.getSaturationModifier();
+        meat = properties.isMeat();
+        alwaysEdible = properties.canAlwaysEat();
+        fastToEat = properties.isFastFood();
 
-		properties.getEffects().forEach(pair -> {
-			effects.add(Pair.of(pair::getFirst, pair.getSecond()));
-		});
-	}
+        properties.getEffects().forEach(pair -> {
+            effects.add(Pair.of(pair::getFirst, pair.getSecond()));
+        });
+    }
 
-	public FoodBuilder hunger(int h) {
-		hunger = h;
-		return this;
-	}
+    public FoodBuilder hunger(int h) {
+        hunger = h;
+        return this;
+    }
 
-	public FoodBuilder saturation(float s) {
-		saturation = s;
-		return this;
-	}
+    public FoodBuilder saturation(float s) {
+        saturation = s;
+        return this;
+    }
 
-	public FoodBuilder meat(boolean flag) {
-		meat = flag;
-		return this;
-	}
+    public FoodBuilder meat(boolean flag) {
+        meat = flag;
+        return this;
+    }
 
-	public FoodBuilder meat() {
-		return meat(true);
-	}
+    public FoodBuilder meat() {
+        return meat(true);
+    }
 
-	public FoodBuilder alwaysEdible(boolean flag) {
-		alwaysEdible = flag;
-		return this;
-	}
+    public FoodBuilder alwaysEdible(boolean flag) {
+        alwaysEdible = flag;
+        return this;
+    }
 
-	public FoodBuilder alwaysEdible() {
-		return alwaysEdible(true);
-	}
+    public FoodBuilder alwaysEdible() {
+        return alwaysEdible(true);
+    }
 
-	public FoodBuilder fastToEat(boolean flag) {
-		fastToEat = flag;
-		return this;
-	}
+    public FoodBuilder fastToEat(boolean flag) {
+        fastToEat = flag;
+        return this;
+    }
 
-	public FoodBuilder fastToEat() {
-		return fastToEat(true);
-	}
+    public FoodBuilder fastToEat() {
+        return fastToEat(true);
+    }
 
-	public FoodBuilder effect(ResourceLocation mobEffectId, int duration, int amplifier, float probability) {
-		effects.add(Pair.of(new EffectSupplier(mobEffectId, duration, amplifier), probability));
-		return this;
-	}
+    public FoodBuilder effect(ResourceLocation mobEffectId, int duration, int amplifier, float probability) {
+        effects.add(Pair.of(new EffectSupplier(mobEffectId, duration, amplifier), probability));
+        return this;
+    }
 
-	public FoodBuilder removeEffect(MobEffect mobEffect) {
-		if (mobEffect == null) {
-			return this;
-		}
+    public FoodBuilder removeEffect(MobEffect mobEffect) {
+        if (mobEffect == null) {
+            return this;
+        }
 
-		effects.removeIf(pair -> {
-			MobEffectInstance effectInstance = pair.getKey().get();
-			return effectInstance.getDescriptionId().equals(mobEffect.getDescriptionId());
-		});
+        effects.removeIf(pair -> {
+            MobEffectInstance effectInstance = pair.getKey().get();
+            return effectInstance.getDescriptionId().equals(mobEffect.getDescriptionId());
+        });
 
-		return this;
-	}
+        return this;
+    }
 
-	public FoodBuilder eaten(Consumer<ItemFoodEatenEventJS> e) {
-		eaten = e;
-		return this;
-	}
+    public FoodBuilder eaten(Consumer<ItemFoodEatenEventJS> e) {
+        eaten = e;
+        return this;
+    }
 
-	public FoodProperties build() {
-		FoodProperties.Builder b = new FoodProperties.Builder();
-		b.nutrition(hunger);
-		b.saturationMod(saturation);
+    public FoodProperties build() {
+        FoodProperties.Builder b = new FoodProperties.Builder();
+        b.nutrition(hunger);
+        b.saturationMod(saturation);
 
-		if (meat) {
-			b.meat();
-		}
+        if (meat) {
+            b.meat();
+        }
 
-		if (alwaysEdible) {
-			b.alwaysEat();
-		}
+        if (alwaysEdible) {
+            b.alwaysEat();
+        }
 
-		if (fastToEat) {
-			b.fast();
-		}
+        if (fastToEat) {
+            b.fast();
+        }
 
-		for (Pair<Supplier<MobEffectInstance>, Float> effect : effects) {
-			FoodPropertiesHooks.effect(b, effect.getLeft(), effect.getRight());
-		}
+        for (Pair<Supplier<MobEffectInstance>, Float> effect : effects) {
+            FoodPropertiesHooks.effect(b, effect.getLeft(), effect.getRight());
+        }
 
-		return b.build();
-	}
+        return b.build();
+    }
 
-	private static class EffectSupplier implements Supplier<MobEffectInstance> {
-		private final ResourceLocation id;
-		private final int duration;
-		private final int amplifier;
+    private static class EffectSupplier implements Supplier<MobEffectInstance> {
+        private final ResourceLocation id;
+        private final int duration;
+        private final int amplifier;
 
-		private MobEffect cachedEffect;
+        private MobEffect cachedEffect;
 
-		public EffectSupplier(ResourceLocation id, int duration, int amplifier) {
-			this.id = id;
-			this.duration = duration;
-			this.amplifier = amplifier;
-		}
+        public EffectSupplier(ResourceLocation id, int duration, int amplifier) {
+            this.id = id;
+            this.duration = duration;
+            this.amplifier = amplifier;
+        }
 
-		@Override
-		public MobEffectInstance get() {
-			if(cachedEffect == null) {
-				cachedEffect = KubeJSRegistries.mobEffects().get(id);
-				if(cachedEffect == null) {
-					Set<ResourceLocation> effectIds = KubeJSRegistries.mobEffects().entrySet().stream().map(entry -> entry.getKey().location()).collect(Collectors.toSet());
-					throw new RuntimeException(String.format("Missing effect '%s'. Check spelling or maybe potion id was used instead of effect id. Possible ids: %s", id, effectIds));
-				}
-			}
+        @Override
+        public MobEffectInstance get() {
+            if (cachedEffect == null) {
+                cachedEffect = KubeJSRegistries.mobEffects().get(id);
+                if (cachedEffect == null) {
+                    Set<ResourceLocation> effectIds = KubeJSRegistries.mobEffects().entrySet().stream().map(entry -> entry.getKey().location()).collect(Collectors.toSet());
+                    throw new RuntimeException(String.format("Missing effect '%s'. Check spelling or maybe potion id was used instead of effect id. Possible ids: %s", id, effectIds));
+                }
+            }
 
-			return new MobEffectInstance(cachedEffect, duration, amplifier);
-		}
-	}
+            return new MobEffectInstance(cachedEffect, duration, amplifier);
+        }
+    }
 }

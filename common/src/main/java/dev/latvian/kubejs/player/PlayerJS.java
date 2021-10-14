@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.player;
 
 import com.mojang.authlib.GameProfile;
+import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.latvian.kubejs.core.PlayerKJS;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
@@ -10,7 +11,6 @@ import dev.latvian.kubejs.stages.Stages;
 import dev.latvian.kubejs.util.AttachedData;
 import dev.latvian.kubejs.util.WithAttachedData;
 import dev.latvian.kubejs.world.WorldJS;
-import dev.architectury.architectury.hooks.PlayerHooks;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
