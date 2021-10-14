@@ -14,7 +14,7 @@ import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
-import me.shedaniel.architectury.platform.Platform;
+import dev.architectury.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;

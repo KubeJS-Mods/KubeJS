@@ -4,11 +4,11 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.script.ScriptType;
-import me.shedaniel.rei.api.EntryRegistry;
-import me.shedaniel.rei.api.EntryStack;
-import me.shedaniel.rei.api.RecipeHelper;
-import me.shedaniel.rei.api.plugins.REIPluginV0;
-import me.shedaniel.rei.utils.CollectionUtils;
+import dev.architectury.rei.api.EntryRegistry;
+import dev.architectury.rei.api.EntryStack;
+import dev.architectury.rei.api.RecipeHelper;
+import dev.architectury.rei.api.plugins.REIPluginV0;
+import dev.architectury.rei.utils.CollectionUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 

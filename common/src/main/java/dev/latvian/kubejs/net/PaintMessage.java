@@ -2,9 +2,9 @@ package dev.latvian.kubejs.net;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
-import me.shedaniel.architectury.networking.NetworkManager.PacketContext;
-import me.shedaniel.architectury.networking.simple.BaseS2CMessage;
-import me.shedaniel.architectury.networking.simple.MessageType;
+import dev.architectury.architectury.networking.NetworkManager.PacketContext;
+import dev.architectury.architectury.networking.simple.BaseS2CMessage;
+import dev.architectury.architectury.networking.simple.MessageType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 

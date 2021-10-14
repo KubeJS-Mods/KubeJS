@@ -11,7 +11,7 @@ import dev.latvian.kubejs.integration.IntegrationManager;
 import dev.latvian.kubejs.item.forge.ItemDestroyedEventJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
-import me.shedaniel.architectury.platform.forge.EventBuses;
+import dev.architectury.architectury.platform.forge.EventBuses;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;

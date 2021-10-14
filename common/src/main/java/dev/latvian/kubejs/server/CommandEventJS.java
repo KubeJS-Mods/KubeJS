@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.server;
 
 import com.mojang.brigadier.ParseResults;
-import me.shedaniel.architectury.event.events.CommandPerformEvent;
+import dev.architectury.architectury.event.events.CommandPerformEvent;
 import net.minecraft.commands.CommandSourceStack;
 
 /**

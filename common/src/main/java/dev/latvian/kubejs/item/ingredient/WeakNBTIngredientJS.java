@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.util.ConsoleJS;
-import me.shedaniel.architectury.platform.Platform;
+import dev.architectury.architectury.platform.Platform;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

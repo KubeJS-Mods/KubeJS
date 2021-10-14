@@ -3,8 +3,8 @@ package dev.latvian.kubejs.world;
 import dev.latvian.kubejs.script.AttachDataEvent;
 import dev.latvian.kubejs.script.DataType;
 import dev.latvian.kubejs.util.KubeJSPlugins;
-import me.shedaniel.architectury.event.Event;
-import me.shedaniel.architectury.event.EventFactory;
+import dev.architectury.architectury.event.Event;
+import dev.architectury.architectury.event.EventFactory;
 
 import java.util.function.Consumer;
 

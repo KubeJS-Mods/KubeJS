@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.script;
 
 
-import me.shedaniel.architectury.event.Event;
-import me.shedaniel.architectury.event.EventFactory;
+import dev.architectury.architectury.event.Event;
+import dev.architectury.architectury.event.EventFactory;
 
 /**
  * @author LatvianModder

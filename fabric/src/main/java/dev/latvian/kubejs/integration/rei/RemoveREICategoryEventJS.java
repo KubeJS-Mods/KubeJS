@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.integration.rei;
 
 import dev.latvian.kubejs.event.EventJS;
-import me.shedaniel.rei.api.RecipeHelper;
-import me.shedaniel.rei.utils.CollectionUtils;
+import dev.architectury.rei.api.RecipeHelper;
+import dev.architectury.rei.utils.CollectionUtils;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Arrays;

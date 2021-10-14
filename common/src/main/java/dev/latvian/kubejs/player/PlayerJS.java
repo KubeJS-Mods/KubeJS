@@ -10,7 +10,7 @@ import dev.latvian.kubejs.stages.Stages;
 import dev.latvian.kubejs.util.AttachedData;
 import dev.latvian.kubejs.util.WithAttachedData;
 import dev.latvian.kubejs.world.WorldJS;
-import me.shedaniel.architectury.hooks.PlayerHooks;
+import dev.architectury.architectury.hooks.PlayerHooks;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;

@@ -3,8 +3,8 @@ package dev.latvian.kubejs.integration.rei;
 import com.google.common.collect.Lists;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.util.ListJS;
-import me.shedaniel.rei.api.EntryRegistry;
-import me.shedaniel.rei.api.EntryStack;
+import dev.architectury.rei.api.EntryRegistry;
+import dev.architectury.rei.api.EntryStack;
 
 import java.util.Collection;
 import java.util.List;

@@ -1,38 +1,35 @@
 plugins {
-	id "com.github.johnrengelman.shadow" version "5.0.0"
+	id "com.github.johnrengelman.shadow" version "7.0.0"
 	id "com.matthewprenger.cursegradle" version "1.4.0"
 }
 
 def ENV = System.getenv()
-
-configurations {
-	shadowCommon
-}
 
 architectury {
 	platformSetupLoomIde()
 	forge()
 }
 
+configurations {
+	common
+	shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+	compileClasspath.extendsFrom common
+	runtimeClasspath.extendsFrom common
+	developmentForge.extendsFrom common
+}
+
 loom {
-	mixinConfigs = ["kubejs.mixins.json", "kubejs-common.mixins.json"]
-	useFabricMixin = true
+	forge {
+		mixinConfigs = ["kubejs.mixins.json", "kubejs-common.mixins.json"]
+	}
 }
 
 repositories {
 	maven {
-		name "ModMaven (JEI, Bookshelf, Game Stages)"
+		name "ModMaven (JEI)"
 		url "https://modmaven.dev/"
 		content {
 			includeGroup "mezz.jei"
-			includeGroup "net.darkhax.bookshelf"
-			includeGroup "net.darkhax.gamestages"
-		}
-	}
-	maven {
-		url "https://nexus.resourcefulbees.com/repository/maven-releases/"
-		content {
-			includeGroup "com.resourcefulbees"
 		}
 	}
 }
@@ -40,23 +37,13 @@ repositories {
 dependencies {
 	forge("net.minecraftforge:forge:${rootProject.architectury.minecraft}-${rootProject.forge_version}")
 
-	modApi("me.shedaniel:architectury-forge:${rootProject.architectury_version}")
+	modApi("dev.architectury:architectury-forge:${rootProject.architectury_version}")
 
 	modApi("dev.latvian.mods:rhino-forge:${rootProject.rhino_version}")
 
-	modOptional("mezz.jei:jei-1.16.4:${rootProject.forge_jei_version}")
-	modOptional("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
-	modOptional("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
+	modOptional("mezz.jei:jei-1.17.1:${rootProject.forge_jei_version}")
 
-	// test mods, these are included at runtime only
-	// modRuntime("com.resourcefulbees:ResourcefulBees:1.16.5-0.6.4b")
-	// modRuntime("curse.maven:athenaeum-1-16-437531:3188454")
-	// modRuntime("curse.maven:artisan-worktables-1-16-437529:3277959")
-
-	implementation(project(path: ":common")) {
-		transitive = false
-	}
-	developmentForge(project(path: ":common")) {
+	common(project(path: ":common", configuration: "dev")) {
 		transitive = false
 	}
 	shadowCommon(project(path: ":common", configuration: "transformProductionForge")) {
@@ -102,6 +89,12 @@ jar {
 	classifier "dev"
 }
 
+components.java {
+	withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+		skip()
+	}
+}
+
 if (ENV.CURSEFORGE_KEY) {
 	curseforge {
 		apiKey = ENV.CURSEFORGE_KEY
@@ -109,8 +102,7 @@ if (ENV.CURSEFORGE_KEY) {
 			id = project.curseforge_id_forge
 			releaseType = project.curseforge_type
 			addGameVersion "Forge"
-			addGameVersion "1.16.4"
-			addGameVersion "1.16.5"
+			addGameVersion "1.17.1"
 			mainArtifact(remapJar.archivePath)
 			relations {
 				requiredDependency 'rhino'
@@ -128,10 +120,7 @@ publishing {
 	publications {
 		mavenForge(MavenPublication) {
 			artifactId = "${rootProject.mod_name}-${project.name}"
-			artifact(remapJar)
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
+			from components.java
 		}
 	}
 

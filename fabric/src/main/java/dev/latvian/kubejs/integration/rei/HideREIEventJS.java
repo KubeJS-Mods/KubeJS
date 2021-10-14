@@ -3,8 +3,8 @@ package dev.latvian.kubejs.integration.rei;
 import dev.latvian.kubejs.event.EventJS;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
-import me.shedaniel.rei.api.EntryRegistry;
-import me.shedaniel.rei.api.EntryStack;
+import dev.architectury.rei.api.EntryRegistry;
+import dev.architectury.rei.api.EntryStack;
 
 import java.util.Collection;
 import java.util.function.Function;

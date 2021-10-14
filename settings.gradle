@@ -9,4 +9,4 @@ pluginManagement {
 
 include "common", "fabric", "forge"
 
-rootProject.name = 'KubeJS-1.16.5'
+rootProject.name = 'KubeJS-1.17.1'

@@ -3,7 +3,7 @@ package dev.latvian.kubejs.world;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.player.EntityArrayList;
-import me.shedaniel.architectury.hooks.ExplosionHooks;
+import dev.architectury.architectury.hooks.ExplosionHooks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;

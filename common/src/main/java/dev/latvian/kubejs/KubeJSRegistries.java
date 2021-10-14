@@ -1,8 +1,8 @@
 package dev.latvian.kubejs;
 
 import com.mojang.serialization.Codec;
-import me.shedaniel.architectury.registry.Registries;
-import me.shedaniel.architectury.registry.Registry;
+import dev.architectury.architectury.registry.Registries;
+import dev.architectury.architectury.registry.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;

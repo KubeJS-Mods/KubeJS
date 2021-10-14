@@ -5,9 +5,9 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.ListJS;
-import me.shedaniel.rei.api.BuiltinPlugin;
-import me.shedaniel.rei.api.EntryStack;
-import me.shedaniel.rei.utils.CollectionUtils;
+import dev.architectury.rei.api.BuiltinPlugin;
+import dev.architectury.rei.api.EntryStack;
+import dev.architectury.rei.utils.CollectionUtils;
 import net.minecraft.network.chat.Component;
 
 /**

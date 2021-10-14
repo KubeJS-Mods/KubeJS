@@ -315,7 +315,7 @@ public class TagEventJS<T> extends EventJS {
 	private int addedCount;
 	private int removedCount;
 	private List<Predicate<String>> globalPriorityList;
-	private me.shedaniel.architectury.registry.Registry<T> actualRegistry;
+	private dev.architectury.architectury.registry.Registry<T> actualRegistry;
 
 	public TagEventJS(String t, Map<ResourceLocation, SetTag.Builder> m, Function<ResourceLocation, Optional<T>> r) {
 		type = t;

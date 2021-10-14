@@ -2,9 +2,9 @@ package dev.latvian.kubejs.net;
 
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.util.MapJS;
-import me.shedaniel.architectury.networking.NetworkManager.PacketContext;
-import me.shedaniel.architectury.networking.simple.BaseC2SMessage;
-import me.shedaniel.architectury.networking.simple.MessageType;
+import dev.architectury.architectury.networking.NetworkManager.PacketContext;
+import dev.architectury.architectury.networking.simple.BaseC2SMessage;
+import dev.architectury.architectury.networking.simple.MessageType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;

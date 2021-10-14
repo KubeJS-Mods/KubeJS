@@ -3,7 +3,7 @@ package dev.latvian.kubejs.block;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
-import me.shedaniel.architectury.utils.IntValue;
+import dev.architectury.architectury.utils.IntValue;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;

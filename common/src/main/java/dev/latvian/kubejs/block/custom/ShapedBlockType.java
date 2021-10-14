@@ -2,7 +2,7 @@ package dev.latvian.kubejs.block.custom;
 
 import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
-import me.shedaniel.architectury.platform.Platform;
+import dev.architectury.architectury.platform.Platform;
 import net.minecraft.world.level.block.Block;
 
 import java.util.function.Function;

@@ -6,9 +6,9 @@ import dev.latvian.mods.rhino.NativeJavaClass;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.ScriptableObject;
 import dev.latvian.mods.rhino.util.DynamicFunction;
-import me.shedaniel.architectury.ForgeEvent;
-import me.shedaniel.architectury.event.Event;
-import me.shedaniel.architectury.event.EventFactory;
+import dev.architectury.architectury.ForgeEvent;
+import dev.architectury.architectury.event.Event;
+import dev.architectury.architectury.event.EventFactory;
 
 import java.util.function.Consumer;
 

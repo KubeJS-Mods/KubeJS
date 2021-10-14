@@ -11,7 +11,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.mod.util.CountingMap;
-import me.shedaniel.architectury.registry.ToolType;
+import dev.architectury.architectury.registry.ToolType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stat;

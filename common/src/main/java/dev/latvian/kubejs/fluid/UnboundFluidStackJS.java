@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.fluid;
 
 import dev.latvian.kubejs.util.MapJS;
-import me.shedaniel.architectury.fluid.FluidStack;
-import me.shedaniel.architectury.utils.Fraction;
+import dev.architectury.architectury.fluid.FluidStack;
+import dev.architectury.architectury.utils.Fraction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;

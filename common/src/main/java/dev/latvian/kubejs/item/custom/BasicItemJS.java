@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.kubejs.item.ItemStackJS;
-import me.shedaniel.architectury.registry.fuel.FuelRegistry;
+import dev.architectury.architectury.registry.fuel.FuelRegistry;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;

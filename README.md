@@ -32,7 +32,7 @@ repositories {
         // Shedaniel's maven (Architectury API)
         url = "https://maven.architectury.dev"
         content {
-            includeGroup "me.shedaniel"
+            includeGroup "dev.architectury"
         }
     }
 
@@ -58,7 +58,7 @@ implementation fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
 
 // these two are unfortunately needed since fg.deobf doesn't respect transitive dependencies as of yet
 implementation "dev.latvian.mods:rhino:${rhino_version}"
-implementation fg.deobf("me.shedaniel:architectury-forge:${architectury_version}")
+implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
 ```
 
 Just set the versions with most up-to-date version of the required mod(s), which you also find using these badges:

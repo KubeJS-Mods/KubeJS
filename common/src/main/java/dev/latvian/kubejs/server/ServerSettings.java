@@ -6,7 +6,7 @@ import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.JsonUtilsJS;
-import me.shedaniel.architectury.registry.Registry;
+import dev.architectury.architectury.registry.Registry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;

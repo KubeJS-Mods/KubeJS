@@ -4,7 +4,7 @@ import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.core.ItemKJS;
 import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.mods.rhino.util.RemapForJS;
-import me.shedaniel.architectury.registry.fuel.FuelRegistry;
+import dev.architectury.architectury.registry.fuel.FuelRegistry;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

@@ -1,7 +1,7 @@
 package dev.latvian.kubejs;
 
 import dev.latvian.kubejs.util.UtilsJS;
-import me.shedaniel.architectury.platform.Platform;
+import dev.architectury.architectury.platform.Platform;
 import net.minecraft.server.packs.PackType;
 
 import java.nio.file.Files;

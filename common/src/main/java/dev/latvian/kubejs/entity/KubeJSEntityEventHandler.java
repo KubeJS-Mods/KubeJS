@@ -3,7 +3,7 @@ package dev.latvian.kubejs.entity;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
-import me.shedaniel.architectury.event.events.EntityEvent;
+import dev.architectury.architectury.event.events.EntityEvent;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
