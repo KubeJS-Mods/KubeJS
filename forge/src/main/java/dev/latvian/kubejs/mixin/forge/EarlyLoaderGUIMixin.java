@@ -7,9 +7,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * @author LatvianModder
@@ -25,6 +23,7 @@ public abstract class EarlyLoaderGUIMixin {
 		return ClientProperties.get().getMemoryColor(color);
 	}
 
+	/*
 	@ModifyArg(method = "renderMessages", remap = false, at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/client/EarlyLoaderGUI;renderMessage(Ljava/lang/String;[FIF)V"), index = 1)
 	private float[] logColorKJS(float[] color) {
 		return ClientProperties.get().getLogColor(color);
@@ -49,4 +48,5 @@ public abstract class EarlyLoaderGUIMixin {
 	private void renderBackgroundKJS(CallbackInfo ci) {
 		ci.cancel();
 	}
+	 */
 }
