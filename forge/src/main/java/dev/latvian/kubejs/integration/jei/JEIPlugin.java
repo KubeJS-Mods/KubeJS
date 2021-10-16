@@ -57,7 +57,7 @@ public class JEIPlugin implements IModPlugin {
 	}
 
 	private FluidStack fromArchitectury(dev.architectury.fluid.FluidStack stack) {
-		return new FluidStack(stack.getFluid(), stack.getAmount().intValue(), stack.getTag());
+		return new FluidStack(stack.getFluid(), (int) stack.getAmount(), stack.getTag());
 	}
 
 	@Override

@@ -50,8 +50,8 @@ dependencies {
 
 	modCompileOnly("mezz.jei:jei-1.17.1:${rootProject.forge_jei_version}")
 	modRuntimeOnly("mezz.jei:jei-1.17.1:${rootProject.forge_jei_version}")
-	modCompileOnly("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
-	modCompileOnly("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
+	// modCompileOnly("net.darkhax.bookshelf:Bookshelf-1.17.1:${rootProject.forge_bookshelf_version}")
+	// modCompileOnly("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
 
 	common(project(path: ":common", configuration: "dev")) { transitive false }
 	shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive false }

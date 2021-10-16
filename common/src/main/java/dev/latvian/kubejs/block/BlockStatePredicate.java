@@ -10,6 +10,7 @@ import net.minecraft.tags.Tag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -273,5 +274,15 @@ public abstract class BlockStatePredicate {
 		}
 
 		return set;
+	}
+
+	public boolean check(List<OreConfiguration.TargetBlockState> targetStates) {
+		for (OreConfiguration.TargetBlockState state : targetStates) {
+			if (check(state.state)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

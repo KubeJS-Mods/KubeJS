@@ -1,12 +1,10 @@
 package dev.latvian.kubejs.client.painter.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.math.Matrix4f;
 import dev.latvian.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.rhino.util.unit.Unit;
 import net.minecraft.resources.ResourceLocation;
-import org.lwjgl.opengl.GL11;
 
 public class GradientObject extends ScreenPainterObject {
 	private Unit colorTL = PainterObjectProperties.WHITE_COLOR;
@@ -73,7 +71,8 @@ public class GradientObject extends ScreenPainterObject {
 		Matrix4f m = event.getMatrix();
 
 		event.setSmoothShade(true);
-		RenderSystem.alphaFunc(GL11.GL_GREATER, 0.003F);
+		// FIXME: possibly no longer required in 1.17
+		// RenderSystem.alphaFunc(GL11.GL_GREATER, 0.003F);
 
 		if (texture == null) {
 			event.setTextureEnabled(false);
@@ -95,6 +94,6 @@ public class GradientObject extends ScreenPainterObject {
 		}
 
 		event.setSmoothShade(false);
-		RenderSystem.defaultAlphaFunc();
+		// RenderSystem.defaultAlphaFunc();
 	}
 }

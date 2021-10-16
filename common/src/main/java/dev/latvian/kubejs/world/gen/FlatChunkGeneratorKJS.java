@@ -1,23 +1,7 @@
 package dev.latvian.kubejs.world.gen;
 
-import com.mojang.serialization.Codec;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.WorldGenRegion;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.NoiseColumn;
-import net.minecraft.world.level.StructureFeatureManager;
-import net.minecraft.world.level.biome.FixedBiomeSource;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
-
-import java.util.Arrays;
-
-public class FlatChunkGeneratorKJS extends ChunkGenerator {
+public class FlatChunkGeneratorKJS {
+}/*extends ChunkGenerator {
 	public static final Codec<FlatChunkGeneratorKJS> CODEC = FlatLevelGeneratorSettings.CODEC.fieldOf("settings").xmap(FlatChunkGeneratorKJS::new, FlatChunkGeneratorKJS::settings).codec();
 
 	private final FlatLevelGeneratorSettings settings;
@@ -83,10 +67,10 @@ public class FlatChunkGeneratorKJS extends ChunkGenerator {
 
 	@Override
 	public int getBaseHeight(int i, int j, Heightmap.Types arg) {
-		BlockState[] lvs = this.settings.getLayers();
+		List<BlockState> lvs = this.settings.getLayers();
 
-		for (int k = lvs.length - 1; k >= 0; --k) {
-			BlockState lv = lvs[k];
+		for (int k = lvs.size() - 1; k >= 0; --k) {
+			BlockState lv = lvs.get(k);
 			if (lv != null && arg.isOpaque().test(lv)) {
 				return k + 1;
 			}
@@ -97,6 +81,7 @@ public class FlatChunkGeneratorKJS extends ChunkGenerator {
 
 	@Override
 	public BlockGetter getBaseColumn(int i, int j) {
-		return new NoiseColumn(Arrays.stream(this.settings.getLayers()).map((arg) -> arg == null ? Blocks.AIR.defaultBlockState() : arg).toArray(BlockState[]::new));
+		return new NoiseColumn(0, settings.getLayers().stream().map((arg) -> arg == null ? Blocks.AIR.defaultBlockState() : arg).toArray(BlockState[]::new));
 	}
 }
+*/

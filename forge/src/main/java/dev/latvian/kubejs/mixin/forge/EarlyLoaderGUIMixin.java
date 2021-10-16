@@ -2,7 +2,7 @@ package dev.latvian.kubejs.mixin.forge;
 
 import com.mojang.blaze3d.platform.Window;
 import dev.latvian.kubejs.client.ClientProperties;
-import net.minecraftforge.fml.client.EarlyLoaderGUI;
+import net.minecraftforge.fmlclient.EarlyLoaderGUI;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

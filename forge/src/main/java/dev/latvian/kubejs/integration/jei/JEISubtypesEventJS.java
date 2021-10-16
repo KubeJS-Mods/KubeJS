@@ -3,7 +3,8 @@ package dev.latvian.kubejs.integration.jei;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
-import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
@@ -19,7 +20,7 @@ public class JEISubtypesEventJS extends EventJS {
 	public interface Interpreter extends Function<ItemStackJS, Object> {
 	}
 
-	private static class NBTKeyInterpreter implements ISubtypeInterpreter {
+	private static class NBTKeyInterpreter implements IIngredientSubtypeInterpreter<ItemStack> {
 		private final String key;
 
 		private NBTKeyInterpreter(String k) {
@@ -27,7 +28,7 @@ public class JEISubtypesEventJS extends EventJS {
 		}
 
 		@Override
-		public String apply(ItemStack stack) {
+		public String apply(ItemStack stack, UidContext context) {
 			CompoundTag nbt = stack.getTag();
 
 			if (nbt == null || !nbt.contains(key)) {
@@ -45,7 +46,7 @@ public class JEISubtypesEventJS extends EventJS {
 	}
 
 	public void registerInterpreter(Object id, Interpreter interpreter) {
-		registration.registerSubtypeInterpreter(ItemStackJS.of(id).getItem(), stack -> {
+		registration.registerSubtypeInterpreter(ItemStackJS.of(id).getItem(), (stack, context) -> {
 			Object o = interpreter.apply(ItemStackJS.of(stack));
 			return o == null ? "" : o.toString();
 		});

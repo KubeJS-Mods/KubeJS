@@ -14,7 +14,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.opengl.GL11;
 
 // FIXME: rendering code :help_me:
 public class PaintEventJS extends ClientEventJS {
@@ -61,12 +60,12 @@ public class PaintEventJS extends ClientEventJS {
 		mc.getTextureManager().bindForSetup(tex);
 	}
 
-	public void begin(int type, VertexFormat format) {
+	public void begin(VertexFormat.Mode type, VertexFormat format) {
 		buffer.begin(type, format);
 	}
 
 	public void beginQuads(VertexFormat format) {
-		begin(GL11.GL_QUADS, format);
+		begin(VertexFormat.Mode.QUADS, format);
 	}
 
 	public void beginQuads(boolean texture) {
@@ -94,7 +93,8 @@ public class PaintEventJS extends ClientEventJS {
 	}
 
 	public void setSmoothShade(boolean smooth) {
-		RenderSystem.shadeModel(smooth ? GL11.GL_SMOOTH : GL11.GL_FLAT);
+		// FIXME: possibly no longer required in 1.17
+		// RenderSystem.shadeModel(smooth ? GL11.GL_SMOOTH : GL11.GL_FLAT);
 	}
 
 	public void setTextureEnabled(boolean enabled) {

@@ -24,7 +24,7 @@ public class RemoveJEIRecipesEvent extends EventJS {
 	public RemoveJEIRecipesEvent(IJeiRuntime r) {
 		runtime = r;
 		recipesRemoved = new HashMap<>();
-		allCategories = runtime.getRecipeManager().getRecipeCategories();
+		allCategories = runtime.getRecipeManager().getRecipeCategories(null, false);
 	}
 
 	public Collection<IRecipeCategory<?>> getCategories() {
@@ -54,12 +54,12 @@ public class RemoveJEIRecipesEvent extends EventJS {
 		IRecipeManager rm = runtime.getRecipeManager();
 		for (ResourceLocation cat : recipesRemoved.keySet()) {
 			try {
-				IRecipeCategory<?> category = rm.getRecipeCategory(cat);
+				IRecipeCategory<?> category = rm.getRecipeCategory(cat, false);
 				if (Recipe.class.isAssignableFrom(category.getRecipeClass())) {
 					for (ResourceLocation id : recipesRemoved.get(cat)) {
 						try {
 							boolean found = false;
-							for (Object o : rm.getRecipes(category)) {
+							for (Object o : rm.getRecipes(category, null, false)) {
 								Recipe<?> recipe = (Recipe<?>) o;
 								if (id.equals(recipe.getId())) {
 									rm.hideRecipe(recipe, cat);
