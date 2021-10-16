@@ -1,19 +1,12 @@
 package dev.latvian.kubejs.integration.rei;
 
 import dev.latvian.kubejs.event.EventJS;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import it.unimi.dsi.fastutil.longs.LongSet;
-import dev.architectury.rei.api.EntryRegistry;
-import dev.architectury.rei.api.EntryStack;
-
-import java.util.Collection;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * @author shedaniel
  */
 public class HideREIEventJS<T> extends EventJS {
+	/*
 	private final EntryRegistry registry;
 	private final EntryStack.Type type;
 	private final Function<Object, Collection<EntryStack>> serializer;
@@ -58,4 +51,5 @@ public class HideREIEventJS<T> extends EventJS {
 			});
 		}
 	}
+	 */
 }

@@ -1,15 +1,9 @@
 package dev.latvian.kubejs.integration.rei;
 
 import dev.latvian.kubejs.event.EventJS;
-import dev.architectury.rei.api.RecipeHelper;
-import dev.architectury.rei.utils.CollectionUtils;
-import net.minecraft.resources.ResourceLocation;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Set;
 
 public class RemoveREICategoryEventJS extends EventJS {
+	/*
 	private final Set<ResourceLocation> categoriesRemoved;
 
 	public RemoveREICategoryEventJS(Set<ResourceLocation> categoriesRemoved) {
@@ -27,4 +21,5 @@ public class RemoveREICategoryEventJS extends EventJS {
 	public void yeet(ResourceLocation[] categoriesToYeet) {
 		remove(categoriesToYeet);
 	}
+	 */
 }

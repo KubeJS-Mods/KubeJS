@@ -154,7 +154,7 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 
 		ConsoleJS.STARTUP.info("Mod spawns with type '" + category.getName() + "' in biome '" + selectionContext.getBiomeKey().location() + "':");
 
-		for (MobSpawnSettings.SpawnerData data : selectionContext.getBiome().getMobSettings().getMobs(category)) {
+		for (MobSpawnSettings.SpawnerData data : selectionContext.getBiome().getMobSettings().getMobs(category).unwrap()) {
 			ConsoleJS.STARTUP.info("- " + data.toString());
 		}
 	}

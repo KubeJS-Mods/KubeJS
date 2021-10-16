@@ -1,19 +1,12 @@
 package dev.latvian.kubejs.integration.rei;
 
-import com.google.common.collect.Lists;
 import dev.latvian.kubejs.event.EventJS;
-import dev.latvian.kubejs.util.ListJS;
-import dev.architectury.rei.api.EntryRegistry;
-import dev.architectury.rei.api.EntryStack;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Function;
 
 /**
  * @author shedaniel
  */
 public class AddREIEventJS extends EventJS {
+	/*
 	private final EntryRegistry registry;
 	private final Function<Object, Collection<EntryStack>> function;
 	private final List<EntryStack> added = Lists.newArrayList();
@@ -43,4 +36,5 @@ public class AddREIEventJS extends EventJS {
 			registry.registerEntries(added.toArray(new EntryStack[0]));
 		}
 	}
+	 */
 }
