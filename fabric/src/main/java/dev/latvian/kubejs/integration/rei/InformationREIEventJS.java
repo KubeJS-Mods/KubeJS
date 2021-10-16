@@ -1,6 +1,13 @@
 package dev.latvian.kubejs.integration.rei;
 
 import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.text.Text;
+import dev.latvian.kubejs.util.ListJS;
+import me.shedaniel.rei.api.common.util.CollectionUtils;
+import me.shedaniel.rei.api.common.util.EntryIngredients;
+import me.shedaniel.rei.plugin.client.BuiltinClientPlugin;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -15,17 +22,15 @@ public class InformationREIEventJS extends EventJS {
 	 * @param description The information to be provided
 	 */
 	public void add(Object stacks, Component title, Object description) {
-		/*
-		BuiltinPlugin.getInstance().registerInformation(
-				EntryStack.ofItemStacks(CollectionUtils.map(IngredientJS.of(stacks).getStacks(), ItemStackJS::getItemStack)),
+		BuiltinClientPlugin.getInstance().registerInformation(
+				EntryIngredients.ofItemStacks(CollectionUtils.map(IngredientJS.of(stacks).getStacks(), ItemStackJS::getItemStack)),
 				title,
 				components -> {
 					for (Object o : ListJS.orSelf(description)) {
-						components.add(Text.componentOf(o));
+						components.add(Text.of(o).component());
 					}
 					return components;
 				}
 		);
-		 */
 	}
 }

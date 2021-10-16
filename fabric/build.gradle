@@ -36,6 +36,10 @@ dependencies {
 		exclude group: "net.fabricmc.fabric-api"
 		exclude group: "net.fabricmc"
 	}
+	modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${rootProject.fabric_rei_version}") {
+		exclude group: "net.fabricmc.fabric-api"
+		exclude group: "net.fabricmc"
+	}
 
 	modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-fabric:${rootProject.fabric_rei_version}") {
 		exclude group: "net.fabricmc.fabric-api"
