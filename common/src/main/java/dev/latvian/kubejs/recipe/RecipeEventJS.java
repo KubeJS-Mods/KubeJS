@@ -12,6 +12,7 @@ import dev.latvian.kubejs.core.RecipeManagerKJS;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.kubejs.item.ingredient.IngredientWithCustomPredicateJS;
 import dev.latvian.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.kubejs.script.ScriptType;
@@ -42,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -54,6 +56,7 @@ import java.util.stream.Collectors;
 public class RecipeEventJS extends EventJS {
 	public static final String FORGE_CONDITIONAL = "forge:conditional";
 	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.kubejs.recipe.RecipeEventJS.post");
+	public static Map<UUID, IngredientWithCustomPredicateJS> customIngredientMap = null;
 
 	public static RecipeEventJS instance;
 

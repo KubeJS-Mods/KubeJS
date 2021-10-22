@@ -19,6 +19,7 @@ import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.kubejs.util.UtilsJS;
+import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ServerResources;
 import net.minecraft.server.packs.PackResources;
@@ -122,6 +123,12 @@ public class ServerScriptManager {
 		KubeJSPlugins.forEachPlugin(plugin -> plugin.addRecipes(modEvent));
 		RegisterRecipeHandlersEvent.EVENT.invoker().accept(modEvent);
 		new RecipeTypeRegistryEventJS(typeMap).post(ScriptType.SERVER, KubeJSEvents.RECIPES_TYPE_REGISTRY);
+
+		// Currently custom ingredients are only supported on Forge
+		if (Platform.isForge()) {
+			RecipeEventJS.customIngredientMap = new HashMap<>();
+		}
+
 		RecipeEventJS.instance = new RecipeEventJS(typeMap);
 		return list;
 	}
