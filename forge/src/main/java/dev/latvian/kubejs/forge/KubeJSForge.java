@@ -9,15 +9,18 @@ import dev.latvian.kubejs.entity.forge.CheckLivingEntitySpawnEventJS;
 import dev.latvian.kubejs.entity.forge.LivingEntityDropsEventJS;
 import dev.latvian.kubejs.integration.IntegrationManager;
 import dev.latvian.kubejs.item.forge.ItemDestroyedEventJS;
+import dev.latvian.kubejs.item.ingredient.forge.CustomPredicateIngredient;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import me.shedaniel.architectury.platform.forge.EventBuses;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
@@ -57,6 +60,8 @@ public class KubeJSForge {
 			} catch (Throwable ex) {
 			}
 		}
+
+		CraftingHelper.register(new ResourceLocation("kubejs:custom_predicate"), CustomPredicateIngredient.SERIALIZER);
 	}
 
 	private static void loadComplete(FMLLoadCompleteEvent event) {
