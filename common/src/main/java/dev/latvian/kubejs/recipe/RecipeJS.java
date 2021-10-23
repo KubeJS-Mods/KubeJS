@@ -462,6 +462,24 @@ public abstract class RecipeJS {
 		return resultRecipe;
 	}
 
+	public ItemStackJS getOriginalRecipeResult() {
+		if(this.originalRecipe == null) {
+			ConsoleJS.SERVER.warn("Original recipe is null - could not get result");
+			return ItemStackJS.EMPTY;
+		}
+
+		return ItemStackJS.of(this.originalRecipe.getResultItem());
+	}
+
+	public List<IngredientJS> getOriginalRecipeIngredients() {
+		if(this.originalRecipe == null) {
+			ConsoleJS.SERVER.warn("Original recipe is null - could not get ingredients");
+			return new ArrayList<>();
+		}
+
+		return this.originalRecipe.getIngredients().stream().map(IngredientJS::of).collect(Collectors.toList());
+	}
+
 	/**
 	 * Only used when a recipe has sub-recipes, e.g. create:sequenced_assembly
 	 */
