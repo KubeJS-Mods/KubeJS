@@ -1,8 +1,8 @@
 package dev.latvian.kubejs.fluid;
 
-import dev.latvian.kubejs.util.MapJS;
 import me.shedaniel.architectury.fluid.FluidStack;
 import me.shedaniel.architectury.utils.Fraction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +14,7 @@ public class UnboundFluidStackJS extends FluidStackJS {
 	private final ResourceLocation fluidRL;
 	private final String fluid;
 	private int amount;
-	private MapJS nbt;
+	private CompoundTag nbt;
 	private FluidStack cached;
 
 	public UnboundFluidStackJS(ResourceLocation f) {
@@ -38,7 +38,7 @@ public class UnboundFluidStackJS extends FluidStackJS {
 	@Override
 	public FluidStack getFluidStack() {
 		if (cached == null) {
-			cached = FluidStack.create(this::getFluid, Fraction.ofWhole(amount), MapJS.nbt(nbt));
+			cached = FluidStack.create(this::getFluid, Fraction.ofWhole(amount), nbt);
 		}
 
 		return cached;
@@ -57,18 +57,13 @@ public class UnboundFluidStackJS extends FluidStackJS {
 
 	@Override
 	@Nullable
-	public MapJS getNbt() {
+	public CompoundTag getNbt() {
 		return nbt;
 	}
 
 	@Override
-	public void setNbt(@Nullable Object n) {
-		nbt = MapJS.of(n);
-
-		if (nbt != null) {
-			nbt.changeListener = this;
-		}
-
+	public void setNbt(@Nullable CompoundTag n) {
+		nbt = n;
 		cached = null;
 	}
 
@@ -78,10 +73,5 @@ public class UnboundFluidStackJS extends FluidStackJS {
 		fs.amount = amount;
 		fs.nbt = nbt == null ? null : nbt.copy();
 		return fs;
-	}
-
-	@Override
-	public void onChanged(@Nullable MapJS o) {
-		cached = null;
 	}
 }

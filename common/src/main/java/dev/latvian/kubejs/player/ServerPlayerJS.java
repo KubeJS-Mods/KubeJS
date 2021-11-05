@@ -5,7 +5,6 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.net.PaintMessage;
 import dev.latvian.kubejs.net.SendDataFromServerMessage;
 import dev.latvian.kubejs.server.ServerJS;
-import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import net.minecraft.advancements.AdvancementProgress;
@@ -151,9 +150,9 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	}
 
 	@Override
-	public void sendData(String channel, @Nullable Object data) {
+	public void sendData(String channel, @Nullable CompoundTag data) {
 		if (!channel.isEmpty()) {
-			new SendDataFromServerMessage(channel, MapJS.nbt(data)).sendTo(minecraftPlayer);
+			new SendDataFromServerMessage(channel, data).sendTo(minecraftPlayer);
 		}
 	}
 
@@ -164,6 +163,6 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	}
 
 	public void setSpawnLocation(BlockContainerJS c) {
-		minecraftPlayer.setRespawnPosition(c.minecraftWorld.dimension(), c.getPos(), 0F, true, false);
+		minecraftPlayer.setRespawnPosition(c.minecraftLevel.dimension(), c.getPos(), 0F, true, false);
 	}
 }

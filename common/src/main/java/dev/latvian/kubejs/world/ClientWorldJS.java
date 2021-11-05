@@ -48,7 +48,7 @@ public class ClientWorldJS extends WorldJS {
 
 	@Override
 	public EntityArrayList getEntities() {
-		return new EntityArrayList(this, ((ClientLevel) minecraftWorld).entitiesForRendering());
+		return new EntityArrayList(this, ((ClientLevel) minecraftLevel).entitiesForRendering());
 	}
 
 	public LocalPlayer getMinecraftPlayer() {
@@ -60,7 +60,7 @@ public class ClientWorldJS extends WorldJS {
 		if (level == null) {
 			return instance = null;
 		}
-		if (instance != null && instance.minecraftWorld == level) {
+		if (instance != null && instance.minecraftLevel == level) {
 			return instance;
 		}
 

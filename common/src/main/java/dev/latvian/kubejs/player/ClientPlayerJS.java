@@ -3,7 +3,6 @@ package dev.latvian.kubejs.player;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.entity.RayTraceResultJS;
 import dev.latvian.kubejs.net.SendDataFromClientMessage;
-import dev.latvian.kubejs.util.MapJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
@@ -47,9 +46,9 @@ public class ClientPlayerJS extends PlayerJS<Player> {
 	}
 
 	@Override
-	public void sendData(String channel, @Nullable Object data) {
+	public void sendData(String channel, @Nullable CompoundTag data) {
 		if (!channel.isEmpty() && isSelf()) {
-			new SendDataFromClientMessage(channel, MapJS.nbt(data)).sendToServer();
+			new SendDataFromClientMessage(channel, data).sendToServer();
 		}
 	}
 

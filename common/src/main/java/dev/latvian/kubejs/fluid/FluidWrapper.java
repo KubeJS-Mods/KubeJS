@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.fluid;
 
 import dev.latvian.kubejs.KubeJSRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 
@@ -14,16 +15,24 @@ public class FluidWrapper {
 	public static final ResourceLocation WATER_ID = new ResourceLocation("minecraft:water");
 	public static final ResourceLocation LAVA_ID = new ResourceLocation("minecraft:lava");
 
-	public static FluidStackJS of(ResourceLocation o) {
+	public static FluidStackJS of(FluidStackJS o) {
 		return FluidStackJS.of(o);
 	}
 
-	public static FluidStackJS of(ResourceLocation o, Object amountOrNBT) {
-		return FluidStackJS.of(o, amountOrNBT);
+	public static FluidStackJS of(FluidStackJS o, int amount) {
+		o.setAmount(amount);
+		return o;
 	}
 
-	public static FluidStackJS of(ResourceLocation o, int amount, Object nbt) {
-		return FluidStackJS.of(o, amount, nbt);
+	public static FluidStackJS of(FluidStackJS o, CompoundTag nbt) {
+		o.setNbt(nbt);
+		return o;
+	}
+
+	public static FluidStackJS of(FluidStackJS o, int amount, CompoundTag nbt) {
+		o.setAmount(amount);
+		o.setNbt(nbt);
+		return o;
 	}
 
 	public static FluidStackJS water() {

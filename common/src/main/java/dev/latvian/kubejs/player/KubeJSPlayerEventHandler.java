@@ -3,6 +3,7 @@ package dev.latvian.kubejs.player;
 import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.core.EntityKJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.stages.Stages;
@@ -68,6 +69,7 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	public static void cloned(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean wonGame) {
+		((EntityKJS) newPlayer).getPersistentDataKJS().merge(((EntityKJS) oldPlayer).getPersistentDataKJS());
 		newPlayer.inventoryMenu.addSlotListener(new InventoryListener(newPlayer));
 	}
 

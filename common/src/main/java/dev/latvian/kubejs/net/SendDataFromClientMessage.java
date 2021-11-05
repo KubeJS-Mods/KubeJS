@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.net;
 
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.util.MapJS;
 import me.shedaniel.architectury.networking.NetworkManager.PacketContext;
 import me.shedaniel.architectury.networking.simple.BaseC2SMessage;
 import me.shedaniel.architectury.networking.simple.MessageType;
@@ -44,7 +43,7 @@ public class SendDataFromClientMessage extends BaseC2SMessage {
 			final Player player = context.getPlayer();
 
 			if (player != null) {
-				new NetworkEventJS(player, channel, MapJS.of(data)).post(KubeJSEvents.PLAYER_DATA_FROM_CLIENT, channel);
+				new NetworkEventJS(player, channel, data).post(KubeJSEvents.PLAYER_DATA_FROM_CLIENT, channel);
 			}
 		}
 	}

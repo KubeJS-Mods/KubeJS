@@ -8,7 +8,6 @@ import dev.latvian.kubejs.player.ServerPlayerDataJS;
 import dev.latvian.kubejs.player.ServerPlayerJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.AttachedData;
-import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.WithAttachedData;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
@@ -18,6 +17,7 @@ import dev.latvian.mods.rhino.mod.wrapper.UUIDWrapper;
 import net.minecraft.Util;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -49,6 +49,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	public final transient Map<UUID, ServerPlayerDataJS> playerMap;
 	public final transient Map<UUID, FakeServerPlayerDataJS> fakePlayerMap;
 	public final transient List<ServerWorldJS> worlds;
+	public final CompoundTag persistentData;
 
 	public ServerWorldJS overworld;
 	private AttachedData data;
@@ -62,6 +63,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		playerMap = new HashMap<>();
 		fakePlayerMap = new HashMap<>();
 		worlds = new ArrayList<>();
+		persistentData = new CompoundTag();
 	}
 
 	public void release() {
@@ -302,7 +304,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		return a == null ? null : new AdvancementJS(a);
 	}
 
-	public void sendDataToAll(String channel, @Nullable Object data) {
-		new SendDataFromServerMessage(channel, MapJS.nbt(data)).sendToAll(getMinecraftServer());
+	public void sendDataToAll(String channel, @Nullable CompoundTag data) {
+		new SendDataFromServerMessage(channel, data).sendToAll(getMinecraftServer());
 	}
 }

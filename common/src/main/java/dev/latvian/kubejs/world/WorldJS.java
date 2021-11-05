@@ -35,11 +35,13 @@ import java.util.Collection;
  * @author LatvianModder
  */
 public abstract class WorldJS implements WithAttachedData {
-	public Level minecraftWorld;
+	public final Level minecraftLevel;
+	public final Level minecraftWorld; // compat
 
 	private AttachedData data;
 
 	public WorldJS(Level w) {
+		minecraftLevel = w;
 		minecraftWorld = w;
 	}
 
@@ -55,7 +57,7 @@ public abstract class WorldJS implements WithAttachedData {
 	}
 
 	public GameRulesJS getGameRules() {
-		return new GameRulesJS(minecraftWorld.getGameRules());
+		return new GameRulesJS(minecraftLevel.getGameRules());
 	}
 
 	@Nullable
@@ -64,35 +66,35 @@ public abstract class WorldJS implements WithAttachedData {
 	}
 
 	public long getTime() {
-		return minecraftWorld.getGameTime();
+		return minecraftLevel.getGameTime();
 	}
 
 	public long getLocalTime() {
-		return minecraftWorld.getDayTime();
+		return minecraftLevel.getDayTime();
 	}
 
 	public String getDimension() {
-		return minecraftWorld.dimension().location().toString();
+		return minecraftLevel.dimension().location().toString();
 	}
 
 	public boolean isOverworld() {
-		return minecraftWorld.dimension() == Level.OVERWORLD;
+		return minecraftLevel.dimension() == Level.OVERWORLD;
 	}
 
 	public boolean isDaytime() {
-		return minecraftWorld.isDay();
+		return minecraftLevel.isDay();
 	}
 
 	public boolean isRaining() {
-		return minecraftWorld.isRaining();
+		return minecraftLevel.isRaining();
 	}
 
 	public boolean isThundering() {
-		return minecraftWorld.isThundering();
+		return minecraftLevel.isThundering();
 	}
 
 	public void setRainStrength(float strength) {
-		minecraftWorld.setRainLevel(strength);
+		minecraftLevel.setRainLevel(strength);
 	}
 
 	public BlockContainerJS getBlock(int x, int y, int z) {
@@ -100,7 +102,7 @@ public abstract class WorldJS implements WithAttachedData {
 	}
 
 	public BlockContainerJS getBlock(BlockPos pos) {
-		return new BlockContainerJS(minecraftWorld, pos);
+		return new BlockContainerJS(minecraftLevel, pos);
 	}
 
 	public BlockContainerJS getBlock(BlockEntity blockEntity) {
@@ -147,7 +149,7 @@ public abstract class WorldJS implements WithAttachedData {
 	}
 
 	public EntityArrayList getPlayers() {
-		return createEntityList(minecraftWorld.players());
+		return createEntityList(minecraftLevel.players());
 	}
 
 	public EntityArrayList getEntities() {
@@ -155,7 +157,7 @@ public abstract class WorldJS implements WithAttachedData {
 	}
 
 	public ExplosionJS createExplosion(double x, double y, double z) {
-		return new ExplosionJS(minecraftWorld, x, y, z);
+		return new ExplosionJS(minecraftLevel, x, y, z);
 	}
 
 	@Nullable
@@ -166,15 +168,15 @@ public abstract class WorldJS implements WithAttachedData {
 			return null;
 		}
 
-		return getEntity(type.create(minecraftWorld));
+		return getEntity(type.create(minecraftLevel));
 	}
 
 	public void spawnLightning(double x, double y, double z, boolean effectOnly, @Nullable EntityJS player) {
-		if (minecraftWorld instanceof ServerLevel) {
-			LightningBolt e = EntityType.LIGHTNING_BOLT.create(minecraftWorld);
+		if (minecraftLevel instanceof ServerLevel) {
+			LightningBolt e = EntityType.LIGHTNING_BOLT.create(minecraftLevel);
 			e.moveTo(x, y, z);
 			e.setCause(player instanceof ServerPlayerJS ? ((ServerPlayerJS) player).minecraftPlayer : null);
-			minecraftWorld.addFreshEntity(e);
+			minecraftLevel.addFreshEntity(e);
 		}
 	}
 
@@ -183,10 +185,10 @@ public abstract class WorldJS implements WithAttachedData {
 	}
 
 	public void spawnFireworks(double x, double y, double z, FireworksJS f) {
-		minecraftWorld.addFreshEntity(f.createFireworkRocket(minecraftWorld, x, y, z));
+		minecraftLevel.addFreshEntity(f.createFireworkRocket(minecraftLevel, x, y, z));
 	}
 
 	public EntityArrayList getEntitiesWithin(AABB aabb) {
-		return new EntityArrayList(this, minecraftWorld.getEntities(null, aabb));
+		return new EntityArrayList(this, minecraftLevel.getEntities(null, aabb));
 	}
 }

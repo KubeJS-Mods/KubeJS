@@ -47,14 +47,14 @@ import java.util.Optional;
 public class BlockContainerJS implements SpecialEquality {
 	private static final ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
 
-	public final Level minecraftWorld;
+	public final Level minecraftLevel;
 	private final BlockPos pos;
 
 	private BlockState cachedState;
 	private BlockEntity cachedEntity;
 
 	public BlockContainerJS(Level w, BlockPos p) {
-		minecraftWorld = w;
+		minecraftLevel = w;
 		pos = p;
 	}
 
@@ -63,8 +63,12 @@ public class BlockContainerJS implements SpecialEquality {
 		cachedEntity = null;
 	}
 
+	public WorldJS getLevel() {
+		return UtilsJS.getWorld(minecraftLevel);
+	}
+
 	public WorldJS getWorld() {
-		return UtilsJS.getWorld(minecraftWorld);
+		return UtilsJS.getWorld(minecraftLevel);
 	}
 
 	public BlockPos getPos() {
@@ -72,7 +76,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public String getDimension() {
-		return minecraftWorld.dimension().location().toString();
+		return minecraftLevel.dimension().location().toString();
 	}
 
 	public int getX() {
@@ -88,7 +92,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public BlockContainerJS offset(Direction f, int d) {
-		return new BlockContainerJS(minecraftWorld, getPos().relative(f, d));
+		return new BlockContainerJS(minecraftLevel, getPos().relative(f, d));
 	}
 
 	public BlockContainerJS offset(Direction f) {
@@ -96,7 +100,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public BlockContainerJS offset(int x, int y, int z) {
-		return new BlockContainerJS(minecraftWorld, getPos().offset(x, y, z));
+		return new BlockContainerJS(minecraftLevel, getPos().offset(x, y, z));
 	}
 
 	public BlockContainerJS getDown() {
@@ -125,14 +129,14 @@ public class BlockContainerJS implements SpecialEquality {
 
 	public BlockState getBlockState() {
 		if (cachedState == null) {
-			cachedState = minecraftWorld.getBlockState(getPos());
+			cachedState = minecraftLevel.getBlockState(getPos());
 		}
 
 		return cachedState;
 	}
 
 	public void setBlockState(BlockState state, int flags) {
-		minecraftWorld.setBlock(getPos(), state, flags);
+		minecraftLevel.setBlock(getPos(), state, flags);
 		clearCache();
 	}
 
@@ -193,7 +197,7 @@ public class BlockContainerJS implements SpecialEquality {
 	@Nullable
 	public BlockEntity getEntity() {
 		if (cachedEntity == null || cachedEntity.isRemoved()) {
-			cachedEntity = minecraftWorld.getBlockEntity(pos);
+			cachedEntity = minecraftLevel.getBlockEntity(pos);
 		}
 
 		return cachedEntity;
@@ -240,11 +244,11 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public int getLight() {
-		return minecraftWorld.getMaxLocalRawBrightness(pos);
+		return minecraftLevel.getMaxLocalRawBrightness(pos);
 	}
 
 	public boolean getCanSeeSky() {
-		return minecraftWorld.canSeeSkyFromBelowWater(pos);
+		return minecraftLevel.canSeeSkyFromBelowWater(pos);
 	}
 
 	@Override
@@ -278,7 +282,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public ExplosionJS createExplosion() {
-		return new ExplosionJS(minecraftWorld, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D);
+		return new ExplosionJS(minecraftLevel, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D);
 	}
 
 	@Nullable
@@ -293,11 +297,11 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public void spawnLightning(boolean effectOnly, @Nullable EntityJS player) {
-		if (minecraftWorld instanceof ServerLevel) {
-			LightningBolt e = EntityType.LIGHTNING_BOLT.create(minecraftWorld);
+		if (minecraftLevel instanceof ServerLevel) {
+			LightningBolt e = EntityType.LIGHTNING_BOLT.create(minecraftLevel);
 			e.moveTo(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D);
 			e.setCause(player instanceof ServerPlayerJS ? ((ServerPlayerJS) player).minecraftPlayer : null);
-			minecraftWorld.addFreshEntity(e);
+			minecraftLevel.addFreshEntity(e);
 		}
 	}
 
@@ -306,7 +310,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public void spawnFireworks(FireworksJS fireworks) {
-		minecraftWorld.addFreshEntity(fireworks.createFireworkRocket(minecraftWorld, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D));
+		minecraftLevel.addFreshEntity(fireworks.createFireworkRocket(minecraftLevel, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D));
 	}
 
 	@Nullable
@@ -331,7 +335,7 @@ public class BlockContainerJS implements SpecialEquality {
 
 	public ItemStackJS getItem() {
 		BlockState state = getBlockState();
-		return ItemStackJS.of(state.getBlock().getCloneItemStack(minecraftWorld, pos, state));
+		return ItemStackJS.of(state.getBlock().getCloneItemStack(minecraftLevel, pos, state));
 	}
 
 	@Override
@@ -352,7 +356,7 @@ public class BlockContainerJS implements SpecialEquality {
 	public EntityArrayList getPlayersInRadius(double radius) {
 		EntityArrayList list = new EntityArrayList(getWorld(), 1);
 
-		for (Player player : minecraftWorld.getEntitiesOfClass(Player.class, new AABB(pos.getX() - radius, pos.getY() - radius, pos.getZ() - radius, pos.getX() + 1D + radius, pos.getY() + 1D + radius, pos.getZ() + 1D + radius), BlockContainerJS::isReal)) {
+		for (Player player : minecraftLevel.getEntitiesOfClass(Player.class, new AABB(pos.getX() - radius, pos.getY() - radius, pos.getZ() - radius, pos.getX() + 1D + radius, pos.getY() + 1D + radius, pos.getZ() + 1D + radius), BlockContainerJS::isReal)) {
 			PlayerJS<?> p = getWorld().getPlayer(player);
 
 			if (p != null) {
@@ -368,7 +372,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public String getBiomeId() {
-		Optional<ResourceKey<Biome>> key = minecraftWorld.getBiomeName(pos);
+		Optional<ResourceKey<Biome>> key = minecraftLevel.getBiomeName(pos);
 		return key.isPresent() ? key.get().location().toString() : "";
 	}
 

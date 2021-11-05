@@ -1,17 +1,16 @@
 package dev.latvian.kubejs.entity;
 
 import com.mojang.authlib.GameProfile;
+import dev.latvian.kubejs.core.EntityKJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
-import me.shedaniel.architectury.annotations.ExpectPlatform;
 import me.shedaniel.architectury.hooks.EntityHooks;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.Util;
@@ -45,17 +44,23 @@ import java.util.UUID;
 public class EntityJS implements MessageSender, WrappedJS {
 	private static Map<String, DamageSource> damageSourceMap;
 
-	private final WorldJS world;
+	private final WorldJS level;
 
 	public final Entity minecraftEntity;
+	public final CompoundTag persistentData;
 
 	public EntityJS(WorldJS w, Entity e) {
-		world = w;
+		level = w;
 		minecraftEntity = e;
+		persistentData = ((EntityKJS) e).getPersistentDataKJS();
+	}
+
+	public WorldJS getLevel() {
+		return level;
 	}
 
 	public WorldJS getWorld() {
-		return world;
+		return level;
 	}
 
 	@Nullable
@@ -320,8 +325,8 @@ public class EntityJS implements MessageSender, WrappedJS {
 
 	@Override
 	public int runCommand(String command) {
-		if (world instanceof ServerWorldJS) {
-			return world.getServer().getMinecraftServer().getCommands().performCommand(minecraftEntity.createCommandSourceStack(), command);
+		if (level instanceof ServerWorldJS) {
+			return level.getServer().getMinecraftServer().getCommands().performCommand(minecraftEntity.createCommandSourceStack(), command);
 		}
 
 		return 0;
@@ -329,8 +334,8 @@ public class EntityJS implements MessageSender, WrappedJS {
 
 	@Override
 	public int runCommandSilent(String command) {
-		if (world instanceof ServerWorldJS) {
-			return world.getServer().getMinecraftServer().getCommands().performCommand(minecraftEntity.createCommandSourceStack().withSuppressedOutput(), command);
+		if (level instanceof ServerWorldJS) {
+			return level.getServer().getMinecraftServer().getCommands().performCommand(minecraftEntity.createCommandSourceStack().withSuppressedOutput(), command);
 		}
 
 		return 0;
@@ -353,7 +358,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public EntityArrayList getPassengers() {
-		return new EntityArrayList(world, minecraftEntity.getPassengers());
+		return new EntityArrayList(level, minecraftEntity.getPassengers());
 	}
 
 	public boolean isPassenger(EntityJS e) {
@@ -361,12 +366,12 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public EntityArrayList getRecursivePassengers() {
-		return new EntityArrayList(world, minecraftEntity.getIndirectPassengers());
+		return new EntityArrayList(level, minecraftEntity.getIndirectPassengers());
 	}
 
 	@Nullable
 	public EntityJS getRidingEntity() {
-		return world.getEntity(minecraftEntity.getVehicle());
+		return level.getEntity(minecraftEntity.getVehicle());
 	}
 
 	public String getTeamId() {
@@ -466,8 +471,9 @@ public class EntityJS implements MessageSender, WrappedJS {
 		return this;
 	}
 
-	public MapJS getNbt() {
-		return getPersistentData(minecraftEntity);
+	@Deprecated
+	public CompoundTag getNbt() {
+		return persistentData;
 	}
 
 	public void playSound(SoundEvent id, float volume, float pitch) {
@@ -479,7 +485,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public void spawn() {
-		world.minecraftWorld.addFreshEntity(minecraftEntity);
+		level.minecraftLevel.addFreshEntity(minecraftEntity);
 	}
 
 	public void attack(String source, float hp) {
@@ -520,11 +526,6 @@ public class EntityJS implements MessageSender, WrappedJS {
 		Vec3 toPos = fromPos.add(x * distance, y * distance, z * distance);
 		HitResult hitResult = minecraftEntity.level.clip(new ClipContext(fromPos, toPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, minecraftEntity));
 		return new RayTraceResultJS(this, hitResult, distance);
-	}
-
-	@ExpectPlatform
-	private static MapJS getPersistentData(Entity entity) {
-		throw new AssertionError();
 	}
 
 	public boolean isInWater() {
