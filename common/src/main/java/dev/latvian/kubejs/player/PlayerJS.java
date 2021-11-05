@@ -129,7 +129,7 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 	public void spawn() {
 	}
 
-	public void sendData(String channel, @Nullable Object data) {
+	public void sendData(String channel, @Nullable CompoundTag data) {
 	}
 
 	public void addFood(int f, float m) {

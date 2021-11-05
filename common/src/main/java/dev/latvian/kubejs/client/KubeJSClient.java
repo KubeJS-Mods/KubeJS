@@ -9,7 +9,6 @@ import dev.latvian.kubejs.client.painter.Painter;
 import dev.latvian.kubejs.net.NetworkEventJS;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.util.KubeJSPlugins;
-import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.util.unit.FixedUnit;
@@ -110,7 +109,7 @@ public class KubeJSClient extends KubeJSCommon {
 
 	@Override
 	public void handleDataToClientPacket(String channel, @Nullable CompoundTag data) {
-		new NetworkEventJS(Minecraft.getInstance().player, channel, MapJS.of(data)).post(KubeJSEvents.PLAYER_DATA_FROM_SERVER, channel);
+		new NetworkEventJS(Minecraft.getInstance().player, channel, data).post(KubeJSEvents.PLAYER_DATA_FROM_SERVER, channel);
 	}
 
 	@Override

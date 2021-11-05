@@ -2,7 +2,7 @@ package dev.latvian.kubejs.net;
 
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
-import dev.latvian.kubejs.util.MapJS;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
 public class NetworkEventJS extends PlayerEventJS {
 	private final Player player;
 	private final String channel;
-	private final MapJS data;
+	private final CompoundTag data;
 
-	public NetworkEventJS(Player p, String c, @Nullable MapJS d) {
+	public NetworkEventJS(Player p, String c, @Nullable CompoundTag d) {
 		player = p;
 		channel = c;
 		data = d;
@@ -35,7 +35,7 @@ public class NetworkEventJS extends PlayerEventJS {
 	}
 
 	@Nullable
-	public MapJS getData() {
+	public CompoundTag getData() {
 		return data;
 	}
 }
