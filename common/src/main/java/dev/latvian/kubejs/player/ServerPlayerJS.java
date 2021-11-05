@@ -163,6 +163,6 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	}
 
 	public void setSpawnLocation(BlockContainerJS c) {
-		minecraftPlayer.setRespawnPosition(c.minecraftWorld.dimension(), c.getPos(), 0F, true, false);
+		minecraftPlayer.setRespawnPosition(c.minecraftLevel.dimension(), c.getPos(), 0F, true, false);
 	}
 }

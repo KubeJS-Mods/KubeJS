@@ -13,6 +13,10 @@ import org.jetbrains.annotations.Nullable;
 public abstract class WorldEventJS extends EventJS {
 	public abstract WorldJS getWorld();
 
+	public WorldJS getLevel() {
+		return getWorld();
+	}
+
 	@Nullable
 	public ServerJS getServer() {
 		return getWorld().getServer();

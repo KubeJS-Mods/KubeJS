@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.fluid;
 
-import dev.latvian.kubejs.util.MapJS;
 import me.shedaniel.architectury.fluid.FluidStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
@@ -44,12 +44,12 @@ public class EmptyFluidStackJS extends FluidStackJS {
 
 	@Override
 	@Nullable
-	public MapJS getNbt() {
+	public CompoundTag getNbt() {
 		return null;
 	}
 
 	@Override
-	public void setNbt(@Nullable Object nbt) {
+	public void setNbt(@Nullable CompoundTag nbt) {
 	}
 
 	@Override

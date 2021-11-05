@@ -16,13 +16,20 @@ import me.shedaniel.architectury.event.events.CommandPerformEvent;
 import me.shedaniel.architectury.event.events.CommandRegistrationEvent;
 import me.shedaniel.architectury.event.events.LifecycleEvent;
 import me.shedaniel.architectury.event.events.TickEvent;
+import me.shedaniel.architectury.hooks.LevelResourceHooks;
+import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.LevelResource;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -31,11 +38,14 @@ import java.util.List;
  * @author LatvianModder
  */
 public class KubeJSServerEventHandler {
+	private static final LevelResource PERSISTENT_DATA = LevelResourceHooks.create("kubejs_persistent_data.nbt");
+
 	public static void init() {
 		LifecycleEvent.SERVER_BEFORE_START.register(KubeJSServerEventHandler::serverAboutToStart);
 		CommandRegistrationEvent.EVENT.register(KubeJSServerEventHandler::registerCommands);
 		LifecycleEvent.SERVER_STARTED.register(KubeJSServerEventHandler::serverStarted);
 		LifecycleEvent.SERVER_STOPPING.register(KubeJSServerEventHandler::serverStopping);
+		LifecycleEvent.SERVER_WORLD_SAVE.register(KubeJSServerEventHandler::serverWorldSave);
 		TickEvent.SERVER_POST.register(KubeJSServerEventHandler::serverTick);
 		CommandPerformEvent.EVENT.register(KubeJSServerEventHandler::command);
 	}
@@ -46,6 +56,20 @@ public class KubeJSServerEventHandler {
 		}
 
 		ServerJS.instance = new ServerJS(server, ServerScriptManager.instance);
+
+		Path p = server.getWorldPath(PERSISTENT_DATA);
+
+		if (Files.exists(p)) {
+			try {
+				CompoundTag tag = NbtIo.readCompressed(p.toFile());
+
+				if (tag != null) {
+					ServerJS.instance.persistentData.merge(tag);
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
 	}
 
 	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection selection) {
@@ -59,7 +83,7 @@ public class KubeJSServerEventHandler {
 		ServerJS.instance.worlds.add(ServerJS.instance.overworld);
 
 		for (ServerLevel world : server.getAllLevels()) {
-			if (world != ServerJS.instance.overworld.minecraftWorld) {
+			if (world != ServerJS.instance.overworld.minecraftLevel) {
 				ServerWorldJS w = new ServerWorldJS(ServerJS.instance, world);
 				ServerJS.instance.levelMap.put(world.dimension().location().toString(), w);
 			}
@@ -94,6 +118,21 @@ public class KubeJSServerEventHandler {
 		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_UNLOAD);
 		s.release();
 		ServerJS.instance = null;
+	}
+
+	private static void serverWorldSave(ServerLevel level) {
+		ServerJS s = ServerJS.instance;
+		Path p = level.getServer().getWorldPath(PERSISTENT_DATA);
+
+		if (s != null && level.dimension() == Level.OVERWORLD) {
+			Util.ioPool().execute(() -> {
+				try {
+					NbtIo.writeCompressed(s.persistentData, p.toFile());
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			});
+		}
 	}
 
 	public static void serverTick(MinecraftServer server) {

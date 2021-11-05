@@ -5,13 +5,12 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.recipe.RecipeExceptionJS;
-import dev.latvian.kubejs.util.JSObjectType;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
-import dev.latvian.mods.rhino.mod.util.ChangeListener;
 import dev.latvian.mods.rhino.mod.util.Copyable;
+import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import me.shedaniel.architectury.fluid.FluidStack;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.Registry;
@@ -28,7 +27,7 @@ import java.util.Objects;
 /**
  * @author LatvianModder
  */
-public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListener<MapJS> {
+public abstract class FluidStackJS implements WrappedJS, Copyable {
 	public static FluidStackJS of(@Nullable Object o) {
 		if (o == null) {
 			return EmptyFluidStackJS.INSTANCE;
@@ -62,7 +61,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 			}
 
 			if (map.containsKey("nbt")) {
-				stack.setNbt(map.get("nbt"));
+				stack.setNbt(MapJS.nbt(map.get("nbt")));
 			}
 
 			return stack;
@@ -71,20 +70,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 		return EmptyFluidStackJS.INSTANCE;
 	}
 
-	public static FluidStackJS of(@Nullable Object o, @Nullable Object amountOrNBT) {
-		FluidStackJS stack = of(o);
-		Object n = UtilsJS.wrap(amountOrNBT, JSObjectType.ANY);
-
-		if (n instanceof Number) {
-			stack.setAmount(((Number) n).intValue());
-		} else if (n instanceof MapJS) {
-			stack.setNbt(n);
-		}
-
-		return stack;
-	}
-
-	public static FluidStackJS of(@Nullable Object o, int amount, @Nullable Object nbt) {
+	public static FluidStackJS of(@Nullable Object o, int amount, @Nullable CompoundTag nbt) {
 		FluidStackJS stack = of(o);
 		stack.setAmount(amount);
 		stack.setNbt(nbt);
@@ -105,7 +91,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 		}
 
 		int amount = FluidStack.bucketAmount().intValue();
-		Object nbt = null;
+		CompoundTag nbt = null;
 
 		if (json.has("amount")) {
 			amount = json.get("amount").getAsInt();
@@ -115,7 +101,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 
 		if (json.has("nbt")) {
 			if (json.get("nbt").isJsonObject()) {
-				nbt = MapJS.of(json.get("nbt"));
+				nbt = MapJS.nbt(json.get("nbt"));
 			} else {
 				try {
 					nbt = TagParser.parseTag(json.get("nbt").getAsString());
@@ -125,7 +111,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 			}
 		}
 
-		return FluidStackJS.of(fluid, amount, nbt);
+		return of(fluid, amount, nbt);
 	}
 
 	public abstract String getId();
@@ -169,18 +155,18 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 	}
 
 	@Nullable
-	public abstract MapJS getNbt();
+	public abstract CompoundTag getNbt();
 
-	public abstract void setNbt(@Nullable Object nbt);
+	public abstract void setNbt(@Nullable CompoundTag nbt);
 
-	public final FluidStackJS withNBT(@Nullable Object nbt) {
+	public final FluidStackJS withNBT(@Nullable CompoundTag nbt) {
 		FluidStackJS fs = copy();
 		fs.setNbt(nbt);
 		return fs;
 	}
 
 	@Deprecated
-	public final FluidStackJS nbt(@Nullable Object nbt) {
+	public final FluidStackJS nbt(@Nullable CompoundTag nbt) {
 		return withNBT(nbt);
 	}
 
@@ -219,7 +205,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 
 	public String toString() {
 		int amount = getAmount();
-		MapJS nbt = getNbt();
+		CompoundTag nbt = getNbt();
 
 		StringBuilder builder = new StringBuilder();
 		builder.append("Fluid.of('");
@@ -232,7 +218,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 
 		if (nbt != null) {
 			builder.append(", ");
-			nbt.appendString(builder);
+			NBTUtils.quoteAndEscapeForJS(builder, nbt.toString());
 		}
 
 		builder.append("')");
@@ -248,7 +234,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 		}
 
 		if (getNbt() != null) {
-			o.add("nbt", getNbt().toJson());
+			o.add("nbt", MapJS.json(getNbt()));
 		}
 
 		return o;
@@ -258,9 +244,5 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, ChangeListene
 		CompoundTag tag = new CompoundTag();
 		getFluidStack().write(tag);
 		return tag;
-	}
-
-	@Override
-	public void onChanged(MapJS o) {
 	}
 }

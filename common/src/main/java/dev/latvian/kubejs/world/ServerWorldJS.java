@@ -10,6 +10,7 @@ import dev.latvian.kubejs.player.ServerPlayerDataJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -20,10 +21,15 @@ import net.minecraft.world.level.storage.ServerLevelData;
  */
 public class ServerWorldJS extends WorldJS {
 	private final ServerJS server;
+	public final CompoundTag persistentData;
 
 	public ServerWorldJS(ServerJS s, ServerLevel w) {
 		super(w);
 		server = s;
+
+		String t = w.dimension().location().toString();
+		persistentData = s.persistentData.getCompound(t);
+		s.persistentData.put(t, persistentData);
 	}
 
 	@Override
@@ -37,15 +43,15 @@ public class ServerWorldJS extends WorldJS {
 	}
 
 	public long getSeed() {
-		return ((ServerLevel) minecraftWorld).getSeed();
+		return ((ServerLevel) minecraftLevel).getSeed();
 	}
 
 	public void setTime(long time) {
-		((ServerLevelData) minecraftWorld.getLevelData()).setGameTime(time);
+		((ServerLevelData) minecraftLevel.getLevelData()).setGameTime(time);
 	}
 
 	public void setLocalTime(long time) {
-		((ServerLevelData) minecraftWorld.getLevelData()).setDayTime(time);
+		((ServerLevelData) minecraftLevel.getLevelData()).setDayTime(time);
 	}
 
 	@Override
@@ -74,7 +80,7 @@ public class ServerWorldJS extends WorldJS {
 
 	@Override
 	public EntityArrayList getEntities() {
-		return new EntityArrayList(this, Lists.newArrayList(((ServerLevel) minecraftWorld).getAllEntities()));
+		return new EntityArrayList(this, Lists.newArrayList(((ServerLevel) minecraftLevel).getAllEntities()));
 	}
 
 	public EntityArrayList getEntities(String filter) {

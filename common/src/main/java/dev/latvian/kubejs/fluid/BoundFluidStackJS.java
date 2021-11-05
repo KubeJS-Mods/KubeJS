@@ -1,10 +1,10 @@
 package dev.latvian.kubejs.fluid;
 
-import dev.latvian.kubejs.util.MapJS;
 import me.shedaniel.architectury.fluid.FluidStack;
 import me.shedaniel.architectury.registry.Registries;
 import me.shedaniel.architectury.utils.Fraction;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,22 +45,17 @@ public class BoundFluidStackJS extends FluidStackJS {
 
 	@Override
 	@Nullable
-	public MapJS getNbt() {
-		return MapJS.of(fluidStack.getTag());
+	public CompoundTag getNbt() {
+		return fluidStack.getTag();
 	}
 
 	@Override
-	public void setNbt(@Nullable Object nbt) {
-		fluidStack.setTag(MapJS.nbt(nbt));
+	public void setNbt(@Nullable CompoundTag nbt) {
+		fluidStack.setTag(nbt);
 	}
 
 	@Override
 	public FluidStackJS copy() {
 		return new BoundFluidStackJS(fluidStack.copy());
-	}
-
-	@Override
-	public void onChanged(@Nullable MapJS o) {
-		setNbt(o);
 	}
 }

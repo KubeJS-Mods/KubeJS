@@ -13,7 +13,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public class ServerCommandSender extends CommandSourceStack {
 	public ServerCommandSender(ServerJS w) {
-		super(CommandSource.NULL, Vec3.ZERO, Vec2.ZERO, (ServerLevel) w.getOverworld().minecraftWorld, 4, "Server", new TextComponent("Server"), w.getMinecraftServer(), null, true, (context, success, result) -> {
+		super(CommandSource.NULL, Vec3.ZERO, Vec2.ZERO, (ServerLevel) w.getOverworld().minecraftLevel, 4, "Server", new TextComponent("Server"), w.getMinecraftServer(), null, true, (context, success, result) -> {
 		}, EntityAnchorArgument.Anchor.FEET);
 	}
 }

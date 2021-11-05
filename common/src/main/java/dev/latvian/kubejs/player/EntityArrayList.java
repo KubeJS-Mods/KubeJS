@@ -3,7 +3,6 @@ package dev.latvian.kubejs.player;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextString;
-import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.Util;
@@ -121,12 +120,10 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		return list;
 	}
 
-	public void sendData(String channel, @Nullable Object data) {
-		CompoundTag nbt = MapJS.nbt(data);
-
+	public void sendData(String channel, @Nullable CompoundTag data) {
 		for (EntityJS entity : this) {
 			if (entity instanceof PlayerJS) {
-				((PlayerJS) entity).sendData(channel, nbt);
+				((PlayerJS) entity).sendData(channel, data);
 			}
 		}
 	}
