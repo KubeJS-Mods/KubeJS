@@ -10,7 +10,7 @@ import dev.latvian.kubejs.item.custom.ItemType;
 import dev.latvian.kubejs.util.BuilderBase;
 import dev.latvian.kubejs.util.ConsoleJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import me.shedaniel.architectury.annotations.ExpectPlatform;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

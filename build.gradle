@@ -1,7 +1,6 @@
 plugins {
-	id "architectury-plugin" version "3.1-SNAPSHOT"
-	id "dev.architectury.loom" version "0.7.3-SNAPSHOT" apply false
-	id "io.github.juuxel.loom-quiltflower" version "1.1.1" apply false
+	id "architectury-plugin" version "3.4-SNAPSHOT"
+	id "dev.architectury.loom" version "0.10.0-SNAPSHOT" apply false
 }
 
 architectury {
@@ -10,11 +9,9 @@ architectury {
 
 subprojects {
 	apply plugin: "dev.architectury.loom"
-	apply plugin: "io.github.juuxel.loom-quiltflower"
 
 	loom {
 		silentMojangMappingsLicense()
-		useFabricMixin = true
 	}
 
 	dependencies {
@@ -31,20 +28,10 @@ allprojects {
 
 	def ENV = System.getenv()
 	version = "${mod_version}-build.${ENV.GITHUB_RUN_NUMBER ?: 9999}"
-	group = project.mod_package
-	archivesBaseName = project.mod_name
+	group = project.maven_group
+	archivesBaseName = project.archives_base_name
 
 	sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
-
-	configurations {
-		modOptional
-		modCompileOnly.extendsFrom(modOptional)
-		modRuntime.extendsFrom(modOptional)
-
-		optional
-		compileOnly.extendsFrom(optional)
-		runtime.extendsFrom(optional)
-	}
 
 	tasks.withType(JavaCompile) {
 		options.encoding = "UTF-8"
@@ -56,10 +43,6 @@ allprojects {
 		if (JavaVersion.current().isJava9Compatible()) {
 			options.release = targetVersion
 		}
-	}
-
-	java {
-		withSourcesJar()
 	}
 
 	repositories {
@@ -81,6 +64,10 @@ allprojects {
 				includeGroup "dev.ftb.mods"
 			}
 		}
+	}
+
+	java {
+		withSourcesJar()
 	}
 }
 

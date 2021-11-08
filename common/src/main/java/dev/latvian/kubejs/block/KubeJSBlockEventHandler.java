@@ -6,7 +6,7 @@ import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.core.BlockKJS;
 import dev.latvian.kubejs.fluid.FluidBuilder;
-import me.shedaniel.architectury.annotations.ExpectPlatform;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import me.shedaniel.architectury.event.events.BlockEvent;
 import me.shedaniel.architectury.event.events.InteractionEvent;
 import me.shedaniel.architectury.utils.IntValue;
