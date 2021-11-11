@@ -31,10 +31,14 @@ public class AdvancementJS {
 
 	@Override
 	public String toString() {
-		return advancement.getId().toString();
+		return getId().toString();
 	}
 
 	public ResourceLocation id() {
+		return getId();
+	}
+
+	public ResourceLocation getId() {
 		return advancement.getId();
 	}
 
