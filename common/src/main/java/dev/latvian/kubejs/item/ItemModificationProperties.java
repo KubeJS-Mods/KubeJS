@@ -5,6 +5,7 @@ import dev.latvian.kubejs.core.ItemKJS;
 import dev.latvian.kubejs.core.TieredItemKJS;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Consumer;
 
@@ -30,8 +31,15 @@ public class ItemModificationProperties {
 		item.setBurnTimeKJS(i);
 	}
 
+	// Removing soon because of typo.
+	@Deprecated
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.0")
 	public void setCraftingReminder(Item i) {
-		item.setCraftingReminderKJS(i);
+		setCraftingRemainder(i);
+	}
+
+	public void setCraftingRemainder(Item i) {
+		item.setCraftingRemainderKJS(i);
 	}
 
 	public void setFireResistant(boolean b) {
@@ -53,7 +61,7 @@ public class ItemModificationProperties {
 	}
 
 	public void setFoodProperties(Consumer<FoodBuilder> consumer) {
-		Item originalItem = (Item)item;
+		Item originalItem = (Item) item;
 		FoodProperties fp = originalItem.getFoodProperties();
 		FoodBuilder builder = fp == null ? new FoodBuilder() : new FoodBuilder(fp);
 		consumer.accept(builder);

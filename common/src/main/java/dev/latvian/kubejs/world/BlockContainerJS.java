@@ -12,7 +12,7 @@ import dev.latvian.kubejs.player.ServerPlayerJS;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
-import me.shedaniel.architectury.annotations.ExpectPlatform;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import me.shedaniel.architectury.hooks.PlayerHooks;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.BlockPos;

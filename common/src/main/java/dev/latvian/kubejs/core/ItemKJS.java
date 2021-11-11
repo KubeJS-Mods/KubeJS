@@ -19,7 +19,7 @@ public interface ItemKJS {
 
 	void setMaxDamageKJS(int i);
 
-	void setCraftingReminderKJS(Item i);
+	void setCraftingRemainderKJS(Item i);
 
 	void setFireResistantKJS(boolean b);
 
