@@ -1,7 +1,7 @@
 dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-
 	modApi "me.shedaniel:architectury:${rootProject.architectury_version}"
+
 	modApi "dev.latvian.mods:rhino-fabric:${rootProject.rhino_version}"
 }
 
@@ -11,14 +11,19 @@ architectury {
 	common()
 }
 
+configurations {
+	dev
+}
+
+artifacts {
+	dev(jar)
+}
+
 publishing {
 	publications {
 		mavenCommon(MavenPublication) {
 			artifactId = rootProject.archivesBaseName
-			artifact remapJar
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
+			from components.java
 		}
 	}
 

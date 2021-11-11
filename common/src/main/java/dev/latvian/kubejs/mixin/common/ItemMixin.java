@@ -46,7 +46,7 @@ public abstract class ItemMixin implements ItemKJS {
 
 	@Override
 	@Accessor("craftingRemainingItem")
-	public abstract void setCraftingReminderKJS(Item i);
+	public abstract void setCraftingRemainderKJS(Item i);
 
 	@Override
 	@Accessor("isFireResistant")
