@@ -397,6 +397,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(ItemType.class, ItemTypes::get);
 		typeWrappers.register(BlockType.class, BlockTypes::get);
 		typeWrappers.register(Color.class, ColorWrapper::of);
+		typeWrappers.register(ToolType.class, o -> ToolType.create(o.toString(), () -> null));
 
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
 	}
