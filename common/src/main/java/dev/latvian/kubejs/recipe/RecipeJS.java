@@ -468,4 +468,8 @@ public abstract class RecipeJS {
 	public void dontAdd() {
 		RecipeEventJS.instance.addedRecipes.remove(this);
 	}
+
+	public boolean serializeNBTAsJson() {
+		return type != null && type.getMod().equals("techreborn");
+	}
 }

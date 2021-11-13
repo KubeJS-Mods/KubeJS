@@ -3,6 +3,7 @@ package dev.latvian.kubejs.item.ingredient;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.fluid.FluidStackJS;
 import dev.latvian.kubejs.item.DummyFluidItemStackJS;
@@ -17,7 +18,6 @@ import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -148,20 +148,24 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			boolean val = map.containsKey("value");
 
 			if (map.containsKey("type")) {
-				JsonObject json = map.toJson();
+				if ("forge:nbt".equals(map.get("type"))) {
+					in = ItemStackJS.of(map.get("item")).withNBT(MapJS.nbt(map.get("nbt")));
+				} else {
+					JsonObject json = map.toJson();
 
-				try {
-					Ingredient ingredient = getCustomIngredient(json);
-					return new CustomIngredient(ingredient, json);
-				} catch (Exception ex) {
-					throw new RecipeExceptionJS("Failed to parse custom ingredient (" + json.get("type") + ") from " + json + ": " + ex).fallback();
+					try {
+						Ingredient ingredient = getCustomIngredient(json);
+						return new CustomIngredient(ingredient, json);
+					} catch (Exception ex) {
+						throw new RecipeExceptionJS("Failed to parse custom ingredient (" + json.get("type") + ") from " + json + ": " + ex).fallback();
+					}
 				}
 			} else if (val || map.containsKey("ingredient")) {
 				in = of(val ? map.get("value") : map.get("ingredient"));
 			} else if (map.containsKey("tag")) {
 				in = TagIngredientJS.createTag(map.get("tag").toString());
 			} else if (map.containsKey("item")) {
-				in = ItemStackJS.of(map);
+				in = ItemStackJS.of(map).removeNBT();
 			} else if (map.containsKey("fluid")) {
 				return new DummyFluidItemStackJS(FluidStackJS.of(map));
 			}
@@ -208,18 +212,22 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			boolean val = o.has("value");
 
 			if (o.has("type")) {
-				try {
-					Ingredient ingredient = getCustomIngredient(o);
-					return new CustomIngredient(ingredient, o);
-				} catch (Exception ex) {
-					throw new RecipeExceptionJS("Failed to parse custom ingredient (" + o.get("type") + ") from " + o + ": " + ex);
+				if ("forge:nbt".equals(o.get("type").getAsString())) {
+					in = ItemStackJS.of(o.get("item").getAsString()).withNBT(MapJS.nbt(o.get("nbt")));
+				} else {
+					try {
+						Ingredient ingredient = getCustomIngredient(o);
+						return new CustomIngredient(ingredient, o);
+					} catch (Exception ex) {
+						throw new RecipeExceptionJS("Failed to parse custom ingredient (" + o.get("type") + ") from " + o + ": " + ex);
+					}
 				}
 			} else if (val || o.has("ingredient")) {
 				in = ingredientFromRecipeJson(val ? o.get("value") : o.get("ingredient"));
 			} else if (o.has("tag")) {
 				in = TagIngredientJS.createTag(o.get("tag").getAsString());
 			} else if (o.has("item")) {
-				in = ItemStackJS.of(o.get("item").getAsString());
+				in = ItemStackJS.of(o.get("item").getAsString()).removeNBT();
 			}
 
 			if (o.has("count")) {

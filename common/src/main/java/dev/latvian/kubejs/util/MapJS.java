@@ -2,6 +2,7 @@ package dev.latvian.kubejs.util;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.mod.util.ChangeListener;
 import dev.latvian.mods.rhino.mod.util.Copyable;
@@ -40,6 +41,12 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 		} else if (map instanceof CharSequence) {
 			try {
 				return TagParser.parseTag(map.toString());
+			} catch (Exception ex) {
+				return null;
+			}
+		} else if (map instanceof JsonPrimitive) {
+			try {
+				return TagParser.parseTag(((JsonPrimitive) map).getAsString());
 			} catch (Exception ex) {
 				return null;
 			}
