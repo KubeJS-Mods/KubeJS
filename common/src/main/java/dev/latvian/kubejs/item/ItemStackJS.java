@@ -2,6 +2,7 @@ package dev.latvian.kubejs.item;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.fluid.FluidStackJS;
@@ -30,7 +31,6 @@ import dev.latvian.mods.rhino.mod.util.NBTSerializable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.util.SpecialEquality;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import me.shedaniel.architectury.registry.Registries;
 import me.shedaniel.architectury.registry.ToolType;
 import me.shedaniel.architectury.utils.NbtType;
@@ -1049,7 +1049,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		CompoundTag nbt = getNbt();
 
 		if (nbt != null) {
-			if (RecipeJS.currentRecipe != null && RecipeJS.currentRecipe.type != null && RecipeJS.currentRecipe.type.getIdRL().getNamespace().equals("techreborn")) {
+			if (RecipeJS.currentRecipe != null && RecipeJS.currentRecipe.serializeNBTAsJson()) {
 				json.add("nbt", new CompoundTagWrapper(nbt).toJson());
 			} else {
 				json.addProperty("nbt", nbt.toString());

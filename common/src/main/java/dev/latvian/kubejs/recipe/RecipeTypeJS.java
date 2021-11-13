@@ -36,6 +36,10 @@ public class RecipeTypeJS {
 		return string;
 	}
 
+	public String getMod() {
+		return id.getNamespace();
+	}
+
 	public ResourceLocation getIdRL() {
 		return id;
 	}
