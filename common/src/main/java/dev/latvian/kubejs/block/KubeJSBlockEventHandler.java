@@ -1,12 +1,13 @@
 package dev.latvian.kubejs.block;
 
+import dev.architectury.injectables.annotations.ExpectPlatform;
+import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.core.BlockKJS;
 import dev.latvian.kubejs.fluid.FluidBuilder;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import me.shedaniel.architectury.event.events.BlockEvent;
 import me.shedaniel.architectury.event.events.InteractionEvent;
 import me.shedaniel.architectury.utils.IntValue;
@@ -32,7 +33,10 @@ import org.jetbrains.annotations.Nullable;
 public class KubeJSBlockEventHandler {
 
 	public static void init() {
-		registry();
+		if (!CommonProperties.get().serverOnly) {
+			registry();
+		}
+
 		InteractionEvent.RIGHT_CLICK_BLOCK.register(KubeJSBlockEventHandler::rightClick);
 		InteractionEvent.LEFT_CLICK_BLOCK.register(KubeJSBlockEventHandler::leftClick);
 		BlockEvent.BREAK.register(KubeJSBlockEventHandler::blockBreak);

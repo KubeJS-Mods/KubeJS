@@ -403,6 +403,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void addRecipes(RegisterRecipeHandlersEvent event) {
+		event.registerShaped(new ResourceLocation("kubejs:shaped"));
+		event.registerShapeless(new ResourceLocation("kubejs:shapeless"));
 		event.registerShaped(new ResourceLocation("minecraft:crafting_shaped"));
 		event.registerShapeless(new ResourceLocation("minecraft:crafting_shapeless"));
 		event.register(new ResourceLocation("minecraft:stonecutting"), StonecuttingRecipeJS::new);
