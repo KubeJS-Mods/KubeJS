@@ -469,21 +469,21 @@ public abstract class RecipeJS {
 	}
 
 	public ItemStackJS getOriginalRecipeResult() {
-		if(this.originalRecipe == null) {
+		if (originalRecipe == null) {
 			ConsoleJS.SERVER.warn("Original recipe is null - could not get result");
 			return ItemStackJS.EMPTY;
 		}
 
-		return ItemStackJS.of(this.originalRecipe.getResultItem());
+		return ItemStackJS.of(originalRecipe.getResultItem());
 	}
 
 	public List<IngredientJS> getOriginalRecipeIngredients() {
-		if(this.originalRecipe == null) {
+		if (originalRecipe == null) {
 			ConsoleJS.SERVER.warn("Original recipe is null - could not get ingredients");
 			return new ArrayList<>();
 		}
 
-		return this.originalRecipe.getIngredients().stream().map(IngredientJS::of).collect(Collectors.toList());
+		return originalRecipe.getIngredients().stream().map(IngredientJS::of).collect(Collectors.toList());
 	}
 
 	/**
