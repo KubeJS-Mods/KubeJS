@@ -6,6 +6,8 @@ import dev.latvian.kubejs.item.ingredient.IngredientWithCustomPredicateJS;
 import dev.latvian.kubejs.item.ingredient.MatchAllIngredientJS;
 import dev.latvian.kubejs.item.ingredient.MatchAnyIngredientJS;
 import dev.latvian.kubejs.recipe.RecipeEventJS;
+import dev.latvian.kubejs.recipe.ingredientaction.CustomIngredientAction;
+import dev.latvian.kubejs.recipe.ingredientaction.CustomIngredientActionCallback;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.UUID;
@@ -53,5 +55,9 @@ public class IngredientWrapper {
 		MatchAnyIngredientJS ingredient = new MatchAnyIngredientJS();
 		ingredient.addAll(objects);
 		return ingredient;
+	}
+
+	public static void registerCustomIngredientAction(String id, CustomIngredientActionCallback callback) {
+		CustomIngredientAction.MAP.put(id, callback);
 	}
 }

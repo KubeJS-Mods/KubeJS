@@ -27,6 +27,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class ItemHandlerUtils {
 	public static void giveItemToPlayer(Player player, @NotNull ItemStack stack, int preferredSlot) {
 		if (stack.isEmpty()) {
@@ -133,7 +135,11 @@ public class ItemHandlerUtils {
 			return false;
 		}
 
-		return (!a.hasTag() || a.getTag().equals(b.getTag())) && ContainerInventory.areCapsCompatible(a, b);
+		if ((!a.hasTag() || Objects.equals(a.getTag(), b.getTag()))) {
+			return ContainerInventory.areCapsCompatible(a, b);
+		}
+
+		return false;
 	}
 
 	public static boolean canItemStacksStack(@NotNull ItemStack a, @NotNull ItemStack b) {
@@ -141,6 +147,10 @@ public class ItemHandlerUtils {
 			return false;
 		}
 
-		return (!a.hasTag() || a.getTag().equals(b.getTag())) && ContainerInventory.areCapsCompatible(a, b);
+		if ((!a.hasTag() || Objects.equals(a.getTag(), b.getTag()))) {
+			return ContainerInventory.areCapsCompatible(a, b);
+		}
+
+		return false;
 	}
 }

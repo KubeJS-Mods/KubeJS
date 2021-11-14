@@ -147,7 +147,7 @@ public class ShapedRecipeJS extends RecipeJS {
 	}
 
 	public ShapedRecipeJS noMirror() {
-		json.addProperty("mirrored", false);
+		json.addProperty("mirror", false);
 		save();
 		return this;
 	}

@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import dev.latvian.kubejs.recipe.KubeJSRecipeEventHandler;
+import dev.latvian.kubejs.recipe.ingredientaction.IngredientAction;
 import me.shedaniel.architectury.core.AbstractRecipeSerializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,25 +15,22 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.Level;
 
-public class ShapelessKubeJSRecipe implements CraftingRecipe {
-	private final ResourceLocation id;
+import java.util.List;
+
+public class ShapelessKubeJSRecipe extends ShapelessRecipe {
 	private String group;
 	private ItemStack result;
 	private NonNullList<Ingredient> ingredients;
+	private List<IngredientAction> ingredientActions;
 
-	public ShapelessKubeJSRecipe(ResourceLocation i) {
-		id = i;
-	}
-
-	@Override
-	public ResourceLocation getId() {
-		return id;
+	public ShapelessKubeJSRecipe(ResourceLocation _id) {
+		super(_id, "", ItemStack.EMPTY, NonNullList.withSize(0, Ingredient.EMPTY));
 	}
 
 	@Override
@@ -43,44 +41,56 @@ public class ShapelessKubeJSRecipe implements CraftingRecipe {
 	@Override
 	@Environment(EnvType.CLIENT)
 	public String getGroup() {
-		return this.group;
+		return group;
 	}
 
 	@Override
 	public ItemStack getResultItem() {
-		return this.result;
+		return result;
 	}
 
 	@Override
 	public NonNullList<Ingredient> getIngredients() {
-		return this.ingredients;
+		return ingredients;
 	}
 
 	@Override
 	public boolean matches(CraftingContainer craftingContainer, Level level) {
 		StackedContents stackedContents = new StackedContents();
-		int i = 0;
+		int count = 0;
 
-		for (int j = 0; j < craftingContainer.getContainerSize(); ++j) {
-			ItemStack itemStack = craftingContainer.getItem(j);
-			if (!itemStack.isEmpty()) {
-				++i;
-				stackedContents.accountStack(itemStack, 1);
+		for (int i = 0; i < craftingContainer.getContainerSize(); i++) {
+			ItemStack stack = craftingContainer.getItem(i);
+
+			if (!stack.isEmpty()) {
+				count++;
+				stackedContents.accountStack(stack, 1);
 			}
 		}
 
-		return i == this.ingredients.size() && stackedContents.canCraft(this, null);
+		return count == ingredients.size() && stackedContents.canCraft(this, null);
 	}
 
 	@Override
 	public ItemStack assemble(CraftingContainer craftingContainer) {
-		return this.result.copy();
+		return result.copy();
 	}
 
 	@Override
 	@Environment(EnvType.CLIENT)
-	public boolean canCraftInDimensions(int i, int j) {
-		return i * j >= this.ingredients.size();
+	public boolean canCraftInDimensions(int w, int h) {
+		return w * h >= ingredients.size();
+	}
+
+	@Override
+	public NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
+		NonNullList<ItemStack> list = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
+
+		for (int i = 0; i < list.size(); i++) {
+			list.set(i, IngredientAction.getRemaining(container, i, ingredientActions));
+		}
+
+		return list;
 	}
 
 	public static class SerializerKJS extends AbstractRecipeSerializer<ShapelessKubeJSRecipe> {
@@ -97,13 +107,14 @@ public class ShapelessKubeJSRecipe implements CraftingRecipe {
 			}
 
 			r.result = ShapedRecipe.itemFromJson(GsonHelper.getAsJsonObject(json, "result"));
+			r.ingredientActions = IngredientAction.parseList(json.get("kubejs_actions"));
 			return r;
 		}
 
 		private static NonNullList<Ingredient> itemsFromJson(JsonArray a) {
 			NonNullList<Ingredient> list = NonNullList.create();
 
-			for (int i = 0; i < a.size(); ++i) {
+			for (int i = 0; i < a.size(); i++) {
 				Ingredient ingredient = Ingredient.fromJson(a.get(i));
 
 				if (!ingredient.isEmpty()) {
@@ -126,6 +137,7 @@ public class ShapelessKubeJSRecipe implements CraftingRecipe {
 			}
 
 			r.result = buf.readItem();
+			r.ingredientActions = IngredientAction.readList(buf);
 			return r;
 		}
 
@@ -139,6 +151,7 @@ public class ShapelessKubeJSRecipe implements CraftingRecipe {
 			}
 
 			buf.writeItem(r.result);
+			IngredientAction.writeList(buf, r.ingredientActions);
 		}
 	}
 }

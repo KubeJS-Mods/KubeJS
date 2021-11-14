@@ -7,6 +7,7 @@ import dev.latvian.kubejs.recipe.RecipeEventJS;
 import dev.latvian.kubejs.recipe.RecipeTypeJS;
 import dev.latvian.kubejs.recipe.RecipeTypeRegistryEventJS;
 import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
+import dev.latvian.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.kubejs.script.ScriptFile;
 import dev.latvian.kubejs.script.ScriptFileInfo;
 import dev.latvian.kubejs.script.ScriptManager;
@@ -128,6 +129,8 @@ public class ServerScriptManager {
 		if (Platform.isForge()) {
 			RecipeEventJS.customIngredientMap = new HashMap<>();
 		}
+
+		CustomIngredientAction.MAP.clear();
 
 		RecipeEventJS.instance = new RecipeEventJS(typeMap);
 		return list;

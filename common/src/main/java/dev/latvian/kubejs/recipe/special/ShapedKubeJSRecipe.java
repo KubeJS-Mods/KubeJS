@@ -7,6 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import dev.latvian.kubejs.recipe.KubeJSRecipeEventHandler;
+import dev.latvian.kubejs.recipe.ingredientaction.IngredientAction;
 import me.shedaniel.architectury.core.AbstractRecipeSerializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -16,17 +17,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ShapedKubeJSRecipe implements CraftingRecipe {
-	private final ResourceLocation id;
+public class ShapedKubeJSRecipe extends ShapedRecipe {
 	private String group;
 	private int width;
 	private int height;
@@ -34,14 +34,10 @@ public class ShapedKubeJSRecipe implements CraftingRecipe {
 	private ItemStack result;
 	private boolean mirror;
 	private boolean shrink;
+	private List<IngredientAction> ingredientActions;
 
-	public ShapedKubeJSRecipe(ResourceLocation i) {
-		id = i;
-	}
-
-	@Override
-	public ResourceLocation getId() {
-		return id;
+	public ShapedKubeJSRecipe(ResourceLocation _id) {
+		super(_id, "", 0, 0, NonNullList.withSize(0, Ingredient.EMPTY), ItemStack.EMPTY);
 	}
 
 	@Override
@@ -123,6 +119,17 @@ public class ShapedKubeJSRecipe implements CraftingRecipe {
 
 	public int getHeight() {
 		return height;
+	}
+
+	@Override
+	public NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
+		NonNullList<ItemStack> list = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
+
+		for (int i = 0; i < list.size(); i++) {
+			list.set(i, IngredientAction.getRemaining(container, i, ingredientActions));
+		}
+
+		return list;
 	}
 
 	private static NonNullList<Ingredient> dissolvePattern(String[] pattern, Map<String, Ingredient> key, int w, int h) {
@@ -262,6 +269,7 @@ public class ShapedKubeJSRecipe implements CraftingRecipe {
 			r.height = pattern.length;
 			r.ingredients = ShapedKubeJSRecipe.dissolvePattern(pattern, key, r.width, r.height);
 			r.result = ShapedRecipe.itemFromJson(GsonHelper.getAsJsonObject(json, "result"));
+			r.ingredientActions = IngredientAction.parseList(json.get("kubejs_actions"));
 			return r;
 		}
 
@@ -280,6 +288,7 @@ public class ShapedKubeJSRecipe implements CraftingRecipe {
 			r.result = buf.readItem();
 			r.mirror = buf.readBoolean();
 			r.shrink = buf.readBoolean();
+			r.ingredientActions = IngredientAction.readList(buf);
 			return r;
 		}
 
@@ -296,6 +305,7 @@ public class ShapedKubeJSRecipe implements CraftingRecipe {
 			buf.writeItem(r.result);
 			buf.writeBoolean(r.mirror);
 			buf.writeBoolean(r.shrink);
+			IngredientAction.writeList(buf, r.ingredientActions);
 		}
 	}
 }
