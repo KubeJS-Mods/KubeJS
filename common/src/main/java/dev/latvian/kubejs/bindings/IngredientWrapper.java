@@ -9,6 +9,7 @@ import dev.latvian.kubejs.recipe.RecipeEventJS;
 import dev.latvian.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.kubejs.recipe.ingredientaction.CustomIngredientActionCallback;
 import net.minecraft.nbt.CompoundTag;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -59,5 +60,9 @@ public class IngredientWrapper {
 
 	public static void registerCustomIngredientAction(String id, CustomIngredientActionCallback callback) {
 		CustomIngredientAction.MAP.put(id, callback);
+	}
+
+	public static boolean isIngredient(@Nullable Object o) {
+		return o instanceof IngredientJS;
 	}
 }

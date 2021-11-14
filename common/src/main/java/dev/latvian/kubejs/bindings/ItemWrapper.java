@@ -75,4 +75,8 @@ public class ItemWrapper {
 	public static boolean exists(ResourceLocation id) {
 		return KubeJSRegistries.items().contains(id);
 	}
+
+	public static boolean isItem(@Nullable Object o) {
+		return o instanceof ItemStackJS;
+	}
 }
