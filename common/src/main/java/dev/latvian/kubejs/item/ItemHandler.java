@@ -48,4 +48,12 @@ public interface ItemHandler extends Iterable<ItemStack> {
 	interface Mutable extends ItemHandler {
 		void setStackInSlot(int slot, @NotNull ItemStack stack);
 	}
+
+	default int getWidth() {
+		return getSlots();
+	}
+
+	default int getHeight() {
+		return 1;
+	}
 }

@@ -8,6 +8,12 @@ import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
+import dev.latvian.kubejs.recipe.ingredientaction.CustomIngredientAction;
+import dev.latvian.kubejs.recipe.ingredientaction.DamageAction;
+import dev.latvian.kubejs.recipe.ingredientaction.IngredientAction;
+import dev.latvian.kubejs.recipe.ingredientaction.IngredientActionFilter;
+import dev.latvian.kubejs.recipe.ingredientaction.KeepAction;
+import dev.latvian.kubejs.recipe.ingredientaction.ReplaceAction;
 import dev.latvian.kubejs.recipe.minecraft.CustomRecipeJS;
 import dev.latvian.kubejs.recipe.mod.TechRebornCompat;
 import dev.latvian.kubejs.server.ServerSettings;
@@ -471,5 +477,39 @@ public abstract class RecipeJS {
 
 	public boolean serializeNBTAsJson() {
 		return type != null && type.getMod().equals("techreborn");
+	}
+
+	public RecipeJS action(IngredientActionFilter filter, IngredientAction action) {
+		JsonArray a = (JsonArray) json.get("kubejs_actions");
+
+		if (a == null) {
+			a = new JsonArray();
+			json.add("kubejs_actions", a);
+		}
+
+		action.copyFrom(filter);
+		a.add(action.toJson());
+		save();
+		return this;
+	}
+
+	public RecipeJS damageItem(IngredientActionFilter filter, int damage) {
+		return action(filter, new DamageAction(damage));
+	}
+
+	public RecipeJS damageItem(IngredientActionFilter filter) {
+		return damageItem(filter, 1);
+	}
+
+	public RecipeJS replaceItem(IngredientActionFilter filter, ItemStackJS item) {
+		return action(filter, new ReplaceAction(item.getItemStack()));
+	}
+
+	public RecipeJS customAction(IngredientActionFilter filter, String id) {
+		return action(filter, new CustomIngredientAction(id));
+	}
+
+	public RecipeJS keep(IngredientActionFilter filter) {
+		return action(filter, new KeepAction());
 	}
 }

@@ -212,4 +212,12 @@ public class InventoryJS {
 
 		return null;
 	}
+
+	public int getWidth() {
+		return minecraftInventory.getWidth();
+	}
+
+	public int getHeight() {
+		return minecraftInventory.getHeight();
+	}
 }

@@ -51,6 +51,7 @@ import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.kubejs.loot.LootBuilder;
 import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
 import dev.latvian.kubejs.recipe.filter.RecipeFilter;
+import dev.latvian.kubejs.recipe.ingredientaction.IngredientActionFilter;
 import dev.latvian.kubejs.recipe.minecraft.CookingRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.SmithingRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.StonecuttingRecipeJS;
@@ -397,12 +398,42 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(ItemType.class, ItemTypes::get);
 		typeWrappers.register(BlockType.class, BlockTypes::get);
 		typeWrappers.register(Color.class, ColorWrapper::of);
+		typeWrappers.register(ToolType.class, o -> ToolType.create(o.toString(), () -> null));
+		typeWrappers.register(IngredientActionFilter.class, o -> {
+			IngredientActionFilter filter = new IngredientActionFilter();
+
+			if (o instanceof String) {
+				filter.filterIngredient = IngredientJS.of(o);
+
+				if (filter.filterIngredient instanceof ItemStackJS) {
+					filter.filterIngredient = ((ItemStackJS) filter.filterIngredient).ignoreNBT();
+				}
+			} else if (o instanceof Number) {
+				filter.filterIndex = ((Number) o).intValue();
+			} else {
+				MapJS map = MapJS.of(o);
+
+				if (map != null && !map.isEmpty()) {
+					if (map.containsKey("item")) {
+						filter.filterIngredient = IngredientJS.of(map.get("item"));
+					}
+
+					if (map.containsKey("index")) {
+						filter.filterIndex = ((Number) map.get("index")).intValue();
+					}
+				}
+			}
+
+			return filter;
+		});
 
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
 	}
 
 	@Override
 	public void addRecipes(RegisterRecipeHandlersEvent event) {
+		event.registerShaped(new ResourceLocation("kubejs:shaped"));
+		event.registerShapeless(new ResourceLocation("kubejs:shapeless"));
 		event.registerShaped(new ResourceLocation("minecraft:crafting_shaped"));
 		event.registerShapeless(new ResourceLocation("minecraft:crafting_shapeless"));
 		event.register(new ResourceLocation("minecraft:stonecutting"), StonecuttingRecipeJS::new);

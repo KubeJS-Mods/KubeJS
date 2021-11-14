@@ -1,6 +1,9 @@
 package dev.latvian.kubejs.item.ingredient;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dev.latvian.kubejs.item.ItemStackJS;
+import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -45,5 +48,17 @@ public final class IgnoreNBTIngredientJS implements IngredientJS {
 	@Override
 	public IngredientJS copy() {
 		return new IgnoreNBTIngredientJS(item.copy());
+	}
+
+	@Override
+	public JsonElement toJson() {
+		JsonObject json = new JsonObject();
+		json.addProperty("item", item.getId());
+
+		if (Platform.isForge()) {
+			json.addProperty("type", "kubejs:ignore_nbt");
+		}
+
+		return json;
 	}
 }

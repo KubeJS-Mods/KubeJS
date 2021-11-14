@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.item;
 
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
@@ -10,7 +11,6 @@ import dev.latvian.kubejs.block.DetectorInstance;
 import dev.latvian.kubejs.core.ItemKJS;
 import dev.latvian.kubejs.fluid.FluidBuilder;
 import dev.latvian.kubejs.player.InventoryChangedEventJS;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import me.shedaniel.architectury.event.events.InteractionEvent;
 import me.shedaniel.architectury.event.events.PlayerEvent;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,7 +36,10 @@ public class KubeJSItemEventHandler {
 	public static Supplier<Item> DUMMY_FLUID_ITEM = () -> Items.STRUCTURE_VOID;
 
 	public static void init() {
-		registry();
+		if (!CommonProperties.get().serverOnly) {
+			registry();
+		}
+
 		InteractionEvent.RIGHT_CLICK_ITEM.register(KubeJSItemEventHandler::rightClick);
 		InteractionEvent.CLIENT_RIGHT_CLICK_AIR.register(KubeJSItemEventHandler::rightClickEmpty);
 		InteractionEvent.CLIENT_LEFT_CLICK_AIR.register(KubeJSItemEventHandler::leftClickEmpty);

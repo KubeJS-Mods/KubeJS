@@ -1,0 +1,16 @@
+package dev.latvian.kubejs.recipe.ingredientaction;
+
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
+
+public class KeepAction extends IngredientAction {
+	@Override
+	public ItemStack transform(ItemStack old, int index, CraftingContainer container) {
+		return old;
+	}
+
+	@Override
+	public String getType() {
+		return "keep";
+	}
+}

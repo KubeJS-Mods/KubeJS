@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.item;
 
 import com.google.gson.JsonObject;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.bindings.RarityWrapper;
@@ -10,7 +11,6 @@ import dev.latvian.kubejs.item.custom.ItemType;
 import dev.latvian.kubejs.util.BuilderBase;
 import dev.latvian.kubejs.util.ConsoleJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -158,10 +158,6 @@ public class ItemBuilder extends BuilderBase {
 	public ItemBuilder subtypes(Function<ItemStackJS, Collection<ItemStackJS>> fn) {
 		subtypes = fn;
 		return this;
-	}
-
-	public ItemBuilder tool(String type, int level) {
-		return tool(ToolType.byName(type), level);
 	}
 
 	public ItemBuilder tool(ToolType type, int level) {

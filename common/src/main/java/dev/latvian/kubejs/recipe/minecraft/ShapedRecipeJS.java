@@ -145,4 +145,16 @@ public class ShapedRecipeJS extends RecipeJS {
 			json.add("key", keyJson);
 		}
 	}
+
+	public ShapedRecipeJS noMirror() {
+		json.addProperty("mirror", false);
+		save();
+		return this;
+	}
+
+	public ShapedRecipeJS noShrink() {
+		json.addProperty("shrink", false);
+		save();
+		return this;
+	}
 }

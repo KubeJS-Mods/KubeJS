@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSRegistries;
@@ -23,7 +24,6 @@ import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -115,8 +115,8 @@ public class RecipeEventJS extends EventJS {
 		SpecialRecipeSerializerManager.INSTANCE.reset();
 		SpecialRecipeSerializerManager.INSTANCE.post(ScriptType.SERVER, KubeJSEvents.RECIPES_SERIALIZER_SPECIAL_FLAG);
 
-		shaped = getRecipeFunction("minecraft:crafting_shaped");
-		shapeless = getRecipeFunction("minecraft:crafting_shapeless");
+		shaped = getRecipeFunction(CommonProperties.get().serverOnly ? "minecraft:crafting_shaped" : "kubejs:shaped");
+		shapeless = getRecipeFunction(CommonProperties.get().serverOnly ? "minecraft:crafting_shapeless" : "kubejs:shapeless");
 		smelting = getRecipeFunction("minecraft:smelting");
 		blasting = getRecipeFunction("minecraft:blasting");
 		smoking = getRecipeFunction("minecraft:smoking");

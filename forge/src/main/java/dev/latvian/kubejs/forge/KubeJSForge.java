@@ -10,6 +10,7 @@ import dev.latvian.kubejs.entity.forge.LivingEntityDropsEventJS;
 import dev.latvian.kubejs.integration.IntegrationManager;
 import dev.latvian.kubejs.item.forge.ItemDestroyedEventJS;
 import dev.latvian.kubejs.item.ingredient.forge.CustomPredicateIngredient;
+import dev.latvian.kubejs.item.ingredient.forge.IgnoreNBTIngredient;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import me.shedaniel.architectury.platform.forge.EventBuses;
@@ -62,6 +63,7 @@ public class KubeJSForge {
 		}
 
 		CraftingHelper.register(new ResourceLocation("kubejs:custom_predicate"), CustomPredicateIngredient.SERIALIZER);
+		CraftingHelper.register(new ResourceLocation("kubejs:ignore_nbt"), IgnoreNBTIngredient.SERIALIZER);
 	}
 
 	private static void loadComplete(FMLLoadCompleteEvent event) {

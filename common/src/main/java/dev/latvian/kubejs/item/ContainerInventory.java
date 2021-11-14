@@ -21,7 +21,9 @@ package dev.latvian.kubejs.item;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.world.Container;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import org.jetbrains.annotations.NotNull;
 
 public class ContainerInventory implements ItemHandler.Mutable {
@@ -190,5 +192,28 @@ public class ContainerInventory implements ItemHandler.Mutable {
 	@ExpectPlatform
 	public static boolean areCapsCompatible(ItemStack a, ItemStack b) {
 		throw new AssertionError();
+	}
+
+	@ExpectPlatform
+	public static ItemStack getContainerItem(ItemStack stack) {
+		throw new AssertionError();
+	}
+
+	@Override
+	public int getWidth() {
+		if (container instanceof ChestBlockEntity) {
+			return 9;
+		}
+
+		return container instanceof CraftingContainer ? ((CraftingContainer) container).getWidth() : getSlots();
+	}
+
+	@Override
+	public int getHeight() {
+		if (container instanceof ChestBlockEntity) {
+			return getSlots() / 9;
+		}
+
+		return container instanceof CraftingContainer ? ((CraftingContainer) container).getHeight() : 1;
 	}
 }

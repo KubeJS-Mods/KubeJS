@@ -8,6 +8,7 @@ import dev.latvian.kubejs.fluid.KubeJSFluidEventHandler;
 import dev.latvian.kubejs.item.KubeJSItemEventHandler;
 import dev.latvian.kubejs.net.KubeJSNet;
 import dev.latvian.kubejs.player.KubeJSPlayerEventHandler;
+import dev.latvian.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.kubejs.script.ScriptFileInfo;
 import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.kubejs.script.ScriptPack;
@@ -128,6 +129,7 @@ public class KubeJS {
 		KubeJSItemEventHandler.init();
 		KubeJSFluidEventHandler.init();
 		KubeJSServerEventHandler.init();
+		KubeJSRecipeEventHandler.init();
 
 		PROXY.init();
 	}

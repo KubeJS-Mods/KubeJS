@@ -13,6 +13,7 @@ import net.minecraft.tags.Tag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -138,5 +139,10 @@ public class TagIngredientJS implements IngredientJS {
 		}
 
 		return IngredientJS.super.anyStackMatches(ingredient);
+	}
+
+	@Override
+	public Ingredient createVanillaIngredient() {
+		return Ingredient.of(getActualTag());
 	}
 }

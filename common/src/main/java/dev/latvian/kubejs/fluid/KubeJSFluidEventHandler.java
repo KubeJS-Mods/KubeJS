@@ -1,8 +1,9 @@
 package dev.latvian.kubejs.fluid;
 
+import dev.architectury.injectables.annotations.ExpectPlatform;
+import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.KubeJSRegistries;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.FlowingFluid;
 
@@ -11,7 +12,9 @@ import net.minecraft.world.level.material.FlowingFluid;
  */
 public class KubeJSFluidEventHandler {
 	public static void init() {
-		registry();
+		if (!CommonProperties.get().serverOnly) {
+			registry();
+		}
 	}
 
 	@ExpectPlatform
