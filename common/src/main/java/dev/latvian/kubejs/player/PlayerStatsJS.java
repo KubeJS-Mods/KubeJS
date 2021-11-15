@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.player;
 
-import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stats;
 import net.minecraft.stats.StatsCounter;
@@ -25,15 +24,99 @@ public class PlayerStatsJS {
 	}
 
 	public int get(ResourceLocation id) {
-		return statFile.getValue(UtilsJS.getStat(id));
+		return statFile.getValue(Stats.CUSTOM.get(id));
+	}
+
+	public int getPlayTime() {
+		return get(Stats.PLAY_ONE_MINUTE);
+	}
+
+	public int getTimeSinceDeath() {
+		return get(Stats.TIME_SINCE_DEATH);
+	}
+
+	public int getTimeSinceRest() {
+		return get(Stats.TIME_SINCE_REST);
+	}
+
+	public int getTimeCrouchTime() {
+		return get(Stats.CROUCH_TIME);
+	}
+
+	public int getJumps() {
+		return get(Stats.JUMP);
+	}
+
+	public int getWalkDistance() {
+		return get(Stats.WALK_ONE_CM);
+	}
+
+	public int getSprintDistance() {
+		return get(Stats.SPRINT_ONE_CM);
+	}
+
+	public int getSwimDistance() {
+		return get(Stats.SWIM_ONE_CM);
+	}
+
+	public int getCrouchDistance() {
+		return get(Stats.CROUCH_ONE_CM);
+	}
+
+	public int getDamageDealt() {
+		return get(Stats.DAMAGE_DEALT);
+	}
+
+	public int getDamageDealt_absorbed() {
+		return get(Stats.DAMAGE_DEALT_ABSORBED);
+	}
+
+	public int getDamageDealt_resisted() {
+		return get(Stats.DAMAGE_DEALT_RESISTED);
+	}
+
+	public int getDamageTaken() {
+		return get(Stats.DAMAGE_TAKEN);
+	}
+
+	public int getDamageBlocked_by_shield() {
+		return get(Stats.DAMAGE_BLOCKED_BY_SHIELD);
+	}
+
+	public int getDamageAbsorbed() {
+		return get(Stats.DAMAGE_ABSORBED);
+	}
+
+	public int getDamageResisted() {
+		return get(Stats.DAMAGE_RESISTED);
+	}
+
+	public int getDeaths() {
+		return get(Stats.DEATHS);
+	}
+
+	public int getMobKills() {
+		return get(Stats.MOB_KILLS);
+	}
+
+	public int getAnimalsBred() {
+		return get(Stats.ANIMALS_BRED);
+	}
+
+	public int getPlayerKills() {
+		return get(Stats.PLAYER_KILLS);
+	}
+
+	public int getFishCaught() {
+		return get(Stats.FISH_CAUGHT);
 	}
 
 	public void set(ResourceLocation id, int value) {
-		statFile.setValue(player.minecraftPlayer, UtilsJS.getStat(id), value);
+		statFile.setValue(player.minecraftPlayer, Stats.CUSTOM.get(id), value);
 	}
 
 	public void add(ResourceLocation id, int value) {
-		statFile.increment(player.minecraftPlayer, UtilsJS.getStat(id), value);
+		statFile.increment(player.minecraftPlayer, Stats.CUSTOM.get(id), value);
 	}
 
 	public int getBlocksMined(Block block) {
