@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSRegistries;
+import dev.latvian.kubejs.core.ItemStackKJS;
 import dev.latvian.kubejs.fluid.FluidStackJS;
 import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.kubejs.item.ingredient.IgnoreNBTIngredientJS;
@@ -665,7 +666,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 	public ItemStackJS removeNBT() {
 		ItemStackJS s = copy();
-		s.stack.setTag(null);
+		((ItemStackKJS) (Object) s.stack).removeTagKJS();
 		return s;
 	}
 
