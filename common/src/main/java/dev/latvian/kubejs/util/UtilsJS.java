@@ -34,8 +34,6 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.stats.Stat;
-import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -409,10 +407,6 @@ public class UtilsJS {
 		} catch (Exception ex) {
 			return def;
 		}
-	}
-
-	public static Stat<ResourceLocation> getStat(ResourceLocation id) {
-		return Stats.CUSTOM.get(id);
 	}
 
 	public static ToolType getToolType(String id) {
