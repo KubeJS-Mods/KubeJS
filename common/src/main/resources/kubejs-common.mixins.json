@@ -14,6 +14,7 @@
 		"EntityTargetMixin",
 		"FireworkRocketEntityMixin",
 		"ItemMixin",
+		"ItemStackMixin",
 		"LevelMixin",
 		"LivingEntityMixin",
 		"LootTablesMixin",
