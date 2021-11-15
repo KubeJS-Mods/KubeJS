@@ -114,6 +114,8 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 		return of(fluid, amount, nbt);
 	}
 
+	private double chance = Double.NaN;
+
 	public abstract String getId();
 
 	public Collection<ResourceLocation> getTags() {
@@ -173,6 +175,32 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 	@Override
 	public abstract FluidStackJS copy();
 
+	public boolean hasChance() {
+		return !Double.isNaN(chance);
+	}
+
+	public void removeChance() {
+		setChance(Double.NaN);
+	}
+
+	public void setChance(double c) {
+		chance = c;
+	}
+
+	public double getChance() {
+		return chance;
+	}
+
+	public final FluidStackJS withChance(double c) {
+		if (Double.isNaN(chance) && Double.isNaN(c) || chance == c) {
+			return this;
+		}
+
+		FluidStackJS is = copy();
+		is.setChance(c);
+		return is;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(getFluid(), getNbt());
@@ -222,6 +250,13 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 		}
 
 		builder.append("')");
+
+		if (hasChance()) {
+			builder.append(".withChance(");
+			builder.append(getChance());
+			builder.append(')');
+		}
+
 		return builder.toString();
 	}
 
@@ -235,6 +270,10 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 
 		if (getNbt() != null) {
 			o.add("nbt", MapJS.json(getNbt()));
+		}
+
+		if (hasChance()) {
+			o.addProperty("chance", getChance());
 		}
 
 		return o;

@@ -160,7 +160,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		}
 
 		public String toString() {
-			return "item.empty";
+			return "Item.empty";
 		}
 
 		@Override

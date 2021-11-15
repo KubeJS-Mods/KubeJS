@@ -69,6 +69,20 @@ public class EmptyFluidStackJS extends FluidStackJS {
 
 	@Override
 	public String toString() {
-		return "fluid.empty";
+		return "Fluid.empty";
+	}
+
+	@Override
+	public void setChance(double c) {
+	}
+
+	@Override
+	public double getChance() {
+		return Double.NaN;
+	}
+
+	@Override
+	public boolean hasChance() {
+		return false;
 	}
 }

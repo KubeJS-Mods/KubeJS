@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /**
  * @author LatvianModder
  */
-@Mixin(Item.class)
+@Mixin(value = Item.class, priority = 1001)
 public abstract class ItemMixin implements ItemKJS {
 	@Unique
 	private ItemBuilder itemBuilderKJS;

@@ -8,6 +8,7 @@ import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.mod.util.CountingMap;
@@ -163,5 +164,9 @@ public class UtilsWrapper {
 	@Nullable
 	public static Object copy(@Nullable Object o) {
 		return UtilsJS.copy(o);
+	}
+
+	public static boolean isWrapped(@Nullable Object o) {
+		return o instanceof WrappedJS;
 	}
 }

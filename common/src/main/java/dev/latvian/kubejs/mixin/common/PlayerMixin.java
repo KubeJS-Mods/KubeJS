@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 /**
  * @author LatvianModder
  */
-@Mixin(Player.class)
+@Mixin(value = Player.class, priority = 1001)
 public abstract class PlayerMixin implements PlayerKJS {
 	private Stages stagesKJS;
 

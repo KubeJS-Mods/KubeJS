@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 /**
  * @author LatvianModder
  */
-@Mixin(Block.class)
+@Mixin(value = Block.class, priority = 1001)
 public class BlockMixin {
 	@RemapForJS("getId")
 	public String getIdKJS() {
