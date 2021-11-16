@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
@@ -18,6 +19,7 @@ import dev.latvian.kubejs.recipe.minecraft.CustomRecipeJS;
 import dev.latvian.kubejs.recipe.mod.TechRebornCompat;
 import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.util.ConsoleJS;
+import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
 import me.shedaniel.architectury.platform.Platform;
@@ -52,6 +54,7 @@ public abstract class RecipeJS {
 
 	public ResourceLocation id;
 	public RecipeTypeJS type;
+	public JsonObject originalJson = null;
 	public JsonObject json = null;
 	public Recipe<?> originalRecipe = null;
 	public final List<ItemStackJS> outputItems = new ArrayList<>(1);
@@ -69,6 +72,11 @@ public abstract class RecipeJS {
 	public final void deserializeJson() {
 		currentRecipe = this;
 		deserialize();
+
+		if (CommonProperties.get().debugInfo) {
+			originalJson = (JsonObject) JsonUtilsJS.copy(json);
+		}
+
 		currentRecipe = null;
 	}
 

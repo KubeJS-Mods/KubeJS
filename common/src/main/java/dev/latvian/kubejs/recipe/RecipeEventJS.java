@@ -379,7 +379,7 @@ public class RecipeEventJS extends EventJS {
 			ConsoleJS.SERVER.info("======== Debug output of all modified recipes ========");
 
 			for (RecipeJS r : modifiedRecipes) {
-				ConsoleJS.SERVER.info(r.id + ": " + r.json);
+				ConsoleJS.SERVER.info(r.id + ": " + r.json + " FROM " + r.originalJson);
 			}
 
 			ConsoleJS.SERVER.info("======== Debug output of all removed recipes ========");
