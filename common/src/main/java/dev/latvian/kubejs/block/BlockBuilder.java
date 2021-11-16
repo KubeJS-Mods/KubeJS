@@ -147,10 +147,6 @@ public class BlockBuilder extends BuilderBase {
 		return this;
 	}
 
-	public BlockBuilder harvestTool(String tool, int level) {
-		return harvestTool(ToolType.byName(tool), level);
-	}
-
 	public BlockBuilder opaque(boolean o) {
 		opaque = o;
 		return this;
