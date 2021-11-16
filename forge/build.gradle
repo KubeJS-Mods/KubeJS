@@ -64,6 +64,7 @@ dependencies {
 	modRuntimeOnly("mezz.jei:jei-1.16.4:${rootProject.forge_jei_version}")
 	modRuntimeOnly("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
 	modRuntimeOnly("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
+	modRuntimeOnly("curse.maven:emendatus-enigmatica-399630:${rootProject.emendatus_enigmatica_file}")
 
 	// test mods, these are included at runtime only
 	// modRuntime("com.resourcefulbees:ResourcefulBees:1.16.5-0.6.4b")

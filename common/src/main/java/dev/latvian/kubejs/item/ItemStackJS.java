@@ -598,6 +598,11 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	public ItemStackJS copy() {
 		ItemStackJS s = new ItemStackJS(stack.copy());
 		s.chance = chance;
+
+		if (!hasNBT()) {
+			((ItemStackKJS) (Object) s.stack).removeTagKJS();
+		}
+
 		return s;
 	}
 
