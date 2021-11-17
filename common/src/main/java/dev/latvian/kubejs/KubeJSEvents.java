@@ -94,4 +94,6 @@ public class KubeJSEvents {
 	public static final String ENTITY_TYPE_TAGS = "entity_type.tags";
 
 	public static final String SOUND_REGISTRY = "sound.registry";
+
+    public static final String ENCHANTMENT_REGISTRY = "enchantment.registry";
 }

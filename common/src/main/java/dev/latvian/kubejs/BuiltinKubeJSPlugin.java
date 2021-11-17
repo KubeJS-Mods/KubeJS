@@ -3,10 +3,13 @@ package dev.latvian.kubejs;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.bindings.BlockWrapper;
+import dev.latvian.kubejs.bindings.EnchantmentCategoryWrapper;
+import dev.latvian.kubejs.bindings.EnchantmentRarityWrapper;
 import dev.latvian.kubejs.bindings.IngredientWrapper;
 import dev.latvian.kubejs.bindings.ItemWrapper;
 import dev.latvian.kubejs.bindings.JsonIOWrapper;
 import dev.latvian.kubejs.bindings.JsonWrapper;
+import dev.latvian.kubejs.bindings.MobTypeWrapper;
 import dev.latvian.kubejs.bindings.NBTIOWrapper;
 import dev.latvian.kubejs.bindings.RarityWrapper;
 import dev.latvian.kubejs.bindings.ScriptEventsWrapper;
@@ -36,6 +39,7 @@ import dev.latvian.kubejs.fluid.FluidStackJS;
 import dev.latvian.kubejs.fluid.FluidWrapper;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.kubejs.generator.DataJsonGenerator;
+import dev.latvian.kubejs.item.EnchantmentRegistryEventJS;
 import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.kubejs.item.ItemRegistryEventJS;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -102,9 +106,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.MobType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -155,6 +161,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		new BlockRegistryEventJS().post(KubeJSEvents.BLOCK_REGISTRY);
 		new ItemRegistryEventJS().post(KubeJSEvents.ITEM_REGISTRY);
 		new FluidRegistryEventJS().post(KubeJSEvents.FLUID_REGISTRY);
+		new EnchantmentRegistryEventJS().post(KubeJSEvents.ENCHANTMENT_REGISTRY);
 	}
 
 	@Override
@@ -308,6 +315,12 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("Vec3d", Vec3.class);
 		event.add("Vec3i", Vec3i.class);
 		event.add("BlockPos", BlockPos.class);
+
+		event.add("EnchantmentCategory", EnchantmentCategoryWrapper.class);
+
+		event.add("EnchantmentRarity", EnchantmentRarityWrapper.class);
+
+		event.add("MobType", MobTypeWrapper.class);
 
 		KubeJS.PROXY.clientBindings(event);
 	}
