@@ -90,6 +90,11 @@ public class KubeJSItemEventHandler {
 		if (!CommonProperties.get().serverOnly) {
 			DUMMY_FLUID_ITEM = KubeJSRegistries.items().register(KubeJS.id("dummy_fluid_item"), () -> new Item(new Item.Properties().stacksTo(1).tab(KubeJS.tab)));
 		}
+
+		for (EnchantmentBuilder builder : KubeJSObjects.ENCHANTMENTS.values()) {
+			builder.enchantment = new EnchantmentJS(builder);
+			KubeJSRegistries.enchantments().register(builder.id, () -> builder.enchantment);
+		}
 	}
 
 	private static InteractionResultHolder<ItemStack> rightClick(Player player, InteractionHand hand) {
