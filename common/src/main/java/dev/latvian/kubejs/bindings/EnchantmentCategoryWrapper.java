@@ -4,6 +4,9 @@ import net.minecraft.world.item.enchantment.EnchantmentCategory;
 
 import java.util.Locale;
 
+/**
+ * @author ILIKEPIEFOO2
+ */
 public class EnchantmentCategoryWrapper {
 	public static final EnchantmentCategoryWrapper ARMOR = new EnchantmentCategoryWrapper(EnchantmentCategory.ARMOR);
 	public static final EnchantmentCategoryWrapper ARMOR_FEET = new EnchantmentCategoryWrapper(EnchantmentCategory.ARMOR_FEET);
@@ -28,20 +31,51 @@ public class EnchantmentCategoryWrapper {
 
 	public static EnchantmentCategoryWrapper fromString(String s) {
         switch (s.toLowerCase(Locale.ROOT)) {
-            case "ARMOR": return ARMOR;
-            case "ARMOR_FEET": return ARMOR_FEET;
-            case "ARMOR_HEAD": return ARMOR_HEAD;
-            case "ARMOR_LEGS": return ARMOR_LEGS;
-            case "ARMOR_CHEST": return ARMOR_CHEST;
-            case "BOW": return BOW;
-            case "WEAPON": return WEAPON;
-            case "BREAKABLE": return BREAKABLE;
-            case "WEARABLE": return WEARABLE;
-            case "CROSSBOW": return CROSSBOW;
-            case "VANISHABLE": return VANISHABLE;
-            case "TRIDENT": return TRIDENT;
-            case "FISHING_ROD": return FISHING_ROD;
-            case "DIGGER": return DIGGER;
+			case "breakable":
+				return BREAKABLE;
+			case "wearable":
+				return WEARABLE;
+			case "armor":
+				return ARMOR;
+			case "head":
+			case "helmet":
+			case "armor_head":
+				return ARMOR_HEAD;
+			case "chest":
+			case "chestplate":
+			case "armor_chest":
+				return ARMOR_CHEST;
+			case "legs":
+			case "leggings":
+			case "pants":
+            case "armor_legs":
+				return ARMOR_LEGS;
+			case "feet":
+			case "boots":
+			case "armor_feet":
+				return ARMOR_FEET;
+
+			case "weapon":
+				return WEAPON;
+
+			case "trident":
+				return TRIDENT;
+
+			case "bow":
+				return BOW;
+			case "crossbow":
+				return CROSSBOW;
+
+			case "vanishable":
+				return VANISHABLE;
+
+			case "fishingrod":
+			case "rod":
+            case "fishing_rod":
+				return FISHING_ROD;
+
+            case "digger":
+				return DIGGER;
             default: return new EnchantmentCategoryWrapper(EnchantmentCategory.valueOf(s.toUpperCase(Locale.ROOT)));
         }
     }
