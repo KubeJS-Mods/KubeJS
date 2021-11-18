@@ -36,4 +36,16 @@ public class EnchantmentRarityWrapper {
                 return new EnchantmentRarityWrapper(Enchantment.Rarity.valueOf(s));
         }
     }
+
+	@Override
+	public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o instanceof EnchantmentRarityWrapper)
+			return rarity.getWeight() == ((EnchantmentRarityWrapper) o).rarity.getWeight();
+		if (o instanceof Enchantment.Rarity)
+			return rarity.getWeight() == ((Enchantment.Rarity) o).getWeight();
+		if (o instanceof String)
+			return rarity.getWeight() == fromString((String) o).rarity.getWeight();
+		return false;
+    }
 }

@@ -79,4 +79,17 @@ public class EnchantmentCategoryWrapper {
             default: return new EnchantmentCategoryWrapper(EnchantmentCategory.valueOf(s.toUpperCase(Locale.ROOT)));
         }
     }
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this)
+			return true;
+        if (obj instanceof EnchantmentCategoryWrapper)
+            return category == ((EnchantmentCategoryWrapper) obj).category;
+		if (obj instanceof EnchantmentCategory)
+			return category == (EnchantmentCategory) obj;
+		if (obj instanceof String)
+			return category == EnchantmentCategory.valueOf(((String) obj).toUpperCase(Locale.ROOT));
+        return false;
+    }
 }

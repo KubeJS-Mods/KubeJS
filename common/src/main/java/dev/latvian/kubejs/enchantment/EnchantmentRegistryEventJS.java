@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.item;
+package dev.latvian.kubejs.enchantment;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSObjects;

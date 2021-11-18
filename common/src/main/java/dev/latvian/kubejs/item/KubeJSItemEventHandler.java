@@ -9,6 +9,8 @@ import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.block.DetectorInstance;
 import dev.latvian.kubejs.core.ItemKJS;
+import dev.latvian.kubejs.enchantment.EnchantmentBuilder;
+import dev.latvian.kubejs.enchantment.EnchantmentJS;
 import dev.latvian.kubejs.fluid.FluidBuilder;
 import dev.latvian.kubejs.player.InventoryChangedEventJS;
 import me.shedaniel.architectury.event.events.InteractionEvent;
