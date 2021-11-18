@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.item;
 
 import com.mojang.datafixers.util.Function3;
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.bindings.EnchantmentCategoryWrapper;
 import dev.latvian.kubejs.bindings.EnchantmentRarityWrapper;
 import dev.latvian.kubejs.bindings.MobTypeWrapper;
@@ -8,6 +9,7 @@ import dev.latvian.kubejs.entity.DamageSourceJS;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.util.BuilderBase;
+import dev.latvian.kubejs.util.ListJS;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -63,8 +65,16 @@ public class EnchantmentBuilder extends BuilderBase {
 	 *
 	 * @param slot The Equipment slot for the enchantment to look on a player for.
 	 */
-	public EnchantmentBuilder equipSlot(EquipmentSlot slot) {
-		equipmentSlots.add(slot);
+	public EnchantmentBuilder equipSlot(Object slot) {
+		if (slot instanceof EquipmentSlot) {
+			equipmentSlots.add((EquipmentSlot) slot);
+		}else if(slot instanceof String) {
+			equipmentSlots.add(EquipmentSlot.valueOf((String) slot));
+		}else if(slot instanceof ListJS) {
+			((ListJS) slot).forEach(this::equipSlot);
+		} else {
+			KubeJS.LOGGER.warn("Invalid equipment slot was provided: " + slot);
+		}
 		return this;
 	}
 
@@ -73,8 +83,14 @@ public class EnchantmentBuilder extends BuilderBase {
 	 *
 	 * @param rarityWrapper The rarity of the enchantment.
 	 */
-	public EnchantmentBuilder setRarity(EnchantmentRarityWrapper rarityWrapper){
-		this.rarityWrapper = rarityWrapper;
+	public EnchantmentBuilder setRarity(Object rarityWrapper){
+		if(rarityWrapper instanceof EnchantmentRarityWrapper) {
+			this.rarityWrapper = (EnchantmentRarityWrapper) rarityWrapper;
+		}else if(rarityWrapper instanceof String) {
+			this.rarityWrapper = EnchantmentRarityWrapper.fromString((String) rarityWrapper);
+		} else {
+			KubeJS.LOGGER.warn("Invalid enchantment rarity was provided: " + rarityWrapper);
+		}
 		return this;
 	}
 
@@ -82,11 +98,19 @@ public class EnchantmentBuilder extends BuilderBase {
 	 * Sets the category of the enchantment.
 	 * By default, used to check if an enchantment can be applied to an item.
 	 * Further logic can be added in the customEnchantCheck function.
+	 * (You can test if this works with the /enchant command since it uses
+	 * this and the customEnchantCheck and will tell you if it can be enchanted normally.)
 	 *
 	 * @param categoryWrapper The category of the enchantment.
 	 */
-	public EnchantmentBuilder setCategory(EnchantmentCategoryWrapper categoryWrapper){
-		this.categoryWrapper = categoryWrapper;
+	public EnchantmentBuilder setCategory(Object categoryWrapper){
+		if(categoryWrapper instanceof EnchantmentCategoryWrapper) {
+			this.categoryWrapper = (EnchantmentCategoryWrapper) categoryWrapper;
+		}else if(categoryWrapper instanceof String) {
+			this.categoryWrapper = EnchantmentCategoryWrapper.fromString((String) categoryWrapper);
+		} else {
+			KubeJS.LOGGER.error("Invalid category type for enchantment. Object \"" + categoryWrapper.getClass().getName() + "\" is not a valid category type.");
+		}
 		return this;
 	}
 
@@ -144,7 +168,10 @@ public class EnchantmentBuilder extends BuilderBase {
 	}
 
 	/**
-	 * Determines whether the enchantment can be discovered
+	 * Determines whether the enchantment can be discovered?
+	 * I have no clue what this means. For some reason
+	 * Soul speed is the only vanilla enchantment that is not discoverable.
+	 * Do what you will with this.
 	 */
 	public EnchantmentBuilder notDiscoverable(){
 		discoverable = false;
