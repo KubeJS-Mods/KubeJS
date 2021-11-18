@@ -4,6 +4,9 @@ import net.minecraft.world.entity.MobType;
 
 import java.util.Locale;
 
+/**
+ * @author ILIKEPIEFOO2
+ */
 public class MobTypeWrapper {
 	public static final MobTypeWrapper UNDEFINED = new MobTypeWrapper(MobType.UNDEFINED);
 	public static final MobTypeWrapper UNDEAD = new MobTypeWrapper(MobType.UNDEAD);

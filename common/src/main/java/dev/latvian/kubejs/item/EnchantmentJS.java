@@ -13,6 +13,9 @@ import net.minecraft.world.entity.MobType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 
+/**
+ * @author ILIKEPIEFOO2
+ */
 public class EnchantmentJS extends Enchantment {
 	public final EnchantmentBuilder properties;
 

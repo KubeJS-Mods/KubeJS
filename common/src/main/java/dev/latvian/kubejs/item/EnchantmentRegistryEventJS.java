@@ -1,14 +1,17 @@
 package dev.latvian.kubejs.item;
 
-import dev.latvian.kubejs.bindings.EnchantmentCategoryWrapper;
-import dev.latvian.kubejs.bindings.EnchantmentRarityWrapper;
+import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.event.StartupEventJS;
 
 import java.util.function.Consumer;
 
+/**
+ * @author ILIKEPIEFOO2
+ */
 public class EnchantmentRegistryEventJS extends StartupEventJS {
 
+	// As of 1.16 KubeJS, this is the normal way to do builders.
 	public EnchantmentBuilder create(String name){
 		EnchantmentBuilder builder = new EnchantmentBuilder(name);
 		KubeJSObjects.ENCHANTMENTS.put(builder.id,builder);
@@ -16,31 +19,28 @@ public class EnchantmentRegistryEventJS extends StartupEventJS {
 		return builder;
 	}
 
+	// Implementation style for 1.18+ KubeJS.
 	public EnchantmentBuilder create(String name, Consumer<EnchantmentBuilder> builderConsumer){
 		EnchantmentBuilder builder = create(name);
-		builderConsumer.accept(builder);
+		try {
+			builderConsumer.accept(builder);
+		}catch (Exception e){
+			KubeJS.LOGGER.error("Error while creating enchantment: " + name, e);
+		}
 		return builder;
 	}
 
-	public EnchantmentBuilder create(String name, EnchantmentCategoryWrapper categoryWrapper, Consumer<EnchantmentBuilder> builderConsumer){
-		EnchantmentBuilder builder = create(name);
-		builder.categoryWrapper = categoryWrapper;
-		builderConsumer.accept(builder);
+	public EnchantmentBuilder create(String name, Object categoryWrapper, Consumer<EnchantmentBuilder> builderConsumer){
+		EnchantmentBuilder builder = create(name, builderConsumer);
+		builder.setCategory(categoryWrapper);
 		return builder;
 	}
 
-	public EnchantmentBuilder create(String name, EnchantmentCategoryWrapper categoryWrapper, EnchantmentRarityWrapper rarityWrapper, Consumer<EnchantmentBuilder> builderConsumer){
-		EnchantmentBuilder builder = create(name);
-		builder.rarityWrapper = rarityWrapper;
-		builder.categoryWrapper = categoryWrapper;
-		builderConsumer.accept(builder);
+	public EnchantmentBuilder create(String name, Object categoryWrapper, Object rarityWrapper, Consumer<EnchantmentBuilder> builderConsumer){
+		EnchantmentBuilder builder = create(name, builderConsumer);
+		builder.setCategory(categoryWrapper);
+		builder.setRarity(rarityWrapper);
 		return builder;
 	}
 
-	public EnchantmentBuilder create(String name, EnchantmentRarityWrapper rarityWrapper, Consumer<EnchantmentBuilder> builderConsumer){
-		EnchantmentBuilder builder = create(name);
-		builder.rarityWrapper = rarityWrapper;
-		builderConsumer.accept(builder);
-		return builder;
-	}
 }
