@@ -60,6 +60,7 @@ import dev.latvian.kubejs.recipe.minecraft.CookingRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.SmithingRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.StonecuttingRecipeJS;
 import dev.latvian.kubejs.recipe.mod.AE2GrinderRecipeJS;
+import dev.latvian.kubejs.recipe.mod.ArsNouveauEnchantingApparatusRecipeJS;
 import dev.latvian.kubejs.recipe.mod.BotaniaRunicAltarRecipeJS;
 import dev.latvian.kubejs.recipe.mod.BotanyPotsCropRecipeJS;
 import dev.latvian.kubejs.recipe.mod.IDSqueezerRecipeJS;
@@ -513,6 +514,10 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		if (Platform.isModLoaded("integrateddynamics") && !Platform.isModLoaded("kubejs_integrated_dynamics")) {
 			event.register(new ResourceLocation("integrateddynamics:squeezer"), IDSqueezerRecipeJS::new);
 			event.register(new ResourceLocation("integrateddynamics:mechanical_squeezer"), IDSqueezerRecipeJS::new);
+		}
+
+		if (Platform.isModLoaded("ars_nouveau")) {
+			event.register(new ResourceLocation("ars_nouveau:enchanting_apparatus"), ArsNouveauEnchantingApparatusRecipeJS::new);
 		}
 	}
 

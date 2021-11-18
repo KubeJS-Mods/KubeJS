@@ -91,21 +91,25 @@ public class BotanyPotsCropRecipeJS extends RecipeJS {
 
 	@Override
 	public void serialize() {
-		json.add("seed", inputItems.get(0).toJson());
-
-		JsonArray array = new JsonArray();
-
-		for (int i = 0; i < outputItems.size(); i++) {
-			ItemStackJS is = outputItems.get(i);
-			JsonObject o = new JsonObject();
-			o.addProperty("chance", is.hasChance() ? is.getChance() : 1D);
-			o.addProperty("minRolls", minRolls.get(i));
-			o.addProperty("maxRolls", maxRolls.get(i));
-			is.removeChance();
-			o.add("output", is.toResultJson());
-			array.add(o);
+		if (serializeInputs) {
+			json.add("seed", inputItems.get(0).toJson());
 		}
 
-		json.add("results", array);
+		if (serializeOutputs) {
+			JsonArray array = new JsonArray();
+
+			for (int i = 0; i < outputItems.size(); i++) {
+				ItemStackJS is = outputItems.get(i);
+				JsonObject o = new JsonObject();
+				o.addProperty("chance", is.hasChance() ? is.getChance() : 1D);
+				o.addProperty("minRolls", minRolls.get(i));
+				o.addProperty("maxRolls", maxRolls.get(i));
+				is.removeChance();
+				o.add("output", is.toResultJson());
+				array.add(o);
+			}
+
+			json.add("results", array);
+		}
 	}
 }
