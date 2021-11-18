@@ -30,4 +30,16 @@ public class MobTypeWrapper {
             default: return UNDEFINED;
         }
     }
+
+	@Override
+	public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o instanceof MobTypeWrapper)
+			return type == ((MobTypeWrapper) o).type;
+		if (o instanceof MobType)
+			return type == (MobType) o;
+		if (o instanceof String)
+			return this.equals(fromString((String) o));
+		return false;
+    }
 }

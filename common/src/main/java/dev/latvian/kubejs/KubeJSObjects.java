@@ -3,10 +3,9 @@ package dev.latvian.kubejs;
 import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.block.DetectorInstance;
 import dev.latvian.kubejs.fluid.FluidBuilder;
-import dev.latvian.kubejs.item.EnchantmentBuilder;
+import dev.latvian.kubejs.enchantment.EnchantmentBuilder;
 import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.kubejs.util.BuilderBase;
-import dev.latvian.kubejs.util.MapJS;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.item;
+package dev.latvian.kubejs.enchantment;
 
 import com.mojang.datafixers.util.Function3;
 import dev.latvian.kubejs.KubeJS;
@@ -16,6 +16,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -35,15 +36,15 @@ public class EnchantmentBuilder extends BuilderBase {
 
 
 	// Functions that return something.
-	public Function<Integer, Integer> costMin = null;
-	public Function<Integer, Integer> costMax = null;
-	public Function3<Integer, DamageSourceJS, EnchantmentJS, Integer> damageProtection = null;
-	public Function3<Integer, MobTypeWrapper, EnchantmentJS, Double> damageBonus = null;
-	public Function<ItemStack, Boolean> customEnchantCheck = null;
+	public Function<MinimumCostCallbackJS, Integer> costMin = null;
+	public Function<MaximumCostCallbackJS, Integer> costMax = null;
+	public Function<DamageProtectionCallbackJS, Integer> damageProtection = null;
+	public Function<DamageBonusCallbackJS, Double> damageBonus = null;
+	public Function<CustomEnchantCallbackJS, Boolean> customEnchantCheck = null;
 
 	// Functions that don't return anything.
-	public TriConsumer<LivingEntityJS, EntityJS, Integer>  postAttack = null;
-	public TriConsumer<LivingEntityJS, EntityJS, Integer>  postHurt = null;
+	public Consumer<PostAttackCallbackJS> postAttack = null;
+	public Consumer<PostHurtCallbackJS>  postHurt = null;
 
 
 	public transient Enchantment enchantment;
@@ -179,67 +180,46 @@ public class EnchantmentBuilder extends BuilderBase {
 	}
 
 	/**
-	 * Calculates the cost to enchant an item with the minimum enchantment level.
+	 * Calculates the minimum cost to enchant an item provided it's level.
 	 *
-	 * @param costMin A function that takes in the level of the enchantment and
-	 *                   NEEDS TO return the minimum experience level cost.
-	 * @example In JavaScript this might be something like: (level) => { return level * 10; }
-	 *          This example would make the enchantment cost 10 times the experience levels of the minimum enchantment level.
+	 * By default, the equation is calculated as (1 + level * 10).
 	 *
-	 *          By default, the equation is calculated as (1 + level * 10).
+	 * @param costMin A function that needs to return the cost (in enchanting levels) to enchant an
+	 *                   item with the minimum enchantment level as an Integer.
 	 *
 	 * @implNote If your function does not return an integer, or throws an error
 	 * it will log a KubeJS error to console and use the default function instead.
 	 */
-	public EnchantmentBuilder setCostMin(Function<Integer, Integer> costMin) {
+	public EnchantmentBuilder setCostMin(Function<MinimumCostCallbackJS, Integer> costMin) {
 		this.costMin = costMin;
 		return this;
 	}
 
 	/**
-	 * Calculates the cost to enchant an item with the maximum enchantment level.
+	 * Calculates the maximum cost to enchant an item provided it's level.
+	 * By default, the equation is calculated by using the setCostMin function and adding 5.
 	 *
-	 * @param costMax A function that takes in the level of the enchantment and
-	 *                NEEDS TO return the maximum experience level cost.
-	 * @example In JavaScript this might be something like:
-	 * 			(level) => {
-	 * 				return level * 10;
-	 * 			}
-	 *          This example would make the enchantment cost 10 times the experience levels
-	 *          of the minimum enchantment level.
-	 *
-	 *			By default, the equation is calculated by using the setCostMin function and adding 5.
-	 *		    If the setCostMin function is not provided, or null the default will be used.
+	 * @param costMax A function that needs to return the cost (in enchanting levels) to enchant an
+	 * 	 				item with the maximum enchantment level as an Integer.
 	 *
 	 * @implNote If your function does not return an integer, or throws an error during execution
 	 * it will log a KubeJS error to console and use the default function instead.
 	 */
-	public EnchantmentBuilder setCostMax(Function<Integer, Integer> costMax) {
+	public EnchantmentBuilder setCostMax(Function<MaximumCostCallbackJS, Integer> costMax) {
 		this.costMax = costMax;
 		return this;
 	}
 
 	/**
-	 * Calculates how much of a damage protection bonus is shown when you
-	 * hover over the equipment in your inventory as well as whenever you
-	 * take damage from an entity.
+	 * Calculates how much of a damage protection bonus is shown and provided when you
+	 * hover over the equipment in your inventory as well as whenever you take damage from an entity.
 	 *
-	 * @param damageProtection A function that takes in three parameters:
-	 *                         		1. Level of the enchantment.
-	 *                         		2. The DamageSourceJS.
-	 *                         		3. The EnchantmentJS instance.
-	 *                         It needs to return:
-	 *                         		- An Integer number of how much damage protection is given.
-	 * @example In JavaScript this might be something like:
-	 * 			(level, damageSource, enchantment) => {
-	 * 				return level+1;
-	 * 			}
-	 *
+	 * @param damageProtection A function that needs to return the damage protection bonus as an Integer.
 	 *
 	 * @implNote If your function does not return an integer, or throws an error during execution
 	 * it will log a KubeJS error to console and use the default function instead.
 	 */
-	public EnchantmentBuilder setDamageProtection(Function3<Integer, DamageSourceJS, EnchantmentJS, Integer> damageProtection) {
+	public EnchantmentBuilder setDamageProtection(Function<DamageProtectionCallbackJS, Integer> damageProtection) {
 		this.damageProtection = damageProtection;
 		return this;
 	}
@@ -249,69 +229,41 @@ public class EnchantmentBuilder extends BuilderBase {
 	 * hover over the item in your inventory as well as whenever you
 	 * damage an entity.
 	 *
-	 * @param damageBonus A function that takes in three parameters:
-	 *                         1. Level of the enchantment.
-	 *                         2. The MobTypeWrapper. Could be used to determine the type of mob and apply a bonus.
-	 *                         3. The EnchantmentJS instance.
-	 *                    It needs to return:
-	 *                         - An Double number of how much damage bonus is given.
-	 * @example In JavaScript this might be something like:
-	 * 			(level, mobtype, enchantment) => {
-	 * 				return level+1;
-	 * 			}
+	 * @param damageBonus A function that needs to return a damage bonus as a double.
+	 *
 	 * @implNote All doubles will be truncated into a float,
 	 * due to implementation issues. Slight calculation errors may occur as a result.
 	 *
 	 * @implNote If your function does not return a Double, or throws an error during execution
 	 * it will log a KubeJS error to console and use the default function instead.
 	 */
-	public EnchantmentBuilder setDamageBonus(Function3<Integer, MobTypeWrapper, EnchantmentJS, Double> damageBonus) {
+	public EnchantmentBuilder setDamageBonus(Function<DamageBonusCallbackJS, Double> damageBonus) {
 		this.damageBonus = damageBonus;
 		return this;
 	}
 
 	/**
-     * Once damage has been applied to a target, you can perform some logic
-	 * on either the target or the attacker.
+     * Once damage has been applied to a target, you can perform some logic.
      *
-     * @param postAttack A function that takes in three parameters:
-     *                         1. The living entity attacking, aka the attacker with the enchantment.
-     *                         2. The Entity being attacked, aka the target.
-     *                         3. The level of the enchantment.
-	 *                   It does not need to return anything.
-     * @example In JavaScript this might be something like:
-     * 			(attacker, target, level) => {
-     * 				attacker.heal(level);
-	 * 			    target.kill();
-     * 			}
+     * @param postAttack A function that will be called after the attack has been applied.
      *
      * @implNote If your function throws an error during execution,
      * it will log a KubeJS error to console and use the default function instead.
      */
-	public EnchantmentBuilder setPostAttack(TriConsumer<LivingEntityJS, EntityJS, Integer> postAttack) {
+	public EnchantmentBuilder setPostAttack(Consumer<PostAttackCallbackJS> postAttack) {
 		this.postAttack = postAttack;
 		return this;
 	}
 
 	/**
-	 * Once damage has been applied to someone with this enchantment, you can perform some logic
-	 * on either the enchantment holder or the attacker.
+	 * Once damage has been applied to someone with this enchantment, you can perform some logic.
 	 *
-	 * @param postHurt  A function that takes in three parameters:
-	 *                         1. The living entity who was attacked, the enchantment holder.
-	 *                         2. The Entity who attacked the enchantment holder.
-	 *                         3. The level of the enchantment.
-	 *                   It does not need to return anything.
-	 * @example In JavaScript this might be something like:
-	 * 			(attacked, attacker, level) => {
-	 * 				attacker.kill();
-	 * 			    attacked.heal(level);
-	 * 			}
+	 * @param postHurt  A function that will be called after the attack has been applied.
 	 *
 	 * @implNote If your function throws an error during execution,
 	 * it will log a KubeJS error to console and use the default function instead.
 	 */
-	public EnchantmentBuilder setPostHurt(TriConsumer<LivingEntityJS, EntityJS, Integer> postHurt) {
+	public EnchantmentBuilder setPostHurt(Consumer<PostHurtCallbackJS> postHurt) {
 		this.postHurt = postHurt;
 		return this;
 	}
@@ -322,22 +274,12 @@ public class EnchantmentBuilder extends BuilderBase {
 	 * So if the item is part of the enchantment category you specify, it will ignore this.
 	 *
 	 *
-	 * @param customEnchantCheck A function that takes in three parameters:
-	 *                         		1. The living entity who was attacked, the enchantment holder.
-	 *                         		2. The Entity who attacked the enchantment holder.
-	 *                         		3. The level of the enchantment.
-	 *                   		It needs to return:
-	 *                   	     	- A boolean, true if the enchantment can be applied to
-	 *                   	     	the target, false otherwise.
-	 * @example In JavaScript this might be something like:
-	 * 			(item) => {
-	 * 				return item.id == 'minecraft:apple';
-	 * 			}
+	 * @param customEnchantCheck A function that checks if an item can be enchanted, needs to return boolean.
 	 *
 	 * @implNote If your function does not return a boolean, or throws an error during execution,
 	 * it will log a KubeJS error to console and use the default function instead.
 	 */
-	public EnchantmentBuilder setCustomEnchantCheck(Function<ItemStack, Boolean> customEnchantCheck) {
+	public EnchantmentBuilder setCustomEnchantCheck(Function<CustomEnchantCallbackJS, Boolean> customEnchantCheck) {
 		this.customEnchantCheck = customEnchantCheck;
 		return this;
 	}
