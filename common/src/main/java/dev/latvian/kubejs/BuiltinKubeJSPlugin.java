@@ -400,33 +400,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(BlockType.class, BlockTypes::get);
 		typeWrappers.register(Color.class, ColorWrapper::of);
 		typeWrappers.register(ToolType.class, o -> ToolType.create(o.toString(), () -> null));
-		typeWrappers.register(IngredientActionFilter.class, o -> {
-			IngredientActionFilter filter = new IngredientActionFilter();
-
-			if (o instanceof String) {
-				filter.filterIngredient = IngredientJS.of(o);
-
-				if (filter.filterIngredient instanceof ItemStackJS) {
-					filter.filterIngredient = ((ItemStackJS) filter.filterIngredient).ignoreNBT();
-				}
-			} else if (o instanceof Number) {
-				filter.filterIndex = ((Number) o).intValue();
-			} else {
-				MapJS map = MapJS.of(o);
-
-				if (map != null && !map.isEmpty()) {
-					if (map.containsKey("item")) {
-						filter.filterIngredient = IngredientJS.of(map.get("item"));
-					}
-
-					if (map.containsKey("index")) {
-						filter.filterIndex = ((Number) map.get("index")).intValue();
-					}
-				}
-			}
-
-			return filter;
-		});
+		typeWrappers.register(IngredientActionFilter.class, IngredientActionFilter::filterOf);
 
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
 	}
