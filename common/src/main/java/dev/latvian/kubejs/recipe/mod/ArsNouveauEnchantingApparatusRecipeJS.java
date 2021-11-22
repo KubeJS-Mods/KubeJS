@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.recipe.mod;
 
 import dev.latvian.kubejs.recipe.RecipeJS;
+import dev.latvian.kubejs.util.JsonUtilsJS;
 import dev.latvian.kubejs.util.ListJS;
 
 /**
@@ -33,10 +34,10 @@ public class ArsNouveauEnchantingApparatusRecipeJS extends RecipeJS {
 		}
 
 		if (serializeInputs) {
-			json.add("reagent", inputItems.get(0).toJson());
+			json.add("reagent", JsonUtilsJS.toArray(inputItems.get(0).toJson()));
 
 			for (int i = 1; i < inputItems.size(); i++) {
-				json.add("item_" + i, inputItems.get(i).toJson());
+				json.add("item_" + i, JsonUtilsJS.toArray(inputItems.get(i).toJson()));
 			}
 		}
 	}
