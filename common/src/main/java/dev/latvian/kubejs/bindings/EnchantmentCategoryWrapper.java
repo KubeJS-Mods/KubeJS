@@ -22,6 +22,7 @@ public class EnchantmentCategoryWrapper {
 	public static final EnchantmentCategoryWrapper TRIDENT = new EnchantmentCategoryWrapper(EnchantmentCategory.TRIDENT);
 	public static final EnchantmentCategoryWrapper FISHING_ROD = new EnchantmentCategoryWrapper(EnchantmentCategory.FISHING_ROD);
 	public static final EnchantmentCategoryWrapper DIGGER = new EnchantmentCategoryWrapper(EnchantmentCategory.DIGGER);
+	public static final EnchantmentCategoryWrapper CUSTOM = new EnchantmentCategoryWrapper(null);
 
 	public final EnchantmentCategory category;
 
@@ -76,6 +77,11 @@ public class EnchantmentCategoryWrapper {
 
             case "digger":
 				return DIGGER;
+
+			case "null":
+			case "none":
+			case "custom":
+				return CUSTOM;
             default: return new EnchantmentCategoryWrapper(EnchantmentCategory.valueOf(s.toUpperCase(Locale.ROOT)));
         }
     }
@@ -84,6 +90,8 @@ public class EnchantmentCategoryWrapper {
 	public boolean equals(Object obj) {
 		if (obj == this)
 			return true;
+		if (obj == null)
+			return this == CUSTOM;
         if (obj instanceof EnchantmentCategoryWrapper)
             return category == ((EnchantmentCategoryWrapper) obj).category;
 		if (obj instanceof EnchantmentCategory)

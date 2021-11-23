@@ -10,6 +10,7 @@ public class DamageProtectionCallbackJS {
 	public final WorldJS world;
 	public final DamageSourceJS source;
 	public final EnchantmentJS enchantment;
+	public int bonus;
 
     public DamageProtectionCallbackJS(int level, DamageSource source, EnchantmentJS enchantment) {
         this.level = level;
@@ -38,4 +39,23 @@ public class DamageProtectionCallbackJS {
     public EnchantmentJS getEnchantment() {
         return enchantment;
     }
+
+	public int getBonus() {
+		return bonus;
+	}
+
+    public void setBonus(int bonus) {
+        this.bonus = bonus;
+    }
+
+	@Override
+	public String toString() {
+		return "DamageProtectionCallbackJS{" +
+				"level=" + level +
+				", world=" + world +
+				", source=" + source +
+				", enchantment=" + enchantment +
+				", bonus=" + bonus +
+				'}';
+	}
 }

@@ -1,23 +1,17 @@
 package dev.latvian.kubejs.enchantment;
 
-import com.mojang.datafixers.util.Function3;
+
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.bindings.EnchantmentCategoryWrapper;
 import dev.latvian.kubejs.bindings.EnchantmentRarityWrapper;
-import dev.latvian.kubejs.bindings.MobTypeWrapper;
-import dev.latvian.kubejs.entity.DamageSourceJS;
-import dev.latvian.kubejs.entity.EntityJS;
-import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.util.BuilderBase;
 import dev.latvian.kubejs.util.ListJS;
+import dev.latvian.mods.rhino.NativeArray;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import org.apache.logging.log4j.util.TriConsumer;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * @author ILIKEPIEFOO2
@@ -35,12 +29,12 @@ public class EnchantmentBuilder extends BuilderBase {
 	public EnchantmentCategoryWrapper categoryWrapper = EnchantmentCategoryWrapper.BREAKABLE;
 
 
-	// Functions that return something.
-	public Function<MinimumCostCallbackJS, Integer> costMin = null;
-	public Function<MaximumCostCallbackJS, Integer> costMax = null;
-	public Function<DamageProtectionCallbackJS, Integer> damageProtection = null;
-	public Function<DamageBonusCallbackJS, Double> damageBonus = null;
-	public Function<CustomEnchantCallbackJS, Boolean> customEnchantCheck = null;
+	// Functions with setters.
+	public Consumer<MinimumCostCallbackJS> costMin = null;
+	public Consumer<MaximumCostCallbackJS> costMax = null;
+	public Consumer<DamageProtectionCallbackJS> damageProtection = null;
+	public Consumer<DamageBonusCallbackJS> damageBonus = null;
+	public Consumer<CustomEnchantCallbackJS> customEnchantCheck = null;
 
 	// Functions that don't return anything.
 	public Consumer<PostAttackCallbackJS> postAttack = null;
@@ -73,8 +67,11 @@ public class EnchantmentBuilder extends BuilderBase {
 			equipmentSlots.add(EquipmentSlot.valueOf((String) slot));
 		}else if(slot instanceof ListJS) {
 			((ListJS) slot).forEach(this::equipSlot);
-		} else {
-			KubeJS.LOGGER.warn("Invalid equipment slot was provided: " + slot);
+		} else if(slot instanceof NativeArray) {
+			((NativeArray) slot).forEach(this::equipSlot);
+		}
+		else {
+			KubeJS.LOGGER.warn("Invalid equipment slot was provided: \"" + slot + "\", Type: "+ slot.getClass().getName());
 		}
 		return this;
 	}
@@ -184,13 +181,10 @@ public class EnchantmentBuilder extends BuilderBase {
 	 *
 	 * By default, the equation is calculated as (1 + level * 10).
 	 *
-	 * @param costMin A function that needs to return the cost (in enchanting levels) to enchant an
-	 *                   item with the minimum enchantment level as an Integer.
-	 *
-	 * @implNote If your function does not return an integer, or throws an error
-	 * it will log a KubeJS error to console and use the default function instead.
+	 * @implNote If your function throws an error it will log a KubeJS error to
+	 * console and use the default function instead.
 	 */
-	public EnchantmentBuilder setCostMin(Function<MinimumCostCallbackJS, Integer> costMin) {
+	public EnchantmentBuilder setCostMin(Consumer<MinimumCostCallbackJS> costMin) {
 		this.costMin = costMin;
 		return this;
 	}
@@ -199,13 +193,11 @@ public class EnchantmentBuilder extends BuilderBase {
 	 * Calculates the maximum cost to enchant an item provided it's level.
 	 * By default, the equation is calculated by using the setCostMin function and adding 5.
 	 *
-	 * @param costMax A function that needs to return the cost (in enchanting levels) to enchant an
-	 * 	 				item with the maximum enchantment level as an Integer.
 	 *
-	 * @implNote If your function does not return an integer, or throws an error during execution
-	 * it will log a KubeJS error to console and use the default function instead.
+	 * @implNote If your function throws an error it will log a KubeJS error to
+	 * console and use the default function instead.
 	 */
-	public EnchantmentBuilder setCostMax(Function<MaximumCostCallbackJS, Integer> costMax) {
+	public EnchantmentBuilder setCostMax(Consumer<MaximumCostCallbackJS> costMax) {
 		this.costMax = costMax;
 		return this;
 	}
@@ -214,12 +206,10 @@ public class EnchantmentBuilder extends BuilderBase {
 	 * Calculates how much of a damage protection bonus is shown and provided when you
 	 * hover over the equipment in your inventory as well as whenever you take damage from an entity.
 	 *
-	 * @param damageProtection A function that needs to return the damage protection bonus as an Integer.
-	 *
-	 * @implNote If your function does not return an integer, or throws an error during execution
-	 * it will log a KubeJS error to console and use the default function instead.
+	 * @implNote If your function throws an error it will log a KubeJS error to
+	 * console and use the default function instead.
 	 */
-	public EnchantmentBuilder setDamageProtection(Function<DamageProtectionCallbackJS, Integer> damageProtection) {
+	public EnchantmentBuilder setDamageProtection(Consumer<DamageProtectionCallbackJS> damageProtection) {
 		this.damageProtection = damageProtection;
 		return this;
 	}
@@ -229,15 +219,10 @@ public class EnchantmentBuilder extends BuilderBase {
 	 * hover over the item in your inventory as well as whenever you
 	 * damage an entity.
 	 *
-	 * @param damageBonus A function that needs to return a damage bonus as a double.
-	 *
-	 * @implNote All doubles will be truncated into a float,
-	 * due to implementation issues. Slight calculation errors may occur as a result.
-	 *
-	 * @implNote If your function does not return a Double, or throws an error during execution
-	 * it will log a KubeJS error to console and use the default function instead.
+	 * @implNote If your function throws an error it will log a KubeJS error to
+	 * console and use the default function instead.
 	 */
-	public EnchantmentBuilder setDamageBonus(Function<DamageBonusCallbackJS, Double> damageBonus) {
+	public EnchantmentBuilder setDamageBonus(Consumer<DamageBonusCallbackJS> damageBonus) {
 		this.damageBonus = damageBonus;
 		return this;
 	}
@@ -245,10 +230,8 @@ public class EnchantmentBuilder extends BuilderBase {
 	/**
      * Once damage has been applied to a target, you can perform some logic.
      *
-     * @param postAttack A function that will be called after the attack has been applied.
-     *
-     * @implNote If your function throws an error during execution,
-     * it will log a KubeJS error to console and use the default function instead.
+	 * @implNote If your function throws an error it will log a KubeJS error to
+	 * console and use the default function instead.
      */
 	public EnchantmentBuilder setPostAttack(Consumer<PostAttackCallbackJS> postAttack) {
 		this.postAttack = postAttack;
@@ -260,8 +243,8 @@ public class EnchantmentBuilder extends BuilderBase {
 	 *
 	 * @param postHurt  A function that will be called after the attack has been applied.
 	 *
-	 * @implNote If your function throws an error during execution,
-	 * it will log a KubeJS error to console and use the default function instead.
+	 * @implNote If your function throws an error it will log a KubeJS error to
+	 * console and use the default function instead.
 	 */
 	public EnchantmentBuilder setPostHurt(Consumer<PostHurtCallbackJS> postHurt) {
 		this.postHurt = postHurt;
@@ -274,12 +257,10 @@ public class EnchantmentBuilder extends BuilderBase {
 	 * So if the item is part of the enchantment category you specify, it will ignore this.
 	 *
 	 *
-	 * @param customEnchantCheck A function that checks if an item can be enchanted, needs to return boolean.
-	 *
-	 * @implNote If your function does not return a boolean, or throws an error during execution,
-	 * it will log a KubeJS error to console and use the default function instead.
+	 * @implNote If your function throws an error it will log a KubeJS error to
+	 * console and use the default function instead.
 	 */
-	public EnchantmentBuilder setCustomEnchantCheck(Function<CustomEnchantCallbackJS, Boolean> customEnchantCheck) {
+	public EnchantmentBuilder setCustomEnchantCheck(Consumer<CustomEnchantCallbackJS> customEnchantCheck) {
 		this.customEnchantCheck = customEnchantCheck;
 		return this;
 	}

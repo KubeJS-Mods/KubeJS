@@ -6,6 +6,7 @@ import net.minecraft.world.item.ItemStack;
 public class CustomEnchantCallbackJS {
 	public final ItemStackJS item;
 	public final EnchantmentJS enchantment;
+	public boolean canEnchant = false;
 
 	public CustomEnchantCallbackJS(ItemStack item, EnchantmentJS enchantment) {
         this.item = ItemStackJS.of(item);
@@ -20,4 +21,24 @@ public class CustomEnchantCallbackJS {
         return enchantment;
     }
 
+	public void setCanEnchant(boolean canEnchant) {
+        this.canEnchant = canEnchant;
+    }
+
+	public boolean canEnchant() {
+        return this.canEnchant;
+    }
+
+	public void allow() {
+        this.canEnchant = true;
+    }
+
+	@Override
+	public String toString() {
+		return "CustomEnchantCallbackJS{" +
+				"item=" + item +
+				", enchantment=" + enchantment +
+				", canEnchant=" + canEnchant +
+				'}';
+	}
 }
