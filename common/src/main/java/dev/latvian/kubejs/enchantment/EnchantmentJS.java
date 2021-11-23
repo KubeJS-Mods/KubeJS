@@ -1,13 +1,7 @@
 package dev.latvian.kubejs.enchantment;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.bindings.MobTypeWrapper;
-import dev.latvian.kubejs.entity.DamageSourceJS;
-import dev.latvian.kubejs.entity.EntityJS;
-import dev.latvian.kubejs.entity.LivingEntityJS;
-import dev.latvian.kubejs.item.ItemStackJS;
-import dev.latvian.kubejs.server.ServerJS;
-import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.bindings.EnchantmentCategoryWrapper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -46,10 +40,9 @@ public class EnchantmentJS extends Enchantment {
 		if(properties.costMin == null)
 			return super.getMinCost(i);
 		try{
-			return properties.costMin.apply(new MinimumCostCallbackJS(
-					i,
-					this
-			));
+			MinimumCostCallbackJS callback = new MinimumCostCallbackJS(i, this);
+			properties.costMin.accept(callback);
+			return callback.getCost();
 		}catch(Exception e){
 			KubeJS.LOGGER.error("Unable to apply min cost for enchantment " + this.properties.id + "!", e);
 		}
@@ -61,10 +54,9 @@ public class EnchantmentJS extends Enchantment {
 		if(properties.costMax == null)
 			return super.getMaxCost(i);
 		try{
-			return properties.costMax.apply(new MaximumCostCallbackJS(
-					i,
-					this
-			));
+			MaximumCostCallbackJS callback = new MaximumCostCallbackJS(i, this);
+			properties.costMax.accept(callback);
+			return callback.getCost();
 		}catch(Exception e){
 			KubeJS.LOGGER.error("Unable to apply max cost for enchantment " + this.properties.id + "!", e);
 		}
@@ -76,15 +68,9 @@ public class EnchantmentJS extends Enchantment {
 		if(properties.damageProtection == null)
 			return super.getDamageProtection(i, damageSource);
 		try{
-			if(damageSource.getEntity() == null && damageSource.getDirectEntity() == null){
-				return super.getDamageProtection(i, damageSource);
-			}else {
-				return properties.damageProtection.apply(new DamageProtectionCallbackJS(
-						i,
-						damageSource,
-						this
-				));
-			}
+			DamageProtectionCallbackJS callback = new DamageProtectionCallbackJS(i, damageSource, this);
+			properties.damageProtection.accept(callback);
+			return callback.getBonus();
 		}catch(Exception e){
 			KubeJS.LOGGER.error("Unable to apply damage protection for enchantment " + this.properties.id + "!", e);
 		}
@@ -96,12 +82,9 @@ public class EnchantmentJS extends Enchantment {
 		if(properties.damageBonus == null)
 			return super.getDamageBonus(i, mobType);
 		try {
-			return (properties.damageBonus.apply(new DamageBonusCallbackJS(
-					i,
-					mobType,
-					this
-					))
-			).floatValue();
+			DamageBonusCallbackJS callback = new DamageBonusCallbackJS(i, mobType, this);
+			properties.damageBonus.accept(callback);
+			return callback.getBonus();
 		}catch (Exception e){
 			KubeJS.LOGGER.error("Unable to apply damage bonus for enchantment " + this.properties.id + "!", e);
 		}
@@ -110,17 +93,23 @@ public class EnchantmentJS extends Enchantment {
 
 	@Override
 	public boolean canEnchant(ItemStack itemStack) {
-		if(properties.customEnchantCheck == null)
-			return super.canEnchant(itemStack);
-		try {
-			return properties.customEnchantCheck.apply(new CustomEnchantCallbackJS(
-					itemStack,
-					this
-			));
-		}catch(Exception e){
-			KubeJS.LOGGER.error("Unable to check if item can be enchanted with enchantment " + this.properties.id + "!", e);
+		if(properties.customEnchantCheck != null) {
+			try {
+				CustomEnchantCallbackJS callback = new CustomEnchantCallbackJS(itemStack, this);
+				properties.customEnchantCheck.accept(callback);
+				// Check if the custom logic returned true or if the enchantment is allowed by default.
+				// Prevent null pointer exception in the case of Custom Category.
+				if(properties.categoryWrapper != EnchantmentCategoryWrapper.CUSTOM)
+					return callback.canEnchant() || super.canEnchant(itemStack);
+				return callback.canEnchant();
+			}catch(Exception e){
+				KubeJS.LOGGER.error("Unable to check if item can be enchanted with enchantment " + this.properties.id + "!", e);
+			}
 		}
-		return super.canEnchant(itemStack);
+		// Prevent null pointer exception in the case of Custom Category.
+		if (properties.categoryWrapper != EnchantmentCategoryWrapper.CUSTOM)
+			return super.canEnchant(itemStack);
+		return false;
 	}
 
 	@Override
@@ -129,12 +118,8 @@ public class EnchantmentJS extends Enchantment {
 			super.doPostAttack(livingEntity, entity, i);
 		}else{
 			try {
-				properties.postAttack.accept(new PostAttackCallbackJS(
-						i,
-						livingEntity,
-						entity,
-						this
-				));
+				PostAttackCallbackJS callback = new PostAttackCallbackJS(livingEntity, entity, i, this);
+				properties.postAttack.accept(callback);
 			} catch (Exception e) {
 				KubeJS.LOGGER.error("Unable to apply post attack for enchantment " + this.properties.id + "!", e);
 				super.doPostAttack(livingEntity, entity, i);
@@ -148,12 +133,8 @@ public class EnchantmentJS extends Enchantment {
 			super.doPostHurt(livingEntity, entity, i);
 		}else {
 			try {
-				properties.postHurt.accept(new PostHurtCallbackJS(
-						i,
-						livingEntity,
-						entity,
-						this
-				));
+				PostHurtCallbackJS callback = new PostHurtCallbackJS(livingEntity, entity, i, this);
+				properties.postHurt.accept(callback);
 			} catch (Exception e) {
 				KubeJS.LOGGER.error("Unable to apply post hurt for enchantment " + this.properties.id + "!", e);
 				super.doPostHurt(livingEntity,entity,i);
