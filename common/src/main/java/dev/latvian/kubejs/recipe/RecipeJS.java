@@ -505,7 +505,7 @@ public abstract class RecipeJS {
 		return type != null && type.getMod().equals("techreborn");
 	}
 
-	public RecipeJS action(IngredientActionFilter filter, IngredientAction action) {
+	public RecipeJS ingredientAction(IngredientActionFilter filter, IngredientAction action) {
 		JsonArray a = (JsonArray) json.get("kubejs_actions");
 
 		if (a == null) {
@@ -519,23 +519,43 @@ public abstract class RecipeJS {
 		return this;
 	}
 
-	public RecipeJS damageItem(IngredientActionFilter filter, int damage) {
-		return action(filter, new DamageAction(damage));
+	public final RecipeJS damageIngredient(IngredientActionFilter filter, int damage) {
+		return ingredientAction(filter, new DamageAction(damage));
 	}
 
-	public RecipeJS damageItem(IngredientActionFilter filter) {
-		return damageItem(filter, 1);
+	@Deprecated
+	public final RecipeJS damageItem(IngredientActionFilter filter, int damage) {
+		return damageIngredient(filter, damage);
 	}
 
-	public RecipeJS replaceItem(IngredientActionFilter filter, ItemStackJS item) {
-		return action(filter, new ReplaceAction(item.getItemStack()));
+	public final RecipeJS damageIngredient(IngredientActionFilter filter) {
+		return damageIngredient(filter, 1);
 	}
 
-	public RecipeJS customAction(IngredientActionFilter filter, String id) {
-		return action(filter, new CustomIngredientAction(id));
+	@Deprecated
+	public final RecipeJS damageItem(IngredientActionFilter filter) {
+		return damageIngredient(filter);
 	}
 
-	public RecipeJS keep(IngredientActionFilter filter) {
-		return action(filter, new KeepAction());
+	public final RecipeJS replaceIngredient(IngredientActionFilter filter, ItemStackJS item) {
+		return ingredientAction(filter, new ReplaceAction(item.getItemStack()));
+	}
+
+	@Deprecated
+	public final RecipeJS replaceItem(IngredientActionFilter filter, ItemStackJS item) {
+		return replaceIngredient(filter, item);
+	}
+
+	public final RecipeJS customIngredientAction(IngredientActionFilter filter, String id) {
+		return ingredientAction(filter, new CustomIngredientAction(id));
+	}
+
+	public final RecipeJS keepIngredient(IngredientActionFilter filter) {
+		return ingredientAction(filter, new KeepAction());
+	}
+
+	@Deprecated
+	public final RecipeJS keep(IngredientActionFilter filter) {
+		return keepIngredient(filter);
 	}
 }

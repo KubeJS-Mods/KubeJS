@@ -237,4 +237,14 @@ public class JsonUtilsJS {
 	public static void write(String file, @Nullable MapJS json) throws IOException {
 		write(KubeJS.getGameDirectory().resolve(file).toFile(), json);
 	}
+
+	public static JsonArray toArray(JsonElement element) {
+		if (element.isJsonArray()) {
+			return element.getAsJsonArray();
+		}
+
+		JsonArray a = new JsonArray();
+		a.add(element);
+		return a;
+	}
 }
