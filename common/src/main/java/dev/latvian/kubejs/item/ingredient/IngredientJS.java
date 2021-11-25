@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.latvian.kubejs.KubeJSRegistries;
+import dev.latvian.kubejs.core.IngredientKJS;
 import dev.latvian.kubejs.fluid.FluidStackJS;
 import dev.latvian.kubejs.item.DummyFluidItemStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -116,7 +117,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 
 			List<IngredientJS> in = new ArrayList<>();
 
-			for (ItemStack stack : ((Ingredient) o).getItems()) {
+			for (ItemStack stack : ((IngredientKJS) o).getItemsKJS()) {
 				if (!stack.isEmpty()) {
 					in.add(ItemStackJS.of(stack));
 				}

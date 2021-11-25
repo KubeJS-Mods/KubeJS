@@ -2,6 +2,7 @@ package dev.latvian.kubejs.item.ingredient.forge;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.kubejs.core.IngredientKJS;
 import dev.latvian.kubejs.item.ingredient.IngredientWithCustomPredicateJS;
 import dev.latvian.kubejs.recipe.RecipeEventJS;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -49,7 +50,7 @@ public class CustomPredicateIngredient extends Ingredient {
 	@Override
 	@NotNull
 	public ItemStack[] getItems() {
-		return ingredient.getItems();
+		return ((IngredientKJS) ingredient).getItemsKJS();
 	}
 
 	@Override
