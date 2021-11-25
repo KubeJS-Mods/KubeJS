@@ -57,6 +57,8 @@ import dev.latvian.kubejs.recipe.minecraft.SmithingRecipeJS;
 import dev.latvian.kubejs.recipe.minecraft.StonecuttingRecipeJS;
 import dev.latvian.kubejs.recipe.mod.AE2GrinderRecipeJS;
 import dev.latvian.kubejs.recipe.mod.ArsNouveauEnchantingApparatusRecipeJS;
+import dev.latvian.kubejs.recipe.mod.ArsNouveauEnchantmentRecipeJS;
+import dev.latvian.kubejs.recipe.mod.ArsNouveauGlyphPressRecipeJS;
 import dev.latvian.kubejs.recipe.mod.BotaniaRunicAltarRecipeJS;
 import dev.latvian.kubejs.recipe.mod.BotanyPotsCropRecipeJS;
 import dev.latvian.kubejs.recipe.mod.IDSqueezerRecipeJS;
@@ -481,6 +483,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		if (Platform.isModLoaded("ars_nouveau")) {
 			event.register(new ResourceLocation("ars_nouveau:enchanting_apparatus"), ArsNouveauEnchantingApparatusRecipeJS::new);
+			event.register(new ResourceLocation("ars_nouveau:enchantment"), ArsNouveauEnchantmentRecipeJS::new);
+			event.register(new ResourceLocation("ars_nouveau:glyph_recipe"), ArsNouveauGlyphPressRecipeJS::new);
 		}
 	}
 
