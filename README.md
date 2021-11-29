@@ -38,7 +38,6 @@ repositories {
 
     maven {
         // saps.dev Maven (KubeJS and Rhino)
-        // you can also use Lat's Maven @ https://maven.latvian.dev/
         url = "https://maven.saps.dev/minecraft"
         content {
             includeGroup "dev.latvian.mods"
@@ -57,17 +56,17 @@ modImplementation("dev.latvian.mods:kubejs-<loader>:${kubejs_version}")
 implementation fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
 
 // these two are unfortunately needed since fg.deobf doesn't respect transitive dependencies as of yet
-implementation "dev.latvian.mods:rhino:${rhino_version}"
+implementation fg.deobf("dev.latvian.mods:rhino:${rhino_version}")
 implementation fg.deobf("me.shedaniel:architectury-forge:${architectury_version}")
 ```
 
 Just set the versions with most up-to-date version of the required mod(s), which you also find using these badges:
 
 <p align="center">
-    <a href="https://maven.saps.dev/versions">
+    <a href="https://vers.saps.dev">
         <img src="https://flat.badgen.net/maven/v/metadata-url/https/mvn.saps.dev/minecraft/dev/latvian/mods/kubejs/maven-metadata.xml?color=C186E6&label=KubeJS" alt="KubeJS Latest Version">
     </a>
-	<a href="https://maven.saps.dev/versions">
+	<a href="https://vers.saps.dev">
         <img src="https://flat.badgen.net/maven/v/metadata-url/https/mvn.saps.dev/minecraft/dev/latvian/mods/rhino/maven-metadata.xml?color=3498DB&label=Rhino" alt="Rhino Latest Version">
     </a>
 		<a href="https://niceme.me">
