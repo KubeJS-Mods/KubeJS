@@ -38,7 +38,7 @@ public class IDSqueezerRecipeJS extends RecipeJS {
 
 			JsonArray a = new JsonArray();
 
-			for (ItemStackJS stack : outputItems) {
+			for (var stack : outputItems) {
 				if (stack.getFluidStack() != null) {
 					o.add("fluid", stack.toResultJson());
 				} else {

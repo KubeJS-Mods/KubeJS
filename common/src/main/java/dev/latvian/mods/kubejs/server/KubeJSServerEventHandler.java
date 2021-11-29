@@ -16,7 +16,6 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.mods.kubejs.world.ServerWorldJS;
 import dev.latvian.mods.kubejs.world.SimpleWorldEventJS;
-import dev.latvian.mods.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.RhinoException;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
@@ -82,7 +81,7 @@ public class KubeJSServerEventHandler {
 		ServerJS.instance.levelMap.put("minecraft:overworld", ServerJS.instance.overworld);
 		ServerJS.instance.worlds.add(ServerJS.instance.overworld);
 
-		for (ServerLevel world : server.getAllLevels()) {
+		for (var world : server.getAllLevels()) {
 			if (world != ServerJS.instance.overworld.minecraftLevel) {
 				ServerWorldJS w = new ServerWorldJS(ServerJS.instance, world);
 				ServerJS.instance.levelMap.put(world.dimension().location().toString(), w);
@@ -94,7 +93,7 @@ public class KubeJSServerEventHandler {
 		new AttachServerDataEvent(ServerJS.instance).invoke();
 		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_LOAD);
 
-		for (ServerWorldJS world : ServerJS.instance.worlds) {
+		for (var world : ServerJS.instance.worlds) {
 			new AttachWorldDataEvent(ServerJS.instance.getOverworld()).invoke();
 			new SimpleWorldEventJS(ServerJS.instance.getOverworld()).post(KubeJSEvents.WORLD_LOAD);
 		}
@@ -111,7 +110,7 @@ public class KubeJSServerEventHandler {
 			new SimplePlayerEventJS(p.getMinecraftPlayer()).post(KubeJSEvents.PLAYER_LOGGED_OUT);
 		}
 
-		for (WorldJS w : s.levelMap.values()) {
+		for (var w : s.levelMap.values()) {
 			new SimpleWorldEventJS(w).post(KubeJSEvents.WORLD_UNLOAD);
 		}
 
@@ -152,7 +151,7 @@ public class KubeJSServerEventHandler {
 				}
 			}
 
-			for (ScheduledEvent e : list) {
+			for (var e : list) {
 				try {
 					e.call();
 				} catch (RhinoException ex) {
@@ -177,7 +176,7 @@ public class KubeJSServerEventHandler {
 				}
 			}
 
-			for (ScheduledEvent e : list) {
+			for (var e : list) {
 				try {
 					e.call();
 				} catch (RhinoException ex) {

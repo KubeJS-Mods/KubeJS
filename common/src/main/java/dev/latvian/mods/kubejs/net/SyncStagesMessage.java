@@ -44,7 +44,7 @@ public class SyncStagesMessage extends BaseS2CMessage {
 		buf.writeUUID(player);
 		buf.writeVarInt(stages.size());
 
-		for (String s : stages) {
+		for (var s : stages) {
 			buf.writeUtf(s, Short.MAX_VALUE);
 		}
 	}

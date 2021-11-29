@@ -6,7 +6,6 @@ import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSObjects;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.util.BuilderBase;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -127,7 +126,7 @@ public abstract class KubeJSResourcePack implements PackResources {
 			}
 		} else {
 			if (path.equals("loot_tables")) {
-				for (ResourceLocation id : KubeJSObjects.BLOCKS.keySet()) {
+				for (var id : KubeJSObjects.BLOCKS.keySet()) {
 					list.add(new ResourceLocation(id.getNamespace(), "loot_tables/blocks/" + id.getPath() + ".json"));
 				}
 			}
@@ -164,7 +163,7 @@ public abstract class KubeJSResourcePack implements PackResources {
 		namespaces.add("kubejs_generated");
 		namespaces.add(KubeJS.MOD_ID);
 
-		for (BuilderBase builder : KubeJSObjects.ALL) {
+		for (var builder : KubeJSObjects.ALL) {
 			namespaces.add(builder.id.getNamespace());
 		}
 

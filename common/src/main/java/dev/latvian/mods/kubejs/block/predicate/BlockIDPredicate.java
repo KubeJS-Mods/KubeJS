@@ -115,7 +115,7 @@ public class BlockIDPredicate implements BlockPredicate {
 	public BlockState getBlockState() {
 		BlockState state = getBlock().defaultBlockState();
 
-		for (PropertyObject object : getBlockProperties()) {
+		for (var object : getBlockProperties()) {
 			state = state.setValue(object.property, UtilsJS.cast(object.value));
 		}
 
@@ -136,7 +136,7 @@ public class BlockIDPredicate implements BlockPredicate {
 			return true;
 		}
 
-		for (PropertyObject object : getBlockProperties()) {
+		for (var object : getBlockProperties()) {
 			if (!state.getValue(object.property).equals(object.value)) {
 				return false;
 			}
@@ -180,7 +180,7 @@ public class BlockIDPredicate implements BlockPredicate {
 
 			((BlockKJS) block).setLightLevelKJS(level);
 
-			for (BlockState state : block.getStateContainer().getValidStates())
+			for (var state : block.getStateContainer().getValidStates())
 			{
 				if (checkState(state))
 				{

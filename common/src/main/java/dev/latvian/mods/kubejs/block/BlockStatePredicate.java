@@ -154,7 +154,7 @@ public abstract class BlockStatePredicate {
 
 		@Override
 		public boolean check(BlockState state) {
-			for (BlockStatePredicate predicate : list) {
+			for (var predicate : list) {
 				if (predicate.check(state)) {
 					return true;
 				}
@@ -167,7 +167,7 @@ public abstract class BlockStatePredicate {
 		public Collection<Block> getBlocks() {
 			HashSet<Block> set = new HashSet<>();
 
-			for (BlockStatePredicate predicate : list) {
+			for (var predicate : list) {
 				set.addAll(predicate.getBlocks());
 			}
 
@@ -178,7 +178,7 @@ public abstract class BlockStatePredicate {
 		public Collection<BlockState> getBlockStates() {
 			HashSet<BlockState> set = new HashSet<>();
 
-			for (BlockStatePredicate predicate : list) {
+			for (var predicate : list) {
 				set.addAll(predicate.getBlockStates());
 			}
 
@@ -189,7 +189,7 @@ public abstract class BlockStatePredicate {
 		public Set<ResourceLocation> getBlockIds() {
 			Set<ResourceLocation> set = new LinkedHashSet<>();
 
-			for (BlockStatePredicate predicate : list) {
+			for (var predicate : list) {
 				set.addAll(predicate.getBlockIds());
 			}
 
@@ -224,7 +224,7 @@ public abstract class BlockStatePredicate {
 	public static BlockStatePredicate of(Object blocks) {
 		BlockStatePredicate.FromList predicate = new BlockStatePredicate.FromList();
 
-		for (Object o : ListJS.orSelf(blocks)) {
+		for (var o : ListJS.orSelf(blocks)) {
 			BlockStatePredicate p = of0(o);
 
 			if (p != BlockStatePredicate.Empty.INSTANCE) {
@@ -255,7 +255,7 @@ public abstract class BlockStatePredicate {
 	public Collection<BlockState> getBlockStates() {
 		List<BlockState> states = new ArrayList<>();
 
-		for (Block block : getBlocks()) {
+		for (var block : getBlocks()) {
 			states.addAll(block.getStateDefinition().getPossibleStates());
 		}
 
@@ -265,7 +265,7 @@ public abstract class BlockStatePredicate {
 	public Set<ResourceLocation> getBlockIds() {
 		Set<ResourceLocation> set = new LinkedHashSet<>();
 
-		for (Block block : getBlocks()) {
+		for (var block : getBlocks()) {
 			ResourceLocation blockId = KubeJSRegistries.blocks().getId(block);
 
 			if (blockId != null) {

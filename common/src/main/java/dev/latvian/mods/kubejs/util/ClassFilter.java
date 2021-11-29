@@ -69,13 +69,13 @@ public class ClassFilter {
 			return V_ALLOW;
 		}
 
-		for (String s1 : denyWeak) {
+		for (var s1 : denyWeak) {
 			if (s.startsWith(s1)) {
 				return V_DENY;
 			}
 		}
 
-		for (String s1 : allowWeak) {
+		for (var s1 : allowWeak) {
 			if (s.startsWith(s1)) {
 				return V_ALLOW;
 			}

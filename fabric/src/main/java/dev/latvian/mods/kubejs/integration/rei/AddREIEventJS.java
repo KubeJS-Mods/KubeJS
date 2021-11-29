@@ -24,7 +24,7 @@ public class AddREIEventJS extends EventJS {
 	}
 
 	public void add(Object o) {
-		for (Object o1 : ListJS.orSelf(o)) {
+		for (var o1 : ListJS.orSelf(o)) {
 			Collection<EntryStack<?>> stacks = function.apply(o1);
 
 			if (stacks != null && !stacks.isEmpty()) {

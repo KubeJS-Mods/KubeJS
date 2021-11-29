@@ -41,11 +41,11 @@ public class ItemBuilder extends BuilderBase {
 	public static final Map<String, ArmorMaterial> ARMOR_TIERS = new HashMap<>();
 
 	static {
-		for (Tier tier : Tiers.values()) {
+		for (var tier : Tiers.values()) {
 			TOOL_TIERS.put(tier.toString().toLowerCase(), tier);
 		}
 
-		for (ArmorMaterial tier : ArmorMaterials.values()) {
+		for (var tier : ArmorMaterials.values()) {
 			ARMOR_TIERS.put(tier.toString().toLowerCase(), tier);
 		}
 	}
@@ -199,7 +199,7 @@ public class ItemBuilder extends BuilderBase {
 	}
 
 	public ItemBuilder group(String g) {
-		for (CreativeModeTab ig : CreativeModeTab.TABS) {
+		for (var ig : CreativeModeTab.TABS) {
 			if (ig.getRecipeFolderName().equals(g)) {
 				group = ig;
 				return this;

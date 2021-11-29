@@ -54,7 +54,7 @@ public class BlockWrapper {
 		if (facingMap == null) {
 			facingMap = new HashMap<>(6);
 
-			for (Direction facing : Direction.values()) {
+			for (var facing : Direction.values()) {
 				facingMap.put(facing.getSerializedName(), facing);
 			}
 		}
@@ -69,7 +69,7 @@ public class BlockWrapper {
 	public static List<String> getTypeList() {
 		List<String> list = new ArrayList<>();
 
-		for (ResourceLocation block : KubeJSRegistries.blocks().getIds()) {
+		for (var block : KubeJSRegistries.blocks().getIds()) {
 			list.add(block.toString());
 		}
 
@@ -82,7 +82,7 @@ public class BlockWrapper {
 		if (t != null && t.getValues().size() > 0) {
 			List<String> list = new ArrayList<>();
 
-			for (Block b : t.getValues()) {
+			for (var b : t.getValues()) {
 				ResourceLocation id = KubeJSRegistries.blocks().getId(b);
 
 				if (id != null) {

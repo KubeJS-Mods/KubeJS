@@ -70,7 +70,7 @@ public class KubeJSPlugins {
 	private static void loadFromFile(String id, List<String> list) {
 		KubeJS.LOGGER.info("Found " + id + " plugin");
 
-		for (String s : list) {
+		for (var s : list) {
 			if (s.trim().isEmpty()) {
 				continue;
 			}
@@ -91,7 +91,7 @@ public class KubeJSPlugins {
 		ClassFilter filter = new ClassFilter();
 		forEachPlugin(plugin -> plugin.addClasses(type, filter));
 
-		for (String s : GLOBAL_CLASS_FILTER) {
+		for (var s : GLOBAL_CLASS_FILTER) {
 			if (s.length() >= 2) {
 				if (s.startsWith("+")) {
 					filter.allow(s.substring(1));

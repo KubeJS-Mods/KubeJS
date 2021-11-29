@@ -36,7 +36,7 @@ public interface RecipeFilter extends Predicate<RecipeJS> {
 		} else if (list.size() > 1) {
 			OrFilter predicate = new OrFilter();
 
-			for (Object o1 : list) {
+			for (var o1 : list) {
 				RecipeFilter p = of(o1);
 
 				if (p == ALWAYS_TRUE) {

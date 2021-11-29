@@ -50,7 +50,7 @@ public class AdvancementJS {
 	public Set<AdvancementJS> getChildren() {
 		Set<AdvancementJS> set = new LinkedHashSet<>();
 
-		for (Advancement a : advancement.getChildren()) {
+		for (var a : advancement.getChildren()) {
 			set.add(new AdvancementJS(a));
 		}
 

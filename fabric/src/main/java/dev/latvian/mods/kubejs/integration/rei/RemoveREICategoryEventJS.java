@@ -24,7 +24,7 @@ public class RemoveREICategoryEventJS extends EventJS {
 	}
 
 	public void yeet(String[] categoriesToYeet) {
-		for (String toYeet : categoriesToYeet) {
+		for (var toYeet : categoriesToYeet) {
 			categoriesRemoved.add(CategoryIdentifier.of(toYeet));
 		}
 	}

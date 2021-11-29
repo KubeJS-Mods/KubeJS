@@ -14,10 +14,8 @@ import dev.latvian.mods.kubejs.bindings.RarityWrapper;
 import dev.latvian.mods.kubejs.bindings.ScriptEventsWrapper;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
-import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.BlockRegistryEventJS;
 import dev.latvian.mods.kubejs.block.BlockStatePredicate;
-import dev.latvian.mods.kubejs.block.DetectorInstance;
 import dev.latvian.mods.kubejs.block.MaterialJS;
 import dev.latvian.mods.kubejs.block.MaterialListJS;
 import dev.latvian.mods.kubejs.block.custom.BasicBlockType;
@@ -32,13 +30,11 @@ import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
 import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.event.IEventHandler;
-import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidRegistryEventJS;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
-import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemRegistryEventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.custom.ArmorItemType;
@@ -71,7 +67,6 @@ import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.text.Text;
-import dev.latvian.mods.kubejs.util.BuilderBase;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.ListJS;
@@ -312,7 +307,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	}
 
 	private static Object onEvent(BindingsEvent event, Object[] args) {
-		for (Object o : ListJS.orSelf(args[0])) {
+		for (var o : ListJS.orSelf(args[0])) {
 			event.type.manager.get().events.listen(String.valueOf(o), (IEventHandler) args[1]);
 		}
 
@@ -356,8 +351,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 				return ((EntityJS) o).minecraftEntity.position();
 			} else if (o instanceof List && ((List<?>) o).size() >= 3) {
 				return new Vec3(((Number) ((List<?>) o).get(0)).doubleValue(), ((Number) ((List<?>) o).get(1)).doubleValue(), ((Number) ((List<?>) o).get(2)).doubleValue());
-			} else if (o instanceof BlockPos) {
-				BlockPos bp = (BlockPos) o;
+			} else if (o instanceof BlockPos bp) {
 				return new Vec3(bp.getX() + 0.5D, bp.getY() + 0.5D, bp.getZ() + 0.5D);
 			} else if (o instanceof BlockContainerJS) {
 				BlockPos bp = ((BlockContainerJS) o).getPos();
@@ -461,7 +455,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 					"tanner"
 			};
 
-			for (String t : types) {
+			for (var t : types) {
 				event.register(new ResourceLocation("artisanworktables:" + t + "_shaped"), ShapedArtisanRecipeJS::new);
 				event.register(new ResourceLocation("artisanworktables:" + t + "_shapeless"), ShapelessArtisanRecipeJS::new);
 			}
@@ -485,7 +479,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void generateDataJsons(DataJsonGenerator generator) {
-		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
+		for (var builder : KubeJSObjects.BLOCKS.values()) {
 			if (builder.lootTable != null) {
 				LootBuilder lootBuilder = new LootBuilder(null);
 				lootBuilder.type = "minecraft:block";
@@ -496,14 +490,14 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 			builder.type.generateData(builder, generator);
 		}
 
-		for (ItemBuilder builder : KubeJSObjects.ITEMS.values()) {
+		for (var builder : KubeJSObjects.ITEMS.values()) {
 			builder.type.generateData(builder, generator);
 		}
 	}
 
 	@Override
 	public void generateAssetJsons(AssetJsonGenerator generator) {
-		for (DetectorInstance detector : KubeJSObjects.DETECTORS.values()) {
+		for (var detector : KubeJSObjects.DETECTORS.values()) {
 			generator.blockState(new ResourceLocation(KubeJS.MOD_ID, "detector_" + detector.id), bs -> {
 				bs.variant("powered=false", "kubejs:block/detector");
 				bs.variant("powered=true", "kubejs:block/detector_on");
@@ -514,15 +508,15 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 			});
 		}
 
-		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
+		for (var builder : KubeJSObjects.BLOCKS.values()) {
 			builder.type.generateAssets(builder, generator);
 		}
 
-		for (ItemBuilder builder : KubeJSObjects.ITEMS.values()) {
+		for (var builder : KubeJSObjects.ITEMS.values()) {
 			builder.type.generateAssets(builder, generator);
 		}
 
-		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values()) {
+		for (var builder : KubeJSObjects.FLUIDS.values()) {
 			generator.json(builder.newID("blockstates/", ""), builder.getBlockstateJson());
 			generator.json(builder.newID("models/block/", ""), builder.getBlockModelJson());
 
@@ -537,17 +531,17 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		lang.put("itemGroup.kubejs.kubejs", "KubeJS");
 		lang.put("item.kubejs.dummy_fluid_item", "Dummy Fluid Item");
 
-		for (BuilderBase builder : KubeJSObjects.ALL) {
+		for (var builder : KubeJSObjects.ALL) {
 			if (!builder.displayName.isEmpty()) {
 				lang.put(builder.translationKey, builder.displayName);
 			}
 		}
 
-		for (DetectorInstance detector : KubeJSObjects.DETECTORS.values()) {
+		for (var detector : KubeJSObjects.DETECTORS.values()) {
 			lang.put("block.kubejs.detector_" + detector.id, "KubeJS Detector [" + detector.id + "]");
 		}
 
-		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values()) {
+		for (var builder : KubeJSObjects.FLUIDS.values()) {
 			if (!builder.displayName.isEmpty()) {
 				lang.put(builder.bucketItem.getDescriptionId(), builder.displayName + " Bucket");
 			}

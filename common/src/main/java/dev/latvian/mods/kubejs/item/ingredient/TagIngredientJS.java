@@ -86,7 +86,7 @@ public class TagIngredientJS implements IngredientJS {
 		if (t.getValues().size() > 0) {
 			Set<ItemStackJS> set = new LinkedHashSet<>();
 
-			for (Item item : t.getValues()) {
+			for (var item : t.getValues()) {
 				set.add(new ItemStackJS(new ItemStack(item)));
 			}
 
@@ -112,7 +112,7 @@ public class TagIngredientJS implements IngredientJS {
 		Tag<Item> t = getActualTag();
 
 		if (t.getValues().size() > 0) {
-			for (Item item : t.getValues()) {
+			for (var item : t.getValues()) {
 				return new ItemStackJS(new ItemStack(item));
 			}
 		}

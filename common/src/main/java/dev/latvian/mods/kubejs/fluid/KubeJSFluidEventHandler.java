@@ -23,7 +23,7 @@ public class KubeJSFluidEventHandler {
 	}
 
 	private static void registry() {
-		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values()) {
+		for (var builder : KubeJSObjects.FLUIDS.values()) {
 			KubeJSRegistries.fluids().register(builder.id, () -> builder.stillFluid = buildFluid(true, builder));
 			KubeJSRegistries.fluids().register(new ResourceLocation(builder.id.getNamespace(), "flowing_" + builder.id.getPath()), () -> builder.flowingFluid = buildFluid(false, builder));
 		}

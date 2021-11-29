@@ -27,7 +27,7 @@ public class VariantBlockStateGenerator {
 
 			JsonArray a = new JsonArray();
 
-			for (Model m : models) {
+			for (var m : models) {
 				a.add(m.toJson());
 			}
 

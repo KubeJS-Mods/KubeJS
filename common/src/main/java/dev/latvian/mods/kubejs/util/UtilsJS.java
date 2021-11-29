@@ -107,27 +107,13 @@ public class UtilsJS {
 
 			for (int i = 0; i < f.length(); i++) {
 				switch (f.charAt(i)) {
-					case 'd':
-						flags |= Pattern.UNIX_LINES;
-						break;
-					case 'i':
-						flags |= Pattern.CASE_INSENSITIVE;
-						break;
-					case 'x':
-						flags |= Pattern.COMMENTS;
-						break;
-					case 'm':
-						flags |= Pattern.MULTILINE;
-						break;
-					case 's':
-						flags |= Pattern.DOTALL;
-						break;
-					case 'u':
-						flags |= Pattern.UNICODE_CASE;
-						break;
-					case 'U':
-						flags |= Pattern.UNICODE_CHARACTER_CLASS;
-						break;
+					case 'd' -> flags |= Pattern.UNIX_LINES;
+					case 'i' -> flags |= Pattern.CASE_INSENSITIVE;
+					case 'x' -> flags |= Pattern.COMMENTS;
+					case 'm' -> flags |= Pattern.MULTILINE;
+					case 's' -> flags |= Pattern.DOTALL;
+					case 'u' -> flags |= Pattern.UNICODE_CASE;
+					case 'U' -> flags |= Pattern.UNICODE_CHARACTER_CLASS;
 				}
 			}
 
@@ -233,7 +219,7 @@ public class UtilsJS {
 			list.add((Component) o);
 			list.addAll(((Component) o).getSiblings());
 
-			for (Component c : list) {
+			for (var c : list) {
 				Text t1;
 
 				if (c instanceof TranslatableComponent) {
@@ -293,7 +279,7 @@ public class UtilsJS {
 
 			ListJS list = new ListJS();
 
-			for (Object o1 : (Iterable) o) {
+			for (var o1 : (Iterable) o) {
 				list.add(o1);
 			}
 
@@ -330,16 +316,14 @@ public class UtilsJS {
 			return null;
 		}
 		// NBT
-		else if (o instanceof CompoundTag) {
+		else if (o instanceof CompoundTag nbt) {
 			if (!type.checkMap()) {
 				return null;
 			}
 
-			CompoundTag nbt = (CompoundTag) o;
-
 			MapJS map = new MapJS(nbt.size());
 
-			for (String s : nbt.getAllKeys()) {
+			for (var s : nbt.getAllKeys()) {
 				map.put(s, nbt.get(s));
 			}
 
@@ -485,7 +469,7 @@ public class UtilsJS {
 		BlockState state = KubeJSRegistries.blocks().get(new ResourceLocation(hasProperties ? string.substring(0, i) : string)).defaultBlockState();
 
 		if (hasProperties) {
-			for (String s : string.substring(i + 1, string.length() - 1).split(",")) {
+			for (var s : string.substring(i + 1, string.length() - 1).split(",")) {
 				String[] s1 = s.split("=", 2);
 
 				if (s1.length == 2 && !s1[0].isEmpty() && !s1[1].isEmpty()) {
@@ -539,8 +523,7 @@ public class UtilsJS {
 		if (type instanceof Class<?>) {
 			return (Class<?>) type;
 
-		} else if (type instanceof ParameterizedType) {
-			ParameterizedType parameterizedType = (ParameterizedType) type;
+		} else if (type instanceof ParameterizedType parameterizedType) {
 
 			Type rawType = parameterizedType.getRawType();
 			checkArgument(rawType instanceof Class);
@@ -567,7 +550,7 @@ public class UtilsJS {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
 
-		for (String value : s) {
+		for (var value : s) {
 			if (!value.isEmpty()) {
 				if (first) {
 					first = false;

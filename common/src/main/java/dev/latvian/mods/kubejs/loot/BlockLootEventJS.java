@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.block.BlockStatePredicate;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -40,7 +39,7 @@ public class BlockLootEventJS extends LootEventJS {
 		LootBuilder builder = createLootBuilder(null, b);
 		JsonObject json = builder.toJson();
 
-		for (ResourceLocation id : blocks.getBlockIds()) {
+		for (var id : blocks.getBlockIds()) {
 			ResourceLocation blockId = builder.customId == null ? id : builder.customId;
 
 			if (blockId != null && !blockId.equals(BlockStatePredicate.AIR_ID)) {
@@ -54,7 +53,7 @@ public class BlockLootEventJS extends LootEventJS {
 	}
 
 	public void addSimpleBlock(BlockStatePredicate blocks, ItemStack item) {
-		for (Block block : blocks.getBlocks()) {
+		for (var block : blocks.getBlocks()) {
 			ItemStack item1 = item.isEmpty() ? new ItemStack(block.asItem()) : item;
 
 			if (!item1.isEmpty()) {
@@ -69,7 +68,7 @@ public class BlockLootEventJS extends LootEventJS {
 	}
 
 	public void modifyBlock(BlockStatePredicate blocks, Consumer<LootBuilder> b) {
-		for (ResourceLocation blockId : blocks.getBlockIds()) {
+		for (var blockId : blocks.getBlockIds()) {
 			if (blockId != null && !blockId.equals(BlockStatePredicate.AIR_ID)) {
 				modify(blockId, b);
 			}

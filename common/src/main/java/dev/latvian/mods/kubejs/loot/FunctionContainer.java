@@ -55,7 +55,7 @@ public interface FunctionContainer {
 
 		JsonArray a = new JsonArray();
 
-		for (ResourceLocation r : enchantments) {
+		for (var r : enchantments) {
 			a.add(r.toString());
 		}
 

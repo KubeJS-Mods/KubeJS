@@ -29,19 +29,19 @@ public class PainterObjectStorage {
 	}
 
 	public void handle(CompoundTag root) {
-		for (String key : root.getAllKeys()) {
+		for (var key : root.getAllKeys()) {
 			CompoundTag tag = root.getCompound(key);
 
 			if (key.equals("*")) {
 				if (tag.getBoolean("remove")) {
 					objects.clear();
 				} else {
-					for (PainterObject o : objects.values()) {
+					for (var o : objects.values()) {
 						o.update(tag);
 					}
 				}
 			} else if (key.equals("$")) {
-				for (String k : tag.getAllKeys()) {
+				for (var k : tag.getAllKeys()) {
 					if (tag.contains(k, NbtType.NUMBER)) {
 						Painter.INSTANCE.setVariable(k, FixedUnit.of(tag.getFloat(k)));
 					} else {

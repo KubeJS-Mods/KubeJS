@@ -38,7 +38,7 @@ public class ShapedBlockType extends BlockType {
 		builder.waterlogged();
 		builder.texture("texture", "kubejs:block/detector");
 
-		for (String s : suffixes) {
+		for (var s : suffixes) {
 			if (builder.id.getPath().endsWith(s)) {
 				builder.texture("texture", builder.id.getNamespace() + ":block/" + builder.id.getPath().substring(0, builder.id.getPath().length() - s.length()));
 				break;

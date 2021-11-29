@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.minecraft;
 
 import com.google.gson.JsonArray;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 
@@ -26,8 +25,8 @@ public class ShapelessRecipeJS extends RecipeJS {
 		if (serializeInputs) {
 			JsonArray ingredientsJson = new JsonArray();
 
-			for (IngredientJS in : inputItems) {
-				for (IngredientJS in1 : in.unwrapStackIngredient()) {
+			for (var in : inputItems) {
+				for (var in1 : in.unwrapStackIngredient()) {
 					ingredientsJson.add(in1.toJson());
 				}
 			}

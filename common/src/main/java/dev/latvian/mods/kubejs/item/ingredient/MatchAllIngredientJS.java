@@ -37,7 +37,7 @@ public class MatchAllIngredientJS implements IngredientJS {
 	public Set<ItemStackJS> getStacks() {
 		Set<ItemStackJS> set = new LinkedHashSet<>();
 
-		for (ItemStackJS stack : ItemStackJS.getList()) {
+		for (var stack : ItemStackJS.getList()) {
 			set.add(stack.copy());
 		}
 

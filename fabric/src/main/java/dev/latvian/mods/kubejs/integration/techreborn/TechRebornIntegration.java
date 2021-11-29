@@ -10,7 +10,7 @@ public class TechRebornIntegration implements KubeJSInitializer {
 	public void onKubeJSInitialization() {
 		if (Platform.isModLoaded("techreborn")) {
 			RegisterRecipeHandlersEvent.EVENT.register(event -> {
-				for (String s : new String[]{
+				for (var s : new String[]{
 						// Default recipes
 						"techreborn:alloy_smelter",
 						"techreborn:assembling_machine",
@@ -33,7 +33,7 @@ public class TechRebornIntegration implements KubeJSInitializer {
 					event.register(new ResourceLocation(s), TRRecipeJS::new);
 				}
 
-				for (String s : new String[]{
+				for (var s : new String[]{
 						"techreborn:industrial_grinder",
 						"techreborn:industrial_grinder",
 						"techreborn:fluid_replicator",

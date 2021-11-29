@@ -39,7 +39,7 @@ public class CustomRecipeJS extends RecipeJS {
 		}
 
 		if (e.isJsonArray()) {
-			for (JsonElement e1 : e.getAsJsonArray()) {
+			for (var e1 : e.getAsJsonArray()) {
 				IngredientJS i = IngredientJS.ingredientFromRecipeJson(e1);
 
 				if (!i.isEmpty()) {
@@ -72,7 +72,7 @@ public class CustomRecipeJS extends RecipeJS {
 		}
 
 		if (e.isJsonArray()) {
-			for (JsonElement e1 : e.getAsJsonArray()) {
+			for (var e1 : e.getAsJsonArray()) {
 				ItemStackJS i = ItemStackJS.of(e1);
 
 				if (!i.isEmpty()) {
@@ -160,7 +160,7 @@ public class CustomRecipeJS extends RecipeJS {
 			if (outputType == 1) {
 				JsonArray a = new JsonArray();
 
-				for (ItemStackJS in : outputItems) {
+				for (var in : outputItems) {
 					a.add(in.toResultJson());
 				}
 
@@ -177,7 +177,7 @@ public class CustomRecipeJS extends RecipeJS {
 			if (inputType == 1) {
 				JsonArray a = new JsonArray();
 
-				for (IngredientJS in : inputItems) {
+				for (var in : inputItems) {
 					a.add(in.toJson());
 				}
 

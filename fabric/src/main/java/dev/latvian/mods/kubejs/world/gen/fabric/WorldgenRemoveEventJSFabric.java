@@ -120,7 +120,7 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 	@Override
 	public void removeFeatureById(GenerationStep.Decoration type, ResourceLocation[] ids) {
 		/*
-		for (ResourceLocation id : ids) {
+		for (var id : ids) {
 			modificationContext.getGenerationSettings().removeFeature(type, ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id));
 		}
 		*/
@@ -129,7 +129,7 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 	// FIXME
 	@Override
 	public void removeAllFeatures(GenerationStep.Decoration type) {
-		/*for (ResourceLocation key : getFeatureRegistry().keySet()) {
+		/*for (var key : getFeatureRegistry().keySet()) {
 			modificationContext.getGenerationSettings().removeFeature(type, ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, key));
 		}*/
 	}
@@ -140,7 +140,7 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 		/*
 		GenerationStep.Decoration[] decorations = GenerationStep.Decoration.values();
 
-		for (ResourceLocation key : getFeatureRegistry().keySet()) {
+		for (var key : getFeatureRegistry().keySet()) {
 			for (GenerationStep.Decoration decoration : decorations) {
 				modificationContext.getGenerationSettings().removeFeature(decoration, ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, key));
 			}
@@ -150,7 +150,7 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 	@Override
 	public void printSpawns(@Nullable MobCategory category) {
 		if (category == null) {
-			for (MobCategory c : MobCategory.values()) {
+			for (var c : MobCategory.values()) {
 				printSpawns(c);
 			}
 

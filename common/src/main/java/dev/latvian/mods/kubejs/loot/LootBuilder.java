@@ -20,8 +20,7 @@ public class LootBuilder implements FunctionContainer, ConditionContainer {
 	public JsonArray conditions = new JsonArray();
 
 	public LootBuilder(@Nullable JsonElement prev) {
-		if (prev instanceof JsonObject) {
-			JsonObject o = (JsonObject) prev;
+		if (prev instanceof JsonObject o) {
 
 			if (o.has("pools")) {
 				pools = o.get("pools").getAsJsonArray();

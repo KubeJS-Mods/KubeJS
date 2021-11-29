@@ -58,18 +58,18 @@ public class ServerScriptManager {
 
 		Map<String, List<ResourceLocation>> packs = new HashMap<>();
 
-		for (ResourceLocation resource : resourceManager.listResources("kubejs", s -> s.endsWith(".js"))) {
+		for (var resource : resourceManager.listResources("kubejs", s -> s.endsWith(".js"))) {
 			packs.computeIfAbsent(resource.getNamespace(), s -> new ArrayList<>()).add(resource);
 		}
 
 		for (Map.Entry<String, List<ResourceLocation>> entry : packs.entrySet()) {
 			ScriptPack pack = new ScriptPack(scriptManager, new ScriptPackInfo(entry.getKey(), "kubejs/"));
 
-			for (ResourceLocation id : entry.getValue()) {
+			for (var id : entry.getValue()) {
 				pack.info.scripts.add(new ScriptFileInfo(pack.info, id.getPath().substring(7)));
 			}
 
-			for (ScriptFileInfo fileInfo : pack.info.scripts) {
+			for (var fileInfo : pack.info.scripts) {
 				ScriptSource.FromResource scriptSource = info -> resourceManager.getResource(info.id);
 				Throwable error = fileInfo.preload(scriptSource);
 
@@ -102,7 +102,7 @@ public class ServerScriptManager {
 
 		SimpleReloadableResourceManager resourceManager = new SimpleReloadableResourceManager(PackType.SERVER_DATA);
 
-		for (PackResources p : list) {
+		for (var p : list) {
 			resourceManager.add(p);
 		}
 

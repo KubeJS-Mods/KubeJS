@@ -13,7 +13,7 @@ public class AndFilter implements RecipeFilter {
 
 	@Override
 	public boolean test(RecipeJS r) {
-		for (RecipeFilter p : list) {
+		for (var p : list) {
 			if (!p.test(r)) {
 				return false;
 			}

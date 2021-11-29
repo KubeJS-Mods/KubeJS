@@ -36,7 +36,7 @@ public abstract class IngredientAction extends IngredientActionFilter {
 
 		List<IngredientAction> list = new ArrayList<>();
 
-		for (JsonElement e : json.getAsJsonArray()) {
+		for (var e : json.getAsJsonArray()) {
 			JsonObject o = e.getAsJsonObject();
 
 			Function<JsonObject, IngredientAction> factory = FACTORY_MAP.get(o.has("type") ? o.get("type").getAsString() : "");
@@ -84,7 +84,7 @@ public abstract class IngredientAction extends IngredientActionFilter {
 
 		buf.writeVarInt(list.size());
 
-		for (IngredientAction action : list) {
+		for (var action : list) {
 			buf.writeUtf(action.getType(), Short.MAX_VALUE);
 			JsonObject json = new JsonObject();
 			action.toJson(json);
@@ -101,7 +101,7 @@ public abstract class IngredientAction extends IngredientActionFilter {
 			return ItemStack.EMPTY;
 		}
 
-		for (IngredientAction action : ingredientActions) {
+		for (var action : ingredientActions) {
 			if (action.checkFilter(index, stack)) {
 				return action.transform(stack.copy(), index, container);
 			}

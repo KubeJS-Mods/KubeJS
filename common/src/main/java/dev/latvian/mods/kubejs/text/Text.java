@@ -72,13 +72,12 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		} else if (o instanceof ListJS) {
 			Text text = new TextString("");
 
-			for (Object e1 : (ListJS) o) {
+			for (var e1 : (ListJS) o) {
 				text.append(ofWrapped(e1));
 			}
 
 			return text;
-		} else if (o instanceof MapJS) {
-			MapJS map = (MapJS) o;
+		} else if (o instanceof MapJS map) {
 
 			if (map.containsKey("text") || map.containsKey("translate")) {
 				Text text;
@@ -93,7 +92,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 						with = new Object[a.size()];
 						int i = 0;
 
-						for (Object e1 : a) {
+						for (var e1 : a) {
 							with[i] = e1;
 
 							if (with[i] instanceof MapJS || with[i] instanceof ListJS) {
@@ -126,7 +125,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 				text.siblings = null;
 
 				if (map.containsKey("extra")) {
-					for (Object e : map.getOrNewList("extra")) {
+					for (var e : map.getOrNewList("extra")) {
 						text.append(ofWrapped(e));
 					}
 				}
@@ -141,7 +140,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		Text text = new TextString("");
 		boolean first = true;
 
-		for (Text t : texts) {
+		for (var t : texts) {
 			if (first) {
 				first = false;
 			} else {
@@ -184,7 +183,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 			component.setStyle(createStyle());
 		}
 
-		for (Text text : getSiblings()) {
+		for (var text : getSiblings()) {
 			component.append(text.component());
 		}
 
@@ -208,7 +207,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		t.click = click;
 		t.hover = hover == null ? null : hover.copy();
 
-		for (Text child : getSiblings()) {
+		for (var child : getSiblings()) {
 			t.append(child.copy());
 		}
 
@@ -294,7 +293,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		if (!getSiblings().isEmpty()) {
 			JsonArray array = new JsonArray();
 
-			for (Text child : getSiblings()) {
+			for (var child : getSiblings()) {
 				array.add(child.toJson());
 			}
 
@@ -313,8 +312,8 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		List<Text> list = new ArrayList<>();
 		list.add(this);
 
-		for (Text child : getSiblings()) {
-			for (Text part : child) {
+		for (var child : getSiblings()) {
+			for (var part : child) {
 				list.add(part);
 			}
 		}
@@ -482,8 +481,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
-		} else if (obj instanceof Text) {
-			Text t = (Text) obj;
+		} else if (obj instanceof Text t) {
 
 			if (color == t.color && bold == t.bold && italic == t.italic && underlined == t.underlined && strikethrough == t.strikethrough && obfuscated == t.obfuscated) {
 				return Objects.equals(insertion, t.insertion) && Objects.equals(font, t.font) && Objects.equals(click, t.click) && Objects.equals(hover, t.hover) && Objects.equals(siblings, t.siblings);

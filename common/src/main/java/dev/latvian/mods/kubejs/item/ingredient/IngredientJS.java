@@ -117,7 +117,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 
 			List<IngredientJS> in = new ArrayList<>();
 
-			for (ItemStack stack : ((IngredientKJS) o).getItemsKJS()) {
+			for (var stack : ((IngredientKJS) o).getItemsKJS()) {
 				if (!stack.isEmpty()) {
 					in.add(ItemStackJS.of(stack));
 				}
@@ -131,7 +131,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 		if (list != null) {
 			MatchAnyIngredientJS l = new MatchAnyIngredientJS();
 
-			for (Object o1 : list) {
+			for (var o1 : list) {
 				IngredientJS ingredient = of(o1);
 
 				if (ingredient != ItemStackJS.EMPTY) {
@@ -200,7 +200,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 		if (json.isJsonArray()) {
 			MatchAnyIngredientJS any = new MatchAnyIngredientJS();
 
-			for (JsonElement e : json.getAsJsonArray()) {
+			for (var e : json.getAsJsonArray()) {
 				any.ingredients.add(ingredientFromRecipeJson(e));
 			}
 
@@ -276,7 +276,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 	default Set<ItemStackJS> getStacks() {
 		Set<ItemStackJS> set = new LinkedHashSet<>();
 
-		for (ItemStackJS stack : ItemStackJS.getList()) {
+		for (var stack : ItemStackJS.getList()) {
 			if (test(stack)) {
 				set.add(stack.copy());
 			}
@@ -288,7 +288,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 	default Set<Item> getVanillaItems() {
 		Set<Item> set = new LinkedHashSet<>();
 
-		for (Item item : KubeJSRegistries.items()) {
+		for (var item : KubeJSRegistries.items()) {
 			if (item != Items.AIR && testVanillaItem(item)) {
 				set.add(item);
 			}
@@ -300,7 +300,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 	default Set<String> getItemIds() {
 		Set<String> ids = new LinkedHashSet<>();
 
-		for (Item item : getVanillaItems()) {
+		for (var item : getVanillaItems()) {
 			ResourceLocation id = KubeJSRegistries.items().getId(item);
 
 			if (id != null) {
@@ -320,7 +320,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 	}
 
 	default ItemStackJS getFirst() {
-		for (ItemStackJS stack : getStacks()) {
+		for (var stack : getStacks()) {
 			if (!stack.isEmpty()) {
 				return stack.withCount(getCount());
 			}
@@ -360,7 +360,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 
 		JsonArray array = new JsonArray();
 
-		for (ItemStackJS stackJS : set) {
+		for (var stackJS : set) {
 			array.add(stackJS.toJson());
 		}
 
@@ -368,7 +368,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 	}
 
 	default boolean anyStackMatches(IngredientJS ingredient) {
-		for (ItemStackJS stack : getStacks()) {
+		for (var stack : getStacks()) {
 			if (ingredient.test(stack)) {
 				return true;
 			}

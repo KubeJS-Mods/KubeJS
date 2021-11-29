@@ -25,7 +25,7 @@ public interface ItemHandler extends Iterable<ItemStack> {
 	@NotNull
 	@Override
 	default Iterator<ItemStack> iterator() {
-		return new Iterator<ItemStack>() {
+		return new Iterator<>() {
 			private int cursor;
 
 			@Override

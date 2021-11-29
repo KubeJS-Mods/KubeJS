@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs;
 
-import dev.architectury.platform.Mod;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.utils.EnvExecutor;
@@ -88,7 +87,7 @@ public class KubeJS {
 		long now = System.currentTimeMillis();
 		LOGGER.info("Looking for KubeJS plugins...");
 
-		for (Mod mod : Platform.getMods()) {
+		for (var mod : Platform.getMods()) {
 			try {
 				KubeJSPlugins.load(mod.getModId(), mod.getFilePath());
 			} catch (Exception ex) {

@@ -57,7 +57,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -311,8 +310,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			return new DummyFluidItemStackJS((FluidStackJS) o);
 		} else if (o instanceof IngredientJS) {
 			return ((IngredientJS) o).getFirst();
-		} else if (o instanceof ItemStack) {
-			ItemStack stack = (ItemStack) o;
+		} else if (o instanceof ItemStack stack) {
 			return stack.isEmpty() ? EMPTY : new ItemStackJS(stack);
 		} else if (o instanceof ResourceLocation) {
 			Item item = KubeJSRegistries.items().get((ResourceLocation) o);
@@ -514,20 +512,20 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		LinkedHashSet<ItemStackJS> set = new LinkedHashSet<>();
 		NonNullList<ItemStack> stackList = NonNullList.create();
 
-		for (Item item : KubeJSRegistries.items()) {
+		for (var item : KubeJSRegistries.items()) {
 			try {
 				item.fillItemCategory(CreativeModeTab.TAB_SEARCH, stackList);
 			} catch (Throwable ex) {
 			}
 		}
 
-		for (ItemStack stack : stackList) {
+		for (var stack : stackList) {
 			if (!stack.isEmpty()) {
 				set.add(new ItemStackJS(stack).withCount(1));
 			}
 		}
 
-		cachedItemList = Collections.unmodifiableList(Arrays.asList(set.toArray(new ItemStackJS[0])));
+		cachedItemList = List.of(set.toArray(new ItemStackJS[0]));
 		return cachedItemList;
 	}
 
@@ -548,7 +546,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		if (cachedItemTypeListJS == null) {
 			cachedItemTypeListJS = new ListJS();
 
-			for (ResourceLocation id : KubeJSRegistries.items().getIds()) {
+			for (var id : KubeJSRegistries.items().getIds()) {
 				cachedItemTypeListJS.add(id.toString());
 			}
 		}
@@ -558,7 +556,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 	@Nullable
 	public static CreativeModeTab findGroup(String id) {
-		for (CreativeModeTab group : CreativeModeTab.TABS) {
+		for (var group : CreativeModeTab.TABS) {
 			if (id.equals(group.getRecipeFolderName())) {
 				return group;
 			}
@@ -682,7 +680,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			is.setTag(nbt);
 		} else {
 			if (nbt != null && !nbt.isEmpty()) {
-				for (String key : nbt.getAllKeys()) {
+				for (var key : nbt.getAllKeys()) {
 					is.getTag().put(key, nbt.get(key));
 				}
 			}
@@ -863,8 +861,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	public boolean equals(Object o) {
 		if (o instanceof CharSequence) {
 			return getId().equals(UtilsJS.getID(o.toString()));
-		} else if (o instanceof ItemStack) {
-			ItemStack s = (ItemStack) o;
+		} else if (o instanceof ItemStack s) {
 			return !s.isEmpty() && areItemsEqual(s) && isNBTEqual(s);
 		}
 
@@ -875,8 +872,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	public boolean strongEquals(Object o) {
 		if (o instanceof CharSequence) {
 			return getId().equals(UtilsJS.getID(o.toString())) && getCount() == 1 && !hasNBT();
-		} else if (o instanceof ItemStack) {
-			ItemStack s = (ItemStack) o;
+		} else if (o instanceof ItemStack s) {
 			return getCount() == s.getCount() && areItemsEqual(s) && isNBTEqual(s);
 		}
 
@@ -944,7 +940,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			} else {
 				ListJS lore1 = new ListJS(lore.size());
 
-				for (Object o1 : lore) {
+				for (var o1 : lore) {
 					lore1.add(Component.Serializer.toJson(Text.componentOf(o1)));
 				}
 
@@ -955,7 +951,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		ListJS list = ListJS.of(nbt.get("Lore"));
 
 		if (list != null) {
-			for (Object o : list) {
+			for (var o : list) {
 				try {
 					lore.add(Component.Serializer.fromJson(o.toString()));
 				} catch (JsonParseException var19) {

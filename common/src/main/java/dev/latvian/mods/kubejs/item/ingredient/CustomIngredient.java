@@ -48,7 +48,7 @@ public class CustomIngredient implements IngredientJS {
 	public Set<ItemStackJS> getStacks() {
 		Set<ItemStackJS> set = new LinkedHashSet<>();
 
-		for (int i : ingredient.getStackingIds()) {
+		for (var i : ingredient.getStackingIds()) {
 			set.add(ItemStackJS.of(StackedContents.fromStackingIndex(i)));
 		}
 
@@ -59,7 +59,7 @@ public class CustomIngredient implements IngredientJS {
 	public Set<Item> getVanillaItems() {
 		Set<Item> set = new LinkedHashSet<>();
 
-		for (int i : ingredient.getStackingIds()) {
+		for (var i : ingredient.getStackingIds()) {
 			Item item = Item.byId(i);
 
 			if (item != Items.AIR) {

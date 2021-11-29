@@ -201,7 +201,7 @@ public class KubeJSCommands {
 		List<ResourceLocation> tags = new ArrayList<>(Tags.byItem(stack.getItem()));
 		tags.sort(null);
 
-		for (ResourceLocation id : tags) {
+		for (var id : tags) {
 			player.sendMessage(copy("'#" + id + "'", ChatFormatting.YELLOW, "Item Tag [" + TagIngredientJS.createTag(id.toString()).getStacks().size() + " items]"), Util.NIL_UUID);
 		}
 
@@ -224,7 +224,7 @@ public class KubeJSCommands {
 
 	private static int dump(List<ItemStack> stacks, ServerPlayer player, String name) {
 		List<ItemStackJS> stackList = new ArrayList<>(stacks.size());
-		for (ItemStack stack : stacks) {
+		for (var stack : stacks) {
 			if (!stack.isEmpty()) {
 				stackList.add(ItemStackJS.of(stack));
 			}
@@ -319,7 +319,7 @@ public class KubeJSCommands {
 		Collection<String> collection2 = Lists.newArrayList(collection);
 		Collection<String> collection3 = worldData.getDataPackConfig().getDisabled();
 
-		for (String string : packRepository.getAvailableIds()) {
+		for (var string : packRepository.getAvailableIds()) {
 			if (!collection3.contains(string) && !collection2.contains(string)) {
 				collection2.add(string);
 			}
@@ -354,7 +354,7 @@ public class KubeJSCommands {
 
 		player.sendMessage(new TextComponent(t + ":"), Util.NIL_UUID);
 
-		for (T item : tag.getValues()) {
+		for (var item : tag.getValues()) {
 			ResourceLocation id = Registries.getId(item, reg);
 			if (id == null) {
 				player.sendMessage(new TextComponent("- " + item), Util.NIL_UUID);
@@ -373,7 +373,7 @@ public class KubeJSCommands {
 	}
 
 	private static int addStage(CommandSourceStack source, Collection<ServerPlayer> players, String stage) {
-		for (ServerPlayer p : players) {
+		for (var p : players) {
 			if (Stages.get(p).add(stage)) {
 				source.sendSuccess(new TextComponent("Added '" + stage + "' stage for " + p.getScoreboardName()), false);
 			}
@@ -383,7 +383,7 @@ public class KubeJSCommands {
 	}
 
 	private static int removeStage(CommandSourceStack source, Collection<ServerPlayer> players, String stage) {
-		for (ServerPlayer p : players) {
+		for (var p : players) {
 			if (Stages.get(p).remove(stage)) {
 				source.sendSuccess(new TextComponent("Removed '" + stage + "' stage for " + p.getScoreboardName()), false);
 			}
@@ -393,7 +393,7 @@ public class KubeJSCommands {
 	}
 
 	private static int clearStages(CommandSourceStack source, Collection<ServerPlayer> players) {
-		for (ServerPlayer p : players) {
+		for (var p : players) {
 			if (Stages.get(p).clear()) {
 				source.sendSuccess(new TextComponent("Cleared stages for " + p.getScoreboardName()), false);
 			}
@@ -403,7 +403,7 @@ public class KubeJSCommands {
 	}
 
 	private static int listStages(CommandSourceStack source, Collection<ServerPlayer> players) {
-		for (ServerPlayer p : players) {
+		for (var p : players) {
 			source.sendSuccess(new TextComponent(p.getScoreboardName() + " stages:"), false);
 			Stages.get(p).getAll().stream().sorted().forEach(s -> source.sendSuccess(new TextComponent("- " + s), false));
 		}

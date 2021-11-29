@@ -108,7 +108,7 @@ public class RecipesAfterLoadEventJS extends EventJS {
 
 			Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> newMap = new HashMap<>();
 
-			for (RecipeJS r : e.originalRecipes) {
+			for (var r : e.originalRecipes) {
 				newMap.computeIfAbsent(r.originalRecipe.getType(), t -> new HashMap<>()).put(r.id, r.originalRecipe);
 			}
 

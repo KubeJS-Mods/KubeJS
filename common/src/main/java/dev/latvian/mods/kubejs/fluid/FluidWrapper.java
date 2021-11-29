@@ -62,7 +62,7 @@ public class FluidWrapper {
 	public static List<String> getTypes() {
 		List<String> types = new ArrayList<>();
 
-		for (ResourceLocation id : KubeJSRegistries.fluids().getIds()) {
+		for (var id : KubeJSRegistries.fluids().getIds()) {
 			types.add(id.toString());
 		}
 

@@ -137,7 +137,7 @@ public abstract class Stages {
 			return false;
 		}
 
-		for (String s : new ArrayList<>(all)) {
+		for (var s : new ArrayList<>(all)) {
 			remove(s);
 		}
 
@@ -153,11 +153,11 @@ public abstract class Stages {
 	public void replace(Collection<String> stages) {
 		Collection<String> all = getAll();
 
-		for (String s : new ArrayList<>(all)) {
+		for (var s : new ArrayList<>(all)) {
 			removeNoUpdate(s);
 		}
 
-		for (String s : stages) {
+		for (var s : stages) {
 			addNoUpdate(s);
 		}
 	}

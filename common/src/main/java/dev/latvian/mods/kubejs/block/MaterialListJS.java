@@ -79,7 +79,7 @@ public class MaterialListJS {
 	}
 
 	public MaterialJS get(Material minecraftMaterial) {
-		for (MaterialJS materialJS : map.values()) {
+		for (var materialJS : map.values()) {
 			if (materialJS.getMinecraftMaterial() == minecraftMaterial) {
 				return materialJS;
 			}

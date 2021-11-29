@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.client.painter.screen;
 
-import dev.latvian.mods.kubejs.client.painter.PainterObject;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectStorage;
 import dev.latvian.mods.rhino.util.unit.FixedUnit;
@@ -42,9 +41,8 @@ public class ScreenGroup extends ScreenPainterObject {
 		w = FixedUnit.ZERO;
 		h = FixedUnit.ZERO;
 
-		for (PainterObject object : storage.getObjects()) {
-			if (object instanceof ScreenPainterObject) {
-				ScreenPainterObject s = (ScreenPainterObject) object;
+		for (var object : storage.getObjects()) {
+			if (object instanceof ScreenPainterObject s) {
 				s.preDraw(event);
 				w = w.max(s.x.add(s.w));
 				h = h.max(s.y.add(s.h));
@@ -65,9 +63,8 @@ public class ScreenGroup extends ScreenPainterObject {
 		event.translate(ax, ay, az);
 		event.scale(scaleX, scaleY, scaleZ);
 
-		for (PainterObject object : storage.getObjects()) {
-			if (object instanceof ScreenPainterObject) {
-				ScreenPainterObject s = (ScreenPainterObject) object;
+		for (var object : storage.getObjects()) {
+			if (object instanceof ScreenPainterObject s) {
 				s.draw(event);
 			}
 		}

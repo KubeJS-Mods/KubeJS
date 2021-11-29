@@ -16,7 +16,7 @@ public interface TagCollectionKJS<T> {
 	default void customTagsKJS(Map<ResourceLocation, Tag.Builder> map) {
 		TagIngredientJS.clearTagCache();
 		String c = getResourceLocationPrefixKJS().substring(5);
-		new TagEventJS<T>(c, map, getRegistryKJS()).post("tags." + c);
+		new TagEventJS<>(c, map, getRegistryKJS()).post("tags." + c);
 	}
 
 	Function<ResourceLocation, Optional<T>> getRegistryKJS();

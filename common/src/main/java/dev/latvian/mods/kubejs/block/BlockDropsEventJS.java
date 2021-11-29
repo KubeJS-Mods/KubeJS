@@ -56,7 +56,7 @@ public class BlockDropsEventJS extends PlayerEventJS {
 		{
 			dropList = new ArrayList<>();
 
-			for (ItemStack stack : event.getDrops())
+			for (var stack : event.getDrops())
 			{
 				dropList.add(ItemStackJS.of(stack));
 			}

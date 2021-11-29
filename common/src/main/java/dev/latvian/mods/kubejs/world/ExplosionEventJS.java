@@ -98,7 +98,7 @@ public abstract class ExplosionEventJS extends WorldEventJS {
 		public List<BlockContainerJS> getAffectedBlocks() {
 			List<BlockContainerJS> list = new ArrayList<>(explosion.getToBlow().size());
 
-			for (BlockPos pos : explosion.getToBlow()) {
+			for (var pos : explosion.getToBlow()) {
 				list.add(new BlockContainerJS(world, pos));
 			}
 

@@ -25,7 +25,7 @@ public class MultipartBlockStateGenerator {
 			if (!when.isEmpty()) {
 				JsonObject whenJson = new JsonObject();
 
-				for (String s : when.split(",")) {
+				for (var s : when.split(",")) {
 					String[] s1 = s.split("=", 2);
 
 					if (s1.length == 2 && !s1[0].isEmpty() && !s1[1].isEmpty()) {

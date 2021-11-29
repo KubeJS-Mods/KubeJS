@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.script;
 
 import dev.architectury.injectables.targets.ArchitecturyTarget;
-import dev.architectury.platform.Mod;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import dev.latvian.mods.kubejs.KubeJS;
@@ -44,7 +43,7 @@ public class PlatformWrapper {
 	private static final Map<String, ModInfo> MOD_MAP = new LinkedHashMap<>();
 
 	static {
-		for (Mod mod : Platform.getMods()) {
+		for (var mod : Platform.getMods()) {
 			ModInfo info = new ModInfo(mod.getModId());
 			info.name = mod.getName();
 			info.version = mod.getVersion();

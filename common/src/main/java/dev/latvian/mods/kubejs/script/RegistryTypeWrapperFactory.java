@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -26,7 +25,7 @@ public class RegistryTypeWrapperFactory<T> implements TypeWrapperFactory<T> {
 			all = new ArrayList<>();
 
 			try {
-				for (Field field : net.minecraft.core.Registry.class.getDeclaredFields()) {
+				for (var field : net.minecraft.core.Registry.class.getDeclaredFields()) {
 					if (field.getType() == ResourceKey.class && Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers())) {
 						String id = "unknown";
 

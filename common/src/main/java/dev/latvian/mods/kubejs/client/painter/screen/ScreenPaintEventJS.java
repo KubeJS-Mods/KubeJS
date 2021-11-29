@@ -36,25 +36,19 @@ public class ScreenPaintEventJS extends PaintEventJS {
 	}
 
 	public float alignX(float x, float w, int alignX) {
-		switch (alignX) {
-			case Painter.RIGHT:
-				return width - w + x;
-			case Painter.CENTER:
-				return (width - w) / 2 + x;
-			default:
-				return x;
-		}
+		return switch (alignX) {
+			case Painter.RIGHT -> width - w + x;
+			case Painter.CENTER -> (width - w) / 2 + x;
+			default -> x;
+		};
 	}
 
 	public float alignY(float y, float h, int alignY) {
-		switch (alignY) {
-			case Painter.BOTTOM:
-				return height - h + y;
-			case Painter.CENTER:
-				return (height - h) / 2 + y;
-			default:
-				return y;
-		}
+		return switch (alignY) {
+			case Painter.BOTTOM -> height - h + y;
+			case Painter.CENTER -> (height - h) / 2 + y;
+			default -> y;
+		};
 	}
 
 	public void translate(double x, double y) {

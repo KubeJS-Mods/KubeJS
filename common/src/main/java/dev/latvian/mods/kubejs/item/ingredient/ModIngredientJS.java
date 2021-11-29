@@ -48,7 +48,7 @@ public class ModIngredientJS implements IngredientJS {
 	public Set<ItemStackJS> getStacks() {
 		Set<ItemStackJS> set = new LinkedHashSet<>();
 
-		for (ItemStackJS stack : ItemStackJS.getList()) {
+		for (var stack : ItemStackJS.getList()) {
 			if (mod.equals(stack.getMod())) {
 				set.add(stack);
 			}
@@ -59,7 +59,7 @@ public class ModIngredientJS implements IngredientJS {
 
 	@Override
 	public ItemStackJS getFirst() {
-		for (ItemStackJS stack : ItemStackJS.getList()) {
+		for (var stack : ItemStackJS.getList()) {
 			if (mod.equals(stack.getMod())) {
 				return stack.copy();
 			}

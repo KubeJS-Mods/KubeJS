@@ -55,7 +55,7 @@ public class WorldgenAddEventJS extends StartupEventJS {
 
 		AnyRuleTest ruleTest = new AnyRuleTest();
 
-		for (Object o : ListJS.orSelf(properties.spawnsIn.values)) {
+		for (var o : ListJS.orSelf(properties.spawnsIn.values)) {
 			String s = String.valueOf(o);
 			boolean invert = false;
 

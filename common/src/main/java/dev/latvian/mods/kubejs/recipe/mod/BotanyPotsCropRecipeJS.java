@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.mod;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
@@ -20,7 +19,7 @@ public class BotanyPotsCropRecipeJS extends RecipeJS {
 
 	@Override
 	public void create(ListJS args) {
-		for (Object o : ListJS.orSelf(args.get(0))) {
+		for (var o : ListJS.orSelf(args.get(0))) {
 			if (o instanceof Map) {
 				Map<String, Object> m = (Map<String, Object>) o;
 				outputItems.add(parseResultItem(m.get("item")));
@@ -49,7 +48,7 @@ public class BotanyPotsCropRecipeJS extends RecipeJS {
 	public void deserialize() {
 		inputItems.add(parseIngredientItem(json.get("seed")));
 
-		for (JsonElement e : json.get("results").getAsJsonArray()) {
+		for (var e : json.get("results").getAsJsonArray()) {
 			JsonObject o = e.getAsJsonObject();
 			ItemStackJS is = parseResultItem(o.get("output"));
 
@@ -72,7 +71,7 @@ public class BotanyPotsCropRecipeJS extends RecipeJS {
 	public BotanyPotsCropRecipeJS categories(String[] c) {
 		JsonArray categories = new JsonArray();
 
-		for (String s : c) {
+		for (var s : c) {
 			categories.add(s);
 		}
 

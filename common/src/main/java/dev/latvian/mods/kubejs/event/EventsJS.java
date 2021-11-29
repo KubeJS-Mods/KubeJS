@@ -53,7 +53,7 @@ public class EventsJS {
 
 		boolean c = event.canCancel();
 
-		for (ScriptEventHandler handler : list) {
+		for (var handler : list) {
 			try {
 				handler.handler.onEvent(event);
 

@@ -10,8 +10,6 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSObjects;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
-import dev.latvian.mods.kubejs.block.BlockBuilder;
-import dev.latvian.mods.kubejs.block.DetectorInstance;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.player.InventoryChangedEventJS;
@@ -56,7 +54,7 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static void registry() {
-		for (ItemBuilder builder : KubeJSObjects.ITEMS.values()) {
+		for (var builder : KubeJSObjects.ITEMS.values()) {
 			builder.item = builder.type.createItem(builder);
 
 			if (builder.item instanceof ItemKJS) {
@@ -66,7 +64,7 @@ public class KubeJSItemEventHandler {
 			KubeJSRegistries.items().register(builder.id, () -> builder.item);
 		}
 
-		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
+		for (var builder : KubeJSObjects.BLOCKS.values()) {
 			if (builder.itemBuilder != null) {
 				builder.itemBuilder.blockItem = new BlockItemJS(builder.itemBuilder);
 
@@ -78,12 +76,12 @@ public class KubeJSItemEventHandler {
 			}
 		}
 
-		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values()) {
+		for (var builder : KubeJSObjects.FLUIDS.values()) {
 			builder.bucketItem = buildBucket(builder);
 			KubeJSRegistries.items().register(builder.newID("", "_bucket"), () -> builder.bucketItem);
 		}
 
-		for (DetectorInstance detector : KubeJSObjects.DETECTORS.values()) {
+		for (var detector : KubeJSObjects.DETECTORS.values()) {
 			detector.item = KubeJSRegistries.items().register(KubeJS.id("detector_" + detector.id), () -> new BlockItem(detector.block.get(), new Item.Properties().tab(KubeJS.tab)));
 		}
 

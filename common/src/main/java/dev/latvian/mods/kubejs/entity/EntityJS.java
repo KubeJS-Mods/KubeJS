@@ -31,7 +31,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Team;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
@@ -457,7 +456,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 
 		CompoundTag nbt = getFullNBT();
 
-		for (String k : tag.getAllKeys()) {
+		for (var k : tag.getAllKeys()) {
 			Tag t = tag.get(k);
 
 			if (t == null || t == EndTag.INSTANCE) {
@@ -493,7 +492,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 			damageSourceMap = new HashMap<>();
 
 			try {
-				for (Field field : DamageSource.class.getDeclaredFields()) {
+				for (var field : DamageSource.class.getDeclaredFields()) {
 					field.setAccessible(true);
 
 					if (Modifier.isStatic(field.getModifiers()) && field.getType() == DamageSource.class) {

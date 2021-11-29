@@ -42,43 +42,25 @@ public abstract class ScreenPainterObject extends PainterObject {
 
 		if (properties.hasString("draw")) {
 			switch (properties.getString("draw", "ingame")) {
-				case "always":
-					draw = Painter.DRAW_ALWAYS;
-					break;
-				case "gui":
-					draw = Painter.DRAW_GUI;
-					break;
-				default:
-					draw = Painter.DRAW_INGAME;
-					break;
+				case "always" -> draw = Painter.DRAW_ALWAYS;
+				case "gui" -> draw = Painter.DRAW_GUI;
+				default -> draw = Painter.DRAW_INGAME;
 			}
 		}
 
 		if (properties.hasString("alignX")) {
 			switch (properties.getString("alignX", "left")) {
-				case "right":
-					alignX = Painter.RIGHT;
-					break;
-				case "center":
-					alignX = Painter.CENTER;
-					break;
-				default:
-					alignX = Painter.LEFT;
-					break;
+				case "right" -> alignX = Painter.RIGHT;
+				case "center" -> alignX = Painter.CENTER;
+				default -> alignX = Painter.LEFT;
 			}
 		}
 
 		if (properties.hasString("alignY")) {
 			switch (properties.getString("alignY", "top")) {
-				case "bottom":
-					alignY = Painter.BOTTOM;
-					break;
-				case "center":
-					alignY = Painter.CENTER;
-					break;
-				default:
-					alignY = Painter.TOP;
-					break;
+				case "bottom" -> alignY = Painter.BOTTOM;
+				case "center" -> alignY = Painter.CENTER;
+				default -> alignY = Painter.TOP;
 			}
 		}
 	}

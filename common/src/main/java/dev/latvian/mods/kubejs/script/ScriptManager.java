@@ -72,7 +72,7 @@ public class ScriptManager {
 		ScriptPack pack = new ScriptPack(this, new ScriptPackInfo(directory.getFileName().toString(), ""));
 		KubeJS.loadScripts(pack, directory, "");
 
-		for (ScriptFileInfo fileInfo : pack.info.scripts) {
+		for (var fileInfo : pack.info.scripts) {
 			ScriptSource.FromPath scriptSource = info -> directory.resolve(info.file);
 
 			Throwable error = fileInfo.preload(scriptSource);
@@ -116,7 +116,7 @@ public class ScriptManager {
 		int i = 0;
 		int t = 0;
 
-		for (ScriptPack pack : packs.values()) {
+		for (var pack : packs.values()) {
 			try {
 				pack.context = context;
 				pack.scope = context.initStandardObjects();
@@ -125,7 +125,7 @@ public class ScriptManager {
 				KubeJSPlugins.forEachPlugin(plugin -> plugin.addBindings(event));
 				BindingsEvent.EVENT.invoker().accept(event);
 
-				for (ScriptFile file : pack.scripts) {
+				for (var file : pack.scripts) {
 					t++;
 					long start = System.currentTimeMillis();
 

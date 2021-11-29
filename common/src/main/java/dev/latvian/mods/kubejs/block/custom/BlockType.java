@@ -55,11 +55,11 @@ public abstract class BlockType {
 						boxes.add(new AABB(0D, 0D, 0D, 1D, 1D, 1D));
 					}
 
-					for (AABB box : boxes) {
+					for (var box : boxes) {
 						m.element(e -> {
 							e.box(box);
 
-							for (Direction direction : Direction.values()) {
+							for (var direction : Direction.values()) {
 								e.face(direction, face -> {
 									face.tex("#" + direction.getSerializedName());
 									face.cull();
@@ -120,7 +120,7 @@ public abstract class BlockType {
 				cube.add("to", to);
 				JsonObject faces = new JsonObject();
 
-				for (Direction direction : Direction.values()) {
+				for (var direction : Direction.values()) {
 					JsonObject f = new JsonObject();
 					f.addProperty("texture", "#" + direction.getSerializedName());
 					f.addProperty("cullface", direction.getSerializedName());
@@ -142,7 +142,7 @@ public abstract class BlockType {
 	}
 
 	private boolean areAllTexturesEqual(JsonObject tex, String t) {
-		for (Direction direction : Direction.values()) {
+		for (var direction : Direction.values()) {
 			if (!tex.get(direction.getSerializedName()).getAsString().equals(t)) {
 				return false;
 			}

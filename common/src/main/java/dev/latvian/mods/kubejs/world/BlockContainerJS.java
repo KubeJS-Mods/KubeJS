@@ -157,13 +157,13 @@ public class BlockContainerJS implements SpecialEquality {
 		BlockState state = block.defaultBlockState();
 
 		if (!properties.isEmpty() && state.getBlock() != Blocks.AIR) {
-			Map<String, Property> pmap = new HashMap<>();
+			Map<String, Property<?>> pmap = new HashMap<>();
 
-			for (Property property : state.getProperties()) {
+			for (var property : state.getProperties()) {
 				pmap.put(property.getName(), property);
 			}
 
-			for (Map.Entry entry : properties.entrySet()) {
+			for (var entry : properties.entrySet()) {
 				Property<?> property = pmap.get(String.valueOf(entry.getKey()));
 
 				if (property != null) {
@@ -235,7 +235,7 @@ public class BlockContainerJS implements SpecialEquality {
 		if (t == null) {
 			setEntityData(tag);
 		} else if (tag != null && !tag.isEmpty()) {
-			for (String s : tag.getAllKeys()) {
+			for (var s : tag.getAllKeys()) {
 				t.put(s, tag.get(s));
 			}
 		}
@@ -356,7 +356,7 @@ public class BlockContainerJS implements SpecialEquality {
 	public EntityArrayList getPlayersInRadius(double radius) {
 		EntityArrayList list = new EntityArrayList(getWorld(), 1);
 
-		for (Player player : minecraftLevel.getEntitiesOfClass(Player.class, new AABB(pos.getX() - radius, pos.getY() - radius, pos.getZ() - radius, pos.getX() + 1D + radius, pos.getY() + 1D + radius, pos.getZ() + 1D + radius), BlockContainerJS::isReal)) {
+		for (var player : minecraftLevel.getEntitiesOfClass(Player.class, new AABB(pos.getX() - radius, pos.getY() - radius, pos.getZ() - radius, pos.getX() + 1D + radius, pos.getY() + 1D + radius, pos.getZ() + 1D + radius), BlockContainerJS::isReal)) {
 			PlayerJS<?> p = getWorld().getPlayer(player);
 
 			if (p != null) {

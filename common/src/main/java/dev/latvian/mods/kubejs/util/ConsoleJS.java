@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
@@ -332,7 +331,7 @@ public class ConsoleJS {
 		StackTraceElement[] elements = Thread.currentThread().getStackTrace();
 		info("=== Stack Trace ===");
 
-		for (StackTraceElement element : elements) {
+		for (var element : elements) {
 			info("=\t" + element);
 		}
 	}
@@ -357,7 +356,7 @@ public class ConsoleJS {
 			HashMap<String, VarFunc> vars = new HashMap<>();
 			HashMap<String, VarFunc> funcs = new HashMap<>();
 
-			for (Field field : c.getDeclaredFields()) {
+			for (var field : c.getDeclaredFields()) {
 				if ((field.getModifiers() & Modifier.PUBLIC) == 0 || (field.getModifiers() & Modifier.TRANSIENT) == 0) {
 					continue;
 				}
@@ -372,7 +371,7 @@ public class ConsoleJS {
 				vars.put(f.name, f);
 			}
 
-			for (Method method : c.getDeclaredMethods()) {
+			for (var method : c.getDeclaredMethods()) {
 				if ((method.getModifiers() & Modifier.PUBLIC) == 0 || isOverrideMethod(method)) {
 					continue;
 				}

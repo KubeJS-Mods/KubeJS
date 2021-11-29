@@ -38,7 +38,7 @@ public final class FilteredIngredientJS implements IngredientJS {
 	public Set<ItemStackJS> getStacks() {
 		Set<ItemStackJS> set = new LinkedHashSet<>();
 
-		for (ItemStackJS stack : ingredient.getStacks()) {
+		for (var stack : ingredient.getStacks()) {
 			if (filter.test(stack)) {
 				set.add(stack);
 			}
@@ -51,7 +51,7 @@ public final class FilteredIngredientJS implements IngredientJS {
 	public Set<Item> getVanillaItems() {
 		Set<Item> set = new LinkedHashSet<>();
 
-		for (Item item : ingredient.getVanillaItems()) {
+		for (var item : ingredient.getVanillaItems()) {
 			if (filter.testVanillaItem(item)) {
 				set.add(item);
 			}

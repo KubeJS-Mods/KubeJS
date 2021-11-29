@@ -121,7 +121,7 @@ public class ModelGenerator {
 		if (!elements.isEmpty()) {
 			JsonArray a = new JsonArray();
 
-			for (Element e : elements) {
+			for (var e : elements) {
 				a.add(e.toJson());
 			}
 

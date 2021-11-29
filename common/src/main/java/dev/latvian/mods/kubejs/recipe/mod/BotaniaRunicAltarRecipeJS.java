@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.mod;
 
 import com.google.gson.JsonArray;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 
@@ -37,7 +36,7 @@ public class BotaniaRunicAltarRecipeJS extends RecipeJS {
 		if (serializeInputs) {
 			JsonArray a = new JsonArray();
 
-			for (IngredientJS in : inputItems) {
+			for (var in : inputItems) {
 				a.add(in.toJson());
 			}
 

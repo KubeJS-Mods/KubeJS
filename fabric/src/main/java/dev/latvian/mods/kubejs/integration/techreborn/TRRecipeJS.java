@@ -80,7 +80,7 @@ public class TRRecipeJS extends RecipeJS {
 		if (serializeOutputs) {
 			JsonArray array = new JsonArray();
 
-			for (ItemStackJS out : outputItems) {
+			for (var out : outputItems) {
 				array.add(out.toResultJson());
 			}
 
@@ -90,7 +90,7 @@ public class TRRecipeJS extends RecipeJS {
 		if (serializeInputs) {
 			JsonArray array = new JsonArray();
 
-			for (IngredientJS in : inputItems) {
+			for (var in : inputItems) {
 				array.add(in.toJson());
 			}
 
@@ -100,8 +100,7 @@ public class TRRecipeJS extends RecipeJS {
 
 	@Override
 	public IngredientJS parseIngredientItem(Object o, String key) {
-		if (o instanceof JsonObject) {
-			JsonObject json = (JsonObject) o;
+		if (o instanceof JsonObject json) {
 
 			ResourceLocation type = DummyRebornIngredient.STACK_RECIPE_TYPE;
 

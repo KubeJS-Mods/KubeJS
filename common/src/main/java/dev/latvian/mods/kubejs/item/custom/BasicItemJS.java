@@ -52,7 +52,7 @@ public class BasicItemJS extends Item {
 	@Override
 	public void fillItemCategory(CreativeModeTab category, NonNullList<ItemStack> stacks) {
 		if (subtypes != null) {
-			for (ItemStackJS stack : subtypes.apply(ItemStackJS.of(this))) {
+			for (var stack : subtypes.apply(ItemStackJS.of(this))) {
 				stacks.add(stack.getItemStack());
 			}
 		} else {

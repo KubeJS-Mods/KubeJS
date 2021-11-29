@@ -173,7 +173,7 @@ public class BlockBuilder extends BuilderBase {
 	}
 
 	public BlockBuilder texture(String tex) {
-		for (Direction direction : Direction.values()) {
+		for (var direction : Direction.values()) {
 			textures.addProperty(direction.getSerializedName(), tex);
 		}
 

@@ -39,11 +39,11 @@ public class ShapedRecipeJS extends RecipeJS {
 
 			int id = 0;
 
-			for (Object o : vertical) {
+			for (var o : vertical) {
 				StringBuilder horizontalPattern = new StringBuilder();
 				ListJS horizontal = ListJS.orSelf(o);
 
-				for (Object item : horizontal) {
+				for (var item : horizontal) {
 					IngredientJS ingredient = IngredientJS.of(item);
 
 					if (!ingredient.isEmpty()) {
@@ -85,7 +85,7 @@ public class ShapedRecipeJS extends RecipeJS {
 			throw new RecipeExceptionJS("Key map is empty!");
 		}
 
-		for (String k : key1.keySet()) {
+		for (var k : key1.keySet()) {
 			Object o = key1.get(k);
 
 			if (o == ItemStackJS.EMPTY || o.equals("minecraft:air")) {
@@ -96,10 +96,10 @@ public class ShapedRecipeJS extends RecipeJS {
 			}
 		}
 
-		for (Object p : pattern1) {
+		for (var p : pattern1) {
 			String s = String.valueOf(p);
 
-			for (String s1 : airs) {
+			for (var s1 : airs) {
 				s = s.replace(s1, " ");
 			}
 
@@ -111,7 +111,7 @@ public class ShapedRecipeJS extends RecipeJS {
 	public void deserialize() {
 		outputItems.add(parseResultItem(json.get("result")));
 
-		for (JsonElement e : json.get("pattern").getAsJsonArray()) {
+		for (var e : json.get("pattern").getAsJsonArray()) {
 			pattern.add(e.getAsString());
 		}
 
@@ -130,7 +130,7 @@ public class ShapedRecipeJS extends RecipeJS {
 		if (serializeInputs) {
 			JsonArray patternJson = new JsonArray();
 
-			for (String s : pattern) {
+			for (var s : pattern) {
 				patternJson.add(s);
 			}
 

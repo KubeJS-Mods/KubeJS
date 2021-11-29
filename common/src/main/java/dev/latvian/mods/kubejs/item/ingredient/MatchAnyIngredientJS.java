@@ -30,7 +30,7 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	}
 
 	public MatchAnyIngredientJS addAll(Object ingredients) {
-		for (Object o : ListJS.orSelf(ingredients)) {
+		for (var o : ListJS.orSelf(ingredients)) {
 			add(o);
 		}
 
@@ -43,7 +43,7 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 			return false;
 		}
 
-		for (IngredientJS ingredient : ingredients) {
+		for (var ingredient : ingredients) {
 			if (ingredient.test(stack)) {
 				return true;
 			}
@@ -58,7 +58,7 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 			return false;
 		}
 
-		for (IngredientJS ingredient : ingredients) {
+		for (var ingredient : ingredients) {
 			if (ingredient.testVanilla(stack)) {
 				return true;
 			}
@@ -73,7 +73,7 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 			return false;
 		}
 
-		for (IngredientJS ingredient : ingredients) {
+		for (var ingredient : ingredients) {
 			if (ingredient.testVanillaItem(item)) {
 				return true;
 			}
@@ -86,7 +86,7 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	public Set<ItemStackJS> getStacks() {
 		Set<ItemStackJS> set = new LinkedHashSet<>();
 
-		for (IngredientJS ingredient : ingredients) {
+		for (var ingredient : ingredients) {
 			set.addAll(ingredient.getStacks());
 		}
 
@@ -97,7 +97,7 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	public Set<Item> getVanillaItems() {
 		Set<Item> set = new LinkedHashSet<>();
 
-		for (IngredientJS ingredient : ingredients) {
+		for (var ingredient : ingredients) {
 			set.addAll(ingredient.getVanillaItems());
 		}
 
@@ -106,7 +106,7 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 
 	@Override
 	public boolean isEmpty() {
-		for (IngredientJS i : ingredients) {
+		for (var i : ingredients) {
 			if (!i.isEmpty()) {
 				return false;
 			}
@@ -124,7 +124,7 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	public IngredientJS copy() {
 		MatchAnyIngredientJS i = new MatchAnyIngredientJS();
 
-		for (IngredientJS in : ingredients) {
+		for (var in : ingredients) {
 			i.ingredients.add(in.copy());
 		}
 
@@ -138,7 +138,7 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 
 	@Override
 	public boolean isInvalidRecipeIngredient() {
-		for (IngredientJS i : ingredients) {
+		for (var i : ingredients) {
 			if (i.isInvalidRecipeIngredient()) {
 				return true;
 			}

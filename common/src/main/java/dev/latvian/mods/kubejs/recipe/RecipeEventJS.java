@@ -226,7 +226,7 @@ public class RecipeEventJS extends EventJS {
 					if (!recipe.inputItems.isEmpty()) {
 						JsonArray array = new JsonArray();
 
-						for (IngredientJS in : recipe.inputItems) {
+						for (var in : recipe.inputItems) {
 							array.add(in.toJson());
 						}
 
@@ -236,7 +236,7 @@ public class RecipeEventJS extends EventJS {
 					if (!recipe.outputItems.isEmpty()) {
 						JsonArray array = new JsonArray();
 
-						for (ItemStackJS out : recipe.outputItems) {
+						for (var out : recipe.outputItems) {
 							array.add(out.toResultJson());
 						}
 
@@ -352,7 +352,7 @@ public class RecipeEventJS extends EventJS {
 				});
 
 		if (ServerSettings.dataExport != null) {
-			for (RecipeJS r : removedRecipes) {
+			for (var r : removedRecipes) {
 				JsonElement e = allRecipeMap.get(r.getId());
 
 				if (e instanceof JsonObject) {
@@ -372,19 +372,19 @@ public class RecipeEventJS extends EventJS {
 		if (CommonProperties.get().debugInfo) {
 			ConsoleJS.SERVER.info("======== Debug output of all added recipes ========");
 
-			for (RecipeJS r : addedRecipes) {
+			for (var r : addedRecipes) {
 				ConsoleJS.SERVER.info(r.id + ": " + r.json);
 			}
 
 			ConsoleJS.SERVER.info("======== Debug output of all modified recipes ========");
 
-			for (RecipeJS r : modifiedRecipes) {
+			for (var r : modifiedRecipes) {
 				ConsoleJS.SERVER.info(r.id + ": " + r.json + " FROM " + r.originalJson);
 			}
 
 			ConsoleJS.SERVER.info("======== Debug output of all removed recipes ========");
 
-			for (RecipeJS r : removedRecipes) {
+			for (var r : removedRecipes) {
 				ConsoleJS.SERVER.info(r.id + ": " + r.json);
 			}
 		}

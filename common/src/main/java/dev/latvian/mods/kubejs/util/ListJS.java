@@ -79,7 +79,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 	public static ListJS of(byte[] array) {
 		ListJS list = new ListJS(array.length);
 
-		for (byte v : array) {
+		for (var v : array) {
 			list.add(v);
 		}
 
@@ -89,7 +89,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 	public static ListJS of(short[] array) {
 		ListJS list = new ListJS(array.length);
 
-		for (short v : array) {
+		for (var v : array) {
 			list.add(v);
 		}
 
@@ -99,7 +99,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 	public static ListJS of(int[] array) {
 		ListJS list = new ListJS(array.length);
 
-		for (int v : array) {
+		for (var v : array) {
 			list.add(v);
 		}
 
@@ -109,7 +109,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 	public static ListJS of(long[] array) {
 		ListJS list = new ListJS(array.length);
 
-		for (long v : array) {
+		for (var v : array) {
 			list.add(v);
 		}
 
@@ -119,7 +119,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 	public static ListJS of(float[] array) {
 		ListJS list = new ListJS(array.length);
 
-		for (float v : array) {
+		for (var v : array) {
 			list.add(v);
 		}
 
@@ -129,7 +129,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 	public static ListJS of(double[] array) {
 		ListJS list = new ListJS(array.length);
 
-		for (double v : array) {
+		for (var v : array) {
 			list.add(v);
 		}
 
@@ -139,7 +139,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 	public static ListJS of(char[] array) {
 		ListJS list = new ListJS(array.length);
 
-		for (char v : array) {
+		for (var v : array) {
 			list.add(v);
 		}
 
@@ -255,7 +255,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 	public ListJS filter(Predicate<Object> predicate) {
 		ListJS list = new ListJS();
 
-		for (Object o : this) {
+		for (var o : this) {
 			if (predicate.test(o)) {
 				list.add(o);
 			}
@@ -267,7 +267,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 	public ListJS map(Function<Object, Object> transformer) {
 		ListJS list = new ListJS();
 
-		for (Object o : this) {
+		for (var o : this) {
 			list.add(transformer.apply(o));
 		}
 
@@ -337,7 +337,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 	public ListJS copy() {
 		ListJS list = new ListJS(size());
 
-		for (Object object : this) {
+		for (var object : this) {
 			list.add(UtilsJS.copy(object));
 		}
 
@@ -445,7 +445,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 	public JsonArray toJson() {
 		JsonArray json = new JsonArray();
 
-		for (Object o : this) {
+		for (var o : this) {
 			JsonElement e = JsonUtilsJS.of(o);
 
 			if (!e.isJsonNull()) {
@@ -466,7 +466,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 		int s = 0;
 		byte commmonId = -1;
 
-		for (Object o : this) {
+		for (var o : this) {
 			values[s] = NBTUtils.toNBT(o);
 
 			if (values[s] != null) {
@@ -510,7 +510,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 
 		ListTag nbt = new ListTag();
 
-		for (Tag nbt1 : values) {
+		for (var nbt1 : values) {
 			if (nbt1 == null) {
 				return nbt;
 			}

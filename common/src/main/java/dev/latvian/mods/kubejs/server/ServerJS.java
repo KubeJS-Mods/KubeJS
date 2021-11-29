@@ -23,7 +23,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
@@ -146,14 +145,14 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	public void tell(Component message) {
 		getMinecraftServer().sendMessage(message, Util.NIL_UUID);
 
-		for (ServerPlayer player : getMinecraftServer().getPlayerList().getPlayers()) {
+		for (var player : getMinecraftServer().getPlayerList().getPlayers()) {
 			player.sendMessage(message, Util.NIL_UUID);
 		}
 	}
 
 	@Override
 	public void setStatusMessage(Component message) {
-		for (ServerPlayer player : getMinecraftServer().getPlayerList().getPlayers()) {
+		for (var player : getMinecraftServer().getPlayerList().getPlayers()) {
 			player.displayClientMessage(message, true);
 		}
 	}
@@ -229,13 +228,13 @@ public class ServerJS implements MessageSender, WithAttachedData {
 			return getPlayer(uuid);
 		}
 
-		for (ServerPlayerDataJS p : playerMap.values()) {
+		for (var p : playerMap.values()) {
 			if (p.getName().equalsIgnoreCase(name)) {
 				return p.getPlayer();
 			}
 		}
 
-		for (ServerPlayerDataJS p : playerMap.values()) {
+		for (var p : playerMap.values()) {
 			if (p.getName().toLowerCase().contains(name)) {
 				return p.getPlayer();
 			}
@@ -256,7 +255,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	public EntityArrayList getEntities() {
 		EntityArrayList list = new EntityArrayList(overworld, 10);
 
-		for (ServerWorldJS world : worlds) {
+		for (var world : worlds) {
 			list.addAll(world.getEntities());
 		}
 
@@ -266,7 +265,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	public EntityArrayList getEntities(String filter) {
 		EntityArrayList list = new EntityArrayList(overworld, 10);
 
-		for (ServerWorldJS world : worlds) {
+		for (var world : worlds) {
 			list.addAll(world.getEntities(filter));
 		}
 

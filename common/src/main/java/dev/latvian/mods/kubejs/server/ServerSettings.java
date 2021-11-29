@@ -12,7 +12,6 @@ import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.resources.ResourceLocation;
 
 import java.io.BufferedWriter;
 import java.nio.file.Files;
@@ -44,7 +43,7 @@ public class ServerSettings {
 	private static <T> void addRegistry(JsonObject o, String name, Registrar<T> r) {
 		JsonArray a = new JsonArray();
 
-		for (ResourceLocation id : r.getIds()) {
+		for (var id : r.getIds()) {
 			a.add(id.toString());
 		}
 
@@ -61,7 +60,7 @@ public class ServerSettings {
 
 		JsonArray errors = new JsonArray();
 
-		for (String s : ScriptType.SERVER.errors) {
+		for (var s : ScriptType.SERVER.errors) {
 			errors.add(s);
 		}
 
@@ -69,7 +68,7 @@ public class ServerSettings {
 
 		JsonArray warnings = new JsonArray();
 
-		for (String s : ScriptType.SERVER.warnings) {
+		for (var s : ScriptType.SERVER.warnings) {
 			warnings.add(s);
 		}
 

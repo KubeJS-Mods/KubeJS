@@ -94,7 +94,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 	public Collection<ResourceLocation> getResources(PackType type, String namespace, String path, int maxDepth, Predicate<String> filter) {
 		List<ResourceLocation> list = Lists.newArrayList();
 
-		for (ResourceLocation key : locationToData.keySet()) {
+		for (var key : locationToData.keySet()) {
 			if (namespace.equals(key.getNamespace())) {
 				try {
 					int i = key.getPath().lastIndexOf('/');

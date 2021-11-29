@@ -298,7 +298,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 			buf.writeVarInt(r.width);
 			buf.writeVarInt(r.height);
 
-			for (Ingredient ingredient : r.ingredients) {
+			for (var ingredient : r.ingredients) {
 				ingredient.toNetwork(buf);
 			}
 

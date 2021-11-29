@@ -7,10 +7,8 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSObjects;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
-import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.core.TagBuilderKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
-import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
@@ -54,7 +52,7 @@ public class TagEventJS<T> extends EventJS {
 
 		List<Predicate<String>> list = new ArrayList<>();
 
-		for (Object o1 : ListJS.orSelf(o)) {
+		for (var o1 : ListJS.orSelf(o)) {
 			String s = String.valueOf(o1);
 
 			if (s.startsWith("@")) {
@@ -92,7 +90,7 @@ public class TagEventJS<T> extends EventJS {
 		}
 
 		public TagWrapper<T> add(Object ids) {
-			for (Object o : ListJS.orSelf(ids)) {
+			for (var o : ListJS.orSelf(ids)) {
 				String s = String.valueOf(o);
 
 				if (s.startsWith("#")) {
@@ -107,7 +105,7 @@ public class TagEventJS<T> extends EventJS {
 					Pattern pattern = UtilsJS.parseRegex(s);
 
 					if (pattern != null && event.registrar != null) {
-						for (ResourceLocation sid : event.registrar.getIds()) {
+						for (var sid : event.registrar.getIds()) {
 							if (pattern.matcher(sid.toString()).find()) {
 								Optional<T> v = event.registry.apply(sid);
 
@@ -145,7 +143,7 @@ public class TagEventJS<T> extends EventJS {
 		}
 
 		public TagWrapper<T> remove(Object ids) {
-			for (Object o : ListJS.orSelf(ids)) {
+			for (var o : ListJS.orSelf(ids)) {
 				String s = String.valueOf(o);
 
 				if (s.startsWith("#")) {
@@ -170,7 +168,7 @@ public class TagEventJS<T> extends EventJS {
 					Pattern pattern = UtilsJS.parseRegex(s);
 
 					if (pattern != null && event.registrar != null) {
-						for (ResourceLocation sid : event.registrar.getIds()) {
+						for (var sid : event.registrar.getIds()) {
 							if (pattern.matcher(sid.toString()).find()) {
 								Optional<T> v = event.registry.apply(sid);
 
@@ -274,7 +272,7 @@ public class TagEventJS<T> extends EventJS {
 				HashSet<String> set = new HashSet<>();
 				gatherAllItemIDs(set, proxy.getEntry());
 
-				for (String id : set) {
+				for (var id : set) {
 					for (int i = 0; i < priorityList.size(); i++) {
 						if (priorityList.get(i).test(id)) {
 							listOfLists.get(i).add(proxy);
@@ -328,18 +326,10 @@ public class TagEventJS<T> extends EventJS {
 		registrar = null;
 
 		switch (type) {
-			case "items":
-				registrar = UtilsJS.cast(KubeJSRegistries.items());
-				break;
-			case "blocks":
-				registrar = UtilsJS.cast(KubeJSRegistries.blocks());
-				break;
-			case "fluids":
-				registrar = UtilsJS.cast(KubeJSRegistries.fluids());
-				break;
-			case "entity_types":
-				registrar = UtilsJS.cast(KubeJSRegistries.entityTypes());
-				break;
+			case "items" -> registrar = UtilsJS.cast(KubeJSRegistries.items());
+			case "blocks" -> registrar = UtilsJS.cast(KubeJSRegistries.blocks());
+			case "fluids" -> registrar = UtilsJS.cast(KubeJSRegistries.fluids());
+			case "entity_types" -> registrar = UtilsJS.cast(KubeJSRegistries.entityTypes());
 		}
 	}
 
@@ -381,22 +371,22 @@ public class TagEventJS<T> extends EventJS {
 		}
 
 		if (type.equals("items")) {
-			for (ItemBuilder item : KubeJSObjects.ITEMS.values()) {
-				for (String s : item.defaultTags) {
+			for (var item : KubeJSObjects.ITEMS.values()) {
+				for (var s : item.defaultTags) {
 					add(new ResourceLocation(s), item.id);
 				}
 
-				for (BlockBuilder block : KubeJSObjects.BLOCKS.values()) {
+				for (var block : KubeJSObjects.BLOCKS.values()) {
 					if (block.itemBuilder != null) {
-						for (String s : block.itemBuilder.defaultTags) {
+						for (var s : block.itemBuilder.defaultTags) {
 							add(new ResourceLocation(s), block.itemBuilder.id);
 						}
 					}
 				}
 			}
 		} else if (type.equals("blocks")) {
-			for (BlockBuilder block : KubeJSObjects.BLOCKS.values()) {
-				for (String s : block.defaultTags) {
+			for (var block : KubeJSObjects.BLOCKS.values()) {
+				for (var s : block.defaultTags) {
 					add(new ResourceLocation(s), block.id);
 				}
 			}
@@ -468,7 +458,7 @@ public class TagEventJS<T> extends EventJS {
 	}
 
 	public void removeAllTagsFrom(Object ids) {
-		for (Object o : ListJS.orSelf(ids)) {
+		for (var o : ListJS.orSelf(ids)) {
 			String id = String.valueOf(o);
 
 			for (TagWrapper<T> tagWrapper : tags.values()) {

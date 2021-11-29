@@ -83,7 +83,7 @@ public class TextTranslate extends Text {
 		if (objects.length > 0) {
 			JsonArray array = new JsonArray();
 
-			for (Object ob : objects) {
+			for (var ob : objects) {
 				array.add(JsonUtilsJS.of(ob));
 			}
 

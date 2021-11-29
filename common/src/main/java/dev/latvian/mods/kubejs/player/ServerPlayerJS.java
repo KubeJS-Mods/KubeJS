@@ -54,18 +54,10 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 
 	public void setGameMode(String mode) {
 		switch (mode) {
-			case "survival":
-				minecraftPlayer.setGameMode(GameType.SURVIVAL);
-				break;
-			case "creative":
-				minecraftPlayer.setGameMode(GameType.CREATIVE);
-				break;
-			case "adventure":
-				minecraftPlayer.setGameMode(GameType.ADVENTURE);
-				break;
-			case "spectator":
-				minecraftPlayer.setGameMode(GameType.SPECTATOR);
-				break;
+			case "survival" -> minecraftPlayer.setGameMode(GameType.SURVIVAL);
+			case "creative" -> minecraftPlayer.setGameMode(GameType.CREATIVE);
+			case "adventure" -> minecraftPlayer.setGameMode(GameType.ADVENTURE);
+			case "spectator" -> minecraftPlayer.setGameMode(GameType.SPECTATOR);
 		}
 	}
 
@@ -108,7 +100,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 		if (a != null) {
 			AdvancementProgress advancementprogress = minecraftPlayer.getAdvancements().getOrStartProgress(a.advancement);
 
-			for (String s : advancementprogress.getRemainingCriteria()) {
+			for (var s : advancementprogress.getRemainingCriteria()) {
 				minecraftPlayer.getAdvancements().award(a.advancement, s);
 			}
 		}
@@ -121,7 +113,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 			AdvancementProgress advancementprogress = minecraftPlayer.getAdvancements().getOrStartProgress(a.advancement);
 
 			if (advancementprogress.hasProgress()) {
-				for (String s : advancementprogress.getCompletedCriteria()) {
+				for (var s : advancementprogress.getCompletedCriteria()) {
 					minecraftPlayer.getAdvancements().revoke(a.advancement, s);
 				}
 			}

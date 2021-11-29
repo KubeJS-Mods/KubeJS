@@ -49,7 +49,7 @@ public class KubeJSBlockEventHandler {
 	}
 
 	private static void registry() {
-		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
+		for (var builder : KubeJSObjects.BLOCKS.values()) {
 			BlockBuilder.current = builder;
 
 			builder.block = builder.type.createBlock(builder);
@@ -63,12 +63,12 @@ public class KubeJSBlockEventHandler {
 
 		BlockBuilder.current = null;
 
-		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values()) {
+		for (var builder : KubeJSObjects.FLUIDS.values()) {
 			builder.block = buildFluidBlock(builder, Block.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops());
 			KubeJSRegistries.blocks().register(builder.id, () -> builder.block);
 		}
 
-		for (DetectorInstance detector : KubeJSObjects.DETECTORS.values()) {
+		for (var detector : KubeJSObjects.DETECTORS.values()) {
 			detector.block = KubeJSRegistries.blocks().register(new ResourceLocation(KubeJS.MOD_ID, "detector_" + detector.id), () -> new DetectorBlock(detector.id));
 		}
 	}
@@ -120,7 +120,7 @@ public class KubeJSBlockEventHandler {
 		{
 			event.getDrops().clear();
 
-			for (ItemStackJS stack : e.dropList)
+			for (var stack : e.dropList)
 			{
 				event.getDrops().add(stack.getItemStack());
 			}

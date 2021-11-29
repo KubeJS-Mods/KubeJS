@@ -41,7 +41,7 @@ public class JsonUtilsJS {
 		} else if (element instanceof JsonArray) {
 			JsonArray a = new JsonArray();
 
-			for (JsonElement e : (JsonArray) element) {
+			for (var e : (JsonArray) element) {
 				a.add(copy(e));
 			}
 
@@ -96,7 +96,7 @@ public class JsonUtilsJS {
 			JsonArray a = json.getAsJsonArray();
 			List<Object> objects = new ArrayList<>(a.size());
 
-			for (JsonElement e : a) {
+			for (var e : a) {
 				objects.add(toObject(e));
 			}
 

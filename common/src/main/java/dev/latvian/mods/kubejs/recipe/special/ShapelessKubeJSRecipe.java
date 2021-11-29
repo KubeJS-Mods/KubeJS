@@ -146,7 +146,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe {
 			buf.writeUtf(r.group);
 			buf.writeVarInt(r.ingredients.size());
 
-			for (Ingredient ingredient : r.ingredients) {
+			for (var ingredient : r.ingredients) {
 				ingredient.toNetwork(buf);
 			}
 

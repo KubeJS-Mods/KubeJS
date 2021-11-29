@@ -16,7 +16,7 @@ public class WorldgenEntryList {
 			return true;
 		}
 
-		for (String v : values) {
+		for (var v : values) {
 			if (filter.test(v)) {
 				return !blacklist;
 			}

@@ -14,16 +14,11 @@ import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSObjects;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenPaintEventJS;
-import dev.latvian.mods.kubejs.client.painter.screen.ScreenPainterObject;
 import dev.latvian.mods.kubejs.client.painter.world.WorldPaintEventJS;
-import dev.latvian.mods.kubejs.client.painter.world.WorldPainterObject;
 import dev.latvian.mods.kubejs.core.BucketItemKJS;
 import dev.latvian.mods.kubejs.core.ImageButtonKJS;
-import dev.latvian.mods.kubejs.fluid.FluidBuilder;
-import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
 import dev.latvian.mods.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -93,17 +88,12 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void renderLayers() {
-		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
+		for (var builder : KubeJSObjects.BLOCKS.values()) {
 			switch (builder.renderType) {
-				case "cutout":
-					RenderTypeRegistry.register(RenderType.cutout(), builder.block);
-					break;
-				case "cutout_mipped":
-					RenderTypeRegistry.register(RenderType.cutoutMipped(), builder.block);
-					break;
-				case "translucent":
-					RenderTypeRegistry.register(RenderType.translucent(), builder.block);
-					break;
+				case "cutout" -> RenderTypeRegistry.register(RenderType.cutout(), builder.block);
+				case "cutout_mipped" -> RenderTypeRegistry.register(RenderType.cutoutMipped(), builder.block);
+				case "translucent" -> RenderTypeRegistry.register(RenderType.translucent(), builder.block);
+
 				//default:
 				//	RenderTypeLookup.setRenderLayer(block, RenderType.getSolid());
 			}
@@ -126,29 +116,29 @@ public class KubeJSClientEventHandler {
 		boolean advanced = flag.isAdvanced();
 
 		if (advanced && ClientProperties.get().getShowTagNames() && Screen.hasShiftDown()) {
-			for (ResourceLocation tag : Tags.byItemStack(stack)) {
+			for (var tag : Tags.byItemStack(stack)) {
 				tempTagNames.computeIfAbsent(tag, TagInstance::new).item = true;
 			}
 
 			if (stack.getItem() instanceof BlockItem) {
-				for (ResourceLocation tag : Tags.byBlock(((BlockItem) stack.getItem()).getBlock())) {
+				for (var tag : Tags.byBlock(((BlockItem) stack.getItem()).getBlock())) {
 					tempTagNames.computeIfAbsent(tag, TagInstance::new).block = true;
 				}
 			}
 
 			if (stack.getItem() instanceof BucketItemKJS) {
-				for (ResourceLocation tag : Tags.byFluid(((BucketItemKJS) stack.getItem()).getFluidKJS())) {
+				for (var tag : Tags.byFluid(((BucketItemKJS) stack.getItem()).getFluidKJS())) {
 					tempTagNames.computeIfAbsent(tag, TagInstance::new).fluid = true;
 				}
 			}
 
 			if (stack.getItem() instanceof SpawnEggItem) {
-				for (ResourceLocation tag : Tags.byEntityType(((SpawnEggItem) stack.getItem()).getType(stack.getTag()))) {
+				for (var tag : Tags.byEntityType(((SpawnEggItem) stack.getItem()).getType(stack.getTag()))) {
 					tempTagNames.computeIfAbsent(tag, TagInstance::new).entity = true;
 				}
 			}
 
-			for (TagInstance instance : tempTagNames.values()) {
+			for (var instance : tempTagNames.values()) {
 				lines.add(instance.toText());
 			}
 
@@ -215,13 +205,13 @@ public class KubeJSClientEventHandler {
 		Painter.INSTANCE.mouseYUnit.set(event.mouseY);
 		event.post(KubeJSEvents.CLIENT_PAINT_SCREEN);
 
-		for (ScreenPainterObject object : Painter.INSTANCE.getScreenObjects()) {
+		for (var object : Painter.INSTANCE.getScreenObjects()) {
 			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
 				object.preDraw(event);
 			}
 		}
 
-		for (ScreenPainterObject object : Painter.INSTANCE.getScreenObjects()) {
+		for (var object : Painter.INSTANCE.getScreenObjects()) {
 			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
 				object.draw(event);
 			}
@@ -241,13 +231,13 @@ public class KubeJSClientEventHandler {
 		ScreenPaintEventJS event = new ScreenPaintEventJS(mc, screen, matrices, mouseX, mouseY, delta);
 		event.post(KubeJSEvents.CLIENT_PAINT_SCREEN);
 
-		for (ScreenPainterObject object : Painter.INSTANCE.getScreenObjects()) {
+		for (var object : Painter.INSTANCE.getScreenObjects()) {
 			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
 				object.preDraw(event);
 			}
 		}
 
-		for (ScreenPainterObject object : Painter.INSTANCE.getScreenObjects()) {
+		for (var object : Painter.INSTANCE.getScreenObjects()) {
 			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
 				object.draw(event);
 			}
@@ -255,7 +245,7 @@ public class KubeJSClientEventHandler {
 	}
 
 	private boolean isOver(List<AbstractWidget> list, int x, int y) {
-		for (AbstractWidget w : list) {
+		for (var w : list) {
 			if (w.visible && x >= w.x && y >= w.y && x < w.x + w.getWidth() && y < w.y + w.getHeight()) //getWidth_CLASH = getHeight
 			{
 				return true;
@@ -281,19 +271,19 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void itemColors() {
-		for (ItemBuilder builder : KubeJSObjects.ITEMS.values()) {
+		for (var builder : KubeJSObjects.ITEMS.values()) {
 			if (!builder.color.isEmpty()) {
 				ColorHandlerRegistry.registerItemColors((stack, index) -> builder.color.get(index), Objects.requireNonNull(builder.item, "Item " + builder.id + " is null!"));
 			}
 		}
 
-		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
+		for (var builder : KubeJSObjects.BLOCKS.values()) {
 			if (builder.itemBuilder != null && !builder.color.isEmpty()) {
 				ColorHandlerRegistry.registerItemColors((stack, index) -> builder.color.get(index), Objects.requireNonNull(builder.itemBuilder.blockItem, "Block Item " + builder.id + " is null!"));
 			}
 		}
 
-		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values()) {
+		for (var builder : KubeJSObjects.FLUIDS.values()) {
 			if (builder.bucketColor != 0xFFFFFFFF) {
 				ColorHandlerRegistry.registerItemColors((stack, index) -> index == 1 ? builder.bucketColor : 0xFFFFFFFF, Objects.requireNonNull(builder.bucketItem, "Bucket Item " + builder.id + " is null!"));
 			}
@@ -301,7 +291,7 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void blockColors() {
-		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
+		for (var builder : KubeJSObjects.BLOCKS.values()) {
 			if (!builder.color.isEmpty()) {
 				ColorHandlerRegistry.registerBlockColors((state, world, pos, index) -> builder.color.get(index), builder.block);
 			}
@@ -370,13 +360,13 @@ public class KubeJSClientEventHandler {
 		WorldPaintEventJS event = new WorldPaintEventJS(mc, ps, delta);
 		event.post(KubeJSEvents.CLIENT_PAINT_WORLD);
 
-		for (WorldPainterObject object : Painter.INSTANCE.getWorldObjects()) {
+		for (var object : Painter.INSTANCE.getWorldObjects()) {
 			if (object.visible) {
 				object.preDraw(event);
 			}
 		}
 
-		for (WorldPainterObject object : Painter.INSTANCE.getWorldObjects()) {
+		for (var object : Painter.INSTANCE.getWorldObjects()) {
 			if (object.visible) {
 				object.draw(event);
 			}

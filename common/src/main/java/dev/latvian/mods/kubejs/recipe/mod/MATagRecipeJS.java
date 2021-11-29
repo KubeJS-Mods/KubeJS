@@ -25,7 +25,7 @@ public class MATagRecipeJS extends RecipeJS {
 
 	@Override
 	public void deserialize() {
-		for (JsonElement e : json.get("pattern").getAsJsonArray()) {
+		for (var e : json.get("pattern").getAsJsonArray()) {
 			pattern.add(e.getAsString());
 		}
 
@@ -48,7 +48,7 @@ public class MATagRecipeJS extends RecipeJS {
 		if (serializeInputs) {
 			JsonArray patternJson = new JsonArray();
 
-			for (String s : pattern) {
+			for (var s : pattern) {
 				patternJson.add(s);
 			}
 

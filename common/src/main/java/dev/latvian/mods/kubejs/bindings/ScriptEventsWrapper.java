@@ -17,7 +17,7 @@ public class ScriptEventsWrapper {
 	}
 
 	public void listen(Object id, IEventHandler handler) {
-		for (Object o : ListJS.orSelf(id)) {
+		for (var o : ListJS.orSelf(id)) {
 			events.listen(String.valueOf(o), handler);
 		}
 	}

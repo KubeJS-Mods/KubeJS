@@ -36,7 +36,7 @@ public class FireworksJS {
 		}
 
 		if (properties.containsKey("explosions")) {
-			for (Object o1 : ListJS.orSelf(properties.get("explosions"))) {
+			for (var o1 : ListJS.orSelf(properties.get("explosions"))) {
 				MapJS m = MapJS.of(o1);
 
 				if (m == null) {
@@ -58,13 +58,13 @@ public class FireworksJS {
 				}
 
 				if (m.containsKey("colors")) {
-					for (Object o2 : ListJS.orSelf(m.get("colors"))) {
+					for (var o2 : ListJS.orSelf(m.get("colors"))) {
 						e.colors.add(ColorWrapper.of(o2).getFireworkColorKJS());
 					}
 				}
 
 				if (m.containsKey("fadeColors")) {
-					for (Object o2 : ListJS.orSelf(m.get("fadeColors"))) {
+					for (var o2 : ListJS.orSelf(m.get("fadeColors"))) {
 						e.fadeColors.add(ColorWrapper.of(o2).getFireworkColorKJS());
 					}
 				}
@@ -104,7 +104,7 @@ public class FireworksJS {
 		}
 
 		public static Shape get(String name) {
-			for (Shape s : VALUES) {
+			for (var s : VALUES) {
 				if (s.name.equals(name)) {
 					return s;
 				}
@@ -133,7 +133,7 @@ public class FireworksJS {
 		nbt.putInt("Flight", flight);
 		ListTag list = new ListTag();
 
-		for (Explosion e : explosions) {
+		for (var e : explosions) {
 			CompoundTag nbt1 = new CompoundTag();
 			nbt1.putInt("Type", e.shape.type);
 			nbt1.putBoolean("Flicker", e.flicker);

@@ -24,7 +24,6 @@ import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.apache.commons.codec.binary.Hex;
@@ -129,7 +128,7 @@ public abstract class RecipeJS {
 
 		if (originalRecipe != null && this instanceof CustomRecipeJS && ServerSettings.instance.useOriginalRecipeForFilters) {
 			try {
-				for (Ingredient in0 : originalRecipe.getIngredients()) {
+				for (var in0 : originalRecipe.getIngredients()) {
 					IngredientJS in = IngredientJS.of(in0);
 
 					if (!in.isEmpty() && (exact ? in.equals(ingredient) : in.anyStackMatches(ingredient))) {
@@ -334,11 +333,11 @@ public abstract class RecipeJS {
 				array.add((JsonElement) o);
 			}
 
-			for (JsonElement e : array) {
+			for (var e : array) {
 				list.add(parseIngredientItem(e));
 			}
 		} else {
-			for (Object o1 : ListJS.orSelf(o)) {
+			for (var o1 : ListJS.orSelf(o)) {
 				list.add(parseIngredientItem(o1));
 			}
 		}
@@ -363,11 +362,11 @@ public abstract class RecipeJS {
 				array.add((JsonElement) o);
 			}
 
-			for (JsonElement e : array) {
+			for (var e : array) {
 				list.add(parseResultItem(e));
 			}
 		} else {
-			for (Object o1 : ListJS.orSelf(o)) {
+			for (var o1 : ListJS.orSelf(o)) {
 				list.add(parseResultItem(o1));
 			}
 		}
@@ -384,7 +383,7 @@ public abstract class RecipeJS {
 			stream.writeByte('-');
 		} else if (element instanceof JsonArray) {
 			stream.writeByte('[');
-			for (JsonElement e : (JsonArray) element) {
+			for (var e : (JsonArray) element) {
 				writeJsonHash(stream, e);
 			}
 		} else if (element instanceof JsonObject) {

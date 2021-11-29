@@ -20,7 +20,7 @@ public class AnyRuleTest extends RuleTest {
 
 	@Override
 	public boolean test(BlockState blockState, Random random) {
-		for (RuleTest test : list) {
+		for (var test : list) {
 			if (test.test(blockState, random)) {
 				return true;
 			}
