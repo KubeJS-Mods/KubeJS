@@ -15,19 +15,19 @@
 	"icon": "kubejs_logo.png",
 	"entrypoints": {
 		"main": [
-			"dev.latvian.kubejs.fabric.KubeJSFabric"
+			"dev.latvian.mods.kubejs.fabric.KubeJSFabric"
 		],
 		"client": [
-			"dev.latvian.kubejs.fabric.KubeJSFabric"
+			"dev.latvian.mods.kubejs.fabric.KubeJSFabric"
 		],
 		"server": [
-			"dev.latvian.kubejs.fabric.KubeJSFabric"
+			"dev.latvian.mods.kubejs.fabric.KubeJSFabric"
 		],
 		"rei_plugins": [
-			"dev.latvian.kubejs.integration.rei.REIPlugin"
+			"dev.latvian.mods.kubejs.integration.rei.REIPlugin"
 		],
 		"kubejs-init": [
-			"dev.latvian.kubejs.integration.techreborn.TechRebornIntegration"
+			"dev.latvian.mods.kubejs.integration.techreborn.TechRebornIntegration"
 		]
 	},
 	"mixins": [
@@ -36,8 +36,8 @@
 	],
 	"depends": {
 		"fabric": "*",
-		"minecraft": "~1.16.5",
-		"rhino": ">=1605.1.5-build.73",
-		"architectury": ">=1.20.28"
+		"minecraft": "~1.18-rc3",
+		"rhino": ">=1800.1.6-build.76",
+		"architectury": ">=3.0.39"
 	}
 }

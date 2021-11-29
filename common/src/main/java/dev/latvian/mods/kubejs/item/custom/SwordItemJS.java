@@ -1,0 +1,10 @@
+package dev.latvian.mods.kubejs.item.custom;
+
+import dev.latvian.mods.kubejs.item.ItemBuilder;
+import net.minecraft.world.item.SwordItem;
+
+public class SwordItemJS extends SwordItem {
+	public SwordItemJS(ItemBuilder builder) {
+		super(builder.toolTier, (int) builder.attackDamageBaseline, builder.attackSpeedBaseline, builder.createItemProperties());
+	}
+}

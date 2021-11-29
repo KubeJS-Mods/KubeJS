@@ -19,6 +19,10 @@ configurations {
 	dev
 }
 
+artifacts {
+	dev(jar)
+}
+
 loom {
 	forge {
 		mixinConfigs = [
@@ -34,7 +38,7 @@ artifacts {
 
 repositories {
 	maven {
-		name "ModMaven (JEI, Bookshelf, Game Stages)"
+		name "ModMaven (JEI)"
 		url "https://modmaven.dev/"
 		content {
 			includeGroup "mezz.jei"
@@ -42,34 +46,23 @@ repositories {
 			includeGroup "net.darkhax.gamestages"
 		}
 	}
-	maven {
-		url "https://nexus.resourcefulbees.com/repository/maven-releases/"
-		content {
-			includeGroup "com.resourcefulbees"
-		}
-	}
 }
 
 dependencies {
 	forge("net.minecraftforge:forge:${rootProject.architectury.minecraft}-${rootProject.forge_version}")
 
-	modApi("me.shedaniel:architectury-forge:${rootProject.architectury_version}")
+	modApi("dev.architectury:architectury-forge:${rootProject.architectury_version}")
 
-	modApi("dev.latvian.mods:rhino-forge:${rootProject.rhino_version}")
+	modApi("dev.latvian.mods:rhino-forge:${rootProject.rhino_version}") { transitive false }
 
-	modCompileOnly("mezz.jei:jei-1.16.4:${rootProject.forge_jei_version}")
-	modCompileOnly("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
-	modCompileOnly("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
+	modCompileOnly("mezz.jei:jei-1.17.1:${rootProject.forge_jei_version}")
+	// modCompileOnly("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
+	// modCompileOnly("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
 
-	modRuntimeOnly("mezz.jei:jei-1.16.4:${rootProject.forge_jei_version}")
-	modRuntimeOnly("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
-	modRuntimeOnly("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
-	modRuntimeOnly("curse.maven:emendatus-enigmatica-399630:${rootProject.emendatus_enigmatica_file}")
-
-	// test mods, these are included at runtime only
-	// modRuntime("com.resourcefulbees:ResourcefulBees:1.16.5-0.6.4b")
-	// modRuntime("curse.maven:athenaeum-1-16-437531:3188454")
-	// modRuntime("curse.maven:artisan-worktables-1-16-437529:3277959")
+	modRuntimeOnly("mezz.jei:jei-1.17.1:${rootProject.forge_jei_version}")
+	// modRuntimeOnly("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
+	// modRuntimeOnly("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
+	// modRuntimeOnly("curse.maven:emendatus-enigmatica-399630:${rootProject.emendatus_enigmatica_file}")
 
 	common(project(path: ":common", configuration: "dev")) { transitive false }
 	shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
@@ -126,8 +119,7 @@ if (ENV.CURSEFORGE_KEY) {
 			id = project.curseforge_id_forge
 			releaseType = project.curseforge_type
 			addGameVersion "Forge"
-			addGameVersion "1.16.4"
-			addGameVersion "1.16.5"
+			addGameVersion "1.17.1"
 			mainArtifact(remapJar.archivePath)
 			relations {
 				requiredDependency 'rhino'

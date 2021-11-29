@@ -28,16 +28,20 @@ dependencies {
 	modImplementation("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
 	modImplementation("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
 
-	modApi("me.shedaniel:architectury-fabric:${rootProject.architectury_version}")
+	modApi("dev.architectury:architectury-fabric:${rootProject.architectury_version}")
 
-	modApi("dev.latvian.mods:rhino-fabric:${rootProject.rhino_version}")
+	modApi("dev.latvian.mods:rhino-fabric:${rootProject.rhino_version}") { transitive false }
 
-	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api:${rootProject.fabric_rei_version}") {
+	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${rootProject.fabric_rei_version}") {
+		exclude group: "net.fabricmc.fabric-api"
+		exclude group: "net.fabricmc"
+	}
+	modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${rootProject.fabric_rei_version}") {
 		exclude group: "net.fabricmc.fabric-api"
 		exclude group: "net.fabricmc"
 	}
 
-	modRuntime("me.shedaniel:RoughlyEnoughItems:${rootProject.fabric_rei_version}") {
+	modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-fabric:${rootProject.fabric_rei_version}") {
 		exclude group: "net.fabricmc.fabric-api"
 		exclude group: "net.fabricmc"
 	}
@@ -83,8 +87,7 @@ if (ENV.CURSEFORGE_KEY) {
 			id = project.curseforge_id_fabric
 			releaseType = project.curseforge_type
 			addGameVersion "Fabric"
-			addGameVersion "1.16.4"
-			addGameVersion "1.16.5"
+			addGameVersion "1.17.1"
 			mainArtifact(remapJar.archivePath)
 			relations {
 				requiredDependency 'rhino'

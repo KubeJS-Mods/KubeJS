@@ -1,13 +1,9 @@
 package dev.latvian.kubejs.integration.gamestages;
 
-import dev.latvian.kubejs.entity.EntityJS;
-import dev.latvian.kubejs.player.PlayerEventJS;
-import net.darkhax.gamestages.event.GameStageEvent;
-
 /**
  * @author LatvianModder
  */
-public class GameStageEventJS extends PlayerEventJS {
+public class GameStageEventJS {/* FIXME: Gamestages extends PlayerEventJS {
 	private final GameStageEvent event;
 
 	public GameStageEventJS(GameStageEvent e) {
@@ -22,4 +18,5 @@ public class GameStageEventJS extends PlayerEventJS {
 	public String getStage() {
 		return event.getStageName();
 	}
+	 */
 }

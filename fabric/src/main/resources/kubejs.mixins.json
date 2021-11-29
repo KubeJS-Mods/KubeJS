@@ -1,7 +1,7 @@
 {
 	"required": true,
-	"package": "dev.latvian.kubejs.mixin.fabric",
-	"compatibilityLevel": "JAVA_8",
+	"package": "dev.latvian.mods.kubejs.mixin.fabric",
+	"compatibilityLevel": "JAVA_16",
 	"mixins": [
 	],
 	"client": [

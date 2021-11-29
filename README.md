@@ -32,7 +32,7 @@ repositories {
         // Shedaniel's maven (Architectury API)
         url = "https://maven.architectury.dev"
         content {
-            includeGroup "me.shedaniel"
+            includeGroup "dev.architectury"
         }
     }
 

@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[32,)"
+loaderVersion = "[37,)"
 issueTrackerURL = "https://github.com/KubeJS-Mods/KubeJS/issues"
 license = "GNU LGPLv3"
 
@@ -17,35 +17,28 @@ license = "GNU LGPLv3"
 [[dependencies.kubejs]]
 modId = "forge"
 mandatory = true
-versionRange = "[32.0.75,)"
+versionRange = "[37,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.kubejs]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.16.4,)"
+versionRange = "[1.17.1,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.kubejs]]
 modId = "rhino"
 mandatory = true
-versionRange = "[1605.1.5-build.73,)"
+versionRange = "[1800.1.6-build.76,)"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.kubejs]]
 modId = "architectury"
 mandatory = true
-versionRange = "[1.20.28,)"
-ordering = "AFTER"
-side = "BOTH"
-
-[[dependencies.kubejs]]
-modId = "gamestages"
-mandatory = false
-versionRange = "[1.0.0,)"
+versionRange = "[2.5.32,)"
 ordering = "AFTER"
 side = "BOTH"
 

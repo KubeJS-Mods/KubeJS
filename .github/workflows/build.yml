@@ -4,8 +4,8 @@ on:
   push:
     branches:
       # main and dev versions for each mc ver here
-      - "1.16/main"
-      - "1.16/dev"
+      - "1.18/main"
+      - "1.18/dev"
   workflow_dispatch:
     inputs:
       norelease:
@@ -30,12 +30,12 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 30 # Gets the last 30 commits so the changelog might work
-      # Always run on Java 16, Loom needs it
-      - name: Set up JDK 16
+      # 1.18 needs Java 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
-          java-version: '16'
+          java-version: '17'
       - name: Build with Gradle
         env:
           FTB_MAVEN_TOKEN: ${{ secrets.FTB_MAVEN_TOKEN }}

@@ -1,11 +1,10 @@
 {
 	"required": true,
 	"package": "dev.latvian.kubejs.mixin.forge",
-	"compatibilityLevel": "JAVA_8",
+	"compatibilityLevel": "JAVA_16",
 	"mixins": [
 	],
 	"client": [
-		"EarlyLoaderGUIMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

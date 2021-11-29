@@ -22,7 +22,7 @@ public class RemoveJEICategoriesEvent extends EventJS {
 	public RemoveJEICategoriesEvent(IJeiRuntime r) {
 		runtime = r;
 		categoriesRemoved = new HashSet<>();
-		allCategories = runtime.getRecipeManager().getRecipeCategories();
+		allCategories = runtime.getRecipeManager().getRecipeCategories(null, false);
 	}
 
 	public Collection<IRecipeCategory<?>> getCategories() {
