@@ -1,1 +1,1 @@
-dev.latvian.kubejs.forge.BuiltinKubeJSForgePlugin
+dev.latvian.mods.kubejs.forge.BuiltinKubeJSForgePlugin

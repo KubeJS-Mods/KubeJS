@@ -1,1 +1,1 @@
-BuiltinKubeJSFabricPlugin
+dev.latvian.mods.kubejs.fabric.BuiltinKubeJSFabricPlugin
