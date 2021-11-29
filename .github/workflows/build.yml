@@ -2,7 +2,10 @@ name: Java CI
 
 on:
   push:
-    branches: [ main, dev ]
+    branches:
+      # main and dev versions for each mc ver here
+      - "1.16/main"
+      - "1.16/dev"
   workflow_dispatch:
     inputs:
       norelease:
@@ -27,6 +30,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 30 # Gets the last 30 commits so the changelog might work
+      # Always run on Java 16, Loom needs it
       - name: Set up JDK 16
         uses: actions/setup-java@v2
         with:
@@ -41,11 +45,11 @@ jobs:
           ./gradlew build publish --stacktrace --no-daemon
       - name: Release to CurseForge
         if: |
-          github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '[norelease]') && github.event.inputs.norelease != 'true'
+          contains(github.ref, 'main') && !contains(github.event.head_commit.message, '[norelease]') && github.event.inputs.norelease != 'true'
         env:
           GIT_COMMIT: ${{ github.event.after }}
           GIT_PREVIOUS_COMMIT: ${{ github.event.before }}
           CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
         run: |
           chmod +x ./gradlew
-          ./gradlew build curseforgePublish --stacktrace --no-daemon
+          ./gradlew build curseforge --stacktrace --no-daemon
