@@ -11,6 +11,8 @@ import me.shedaniel.rei.api.client.registry.entry.EntryRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.entry.EntryStack;
 import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
+import me.shedaniel.rei.api.common.plugins.PluginManager;
+import me.shedaniel.rei.api.common.registry.ReloadStage;
 import me.shedaniel.rei.api.common.util.CollectionUtils;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
 
@@ -45,10 +47,11 @@ public class REIPlugin implements REIClientPlugin {
 		});
 	}
 
-	// TODO: should be an easy fix i'm just lazy
-	/*@Override
-	public void postRegister() {
-		categoriesRemoved.clear();
-		new RemoveREICategoryEventJS(categoriesRemoved).post(ScriptType.CLIENT, REIIntegration.REI_REMOVE_CATEGORIES);
-	}*/
+	@Override
+	public void postStage(PluginManager<REIClientPlugin> manager, ReloadStage stage) {
+		if (stage == ReloadStage.END) {
+			categoriesRemoved.clear();
+			new RemoveREICategoryEventJS(categoriesRemoved).post(ScriptType.CLIENT, REIIntegration.REI_REMOVE_CATEGORIES);
+		}
+	}
 }
