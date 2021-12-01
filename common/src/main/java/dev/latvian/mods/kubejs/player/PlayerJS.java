@@ -93,14 +93,13 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 		minecraftPlayer.getInventory().selected = Mth.clamp(index, 0, 8);
 	}
 
-	// FIXME: carried
-	/*public ItemStackJS getMouseItem() {
-		return ItemStackJS.of(minecraftPlayer.inventory.getCarried());
+	public ItemStackJS getMouseItem() {
+		return ItemStackJS.of(minecraftPlayer.inventoryMenu.getCarried());
 	}
 
 	public void setMouseItem(ItemStackJS item) {
-		minecraftPlayer.inventory.setCarried(item.getItemStack());
-	}*/
+		minecraftPlayer.inventoryMenu.setCarried(item.getItemStack());
+	}
 
 	@Override
 	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {

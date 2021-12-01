@@ -91,11 +91,6 @@ public class PaintEventJS extends ClientEventJS {
 		return textureAtlas;
 	}
 
-	public void setSmoothShade(boolean smooth) {
-		// FIXME: possibly no longer required in 1.17
-		// RenderSystem.shadeModel(smooth ? GL11.GL_SMOOTH : GL11.GL_FLAT);
-	}
-
 	public void setTextureEnabled(boolean enabled) {
 		if (enabled) {
 			RenderSystem.enableTexture();

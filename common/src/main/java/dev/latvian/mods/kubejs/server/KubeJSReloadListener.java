@@ -11,8 +11,8 @@ public class KubeJSReloadListener implements ResourceManagerReloadListener {
 
 	@Override
 	public void onResourceManagerReload(ResourceManager resourceManager) {
-		if (resources != null && resources.getRecipeManager() instanceof RecipeManagerKJS) {
-			RecipesAfterLoadEventJS.post((RecipeManagerKJS) resources.getRecipeManager());
+		if (resources != null && resources.getRecipeManager() instanceof RecipeManagerKJS rm) {
+			RecipesAfterLoadEventJS.post(rm);
 		}
 	}
 }

@@ -70,10 +70,6 @@ public class GradientObject extends ScreenPainterObject {
 		float az = z.get();
 		Matrix4f m = event.getMatrix();
 
-		event.setSmoothShade(true);
-		// FIXME: possibly no longer required in 1.17
-		// RenderSystem.alphaFunc(GL11.GL_GREATER, 0.003F);
-
 		if (texture == null) {
 			event.setTextureEnabled(false);
 			event.beginQuads(DefaultVertexFormat.POSITION_COLOR);
@@ -93,7 +89,5 @@ public class GradientObject extends ScreenPainterObject {
 			event.end();
 		}
 
-		event.setSmoothShade(false);
-		// RenderSystem.defaultAlphaFunc();
 	}
 }

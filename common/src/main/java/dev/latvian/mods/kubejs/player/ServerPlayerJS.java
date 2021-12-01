@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.player;
 
 import dev.latvian.mods.kubejs.core.PlayerInteractionManagerKJS;
+import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
 import dev.latvian.mods.kubejs.server.ServerJS;
@@ -131,15 +132,14 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 		}
 	}
 
-	// FIXME: carried
-	/*@Override
+	@Override
 	public void setMouseItem(ItemStackJS item) {
 		super.setMouseItem(item);
 
 		if (minecraftPlayer.connection != null) {
-			minecraftPlayer.broadcastCarriedItem();
+			minecraftPlayer.inventoryMenu.broadcastChanges();
 		}
-	}*/
+	}
 
 	@Override
 	public void sendData(String channel, @Nullable CompoundTag data) {
