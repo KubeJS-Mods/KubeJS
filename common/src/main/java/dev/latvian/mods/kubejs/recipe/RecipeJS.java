@@ -430,10 +430,10 @@ public abstract class RecipeJS {
 		}
 
 		if (messageDigest == null) {
-			return new BigInteger(HexFormat.of().formatHex(getJsonHashBytes())).toString(36);
+			return new BigInteger(HexFormat.of().formatHex(getJsonHashBytes()), 16).toString(36);
 		} else {
 			messageDigest.reset();
-			return new BigInteger(HexFormat.of().formatHex(messageDigest.digest(getJsonHashBytes()))).toString(36);
+			return new BigInteger(HexFormat.of().formatHex(messageDigest.digest(getJsonHashBytes())), 16).toString(36);
 		}
 	}
 
