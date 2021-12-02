@@ -194,9 +194,9 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		filter.allow("it.unimi.dsi.fastutil"); // FastUtil
 
-		filter.allow("dev.latvian.kubejs"); // KubeJS
-		filter.deny("dev.latvian.kubejs.script");
-		filter.deny("dev.latvian.kubejs.mixin");
+		filter.allow("dev.latvian.mods.kubejs"); // KubeJS
+		filter.deny("dev.latvian.mods.kubejs.script");
+		filter.deny("dev.latvian.mods.kubejs.mixin");
 		filter.deny(KubeJSPlugin.class);
 		filter.deny(KubeJSPlugins.class);
 

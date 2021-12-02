@@ -55,14 +55,17 @@ dependencies {
 
 	modApi("dev.latvian.mods:rhino-forge:${rootProject.rhino_version}") { transitive false }
 
-	modCompileOnly("mezz.jei:jei-1.17.1:${rootProject.forge_jei_version}")
+	//modCompileOnly("mezz.jei:jei-1.17.1:${rootProject.forge_jei_version}")
 	// modCompileOnly("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
 	// modCompileOnly("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
 
-	modRuntimeOnly("mezz.jei:jei-1.17.1:${rootProject.forge_jei_version}")
+	//modRuntimeOnly("mezz.jei:jei-1.17.1:${rootProject.forge_jei_version}")
 	// modRuntimeOnly("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
 	// modRuntimeOnly("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
 	// modRuntimeOnly("curse.maven:emendatus-enigmatica-399630:${rootProject.emendatus_enigmatica_file}")
+
+	modImplementation("me.shedaniel:RoughlyEnoughItems-forge:${rootProject.fabric_rei_version}") {
+	}
 
 	common(project(path: ":common", configuration: "dev")) { transitive false }
 	shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
@@ -119,13 +122,12 @@ if (ENV.CURSEFORGE_KEY) {
 			id = project.curseforge_id_forge
 			releaseType = project.curseforge_type
 			addGameVersion "Forge"
-			addGameVersion "1.17.1"
+			addGameVersion "1.18"
 			mainArtifact(remapJar.archivePath)
 			relations {
 				requiredDependency 'rhino'
 				requiredDependency 'architectury-forge'
 				optionalDependency 'jei'
-				optionalDependency 'game-stages'
 			}
 			changelog = getGitChangelog
 			changelogType = 'markdown'
