@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  * @author LatvianModder
  */
 public class RecipeFunction extends BaseFunction implements WrappedJS {
-	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.kubejs.recipe.RecipeFunction.call");
+	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.mods.kubejs.recipe.RecipeFunction.call");
 
 	private final RecipeEventJS event;
 	public final ResourceLocation typeID;

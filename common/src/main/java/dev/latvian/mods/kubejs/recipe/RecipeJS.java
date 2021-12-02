@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
@@ -22,11 +23,9 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonUtilsJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
-import dev.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import org.apache.commons.codec.binary.Hex;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
@@ -37,6 +36,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -430,10 +430,10 @@ public abstract class RecipeJS {
 		}
 
 		if (messageDigest == null) {
-			return new BigInteger(Hex.encodeHexString(getJsonHashBytes()), 16).toString(36);
+			return new BigInteger(HexFormat.of().formatHex(getJsonHashBytes())).toString(36);
 		} else {
 			messageDigest.reset();
-			return new BigInteger(Hex.encodeHexString(messageDigest.digest(getJsonHashBytes())), 16).toString(36);
+			return new BigInteger(HexFormat.of().formatHex(messageDigest.digest(getJsonHashBytes()))).toString(36);
 		}
 	}
 
