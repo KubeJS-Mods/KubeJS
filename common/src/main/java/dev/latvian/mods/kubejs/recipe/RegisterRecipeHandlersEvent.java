@@ -1,5 +1,9 @@
 package dev.latvian.mods.kubejs.recipe;
 
+import dev.architectury.annotations.ForgeEvent;
+import dev.architectury.event.Event;
+import dev.architectury.event.EventFactory;
+import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
@@ -7,12 +11,9 @@ import dev.latvian.mods.kubejs.recipe.minecraft.ShapedRecipeJS;
 import dev.latvian.mods.kubejs.recipe.minecraft.ShapelessRecipeJS;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.architectury.annotations.ForgeEvent;
-import dev.architectury.event.Event;
-import dev.architectury.event.EventFactory;
-import dev.architectury.registry.registries.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
 import java.util.Objects;
@@ -21,13 +22,18 @@ import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
+ * @deprecated This class and others like it will be changed significantly in 4.1,
+ * including the removal of {@code EVENT} and the {@code @ForgeEvent}
+ * annotation, honestly, just use the KubeJS plugin system instead...
  */
+@Deprecated
 @ForgeEvent
 public class RegisterRecipeHandlersEvent {
 	/**
 	 * @deprecated Use {@link KubeJSPlugin#addRecipes(RegisterRecipeHandlersEvent)} instead
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
 	public static final Event<Consumer<RegisterRecipeHandlersEvent>> EVENT = EventFactory.createConsumerLoop(RegisterRecipeHandlersEvent.class);
 	private final Map<ResourceLocation, RecipeTypeJS> map;
 

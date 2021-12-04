@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.net;
 
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.architectury.networking.NetworkManager.PacketContext;
 import dev.architectury.networking.simple.BaseS2CMessage;
 import dev.architectury.networking.simple.MessageType;
+import dev.latvian.mods.kubejs.KubeJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.Nullable;

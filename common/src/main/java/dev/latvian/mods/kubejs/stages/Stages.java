@@ -1,13 +1,13 @@
 package dev.latvian.mods.kubejs.stages;
 
+import dev.architectury.event.Event;
+import dev.architectury.event.EventFactory;
+import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.core.PlayerKJS;
 import dev.latvian.mods.kubejs.net.AddStageMessage;
 import dev.latvian.mods.kubejs.net.RemoveStageMessage;
 import dev.latvian.mods.kubejs.net.SyncStagesMessage;
-import dev.architectury.event.Event;
-import dev.architectury.event.EventFactory;
-import dev.architectury.hooks.level.entity.PlayerHooks;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
@@ -89,11 +89,6 @@ public abstract class Stages {
 
 	public boolean has(String stage) {
 		return getAll().contains(stage);
-	}
-
-	@Deprecated
-	public final Collection<String> getList() {
-		return getAll();
 	}
 
 	public boolean add(String stage) {

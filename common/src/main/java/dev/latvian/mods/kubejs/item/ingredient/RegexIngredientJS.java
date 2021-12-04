@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.item.ingredient;
 
+import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.architectury.registry.registries.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.ItemStack;
 

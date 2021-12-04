@@ -16,6 +16,7 @@ import java.util.function.Predicate;
 
 /**
  * FIXME: Move to {@link dev.architectury.registry.level.biome.BiomeModifications} once it's ready.
+ *
  * @author LatvianModder
  */
 public class WorldgenRemoveEventJS extends StartupEventJS {

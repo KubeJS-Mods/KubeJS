@@ -1,11 +1,15 @@
 package dev.latvian.mods.kubejs.script;
 
-import dev.latvian.mods.kubejs.util.WithAttachedData;
 import dev.architectury.annotations.ForgeEvent;
+import dev.latvian.mods.kubejs.util.WithAttachedData;
 
 /**
  * @author LatvianModder
+ * @deprecated This class and others like it will be changed significantly in 4.1,
+ * including the removal of {@code EVENT} and the {@code @ForgeEvent}
+ * annotation, honestly, just use the KubeJS plugin system instead...
  */
+@Deprecated
 @ForgeEvent
 public class AttachDataEvent<T extends WithAttachedData> {
 	private final DataType<T> type;

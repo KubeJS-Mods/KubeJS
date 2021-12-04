@@ -3,6 +3,8 @@ package dev.latvian.mods.kubejs.fluid;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.architectury.fluid.FluidStack;
+import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -10,8 +12,6 @@ import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.mod.util.Copyable;
-import dev.architectury.fluid.FluidStack;
-import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -151,11 +151,6 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 		return fs;
 	}
 
-	@Deprecated
-	public final FluidStackJS amount(long amount) {
-		return withAmount(amount);
-	}
-
 	@Nullable
 	public abstract CompoundTag getNbt();
 
@@ -165,11 +160,6 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 		FluidStackJS fs = copy();
 		fs.setNbt(nbt);
 		return fs;
-	}
-
-	@Deprecated
-	public final FluidStackJS nbt(@Nullable CompoundTag nbt) {
-		return withNBT(nbt);
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.core.TieredItemKJS;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Consumer;
 
@@ -29,13 +28,6 @@ public class ItemModificationProperties {
 
 	public void setBurnTime(int i) {
 		item.setBurnTimeKJS(i);
-	}
-
-	// Removing soon because of typo.
-	@Deprecated
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.0")
-	public void setCraftingReminder(Item i) {
-		setCraftingRemainder(i);
 	}
 
 	public void setCraftingRemainder(Item i) {

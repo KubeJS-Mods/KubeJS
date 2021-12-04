@@ -19,13 +19,6 @@ public abstract class BuilderBase {
 
 	public abstract String getBuilderType();
 
-	@Deprecated
-	public void add() {
-		ConsoleJS.STARTUP.setLineNumber(true);
-		ConsoleJS.STARTUP.log("You no longer need to use .add() at end of " + getBuilderType() + " builder!");
-		ConsoleJS.STARTUP.setLineNumber(false);
-	}
-
 	public BuilderBase translationKey(String key) {
 		translationKey = key;
 		return this;

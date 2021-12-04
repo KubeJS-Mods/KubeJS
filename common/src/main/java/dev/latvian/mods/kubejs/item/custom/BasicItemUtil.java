@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.item.custom;
 
-import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import dev.latvian.mods.kubejs.item.ItemBuilder;
 
 public class BasicItemUtil {
 	@ExpectPlatform

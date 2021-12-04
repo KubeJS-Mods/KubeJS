@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.entity;
 
 import com.mojang.authlib.GameProfile;
-import dev.latvian.mods.kubejs.core.EntityKJS;
 import dev.architectury.hooks.level.entity.EntityHooks;
 import dev.architectury.registry.registries.Registries;
+import dev.latvian.mods.kubejs.core.EntityKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.server.ServerJS;

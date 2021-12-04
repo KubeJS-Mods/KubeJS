@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.mixin.common;
 
+import dev.architectury.registry.fuel.FuelRegistry;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.rhino.util.RemapForJS;
-import dev.architectury.registry.fuel.FuelRegistry;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

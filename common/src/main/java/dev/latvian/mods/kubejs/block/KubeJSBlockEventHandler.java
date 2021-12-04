@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.block;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
-import dev.latvian.mods.kubejs.CommonProperties;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.BlockEvent;
 import dev.architectury.event.events.common.InteractionEvent;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.utils.value.IntValue;
+import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSObjects;

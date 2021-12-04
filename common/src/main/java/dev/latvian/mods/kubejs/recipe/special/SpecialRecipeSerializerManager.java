@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.recipe.special;
 
-import dev.latvian.mods.kubejs.event.EventJS;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.architectury.registry.registries.Registries;
+import dev.latvian.mods.kubejs.event.EventJS;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;

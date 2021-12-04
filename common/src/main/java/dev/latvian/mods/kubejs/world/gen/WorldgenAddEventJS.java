@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 /**
  * FIXME: Move to {@link dev.architectury.registry.level.biome.BiomeModifications} once it's ready.
+ *
  * @author LatvianModder
  */
 public class WorldgenAddEventJS extends StartupEventJS {

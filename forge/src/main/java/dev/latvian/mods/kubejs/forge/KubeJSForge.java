@@ -53,16 +53,11 @@ public class KubeJSForge {
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::checkLivingSpawn);
 
 		if (!CommonProperties.get().serverOnly) {
-			// Yes this is stupid but for now I will do this until more mods update to 1.16.5 properly, because we never know how many mods hardcode [.4]. Use ForgeMod.enableMilkFluid(); after a while
-
-			try {
-				ForgeMod.class.getDeclaredMethod("enableMilkFluid").invoke(null);
-			} catch (Throwable ex) {
-			}
+			ForgeMod.enableMilkFluid();
+			CraftingHelper.register(new ResourceLocation("kubejs:custom_predicate"), CustomPredicateIngredient.SERIALIZER);
+			CraftingHelper.register(new ResourceLocation("kubejs:ignore_nbt"), IgnoreNBTIngredient.SERIALIZER);
 		}
 
-		CraftingHelper.register(new ResourceLocation("kubejs:custom_predicate"), CustomPredicateIngredient.SERIALIZER);
-		CraftingHelper.register(new ResourceLocation("kubejs:ignore_nbt"), IgnoreNBTIngredient.SERIALIZER);
 	}
 
 	private static void loadComplete(FMLLoadCompleteEvent event) {

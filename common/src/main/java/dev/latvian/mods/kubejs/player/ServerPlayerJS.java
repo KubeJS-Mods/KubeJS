@@ -62,11 +62,6 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 		}
 	}
 
-	@Deprecated
-	public boolean isOP() {
-		return isOp();
-	}
-
 	public boolean isOp() {
 		return server.getMinecraftServer().getPlayerList().isOp(minecraftPlayer.getGameProfile());
 	}

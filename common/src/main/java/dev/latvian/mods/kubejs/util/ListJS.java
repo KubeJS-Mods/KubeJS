@@ -2,13 +2,13 @@ package dev.latvian.mods.kubejs.util;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import dev.architectury.utils.NbtType;
 import dev.latvian.mods.rhino.mod.util.ChangeListener;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.mod.util.NBTSerializable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.mod.util.StringBuilderAppendable;
-import dev.architectury.utils.NbtType;
 import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.IntArrayTag;

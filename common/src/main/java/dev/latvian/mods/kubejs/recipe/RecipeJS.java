@@ -104,11 +104,6 @@ public abstract class RecipeJS {
 		return this;
 	}
 
-	@Deprecated
-	public RecipeJS set(Object data) {
-		return merge(data);
-	}
-
 	public RecipeJS id(ResourceLocation _id) {
 		id = _id;
 		save();
@@ -522,27 +517,12 @@ public abstract class RecipeJS {
 		return ingredientAction(filter, new DamageAction(damage));
 	}
 
-	@Deprecated
-	public final RecipeJS damageItem(IngredientActionFilter filter, int damage) {
-		return damageIngredient(filter, damage);
-	}
-
 	public final RecipeJS damageIngredient(IngredientActionFilter filter) {
 		return damageIngredient(filter, 1);
 	}
 
-	@Deprecated
-	public final RecipeJS damageItem(IngredientActionFilter filter) {
-		return damageIngredient(filter);
-	}
-
 	public final RecipeJS replaceIngredient(IngredientActionFilter filter, ItemStackJS item) {
 		return ingredientAction(filter, new ReplaceAction(item.getItemStack()));
-	}
-
-	@Deprecated
-	public final RecipeJS replaceItem(IngredientActionFilter filter, ItemStackJS item) {
-		return replaceIngredient(filter, item);
 	}
 
 	public final RecipeJS customIngredientAction(IngredientActionFilter filter, String id) {
@@ -553,8 +533,4 @@ public abstract class RecipeJS {
 		return ingredientAction(filter, new KeepAction());
 	}
 
-	@Deprecated
-	public final RecipeJS keep(IngredientActionFilter filter) {
-		return keepIngredient(filter);
-	}
 }

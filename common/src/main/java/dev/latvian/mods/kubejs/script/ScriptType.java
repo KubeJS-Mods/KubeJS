@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.script;
 
+import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.architectury.platform.Platform;
 import net.minecraft.world.level.LevelReader;
 import org.apache.logging.log4j.LogManager;
 

@@ -625,12 +625,6 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	}
 
 	@Override
-	@Deprecated
-	public final ItemStackJS x(int c) {
-		return withCount(c);
-	}
-
-	@Override
 	public boolean isEmpty() {
 		return stack.isEmpty();
 	}
@@ -659,12 +653,6 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 	public String getNbtString() {
 		return String.valueOf(getNbt());
-	}
-
-	@Nullable
-	@Deprecated
-	public CompoundTag getMinecraftNbt() {
-		return getNbt();
 	}
 
 	public ItemStackJS removeNBT() {
@@ -713,11 +701,6 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		ItemStackJS is = copy();
 		is.setChance(c);
 		return is;
-	}
-
-	@Deprecated
-	public final ItemStackJS chance(double c) {
-		return withChance(c);
 	}
 
 	public Text getName() {

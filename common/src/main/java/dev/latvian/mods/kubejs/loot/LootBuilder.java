@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.loot;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,14 +58,6 @@ public class LootBuilder implements FunctionContainer, ConditionContainer {
 		LootBuilderPool pool = new LootBuilderPool();
 		p.accept(pool);
 		pools.add(pool.toJson());
-	}
-
-	@Deprecated
-	public void pool(Consumer<LootBuilderPool> p) {
-		addPool(p);
-		ConsoleJS.SERVER.setLineNumber(true);
-		ConsoleJS.SERVER.warn("This method is no longer supported! Use table.addPool(pool => {...})");
-		ConsoleJS.SERVER.setLineNumber(false);
 	}
 
 	public LootBuilder addFunction(JsonObject o) {

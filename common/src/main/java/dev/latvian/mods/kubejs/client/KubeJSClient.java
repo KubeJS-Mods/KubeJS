@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.client;
 
+import dev.architectury.hooks.PackRepositoryHooks;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCommon;
 import dev.latvian.mods.kubejs.KubeJSEvents;
@@ -14,7 +15,6 @@ import dev.latvian.mods.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.util.unit.FixedUnit;
 import dev.latvian.mods.rhino.util.unit.Unit;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
-import dev.architectury.hooks.PackRepositoryHooks;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
