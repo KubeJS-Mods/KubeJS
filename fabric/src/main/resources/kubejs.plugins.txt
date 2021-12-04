@@ -1,1 +1,2 @@
 dev.latvian.mods.kubejs.fabric.BuiltinKubeJSFabricPlugin
+dev.latvian.mods.kubejs.integration.techreborn.TechRebornKubeJSPlugin

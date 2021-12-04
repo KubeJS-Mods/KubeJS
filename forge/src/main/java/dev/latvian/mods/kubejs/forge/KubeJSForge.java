@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.block.forge.MissingMappingEventJS;
 import dev.latvian.mods.kubejs.entity.ItemEntityJS;
 import dev.latvian.mods.kubejs.entity.forge.CheckLivingEntitySpawnEventJS;
 import dev.latvian.mods.kubejs.entity.forge.LivingEntityDropsEventJS;
-import dev.latvian.mods.kubejs.integration.IntegrationManager;
 import dev.latvian.mods.kubejs.item.forge.ItemDestroyedEventJS;
 import dev.latvian.mods.kubejs.item.ingredient.forge.CustomPredicateIngredient;
 import dev.latvian.mods.kubejs.item.ingredient.forge.IgnoreNBTIngredient;
@@ -42,7 +41,6 @@ public class KubeJSForge {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(KubeJSForge::loadComplete);
 		KubeJS.instance = new KubeJS();
 		KubeJS.instance.setup();
-		IntegrationManager.init();
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 
 		MinecraftForge.EVENT_BUS.addGenericListener(Block.class, KubeJSForge::missingBlockMappings);

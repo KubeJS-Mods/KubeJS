@@ -1,1 +1,2 @@
 dev.latvian.mods.kubejs.forge.BuiltinKubeJSForgePlugin
+dev.latvian.mods.kubejs.integration.gamestages.GameStagesIntegration

@@ -12,11 +12,10 @@ import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
- * @deprecated This class and others like it will be changed significantly in 4.1,
+ * @apiNote This class and others like it will be changed significantly in 4.1,
  * including the removal of {@code EVENT} and the {@code @ForgeEvent}
  * annotation, honestly, just use the KubeJS plugin system instead...
  */
-@Deprecated
 public class AttachWorldDataEvent extends AttachDataEvent<WorldJS> {
 	/**
 	 * @deprecated Use {@link KubeJSPlugin#attachWorldData(AttachWorldDataEvent)} instead
