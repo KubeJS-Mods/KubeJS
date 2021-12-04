@@ -308,13 +308,13 @@ public class ConsoleJS {
 
 	public void debug(Object message) {
 		if (shouldPrintDebug()) {
-			info(message);
+			log(logger::debug, "DEBUG", message);
 		}
 	}
 
 	public void debugf(String message, Object... args) {
 		if (shouldPrintDebug()) {
-			infof(message, args);
+			logf(logger::debug, "DEBUG", message, args);
 		}
 	}
 
