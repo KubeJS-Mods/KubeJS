@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -40,6 +41,7 @@ public abstract class KubeJSResourcePack implements PackResources {
 
 	public KubeJSResourcePack(PackType t) {
 		packType = t;
+		Objects.requireNonNull(KubeJS.instance, "KubeJS has not been initialized, this won't happen unless some OTHER mod failed to load first! Check your latest.log!");
 	}
 
 	private static String getFullPath(PackType type, ResourceLocation location) {
