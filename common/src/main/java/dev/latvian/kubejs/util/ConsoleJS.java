@@ -62,7 +62,7 @@ public class ConsoleJS {
 			if (x != null && skipString != null && skipString.matcher(x).find()) {
 				skip = true;
 			} else {
-				console.log(console.logger::error, "ERR ", x);
+				console.log(console.logger::error, "ERR  ", x);
 			}
 		}
 	}
@@ -229,11 +229,11 @@ public class ConsoleJS {
 	}
 
 	public void info(Object message) {
-		log(logger::info, "INFO", message);
+		log(logger::info, "INFO ", message);
 	}
 
 	public void infof(Object message, Object... args) {
-		logf(logger::info, "INFO", message, args);
+		logf(logger::info, "INFO ", message, args);
 	}
 
 	public void log(Object message) {
@@ -244,7 +244,7 @@ public class ConsoleJS {
 		log(s -> {
 			logger.warn(s);
 			type.warnings.add(s);
-		}, "WARN", message);
+		}, "WARN ", message);
 	}
 
 	public void warn(String message, Throwable throwable, @Nullable Pattern skip) {
@@ -268,14 +268,14 @@ public class ConsoleJS {
 		logf(s -> {
 			logger.warn(s);
 			type.warnings.add(s);
-		}, "WARN", message, args);
+		}, "WARN ", message, args);
 	}
 
 	public void error(Object message) {
 		log(s -> {
 			logger.error(s);
 			type.errors.add(s);
-		}, "ERR ", message);
+		}, "ERR  ", message);
 	}
 
 	public void error(String message, Throwable throwable, @Nullable Pattern skip) {
@@ -299,7 +299,7 @@ public class ConsoleJS {
 		logf(s -> {
 			logger.error(s);
 			type.errors.add(s);
-		}, "ERR ", message, args);
+		}, "ERR  ", message, args);
 	}
 
 	public boolean shouldPrintDebug() {
@@ -308,13 +308,13 @@ public class ConsoleJS {
 
 	public void debug(Object message) {
 		if (shouldPrintDebug()) {
-			info(message);
+			log(logger::debug, "DEBUG", message);
 		}
 	}
 
 	public void debugf(String message, Object... args) {
 		if (shouldPrintDebug()) {
-			infof(message, args);
+			logf(logger::debug, "DEBUG", message, args);
 		}
 	}
 

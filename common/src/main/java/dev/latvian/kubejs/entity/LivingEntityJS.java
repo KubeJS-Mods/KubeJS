@@ -110,7 +110,7 @@ public class LivingEntityJS extends EntityJS {
 	}
 
 	public void swingArm(InteractionHand hand) {
-		minecraftLivingEntity.swing(hand);
+		minecraftLivingEntity.swing(hand,true);
 	}
 
 	public ItemStackJS getEquipment(EquipmentSlot slot) {
