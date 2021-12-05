@@ -66,14 +66,14 @@ public class IDSqueezerRecipeJS extends RecipeJS {
 
 	@Override
 	public ItemStackJS parseResultItem(@Nullable Object o) {
-		if (o instanceof JsonObject) {
-			JsonElement e = ((JsonObject) o).get("item");
+		if (o instanceof JsonObject jsonObj) {
+			JsonElement e = jsonObj.get("item");
 
 			if (e instanceof JsonObject) {
 				ItemStackJS i = super.parseResultItem(e);
 
-				if (((JsonObject) o).has("chance")) {
-					i.setChance(((JsonObject) o).get("chance").getAsDouble());
+				if (jsonObj.has("chance")) {
+					i.setChance(jsonObj.get("chance").getAsDouble());
 				}
 
 				return i;

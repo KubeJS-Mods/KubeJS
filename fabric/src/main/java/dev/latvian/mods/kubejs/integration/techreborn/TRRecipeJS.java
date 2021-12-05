@@ -100,24 +100,24 @@ public class TRRecipeJS extends RecipeJS {
 
 	@Override
 	public IngredientJS parseIngredientItem(Object o, String key) {
-		if (o instanceof JsonObject json) {
+		if (o instanceof JsonObject jsonObj) {
 
 			ResourceLocation type = DummyRebornIngredient.STACK_RECIPE_TYPE;
 
-			if (json.has("fluid")) {
+			if (jsonObj.has("fluid")) {
 				type = DummyRebornIngredient.FLUID_RECIPE_TYPE;
-			} else if (json.has("tag")) {
+			} else if (jsonObj.has("tag")) {
 				type = DummyRebornIngredient.TAG_RECIPE_TYPE;
-			} else if (json.has("wrapped")) {
+			} else if (jsonObj.has("wrapped")) {
 				type = DummyRebornIngredient.WRAPPED_RECIPE_TYPE;
 			}
 
-			if (json.has("type")) {
-				type = new ResourceLocation(json.get("type").getAsString());
+			if (jsonObj.has("type")) {
+				type = new ResourceLocation(jsonObj.get("type").getAsString());
 			}
 
 			if (!type.equals(DummyRebornIngredient.STACK_RECIPE_TYPE) && !type.equals(DummyRebornIngredient.TAG_RECIPE_TYPE)) {
-				return new DummyRebornIngredient(type, json);
+				return new DummyRebornIngredient(type, jsonObj);
 			}
 		}
 

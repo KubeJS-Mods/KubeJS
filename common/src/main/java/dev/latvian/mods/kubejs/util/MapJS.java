@@ -36,17 +36,17 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 
 	@Nullable
 	public static CompoundTag nbt(@Nullable Object map) {
-		if (map instanceof CompoundTag) {
-			return (CompoundTag) map;
+		if (map instanceof CompoundTag nbt) {
+			return nbt;
 		} else if (map instanceof CharSequence) {
 			try {
 				return TagParser.parseTag(map.toString());
 			} catch (Exception ex) {
 				return null;
 			}
-		} else if (map instanceof JsonPrimitive) {
+		} else if (map instanceof JsonPrimitive json) {
 			try {
-				return TagParser.parseTag(((JsonPrimitive) map).getAsString());
+				return TagParser.parseTag(json.getAsString());
 			} catch (Exception ex) {
 				return null;
 			}
@@ -58,8 +58,8 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 
 	@Nullable
 	public static JsonObject json(@Nullable Object map) {
-		if (map instanceof JsonObject) {
-			return (JsonObject) map;
+		if (map instanceof JsonObject json) {
+			return json;
 		} else if (map instanceof CharSequence) {
 			try {
 				return JsonUtilsJS.GSON.fromJson(map.toString(), JsonObject.class);
@@ -170,10 +170,10 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 	protected boolean setChangeListener(@Nullable Object v) {
 		if (v == null) {
 			return false;
-		} else if (v instanceof MapJS) {
-			((MapJS) v).changeListener = this::onChanged;
-		} else if (v instanceof ListJS) {
-			((ListJS) v).changeListener = this::onChanged;
+		} else if (v instanceof MapJS map) {
+			map.changeListener = this::onChanged;
+		} else if (v instanceof ListJS list) {
+			list.changeListener = this::onChanged;
 		}
 
 		return true;
@@ -187,25 +187,22 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 	}
 
 	@Nullable
-	@SuppressWarnings("RedundantIfStatement")
 	private Object withChangeListener(Object value) {
 		Object v = UtilsJS.wrap(value, JSObjectType.ANY);
 
-		if (v instanceof Double) {
-			double d = (Double) v;
-
+		if (v instanceof Double d) {
 			if (Double.isNaN(d) || Double.isInfinite(d)) {
 				return d;
 			}
 
 			if (d <= Integer.MAX_VALUE && d >= Integer.MIN_VALUE) {
-				int i = (int) d;
+				int i = d.intValue();
 
 				if (i == d) {
 					return i;
 				}
 			} else if (d <= Long.MAX_VALUE && d >= Long.MIN_VALUE) {
-				long i = (long) d;
+				long i = d.longValue();
 
 				if (i == d) {
 					return i;

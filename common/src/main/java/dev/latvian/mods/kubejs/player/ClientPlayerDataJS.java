@@ -12,18 +12,18 @@ import java.util.UUID;
  * @author LatvianModder
  */
 public class ClientPlayerDataJS extends PlayerDataJS<Player, ClientPlayerJS> {
-	private final ClientWorldJS world;
+	private final ClientWorldJS level;
 	private final ClientPlayerJS player;
 	private final Player minecraftPlayer;
 
-	public ClientPlayerDataJS(ClientWorldJS w, Player p, boolean s) {
-		world = w;
+	public ClientPlayerDataJS(ClientWorldJS l, Player p, boolean s) {
+		level = l;
 		minecraftPlayer = p;
 		player = new ClientPlayerJS(this, minecraftPlayer, s);
 	}
 
 	public ClientWorldJS getWorld() {
-		return world;
+		return level;
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class ClientPlayerDataJS extends PlayerDataJS<Player, ClientPlayerJS> {
 
 	@Override
 	public WorldJS getOverworld() {
-		return world;
+		return level;
 	}
 
 	@Nullable

@@ -83,8 +83,8 @@ public class ShapedBlockType extends BlockType {
 
 	@Override
 	public void generateAssets(BlockBuilder builder, AssetJsonGenerator generator) {
-		if (builder.block instanceof CustomBlockJS) {
-			((CustomBlockJS) builder.block).generateAssets(builder, generator);
+		if (builder.block instanceof CustomBlockJS custom) {
+			custom.generateAssets(builder, generator);
 		} else {
 			super.generateAssets(builder, generator);
 		}

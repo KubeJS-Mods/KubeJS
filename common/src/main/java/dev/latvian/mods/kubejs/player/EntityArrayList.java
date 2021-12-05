@@ -21,23 +21,23 @@ import java.util.function.Predicate;
  * @author LatvianModder
  */
 public class EntityArrayList extends ArrayList<EntityJS> implements MessageSender {
-	private final WorldJS world;
+	private final WorldJS level;
 
-	public EntityArrayList(WorldJS w, int size) {
+	public EntityArrayList(WorldJS l, int size) {
 		super(size);
-		world = w;
+		level = l;
 	}
 
-	public EntityArrayList(WorldJS w, Iterable<? extends Entity> c) {
-		this(w, c instanceof Collection ? ((Collection) c).size() : 10);
+	public EntityArrayList(WorldJS l, Iterable<? extends Entity> entities) {
+		this(l, entities instanceof Collection c ? c.size() : 10);
 
-		for (var entity : c) {
-			add(world.getEntity(entity));
+		for (var entity : entities) {
+			add(level.getEntity(entity));
 		}
 	}
 
 	public WorldJS getWorld() {
-		return world;
+		return level;
 	}
 
 	@Override
@@ -60,8 +60,8 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 	@Override
 	public void setStatusMessage(Component message) {
 		for (var entity : this) {
-			if (entity.minecraftEntity instanceof ServerPlayer) {
-				((ServerPlayer) entity.minecraftEntity).displayClientMessage(message, true);
+			if (entity.minecraftEntity instanceof ServerPlayer player) {
+				player.displayClientMessage(message, true);
 			}
 		}
 	}
@@ -109,7 +109,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 			return this;
 		}
 
-		EntityArrayList list = new EntityArrayList(world, size());
+		EntityArrayList list = new EntityArrayList(level, size());
 
 		for (var entity : this) {
 			if (filter.test(entity)) {
@@ -122,8 +122,8 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 	public void sendData(String channel, @Nullable CompoundTag data) {
 		for (var entity : this) {
-			if (entity instanceof PlayerJS) {
-				((PlayerJS) entity).sendData(channel, data);
+			if (entity instanceof PlayerJS playerJS) {
+				playerJS.sendData(channel, data);
 			}
 		}
 	}

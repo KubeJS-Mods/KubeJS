@@ -57,8 +57,8 @@ public class KubeJSItemEventHandler {
 		for (var builder : KubeJSObjects.ITEMS.values()) {
 			builder.item = builder.type.createItem(builder);
 
-			if (builder.item instanceof ItemKJS) {
-				((ItemKJS) builder.item).setItemBuilderKJS(builder);
+			if (builder.item instanceof ItemKJS kjs) {
+				kjs.setItemBuilderKJS(builder);
 			}
 
 			KubeJSRegistries.items().register(builder.id, () -> builder.item);
@@ -68,8 +68,8 @@ public class KubeJSItemEventHandler {
 			if (builder.itemBuilder != null) {
 				builder.itemBuilder.blockItem = new BlockItemJS(builder.itemBuilder);
 
-				if (builder.itemBuilder.blockItem instanceof ItemKJS) {
-					((ItemKJS) builder.itemBuilder.blockItem).setItemBuilderKJS(builder.itemBuilder);
+				if (builder.itemBuilder.blockItem instanceof ItemKJS kjs) {
+					kjs.setItemBuilderKJS(builder.itemBuilder);
 				}
 
 				KubeJSRegistries.items().register(builder.id, () -> builder.itemBuilder.blockItem);

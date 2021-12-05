@@ -27,8 +27,8 @@ public enum ScriptType {
 		ConsoleJS.CLIENT = CLIENT.console;
 	}
 
-	public static ScriptType of(LevelReader world) {
-		return world.isClientSide() ? CLIENT : SERVER;
+	public static ScriptType of(LevelReader level) {
+		return level.isClientSide() ? CLIENT : SERVER;
 	}
 
 	public final String name;

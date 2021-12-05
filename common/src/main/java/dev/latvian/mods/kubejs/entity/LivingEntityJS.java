@@ -20,8 +20,8 @@ import java.util.function.Consumer;
 public class LivingEntityJS extends EntityJS {
 	public final LivingEntity minecraftLivingEntity;
 
-	public LivingEntityJS(WorldJS w, LivingEntity e) {
-		super(w, e);
+	public LivingEntityJS(WorldJS l, LivingEntity e) {
+		super(l, e);
 		minecraftLivingEntity = e;
 	}
 

@@ -15,15 +15,15 @@ import org.jetbrains.annotations.Nullable;
  */
 public class BlockBreakEventJS extends PlayerEventJS {
 	private final ServerPlayer entity;
-	private final Level world;
+	private final Level level;
 	private final BlockPos pos;
 	private final BlockState state;
 	@Nullable
 	private final IntValue xp;
 
-	public BlockBreakEventJS(ServerPlayer entity, Level world, BlockPos pos, BlockState state, @Nullable IntValue xp) {
+	public BlockBreakEventJS(ServerPlayer entity, Level level, BlockPos pos, BlockState state, @Nullable IntValue xp) {
 		this.entity = entity;
-		this.world = world;
+		this.level = level;
 		this.pos = pos;
 		this.state = state;
 		this.xp = xp;
@@ -40,7 +40,7 @@ public class BlockBreakEventJS extends PlayerEventJS {
 	}
 
 	public BlockContainerJS getBlock() {
-		return new BlockContainerJS(world, pos) {
+		return new BlockContainerJS(level, pos) {
 			@Override
 			public BlockState getBlockState() {
 				return state;

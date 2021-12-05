@@ -102,8 +102,8 @@ public class UtilsJS {
 	public static Pattern parseRegex(Object o) {
 		if (o instanceof CharSequence || o instanceof NativeRegExp) {
 			return regex(o.toString());
-		} else if (o instanceof Pattern) {
-			return (Pattern) o;
+		} else if (o instanceof Pattern pattern) {
+			return pattern;
 		}
 
 		return null;
@@ -191,14 +191,13 @@ public class UtilsJS {
 
 	@Nullable
 	public static Object copy(@Nullable Object o) {
-		if (o instanceof Copyable) {
-			return ((Copyable) o).copy();
-		} else if (o instanceof JsonElement) {
-			return JsonUtilsJS.copy((JsonElement) o);
-		} else if (o instanceof Tag) {
-			return ((Tag) o).copy();
+		if (o instanceof Copyable copyable) {
+			return copyable.copy();
+		} else if (o instanceof JsonElement json) {
+			return JsonUtilsJS.copy(json);
+		} else if (o instanceof Tag tag) {
+			return tag.copy();
 		}
-
 		return o;
 	}
 
@@ -209,22 +208,22 @@ public class UtilsJS {
 			return o;
 		} else if (o instanceof CharSequence || o instanceof ResourceLocation) {
 			return o.toString();
-		} else if (o instanceof Wrapper) {
-			return wrap(((Wrapper) o).unwrap(), type);
+		} else if (o instanceof Wrapper w) {
+			return wrap(w.unwrap(), type);
 		}
 		// Vanilla text component
-		else if (o instanceof Component) {
+		else if (o instanceof Component component) {
 			Text t = new TextString("");
 
 			List<Component> list = new ArrayList<>();
-			list.add((Component) o);
-			list.addAll(((Component) o).getSiblings());
+			list.add(component);
+			list.addAll(component.getSiblings());
 
 			for (var c : list) {
 				Text t1;
 
-				if (c instanceof TranslatableComponent) {
-					t1 = new TextTranslate(((TranslatableComponent) c).getKey(), ((TranslatableComponent) c).getArgs());
+				if (c instanceof TranslatableComponent tlc) {
+					t1 = new TextTranslate(tlc.getKey(), tlc.getArgs());
 				} else {
 					t1 = new TextString(c.getContents());
 				}
@@ -295,18 +294,18 @@ public class UtilsJS {
 			}
 		}
 		// GSON Primitives
-		else if (o instanceof JsonPrimitive) {
-			return JsonUtilsJS.toPrimitive((JsonPrimitive) o);
+		else if (o instanceof JsonPrimitive json) {
+			return JsonUtilsJS.toPrimitive(json);
 		}
 		// GSON Objects
-		else if (o instanceof JsonObject) {
+		else if (o instanceof JsonObject json) {
 			if (!type.checkMap()) {
 				return null;
 			}
 
-			MapJS map = new MapJS(((JsonObject) o).size());
+			MapJS map = new MapJS(json.size());
 
-			for (Map.Entry<String, JsonElement> entry : ((JsonObject) o).entrySet()) {
+			for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
 				map.put(entry.getKey(), entry.getValue());
 			}
 
@@ -317,22 +316,22 @@ public class UtilsJS {
 			return null;
 		}
 		// NBT
-		else if (o instanceof CompoundTag nbt) {
+		else if (o instanceof CompoundTag tag) {
 			if (!type.checkMap()) {
 				return null;
 			}
 
-			MapJS map = new MapJS(nbt.size());
+			MapJS map = new MapJS(tag.size());
 
-			for (var s : nbt.getAllKeys()) {
-				map.put(s, nbt.get(s));
+			for (var s : tag.getAllKeys()) {
+				map.put(s, tag.get(s));
 			}
 
 			return map;
-		} else if (o instanceof NumericTag) {
-			return ((NumericTag) o).getAsNumber();
-		} else if (o instanceof StringTag) {
-			return ((StringTag) o).getAsString();
+		} else if (o instanceof NumericTag tag) {
+			return tag.getAsNumber();
+		} else if (o instanceof StringTag tag) {
+			return tag.getAsString();
 		}
 
 		return o;
@@ -341,8 +340,8 @@ public class UtilsJS {
 	public static int parseInt(@Nullable Object object, int def) {
 		if (object == null) {
 			return def;
-		} else if (object instanceof Number) {
-			return ((Number) object).intValue();
+		} else if (object instanceof Number num) {
+			return num.intValue();
 		}
 
 		try {
@@ -361,8 +360,8 @@ public class UtilsJS {
 	public static long parseLong(@Nullable Object object, long def) {
 		if (object == null) {
 			return def;
-		} else if (object instanceof Number) {
-			return ((Number) object).longValue();
+		} else if (object instanceof Number num) {
+			return num.longValue();
 		}
 
 		try {
@@ -381,8 +380,8 @@ public class UtilsJS {
 	public static double parseDouble(@Nullable Object object, double def) {
 		if (object == null) {
 			return def;
-		} else if (object instanceof Number) {
-			return ((Number) object).doubleValue();
+		} else if (object instanceof Number num) {
+			return num.doubleValue();
 		}
 
 		try {
@@ -402,11 +401,11 @@ public class UtilsJS {
 		return ToolType.byName(id);
 	}
 
-	public static WorldJS getWorld(Level world) {
-		if (world.isClientSide()) {
+	public static WorldJS getWorld(Level level) {
+		if (level.isClientSide()) {
 			return getClientWorld();
 		} else {
-			return ServerJS.instance.getLevel(world);
+			return ServerJS.instance.getLevel(level);
 		}
 	}
 
@@ -429,8 +428,8 @@ public class UtilsJS {
 	public static ResourceLocation getMCID(@Nullable Object o) {
 		if (o == null) {
 			return AIR_LOCATION;
-		} else if (o instanceof ResourceLocation) {
-			return (ResourceLocation) o;
+		} else if (o instanceof ResourceLocation id) {
+			return id;
 		}
 
 		String s = o.toString();
@@ -521,28 +520,23 @@ public class UtilsJS {
 	}
 
 	public static Class<?> getRawType(Type type) {
-		if (type instanceof Class<?>) {
-			return (Class<?>) type;
-
-		} else if (type instanceof ParameterizedType parameterizedType) {
-
-			Type rawType = parameterizedType.getRawType();
+		if (type instanceof Class<?> clz) {
+			return clz;
+		} else if (type instanceof ParameterizedType paramType) {
+			Type rawType = paramType.getRawType();
 			checkArgument(rawType instanceof Class);
 			return (Class<?>) rawType;
-
-		} else if (type instanceof GenericArrayType) {
-			Type componentType = ((GenericArrayType) type).getGenericComponentType();
+		} else if (type instanceof GenericArrayType arrType) {
+			Type componentType = arrType.getGenericComponentType();
 			return Array.newInstance(getRawType(componentType), 0).getClass();
-
 		} else if (type instanceof TypeVariable) {
 			return Object.class;
-
-		} else if (type instanceof WildcardType) {
-			return getRawType(((WildcardType) type).getUpperBounds()[0]);
-		} else {
-			String className = type == null ? "null" : type.getClass().getName();
-			throw new IllegalArgumentException("Expected a Class, ParameterizedType, or GenericArrayType, but <" + type + "> is of type " + className);
+		} else if (type instanceof WildcardType wildcard) {
+			return getRawType(wildcard.getUpperBounds()[0]);
 		}
+
+		String className = type == null ? "null" : type.getClass().getName();
+		throw new IllegalArgumentException("Expected a Class, ParameterizedType, or GenericArrayType, but <" + type + "> is of type " + className);
 	}
 
 	public static String convertSnakeCaseToCamelCase(String string) {

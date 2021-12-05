@@ -14,8 +14,8 @@ public abstract class PlayerEventJS extends LivingEntityEventJS {
 	public PlayerJS getPlayer() {
 		EntityJS e = getEntity();
 
-		if (e instanceof PlayerJS) {
-			return (PlayerJS) e;
+		if (e instanceof PlayerJS playerJS) {
+			return playerJS;
 		}
 
 		return null;

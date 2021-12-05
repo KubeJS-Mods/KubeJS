@@ -195,18 +195,18 @@ public class InventoryJS {
 	}
 
 	public void markDirty() {
-		if (minecraftInventory instanceof ContainerInventory) {
-			((ContainerInventory) minecraftInventory).getInv().setChanged();
+		if (minecraftInventory instanceof ContainerInventory container) {
+			container.getInv().setChanged();
 		}
 	}
 
 	@Nullable
-	public BlockContainerJS getBlock(WorldJS world) {
-		if (minecraftInventory instanceof ContainerInventory) {
-			Container inv = ((ContainerInventory) minecraftInventory).getInv();
+	public BlockContainerJS getBlock(WorldJS level) {
+		if (minecraftInventory instanceof ContainerInventory container) {
+			Container inv = container.getInv();
 
-			if (inv instanceof BlockEntity) {
-				return world.getBlock((BlockEntity) inv);
+			if (inv instanceof BlockEntity be) {
+				return level.getBlock(be);
 			}
 		}
 

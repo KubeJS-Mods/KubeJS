@@ -246,7 +246,7 @@ public class RecipeEventJS extends EventJS {
 					allRecipeMap.add(recipe.getId(), exp);
 				}
 			} catch (Throwable ex) {
-				if (!(ex instanceof RecipeExceptionJS) || ((RecipeExceptionJS) ex).fallback) {
+				if (!(ex instanceof RecipeExceptionJS rex) || rex.fallback) {
 					if (ServerSettings.instance.logErroringRecipes) {
 						ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'! Falling back to vanilla", ex, SKIP_ERROR);
 					}
@@ -353,10 +353,8 @@ public class RecipeEventJS extends EventJS {
 
 		if (ServerSettings.dataExport != null) {
 			for (var r : removedRecipes) {
-				JsonElement e = allRecipeMap.get(r.getId());
-
-				if (e instanceof JsonObject) {
-					((JsonObject) e).addProperty("removed", true);
+				if (allRecipeMap.get(r.getId()) instanceof JsonObject json) {
+					json.addProperty("removed", true);
 				}
 			}
 
@@ -529,8 +527,8 @@ public class RecipeEventJS extends EventJS {
 
 		Object func0 = recipeFunctions.get(namespace);
 
-		if (func0 instanceof RecipeFunction) {
-			return (RecipeFunction) func0;
+		if (func0 instanceof RecipeFunction fn) {
+			return fn;
 		} else if (!(func0 instanceof Map)) {
 			throw new NullPointerException("Unknown recipe type: " + id);
 		}

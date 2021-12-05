@@ -36,10 +36,6 @@ public interface BlockKJS {
 	void setJumpFactorKJS(float v);
 
 	default List<BlockState> getBlockStatesKJS() {
-		if (!(this instanceof Block)) {
-			return Collections.emptyList();
-		}
-
-		return ((Block) this).getStateDefinition().getPossibleStates();
+		return this instanceof Block block ? block.getStateDefinition().getPossibleStates() : Collections.emptyList();
 	}
 }

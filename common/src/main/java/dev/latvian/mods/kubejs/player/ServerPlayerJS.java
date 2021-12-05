@@ -28,9 +28,9 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	public final ServerJS server;
 	private final boolean hasClientMod;
 
-	public ServerPlayerJS(ServerPlayerDataJS d, ServerWorldJS w, ServerPlayer p) {
-		super(d, w, p);
-		server = w.getServer();
+	public ServerPlayerJS(ServerPlayerDataJS d, ServerWorldJS l, ServerPlayer p) {
+		super(d, l, p);
+		server = l.getServer();
 		hasClientMod = d.hasClientMod();
 	}
 

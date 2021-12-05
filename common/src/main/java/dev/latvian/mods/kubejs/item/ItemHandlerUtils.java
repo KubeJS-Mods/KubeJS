@@ -36,7 +36,7 @@ public class ItemHandlerUtils {
 		}
 
 		ItemHandler inventory = new PlayerMainInvWrapper(player.getInventory());
-		Level world = player.level;
+		Level level = player.level;
 
 		// try adding it into the inventory
 		ItemStack remainder = stack;
@@ -51,17 +51,17 @@ public class ItemHandlerUtils {
 
 		// play sound if something got picked up
 		if (remainder.isEmpty() || remainder.getCount() != stack.getCount()) {
-			world.playSound(null, player.getX(), player.getY() + 0.5, player.getZ(),
-					SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((world.random.nextFloat() - world.random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+			level.playSound(null, player.getX(), player.getY() + 0.5, player.getZ(),
+					SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((level.random.nextFloat() - level.random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
 		}
 
 		// drop remaining itemstack into the world
-		if (!remainder.isEmpty() && !world.isClientSide) {
-			ItemEntity itemEntity = new ItemEntity(world, player.getX(), player.getY() + 0.5, player.getZ(), remainder);
+		if (!remainder.isEmpty() && !level.isClientSide) {
+			ItemEntity itemEntity = new ItemEntity(level, player.getX(), player.getY() + 0.5, player.getZ(), remainder);
 			itemEntity.setPickUpDelay(40);
 			itemEntity.setDeltaMovement(itemEntity.getDeltaMovement().multiply(0, 1, 0));
 
-			world.addFreshEntity(itemEntity);
+			level.addFreshEntity(itemEntity);
 		}
 	}
 

@@ -46,10 +46,10 @@ public class TextTranslate extends Text {
 		Object[] o = new Object[objects.length];
 
 		for (int i = 0; i < objects.length; i++) {
-			if (objects[i] instanceof Text) {
-				o[i] = ((Text) objects[i]).component();
-			} else if (objects[i] instanceof Component) {
-				o[i] = ((Component) objects[i]).copy();
+			if (objects[i] instanceof Text text) {
+				o[i] = text.component();
+			} else if (objects[i] instanceof Component component) {
+				o[i] = component.copy();
 			} else {
 				o[i] = objects[i];
 			}
@@ -63,10 +63,10 @@ public class TextTranslate extends Text {
 		Object[] o = new Object[objects.length];
 
 		for (int i = 0; i < objects.length; i++) {
-			if (objects[i] instanceof Text) {
-				o[i] = ((Text) objects[i]).copy();
-			} else if (objects[i] instanceof Component) {
-				o[i] = ((Component) objects[i]).copy();
+			if (objects[i] instanceof Text text) {
+				o[i] = text.copy();
+			} else if (objects[i] instanceof Component component) {
+				o[i] = component.copy();
 			} else {
 				o[i] = objects[i];
 			}
@@ -97,23 +97,23 @@ public class TextTranslate extends Text {
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
-		} else if (!(obj instanceof TextTranslate) || !key.equals(((TextTranslate) obj).key)) {
+		} else if (!(obj instanceof TextTranslate translate) || !key.equals(translate.key)) {
 			return false;
-		}
+		} else {
+			Object[] o = translate.objects;
 
-		Object[] o = ((TextTranslate) obj).objects;
-
-		if (objects.length == o.length) {
-			for (int i = 0; i < objects.length; i++) {
-				if (!Objects.equals(objects[i], o[i])) {
-					return false;
+			if (objects.length == o.length) {
+				for (int i = 0; i < objects.length; i++) {
+					if (!Objects.equals(objects[i], o[i])) {
+						return false;
+					}
 				}
+
+				return super.equals(obj);
 			}
 
-			return super.equals(obj);
+			return false;
 		}
-
-		return false;
 	}
 
 	@Override

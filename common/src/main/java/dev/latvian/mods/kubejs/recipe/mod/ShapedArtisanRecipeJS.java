@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.mod;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
@@ -21,11 +20,9 @@ public class ShapedArtisanRecipeJS extends ShapedRecipeJS {
 	}
 
 	public ShapedArtisanRecipeJS tool(IngredientJS ingredient, int damage) {
-		JsonElement e = ingredient.toJson();
-
-		if (e instanceof JsonObject) {
-			((JsonObject) e).addProperty("damage", damage);
-			getOrCreateArray("tools").add(e);
+		if (ingredient.toJson() instanceof JsonObject o) {
+			o.addProperty("damage", damage);
+			getOrCreateArray("tools").add(o);
 		} else {
 			JsonObject o = new JsonObject();
 			o.addProperty("item", ingredient.getFirst().getId());

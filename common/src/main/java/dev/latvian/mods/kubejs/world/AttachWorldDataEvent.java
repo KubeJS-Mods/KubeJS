@@ -24,8 +24,8 @@ public class AttachWorldDataEvent extends AttachDataEvent<WorldJS> {
 	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
 	public static final Event<Consumer<AttachWorldDataEvent>> EVENT = EventFactory.createConsumerLoop(AttachWorldDataEvent.class);
 
-	public AttachWorldDataEvent(WorldJS w) {
-		super(DataType.WORLD, w);
+	public AttachWorldDataEvent(WorldJS l) {
+		super(DataType.WORLD, l);
 	}
 
 	public void invoke() {

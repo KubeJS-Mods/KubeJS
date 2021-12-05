@@ -89,16 +89,14 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 	}
 
 	private Object normalize(Object o) {
-		if (o instanceof ItemStackJS) {
-			return ((ItemStackJS) o).toResultJson();
-		} else if (o instanceof IngredientJS) {
-			return ((IngredientJS) o).toJson();
+		if (o instanceof ItemStackJS stack) {
+			return stack.toResultJson();
+		} else if (o instanceof IngredientJS ingr) {
+			return ingr.toJson();
 		} else if (o instanceof String s) {
-
 			if (s.length() >= 4 && s.startsWith("#") && s.indexOf(':') != -1) {
 				return TagIngredientJS.createTag(s.substring(1)).toJson();
 			}
-
 			return o;
 		} else if (o instanceof ListJS) {
 			ListJS list = new ListJS();

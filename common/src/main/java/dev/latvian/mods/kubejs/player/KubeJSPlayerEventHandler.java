@@ -94,8 +94,8 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	public static void inventoryOpened(Player player, AbstractContainerMenu menu) {
-		if (player instanceof ServerPlayer && !(menu instanceof InventoryMenu)) {
-			menu.addSlotListener(new InventoryListener((ServerPlayer) player));
+		if (player instanceof ServerPlayer serverPlayer && !(menu instanceof InventoryMenu)) {
+			menu.addSlotListener(new InventoryListener(serverPlayer));
 		}
 
 		new InventoryEventJS(player, menu).post(KubeJSEvents.PLAYER_INVENTORY_OPENED);

@@ -298,36 +298,36 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	private static ListJS cachedItemTypeListJS;
 
 	public static ItemStackJS of(@Nullable Object o) {
-		if (o instanceof Wrapper) {
-			o = ((Wrapper) o).unwrap();
+		if (o instanceof Wrapper w) {
+			o = w.unwrap();
 		}
 
 		if (o == null || o == ItemStack.EMPTY || o == Items.AIR) {
 			return EMPTY;
-		} else if (o instanceof ItemStackJS) {
-			return (ItemStackJS) o;
-		} else if (o instanceof FluidStackJS) {
-			return new DummyFluidItemStackJS((FluidStackJS) o);
-		} else if (o instanceof IngredientJS) {
-			return ((IngredientJS) o).getFirst();
+		} else if (o instanceof ItemStackJS js) {
+			return js;
+		} else if (o instanceof FluidStackJS fluidStack) {
+			return new DummyFluidItemStackJS(fluidStack);
+		} else if (o instanceof IngredientJS ingr) {
+			return ingr.getFirst();
 		} else if (o instanceof ItemStack stack) {
 			return stack.isEmpty() ? EMPTY : new ItemStackJS(stack);
-		} else if (o instanceof ResourceLocation) {
-			Item item = KubeJSRegistries.items().get((ResourceLocation) o);
+		} else if (o instanceof ResourceLocation id) {
+			Item item = KubeJSRegistries.items().get(id);
 
 			if (item == Items.AIR) {
 				if (RecipeJS.itemErrors) {
-					throw new RecipeExceptionJS("Item '" + o + "' not found!").error();
+					throw new RecipeExceptionJS("Item '" + id + "' not found!").error();
 				}
 
 				return EMPTY;
 			}
 
 			return new ItemStackJS(new ItemStack(item));
-		} else if (o instanceof ItemLike) {
-			return new ItemStackJS(new ItemStack(((ItemLike) o).asItem()));
-		} else if (o instanceof JsonElement) {
-			return resultFromRecipeJson((JsonElement) o);
+		} else if (o instanceof ItemLike itemLike) {
+			return new ItemStackJS(new ItemStack(itemLike.asItem()));
+		} else if (o instanceof JsonElement json) {
+			return resultFromRecipeJson(json);
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
 			Pattern reg = UtilsJS.parseRegex(o);
 
@@ -404,8 +404,8 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 				ItemStack stack = new ItemStack(item);
 
-				if (map.get("count") instanceof Number) {
-					stack.setCount(((Number) map.get("count")).intValue());
+				if (map.get("count") instanceof Number number) {
+					stack.setCount(number.intValue());
 				}
 
 				if (map.containsKey("nbt")) {
@@ -413,8 +413,8 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 				}
 
 				return new ItemStackJS(stack);
-			} else if (map.get("tag") instanceof CharSequence) {
-				ItemStackJS stack = TagIngredientJS.createTag(map.get("tag").toString()).getFirst();
+			} else if (map.get("tag") instanceof CharSequence s) {
+				ItemStackJS stack = TagIngredientJS.createTag(s.toString()).getFirst();
 
 				if (map.containsKey("count")) {
 					stack.setCount(UtilsJS.parseInt(map.get("count"), 1));
@@ -432,12 +432,11 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	public static Item getRawItem(@Nullable Object o) {
 		if (o == null) {
 			return Items.AIR;
-		} else if (o instanceof Item) {
-			return (Item) o;
+		} else if (o instanceof Item item) {
+			return item;
 		} else if (o instanceof CharSequence) {
 			String s = o.toString();
-
-			if (s == null || s.isEmpty()) {
+			if (s.isEmpty()) {
 				return Items.AIR;
 			} else if (s.charAt(0) != '#') {
 				return KubeJSRegistries.items().get(UtilsJS.getMCID(s));
@@ -887,8 +886,8 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		for (Map.Entry<String, Object> entry : enchantments.entrySet()) {
 			Enchantment enchantment = KubeJSRegistries.enchantments().get(UtilsJS.getMCID(entry.getKey()));
 
-			if (enchantment != null && entry.getValue() instanceof Number) {
-				is = is.enchant(enchantment, ((Number) entry.getValue()).intValue());
+			if (enchantment != null && entry.getValue() instanceof Number number) {
+				is = is.enchant(enchantment, number.intValue());
 			}
 		}
 

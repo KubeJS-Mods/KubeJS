@@ -15,13 +15,13 @@ import org.jetbrains.annotations.Nullable;
  */
 public class BlockPlaceEventJS extends EntityEventJS {
 	private final Entity entity;
-	private final Level world;
+	private final Level level;
 	private final BlockPos pos;
 	private final BlockState state;
 
-	public BlockPlaceEventJS(@Nullable Entity entity, Level world, BlockPos pos, BlockState state) {
+	public BlockPlaceEventJS(@Nullable Entity entity, Level level, BlockPos pos, BlockState state) {
 		this.entity = entity;
-		this.world = world;
+		this.level = level;
 		this.pos = pos;
 		this.state = state;
 	}
@@ -33,7 +33,7 @@ public class BlockPlaceEventJS extends EntityEventJS {
 
 	@Override
 	public WorldJS getWorld() {
-		return worldOf(world);
+		return levelOf(level);
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class BlockPlaceEventJS extends EntityEventJS {
 	}
 
 	public BlockContainerJS getBlock() {
-		return new BlockContainerJS(world, pos) {
+		return new BlockContainerJS(level, pos) {
 			@Override
 			public BlockState getBlockState() {
 				return state;

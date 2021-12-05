@@ -19,7 +19,7 @@ public abstract class EntityEventJS extends WorldEventJS {
 
 	protected EntityJS entityOf(Entity entity) {
 		if (cachedEntity == null) {
-			cachedEntity = worldOf(entity).getEntity(entity);
+			cachedEntity = levelOf(entity).getEntity(entity);
 
 			if (cachedEntity == null) {
 				throw new IllegalStateException("Entity can't be null!");

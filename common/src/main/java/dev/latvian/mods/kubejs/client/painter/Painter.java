@@ -119,8 +119,8 @@ public class Painter {
 	public void setVariable(String key, Unit variable) {
 		Unit original = unitStorage.getVariable(key);
 
-		if (original instanceof MutableUnit) {
-			((MutableUnit) original).set(variable.get());
+		if (original instanceof MutableUnit mut) {
+			mut.set(variable.get());
 		} else if (variable instanceof FixedUnit) {
 			unitStorage.setVariable(key, new MutableUnit(variable.get()));
 		} else {

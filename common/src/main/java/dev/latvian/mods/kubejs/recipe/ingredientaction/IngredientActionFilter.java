@@ -9,13 +9,13 @@ public class IngredientActionFilter {
 	public static IngredientActionFilter filterOf(Object o) {
 		IngredientActionFilter filter = new IngredientActionFilter();
 
-		if (o instanceof Number) {
-			filter.filterIndex = ((Number) o).intValue();
+		if (o instanceof Number num) {
+			filter.filterIndex = num.intValue();
 		} else if (o instanceof String || o instanceof IngredientJS) {
 			filter.filterIngredient = IngredientJS.of(o);
 
-			if (filter.filterIngredient instanceof ItemStackJS) {
-				filter.filterIngredient = ((ItemStackJS) filter.filterIngredient).ignoreNBT();
+			if (filter.filterIngredient instanceof ItemStackJS stack) {
+				filter.filterIngredient = stack.ignoreNBT();
 			}
 		} else {
 			MapJS map = MapJS.of(o);

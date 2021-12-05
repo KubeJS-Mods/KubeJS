@@ -57,11 +57,7 @@ public class MaterialListJS {
 	}
 
 	public MaterialJS of(Object o) {
-		if (o instanceof MaterialJS) {
-			return (MaterialJS) o;
-		}
-
-		return map.getOrDefault(String.valueOf(o).toLowerCase(), wood);
+		return o instanceof MaterialJS mat ? mat : map.getOrDefault(String.valueOf(o).toLowerCase(), wood);
 	}
 
 	public MaterialJS add(MaterialJS m) {

@@ -37,7 +37,7 @@ public class KubeJSCommon {
 	}
 
 	public WorldJS getClientWorld() {
-		throw new IllegalStateException("Can't access client world from server side!");
+		throw new IllegalStateException("Can't access client level from server side!");
 	}
 
 	public WorldJS getWorld(Level level) {

@@ -4,14 +4,14 @@ package dev.latvian.mods.kubejs.world;
  * @author LatvianModder
  */
 public class SimpleWorldEventJS extends WorldEventJS {
-	private final WorldJS world;
+	private final WorldJS level;
 
-	public SimpleWorldEventJS(WorldJS w) {
-		world = w;
+	public SimpleWorldEventJS(WorldJS l) {
+		level = l;
 	}
 
 	@Override
 	public WorldJS getWorld() {
-		return world;
+		return level;
 	}
 }

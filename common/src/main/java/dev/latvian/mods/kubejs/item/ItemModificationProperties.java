@@ -43,10 +43,10 @@ public class ItemModificationProperties {
 	}
 
 	public void setTier(Consumer<ModifiedToolTier> c) {
-		if (item instanceof TieredItemKJS) {
-			ModifiedToolTier t = new ModifiedToolTier(((TieredItemKJS) item).getTierKJS());
+		if (item instanceof TieredItemKJS kjs) {
+			ModifiedToolTier t = new ModifiedToolTier(kjs.getTierKJS());
 			c.accept(t);
-			((TieredItemKJS) item).setTierKJS(t);
+			kjs.setTierKJS(t);
 		} else {
 			throw new IllegalArgumentException("Item is not a tool/tiered item!");
 		}

@@ -39,8 +39,8 @@ import java.util.concurrent.CompletableFuture;
 public class KubeJSClient extends KubeJSCommon {
 	@Override
 	public void init() {
-		if (Minecraft.getInstance() == null) // You'd think that this is impossible, but not when you use runData gradle task
-		{
+		// You'd think that this is impossible, but not when you use runData gradle task
+		if (Minecraft.getInstance() == null) {
 			return;
 		}
 
@@ -84,17 +84,16 @@ public class KubeJSClient extends KubeJSCommon {
 	@Override
 	public void clientBindings(BindingsEvent event) {
 		event.add("Client", new ClientWrapper());
-		event.add("client", new ClientWrapper());
 		event.add("Painter", Painter.INSTANCE);
 	}
 
 	@Override
 	public void clientTypeWrappers(TypeWrappers typeWrappers) {
 		typeWrappers.register(Unit.class, o -> {
-			if (o instanceof Unit) {
-				return (Unit) o;
-			} else if (o instanceof Number) {
-				return FixedUnit.of(((Number) o).floatValue());
+			if (o instanceof Unit unit) {
+				return unit;
+			} else if (o instanceof Number number) {
+				return FixedUnit.of(number.floatValue());
 			} else if (o instanceof String) {
 				return Painter.INSTANCE.unitStorage.parse(o.toString());
 			}

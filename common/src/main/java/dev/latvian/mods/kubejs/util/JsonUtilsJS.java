@@ -38,18 +38,18 @@ public class JsonUtilsJS {
 	public static JsonElement copy(@Nullable JsonElement element) {
 		if (element == null || element.isJsonNull()) {
 			return JsonNull.INSTANCE;
-		} else if (element instanceof JsonArray) {
+		} else if (element instanceof JsonArray jsonArr) {
 			JsonArray a = new JsonArray();
 
-			for (var e : (JsonArray) element) {
+			for (var e : jsonArr) {
 				a.add(copy(e));
 			}
 
 			return a;
-		} else if (element instanceof JsonObject) {
+		} else if (element instanceof JsonObject jsonObj) {
 			JsonObject o = new JsonObject();
 
-			for (Map.Entry<String, JsonElement> entry : ((JsonObject) element).entrySet()) {
+			for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
 				o.add(entry.getKey(), copy(entry.getValue()));
 			}
 
@@ -62,18 +62,18 @@ public class JsonUtilsJS {
 	public static JsonElement of(@Nullable Object o) {
 		if (o == null) {
 			return JsonNull.INSTANCE;
-		} else if (o instanceof JsonSerializable) {
-			return ((JsonSerializable) o).toJson();
-		} else if (o instanceof JsonElement) {
-			return (JsonElement) o;
+		} else if (o instanceof JsonSerializable serializable) {
+			return serializable.toJson();
+		} else if (o instanceof JsonElement json) {
+			return json;
 		} else if (o instanceof CharSequence) {
 			return new JsonPrimitive(o.toString());
-		} else if (o instanceof Boolean) {
-			return new JsonPrimitive((Boolean) o);
-		} else if (o instanceof Number) {
-			return new JsonPrimitive((Number) o);
-		} else if (o instanceof Character) {
-			return new JsonPrimitive((Character) o);
+		} else if (o instanceof Boolean bool) {
+			return new JsonPrimitive(bool);
+		} else if (o instanceof Number num) {
+			return new JsonPrimitive(num);
+		} else if (o instanceof Character c) {
+			return new JsonPrimitive(c);
 		}
 
 		return JsonNull.INSTANCE;

@@ -30,8 +30,8 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 	private final PlayerDataJS playerData;
 	private InventoryJS inventory;
 
-	public PlayerJS(PlayerDataJS d, WorldJS w, E p) {
-		super(w, p);
+	public PlayerJS(PlayerDataJS d, WorldJS l, E p) {
+		super(l, p);
 		playerData = d;
 		minecraftPlayer = p;
 	}

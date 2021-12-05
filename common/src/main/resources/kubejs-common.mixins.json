@@ -17,10 +17,10 @@
 		"LivingEntityMixin",
 		"LootTablesMixin",
 		"MinecraftServerMixin",
-		"ServerPlayerGameModeMixin",
 		"PlayerListMixin",
 		"PlayerMixin",
 		"RecipeManagerMixin",
+		"ServerPlayerGameModeMixin",
 		"ServerResourcesMixin",
 		"SimpleReloadableResourceManagerMixin",
 		"TagBuilderMixin",
@@ -31,11 +31,11 @@
 		"AbstractSelectionListMixin",
 		"ImageButtonMixin",
 		"KeyboardHandlerMixin",
-		"WindowMixin",
 		"MinecraftMixin",
 		"OptionsMixin",
 		"ResourceLoadProgressGuiMixin",
-		"ScreenMixin"
+		"ScreenMixin",
+		"WindowMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

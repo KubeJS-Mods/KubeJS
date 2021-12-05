@@ -33,8 +33,8 @@ public class ChestEventJS extends InventoryEventJS {
 
 	@Nullable
 	public BlockContainerJS getBlock() {
-		if (getWrappedInventory() instanceof BlockEntity) {
-			return getWorld().getBlock((BlockEntity) getWrappedInventory());
+		if (getWrappedInventory() instanceof BlockEntity be) {
+			return getWorld().getBlock(be);
 		}
 
 		return null;

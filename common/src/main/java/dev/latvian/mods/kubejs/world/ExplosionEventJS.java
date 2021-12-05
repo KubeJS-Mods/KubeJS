@@ -18,17 +18,17 @@ import java.util.List;
  * @author LatvianModder
  */
 public abstract class ExplosionEventJS extends WorldEventJS {
-	protected final Level world;
+	protected final Level level;
 	protected final Explosion explosion;
 
-	public ExplosionEventJS(Level world, Explosion explosion) {
-		this.world = world;
+	public ExplosionEventJS(Level level, Explosion explosion) {
+		this.level = level;
 		this.explosion = explosion;
 	}
 
 	@Override
 	public WorldJS getWorld() {
-		return worldOf(world);
+		return levelOf(level);
 	}
 
 	public Vec3 getPosition() {
@@ -48,7 +48,7 @@ public abstract class ExplosionEventJS extends WorldEventJS {
 	}
 
 	public BlockContainerJS getBlock() {
-		return new BlockContainerJS(world, new BlockPos(getPosition()));
+		return new BlockContainerJS(level, new BlockPos(getPosition()));
 	}
 
 	@Nullable
@@ -57,8 +57,8 @@ public abstract class ExplosionEventJS extends WorldEventJS {
 	}
 
 	public static class Pre extends ExplosionEventJS {
-		public Pre(Level world, Explosion explosion) {
-			super(world, explosion);
+		public Pre(Level level, Explosion explosion) {
+			super(level, explosion);
 		}
 
 		@Override
@@ -78,8 +78,8 @@ public abstract class ExplosionEventJS extends WorldEventJS {
 	public static class Post extends ExplosionEventJS {
 		private final List<Entity> affectedEntities;
 
-		public Post(Level world, Explosion explosion, List<Entity> affectedEntities) {
-			super(world, explosion);
+		public Post(Level level, Explosion explosion, List<Entity> affectedEntities) {
+			super(level, explosion);
 			this.affectedEntities = affectedEntities;
 		}
 
@@ -99,7 +99,7 @@ public abstract class ExplosionEventJS extends WorldEventJS {
 			List<BlockContainerJS> list = new ArrayList<>(explosion.getToBlow().size());
 
 			for (var pos : explosion.getToBlow()) {
-				list.add(new BlockContainerJS(world, pos));
+				list.add(new BlockContainerJS(level, pos));
 			}
 
 			return list;

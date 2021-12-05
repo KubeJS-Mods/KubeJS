@@ -34,8 +34,8 @@ public class KubeJSEntityEventHandler {
 		return EventResult.pass();
 	}
 
-	private static EventResult entitySpawned(Entity entity, Level world) {
-		if (entity != null && ServerJS.instance != null && ServerJS.instance.overworld != null && !world.isClientSide() && new EntitySpawnedEventJS(entity, world).post(ScriptType.SERVER, KubeJSEvents.ENTITY_SPAWNED)) {
+	private static EventResult entitySpawned(Entity entity, Level level) {
+		if (entity != null && ServerJS.instance != null && ServerJS.instance.overworld != null && !level.isClientSide() && new EntitySpawnedEventJS(entity, level).post(ScriptType.SERVER, KubeJSEvents.ENTITY_SPAWNED)) {
 			return EventResult.interruptFalse();
 		}
 		return EventResult.pass();

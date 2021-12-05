@@ -81,10 +81,10 @@ public class KubeJSServerEventHandler {
 		ServerJS.instance.levelMap.put("minecraft:overworld", ServerJS.instance.overworld);
 		ServerJS.instance.worlds.add(ServerJS.instance.overworld);
 
-		for (var world : server.getAllLevels()) {
-			if (world != ServerJS.instance.overworld.minecraftLevel) {
-				ServerWorldJS w = new ServerWorldJS(ServerJS.instance, world);
-				ServerJS.instance.levelMap.put(world.dimension().location().toString(), w);
+		for (var level : server.getAllLevels()) {
+			if (level != ServerJS.instance.overworld.minecraftLevel) {
+				ServerWorldJS l = new ServerWorldJS(ServerJS.instance, level);
+				ServerJS.instance.levelMap.put(level.dimension().location().toString(), l);
 			}
 		}
 
@@ -93,7 +93,7 @@ public class KubeJSServerEventHandler {
 		new AttachServerDataEvent(ServerJS.instance).invoke();
 		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_LOAD);
 
-		for (var world : ServerJS.instance.worlds) {
+		for (var level : ServerJS.instance.worlds) {
 			new AttachWorldDataEvent(ServerJS.instance.getOverworld()).invoke();
 			new SimpleWorldEventJS(ServerJS.instance.getOverworld()).post(KubeJSEvents.WORLD_LOAD);
 		}

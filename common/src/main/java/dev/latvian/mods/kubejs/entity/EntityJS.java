@@ -48,8 +48,8 @@ public class EntityJS implements MessageSender, WrappedJS {
 	public final Entity minecraftEntity;
 	public final CompoundTag persistentData;
 
-	public EntityJS(WorldJS w, Entity e) {
-		level = w;
+	public EntityJS(WorldJS l, Entity e) {
+		level = l;
 		minecraftEntity = e;
 		persistentData = ((EntityKJS) e).getPersistentDataKJS();
 	}

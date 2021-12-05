@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.text;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import dev.latvian.mods.kubejs.util.JSObjectType;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -35,17 +36,16 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	public static Component componentOf(@Nullable Object o) {
 		if (o == null) {
 			return new TextComponent("null");
-		} else if (o instanceof Component) {
-			return (Component) o;
+		} else if (o instanceof Component component) {
+			return component;
 		} else if (o instanceof CharSequence) {
 			return new TextComponent(o.toString());
-		} else if (o instanceof StringTag) {
-			String s = ((StringTag) o).getAsString();
-
+		} else if (o instanceof StringTag tag) {
+			String s = tag.getAsString();
 			if (s.startsWith("{") && s.endsWith("}")) {
 				try {
 					return Component.Serializer.fromJson(s);
-				} catch (Exception ex) {
+				} catch (JsonParseException ex) {
 					return new TextComponent("Error: " + ex);
 				}
 			} else {
@@ -65,72 +65,69 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 			return new TextString("null");
 		} else if (o instanceof CharSequence || o instanceof Number || o instanceof Character) {
 			return new TextString(o.toString());
-		} else if (o instanceof Enum) {
-			return new TextString(((Enum) o).name());
-		} else if (o instanceof Text) {
-			return (Text) o;
-		} else if (o instanceof ListJS) {
+		} else if (o instanceof Enum<?> e) {
+			return new TextString(e.name());
+		} else if (o instanceof Text t) {
+			return t;
+		} else if (o instanceof ListJS list) {
 			Text text = new TextString("");
 
-			for (var e1 : (ListJS) o) {
+			for (var e1 : list) {
 				text.append(ofWrapped(e1));
 			}
 
 			return text;
-		} else if (o instanceof MapJS map) {
+		} else if (o instanceof MapJS map && (map.containsKey("text") || map.containsKey("translate"))) {
+			Text text;
 
-			if (map.containsKey("text") || map.containsKey("translate")) {
-				Text text;
+			if (map.containsKey("text")) {
+				text = new TextString(map.get("text").toString());
+			} else {
+				Object[] with;
 
-				if (map.containsKey("text")) {
-					text = new TextString(map.get("text").toString());
-				} else {
-					Object[] with;
+				if (map.containsKey("with")) {
+					ListJS a = map.getOrNewList("with");
+					with = new Object[a.size()];
+					int i = 0;
 
-					if (map.containsKey("with")) {
-						ListJS a = map.getOrNewList("with");
-						with = new Object[a.size()];
-						int i = 0;
+					for (var e1 : a) {
+						with[i] = e1;
 
-						for (var e1 : a) {
-							with[i] = e1;
-
-							if (with[i] instanceof MapJS || with[i] instanceof ListJS) {
-								with[i] = ofWrapped(e1);
-							}
-
-							i++;
+						if (with[i] instanceof MapJS || with[i] instanceof ListJS) {
+							with[i] = ofWrapped(e1);
 						}
-					} else {
-						with = new Object[0];
+
+						i++;
 					}
-
-					text = new TextTranslate(map.get("translate").toString(), with);
+				} else {
+					with = new Object[0];
 				}
 
-				if (map.containsKey("color")) {
-					text.color = ColorWrapper.of(map.get("color")).getRgbKJS();
-				}
-
-				text.bold = (Boolean) map.getOrDefault("bold", null);
-				text.italic = (Boolean) map.getOrDefault("italic", null);
-				text.underlined = (Boolean) map.getOrDefault("underlined", null);
-				text.strikethrough = (Boolean) map.getOrDefault("strikethrough", null);
-				text.obfuscated = (Boolean) map.getOrDefault("obfuscated", null);
-				text.insertion = (String) map.getOrDefault("insertion", null);
-				text.font = map.containsKey("font") ? new ResourceLocation(map.get("font").toString()) : null;
-				text.click = map.containsKey("click") ? map.get("click").toString() : null;
-				text.hover = map.containsKey("hover") ? ofWrapped(map.get("hover")) : null;
-
-				text.siblings = null;
-
-				if (map.containsKey("extra")) {
-					for (var e : map.getOrNewList("extra")) {
-						text.append(ofWrapped(e));
-					}
-				}
-				return text;
+				text = new TextTranslate(map.get("translate").toString(), with);
 			}
+
+			if (map.containsKey("color")) {
+				text.color = ColorWrapper.of(map.get("color")).getRgbKJS();
+			}
+
+			text.bold = (Boolean) map.getOrDefault("bold", null);
+			text.italic = (Boolean) map.getOrDefault("italic", null);
+			text.underlined = (Boolean) map.getOrDefault("underlined", null);
+			text.strikethrough = (Boolean) map.getOrDefault("strikethrough", null);
+			text.obfuscated = (Boolean) map.getOrDefault("obfuscated", null);
+			text.insertion = (String) map.getOrDefault("insertion", null);
+			text.font = map.containsKey("font") ? new ResourceLocation(map.get("font").toString()) : null;
+			text.click = map.containsKey("click") ? map.get("click").toString() : null;
+			text.hover = map.containsKey("hover") ? ofWrapped(map.get("hover")) : null;
+
+			text.siblings = null;
+
+			if (map.containsKey("extra")) {
+				for (var e : map.getOrNewList("extra")) {
+					text.append(ofWrapped(e));
+				}
+			}
+			return text;
 		}
 
 		return new TextString(o.toString());
