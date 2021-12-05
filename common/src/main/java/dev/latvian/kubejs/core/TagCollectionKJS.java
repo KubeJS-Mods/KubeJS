@@ -18,6 +18,7 @@ public interface TagCollectionKJS<T> {
 		String c = getResourceLocationPrefixKJS().substring(5);
 		String t = getItemTypeNameKJS();
 		new TagEventJS<T>(c, map, getRegistryKJS()).post(t + ".tags");
+		new TagEventJS<T>(c, map, getRegistryKJS()).post("tags." + c);
 	}
 
 	Function<ResourceLocation, Optional<T>> getRegistryKJS();
