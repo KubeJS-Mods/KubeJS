@@ -7,8 +7,6 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSObjects;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -49,7 +47,6 @@ public abstract class KubeJSResourcePack implements PackResources {
 	}
 
 	@Override
-	@Environment(EnvType.CLIENT)
 	public InputStream getRootResource(String fileName) throws IOException {
 		if (fileName.equals("pack.png")) {
 			return KubeJSResourcePack.class.getResourceAsStream("/kubejs_logo.png");

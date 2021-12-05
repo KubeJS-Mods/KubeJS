@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.recipe.minecraft;
 
+import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.ListJS;
-import dev.architectury.platform.Platform;
 
 /**
  * @author LatvianModder

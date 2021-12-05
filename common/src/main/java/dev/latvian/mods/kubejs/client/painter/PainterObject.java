@@ -51,8 +51,8 @@ public abstract class PainterObject implements SpecialEquality {
 	public boolean specialEquals(Object o, boolean shallow) {
 		if (this == o || id == o) {
 			return true;
-		} else if (o instanceof PainterObject) {
-			return id.equals(((PainterObject) o).id);
+		} else if (o instanceof PainterObject po) {
+			return id.equals(po.id);
 		} else if (o instanceof String) {
 			return id.equals(toString());
 		}

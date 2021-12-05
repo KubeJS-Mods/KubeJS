@@ -36,7 +36,7 @@ public class CustomCommandEventJS extends PlayerEventJS {
 
 	@Override
 	public WorldJS getWorld() {
-		return worldOf(level);
+		return levelOf(level);
 	}
 
 	@Override

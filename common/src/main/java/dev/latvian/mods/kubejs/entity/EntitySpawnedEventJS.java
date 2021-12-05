@@ -9,11 +9,11 @@ import net.minecraft.world.level.Level;
  */
 public class EntitySpawnedEventJS extends EntityEventJS {
 	private final Entity entity;
-	private final Level world;
+	private final Level level;
 
-	public EntitySpawnedEventJS(Entity entity, Level world) {
+	public EntitySpawnedEventJS(Entity entity, Level level) {
 		this.entity = entity;
-		this.world = world;
+		this.level = level;
 	}
 
 	@Override
@@ -23,7 +23,7 @@ public class EntitySpawnedEventJS extends EntityEventJS {
 
 	@Override
 	public WorldJS getWorld() {
-		return worldOf(world);
+		return levelOf(level);
 	}
 
 	@Override

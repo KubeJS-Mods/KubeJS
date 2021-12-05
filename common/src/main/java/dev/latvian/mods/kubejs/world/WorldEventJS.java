@@ -22,12 +22,12 @@ public abstract class WorldEventJS extends EventJS {
 		return getWorld().getServer();
 	}
 
-	protected WorldJS worldOf(Level world) {
-		return UtilsJS.getWorld(world);
+	protected WorldJS levelOf(Level level) {
+		return UtilsJS.getWorld(level);
 	}
 
-	protected WorldJS worldOf(Entity entity) {
-		return worldOf(entity.level);
+	protected WorldJS levelOf(Entity entity) {
+		return levelOf(entity.level);
 	}
 
 	public final boolean post(String id) {

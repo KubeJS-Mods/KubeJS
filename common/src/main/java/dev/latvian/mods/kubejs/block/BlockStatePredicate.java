@@ -235,13 +235,14 @@ public abstract class BlockStatePredicate {
 		return predicate.list.size() == 1 ? predicate.list.get(0) : predicate.list.isEmpty() ? BlockStatePredicate.Empty.INSTANCE : predicate;
 	}
 
+	@SuppressWarnings("unchecked")
 	private static BlockStatePredicate of0(Object o) {
-		if (o instanceof Block) {
-			return new FromID((Block) o);
-		} else if (o instanceof BlockState) {
-			return new FromState((BlockState) o);
-		} else if (o instanceof Tag) {
-			return new FromTag((Tag<Block>) o);
+		if (o instanceof Block block) {
+			return new FromID(block);
+		} else if (o instanceof BlockState state) {
+			return new FromState(state);
+		} else if (o instanceof Tag tag) {
+			return new FromTag((Tag<Block>) tag);
 		}
 
 		Pattern pattern = UtilsJS.parseRegex(o);

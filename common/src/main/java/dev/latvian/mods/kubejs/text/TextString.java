@@ -46,7 +46,7 @@ public class TextString extends Text {
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
-		} else if (!(obj instanceof TextString) || !string.equals(((TextString) obj).string)) {
+		} else if (!(obj instanceof TextString s) || !string.equals(s.string)) {
 			return false;
 		}
 

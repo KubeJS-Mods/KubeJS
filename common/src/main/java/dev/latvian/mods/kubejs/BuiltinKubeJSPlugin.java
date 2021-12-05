@@ -11,7 +11,6 @@ import dev.latvian.mods.kubejs.bindings.JsonIOWrapper;
 import dev.latvian.mods.kubejs.bindings.JsonWrapper;
 import dev.latvian.mods.kubejs.bindings.NBTIOWrapper;
 import dev.latvian.mods.kubejs.bindings.RarityWrapper;
-import dev.latvian.mods.kubejs.bindings.ScriptEventsWrapper;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
 import dev.latvian.mods.kubejs.block.BlockRegistryEventJS;
@@ -29,6 +28,7 @@ import dev.latvian.mods.kubejs.client.painter.screen.RectangleObject;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
 import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
 import dev.latvian.mods.kubejs.entity.EntityJS;
+import dev.latvian.mods.kubejs.event.DataEvent;
 import dev.latvian.mods.kubejs.event.IEventHandler;
 import dev.latvian.mods.kubejs.fluid.FluidRegistryEventJS;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
@@ -91,6 +91,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -232,28 +233,22 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		event.add("Platform", PlatformWrapper.class);
 		event.add("console", event.type.console);
-		event.add("events", new ScriptEventsWrapper(event.type.manager.get().events));
 
 		event.addFunction("onEvent", args -> onEvent(event, args), null, IEventHandler.class);
+		event.addFunction("postEvent", args -> postEvent(event, args), String.class, Object.class, Boolean.class);
 		event.addFunction("java", args -> event.manager.loadJavaClass(event.scope, args), new Class[]{null});
 
 		event.add("JavaMath", Math.class);
 		event.add("ResourceLocation", ResourceLocation.class);
 
 		event.add("Utils", UtilsWrapper.class);
-		event.add("utils", UtilsWrapper.class);
 		event.add("Text", TextWrapper.class);
-		event.add("text", TextWrapper.class);
 		event.add("UUID", UUIDWrapper.class);
-		event.add("uuid", UUIDWrapper.class);
 		event.add("JsonUtils", JsonWrapper.class);
 		event.add("JsonIO", JsonIOWrapper.class);
 		event.add("Block", BlockWrapper.class);
-		event.add("block", BlockWrapper.class);
 		event.add("Item", ItemWrapper.class);
-		event.add("item", ItemWrapper.class);
 		event.add("Ingredient", IngredientWrapper.class);
-		event.add("ingredient", IngredientWrapper.class);
 		event.add("NBT", NBTWrapper.class);
 		event.add("NBTIO", NBTIOWrapper.class);
 		event.add("Direction", DirectionWrapper.class);
@@ -261,7 +256,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("AABB", AABBWrapper.class);
 
 		event.add("Fluid", FluidWrapper.class);
-		event.add("fluid", FluidWrapper.class);
 
 		event.add("SECOND", 1000L);
 		event.add("MINUTE", 60000L);
@@ -314,6 +308,16 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		return null;
 	}
 
+	private static Object postEvent(BindingsEvent event, Object[] args) {
+		var id = String.valueOf(args[0]);
+		var data = args.length >= 2 ? args[1] : null;
+		var cancellable = args.length >= 3 && Boolean.TRUE.equals(args[2]);
+
+		var events = event.type.manager.get().events;
+
+		return events.postToHandlers(id, events.handlers(id), new DataEvent(cancellable, data));
+	}
+
 	@Override
 	public void addTypeWrappers(ScriptType type, TypeWrappers typeWrappers) {
 		// Java / Minecraft //
@@ -333,29 +337,28 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(MutableComponent.class, o -> new TextComponent("").append(Text.componentOf(o)));
 
 		typeWrappers.register(BlockPos.class, o -> {
-			if (o instanceof BlockPos) {
-				return (BlockPos) o;
-			} else if (o instanceof BlockContainerJS) {
-				return ((BlockContainerJS) o).getPos();
-			} else if (o instanceof List && ((List<?>) o).size() >= 3) {
-				return new BlockPos(((Number) ((List<?>) o).get(0)).intValue(), ((Number) ((List<?>) o).get(1)).intValue(), ((Number) ((List<?>) o).get(2)).intValue());
+			if (o instanceof BlockPos pos) {
+				return pos;
+			} else if (o instanceof List<?> list && list.size() >= 3) {
+				return new BlockPos(UtilsJS.parseInt(list.get(0), 0), UtilsJS.parseInt(list.get(1), 0), UtilsJS.parseInt(list.get(2), 0));
+			} else if (o instanceof BlockContainerJS block) {
+				return block.getPos();
 			}
 
 			return BlockPos.ZERO;
 		});
 
 		typeWrappers.register(Vec3.class, o -> {
-			if (o instanceof Vec3) {
-				return (Vec3) o;
-			} else if (o instanceof EntityJS) {
-				return ((EntityJS) o).minecraftEntity.position();
-			} else if (o instanceof List && ((List<?>) o).size() >= 3) {
-				return new Vec3(((Number) ((List<?>) o).get(0)).doubleValue(), ((Number) ((List<?>) o).get(1)).doubleValue(), ((Number) ((List<?>) o).get(2)).doubleValue());
-			} else if (o instanceof BlockPos bp) {
-				return new Vec3(bp.getX() + 0.5D, bp.getY() + 0.5D, bp.getZ() + 0.5D);
-			} else if (o instanceof BlockContainerJS) {
-				BlockPos bp = ((BlockContainerJS) o).getPos();
-				return new Vec3(bp.getX() + 0.5D, bp.getY() + 0.5D, bp.getZ() + 0.5D);
+			if (o instanceof Vec3 vec) {
+				return vec;
+			} else if (o instanceof EntityJS entity) {
+				return entity.minecraftEntity.position();
+			} else if (o instanceof List<?> list && list.size() >= 3) {
+				return new Vec3(UtilsJS.parseDouble(list.get(0), 0), UtilsJS.parseDouble(list.get(1), 0), UtilsJS.parseDouble(list.get(2), 0));
+			} else if (o instanceof BlockPos pos) {
+				return new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
+			} else if (o instanceof BlockContainerJS block) {
+				return new Vec3(block.getPos().getX() + 0.5D, block.getPos().getY() + 0.5D, block.getPos().getZ() + 0.5D);
 			}
 
 			return Vec3.ZERO;
@@ -364,18 +367,18 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(Item.class, ItemStackJS::getRawItem);
 		typeWrappers.register(GenerationStep.Decoration.class, o -> o == null || o.toString().isEmpty() ? null : GenerationStep.Decoration.valueOf(o.toString().toUpperCase()));
 		typeWrappers.register(MobCategory.class, o -> o == null ? null : MobCategory.byName(o.toString()));
-		typeWrappers.register(net.minecraft.network.chat.TextColor.class, o -> {
-			if (o instanceof Number) {
-				return net.minecraft.network.chat.TextColor.fromRgb(((Number) o).intValue() & 0xFFFFFF);
-			} else if (o instanceof ChatFormatting) {
-				return net.minecraft.network.chat.TextColor.fromLegacyFormat((ChatFormatting) o);
+		typeWrappers.register(TextColor.class, o -> {
+			if (o instanceof Number number) {
+				return TextColor.fromRgb(number.intValue() & 0xFFFFFF);
+			} else if (o instanceof ChatFormatting legacyColor) {
+				return TextColor.fromLegacyFormat(legacyColor);
 			}
 
-			return net.minecraft.network.chat.TextColor.parseColor(o.toString());
+			return TextColor.parseColor(o.toString());
 		});
 
 		typeWrappers.register(AABB.class, AABBWrapper::wrap);
-		typeWrappers.register(Direction.class, o -> o instanceof Direction ? (Direction) o : DirectionWrapper.ALL.get(o.toString().toLowerCase()));
+		typeWrappers.register(Direction.class, o -> o instanceof Direction dir ? dir : DirectionWrapper.ALL.get(o.toString().toLowerCase()));
 		typeWrappers.register(NumberProvider.class, UtilsJS::numberProviderOf);
 		typeWrappers.register(LootContext.EntityTarget.class, o -> o == null ? null : LootContext.EntityTarget.getByName(o.toString().toLowerCase()));
 		typeWrappers.register(CopyNameFunction.NameSource.class, o -> o == null ? null : CopyNameFunction.NameSource.getByName(o.toString().toLowerCase()));

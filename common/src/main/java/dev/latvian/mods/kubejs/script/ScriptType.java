@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.script;
 
+import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.architectury.platform.Platform;
 import net.minecraft.world.level.LevelReader;
 import org.apache.logging.log4j.LogManager;
 
@@ -27,8 +27,8 @@ public enum ScriptType {
 		ConsoleJS.CLIENT = CLIENT.console;
 	}
 
-	public static ScriptType of(LevelReader world) {
-		return world.isClientSide() ? CLIENT : SERVER;
+	public static ScriptType of(LevelReader level) {
+		return level.isClientSide() ? CLIENT : SERVER;
 	}
 
 	public final String name;

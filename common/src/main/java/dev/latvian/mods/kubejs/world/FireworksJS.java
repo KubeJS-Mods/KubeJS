@@ -27,12 +27,12 @@ public class FireworksJS {
 			return fireworks;
 		}
 
-		if (properties.get("flight") instanceof Number) {
-			fireworks.flight = ((Number) properties.get("flight")).intValue();
+		if (properties.get("flight") instanceof Number flight) {
+			fireworks.flight = flight.intValue();
 		}
 
-		if (properties.get("lifeTime") instanceof Number) {
-			fireworks.lifetime = ((Number) properties.get("lifeTime")).intValue();
+		if (properties.get("lifetime") instanceof Number lifetime) {
+			fireworks.lifetime = lifetime.intValue();
 		}
 
 		if (properties.containsKey("explosions")) {
@@ -45,16 +45,16 @@ public class FireworksJS {
 
 				Explosion e = new Explosion();
 
-				if (m.get("shape") instanceof String) {
-					e.shape = Shape.get(m.get("shape").toString());
+				if (m.get("shape") instanceof String shape) {
+					e.shape = Shape.get(shape);
 				}
 
-				if (m.get("flicker") instanceof Boolean) {
-					e.flicker = (Boolean) m.get("flicker");
+				if (m.get("flicker") instanceof Boolean flicker) {
+					e.flicker = flicker;
 				}
 
-				if (m.get("trail") instanceof Boolean) {
-					e.trail = (Boolean) m.get("trail");
+				if (m.get("trail") instanceof Boolean trail) {
+					e.trail = trail;
 				}
 
 				if (m.containsKey("colors")) {

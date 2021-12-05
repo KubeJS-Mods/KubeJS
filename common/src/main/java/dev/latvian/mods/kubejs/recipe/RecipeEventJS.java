@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
@@ -24,7 +25,6 @@ import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import dev.architectury.platform.Platform;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -246,7 +246,7 @@ public class RecipeEventJS extends EventJS {
 					allRecipeMap.add(recipe.getId(), exp);
 				}
 			} catch (Throwable ex) {
-				if (!(ex instanceof RecipeExceptionJS) || ((RecipeExceptionJS) ex).fallback) {
+				if (!(ex instanceof RecipeExceptionJS rex) || rex.fallback) {
 					if (ServerSettings.instance.logErroringRecipes) {
 						ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'! Falling back to vanilla", ex, SKIP_ERROR);
 					}
@@ -353,10 +353,8 @@ public class RecipeEventJS extends EventJS {
 
 		if (ServerSettings.dataExport != null) {
 			for (var r : removedRecipes) {
-				JsonElement e = allRecipeMap.get(r.getId());
-
-				if (e instanceof JsonObject) {
-					((JsonObject) e).addProperty("removed", true);
+				if (allRecipeMap.get(r.getId()) instanceof JsonObject json) {
+					json.addProperty("removed", true);
 				}
 			}
 
@@ -529,8 +527,8 @@ public class RecipeEventJS extends EventJS {
 
 		Object func0 = recipeFunctions.get(namespace);
 
-		if (func0 instanceof RecipeFunction) {
-			return (RecipeFunction) func0;
+		if (func0 instanceof RecipeFunction fn) {
+			return fn;
 		} else if (!(func0 instanceof Map)) {
 			throw new NullPointerException("Unknown recipe type: " + id);
 		}
@@ -559,7 +557,7 @@ public class RecipeEventJS extends EventJS {
 
 	public void printAllTypes() {
 		ConsoleJS.SERVER.info("== All recipe types [available] ==");
-		List<String> list = KubeJSRegistries.recipeSerializers().entrySet().stream().map(e -> e.getKey().location().toString()).sorted().collect(Collectors.toList());
+		List<String> list = KubeJSRegistries.recipeSerializers().entrySet().stream().map(e -> e.getKey().location().toString()).sorted().toList();
 		list.forEach(ConsoleJS.SERVER::info);
 		ConsoleJS.SERVER.info(list.size() + " types");
 	}

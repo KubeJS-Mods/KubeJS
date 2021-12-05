@@ -13,12 +13,12 @@ import net.minecraft.world.item.ItemStack;
  */
 public interface LivingEntityKJS {
 	default void foodEatenKJS(ItemStack is) {
-		if (this instanceof ServerPlayer) {
-			ItemFoodEatenEventJS event = new ItemFoodEatenEventJS((ServerPlayer) this, is);
+		if (this instanceof ServerPlayer player) {
+			ItemFoodEatenEventJS event = new ItemFoodEatenEventJS(player, is);
 			Item i = is.getItem();
 
-			if (i instanceof ItemKJS) {
-				ItemBuilder b = ((ItemKJS) i).getItemBuilderKJS();
+			if (i instanceof ItemKJS itemKJS) {
+				ItemBuilder b = itemKJS.getItemBuilderKJS();
 
 				if (b != null && b.foodBuilder != null && b.foodBuilder.eaten != null) {
 					b.foodBuilder.eaten.accept(event);

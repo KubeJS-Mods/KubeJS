@@ -21,8 +21,8 @@ public class BlockModificationProperties {
 		block.setMaterialKJS(m);
 
 		for (var state : block.getBlockStatesKJS()) {
-			if (state instanceof BlockStateKJS) {
-				((BlockStateKJS) state).setMaterialKJS(m);
+			if (state instanceof BlockStateKJS stateKJS) {
+				stateKJS.setMaterialKJS(m);
 			}
 		}
 	}
@@ -33,8 +33,8 @@ public class BlockModificationProperties {
 
 	public void setDestroySpeed(float v) {
 		for (var state : block.getBlockStatesKJS()) {
-			if (state instanceof BlockStateKJS) {
-				((BlockStateKJS) state).setDestroySpeedKJS(v);
+			if (state instanceof BlockStateKJS stateKJS) {
+				stateKJS.setDestroySpeedKJS(v);
 			}
 		}
 	}
@@ -65,16 +65,16 @@ public class BlockModificationProperties {
 
 	public void setLightEmission(int v) {
 		for (var state : block.getBlockStatesKJS()) {
-			if (state instanceof BlockStateKJS) {
-				((BlockStateKJS) state).setLightEmissionKJS(v);
+			if (state instanceof BlockStateKJS stateKJS) {
+				stateKJS.setLightEmissionKJS(v);
 			}
 		}
 	}
 
 	public void setRequiresTool(boolean v) {
 		for (var state : block.getBlockStatesKJS()) {
-			if (state instanceof BlockStateKJS) {
-				((BlockStateKJS) state).setRequiresToolKJS(v);
+			if (state instanceof BlockStateKJS stateKJS) {
+				stateKJS.setRequiresToolKJS(v);
 			}
 		}
 	}

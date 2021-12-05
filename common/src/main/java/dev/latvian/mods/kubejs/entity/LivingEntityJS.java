@@ -8,6 +8,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,8 +20,8 @@ import java.util.function.Consumer;
 public class LivingEntityJS extends EntityJS {
 	public final LivingEntity minecraftLivingEntity;
 
-	public LivingEntityJS(WorldJS w, LivingEntity e) {
-		super(w, e);
+	public LivingEntityJS(WorldJS l, LivingEntity e) {
+		super(l, e);
 		minecraftLivingEntity = e;
 	}
 
@@ -110,7 +111,7 @@ public class LivingEntityJS extends EntityJS {
 	}
 
 	public void swingArm(InteractionHand hand) {
-		minecraftLivingEntity.swing(hand,true);
+		minecraftLivingEntity.swing(hand, true);
 	}
 
 	public ItemStackJS getEquipment(EquipmentSlot slot) {
@@ -224,10 +225,9 @@ public class LivingEntityJS extends EntityJS {
 		minecraftLivingEntity.setSpeed(speed);
 	}
 
-	// FIXME
-	//public boolean canEntityBeSeen(EntityJS entity) {
-	//  return minecraftLivingEntity.canSee(entity.minecraftEntity);
-	//}
+	public boolean canEntityBeSeen(LivingEntityJS entity) {
+		return BehaviorUtils.canSee(minecraftLivingEntity, entity.minecraftLivingEntity);
+	}
 
 	public float getAbsorptionAmount() {
 		return minecraftLivingEntity.getAbsorptionAmount();

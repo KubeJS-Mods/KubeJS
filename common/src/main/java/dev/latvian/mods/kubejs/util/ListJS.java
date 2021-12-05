@@ -2,13 +2,13 @@ package dev.latvian.mods.kubejs.util;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import dev.architectury.utils.NbtType;
 import dev.latvian.mods.rhino.mod.util.ChangeListener;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.mod.util.NBTSerializable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.mod.util.StringBuilderAppendable;
-import dev.architectury.utils.NbtType;
 import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.IntArrayTag;
@@ -148,8 +148,8 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 
 	@Nullable
 	public static JsonArray json(@Nullable Object array) {
-		if (array instanceof JsonArray) {
-			return (JsonArray) array;
+		if (array instanceof JsonArray arr) {
+			return arr;
 		} else if (array instanceof CharSequence) {
 			try {
 				return JsonUtilsJS.GSON.fromJson(array.toString(), JsonArray.class);
@@ -164,8 +164,8 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 
 	@Nullable
 	public static CollectionTag<?> nbt(@Nullable Object list) {
-		if (list instanceof CollectionTag) {
-			return (CollectionTag<?>) list;
+		if (list instanceof CollectionTag tag) {
+			return tag;
 		} else if (list instanceof CharSequence) {
 			try {
 				return (CollectionTag<?>) TagParser.parseTag("{a:" + list + "}").get("a");
@@ -323,8 +323,8 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 
 			Object o = get(i);
 
-			if (o instanceof StringBuilderAppendable) {
-				((StringBuilderAppendable) o).appendString(builder);
+			if (o instanceof StringBuilderAppendable appendable) {
+				appendable.appendString(builder);
 			} else {
 				builder.append(o);
 			}
@@ -345,10 +345,10 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 	}
 
 	protected boolean setChangeListener(@Nullable Object v) {
-		if (v instanceof MapJS) {
-			((MapJS) v).changeListener = this::onChanged;
-		} else if (v instanceof ListJS) {
-			((ListJS) v).changeListener = this::onChanged;
+		if (v instanceof MapJS map) {
+			map.changeListener = this::onChanged;
+		} else if (v instanceof ListJS list) {
+			list.changeListener = this::onChanged;
 		}
 
 		return true;

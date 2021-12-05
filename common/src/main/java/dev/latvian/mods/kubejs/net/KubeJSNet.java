@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.net;
 
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.architectury.networking.simple.MessageType;
 import dev.architectury.networking.simple.SimpleNetworkManager;
+import dev.latvian.mods.kubejs.KubeJS;
 
 /**
  * @author LatvianModder

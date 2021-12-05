@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.player;
 
-import dev.latvian.mods.kubejs.core.PlayerInteractionManagerKJS;
+import dev.latvian.mods.kubejs.core.ServerPlayerGameModeKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
@@ -28,9 +28,9 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	public final ServerJS server;
 	private final boolean hasClientMod;
 
-	public ServerPlayerJS(ServerPlayerDataJS d, ServerWorldJS w, ServerPlayer p) {
-		super(d, w, p);
-		server = w.getServer();
+	public ServerPlayerJS(ServerPlayerDataJS d, ServerWorldJS l, ServerPlayer p) {
+		super(d, l, p);
+		server = l.getServer();
 		hasClientMod = d.hasClientMod();
 	}
 
@@ -46,7 +46,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 
 	@Override
 	public boolean isMiningBlock() {
-		return ((PlayerInteractionManagerKJS) minecraftPlayer.gameMode).isDestroyingBlockKJS();
+		return ((ServerPlayerGameModeKJS) minecraftPlayer.gameMode).isDestroyingBlockKJS();
 	}
 
 	public void setCreativeMode(boolean mode) {
@@ -60,11 +60,6 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 			case "adventure" -> minecraftPlayer.setGameMode(GameType.ADVENTURE);
 			case "spectator" -> minecraftPlayer.setGameMode(GameType.SPECTATOR);
 		}
-	}
-
-	@Deprecated
-	public boolean isOP() {
-		return isOp();
 	}
 
 	public boolean isOp() {

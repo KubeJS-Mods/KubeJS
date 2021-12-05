@@ -205,7 +205,7 @@ public class ContainerInventory implements ItemHandler.Mutable {
 			return 9;
 		}
 
-		return container instanceof CraftingContainer ? ((CraftingContainer) container).getWidth() : getSlots();
+		return container instanceof CraftingContainer crafter ? crafter.getWidth() : getSlots();
 	}
 
 	@Override
@@ -214,6 +214,6 @@ public class ContainerInventory implements ItemHandler.Mutable {
 			return getSlots() / 9;
 		}
 
-		return container instanceof CraftingContainer ? ((CraftingContainer) container).getHeight() : 1;
+		return container instanceof CraftingContainer crafter ? crafter.getHeight() : 1;
 	}
 }

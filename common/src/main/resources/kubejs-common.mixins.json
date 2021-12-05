@@ -7,7 +7,6 @@
 		"BlockMixin",
 		"BlockStateBaseMixin",
 		"BucketItemMixin",
-		"DataPackRegistriesMixin",
 		"EntityMixin",
 		"EntityTargetMixin",
 		"FireworkRocketEntityMixin",
@@ -18,26 +17,25 @@
 		"LivingEntityMixin",
 		"LootTablesMixin",
 		"MinecraftServerMixin",
-		"PlayerInteractionManagerMixin",
 		"PlayerListMixin",
 		"PlayerMixin",
 		"RecipeManagerMixin",
+		"ServerPlayerGameModeMixin",
 		"ServerResourcesMixin",
 		"SimpleReloadableResourceManagerMixin",
 		"TagBuilderMixin",
-		"TagCollectionReaderMixin",
+		"TagLoaderMixin",
 		"TieredItemMixin"
 	],
 	"client": [
 		"AbstractSelectionListMixin",
 		"ImageButtonMixin",
-		"ItemClientMixin",
 		"KeyboardHandlerMixin",
-		"MainWindowMixin",
 		"MinecraftMixin",
 		"OptionsMixin",
 		"ResourceLoadProgressGuiMixin",
-		"ScreenMixin"
+		"ScreenMixin",
+		"WindowMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

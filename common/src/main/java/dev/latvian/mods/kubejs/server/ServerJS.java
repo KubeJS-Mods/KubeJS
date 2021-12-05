@@ -168,16 +168,16 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	}
 
 	public WorldJS getLevel(String dimension) {
-		ServerWorldJS world = levelMap.get(dimension);
+		ServerWorldJS level = levelMap.get(dimension);
 
-		if (world == null) {
-			world = new ServerWorldJS(this, getMinecraftServer().getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(dimension))));
-			levelMap.put(dimension, world);
+		if (level == null) {
+			level = new ServerWorldJS(this, getMinecraftServer().getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(dimension))));
+			levelMap.put(dimension, level);
 			updateWorldList();
-			new AttachWorldDataEvent(world).invoke();
+			new AttachWorldDataEvent(level).invoke();
 		}
 
-		return world;
+		return level;
 	}
 
 	@Deprecated
@@ -186,16 +186,16 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	}
 
 	public WorldJS getLevel(Level minecraftLevel) {
-		ServerWorldJS world = levelMap.get(minecraftLevel.dimension().location().toString());
+		ServerWorldJS level = levelMap.get(minecraftLevel.dimension().location().toString());
 
-		if (world == null) {
-			world = new ServerWorldJS(this, (ServerLevel) minecraftLevel);
-			levelMap.put(minecraftLevel.dimension().location().toString(), world);
+		if (level == null) {
+			level = new ServerWorldJS(this, (ServerLevel) minecraftLevel);
+			levelMap.put(minecraftLevel.dimension().location().toString(), level);
 			updateWorldList();
-			new AttachWorldDataEvent(world).invoke();
+			new AttachWorldDataEvent(level).invoke();
 		}
 
-		return world;
+		return level;
 	}
 
 	@Deprecated
@@ -255,8 +255,8 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	public EntityArrayList getEntities() {
 		EntityArrayList list = new EntityArrayList(overworld, 10);
 
-		for (var world : worlds) {
-			list.addAll(world.getEntities());
+		for (var level : worlds) {
+			list.addAll(level.getEntities());
 		}
 
 		return list;
@@ -265,8 +265,8 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	public EntityArrayList getEntities(String filter) {
 		EntityArrayList list = new EntityArrayList(overworld, 10);
 
-		for (var world : worlds) {
-			list.addAll(world.getEntities(filter));
+		for (var level : worlds) {
+			list.addAll(level.getEntities(filter));
 		}
 
 		return list;

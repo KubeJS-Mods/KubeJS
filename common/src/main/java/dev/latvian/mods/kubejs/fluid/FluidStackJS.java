@@ -3,6 +3,8 @@ package dev.latvian.mods.kubejs.fluid;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.architectury.fluid.FluidStack;
+import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -10,8 +12,6 @@ import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.mod.util.Copyable;
-import dev.architectury.fluid.FluidStack;
-import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -31,15 +31,15 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 	public static FluidStackJS of(@Nullable Object o) {
 		if (o == null) {
 			return EmptyFluidStackJS.INSTANCE;
-		} else if (o instanceof FluidStackJS) {
-			return (FluidStackJS) o;
-		} else if (o instanceof FluidStack) {
-			return new BoundFluidStackJS((FluidStack) o);
-		} else if (o instanceof Fluid) {
-			UnboundFluidStackJS f = new UnboundFluidStackJS(Registries.getId((Fluid) o, Registry.FLUID_REGISTRY));
+		} else if (o instanceof FluidStackJS js) {
+			return js;
+		} else if (o instanceof FluidStack fluidStack) {
+			return new BoundFluidStackJS(fluidStack);
+		} else if (o instanceof Fluid fluid) {
+			UnboundFluidStackJS f = new UnboundFluidStackJS(Registries.getId(fluid, Registry.FLUID_REGISTRY));
 			return f.isEmpty() ? EmptyFluidStackJS.INSTANCE : f;
-		} else if (o instanceof JsonElement) {
-			return fromJson((JsonElement) o);
+		} else if (o instanceof JsonElement json) {
+			return fromJson(json);
 		} else if (o instanceof CharSequence || o instanceof ResourceLocation) {
 			String s = o.toString();
 
@@ -56,8 +56,8 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 		if (map != null && map.containsKey("fluid")) {
 			FluidStackJS stack = new UnboundFluidStackJS(new ResourceLocation(map.get("fluid").toString()));
 
-			if (map.get("amount") instanceof Number) {
-				stack.setAmount(((Number) map.get("amount")).longValue());
+			if (map.get("amount") instanceof Number num) {
+				stack.setAmount(num.longValue());
 			}
 
 			if (map.containsKey("nbt")) {
@@ -151,11 +151,6 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 		return fs;
 	}
 
-	@Deprecated
-	public final FluidStackJS amount(long amount) {
-		return withAmount(amount);
-	}
-
 	@Nullable
 	public abstract CompoundTag getNbt();
 
@@ -165,11 +160,6 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 		FluidStackJS fs = copy();
 		fs.setNbt(nbt);
 		return fs;
-	}
-
-	@Deprecated
-	public final FluidStackJS nbt(@Nullable CompoundTag nbt) {
-		return withNBT(nbt);
 	}
 
 	@Override

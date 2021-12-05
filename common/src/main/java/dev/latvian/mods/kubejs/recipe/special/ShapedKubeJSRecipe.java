@@ -9,8 +9,6 @@ import com.google.gson.JsonSyntaxException;
 import dev.architectury.core.AbstractRecipeSerializer;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -46,7 +44,6 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 	}
 
 	@Override
-	@Environment(EnvType.CLIENT)
 	public String getGroup() {
 		return group;
 	}
@@ -62,7 +59,6 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 	}
 
 	@Override
-	@Environment(EnvType.CLIENT)
 	public boolean canCraftInDimensions(int w, int h) {
 		return w >= width && h >= height;
 	}

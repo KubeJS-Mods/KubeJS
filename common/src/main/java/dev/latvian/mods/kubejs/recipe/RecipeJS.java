@@ -23,6 +23,7 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonUtilsJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
+import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -104,11 +105,6 @@ public abstract class RecipeJS {
 		return this;
 	}
 
-	@Deprecated
-	public RecipeJS set(Object data) {
-		return merge(data);
-	}
-
 	public RecipeJS id(ResourceLocation _id) {
 		id = _id;
 		save();
@@ -135,7 +131,7 @@ public abstract class RecipeJS {
 						return true;
 					}
 				}
-			} catch (Exception ex) {
+			} catch (Exception ignored) {
 			}
 		}
 
@@ -185,7 +181,7 @@ public abstract class RecipeJS {
 				if (!out.isEmpty()) {
 					return exact ? ingredient.equals(out) : ingredient.test(out);
 				}
-			} catch (Exception ex) {
+			} catch (Exception ignored) {
 			}
 		}
 
@@ -323,16 +319,8 @@ public abstract class RecipeJS {
 	public List<IngredientJS> parseIngredientItemList(@Nullable Object o) {
 		List<IngredientJS> list = new ArrayList<>();
 
-		if (o instanceof JsonElement) {
-			JsonArray array;
-
-			if (o instanceof JsonArray) {
-				array = ((JsonArray) o).getAsJsonArray();
-			} else {
-				array = new JsonArray();
-				array.add((JsonElement) o);
-			}
-
+		if (o instanceof JsonElement elem) {
+			JsonArray array = elem instanceof JsonArray arr ? arr : Util.make(new JsonArray(), (arr) -> arr.add(elem));
 			for (var e : array) {
 				list.add(parseIngredientItem(e));
 			}
@@ -352,16 +340,8 @@ public abstract class RecipeJS {
 	public List<ItemStackJS> parseResultItemList(@Nullable Object o) {
 		List<ItemStackJS> list = new ArrayList<>();
 
-		if (o instanceof JsonElement) {
-			JsonArray array;
-
-			if (o instanceof JsonArray) {
-				array = ((JsonArray) o).getAsJsonArray();
-			} else {
-				array = new JsonArray();
-				array.add((JsonElement) o);
-			}
-
+		if (o instanceof JsonElement elem) {
+			JsonArray array = elem instanceof JsonArray arr ? arr : Util.make(new JsonArray(), (arr) -> arr.add(elem));
 			for (var e : array) {
 				list.add(parseResultItem(e));
 			}
@@ -381,22 +361,22 @@ public abstract class RecipeJS {
 	private static void writeJsonHash(DataOutputStream stream, @Nullable JsonElement element) throws IOException {
 		if (element == null || element.isJsonNull()) {
 			stream.writeByte('-');
-		} else if (element instanceof JsonArray) {
+		} else if (element instanceof JsonArray arr) {
 			stream.writeByte('[');
-			for (var e : (JsonArray) element) {
+			for (var e : arr) {
 				writeJsonHash(stream, e);
 			}
-		} else if (element instanceof JsonObject) {
+		} else if (element instanceof JsonObject obj) {
 			stream.writeByte('{');
-			for (Map.Entry<String, JsonElement> e : ((JsonObject) element).entrySet()) {
+			for (var e : obj.entrySet()) {
 				stream.writeBytes(e.getKey());
 				writeJsonHash(stream, e.getValue());
 			}
-		} else if (element instanceof JsonPrimitive) {
+		} else if (element instanceof JsonPrimitive primitive) {
 			stream.writeByte('=');
-			if (((JsonPrimitive) element).isBoolean()) {
+			if (primitive.isBoolean()) {
 				stream.writeBoolean(element.getAsBoolean());
-			} else if (((JsonPrimitive) element).isNumber()) {
+			} else if (primitive.isNumber()) {
 				stream.writeDouble(element.getAsDouble());
 			} else {
 				stream.writeBytes(element.getAsString());
@@ -505,15 +485,9 @@ public abstract class RecipeJS {
 	}
 
 	public RecipeJS ingredientAction(IngredientActionFilter filter, IngredientAction action) {
-		JsonArray a = (JsonArray) json.get("kubejs_actions");
-
-		if (a == null) {
-			a = new JsonArray();
-			json.add("kubejs_actions", a);
-		}
-
+		JsonArray array = json.get("kubejs_actions") instanceof JsonArray arr ? arr : Util.make(new JsonArray(), (arr) -> json.add("kubejs_actions", arr));
 		action.copyFrom(filter);
-		a.add(action.toJson());
+		array.add(action.toJson());
 		save();
 		return this;
 	}
@@ -522,27 +496,12 @@ public abstract class RecipeJS {
 		return ingredientAction(filter, new DamageAction(damage));
 	}
 
-	@Deprecated
-	public final RecipeJS damageItem(IngredientActionFilter filter, int damage) {
-		return damageIngredient(filter, damage);
-	}
-
 	public final RecipeJS damageIngredient(IngredientActionFilter filter) {
 		return damageIngredient(filter, 1);
 	}
 
-	@Deprecated
-	public final RecipeJS damageItem(IngredientActionFilter filter) {
-		return damageIngredient(filter);
-	}
-
 	public final RecipeJS replaceIngredient(IngredientActionFilter filter, ItemStackJS item) {
 		return ingredientAction(filter, new ReplaceAction(item.getItemStack()));
-	}
-
-	@Deprecated
-	public final RecipeJS replaceItem(IngredientActionFilter filter, ItemStackJS item) {
-		return replaceIngredient(filter, item);
 	}
 
 	public final RecipeJS customIngredientAction(IngredientActionFilter filter, String id) {
@@ -553,8 +512,4 @@ public abstract class RecipeJS {
 		return ingredientAction(filter, new KeepAction());
 	}
 
-	@Deprecated
-	public final RecipeJS keep(IngredientActionFilter filter) {
-		return keepIngredient(filter);
-	}
 }

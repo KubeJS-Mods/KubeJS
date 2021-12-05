@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.stream.Stream;
 
 public class IgnoreNBTIngredient extends Ingredient {
-	public static final IIngredientSerializer<IgnoreNBTIngredient> SERIALIZER = new IIngredientSerializer<IgnoreNBTIngredient>() {
+	public static final IIngredientSerializer<IgnoreNBTIngredient> SERIALIZER = new IIngredientSerializer<>() {
 		@Override
 		public IgnoreNBTIngredient parse(FriendlyByteBuf buf) {
 			ItemStack stack = buf.readItem();

@@ -20,8 +20,8 @@ public class KubeJSFluidEventHandlerImpl {
 			return (ForgeFlowingFluid.Properties) fluidBuilder.extraPlatformInfo;
 		}
 		FluidAttributes.Builder builder = FluidAttributes.builder(
-				new ResourceLocation(fluidBuilder.stillTexture),
-				new ResourceLocation(fluidBuilder.flowingTexture))
+						new ResourceLocation(fluidBuilder.stillTexture),
+						new ResourceLocation(fluidBuilder.flowingTexture))
 				.translationKey("fluid." + fluidBuilder.id.getNamespace() + "." + fluidBuilder.id.getPath())
 				.color(fluidBuilder.color)
 				.rarity(fluidBuilder.rarity.rarity)

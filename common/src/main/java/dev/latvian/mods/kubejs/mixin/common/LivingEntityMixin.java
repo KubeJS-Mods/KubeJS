@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin implements LivingEntityKJS {
 	@Inject(method = "eat", at = @At("HEAD"))
-	private void foodEaten(Level world, ItemStack item, CallbackInfoReturnable<ItemStack> ci) {
+	private void foodEaten(Level level, ItemStack item, CallbackInfoReturnable<ItemStack> ci) {
 		foodEatenKJS(item);
 	}
 }

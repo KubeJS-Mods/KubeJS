@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.entity;
 
 import com.mojang.authlib.GameProfile;
-import dev.latvian.mods.kubejs.core.EntityKJS;
 import dev.architectury.hooks.level.entity.EntityHooks;
 import dev.architectury.registry.registries.Registries;
+import dev.latvian.mods.kubejs.core.EntityKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.server.ServerJS;
@@ -48,8 +48,8 @@ public class EntityJS implements MessageSender, WrappedJS {
 	public final Entity minecraftEntity;
 	public final CompoundTag persistentData;
 
-	public EntityJS(WorldJS w, Entity e) {
-		level = w;
+	public EntityJS(WorldJS l, Entity e) {
+		level = l;
 		minecraftEntity = e;
 		persistentData = ((EntityKJS) e).getPersistentDataKJS();
 	}
@@ -500,7 +500,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 						damageSourceMap.put(s.getMsgId(), s);
 					}
 				}
-			} catch (Exception ex) {
+			} catch (Exception ignored) {
 			}
 		}
 

@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.net;
 
-import dev.latvian.mods.kubejs.stages.Stages;
 import dev.architectury.networking.NetworkManager.PacketContext;
 import dev.architectury.networking.simple.BaseS2CMessage;
 import dev.architectury.networking.simple.MessageType;
+import dev.latvian.mods.kubejs.stages.Stages;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 

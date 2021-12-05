@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.recipe;
 
+import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.recipe.minecraft.ShapedRecipeJS;
 import dev.latvian.mods.kubejs.recipe.minecraft.ShapelessRecipeJS;
-import dev.architectury.registry.registries.Registries;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 

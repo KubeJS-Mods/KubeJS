@@ -18,7 +18,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 public class CustomPredicateIngredient extends Ingredient {
-	public static final IIngredientSerializer<CustomPredicateIngredient> SERIALIZER = new IIngredientSerializer<CustomPredicateIngredient>() {
+	public static final IIngredientSerializer<CustomPredicateIngredient> SERIALIZER = new IIngredientSerializer<>() {
 		@Override
 		public CustomPredicateIngredient parse(FriendlyByteBuf buf) {
 			return new CustomPredicateIngredient(Ingredient.fromNetwork(buf), buf.readUUID(), false);

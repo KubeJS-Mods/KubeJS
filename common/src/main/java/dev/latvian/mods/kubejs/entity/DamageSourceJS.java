@@ -9,16 +9,16 @@ import org.jetbrains.annotations.Nullable;
  * @author LatvianModder
  */
 public class DamageSourceJS {
-	private final WorldJS world;
+	private final WorldJS level;
 	public final DamageSource source;
 
-	public DamageSourceJS(WorldJS w, DamageSource s) {
-		world = w;
+	public DamageSourceJS(WorldJS l, DamageSource s) {
+		level = l;
 		source = s;
 	}
 
 	public WorldJS getWorld() {
-		return world;
+		return level;
 	}
 
 	public String getType() {

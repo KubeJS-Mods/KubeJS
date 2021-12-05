@@ -21,8 +21,8 @@ public class ScreenGroup extends ScreenPainterObject {
 
 		Tag c = properties.tag.get("children");
 
-		if (c instanceof CompoundTag) {
-			storage.handle((CompoundTag) c);
+		if (c instanceof CompoundTag tag) {
+			storage.handle(tag);
 		}
 
 		scaleX = properties.getFloat("scaleX", scaleX);

@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.block.custom;
 
+import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
-import dev.architectury.platform.Platform;
 import net.minecraft.world.level.block.Block;
 
 import java.util.function.Function;
@@ -83,8 +83,8 @@ public class ShapedBlockType extends BlockType {
 
 	@Override
 	public void generateAssets(BlockBuilder builder, AssetJsonGenerator generator) {
-		if (builder.block instanceof CustomBlockJS) {
-			((CustomBlockJS) builder.block).generateAssets(builder, generator);
+		if (builder.block instanceof CustomBlockJS custom) {
+			custom.generateAssets(builder, generator);
 		} else {
 			super.generateAssets(builder, generator);
 		}

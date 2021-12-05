@@ -9,15 +9,15 @@ import net.minecraft.world.level.LevelAccessor;
  * @author LatvianModder
  */
 public class ExplosionJS {
-	private final LevelAccessor world;
+	private final LevelAccessor level;
 	public final double x, y, z;
 	public EntityJS exploder;
 	public float strength;
 	public boolean causesFire;
 	public Explosion.BlockInteraction explosionMode;
 
-	public ExplosionJS(LevelAccessor w, double _x, double _y, double _z) {
-		world = w;
+	public ExplosionJS(LevelAccessor l, double _x, double _y, double _z) {
+		level = l;
 		x = _x;
 		y = _y;
 		z = _z;
@@ -53,8 +53,8 @@ public class ExplosionJS {
 	}
 
 	public void explode() {
-		if (world instanceof Level) {
-			((Level) world).explode(exploder == null ? null : exploder.minecraftEntity, x, y, z, strength, causesFire, explosionMode);
+		if (level instanceof Level level) {
+			level.explode(exploder == null ? null : exploder.minecraftEntity, x, y, z, strength, causesFire, explosionMode);
 		}
 	}
 }

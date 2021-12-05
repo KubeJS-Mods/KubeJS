@@ -1,7 +1,5 @@
 package dev.latvian.mods.kubejs.world.gen.forge;
 
-import dev.latvian.mods.kubejs.KubeJSEvents;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

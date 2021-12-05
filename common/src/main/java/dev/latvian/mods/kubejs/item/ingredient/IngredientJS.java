@@ -41,16 +41,16 @@ import java.util.regex.Pattern;
 @FunctionalInterface
 public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 	static IngredientJS of(@Nullable Object o) {
-		if (o instanceof Wrapper) {
-			o = ((Wrapper) o).unwrap();
+		if (o instanceof Wrapper w) {
+			o = w.unwrap();
 		}
 
 		if (o == null || o == ItemStack.EMPTY || o == Items.AIR) {
 			return ItemStackJS.EMPTY;
-		} else if (o instanceof IngredientJS) {
-			return (IngredientJS) o;
-		} else if (o instanceof FluidStackJS) {
-			return new DummyFluidItemStackJS((FluidStackJS) o);
+		} else if (o instanceof IngredientJS ingr) {
+			return ingr;
+		} else if (o instanceof FluidStackJS fluid) {
+			return new DummyFluidItemStackJS(fluid);
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
 			Pattern reg = UtilsJS.parseRegex(o);
 
@@ -59,8 +59,8 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			}
 
 			return ItemStackJS.EMPTY;
-		} else if (o instanceof JsonElement) {
-			return ingredientFromRecipeJson((JsonElement) o);
+		} else if (o instanceof JsonElement json) {
+			return ingredientFromRecipeJson(json);
 		} else if (o instanceof CharSequence) {
 			String s = o.toString();
 			int count = 1;
@@ -110,8 +110,8 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			}
 
 			return new ItemStackJS(new ItemStack(item, count));
-		} else if (o instanceof Ingredient) {
-			if (((Ingredient) o).isEmpty()) {
+		} else if (o instanceof Ingredient ingr) {
+			if (ingr.isEmpty()) {
 				return ItemStackJS.EMPTY;
 			}
 
@@ -176,13 +176,13 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			} else if (map.containsKey("amount")) {
 				in = in.withCount(UtilsJS.parseInt(map.get("amount"), 1));
 
-				if (in instanceof IngredientStackJS) {
-					((IngredientStackJS) in).countKey = "amount";
+				if (in instanceof IngredientStackJS is) {
+					is.countKey = "amount";
 				}
 			}
 
-			if (val && in instanceof IngredientStackJS) {
-				((IngredientStackJS) in).ingredientKey = "value";
+			if (val && in instanceof IngredientStackJS is) {
+				is.ingredientKey = "value";
 			}
 
 			return in;

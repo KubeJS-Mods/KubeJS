@@ -300,7 +300,8 @@ public class BlockContainerJS implements SpecialEquality {
 		if (minecraftLevel instanceof ServerLevel) {
 			LightningBolt e = EntityType.LIGHTNING_BOLT.create(minecraftLevel);
 			e.moveTo(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D);
-			e.setCause(player instanceof ServerPlayerJS ? ((ServerPlayerJS) player).minecraftPlayer : null);
+			e.setCause(player instanceof ServerPlayerJS serverPlayer ? serverPlayer.minecraftPlayer : null);
+			e.setVisualOnly(effectOnly);
 			minecraftLevel.addFreshEntity(e);
 		}
 	}

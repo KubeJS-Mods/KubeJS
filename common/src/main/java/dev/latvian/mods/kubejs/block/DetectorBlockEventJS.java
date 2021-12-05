@@ -27,7 +27,7 @@ public class DetectorBlockEventJS extends WorldEventJS {
 
 	@Override
 	public WorldJS getWorld() {
-		return worldOf(level);
+		return levelOf(level);
 	}
 
 	public boolean isPowered() {

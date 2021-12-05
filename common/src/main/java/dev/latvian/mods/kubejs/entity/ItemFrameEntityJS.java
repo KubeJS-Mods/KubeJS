@@ -12,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 public class ItemFrameEntityJS extends EntityJS {
 	private final ItemFrame itemFrameEntity;
 
-	public ItemFrameEntityJS(WorldJS w, ItemFrame e) {
-		super(w, e);
+	public ItemFrameEntityJS(WorldJS l, ItemFrame e) {
+		super(l, e);
 		itemFrameEntity = e;
 	}
 

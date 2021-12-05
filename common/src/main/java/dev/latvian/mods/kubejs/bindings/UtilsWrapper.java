@@ -107,11 +107,11 @@ public class UtilsWrapper {
 		return UtilsJS.getToolType(id);
 	}
 
-	public static WorldJS getWorld(Level world) {
-		if (world.isClientSide()) {
+	public static WorldJS getWorld(Level level) {
+		if (level.isClientSide()) {
 			return getClientWorld();
 		} else {
-			return ServerJS.instance.getLevel(world);
+			return ServerJS.instance.getLevel(level);
 		}
 	}
 
@@ -129,8 +129,8 @@ public class UtilsWrapper {
 			return null;
 		}
 
-		if (objects instanceof List) {
-			return ((List) objects).get(random.nextInt(objects.size()));
+		if (objects instanceof List<?> list) {
+			return list.get(random.nextInt(objects.size()));
 		} else {
 			return new ArrayList<>(objects).get(random.nextInt(objects.size()));
 		}

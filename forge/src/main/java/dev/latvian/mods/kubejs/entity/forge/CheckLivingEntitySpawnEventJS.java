@@ -25,7 +25,7 @@ public class CheckLivingEntitySpawnEventJS extends LivingEntityEventJS {
 
 	@Override
 	public WorldJS getWorld() {
-		return worldOf((Level) event.getWorld());
+		return levelOf((Level) event.getWorld());
 	}
 
 	@Override

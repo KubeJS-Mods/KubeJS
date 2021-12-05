@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.core.TieredItemKJS;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Consumer;
 
@@ -31,13 +30,6 @@ public class ItemModificationProperties {
 		item.setBurnTimeKJS(i);
 	}
 
-	// Removing soon because of typo.
-	@Deprecated
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.0")
-	public void setCraftingReminder(Item i) {
-		setCraftingRemainder(i);
-	}
-
 	public void setCraftingRemainder(Item i) {
 		item.setCraftingRemainderKJS(i);
 	}
@@ -51,10 +43,10 @@ public class ItemModificationProperties {
 	}
 
 	public void setTier(Consumer<ModifiedToolTier> c) {
-		if (item instanceof TieredItemKJS) {
-			ModifiedToolTier t = new ModifiedToolTier(((TieredItemKJS) item).getTierKJS());
+		if (item instanceof TieredItemKJS kjs) {
+			ModifiedToolTier t = new ModifiedToolTier(kjs.getTierKJS());
 			c.accept(t);
-			((TieredItemKJS) item).setTierKJS(t);
+			kjs.setTierKJS(t);
 		} else {
 			throw new IllegalArgumentException("Item is not a tool/tiered item!");
 		}

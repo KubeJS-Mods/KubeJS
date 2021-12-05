@@ -12,8 +12,8 @@ import java.util.function.Consumer;
 public class ItemModificationEventJS extends EventJS {
 	public void modify(IngredientJS in, Consumer<ItemModificationProperties> c) {
 		for (var item : in.getVanillaItems()) {
-			if (item instanceof ItemKJS) {
-				c.accept(new ItemModificationProperties((ItemKJS) item));
+			if (item instanceof ItemKJS kjs) {
+				c.accept(new ItemModificationProperties(kjs));
 			}
 		}
 	}

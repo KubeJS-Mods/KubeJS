@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.block;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
-import dev.latvian.mods.kubejs.CommonProperties;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.BlockEvent;
 import dev.architectury.event.events.common.InteractionEvent;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.utils.value.IntValue;
+import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSObjects;
@@ -54,8 +54,8 @@ public class KubeJSBlockEventHandler {
 
 			builder.block = builder.type.createBlock(builder);
 
-			if (builder.block instanceof BlockKJS) {
-				((BlockKJS) builder.block).setBlockBuilderKJS(builder);
+			if (builder.block instanceof BlockKJS blockKJS) {
+				blockKJS.setBlockBuilderKJS(builder);
 			}
 
 			KubeJSRegistries.blocks().register(builder.id, () -> builder.block);
@@ -89,42 +89,20 @@ public class KubeJSBlockEventHandler {
 		return EventResult.pass();
 	}
 
-	private static EventResult blockBreak(Level world, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp) {
-		if (player != null && player.level != null && new BlockBreakEventJS(player, world, pos, state, xp).post(KubeJSEvents.BLOCK_BREAK)) {
+	private static EventResult blockBreak(Level level, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp) {
+		if (player != null && player.level != null && new BlockBreakEventJS(player, level, pos, state, xp).post(KubeJSEvents.BLOCK_BREAK)) {
 			return EventResult.interruptFalse();
 		}
 
 		return EventResult.pass();
 	}
 
-	private static EventResult blockPlace(Level world, BlockPos pos, BlockState state, @Nullable Entity placer) {
-		if (world != null && (placer == null || placer.level != null) && new BlockPlaceEventJS(placer, world, pos, state).post(KubeJSEvents.BLOCK_PLACE)) {
+	private static EventResult blockPlace(Level level, BlockPos pos, BlockState state, @Nullable Entity placer) {
+		if (level != null && (placer == null || placer.level != null) && new BlockPlaceEventJS(placer, level, pos, state).post(KubeJSEvents.BLOCK_PLACE)) {
 			return EventResult.interruptFalse();
 		}
 
 		return EventResult.pass();
 	}
 
-	/*
-	private static void blockDrops(BlockEvent.HarvestDropsEvent event)
-	{
-		if (event.getWorld().isRemote())
-		{
-			return;
-		}
-
-		BlockDropsEventJS e = new BlockDropsEventJS(event);
-		e.post(KubeJSEvents.BLOCK_DROPS);
-
-		if (e.dropList != null)
-		{
-			event.getDrops().clear();
-
-			for (var stack : e.dropList)
-			{
-				event.getDrops().add(stack.getItemStack());
-			}
-		}
-	}
-	 */
 }

@@ -107,7 +107,7 @@ public class ScriptManager {
 		for (RegistryTypeWrapperFactory<?> registryTypeWrapperFactory : RegistryTypeWrapperFactory.getAll()) {
 			try {
 				typeWrappers.register(registryTypeWrapperFactory.type, UtilsJS.cast(registryTypeWrapperFactory));
-			} catch (IllegalArgumentException ex) {
+			} catch (IllegalArgumentException ignored) {
 			}
 		}
 

@@ -3,8 +3,6 @@ package dev.latvian.mods.kubejs.block.custom;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.world.BlockContainerJS;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -43,7 +41,7 @@ public class BasicBlockJS extends Block {
 
 	@Override
 	@Deprecated
-	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+	public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
 		return shape;
 	}
 
@@ -111,14 +109,12 @@ public class BasicBlockJS extends Block {
 
 	@Override
 	@Deprecated
-	@Environment(EnvType.CLIENT)
 	public float getShadeBrightness(BlockState state, BlockGetter level, BlockPos pos) {
 		return properties.transparent ? 1F : super.getShadeBrightness(state, level, pos);
 	}
 
 	@Override
 	@Deprecated
-	@Environment(EnvType.CLIENT)
 	public boolean skipRendering(BlockState state, BlockState state2, Direction direction) {
 		return properties.transparent ? (state2.is(this) || super.skipRendering(state, state2, direction)) : super.skipRendering(state, state2, direction);
 	}

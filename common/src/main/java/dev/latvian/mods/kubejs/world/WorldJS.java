@@ -115,14 +115,14 @@ public abstract class WorldJS implements WithAttachedData {
 	public EntityJS getEntity(@Nullable Entity e) {
 		if (e == null) {
 			return null;
-		} else if (e instanceof Player) {
-			return getPlayerData((Player) e).getPlayer();
-		} else if (e instanceof LivingEntity) {
-			return new LivingEntityJS(this, (LivingEntity) e);
-		} else if (e instanceof ItemEntity) {
-			return new ItemEntityJS(this, (ItemEntity) e);
-		} else if (e instanceof ItemFrame) {
-			return new ItemFrameEntityJS(this, (ItemFrame) e);
+		} else if (e instanceof Player player) {
+			return getPlayerData(player).getPlayer();
+		} else if (e instanceof LivingEntity living) {
+			return new LivingEntityJS(this, living);
+		} else if (e instanceof ItemEntity item) {
+			return new ItemEntityJS(this, item);
+		} else if (e instanceof ItemFrame frame) {
+			return new ItemFrameEntityJS(this, frame);
 		}
 
 		return new EntityJS(this, e);
@@ -131,7 +131,7 @@ public abstract class WorldJS implements WithAttachedData {
 	@Nullable
 	public LivingEntityJS getLivingEntity(@Nullable Entity entity) {
 		EntityJS e = getEntity(entity);
-		return e instanceof LivingEntityJS ? (LivingEntityJS) e : null;
+		return e instanceof LivingEntityJS living ? living : null;
 	}
 
 	@Nullable
@@ -141,7 +141,7 @@ public abstract class WorldJS implements WithAttachedData {
 		}
 
 		EntityJS e = getEntity(entity);
-		return e instanceof PlayerJS ? (PlayerJS) e : null;
+		return e instanceof PlayerJS player ? player : null;
 	}
 
 	public EntityArrayList createEntityList(Collection<? extends Entity> entities) {
@@ -175,7 +175,8 @@ public abstract class WorldJS implements WithAttachedData {
 		if (minecraftLevel instanceof ServerLevel) {
 			LightningBolt e = EntityType.LIGHTNING_BOLT.create(minecraftLevel);
 			e.moveTo(x, y, z);
-			e.setCause(player instanceof ServerPlayerJS ? ((ServerPlayerJS) player).minecraftPlayer : null);
+			e.setCause(player instanceof ServerPlayerJS serverPlayer ? serverPlayer.minecraftPlayer : null);
+			e.setVisualOnly(effectOnly);
 			minecraftLevel.addFreshEntity(e);
 		}
 	}

@@ -120,20 +120,20 @@ public class KubeJSClientEventHandler {
 				tempTagNames.computeIfAbsent(tag, TagInstance::new).item = true;
 			}
 
-			if (stack.getItem() instanceof BlockItem) {
-				for (var tag : Tags.byBlock(((BlockItem) stack.getItem()).getBlock())) {
+			if (stack.getItem() instanceof BlockItem item) {
+				for (var tag : Tags.byBlock(item.getBlock())) {
 					tempTagNames.computeIfAbsent(tag, TagInstance::new).block = true;
 				}
 			}
 
-			if (stack.getItem() instanceof BucketItemKJS) {
-				for (var tag : Tags.byFluid(((BucketItemKJS) stack.getItem()).getFluidKJS())) {
+			if (stack.getItem() instanceof BucketItemKJS item) {
+				for (var tag : Tags.byFluid(item.getFluidKJS())) {
 					tempTagNames.computeIfAbsent(tag, TagInstance::new).fluid = true;
 				}
 			}
 
-			if (stack.getItem() instanceof SpawnEggItem) {
-				for (var tag : Tags.byEntityType(((SpawnEggItem) stack.getItem()).getType(stack.getTag()))) {
+			if (stack.getItem() instanceof SpawnEggItem item) {
+				for (var tag : Tags.byEntityType(item.getType(stack.getTag()))) {
 					tempTagNames.computeIfAbsent(tag, TagInstance::new).entity = true;
 				}
 			}
@@ -150,12 +150,12 @@ public class KubeJSClientEventHandler {
 			new ItemTooltipEventJS(staticItemTooltips).post(ScriptType.CLIENT, KubeJSEvents.ITEM_TOOLTIP);
 		}
 
-		for (ItemTooltipEventJS.StaticTooltipHandler h : staticItemTooltips.getOrDefault(Items.AIR, Collections.emptyList())) {
-			h.tooltip(stack, advanced, lines);
+		for (var handler : staticItemTooltips.getOrDefault(Items.AIR, Collections.emptyList())) {
+			handler.tooltip(stack, advanced, lines);
 		}
 
-		for (ItemTooltipEventJS.StaticTooltipHandler h : staticItemTooltips.getOrDefault(stack.getItem(), Collections.emptyList())) {
-			h.tooltip(stack, advanced, lines);
+		for (var handler : staticItemTooltips.getOrDefault(stack.getItem(), Collections.emptyList())) {
+			handler.tooltip(stack, advanced, lines);
 		}
 	}
 
@@ -246,8 +246,7 @@ public class KubeJSClientEventHandler {
 
 	private boolean isOver(List<AbstractWidget> list, int x, int y) {
 		for (var w : list) {
-			if (w.visible && x >= w.x && y >= w.y && x < w.x + w.getWidth() && y < w.y + w.getHeight()) //getWidth_CLASH = getHeight
-			{
+			if (w.visible && x >= w.x && y >= w.y && x < w.x + w.getWidth() && y < w.y + w.getHeight()) {
 				return true;
 			}
 		}
@@ -260,7 +259,7 @@ public class KubeJSClientEventHandler {
 			var iterator = screen.children().iterator();
 			while (iterator.hasNext()) {
 				GuiEventListener listener = iterator.next();
-				if (listener instanceof AbstractWidget && listener instanceof ImageButtonKJS && RECIPE_BUTTON_TEXTURE.equals(((ImageButtonKJS) listener).getButtonTextureKJS())) {
+				if (listener instanceof AbstractWidget && listener instanceof ImageButtonKJS buttonKJS && RECIPE_BUTTON_TEXTURE.equals(buttonKJS.getButtonTextureKJS())) {
 					access.getRenderables().remove(listener);
 					access.getNarratables().remove(listener);
 					iterator.remove();
@@ -293,7 +292,7 @@ public class KubeJSClientEventHandler {
 	private void blockColors() {
 		for (var builder : KubeJSObjects.BLOCKS.values()) {
 			if (!builder.color.isEmpty()) {
-				ColorHandlerRegistry.registerBlockColors((state, world, pos, index) -> builder.color.get(index), builder.block);
+				ColorHandlerRegistry.registerBlockColors((state, level, pos, index) -> builder.color.get(index), builder.block);
 			}
 		}
 	}

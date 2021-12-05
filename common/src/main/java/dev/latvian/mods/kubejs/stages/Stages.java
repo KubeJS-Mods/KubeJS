@@ -1,13 +1,13 @@
 package dev.latvian.mods.kubejs.stages;
 
+import dev.architectury.event.Event;
+import dev.architectury.event.EventFactory;
+import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.core.PlayerKJS;
 import dev.latvian.mods.kubejs.net.AddStageMessage;
 import dev.latvian.mods.kubejs.net.RemoveStageMessage;
 import dev.latvian.mods.kubejs.net.SyncStagesMessage;
-import dev.architectury.event.Event;
-import dev.architectury.event.EventFactory;
-import dev.architectury.hooks.level.entity.PlayerHooks;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
@@ -63,11 +63,12 @@ public abstract class Stages {
 			return NoStages.NULL_INSTANCE;
 		}
 
-		Stages stages = ((PlayerKJS) player).getStagesRawKJS();
+		var playerKJS = ((PlayerKJS) player);
+		var stages = playerKJS.getStagesRawKJS();
 
 		if (stages == null) {
 			stages = createEntityStages(player);
-			((PlayerKJS) player).setStagesKJS(stages);
+			playerKJS.setStagesKJS(stages);
 		}
 
 		return stages;
@@ -91,15 +92,10 @@ public abstract class Stages {
 		return getAll().contains(stage);
 	}
 
-	@Deprecated
-	public final Collection<String> getList() {
-		return getAll();
-	}
-
 	public boolean add(String stage) {
 		if (addNoUpdate(stage)) {
-			if (player instanceof ServerPlayer) {
-				new AddStageMessage(player.getUUID(), stage).sendToAll(((ServerPlayer) player).server);
+			if (player instanceof ServerPlayer serverPlayer) {
+				new AddStageMessage(player.getUUID(), stage).sendToAll(serverPlayer.server);
 			}
 
 			invokeAdded(this, stage);
@@ -111,8 +107,8 @@ public abstract class Stages {
 
 	public boolean remove(String stage) {
 		if (removeNoUpdate(stage)) {
-			if (player instanceof ServerPlayer) {
-				new RemoveStageMessage(player.getUUID(), stage).sendToAll(((ServerPlayer) player).server);
+			if (player instanceof ServerPlayer serverPlayer) {
+				new RemoveStageMessage(player.getUUID(), stage).sendToAll(serverPlayer.server);
 			}
 
 			invokeRemoved(this, stage);
@@ -145,8 +141,8 @@ public abstract class Stages {
 	}
 
 	public void sync() {
-		if (player instanceof ServerPlayer) {
-			new SyncStagesMessage(player.getUUID(), getAll()).sendToAll(((ServerPlayer) player).server);
+		if (player instanceof ServerPlayer serverPlayer) {
+			new SyncStagesMessage(player.getUUID(), getAll()).sendToAll(serverPlayer.server);
 		}
 	}
 

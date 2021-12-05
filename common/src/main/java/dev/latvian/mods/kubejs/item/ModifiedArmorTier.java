@@ -2,14 +2,12 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
@@ -24,14 +22,14 @@ public class ModifiedArmorTier implements ArmorMaterial {
 	private SoundEvent sound;
 	private float toughness;
 	private float knockbackResistance;
-	private Optional<Ingredient> repairIngredient;
+	private Supplier<Ingredient> repairIngredient;
 	private String name;
 
 	public ModifiedArmorTier(String id, ArmorMaterial p) {
 		parent = p;
 		enchantmentValue = p.getEnchantmentValue();
 		sound = p.getEquipSound();
-		repairIngredient = Optional.empty();
+		repairIngredient = parent::getRepairIngredient;
 		toughness = p.getToughness();
 		knockbackResistance = p.getKnockbackResistance();
 		name = id;
@@ -78,15 +76,14 @@ public class ModifiedArmorTier implements ArmorMaterial {
 	@Override
 	@RemapForJS("getVanillaRepairIngredient")
 	public Ingredient getRepairIngredient() {
-		return repairIngredient.orElse(parent.getRepairIngredient());
+		return repairIngredient.get();
 	}
 
 	public void setRepairIngredient(IngredientJS in) {
-		repairIngredient = Optional.of(in.createVanillaIngredient());
+		repairIngredient = in::createVanillaIngredient;
 	}
 
 	@Override
-	@Environment(EnvType.CLIENT)
 	public String getName() {
 		return name;
 	}
