@@ -21,6 +21,7 @@ import dev.latvian.mods.kubejs.server.KubeJSServerEventHandler;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.world.KubeJSWorldEventHandler;
+import dev.latvian.mods.kubejs.world.gen.KJSFlatLevelSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -165,8 +166,7 @@ public class KubeJS {
 		UtilsJS.init();
 		KubeJSNet.init();
 		new StartupEventJS().post(ScriptType.STARTUP, KubeJSEvents.INIT);
-		// FIXME: Registry.register(Registry.CHUNK_GENERATOR, new ResourceLocation(KubeJS.MOD_ID, "flat"), FlatChunkGeneratorKJS.CODEC);
-		//KubeJSRegistries.chunkGenerators().register(new ResourceLocation(KubeJS.MOD_ID, "flat"), () -> FlatChunkGeneratorKJS.CODEC);
+		KubeJSRegistries.chunkGenerators().register(new ResourceLocation(KubeJS.MOD_ID, "flat"), () -> KJSFlatLevelSource.CODEC);
 	}
 
 	public void loadComplete() {
