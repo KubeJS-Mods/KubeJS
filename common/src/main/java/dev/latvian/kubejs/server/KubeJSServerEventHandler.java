@@ -95,8 +95,8 @@ public class KubeJSServerEventHandler {
 		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_LOAD);
 
 		for (ServerWorldJS world : ServerJS.instance.worlds) {
-			new AttachWorldDataEvent(ServerJS.instance.getOverworld()).invoke();
-			new SimpleWorldEventJS(ServerJS.instance.getOverworld()).post(KubeJSEvents.WORLD_LOAD);
+			new AttachWorldDataEvent(world).invoke();
+			new SimpleWorldEventJS(world).post(KubeJSEvents.WORLD_LOAD);
 		}
 	}
 
