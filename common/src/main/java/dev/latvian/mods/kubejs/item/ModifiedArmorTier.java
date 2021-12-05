@@ -2,8 +2,6 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorMaterial;
@@ -86,7 +84,6 @@ public class ModifiedArmorTier implements ArmorMaterial {
 	}
 
 	@Override
-	@Environment(EnvType.CLIENT)
 	public String getName() {
 		return name;
 	}

@@ -133,7 +133,7 @@ public class CustomRecipeJS extends RecipeJS {
 			) {
 				ConsoleJS.SERVER.debug("! " + this + ": Couldn't find any input items!");
 			}
-		} catch (Exception ex) {
+		} catch (Exception ignored) {
 		}
 
 		try {
@@ -150,7 +150,7 @@ public class CustomRecipeJS extends RecipeJS {
 			) {
 				ConsoleJS.SERVER.debug("! " + this + ": Couldn't find any output items!");
 			}
-		} catch (Exception ex) {
+		} catch (Exception ignored) {
 		}
 	}
 

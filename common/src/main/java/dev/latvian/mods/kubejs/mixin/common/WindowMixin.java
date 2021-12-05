@@ -13,7 +13,7 @@ import java.io.InputStream;
  * @author LatvianModder
  */
 @Mixin(Window.class)
-public class MainWindowMixin {
+public class WindowMixin {
 	@Inject(method = "setIcon", at = @At("HEAD"), cancellable = true)
 	private void setWindowIcon(InputStream icon16, InputStream icon32, CallbackInfo ci) {
 		if (ClientProperties.get().cancelIconUpdate()) {

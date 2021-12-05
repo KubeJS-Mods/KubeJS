@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.player;
 
-import dev.latvian.mods.kubejs.core.PlayerInteractionManagerKJS;
+import dev.latvian.mods.kubejs.core.ServerPlayerGameModeKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
@@ -46,7 +46,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 
 	@Override
 	public boolean isMiningBlock() {
-		return ((PlayerInteractionManagerKJS) minecraftPlayer.gameMode).isDestroyingBlockKJS();
+		return ((ServerPlayerGameModeKJS) minecraftPlayer.gameMode).isDestroyingBlockKJS();
 	}
 
 	public void setCreativeMode(boolean mode) {

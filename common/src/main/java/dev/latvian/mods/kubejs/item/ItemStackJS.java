@@ -515,7 +515,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		for (var item : KubeJSRegistries.items()) {
 			try {
 				item.fillItemCategory(CreativeModeTab.TAB_SEARCH, stackList);
-			} catch (Throwable ex) {
+			} catch (Throwable ignored) {
 			}
 		}
 

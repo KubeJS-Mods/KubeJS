@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.mixin.common;
 
-import dev.latvian.mods.kubejs.core.TagCollectionKJS;
+import dev.latvian.mods.kubejs.core.TagLoaderKJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.Tag;
@@ -19,7 +19,7 @@ import java.util.function.Function;
  * @author LatvianModder
  */
 @Mixin(TagLoader.class)
-public abstract class TagCollectionReaderMixin<T> implements TagCollectionKJS<T> {
+public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 	@Inject(method = "load", at = @At("RETURN"))
 	private void customTags(ResourceManager resourceManager, CallbackInfoReturnable<Map<ResourceLocation, Tag.Builder>> cir) {
 		customTagsKJS(cir.getReturnValue());

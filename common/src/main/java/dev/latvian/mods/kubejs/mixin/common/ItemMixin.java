@@ -5,17 +5,23 @@ import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.rhino.util.RemapForJS;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
 
 /**
  * @author LatvianModder
@@ -75,6 +81,13 @@ public abstract class ItemMixin implements ItemKJS {
 	private void isFoilKJS(ItemStack itemStack, CallbackInfoReturnable<Boolean> ci) {
 		if (itemBuilderKJS != null && itemBuilderKJS.glow) {
 			ci.setReturnValue(true);
+		}
+	}
+
+	@Inject(method = "appendHoverText", at = @At("RETURN"))
+	private void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn, CallbackInfo ci) {
+		if (itemBuilderKJS != null && !itemBuilderKJS.tooltip.isEmpty()) {
+			tooltip.addAll(itemBuilderKJS.tooltip);
 		}
 	}
 }

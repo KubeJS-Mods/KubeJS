@@ -62,7 +62,6 @@ public class KubeJSEvents {
 
 	public static final String BLOCK_REGISTRY = "block.registry";
 	public static final String BLOCK_MISSING_MAPPINGS = "block.missing_mappings";
-	public static final String BLOCK_TAGS = "block.tags";
 	public static final String BLOCK_RIGHT_CLICK = "block.right_click";
 	public static final String BLOCK_LEFT_CLICK = "block.left_click";
 	public static final String BLOCK_PLACE = "block.place";
@@ -74,7 +73,6 @@ public class KubeJSEvents {
 	public static final String ITEM_REGISTRY_TOOL_TIERS = "item.registry.tool_tiers";
 	public static final String ITEM_REGISTRY_ARMOR_TIERS = "item.registry.armor_tiers";
 	public static final String ITEM_MISSING_MAPPINGS = "item.missing_mappings";
-	public static final String ITEM_TAGS = "item.tags";
 	public static final String ITEM_RIGHT_CLICK = "item.right_click";
 	public static final String ITEM_RIGHT_CLICK_EMPTY = "item.right_click_empty";
 	public static final String ITEM_LEFT_CLICK = "item.left_click";
@@ -89,9 +87,6 @@ public class KubeJSEvents {
 	public static final String ITEM_MODIFICATION = "item.modification";
 
 	public static final String FLUID_REGISTRY = "fluid.registry";
-	public static final String FLUID_TAGS = "fluid.tags";
-
-	public static final String ENTITY_TYPE_TAGS = "entity_type.tags";
 
 	public static final String SOUND_REGISTRY = "sound.registry";
 }

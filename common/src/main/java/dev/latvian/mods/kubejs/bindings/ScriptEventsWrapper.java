@@ -2,8 +2,6 @@ package dev.latvian.mods.kubejs.bindings;
 
 import dev.latvian.mods.kubejs.event.DataEvent;
 import dev.latvian.mods.kubejs.event.EventsJS;
-import dev.latvian.mods.kubejs.event.IEventHandler;
-import dev.latvian.mods.kubejs.util.ListJS;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -14,12 +12,6 @@ public class ScriptEventsWrapper {
 
 	public ScriptEventsWrapper(EventsJS e) {
 		events = e;
-	}
-
-	public void listen(Object id, IEventHandler handler) {
-		for (var o : ListJS.orSelf(id)) {
-			events.listen(String.valueOf(o), handler);
-		}
 	}
 
 	public void post(String id, @Nullable Object data) {

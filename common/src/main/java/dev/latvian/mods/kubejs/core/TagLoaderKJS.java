@@ -12,7 +12,7 @@ import java.util.function.Function;
 /**
  * @author LatvianModder
  */
-public interface TagCollectionKJS<T> {
+public interface TagLoaderKJS<T> {
 	default void customTagsKJS(Map<ResourceLocation, Tag.Builder> map) {
 		TagIngredientJS.clearTagCache();
 		String c = getResourceLocationPrefixKJS().substring(5);

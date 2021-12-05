@@ -103,7 +103,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 					if (key.getPath().startsWith(path) && filter.test(p)) {
 						list.add(key);
 					}
-				} catch (Exception ex) {
+				} catch (Exception ignored) {
 				}
 			}
 		}

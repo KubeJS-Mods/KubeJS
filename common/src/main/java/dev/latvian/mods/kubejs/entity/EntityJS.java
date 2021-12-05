@@ -500,7 +500,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 						damageSourceMap.put(s.getMsgId(), s);
 					}
 				}
-			} catch (Exception ex) {
+			} catch (Exception ignored) {
 			}
 		}
 

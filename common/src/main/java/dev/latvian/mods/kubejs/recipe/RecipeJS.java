@@ -130,7 +130,7 @@ public abstract class RecipeJS {
 						return true;
 					}
 				}
-			} catch (Exception ex) {
+			} catch (Exception ignored) {
 			}
 		}
 
@@ -180,7 +180,7 @@ public abstract class RecipeJS {
 				if (!out.isEmpty()) {
 					return exact ? ingredient.equals(out) : ingredient.test(out);
 				}
-			} catch (Exception ex) {
+			} catch (Exception ignored) {
 			}
 		}
 
