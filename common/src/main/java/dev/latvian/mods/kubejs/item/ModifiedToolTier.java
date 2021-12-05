@@ -1,11 +1,12 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
@@ -17,7 +18,7 @@ public class ModifiedToolTier implements Tier {
 	private float attackDamageBonus;
 	private int level;
 	private int enchantmentValue;
-	private Optional<Ingredient> repairIngredient;
+	private Supplier<Ingredient> repairIngredient;
 
 	public ModifiedToolTier(Tier p) {
 		parent = p;
@@ -26,7 +27,7 @@ public class ModifiedToolTier implements Tier {
 		attackDamageBonus = parent.getAttackDamageBonus();
 		level = parent.getLevel();
 		enchantmentValue = parent.getEnchantmentValue();
-		repairIngredient = Optional.empty();
+		repairIngredient = parent::getRepairIngredient;
 	}
 
 	@Override
@@ -82,10 +83,10 @@ public class ModifiedToolTier implements Tier {
 	@Override
 	@RemapForJS("getVanillaRepairIngredient")
 	public Ingredient getRepairIngredient() {
-		return repairIngredient.orElse(parent.getRepairIngredient());
+		return repairIngredient.get();
 	}
 
 	public void setRepairIngredient(IngredientJS in) {
-		repairIngredient = Optional.of(in.createVanillaIngredient());
+		repairIngredient = in::createVanillaIngredient;
 	}
 }
