@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.integration.techreborn;
+package dev.latvian.mods.kubejs.integration.fabric.techreborn;
 
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.util.ListJS;

@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.integration.rei;
 
 import dev.architectury.event.EventResult;
+import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -24,19 +25,27 @@ import java.util.function.Function;
 /**
  * @author shedaniel
  */
-public class REIPlugin implements REIClientPlugin {
+public class KubeJSREIPlugin implements REIClientPlugin {
 	private final Set<CategoryIdentifier<?>> categoriesRemoved = new HashSet<>();
 
 	@Override
 	public void registerEntries(EntryRegistry registry) {
-		Function<Object, Collection<EntryStack<?>>> itemSerializer = o -> EntryIngredients.ofItemStacks(CollectionUtils.map(IngredientJS.of(o).getStacks(), ItemStackJS::getItemStack));
+		// TODO: i would like this system to be more extendable,
+		//  such that other mod creators can registers serializers for their own
+		//  entry types and we'd just handle firing the KubeJS events for them.
+		Function<Object, Collection<EntryStack<?>>> itemSerializer = o -> EntryIngredients.ofItemStacks(
+				CollectionUtils.map(IngredientJS.of(o).getStacks(), ItemStackJS::getItemStack));
+		Function<Object, Collection<EntryStack<?>>> fluidSerializer = o -> EntryIngredients.of(FluidStackJS.of(o).getFluidStack());
 
 		new HideREIEventJS<>(registry, VanillaEntryTypes.ITEM, itemSerializer).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_ITEMS);
+		new HideREIEventJS<>(registry, VanillaEntryTypes.FLUID, fluidSerializer).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_FLUIDS);
 		new AddREIEventJS(registry, itemSerializer).post(ScriptType.CLIENT, REIIntegration.REI_ADD_ITEMS);
+		new AddREIEventJS(registry, fluidSerializer).post(ScriptType.CLIENT, REIIntegration.REI_ADD_FLUIDS);
 	}
 
 	@Override
 	public void registerDisplays(DisplayRegistry registry) {
+		// TODO: can we make this fire for more entry types than just items?
 		new InformationREIEventJS().post(ScriptType.CLIENT, REIIntegration.REI_INFORMATION);
 	}
 

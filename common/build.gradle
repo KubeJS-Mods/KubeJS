@@ -3,6 +3,9 @@ dependencies {
 
 	modApi "dev.architectury:architectury:${rootProject.architectury_version}"
 	modApi("dev.latvian.mods:rhino:${rootProject.rhino_version}") { transitive false }
+
+	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api:${rootProject.rei_version}") { transitive false }
+	modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin:${rootProject.rei_version}") { transitive false }
 }
 
 def ENV = System.getenv()

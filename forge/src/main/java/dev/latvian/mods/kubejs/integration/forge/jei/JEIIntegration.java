@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.integration.jei;
+package dev.latvian.mods.kubejs.integration.forge.jei;
 
 /**
  * @author LatvianModder

@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.integration.gamestages;
+package dev.latvian.mods.kubejs.integration.forge.gamestages;
 
 /**
  * @author LatvianModder

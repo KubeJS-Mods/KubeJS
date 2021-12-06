@@ -32,16 +32,16 @@ dependencies {
 
 	modApi("dev.latvian.mods:rhino-fabric:${rootProject.rhino_version}") { transitive false }
 
-	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${rootProject.fabric_rei_version}") {
+	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${rootProject.rei_version}") {
 		exclude group: "net.fabricmc.fabric-api"
 		exclude group: "net.fabricmc"
 	}
-	modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${rootProject.fabric_rei_version}") {
+	modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${rootProject.rei_version}") {
 		exclude group: "net.fabricmc.fabric-api"
 		exclude group: "net.fabricmc"
 	}
 
-	modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-fabric:${rootProject.fabric_rei_version}") {
+	modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-fabric:${rootProject.rei_version}") {
 		exclude group: "net.fabricmc.fabric-api"
 		exclude group: "net.fabricmc"
 	}
