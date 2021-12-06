@@ -6,6 +6,7 @@ import dev.architectury.registry.block.ToolType;
 import dev.latvian.mods.kubejs.block.custom.BasicBlockType;
 import dev.latvian.mods.kubejs.block.custom.BlockType;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.BuilderBase;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.core.Direction;
@@ -14,6 +15,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -79,7 +81,7 @@ public class BlockBuilder extends BuilderBase {
 		color = new Int2IntOpenHashMap();
 		color.defaultReturnValue(0xFFFFFFFF);
 		textures = new JsonObject();
-		texture(id.getNamespace() + ":block/" + id.getPath());
+		textureAll(id.getNamespace() + ":block/" + id.getPath());
 		model = "";
 		itemBuilder = new BlockItemBuilder(i);
 		itemBuilder.blockBuilder = this;
@@ -172,22 +174,29 @@ public class BlockBuilder extends BuilderBase {
 		return this;
 	}
 
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
 	public BlockBuilder texture(String tex) {
-		for (var direction : Direction.values()) {
-			textures.addProperty(direction.getSerializedName(), tex);
+		ScriptType.STARTUP.console.warn("Using 'texture(tex)' in block builders is deprecated! Please use 'textureAll(tex)' instead!");
+		return textureAll(tex);
+	}
+
+	public BlockBuilder textureAll(String tex) {
+		for (Direction direction : Direction.values()) {
+			textureSide(direction, tex);
 		}
 
 		textures.addProperty("particle", tex);
 		return this;
 	}
 
+	public BlockBuilder textureSide(Direction direction, String tex) {
+		return texture(direction.getSerializedName(), tex);
+	}
+
 	public BlockBuilder texture(String id, String tex) {
 		textures.addProperty(id, tex);
 		return this;
-	}
-
-	public BlockBuilder texture(Direction direction, String tex) {
-		return texture(direction.getSerializedName(), tex);
 	}
 
 	public BlockBuilder model(String m) {
