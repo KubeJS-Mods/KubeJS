@@ -61,4 +61,10 @@ public final class IgnoreNBTIngredientJS implements IngredientJS {
 
 		return json;
 	}
+
+	@Override
+	public String toString() {
+		String stack = item.toString().replaceAll("^'(.*)'$", "Item.of($1)");
+		return stack + ".ignoreNBT()";
+	}
 }

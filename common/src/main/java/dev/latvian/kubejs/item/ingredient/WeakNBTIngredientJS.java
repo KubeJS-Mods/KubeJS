@@ -101,4 +101,11 @@ public final class WeakNBTIngredientJS implements IngredientJS {
 
 		return json;
 	}
+
+	@Override
+	public String toString() {
+		String stack = item.toString().replaceAll("^'(.*)'$", "Item.of($1)");
+		return stack + ".weakNBT()";
+
+	}
 }
