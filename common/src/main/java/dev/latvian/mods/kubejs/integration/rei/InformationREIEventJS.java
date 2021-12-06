@@ -26,9 +26,7 @@ public class InformationREIEventJS extends EventJS {
 				EntryIngredients.ofItemStacks(CollectionUtils.map(IngredientJS.of(stacks).getStacks(), ItemStackJS::getItemStack)),
 				title,
 				components -> {
-					for (var o : ListJS.orSelf(description)) {
-						components.add(Text.of(o).component());
-					}
+					components.addAll(CollectionUtils.map(ListJS.orSelf(description), Text::componentOf));
 					return components;
 				}
 		);

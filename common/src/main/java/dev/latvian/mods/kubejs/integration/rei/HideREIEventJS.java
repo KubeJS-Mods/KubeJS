@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.integration.rei;
 
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import me.shedaniel.rei.api.client.registry.entry.EntryRegistry;
@@ -10,7 +11,6 @@ import me.shedaniel.rei.api.common.util.EntryStacks;
 
 import java.util.Collection;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * @author shedaniel
@@ -29,7 +29,7 @@ public class HideREIEventJS<T> extends EventJS {
 	}
 
 	public Collection<T> getAllIngredients() {
-		return (Collection<T>) registry.getEntryStacks().filter(this::filterType).map(EntryStack::getValue).collect(Collectors.toList());
+		return UtilsJS.cast(registry.getEntryStacks().filter(this::filterType).map(EntryStack::getValue).toList());
 	}
 
 	private boolean filterType(EntryStack<?> stack) {

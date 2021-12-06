@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.integration.jei;
+package dev.latvian.mods.kubejs.integration.forge.jei;
 
 import dev.latvian.mods.kubejs.event.EventJS;
 import mezz.jei.api.ingredients.IIngredientType;

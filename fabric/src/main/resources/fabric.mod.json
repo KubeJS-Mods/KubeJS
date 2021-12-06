@@ -24,7 +24,7 @@
 			"dev.latvian.mods.kubejs.fabric.KubeJSFabric"
 		],
 		"rei_plugins": [
-			"dev.latvian.mods.kubejs.integration.rei.REIPlugin"
+			"dev.latvian.mods.kubejs.integration.rei.KubeJSREIPlugin"
 		]
 	},
 	"mixins": [

@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.integration.gamestages;
+package dev.latvian.mods.kubejs.integration.forge.gamestages;
 
 import dev.latvian.mods.kubejs.core.PlayerKJS;
 import dev.latvian.mods.kubejs.player.PlayerDataJS;

@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.integration.gamestages;
+package dev.latvian.mods.kubejs.integration.forge.gamestages;
 
 public class GameStagesWrapper {/* FIXME: Gamestages extends Stages {
 	public GameStagesWrapper(Player p) {

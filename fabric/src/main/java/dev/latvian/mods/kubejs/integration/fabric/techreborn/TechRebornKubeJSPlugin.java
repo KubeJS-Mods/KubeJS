@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.integration.techreborn;
+package dev.latvian.mods.kubejs.integration.fabric.techreborn;
 
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
