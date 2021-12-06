@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.item.custom;
+package dev.latvian.mods.kubejs.item.type;
 
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;

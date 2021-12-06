@@ -1,7 +1,12 @@
-package dev.latvian.mods.kubejs.item.custom;
+package dev.latvian.mods.kubejs.item.type;
 
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
+import dev.latvian.mods.kubejs.item.custom.AxeItemJS;
+import dev.latvian.mods.kubejs.item.custom.HoeItemJS;
+import dev.latvian.mods.kubejs.item.custom.PickaxeItemJS;
+import dev.latvian.mods.kubejs.item.custom.ShovelItemJS;
+import dev.latvian.mods.kubejs.item.custom.SwordItemJS;
 import net.minecraft.world.item.Item;
 
 import java.util.function.Function;

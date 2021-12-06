@@ -1,6 +1,7 @@
-package dev.latvian.mods.kubejs.item.custom;
+package dev.latvian.mods.kubejs.item.type;
 
 import dev.latvian.mods.kubejs.item.ItemBuilder;
+import dev.latvian.mods.kubejs.item.custom.ArmorItemJS;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 

@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.item.custom;
+package dev.latvian.mods.kubejs.item.type;
 
 import java.util.HashMap;
 import java.util.Map;
