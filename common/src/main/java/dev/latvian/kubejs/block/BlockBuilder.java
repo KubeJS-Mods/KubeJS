@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.block.custom.BasicBlockType;
 import dev.latvian.kubejs.block.custom.BlockType;
 import dev.latvian.kubejs.loot.LootBuilder;
+import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.BuilderBase;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import me.shedaniel.architectury.registry.BlockProperties;
@@ -79,7 +80,7 @@ public class BlockBuilder extends BuilderBase {
 		color = new Int2IntOpenHashMap();
 		color.defaultReturnValue(0xFFFFFFFF);
 		textures = new JsonObject();
-		texture(id.getNamespace() + ":block/" + id.getPath());
+		textureAll(id.getNamespace() + ":block/" + id.getPath());
 		model = "";
 		itemBuilder = new BlockItemBuilder(i);
 		itemBuilder.blockBuilder = this;
@@ -172,22 +173,28 @@ public class BlockBuilder extends BuilderBase {
 		return this;
 	}
 
+	@Deprecated
 	public BlockBuilder texture(String tex) {
+		ScriptType.STARTUP.console.warn("Using 'texture(tex)' in block builders is deprecated! Please use 'textureAll(tex)' instead!");
+		return textureAll(tex);
+	}
+
+	public BlockBuilder textureAll(String tex) {
 		for (Direction direction : Direction.values()) {
-			textures.addProperty(direction.getSerializedName(), tex);
+			textureSide(direction, tex);
 		}
 
 		textures.addProperty("particle", tex);
 		return this;
 	}
 
+	public BlockBuilder textureSide(Direction direction, String tex) {
+		return texture(direction.getSerializedName(), tex);
+	}
+
 	public BlockBuilder texture(String id, String tex) {
 		textures.addProperty(id, tex);
 		return this;
-	}
-
-	public BlockBuilder texture(Direction direction, String tex) {
-		return texture(direction.getSerializedName(), tex);
 	}
 
 	public BlockBuilder model(String m) {
