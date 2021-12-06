@@ -27,6 +27,5 @@ public class ArmorItemType extends ItemType {
 	public void applyDefaults(ItemBuilder builder) {
 		super.applyDefaults(builder);
 		builder.unstackable();
-		builder.maxDamage(300);
 	}
 }

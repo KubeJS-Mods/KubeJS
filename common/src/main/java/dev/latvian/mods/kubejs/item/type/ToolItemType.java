@@ -41,7 +41,6 @@ public class ToolItemType extends ItemType {
 		builder.attackDamageBaseline = attackDamageBaseline;
 		builder.attackSpeedBaseline = attackSpeedBaseline;
 		builder.unstackable();
-		builder.maxDamage(300);
 	}
 
 	@Override
