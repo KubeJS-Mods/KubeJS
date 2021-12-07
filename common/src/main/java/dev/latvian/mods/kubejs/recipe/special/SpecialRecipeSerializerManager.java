@@ -2,9 +2,8 @@ package dev.latvian.mods.kubejs.recipe.special;
 
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
-import dev.architectury.registry.registries.Registries;
+import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.event.EventJS;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 
@@ -29,18 +28,38 @@ public class SpecialRecipeSerializerManager extends EventJS {
 	}
 
 	public boolean isSpecial(Recipe<?> recipe) {
-		return data.getOrDefault(Registries.getId(recipe.getSerializer(), Registry.RECIPE_SERIALIZER_REGISTRY), recipe.isSpecial());
+		return data.getOrDefault(KubeJSRegistries.recipeSerializers().getId(recipe.getSerializer()), recipe.isSpecial());
 	}
 
-	public void ignoreSpecialFlag(String id) {
+	public void ignoreSpecialFlag(ResourceLocation id) {
 		synchronized (data) {
-			data.put(new ResourceLocation(id), false);
+			data.put(id, false);
 		}
 	}
 
-	public void addSpecialFlag(String id) {
+	public void addSpecialFlag(ResourceLocation id) {
 		synchronized (data) {
-			data.put(new ResourceLocation(id), true);
+			data.put(id, true);
+		}
+	}
+
+	public void ignoreSpecialMod(String modid) {
+		synchronized (data) {
+			KubeJSRegistries.recipeSerializers().getIds().forEach(id -> {
+				if (id.getNamespace().equals(modid)) {
+					data.put(id, false);
+				}
+			});
+		}
+	}
+
+	public void addSpecialMod(String modid) {
+		synchronized (data) {
+			KubeJSRegistries.recipeSerializers().getIds().forEach(id -> {
+				if (id.getNamespace().equals(modid)) {
+					data.put(id, true);
+				}
+			});
 		}
 	}
 }
