@@ -23,7 +23,7 @@ import static net.minecraft.core.Registry.*;
 public class KubeJSRegistries {
 	private static final Registries REGISTRIES = Registries.get(KubeJS.MOD_ID);
 
-	public static <T> Registrar<T> genericRegistry(ResourceKey<net.minecraft.core.Registry<T>> key) {
+	public static <T> Registrar<T> genericRegistry(ResourceKey<Registry<T>> key) {
 		return REGISTRIES.get(key);
 	}
 

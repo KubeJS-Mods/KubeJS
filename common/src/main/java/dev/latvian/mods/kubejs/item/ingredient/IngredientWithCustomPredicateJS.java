@@ -90,6 +90,6 @@ public class IngredientWithCustomPredicateJS implements IngredientJS {
 
 	@Override
 	public String toString() {
-		return ingredient.toString();
+		return ingredient + " (with custom predicate)";
 	}
 }

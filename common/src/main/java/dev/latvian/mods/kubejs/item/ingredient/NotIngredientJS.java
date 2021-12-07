@@ -37,4 +37,9 @@ public final class NotIngredientJS implements IngredientJS {
 	public boolean isInvalidRecipeIngredient() {
 		return ingredientJS.isInvalidRecipeIngredient();
 	}
+
+	@Override
+	public String toString() {
+		return "!" + ingredientJS;
+	}
 }

@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -25,7 +26,7 @@ public class RegistryTypeWrapperFactory<T> implements TypeWrapperFactory<T> {
 			all = new ArrayList<>();
 
 			try {
-				for (var field : net.minecraft.core.Registry.class.getDeclaredFields()) {
+				for (var field : Registry.class.getDeclaredFields()) {
 					if (field.getType() == ResourceKey.class && Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers())) {
 						String id = "unknown";
 
