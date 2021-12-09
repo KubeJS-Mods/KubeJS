@@ -67,11 +67,11 @@ public abstract class ExplosionEventJS extends WorldEventJS {
 		}
 
 		public float getSize() {
-			return ExplosionHooks.getRadius(explosion);
+			return explosion.radius;
 		}
 
 		public void setSize(float s) {
-			ExplosionHooks.setRadius(explosion, s);
+			explosion.radius = s;
 		}
 	}
 

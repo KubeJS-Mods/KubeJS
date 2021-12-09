@@ -6,7 +6,6 @@ import dev.architectury.event.events.common.CommandPerformEvent;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.TickEvent;
-import dev.architectury.hooks.LevelResourceHooks;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.command.KubeJSCommands;
 import dev.latvian.mods.kubejs.player.PlayerDataJS;
@@ -37,7 +36,7 @@ import java.util.List;
  * @author LatvianModder
  */
 public class KubeJSServerEventHandler {
-	private static final LevelResource PERSISTENT_DATA = LevelResourceHooks.create("kubejs_persistent_data.nbt");
+	private static final LevelResource PERSISTENT_DATA = new LevelResource("kubejs_persistent_data.nbt");
 
 	public static void init() {
 		LifecycleEvent.SERVER_BEFORE_START.register(KubeJSServerEventHandler::serverAboutToStart);

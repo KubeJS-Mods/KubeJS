@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.entity;
 
 import com.mojang.authlib.GameProfile;
-import dev.architectury.hooks.level.entity.EntityHooks;
 import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.core.EntityKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
@@ -81,7 +80,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public GameProfile getProfile() {
-		return new GameProfile(getId(), EntityHooks.getEncodeId(minecraftEntity));
+		return new GameProfile(getId(), minecraftEntity.getEncodeId());
 	}
 
 	@Override
