@@ -107,12 +107,15 @@ public class RecipesAfterLoadEventJS extends EventJS {
 			e.originalRecipes.removeAll(e.removedRecipes);
 
 			Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> newMap = new HashMap<>();
+			Map<ResourceLocation, Recipe<?>> newByName = new HashMap<>();
 
 			for (var r : e.originalRecipes) {
 				newMap.computeIfAbsent(r.originalRecipe.getType(), t -> new HashMap<>()).put(r.id, r.originalRecipe);
+				newByName.put(r.id, r.originalRecipe);
 			}
 
 			recipeManager.setRecipesKJS(newMap);
+			recipeManager.setByNameKJS(newByName);
 		}
 	}
 }
