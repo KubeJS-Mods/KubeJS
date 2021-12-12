@@ -19,9 +19,17 @@ import java.util.Optional;
  * @author LatvianModder
  */
 public class BlockIDPredicate implements BlockPredicate {
-	private static class PropertyObject {
+	public static class PropertyObject {
 		private Property<?> property;
 		private Object value;
+
+		public Property<?> getProperty() {
+			return property;
+		}
+
+		public Object getValue() {
+			return value;
+		}
 	}
 
 	private final ResourceLocation id;
