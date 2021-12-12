@@ -14,7 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LoadingOverlay.class)
 public abstract class LoadingOverlayMixin {
 
-	@Inject(method = "lambda$static$0", at = @At("HEAD"), cancellable = true)
+	@SuppressWarnings("UnresolvedMixinReference")
+	@Inject(method = {"lambda$static$0", "method_35733"}, at = @At("HEAD"), remap = false, cancellable = true)
 	private static void backgroundColorKJS(CallbackInfoReturnable<Integer> cir) {
 		ClientProperties.get().getBackgroundColor()
 				.ifPresent(cir::setReturnValue);
