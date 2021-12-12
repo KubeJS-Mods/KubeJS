@@ -4,18 +4,20 @@ import dev.latvian.mods.kubejs.client.ClientProperties;
 import net.minecraft.client.gui.screens.LoadingOverlay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * @author LatvianModder
  */
 @Mixin(LoadingOverlay.class)
-public abstract class ResourceLoadProgressGuiMixin {
-	@ModifyArg(method = "render",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/LoadingOverlay;fill(Lcom/mojang/blaze3d/vertex/PoseStack;IIIII)V"),
-			index = 5)
-	private int backgroundColorKJS(int color) {
-		return ClientProperties.get().getBackgroundColor(color);
+public abstract class LoadingOverlayMixin {
+
+	@Inject(method = "lambda$static$0", at = @At("HEAD"), cancellable = true)
+	private static void backgroundColorKJS(CallbackInfoReturnable<Integer> cir) {
+		ClientProperties.get().getBackgroundColor()
+				.ifPresent(cir::setReturnValue);
 	}
 
 	@ModifyArg(method = "drawProgressBar", at = @At(value = "INVOKE", ordinal = 0,

@@ -19,13 +19,9 @@ import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerSettings;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.JsonUtilsJS;
-import dev.latvian.mods.kubejs.util.ListJS;
-import dev.latvian.mods.kubejs.util.MapJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.*;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.Recipe;
@@ -35,18 +31,9 @@ import net.minecraft.world.item.crafting.RecipeType;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -90,14 +77,14 @@ public class RecipeEventJS extends EventJS {
 
 		Map<String, Map<String, RecipeSerializer<?>>> serializers = new HashMap<>();
 
-		for (Map.Entry<ResourceKey<RecipeSerializer<?>>, RecipeSerializer<?>> entry : KubeJSRegistries.recipeSerializers().entrySet()) {
+		for (var entry : KubeJSRegistries.recipeSerializers().entrySet()) {
 			serializers.computeIfAbsent(entry.getKey().location().getNamespace(), n -> new HashMap<>()).put(entry.getKey().location().getPath(), entry.getValue());
 		}
 
-		for (Map.Entry<String, Map<String, RecipeSerializer<?>>> entry : serializers.entrySet()) {
+		for (var entry : serializers.entrySet()) {
 			Map<String, RecipeFunction> funcs = new HashMap<>();
 
-			for (Map.Entry<String, RecipeSerializer<?>> entry1 : entry.getValue().entrySet()) {
+			for (var entry1 : entry.getValue().entrySet()) {
 				ResourceLocation location = new ResourceLocation(entry.getKey(), entry1.getKey());
 				RecipeTypeJS typeJS = t.get(location);
 				RecipeFunction func = new RecipeFunction(this, location, typeJS != null ? typeJS : new CustomRecipeTypeJS(entry1.getValue()));
@@ -129,11 +116,11 @@ public class RecipeEventJS extends EventJS {
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap) {
 		RecipeJS.itemErrors = false;
 		ConsoleJS.SERVER.setLineNumber(true);
-		Stopwatch timer = Stopwatch.createStarted();
+		var timer = Stopwatch.createStarted();
 
-		JsonObject allRecipeMap = new JsonObject();
+		var allRecipeMap = new JsonObject();
 
-		for (Map.Entry<ResourceLocation, JsonObject> entry : jsonMap.entrySet()) {
+		for (var entry : jsonMap.entrySet()) {
 			ResourceLocation recipeId = entry.getKey();
 
 			if (Platform.isForge() && recipeId.getPath().startsWith("_")) {
@@ -277,8 +264,7 @@ public class RecipeEventJS extends EventJS {
 		ConsoleJS.SERVER.setLineNumber(false);
 		ConsoleJS.SERVER.info("Posted recipe events in " + timer.stop());
 
-		Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> newRecipeMap = new HashMap<>();
-		Map<ResourceLocation, RecipeType<?>> existingRecipes = new HashMap<>();
+		HashMap<ResourceLocation, Recipe<?>> recipesByName = new HashMap<>();
 
 		timer.reset().start();
 		originalRecipes.stream()
@@ -296,28 +282,32 @@ public class RecipeEventJS extends EventJS {
 						ConsoleJS.SERVER.warn("Error parsing recipe " + recipe + ": " + recipe.json, ex);
 						failed.increment();
 					}
-					if (recipe.originalRecipe != null) {
-						existingRecipes.put(recipe.id, recipe.originalRecipe.getType());
-					}
 					return recipe.originalRecipe;
 				})
 				.filter(Objects::nonNull)
-				.collect(Collectors.groupingBy(Recipe::getType,
-						Collectors.groupingBy(Recipe::getId,
-								Collectors.reducing(null, Function.identity(), (recipe, recipe2) -> recipe2))))
-				.forEach((recipeType, map) -> {
-					//modified.add(map.size());
-					newRecipeMap.computeIfAbsent(recipeType, type -> new HashMap<>()).putAll(map);
+				.forEach(recipe -> {
+					var id = recipe.getId();
+					var ser = KubeJSRegistries.recipeSerializers().getId(recipe.getSerializer());
+					var oldEntry = recipesByName.put(id, recipe);
+					if (oldEntry != null) {
+						var oldSer = KubeJSRegistries.recipeSerializers().getId(oldEntry.getSerializer());
+						if (ServerSettings.instance.logOverrides) {
+							ConsoleJS.SERVER.info("Overriding existing recipe with ID " + recipe.getId() + "[" + oldSer + " => " + ser + "] during phase PARSE!");
+						}
+					}
 				});
 		fallbackedRecipes.stream()
 				.filter(Objects::nonNull)
-				.peek(recipe -> existingRecipes.put(recipe.getId(), recipe.getType()))
-				.collect(Collectors.groupingBy(Recipe::getType,
-						Collectors.groupingBy(Recipe::getId,
-								Collectors.reducing(null, Function.identity(), (recipe, recipe2) -> recipe2))))
-				.forEach((recipeType, map) -> {
-					fallbacked.add(map.size());
-					newRecipeMap.computeIfAbsent(recipeType, type -> new HashMap<>()).putAll(map);
+				.forEach(recipe -> {
+					var id = recipe.getId();
+					var ser = KubeJSRegistries.recipeSerializers().getId(recipe.getSerializer());
+					var oldEntry = recipesByName.put(id, recipe);
+					if (oldEntry != null) {
+						var oldSer = KubeJSRegistries.recipeSerializers().getId(oldEntry.getSerializer());
+						if (ServerSettings.instance.logOverrides) {
+							ConsoleJS.SERVER.info("Overriding existing recipe with ID " + recipe.getId() + "[" + oldSer + " => " + ser + "] during phase FALLBACK!");
+						}
+					}
 				});
 		ConsoleJS.SERVER.info("Modified & removed recipes in " + timer.stop());
 
@@ -330,25 +320,21 @@ public class RecipeEventJS extends EventJS {
 						ConsoleJS.SERVER.warn("Error creating recipe " + recipe + ": " + recipe.json, ex, SKIP_ERROR);
 						failed.increment();
 					}
-					if (recipe.originalRecipe != null) {
-						ResourceLocation id = recipe.getOrCreateId();
-						RecipeType<?> t = existingRecipes.remove(id);
-						if (t != null) {
-							newRecipeMap.get(t).remove(id);
-							if (ServerSettings.instance.logOverrides) {
-								ConsoleJS.SERVER.info("Overriding existing recipe with ID " + id + "(" + t + " => " + recipe.getType() + ")");
-							}
-						}
-					}
 					return recipe.originalRecipe;
 				})
 				.filter(Objects::nonNull)
-				.collect(Collectors.groupingBy(Recipe::getType,
-						Collectors.groupingBy(Recipe::getId,
-								Collectors.reducing(null, Function.identity(), (recipe, recipe2) -> recipe2))))
-				.forEach((recipeType, map) -> {
-					added.add(map.size());
-					newRecipeMap.computeIfAbsent(recipeType, type -> new HashMap<>()).putAll(map);
+				.forEach(recipe -> {
+					added.increment();
+					var id = recipe.getId();
+					var ser = KubeJSRegistries.recipeSerializers().getId(recipe.getSerializer());
+					var oldEntry = recipesByName.put(id, recipe);
+					if (oldEntry != null) {
+						var oldSer = KubeJSRegistries.recipeSerializers().getId(oldEntry.getSerializer());
+						if (ServerSettings.instance.logOverrides) {
+							ConsoleJS.SERVER.info("Overriding existing recipe with ID " + recipe.getId() + "[" + oldSer + " => " + ser + "] during phase ADD!");
+						}
+						removed.increment();
+					}
 				});
 
 		if (ServerSettings.dataExport != null) {
@@ -362,16 +348,17 @@ public class RecipeEventJS extends EventJS {
 		}
 
 		ConsoleJS.SERVER.info("Added recipes in " + timer.stop());
+
+		HashMap<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> newRecipeMap = Util.make(new HashMap<>(), map -> {
+			recipesByName.forEach((id, recipe) -> {
+				var type = recipe.getType();
+				var recipes = map.computeIfAbsent(type, t -> new HashMap<>());
+				recipes.put(id, recipe);
+			});
+		});
+
 		pingNewRecipes(newRecipeMap);
-		((RecipeManagerKJS) recipeManager).setByNameKJS(newRecipeMap.values().stream().flatMap(e -> e.entrySet().stream())
-				.collect(Collectors.toMap(
-						Map.Entry::getKey,
-						Map.Entry::getValue,
-						(a, b) -> {
-							ConsoleJS.SERVER.warn("Duplicate recipe id: " + a.getId());
-							return b;
-						}
-				)));
+		((RecipeManagerKJS) recipeManager).setByNameKJS(recipesByName);
 		((RecipeManagerKJS) recipeManager).setRecipesKJS(newRecipeMap);
 		ConsoleJS.SERVER.info("Added " + added.getValue() + " recipes, removed " + removed.getValue() + " recipes, modified " + modifiedRecipesCount.get() + " recipes, with " + failed.getValue() + " failed recipes and " + fallbacked.getValue() + " fall-backed recipes");
 		RecipeJS.itemErrors = false;

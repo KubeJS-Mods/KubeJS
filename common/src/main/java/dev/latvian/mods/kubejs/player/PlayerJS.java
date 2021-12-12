@@ -191,7 +191,7 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 	}
 
 	public void closeInventory() {
-		PlayerHooks.closeContainer(minecraftPlayer);
+		minecraftPlayer.closeContainer();
 	}
 
 	public AbstractContainerMenu getOpenInventory() {

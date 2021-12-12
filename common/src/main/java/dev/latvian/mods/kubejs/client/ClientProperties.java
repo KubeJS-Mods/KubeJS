@@ -11,6 +11,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.OptionalInt;
 import java.util.Properties;
 
 /**
@@ -203,12 +204,8 @@ public class ClientProperties {
 		return overrideColors ? fmlLogColor3f : color;
 	}
 
-	public float getBackgroundColor(float c, int index) {
-		return overrideColors ? backgroundColor3f[index] : c;
-	}
-
-	public int getBackgroundColor(int color) {
-		return overrideColors ? ((color & 0xFF000000) | backgroundColor) : color;
+	public OptionalInt getBackgroundColor() {
+		return overrideColors ? OptionalInt.of(0xFF000000 | backgroundColor) : OptionalInt.empty();
 	}
 
 	public int getBarColor(int color) {
