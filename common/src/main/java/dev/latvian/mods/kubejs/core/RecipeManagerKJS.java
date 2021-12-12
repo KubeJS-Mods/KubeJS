@@ -20,6 +20,10 @@ public interface RecipeManagerKJS {
 
 	void setRecipesKJS(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map);
 
+	Map<ResourceLocation, Recipe<?>> getByNameKJS();
+
+	void setByNameKJS(Map<ResourceLocation, Recipe<?>> map);
+
 	default void customRecipesKJS(Map<ResourceLocation, JsonObject> jsonMap) {
 		if (RecipeEventJS.instance != null) {
 			RecipeEventJS.instance.post((RecipeManager) this, jsonMap);
