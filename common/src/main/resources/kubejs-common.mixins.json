@@ -33,7 +33,7 @@
 		"KeyboardHandlerMixin",
 		"MinecraftMixin",
 		"OptionsMixin",
-		"ResourceLoadProgressGuiMixin",
+      "LoadingOverlayMixin",
 		"ScreenMixin",
 		"WindowMixin"
 	],
