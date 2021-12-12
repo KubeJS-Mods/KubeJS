@@ -34,4 +34,12 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 	@Override
 	@Accessor("recipes")
 	public abstract void setRecipesKJS(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map);
+
+	@Override
+	@Accessor("byName")
+	public abstract Map<ResourceLocation, Recipe<?>> getByNameKJS();
+
+	@Override
+	@Accessor("byName")
+	public abstract void setByNameKJS(Map<ResourceLocation, Recipe<?>> map);
 }

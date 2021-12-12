@@ -363,6 +363,15 @@ public class RecipeEventJS extends EventJS {
 
 		ConsoleJS.SERVER.info("Added recipes in " + timer.stop());
 		pingNewRecipes(newRecipeMap);
+		((RecipeManagerKJS) recipeManager).setByNameKJS(newRecipeMap.values().stream().flatMap(e -> e.entrySet().stream())
+				.collect(Collectors.toMap(
+						Map.Entry::getKey,
+						Map.Entry::getValue,
+						(a, b) -> {
+							ConsoleJS.SERVER.warn("Duplicate recipe id: " + a.getId());
+							return b;
+						}
+				)));
 		((RecipeManagerKJS) recipeManager).setRecipesKJS(newRecipeMap);
 		ConsoleJS.SERVER.info("Added " + added.getValue() + " recipes, removed " + removed.getValue() + " recipes, modified " + modifiedRecipesCount.get() + " recipes, with " + failed.getValue() + " failed recipes and " + fallbacked.getValue() + " fall-backed recipes");
 		RecipeJS.itemErrors = false;
