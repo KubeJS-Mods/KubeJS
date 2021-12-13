@@ -28,6 +28,15 @@ import java.util.function.Function;
 public class KubeJSREIPlugin implements REIClientPlugin {
 	private final Set<CategoryIdentifier<?>> categoriesRemoved = new HashSet<>();
 
+	/**
+	 * We want to run as late as possible, so we can remove other
+	 * mods' entries after they have already been added.
+	 */
+	@Override
+	public double getPriority() {
+		return 1e7;
+	}
+
 	@Override
 	public void registerEntries(EntryRegistry registry) {
 		// TODO: i would like this system to be more extendable,
@@ -51,9 +60,8 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 
 	@Override
 	public void registerCategories(CategoryRegistry registry) {
-		registry.registerVisibilityPredicate(category -> {
-			return categoriesRemoved.contains(category.getCategoryIdentifier()) ? EventResult.interruptFalse() : EventResult.pass();
-		});
+		registry.registerVisibilityPredicate(category -> categoriesRemoved.contains(category.getCategoryIdentifier())
+				? EventResult.interruptFalse() : EventResult.pass());
 	}
 
 	@Override
