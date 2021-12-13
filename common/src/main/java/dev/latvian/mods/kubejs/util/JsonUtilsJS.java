@@ -16,14 +16,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -246,5 +239,47 @@ public class JsonUtilsJS {
 		JsonArray a = new JsonArray();
 		a.add(element);
 		return a;
+	}
+
+    public static void writeJsonHash(DataOutputStream stream, @Nullable JsonElement element) throws IOException {
+        if (element == null || element.isJsonNull()) {
+            stream.writeByte('-');
+        } else if (element instanceof JsonArray arr) {
+            stream.writeByte('[');
+            for (var e : arr) {
+                writeJsonHash(stream, e);
+            }
+        } else if (element instanceof JsonObject obj) {
+            stream.writeByte('{');
+            for (var e : obj.entrySet()) {
+                stream.writeBytes(e.getKey());
+                writeJsonHash(stream, e.getValue());
+            }
+        } else if (element instanceof JsonPrimitive primitive) {
+            stream.writeByte('=');
+            if (primitive.isBoolean()) {
+                stream.writeBoolean(element.getAsBoolean());
+            } else if (primitive.isNumber()) {
+                stream.writeDouble(element.getAsDouble());
+            } else {
+                stream.writeBytes(element.getAsString());
+            }
+        } else {
+            stream.writeByte('?');
+            stream.writeInt(element.hashCode());
+        }
+    }
+
+	public static byte[] getJsonHashBytes(JsonElement json) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
+			writeJsonHash(new DataOutputStream(baos), json);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			int h = json.hashCode();
+			return new byte[]{(byte) (h >> 24), (byte) (h >> 16), (byte) (h >> 8), (byte) (h >> 0)};
+		}
+
+		return baos.toByteArray();
 	}
 }

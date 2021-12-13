@@ -29,9 +29,6 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.lang.invoke.MethodHandle;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -358,48 +355,6 @@ public abstract class RecipeJS {
 		return inputItems + " -> " + outputItems;
 	}
 
-	private static void writeJsonHash(DataOutputStream stream, @Nullable JsonElement element) throws IOException {
-		if (element == null || element.isJsonNull()) {
-			stream.writeByte('-');
-		} else if (element instanceof JsonArray arr) {
-			stream.writeByte('[');
-			for (var e : arr) {
-				writeJsonHash(stream, e);
-			}
-		} else if (element instanceof JsonObject obj) {
-			stream.writeByte('{');
-			for (var e : obj.entrySet()) {
-				stream.writeBytes(e.getKey());
-				writeJsonHash(stream, e.getValue());
-			}
-		} else if (element instanceof JsonPrimitive primitive) {
-			stream.writeByte('=');
-			if (primitive.isBoolean()) {
-				stream.writeBoolean(element.getAsBoolean());
-			} else if (primitive.isNumber()) {
-				stream.writeDouble(element.getAsDouble());
-			} else {
-				stream.writeBytes(element.getAsString());
-			}
-		} else {
-			stream.writeByte('?');
-			stream.writeInt(element.hashCode());
-		}
-	}
-
-	public byte[] getJsonHashBytes() {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try {
-			writeJsonHash(new DataOutputStream(baos), json);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-			int h = json.hashCode();
-			return new byte[]{(byte) (h >> 24), (byte) (h >> 16), (byte) (h >> 8), (byte) (h >> 0)};
-		}
-
-		return baos.toByteArray();
-	}
-
 	public String getUniqueId() {
 		if (messageDigest == null) {
 			try {
@@ -410,10 +365,10 @@ public abstract class RecipeJS {
 		}
 
 		if (messageDigest == null) {
-			return new BigInteger(HexFormat.of().formatHex(getJsonHashBytes()), 16).toString(36);
+			return new BigInteger(HexFormat.of().formatHex(JsonUtilsJS.getJsonHashBytes(json)), 16).toString(36);
 		} else {
 			messageDigest.reset();
-			return new BigInteger(HexFormat.of().formatHex(messageDigest.digest(getJsonHashBytes())), 16).toString(36);
+			return new BigInteger(HexFormat.of().formatHex(messageDigest.digest(JsonUtilsJS.getJsonHashBytes(json))), 16).toString(36);
 		}
 	}
 
