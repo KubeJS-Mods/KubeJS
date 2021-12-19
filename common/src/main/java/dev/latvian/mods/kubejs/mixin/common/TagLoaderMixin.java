@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.mixin.common;
 
 import dev.latvian.mods.kubejs.core.TagLoaderKJS;
+import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.Tag;
@@ -22,7 +24,11 @@ import java.util.function.Function;
 public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 	@Inject(method = "load", at = @At("RETURN"))
 	private void customTags(ResourceManager resourceManager, CallbackInfoReturnable<Map<ResourceLocation, Tag.Builder>> cir) {
-		customTagsKJS(cir.getReturnValue());
+		// band-aid fix for #237, as some mods use tags on the client side;
+		// technically not an intended use case, but easy enough to fix
+		if(ServerScriptManager.instance != null) {
+			customTagsKJS(cir.getReturnValue());
+		}
 	}
 
 	@Override
