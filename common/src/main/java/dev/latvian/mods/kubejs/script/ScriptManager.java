@@ -61,23 +61,23 @@ public class ScriptManager {
 		if (Files.notExists(directory)) {
 			UtilsJS.tryIO(() -> Files.createDirectories(directory));
 
-			try (InputStream in = KubeJS.class.getResourceAsStream(exampleScript);
-				 OutputStream out = Files.newOutputStream(directory.resolve("script.js"))) {
+			try (var in = KubeJS.class.getResourceAsStream(exampleScript);
+				 var out = Files.newOutputStream(directory.resolve("script.js"))) {
 				out.write(IOUtils.toByteArray(in));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
 
-		ScriptPack pack = new ScriptPack(this, new ScriptPackInfo(directory.getFileName().toString(), ""));
+		var pack = new ScriptPack(this, new ScriptPackInfo(directory.getFileName().toString(), ""));
 		KubeJS.loadScripts(pack, directory, "");
 
 		for (var fileInfo : pack.info.scripts) {
-			ScriptSource.FromPath scriptSource = info -> directory.resolve(info.file);
+			var scriptSource = (ScriptSource.FromPath) info -> directory.resolve(info.file);
 
-			Throwable error = fileInfo.preload(scriptSource);
+			var error = fileInfo.preload(scriptSource);
 
-			String packMode = fileInfo.getPackMode();
+			var packMode = fileInfo.getPackMode();
 			if (fileInfo.isIgnored() || (!packMode.equals("default") && !packMode.equals(CommonProperties.get().packMode))) {
 				continue;
 			}
@@ -98,36 +98,36 @@ public class ScriptManager {
 	}
 
 	public void load() {
-		Context context = Context.enterWithNewFactory();
+		var context = Context.enterWithNewFactory();
 		context.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || isClassAllowed(fullClassName));
-		TypeWrappers typeWrappers = context.getTypeWrappers();
+		var typeWrappers = context.getTypeWrappers();
 		// typeWrappers.removeAll();
 		KubeJSPlugins.forEachPlugin(plugin -> plugin.addTypeWrappers(type, typeWrappers));
 
-		for (RegistryTypeWrapperFactory<?> registryTypeWrapperFactory : RegistryTypeWrapperFactory.getAll()) {
+		for (var registryTypeWrapperFactory : RegistryTypeWrapperFactory.getAll()) {
 			try {
 				typeWrappers.register(registryTypeWrapperFactory.type, UtilsJS.cast(registryTypeWrapperFactory));
 			} catch (IllegalArgumentException ignored) {
 			}
 		}
 
-		long startAll = System.currentTimeMillis();
+		var startAll = System.currentTimeMillis();
 
-		int i = 0;
-		int t = 0;
+		var i = 0;
+		var t = 0;
 
 		for (var pack : packs.values()) {
 			try {
 				pack.context = context;
 				pack.scope = context.initStandardObjects();
 
-				BindingsEvent event = new BindingsEvent(this, pack.context, pack.scope);
+				var event = new BindingsEvent(this, pack.context, pack.scope);
 				KubeJSPlugins.forEachPlugin(plugin -> plugin.addBindings(event));
 				BindingsEvent.EVENT.invoker().accept(event);
 
 				for (var file : pack.scripts) {
 					t++;
-					long start = System.currentTimeMillis();
+					var start = System.currentTimeMillis();
 
 					if (file.load()) {
 						i++;
@@ -159,7 +159,7 @@ public class ScriptManager {
 	}
 
 	public NativeJavaClass loadJavaClass(Scriptable scope, Object[] args) {
-		String name = args[0].toString();
+		var name = args[0].toString();
 
 		if (name.isEmpty()) {
 			throw Context.reportRuntimeError("Class name can't be empty!");
@@ -169,7 +169,7 @@ public class ScriptManager {
 			javaClassCache = new HashMap<>();
 		}
 
-		Optional<NativeJavaClass> ch = javaClassCache.get(name);
+		var ch = javaClassCache.get(name);
 
 		if (ch == null) {
 			javaClassCache.put(name, Optional.empty());
@@ -179,8 +179,8 @@ public class ScriptManager {
 					throw Context.reportRuntimeError("Class '" + name + "' is not allowed!");
 				}
 
-				Class<?> c = Class.forName(name);
-				NativeJavaClass njc = new NativeJavaClass(scope, c);
+				var c = Class.forName(name);
+				var njc = new NativeJavaClass(scope, c);
 				javaClassCache.put(name, Optional.of(njc));
 				return njc;
 			} catch (Throwable ex) {

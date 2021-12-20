@@ -23,7 +23,7 @@ public class ShapelessRecipeJS extends RecipeJS {
 	@Override
 	public void serialize() {
 		if (serializeInputs) {
-			JsonArray ingredientsJson = new JsonArray();
+			var ingredientsJson = new JsonArray();
 
 			for (var in : inputItems) {
 				for (var in1 : in.unwrapStackIngredient()) {

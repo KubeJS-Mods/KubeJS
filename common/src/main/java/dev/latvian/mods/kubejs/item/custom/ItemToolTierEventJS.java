@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  */
 public class ItemToolTierEventJS extends StartupEventJS {
 	public void add(String id, Consumer<ModifiedToolTier> tier) {
-		ModifiedToolTier t = new ModifiedToolTier(Tiers.IRON);
+		var t = new ModifiedToolTier(Tiers.IRON);
 		tier.accept(t);
 		ItemBuilder.TOOL_TIERS.put(id, t);
 	}

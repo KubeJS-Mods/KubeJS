@@ -20,7 +20,7 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	public final List<IngredientJS> ingredients = new ArrayList<>();
 
 	public MatchAnyIngredientJS add(@Nullable Object ingredient) {
-		IngredientJS i = IngredientJS.of(ingredient);
+		var i = IngredientJS.of(ingredient);
 
 		if (i != ItemStackJS.EMPTY) {
 			ingredients.add(i);
@@ -122,7 +122,7 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 
 	@Override
 	public IngredientJS copy() {
-		MatchAnyIngredientJS i = new MatchAnyIngredientJS();
+		var i = new MatchAnyIngredientJS();
 
 		for (var in : ingredients) {
 			i.ingredients.add(in.copy());

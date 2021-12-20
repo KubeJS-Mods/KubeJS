@@ -28,15 +28,15 @@ public class RegistryTypeWrapperFactory<T> implements TypeWrapperFactory<T> {
 			try {
 				for (var field : Registry.class.getDeclaredFields()) {
 					if (field.getType() == ResourceKey.class && Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers())) {
-						String id = "unknown";
+						var id = "unknown";
 
 						try {
 							field.setAccessible(true);
-							ResourceKey key = (ResourceKey) field.get(null);
+							var key = (ResourceKey) field.get(null);
 							id = key.location().getPath();
-							Type type = field.getGenericType(); // ResourceKey<Registry<T>>
-							Type type1 = ((ParameterizedType) type).getActualTypeArguments()[0]; // Registry<T>
-							Type type2 = ((ParameterizedType) type1).getActualTypeArguments()[0]; // T
+							var type = field.getGenericType(); // ResourceKey<Registry<T>>
+							var type1 = ((ParameterizedType) type).getActualTypeArguments()[0]; // Registry<T>
+							var type2 = ((ParameterizedType) type1).getActualTypeArguments()[0]; // T
 							Class rawType = UtilsJS.getRawType(type2);
 
 							if (rawType == Item.class || rawType == ResourceLocation.class || rawType == ResourceKey.class || rawType == Codec.class) {

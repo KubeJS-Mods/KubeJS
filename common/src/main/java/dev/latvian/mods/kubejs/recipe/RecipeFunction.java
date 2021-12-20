@@ -45,7 +45,7 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 				throw new RecipeExceptionJS("Unknown recipe type!");
 			}
 
-			ListJS args = ListJS.of(args0);
+			var args = ListJS.of(args0);
 
 			if (args == null || args.isEmpty()) {
 				throw new RecipeExceptionJS("Recipe requires at least one argument!");
@@ -54,10 +54,10 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 			}
 
 			if (args.size() == 1) {
-				MapJS map = MapJS.of(args.get(0));
+				var map = MapJS.of(args.get(0));
 
 				if (map != null) {
-					RecipeJS recipe = type.factory.get();
+					var recipe = type.factory.get();
 					recipe.type = type;
 					recipe.json = ((MapJS) normalize(map)).toJson();
 
@@ -71,7 +71,7 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 				}
 			}
 
-			RecipeJS recipe = type.factory.get();
+			var recipe = type.factory.get();
 			recipe.type = type;
 			recipe.json = new JsonObject();
 			recipe.serializeInputs = true;
@@ -99,7 +99,7 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 			}
 			return o;
 		} else if (o instanceof ListJS) {
-			ListJS list = new ListJS();
+			var list = new ListJS();
 
 			for (var o1 : (ListJS) o) {
 				list.add(normalize(o1));
@@ -107,9 +107,9 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 
 			return list;
 		} else if (o instanceof MapJS) {
-			MapJS map = new MapJS();
+			var map = new MapJS();
 
-			for (Map.Entry<String, Object> entry : ((MapJS) o).entrySet()) {
+			for (var entry : ((MapJS) o).entrySet()) {
 				map.put(entry.getKey(), normalize(entry.getValue()));
 			}
 

@@ -22,14 +22,14 @@ public class ModelGenerator {
 		}
 
 		public JsonObject toJson() {
-			JsonObject json = new JsonObject();
-			JsonArray f = new JsonArray();
+			var json = new JsonObject();
+			var f = new JsonArray();
 			f.add(box.minX * 16D);
 			f.add(box.minY * 16D);
 			f.add(box.minZ * 16D);
 			json.add("from", f);
 
-			JsonArray t = new JsonArray();
+			var t = new JsonArray();
 			t.add(box.maxX * 16D);
 			t.add(box.maxY * 16D);
 			t.add(box.maxZ * 16D);
@@ -40,7 +40,7 @@ public class ModelGenerator {
 		}
 
 		public void face(Direction direction, Consumer<Face> consumer) {
-			Face f = new Face();
+			var f = new Face();
 			f.direction = direction;
 			consumer.accept(f);
 			faces.add(direction.getSerializedName(), f.toJson());
@@ -55,7 +55,7 @@ public class ModelGenerator {
 		private int tintindex = -1;
 
 		public JsonObject toJson() {
-			JsonObject json = new JsonObject();
+			var json = new JsonObject();
 			json.addProperty("texture", texture);
 
 			if (cullface != null) {
@@ -63,7 +63,7 @@ public class ModelGenerator {
 			}
 
 			if (uv != null) {
-				JsonArray a = new JsonArray();
+				var a = new JsonArray();
 				a.add(uv[0]);
 				a.add(uv[1]);
 				a.add(uv[2]);
@@ -108,7 +108,7 @@ public class ModelGenerator {
 	private final List<Element> elements = new ArrayList<>();
 
 	public JsonObject toJson() {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 
 		if (!parent.isEmpty()) {
 			json.addProperty("parent", parent);
@@ -119,7 +119,7 @@ public class ModelGenerator {
 		}
 
 		if (!elements.isEmpty()) {
-			JsonArray a = new JsonArray();
+			var a = new JsonArray();
 
 			for (var e : elements) {
 				a.add(e.toJson());
@@ -140,13 +140,13 @@ public class ModelGenerator {
 	}
 
 	public void textures(JsonObject json) {
-		for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+		for (var entry : json.entrySet()) {
 			textures.add(entry.getKey(), entry.getValue());
 		}
 	}
 
 	public void element(Consumer<Element> consumer) {
-		Element e = new Element();
+		var e = new Element();
 		consumer.accept(e);
 		elements.add(e);
 	}

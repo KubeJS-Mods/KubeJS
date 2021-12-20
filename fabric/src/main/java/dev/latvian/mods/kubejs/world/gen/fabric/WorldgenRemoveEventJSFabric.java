@@ -36,8 +36,8 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 	private Registry<ConfiguredFeature<?, ?>> getFeatureRegistry() {
 		if (featureRegistry == null) {
 			try {
-				Class<?> c = Class.forName("net.fabricmc.fabric.impl.biome.modification.BiomeModificationContextImpl$GenerationSettingsContextImpl");
-				Field field = c.getDeclaredField("features");
+				var c = Class.forName("net.fabricmc.fabric.impl.biome.modification.BiomeModificationContextImpl$GenerationSettingsContextImpl");
+				var field = c.getDeclaredField("features");
 				field.setAccessible(true);
 				featureRegistry = UtilsJS.cast(field.get(modificationContext.getGenerationSettings()));
 			} catch (Exception ex) {
@@ -159,7 +159,7 @@ public class WorldgenRemoveEventJSFabric extends WorldgenRemoveEventJS {
 
 		ConsoleJS.STARTUP.info("Mod spawns with type '" + category.getName() + "' in biome '" + selectionContext.getBiomeKey().location() + "':");
 
-		for (MobSpawnSettings.SpawnerData data : selectionContext.getBiome().getMobSettings().getMobs(category).unwrap()) {
+		for (var data : selectionContext.getBiome().getMobSettings().getMobs(category).unwrap()) {
 			ConsoleJS.STARTUP.info("- " + data.toString());
 		}
 	}

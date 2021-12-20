@@ -10,7 +10,7 @@ import java.util.function.Consumer;
  */
 public class BlockRegistryEventJS extends StartupEventJS {
 	public void create(String name, Consumer<BlockBuilder> callback) {
-		BlockBuilder builder = new BlockBuilder(name);
+		var builder = new BlockBuilder(name);
 		callback.accept(builder);
 		KubeJSObjects.BLOCKS.put(builder.id, builder);
 		KubeJSObjects.ALL.add(builder);

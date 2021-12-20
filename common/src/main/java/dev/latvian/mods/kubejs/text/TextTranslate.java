@@ -21,7 +21,7 @@ public class TextTranslate extends Text {
 		key = k;
 		objects = o;
 
-		for (int i = 0; i < objects.length; i++) {
+		for (var i = 0; i < objects.length; i++) {
 			if (objects[i] instanceof Component || !(objects[i] instanceof Text) && JsonUtilsJS.toPrimitive(JsonUtilsJS.of(objects[i])) == null) {
 				objects[i] = of(objects[i]);
 			}
@@ -43,9 +43,9 @@ public class TextTranslate extends Text {
 
 	@Override
 	public TranslatableComponent rawComponent() {
-		Object[] o = new Object[objects.length];
+		var o = new Object[objects.length];
 
-		for (int i = 0; i < objects.length; i++) {
+		for (var i = 0; i < objects.length; i++) {
 			if (objects[i] instanceof Text text) {
 				o[i] = text.component();
 			} else if (objects[i] instanceof Component component) {
@@ -60,9 +60,9 @@ public class TextTranslate extends Text {
 
 	@Override
 	public Text rawCopy() {
-		Object[] o = new Object[objects.length];
+		var o = new Object[objects.length];
 
-		for (int i = 0; i < objects.length; i++) {
+		for (var i = 0; i < objects.length; i++) {
 			if (objects[i] instanceof Text text) {
 				o[i] = text.copy();
 			} else if (objects[i] instanceof Component component) {
@@ -77,11 +77,11 @@ public class TextTranslate extends Text {
 
 	@Override
 	public JsonObject toJson() {
-		JsonObject o = getStyleAndSiblingJson();
+		var o = getStyleAndSiblingJson();
 		o.addProperty("translate", key);
 
 		if (objects.length > 0) {
-			JsonArray array = new JsonArray();
+			var array = new JsonArray();
 
 			for (var ob : objects) {
 				array.add(JsonUtilsJS.of(ob));
@@ -100,10 +100,10 @@ public class TextTranslate extends Text {
 		} else if (!(obj instanceof TextTranslate translate) || !key.equals(translate.key)) {
 			return false;
 		} else {
-			Object[] o = translate.objects;
+			var o = translate.objects;
 
 			if (objects.length == o.length) {
-				for (int i = 0; i < objects.length; i++) {
+				for (var i = 0; i < objects.length; i++) {
 					if (!Objects.equals(objects[i], o[i])) {
 						return false;
 					}

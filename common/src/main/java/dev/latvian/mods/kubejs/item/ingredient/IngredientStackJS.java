@@ -115,7 +115,7 @@ public class IngredientStackJS implements IngredientJS {
 	@Override
 	public JsonElement toJson() {
 		if (RecipeJS.currentRecipe != null) {
-			JsonElement e = RecipeJS.currentRecipe.serializeIngredientStack(this);
+			var e = RecipeJS.currentRecipe.serializeIngredientStack(this);
 
 			if (e != null) {
 				return e;
@@ -126,7 +126,7 @@ public class IngredientStackJS implements IngredientJS {
 			return ingredient.toJson();
 		}
 
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.add(ingredientKey, ingredient.toJson());
 		json.addProperty(countKey, countOverride);
 		return json;
@@ -145,7 +145,7 @@ public class IngredientStackJS implements IngredientJS {
 
 		List<IngredientJS> list = new ArrayList<>();
 
-		for (int i = 0; i < countOverride; i++) {
+		for (var i = 0; i < countOverride; i++) {
 			list.add(ingredient.withCount(1));
 		}
 

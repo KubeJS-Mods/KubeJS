@@ -182,7 +182,7 @@ public class BlockBuilder extends BuilderBase {
 	}
 
 	public BlockBuilder textureAll(String tex) {
-		for (Direction direction : Direction.values()) {
+		for (var direction : Direction.values()) {
 			textureSide(direction, tex);
 		}
 
@@ -239,9 +239,9 @@ public class BlockBuilder extends BuilderBase {
 			return Shapes.block();
 		}
 
-		VoxelShape shape = Shapes.create(customShape.get(0));
+		var shape = Shapes.create(customShape.get(0));
 
-		for (int i = 1; i < customShape.size(); i++) {
+		for (var i = 1; i < customShape.size(); i++) {
 			shape = Shapes.or(shape, Shapes.create(customShape.get(i)));
 		}
 
@@ -338,7 +338,7 @@ public class BlockBuilder extends BuilderBase {
 	}
 
 	public Block.Properties createProperties() {
-		BlockProperties properties = BlockProperties.of(material.getMinecraftMaterial());
+		var properties = BlockProperties.of(material.getMinecraftMaterial());
 		properties.sound(material.getSound());
 
 		if (resistance >= 0F) {

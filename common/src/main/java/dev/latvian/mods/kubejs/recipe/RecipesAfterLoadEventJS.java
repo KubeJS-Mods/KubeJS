@@ -38,8 +38,8 @@ public class RecipesAfterLoadEventJS extends EventJS {
 		if (originalRecipes == null) {
 			originalRecipes = new ArrayList<>();
 
-			for (Map<ResourceLocation, Recipe<?>> map : recipeMap.values()) {
-				for (Map.Entry<ResourceLocation, Recipe<?>> entry : map.entrySet()) {
+			for (var map : recipeMap.values()) {
+				for (var entry : map.entrySet()) {
 					RecipeJS r = new CustomRecipeJS();
 					r.id = entry.getKey();
 					r.originalRecipe = entry.getValue();
@@ -79,7 +79,7 @@ public class RecipesAfterLoadEventJS extends EventJS {
 	}
 
 	public int remove(RecipeFilter filter) {
-		MutableInt count = new MutableInt();
+		var count = new MutableInt();
 		forEachRecipe(filter, r ->
 		{
 			if (removedRecipes.add(r)) {
@@ -97,8 +97,8 @@ public class RecipesAfterLoadEventJS extends EventJS {
 
 	@HideFromJS
 	public static void post(RecipeManagerKJS recipeManager) {
-		RecipesAfterLoadEventJS e = new RecipesAfterLoadEventJS(recipeManager.getRecipesKJS());
-		boolean b = ServerSettings.instance.useOriginalRecipeForFilters;
+		var e = new RecipesAfterLoadEventJS(recipeManager.getRecipesKJS());
+		var b = ServerSettings.instance.useOriginalRecipeForFilters;
 		ServerSettings.instance.useOriginalRecipeForFilters = true;
 		e.post(ScriptType.SERVER, KubeJSEvents.RECIPES_AFTER_LOAD);
 		ServerSettings.instance.useOriginalRecipeForFilters = b;

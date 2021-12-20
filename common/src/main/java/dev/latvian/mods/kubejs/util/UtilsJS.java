@@ -115,13 +115,13 @@ public class UtilsJS {
 			return null;
 		}
 
-		Matcher matcher = REGEX_PATTERN.matcher(string);
+		var matcher = REGEX_PATTERN.matcher(string);
 
 		if (matcher.matches()) {
-			int flags = 0;
-			String f = matcher.group(2);
+			var flags = 0;
+			var f = matcher.group(2);
 
-			for (int i = 0; i < f.length(); i++) {
+			for (var i = 0; i < f.length(); i++) {
 				switch (f.charAt(i)) {
 					case 'd' -> flags |= Pattern.UNIX_LINES;
 					case 'i' -> flags |= Pattern.CASE_INSENSITIVE;
@@ -140,11 +140,11 @@ public class UtilsJS {
 	}
 
 	public static String toRegexString(Pattern pattern) {
-		StringBuilder sb = new StringBuilder("/");
+		var sb = new StringBuilder("/");
 		sb.append(pattern.pattern());
 		sb.append('/');
 
-		int flags = pattern.flags();
+		var flags = pattern.flags();
 
 		if ((flags & Pattern.UNIX_LINES) != 0) {
 			sb.append('d');
@@ -236,7 +236,7 @@ public class UtilsJS {
 				t1.obfuscated(c.getStyle().isObfuscated());
 				t1.insertion(c.getStyle().getInsertion());
 
-				ClickEvent ce = c.getStyle().getClickEvent();
+				var ce = c.getStyle().getClickEvent();
 
 				if (ce != null) {
 					if (ce.getAction() == ClickEvent.Action.RUN_COMMAND) {
@@ -250,7 +250,7 @@ public class UtilsJS {
 					}
 				}
 
-				HoverEvent he = c.getStyle().getHoverEvent();
+				var he = c.getStyle().getHoverEvent();
 
 				if (he != null && he.getAction() == HoverEvent.Action.SHOW_TEXT) {
 					t1.hover(Text.of(he.getValue(HoverEvent.Action.SHOW_TEXT)));
@@ -267,7 +267,7 @@ public class UtilsJS {
 				return null;
 			}
 
-			MapJS map = new MapJS(((Map) o).size());
+			var map = new MapJS(((Map) o).size());
 			map.putAll((Map) o);
 			return map;
 		}
@@ -277,7 +277,7 @@ public class UtilsJS {
 				return null;
 			}
 
-			ListJS list = new ListJS();
+			var list = new ListJS();
 
 			for (var o1 : (Iterable) o) {
 				list.add(o1);
@@ -303,9 +303,9 @@ public class UtilsJS {
 				return null;
 			}
 
-			MapJS map = new MapJS(json.size());
+			var map = new MapJS(json.size());
 
-			for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+			for (var entry : json.entrySet()) {
 				map.put(entry.getKey(), entry.getValue());
 			}
 
@@ -321,7 +321,7 @@ public class UtilsJS {
 				return null;
 			}
 
-			MapJS map = new MapJS(tag.size());
+			var map = new MapJS(tag.size());
 
 			for (var s : tag.getAllKeys()) {
 				map.put(s, tag.get(s));
@@ -345,7 +345,7 @@ public class UtilsJS {
 		}
 
 		try {
-			String s = object.toString();
+			var s = object.toString();
 
 			if (s.isEmpty()) {
 				return def;
@@ -365,7 +365,7 @@ public class UtilsJS {
 		}
 
 		try {
-			String s = object.toString();
+			var s = object.toString();
 
 			if (s.isEmpty()) {
 				return def;
@@ -385,7 +385,7 @@ public class UtilsJS {
 		}
 
 		try {
-			String s = object.toString();
+			var s = object.toString();
 
 			if (s.isEmpty()) {
 				return def;
@@ -432,7 +432,7 @@ public class UtilsJS {
 			return id;
 		}
 
-		String s = o.toString();
+		var s = o.toString();
 
 		if (s == null || s.isEmpty()) {
 			return AIR_LOCATION;
@@ -446,7 +446,7 @@ public class UtilsJS {
 			return "minecraft";
 		}
 
-		int i = s.indexOf(':');
+		var i = s.indexOf(':');
 		return i == -1 ? "minecraft" : s.substring(0, i);
 	}
 
@@ -455,7 +455,7 @@ public class UtilsJS {
 			return "air";
 		}
 
-		int i = s.indexOf(':');
+		var i = s.indexOf(':');
 		return i == -1 ? s : s.substring(i + 1);
 	}
 
@@ -464,16 +464,16 @@ public class UtilsJS {
 			return Blocks.AIR.defaultBlockState();
 		}
 
-		int i = string.indexOf('[');
-		boolean hasProperties = i >= 0 && string.indexOf(']') == string.length() - 1;
-		BlockState state = KubeJSRegistries.blocks().get(new ResourceLocation(hasProperties ? string.substring(0, i) : string)).defaultBlockState();
+		var i = string.indexOf('[');
+		var hasProperties = i >= 0 && string.indexOf(']') == string.length() - 1;
+		var state = KubeJSRegistries.blocks().get(new ResourceLocation(hasProperties ? string.substring(0, i) : string)).defaultBlockState();
 
 		if (hasProperties) {
 			for (var s : string.substring(i + 1, string.length() - 1).split(",")) {
-				String[] s1 = s.split("=", 2);
+				var s1 = s.split("=", 2);
 
 				if (s1.length == 2 && !s1[0].isEmpty() && !s1[1].isEmpty()) {
-					Property<?> p = state.getBlock().getStateDefinition().getProperty(s1[0]);
+					var p = state.getBlock().getStateDefinition().getProperty(s1[0]);
 
 					if (p != null) {
 						Optional<?> o = p.getValue(s1[1]);
@@ -490,16 +490,16 @@ public class UtilsJS {
 	}
 
 	public static ListJS rollChestLoot(ResourceLocation id, @Nullable EntityJS entity) {
-		ListJS list = new ListJS();
+		var list = new ListJS();
 		if (ServerJS.instance != null) {
-			MinecraftServer server = ServerJS.instance.getMinecraftServer();
-			LootTables tables = ServerJS.instance.getMinecraftServer().getLootTables();
-			LootTable table = tables.get(id);
+			var server = ServerJS.instance.getMinecraftServer();
+			var tables = ServerJS.instance.getMinecraftServer().getLootTables();
+			var table = tables.get(id);
 
 			LootContext.Builder builder;
 
 			if (entity != null) {
-				Entity mcEntity = entity.minecraftEntity;
+				var mcEntity = entity.minecraftEntity;
 				builder = new LootContext.Builder((ServerLevel) mcEntity.level)
 						.withOptionalParameter(LootContextParams.THIS_ENTITY, mcEntity)
 						.withParameter(LootContextParams.ORIGIN, mcEntity.position());
@@ -523,11 +523,11 @@ public class UtilsJS {
 		if (type instanceof Class<?> clz) {
 			return clz;
 		} else if (type instanceof ParameterizedType paramType) {
-			Type rawType = paramType.getRawType();
+			var rawType = paramType.getRawType();
 			checkArgument(rawType instanceof Class);
 			return (Class<?>) rawType;
 		} else if (type instanceof GenericArrayType arrType) {
-			Type componentType = arrType.getGenericComponentType();
+			var componentType = arrType.getGenericComponentType();
 			return Array.newInstance(getRawType(componentType), 0).getClass();
 		} else if (type instanceof TypeVariable) {
 			return Object.class;
@@ -535,15 +535,15 @@ public class UtilsJS {
 			return getRawType(wildcard.getUpperBounds()[0]);
 		}
 
-		String className = type == null ? "null" : type.getClass().getName();
+		var className = type == null ? "null" : type.getClass().getName();
 		throw new IllegalArgumentException("Expected a Class, ParameterizedType, or GenericArrayType, but <" + type + "> is of type " + className);
 	}
 
 	public static String convertSnakeCaseToCamelCase(String string) {
-		String[] s = SNAKE_CASE_SPLIT.split(string, 0);
+		var s = SNAKE_CASE_SPLIT.split(string, 0);
 
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
+		var sb = new StringBuilder();
+		var first = true;
 
 		for (var value : s) {
 			if (!value.isEmpty()) {
@@ -563,20 +563,20 @@ public class UtilsJS {
 	@SuppressWarnings("unchecked")
 	public static NumberProvider numberProviderOf(Object o) {
 		if (o instanceof Number n) {
-			float f = n.floatValue();
+			var f = n.floatValue();
 			return UniformGenerator.between(f, f);
 		} else if (o instanceof List l && !l.isEmpty()) {
 			var min = (Number) l.get(0);
 			var max = l.size() >= 2 ? (Number) l.get(1) : min;
 			return UniformGenerator.between(min.floatValue(), max.floatValue());
 		} else if (o instanceof Map) {
-			Map<String, Object> m = (Map<String, Object>) o;
+			var m = (Map<String, Object>) o;
 			if (m.containsKey("min") && m.containsKey("max")) {
 				return UniformGenerator.between(((Number) m.get("min")).intValue(), ((Number) m.get("max")).floatValue());
 			} else if (m.containsKey("n") && m.containsKey("p")) {
 				return BinomialDistributionGenerator.binomial(((Number) m.get("n")).intValue(), ((Number) m.get("p")).floatValue());
 			} else if (m.containsKey("value")) {
-				float f = ((Number) m.get("value")).floatValue();
+				var f = ((Number) m.get("value")).floatValue();
 				return UniformGenerator.between(f, f);
 			}
 		}

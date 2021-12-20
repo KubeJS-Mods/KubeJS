@@ -26,10 +26,10 @@ public class SyncStagesMessage extends BaseS2CMessage {
 	SyncStagesMessage(FriendlyByteBuf buf) {
 		player = buf.readUUID();
 
-		int s = buf.readVarInt();
+		var s = buf.readVarInt();
 		stages = new ArrayList<>(s);
 
-		for (int i = 0; i < s; i++) {
+		for (var i = 0; i < s; i++) {
 			stages.add(buf.readUtf(Short.MAX_VALUE));
 		}
 	}
@@ -51,8 +51,8 @@ public class SyncStagesMessage extends BaseS2CMessage {
 
 	@Override
 	public void handle(PacketContext context) {
-		Player p0 = context.getPlayer();
-		Player p = player.equals(p0.getUUID()) ? p0 : p0.level.getPlayerByUUID(player);
+		var p0 = context.getPlayer();
+		var p = player.equals(p0.getUUID()) ? p0 : p0.level.getPlayerByUUID(player);
 
 		if (p != null) {
 			Stages.get(p).replace(stages);

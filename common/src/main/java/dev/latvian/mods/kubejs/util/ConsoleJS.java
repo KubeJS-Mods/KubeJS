@@ -133,18 +133,18 @@ public class ConsoleJS {
 	}
 
 	private String string(Object object) {
-		Object o = UtilsJS.wrap(object, JSObjectType.ANY);
-		String s = o == null || o.getClass().isPrimitive() || o instanceof Boolean || o instanceof String || o instanceof Number || o instanceof WrappedJS ? String.valueOf(o) : (o + " [" + o.getClass().getName() + "]");
+		var o = UtilsJS.wrap(object, JSObjectType.ANY);
+		var s = o == null || o.getClass().isPrimitive() || o instanceof Boolean || o instanceof String || o instanceof Number || o instanceof WrappedJS ? String.valueOf(o) : (o + " [" + o.getClass().getName() + "]");
 
 		if (lineNumber <= 0 && group.isEmpty()) {
 			return s;
 		}
 
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 
 		if (lineNumber > 0) {
-			int[] lineP = {0};
-			String lineS = Context.getSourcePositionFromStack(lineP);
+			var lineP = new int[]{0};
+			var lineS = Context.getSourcePositionFromStack(lineP);
 
 			if (lineP[0] > 0) {
 				if (lineS != null) {
@@ -168,7 +168,7 @@ public class ConsoleJS {
 
 	private void log(Consumer<String> logFunction, String type, Object message) {
 		if (shouldPrint()) {
-			String s = string(message);
+			var s = string(message);
 			logFunction.accept(s);
 			writeToFile(type, s);
 		}
@@ -176,7 +176,7 @@ public class ConsoleJS {
 
 	private void logf(Consumer<String> logFunction, String type, Object message, Object... args) {
 		if (!shouldPrint()) {
-			String s = stringf(message, args);
+			var s = stringf(message, args);
 			logFunction.accept(s);
 			writeToFile(type, s);
 		}
@@ -187,8 +187,8 @@ public class ConsoleJS {
 			return;
 		}
 
-		Calendar calendar = Calendar.getInstance();
-		StringBuilder sb = new StringBuilder();
+		var calendar = Calendar.getInstance();
+		var sb = new StringBuilder();
 		sb.append('[');
 
 		if (calendar.get(Calendar.HOUR_OF_DAY) < 10) {
@@ -248,7 +248,7 @@ public class ConsoleJS {
 
 	public void warn(String message, Throwable throwable, @Nullable Pattern skip) {
 		if (shouldPrint()) {
-			String s = throwable.toString();
+			var s = throwable.toString();
 
 			if (CommonProperties.get().debugInfo || s.equals("java.lang.NullPointerException")) {
 				warn(message + ":");
@@ -279,7 +279,7 @@ public class ConsoleJS {
 
 	public void error(String message, Throwable throwable, @Nullable Pattern skip) {
 		if (shouldPrint()) {
-			String s = throwable.toString();
+			var s = throwable.toString();
 
 			if (CommonProperties.get().debugInfo || s.equals("java.lang.NullPointerException")) {
 				error(message + ":");
@@ -328,7 +328,7 @@ public class ConsoleJS {
 	}
 
 	public void trace() {
-		StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+		var elements = Thread.currentThread().getStackTrace();
 		info("=== Stack Trace ===");
 
 		for (var element : elements) {
@@ -337,7 +337,7 @@ public class ConsoleJS {
 	}
 
 	public int getScriptLine() {
-		int[] linep = {0};
+		var linep = new int[]{0};
 		Context.getSourcePositionFromStack(linep);
 		return linep[0];
 	}
@@ -346,22 +346,22 @@ public class ConsoleJS {
 		setLineNumber(true);
 
 		try {
-			Class<?> c = Class.forName(className);
-			Class<?> sc = c.getSuperclass();
+			var c = Class.forName(className);
+			var sc = c.getSuperclass();
 
 			info("=== " + c.getName() + " ===");
 			info("= Parent class =");
 			info("> " + (sc == null ? "-" : sc.getName()));
 
-			HashMap<String, VarFunc> vars = new HashMap<>();
-			HashMap<String, VarFunc> funcs = new HashMap<>();
+			var vars = new HashMap<String, VarFunc>();
+			var funcs = new HashMap<String, VarFunc>();
 
 			for (var field : c.getDeclaredFields()) {
 				if ((field.getModifiers() & Modifier.PUBLIC) == 0 || (field.getModifiers() & Modifier.TRANSIENT) == 0) {
 					continue;
 				}
 
-				VarFunc f = new VarFunc(field.getName(), field.getType());
+				var f = new VarFunc(field.getName(), field.getType());
 				f.flags |= 1;
 
 				if ((field.getModifiers() & Modifier.FINAL) == 0) {
@@ -376,15 +376,15 @@ public class ConsoleJS {
 					continue;
 				}
 
-				VarFunc f = new VarFunc(method.getName(), method.getReturnType());
+				var f = new VarFunc(method.getName(), method.getReturnType());
 
-				for (int i = 0; i < method.getParameterCount(); i++) {
+				for (var i = 0; i < method.getParameterCount(); i++) {
 					f.params.add(method.getParameters()[i].getType());
 				}
 
 				if (f.name.length() >= 4 && f.name.startsWith("get") && Character.isUpperCase(f.name.charAt(3)) && f.params.size() == 0) {
-					String n = Character.toLowerCase(f.name.charAt(3)) + f.name.substring(4);
-					VarFunc f0 = vars.get(n);
+					var n = Character.toLowerCase(f.name.charAt(3)) + f.name.substring(4);
+					var f0 = vars.get(n);
 
 					if (f0 == null) {
 						vars.put(n, new VarFunc(n, f.type));
@@ -428,8 +428,8 @@ public class ConsoleJS {
 			return c.getName();
 		}
 
-		String s = c.getName();
-		int i = s.lastIndexOf('.');
+		var s = c.getName();
+		var i = s.lastIndexOf('.');
 		s = s.substring(i + 1);
 		i = s.lastIndexOf('$');
 		s = s.substring(i + 1);
@@ -489,7 +489,7 @@ public class ConsoleJS {
 				return false;
 			}
 
-			VarFunc varFunc = (VarFunc) o;
+			var varFunc = (VarFunc) o;
 			return Objects.equals(name, varFunc.name) &&
 					Objects.equals(type, varFunc.type) &&
 					Objects.equals(flags, varFunc.flags) &&

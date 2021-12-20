@@ -36,7 +36,7 @@ public class LootBuilder implements FunctionContainer, ConditionContainer {
 	}
 
 	public JsonObject toJson() {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("type", type);
 
 		if (pools.size() > 0) {
@@ -55,7 +55,7 @@ public class LootBuilder implements FunctionContainer, ConditionContainer {
 	}
 
 	public void addPool(Consumer<LootBuilderPool> p) {
-		LootBuilderPool pool = new LootBuilderPool();
+		var pool = new LootBuilderPool();
 		p.accept(pool);
 		pools.add(pool.toJson());
 	}

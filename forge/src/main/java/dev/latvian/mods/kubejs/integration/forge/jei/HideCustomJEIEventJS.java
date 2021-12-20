@@ -39,7 +39,7 @@ public class HideCustomJEIEventJS extends EventJS {
 
 	@Override
 	protected void afterPosted(boolean result) {
-		for (HideJEIEventJS<?> eventJS : events.values()) {
+		for (var eventJS : events.values()) {
 			eventJS.afterPosted(result);
 		}
 	}

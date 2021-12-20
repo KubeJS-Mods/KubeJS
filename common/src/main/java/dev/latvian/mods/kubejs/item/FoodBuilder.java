@@ -90,7 +90,7 @@ public class FoodBuilder {
 		}
 
 		effects.removeIf(pair -> {
-			MobEffectInstance effectInstance = pair.getKey().get();
+			var effectInstance = pair.getKey().get();
 			return effectInstance.getDescriptionId().equals(mobEffect.getDescriptionId());
 		});
 
@@ -103,7 +103,7 @@ public class FoodBuilder {
 	}
 
 	public FoodProperties build() {
-		FoodProperties.Builder b = new FoodProperties.Builder();
+		var b = new FoodProperties.Builder();
 		b.nutrition(hunger);
 		b.saturationMod(saturation);
 
@@ -119,7 +119,7 @@ public class FoodBuilder {
 			b.fast();
 		}
 
-		for (Pair<Supplier<MobEffectInstance>, Float> effect : effects) {
+		for (var effect : effects) {
 			FoodPropertiesHooks.effect(b, effect.getLeft(), effect.getRight());
 		}
 
@@ -144,7 +144,7 @@ public class FoodBuilder {
 			if (cachedEffect == null) {
 				cachedEffect = KubeJSRegistries.mobEffects().get(id);
 				if (cachedEffect == null) {
-					Set<ResourceLocation> effectIds = KubeJSRegistries.mobEffects().entrySet().stream().map(entry -> entry.getKey().location()).collect(Collectors.toSet());
+					var effectIds = KubeJSRegistries.mobEffects().entrySet().stream().map(entry -> entry.getKey().location()).collect(Collectors.toSet());
 					throw new RuntimeException(String.format("Missing effect '%s'. Check spelling or maybe potion id was used instead of effect id. Possible ids: %s", id, effectIds));
 				}
 			}

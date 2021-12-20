@@ -11,7 +11,7 @@ import java.util.function.Supplier;
  */
 public class ItemRegistryEventJS extends StartupEventJS {
 	public void create(String name, Consumer<ItemBuilder> callback) {
-		ItemBuilder builder = new ItemBuilder(name);
+		var builder = new ItemBuilder(name);
 		callback.accept(builder);
 		KubeJSObjects.ITEMS.put(builder.id, builder);
 		KubeJSObjects.ALL.add(builder);

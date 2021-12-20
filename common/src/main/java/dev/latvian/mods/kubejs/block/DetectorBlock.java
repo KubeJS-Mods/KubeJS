@@ -20,7 +20,7 @@ public class DetectorBlock extends Block {
 	@Override
 	public void neighborChanged(BlockState blockState, Level level, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (!level.isClientSide) {
-			boolean p = !blockState.getValue(BlockStateProperties.POWERED);
+			var p = !blockState.getValue(BlockStateProperties.POWERED);
 
 			if (p == level.hasNeighborSignal(blockPos)) {
 				level.setBlock(blockPos, blockState.setValue(BlockStateProperties.POWERED, p), 2);

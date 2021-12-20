@@ -20,7 +20,7 @@ public class ArsNouveauEnchantingApparatusRecipeJS extends RecipeJS {
 		outputItems.add(parseResultItem(json.get("output")));
 		inputItems.add(parseIngredientItem(json.get("reagent")));
 
-		for (int i = 1; i <= 8; i++) {
+		for (var i = 1; i <= 8; i++) {
 			if (json.has("item_" + i)) {
 				inputItems.add(parseIngredientItem(json.get("item_" + i)));
 			}
@@ -36,7 +36,7 @@ public class ArsNouveauEnchantingApparatusRecipeJS extends RecipeJS {
 		if (serializeInputs) {
 			json.add("reagent", JsonUtilsJS.toArray(inputItems.get(0).toJson()));
 
-			for (int i = 1; i < inputItems.size(); i++) {
+			for (var i = 1; i < inputItems.size(); i++) {
 				json.add("item_" + i, JsonUtilsJS.toArray(inputItems.get(i).toJson()));
 			}
 		}

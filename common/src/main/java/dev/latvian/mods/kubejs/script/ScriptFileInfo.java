@@ -43,14 +43,14 @@ public class ScriptFileInfo {
 		priority = 0;
 		ignored = false;
 
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(source.createStream(this), StandardCharsets.UTF_8))) {
+		try (var reader = new BufferedReader(new InputStreamReader(source.createStream(this), StandardCharsets.UTF_8))) {
 			String line;
 
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
 
 				if (line.startsWith("//")) {
-					String[] s = line.substring(2).split(":", 2);
+					var s = line.substring(2).split(":", 2);
 
 					if (s.length == 2) {
 						properties.put(s[0].trim().toLowerCase(), s[1].trim());

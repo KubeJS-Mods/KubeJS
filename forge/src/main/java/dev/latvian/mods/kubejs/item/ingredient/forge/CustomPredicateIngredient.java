@@ -62,7 +62,7 @@ public class CustomPredicateIngredient extends Ingredient {
 	@Override
 	public boolean test(@Nullable ItemStack target) {
 		if (isServer && target != null && ingredient.test(target) && RecipeEventJS.customIngredientMap != null) {
-			IngredientWithCustomPredicateJS i = RecipeEventJS.customIngredientMap.get(uuid);
+            var i = RecipeEventJS.customIngredientMap.get(uuid);
 			return i != null && i.predicate.test(target);
 		}
 
@@ -81,7 +81,7 @@ public class CustomPredicateIngredient extends Ingredient {
 
 	@Override
 	public JsonElement toJson() {
-		JsonObject json = new JsonObject();
+        var json = new JsonObject();
 		json.addProperty("type", "kubejs:custom_predicate");
 		json.add("ingredient", ingredient.toJson());
 		json.addProperty("uuid", uuid.toString());

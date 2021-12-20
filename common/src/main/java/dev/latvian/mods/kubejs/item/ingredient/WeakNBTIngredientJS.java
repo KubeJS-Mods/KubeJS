@@ -46,7 +46,7 @@ public final class WeakNBTIngredientJS implements IngredientJS {
 	public boolean testVanilla(ItemStack stack) {
 		if (item.areItemsEqual(stack) && item.hasNBT() == stack.hasTag()) {
 			if (item.hasNBT()) {
-				CompoundTag t = item.getNbt();
+				var t = item.getNbt();
 
 				for (var key : t.getAllKeys()) {
 					if (!Objects.equals(t.get(key), stack.getTag().get(key))) {
@@ -83,7 +83,7 @@ public final class WeakNBTIngredientJS implements IngredientJS {
 
 	@Override
 	public JsonElement toJson() {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("item", item.getId());
 
 		if (item.hasNBT()) {
@@ -104,7 +104,7 @@ public final class WeakNBTIngredientJS implements IngredientJS {
 
 	@Override
 	public String toString() {
-		String stack = item.toString().replaceAll("^'(.*)'$", "Item.of($1)");
+		var stack = item.toString().replaceAll("^'(.*)'$", "Item.of($1)");
 		return stack + ".weakNBT()";
 
 	}

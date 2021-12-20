@@ -65,7 +65,7 @@ public class Painter {
 
 	@Nullable
 	public PainterObject make(String type) {
-		Supplier<PainterObject> supplier = objectRegistry.get(type);
+		var supplier = objectRegistry.get(type);
 		return supplier == null ? null : supplier.get();
 	}
 
@@ -117,7 +117,7 @@ public class Painter {
 	}
 
 	public void setVariable(String key, Unit variable) {
-		Unit original = unitStorage.getVariable(key);
+		var original = unitStorage.getVariable(key);
 
 		if (original instanceof MutableUnit mut) {
 			mut.set(variable.get());

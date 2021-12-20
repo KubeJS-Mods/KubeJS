@@ -36,11 +36,11 @@ public class BlockLootEventJS extends LootEventJS {
 	}
 
 	public void addBlock(BlockStatePredicate blocks, Consumer<LootBuilder> b) {
-		LootBuilder builder = createLootBuilder(null, b);
-		JsonObject json = builder.toJson();
+		var builder = createLootBuilder(null, b);
+		var json = builder.toJson();
 
 		for (var id : blocks.getBlockIds()) {
-			ResourceLocation blockId = builder.customId == null ? id : builder.customId;
+			var blockId = builder.customId == null ? id : builder.customId;
 
 			if (blockId != null && !blockId.equals(BlockStatePredicate.AIR_ID)) {
 				addJson(blockId, json);
@@ -54,7 +54,7 @@ public class BlockLootEventJS extends LootEventJS {
 
 	public void addSimpleBlock(BlockStatePredicate blocks, ItemStack item) {
 		for (var block : blocks.getBlocks()) {
-			ItemStack item1 = item.isEmpty() ? new ItemStack(block.asItem()) : item;
+			var item1 = item.isEmpty() ? new ItemStack(block.asItem()) : item;
 
 			if (!item1.isEmpty()) {
 				addBlock(new BlockStatePredicate.FromID(block), loot -> {

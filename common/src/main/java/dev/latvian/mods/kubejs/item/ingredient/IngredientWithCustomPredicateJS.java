@@ -43,7 +43,7 @@ public class IngredientWithCustomPredicateJS implements IngredientJS {
 	@Override
 	public JsonElement toJson() {
 		if (uuid != null) {
-			JsonObject json = new JsonObject();
+			var json = new JsonObject();
 			json.addProperty("type", "kubejs:custom_predicate");
 			json.add("ingredient", ingredient.toJson());
 			json.addProperty("uuid", uuid.toString());

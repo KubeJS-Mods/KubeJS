@@ -30,7 +30,7 @@ public class ItemWrapper {
 	}
 
 	public static ItemStackJS of(ItemStackJS in, int count, CompoundTag nbt) {
-		ItemStackJS is = in.withNBT(nbt);
+		var is = in.withNBT(nbt);
 		is.setCount(count);
 		return is;
 	}

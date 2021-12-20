@@ -40,7 +40,7 @@ public class KubeJSPlayerEventHandler {
 
 	public static void loggedIn(ServerPlayer player) {
 		if (ServerJS.instance != null) {
-			ServerPlayerDataJS p = new ServerPlayerDataJS(ServerJS.instance, player.getUUID(), player.getGameProfile().getName(), KubeJS.nextClientHasClientMod);
+			var p = new ServerPlayerDataJS(ServerJS.instance, player.getUUID(), player.getGameProfile().getName(), KubeJS.nextClientHasClientMod);
 			KubeJS.nextClientHasClientMod = false;
 			p.getServer().playerMap.put(p.getId(), p);
 			new AttachPlayerDataEvent(p).invoke();
@@ -81,7 +81,7 @@ public class KubeJSPlayerEventHandler {
 
 	@NotNull
 	public static EventResult chat(ServerPlayer player, TextFilter.FilteredText message, ChatEvent.ChatComponent component) {
-		PlayerChatEventJS event = new PlayerChatEventJS(player, message.getRaw(), component.getRaw());
+		var event = new PlayerChatEventJS(player, message.getRaw(), component.getRaw());
 		component.setRaw(event.component);
 		if (event.post(KubeJSEvents.PLAYER_CHAT)) {
 			return EventResult.interruptFalse();

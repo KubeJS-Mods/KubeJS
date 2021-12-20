@@ -65,8 +65,8 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 
 	@Override
 	public boolean matches(CraftingContainer craftingContainer, Level level) {
-		for (int x = 0; x <= craftingContainer.getWidth() - width; x++) {
-			for (int y = 0; y <= craftingContainer.getHeight() - height; y++) {
+		for (var x = 0; x <= craftingContainer.getWidth() - width; x++) {
+			for (var y = 0; y <= craftingContainer.getHeight() - height; y++) {
 				if (mirror && matches(craftingContainer, x, y, true)) {
 					return true;
 				}
@@ -81,11 +81,11 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 	}
 
 	private boolean matches(CraftingContainer craftingContainer, int x0, int y0, boolean mirrorPattern) {
-		for (int x = 0; x < craftingContainer.getWidth(); x++) {
-			for (int y = 0; y < craftingContainer.getHeight(); y++) {
-				int m = x - x0;
-				int n = y - y0;
-				Ingredient ingredient = Ingredient.EMPTY;
+		for (var x = 0; x < craftingContainer.getWidth(); x++) {
+			for (var y = 0; y < craftingContainer.getHeight(); y++) {
+				var m = x - x0;
+				var n = y - y0;
+				var ingredient = Ingredient.EMPTY;
 
 				if (m >= 0 && n >= 0 && m < width && n < height) {
 					if (mirrorPattern) {
@@ -119,9 +119,9 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 
 	@Override
 	public NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
-		NonNullList<ItemStack> list = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
+		var list = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
 
-		for (int i = 0; i < list.size(); i++) {
+		for (var i = 0; i < list.size(); i++) {
 			list.set(i, IngredientAction.getRemaining(container, i, ingredientActions));
 		}
 
@@ -129,14 +129,14 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 	}
 
 	private static NonNullList<Ingredient> dissolvePattern(String[] pattern, Map<String, Ingredient> key, int w, int h) {
-		NonNullList<Ingredient> nonNullList = NonNullList.withSize(w * h, Ingredient.EMPTY);
+		var nonNullList = NonNullList.withSize(w * h, Ingredient.EMPTY);
 		Set<String> set = Sets.newHashSet(key.keySet());
 		set.remove(" ");
 
-		for (int k = 0; k < pattern.length; ++k) {
-			for (int l = 0; l < pattern[k].length(); ++l) {
-				String string = pattern[k].substring(l, l + 1);
-				Ingredient ingredient = key.get(string);
+		for (var k = 0; k < pattern.length; ++k) {
+			for (var l = 0; l < pattern[k].length(); ++l) {
+				var string = pattern[k].substring(l, l + 1);
+				var ingredient = key.get(string);
 				if (ingredient == null) {
 					throw new JsonSyntaxException("Pattern references symbol '" + string + "' but it's not defined in the key");
 				}
@@ -154,15 +154,15 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 	}
 
 	private static String[] shrink(String[] strings) {
-		int i = Integer.MAX_VALUE;
-		int j = 0;
-		int k = 0;
-		int l = 0;
+		var i = Integer.MAX_VALUE;
+		var j = 0;
+		var k = 0;
+		var l = 0;
 
-		for (int m = 0; m < strings.length; ++m) {
-			String string = strings[m];
+		for (var m = 0; m < strings.length; ++m) {
+			var string = strings[m];
 			i = Math.min(i, firstNonSpace(string));
-			int n = lastNonSpace(string);
+			var n = lastNonSpace(string);
 			j = Math.max(j, n);
 			if (n < 0) {
 				if (k == m) {
@@ -178,9 +178,9 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 		if (strings.length == l) {
 			return new String[0];
 		} else {
-			String[] strings2 = new String[strings.length - l - k];
+			var strings2 = new String[strings.length - l - k];
 
-			for (int o = 0; o < strings2.length; ++o) {
+			for (var o = 0; o < strings2.length; ++o) {
 				strings2[o] = strings[o + k].substring(i, j + 1);
 			}
 
@@ -205,14 +205,14 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 	}
 
 	private static String[] patternFromJson(JsonArray jsonArray) {
-		String[] strings = new String[jsonArray.size()];
+		var strings = new String[jsonArray.size()];
 		if (strings.length > 3) {
 			throw new JsonSyntaxException("Invalid pattern: too many rows, 3 is maximum");
 		} else if (strings.length == 0) {
 			throw new JsonSyntaxException("Invalid pattern: empty pattern not allowed");
 		} else {
-			for (int i = 0; i < strings.length; ++i) {
-				String string = GsonHelper.convertToString(jsonArray.get(i), "pattern[" + i + "]");
+			for (var i = 0; i < strings.length; ++i) {
+				var string = GsonHelper.convertToString(jsonArray.get(i), "pattern[" + i + "]");
 				if (string.length() > 3) {
 					throw new JsonSyntaxException("Invalid pattern: too many columns, 3 is maximum");
 				}
@@ -231,7 +231,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 	private static Map<String, Ingredient> keyFromJson(JsonObject jsonObject) {
 		Map<String, Ingredient> map = Maps.newHashMap();
 
-		for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+		for (var entry : jsonObject.entrySet()) {
 			if (entry.getKey().length() != 1) {
 				throw new JsonSyntaxException("Invalid key entry: '" + entry.getKey() + "' is an invalid symbol (must be 1 character only).");
 			}
@@ -250,12 +250,12 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 	public static class SerializerKJS extends AbstractRecipeSerializer<ShapedKubeJSRecipe> {
 		@Override
 		public ShapedKubeJSRecipe fromJson(ResourceLocation id, JsonObject json) {
-			ShapedKubeJSRecipe r = new ShapedKubeJSRecipe(id);
+			var r = new ShapedKubeJSRecipe(id);
 			r.mirror = !json.has("mirror") || json.get("mirror").getAsBoolean();
 			r.shrink = !json.has("shrink") || json.get("shrink").getAsBoolean();
 			r.group = GsonHelper.getAsString(json, "group", "");
-			Map<String, Ingredient> key = ShapedKubeJSRecipe.keyFromJson(GsonHelper.getAsJsonObject(json, "key"));
-			String[] pattern = ShapedKubeJSRecipe.patternFromJson(GsonHelper.getAsJsonArray(json, "pattern"));
+			var key = ShapedKubeJSRecipe.keyFromJson(GsonHelper.getAsJsonObject(json, "key"));
+			var pattern = ShapedKubeJSRecipe.patternFromJson(GsonHelper.getAsJsonArray(json, "pattern"));
 
 			if (r.shrink) {
 				pattern = shrink(pattern);
@@ -271,13 +271,13 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 
 		@Override
 		public ShapedKubeJSRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-			ShapedKubeJSRecipe r = new ShapedKubeJSRecipe(id);
+			var r = new ShapedKubeJSRecipe(id);
 			r.group = buf.readUtf(32767);
 			r.width = buf.readVarInt();
 			r.height = buf.readVarInt();
 			r.ingredients = NonNullList.withSize(r.width * r.height, Ingredient.EMPTY);
 
-			for (int i = 0; i < r.width * r.height; ++i) {
+			for (var i = 0; i < r.width * r.height; ++i) {
 				r.ingredients.set(i, Ingredient.fromNetwork(buf));
 			}
 

@@ -83,7 +83,7 @@ public class UtilsWrapper {
 	}
 
 	public static Pattern regex(Object s) {
-		Pattern pattern = UtilsJS.parseRegex(s);
+		var pattern = UtilsJS.parseRegex(s);
 		return pattern == null ? Pattern.compile(s.toString()) : pattern;
 	}
 

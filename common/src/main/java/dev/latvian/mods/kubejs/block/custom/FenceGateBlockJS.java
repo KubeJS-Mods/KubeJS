@@ -12,10 +12,10 @@ public class FenceGateBlockJS extends FenceGateBlock implements CustomBlockJS {
 	@Override
 	public void generateAssets(BlockBuilder builder, AssetJsonGenerator generator) {
 		generator.blockState(builder.id, bs -> {
-			String mod = builder.newID("block/", "").toString();
-			String modOpen = builder.newID("block/", "_open").toString();
-			String modWall = builder.newID("block/", "_wall").toString();
-			String modWallOpen = builder.newID("block/", "_wall_open").toString();
+			var mod = builder.newID("block/", "").toString();
+			var modOpen = builder.newID("block/", "_open").toString();
+			var modWall = builder.newID("block/", "_wall").toString();
+			var modWallOpen = builder.newID("block/", "_wall_open").toString();
 
 			bs.variant("facing=east,in_wall=false,open=false", v -> v.model(mod).y(270).uvlock());
 			bs.variant("facing=east,in_wall=false,open=true", v -> v.model(modOpen).y(270).uvlock());
@@ -35,7 +35,7 @@ public class FenceGateBlockJS extends FenceGateBlock implements CustomBlockJS {
 			bs.variant("facing=west,in_wall=true,open=true", v -> v.model(modWallOpen).y(90).uvlock());
 		});
 
-		final String texture = builder.textures.get("texture").getAsString();
+		final var texture = builder.textures.get("texture").getAsString();
 
 		generator.blockModel(builder.id, m -> {
 			m.parent("minecraft:block/template_fence_gate");

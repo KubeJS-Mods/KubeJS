@@ -68,7 +68,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 	@Override
 	public int runCommand(String command) {
-		int m = 0;
+		var m = 0;
 
 		for (var entity : this) {
 			m = Math.max(m, entity.runCommand(command));
@@ -79,7 +79,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 	@Override
 	public int runCommandSilent(String command) {
-		int m = 0;
+		var m = 0;
 
 		for (var entity : this) {
 			m = Math.max(m, entity.runCommandSilent(command));
@@ -109,7 +109,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 			return this;
 		}
 
-		EntityArrayList list = new EntityArrayList(level, size());
+		var list = new EntityArrayList(level, size());
 
 		for (var entity : this) {
 			if (filter.test(entity)) {

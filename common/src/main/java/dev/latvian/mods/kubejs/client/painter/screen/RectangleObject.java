@@ -27,11 +27,11 @@ public class RectangleObject extends ScreenPainterObject {
 
 	@Override
 	public void draw(ScreenPaintEventJS event) {
-		float aw = w.get();
-		float ah = h.get();
-		float ax = event.alignX(x.get(), aw, alignX);
-		float ay = event.alignY(y.get(), ah, alignY);
-		float az = z.get();
+		var aw = w.get();
+		var ah = h.get();
+		var ax = event.alignX(x.get(), aw, alignX);
+		var ay = event.alignY(y.get(), ah, alignY);
+		var az = z.get();
 
 		if (texture == null) {
 			event.setTextureEnabled(false);

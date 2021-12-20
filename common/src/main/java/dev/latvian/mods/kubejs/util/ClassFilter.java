@@ -85,7 +85,7 @@ public class ClassFilter {
 	}
 
 	public boolean isAllowed(String s) {
-		byte b = cache.getByte(s);
+		var b = cache.getByte(s);
 
 		if (b == V_DEF) {
 			b = isAllowed0(s);

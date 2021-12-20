@@ -18,7 +18,7 @@ public class IDSqueezerRecipeJS extends RecipeJS {
 
 	@Override
 	public void deserialize() {
-		JsonObject r = json.get("result").getAsJsonObject();
+		var r = json.get("result").getAsJsonObject();
 
 		if (r.has("fluid")) {
 			outputItems.add(ItemStackJS.of(r.get("fluid")));
@@ -34,9 +34,9 @@ public class IDSqueezerRecipeJS extends RecipeJS {
 	@Override
 	public void serialize() {
 		if (serializeOutputs) {
-			JsonObject o = new JsonObject();
+			var o = new JsonObject();
 
-			JsonArray a = new JsonArray();
+			var a = new JsonArray();
 
 			for (var stack : outputItems) {
 				if (stack.getFluidStack() != null) {
@@ -67,10 +67,10 @@ public class IDSqueezerRecipeJS extends RecipeJS {
 	@Override
 	public ItemStackJS parseResultItem(@Nullable Object o) {
 		if (o instanceof JsonObject jsonObj) {
-			JsonElement e = jsonObj.get("item");
+			var e = jsonObj.get("item");
 
 			if (e instanceof JsonObject) {
-				ItemStackJS i = super.parseResultItem(e);
+				var i = super.parseResultItem(e);
 
 				if (jsonObj.has("chance")) {
 					i.setChance(jsonObj.get("chance").getAsDouble());
@@ -85,7 +85,7 @@ public class IDSqueezerRecipeJS extends RecipeJS {
 
 	@Override
 	public JsonElement serializeItemStack(ItemStackJS stack) {
-		JsonObject o = new JsonObject();
+		var o = new JsonObject();
 		o.add("item", stack.toRawResultJson());
 
 		if (stack.hasChance()) {

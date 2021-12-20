@@ -59,7 +59,7 @@ public class ServerPlayerDataJS extends PlayerDataJS<ServerPlayer, ServerPlayerJ
 
 	@Override
 	public ServerPlayerJS getPlayer() {
-		ServerPlayer p = getMinecraftPlayer();
+		var p = getMinecraftPlayer();
 
 		if (p == null) {
 			throw new NullPointerException("Player entity for " + getName() + " not found!");

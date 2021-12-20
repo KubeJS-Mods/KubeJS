@@ -47,7 +47,7 @@ public class KubeJSClient extends KubeJSCommon {
 		reloadClientScripts();
 
 		new KubeJSClientEventHandler().init();
-		PackRepository list = Minecraft.getInstance().getResourcePackRepository();
+		var list = Minecraft.getInstance().getResourcePackRepository();
 		PackRepositoryHooks.addSource(list, new KubeJSResourcePackFinder());
 		setup();
 
@@ -68,7 +68,7 @@ public class KubeJSClient extends KubeJSCommon {
 
 	public static void copyDefaultOptionsFile(File optionsFile) {
 		if (!optionsFile.exists()) {
-			Path defOptions = KubeJSPaths.CONFIG.resolve("defaultoptions.txt");
+			var defOptions = KubeJSPaths.CONFIG.resolve("defaultoptions.txt");
 
 			if (Files.exists(defOptions)) {
 				try {
@@ -128,8 +128,8 @@ public class KubeJSClient extends KubeJSCommon {
 	}
 
 	private void reload(PreparableReloadListener listener) {
-		long start = System.currentTimeMillis();
-		Minecraft mc = Minecraft.getInstance();
+		var start = System.currentTimeMillis();
+		var mc = Minecraft.getInstance();
 		listener.reload(CompletableFuture::completedFuture, mc.getResourceManager(), InactiveProfiler.INSTANCE, InactiveProfiler.INSTANCE, Util.backgroundExecutor(), mc).thenAccept(unused -> {
 			/*
 			long ms = System.currentTimeMillis() - start;

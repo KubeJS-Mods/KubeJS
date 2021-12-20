@@ -28,7 +28,7 @@ public abstract class Stages {
 			return NoStages.NULL_INSTANCE;
 		}
 
-		StageCreationEvent event = new StageCreationEvent(player);
+		var event = new StageCreationEvent(player);
 		OVERRIDE_CREATION.invoker().accept(event);
 
 		if (event.getPlayerStages() != null) {
@@ -127,7 +127,7 @@ public abstract class Stages {
 	}
 
 	public boolean clear() {
-		Collection<String> all = getAll();
+		var all = getAll();
 
 		if (all.isEmpty()) {
 			return false;
@@ -147,7 +147,7 @@ public abstract class Stages {
 	}
 
 	public void replace(Collection<String> stages) {
-		Collection<String> all = getAll();
+		var all = getAll();
 
 		for (var s : new ArrayList<>(all)) {
 			removeNoUpdate(s);

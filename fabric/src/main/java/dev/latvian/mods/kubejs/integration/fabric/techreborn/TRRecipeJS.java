@@ -78,7 +78,7 @@ public class TRRecipeJS extends RecipeJS {
 	@Override
 	public void serialize() {
 		if (serializeOutputs) {
-			JsonArray array = new JsonArray();
+			var array = new JsonArray();
 
 			for (var out : outputItems) {
 				array.add(out.toResultJson());
@@ -88,7 +88,7 @@ public class TRRecipeJS extends RecipeJS {
 		}
 
 		if (serializeInputs) {
-			JsonArray array = new JsonArray();
+			var array = new JsonArray();
 
 			for (var in : inputItems) {
 				array.add(in.toJson());
@@ -102,7 +102,7 @@ public class TRRecipeJS extends RecipeJS {
 	public IngredientJS parseIngredientItem(Object o, String key) {
 		if (o instanceof JsonObject jsonObj) {
 
-			ResourceLocation type = DummyRebornIngredient.STACK_RECIPE_TYPE;
+			var type = DummyRebornIngredient.STACK_RECIPE_TYPE;
 
 			if (jsonObj.has("fluid")) {
 				type = DummyRebornIngredient.FLUID_RECIPE_TYPE;
@@ -126,7 +126,7 @@ public class TRRecipeJS extends RecipeJS {
 
 	@Override
 	public JsonElement serializeIngredientStack(IngredientStackJS in) {
-		JsonObject o = in.ingredient.toJson().getAsJsonObject();
+		var o = in.ingredient.toJson().getAsJsonObject();
 		o.addProperty("count", in.getCount());
 		return o;
 	}

@@ -16,7 +16,7 @@ public class StonecuttingRecipeJS extends RecipeJS {
 
 	@Override
 	public void deserialize() {
-		ItemStackJS result = parseResultItem(json.get("result"));
+		var result = parseResultItem(json.get("result"));
 
 		if (json.has("count")) {
 			result.setCount(json.get("count").getAsInt());

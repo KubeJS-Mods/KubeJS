@@ -27,15 +27,15 @@ public class KubeJSClientResourcePack extends KubeJSResourcePack {
 
 	@Override
 	public void generateJsonFiles(Map<ResourceLocation, JsonElement> map) {
-		AssetJsonGenerator generator = new AssetJsonGenerator(map);
+		var generator = new AssetJsonGenerator(map);
 		KubeJSPlugins.forEachPlugin(p -> p.generateAssetJsons(generator));
 
 		Map<String, String> langMap = new HashMap<>();
 		KubeJSPlugins.forEachPlugin(p -> p.generateLang(langMap));
 
-		JsonObject lang = new JsonObject();
+		var lang = new JsonObject();
 
-		for (Map.Entry<String, String> entry : langMap.entrySet()) {
+		for (var entry : langMap.entrySet()) {
 			lang.addProperty(entry.getKey(), entry.getValue());
 		}
 

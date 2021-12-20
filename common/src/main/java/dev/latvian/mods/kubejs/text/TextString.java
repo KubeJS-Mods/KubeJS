@@ -32,7 +32,7 @@ public class TextString extends Text {
 
 	@Override
 	public JsonElement toJson() {
-		JsonObject o = getStyleAndSiblingJson();
+		var o = getStyleAndSiblingJson();
 
 		if (o.size() == 0) {
 			return new JsonPrimitive(string);

@@ -40,7 +40,7 @@ public class SendDataFromClientMessage extends BaseC2SMessage {
 	@Override
 	public void handle(PacketContext context) {
 		if (!channel.isEmpty()) {
-			final Player player = context.getPlayer();
+			final var player = context.getPlayer();
 
 			if (player != null) {
 				new NetworkEventJS(player, channel, data).post(KubeJSEvents.PLAYER_DATA_FROM_CLIENT, channel);

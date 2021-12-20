@@ -52,11 +52,11 @@ public class ClientProperties {
 		properties = new Properties();
 
 		try {
-			Path propertiesFile = KubeJSPaths.CONFIG.resolve("client.properties");
+			var propertiesFile = KubeJSPaths.CONFIG.resolve("client.properties");
 
 			UtilsJS.tryIO(() ->
 			{
-				Path p0 = KubeJSPaths.DIRECTORY.resolve("client.properties");
+				var p0 = KubeJSPaths.DIRECTORY.resolve("client.properties");
 
 				if (Files.exists(p0)) {
 					Files.move(p0, propertiesFile);
@@ -89,11 +89,11 @@ public class ClientProperties {
 			menuInnerBackgroundBrightness = Mth.clamp(get("menuInnerBackgroundBrightness", 32), 0, 255);
 			menuBackgroundScale = (float) Mth.clamp(get("menuBackgroundScale", 32D), 0.0625D, 1024D);
 
-			Path iconFile = KubeJSPaths.CONFIG.resolve("packicon.png");
+			var iconFile = KubeJSPaths.CONFIG.resolve("packicon.png");
 
 			UtilsJS.tryIO(() ->
 			{
-				Path p0 = KubeJSPaths.DIRECTORY.resolve("packicon.png");
+				var p0 = KubeJSPaths.DIRECTORY.resolve("packicon.png");
 
 				if (Files.exists(p0)) {
 					Files.move(p0, iconFile);
@@ -117,7 +117,7 @@ public class ClientProperties {
 	}
 
 	private String get(String key, String def) {
-		String s = properties.getProperty(key);
+		var s = properties.getProperty(key);
 
 		if (s == null) {
 			properties.setProperty(key, def);
@@ -141,7 +141,7 @@ public class ClientProperties {
 	}
 
 	private int getColor(String key, int def) {
-		String s = get(key, String.format("%06X", def & 0xFFFFFF));
+		var s = get(key, String.format("%06X", def & 0xFFFFFF));
 
 		if (s.isEmpty() || s.equals("default")) {
 			return def;
@@ -156,7 +156,7 @@ public class ClientProperties {
 	}
 
 	private float[] getColor3f(int color) {
-		float[] c = new float[3];
+		var c = new float[3];
 		c[0] = ((color >> 16) & 0xFF) / 255F;
 		c[1] = ((color >> 8) & 0xFF) / 255F;
 		c[2] = ((color >> 0) & 0xFF) / 255F;
@@ -166,8 +166,8 @@ public class ClientProperties {
 	public boolean cancelIconUpdate() {
 		if (tempIconCancel) {
 			if (icon != null) {
-				try (InputStream stream16 = Files.newInputStream(icon);
-					 InputStream stream32 = Files.newInputStream(icon)) {
+				try (var stream16 = Files.newInputStream(icon);
+					 var stream32 = Files.newInputStream(icon)) {
 					tempIconCancel = false;
 					Minecraft.getInstance().getWindow().setIcon(stream16, stream32);
 					tempIconCancel = true;

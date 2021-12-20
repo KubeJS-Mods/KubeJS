@@ -16,7 +16,7 @@ public class BlockModificationProperties {
 	}
 
 	public void setMaterial(MaterialJS v) {
-		Material m = v.getMinecraftMaterial();
+		var m = v.getMinecraftMaterial();
 
 		block.setMaterialKJS(m);
 

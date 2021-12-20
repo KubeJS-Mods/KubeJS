@@ -38,27 +38,27 @@ public class GameRulesJS {
 
 	@Nullable
 	private Object get(String rule) {
-		GameRules.Key key = getKey(rule);
+		var key = getKey(rule);
 		return key == null ? null : rules.getRule(key);
 	}
 
 	public String getString(String rule) {
-		Object o = get(rule);
+		var o = get(rule);
 		return o == null ? "" : String.valueOf(o);
 	}
 
 	public boolean getBoolean(String rule) {
-		Object o = get(rule);
+		var o = get(rule);
 		return o instanceof Boolean && (Boolean) o;
 	}
 
 	public int getInt(String rule) {
-		Object o = get(rule);
+		var o = get(rule);
 		return o instanceof Number ? ((Number) o).intValue() : 0;
 	}
 
 	public void set(String rule, Object value) {
-		CompoundTag nbt = rules.createTag();
+		var nbt = rules.createTag();
 		nbt.putString(rule, String.valueOf(value));
 		rules = new GameRules(new Dynamic<>(NbtOps.INSTANCE, nbt)); //TODO: Check if works
 	}

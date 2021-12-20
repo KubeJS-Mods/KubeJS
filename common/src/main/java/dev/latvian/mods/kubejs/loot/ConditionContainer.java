@@ -11,14 +11,14 @@ public interface ConditionContainer {
 	ConditionContainer addCondition(JsonObject o);
 
 	default ConditionContainer randomChance(double chance) {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("condition", "minecraft:random_chance");
 		json.addProperty("chance", chance);
 		return addCondition(json);
 	}
 
 	default ConditionContainer randomChanceWithLooting(double chance, double multiplier) {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("condition", "minecraft:random_chance_with_looting");
 		json.addProperty("chance", chance);
 		json.addProperty("looting_multiplier", multiplier);
@@ -27,14 +27,14 @@ public interface ConditionContainer {
 
 	// Block
 	default ConditionContainer survivesExplosion() {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("condition", "minecraft:survives_explosion");
 		return addCondition(json);
 	}
 
 	// Entity
 	default ConditionContainer entityProperties(LootContext.EntityTarget entity, JsonObject properties) {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("condition", "minecraft:entity_properties");
 		json.addProperty("entity", EntityTargetKJS.getNameKJS(entity));
 		json.add("predicate", properties);
@@ -43,20 +43,20 @@ public interface ConditionContainer {
 
 	// Entity
 	default ConditionContainer killedByPlayer() {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("condition", "minecraft:killed_by_player");
 		return addCondition(json);
 	}
 
 	// Entity
 	default ConditionContainer entityScores(LootContext.EntityTarget entity, Map<String, Object> scores) {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("condition", "minecraft:entity_scores");
 		json.addProperty("entity", EntityTargetKJS.getNameKJS(entity));
 
-		JsonObject s = new JsonObject();
+		var s = new JsonObject();
 
-		for (Map.Entry<String, Object> entry : scores.entrySet()) {
+		for (var entry : scores.entrySet()) {
 			s.add(entry.getKey(), UtilsJS.numberProviderJson(UtilsJS.numberProviderOf(entry.getValue())));
 		}
 

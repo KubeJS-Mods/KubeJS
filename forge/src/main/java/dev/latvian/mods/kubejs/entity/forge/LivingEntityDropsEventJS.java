@@ -51,7 +51,7 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS {
 		if (eventDrops == null) {
 			eventDrops = new ArrayList<>();
 
-			for (ItemEntity entity : event.getDrops()) {
+			for (var entity : event.getDrops()) {
 				eventDrops.add(new ItemEntityJS(getWorld(), entity));
 			}
 		}
@@ -61,13 +61,13 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS {
 
 	@Nullable
 	public ItemEntityJS addDrop(Object item) {
-		ItemStack i = ItemStackJS.of(item).getItemStack();
+        var i = ItemStackJS.of(item).getItemStack();
 
 		if (!i.isEmpty()) {
-			Entity e = event.getEntity();
-			ItemEntity ei = new ItemEntity(e.level, e.getX(), e.getY(), e.getZ(), i);
+            var e = event.getEntity();
+            var ei = new ItemEntity(e.level, e.getX(), e.getY(), e.getZ(), i);
 			ei.setPickUpDelay(10);
-			ItemEntityJS ie = new ItemEntityJS(getWorld(), ei);
+            var ie = new ItemEntityJS(getWorld(), ei);
 			getDrops().add(ie);
 			return ie;
 		}

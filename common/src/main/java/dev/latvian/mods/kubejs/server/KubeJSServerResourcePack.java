@@ -16,7 +16,7 @@ public class KubeJSServerResourcePack extends KubeJSResourcePack {
 
 	@Override
 	public void generateJsonFiles(Map<ResourceLocation, JsonElement> map) {
-		DataJsonGenerator generator = new DataJsonGenerator(map);
+		var generator = new DataJsonGenerator(map);
 		KubeJSPlugins.forEachPlugin(p -> p.generateDataJsons(generator));
 	}
 }

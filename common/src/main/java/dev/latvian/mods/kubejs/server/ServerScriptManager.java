@@ -62,16 +62,16 @@ public class ServerScriptManager {
 			packs.computeIfAbsent(resource.getNamespace(), s -> new ArrayList<>()).add(resource);
 		}
 
-		for (Map.Entry<String, List<ResourceLocation>> entry : packs.entrySet()) {
-			ScriptPack pack = new ScriptPack(scriptManager, new ScriptPackInfo(entry.getKey(), "kubejs/"));
+		for (var entry : packs.entrySet()) {
+			var pack = new ScriptPack(scriptManager, new ScriptPackInfo(entry.getKey(), "kubejs/"));
 
 			for (var id : entry.getValue()) {
 				pack.info.scripts.add(new ScriptFileInfo(pack.info, id.getPath().substring(7)));
 			}
 
 			for (var fileInfo : pack.info.scripts) {
-				ScriptSource.FromResource scriptSource = info -> resourceManager.getResource(info.id);
-				Throwable error = fileInfo.preload(scriptSource);
+				var scriptSource = (ScriptSource.FromResource) info -> resourceManager.getResource(info.id);
+				var error = fileInfo.preload(scriptSource);
 
 				if (fileInfo.isIgnored()) {
 					continue;
@@ -92,15 +92,15 @@ public class ServerScriptManager {
 	}
 
 	public List<PackResources> resourcePackList(List<PackResources> list0) {
-		VirtualKubeJSDataPack virtualDataPackLow = new VirtualKubeJSDataPack(false);
-		VirtualKubeJSDataPack virtualDataPackHigh = new VirtualKubeJSDataPack(true);
+		var virtualDataPackLow = new VirtualKubeJSDataPack(false);
+		var virtualDataPackHigh = new VirtualKubeJSDataPack(true);
 		List<PackResources> list = new ArrayList<>();
 		list.add(virtualDataPackLow);
 		list.addAll(list0);
 		list.add(new KubeJSServerResourcePack());
 		list.add(virtualDataPackHigh);
 
-		SimpleReloadableResourceManager resourceManager = new SimpleReloadableResourceManager(PackType.SERVER_DATA);
+		var resourceManager = new SimpleReloadableResourceManager(PackType.SERVER_DATA);
 
 		for (var p : list) {
 			resourceManager.add(p);
@@ -120,7 +120,7 @@ public class ServerScriptManager {
 		ConsoleJS.SERVER.info("Scripts loaded");
 
 		Map<ResourceLocation, RecipeTypeJS> typeMap = new HashMap<>();
-		RegisterRecipeHandlersEvent modEvent = new RegisterRecipeHandlersEvent(typeMap);
+		var modEvent = new RegisterRecipeHandlersEvent(typeMap);
 		KubeJSPlugins.forEachPlugin(plugin -> plugin.addRecipes(modEvent));
 		RegisterRecipeHandlersEvent.EVENT.invoker().accept(modEvent);
 		new RecipeTypeRegistryEventJS(typeMap).post(ScriptType.SERVER, KubeJSEvents.RECIPES_TYPE_REGISTRY);

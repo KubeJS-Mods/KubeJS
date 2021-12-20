@@ -57,19 +57,19 @@ public abstract class KubeJSResourcePack implements PackResources {
 
 	@Override
 	public InputStream getResource(PackType type, ResourceLocation location) throws IOException {
-		String resourcePath = getFullPath(type, location);
+		var resourcePath = getFullPath(type, location);
 
 		if (type != packType) {
 			throw new IllegalStateException(packType.getDirectory() + " KubeJS pack can't load " + resourcePath + "!");
 		}
 
-		Path file = KubeJSPaths.DIRECTORY.resolve(resourcePath);
+		var file = KubeJSPaths.DIRECTORY.resolve(resourcePath);
 
 		if (Files.exists(file)) {
 			return Files.newInputStream(file);
 		} else {
 			if (location.getPath().endsWith(".json")) {
-				JsonElement json = getCachedResources().get(location);
+				var json = getCachedResources().get(location);
 
 				if (json != null) {
 					return new ByteArrayInputStream(json.toString().getBytes(StandardCharsets.UTF_8));
@@ -83,7 +83,7 @@ public abstract class KubeJSResourcePack implements PackResources {
 	@Override
 	public boolean hasResource(PackType type, ResourceLocation location) {
 		if (location.getPath().endsWith(".json")) {
-			JsonElement json = getCachedResources().get(location);
+			var json = getCachedResources().get(location);
 
 			if (json != null) {
 				return true;
@@ -100,7 +100,7 @@ public abstract class KubeJSResourcePack implements PackResources {
 
 			cachedResources = new HashMap<>();
 
-			for (Map.Entry<ResourceLocation, JsonElement> entry : map.entrySet()) {
+			for (var entry : map.entrySet()) {
 				cachedResources.put(new ResourceLocation(entry.getKey().getNamespace(), entry.getKey().getPath() + ".json"), entry.getValue());
 			}
 		}
@@ -133,10 +133,10 @@ public abstract class KubeJSResourcePack implements PackResources {
 
 		UtilsJS.tryIO(() ->
 		{
-			Path root = KubeJSPaths.get(type).toAbsolutePath();
+			var root = KubeJSPaths.get(type).toAbsolutePath();
 
 			if (Files.exists(root) && Files.isDirectory(root)) {
-				Path inputPath = root.getFileSystem().getPath(path);
+				var inputPath = root.getFileSystem().getPath(path);
 
 				Files.walk(root)
 						.map(p -> root.relativize(p.toAbsolutePath()))
@@ -158,7 +158,7 @@ public abstract class KubeJSResourcePack implements PackResources {
 			return Collections.emptySet();
 		}
 
-		HashSet<String> namespaces = new HashSet<>();
+		var namespaces = new HashSet<String>();
 		namespaces.add("kubejs_generated");
 		namespaces.add(KubeJS.MOD_ID);
 
@@ -168,7 +168,7 @@ public abstract class KubeJSResourcePack implements PackResources {
 
 		UtilsJS.tryIO(() ->
 		{
-			Path root = KubeJSPaths.get(type).toAbsolutePath();
+			var root = KubeJSPaths.get(type).toAbsolutePath();
 
 			if (Files.exists(root) && Files.isDirectory(root)) {
 				Files.walk(root, 1)

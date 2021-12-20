@@ -13,9 +13,9 @@ public class StairBlockJS extends StairBlock implements CustomBlockJS {
 	@Override
 	public void generateAssets(BlockBuilder builder, AssetJsonGenerator generator) {
 		generator.blockState(builder.id, bs -> {
-			String mod = builder.newID("block/", "").toString();
-			String modInner = builder.newID("block/", "_inner").toString();
-			String modOuter = builder.newID("block/", "_outer").toString();
+			var mod = builder.newID("block/", "").toString();
+			var modInner = builder.newID("block/", "_inner").toString();
+			var modOuter = builder.newID("block/", "_outer").toString();
 
 			bs.variant("facing=east,half=bottom,shape=inner_left", v -> v.model(modInner).y(270).uvlock());
 			bs.variant("facing=east,half=bottom,shape=inner_right", v -> v.model(modInner));
@@ -59,7 +59,7 @@ public class StairBlockJS extends StairBlock implements CustomBlockJS {
 			bs.variant("facing=west,half=top,shape=straight", v -> v.model(mod).x(180).y(180).uvlock());
 		});
 
-		final String texture = builder.textures.get("texture").getAsString();
+		final var texture = builder.textures.get("texture").getAsString();
 
 		generator.blockModel(builder.id, m -> {
 			m.parent("minecraft:block/stairs");

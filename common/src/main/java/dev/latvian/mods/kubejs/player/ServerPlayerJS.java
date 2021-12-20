@@ -75,8 +75,8 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	}
 
 	public void ban(String banner, String reason, long expiresInMillis) {
-		Date date = new Date();
-		UserBanListEntry userlistbansentry = new UserBanListEntry(minecraftPlayer.getGameProfile(), date, banner, new Date(date.getTime() + (expiresInMillis <= 0L ? 315569260000L : expiresInMillis)), reason);
+		var date = new Date();
+		var userlistbansentry = new UserBanListEntry(minecraftPlayer.getGameProfile(), date, banner, new Date(date.getTime() + (expiresInMillis <= 0L ? 315569260000L : expiresInMillis)), reason);
 		server.getMinecraftServer().getPlayerList().getBans().add(userlistbansentry);
 		kick(new TranslatableComponent("multiplayer.disconnect.banned"));
 	}
@@ -86,15 +86,15 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	}
 
 	public boolean isAdvancementDone(ResourceLocation id) {
-		AdvancementJS a = ServerJS.instance.getAdvancement(id);
+		var a = ServerJS.instance.getAdvancement(id);
 		return a != null && minecraftPlayer.getAdvancements().getOrStartProgress(a.advancement).isDone();
 	}
 
 	public void unlockAdvancement(ResourceLocation id) {
-		AdvancementJS a = ServerJS.instance.getAdvancement(id);
+		var a = ServerJS.instance.getAdvancement(id);
 
 		if (a != null) {
-			AdvancementProgress advancementprogress = minecraftPlayer.getAdvancements().getOrStartProgress(a.advancement);
+			var advancementprogress = minecraftPlayer.getAdvancements().getOrStartProgress(a.advancement);
 
 			for (var s : advancementprogress.getRemainingCriteria()) {
 				minecraftPlayer.getAdvancements().award(a.advancement, s);
@@ -103,10 +103,10 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	}
 
 	public void revokeAdvancement(ResourceLocation id) {
-		AdvancementJS a = ServerJS.instance.getAdvancement(id);
+		var a = ServerJS.instance.getAdvancement(id);
 
 		if (a != null) {
-			AdvancementProgress advancementprogress = minecraftPlayer.getAdvancements().getOrStartProgress(a.advancement);
+			var advancementprogress = minecraftPlayer.getAdvancements().getOrStartProgress(a.advancement);
 
 			if (advancementprogress.hasProgress()) {
 				for (var s : advancementprogress.getCompletedCriteria()) {
@@ -118,9 +118,9 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 
 	@Override
 	public void setSelectedSlot(int index) {
-		int p = getSelectedSlot();
+		var p = getSelectedSlot();
 		super.setSelectedSlot(index);
-		int n = getSelectedSlot();
+		var n = getSelectedSlot();
 
 		if (p != n && minecraftPlayer.connection != null) {
 			minecraftPlayer.connection.send(new ClientboundSetCarriedItemPacket(n));
@@ -145,7 +145,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 
 	@Nullable
 	public BlockContainerJS getSpawnLocation() {
-		BlockPos pos = minecraftPlayer.getRespawnPosition();
+		var pos = minecraftPlayer.getRespawnPosition();
 		return pos == null ? null : new BlockContainerJS(minecraftPlayer.level, pos);
 	}
 

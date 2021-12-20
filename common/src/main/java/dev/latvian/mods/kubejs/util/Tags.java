@@ -64,7 +64,7 @@ public class Tags {
 
 	public static <T> Collection<ResourceLocation> forType(T item, TagCollection<T> tags) {
 		Collection<ResourceLocation> list = Sets.newHashSet();
-		for (Map.Entry<ResourceLocation, Tag<T>> entry : tags.getAllTags().entrySet()) {
+		for (var entry : tags.getAllTags().entrySet()) {
 			if (entry.getValue().contains(item)) {
 				list.add(entry.getKey());
 			}

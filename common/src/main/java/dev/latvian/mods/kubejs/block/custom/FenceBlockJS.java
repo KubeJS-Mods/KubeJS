@@ -12,8 +12,8 @@ public class FenceBlockJS extends FenceBlock implements CustomBlockJS {
 	@Override
 	public void generateAssets(BlockBuilder builder, AssetJsonGenerator generator) {
 		generator.multipartState(builder.id, bs -> {
-			String modPost = builder.newID("block/", "_post").toString();
-			String modSide = builder.newID("block/", "_side").toString();
+			var modPost = builder.newID("block/", "_post").toString();
+			var modSide = builder.newID("block/", "_side").toString();
 
 			bs.part("", modPost);
 			bs.part("north=true", p -> p.model(modSide).uvlock());
@@ -22,7 +22,7 @@ public class FenceBlockJS extends FenceBlock implements CustomBlockJS {
 			bs.part("west=true", p -> p.model(modSide).uvlock().y(270));
 		});
 
-		final String texture = builder.textures.get("texture").getAsString();
+		final var texture = builder.textures.get("texture").getAsString();
 
 		generator.blockModel(builder.newID("", "_post"), m -> {
 			m.parent("minecraft:block/fence_post");

@@ -52,7 +52,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 
 	@Override
 	public InputStream getResource(String path) throws IOException {
-		String s = pathToData.get(path);
+		var s = pathToData.get(path);
 
 		if (s != null) {
 			if (ServerSettings.instance.dataPackOutput) {
@@ -67,7 +67,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 
 	@Override
 	public InputStream getResource(PackType type, ResourceLocation location) throws IOException {
-		String s = locationToData.get(location);
+		var s = locationToData.get(location);
 
 		if (s != null) {
 			if (ServerSettings.instance.dataPackOutput) {
@@ -97,8 +97,8 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 		for (var key : locationToData.keySet()) {
 			if (namespace.equals(key.getNamespace())) {
 				try {
-					int i = key.getPath().lastIndexOf('/');
-					String p = i == -1 ? key.getPath() : key.getPath().substring(i + 1);
+					var i = key.getPath().lastIndexOf('/');
+					var p = i == -1 ? key.getPath() : key.getPath().substring(i + 1);
 
 					if (key.getPath().startsWith(path) && filter.test(p)) {
 						list.add(key);

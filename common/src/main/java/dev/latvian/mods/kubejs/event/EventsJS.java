@@ -31,7 +31,7 @@ public class EventsJS {
 
 	public void listen(String id, IEventHandler handler) {
 		id = id.replace("yeet", "remove");
-		List<ScriptEventHandler> list = map.get(id);
+		var list = map.get(id);
 
 		if (list == null) {
 			list = new ObjectArrayList<>();
@@ -42,7 +42,7 @@ public class EventsJS {
 	}
 
 	public List<ScriptEventHandler> handlers(String id) {
-		List<ScriptEventHandler> list = map.get(id);
+		var list = map.get(id);
 		return list == null ? Collections.emptyList() : list;
 	}
 
@@ -51,7 +51,7 @@ public class EventsJS {
 			return false;
 		}
 
-		boolean c = event.canCancel();
+		var c = event.canCancel();
 
 		for (var handler : list) {
 			try {

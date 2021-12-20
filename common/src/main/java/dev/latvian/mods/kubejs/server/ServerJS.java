@@ -168,7 +168,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	}
 
 	public WorldJS getLevel(String dimension) {
-		ServerWorldJS level = levelMap.get(dimension);
+		var level = levelMap.get(dimension);
 
 		if (level == null) {
 			level = new ServerWorldJS(this, getMinecraftServer().getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(dimension))));
@@ -186,7 +186,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	}
 
 	public WorldJS getLevel(Level minecraftLevel) {
-		ServerWorldJS level = levelMap.get(minecraftLevel.dimension().location().toString());
+		var level = levelMap.get(minecraftLevel.dimension().location().toString());
 
 		if (level == null) {
 			level = new ServerWorldJS(this, (ServerLevel) minecraftLevel);
@@ -205,7 +205,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 
 	@Nullable
 	public ServerPlayerJS getPlayer(UUID uuid) {
-		ServerPlayerDataJS p = playerMap.get(uuid);
+		var p = playerMap.get(uuid);
 
 		if (p == null) {
 			return null;
@@ -222,7 +222,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 			return null;
 		}
 
-		UUID uuid = UUIDWrapper.fromString(name);
+		var uuid = UUIDWrapper.fromString(name);
 
 		if (uuid != null) {
 			return getPlayer(uuid);
@@ -253,7 +253,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	}
 
 	public EntityArrayList getEntities() {
-		EntityArrayList list = new EntityArrayList(overworld, 10);
+		var list = new EntityArrayList(overworld, 10);
 
 		for (var level : worlds) {
 			list.addAll(level.getEntities());
@@ -263,7 +263,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	}
 
 	public EntityArrayList getEntities(String filter) {
-		EntityArrayList list = new EntityArrayList(overworld, 10);
+		var list = new EntityArrayList(overworld, 10);
 
 		for (var level : worlds) {
 			list.addAll(level.getEntities(filter));
@@ -273,7 +273,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	}
 
 	public ScheduledEvent schedule(long timer, @Nullable Object data, IScheduledEventCallback event) {
-		ScheduledEvent e = new ScheduledEvent(this, false, timer, System.currentTimeMillis() + timer, data, event);
+		var e = new ScheduledEvent(this, false, timer, System.currentTimeMillis() + timer, data, event);
 		scheduledEvents.add(e);
 		return e;
 	}
@@ -283,7 +283,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	}
 
 	public ScheduledEvent scheduleInTicks(long ticks, @Nullable Object data, IScheduledEventCallback event) {
-		ScheduledEvent e = new ScheduledEvent(this, true, ticks, overworld.getTime() + ticks, data, event);
+		var e = new ScheduledEvent(this, true, ticks, overworld.getTime() + ticks, data, event);
 		scheduledTickEvents.add(e);
 		return e;
 	}
@@ -299,7 +299,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 
 	@Nullable
 	public AdvancementJS getAdvancement(ResourceLocation id) {
-		Advancement a = getMinecraftServer().getAdvancements().getAdvancement(id);
+		var a = getMinecraftServer().getAdvancements().getAdvancement(id);
 		return a == null ? null : new AdvancementJS(a);
 	}
 

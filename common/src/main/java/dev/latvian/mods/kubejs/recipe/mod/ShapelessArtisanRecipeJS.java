@@ -9,7 +9,7 @@ import dev.latvian.mods.kubejs.recipe.minecraft.ShapelessRecipeJS;
 
 public class ShapelessArtisanRecipeJS extends ShapelessRecipeJS {
 	private JsonArray getOrCreateArray(String key) {
-		JsonArray a = (JsonArray) json.get(key);
+		var a = (JsonArray) json.get(key);
 
 		if (a == null) {
 			a = new JsonArray();
@@ -24,7 +24,7 @@ public class ShapelessArtisanRecipeJS extends ShapelessRecipeJS {
 			o.addProperty("damage", damage);
 			getOrCreateArray("tools").add(o);
 		} else {
-			JsonObject o = new JsonObject();
+			var o = new JsonObject();
 			o.addProperty("item", ingredient.getFirst().getId());
 			o.addProperty("damage", damage);
 			getOrCreateArray("tools").add(o);
@@ -34,7 +34,7 @@ public class ShapelessArtisanRecipeJS extends ShapelessRecipeJS {
 	}
 
 	public ShapelessArtisanRecipeJS fluid(FluidStackJS fluid) {
-		JsonObject o = new JsonObject();
+		var o = new JsonObject();
 		o.addProperty("fluid", fluid.getId());
 		o.addProperty("amount", fluid.getAmount());
 		json.add("fluidIngredient", o);

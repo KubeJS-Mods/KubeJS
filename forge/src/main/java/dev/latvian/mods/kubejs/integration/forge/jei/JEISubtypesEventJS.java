@@ -29,7 +29,7 @@ public class JEISubtypesEventJS extends EventJS {
 
 		@Override
 		public String apply(ItemStack stack, UidContext context) {
-			CompoundTag nbt = stack.getTag();
+            var nbt = stack.getTag();
 
 			if (nbt == null || !nbt.contains(key)) {
 				return "";
@@ -47,7 +47,7 @@ public class JEISubtypesEventJS extends EventJS {
 
 	public void registerInterpreter(Object id, Interpreter interpreter) {
 		registration.registerSubtypeInterpreter(ItemStackJS.of(id).getItem(), (stack, context) -> {
-			Object o = interpreter.apply(ItemStackJS.of(stack));
+            var o = interpreter.apply(ItemStackJS.of(stack));
 			return o == null ? "" : o.toString();
 		});
 	}
@@ -57,9 +57,9 @@ public class JEISubtypesEventJS extends EventJS {
 	}
 
 	public void useNBTKey(IngredientJS items, String key) {
-		NBTKeyInterpreter in = new NBTKeyInterpreter(key);
+        var in = new NBTKeyInterpreter(key);
 
-		for (Item item : items.getVanillaItems()) {
+		for (var item : items.getVanillaItems()) {
 			registration.registerSubtypeInterpreter(item, new NBTKeyInterpreter(key));
 		}
 	}

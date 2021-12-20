@@ -81,7 +81,7 @@ public class ItemTooltipEventJS extends EventJS {
 			return;
 		}
 
-		StaticTooltipHandlerFromLines l = new StaticTooltipHandlerFromLines(text);
+		var l = new StaticTooltipHandlerFromLines(text);
 
 		if (!l.lines.isEmpty()) {
 			for (var i : IngredientJS.of(item).getVanillaItems()) {
@@ -93,7 +93,7 @@ public class ItemTooltipEventJS extends EventJS {
 	}
 
 	public void addToAll(Object text) {
-		StaticTooltipHandlerFromLines l = new StaticTooltipHandlerFromLines(text);
+		var l = new StaticTooltipHandlerFromLines(text);
 
 		if (!l.lines.isEmpty()) {
 			map.computeIfAbsent(Items.AIR, k -> new ArrayList<>()).add(l);
@@ -106,7 +106,7 @@ public class ItemTooltipEventJS extends EventJS {
 			return;
 		}
 
-		StaticTooltipHandlerFromJSWrapper l = new StaticTooltipHandlerFromJSWrapper(handler);
+		var l = new StaticTooltipHandlerFromJSWrapper(handler);
 
 		for (var i : IngredientJS.of(item).getVanillaItems()) {
 			if (i != Items.AIR) {

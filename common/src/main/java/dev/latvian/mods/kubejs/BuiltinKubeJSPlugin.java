@@ -440,7 +440,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		}
 
 		if (Platform.isModLoaded("artisanworktables")) {
-			String[] types = {
+			var types = new String[]{
 					"basic",
 					"blacksmith",
 					"carpenter",
@@ -484,7 +484,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	public void generateDataJsons(DataJsonGenerator generator) {
 		for (var builder : KubeJSObjects.BLOCKS.values()) {
 			if (builder.lootTable != null) {
-				LootBuilder lootBuilder = new LootBuilder(null);
+				var lootBuilder = new LootBuilder(null);
 				lootBuilder.type = "minecraft:block";
 				builder.lootTable.accept(lootBuilder);
 				generator.json(builder.newID("loot_tables/blocks/", ""), lootBuilder.toJson());
@@ -523,7 +523,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 			generator.json(builder.newID("blockstates/", ""), builder.getBlockstateJson());
 			generator.json(builder.newID("models/block/", ""), builder.getBlockModelJson());
 
-			JsonObject bucketModel = new JsonObject();
+			var bucketModel = new JsonObject();
 			bucketModel.addProperty("parent", "kubejs:item/generated_bucket");
 			generator.json(builder.newID("models/item/", "_bucket"), bucketModel);
 		}

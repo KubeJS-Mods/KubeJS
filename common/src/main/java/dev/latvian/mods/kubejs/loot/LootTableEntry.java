@@ -22,7 +22,7 @@ public class LootTableEntry implements FunctionContainer, ConditionContainer {
 
 	@Override
 	public LootTableEntry addFunction(JsonObject o) {
-		JsonArray a = (JsonArray) json.get("functions");
+		var a = (JsonArray) json.get("functions");
 
 		if (a == null) {
 			a = new JsonArray();
@@ -35,7 +35,7 @@ public class LootTableEntry implements FunctionContainer, ConditionContainer {
 
 	@Override
 	public LootTableEntry addCondition(JsonObject o) {
-		JsonArray a = (JsonArray) json.get("conditions");
+		var a = (JsonArray) json.get("conditions");
 
 		if (a == null) {
 			a = new JsonArray();

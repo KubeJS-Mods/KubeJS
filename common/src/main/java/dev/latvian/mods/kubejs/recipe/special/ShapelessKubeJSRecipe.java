@@ -53,11 +53,11 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe {
 
 	@Override
 	public boolean matches(CraftingContainer craftingContainer, Level level) {
-		StackedContents stackedContents = new StackedContents();
-		int count = 0;
+		var stackedContents = new StackedContents();
+		var count = 0;
 
-		for (int i = 0; i < craftingContainer.getContainerSize(); i++) {
-			ItemStack stack = craftingContainer.getItem(i);
+		for (var i = 0; i < craftingContainer.getContainerSize(); i++) {
+			var stack = craftingContainer.getItem(i);
 
 			if (!stack.isEmpty()) {
 				count++;
@@ -80,9 +80,9 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe {
 
 	@Override
 	public NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
-		NonNullList<ItemStack> list = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
+		var list = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
 
-		for (int i = 0; i < list.size(); i++) {
+		for (var i = 0; i < list.size(); i++) {
 			list.set(i, IngredientAction.getRemaining(container, i, ingredientActions));
 		}
 
@@ -92,7 +92,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe {
 	public static class SerializerKJS extends AbstractRecipeSerializer<ShapelessKubeJSRecipe> {
 		@Override
 		public ShapelessKubeJSRecipe fromJson(ResourceLocation id, JsonObject json) {
-			ShapelessKubeJSRecipe r = new ShapelessKubeJSRecipe(id);
+			var r = new ShapelessKubeJSRecipe(id);
 			r.group = GsonHelper.getAsString(json, "group", "");
 			r.ingredients = itemsFromJson(GsonHelper.getAsJsonArray(json, "ingredients"));
 
@@ -110,8 +110,8 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe {
 		private static NonNullList<Ingredient> itemsFromJson(JsonArray a) {
 			NonNullList<Ingredient> list = NonNullList.create();
 
-			for (int i = 0; i < a.size(); i++) {
-				Ingredient ingredient = Ingredient.fromJson(a.get(i));
+			for (var i = 0; i < a.size(); i++) {
+				var ingredient = Ingredient.fromJson(a.get(i));
 
 				if (!ingredient.isEmpty()) {
 					list.add(ingredient);
@@ -123,12 +123,12 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe {
 
 		@Override
 		public ShapelessKubeJSRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-			ShapelessKubeJSRecipe r = new ShapelessKubeJSRecipe(id);
+			var r = new ShapelessKubeJSRecipe(id);
 			r.group = buf.readUtf(32767);
-			int s = buf.readVarInt();
+			var s = buf.readVarInt();
 			r.ingredients = NonNullList.withSize(s, Ingredient.EMPTY);
 
-			for (int i = 0; i < s; ++i) {
+			for (var i = 0; i < s; ++i) {
 				r.ingredients.set(i, Ingredient.fromNetwork(buf));
 			}
 

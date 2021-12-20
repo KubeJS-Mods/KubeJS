@@ -19,7 +19,7 @@ public class KubeJSFluidEventHandlerImpl {
 		if (fluidBuilder.extraPlatformInfo != null) {
 			return (ForgeFlowingFluid.Properties) fluidBuilder.extraPlatformInfo;
 		}
-		FluidAttributes.Builder builder = FluidAttributes.builder(
+        var builder = FluidAttributes.builder(
 						new ResourceLocation(fluidBuilder.stillTexture),
 						new ResourceLocation(fluidBuilder.flowingTexture))
 				.translationKey("fluid." + fluidBuilder.id.getNamespace() + "." + fluidBuilder.id.getPath())
@@ -34,7 +34,7 @@ public class KubeJSFluidEventHandlerImpl {
 			builder.gaseous();
 		}
 
-		ForgeFlowingFluid.Properties properties = new ForgeFlowingFluid.Properties(() -> fluidBuilder.stillFluid, () -> fluidBuilder.flowingFluid, builder).bucket(() -> fluidBuilder.bucketItem).block(() -> fluidBuilder.block);
+        var properties = new ForgeFlowingFluid.Properties(() -> fluidBuilder.stillFluid, () -> fluidBuilder.flowingFluid, builder).bucket(() -> fluidBuilder.bucketItem).block(() -> fluidBuilder.block);
 		fluidBuilder.extraPlatformInfo = properties;
 		return properties;
 	}

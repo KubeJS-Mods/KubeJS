@@ -70,7 +70,7 @@ public class MaterialListJS {
 	}
 
 	public MaterialJS get(String id) {
-		MaterialJS m = map.get(id);
+		var m = map.get(id);
 		return m == null ? air : m;
 	}
 

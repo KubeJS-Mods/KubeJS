@@ -270,14 +270,14 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 		@Override
 		public JsonElement toJson() {
-			JsonObject json = new JsonObject();
+			var json = new JsonObject();
 			json.addProperty("item", "minecraft:air");
 			return json;
 		}
 
 		@Override
 		public JsonElement toRawResultJson() {
-			JsonObject json = new JsonObject();
+			var json = new JsonObject();
 			json.addProperty("item", "minecraft:air");
 			json.addProperty("count", 1);
 			return json;
@@ -313,7 +313,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		} else if (o instanceof ItemStack stack) {
 			return stack.isEmpty() ? EMPTY : new ItemStackJS(stack);
 		} else if (o instanceof ResourceLocation id) {
-			Item item = KubeJSRegistries.items().get(id);
+			var item = KubeJSRegistries.items().get(id);
 
 			if (item == Items.AIR) {
 				if (RecipeJS.itemErrors) {
@@ -329,7 +329,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		} else if (o instanceof JsonElement json) {
 			return resultFromRecipeJson(json);
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
-			Pattern reg = UtilsJS.parseRegex(o);
+			var reg = UtilsJS.parseRegex(o);
 
 			if (reg != null) {
 				return new RegexIngredientJS(reg).getFirst();
@@ -337,9 +337,9 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 			return EMPTY;
 		} else if (o instanceof CharSequence) {
-			String s = o.toString().trim();
-			int count = 1;
-			int spaceIndex = s.indexOf(' ');
+			var s = o.toString().trim();
+			var count = 1;
+			var spaceIndex = s.indexOf(' ');
 
 			if (spaceIndex >= 2 && s.indexOf('x') == spaceIndex - 1) {
 				count = Integer.parseInt(s.substring(0, spaceIndex - 1));
@@ -355,7 +355,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			} else if (s.startsWith("@")) {
 				return new ModIngredientJS(s.substring(1)).getFirst().withCount(count);
 			} else if (s.startsWith("%")) {
-				CreativeModeTab group = findGroup(s.substring(1));
+				var group = findGroup(s.substring(1));
 
 				if (group == null) {
 					if (RecipeJS.itemErrors) {
@@ -368,13 +368,13 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 				return new GroupIngredientJS(group).getFirst().withCount(count);
 			}
 
-			Pattern reg = UtilsJS.parseRegex(s);
+			var reg = UtilsJS.parseRegex(s);
 
 			if (reg != null) {
 				return new RegexIngredientJS(reg).getFirst().withCount(count);
 			}
 
-			Item item = KubeJSRegistries.items().get(new ResourceLocation(s));
+			var item = KubeJSRegistries.items().get(new ResourceLocation(s));
 
 			if (item == Items.AIR) {
 				if (RecipeJS.itemErrors) {
@@ -387,12 +387,12 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			return new ItemStackJS(new ItemStack(item, count));
 		}
 
-		MapJS map = MapJS.of(o);
+		var map = MapJS.of(o);
 
 		if (map != null) {
 			if (map.containsKey("item")) {
-				String id = KubeJS.appendModId(map.get("item").toString());
-				Item item = KubeJSRegistries.items().get(new ResourceLocation(id));
+				var id = KubeJS.appendModId(map.get("item").toString());
+				var item = KubeJSRegistries.items().get(new ResourceLocation(id));
 
 				if (item == Items.AIR) {
 					if (RecipeJS.itemErrors) {
@@ -402,7 +402,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 					return EMPTY;
 				}
 
-				ItemStack stack = new ItemStack(item);
+				var stack = new ItemStack(item);
 
 				if (map.get("count") instanceof Number number) {
 					stack.setCount(number.intValue());
@@ -414,7 +414,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 				return new ItemStackJS(stack);
 			} else if (map.get("tag") instanceof CharSequence s) {
-				ItemStackJS stack = TagIngredientJS.createTag(s.toString()).getFirst();
+				var stack = TagIngredientJS.createTag(s.toString()).getFirst();
 
 				if (map.containsKey("count")) {
 					stack.setCount(UtilsJS.parseInt(map.get("count"), 1));
@@ -435,7 +435,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		} else if (o instanceof Item item) {
 			return item;
 		} else if (o instanceof CharSequence) {
-			String s = o.toString();
+			var s = o.toString();
 			if (s.isEmpty()) {
 				return Items.AIR;
 			} else if (s.charAt(0) != '#') {
@@ -453,10 +453,10 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		} else if (json.isJsonPrimitive()) {
 			return of(json.getAsString());
 		} else if (json.isJsonObject()) {
-			JsonObject o = json.getAsJsonObject();
+			var o = json.getAsJsonObject();
 
 			if (RecipeJS.currentRecipe != null) {
-				ItemStackJS is = RecipeJS.currentRecipe.resultFromRecipeJson(o);
+				var is = RecipeJS.currentRecipe.resultFromRecipeJson(o);
 
 				if (is != null) {
 					return is;
@@ -464,14 +464,14 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			}
 
 			if (o.has("item")) {
-				ItemStackJS stack = of(o.get("item").getAsString());
+				var stack = of(o.get("item").getAsString());
 
 				if (o.has("count")) {
 					stack.setCount(o.get("count").getAsInt());
 				}
 
 				if (o.has("nbt")) {
-					JsonElement element = o.get("nbt");
+					var element = o.get("nbt");
 
 					if (element.isJsonObject()) {
 						stack = stack.withNBT(MapJS.nbt(element));
@@ -481,14 +481,14 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 				}
 
 				if (o.has("chance")) {
-					boolean locked = o.has("locked") && o.get("locked").getAsBoolean();
-					double c = o.get("chance").getAsDouble();
+					var locked = o.has("locked") && o.get("locked").getAsBoolean();
+					var c = o.get("chance").getAsDouble();
 					stack.setChance(locked ? -c : c);
 				}
 
 				return stack;
 			} else if (o.has("tag")) {
-				int c = 1;
+				var c = 1;
 
 				if (o.has("count")) {
 					c = o.get("count").getAsInt();
@@ -508,7 +508,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			return cachedItemList;
 		}
 
-		LinkedHashSet<ItemStackJS> set = new LinkedHashSet<>();
+		var set = new LinkedHashSet<ItemStackJS>();
 		NonNullList<ItemStack> stackList = NonNullList.create();
 
 		for (var item : KubeJSRegistries.items()) {
@@ -593,7 +593,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 	@Override
 	public ItemStackJS copy() {
-		ItemStackJS s = new ItemStackJS(stack.copy());
+		var s = new ItemStackJS(stack.copy());
 		s.chance = chance;
 
 		if (!hasNBT()) {
@@ -618,7 +618,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			return EMPTY;
 		}
 
-		ItemStackJS is = copy();
+		var is = copy();
 		is.setCount(c);
 		return is;
 	}
@@ -655,13 +655,13 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	}
 
 	public ItemStackJS removeNBT() {
-		ItemStackJS s = copy();
+		var s = copy();
 		((ItemStackKJS) (Object) s.stack).removeTagKJS();
 		return s;
 	}
 
 	public ItemStackJS withNBT(CompoundTag nbt) {
-		ItemStack is = stack.copy();
+		var is = stack.copy();
 
 		if (is.getTag() == null) {
 			is.setTag(nbt);
@@ -697,7 +697,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			return this;
 		}
 
-		ItemStackJS is = copy();
+		var is = copy();
 		is.setChance(c);
 		return is;
 	}
@@ -707,7 +707,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	}
 
 	public ItemStackJS withName(@Nullable Component displayName) {
-		ItemStack is = stack.copy();
+		var is = stack.copy();
 
 		if (displayName != null) {
 			is.setHoverName(displayName);
@@ -720,10 +720,10 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 
-		int count = getCount();
-		boolean hasChanceOrNbt = hasChance() || hasNBT();
+		var count = getCount();
+		var hasChanceOrNbt = hasChance() || hasNBT();
 
 		if (count > 1 && !hasChanceOrNbt) {
 			builder.append('\'');
@@ -743,17 +743,17 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			}
 
 			if (hasNBT()) {
-				CompoundTag t = getNbt();
+				var t = getNbt();
 
 				if (t != null && !t.isEmpty()) {
-					String key = getItem() == Items.ENCHANTED_BOOK ? "StoredEnchantments" : "Enchantments";
+					var key = getItem() == Items.ENCHANTED_BOOK ? "StoredEnchantments" : "Enchantments";
 
 					if (t.contains(key, NbtType.LIST)) {
-						ListTag l = t.getList(key, NbtType.COMPOUND);
+						var l = t.getList(key, NbtType.COMPOUND);
 						enchants = new ArrayList<>(l.size());
 
-						for (int i = 0; i < l.size(); i++) {
-							CompoundTag t1 = l.getCompound(i);
+						for (var i = 0; i < l.size(); i++) {
+							var t1 = l.getCompound(i);
 							enchants.add(Pair.of(t1.getString("id"), t1.getInt("lvl")));
 						}
 
@@ -775,7 +775,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			builder.append(')');
 
 			if (enchants != null) {
-				for (Pair<String, Integer> e : enchants) {
+				for (var e : enchants) {
 					builder.append(".enchant('");
 					builder.append(e.getKey());
 					builder.append("', ");
@@ -806,8 +806,8 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	@Override
 	public boolean testVanilla(ItemStack other) {
 		if (stack.getItem() == other.getItem()) {
-			CompoundTag nbt = stack.getTag();
-			CompoundTag nbt2 = other.getTag();
+			var nbt = stack.getTag();
+			var nbt2 = other.getTag();
 			return Objects.equals(nbt, nbt2);
 		}
 
@@ -847,7 +847,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			return !s.isEmpty() && areItemsEqual(s) && isNBTEqual(s);
 		}
 
-		ItemStackJS s = of(o);
+		var s = of(o);
 		return !s.isEmpty() && areItemsEqual(s) && isNBTEqual(s);
 	}
 
@@ -858,15 +858,15 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			return getCount() == s.getCount() && areItemsEqual(s) && isNBTEqual(s);
 		}
 
-		ItemStackJS s = of(o);
+		var s = of(o);
 		return getCount() == s.getCount() && areItemsEqual(s) && isNBTEqual(s);
 	}
 
 	public MapJS getEnchantments() {
-		MapJS map = new MapJS();
+		var map = new MapJS();
 
-		for (Map.Entry<Enchantment, Integer> entry : EnchantmentHelper.getEnchantments(getItemStack()).entrySet()) {
-			ResourceLocation id = KubeJSRegistries.enchantments().getId(entry.getKey());
+		for (var entry : EnchantmentHelper.getEnchantments(getItemStack()).entrySet()) {
+			var id = KubeJSRegistries.enchantments().getId(entry.getKey());
 
 			if (id != null) {
 				map.put(id.toString(), entry.getValue());
@@ -881,10 +881,10 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	}
 
 	public ItemStackJS enchant(MapJS enchantments) {
-		ItemStackJS is = this;
+		var is = this;
 
-		for (Map.Entry<String, Object> entry : enchantments.entrySet()) {
-			Enchantment enchantment = KubeJSRegistries.enchantments().get(UtilsJS.getMCID(entry.getKey()));
+		for (var entry : enchantments.entrySet()) {
+			var enchantment = KubeJSRegistries.enchantments().get(UtilsJS.getMCID(entry.getKey()));
 
 			if (enchantment != null && entry.getValue() instanceof Number number) {
 				is = is.enchant(enchantment, number.intValue());
@@ -895,7 +895,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	}
 
 	public ItemStackJS enchant(Enchantment enchantment, int level) {
-		ItemStack is = stack.copy();
+		var is = stack.copy();
 
 		if (is.getItem() == Items.ENCHANTED_BOOK) {
 			EnchantedBookItem.addEnchantment(is, new EnchantmentInstance(enchantment, level));
@@ -963,8 +963,8 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 	public boolean isNBTEqual(ItemStackJS other) {
 		if (hasNBT() == other.hasNBT()) {
-			CompoundTag nbt = stack.getTag();
-			CompoundTag nbt2 = other.getNbt();
+			var nbt = stack.getTag();
+			var nbt2 = other.getNbt();
 			return Objects.equals(nbt, nbt2);
 		}
 
@@ -973,8 +973,8 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 	public boolean isNBTEqual(ItemStack other) {
 		if (hasNBT() == other.hasTag()) {
-			CompoundTag nbt = stack.getTag();
-			CompoundTag nbt2 = other.getTag();
+			var nbt = stack.getTag();
+			var nbt2 = other.getTag();
 			return Objects.equals(nbt, nbt2);
 		}
 
@@ -1004,7 +1004,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 	@Override
 	public JsonElement toJson() {
-		int c = getCount();
+		var c = getCount();
 
 		if (c == 1) {
 			return new DummyItemStackJSIngredient(this).toJson();
@@ -1015,7 +1015,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 	public JsonElement toResultJson() {
 		if (RecipeJS.currentRecipe != null) {
-			JsonElement e = RecipeJS.currentRecipe.serializeItemStack(this);
+			var e = RecipeJS.currentRecipe.serializeItemStack(this);
 
 			if (e != null) {
 				return e;
@@ -1026,11 +1026,11 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	}
 
 	public JsonElement toRawResultJson() {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("item", getId());
 		json.addProperty("count", getCount());
 
-		CompoundTag nbt = getNbt();
+		var nbt = getNbt();
 
 		if (nbt != null) {
 			if (RecipeJS.currentRecipe != null && RecipeJS.currentRecipe.serializeNBTAsJson()) {

@@ -44,7 +44,7 @@ public class ItemModificationProperties {
 
 	public void setTier(Consumer<ModifiedToolTier> c) {
 		if (item instanceof TieredItemKJS kjs) {
-			ModifiedToolTier t = new ModifiedToolTier(kjs.getTierKJS());
+            var t = new ModifiedToolTier(kjs.getTierKJS());
 			c.accept(t);
 			kjs.setTierKJS(t);
 		} else {
@@ -53,9 +53,9 @@ public class ItemModificationProperties {
 	}
 
 	public void setFoodProperties(Consumer<FoodBuilder> consumer) {
-		Item originalItem = (Item) item;
-		FoodProperties fp = originalItem.getFoodProperties();
-		FoodBuilder builder = fp == null ? new FoodBuilder() : new FoodBuilder(fp);
+        var originalItem = (Item) item;
+        var fp = originalItem.getFoodProperties();
+        var builder = fp == null ? new FoodBuilder() : new FoodBuilder(fp);
 		consumer.accept(builder);
 		item.setFoodPropertiesKJS(builder.build());
 	}

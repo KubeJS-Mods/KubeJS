@@ -113,7 +113,7 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void itemTooltip(ItemStack stack, List<Component> lines, TooltipFlag flag) {
-		boolean advanced = flag.isAdvanced();
+		var advanced = flag.isAdvanced();
 
 		if (advanced && ClientProperties.get().getShowTagNames() && Screen.hasShiftDown()) {
 			for (var tag : Tags.byItemStack(stack)) {
@@ -188,7 +188,7 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void inGameScreenDraw(PoseStack matrices, float delta) {
-		Minecraft mc = Minecraft.getInstance();
+		var mc = Minecraft.getInstance();
 
 		if (mc.player == null || mc.options.renderDebug || mc.screen != null) {
 			return;
@@ -197,7 +197,7 @@ public class KubeJSClientEventHandler {
 		RenderSystem.enableBlend();
 		//RenderSystem.disableLighting();
 
-		ScreenPaintEventJS event = new ScreenPaintEventJS(mc, matrices, delta);
+		var event = new ScreenPaintEventJS(mc, matrices, delta);
 		Painter.INSTANCE.deltaUnit.set(delta);
 		Painter.INSTANCE.screenWidthUnit.set(event.width);
 		Painter.INSTANCE.screenHeightUnit.set(event.height);
@@ -219,7 +219,7 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void guiScreenDraw(Screen screen, PoseStack matrices, int mouseX, int mouseY, float delta) {
-		Minecraft mc = Minecraft.getInstance();
+		var mc = Minecraft.getInstance();
 
 		if (mc.player == null) {
 			return;
@@ -228,7 +228,7 @@ public class KubeJSClientEventHandler {
 		RenderSystem.enableBlend();
 		//RenderSystem.disableLighting();
 
-		ScreenPaintEventJS event = new ScreenPaintEventJS(mc, screen, matrices, mouseX, mouseY, delta);
+		var event = new ScreenPaintEventJS(mc, screen, matrices, mouseX, mouseY, delta);
 		event.post(KubeJSEvents.CLIENT_PAINT_SCREEN);
 
 		for (var object : Painter.INSTANCE.getScreenObjects()) {
@@ -258,7 +258,7 @@ public class KubeJSClientEventHandler {
 		if (ClientProperties.get().getDisableRecipeBook() && screen instanceof RecipeUpdateListener) {
 			var iterator = screen.children().iterator();
 			while (iterator.hasNext()) {
-				GuiEventListener listener = iterator.next();
+				var listener = iterator.next();
 				if (listener instanceof AbstractWidget && listener instanceof ImageButtonKJS buttonKJS && RECIPE_BUTTON_TEXTURE.equals(buttonKJS.getButtonTextureKJS())) {
 					access.getRenderables().remove(listener);
 					access.getNarratables().remove(listener);
@@ -303,23 +303,23 @@ public class KubeJSClientEventHandler {
 		}
 
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, atlas.getId());
-		int w = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH);
-		int h = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT);
+		var w = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH);
+		var h = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT);
 
 		if (w <= 0 || h <= 0) {
 			return;
 		}
 
-		BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-		int[] pixels = new int[w * h];
+		var image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		var pixels = new int[w * h];
 
-		IntBuffer result = BufferUtils.createIntBuffer(w * h);
+		var result = BufferUtils.createIntBuffer(w * h);
 		GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, result);
 		result.get(pixels);
 
 		image.setRGB(0, 0, w, h, pixels, 0, w);
 
-		Path path = KubeJSPaths.EXPORTED.resolve(atlas.location().getNamespace() + "/" + atlas.location().getPath());
+		var path = KubeJSPaths.EXPORTED.resolve(atlas.location().getNamespace() + "/" + atlas.location().getPath());
 
 		if (!Files.exists(path.getParent())) {
 			try {
@@ -339,7 +339,7 @@ public class KubeJSClientEventHandler {
 			}
 		}
 
-		try (OutputStream stream = Files.newOutputStream(path)) {
+		try (var stream = Files.newOutputStream(path)) {
 			ImageIO.write(image, "PNG", stream);
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -347,7 +347,7 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void renderWorldLast(PoseStack ps, float delta) {
-		Minecraft mc = Minecraft.getInstance();
+		var mc = Minecraft.getInstance();
 
 		if (mc.player == null) {
 			return;
@@ -356,7 +356,7 @@ public class KubeJSClientEventHandler {
 		// RenderSystem.enableBlend();
 		// RenderSystem.disableLighting();
 
-		WorldPaintEventJS event = new WorldPaintEventJS(mc, ps, delta);
+		var event = new WorldPaintEventJS(mc, ps, delta);
 		event.post(KubeJSEvents.CLIENT_PAINT_WORLD);
 
 		for (var object : Painter.INSTANCE.getWorldObjects()) {

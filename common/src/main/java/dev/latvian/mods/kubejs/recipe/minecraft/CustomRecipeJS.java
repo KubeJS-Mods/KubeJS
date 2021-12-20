@@ -32,7 +32,7 @@ public class CustomRecipeJS extends RecipeJS {
 	}
 
 	private boolean addInput(String k) {
-		JsonElement e = json.get(k);
+		var e = json.get(k);
 
 		if (e == null || e.isJsonNull()) {
 			return false;
@@ -40,7 +40,7 @@ public class CustomRecipeJS extends RecipeJS {
 
 		if (e.isJsonArray()) {
 			for (var e1 : e.getAsJsonArray()) {
-				IngredientJS i = IngredientJS.ingredientFromRecipeJson(e1);
+				var i = IngredientJS.ingredientFromRecipeJson(e1);
 
 				if (!i.isEmpty()) {
 					inputItems.add(i);
@@ -52,7 +52,7 @@ public class CustomRecipeJS extends RecipeJS {
 			return true;
 		}
 
-		IngredientJS i = IngredientJS.ingredientFromRecipeJson(e);
+		var i = IngredientJS.ingredientFromRecipeJson(e);
 
 		if (!i.isEmpty()) {
 			inputItems.add(i);
@@ -65,7 +65,7 @@ public class CustomRecipeJS extends RecipeJS {
 	}
 
 	private boolean addOutput(String k) {
-		JsonElement e = json.get(k);
+		var e = json.get(k);
 
 		if (e == null || e.isJsonNull()) {
 			return false;
@@ -73,7 +73,7 @@ public class CustomRecipeJS extends RecipeJS {
 
 		if (e.isJsonArray()) {
 			for (var e1 : e.getAsJsonArray()) {
-				ItemStackJS i = ItemStackJS.of(e1);
+				var i = ItemStackJS.of(e1);
 
 				if (!i.isEmpty()) {
 					outputItems.add(i);
@@ -85,7 +85,7 @@ public class CustomRecipeJS extends RecipeJS {
 			return true;
 		}
 
-		ItemStackJS i = ItemStackJS.of(e);
+		var i = ItemStackJS.of(e);
 
 		if (!i.isEmpty()) {
 			if (e.isJsonPrimitive()) {
@@ -158,7 +158,7 @@ public class CustomRecipeJS extends RecipeJS {
 	public void serialize() {
 		if (serializeOutputs && outputType != -1 && !outputKey.isEmpty()) {
 			if (outputType == 1) {
-				JsonArray a = new JsonArray();
+				var a = new JsonArray();
 
 				for (var in : outputItems) {
 					a.add(in.toResultJson());
@@ -175,7 +175,7 @@ public class CustomRecipeJS extends RecipeJS {
 
 		if (serializeInputs && inputType != -1 && !inputKey.isEmpty()) {
 			if (inputType == 1) {
-				JsonArray a = new JsonArray();
+				var a = new JsonArray();
 
 				for (var in : inputItems) {
 					a.add(in.toJson());

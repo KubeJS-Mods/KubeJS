@@ -41,7 +41,7 @@ public class ServerSettings {
 	}
 
 	private static <T> void addRegistry(JsonObject o, String name, Registrar<T> r) {
-		JsonArray a = new JsonArray();
+		var a = new JsonArray();
 
 		for (var id : r.getIds()) {
 			a.add(id.toString());
@@ -51,14 +51,14 @@ public class ServerSettings {
 	}
 
 	private static void exportDataBlocking() {
-		JsonObject registries = new JsonObject();
+		var registries = new JsonObject();
 		addRegistry(registries, "items", KubeJSRegistries.items());
 		addRegistry(registries, "blocks", KubeJSRegistries.blocks());
 		addRegistry(registries, "fluids", KubeJSRegistries.fluids());
 		addRegistry(registries, "entity_types", KubeJSRegistries.entityTypes());
 		dataExport.add("registries", registries);
 
-		JsonArray errors = new JsonArray();
+		var errors = new JsonArray();
 
 		for (var s : ScriptType.SERVER.errors) {
 			errors.add(s);
@@ -66,7 +66,7 @@ public class ServerSettings {
 
 		dataExport.add("errors", errors);
 
-		JsonArray warnings = new JsonArray();
+		var warnings = new JsonArray();
 
 		for (var s : ScriptType.SERVER.warnings) {
 			warnings.add(s);
@@ -74,7 +74,7 @@ public class ServerSettings {
 
 		dataExport.add("warnings", warnings);
 
-		try (BufferedWriter writer = Files.newBufferedWriter(KubeJSPaths.EXPORTED.resolve("kubejs-server-export.json"))) {
+		try (var writer = Files.newBufferedWriter(KubeJSPaths.EXPORTED.resolve("kubejs-server-export.json"))) {
 			JsonUtilsJS.GSON.toJson(dataExport, writer);
 		} catch (Exception ex) {
 			ex.printStackTrace();

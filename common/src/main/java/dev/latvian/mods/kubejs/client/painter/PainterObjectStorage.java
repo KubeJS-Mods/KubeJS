@@ -30,7 +30,7 @@ public class PainterObjectStorage {
 
 	public void handle(CompoundTag root) {
 		for (var key : root.getAllKeys()) {
-			CompoundTag tag = root.getCompound(key);
+			var tag = root.getCompound(key);
 
 			if (key.equals("*")) {
 				if (tag.getBoolean("remove")) {
@@ -49,15 +49,15 @@ public class PainterObjectStorage {
 					}
 				}
 			} else {
-				PainterObject o = objects.get(key);
+				var o = objects.get(key);
 
 				if (o != null) {
 					o.update(tag);
 				} else if (key.indexOf(' ') != -1) {
 					ConsoleJS.CLIENT.error("Painter id can't contain spaces!");
 				} else {
-					String type = tag.getString("type");
-					PainterObject o1 = Painter.INSTANCE.make(type);
+					var type = tag.getString("type");
+					var o1 = Painter.INSTANCE.make(type);
 
 					if (o1 != null) {
 						o1.id = key;

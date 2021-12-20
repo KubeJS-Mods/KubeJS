@@ -39,8 +39,8 @@ public class RemoveStageMessage extends BaseS2CMessage {
 
 	@Override
 	public void handle(PacketContext context) {
-		Player p0 = context.getPlayer();
-		Player p = player.equals(p0.getUUID()) ? p0 : p0.level.getPlayerByUUID(player);
+		var p0 = context.getPlayer();
+		var p = player.equals(p0.getUUID()) ? p0 : p0.level.getPlayerByUUID(player);
 
 		if (p != null) {
 			Stages.get(p).remove(stage);

@@ -13,8 +13,8 @@ import java.util.function.Consumer;
  */
 public class ItemArmorTierEventJS extends StartupEventJS {
 	public void add(String id, String parent, Consumer<ModifiedArmorTier> tier) {
-		ArmorMaterial material = ItemBuilder.ARMOR_TIERS.getOrDefault(parent, ArmorMaterials.IRON);
-		ModifiedArmorTier t = new ModifiedArmorTier(id, material);
+		var material = ItemBuilder.ARMOR_TIERS.getOrDefault(parent, ArmorMaterials.IRON);
+		var t = new ModifiedArmorTier(id, material);
 		tier.accept(t);
 		ItemBuilder.ARMOR_TIERS.put(id, t);
 	}

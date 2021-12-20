@@ -42,7 +42,7 @@ public class ContainerInventory implements ItemHandler.Mutable {
 			return false;
 		}
 
-		ContainerInventory that = (ContainerInventory) o;
+		var that = (ContainerInventory) o;
 
 		return getInv().equals(that.getInv());
 
@@ -71,7 +71,7 @@ public class ContainerInventory implements ItemHandler.Mutable {
 			return ItemStack.EMPTY;
 		}
 
-		ItemStack stackInSlot = getInv().getItem(slot);
+		var stackInSlot = getInv().getItem(slot);
 
 		int m;
 		if (!stackInSlot.isEmpty()) {
@@ -91,7 +91,7 @@ public class ContainerInventory implements ItemHandler.Mutable {
 
 			if (stack.getCount() <= m) {
 				if (!simulate) {
-					ItemStack copy = stack.copy();
+					var copy = stack.copy();
 					copy.grow(stackInSlot.getCount());
 					getInv().setItem(slot, copy);
 					getInv().setChanged();
@@ -102,7 +102,7 @@ public class ContainerInventory implements ItemHandler.Mutable {
 				// copy the stack to not modify the original one
 				stack = stack.copy();
 				if (!simulate) {
-					ItemStack copy = stack.split(m);
+					var copy = stack.split(m);
 					copy.grow(stackInSlot.getCount());
 					getInv().setItem(slot, copy);
 					getInv().setChanged();
@@ -147,7 +147,7 @@ public class ContainerInventory implements ItemHandler.Mutable {
 			return ItemStack.EMPTY;
 		}
 
-		ItemStack stackInSlot = getInv().getItem(slot);
+		var stackInSlot = getInv().getItem(slot);
 
 		if (stackInSlot.isEmpty()) {
 			return ItemStack.EMPTY;
@@ -157,14 +157,14 @@ public class ContainerInventory implements ItemHandler.Mutable {
 			if (stackInSlot.getCount() < amount) {
 				return stackInSlot.copy();
 			} else {
-				ItemStack copy = stackInSlot.copy();
+				var copy = stackInSlot.copy();
 				copy.setCount(amount);
 				return copy;
 			}
 		} else {
-			int m = Math.min(stackInSlot.getCount(), amount);
+			var m = Math.min(stackInSlot.getCount(), amount);
 
-			ItemStack decrStackSize = getInv().removeItem(slot, m);
+			var decrStackSize = getInv().removeItem(slot, m);
 			getInv().setChanged();
 			return decrStackSize;
 		}

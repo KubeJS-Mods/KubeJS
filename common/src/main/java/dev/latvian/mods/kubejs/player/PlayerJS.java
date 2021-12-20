@@ -182,10 +182,10 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 
 	public void boostElytraFlight() {
 		if (minecraftPlayer.isFallFlying()) {
-			Vec3 v = minecraftPlayer.getLookAngle();
-			double d0 = 1.5D;
-			double d1 = 0.1D;
-			Vec3 m = minecraftPlayer.getDeltaMovement();
+			var v = minecraftPlayer.getLookAngle();
+			var d0 = 1.5D;
+			var d1 = 0.1D;
+			var m = minecraftPlayer.getDeltaMovement();
 			minecraftPlayer.setDeltaMovement(m.add(v.x * 0.1D + (v.x * 1.5D - m.x) * 0.5D, v.y * 0.1D + (v.y * 1.5D - m.y) * 0.5D, v.z * 0.1D + (v.z * 1.5D - m.z) * 0.5D));
 		}
 	}

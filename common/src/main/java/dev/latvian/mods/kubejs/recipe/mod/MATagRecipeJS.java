@@ -33,7 +33,7 @@ public class MATagRecipeJS extends RecipeJS {
 			throw new RecipeExceptionJS("Pattern is empty!");
 		}
 
-		for (Map.Entry<String, JsonElement> entry : json.get("key").getAsJsonObject().entrySet()) {
+		for (var entry : json.get("key").getAsJsonObject().entrySet()) {
 			inputItems.add(parseIngredientItem(entry.getValue(), entry.getKey()));
 			key.add(entry.getKey());
 		}
@@ -46,7 +46,7 @@ public class MATagRecipeJS extends RecipeJS {
 	@Override
 	public void serialize() {
 		if (serializeInputs) {
-			JsonArray patternJson = new JsonArray();
+			var patternJson = new JsonArray();
 
 			for (var s : pattern) {
 				patternJson.add(s);
@@ -54,9 +54,9 @@ public class MATagRecipeJS extends RecipeJS {
 
 			json.add("pattern", patternJson);
 
-			JsonObject keyJson = new JsonObject();
+			var keyJson = new JsonObject();
 
-			for (int i = 0; i < key.size(); i++) {
+			for (var i = 0; i < key.size(); i++) {
 				keyJson.add(key.get(i), inputItems.get(i).toJson());
 			}
 

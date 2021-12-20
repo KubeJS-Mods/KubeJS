@@ -180,7 +180,7 @@ public class KubeJSCommands {
 	}
 
 	private static Component copy(String s, ChatFormatting col, String info) {
-		TextComponent component = new TextComponent("- ");
+		var component = new TextComponent("- ");
 		component.setStyle(component.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.GRAY)));
 		component.setStyle(component.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, s)));
 		component.setStyle(component.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent(info + " (Click to copy)"))));
@@ -195,7 +195,7 @@ public class KubeJSCommands {
 
 	private static int hand(ServerPlayer player, InteractionHand hand) {
 		player.sendMessage(new TextComponent("Item in hand:"), Util.NIL_UUID);
-		ItemStackJS stack = ItemStackJS.of(player.getItemInHand(hand));
+		var stack = ItemStackJS.of(player.getItemInHand(hand));
 		player.sendMessage(copy(stack.toString(), ChatFormatting.GREEN, "Item ID"), Util.NIL_UUID);
 
 		List<ResourceLocation> tags = new ArrayList<>(Tags.byItem(stack.getItem()));
@@ -229,7 +229,7 @@ public class KubeJSCommands {
 				stackList.add(ItemStackJS.of(stack));
 			}
 		}
-		String dump = stackList.toString();
+		var dump = stackList.toString();
 		player.sendMessage(copy(dump, ChatFormatting.WHITE, name + " Item List"), Util.NIL_UUID);
 		return 1;
 	}
@@ -244,7 +244,7 @@ public class KubeJSCommands {
 			return 1;
 		}
 
-		for (int i = 0; i < ScriptType.SERVER.errors.size(); i++) {
+		for (var i = 0; i < ScriptType.SERVER.errors.size(); i++) {
 			source.sendSuccess(new TextComponent("[" + (i + 1) + "] " + ScriptType.SERVER.errors.get(i)).withStyle(ChatFormatting.RED), false);
 		}
 
@@ -263,7 +263,7 @@ public class KubeJSCommands {
 			return 1;
 		}
 
-		for (int i = 0; i < ScriptType.SERVER.warnings.size(); i++) {
+		for (var i = 0; i < ScriptType.SERVER.warnings.size(); i++) {
 			source.sendSuccess(new TextComponent("[" + (i + 1) + "] " + ScriptType.SERVER.warnings.get(i)).withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))), false);
 		}
 
@@ -311,10 +311,10 @@ public class KubeJSCommands {
 		ServerSettings.dataExport = new JsonObject();
 		source.sendSuccess(new TextComponent("Reloading server and exporting data..."), false);
 
-		MinecraftServer minecraftServer = source.getServer();
-		PackRepository packRepository = minecraftServer.getPackRepository();
-		WorldData worldData = minecraftServer.getWorldData();
-		Collection<String> collection = packRepository.getSelectedIds();
+		var minecraftServer = source.getServer();
+		var packRepository = minecraftServer.getPackRepository();
+		var worldData = minecraftServer.getWorldData();
+		var collection = packRepository.getSelectedIds();
 		packRepository.reload();
 		Collection<String> collection2 = Lists.newArrayList(collection);
 		Collection<String> collection3 = worldData.getDataPackConfig().getDisabled();
@@ -345,7 +345,7 @@ public class KubeJSCommands {
 	}
 
 	private static <T> int tagObjects(ServerPlayer player, TagCollection<T> collection, ResourceKey<Registry<T>> reg, ResourceLocation t) {
-		Tag<T> tag = collection.getTag(t);
+		var tag = collection.getTag(t);
 
 		if (tag == null || tag.getValues().isEmpty()) {
 			player.sendMessage(new TextComponent("Tag not found!"), Util.NIL_UUID);
@@ -355,7 +355,7 @@ public class KubeJSCommands {
 		player.sendMessage(new TextComponent(t + ":"), Util.NIL_UUID);
 
 		for (var item : tag.getValues()) {
-			ResourceLocation id = Registries.getId(item, reg);
+			var id = Registries.getId(item, reg);
 			if (id == null) {
 				player.sendMessage(new TextComponent("- " + item), Util.NIL_UUID);
 			} else {

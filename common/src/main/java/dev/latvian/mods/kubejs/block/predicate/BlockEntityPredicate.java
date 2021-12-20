@@ -24,7 +24,7 @@ public class BlockEntityPredicate implements BlockPredicate {
 
 	@Override
 	public boolean check(BlockContainerJS block) {
-		BlockEntity tileEntity = block.getEntity();
+		var tileEntity = block.getEntity();
 		return tileEntity != null && id.equals(Registries.getId(tileEntity.getType(), Registry.BLOCK_ENTITY_TYPE_REGISTRY)) && (checkData == null || checkData.checkData(block.getEntityData()));
 	}
 

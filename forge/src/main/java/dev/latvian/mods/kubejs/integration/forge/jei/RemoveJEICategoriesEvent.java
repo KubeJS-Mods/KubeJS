@@ -30,7 +30,7 @@ public class RemoveJEICategoriesEvent extends EventJS {
 	}
 
 	public void remove(String... categoriesToYeet) {
-		for (String toYeet : categoriesToYeet) {
+		for (var toYeet : categoriesToYeet) {
 			categoriesRemoved.add(new ResourceLocation(toYeet));
 		}
 	}
@@ -41,8 +41,8 @@ public class RemoveJEICategoriesEvent extends EventJS {
 
 	public Collection<ResourceLocation> getCategoryIds() {
 		Set<ResourceLocation> set = new HashSet<>();
-		for (IRecipeCategory<?> allCategory : allCategories) {
-			ResourceLocation uid = allCategory.getUid();
+		for (var allCategory : allCategories) {
+            var uid = allCategory.getUid();
 			set.add(uid);
 		}
 		return set;
@@ -62,7 +62,7 @@ public class RemoveJEICategoriesEvent extends EventJS {
 
 	@Override
 	protected void afterPosted(boolean result) {
-		for (ResourceLocation category : categoriesRemoved) {
+		for (var category : categoriesRemoved) {
 			try {
 				runtime.getRecipeManager().hideRecipeCategory(category);
 			} catch (Exception e) {

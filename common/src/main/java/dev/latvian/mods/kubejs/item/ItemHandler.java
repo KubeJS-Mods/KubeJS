@@ -35,7 +35,7 @@ public interface ItemHandler extends Iterable<ItemStack> {
 
 			@Override
 			public ItemStack next() {
-				int i = cursor;
+				var i = cursor;
 				if (i >= getSlots()) {
 					throw new NoSuchElementException();
 				}

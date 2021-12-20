@@ -254,7 +254,7 @@ public class ItemBuilder extends BuilderBase {
 	}
 
 	public Item.Properties createItemProperties() {
-		Item.Properties properties = new Item.Properties();
+		var properties = new Item.Properties();
 
 		properties.tab(group);
 
@@ -266,11 +266,11 @@ public class ItemBuilder extends BuilderBase {
 
 		properties.rarity(rarity.rarity);
 
-		for (Map.Entry<ToolType, Integer> entry : tools.entrySet()) {
+		for (var entry : tools.entrySet()) {
 			appendToolType(properties, entry.getKey(), entry.getValue());
 		}
 
-		Item item = KubeJSRegistries.items().get(new ResourceLocation(containerItem));
+		var item = KubeJSRegistries.items().get(new ResourceLocation(containerItem));
 
 		if (item != Items.AIR) {
 			properties.craftRemainder(item);

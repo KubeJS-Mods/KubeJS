@@ -41,7 +41,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		} else if (o instanceof CharSequence) {
 			return new TextComponent(o.toString());
 		} else if (o instanceof StringTag tag) {
-			String s = tag.getAsString();
+			var s = tag.getAsString();
 			if (s.startsWith("{") && s.endsWith("}")) {
 				try {
 					return Component.Serializer.fromJson(s);
@@ -86,9 +86,9 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 				Object[] with;
 
 				if (map.containsKey("with")) {
-					ListJS a = map.getOrNewList("with");
+					var a = map.getOrNewList("with");
 					with = new Object[a.size()];
-					int i = 0;
+					var i = 0;
 
 					for (var e1 : a) {
 						with[i] = e1;
@@ -135,7 +135,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 
 	public static Text join(Text separator, Iterable<Text> texts) {
 		Text text = new TextString("");
-		boolean first = true;
+		var first = true;
 
 		for (var t : texts) {
 			if (first) {
@@ -174,7 +174,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	public abstract JsonElement toJson();
 
 	public final Component component() {
-		MutableComponent component = rawComponent();
+		var component = rawComponent();
 
 		if (hasStyle()) {
 			component.setStyle(createStyle());
@@ -192,7 +192,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	}
 
 	public final Text copy() {
-		Text t = rawCopy();
+		var t = rawCopy();
 		t.color = color;
 		t.bold = bold;
 		t.italic = italic;
@@ -212,7 +212,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	}
 
 	public final JsonObject createStyleJson() {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 
 		if (color != -1) {
 			json.addProperty("color", String.format("#%06X", color));
@@ -247,7 +247,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		}
 
 		if (click != null) {
-			JsonObject o = new JsonObject();
+			var o = new JsonObject();
 
 			if (click.startsWith("command:")) {
 				o.addProperty("action", "run_command");
@@ -285,10 +285,10 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	}
 
 	public JsonObject getStyleAndSiblingJson() {
-		JsonObject json = createStyleJson();
+		var json = createStyleJson();
 
 		if (!getSiblings().isEmpty()) {
-			JsonArray array = new JsonArray();
+			var array = new JsonArray();
 
 			for (var child : getSiblings()) {
 				array.add(child.toJson());

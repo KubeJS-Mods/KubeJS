@@ -28,7 +28,7 @@ public class TagIngredientJS implements IngredientJS {
 	private static final Map<String, TagIngredientJS> tagIngredientCache = new HashMap<>();
 
 	public static TagIngredientJS createTag(String tag) {
-		TagIngredientJS i = tagIngredientCache.computeIfAbsent(tag, TagIngredientJS::new);
+		var i = tagIngredientCache.computeIfAbsent(tag, TagIngredientJS::new);
 
 		if (RecipeJS.itemErrors && i.getActualTag().getValues().isEmpty()) {
 			throw new RecipeExceptionJS("Tag '#" + tag + "' doesn't contain any items!").error();
@@ -81,7 +81,7 @@ public class TagIngredientJS implements IngredientJS {
 
 	@Override
 	public Set<ItemStackJS> getStacks() {
-		Tag<Item> t = getActualTag();
+		var t = getActualTag();
 
 		if (t.getValues().size() > 0) {
 			Set<ItemStackJS> set = new LinkedHashSet<>();
@@ -98,7 +98,7 @@ public class TagIngredientJS implements IngredientJS {
 
 	@Override
 	public Set<Item> getVanillaItems() {
-		Tag<Item> t = getActualTag();
+		var t = getActualTag();
 
 		if (t.getValues().size() > 0) {
 			return new LinkedHashSet<>(t.getValues());
@@ -109,7 +109,7 @@ public class TagIngredientJS implements IngredientJS {
 
 	@Override
 	public ItemStackJS getFirst() {
-		Tag<Item> t = getActualTag();
+		var t = getActualTag();
 
 		if (t.getValues().size() > 0) {
 			for (var item : t.getValues()) {
@@ -127,7 +127,7 @@ public class TagIngredientJS implements IngredientJS {
 
 	@Override
 	public JsonElement toJson() {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("tag", tag.toString());
 		return json;
 	}
