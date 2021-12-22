@@ -57,14 +57,15 @@ dependencies {
 
 	modApi("dev.latvian.mods:rhino-forge:${rootProject.rhino_version}")
 
-	modCompileOnly("mezz.jei:jei-1.16.4:${rootProject.forge_jei_version}")
+	modCompileOnly("mezz.jei:jei-1.16.5:${rootProject.forge_jei_version}")
 	modCompileOnly("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
 	modCompileOnly("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
 
-	modRuntimeOnly("mezz.jei:jei-1.16.4:${rootProject.forge_jei_version}")
-	modRuntimeOnly("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
-	modRuntimeOnly("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
-	modRuntimeOnly("curse.maven:emendatus-enigmatica-399630:${rootProject.emendatus_enigmatica_file}")
+	modLocalRuntime("mezz.jei:jei-1.16.5:${rootProject.forge_jei_version}")
+	modLocalRuntime("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
+	modLocalRuntime("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
+
+	modLocalRuntime("com.ridanisaurus:emendatusenigmatica:${rootProject.forge_ee_version}")
 
 	// test mods, these are included at runtime only
 	// modRuntime("com.resourcefulbees:ResourcefulBees:1.16.5-0.6.4b")
