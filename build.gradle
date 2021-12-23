@@ -46,13 +46,6 @@ allprojects {
 		}
 
 		maven {
-			url "https://www.cursemaven.com"
-			content {
-				includeGroup "curse.maven"
-			}
-		}
-
-		maven {
 			url "https://maven.saps.dev/minecraft"
 			content {
 				includeGroup "dev.latvian.mods"

@@ -55,18 +55,12 @@ dependencies {
 
 	modApi("dev.latvian.mods:rhino-forge:${rootProject.rhino_version}") { transitive false }
 
+	// modLocalRuntime modCompileOnly("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
+	// modLocalRuntime modCompileOnly("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
+
+	// if you want to use the other mod at runtime, move the "modLocalRuntime" to it
 	modCompileOnly("mezz.jei:jei-1.18:${rootProject.forge_jei_version}")
-
-	// modCompileOnly("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
-	// modCompileOnly("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
-
-	//modRuntimeOnly("mezz.jei:jei-1.17.1:${rootProject.forge_jei_version}")
-	// modRuntimeOnly("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
-	// modRuntimeOnly("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
-	// modRuntimeOnly("curse.maven:emendatus-enigmatica-399630:${rootProject.emendatus_enigmatica_file}")
-
-	modImplementation("me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}") {
-	}
+	modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}")
 
 	common(project(path: ":common", configuration: "dev")) { transitive false }
 	shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
