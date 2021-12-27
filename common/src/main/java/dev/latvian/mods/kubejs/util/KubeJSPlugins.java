@@ -23,24 +23,24 @@ public class KubeJSPlugins {
 
 	public static void load(String id, Path path) throws Exception {
 		if (Files.isDirectory(path)) {
-			Path pp = path.resolve("kubejs.plugins.txt");
+			var pp = path.resolve("kubejs.plugins.txt");
 
 			if (Files.exists(pp)) {
 				loadFromFile(id, Files.readAllLines(pp));
 			}
 
-			Path pc = path.resolve("kubejs.classfilter.txt");
+			var pc = path.resolve("kubejs.classfilter.txt");
 
 			if (Files.exists(pc)) {
 				GLOBAL_CLASS_FILTER.addAll(Files.readAllLines(pc));
 			}
 		} else if (Files.isRegularFile(path) && (path.getFileName().toString().endsWith(".jar") || path.getFileName().toString().endsWith(".zip"))) {
-			ZipFile file = new ZipFile(path.toFile());
-			ZipEntry zep = file.getEntry("kubejs.plugins.txt");
+			var file = new ZipFile(path.toFile());
+			var zep = file.getEntry("kubejs.plugins.txt");
 
 			if (zep != null) {
-				try (InputStream stream = file.getInputStream(zep);
-					 BufferedReader reader = new BufferedReader(new InputStreamReader(new BufferedInputStream(stream), StandardCharsets.UTF_8))) {
+				try (var stream = file.getInputStream(zep);
+					 var reader = new BufferedReader(new InputStreamReader(new BufferedInputStream(stream), StandardCharsets.UTF_8))) {
 					List<String> list = new ArrayList<>();
 					String s;
 
@@ -52,11 +52,11 @@ public class KubeJSPlugins {
 				}
 			}
 
-			ZipEntry zec = file.getEntry("kubejs.classfilter.txt");
+			var zec = file.getEntry("kubejs.classfilter.txt");
 
 			if (zec != null) {
-				try (InputStream stream = file.getInputStream(zec);
-					 BufferedReader reader = new BufferedReader(new InputStreamReader(new BufferedInputStream(stream), StandardCharsets.UTF_8))) {
+				try (var stream = file.getInputStream(zec);
+					 var reader = new BufferedReader(new InputStreamReader(new BufferedInputStream(stream), StandardCharsets.UTF_8))) {
 					String s;
 
 					while ((s = reader.readLine()) != null) {
@@ -76,7 +76,7 @@ public class KubeJSPlugins {
 			}
 
 			try {
-				Class<?> c = Class.forName(s);
+				var c = Class.forName(s);
 
 				if (KubeJSPlugin.class.isAssignableFrom(c)) {
 					LIST.add((KubeJSPlugin) c.getDeclaredConstructor().newInstance());
@@ -88,7 +88,7 @@ public class KubeJSPlugins {
 	}
 
 	public static ClassFilter createClassFilter(ScriptType type) {
-		ClassFilter filter = new ClassFilter();
+		var filter = new ClassFilter();
 		forEachPlugin(plugin -> plugin.addClasses(type, filter));
 
 		for (var s : GLOBAL_CLASS_FILTER) {

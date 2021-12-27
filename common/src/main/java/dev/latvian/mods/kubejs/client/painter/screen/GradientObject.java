@@ -54,21 +54,21 @@ public class GradientObject extends ScreenPainterObject {
 
 	@Override
 	public void draw(ScreenPaintEventJS event) {
-		int colBL = colorBL.getAsInt();
-		int colBR = colorBR.getAsInt();
-		int colTR = colorTR.getAsInt();
-		int colTL = colorTL.getAsInt();
+		var colBL = colorBL.getAsInt();
+		var colBR = colorBR.getAsInt();
+		var colTR = colorTR.getAsInt();
+		var colTL = colorTL.getAsInt();
 
 		if (((colBL >> 24) & 0xFF) < 2 && ((colBR >> 24) & 0xFF) < 2 && ((colTR >> 24) & 0xFF) < 2 && ((colTL >> 24) & 0xFF) < 2) {
 			return;
 		}
 
-		float aw = w.get();
-		float ah = h.get();
-		float ax = event.alignX(x.get(), aw, alignX);
-		float ay = event.alignY(y.get(), ah, alignY);
-		float az = z.get();
-		Matrix4f m = event.getMatrix();
+		var aw = w.get();
+		var ah = h.get();
+		var ax = event.alignX(x.get(), aw, alignX);
+		var ay = event.alignY(y.get(), ah, alignY);
+		var az = z.get();
+		var m = event.getMatrix();
 
 		if (texture == null) {
 			event.setTextureEnabled(false);

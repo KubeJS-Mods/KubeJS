@@ -32,8 +32,8 @@ public class WorldgenAddEventJSFabric extends WorldgenAddEventJS {
 	private Registry<ConfiguredFeature<?, ?>> getFeatureRegistry() {
 		if (featureRegistry == null) {
 			try {
-				Class<?> c = Class.forName("net.fabricmc.fabric.impl.biome.modification.BiomeModificationContextImpl$GenerationSettingsContextImpl");
-				Field field = c.getDeclaredField("features");
+				var c = Class.forName("net.fabricmc.fabric.impl.biome.modification.BiomeModificationContextImpl$GenerationSettingsContextImpl");
+				var field = c.getDeclaredField("features");
 				field.setAccessible(true);
 				featureRegistry = UtilsJS.cast(field.get(modificationContext.getGenerationSettings()));
 			} catch (Exception ex) {
@@ -47,8 +47,8 @@ public class WorldgenAddEventJSFabric extends WorldgenAddEventJS {
 	@Override
 	protected void addFeature(GenerationStep.Decoration decoration, ConfiguredFeature<?, ?> configuredFeature) {
 		try {
-			Registry<ConfiguredFeature<?, ?>> reg = getFeatureRegistry();
-			ResourceLocation id = new ResourceLocation("kubejs", "feature_" + UUID.randomUUID().toString().replace("-", "_").toLowerCase());
+			var reg = getFeatureRegistry();
+			var id = new ResourceLocation("kubejs", "feature_" + UUID.randomUUID().toString().replace("-", "_").toLowerCase());
 			Registry.register(reg, id, configuredFeature);
 			// FIXME
 			// modificationContext.getGenerationSettings().addFeature(decoration, ResourceKey.create(Registry.CONFIGURED_FEATURE_REGISTRY, id));

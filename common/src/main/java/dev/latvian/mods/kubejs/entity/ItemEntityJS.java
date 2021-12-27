@@ -23,7 +23,7 @@ public class ItemEntityJS extends EntityJS {
 	@Override
 	@Nullable
 	public ItemStackJS getItem() {
-		ItemStack stack = itemEntity.getItem();
+		var stack = itemEntity.getItem();
 		return stack.isEmpty() ? null : ItemStackJS.of(stack);
 	}
 

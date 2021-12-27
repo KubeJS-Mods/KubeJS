@@ -42,9 +42,9 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 		// TODO: i would like this system to be more extendable,
 		//  such that other mod creators can registers serializers for their own
 		//  entry types and we'd just handle firing the KubeJS events for them.
-		Function<Object, Collection<EntryStack<?>>> itemSerializer = o -> EntryIngredients.ofItemStacks(
+		var itemSerializer = (Function<Object, Collection<EntryStack<?>>>) o -> EntryIngredients.ofItemStacks(
 				CollectionUtils.map(IngredientJS.of(o).getStacks(), ItemStackJS::getItemStack));
-		Function<Object, Collection<EntryStack<?>>> fluidSerializer = o -> EntryIngredients.of(FluidStackJS.of(o).getFluidStack());
+		var fluidSerializer = (Function<Object, Collection<EntryStack<?>>>) o -> EntryIngredients.of(FluidStackJS.of(o).getFluidStack());
 
 		new HideREIEventJS<>(registry, VanillaEntryTypes.ITEM, itemSerializer).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_ITEMS);
 		new HideREIEventJS<>(registry, VanillaEntryTypes.FLUID, fluidSerializer).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_FLUIDS);

@@ -20,8 +20,8 @@ import java.util.List;
  */
 public class FireworksJS {
 	public static FireworksJS of(Object o) {
-		MapJS properties = MapJS.of(o);
-		FireworksJS fireworks = new FireworksJS();
+		var properties = MapJS.of(o);
+		var fireworks = new FireworksJS();
 
 		if (properties == null) {
 			return fireworks;
@@ -37,13 +37,13 @@ public class FireworksJS {
 
 		if (properties.containsKey("explosions")) {
 			for (var o1 : ListJS.orSelf(properties.get("explosions"))) {
-				MapJS m = MapJS.of(o1);
+				var m = MapJS.of(o1);
 
 				if (m == null) {
 					continue;
 				}
 
-				Explosion e = new Explosion();
+				var e = new Explosion();
 
 				if (m.get("shape") instanceof String shape) {
 					e.shape = Shape.get(shape);
@@ -78,7 +78,7 @@ public class FireworksJS {
 		}
 
 		if (fireworks.explosions.isEmpty()) {
-			Explosion e = new Explosion();
+			var e = new Explosion();
 			e.colors.add(ColorWrapper.YELLOW_DYE.getFireworkColorKJS());
 			fireworks.explosions.add(e);
 		}
@@ -127,14 +127,14 @@ public class FireworksJS {
 	public final List<Explosion> explosions = new ArrayList<>();
 
 	public FireworkRocketEntity createFireworkRocket(Level w, double x, double y, double z) {
-		ItemStack stack = new ItemStack(Items.FIREWORK_ROCKET);
+		var stack = new ItemStack(Items.FIREWORK_ROCKET);
 
-		CompoundTag nbt = new CompoundTag();
+		var nbt = new CompoundTag();
 		nbt.putInt("Flight", flight);
-		ListTag list = new ListTag();
+		var list = new ListTag();
 
 		for (var e : explosions) {
-			CompoundTag nbt1 = new CompoundTag();
+			var nbt1 = new CompoundTag();
 			nbt1.putInt("Type", e.shape.type);
 			nbt1.putBoolean("Flicker", e.flicker);
 			nbt1.putBoolean("Trail", e.trail);
@@ -146,7 +146,7 @@ public class FireworksJS {
 		nbt.put("Explosions", list);
 		stack.addTagElement("Fireworks", nbt);
 
-		FireworkRocketEntity rocket = new FireworkRocketEntity(w, x, y, z, stack);
+		var rocket = new FireworkRocketEntity(w, x, y, z, stack);
 
 		if (lifetime != -1) {
 			((FireworkRocketEntityKJS) rocket).setLifetimeKJS(lifetime);

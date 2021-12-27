@@ -21,9 +21,9 @@ public class TypedDynamicFunction extends DynamicFunction {
 			throw new IllegalArgumentException("Argument length doesn't match required " + types.length + "!");
 		}
 
-		Object[] newArgs = new Object[types.length];
+		var newArgs = new Object[types.length];
 
-		for (int i = 0; i < types.length; i++) {
+		for (var i = 0; i < types.length; i++) {
 			newArgs[i] = (types[i] == null || types[i] == Object.class) ? args[i] : Context.jsToJava(args[i], types[i]);
 		}
 

@@ -56,7 +56,7 @@ public class ClientWorldJS extends WorldJS {
 	}
 
 	public static ClientWorldJS getInstance() {
-		ClientLevel level = Minecraft.getInstance().level;
+		var level = Minecraft.getInstance().level;
 		if (level == null) {
 			return instance = null;
 		}

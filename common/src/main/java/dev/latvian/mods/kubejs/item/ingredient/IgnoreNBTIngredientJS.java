@@ -52,7 +52,7 @@ public final class IgnoreNBTIngredientJS implements IngredientJS {
 
 	@Override
 	public JsonElement toJson() {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("item", item.getId());
 
 		if (Platform.isForge()) {
@@ -64,7 +64,7 @@ public final class IgnoreNBTIngredientJS implements IngredientJS {
 
 	@Override
 	public String toString() {
-		String stack = item.toString().replaceAll("^'(.*)'$", "Item.of($1)");
+		var stack = item.toString().replaceAll("^'(.*)'$", "Item.of($1)");
 		return stack + ".ignoreNBT()";
 	}
 }

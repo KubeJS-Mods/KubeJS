@@ -17,10 +17,10 @@ public class TagInstance {
 	}
 
 	public Component toText() {
-		StringBuilder builder = new StringBuilder(" #");
+		var builder = new StringBuilder(" #");
 		builder.append(tag);
 		builder.append(" [");
-		boolean first = true;
+		var first = true;
 
 		if (item) {
 			first = false;

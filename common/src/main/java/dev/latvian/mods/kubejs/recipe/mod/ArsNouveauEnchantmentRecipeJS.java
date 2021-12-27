@@ -21,7 +21,7 @@ public class ArsNouveauEnchantmentRecipeJS extends RecipeJS {
 
 	@Override
 	public void deserialize() {
-		for (int i = 1; i <= 8; i++) {
+		for (var i = 1; i <= 8; i++) {
 			if (json.has("item_" + i)) {
 				inputItems.add(parseIngredientItem(json.get("item_" + i)));
 			}
@@ -31,7 +31,7 @@ public class ArsNouveauEnchantmentRecipeJS extends RecipeJS {
 	@Override
 	public void serialize() {
 		if (serializeInputs) {
-			for (int i = 1; i < inputItems.size(); i++) {
+			for (var i = 1; i < inputItems.size(); i++) {
 				json.add("item_" + i, JsonUtilsJS.toArray(inputItems.get(i).toJson()));
 			}
 		}

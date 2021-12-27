@@ -33,14 +33,14 @@ public class RemoveJEIRecipesEvent extends EventJS {
 
 	public Collection<ResourceLocation> getCategoryIds() {
 		Set<ResourceLocation> set = new HashSet<>();
-		for (IRecipeCategory<?> allCategory : allCategories) {
+		for (var allCategory : allCategories) {
 			set.add(allCategory.getUid());
 		}
 		return set;
 	}
 
 	public void remove(ResourceLocation category, ResourceLocation[] recipesToRemove) {
-		for (ResourceLocation toRemove : recipesToRemove) {
+		for (var toRemove : recipesToRemove) {
 			recipesRemoved.computeIfAbsent(category, _0 -> new HashSet<>()).add(toRemove);
 		}
 	}
@@ -51,16 +51,16 @@ public class RemoveJEIRecipesEvent extends EventJS {
 
 	@Override
 	protected void afterPosted(boolean result) {
-		IRecipeManager rm = runtime.getRecipeManager();
-		for (ResourceLocation cat : recipesRemoved.keySet()) {
+        var rm = runtime.getRecipeManager();
+		for (var cat : recipesRemoved.keySet()) {
 			try {
-				IRecipeCategory<?> category = rm.getRecipeCategory(cat, false);
+                var category = rm.getRecipeCategory(cat, false);
 				if (Recipe.class.isAssignableFrom(category.getRecipeClass())) {
-					for (ResourceLocation id : recipesRemoved.get(cat)) {
+					for (var id : recipesRemoved.get(cat)) {
 						try {
-							boolean found = false;
+                            var found = false;
 							for (Object o : rm.getRecipes(category, null, false)) {
-								Recipe<?> recipe = (Recipe<?>) o;
+                                var recipe = (Recipe<?>) o;
 								if (id.equals(recipe.getId())) {
 									rm.hideRecipe(recipe, cat);
 									found = true;

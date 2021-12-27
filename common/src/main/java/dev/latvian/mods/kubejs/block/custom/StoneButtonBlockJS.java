@@ -12,8 +12,8 @@ public class StoneButtonBlockJS extends StoneButtonBlock implements CustomBlockJ
 	@Override
 	public void generateAssets(BlockBuilder builder, AssetJsonGenerator generator) {
 		generator.blockState(builder.id, bs -> {
-			String mod0 = builder.newID("block/", "").toString();
-			String mod1 = builder.newID("block/", "_pressed").toString();
+			var mod0 = builder.newID("block/", "").toString();
+			var mod1 = builder.newID("block/", "_pressed").toString();
 
 			bs.variant("face=ceiling,facing=east,powered=false", v -> v.model(mod0).x(180).y(270));
 			bs.variant("face=ceiling,facing=east,powered=true", v -> v.model(mod1).x(180).y(270));
@@ -41,7 +41,7 @@ public class StoneButtonBlockJS extends StoneButtonBlock implements CustomBlockJ
 			bs.variant("face=wall,facing=west,powered=true", v -> v.model(mod1).x(90).y(270).uvlock());
 		});
 
-		final String texture = builder.textures.get("texture").getAsString();
+		final var texture = builder.textures.get("texture").getAsString();
 
 		generator.blockModel(builder.id, m -> {
 			m.parent("minecraft:block/button");

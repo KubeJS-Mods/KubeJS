@@ -28,25 +28,25 @@ public class EventJS {
 			return true;
 		}
 
-		EventsJS e = t.manager.get().events;
-		boolean b = e.postToHandlers(id, e.handlers(id), this);
+		var e = t.manager.get().events;
+		var b = e.postToHandlers(id, e.handlers(id), this);
 		afterPosted(b);
 		return b;
 	}
 
 	public final boolean post(ScriptType t, String id, String sub) {
-		String id1 = id + '.' + sub;
+		var id1 = id + '.' + sub;
 
 		if (t != ScriptType.STARTUP) {
-			EventsJS e = ScriptType.STARTUP.manager.get().events;
+			var e = ScriptType.STARTUP.manager.get().events;
 			if ((e.postToHandlers(id1, e.handlers(id1), this) || e.postToHandlers(id, e.handlers(id), this)) && canCancel()) {
 				afterPosted(true);
 				return true;
 			}
 		}
 
-		EventsJS e = t.manager.get().events;
-		boolean b = e.postToHandlers(id1, e.handlers(id1), this) || e.postToHandlers(id, e.handlers(id), this);
+		var e = t.manager.get().events;
+		var b = e.postToHandlers(id1, e.handlers(id1), this) || e.postToHandlers(id, e.handlers(id), this);
 		afterPosted(b);
 		return b;
 	}

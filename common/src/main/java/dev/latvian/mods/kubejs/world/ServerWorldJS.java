@@ -27,7 +27,7 @@ public class ServerWorldJS extends WorldJS {
 		super(w);
 		server = s;
 
-		String t = w.dimension().location().toString();
+		var t = w.dimension().location().toString();
 		persistentData = s.persistentData.getCompound(t);
 		s.persistentData.put(t, persistentData);
 	}
@@ -56,13 +56,13 @@ public class ServerWorldJS extends WorldJS {
 
 	@Override
 	public ServerPlayerDataJS getPlayerData(Player player) {
-		ServerPlayerDataJS data = server.playerMap.get(player.getUUID());
+		var data = server.playerMap.get(player.getUUID());
 
 		if (data != null) {
 			return data;
 		}
 
-		FakeServerPlayerDataJS fakeData = server.fakePlayerMap.get(player.getUUID());
+		var fakeData = server.fakePlayerMap.get(player.getUUID());
 
 		if (fakeData == null) {
 			fakeData = new FakeServerPlayerDataJS(server, (ServerPlayer) player);

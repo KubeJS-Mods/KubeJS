@@ -36,7 +36,7 @@ public class EntityPotionEffectsJS {
 
 	public int getDuration(MobEffect mobEffect) {
 		if (mobEffect != null) {
-			MobEffectInstance i = entity.getActiveEffectsMap().get(mobEffect);
+			var i = entity.getActiveEffectsMap().get(mobEffect);
 			return i == null ? 0 : i.getDuration();
 		}
 

@@ -69,7 +69,7 @@ public class JEIPlugin implements IModPlugin {
 		new HideJEIEventJS<>(runtime, VanillaTypes.ITEM, object -> IngredientJS.of(object)::testVanilla, stack -> !stack.isEmpty()).post(ScriptType.CLIENT, JEIIntegration.JEI_HIDE_ITEMS);
 
 		new HideJEIEventJS<>(runtime, VanillaTypes.FLUID, object -> {
-			FluidStackJS fs = FluidStackJS.of(object);
+			var fs = FluidStackJS.of(object);
 			return fluidStack -> fluidStack.getFluid().isSame(fs.getFluid()) && Objects.equals(fluidStack.getTag(), fs.getNbt());
 		}, stack -> !stack.isEmpty()).post(ScriptType.CLIENT, JEIIntegration.JEI_HIDE_FLUIDS);
 

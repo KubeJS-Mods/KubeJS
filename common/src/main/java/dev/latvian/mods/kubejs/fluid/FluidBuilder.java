@@ -119,8 +119,8 @@ public class FluidBuilder extends BuilderBase {
 	public JsonObject getBlockstateJson() {
 		if (blockstateJson == null) {
 			blockstateJson = new JsonObject();
-			JsonObject variants = new JsonObject();
-			JsonObject modelo = new JsonObject();
+			var variants = new JsonObject();
+			var modelo = new JsonObject();
 			modelo.addProperty("model", newID("block/", "").toString());
 			variants.add("", modelo);
 			blockstateJson.add("variants", variants);
@@ -136,7 +136,7 @@ public class FluidBuilder extends BuilderBase {
 	public JsonObject getBlockModelJson() {
 		if (blockModelJson == null) {
 			blockModelJson = new JsonObject();
-			JsonObject textures = new JsonObject();
+			var textures = new JsonObject();
 			textures.addProperty("particle", stillTexture);
 			blockModelJson.add("textures", textures);
 			return blockModelJson;

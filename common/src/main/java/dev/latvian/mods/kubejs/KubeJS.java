@@ -81,7 +81,7 @@ public class KubeJS {
 
 		PROXY = EnvExecutor.getEnvSpecific(() -> KubeJSClient::new, () -> KubeJSCommon::new);
 
-		long now = System.currentTimeMillis();
+		var now = System.currentTimeMillis();
 		LOGGER.info("Looking for KubeJS plugins...");
 
 		for (var mod : Platform.getMods()) {
@@ -127,10 +127,10 @@ public class KubeJS {
 			path += "/";
 		}
 
-		final String pathPrefix = path;
+		final var pathPrefix = path;
 
 		UtilsJS.tryIO(() -> Files.walk(dir, 10).filter(Files::isRegularFile).forEach(file -> {
-			String fileName = dir.relativize(file).toString().replace(File.separatorChar, '/');
+			var fileName = dir.relativize(file).toString().replace(File.separatorChar, '/');
 
 			if (fileName.endsWith(".js")) {
 				pack.info.scripts.add(new ScriptFileInfo(pack.info, pathPrefix + fileName));

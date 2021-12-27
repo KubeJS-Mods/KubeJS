@@ -48,7 +48,7 @@ public class CheckPlayerLoginEventJS extends ServerEventJS {
 	}
 
 	public String getIp() {
-		String string = address.toString();
+		var string = address.toString();
 		if (string.contains("/")) {
 			string = string.substring(string.indexOf(47) + 1);
 		}

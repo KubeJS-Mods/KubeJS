@@ -25,14 +25,14 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 	}
 
 	public boolean isInBiomes(String[] filter) {
-		WorldgenEntryList list = new WorldgenEntryList();
+		var list = new WorldgenEntryList();
 		list.blacklist = false;
 		list.values.addAll(Arrays.asList(filter));
 		return verifyBiomes(list);
 	}
 
 	public boolean isNotInBiomes(String[] filter) {
-		WorldgenEntryList list = new WorldgenEntryList();
+		var list = new WorldgenEntryList();
 		list.blacklist = true;
 		list.values.addAll(Arrays.asList(filter));
 		return verifyBiomes(list);
@@ -71,13 +71,13 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 	}
 
 	public void removeAllFeatures() {
-		for (GenerationStep.Decoration decoration : GenerationStep.Decoration.values()) {
+		for (var decoration : GenerationStep.Decoration.values()) {
 			removeFeature(decoration, configuredFeature -> true);
 		}
 	}
 
 	public void removeOres(Consumer<RemoveOresProperties> p) {
-		RemoveOresProperties properties = new RemoveOresProperties();
+		var properties = new RemoveOresProperties();
 		p.accept(properties);
 
 		if (!verifyBiomes(properties.biomes)) {
@@ -103,7 +103,7 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 	}
 
 	public void removeSpawnsByCategory(Consumer<RemoveSpawnsByCategoryProperties> p) {
-		RemoveSpawnsByCategoryProperties properties = new RemoveSpawnsByCategoryProperties();
+		var properties = new RemoveSpawnsByCategoryProperties();
 		p.accept(properties);
 
 		if (verifyBiomes(properties.biomes)) {
@@ -112,7 +112,7 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 	}
 
 	public void removeSpawnsByID(Consumer<RemoveSpawnsByIDProperties> p) {
-		RemoveSpawnsByIDProperties properties = new RemoveSpawnsByIDProperties();
+		var properties = new RemoveSpawnsByIDProperties();
 		p.accept(properties);
 
 		if (verifyBiomes(properties.biomes)) {

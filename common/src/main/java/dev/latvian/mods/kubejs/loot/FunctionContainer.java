@@ -19,7 +19,7 @@ public interface FunctionContainer {
 	FunctionContainer addFunction(JsonObject o);
 
 	default FunctionContainer addConditionalFunction(Consumer<ConditionalFunction> func) {
-		ConditionalFunction conditionalFunction = new ConditionalFunction();
+		var conditionalFunction = new ConditionalFunction();
 		func.accept(conditionalFunction);
 
 		if (conditionalFunction.function != null) {
@@ -32,7 +32,7 @@ public interface FunctionContainer {
 
 	default FunctionContainer count(NumberProvider count) {
 		if (count instanceof JsonSerializableKJS) {
-			JsonObject o = new JsonObject();
+			var o = new JsonObject();
 			o.addProperty("function", "minecraft:set_count");
 			o.add("count", UtilsJS.numberProviderJson(count));
 			return addFunction(o);
@@ -42,7 +42,7 @@ public interface FunctionContainer {
 	}
 
 	default FunctionContainer enchantWithLevels(NumberProvider levels, boolean treasure) {
-		JsonObject o = new JsonObject();
+		var o = new JsonObject();
 		o.addProperty("function", "minecraft:enchant_with_levels");
 		o.add("levels", UtilsJS.numberProviderJson(levels));
 		o.addProperty("treasure", treasure);
@@ -50,10 +50,10 @@ public interface FunctionContainer {
 	}
 
 	default FunctionContainer enchantRandomly(ResourceLocation[] enchantments) {
-		JsonObject o = new JsonObject();
+		var o = new JsonObject();
 		o.addProperty("function", "minecraft:enchant_randomly");
 
-		JsonArray a = new JsonArray();
+		var a = new JsonArray();
 
 		for (var r : enchantments) {
 			a.add(r.toString());
@@ -64,20 +64,20 @@ public interface FunctionContainer {
 	}
 
 	default FunctionContainer nbt(CompoundTag tag) {
-		JsonObject o = new JsonObject();
+		var o = new JsonObject();
 		o.addProperty("function", "minecraft:set_nbt");
 		o.addProperty("tag", tag.toString());
 		return addFunction(o);
 	}
 
 	default FunctionContainer furnaceSmelt() {
-		JsonObject o = new JsonObject();
+		var o = new JsonObject();
 		o.addProperty("function", "minecraft:furnace_smelt");
 		return addFunction(o);
 	}
 
 	default FunctionContainer lootingEnchant(NumberProvider count, int limit) {
-		JsonObject o = new JsonObject();
+		var o = new JsonObject();
 		o.addProperty("function", "minecraft:looting_enchant");
 		o.add("count", UtilsJS.numberProviderJson(count));
 		o.addProperty("limit", limit);
@@ -85,7 +85,7 @@ public interface FunctionContainer {
 	}
 
 	default FunctionContainer damage(NumberProvider damage) {
-		JsonObject o = new JsonObject();
+		var o = new JsonObject();
 		o.addProperty("function", "minecraft:set_damage");
 		o.add("damage", UtilsJS.numberProviderJson(damage));
 		return addFunction(o);
@@ -94,7 +94,7 @@ public interface FunctionContainer {
 	// set_attributes
 
 	default FunctionContainer name(Text name, @Nullable LootContext.EntityTarget entity) {
-		JsonObject o = new JsonObject();
+		var o = new JsonObject();
 		o.addProperty("function", "minecraft:set_name");
 		o.add("name", name.toJson());
 
@@ -113,7 +113,7 @@ public interface FunctionContainer {
 	// set_stew_effect
 
 	default FunctionContainer copyName(CopyNameFunction.NameSource source) {
-		JsonObject o = new JsonObject();
+		var o = new JsonObject();
 		o.addProperty("function", "minecraft:copy_name");
 		o.addProperty("source", source.name);
 		return addFunction(o);
@@ -124,7 +124,7 @@ public interface FunctionContainer {
 	// apply_bonus
 
 	default FunctionContainer lootTable(ResourceLocation table, long seed) {
-		JsonObject o = new JsonObject();
+		var o = new JsonObject();
 		o.addProperty("function", "minecraft:set_loot_table");
 		o.addProperty("name", table.toString());
 

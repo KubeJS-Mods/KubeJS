@@ -25,18 +25,18 @@ public class AtlasTextureObject extends ScreenPainterObject {
 			return;
 		}
 
-		float aw = w.get();
-		float ah = h.get();
-		float ax = event.alignX(x.get(), aw, alignX);
-		float ay = event.alignY(y.get(), ah, alignY);
-		float az = z.get();
+		var aw = w.get();
+		var ah = h.get();
+		var ax = event.alignX(x.get(), aw, alignX);
+		var ay = event.alignY(y.get(), ah, alignY);
+		var az = z.get();
 
-		TextureAtlasSprite sprite = event.getTextureAtlas().getSprite(texture);
+		var sprite = event.getTextureAtlas().getSprite(texture);
 
-		float u0 = sprite.getU0();
-		float v0 = sprite.getV0();
-		float u1 = sprite.getU1();
-		float v1 = sprite.getV1();
+		var u0 = sprite.getU0();
+		var v0 = sprite.getV0();
+		var u1 = sprite.getU1();
+		var v1 = sprite.getV1();
 		event.bindTexture(TextureAtlas.LOCATION_BLOCKS);
 		event.beginQuads(DefaultVertexFormat.POSITION_COLOR_TEX);
 		event.rectangle(ax, ay, az, aw, ah, color.getAsInt(), u0, v0, u1, v1);

@@ -14,7 +14,7 @@ public class TRRecipeWithTankJS extends TRRecipeJS {
 	}
 
 	public TRRecipeWithTankJS tank(String fluidId, int amount) {
-		JsonObject o = new JsonObject();
+		var o = new JsonObject();
 		o.addProperty("fluid", fluidId);
 		o.addProperty("amount", amount);
 		json.add("tank", o);

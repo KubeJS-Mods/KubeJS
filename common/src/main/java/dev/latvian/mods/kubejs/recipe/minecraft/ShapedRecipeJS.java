@@ -31,23 +31,23 @@ public class ShapedRecipeJS extends RecipeJS {
 			}
 
 			outputItems.add(parseResultItem(args.get(0)));
-			ListJS vertical = ListJS.orSelf(args.get(1));
+			var vertical = ListJS.orSelf(args.get(1));
 
 			if (vertical.isEmpty()) {
 				throw new RecipeExceptionJS("Pattern is empty!");
 			}
 
-			int id = 0;
+			var id = 0;
 
 			for (var o : vertical) {
-				StringBuilder horizontalPattern = new StringBuilder();
-				ListJS horizontal = ListJS.orSelf(o);
+				var horizontalPattern = new StringBuilder();
+				var horizontal = ListJS.orSelf(o);
 
 				for (var item : horizontal) {
-					IngredientJS ingredient = IngredientJS.of(item);
+					var ingredient = IngredientJS.of(item);
 
 					if (!ingredient.isEmpty()) {
-						String currentId = String.valueOf((char) ('A' + (id++)));
+						var currentId = String.valueOf((char) ('A' + (id++)));
 						horizontalPattern.append(currentId);
 						inputItems.add(ingredient);
 						key.add(currentId);
@@ -59,8 +59,8 @@ public class ShapedRecipeJS extends RecipeJS {
 				pattern.add(horizontalPattern.toString());
 			}
 
-			int maxLength = pattern.stream().mapToInt(String::length).max().getAsInt();
-			ListIterator<String> iterator = pattern.listIterator();
+			var maxLength = pattern.stream().mapToInt(String::length).max().getAsInt();
+			var iterator = pattern.listIterator();
 
 			while (iterator.hasNext()) {
 				iterator.set(StringUtils.rightPad(iterator.next(), maxLength));
@@ -71,7 +71,7 @@ public class ShapedRecipeJS extends RecipeJS {
 
 		outputItems.add(parseResultItem(args.get(0)));
 
-		ListJS pattern1 = ListJS.orSelf(args.get(1));
+		var pattern1 = ListJS.orSelf(args.get(1));
 
 		if (pattern1.isEmpty()) {
 			throw new RecipeExceptionJS("Pattern is empty!");
@@ -79,14 +79,14 @@ public class ShapedRecipeJS extends RecipeJS {
 
 		List<String> airs = new ArrayList<>(1);
 
-		MapJS key1 = MapJS.of(args.get(2));
+		var key1 = MapJS.of(args.get(2));
 
 		if (key1 == null || key1.isEmpty()) {
 			throw new RecipeExceptionJS("Key map is empty!");
 		}
 
 		for (var k : key1.keySet()) {
-			Object o = key1.get(k);
+			var o = key1.get(k);
 
 			if (o == ItemStackJS.EMPTY || o.equals("minecraft:air")) {
 				airs.add(k);
@@ -97,7 +97,7 @@ public class ShapedRecipeJS extends RecipeJS {
 		}
 
 		for (var p : pattern1) {
-			String s = String.valueOf(p);
+			var s = String.valueOf(p);
 
 			for (var s1 : airs) {
 				s = s.replace(s1, " ");
@@ -115,7 +115,7 @@ public class ShapedRecipeJS extends RecipeJS {
 			pattern.add(e.getAsString());
 		}
 
-		for (Map.Entry<String, JsonElement> entry : json.get("key").getAsJsonObject().entrySet()) {
+		for (var entry : json.get("key").getAsJsonObject().entrySet()) {
 			inputItems.add(parseIngredientItem(entry.getValue(), entry.getKey()));
 			key.add(entry.getKey());
 		}
@@ -128,7 +128,7 @@ public class ShapedRecipeJS extends RecipeJS {
 		}
 
 		if (serializeInputs) {
-			JsonArray patternJson = new JsonArray();
+			var patternJson = new JsonArray();
 
 			for (var s : pattern) {
 				patternJson.add(s);
@@ -136,9 +136,9 @@ public class ShapedRecipeJS extends RecipeJS {
 
 			json.add("pattern", patternJson);
 
-			JsonObject keyJson = new JsonObject();
+			var keyJson = new JsonObject();
 
-			for (int i = 0; i < key.size(); i++) {
+			for (var i = 0; i < key.size(); i++) {
 				keyJson.add(key.get(i), inputItems.get(i).toJson());
 			}
 

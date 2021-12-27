@@ -58,9 +58,9 @@ public class InventoryJS {
 	}
 
 	public void clear() {
-		ItemHandler.Mutable modInv = minecraftInventory instanceof ItemHandler.Mutable ? (ItemHandler.Mutable) minecraftInventory : null;
+		var modInv = minecraftInventory instanceof ItemHandler.Mutable ? (ItemHandler.Mutable) minecraftInventory : null;
 
-		for (int i = minecraftInventory.getSlots(); i >= 0; i--) {
+		for (var i = minecraftInventory.getSlots(); i >= 0; i--) {
 			if (modInv != null) {
 				modInv.setStackInSlot(i, ItemStack.EMPTY);
 			} else {
@@ -74,9 +74,9 @@ public class InventoryJS {
 			clear();
 		}
 
-		ItemHandler.Mutable modInv = minecraftInventory instanceof ItemHandler.Mutable ? (ItemHandler.Mutable) minecraftInventory : null;
+		var modInv = minecraftInventory instanceof ItemHandler.Mutable ? (ItemHandler.Mutable) minecraftInventory : null;
 
-		for (int i = minecraftInventory.getSlots(); i >= 0; i--) {
+		for (var i = minecraftInventory.getSlots(); i >= 0; i--) {
 			if (ingredient.testVanilla(minecraftInventory.getStackInSlot(i))) {
 				if (modInv != null) {
 					modInv.setStackInSlot(i, ItemStack.EMPTY);
@@ -88,8 +88,8 @@ public class InventoryJS {
 	}
 
 	public int find() {
-		for (int i = 0; i < minecraftInventory.getSlots(); i++) {
-			ItemStack stack1 = minecraftInventory.getStackInSlot(i);
+		for (var i = 0; i < minecraftInventory.getSlots(); i++) {
+			var stack1 = minecraftInventory.getStackInSlot(i);
 
 			if (!stack1.isEmpty()) {
 				return i;
@@ -104,8 +104,8 @@ public class InventoryJS {
 			return find();
 		}
 
-		for (int i = 0; i < minecraftInventory.getSlots(); i++) {
-			ItemStack stack1 = minecraftInventory.getStackInSlot(i);
+		for (var i = 0; i < minecraftInventory.getSlots(); i++) {
+			var stack1 = minecraftInventory.getStackInSlot(i);
 
 			if (ingredient.testVanilla(stack1)) {
 				return i;
@@ -116,9 +116,9 @@ public class InventoryJS {
 	}
 
 	public int count() {
-		int count = 0;
+		var count = 0;
 
-		for (int i = 0; i < minecraftInventory.getSlots(); i++) {
+		for (var i = 0; i < minecraftInventory.getSlots(); i++) {
 			count += minecraftInventory.getStackInSlot(i).getCount();
 		}
 
@@ -130,10 +130,10 @@ public class InventoryJS {
 			return count();
 		}
 
-		int count = 0;
+		var count = 0;
 
-		for (int i = 0; i < minecraftInventory.getSlots(); i++) {
-			ItemStack stack1 = minecraftInventory.getStackInSlot(i);
+		for (var i = 0; i < minecraftInventory.getSlots(); i++) {
+			var stack1 = minecraftInventory.getStackInSlot(i);
 
 			if (ingredient.testVanilla(stack1)) {
 				count += stack1.getCount();
@@ -144,9 +144,9 @@ public class InventoryJS {
 	}
 
 	public int countNonEmpty() {
-		int count = 0;
+		var count = 0;
 
-		for (int i = 0; i < minecraftInventory.getSlots(); i++) {
+		for (var i = 0; i < minecraftInventory.getSlots(); i++) {
 			if (!minecraftInventory.getStackInSlot(i).isEmpty()) {
 				count++;
 			}
@@ -160,10 +160,10 @@ public class InventoryJS {
 			return countNonEmpty();
 		}
 
-		int count = 0;
+		var count = 0;
 
-		for (int i = 0; i < minecraftInventory.getSlots(); i++) {
-			ItemStack stack1 = minecraftInventory.getStackInSlot(i);
+		for (var i = 0; i < minecraftInventory.getSlots(); i++) {
+			var stack1 = minecraftInventory.getStackInSlot(i);
 
 			if (ingredient.testVanilla(stack1)) {
 				count++;
@@ -174,7 +174,7 @@ public class InventoryJS {
 	}
 
 	public boolean isEmpty() {
-		for (int i = 0; i < minecraftInventory.getSlots(); i++) {
+		for (var i = 0; i < minecraftInventory.getSlots(); i++) {
 			if (!minecraftInventory.getStackInSlot(i).isEmpty()) {
 				return false;
 			}
@@ -185,9 +185,9 @@ public class InventoryJS {
 
 	@Override
 	public String toString() {
-		LinkedList<String> list = new LinkedList<>();
+		var list = new LinkedList<String>();
 
-		for (int i = 0; i < getSize(); i++) {
+		for (var i = 0; i < getSize(); i++) {
 			list.add(get(i).toString());
 		}
 
@@ -203,7 +203,7 @@ public class InventoryJS {
 	@Nullable
 	public BlockContainerJS getBlock(WorldJS level) {
 		if (minecraftInventory instanceof ContainerInventory container) {
-			Container inv = container.getInv();
+			var inv = container.getInv();
 
 			if (inv instanceof BlockEntity be) {
 				return level.getBlock(be);

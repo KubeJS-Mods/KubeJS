@@ -271,7 +271,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public void setMotionX(double x) {
-		Vec3 m = minecraftEntity.getDeltaMovement();
+		var m = minecraftEntity.getDeltaMovement();
 		minecraftEntity.setDeltaMovement(x, m.y, m.z);
 	}
 
@@ -280,7 +280,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public void setMotionY(double y) {
-		Vec3 m = minecraftEntity.getDeltaMovement();
+		var m = minecraftEntity.getDeltaMovement();
 		minecraftEntity.setDeltaMovement(m.x, y, m.z);
 	}
 
@@ -289,7 +289,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public void setMotionZ(double z) {
-		Vec3 m = minecraftEntity.getDeltaMovement();
+		var m = minecraftEntity.getDeltaMovement();
 		minecraftEntity.setDeltaMovement(m.x, m.y, z);
 	}
 
@@ -373,7 +373,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public String getTeamId() {
-		Team team = minecraftEntity.getTeam();
+		var team = minecraftEntity.getTeam();
 		return team == null ? "" : team.getName();
 	}
 
@@ -437,7 +437,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public CompoundTag getFullNBT() {
-		CompoundTag nbt = new CompoundTag();
+		var nbt = new CompoundTag();
 		minecraftEntity.saveWithoutId(nbt);
 		return nbt;
 	}
@@ -453,10 +453,10 @@ public class EntityJS implements MessageSender, WrappedJS {
 			return this;
 		}
 
-		CompoundTag nbt = getFullNBT();
+		var nbt = getFullNBT();
 
 		for (var k : tag.getAllKeys()) {
-			Tag t = tag.get(k);
+			var t = tag.get(k);
 
 			if (t == null || t == EndTag.INSTANCE) {
 				nbt.remove(k);
@@ -495,7 +495,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 					field.setAccessible(true);
 
 					if (Modifier.isStatic(field.getModifiers()) && field.getType() == DamageSource.class) {
-						DamageSource s = (DamageSource) field.get(null);
+						var s = (DamageSource) field.get(null);
 						damageSourceMap.put(s.getMsgId(), s);
 					}
 				}
@@ -503,7 +503,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 			}
 		}
 
-		DamageSource s = damageSourceMap.getOrDefault(source, DamageSource.GENERIC);
+		var s = damageSourceMap.getOrDefault(source, DamageSource.GENERIC);
 		minecraftEntity.hurt(s, hp);
 	}
 
@@ -514,14 +514,14 @@ public class EntityJS implements MessageSender, WrappedJS {
 	public RayTraceResultJS rayTrace(double distance) {
 		double xRot = minecraftEntity.getXRot();
 		double yRot = minecraftEntity.getYRot();
-		Vec3 fromPos = minecraftEntity.getEyePosition(1);
-		double x0 = Math.sin(-yRot * (Math.PI / 180D) - (float) Math.PI);
-		double z0 = Math.cos(-yRot * (Math.PI / 180D) - (float) Math.PI);
-		double y0 = -Math.cos(-xRot * (Math.PI / 180D));
-		double y = Math.sin(-xRot * (Math.PI / 180D));
-		double x = x0 * y0;
-		double z = z0 * y0;
-		Vec3 toPos = fromPos.add(x * distance, y * distance, z * distance);
+		var fromPos = minecraftEntity.getEyePosition(1);
+		var x0 = Math.sin(-yRot * (Math.PI / 180D) - (float) Math.PI);
+		var z0 = Math.cos(-yRot * (Math.PI / 180D) - (float) Math.PI);
+		var y0 = -Math.cos(-xRot * (Math.PI / 180D));
+		var y = Math.sin(-xRot * (Math.PI / 180D));
+		var x = x0 * y0;
+		var z = z0 * y0;
+		var toPos = fromPos.add(x * distance, y * distance, z * distance);
 		HitResult hitResult = minecraftEntity.level.clip(new ClipContext(fromPos, toPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, minecraftEntity));
 		return new RayTraceResultJS(this, hitResult, distance);
 	}

@@ -72,7 +72,7 @@ public class ScreenPaintEventJS extends PaintEventJS {
 	}
 
 	public void rectangle(float x, float y, float z, float w, float h, int color) {
-		Matrix4f m = getMatrix();
+		var m = getMatrix();
 		vertex(m, x, y + h, z, color);
 		vertex(m, x + w, y + h, z, color);
 		vertex(m, x + w, y, z, color);
@@ -80,7 +80,7 @@ public class ScreenPaintEventJS extends PaintEventJS {
 	}
 
 	public void rectangle(float x, float y, float z, float w, float h, int color, float u0, float v0, float u1, float v1) {
-		Matrix4f m = getMatrix();
+		var m = getMatrix();
 		vertex(m, x, y + h, z, color, u0, v1);
 		vertex(m, x + w, y + h, z, color, u1, v1);
 		vertex(m, x + w, y, z, color, u1, v0);

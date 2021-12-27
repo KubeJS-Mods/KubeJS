@@ -34,7 +34,7 @@ public class BotaniaRunicAltarRecipeJS extends RecipeJS {
 		}
 
 		if (serializeInputs) {
-			JsonArray a = new JsonArray();
+			var a = new JsonArray();
 
 			for (var in : inputItems) {
 				a.add(in.toJson());

@@ -13,20 +13,20 @@ public class MultipartBlockStateGenerator {
 		private final List<VariantBlockStateGenerator.Model> apply = new ArrayList<>();
 
 		public VariantBlockStateGenerator.Model model(String s) {
-			VariantBlockStateGenerator.Model model = new VariantBlockStateGenerator.Model();
+			var model = new VariantBlockStateGenerator.Model();
 			model.model(s);
 			apply.add(model);
 			return model;
 		}
 
 		public JsonObject toJson() {
-			JsonObject json = new JsonObject();
+			var json = new JsonObject();
 
 			if (!when.isEmpty()) {
-				JsonObject whenJson = new JsonObject();
+				var whenJson = new JsonObject();
 
 				for (var s : when.split(",")) {
-					String[] s1 = s.split("=", 2);
+					var s1 = s.split("=", 2);
 
 					if (s1.length == 2 && !s1[0].isEmpty() && !s1[1].isEmpty()) {
 						whenJson.addProperty(s1[0], s1[1]);
@@ -39,9 +39,9 @@ public class MultipartBlockStateGenerator {
 			if (apply.size() == 1) {
 				json.add("apply", apply.get(0).toJson());
 			} else {
-				JsonArray a = new JsonArray();
+				var a = new JsonArray();
 
-				for (VariantBlockStateGenerator.Model m : apply) {
+				for (var m : apply) {
 					a.add(m.toJson());
 				}
 
@@ -55,7 +55,7 @@ public class MultipartBlockStateGenerator {
 	private final JsonArray multipart = new JsonArray();
 
 	public void part(String when, Consumer<Part> consumer) {
-		Part v = new Part();
+		var v = new Part();
 		v.when = when;
 		consumer.accept(v);
 		multipart.add(v.toJson());
@@ -66,7 +66,7 @@ public class MultipartBlockStateGenerator {
 	}
 
 	public JsonObject toJson() {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.add("multipart", multipart);
 		return json;
 	}

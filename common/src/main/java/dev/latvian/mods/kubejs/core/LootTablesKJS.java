@@ -33,7 +33,7 @@ public interface LootTablesKJS {
 		new FishingLootEventJS(map1).post(ScriptType.SERVER, "fishing.loot_tables");
 		new ChestLootEventJS(map1).post(ScriptType.SERVER, "chest.loot_tables");
 
-		for (Map.Entry<ResourceLocation, JsonElement> entry : map1.entrySet()) {
+		for (var entry : map1.entrySet()) {
 			try {
 				action.accept(entry.getKey(), entry.getValue());
 			} catch (Exception ex) {

@@ -21,7 +21,7 @@ public class BotanyPotsCropRecipeJS extends RecipeJS {
 	public void create(ListJS args) {
 		for (var o : ListJS.orSelf(args.get(0))) {
 			if (o instanceof Map) {
-				Map<String, Object> m = (Map<String, Object>) o;
+				var m = (Map<String, Object>) o;
 				outputItems.add(parseResultItem(m.get("item")));
 				minRolls.add(((Number) m.getOrDefault("minRolls", 1)).intValue());
 				maxRolls.add(((Number) m.getOrDefault("maxRolls", 1)).intValue());
@@ -34,12 +34,12 @@ public class BotanyPotsCropRecipeJS extends RecipeJS {
 
 		inputItems.add(parseIngredientItem(args.get(1)));
 
-		JsonArray categories = new JsonArray();
+		var categories = new JsonArray();
 		categories.add("grass");
 		json.add("categories", categories);
 		json.addProperty("growthTicks", 1200);
 
-		JsonObject display = new JsonObject();
+		var display = new JsonObject();
 		display.addProperty("block", inputItems.get(0).getFirst().getId());
 		json.add("display", display);
 	}
@@ -49,8 +49,8 @@ public class BotanyPotsCropRecipeJS extends RecipeJS {
 		inputItems.add(parseIngredientItem(json.get("seed")));
 
 		for (var e : json.get("results").getAsJsonArray()) {
-			JsonObject o = e.getAsJsonObject();
-			ItemStackJS is = parseResultItem(o.get("output"));
+			var o = e.getAsJsonObject();
+			var is = parseResultItem(o.get("output"));
 
 			if (o.has("chance")) {
 				is.setChance(o.get("chance").getAsDouble());
@@ -69,7 +69,7 @@ public class BotanyPotsCropRecipeJS extends RecipeJS {
 	}
 
 	public BotanyPotsCropRecipeJS categories(String[] c) {
-		JsonArray categories = new JsonArray();
+		var categories = new JsonArray();
 
 		for (var s : c) {
 			categories.add(s);
@@ -81,7 +81,7 @@ public class BotanyPotsCropRecipeJS extends RecipeJS {
 	}
 
 	public BotanyPotsCropRecipeJS displayBlock(String b) {
-		JsonObject display = new JsonObject();
+		var display = new JsonObject();
 		display.addProperty("block", b);
 		json.add("display", display);
 		save();
@@ -95,11 +95,11 @@ public class BotanyPotsCropRecipeJS extends RecipeJS {
 		}
 
 		if (serializeOutputs) {
-			JsonArray array = new JsonArray();
+			var array = new JsonArray();
 
-			for (int i = 0; i < outputItems.size(); i++) {
-				ItemStackJS is = outputItems.get(i);
-				JsonObject o = new JsonObject();
+			for (var i = 0; i < outputItems.size(); i++) {
+				var is = outputItems.get(i);
+				var o = new JsonObject();
 				o.addProperty("chance", is.hasChance() ? is.getChance() : 1D);
 				o.addProperty("minRolls", minRolls.get(i));
 				o.addProperty("maxRolls", maxRolls.get(i));

@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class IngredientActionFilter {
 	public static IngredientActionFilter filterOf(Object o) {
-		IngredientActionFilter filter = new IngredientActionFilter();
+		var filter = new IngredientActionFilter();
 
 		if (o instanceof Number num) {
 			filter.filterIndex = num.intValue();
@@ -18,7 +18,7 @@ public class IngredientActionFilter {
 				filter.filterIngredient = stack.ignoreNBT();
 			}
 		} else {
-			MapJS map = MapJS.of(o);
+			var map = MapJS.of(o);
 
 			if (map != null && !map.isEmpty()) {
 				if (map.containsKey("item")) {

@@ -55,11 +55,11 @@ public class KubeJSServerEventHandler {
 
 		ServerJS.instance = new ServerJS(server, ServerScriptManager.instance);
 
-		Path p = server.getWorldPath(PERSISTENT_DATA);
+		var p = server.getWorldPath(PERSISTENT_DATA);
 
 		if (Files.exists(p)) {
 			try {
-				CompoundTag tag = NbtIo.readCompressed(p.toFile());
+				var tag = NbtIo.readCompressed(p.toFile());
 
 				if (tag != null) {
 					ServerJS.instance.persistentData.merge(tag);
@@ -82,7 +82,7 @@ public class KubeJSServerEventHandler {
 
 		for (var level : server.getAllLevels()) {
 			if (level != ServerJS.instance.overworld.minecraftLevel) {
-				ServerWorldJS l = new ServerWorldJS(ServerJS.instance, level);
+				var l = new ServerWorldJS(ServerJS.instance, level);
 				ServerJS.instance.levelMap.put(level.dimension().location().toString(), l);
 			}
 		}
@@ -103,7 +103,7 @@ public class KubeJSServerEventHandler {
 	}
 
 	public static void destroyServer() {
-		ServerJS s = ServerJS.instance;
+		var s = ServerJS.instance;
 
 		for (PlayerDataJS<?, ?> p : s.playerMap.values()) {
 			new SimplePlayerEventJS(p.getMinecraftPlayer()).post(KubeJSEvents.PLAYER_LOGGED_OUT);
@@ -119,8 +119,8 @@ public class KubeJSServerEventHandler {
 	}
 
 	private static void serverWorldSave(ServerLevel level) {
-		ServerJS s = ServerJS.instance;
-		Path p = level.getServer().getWorldPath(PERSISTENT_DATA);
+		var s = ServerJS.instance;
+		var p = level.getServer().getWorldPath(PERSISTENT_DATA);
 
 		if (s != null && level.dimension() == Level.OVERWORLD) {
 			Util.ioPool().execute(() -> {
@@ -134,15 +134,15 @@ public class KubeJSServerEventHandler {
 	}
 
 	public static void serverTick(MinecraftServer server) {
-		ServerJS s = ServerJS.instance;
+		var s = ServerJS.instance;
 
 		if (!s.scheduledEvents.isEmpty()) {
-			long now = System.currentTimeMillis();
-			Iterator<ScheduledEvent> eventIterator = s.scheduledEvents.iterator();
+			var now = System.currentTimeMillis();
+			var eventIterator = s.scheduledEvents.iterator();
 			List<ScheduledEvent> list = new ArrayList<>();
 
 			while (eventIterator.hasNext()) {
-				ScheduledEvent e = eventIterator.next();
+				var e = eventIterator.next();
 
 				if (now >= e.getEndTime()) {
 					list.add(e);
@@ -162,12 +162,12 @@ public class KubeJSServerEventHandler {
 		}
 
 		if (!s.scheduledTickEvents.isEmpty()) {
-			long now = s.getOverworld().getTime();
-			Iterator<ScheduledEvent> eventIterator = s.scheduledTickEvents.iterator();
+			var now = s.getOverworld().getTime();
+			var eventIterator = s.scheduledTickEvents.iterator();
 			List<ScheduledEvent> list = new ArrayList<>();
 
 			while (eventIterator.hasNext()) {
-				ScheduledEvent e = eventIterator.next();
+				var e = eventIterator.next();
 
 				if (now >= e.getEndTime()) {
 					list.add(e);

@@ -40,7 +40,7 @@ public class IngredientWrapper {
 
 	public static IngredientJS custom(IngredientJS in, Predicate<ItemStackJS> predicate) {
 		if (RecipeEventJS.customIngredientMap != null) {
-			IngredientWithCustomPredicateJS ingredient = new IngredientWithCustomPredicateJS(UUID.randomUUID(), in, i -> predicate.test(new ItemStackJS(i)));
+			var ingredient = new IngredientWithCustomPredicateJS(UUID.randomUUID(), in, i -> predicate.test(new ItemStackJS(i)));
 			RecipeEventJS.customIngredientMap.put(ingredient.uuid, ingredient);
 			return ingredient;
 		}
@@ -53,7 +53,7 @@ public class IngredientWrapper {
 	}
 
 	public static IngredientJS matchAny(Object objects) {
-		MatchAnyIngredientJS ingredient = new MatchAnyIngredientJS();
+		var ingredient = new MatchAnyIngredientJS();
 		ingredient.addAll(objects);
 		return ingredient;
 	}

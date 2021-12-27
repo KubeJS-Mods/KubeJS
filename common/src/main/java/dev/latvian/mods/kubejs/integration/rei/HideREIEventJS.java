@@ -38,7 +38,7 @@ public class HideREIEventJS<T> extends EventJS {
 
 	public void hide(Object o) {
 		if (!hideAll) {
-			for (EntryStack<?> stack : serializer.apply(o)) {
+			for (var stack : serializer.apply(o)) {
 				hidden.add(EntryStacks.hashExact(stack));
 			}
 		}

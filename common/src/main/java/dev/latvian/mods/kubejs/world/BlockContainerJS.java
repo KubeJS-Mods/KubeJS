@@ -153,8 +153,8 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public void set(ResourceLocation id, Map<?, ?> properties, int flags) {
-		Block block = KubeJSRegistries.blocks().get(id);
-		BlockState state = block.defaultBlockState();
+		var block = KubeJSRegistries.blocks().get(id);
+		var state = block.defaultBlockState();
 
 		if (!properties.isEmpty() && state.getBlock() != Blocks.AIR) {
 			Map<String, Property<?>> pmap = new HashMap<>();
@@ -164,7 +164,7 @@ public class BlockContainerJS implements SpecialEquality {
 			}
 
 			for (var entry : properties.entrySet()) {
-				Property<?> property = pmap.get(String.valueOf(entry.getKey()));
+				var property = pmap.get(String.valueOf(entry.getKey()));
 
 				if (property != null) {
 					state = state.setValue(property, UtilsJS.cast(property.getValue(String.valueOf(entry.getValue())).get()));
@@ -185,7 +185,7 @@ public class BlockContainerJS implements SpecialEquality {
 
 	public Map<String, String> getProperties() {
 		Map<String, String> map = new HashMap<>();
-		BlockState state = getBlockState();
+		var state = getBlockState();
 
 		for (Property property : state.getProperties()) {
 			map.put(property.getName(), property.getName(state.getValue(property)));
@@ -204,13 +204,13 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public String getEntityId() {
-		BlockEntity entity = getEntity();
+		var entity = getEntity();
 		return entity == null ? "minecraft:air" : Registries.getId(entity.getType(), Registry.BLOCK_ENTITY_TYPE_REGISTRY).toString();
 	}
 
 	@Nullable
 	public CompoundTag getEntityData() {
-		BlockEntity entity = getEntity();
+		var entity = getEntity();
 
 		if (entity != null) {
 			return entity.saveWithFullMetadata();
@@ -221,7 +221,7 @@ public class BlockContainerJS implements SpecialEquality {
 
 	public void setEntityData(@Nullable CompoundTag tag) {
 		if (tag != null) {
-			BlockEntity entity = getEntity();
+			var entity = getEntity();
 
 			if (entity != null) {
 				entity.load(tag);
@@ -230,7 +230,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public void mergeEntityData(@Nullable CompoundTag tag) {
-		CompoundTag t = getEntityData();
+		var t = getEntityData();
 
 		if (t == null) {
 			setEntityData(tag);
@@ -253,19 +253,19 @@ public class BlockContainerJS implements SpecialEquality {
 
 	@Override
 	public String toString() {
-		String id = getId();
-		Map<String, String> properties = getProperties();
+		var id = getId();
+		var properties = getProperties();
 
 		if (properties.isEmpty()) {
 			return id;
 		}
 
-		StringBuilder builder = new StringBuilder(id);
+		var builder = new StringBuilder(id);
 		builder.append('[');
 
-		boolean first = true;
+		var first = true;
 
-		for (Map.Entry<String, String> entry : properties.entrySet()) {
+		for (var entry : properties.entrySet()) {
 			if (first) {
 				first = false;
 			} else {
@@ -287,7 +287,7 @@ public class BlockContainerJS implements SpecialEquality {
 
 	@Nullable
 	public EntityJS createEntity(ResourceLocation id) {
-		EntityJS entity = getWorld().createEntity(id);
+		var entity = getWorld().createEntity(id);
 
 		if (entity != null) {
 			entity.setPosition(this);
@@ -298,7 +298,7 @@ public class BlockContainerJS implements SpecialEquality {
 
 	public void spawnLightning(boolean effectOnly, @Nullable EntityJS player) {
 		if (minecraftLevel instanceof ServerLevel) {
-			LightningBolt e = EntityType.LIGHTNING_BOLT.create(minecraftLevel);
+			var e = EntityType.LIGHTNING_BOLT.create(minecraftLevel);
 			e.moveTo(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D);
 			e.setCause(player instanceof ServerPlayerJS serverPlayer ? serverPlayer.minecraftPlayer : null);
 			e.setVisualOnly(effectOnly);
@@ -316,7 +316,7 @@ public class BlockContainerJS implements SpecialEquality {
 
 	@Nullable
 	public InventoryJS getInventory(Direction facing) {
-		BlockEntity tileEntity = getEntity();
+		var tileEntity = getEntity();
 
 		if (tileEntity != null) {
 			return getInventoryFromBlockEntity(tileEntity, facing);
@@ -335,7 +335,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public ItemStackJS getItem() {
-		BlockState state = getBlockState();
+		var state = getBlockState();
 		return ItemStackJS.of(state.getBlock().getCloneItemStack(minecraftLevel, pos, state));
 	}
 
@@ -355,7 +355,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public EntityArrayList getPlayersInRadius(double radius) {
-		EntityArrayList list = new EntityArrayList(getWorld(), 1);
+		var list = new EntityArrayList(getWorld(), 1);
 
 		for (var player : minecraftLevel.getEntitiesOfClass(Player.class, new AABB(pos.getX() - radius, pos.getY() - radius, pos.getZ() - radius, pos.getX() + 1D + radius, pos.getY() + 1D + radius, pos.getZ() + 1D + radius), BlockContainerJS::isReal)) {
 			PlayerJS<?> p = getWorld().getPlayer(player);
@@ -373,7 +373,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public String getBiomeId() {
-		Optional<ResourceKey<Biome>> key = minecraftLevel.getBiomeName(pos);
+		var key = minecraftLevel.getBiomeName(pos);
 		return key.isPresent() ? key.get().location().toString() : "";
 	}
 

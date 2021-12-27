@@ -16,7 +16,7 @@ public class StonePressurePlateBlockJS extends PressurePlateBlock implements Cus
 			bs.variant("powered=false", v -> v.model(builder.newID("block/", "_up").toString()));
 		});
 
-		final String texture = builder.textures.get("texture").getAsString();
+		final var texture = builder.textures.get("texture").getAsString();
 
 		generator.blockModel(builder.newID("", "_down"), m -> {
 			m.parent("minecraft:block/pressure_plate_down");

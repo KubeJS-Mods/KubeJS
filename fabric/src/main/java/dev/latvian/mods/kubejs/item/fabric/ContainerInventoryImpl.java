@@ -9,7 +9,7 @@ public class ContainerInventoryImpl {
 	}
 
 	public static ItemStack getContainerItem(ItemStack stack) {
-		Item item = stack.getItem();
+		var item = stack.getItem();
 
 		if (item.hasCraftingRemainingItem()) {
 			return new ItemStack(item.getCraftingRemainingItem());

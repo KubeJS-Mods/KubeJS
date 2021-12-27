@@ -16,8 +16,8 @@ public class TechRebornCompat {
 	private static final Map<Class, MethodHandle> TR_DESERIALIZERS = new ConcurrentHashMap<>();
 
 	public static MethodHandle getTRRecipeConstructor(Recipe<?> resultRecipe, RecipeJS recipe) throws NoSuchMethodException, IllegalAccessException {
-		Class<? extends Recipe> recipeClass = resultRecipe.getClass();
-		MethodHandle handle = TR_CONSTRUCTORS.get(recipeClass);
+		var recipeClass = resultRecipe.getClass();
+		var handle = TR_CONSTRUCTORS.get(recipeClass);
 		if (handle != null) {
 			return handle;
 		}
@@ -28,8 +28,8 @@ public class TechRebornCompat {
 	}
 
 	public static MethodHandle getTRRecipeSerializer(Recipe<?> resultRecipe) throws NoSuchMethodException, IllegalAccessException {
-		Class<? extends Recipe> recipeClass = resultRecipe.getClass();
-		MethodHandle handle = TR_DESERIALIZERS.get(recipeClass);
+		var recipeClass = resultRecipe.getClass();
+		var handle = TR_DESERIALIZERS.get(recipeClass);
 		if (handle != null) {
 			return handle;
 		}

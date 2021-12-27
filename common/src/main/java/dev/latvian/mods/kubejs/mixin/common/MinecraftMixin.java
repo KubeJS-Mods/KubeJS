@@ -26,7 +26,7 @@ public abstract class MinecraftMixin {
 
 	@Inject(method = "createTitle", at = @At("HEAD"), cancellable = true)
 	private void getWindowTitleKJS(CallbackInfoReturnable<String> ci) {
-		String s = ClientProperties.get().title;
+		var s = ClientProperties.get().title;
 
 		if (!s.isEmpty()) {
 			ci.setReturnValue(s);

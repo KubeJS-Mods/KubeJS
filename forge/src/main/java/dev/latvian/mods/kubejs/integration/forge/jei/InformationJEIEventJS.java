@@ -38,8 +38,8 @@ public class InformationJEIEventJS extends EventJS {
 	}
 
 	public <T> void addForType(IIngredientType<T> type, Object o, Text[] s) {
-		Set<String> targets = ListJS.orSelf(o).stream().map(String::valueOf).collect(Collectors.toSet());
-		IIngredientHelper<T> helper = manager.getIngredientHelper(type);
+        var targets = ListJS.orSelf(o).stream().map(String::valueOf).collect(Collectors.toSet());
+        var helper = manager.getIngredientHelper(type);
 		recipes.addAll(IngredientInfoRecipe.create(
 				manager.getAllIngredients(type)
 						.stream()

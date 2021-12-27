@@ -53,7 +53,7 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 
 		try {
 			Class type = Class.forName(args[0].toString());
-			KubeJSForgeEventHandlerWrapper handler = (KubeJSForgeEventHandlerWrapper) args[1];
+            var handler = (KubeJSForgeEventHandlerWrapper) args[1];
 			MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, type, handler);
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);

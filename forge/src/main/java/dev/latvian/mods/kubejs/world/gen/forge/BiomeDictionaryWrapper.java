@@ -13,7 +13,7 @@ public class BiomeDictionaryWrapper {
 	}
 
 	public static void addTypes(ResourceLocation[] biomes, BiomeDictionary.Type[] tags) {
-		for (ResourceLocation id : biomes) {
+		for (var id : biomes) {
 			BiomeDictionary.addTypes(ResourceKey.create(Registry.BIOME_REGISTRY, id), tags);
 		}
 	}
@@ -21,7 +21,7 @@ public class BiomeDictionaryWrapper {
 	public static void printBiomes(BiomeDictionary.Type type) {
 		ConsoleJS.STARTUP.info(type.getName() + ":");
 
-		for (ResourceKey<Biome> biome : BiomeDictionary.getBiomes(type)) {
+		for (var biome : BiomeDictionary.getBiomes(type)) {
 			ConsoleJS.STARTUP.info("- " + biome.location());
 		}
 	}
@@ -29,7 +29,7 @@ public class BiomeDictionaryWrapper {
 	public static void printTags(ResourceLocation biome) {
 		ConsoleJS.STARTUP.info(biome + ":");
 
-		for (BiomeDictionary.Type type : BiomeDictionary.getTypes(ResourceKey.create(Registry.BIOME_REGISTRY, biome))) {
+		for (var type : BiomeDictionary.getTypes(ResourceKey.create(Registry.BIOME_REGISTRY, biome))) {
 			ConsoleJS.STARTUP.info("- " + type.getName());
 		}
 	}

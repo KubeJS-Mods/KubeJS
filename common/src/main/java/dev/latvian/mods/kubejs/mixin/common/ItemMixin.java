@@ -14,6 +14,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
@@ -44,22 +45,27 @@ public abstract class ItemMixin implements ItemKJS {
 
 	@Override
 	@Accessor("maxStackSize")
+	@Mutable
 	public abstract void setMaxStackSizeKJS(int i);
 
 	@Override
 	@Accessor("maxDamage")
+	@Mutable
 	public abstract void setMaxDamageKJS(int i);
 
 	@Override
 	@Accessor("craftingRemainingItem")
+	@Mutable
 	public abstract void setCraftingRemainderKJS(Item i);
 
 	@Override
 	@Accessor("isFireResistant")
+	@Mutable
 	public abstract void setFireResistantKJS(boolean b);
 
 	@Override
 	@Accessor("rarity")
+	@Mutable
 	public abstract void setRarityKJS(Rarity r);
 
 	@Override
@@ -75,6 +81,7 @@ public abstract class ItemMixin implements ItemKJS {
 
 	@Override
 	@Accessor("foodProperties")
+	@Mutable
 	public abstract void setFoodPropertiesKJS(FoodProperties properties);
 
 	@Inject(method = "isFoil", at = @At("HEAD"), cancellable = true)

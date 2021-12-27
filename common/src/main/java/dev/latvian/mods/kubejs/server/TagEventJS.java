@@ -53,13 +53,13 @@ public class TagEventJS<T> extends EventJS {
 		List<Predicate<String>> list = new ArrayList<>();
 
 		for (var o1 : ListJS.orSelf(o)) {
-			String s = String.valueOf(o1);
+			var s = String.valueOf(o1);
 
 			if (s.startsWith("@")) {
-				String m = s.substring(1);
+				var m = s.substring(1);
 				list.add(id -> id.startsWith(m));
 			} else if (s.startsWith("!@")) {
-				String m = s.substring(2);
+				var m = s.substring(2);
 				list.add(id -> !id.startsWith(m));
 			} else {
 				list.add(id -> id.equals(s));
@@ -91,10 +91,10 @@ public class TagEventJS<T> extends EventJS {
 
 		public TagWrapper<T> add(Object ids) {
 			for (var o : ListJS.orSelf(ids)) {
-				String s = String.valueOf(o);
+				var s = String.valueOf(o);
 
 				if (s.startsWith("#")) {
-					TagWrapper<T> w = event.get(new ResourceLocation(s.substring(1)));
+					var w = event.get(new ResourceLocation(s.substring(1)));
 					builder.addTag(w.id, KubeJS.MOD_ID);
 					event.addedCount += w.proxyList.size();
 
@@ -102,12 +102,12 @@ public class TagEventJS<T> extends EventJS {
 						ConsoleJS.SERVER.debug("+ " + this + " // " + w.id);
 					}
 				} else {
-					Pattern pattern = UtilsJS.parseRegex(s);
+					var pattern = UtilsJS.parseRegex(s);
 
 					if (pattern != null && event.registrar != null) {
 						for (var sid : event.registrar.getIds()) {
 							if (pattern.matcher(sid.toString()).find()) {
-								Optional<T> v = event.registry.apply(sid);
+								var v = event.registry.apply(sid);
 
 								if (v.isPresent()) {
 									builder.addElement(sid, KubeJS.MOD_ID);
@@ -122,8 +122,8 @@ public class TagEventJS<T> extends EventJS {
 							}
 						}
 					} else {
-						ResourceLocation sid = new ResourceLocation(s);
-						Optional<T> v = event.registry.apply(sid);
+						var sid = new ResourceLocation(s);
+						var v = event.registry.apply(sid);
 
 						if (v.isPresent()) {
 							builder.addElement(sid, KubeJS.MOD_ID);
@@ -144,14 +144,14 @@ public class TagEventJS<T> extends EventJS {
 
 		public TagWrapper<T> remove(Object ids) {
 			for (var o : ListJS.orSelf(ids)) {
-				String s = String.valueOf(o);
+				var s = String.valueOf(o);
 
 				if (s.startsWith("#")) {
-					TagWrapper<T> w = event.get(new ResourceLocation(s.substring(1)));
-					String entryId = w.id.toString();
-					int originalSize = proxyList.size();
+					var w = event.get(new ResourceLocation(s.substring(1)));
+					var entryId = w.id.toString();
+					var originalSize = proxyList.size();
 					proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(s));
-					int removedCount = proxyList.size() - originalSize;
+					var removedCount = proxyList.size() - originalSize;
 
 					if (removedCount == 0) {
 						if (ServerSettings.instance.logSkippedRecipes) {
@@ -165,17 +165,17 @@ public class TagEventJS<T> extends EventJS {
 						}
 					}
 				} else {
-					Pattern pattern = UtilsJS.parseRegex(s);
+					var pattern = UtilsJS.parseRegex(s);
 
 					if (pattern != null && event.registrar != null) {
 						for (var sid : event.registrar.getIds()) {
 							if (pattern.matcher(sid.toString()).find()) {
-								Optional<T> v = event.registry.apply(sid);
+								var v = event.registry.apply(sid);
 
 								if (v.isPresent()) {
-									int originalSize = proxyList.size();
+									var originalSize = proxyList.size();
 									proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(s));
-									int removedCount = proxyList.size() - originalSize;
+									var removedCount = proxyList.size() - originalSize;
 
 									if (removedCount == 0) {
 										if (ServerSettings.instance.logSkippedRecipes) {
@@ -194,13 +194,13 @@ public class TagEventJS<T> extends EventJS {
 							}
 						}
 					} else {
-						ResourceLocation sid = new ResourceLocation(s);
-						Optional<T> v = event.registry.apply(sid);
+						var sid = new ResourceLocation(s);
+						var v = event.registry.apply(sid);
 
 						if (v.isPresent()) {
-							int originalSize = proxyList.size();
+							var originalSize = proxyList.size();
 							proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(s));
-							int removedCount = proxyList.size() - originalSize;
+							var removedCount = proxyList.size() - originalSize;
 
 							if (removedCount == 0) {
 								if (ServerSettings.instance.logSkippedRecipes) {
@@ -246,10 +246,10 @@ public class TagEventJS<T> extends EventJS {
 			if (entry instanceof Tag.ElementEntry) {
 				set.add(entry.toString());
 			} else if (entry instanceof Tag.TagEntry) {
-				TagWrapper<T> w = event.tags.get(new ResourceLocation(entry.toString().substring(1)));
+				var w = event.tags.get(new ResourceLocation(entry.toString().substring(1)));
 
 				if (w != null && w != this) {
-					for (Tag.BuilderEntry proxy : w.proxyList) {
+					for (var proxy : w.proxyList) {
 						gatherAllItemIDs(set, proxy.getEntry());
 					}
 				}
@@ -262,18 +262,18 @@ public class TagEventJS<T> extends EventJS {
 		public boolean sort() {
 			List<List<Tag.BuilderEntry>> listOfLists = new ArrayList<>();
 
-			for (int i = 0; i < priorityList.size() + 1; i++) {
+			for (var i = 0; i < priorityList.size() + 1; i++) {
 				listOfLists.add(new ArrayList<>());
 			}
 
-			for (Tag.BuilderEntry proxy : proxyList) {
-				boolean added = false;
+			for (var proxy : proxyList) {
+				var added = false;
 
-				HashSet<String> set = new HashSet<>();
+				var set = new HashSet<String>();
 				gatherAllItemIDs(set, proxy.getEntry());
 
 				for (var id : set) {
-					for (int i = 0; i < priorityList.size(); i++) {
+					for (var i = 0; i < priorityList.size(); i++) {
 						if (priorityList.get(i).test(id)) {
 							listOfLists.get(i).add(proxy);
 							added = true;
@@ -291,7 +291,7 @@ public class TagEventJS<T> extends EventJS {
 
 			proxyList.clear();
 
-			for (List<Tag.BuilderEntry> list : listOfLists) {
+			for (var list : listOfLists) {
 				proxyList.addAll(list);
 			}
 
@@ -338,7 +338,7 @@ public class TagEventJS<T> extends EventJS {
 	}
 
 	public void post(String event) {
-		Path dumpFile = KubeJSPaths.EXPORTED.resolve("tags/" + type + ".txt");
+		var dumpFile = KubeJSPaths.EXPORTED.resolve("tags/" + type + ".txt");
 
 		if (!Files.exists(dumpFile)) {
 			try {
@@ -364,8 +364,8 @@ public class TagEventJS<T> extends EventJS {
 
 		tags = new HashMap<>();
 
-		for (Map.Entry<ResourceLocation, SetTag.Builder> entry : map.entrySet()) {
-			TagWrapper<T> w = new TagWrapper<>(this, entry.getKey(), entry.getValue());
+		for (var entry : map.entrySet()) {
+			var w = new TagWrapper<T>(this, entry.getKey(), entry.getValue());
 			tags.put(entry.getKey(), w);
 			ConsoleJS.SERVER.debug(type + "/#" + entry.getKey() + "; " + w.proxyList.size());
 		}
@@ -396,9 +396,9 @@ public class TagEventJS<T> extends EventJS {
 		post(ScriptType.SERVER, event);
 		ConsoleJS.SERVER.setLineNumber(false);
 
-		int reordered = 0;
+		var reordered = 0;
 
-		for (TagWrapper<T> wrapper : tags.values()) {
+		for (var wrapper : tags.values()) {
 			if (wrapper.priorityList == null) {
 				wrapper.priorityList = globalPriorityList;
 			}
@@ -409,22 +409,22 @@ public class TagEventJS<T> extends EventJS {
 		}
 
 		if (ServerSettings.dataExport != null && registrar != null) {
-			JsonObject tj = ServerSettings.dataExport.getAsJsonObject("tags");
+			var tj = ServerSettings.dataExport.getAsJsonObject("tags");
 
 			if (tj == null) {
 				tj = new JsonObject();
 				ServerSettings.dataExport.add("tags", tj);
 			}
 
-			JsonObject tj1 = tj.getAsJsonObject(type);
+			var tj1 = tj.getAsJsonObject(type);
 
 			if (tj1 == null) {
 				tj1 = new JsonObject();
 				tj.add(type, tj1);
 			}
 
-			for (Map.Entry<ResourceLocation, SetTag.Builder> entry : map.entrySet()) {
-				JsonArray a = new JsonArray();
+			for (var entry : map.entrySet()) {
+				var a = new JsonArray();
 				entry.getValue().getEntries().forEach(e -> a.add(e.getEntry().toString()));
 				tj1.add(entry.getKey().toString(), a);
 			}
@@ -434,7 +434,7 @@ public class TagEventJS<T> extends EventJS {
 	}
 
 	public TagWrapper<T> get(ResourceLocation id) {
-		TagWrapper<T> t = tags.get(id);
+		var t = tags.get(id);
 
 		if (t == null) {
 			t = new TagWrapper<>(this, id, SetTag.Builder.tag());
@@ -459,9 +459,9 @@ public class TagEventJS<T> extends EventJS {
 
 	public void removeAllTagsFrom(Object ids) {
 		for (var o : ListJS.orSelf(ids)) {
-			String id = String.valueOf(o);
+			var id = String.valueOf(o);
 
-			for (TagWrapper<T> tagWrapper : tags.values()) {
+			for (var tagWrapper : tags.values()) {
 				tagWrapper.proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(id));
 			}
 		}

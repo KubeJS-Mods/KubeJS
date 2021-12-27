@@ -25,7 +25,7 @@ public class ItemFrameEntityJS extends EntityJS {
 	@Override
 	@Nullable
 	public ItemStackJS getItem() {
-		ItemStack stack = itemFrameEntity.getItem();
+		var stack = itemFrameEntity.getItem();
 		return stack.isEmpty() ? null : ItemStackJS.of(stack);
 	}
 

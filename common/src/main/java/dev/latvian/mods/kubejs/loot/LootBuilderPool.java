@@ -23,7 +23,7 @@ public class LootBuilderPool implements FunctionContainer, ConditionContainer {
 	public final JsonArray entries = new JsonArray();
 
 	public JsonObject toJson() {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 
 		json.add("rolls", UtilsJS.numberProviderJson(rolls));
 
@@ -72,30 +72,30 @@ public class LootBuilderPool implements FunctionContainer, ConditionContainer {
 	}
 
 	public LootTableEntry addEmpty(int weight) {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("type", "minecraft:empty");
 		return addEntry(json).weight(weight);
 	}
 
 	public LootTableEntry addLootTable(ResourceLocation table) {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("type", "minecraft:loot_table");
 		json.addProperty("name", table.toString());
 		return addEntry(json);
 	}
 
 	public LootTableEntry addItem(ItemStack item, int weight, @Nullable NumberProvider count) {
-		ResourceLocation id = KubeJSRegistries.items().getId(item.getItem());
+		var id = KubeJSRegistries.items().getId(item.getItem());
 
 		if (id == null || item.isEmpty()) {
 			return new LootTableEntry(new JsonObject());
 		}
 
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("type", "minecraft:item");
 		json.addProperty("name", id.toString());
 
-		LootTableEntry entry = addEntry(json);
+		var entry = addEntry(json);
 
 		if (weight >= 0) {
 			entry.weight(weight);
@@ -125,7 +125,7 @@ public class LootBuilderPool implements FunctionContainer, ConditionContainer {
 	}
 
 	public LootTableEntry addTag(String tag, boolean expand) {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("type", "minecraft:tag");
 		json.addProperty("name", tag);
 		json.addProperty("expand", expand);

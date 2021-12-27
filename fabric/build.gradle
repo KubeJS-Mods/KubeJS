@@ -25,26 +25,17 @@ artifacts {
 
 dependencies {
 
-	modImplementation("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
-	modImplementation("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
+	modApi("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
+	modApi("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
 
 	modApi("dev.architectury:architectury-fabric:${rootProject.architectury_version}")
 
-	modApi("dev.latvian.mods:rhino-fabric:${rootProject.rhino_version}") { transitive false }
+	modApi("dev.latvian.mods:rhino-fabric:${rootProject.rhino_version}")
 
-	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${rootProject.rei_version}") {
-		exclude group: "net.fabricmc.fabric-api"
-		exclude group: "net.fabricmc"
-	}
-	modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${rootProject.rei_version}") {
-		exclude group: "net.fabricmc.fabric-api"
-		exclude group: "net.fabricmc"
-	}
+	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${rootProject.rei_version}")
+	modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${rootProject.rei_version}")
 
-	modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-fabric:${rootProject.rei_version}") {
-		exclude group: "net.fabricmc.fabric-api"
-		exclude group: "net.fabricmc"
-	}
+	modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:${rootProject.rei_version}")
 
 	common(project(path: ":common", configuration: "dev")) { transitive false }
 	shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }

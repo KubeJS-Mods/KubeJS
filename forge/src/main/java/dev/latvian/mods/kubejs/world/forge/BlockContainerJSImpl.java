@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 
 public class BlockContainerJSImpl {
 	public static InventoryJS getInventoryFromBlockEntity(BlockEntity tileEntity, Direction facing) {
-		IItemHandler handler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).orElse(null);
+        var handler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).orElse(null);
 
 		if (handler != null) {
 			if (handler instanceof IItemHandlerModifiable) {

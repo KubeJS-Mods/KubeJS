@@ -36,22 +36,22 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 		} else if (o instanceof FluidStack fluidStack) {
 			return new BoundFluidStackJS(fluidStack);
 		} else if (o instanceof Fluid fluid) {
-			UnboundFluidStackJS f = new UnboundFluidStackJS(Registries.getId(fluid, Registry.FLUID_REGISTRY));
+			var f = new UnboundFluidStackJS(Registries.getId(fluid, Registry.FLUID_REGISTRY));
 			return f.isEmpty() ? EmptyFluidStackJS.INSTANCE : f;
 		} else if (o instanceof JsonElement json) {
 			return fromJson(json);
 		} else if (o instanceof CharSequence || o instanceof ResourceLocation) {
-			String s = o.toString();
+			var s = o.toString();
 
 			if (s.isEmpty() || s.equals("-") || s.equals("empty") || s.equals("minecraft:empty")) {
 				return EmptyFluidStackJS.INSTANCE;
 			}
 
-			String[] s1 = s.split(" ", 2);
+			var s1 = s.split(" ", 2);
 			return new UnboundFluidStackJS(new ResourceLocation(s1[0])).withAmount(UtilsJS.parseLong(s1.length == 2 ? s1[1] : "", FluidStack.bucketAmount()));
 		}
 
-		MapJS map = MapJS.of(o);
+		var map = MapJS.of(o);
 
 		if (map != null && map.containsKey("fluid")) {
 			FluidStackJS stack = new UnboundFluidStackJS(new ResourceLocation(map.get("fluid").toString()));
@@ -71,7 +71,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 	}
 
 	public static FluidStackJS of(@Nullable Object o, long amount, @Nullable CompoundTag nbt) {
-		FluidStackJS stack = of(o);
+		var stack = of(o);
 		stack.setAmount(amount);
 		stack.setNbt(nbt);
 		return stack;
@@ -82,15 +82,15 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 			return of(e.getAsString());
 		}
 
-		JsonObject json = e.getAsJsonObject();
+		var json = e.getAsJsonObject();
 
-		FluidStackJS fluid = of(json.get("fluid").getAsString());
+		var fluid = of(json.get("fluid").getAsString());
 
 		if (fluid.isEmpty()) {
 			throw new RecipeExceptionJS(json + " is not a valid fluid!");
 		}
 
-		long amount = FluidStack.bucketAmount();
+		var amount = FluidStack.bucketAmount();
 		CompoundTag nbt = null;
 
 		if (json.has("amount")) {
@@ -127,7 +127,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 	}
 
 	public Fluid getFluid() {
-		Fluid f = KubeJSRegistries.fluids().get(new ResourceLocation(getId()));
+		var f = KubeJSRegistries.fluids().get(new ResourceLocation(getId()));
 		return f == null ? Fluids.EMPTY : f;
 	}
 
@@ -146,7 +146,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 			return EmptyFluidStackJS.INSTANCE;
 		}
 
-		FluidStackJS fs = copy();
+		var fs = copy();
 		fs.setAmount(amount);
 		return fs;
 	}
@@ -157,7 +157,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 	public abstract void setNbt(@Nullable CompoundTag nbt);
 
 	public final FluidStackJS withNBT(@Nullable CompoundTag nbt) {
-		FluidStackJS fs = copy();
+		var fs = copy();
 		fs.setNbt(nbt);
 		return fs;
 	}
@@ -186,7 +186,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 			return this;
 		}
 
-		FluidStackJS is = copy();
+		var is = copy();
 		is.setChance(c);
 		return is;
 	}
@@ -202,7 +202,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 			return getId().equals(o.toString());
 		}
 
-		FluidStackJS f = FluidStackJS.of(o);
+		var f = FluidStackJS.of(o);
 
 		if (f.isEmpty()) {
 			return false;
@@ -212,7 +212,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 	}
 
 	public boolean strongEquals(Object o) {
-		FluidStackJS f = of(o);
+		var f = of(o);
 
 		if (f.isEmpty()) {
 			return false;
@@ -222,10 +222,10 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 	}
 
 	public String toString() {
-		long amount = getAmount();
-		CompoundTag nbt = getNbt();
+		var amount = getAmount();
+		var nbt = getNbt();
 
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		builder.append("Fluid.of('");
 		builder.append(getId());
 
@@ -251,7 +251,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 	}
 
 	public JsonObject toJson() {
-		JsonObject o = new JsonObject();
+		var o = new JsonObject();
 		o.addProperty("fluid", getId());
 
 		if (getAmount() != FluidStack.bucketAmount()) {
@@ -270,7 +270,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 	}
 
 	public CompoundTag toNBT() {
-		CompoundTag tag = new CompoundTag();
+		var tag = new CompoundTag();
 		getFluidStack().write(tag);
 		return tag;
 	}

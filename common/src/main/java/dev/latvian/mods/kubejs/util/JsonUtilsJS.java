@@ -32,7 +32,7 @@ public class JsonUtilsJS {
 		if (element == null || element.isJsonNull()) {
 			return JsonNull.INSTANCE;
 		} else if (element instanceof JsonArray jsonArr) {
-			JsonArray a = new JsonArray();
+			var a = new JsonArray();
 
 			for (var e : jsonArr) {
 				a.add(copy(e));
@@ -40,9 +40,9 @@ public class JsonUtilsJS {
 
 			return a;
 		} else if (element instanceof JsonObject jsonObj) {
-			JsonObject o = new JsonObject();
+			var o = new JsonObject();
 
-			for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+			for (var entry : jsonObj.entrySet()) {
 				o.add(entry.getKey(), copy(entry.getValue()));
 			}
 
@@ -77,16 +77,16 @@ public class JsonUtilsJS {
 		if (json == null || json.isJsonNull()) {
 			return null;
 		} else if (json.isJsonObject()) {
-			LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-			JsonObject o = json.getAsJsonObject();
+			var map = new LinkedHashMap<String, Object>();
+			var o = json.getAsJsonObject();
 
-			for (Map.Entry<String, JsonElement> entry : o.entrySet()) {
+			for (var entry : o.entrySet()) {
 				map.put(entry.getKey(), toObject(entry.getValue()));
 			}
 
 			return map;
 		} else if (json.isJsonArray()) {
-			JsonArray a = json.getAsJsonArray();
+			var a = json.getAsJsonArray();
 			List<Object> objects = new ArrayList<>(a.size());
 
 			for (var e : a) {
@@ -100,10 +100,10 @@ public class JsonUtilsJS {
 	}
 
 	public static String toString(JsonElement json) {
-		StringWriter writer = new StringWriter();
+		var writer = new StringWriter();
 
 		try {
-			JsonWriter jsonWriter = new JsonWriter(writer);
+			var jsonWriter = new JsonWriter(writer);
 			jsonWriter.setSerializeNulls(true);
 			jsonWriter.setLenient(true);
 			jsonWriter.setHtmlSafe(false);
@@ -116,10 +116,10 @@ public class JsonUtilsJS {
 	}
 
 	public static String toPrettyString(JsonElement json) {
-		StringWriter writer = new StringWriter();
+		var writer = new StringWriter();
 
 		try {
-			JsonWriter jsonWriter = new JsonWriter(writer);
+			var jsonWriter = new JsonWriter(writer);
 			jsonWriter.setIndent("\t");
 			jsonWriter.setSerializeNulls(true);
 			jsonWriter.setLenient(true);
@@ -138,9 +138,9 @@ public class JsonUtilsJS {
 		}
 
 		try {
-			JsonReader jsonReader = new JsonReader(new StringReader(string));
+			var jsonReader = new JsonReader(new StringReader(string));
 			JsonElement element;
-			boolean lenient = jsonReader.isLenient();
+			var lenient = jsonReader.isLenient();
 			jsonReader.setLenient(true);
 			element = Streams.parse(jsonReader);
 
@@ -161,7 +161,7 @@ public class JsonUtilsJS {
 		if (element == null || element.isJsonNull()) {
 			return null;
 		} else if (element.isJsonPrimitive()) {
-			JsonPrimitive p = element.getAsJsonPrimitive();
+			var p = element.getAsJsonPrimitive();
 
 			if (p.isBoolean()) {
 				return p.getAsBoolean();
@@ -188,10 +188,10 @@ public class JsonUtilsJS {
 			return null;
 		}
 
-		try (FileReader fileReader = new FileReader(file);
-			 JsonReader jsonReader = new JsonReader(fileReader)) {
+		try (var fileReader = new FileReader(file);
+			 var jsonReader = new JsonReader(fileReader)) {
 			JsonElement element;
-			boolean lenient = jsonReader.isLenient();
+			var lenient = jsonReader.isLenient();
 			jsonReader.setLenient(true);
 			element = Streams.parse(jsonReader);
 
@@ -211,10 +211,10 @@ public class JsonUtilsJS {
 			return;
 		}
 
-		JsonObject json = o.toJson();
+		var json = o.toJson();
 
 		try (Writer fileWriter = new FileWriter(file);
-			 JsonWriter jsonWriter = new JsonWriter(new BufferedWriter(fileWriter))) {
+			 var jsonWriter = new JsonWriter(new BufferedWriter(fileWriter))) {
 			jsonWriter.setIndent("\t");
 			jsonWriter.setSerializeNulls(true);
 			jsonWriter.setLenient(true);
@@ -236,7 +236,7 @@ public class JsonUtilsJS {
 			return element.getAsJsonArray();
 		}
 
-		JsonArray a = new JsonArray();
+		var a = new JsonArray();
 		a.add(element);
 		return a;
 	}
@@ -271,12 +271,12 @@ public class JsonUtilsJS {
     }
 
 	public static byte[] getJsonHashBytes(JsonElement json) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		var baos = new ByteArrayOutputStream();
 		try {
 			writeJsonHash(new DataOutputStream(baos), json);
 		} catch (IOException ex) {
 			ex.printStackTrace();
-			int h = json.hashCode();
+			var h = json.hashCode();
 			return new byte[]{(byte) (h >> 24), (byte) (h >> 16), (byte) (h >> 8), (byte) (h >> 0)};
 		}
 

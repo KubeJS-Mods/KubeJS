@@ -38,7 +38,7 @@ public abstract class BlockType {
 			generator.json(b.newID("models/block/", ""), b.modelJson);
 		} else {
 			generator.blockModel(b.id, m -> {
-				String particle = b.textures.get("particle").getAsString();
+				var particle = b.textures.get("particle").getAsString();
 
 				if (areAllTexturesEqual(b.textures, particle)) {
 					m.parent("minecraft:block/cube_all");
@@ -92,13 +92,13 @@ public abstract class BlockType {
 		if (builder.modelJson != null) {
 			map.put(builder.newID("models/block/", ""), builder.modelJson);
 		} else {
-			JsonObject modelJson = new JsonObject();
+			var modelJson = new JsonObject();
 
-			String particle = builder.textures.get("particle").getAsString();
+			var particle = builder.textures.get("particle").getAsString();
 
 			if (areAllTexturesEqual(builder.textures, particle)) {
 				modelJson.addProperty("parent", "block/cube_all");
-				JsonObject textures = new JsonObject();
+				var textures = new JsonObject();
 				textures.addProperty("all", particle);
 				modelJson.add("textures", textures);
 			} else {
@@ -107,21 +107,21 @@ public abstract class BlockType {
 			}
 
 			if (!builder.color.isEmpty()) {
-				JsonObject cube = new JsonObject();
-				JsonArray from = new JsonArray();
+				var cube = new JsonObject();
+				var from = new JsonArray();
 				from.add(0);
 				from.add(0);
 				from.add(0);
 				cube.add("from", from);
-				JsonArray to = new JsonArray();
+				var to = new JsonArray();
 				to.add(16);
 				to.add(16);
 				to.add(16);
 				cube.add("to", to);
-				JsonObject faces = new JsonObject();
+				var faces = new JsonObject();
 
 				for (var direction : Direction.values()) {
-					JsonObject f = new JsonObject();
+					var f = new JsonObject();
 					f.addProperty("texture", "#" + direction.getSerializedName());
 					f.addProperty("cullface", direction.getSerializedName());
 					f.addProperty("tintindex", 0);
@@ -130,7 +130,7 @@ public abstract class BlockType {
 
 				cube.add("faces", faces);
 
-				JsonArray elements = new JsonArray();
+				var elements = new JsonArray();
 				elements.add(cube);
 				modelJson.add("elements", elements);
 			}

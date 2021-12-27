@@ -14,7 +14,7 @@ public class VariantBlockStateGenerator {
 		private final List<Model> models = new ArrayList<>();
 
 		public Model model(String s) {
-			Model model = new Model();
+			var model = new Model();
 			model.model(s);
 			models.add(model);
 			return model;
@@ -25,7 +25,7 @@ public class VariantBlockStateGenerator {
 				return models.get(0).toJson();
 			}
 
-			JsonArray a = new JsonArray();
+			var a = new JsonArray();
 
 			for (var m : models) {
 				a.add(m.toJson());
@@ -62,7 +62,7 @@ public class VariantBlockStateGenerator {
 		}
 
 		public JsonObject toJson() {
-			JsonObject json = new JsonObject();
+			var json = new JsonObject();
 			json.addProperty("model", model);
 
 			if (x != 0) {
@@ -84,7 +84,7 @@ public class VariantBlockStateGenerator {
 	private final JsonObject variants = new JsonObject();
 
 	public void variant(String key, Consumer<Variant> consumer) {
-		Variant v = new Variant();
+		var v = new Variant();
 		v.key = key;
 		consumer.accept(v);
 		variants.add(v.key, v.toJson());
@@ -95,7 +95,7 @@ public class VariantBlockStateGenerator {
 	}
 
 	public JsonObject toJson() {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.add("variants", variants);
 		return json;
 	}

@@ -44,7 +44,7 @@ public class PlatformWrapper {
 
 	static {
 		for (var mod : Platform.getMods()) {
-			ModInfo info = new ModInfo(mod.getModId());
+			var info = new ModInfo(mod.getModId());
 			info.name = mod.getName();
 			info.version = mod.getVersion();
 			MOD_LIST.add(info.id);

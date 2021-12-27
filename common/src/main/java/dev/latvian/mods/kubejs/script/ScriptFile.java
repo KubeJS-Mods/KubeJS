@@ -31,8 +31,8 @@ public class ScriptFile implements Comparable<ScriptFile> {
 	public boolean load() {
 		error = null;
 
-		try (InputStream stream = source.createStream(info)) {
-			String script = new String(IOUtils.toByteArray(new BufferedInputStream(stream)), StandardCharsets.UTF_8);
+		try (var stream = source.createStream(info)) {
+			var script = new String(IOUtils.toByteArray(new BufferedInputStream(stream)), StandardCharsets.UTF_8);
 			pack.context.evaluateString(pack.scope, script, info.location, 1, null);
 			return true;
 		} catch (Throwable ex) {

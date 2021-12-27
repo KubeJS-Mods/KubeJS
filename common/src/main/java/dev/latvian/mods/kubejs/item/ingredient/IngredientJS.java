@@ -52,7 +52,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 		} else if (o instanceof FluidStackJS fluid) {
 			return new DummyFluidItemStackJS(fluid);
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
-			Pattern reg = UtilsJS.parseRegex(o);
+			var reg = UtilsJS.parseRegex(o);
 
 			if (reg != null) {
 				return new RegexIngredientJS(reg);
@@ -62,9 +62,9 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 		} else if (o instanceof JsonElement json) {
 			return ingredientFromRecipeJson(json);
 		} else if (o instanceof CharSequence) {
-			String s = o.toString();
-			int count = 1;
-			int spaceIndex = s.indexOf(' ');
+			var s = o.toString();
+			var count = 1;
+			var spaceIndex = s.indexOf(' ');
 
 			if (spaceIndex >= 2 && s.indexOf('x') == spaceIndex - 1) {
 				count = Integer.parseInt(s.substring(0, spaceIndex - 1));
@@ -84,7 +84,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			} else if (s.startsWith("@")) {
 				return new ModIngredientJS(s.substring(1)).withCount(count);
 			} else if (s.startsWith("%")) {
-				CreativeModeTab group = ItemStackJS.findGroup(s.substring(1));
+				var group = ItemStackJS.findGroup(s.substring(1));
 
 				if (group == null) {
 					if (RecipeJS.itemErrors) {
@@ -97,13 +97,13 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 				return new GroupIngredientJS(group).withCount(count);
 			}
 
-			Pattern reg = UtilsJS.parseRegex(s);
+			var reg = UtilsJS.parseRegex(s);
 
 			if (reg != null) {
 				return new RegexIngredientJS(reg).withCount(count);
 			}
 
-			Item item = KubeJSRegistries.items().get(new ResourceLocation(s));
+			var item = KubeJSRegistries.items().get(new ResourceLocation(s));
 
 			if (item == Items.AIR) {
 				return ItemStackJS.EMPTY;
@@ -129,10 +129,10 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 		List<Object> list = ListJS.of(o);
 
 		if (list != null) {
-			MatchAnyIngredientJS l = new MatchAnyIngredientJS();
+			var l = new MatchAnyIngredientJS();
 
 			for (var o1 : list) {
-				IngredientJS ingredient = of(o1);
+				var ingredient = of(o1);
 
 				if (ingredient != ItemStackJS.EMPTY) {
 					l.ingredients.add(ingredient);
@@ -142,20 +142,20 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			return l.ingredients.isEmpty() ? ItemStackJS.EMPTY : l;
 		}
 
-		MapJS map = MapJS.of(o);
+		var map = MapJS.of(o);
 
 		if (map != null) {
 			IngredientJS in = ItemStackJS.EMPTY;
-			boolean val = map.containsKey("value");
+			var val = map.containsKey("value");
 
 			if (map.containsKey("type")) {
 				if ("forge:nbt".equals(map.get("type"))) {
 					in = ItemStackJS.of(map.get("item")).withNBT(MapJS.nbt(map.get("nbt")));
 				} else {
-					JsonObject json = map.toJson();
+					var json = map.toJson();
 
 					try {
-						Ingredient ingredient = getCustomIngredient(json);
+						var ingredient = getCustomIngredient(json);
 						return new CustomIngredient(ingredient, json);
 					} catch (Exception ex) {
 						throw new RecipeExceptionJS("Failed to parse custom ingredient (" + json.get("type") + ") from " + json + ": " + ex).fallback();
@@ -198,7 +198,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 
 	static IngredientJS ingredientFromRecipeJson(JsonElement json) {
 		if (json.isJsonArray()) {
-			MatchAnyIngredientJS any = new MatchAnyIngredientJS();
+			var any = new MatchAnyIngredientJS();
 
 			for (var e : json.getAsJsonArray()) {
 				any.ingredients.add(ingredientFromRecipeJson(e));
@@ -208,16 +208,16 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 		} else if (json.isJsonPrimitive()) {
 			return of(json.getAsString());
 		} else if (json.isJsonObject()) {
-			JsonObject o = json.getAsJsonObject();
+			var o = json.getAsJsonObject();
 			IngredientJS in = ItemStackJS.EMPTY;
-			boolean val = o.has("value");
+			var val = o.has("value");
 
 			if (o.has("type")) {
 				if ("forge:nbt".equals(o.get("type").getAsString())) {
 					in = ItemStackJS.of(o.get("item").getAsString()).withNBT(MapJS.nbt(o.get("nbt")));
 				} else {
 					try {
-						Ingredient ingredient = getCustomIngredient(o);
+						var ingredient = getCustomIngredient(o);
 						return new CustomIngredient(ingredient, o);
 					} catch (Exception ex) {
 						throw new RecipeExceptionJS("Failed to parse custom ingredient (" + o.get("type") + ") from " + o + ": " + ex);
@@ -301,7 +301,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 		Set<String> ids = new LinkedHashSet<>();
 
 		for (var item : getVanillaItems()) {
-			ResourceLocation id = KubeJSRegistries.items().getId(item);
+			var id = KubeJSRegistries.items().getId(item);
 
 			if (id != null) {
 				ids.add(id.toString());
@@ -352,13 +352,13 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 
 	@Override
 	default JsonElement toJson() {
-		Set<ItemStackJS> set = getStacks();
+		var set = getStacks();
 
 		if (set.size() == 1) {
 			return set.iterator().next().toJson();
 		}
 
-		JsonArray array = new JsonArray();
+		var array = new JsonArray();
 
 		for (var stackJS : set) {
 			array.add(stackJS.toJson());
@@ -382,7 +382,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 	}
 
 	default List<IngredientJS> unwrapStackIngredient() {
-		int count = getCount();
+		var count = getCount();
 
 		if (count <= 0) {
 			return Collections.singletonList(withCount(1));
@@ -390,7 +390,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 
 		List<IngredientJS> list = new ArrayList<>();
 
-		for (int i = 0; i < count; i++) {
+		for (var i = 0; i < count; i++) {
 			list.add(withCount(1));
 		}
 

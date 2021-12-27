@@ -10,7 +10,7 @@ import java.util.function.Consumer;
  */
 public class FluidRegistryEventJS extends StartupEventJS {
 	public void create(String name, Consumer<FluidBuilder> callback) {
-		FluidBuilder builder = new FluidBuilder(name);
+		var builder = new FluidBuilder(name);
 		callback.accept(builder);
 		KubeJSObjects.FLUIDS.put(builder.id, builder);
 		KubeJSObjects.ALL.add(builder);

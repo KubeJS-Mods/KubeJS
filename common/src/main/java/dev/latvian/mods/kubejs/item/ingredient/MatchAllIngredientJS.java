@@ -46,7 +46,7 @@ public class MatchAllIngredientJS implements IngredientJS {
 
 	@Override
 	public ItemStackJS getFirst() {
-		List<ItemStackJS> list = ItemStackJS.getList();
+		var list = ItemStackJS.getList();
 		return list.isEmpty() ? ItemStackJS.EMPTY : list.get(0).copy();
 	}
 

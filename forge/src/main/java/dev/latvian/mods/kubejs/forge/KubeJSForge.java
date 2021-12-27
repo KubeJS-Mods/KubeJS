@@ -81,14 +81,14 @@ public class KubeJSForge {
 			return;
 		}
 
-		LivingEntityDropsEventJS e = new LivingEntityDropsEventJS(event);
+        var e = new LivingEntityDropsEventJS(event);
 
 		if (e.post(KubeJSEvents.ENTITY_DROPS)) {
 			event.setCanceled(true);
 		} else if (e.eventDrops != null) {
 			event.getDrops().clear();
 
-			for (ItemEntityJS ie : e.eventDrops) {
+			for (var ie : e.eventDrops) {
 				event.getDrops().add((ItemEntity) ie.minecraftEntity);
 			}
 		}

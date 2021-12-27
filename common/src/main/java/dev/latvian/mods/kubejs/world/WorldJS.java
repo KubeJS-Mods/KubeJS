@@ -130,7 +130,7 @@ public abstract class WorldJS implements WithAttachedData {
 
 	@Nullable
 	public LivingEntityJS getLivingEntity(@Nullable Entity entity) {
-		EntityJS e = getEntity(entity);
+		var e = getEntity(entity);
 		return e instanceof LivingEntityJS living ? living : null;
 	}
 
@@ -140,7 +140,7 @@ public abstract class WorldJS implements WithAttachedData {
 			return null;
 		}
 
-		EntityJS e = getEntity(entity);
+		var e = getEntity(entity);
 		return e instanceof PlayerJS player ? player : null;
 	}
 
@@ -162,7 +162,7 @@ public abstract class WorldJS implements WithAttachedData {
 
 	@Nullable
 	public EntityJS createEntity(ResourceLocation id) {
-		EntityType<?> type = Registry.ENTITY_TYPE.get(id);
+		var type = Registry.ENTITY_TYPE.get(id);
 
 		if (type == null) {
 			return null;
@@ -173,7 +173,7 @@ public abstract class WorldJS implements WithAttachedData {
 
 	public void spawnLightning(double x, double y, double z, boolean effectOnly, @Nullable EntityJS player) {
 		if (minecraftLevel instanceof ServerLevel) {
-			LightningBolt e = EntityType.LIGHTNING_BOLT.create(minecraftLevel);
+			var e = EntityType.LIGHTNING_BOLT.create(minecraftLevel);
 			e.moveTo(x, y, z);
 			e.setCause(player instanceof ServerPlayerJS serverPlayer ? serverPlayer.minecraftPlayer : null);
 			e.setVisualOnly(effectOnly);

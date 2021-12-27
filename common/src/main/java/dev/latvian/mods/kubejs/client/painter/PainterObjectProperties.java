@@ -41,7 +41,7 @@ public class PainterObjectProperties {
 
 	@Nullable
 	public ResourceLocation getResourceLocation(String key, @Nullable ResourceLocation def) {
-		String s = getString(key, "").trim();
+		var s = getString(key, "").trim();
 		return s.isEmpty() ? def : new ResourceLocation(s);
 	}
 
@@ -73,10 +73,10 @@ public class PainterObjectProperties {
 
 	public Unit getColor(String key, Unit def) {
 		if (hasString(key)) {
-			Color col = ColorWrapper.MAP.get(getString(key, ""));
+			var col = ColorWrapper.MAP.get(getString(key, ""));
 
 			if (col != null) {
-				int i = col.getArgbKJS();
+				var i = col.getArgbKJS();
 				return new ColorUnit(FixedUnit.of((i >> 16) & 0xFF), FixedUnit.of((i >> 8) & 0xFF), FixedUnit.of(i & 0xFF), FixedUnit.of((i >> 24) & 0xFF));
 			}
 		}

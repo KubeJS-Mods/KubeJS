@@ -46,8 +46,8 @@ public enum ScriptType {
 	}
 
 	public Path getLogFile() {
-		Path dir = Platform.getGameFolder().resolve("logs/kubejs");
-		Path file = dir.resolve(name + ".txt");
+		var dir = Platform.getGameFolder().resolve("logs/kubejs");
+		var file = dir.resolve(name + ".txt");
 
 		try {
 			if (!Files.exists(dir)) {

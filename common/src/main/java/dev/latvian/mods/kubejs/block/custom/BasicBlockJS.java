@@ -87,7 +87,7 @@ public class BasicBlockJS extends Block {
 	@Deprecated
 	public void randomTick(BlockState state, ServerLevel level, BlockPos pos, Random random) {
 		if (properties.randomTickCallback != null) {
-			BlockContainerJS containerJS = new BlockContainerJS(level, pos);
+			var containerJS = new BlockContainerJS(level, pos);
 			try {
 				properties.randomTickCallback.accept(new RandomTickCallbackJS(containerJS, random));
 			} catch (Exception e) {

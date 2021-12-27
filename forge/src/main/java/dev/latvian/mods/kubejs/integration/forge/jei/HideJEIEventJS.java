@@ -35,9 +35,9 @@ public class HideJEIEventJS<T> extends EventJS {
 	}
 
 	public void hide(Object o) {
-		Predicate<T> p = function.apply(o);
+        var p = function.apply(o);
 
-		for (T value : allIngredients) {
+		for (var value : allIngredients) {
 			if (p.test(value)) {
 				hidden.add(value);
 			}

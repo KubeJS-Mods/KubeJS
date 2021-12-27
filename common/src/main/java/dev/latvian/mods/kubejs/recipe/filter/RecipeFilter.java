@@ -29,15 +29,15 @@ public interface RecipeFilter extends Predicate<RecipeJS> {
 			return ALWAYS_FALSE;
 		}
 
-		ListJS list = ListJS.orSelf(o);
+		var list = ListJS.orSelf(o);
 
 		if (list.isEmpty()) {
 			return ALWAYS_TRUE;
 		} else if (list.size() > 1) {
-			OrFilter predicate = new OrFilter();
+			var predicate = new OrFilter();
 
 			for (var o1 : list) {
-				RecipeFilter p = of(o1);
+				var p = of(o1);
 
 				if (p == ALWAYS_TRUE) {
 					return ALWAYS_TRUE;
@@ -49,15 +49,15 @@ public interface RecipeFilter extends Predicate<RecipeJS> {
 			return predicate.list.isEmpty() ? ALWAYS_FALSE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
 		}
 
-		MapJS map = MapJS.of(list.get(0));
+		var map = MapJS.of(list.get(0));
 
 		if (map == null || map.isEmpty()) {
 			return ALWAYS_TRUE;
 		}
 
-		boolean exact = Boolean.TRUE.equals(map.get("exact"));
+		var exact = Boolean.TRUE.equals(map.get("exact"));
 
-		AndFilter predicate = new AndFilter();
+		var predicate = new AndFilter();
 
 		if (map.get("or") != null) {
 			predicate.list.add(of(map.get("or")));
@@ -69,8 +69,8 @@ public interface RecipeFilter extends Predicate<RecipeJS> {
 
 		try {
 			if (map.get("id") != null) {
-				String s = map.get("id").toString();
-				Pattern pattern = UtilsJS.parseRegex(s);
+				var s = map.get("id").toString();
+				var pattern = UtilsJS.parseRegex(s);
 				predicate.list.add(pattern == null ? new IDFilter(UtilsJS.getMCID(s)) : new RegexIDFilter(pattern));
 			}
 

@@ -39,12 +39,12 @@ public class BlockIDPredicate implements BlockPredicate {
 			return id.toString();
 		}
 
-		StringBuilder sb = new StringBuilder(id.toString());
+		var sb = new StringBuilder(id.toString());
 		sb.append('[');
 
-		boolean first = true;
+		var first = true;
 
-		for (Map.Entry<String, String> entry : properties.entrySet()) {
+		for (var entry : properties.entrySet()) {
 			if (first) {
 				first = false;
 			} else {
@@ -89,18 +89,18 @@ public class BlockIDPredicate implements BlockPredicate {
 
 			Map<String, Property<?>> map = new HashMap<>();
 
-			for (Property<?> property : getBlock().defaultBlockState().getProperties()) {
+			for (var property : getBlock().defaultBlockState().getProperties()) {
 				map.put(property.getName(), property);
 			}
 
-			for (Map.Entry<String, String> entry : properties.entrySet()) {
-				Property<?> property = map.get(entry.getKey());
+			for (var entry : properties.entrySet()) {
+				var property = map.get(entry.getKey());
 
 				if (property != null) {
 					Optional<?> o = property.getValue(entry.getValue());
 
 					if (o.isPresent()) {
-						PropertyObject po = new PropertyObject();
+						var po = new PropertyObject();
 						po.property = property;
 						po.value = o.get();
 						cachedProperties.add(po);
@@ -113,7 +113,7 @@ public class BlockIDPredicate implements BlockPredicate {
 	}
 
 	public BlockState getBlockState() {
-		BlockState state = getBlock().defaultBlockState();
+		var state = getBlock().defaultBlockState();
 
 		for (var object : getBlockProperties()) {
 			state = state.setValue(object.property, UtilsJS.cast(object.value));

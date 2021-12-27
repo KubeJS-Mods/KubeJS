@@ -20,7 +20,7 @@ public class CustomIngredientAction extends IngredientAction {
 
 	@Override
 	public ItemStack transform(ItemStack old, int index, CraftingContainer container) {
-		CustomIngredientActionCallback callback = MAP.get(id);
+		var callback = MAP.get(id);
 		return callback == null ? ItemStack.EMPTY : ItemStackJS.of(callback.transform(ItemStackJS.of(old), index, new InventoryJS(container))).getItemStack().copy();
 	}
 

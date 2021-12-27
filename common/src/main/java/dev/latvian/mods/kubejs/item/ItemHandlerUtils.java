@@ -36,10 +36,10 @@ public class ItemHandlerUtils {
 		}
 
 		ItemHandler inventory = new PlayerMainInvWrapper(player.getInventory());
-		Level level = player.level;
+		var level = player.level;
 
 		// try adding it into the inventory
-		ItemStack remainder = stack;
+		var remainder = stack;
 		// insert into preferred slot first
 		if (preferredSlot >= 0 && preferredSlot < inventory.getSlots()) {
 			remainder = inventory.insertItem(preferredSlot, stack, false);
@@ -57,7 +57,7 @@ public class ItemHandlerUtils {
 
 		// drop remaining itemstack into the world
 		if (!remainder.isEmpty() && !level.isClientSide) {
-			ItemEntity itemEntity = new ItemEntity(level, player.getX(), player.getY() + 0.5, player.getZ(), remainder);
+			var itemEntity = new ItemEntity(level, player.getX(), player.getY() + 0.5, player.getZ(), remainder);
 			itemEntity.setPickUpDelay(40);
 			itemEntity.setDeltaMovement(itemEntity.getDeltaMovement().multiply(0, 1, 0));
 
@@ -76,11 +76,11 @@ public class ItemHandlerUtils {
 			return insertItem(inventory, stack, simulate);
 		}
 
-		int sizeInventory = inventory.getSlots();
+		var sizeInventory = inventory.getSlots();
 
 		// go through the inventory and try to fill up already existing items
-		for (int i = 0; i < sizeInventory; i++) {
-			ItemStack slot = inventory.getStackInSlot(i);
+		for (var i = 0; i < sizeInventory; i++) {
+			var slot = inventory.getStackInSlot(i);
 			if (canItemStacksStackRelaxed(slot, stack)) {
 				stack = inventory.insertItem(i, stack, simulate);
 
@@ -93,7 +93,7 @@ public class ItemHandlerUtils {
 		// insert remainder into empty slots
 		if (!stack.isEmpty()) {
 			// find empty slot
-			for (int i = 0; i < sizeInventory; i++) {
+			for (var i = 0; i < sizeInventory; i++) {
 				if (inventory.getStackInSlot(i).isEmpty()) {
 					stack = inventory.insertItem(i, stack, simulate);
 					if (stack.isEmpty()) {
@@ -112,7 +112,7 @@ public class ItemHandlerUtils {
 			return stack;
 		}
 
-		for (int i = 0; i < dest.getSlots(); i++) {
+		for (var i = 0; i < dest.getSlots(); i++) {
 			stack = dest.insertItem(i, stack, simulate);
 			if (stack.isEmpty()) {
 				return ItemStack.EMPTY;

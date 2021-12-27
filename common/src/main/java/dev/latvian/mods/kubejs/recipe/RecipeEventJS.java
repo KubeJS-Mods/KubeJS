@@ -85,9 +85,9 @@ public class RecipeEventJS extends EventJS {
 			Map<String, RecipeFunction> funcs = new HashMap<>();
 
 			for (var entry1 : entry.getValue().entrySet()) {
-				ResourceLocation location = new ResourceLocation(entry.getKey(), entry1.getKey());
-				RecipeTypeJS typeJS = t.get(location);
-				RecipeFunction func = new RecipeFunction(this, location, typeJS != null ? typeJS : new CustomRecipeTypeJS(entry1.getValue()));
+				var location = new ResourceLocation(entry.getKey(), entry1.getKey());
+				var typeJS = t.get(location);
+				var func = new RecipeFunction(this, location, typeJS != null ? typeJS : new CustomRecipeTypeJS(entry1.getValue()));
 				funcs.put(UtilsJS.convertSnakeCaseToCamelCase(entry1.getKey()), func);
 				funcs.put(entry1.getKey(), func);
 
@@ -121,18 +121,18 @@ public class RecipeEventJS extends EventJS {
 		var allRecipeMap = new JsonObject();
 
 		for (var entry : jsonMap.entrySet()) {
-			ResourceLocation recipeId = entry.getKey();
+			var recipeId = entry.getKey();
 
 			if (Platform.isForge() && recipeId.getPath().startsWith("_")) {
 				continue; //Forge: filter anything beginning with "_" as it's used for metadata.
 			}
 
-			String recipeIdAndType = recipeId + "[unknown:type]";
+			var recipeIdAndType = recipeId + "[unknown:type]";
 
 			try {
-				JsonObject json = entry.getValue();
+				var json = entry.getValue();
 
-				String type = GsonHelper.getAsString(json, "type");
+				var type = GsonHelper.getAsString(json, "type");
 
 				recipeIdAndType = recipeId + "[" + type + "]";
 
@@ -145,17 +145,17 @@ public class RecipeEventJS extends EventJS {
 				}
 
 				if (type.equals(FORGE_CONDITIONAL)) {
-					JsonArray items = GsonHelper.getAsJsonArray(json, "recipes");
-					boolean skip = true;
+					var items = GsonHelper.getAsJsonArray(json, "recipes");
+					var skip = true;
 
-					for (int idx = 0; idx < items.size(); idx++) {
-						JsonElement e = items.get(idx);
+					for (var idx = 0; idx < items.size(); idx++) {
+						var e = items.get(idx);
 
 						if (!e.isJsonObject()) {
 							throw new RecipeExceptionJS("Invalid recipes entry at index " + idx + " Must be JsonObject");
 						}
 
-						JsonObject o = e.getAsJsonObject();
+						var o = e.getAsJsonObject();
 
 						if (processConditions(o, "conditions")) {
 							json = o.get("recipe").getAsJsonObject();
@@ -175,13 +175,13 @@ public class RecipeEventJS extends EventJS {
 					}
 				}
 
-				RecipeFunction function = getRecipeFunction(type);
+				var function = getRecipeFunction(type);
 
 				if (function.type == null) {
 					throw new MissingRecipeFunctionException("Unknown recipe type!").fallback();
 				}
 
-				RecipeJS recipe = function.type.factory.get();
+				var recipe = function.type.factory.get();
 				recipe.id = recipeId;
 				recipe.type = function.type;
 				recipe.json = json;
@@ -207,11 +207,11 @@ public class RecipeEventJS extends EventJS {
 				}
 
 				if (ServerSettings.dataExport != null) {
-					JsonObject exp = new JsonObject();
+					var exp = new JsonObject();
 					exp.add("recipe", json);
 
 					if (!recipe.inputItems.isEmpty()) {
-						JsonArray array = new JsonArray();
+						var array = new JsonArray();
 
 						for (var in : recipe.inputItems) {
 							array.add(in.toJson());
@@ -221,7 +221,7 @@ public class RecipeEventJS extends EventJS {
 					}
 
 					if (!recipe.outputItems.isEmpty()) {
-						JsonArray array = new JsonArray();
+						var array = new JsonArray();
 
 						for (var out : recipe.outputItems) {
 							array.add(out.toResultJson());
@@ -264,7 +264,7 @@ public class RecipeEventJS extends EventJS {
 		ConsoleJS.SERVER.setLineNumber(false);
 		ConsoleJS.SERVER.info("Posted recipe events in " + timer.stop());
 
-		HashMap<ResourceLocation, Recipe<?>> recipesByName = new HashMap<>();
+		var recipesByName = new HashMap<ResourceLocation, Recipe<?>>();
 
 		timer.reset().start();
 		originalRecipes.stream()
@@ -435,7 +435,7 @@ public class RecipeEventJS extends EventJS {
 	}
 
 	public int remove(RecipeFilter filter) {
-		MutableInt count = new MutableInt();
+		var count = new MutableInt();
 		forEachRecipe(filter, r ->
 		{
 			if (removedRecipes.add(r)) {
@@ -452,9 +452,9 @@ public class RecipeEventJS extends EventJS {
 	}
 
 	public int replaceInput(RecipeFilter filter, IngredientJS ingredient, IngredientJS with, boolean exact) {
-		AtomicInteger count = new AtomicInteger();
-		String is = ingredient.toString();
-		String ws = with.toString();
+		var count = new AtomicInteger();
+		var is = ingredient.toString();
+		var ws = with.toString();
 
 		forEachRecipeAsync(filter, r ->
 		{
@@ -483,9 +483,9 @@ public class RecipeEventJS extends EventJS {
 	}
 
 	public int replaceOutput(RecipeFilter filter, IngredientJS ingredient, ItemStackJS with, boolean exact) {
-		AtomicInteger count = new AtomicInteger();
-		String is = ingredient.toString();
-		String ws = with.toString();
+		var count = new AtomicInteger();
+		var is = ingredient.toString();
+		var ws = with.toString();
 
 		forEachRecipeAsync(filter, r ->
 		{
@@ -518,10 +518,10 @@ public class RecipeEventJS extends EventJS {
 			throw new NullPointerException("Recipe type is null!");
 		}
 
-		String namespace = UtilsJS.getNamespace(id);
-		String path = UtilsJS.getPath(id);
+		var namespace = UtilsJS.getNamespace(id);
+		var path = UtilsJS.getPath(id);
 
-		Object func0 = recipeFunctions.get(namespace);
+		var func0 = recipeFunctions.get(namespace);
 
 		if (func0 instanceof RecipeFunction fn) {
 			return fn;
@@ -529,7 +529,7 @@ public class RecipeEventJS extends EventJS {
 			throw new NullPointerException("Unknown recipe type: " + id);
 		}
 
-		RecipeFunction func = ((Map<String, RecipeFunction>) func0).get(path);
+		var func = ((Map<String, RecipeFunction>) func0).get(path);
 
 		if (func == null) {
 			throw new NullPointerException("Unknown recipe type: " + id);
@@ -539,13 +539,13 @@ public class RecipeEventJS extends EventJS {
 	}
 
 	public RecipeJS custom(Object o) {
-		MapJS json = Objects.requireNonNull(MapJS.of(o));
+		var json = Objects.requireNonNull(MapJS.of(o));
 		return getRecipeFunction(json.getOrDefault("type", "").toString()).createRecipe(new Object[]{json});
 	}
 
 	public void printTypes() {
 		ConsoleJS.SERVER.info("== All recipe types [used] ==");
-		HashSet<String> list = new HashSet<>();
+		var list = new HashSet<String>();
 		originalRecipes.forEach(r -> list.add(r.type.toString()));
 		list.stream().sorted().forEach(ConsoleJS.SERVER::info);
 		ConsoleJS.SERVER.info(list.size() + " types");
@@ -553,19 +553,19 @@ public class RecipeEventJS extends EventJS {
 
 	public void printAllTypes() {
 		ConsoleJS.SERVER.info("== All recipe types [available] ==");
-		List<String> list = KubeJSRegistries.recipeSerializers().entrySet().stream().map(e -> e.getKey().location().toString()).sorted().toList();
+		var list = KubeJSRegistries.recipeSerializers().entrySet().stream().map(e -> e.getKey().location().toString()).sorted().toList();
 		list.forEach(ConsoleJS.SERVER::info);
 		ConsoleJS.SERVER.info(list.size() + " types");
 	}
 
 	public void printExamples(String type) {
-		List<RecipeJS> list = originalRecipes.stream().filter(recipeJS -> recipeJS.type.toString().equals(type)).collect(Collectors.toList());
+		var list = originalRecipes.stream().filter(recipeJS -> recipeJS.type.toString().equals(type)).collect(Collectors.toList());
 		Collections.shuffle(list);
 
 		ConsoleJS.SERVER.info("== Random examples of '" + type + "' ==");
 
-		for (int i = 0; i < Math.min(list.size(), 5); i++) {
-			RecipeJS r = list.get(i);
+		for (var i = 0; i < Math.min(list.size(), 5); i++) {
+			var r = list.get(i);
 			ConsoleJS.SERVER.info("- " + r.getOrCreateId() + ":\n" + JsonUtilsJS.toPrettyString(r.json));
 		}
 	}

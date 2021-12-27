@@ -17,7 +17,7 @@ public class SlabBlockJS extends SlabBlock implements CustomBlockJS {
 			bs.variant("type=top", v -> v.model(builder.newID("block/", "_top").toString()));
 		});
 
-		final String texture = builder.textures.get("texture").getAsString();
+		final var texture = builder.textures.get("texture").getAsString();
 
 		generator.blockModel(builder.newID("", "_double"), m -> {
 			m.parent("minecraft:block/cube_all");

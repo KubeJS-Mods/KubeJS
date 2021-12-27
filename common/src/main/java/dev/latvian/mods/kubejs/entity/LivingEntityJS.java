@@ -179,7 +179,7 @@ public class LivingEntityJS extends EntityJS {
 	}
 
 	public void damageEquipment(EquipmentSlot slot, int amount, Consumer<ItemStackJS> onBroken) {
-		ItemStack stack = minecraftLivingEntity.getItemBySlot(slot);
+		var stack = minecraftLivingEntity.getItemBySlot(slot);
 
 		if (!stack.isEmpty()) {
 			stack.hurtAndBreak(amount, minecraftLivingEntity, livingEntity -> onBroken.accept(ItemStackJS.of(stack)));
@@ -213,7 +213,7 @@ public class LivingEntityJS extends EntityJS {
 	}
 
 	public boolean isHoldingInAnyHand(Object ingredient) {
-		IngredientJS i = IngredientJS.of(ingredient);
+		var i = IngredientJS.of(ingredient);
 		return i.testVanilla(minecraftLivingEntity.getItemInHand(InteractionHand.MAIN_HAND)) || i.testVanilla(minecraftLivingEntity.getItemInHand(InteractionHand.OFF_HAND));
 	}
 

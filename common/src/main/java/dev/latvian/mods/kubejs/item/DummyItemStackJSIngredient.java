@@ -32,7 +32,7 @@ public class DummyItemStackJSIngredient implements IngredientJS {
 			return new JsonArray();
 		}
 
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("item", itemStack.getId());
 
 		if (itemStack.hasNBT()) {

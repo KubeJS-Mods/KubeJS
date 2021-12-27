@@ -71,7 +71,7 @@ public abstract class BlockStatePredicate {
 
 		@Override
 		public Set<ResourceLocation> getBlockIds() {
-			ResourceLocation blockId = KubeJSRegistries.blocks().getId(block);
+			var blockId = KubeJSRegistries.blocks().getId(block);
 			return blockId == null ? Collections.emptySet() : Collections.singleton(blockId);
 		}
 	}
@@ -100,7 +100,7 @@ public abstract class BlockStatePredicate {
 
 		@Override
 		public Set<ResourceLocation> getBlockIds() {
-			ResourceLocation blockId = KubeJSRegistries.blocks().getId(state.getBlock());
+			var blockId = KubeJSRegistries.blocks().getId(state.getBlock());
 			return blockId == null ? Collections.emptySet() : Collections.singleton(blockId);
 		}
 	}
@@ -131,7 +131,7 @@ public abstract class BlockStatePredicate {
 			pattern = p;
 			matchedBlocks = new LinkedHashSet<>();
 
-			for (Map.Entry<ResourceKey<Block>, Block> entry : KubeJSRegistries.blocks().entrySet()) {
+			for (var entry : KubeJSRegistries.blocks().entrySet()) {
 				if (pattern.matcher(entry.getKey().location().toString()).find()) {
 					matchedBlocks.add(entry.getValue());
 				}
@@ -165,7 +165,7 @@ public abstract class BlockStatePredicate {
 
 		@Override
 		public Collection<Block> getBlocks() {
-			HashSet<Block> set = new HashSet<>();
+			var set = new HashSet<Block>();
 
 			for (var predicate : list) {
 				set.addAll(predicate.getBlocks());
@@ -176,7 +176,7 @@ public abstract class BlockStatePredicate {
 
 		@Override
 		public Collection<BlockState> getBlockStates() {
-			HashSet<BlockState> set = new HashSet<>();
+			var set = new HashSet<BlockState>();
 
 			for (var predicate : list) {
 				set.addAll(predicate.getBlockStates());
@@ -199,19 +199,19 @@ public abstract class BlockStatePredicate {
 
 	public static BlockStatePredicate parse(String s) {
 		if (s.startsWith("#")) {
-			Tag<Block> tag = Tags.blocks().getTag(new ResourceLocation(s.substring(1)));
+			var tag = Tags.blocks().getTag(new ResourceLocation(s.substring(1)));
 
 			if (tag != null) {
 				return new FromTag(tag);
 			}
 		} else if (s.indexOf('[') != -1) {
-			BlockState state = UtilsJS.parseBlockState(s);
+			var state = UtilsJS.parseBlockState(s);
 
 			if (state != Blocks.AIR.defaultBlockState()) {
 				return new FromState(state);
 			}
 		} else {
-			Block block = KubeJSRegistries.blocks().get(new ResourceLocation(s));
+			var block = KubeJSRegistries.blocks().get(new ResourceLocation(s));
 
 			if (block != Blocks.AIR) {
 				return new FromID(block);
@@ -222,10 +222,10 @@ public abstract class BlockStatePredicate {
 	}
 
 	public static BlockStatePredicate of(Object blocks) {
-		BlockStatePredicate.FromList predicate = new BlockStatePredicate.FromList();
+		var predicate = new BlockStatePredicate.FromList();
 
 		for (var o : ListJS.orSelf(blocks)) {
-			BlockStatePredicate p = of0(o);
+			var p = of0(o);
 
 			if (p != BlockStatePredicate.Empty.INSTANCE) {
 				predicate.list.add(p);
@@ -245,7 +245,7 @@ public abstract class BlockStatePredicate {
 			return new FromTag((Tag<Block>) tag);
 		}
 
-		Pattern pattern = UtilsJS.parseRegex(o);
+		var pattern = UtilsJS.parseRegex(o);
 		return pattern == null ? BlockStatePredicate.parse(o.toString()) : new FromRegex(pattern);
 	}
 
@@ -267,7 +267,7 @@ public abstract class BlockStatePredicate {
 		Set<ResourceLocation> set = new LinkedHashSet<>();
 
 		for (var block : getBlocks()) {
-			ResourceLocation blockId = KubeJSRegistries.blocks().getId(block);
+			var blockId = KubeJSRegistries.blocks().getId(block);
 
 			if (blockId != null) {
 				set.add(blockId);
@@ -278,7 +278,7 @@ public abstract class BlockStatePredicate {
 	}
 
 	public boolean check(List<OreConfiguration.TargetBlockState> targetStates) {
-		for (OreConfiguration.TargetBlockState state : targetStates) {
+		for (var state : targetStates) {
 			if (check(state.state)) {
 				return true;
 			}

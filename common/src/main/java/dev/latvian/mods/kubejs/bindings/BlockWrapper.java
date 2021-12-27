@@ -31,9 +31,9 @@ public class BlockWrapper {
 	}
 
 	public static BlockIDPredicate id(ResourceLocation id, Map<String, Object> properties) {
-		BlockIDPredicate b = id(id);
+		var b = id(id);
 
-		for (Map.Entry<String, Object> entry : properties.entrySet()) {
+		for (var entry : properties.entrySet()) {
 			b = b.with(entry.getKey(), entry.getValue().toString());
 		}
 
@@ -77,13 +77,13 @@ public class BlockWrapper {
 	}
 
 	public static List<String> getTaggedIds(ResourceLocation tag) {
-		Tag<Block> t = Tags.blocks().getTag(tag);
+		var t = Tags.blocks().getTag(tag);
 
 		if (t != null && t.getValues().size() > 0) {
 			List<String> list = new ArrayList<>();
 
 			for (var b : t.getValues()) {
-				ResourceLocation id = KubeJSRegistries.blocks().getId(b);
+				var id = KubeJSRegistries.blocks().getId(b);
 
 				if (id != null) {
 					list.add(id.toString());

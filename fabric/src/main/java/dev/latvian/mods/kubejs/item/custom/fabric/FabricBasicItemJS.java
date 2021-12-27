@@ -22,7 +22,7 @@ public class FabricBasicItemJS extends BasicItemJS implements DynamicAttributeTo
 		toolsMap = new HashMap<>();
 
 		p.getToolsMap().forEach((type, level) -> {
-			Tag<Item> tag = type.fabricTag.get();
+			var tag = type.fabricTag.get();
 
 			if (tag instanceof Tag.Named) {
 				toolsMap.put(((Tag.Named<Item>) tag).getName(), level);
@@ -35,7 +35,7 @@ public class FabricBasicItemJS extends BasicItemJS implements DynamicAttributeTo
 	@Override
 	public int getMiningLevel(Tag<Item> tag, BlockState state, ItemStack stack, LivingEntity user) {
 		if (tag instanceof Tag.Named<Item> identified) {
-			Integer level = toolsMap.get(identified.getName());
+			var level = toolsMap.get(identified.getName());
 
 			if (level != null) {
 				return level;
@@ -56,7 +56,7 @@ public class FabricBasicItemJS extends BasicItemJS implements DynamicAttributeTo
 	@Override
 	public float getMiningSpeedMultiplier(Tag<Item> tag, BlockState state, ItemStack stack, LivingEntity user) {
 		if (tag instanceof Tag.Named<Item> identified) {
-			Integer level = toolsMap.get(identified.getName());
+			var level = toolsMap.get(identified.getName());
 
 			if (level != null) {
 				return miningSpeed;

@@ -29,7 +29,7 @@ public class TextKeybind extends Text {
 
 	@Override
 	public JsonObject toJson() {
-		JsonObject o = getStyleAndSiblingJson();
+		var o = getStyleAndSiblingJson();
 		o.addProperty("keybind", keybind);
 		return o;
 	}

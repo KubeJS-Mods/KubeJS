@@ -26,7 +26,7 @@ import java.util.Objects;
 public class MapJS extends LinkedHashMap<String, Object> implements StringBuilderAppendable, ChangeListener<Object>, Copyable, JsonSerializable, NBTSerializable {
 	@Nullable
 	public static MapJS of(@Nullable Object o) {
-		Object o1 = UtilsJS.wrap(o, JSObjectType.MAP);
+		var o1 = UtilsJS.wrap(o, JSObjectType.MAP);
 		return o1 instanceof MapJS ? (MapJS) o1 : null;
 	}
 
@@ -52,7 +52,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 			}
 		}
 
-		MapJS m = of(map);
+		var m = of(map);
 		return m == null ? null : m.toNBT();
 	}
 
@@ -68,7 +68,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 			}
 		}
 
-		MapJS m = of(map);
+		var m = of(map);
 		return m == null ? null : m.toJson();
 	}
 
@@ -92,7 +92,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 			return "{}";
 		}
 
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		appendString(builder);
 		return builder.toString();
 	}
@@ -102,7 +102,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 	}
 
 	private boolean isWordString(String s) {
-		for (int i = 0; i < s.length(); i++) {
+		for (var i = 0; i < s.length(); i++) {
 			if (!isWordChar(s.charAt(i))) {
 				return false;
 			}
@@ -119,9 +119,9 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 		}
 
 		builder.append('{');
-		boolean first = true;
+		var first = true;
 
-		for (Map.Entry<String, Object> entry : entrySet()) {
+		for (var entry : entrySet()) {
 			if (first) {
 				first = false;
 			} else {
@@ -143,7 +143,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 				builder.append(entry.getValue().toString().replace("\"", "\\\""));
 				builder.append('"');
 			} else {
-				Object o = entry.getValue();
+				var o = entry.getValue();
 
 				if (o instanceof StringBuilderAppendable) {
 					((StringBuilderAppendable) o).appendString(builder);
@@ -158,9 +158,9 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 
 	@Override
 	public MapJS copy() {
-		MapJS map = new MapJS(size());
+		var map = new MapJS(size());
 
-		for (Map.Entry<String, Object> entry : entrySet()) {
+		for (var entry : entrySet()) {
 			map.put(entry.getKey(), UtilsJS.copy(entry.getValue()));
 		}
 
@@ -188,7 +188,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 
 	@Nullable
 	private Object withChangeListener(Object value) {
-		Object v = UtilsJS.wrap(value, JSObjectType.ANY);
+		var v = UtilsJS.wrap(value, JSObjectType.ANY);
 
 		if (v instanceof Double d) {
 			if (Double.isNaN(d) || Double.isInfinite(d)) {
@@ -196,13 +196,13 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 			}
 
 			if (d <= Integer.MAX_VALUE && d >= Integer.MIN_VALUE) {
-				int i = d.intValue();
+				var i = d.intValue();
 
 				if (i == d) {
 					return i;
 				}
 			} else if (d <= Long.MAX_VALUE && d >= Long.MIN_VALUE) {
-				long i = d.longValue();
+				var i = d.longValue();
 
 				if (i == d) {
 					return i;
@@ -221,10 +221,10 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 
 	@Override
 	public Object put(String key, Object value) {
-		Object v = withChangeListener(value);
+		var v = withChangeListener(value);
 
 		if (v != null) {
-			Object o = super.put(key, v);
+			var o = super.put(key, v);
 			onChanged(null);
 			return o;
 		}
@@ -239,7 +239,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 		}
 
 		for (Map.Entry<?, ?> entry : m.entrySet()) {
-			Object v = withChangeListener(entry.getValue());
+			var v = withChangeListener(entry.getValue());
 
 			if (v != null) {
 				super.put(entry.getKey().toString(), v);
@@ -258,7 +258,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 	@Override
 	@Nullable
 	public Object remove(Object key) {
-		Object o = super.remove(key);
+		var o = super.remove(key);
 
 		if (o != null) {
 			onChanged(null);
@@ -269,10 +269,10 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 
 	@Override
 	public JsonObject toJson() {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 
-		for (Map.Entry<String, Object> entry : entrySet()) {
-			JsonElement e = JsonUtilsJS.of(entry.getValue());
+		for (var entry : entrySet()) {
+			var e = JsonUtilsJS.of(entry.getValue());
 
 			if (!e.isJsonNull()) {
 				json.add(entry.getKey(), e);
@@ -286,8 +286,8 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 	public CompoundTag toNBT() {
 		CompoundTag nbt = new OrderedCompoundTag();
 
-		for (Map.Entry<String, Object> entry : entrySet()) {
-			Tag nbt1 = NBTUtils.toNBT(entry.getValue());
+		for (var entry : entrySet()) {
+			var nbt1 = NBTUtils.toNBT(entry.getValue());
 
 			if (nbt1 != null) {
 				nbt.put(entry.getKey(), nbt1);
@@ -298,7 +298,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 	}
 
 	public MapJS getOrNewMap(String id) {
-		MapJS map = of(get(id));
+		var map = of(get(id));
 
 		if (map == null) {
 			map = new MapJS();
@@ -309,7 +309,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 	}
 
 	public ListJS getOrNewList(String id) {
-		ListJS list = ListJS.of(get(id));
+		var list = ListJS.of(get(id));
 
 		if (list == null) {
 			list = new ListJS();
@@ -324,7 +324,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 			return true;
 		}
 
-		for (Map.Entry<String, Object> entry : other.entrySet()) {
+		for (var entry : other.entrySet()) {
 			if (!Objects.equals(entry.getValue(), get(entry.getKey()))) {
 				return false;
 			}
@@ -338,7 +338,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 			return false;
 		}
 
-		for (Map.Entry<String, Object> entry : other.entrySet()) {
+		for (var entry : other.entrySet()) {
 			if (Objects.equals(entry.getValue(), get(entry.getKey()))) {
 				return true;
 			}

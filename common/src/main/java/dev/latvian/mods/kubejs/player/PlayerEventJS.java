@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class PlayerEventJS extends LivingEntityEventJS {
 	@Nullable
 	public PlayerJS getPlayer() {
-		EntityJS e = getEntity();
+		var e = getEntity();
 
 		if (e instanceof PlayerJS playerJS) {
 			return playerJS;

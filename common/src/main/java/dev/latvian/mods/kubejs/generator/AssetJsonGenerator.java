@@ -16,25 +16,25 @@ public class AssetJsonGenerator extends JsonGenerator {
 	}
 
 	public void blockState(ResourceLocation id, Consumer<VariantBlockStateGenerator> consumer) {
-		VariantBlockStateGenerator gen = new VariantBlockStateGenerator();
+		var gen = new VariantBlockStateGenerator();
 		consumer.accept(gen);
 		json(new ResourceLocation(id.getNamespace(), "blockstates/" + id.getPath()), gen.toJson());
 	}
 
 	public void multipartState(ResourceLocation id, Consumer<MultipartBlockStateGenerator> consumer) {
-		MultipartBlockStateGenerator gen = new MultipartBlockStateGenerator();
+		var gen = new MultipartBlockStateGenerator();
 		consumer.accept(gen);
 		json(new ResourceLocation(id.getNamespace(), "blockstates/" + id.getPath()), gen.toJson());
 	}
 
 	public void blockModel(ResourceLocation id, Consumer<ModelGenerator> consumer) {
-		ModelGenerator gen = new ModelGenerator();
+		var gen = new ModelGenerator();
 		consumer.accept(gen);
 		json(new ResourceLocation(id.getNamespace(), "models/block/" + id.getPath()), gen.toJson());
 	}
 
 	public void itemModel(ResourceLocation id, Consumer<ModelGenerator> consumer) {
-		ModelGenerator gen = new ModelGenerator();
+		var gen = new ModelGenerator();
 		consumer.accept(gen);
 		json(new ResourceLocation(id.getNamespace(), "models/item/" + id.getPath()), gen.toJson());
 	}

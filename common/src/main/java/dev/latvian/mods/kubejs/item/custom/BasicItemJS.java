@@ -27,8 +27,8 @@ public class BasicItemJS extends Item {
 
 	public BasicItemJS(ItemBuilder p) {
 		super(p.createItemProperties());
-		Float attackDamage = p.getAttackDamage();
-		Float attackSpeed = p.getAttackSpeed();
+        var attackDamage = p.getAttackDamage();
+        var attackSpeed = p.getAttackSpeed();
 
 		if (p.burnTime > 0) {
 			FuelRegistry.register(p.burnTime, this);

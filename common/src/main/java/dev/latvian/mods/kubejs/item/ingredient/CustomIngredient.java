@@ -60,7 +60,7 @@ public class CustomIngredient implements IngredientJS {
 		Set<Item> set = new LinkedHashSet<>();
 
 		for (var i : ingredient.getStackingIds()) {
-			Item item = Item.byId(i);
+            var item = Item.byId(i);
 
 			if (item != Items.AIR) {
 				set.add(item);

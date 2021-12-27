@@ -19,7 +19,7 @@ public class ScreenGroup extends ScreenPainterObject {
 	protected void load(PainterObjectProperties properties) {
 		super.load(properties);
 
-		Tag c = properties.tag.get("children");
+		var c = properties.tag.get("children");
 
 		if (c instanceof CompoundTag tag) {
 			storage.handle(tag);
@@ -55,9 +55,9 @@ public class ScreenGroup extends ScreenPainterObject {
 
 	@Override
 	public void draw(ScreenPaintEventJS event) {
-		float ax = event.alignX(x.get(), w.get(), alignX);
-		float ay = event.alignY(y.get(), h.get(), alignY);
-		float az = z.get();
+		var ax = event.alignX(x.get(), w.get(), alignX);
+		var ay = event.alignY(y.get(), h.get(), alignY);
+		var az = z.get();
 
 		event.push();
 		event.translate(ax, ay, az);

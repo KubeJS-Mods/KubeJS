@@ -28,14 +28,14 @@ public class WorldgenAddEventJS extends StartupEventJS {
 	}
 
 	public boolean isInBiomes(String[] filter) {
-		WorldgenEntryList list = new WorldgenEntryList();
+		var list = new WorldgenEntryList();
 		list.blacklist = false;
 		list.values.addAll(Arrays.asList(filter));
 		return verifyBiomes(list);
 	}
 
 	public boolean isNotInBiomes(String[] filter) {
-		WorldgenEntryList list = new WorldgenEntryList();
+		var list = new WorldgenEntryList();
 		list.blacklist = true;
 		list.values.addAll(Arrays.asList(filter));
 		return verifyBiomes(list);

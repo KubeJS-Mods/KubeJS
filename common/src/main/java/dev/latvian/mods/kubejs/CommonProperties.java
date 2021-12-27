@@ -34,7 +34,7 @@ public class CommonProperties {
 		properties = new Properties();
 
 		try {
-			Path propertiesFile = KubeJSPaths.CONFIG.resolve("common.properties");
+			var propertiesFile = KubeJSPaths.CONFIG.resolve("common.properties");
 			writeProperties = false;
 
 			if (Files.exists(propertiesFile)) {
@@ -65,7 +65,7 @@ public class CommonProperties {
 	}
 
 	private void remove(String key) {
-		String s = properties.getProperty(key);
+		var s = properties.getProperty(key);
 
 		if (s != null) {
 			properties.remove(key);
@@ -74,7 +74,7 @@ public class CommonProperties {
 	}
 
 	private String get(String key, String def) {
-		String s = properties.getProperty(key);
+		var s = properties.getProperty(key);
 
 		if (s == null) {
 			properties.setProperty(key, def);
