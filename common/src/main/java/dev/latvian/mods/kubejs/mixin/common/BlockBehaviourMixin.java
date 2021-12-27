@@ -7,6 +7,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
@@ -31,33 +32,41 @@ public abstract class BlockBehaviourMixin implements BlockKJS {
 
 	@Override
 	@Accessor("material")
+	@Mutable
 	public abstract void setMaterialKJS(Material v);
 
 	@Override
 	@Accessor("hasCollision")
+	@Mutable
 	public abstract void setHasCollisionKJS(boolean v);
 
 	@Override
 	@Accessor("explosionResistance")
+	@Mutable
 	public abstract void setExplosionResistanceKJS(float v);
 
 	@Override
 	@Accessor("isRandomlyTicking")
+	@Mutable
 	public abstract void setIsRandomlyTickingKJS(boolean v);
 
 	@Override
 	@Accessor("soundType")
+	@Mutable
 	public abstract void setSoundTypeKJS(SoundType v);
 
 	@Override
 	@Accessor("friction")
+	@Mutable
 	public abstract void setFrictionKJS(float v);
 
 	@Override
 	@Accessor("speedFactor")
+	@Mutable
 	public abstract void setSpeedFactorKJS(float v);
 
 	@Override
 	@Accessor("jumpFactor")
+	@Mutable
 	public abstract void setJumpFactorKJS(float v);
 }
