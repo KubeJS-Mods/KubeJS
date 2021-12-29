@@ -19,6 +19,7 @@ import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -107,15 +108,27 @@ public class UtilsWrapper {
 		return UtilsJS.getToolType(id);
 	}
 
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
 	public static WorldJS getWorld(Level level) {
+		return getLevel(level);
+	}
+
+	public static WorldJS getLevel(Level level) {
 		if (level.isClientSide()) {
-			return getClientWorld();
+			return getClientLevel();
 		} else {
 			return ServerJS.instance.getLevel(level);
 		}
 	}
 
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
 	public static WorldJS getClientWorld() {
+		return getClientLevel();
+	}
+
+	public static WorldJS getClientLevel() {
 		return ClientWorldJS.getInstance();
 	}
 

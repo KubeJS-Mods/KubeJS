@@ -26,7 +26,7 @@ public class DetectorBlockEventJS extends WorldEventJS {
 	}
 
 	@Override
-	public WorldJS getWorld() {
+	public WorldJS getLevel() {
 		return levelOf(level);
 	}
 

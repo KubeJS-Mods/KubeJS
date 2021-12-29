@@ -35,7 +35,7 @@ public class CustomCommandEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	public WorldJS getWorld() {
+	public WorldJS getLevel() {
 		return levelOf(level);
 	}
 
@@ -45,6 +45,6 @@ public class CustomCommandEventJS extends PlayerEventJS {
 	}
 
 	public BlockContainerJS getBlock() {
-		return getWorld().getBlock(blockPos);
+		return this.getLevel().getBlock(blockPos);
 	}
 }

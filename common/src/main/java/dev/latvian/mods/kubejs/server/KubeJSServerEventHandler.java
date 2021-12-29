@@ -19,7 +19,6 @@ import dev.latvian.mods.rhino.RhinoException;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -27,9 +26,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelResource;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -78,7 +75,7 @@ public class KubeJSServerEventHandler {
 	public static void serverStarted(MinecraftServer server) {
 		ServerJS.instance.overworld = new ServerWorldJS(ServerJS.instance, server.getLevel(Level.OVERWORLD));
 		ServerJS.instance.levelMap.put("minecraft:overworld", ServerJS.instance.overworld);
-		ServerJS.instance.worlds.add(ServerJS.instance.overworld);
+		ServerJS.instance.allLevels.add(ServerJS.instance.overworld);
 
 		for (var level : server.getAllLevels()) {
 			if (level != ServerJS.instance.overworld.minecraftLevel) {
@@ -92,9 +89,9 @@ public class KubeJSServerEventHandler {
 		new AttachServerDataEvent(ServerJS.instance).invoke();
 		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_LOAD);
 
-		for (var level : ServerJS.instance.worlds) {
+		for (var level : ServerJS.instance.allLevels) {
 			new AttachWorldDataEvent(level).invoke();
-			new SimpleWorldEventJS(level).post(KubeJSEvents.WORLD_LOAD);
+			new SimpleWorldEventJS(level).post(KubeJSEvents.LEVEL_LOAD);
 		}
 	}
 
@@ -110,7 +107,7 @@ public class KubeJSServerEventHandler {
 		}
 
 		for (var w : s.levelMap.values()) {
-			new SimpleWorldEventJS(w).post(KubeJSEvents.WORLD_UNLOAD);
+			new SimpleWorldEventJS(w).post(KubeJSEvents.LEVEL_UNLOAD);
 		}
 
 		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_UNLOAD);

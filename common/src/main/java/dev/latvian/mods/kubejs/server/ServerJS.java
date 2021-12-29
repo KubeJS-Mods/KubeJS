@@ -15,7 +15,6 @@ import dev.latvian.mods.kubejs.world.ServerWorldJS;
 import dev.latvian.mods.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.mod.wrapper.UUIDWrapper;
 import net.minecraft.Util;
-import net.minecraft.advancements.Advancement;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -25,6 +24,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	public final transient Map<String, ServerWorldJS> levelMap;
 	public final transient Map<UUID, ServerPlayerDataJS> playerMap;
 	public final transient Map<UUID, FakeServerPlayerDataJS> fakePlayerMap;
-	public final transient List<ServerWorldJS> worlds;
+	public final transient List<ServerWorldJS> allLevels;
 	public final CompoundTag persistentData;
 
 	public ServerWorldJS overworld;
@@ -61,7 +61,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		levelMap = new HashMap<>();
 		playerMap = new HashMap<>();
 		fakePlayerMap = new HashMap<>();
-		worlds = new ArrayList<>();
+		allLevels = new ArrayList<>();
 		persistentData = new CompoundTag();
 	}
 
@@ -73,13 +73,13 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		fakePlayerMap.clear();
 		overworld = null;
 		levelMap.clear();
-		worlds.clear();
+		allLevels.clear();
 		data = null;
 	}
 
 	public void updateWorldList() {
-		worlds.clear();
-		worlds.addAll(levelMap.values());
+		allLevels.clear();
+		allLevels.addAll(levelMap.values());
 	}
 
 	@Override
@@ -91,8 +91,14 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		return data;
 	}
 
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
 	public List<ServerWorldJS> getWorlds() {
-		return worlds;
+		return getAllLevels();
+	}
+
+	public List<ServerWorldJS> getAllLevels() {
+		return allLevels;
 	}
 
 	public ServerWorldJS getOverworld() {
@@ -180,8 +186,9 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		return level;
 	}
 
-	@Deprecated
-	public WorldJS getWorld(String dimension) {
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
+	public final WorldJS getWorld(String dimension) {
 		return getLevel(dimension);
 	}
 
@@ -198,8 +205,9 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		return level;
 	}
 
-	@Deprecated
-	public WorldJS getWorld(Level minecraftLevel) {
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
+	public final WorldJS getWorld(Level minecraftLevel) {
 		return getLevel(minecraftLevel);
 	}
 
@@ -255,7 +263,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	public EntityArrayList getEntities() {
 		var list = new EntityArrayList(overworld, 10);
 
-		for (var level : worlds) {
+		for (var level : allLevels) {
 			list.addAll(level.getEntities());
 		}
 
@@ -265,7 +273,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	public EntityArrayList getEntities(String filter) {
 		var list = new EntityArrayList(overworld, 10);
 
-		for (var level : worlds) {
+		for (var level : allLevels) {
 			list.addAll(level.getEntities(filter));
 		}
 

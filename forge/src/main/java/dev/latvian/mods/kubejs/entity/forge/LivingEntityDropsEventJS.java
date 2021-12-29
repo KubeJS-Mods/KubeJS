@@ -5,9 +5,7 @@ import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.entity.ItemEntityJS;
 import dev.latvian.mods.kubejs.entity.LivingEntityEventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 
 import javax.annotation.Nullable;
@@ -36,7 +34,7 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS {
 	}
 
 	public DamageSourceJS getSource() {
-		return new DamageSourceJS(getWorld(), event.getSource());
+		return new DamageSourceJS(getLevel(), event.getSource());
 	}
 
 	public int getLootingLevel() {
@@ -52,7 +50,7 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS {
 			eventDrops = new ArrayList<>();
 
 			for (var entity : event.getDrops()) {
-				eventDrops.add(new ItemEntityJS(getWorld(), entity));
+				eventDrops.add(new ItemEntityJS(getLevel(), entity));
 			}
 		}
 
@@ -67,7 +65,7 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS {
             var e = event.getEntity();
             var ei = new ItemEntity(e.level, e.getX(), e.getY(), e.getZ(), i);
 			ei.setPickUpDelay(10);
-            var ie = new ItemEntityJS(getWorld(), ei);
+            var ie = new ItemEntityJS(getLevel(), ei);
 			getDrops().add(ie);
 			return ie;
 		}

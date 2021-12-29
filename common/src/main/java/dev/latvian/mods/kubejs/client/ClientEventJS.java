@@ -5,9 +5,17 @@ import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.player.ClientPlayerJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.world.ClientWorldJS;
+import org.jetbrains.annotations.ApiStatus;
 
 public class ClientEventJS extends EventJS {
-	public ClientWorldJS getWorld() {
+
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
+	public final ClientWorldJS getWorld() {
+		return getLevel();
+	}
+
+	public ClientWorldJS getLevel() {
 		return ClientWorldJS.getInstance();
 	}
 

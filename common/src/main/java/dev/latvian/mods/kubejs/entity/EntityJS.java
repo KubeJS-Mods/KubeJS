@@ -18,7 +18,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -26,8 +25,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Team;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Modifier;
@@ -53,17 +52,19 @@ public class EntityJS implements MessageSender, WrappedJS {
 		persistentData = ((EntityKJS) e).getPersistentDataKJS();
 	}
 
-	public WorldJS getLevel() {
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
+	public WorldJS getWorld() {
 		return level;
 	}
 
-	public WorldJS getWorld() {
+	public final WorldJS getLevel() {
 		return level;
 	}
 
 	@Nullable
 	public ServerJS getServer() {
-		return getWorld().getServer();
+		return getLevel().getServer();
 	}
 
 	public UUID getId() {

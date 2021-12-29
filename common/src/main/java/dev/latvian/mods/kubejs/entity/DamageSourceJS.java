@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.entity;
 import dev.latvian.mods.kubejs.player.PlayerJS;
 import dev.latvian.mods.kubejs.world.WorldJS;
 import net.minecraft.world.damagesource.DamageSource;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -17,7 +18,13 @@ public class DamageSourceJS {
 		source = s;
 	}
 
-	public WorldJS getWorld() {
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
+	public final WorldJS getWorld() {
+		return getLevel();
+	}
+
+	public WorldJS getLevel() {
 		return level;
 	}
 
@@ -27,16 +34,16 @@ public class DamageSourceJS {
 
 	@Nullable
 	public EntityJS getImmediate() {
-		return getWorld().getEntity(source.getDirectEntity());
+		return getLevel().getEntity(source.getDirectEntity());
 	}
 
 	@Nullable
 	public EntityJS getActual() {
-		return getWorld().getEntity(source.getEntity());
+		return getLevel().getEntity(source.getEntity());
 	}
 
 	@Nullable
 	public PlayerJS<?> getPlayer() {
-		return getWorld().getPlayer(source.getEntity());
+		return getLevel().getPlayer(source.getEntity());
 	}
 }

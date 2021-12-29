@@ -28,7 +28,7 @@ public class LivingEntityHurtEventJS extends LivingEntityEventJS {
 	}
 
 	public DamageSourceJS getSource() {
-		return new DamageSourceJS(getWorld(), source);
+		return new DamageSourceJS(getLevel(), source);
 	}
 
 	public float getDamage() {

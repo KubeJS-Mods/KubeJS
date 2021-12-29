@@ -72,7 +72,7 @@ public class LivingEntityJS extends EntityJS {
 
 	@Nullable
 	public LivingEntityJS getRevengeTarget() {
-		return getWorld().getLivingEntity(minecraftLivingEntity.getLastHurtByMob());
+		return getLevel().getLivingEntity(minecraftLivingEntity.getLastHurtByMob());
 	}
 
 	public int getRevengeTimer() {
@@ -85,7 +85,7 @@ public class LivingEntityJS extends EntityJS {
 
 	@Nullable
 	public LivingEntityJS getLastAttackedEntity() {
-		return getWorld().getLivingEntity(minecraftLivingEntity.getLastHurtMob());
+		return getLevel().getLivingEntity(minecraftLivingEntity.getLastHurtMob());
 	}
 
 	public int getLastAttackedEntityTime() {
@@ -102,12 +102,12 @@ public class LivingEntityJS extends EntityJS {
 
 	@Nullable
 	public DamageSourceJS getLastDamageSource() {
-		return minecraftLivingEntity.getLastDamageSource() == null ? null : new DamageSourceJS(getWorld(), minecraftLivingEntity.getLastDamageSource());
+		return minecraftLivingEntity.getLastDamageSource() == null ? null : new DamageSourceJS(getLevel(), minecraftLivingEntity.getLastDamageSource());
 	}
 
 	@Nullable
 	public LivingEntityJS getAttackingEntity() {
-		return getWorld().getLivingEntity(minecraftLivingEntity.getKillCredit());
+		return getLevel().getLivingEntity(minecraftLivingEntity.getKillCredit());
 	}
 
 	public void swingArm(InteractionHand hand) {

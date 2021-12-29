@@ -27,7 +27,7 @@ public abstract class ExplosionEventJS extends WorldEventJS {
 	}
 
 	@Override
-	public WorldJS getWorld() {
+	public WorldJS getLevel() {
 		return levelOf(level);
 	}
 
@@ -53,7 +53,7 @@ public abstract class ExplosionEventJS extends WorldEventJS {
 
 	@Nullable
 	public LivingEntityJS getExploder() {
-		return getWorld().getLivingEntity(explosion.getSourceMob());
+		return getLevel().getLivingEntity(explosion.getSourceMob());
 	}
 
 	public static class Pre extends ExplosionEventJS {
@@ -84,7 +84,7 @@ public abstract class ExplosionEventJS extends WorldEventJS {
 		}
 
 		public EntityArrayList getAffectedEntities() {
-			return new EntityArrayList(getWorld(), affectedEntities);
+			return new EntityArrayList(getLevel(), affectedEntities);
 		}
 
 		public void removeAffectedEntity(EntityJS entity) {

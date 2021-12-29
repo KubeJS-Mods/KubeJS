@@ -32,7 +32,7 @@ public class BlockPlaceEventJS extends EntityEventJS {
 	}
 
 	@Override
-	public WorldJS getWorld() {
+	public WorldJS getLevel() {
 		return levelOf(level);
 	}
 

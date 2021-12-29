@@ -31,7 +31,7 @@ public class ItemPickupEventJS extends PlayerEventJS {
 	}
 
 	public EntityJS getItemEntity() {
-		return getWorld().getEntity(entity);
+		return getLevel().getEntity(entity);
 	}
 
 	public ItemStackJS getItem() {
