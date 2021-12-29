@@ -123,7 +123,7 @@ public class KubeJSClient extends KubeJSCommon {
 	}
 
 	@Override
-	public WorldJS getClientWorld() {
+	public WorldJS getClientLevel() {
 		return ClientWorldJS.getInstance();
 	}
 

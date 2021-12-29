@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.player.ClientPlayerJS;
 import dev.latvian.mods.kubejs.world.ClientWorldJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -16,7 +17,14 @@ public class ClientWrapper {
 	}
 
 	@Nullable
-	public ClientWorldJS getWorld() {
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
+	public final ClientWorldJS getWorld() {
+		return getLevel();
+	}
+
+	@Nullable
+	public ClientWorldJS getLevel() {
 		return ClientWorldJS.getInstance();
 	}
 

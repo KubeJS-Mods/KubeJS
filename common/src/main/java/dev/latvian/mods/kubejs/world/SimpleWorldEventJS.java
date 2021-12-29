@@ -11,7 +11,7 @@ public class SimpleWorldEventJS extends WorldEventJS {
 	}
 
 	@Override
-	public WorldJS getWorld() {
+	public WorldJS getLevel() {
 		return level;
 	}
 }

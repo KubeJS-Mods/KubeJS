@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import dev.latvian.mods.kubejs.world.ClientWorldJS;
 import dev.latvian.mods.kubejs.world.WorldJS;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -22,7 +23,13 @@ public class ClientPlayerDataJS extends PlayerDataJS<Player, ClientPlayerJS> {
 		player = new ClientPlayerJS(this, minecraftPlayer, s);
 	}
 
-	public ClientWorldJS getWorld() {
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
+	public final ClientWorldJS getWorld() {
+		return getLevel();
+	}
+
+	public ClientWorldJS getLevel() {
 		return level;
 	}
 

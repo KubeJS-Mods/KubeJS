@@ -13,8 +13,8 @@ public abstract class EntityEventJS extends WorldEventJS {
 	public abstract EntityJS getEntity();
 
 	@Override
-	public WorldJS getWorld() {
-		return getEntity().getWorld();
+	public WorldJS getLevel() {
+		return getEntity().getLevel();
 	}
 
 	protected EntityJS entityOf(Entity entity) {

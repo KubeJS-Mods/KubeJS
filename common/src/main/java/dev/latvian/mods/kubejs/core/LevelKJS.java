@@ -6,6 +6,6 @@ import net.minecraft.world.level.Level;
 public interface LevelKJS extends AsKJS {
 	@Override
 	default Object asKJS() {
-		return KubeJS.PROXY.getWorld((Level) this);
+		return KubeJS.PROXY.getLevel((Level) this);
 	}
 }

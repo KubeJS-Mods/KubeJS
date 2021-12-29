@@ -8,7 +8,7 @@ public interface EntityKJS extends AsKJS {
 	@Override
 	default Object asKJS() {
 		var entity = (Entity) this;
-		return KubeJS.PROXY.getWorld(entity.level).getEntity(entity);
+		return KubeJS.PROXY.getLevel(entity.level).getEntity(entity);
 	}
 
 	CompoundTag getPersistentDataKJS();

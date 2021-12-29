@@ -32,14 +32,18 @@ public class KubeJSWorldEventHandler {
 			ServerJS.instance.levelMap.put(level.dimension().location().toString(), l);
 			ServerJS.instance.updateWorldList();
 			new AttachWorldDataEvent(l).invoke();
-			new SimpleWorldEventJS(l).post(ScriptType.SERVER, KubeJSEvents.WORLD_LOAD);
+			var event = new SimpleWorldEventJS(l);
+			event.post(ScriptType.SERVER, KubeJSEvents.LEVEL_LOAD);
+			event.post(ScriptType.SERVER, KubeJSEvents.WORLD_LOAD);
 		}
 	}
 
 	private static void levelUnload(ServerLevel level) {
 		if (ServerJS.instance != null && ServerJS.instance.overworld != null && ServerJS.instance.levelMap.containsKey(level.dimension().location().toString())) {
 			var l = ServerJS.instance.getLevel(level);
-			new SimpleWorldEventJS(l).post(ScriptType.SERVER, KubeJSEvents.WORLD_UNLOAD);
+			var event = new SimpleWorldEventJS(l);
+			event.post(ScriptType.SERVER, KubeJSEvents.LEVEL_UNLOAD);
+			event.post(ScriptType.SERVER, KubeJSEvents.WORLD_UNLOAD);
 			ServerJS.instance.levelMap.remove(l.getDimension());
 			ServerJS.instance.updateWorldList();
 		}
@@ -47,17 +51,22 @@ public class KubeJSWorldEventHandler {
 
 	private static void levelPostTick(ServerLevel level) {
 		var l = ServerJS.instance.getLevel(level);
-		new SimpleWorldEventJS(l).post(ScriptType.SERVER, KubeJSEvents.WORLD_TICK);
+		var event = new SimpleWorldEventJS(l);
+		event.post(ScriptType.SERVER, KubeJSEvents.LEVEL_TICK);
+		event.post(ScriptType.SERVER, KubeJSEvents.WORLD_TICK);
 	}
 
 	private static EventResult preExplosion(Level level, Explosion explosion) {
-		if (new ExplosionEventJS.Pre(level, explosion).post(KubeJSEvents.WORLD_EXPLOSION_PRE)) {
+		var event = new ExplosionEventJS.Pre(level, explosion);
+		if (event.post(KubeJSEvents.LEVEL_EXPLOSION_PRE) || event.post(KubeJSEvents.WORLD_EXPLOSION_PRE)) {
 			return EventResult.interruptFalse();
 		}
 		return EventResult.pass();
 	}
 
 	private static void detonateExplosion(Level level, Explosion explosion, List<Entity> affectedEntities) {
-		new ExplosionEventJS.Post(level, explosion, affectedEntities).post(KubeJSEvents.WORLD_EXPLOSION_POST);
+		var event = new ExplosionEventJS.Post(level, explosion, affectedEntities);
+		event.post(KubeJSEvents.LEVEL_EXPLOSION_POST);
+		event.post(KubeJSEvents.WORLD_EXPLOSION_POST);
 	}
 }

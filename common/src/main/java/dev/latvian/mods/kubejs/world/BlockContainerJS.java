@@ -19,27 +19,23 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * @author LatvianModder
@@ -64,11 +60,13 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public WorldJS getLevel() {
-		return UtilsJS.getWorld(minecraftLevel);
+		return UtilsJS.getLevel(minecraftLevel);
 	}
 
-	public WorldJS getWorld() {
-		return UtilsJS.getWorld(minecraftLevel);
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
+	public final WorldJS getWorld() {
+		return getLevel();
 	}
 
 	public BlockPos getPos() {
@@ -287,7 +285,7 @@ public class BlockContainerJS implements SpecialEquality {
 
 	@Nullable
 	public EntityJS createEntity(ResourceLocation id) {
-		var entity = getWorld().createEntity(id);
+		var entity = getLevel().createEntity(id);
 
 		if (entity != null) {
 			entity.setPosition(this);
@@ -355,10 +353,10 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public EntityArrayList getPlayersInRadius(double radius) {
-		var list = new EntityArrayList(getWorld(), 1);
+		var list = new EntityArrayList(getLevel(), 1);
 
 		for (var player : minecraftLevel.getEntitiesOfClass(Player.class, new AABB(pos.getX() - radius, pos.getY() - radius, pos.getZ() - radius, pos.getX() + 1D + radius, pos.getY() + 1D + radius, pos.getZ() + 1D + radius), BlockContainerJS::isReal)) {
-			PlayerJS<?> p = getWorld().getPlayer(player);
+			PlayerJS<?> p = getLevel().getPlayer(player);
 
 			if (p != null) {
 				list.add(p);

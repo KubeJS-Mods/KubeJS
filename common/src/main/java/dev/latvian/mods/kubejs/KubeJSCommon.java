@@ -7,6 +7,7 @@ import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -36,13 +37,25 @@ public class KubeJSCommon {
 	public void paint(CompoundTag tag) {
 	}
 
-	public WorldJS getClientWorld() {
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
+	public final WorldJS getClientWorld() {
+		return getClientLevel();
+	}
+
+	public WorldJS getClientLevel() {
 		throw new IllegalStateException("Can't access client level from server side!");
 	}
 
-	public WorldJS getWorld(Level level) {
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
+	public final WorldJS getWorld(Level level) {
+		return getLevel(level);
+	}
+
+	public WorldJS getLevel(Level level) {
 		if (level.isClientSide()) {
-			return getClientWorld();
+			return getClientLevel();
 		}
 
 		return ServerJS.instance.getLevel(level);

@@ -40,6 +40,6 @@ public class ItemEntityInteractEventJS extends PlayerEventJS {
 	}
 
 	public EntityJS getTarget() {
-		return getWorld().getEntity(entity);
+		return getLevel().getEntity(entity);
 	}
 }

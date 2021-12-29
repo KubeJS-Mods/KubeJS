@@ -31,17 +31,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.storage.loot.Deserializers;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.LootTables;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.providers.number.BinomialDistributionGenerator;
@@ -49,6 +44,7 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -64,7 +60,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.google.gson.internal.$Gson$Preconditions.checkArgument;
@@ -401,16 +396,28 @@ public class UtilsJS {
 		return ToolType.byName(id);
 	}
 
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
 	public static WorldJS getWorld(Level level) {
+		return getLevel(level);
+	}
+
+	public static WorldJS getLevel(Level level) {
 		if (level.isClientSide()) {
-			return getClientWorld();
+			return getClientLevel();
 		} else {
 			return ServerJS.instance.getLevel(level);
 		}
 	}
 
+	@Deprecated(forRemoval = true)
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
 	public static WorldJS getClientWorld() {
-		return KubeJS.PROXY.getClientWorld();
+		return getClientLevel();
+	}
+
+	public static WorldJS getClientLevel() {
+		return KubeJS.PROXY.getClientLevel();
 	}
 
 	public static String getID(@Nullable String s) {

@@ -16,7 +16,7 @@ public class ClientPlayerJS extends PlayerJS<Player> {
 	private final boolean isSelf;
 
 	public ClientPlayerJS(ClientPlayerDataJS d, Player p, boolean s) {
-		super(d, d.getWorld(), p);
+		super(d, d.getLevel(), p);
 		isSelf = s;
 	}
 

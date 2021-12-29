@@ -38,7 +38,7 @@ public class RayTraceResultJS {
 			hitY = result.getLocation().y;
 			hitZ = result.getLocation().z;
 
-			entity = fromEntity.getWorld().getEntity(((EntityHitResult) result).getEntity());
+			entity = fromEntity.getLevel().getEntity(((EntityHitResult) result).getEntity());
 		} else {
 			type = "miss";
 		}

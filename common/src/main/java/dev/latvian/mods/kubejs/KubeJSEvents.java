@@ -34,11 +34,19 @@ public interface KubeJSEvents {
 	String WORLDGEN_ADD = "worldgen.add";
 	String WORLDGEN_REMOVE = "worldgen.remove";
 
-	String WORLD_LOAD = "world.load";
-	String WORLD_UNLOAD = "world.unload";
-	String WORLD_TICK = "world.tick";
-	String WORLD_EXPLOSION_PRE = "world.explosion.pre";
-	String WORLD_EXPLOSION_POST = "world.explosion.post";
+	String LEVEL_LOAD = "level.load";
+	String LEVEL_UNLOAD = "level.unload";
+	String LEVEL_TICK = "level.tick";
+	String LEVEL_EXPLOSION_PRE = "level.explosion.pre";
+	String LEVEL_EXPLOSION_POST = "level.explosion.post";
+
+	// region DEPRECATED
+	@Deprecated(forRemoval = true) String WORLD_LOAD = "world.load";
+	@Deprecated(forRemoval = true) String WORLD_UNLOAD = "world.unload";
+	@Deprecated(forRemoval = true) String WORLD_TICK = "world.tick";
+	@Deprecated(forRemoval = true) String WORLD_EXPLOSION_PRE = "world.explosion.pre";
+	@Deprecated(forRemoval = true) String WORLD_EXPLOSION_POST = "world.explosion.post";
+	// endregion
 
 	String PLAYER_LOGGED_IN = "player.logged_in";
 	String PLAYER_LOGGED_OUT = "player.logged_out";
