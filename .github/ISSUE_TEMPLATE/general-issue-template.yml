@@ -1,5 +1,5 @@
 name: 1.16 Issue Report
-description: 
+description: A generic issue for any version
 body:
   - type: textarea
     id: versions
