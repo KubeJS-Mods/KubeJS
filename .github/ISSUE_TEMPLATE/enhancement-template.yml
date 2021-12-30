@@ -11,7 +11,7 @@ body:
       required: true
 
   - type: textarea
-    id: description
+    id: additional-info
     attributes:
       label: Additional info
       description: Why should this be considered? Are there any alternatives?
