@@ -1,0 +1,20 @@
+name: 1.16 Issue Report
+description: 
+body:
+  - type: textarea
+    id: versions
+    attributes:
+      label: What versions of KubeJS, Rhino, Architectury, Minecraft and Fabric or Forge are you using?
+    validations:
+      required: true
+  
+  - type: markdown
+    attributes:
+      value: "## Issue Description"
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe your issue
+    validations:
+      required: true
