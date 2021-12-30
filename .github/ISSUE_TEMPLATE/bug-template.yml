@@ -35,7 +35,7 @@ body:
       required: true
 
   - type: input
-    id: mc-version
+    id: loader-version
     attributes:
       label: Forge/Fabric Version
       placeholder: "Ex: Forge 26.2.22/Fabric 0.12.12"
