@@ -8,18 +8,13 @@ import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.SetTag;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author LatvianModder
@@ -28,13 +23,7 @@ public class TagIngredientJS implements IngredientJS {
 	private static final Map<String, TagIngredientJS> tagIngredientCache = new HashMap<>();
 
 	public static TagIngredientJS createTag(String tag) {
-		var i = tagIngredientCache.computeIfAbsent(tag, TagIngredientJS::new);
-
-		if (RecipeJS.itemErrors && i.getActualTag().getValues().isEmpty()) {
-			throw new RecipeExceptionJS("Tag '#" + tag + "' doesn't contain any items!").error();
-		}
-
-		return i;
+		return tagIngredientCache.computeIfAbsent(tag, TagIngredientJS::new).validateTag();
 	}
 
 	public static void clearTagCache() {
@@ -54,11 +43,7 @@ public class TagIngredientJS implements IngredientJS {
 
 	public Tag<Item> getActualTag() {
 		if (actualTag == null) {
-			actualTag = Tags.items().getTag(tag);
-
-			if (actualTag == null) {
-				actualTag = SetTag.empty();
-			}
+			actualTag = Tags.items().getTagOrEmpty(tag);
 		}
 
 		return actualTag;
@@ -109,15 +94,18 @@ public class TagIngredientJS implements IngredientJS {
 
 	@Override
 	public ItemStackJS getFirst() {
-		var t = getActualTag();
+		validateTag();
 
-		if (t.getValues().size() > 0) {
-			for (var item : t.getValues()) {
-				return new ItemStackJS(new ItemStack(item));
-			}
+		for (var item : getActualTag().getValues()) {
+			return new ItemStackJS(new ItemStack(item));
 		}
 
-		throw new RecipeExceptionJS("Tag " + tag + " has no items");
+		return ItemStackJS.EMPTY;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return getActualTag().getValues().isEmpty();
 	}
 
 	@Override
@@ -134,11 +122,18 @@ public class TagIngredientJS implements IngredientJS {
 
 	@Override
 	public boolean anyStackMatches(IngredientJS ingredient) {
-		if (ingredient instanceof TagIngredientJS && tag.equals(((TagIngredientJS) ingredient).tag)) {
+		if (ingredient instanceof TagIngredientJS tagIngredient && tag.equals(tagIngredient.tag)) {
 			return true;
 		}
 
 		return IngredientJS.super.anyStackMatches(ingredient);
+	}
+
+	private TagIngredientJS validateTag() {
+		if (RecipeJS.itemErrors && isEmpty()) {
+			throw new RecipeExceptionJS(String.format("Tag '#%s' doesn't contain any items!", tag)).error();
+		}
+		return this;
 	}
 
 	@Override
