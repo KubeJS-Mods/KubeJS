@@ -7,10 +7,10 @@ import dev.latvian.mods.kubejs.entity.LivingEntityJS;
 import dev.latvian.mods.kubejs.item.InventoryJS;
 import dev.latvian.mods.kubejs.item.ItemHandlerUtils;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
 import dev.latvian.mods.kubejs.stages.Stages;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.WithAttachedData;
-import dev.latvian.mods.kubejs.world.WorldJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,7 +18,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -30,7 +29,7 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 	private final PlayerDataJS playerData;
 	private InventoryJS inventory;
 
-	public PlayerJS(PlayerDataJS d, WorldJS l, E p) {
+	public PlayerJS(PlayerDataJS d, LevelJS l, E p) {
 		super(l, p);
 		playerData = d;
 		minecraftPlayer = p;

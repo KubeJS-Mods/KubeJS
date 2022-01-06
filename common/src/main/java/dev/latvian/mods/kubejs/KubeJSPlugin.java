@@ -2,13 +2,13 @@ package dev.latvian.mods.kubejs;
 
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
+import dev.latvian.mods.kubejs.level.world.AttachWorldDataEvent;
 import dev.latvian.mods.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.mods.kubejs.recipe.RegisterRecipeHandlersEvent;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.AttachServerDataEvent;
 import dev.latvian.mods.kubejs.util.ClassFilter;
-import dev.latvian.mods.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

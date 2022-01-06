@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs;
 
+import dev.latvian.mods.kubejs.level.world.LevelJS;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.server.ServerJS;
-import dev.latvian.mods.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -39,21 +39,21 @@ public class KubeJSCommon {
 
 	@Deprecated(forRemoval = true)
 	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
-	public final WorldJS getClientWorld() {
+	public final LevelJS getClientWorld() {
 		return getClientLevel();
 	}
 
-	public WorldJS getClientLevel() {
+	public LevelJS getClientLevel() {
 		throw new IllegalStateException("Can't access client level from server side!");
 	}
 
 	@Deprecated(forRemoval = true)
 	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
-	public final WorldJS getWorld(Level level) {
+	public final LevelJS getWorld(Level level) {
 		return getLevel(level);
 	}
 
-	public WorldJS getLevel(Level level) {
+	public LevelJS getLevel(Level level) {
 		if (level.isClientSide()) {
 			return getClientLevel();
 		}

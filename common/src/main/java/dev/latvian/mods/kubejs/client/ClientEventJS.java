@@ -2,21 +2,21 @@ package dev.latvian.mods.kubejs.client;
 
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.level.world.ClientLevelJS;
 import dev.latvian.mods.kubejs.player.ClientPlayerJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.world.ClientWorldJS;
 import org.jetbrains.annotations.ApiStatus;
 
 public class ClientEventJS extends EventJS {
 
 	@Deprecated(forRemoval = true)
 	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
-	public final ClientWorldJS getWorld() {
+	public final ClientLevelJS getWorld() {
 		return getLevel();
 	}
 
-	public ClientWorldJS getLevel() {
-		return ClientWorldJS.getInstance();
+	public ClientLevelJS getLevel() {
+		return ClientLevelJS.getInstance();
 	}
 
 	public EntityJS getEntity() {
@@ -24,7 +24,7 @@ public class ClientEventJS extends EventJS {
 	}
 
 	public ClientPlayerJS getPlayer() {
-		return ClientWorldJS.getInstance().clientPlayerData.getPlayer();
+		return ClientLevelJS.getInstance().clientPlayerData.getPlayer();
 	}
 
 	public final boolean post(String id) {

@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.block;
 
 import dev.latvian.mods.kubejs.entity.EntityEventJS;
 import dev.latvian.mods.kubejs.entity.EntityJS;
-import dev.latvian.mods.kubejs.world.BlockContainerJS;
-import dev.latvian.mods.kubejs.world.WorldJS;
+import dev.latvian.mods.kubejs.level.world.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -32,7 +32,7 @@ public class BlockPlaceEventJS extends EntityEventJS {
 	}
 
 	@Override
-	public WorldJS getLevel() {
+	public LevelJS getLevel() {
 		return levelOf(level);
 	}
 

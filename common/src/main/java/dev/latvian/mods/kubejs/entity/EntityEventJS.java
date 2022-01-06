@@ -1,19 +1,19 @@
 package dev.latvian.mods.kubejs.entity;
 
-import dev.latvian.mods.kubejs.world.WorldEventJS;
-import dev.latvian.mods.kubejs.world.WorldJS;
+import dev.latvian.mods.kubejs.level.world.LevelEventJS;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
 import net.minecraft.world.entity.Entity;
 
 /**
  * @author LatvianModder
  */
-public abstract class EntityEventJS extends WorldEventJS {
+public abstract class EntityEventJS extends LevelEventJS {
 	private EntityJS cachedEntity;
 
 	public abstract EntityJS getEntity();
 
 	@Override
-	public WorldJS getLevel() {
+	public LevelJS getLevel() {
 		return getEntity().getLevel();
 	}
 

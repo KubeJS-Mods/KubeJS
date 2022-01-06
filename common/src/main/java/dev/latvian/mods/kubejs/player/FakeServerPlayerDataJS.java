@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.player;
 
+import dev.latvian.mods.kubejs.level.world.LevelJS;
 import dev.latvian.mods.kubejs.server.ServerJS;
-import dev.latvian.mods.kubejs.world.WorldJS;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +17,7 @@ public class FakeServerPlayerDataJS extends ServerPlayerDataJS {
 	}
 
 	@Override
-	public WorldJS getOverworld() {
+	public LevelJS getOverworld() {
 		return getServer().getOverworld();
 	}
 

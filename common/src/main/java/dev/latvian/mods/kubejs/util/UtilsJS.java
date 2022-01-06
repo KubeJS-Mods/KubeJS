@@ -12,12 +12,12 @@ import dev.latvian.mods.kubejs.block.BlockModificationEventJS;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.item.ItemModificationEventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.text.Text;
 import dev.latvian.mods.kubejs.text.TextString;
 import dev.latvian.mods.kubejs.text.TextTranslate;
-import dev.latvian.mods.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
@@ -398,11 +398,11 @@ public class UtilsJS {
 
 	@Deprecated(forRemoval = true)
 	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
-	public static WorldJS getWorld(Level level) {
+	public static LevelJS getWorld(Level level) {
 		return getLevel(level);
 	}
 
-	public static WorldJS getLevel(Level level) {
+	public static LevelJS getLevel(Level level) {
 		if (level.isClientSide()) {
 			return getClientLevel();
 		} else {
@@ -412,11 +412,11 @@ public class UtilsJS {
 
 	@Deprecated(forRemoval = true)
 	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
-	public static WorldJS getClientWorld() {
+	public static LevelJS getClientWorld() {
 		return getClientLevel();
 	}
 
-	public static WorldJS getClientLevel() {
+	public static LevelJS getClientLevel() {
 		return KubeJS.PROXY.getClientLevel();
 	}
 

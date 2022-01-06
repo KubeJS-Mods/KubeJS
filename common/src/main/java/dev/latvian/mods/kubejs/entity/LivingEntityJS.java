@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.entity;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.world.WorldJS;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 public class LivingEntityJS extends EntityJS {
 	public final LivingEntity minecraftLivingEntity;
 
-	public LivingEntityJS(WorldJS l, LivingEntity e) {
+	public LivingEntityJS(LevelJS l, LivingEntity e) {
 		super(l, e);
 		minecraftLivingEntity = e;
 	}

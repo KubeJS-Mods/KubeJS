@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.player;
 
 import com.mojang.authlib.GameProfile;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
+import dev.latvian.mods.kubejs.level.world.ServerLevelJS;
 import dev.latvian.mods.kubejs.server.ServerJS;
-import dev.latvian.mods.kubejs.world.ServerWorldJS;
-import dev.latvian.mods.kubejs.world.WorldJS;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,7 +47,7 @@ public class ServerPlayerDataJS extends PlayerDataJS<ServerPlayer, ServerPlayerJ
 	}
 
 	@Override
-	public WorldJS getOverworld() {
+	public LevelJS getOverworld() {
 		return server.getOverworld();
 	}
 
@@ -65,7 +65,7 @@ public class ServerPlayerDataJS extends PlayerDataJS<ServerPlayer, ServerPlayerJ
 			throw new NullPointerException("Player entity for " + getName() + " not found!");
 		}
 
-		return new ServerPlayerJS(this, (ServerWorldJS) server.getLevel(p.level), p);
+		return new ServerPlayerJS(this, (ServerLevelJS) server.getLevel(p.level), p);
 	}
 
 	@Override

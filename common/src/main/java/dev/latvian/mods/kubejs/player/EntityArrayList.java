@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.player;
 
 import dev.latvian.mods.kubejs.entity.EntityJS;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
 import dev.latvian.mods.kubejs.text.Text;
 import dev.latvian.mods.kubejs.text.TextString;
 import dev.latvian.mods.kubejs.util.MessageSender;
-import dev.latvian.mods.kubejs.world.WorldJS;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -22,14 +22,14 @@ import java.util.function.Predicate;
  * @author LatvianModder
  */
 public class EntityArrayList extends ArrayList<EntityJS> implements MessageSender {
-	private final WorldJS level;
+	private final LevelJS level;
 
-	public EntityArrayList(WorldJS l, int size) {
+	public EntityArrayList(LevelJS l, int size) {
 		super(size);
 		level = l;
 	}
 
-	public EntityArrayList(WorldJS l, Iterable<? extends Entity> entities) {
+	public EntityArrayList(LevelJS l, Iterable<? extends Entity> entities) {
 		this(l, entities instanceof Collection c ? c.size() : 10);
 
 		for (var entity : entities) {
@@ -39,11 +39,11 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 	@Deprecated(forRemoval = true)
 	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
-	public final WorldJS getWorld() {
+	public final LevelJS getWorld() {
 		return getLevel();
 	}
 
-	public WorldJS getLevel() {
+	public LevelJS getLevel() {
 		return level;
 	}
 

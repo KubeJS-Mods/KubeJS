@@ -7,11 +7,11 @@ import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.client.painter.Painter;
+import dev.latvian.mods.kubejs.level.world.ClientLevelJS;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
 import dev.latvian.mods.kubejs.net.NetworkEventJS;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
-import dev.latvian.mods.kubejs.world.ClientWorldJS;
-import dev.latvian.mods.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.util.unit.FixedUnit;
 import dev.latvian.mods.rhino.util.unit.Unit;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
@@ -21,7 +21,6 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.player.Player;
@@ -30,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -123,8 +121,8 @@ public class KubeJSClient extends KubeJSCommon {
 	}
 
 	@Override
-	public WorldJS getClientLevel() {
-		return ClientWorldJS.getInstance();
+	public LevelJS getClientLevel() {
+		return ClientLevelJS.getInstance();
 	}
 
 	private void reload(PreparableReloadListener listener) {

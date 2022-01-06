@@ -2,13 +2,11 @@ package dev.latvian.mods.kubejs.player;
 
 import dev.latvian.mods.kubejs.core.ServerPlayerGameModeKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.level.world.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.world.ServerLevelJS;
 import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
 import dev.latvian.mods.kubejs.server.ServerJS;
-import dev.latvian.mods.kubejs.world.BlockContainerJS;
-import dev.latvian.mods.kubejs.world.ServerWorldJS;
-import net.minecraft.advancements.AdvancementProgress;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -28,7 +26,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	public final ServerJS server;
 	private final boolean hasClientMod;
 
-	public ServerPlayerJS(ServerPlayerDataJS d, ServerWorldJS l, ServerPlayer p) {
+	public ServerPlayerJS(ServerPlayerDataJS d, ServerLevelJS l, ServerPlayer p) {
 		super(d, l, p);
 		server = l.getServer();
 		hasClientMod = d.hasClientMod();

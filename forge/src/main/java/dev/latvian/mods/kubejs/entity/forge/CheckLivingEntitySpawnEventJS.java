@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.entity.forge;
 
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.entity.LivingEntityEventJS;
-import dev.latvian.mods.kubejs.world.BlockContainerJS;
-import dev.latvian.mods.kubejs.world.WorldJS;
+import dev.latvian.mods.kubejs.level.world.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
@@ -24,7 +24,7 @@ public class CheckLivingEntitySpawnEventJS extends LivingEntityEventJS {
 	}
 
 	@Override
-	public WorldJS getLevel() {
+	public LevelJS getLevel() {
 		return levelOf((Level) event.getWorld());
 	}
 

@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.latvian.mods.kubejs.level.world.ClientLevelJS;
 import dev.latvian.mods.kubejs.player.ClientPlayerJS;
-import dev.latvian.mods.kubejs.world.ClientWorldJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.ApiStatus;
@@ -19,22 +19,22 @@ public class ClientWrapper {
 	@Nullable
 	@Deprecated(forRemoval = true)
 	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
-	public final ClientWorldJS getWorld() {
+	public final ClientLevelJS getWorld() {
 		return getLevel();
 	}
 
 	@Nullable
-	public ClientWorldJS getLevel() {
-		return ClientWorldJS.getInstance();
+	public ClientLevelJS getLevel() {
+		return ClientLevelJS.getInstance();
 	}
 
 	@Nullable
 	public ClientPlayerJS getPlayer() {
-		if (ClientWorldJS.getInstance() == null) {
+		if (ClientLevelJS.getInstance() == null) {
 			return null;
 		}
 
-		return ClientWorldJS.getInstance().clientPlayerData.getPlayer();
+		return ClientLevelJS.getInstance().clientPlayerData.getPlayer();
 	}
 
 	@Nullable

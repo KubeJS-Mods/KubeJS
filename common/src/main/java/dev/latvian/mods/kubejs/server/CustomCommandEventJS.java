@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.server;
 
 import dev.latvian.mods.kubejs.entity.EntityJS;
+import dev.latvian.mods.kubejs.level.world.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
-import dev.latvian.mods.kubejs.world.BlockContainerJS;
-import dev.latvian.mods.kubejs.world.WorldJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -35,7 +35,7 @@ public class CustomCommandEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	public WorldJS getLevel() {
+	public LevelJS getLevel() {
 		return levelOf(level);
 	}
 
