@@ -1,8 +1,6 @@
 package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonObject;
-import dev.architectury.injectables.annotations.ExpectPlatform;
-import dev.architectury.registry.block.ToolType;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.bindings.RarityWrapper;
@@ -26,10 +24,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -56,7 +52,6 @@ public class ItemBuilder extends BuilderBase {
 	public transient int burnTime;
 	public transient String containerItem;
 	public transient Function<ItemStackJS, Collection<ItemStackJS>> subtypes;
-	public transient Map<ToolType, Integer> tools;
 	public transient float miningSpeed;
 	public transient Float attackDamage;
 	public transient Float attackSpeed;
@@ -68,7 +63,6 @@ public class ItemBuilder extends BuilderBase {
 	public String texture;
 	public String parentModel;
 	public transient FoodBuilder foodBuilder;
-	public transient Set<String> defaultTags;
 
 	// Tools //
 	public transient Tier toolTier;
@@ -90,7 +84,6 @@ public class ItemBuilder extends BuilderBase {
 		burnTime = 0;
 		containerItem = "minecraft:air";
 		subtypes = null;
-		tools = new HashMap<>();
 		miningSpeed = 1.0F;
 		rarity = RarityWrapper.COMMON;
 		glow = false;
@@ -101,7 +94,6 @@ public class ItemBuilder extends BuilderBase {
 		texture = "";
 		parentModel = "";
 		foodBuilder = null;
-		defaultTags = new HashSet<>();
 		toolTier = Tiers.IRON;
 		armorTier = ArmorMaterials.IRON;
 		displayName = "";
@@ -157,11 +149,6 @@ public class ItemBuilder extends BuilderBase {
 
 	public ItemBuilder subtypes(Function<ItemStackJS, Collection<ItemStackJS>> fn) {
 		subtypes = fn;
-		return this;
-	}
-
-	public ItemBuilder tool(ToolType type, int level) {
-		tools.put(type, level);
 		return this;
 	}
 
@@ -230,10 +217,6 @@ public class ItemBuilder extends BuilderBase {
 		return this;
 	}
 
-	public Map<ToolType, Integer> getToolsMap() {
-		return tools;
-	}
-
 	public float getMiningSpeed() {
 		return miningSpeed;
 	}
@@ -246,11 +229,6 @@ public class ItemBuilder extends BuilderBase {
 	@Nullable
 	public Float getAttackSpeed() {
 		return attackSpeed;
-	}
-
-	public ItemBuilder tag(String tag) {
-		defaultTags.add(tag);
-		return this;
 	}
 
 	public Item.Properties createItemProperties() {
@@ -266,10 +244,6 @@ public class ItemBuilder extends BuilderBase {
 
 		properties.rarity(rarity.rarity);
 
-		for (var entry : tools.entrySet()) {
-			appendToolType(properties, entry.getKey(), entry.getValue());
-		}
-
 		var item = KubeJSRegistries.items().get(new ResourceLocation(containerItem));
 
 		if (item != Items.AIR) {
@@ -281,10 +255,5 @@ public class ItemBuilder extends BuilderBase {
 		}
 
 		return properties;
-	}
-
-	@ExpectPlatform
-	private static void appendToolType(Item.Properties properties, ToolType type, Integer level) {
-		throw new AssertionError();
 	}
 }

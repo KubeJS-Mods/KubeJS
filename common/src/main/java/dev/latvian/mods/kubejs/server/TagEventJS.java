@@ -19,7 +19,6 @@ import net.minecraft.tags.Tag;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,7 +29,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
@@ -373,13 +371,13 @@ public class TagEventJS<T> extends EventJS {
 		if (type.equals("items")) {
 			for (var item : KubeJSObjects.ITEMS.values()) {
 				for (var s : item.defaultTags) {
-					add(new ResourceLocation(s), item.id);
+					add(s, item.id);
 				}
 
 				for (var block : KubeJSObjects.BLOCKS.values()) {
 					if (block.itemBuilder != null) {
 						for (var s : block.itemBuilder.defaultTags) {
-							add(new ResourceLocation(s), block.itemBuilder.id);
+							add(s, block.itemBuilder.id);
 						}
 					}
 				}
@@ -387,7 +385,7 @@ public class TagEventJS<T> extends EventJS {
 		} else if (type.equals("blocks")) {
 			for (var block : KubeJSObjects.BLOCKS.values()) {
 				for (var s : block.defaultTags) {
-					add(new ResourceLocation(s), block.id);
+					add(s, block.id);
 				}
 			}
 		}

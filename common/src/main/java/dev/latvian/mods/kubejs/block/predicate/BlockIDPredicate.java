@@ -191,18 +191,5 @@ public class BlockIDPredicate implements BlockPredicate {
 
 		return this;
 	}
-
-	public BlockIDPredicate setHarvestTool(ToolType type, int level)
-	{
-		Block block = getBlock();
-
-		if (block != Blocks.AIR)
-		{
-			((BlockKJS) block).setHarvestToolKJS(type);
-			((BlockKJS) block).setHarvestLevelKJS(level);
-		}
-
-		return this;
-	}
 	 */
 }

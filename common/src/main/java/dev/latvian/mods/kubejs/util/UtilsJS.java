@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import dev.architectury.registry.block.ToolType;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
@@ -390,10 +389,6 @@ public class UtilsJS {
 		} catch (Exception ex) {
 			return def;
 		}
-	}
-
-	public static ToolType getToolType(String id) {
-		return ToolType.byName(id);
 	}
 
 	@Deprecated(forRemoval = true)

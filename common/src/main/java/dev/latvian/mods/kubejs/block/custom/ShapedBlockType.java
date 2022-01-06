@@ -3,6 +3,8 @@ package dev.latvian.mods.kubejs.block.custom;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 
 import java.util.function.Function;
@@ -46,38 +48,38 @@ public class ShapedBlockType extends BlockType {
 		}
 
 		if (this == SLAB) {
-			builder.tagBlockAndItem("minecraft:slabs");
+			builder.tagBoth(BlockTags.SLABS.getName());
 		} else if (this == STAIRS) {
-			builder.tagBlockAndItem("minecraft:stairs");
+			builder.tagBoth(BlockTags.STAIRS.getName());
 		} else if (this == FENCE) {
-			builder.tagBlockAndItem("minecraft:fences");
+			builder.tagBoth(BlockTags.FENCES.getName());
 
 			if (Platform.isForge()) {
-				builder.tagBlockAndItem("forge:fences");
+				builder.tagBoth(new ResourceLocation("forge:fences"));
 			}
 		} else if (this == FENCE_GATE) {
-			builder.tagBlockAndItem("minecraft:fence_gates");
+			builder.tagBoth(BlockTags.FENCE_GATES.getName());
 
 			if (Platform.isForge()) {
-				builder.tagBlockAndItem("forge:fence_gates");
+				builder.tagBoth(new ResourceLocation("forge:fence_gates"));
 			}
 		} else if (this == WALL) {
-			builder.tagBlockAndItem("minecraft:walls");
+			builder.tagBoth(BlockTags.WALLS.getName());
 		} else if (this == WOODEN_PRESSURE_PLATE) {
 			builder.noCollission();
-			builder.tagBlockAndItem("minecraft:pressure_plates");
-			builder.tagBlockAndItem("minecraft:wooden_pressure_plates");
+			builder.tagBoth(BlockTags.PRESSURE_PLATES.getName());
+			builder.tagBoth(BlockTags.WOODEN_PRESSURE_PLATES.getName());
 		} else if (this == STONE_PRESSURE_PLATE) {
 			builder.noCollission();
-			builder.tagBlockAndItem("minecraft:pressure_plates");
-			builder.tagBlockAndItem("minecraft:stone_pressure_plates");
+			builder.tagBoth(BlockTags.PRESSURE_PLATES.getName());
+			builder.tagBoth(BlockTags.STONE_PRESSURE_PLATES.getName());
 		} else if (this == WOODEN_BUTTON) {
 			builder.noCollission();
-			builder.tagBlockAndItem("minecraft:buttons");
-			builder.tagBlockAndItem("minecraft:wooden_buttons");
+			builder.tagBoth(BlockTags.BUTTONS.getName());
+			builder.tagBoth(BlockTags.WOODEN_BUTTONS.getName());
 		} else if (this == STONE_BUTTON) {
 			builder.noCollission();
-			builder.tagBlockAndItem("minecraft:buttons");
+			builder.tagBoth(BlockTags.BUTTONS.getName());
 		}
 	}
 
