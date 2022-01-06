@@ -53,7 +53,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
 	public LevelJS getWorld() {
 		return level;
 	}

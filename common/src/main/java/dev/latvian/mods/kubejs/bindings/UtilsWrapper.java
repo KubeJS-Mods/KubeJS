@@ -109,7 +109,7 @@ public class UtilsWrapper {
 	}
 
 	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
 	public static LevelJS getWorld(Level level) {
 		return getLevel(level);
 	}
@@ -123,7 +123,7 @@ public class UtilsWrapper {
 	}
 
 	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
 	public static LevelJS getClientWorld() {
 		return getClientLevel();
 	}

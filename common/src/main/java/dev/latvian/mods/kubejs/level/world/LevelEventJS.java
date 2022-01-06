@@ -15,7 +15,7 @@ public abstract class LevelEventJS extends EventJS {
 	public abstract LevelJS getLevel();
 
 	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
 	public final LevelJS getWorld() {
 		return getLevel();
 	}
