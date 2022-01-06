@@ -2,8 +2,6 @@ package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.architectury.injectables.annotations.ExpectPlatform;
-import dev.architectury.registry.block.ToolType;
 import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
@@ -19,7 +17,6 @@ import dev.latvian.mods.kubejs.item.ingredient.RegexIngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.WeakNBTIngredientJS;
 import dev.latvian.mods.kubejs.level.world.BlockContainerJS;
-import dev.latvian.mods.kubejs.player.PlayerJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.text.Text;
@@ -259,11 +256,6 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		@Override
 		public boolean strongEquals(Object o) {
 			return of(o).isEmpty();
-		}
-
-		@Override
-		public int getHarvestLevel(ToolType tool, @Nullable PlayerJS<?> player, @Nullable BlockContainerJS block) {
-			return -1;
 		}
 
 		@Override
@@ -977,19 +969,6 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		}
 
 		return false;
-	}
-
-	public int getHarvestLevel(ToolType tool, @Nullable PlayerJS<?> player, @Nullable BlockContainerJS block) {
-		return _getHarvestLevel(getItemStack(), tool, player, block);
-	}
-
-	@ExpectPlatform
-	private static int _getHarvestLevel(ItemStack stack, ToolType tool, @Nullable PlayerJS<?> player, @Nullable BlockContainerJS block) {
-		throw new AssertionError();
-	}
-
-	public int getHarvestLevel(ToolType tool) {
-		return getHarvestLevel(tool, null, null);
 	}
 
 	public float getHarvestSpeed(@Nullable BlockContainerJS block) {

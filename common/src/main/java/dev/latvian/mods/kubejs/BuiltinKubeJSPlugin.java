@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.architectury.platform.Platform;
-import dev.architectury.registry.block.ToolType;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
@@ -280,12 +279,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("AIR_ITEM", Items.AIR);
 		event.add("AIR_BLOCK", Blocks.AIR);
 
-		event.add("ToolType", ToolType.class);
-		event.add("TOOL_TYPE_AXE", ToolType.AXE);
-		event.add("TOOL_TYPE_PICKAXE", ToolType.PICKAXE);
-		event.add("TOOL_TYPE_SHOVEL", ToolType.SHOVEL);
-		event.add("TOOL_TYPE_HOE", ToolType.HOE);
-
 		event.add("Hand", InteractionHand.class);
 		event.add("MAIN_HAND", InteractionHand.MAIN_HAND);
 		event.add("OFF_HAND", InteractionHand.OFF_HAND);
@@ -397,7 +390,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(ItemType.class, ItemTypes::get);
 		typeWrappers.register(BlockType.class, BlockTypes::get);
 		typeWrappers.register(Color.class, ColorWrapper::of);
-		typeWrappers.register(ToolType.class, o -> ToolType.create(o.toString(), () -> null));
 		typeWrappers.register(IngredientActionFilter.class, IngredientActionFilter::filterOf);
 
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);

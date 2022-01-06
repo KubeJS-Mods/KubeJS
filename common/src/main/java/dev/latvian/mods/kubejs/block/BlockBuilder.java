@@ -2,24 +2,24 @@ package dev.latvian.mods.kubejs.block;
 
 import com.google.gson.JsonObject;
 import dev.architectury.registry.block.BlockProperties;
-import dev.architectury.registry.block.ToolType;
 import dev.latvian.mods.kubejs.block.custom.BasicBlockType;
 import dev.latvian.mods.kubejs.block.custom.BlockType;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.BuilderBase;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -33,8 +33,6 @@ public class BlockBuilder extends BuilderBase {
 	public transient float hardness;
 	public transient float resistance;
 	public transient float lightLevel;
-	public transient ToolType harvestTool;
-	public transient int harvestLevel;
 	public transient boolean opaque;
 	public transient boolean fullBlock;
 	public transient boolean requiresTool;
@@ -59,7 +57,6 @@ public class BlockBuilder extends BuilderBase {
 	public transient boolean viewBlocking;
 	public transient boolean redstoneConductor;
 	public transient boolean transparent;
-	public transient Set<String> defaultTags;
 
 	public transient Block block;
 
@@ -70,8 +67,6 @@ public class BlockBuilder extends BuilderBase {
 		hardness = 0.5F;
 		resistance = -1F;
 		lightLevel = 0F;
-		harvestTool = null;
-		harvestLevel = -1;
 		opaque = true;
 		fullBlock = false;
 		requiresTool = false;
@@ -101,7 +96,6 @@ public class BlockBuilder extends BuilderBase {
 		viewBlocking = true;
 		redstoneConductor = true;
 		transparent = false;
-		defaultTags = new HashSet<>();
 	}
 
 	@Override
@@ -138,12 +132,6 @@ public class BlockBuilder extends BuilderBase {
 
 	public BlockBuilder lightLevel(float light) {
 		lightLevel = light;
-		return this;
-	}
-
-	public BlockBuilder harvestTool(ToolType tool, int level) {
-		harvestTool = tool;
-		harvestLevel = level;
 		return this;
 	}
 
@@ -317,13 +305,32 @@ public class BlockBuilder extends BuilderBase {
 		return defaultCutout().renderType("translucent");
 	}
 
-	public BlockBuilder tag(String tag) {
+	public BlockBuilder tag(ResourceLocation tag) {
+		ScriptType.STARTUP.console.warn("BlockBuilder.tag's behaviour is going to change in a future version to tag both the block and the item!");
+		ScriptType.SERVER.console.warn("If you do not want this, use tagBlock and tagItem instead!");
+		return tagBlock(tag);
+	}
+
+	@Deprecated
+	@ApiStatus.ScheduledForRemoval
+	public BlockBuilder tagBlockAndItem(ResourceLocation tag) {
+		ScriptType.STARTUP.console.warn("BlockBuilder.tagBoth will be migrated to BlockBuilder.tag in the future!");
+		ScriptType.STARTUP.console.warn("For now, use tagBoth instead to avoid this message!");
+		return tagBoth(tag);
+	}
+
+	public BlockBuilder tagBoth(ResourceLocation tag) {
+		tagBlock(tag);
+		tagItem(tag);
+		return this;
+	}
+
+	public BlockBuilder tagBlock(ResourceLocation tag) {
 		defaultTags.add(tag);
 		return this;
 	}
 
-	public BlockBuilder tagBlockAndItem(String tag) {
-		defaultTags.add(tag);
+	public BlockBuilder tagItem(ResourceLocation tag) {
 		itemBuilder.defaultTags.add(tag);
 		return this;
 	}
@@ -339,12 +346,6 @@ public class BlockBuilder extends BuilderBase {
 		}
 
 		properties.lightLevel(state -> (int) (lightLevel * 15F));
-
-		// TODO: migrate to tag tools and harvest levels
-		//  (probably using defaultTags directly)
-		/*if (harvestTool != null && harvestLevel >= 0) {
-			properties.tool(harvestTool, harvestLevel);
-		}*/
 
 		if (noCollission) {
 			properties.noCollission();

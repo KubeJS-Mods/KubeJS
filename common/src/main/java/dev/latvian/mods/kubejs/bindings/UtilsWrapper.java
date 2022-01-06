@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.bindings;
 
-import dev.architectury.registry.block.ToolType;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.level.world.ClientLevelJS;
@@ -102,10 +101,6 @@ public class UtilsWrapper {
 
 	public static Stat<ResourceLocation> getStat(ResourceLocation id) {
 		return Stats.CUSTOM.get(id);
-	}
-
-	public static ToolType getToolType(String id) {
-		return UtilsJS.getToolType(id);
 	}
 
 	@Deprecated(forRemoval = true)
