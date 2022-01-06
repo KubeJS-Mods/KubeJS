@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.world.gen.forge.BiomeDictionaryWrapper;
+import dev.latvian.mods.kubejs.level.gen.forge.BiomeDictionaryWrapper;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.MinecraftForge;

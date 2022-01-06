@@ -3,6 +3,8 @@ package dev.latvian.mods.kubejs.bindings;
 import dev.architectury.registry.block.ToolType;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.entity.EntityJS;
+import dev.latvian.mods.kubejs.level.world.ClientLevelJS;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -10,8 +12,6 @@ import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
-import dev.latvian.mods.kubejs.world.ClientWorldJS;
-import dev.latvian.mods.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.mod.util.CountingMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -109,12 +109,12 @@ public class UtilsWrapper {
 	}
 
 	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
-	public static WorldJS getWorld(Level level) {
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
+	public static LevelJS getWorld(Level level) {
 		return getLevel(level);
 	}
 
-	public static WorldJS getLevel(Level level) {
+	public static LevelJS getLevel(Level level) {
 		if (level.isClientSide()) {
 			return getClientLevel();
 		} else {
@@ -123,13 +123,13 @@ public class UtilsWrapper {
 	}
 
 	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
-	public static WorldJS getClientWorld() {
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
+	public static LevelJS getClientWorld() {
 		return getClientLevel();
 	}
 
-	public static WorldJS getClientLevel() {
-		return ClientWorldJS.getInstance();
+	public static LevelJS getClientLevel() {
+		return ClientLevelJS.getInstance();
 	}
 
 	@Nullable

@@ -1,18 +1,18 @@
 package dev.latvian.mods.kubejs.server;
 
+import dev.latvian.mods.kubejs.level.world.LevelJS;
+import dev.latvian.mods.kubejs.level.world.ServerLevelJS;
 import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
 import dev.latvian.mods.kubejs.player.AdvancementJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.player.FakeServerPlayerDataJS;
 import dev.latvian.mods.kubejs.player.ServerPlayerDataJS;
 import dev.latvian.mods.kubejs.player.ServerPlayerJS;
+import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.text.Text;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.MessageSender;
 import dev.latvian.mods.kubejs.util.WithAttachedData;
-import dev.latvian.mods.kubejs.world.AttachWorldDataEvent;
-import dev.latvian.mods.kubejs.world.ServerWorldJS;
-import dev.latvian.mods.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.mod.wrapper.UUIDWrapper;
 import net.minecraft.Util;
 import net.minecraft.core.Registry;
@@ -44,13 +44,13 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	public final transient ServerScriptManager serverScriptManager;
 	public final transient List<ScheduledEvent> scheduledEvents;
 	public final transient List<ScheduledEvent> scheduledTickEvents;
-	public final transient Map<String, ServerWorldJS> levelMap;
+	public final transient Map<String, ServerLevelJS> levelMap;
 	public final transient Map<UUID, ServerPlayerDataJS> playerMap;
 	public final transient Map<UUID, FakeServerPlayerDataJS> fakePlayerMap;
-	public final transient List<ServerWorldJS> allLevels;
+	public final transient List<ServerLevelJS> allLevels;
 	public final CompoundTag persistentData;
 
-	public ServerWorldJS overworld;
+	public ServerLevelJS overworld;
 	private AttachedData data;
 
 	public ServerJS(MinecraftServer ms, ServerScriptManager m) {
@@ -92,16 +92,16 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	}
 
 	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
-	public List<ServerWorldJS> getWorlds() {
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
+	public List<ServerLevelJS> getWorlds() {
 		return getAllLevels();
 	}
 
-	public List<ServerWorldJS> getAllLevels() {
+	public List<ServerLevelJS> getAllLevels() {
 		return allLevels;
 	}
 
-	public ServerWorldJS getOverworld() {
+	public ServerLevelJS getOverworld() {
 		return overworld;
 	}
 
@@ -173,41 +173,41 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		return getMinecraftServer().getCommands().performCommand(getMinecraftServer().createCommandSourceStack().withSuppressedOutput(), command);
 	}
 
-	public WorldJS getLevel(String dimension) {
+	public LevelJS getLevel(String dimension) {
 		var level = levelMap.get(dimension);
 
 		if (level == null) {
-			level = new ServerWorldJS(this, getMinecraftServer().getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(dimension))));
+			level = new ServerLevelJS(this, getMinecraftServer().getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(dimension))));
 			levelMap.put(dimension, level);
 			updateWorldList();
-			new AttachWorldDataEvent(level).invoke();
+			AttachDataEvent.forLevel(level).invoke();
 		}
 
 		return level;
 	}
 
 	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
-	public final WorldJS getWorld(String dimension) {
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
+	public final LevelJS getWorld(String dimension) {
 		return getLevel(dimension);
 	}
 
-	public WorldJS getLevel(Level minecraftLevel) {
+	public LevelJS getLevel(Level minecraftLevel) {
 		var level = levelMap.get(minecraftLevel.dimension().location().toString());
 
 		if (level == null) {
-			level = new ServerWorldJS(this, (ServerLevel) minecraftLevel);
+			level = new ServerLevelJS(this, (ServerLevel) minecraftLevel);
 			levelMap.put(minecraftLevel.dimension().location().toString(), level);
 			updateWorldList();
-			new AttachWorldDataEvent(level).invoke();
+			AttachDataEvent.forLevel(level).invoke();
 		}
 
 		return level;
 	}
 
 	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
-	public final WorldJS getWorld(Level minecraftLevel) {
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
+	public final LevelJS getWorld(Level minecraftLevel) {
 		return getLevel(minecraftLevel);
 	}
 

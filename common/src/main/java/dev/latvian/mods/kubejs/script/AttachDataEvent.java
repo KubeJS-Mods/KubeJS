@@ -1,33 +1,33 @@
 package dev.latvian.mods.kubejs.script;
 
-import dev.architectury.annotations.ForgeEvent;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
+import dev.latvian.mods.kubejs.player.PlayerDataJS;
+import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.util.WithAttachedData;
 
-/**
- * @author LatvianModder
- * @apiNote This class and others like it will be changed significantly in 4.1,
- * including the removal of {@code EVENT} and the {@code @ForgeEvent}
- * annotation, honestly, just use the KubeJS plugin system instead...
- */
-@ForgeEvent
-public class AttachDataEvent<T extends WithAttachedData> {
-	private final DataType<T> type;
-	private final T parent;
-
-	public AttachDataEvent(DataType<T> t, T p) {
-		type = t;
-		parent = p;
-	}
-
-	public DataType<T> getType() {
-		return type;
-	}
-
-	public T getParent() {
-		return parent;
-	}
+public record AttachDataEvent<T extends WithAttachedData>(
+		DataType<T> type,
+		T parent
+) {
 
 	public void add(String id, Object object) {
 		parent.getData().put(id, object);
 	}
+
+	public void invoke() {
+		type.pluginCallback().accept(this);
+	}
+
+	public static AttachDataEvent<LevelJS> forLevel(LevelJS level) {
+		return new AttachDataEvent<>(DataType.LEVEL, level);
+	}
+
+	public static AttachDataEvent<ServerJS> forServer(ServerJS server) {
+		return new AttachDataEvent<>(DataType.SERVER, server);
+	}
+
+	public static AttachDataEvent<PlayerDataJS> forPlayer(PlayerDataJS playerData) {
+		return new AttachDataEvent<>(DataType.PLAYER, playerData);
+	}
+
 }

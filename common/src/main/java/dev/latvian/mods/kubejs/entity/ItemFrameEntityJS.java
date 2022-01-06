@@ -1,9 +1,8 @@
 package dev.latvian.mods.kubejs.entity;
 
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.world.WorldJS;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
 import net.minecraft.world.entity.decoration.ItemFrame;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -12,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public class ItemFrameEntityJS extends EntityJS {
 	private final ItemFrame itemFrameEntity;
 
-	public ItemFrameEntityJS(WorldJS l, ItemFrame e) {
+	public ItemFrameEntityJS(LevelJS l, ItemFrame e) {
 		super(l, e);
 		itemFrameEntity = e;
 	}

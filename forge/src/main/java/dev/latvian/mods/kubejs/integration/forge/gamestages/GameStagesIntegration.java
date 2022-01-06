@@ -1,7 +1,8 @@
 package dev.latvian.mods.kubejs.integration.forge.gamestages;
 
 import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.player.AttachPlayerDataEvent;
+import dev.latvian.mods.kubejs.player.PlayerDataJS;
+import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModList;
 
@@ -20,9 +21,9 @@ public class GameStagesIntegration extends KubeJSPlugin {
 		}
 	}
 
-	public void attachPlayerData(AttachPlayerDataEvent event) {
+	public void attachPlayerData(AttachDataEvent<PlayerDataJS> event) {
 		if (gameStagesLoaded) {
-			event.add("gamestages", new GameStagesPlayerData(event.getParent()));
+			event.add("gamestages", new GameStagesPlayerData(event.parent()));
 		}
 	}
 

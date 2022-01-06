@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.player;
 
 import dev.latvian.mods.kubejs.item.InventoryJS;
-import dev.latvian.mods.kubejs.world.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.world.BlockContainerJS;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;

@@ -2,9 +2,8 @@ package dev.latvian.mods.kubejs.entity;
 
 import dev.architectury.hooks.level.entity.ItemEntityHooks;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.world.WorldJS;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -15,7 +14,7 @@ import java.util.UUID;
 public class ItemEntityJS extends EntityJS {
 	private final ItemEntity itemEntity;
 
-	public ItemEntityJS(WorldJS l, ItemEntity e) {
+	public ItemEntityJS(LevelJS l, ItemEntity e) {
 		super(l, e);
 		itemEntity = e;
 	}

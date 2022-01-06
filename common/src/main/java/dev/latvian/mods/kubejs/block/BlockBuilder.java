@@ -6,7 +6,6 @@ import dev.architectury.registry.block.ToolType;
 import dev.latvian.mods.kubejs.block.custom.BasicBlockType;
 import dev.latvian.mods.kubejs.block.custom.BlockType;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.BuilderBase;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.core.Direction;
@@ -15,7 +14,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -172,13 +170,6 @@ public class BlockBuilder extends BuilderBase {
 	public BlockBuilder color(int index, int c) {
 		color.put(index, 0xFF000000 | c);
 		return this;
-	}
-
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
-	public BlockBuilder texture(String tex) {
-		ScriptType.STARTUP.console.warn("Using 'texture(tex)' in block builders is deprecated! Please use 'textureAll(tex)' instead!");
-		return textureAll(tex);
 	}
 
 	public BlockBuilder textureAll(String tex) {

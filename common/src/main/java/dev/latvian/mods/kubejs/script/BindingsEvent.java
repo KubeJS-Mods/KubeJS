@@ -9,7 +9,6 @@ import dev.latvian.mods.rhino.NativeJavaClass;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.ScriptableObject;
 import dev.latvian.mods.rhino.util.DynamicFunction;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Consumer;
 
@@ -43,24 +42,12 @@ public class BindingsEvent {
 		}
 	}
 
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
-	public void addClass(String name, Class<?> clazz) {
-		add(name, clazz);
-	}
-
 	public void addFunction(String name, DynamicFunction.Callback callback) {
 		add(name, new DynamicFunction(callback));
 	}
 
 	public void addFunction(String name, DynamicFunction.Callback callback, Class<?>... types) {
 		add(name, new TypedDynamicFunction(callback, types));
-	}
-
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
-	public void addConstant(String name, Object value) {
-		add(name, value);
 	}
 
 	public void addFunction(String name, BaseFunction function) {

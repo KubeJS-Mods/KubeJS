@@ -8,13 +8,13 @@ import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.TickEvent;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.command.KubeJSCommands;
+import dev.latvian.mods.kubejs.level.world.ServerLevelJS;
+import dev.latvian.mods.kubejs.level.world.SimpleLevelEventJS;
 import dev.latvian.mods.kubejs.player.PlayerDataJS;
 import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
+import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.world.AttachWorldDataEvent;
-import dev.latvian.mods.kubejs.world.ServerWorldJS;
-import dev.latvian.mods.kubejs.world.SimpleWorldEventJS;
 import dev.latvian.mods.rhino.RhinoException;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
@@ -73,25 +73,25 @@ public class KubeJSServerEventHandler {
 	}
 
 	public static void serverStarted(MinecraftServer server) {
-		ServerJS.instance.overworld = new ServerWorldJS(ServerJS.instance, server.getLevel(Level.OVERWORLD));
+		ServerJS.instance.overworld = new ServerLevelJS(ServerJS.instance, server.getLevel(Level.OVERWORLD));
 		ServerJS.instance.levelMap.put("minecraft:overworld", ServerJS.instance.overworld);
 		ServerJS.instance.allLevels.add(ServerJS.instance.overworld);
 
 		for (var level : server.getAllLevels()) {
 			if (level != ServerJS.instance.overworld.minecraftLevel) {
-				var l = new ServerWorldJS(ServerJS.instance, level);
+				var l = new ServerLevelJS(ServerJS.instance, level);
 				ServerJS.instance.levelMap.put(level.dimension().location().toString(), l);
 			}
 		}
 
 		ServerJS.instance.updateWorldList();
 
-		new AttachServerDataEvent(ServerJS.instance).invoke();
+		AttachDataEvent.forServer(ServerJS.instance).invoke();
 		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_LOAD);
 
 		for (var level : ServerJS.instance.allLevels) {
-			new AttachWorldDataEvent(level).invoke();
-			new SimpleWorldEventJS(level).post(KubeJSEvents.LEVEL_LOAD);
+			AttachDataEvent.forLevel(level).invoke();
+			new SimpleLevelEventJS(level).post(KubeJSEvents.LEVEL_LOAD);
 		}
 	}
 
@@ -107,7 +107,7 @@ public class KubeJSServerEventHandler {
 		}
 
 		for (var w : s.levelMap.values()) {
-			new SimpleWorldEventJS(w).post(KubeJSEvents.LEVEL_UNLOAD);
+			new SimpleLevelEventJS(w).post(KubeJSEvents.LEVEL_UNLOAD);
 		}
 
 		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_UNLOAD);

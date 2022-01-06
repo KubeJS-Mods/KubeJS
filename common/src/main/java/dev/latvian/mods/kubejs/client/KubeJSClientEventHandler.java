@@ -20,14 +20,12 @@ import dev.latvian.mods.kubejs.client.painter.world.WorldPaintEventJS;
 import dev.latvian.mods.kubejs.core.BucketItemKJS;
 import dev.latvian.mods.kubejs.core.ImageButtonKJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
-import dev.latvian.mods.kubejs.player.AttachPlayerDataEvent;
+import dev.latvian.mods.kubejs.level.world.ClientLevelJS;
+import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.Tags;
-import dev.latvian.mods.kubejs.world.AttachWorldDataEvent;
-import dev.latvian.mods.kubejs.world.ClientWorldJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.player.LocalPlayer;
@@ -47,10 +45,7 @@ import org.lwjgl.opengl.GL12;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.OutputStream;
-import java.nio.IntBuffer;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -160,31 +155,31 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void clientTick(Minecraft minecraft) {
-		if (Minecraft.getInstance().player != null && ClientWorldJS.getInstance() != null) {
+		if (Minecraft.getInstance().player != null && ClientLevelJS.getInstance() != null) {
 			new ClientTickEventJS().post(KubeJSEvents.CLIENT_TICK);
 		}
 	}
 
 	private void loggedIn(LocalPlayer player) {
-		ClientWorldJS.setInstance(new ClientWorldJS(Minecraft.getInstance(), player));
-		new AttachWorldDataEvent(ClientWorldJS.getInstance()).invoke();
-		new AttachPlayerDataEvent(ClientWorldJS.getInstance().clientPlayerData).invoke();
+		ClientLevelJS.setInstance(new ClientLevelJS(Minecraft.getInstance(), player));
+		AttachDataEvent.forLevel(ClientLevelJS.getInstance()).invoke();
+		AttachDataEvent.forPlayer(ClientLevelJS.getInstance().clientPlayerData).invoke();
 		new ClientLoggedInEventJS().post(KubeJSEvents.CLIENT_LOGGED_IN);
 	}
 
 	private void loggedOut(LocalPlayer player) {
-		if (ClientWorldJS.getInstance() != null) {
+		if (ClientLevelJS.getInstance() != null) {
 			new ClientLoggedInEventJS().post(KubeJSEvents.CLIENT_LOGGED_OUT);
 		}
 
-		ClientWorldJS.setInstance(null);
+		ClientLevelJS.setInstance(null);
 		Painter.INSTANCE.clear();
 	}
 
 	private void respawn(LocalPlayer oldPlayer, LocalPlayer newPlayer) {
-		ClientWorldJS.setInstance(new ClientWorldJS(Minecraft.getInstance(), newPlayer));
-		new AttachWorldDataEvent(ClientWorldJS.getInstance()).invoke();
-		new AttachPlayerDataEvent(ClientWorldJS.getInstance().clientPlayerData).invoke();
+		ClientLevelJS.setInstance(new ClientLevelJS(Minecraft.getInstance(), newPlayer));
+		AttachDataEvent.forLevel(ClientLevelJS.getInstance()).invoke();
+		AttachDataEvent.forPlayer(ClientLevelJS.getInstance().clientPlayerData).invoke();
 	}
 
 	private void inGameScreenDraw(PoseStack matrices, float delta) {

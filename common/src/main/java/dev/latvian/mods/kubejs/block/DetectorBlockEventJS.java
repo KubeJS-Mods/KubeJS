@@ -1,12 +1,12 @@
 package dev.latvian.mods.kubejs.block;
 
-import dev.latvian.mods.kubejs.world.BlockContainerJS;
-import dev.latvian.mods.kubejs.world.WorldEventJS;
-import dev.latvian.mods.kubejs.world.WorldJS;
+import dev.latvian.mods.kubejs.level.world.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.world.LevelEventJS;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
-public class DetectorBlockEventJS extends WorldEventJS {
+public class DetectorBlockEventJS extends LevelEventJS {
 	private final String detectorId;
 	private final Level level;
 	private final BlockPos pos;
@@ -26,7 +26,7 @@ public class DetectorBlockEventJS extends WorldEventJS {
 	}
 
 	@Override
-	public WorldJS getLevel() {
+	public LevelJS getLevel() {
 		return levelOf(level);
 	}
 

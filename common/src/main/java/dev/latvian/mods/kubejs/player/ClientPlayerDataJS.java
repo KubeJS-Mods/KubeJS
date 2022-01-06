@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.player;
 
 import com.mojang.authlib.GameProfile;
-import dev.latvian.mods.kubejs.world.ClientWorldJS;
-import dev.latvian.mods.kubejs.world.WorldJS;
+import dev.latvian.mods.kubejs.level.world.ClientLevelJS;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -13,23 +13,23 @@ import java.util.UUID;
  * @author LatvianModder
  */
 public class ClientPlayerDataJS extends PlayerDataJS<Player, ClientPlayerJS> {
-	private final ClientWorldJS level;
+	private final ClientLevelJS level;
 	private final ClientPlayerJS player;
 	private final Player minecraftPlayer;
 
-	public ClientPlayerDataJS(ClientWorldJS l, Player p, boolean s) {
+	public ClientPlayerDataJS(ClientLevelJS l, Player p, boolean s) {
 		level = l;
 		minecraftPlayer = p;
 		player = new ClientPlayerJS(this, minecraftPlayer, s);
 	}
 
 	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
-	public final ClientWorldJS getWorld() {
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
+	public final ClientLevelJS getWorld() {
 		return getLevel();
 	}
 
-	public ClientWorldJS getLevel() {
+	public ClientLevelJS getLevel() {
 		return level;
 	}
 
@@ -49,7 +49,7 @@ public class ClientPlayerDataJS extends PlayerDataJS<Player, ClientPlayerJS> {
 	}
 
 	@Override
-	public WorldJS getOverworld() {
+	public LevelJS getOverworld() {
 		return level;
 	}
 

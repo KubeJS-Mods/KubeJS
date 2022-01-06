@@ -122,7 +122,6 @@ public class ServerScriptManager {
 		Map<ResourceLocation, RecipeTypeJS> typeMap = new HashMap<>();
 		var modEvent = new RegisterRecipeHandlersEvent(typeMap);
 		KubeJSPlugins.forEachPlugin(plugin -> plugin.addRecipes(modEvent));
-		RegisterRecipeHandlersEvent.EVENT.invoker().accept(modEvent);
 		new RecipeTypeRegistryEventJS(typeMap).post(ScriptType.SERVER, KubeJSEvents.RECIPES_TYPE_REGISTRY);
 
 		// Currently custom ingredients are only supported on Forge

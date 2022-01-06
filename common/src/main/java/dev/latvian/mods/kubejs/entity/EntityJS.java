@@ -4,14 +4,14 @@ import com.mojang.authlib.GameProfile;
 import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.core.EntityKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.level.world.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
+import dev.latvian.mods.kubejs.level.world.ServerLevelJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.text.Text;
 import dev.latvian.mods.kubejs.util.MessageSender;
 import dev.latvian.mods.kubejs.util.WrappedJS;
-import dev.latvian.mods.kubejs.world.BlockContainerJS;
-import dev.latvian.mods.kubejs.world.ServerWorldJS;
-import dev.latvian.mods.kubejs.world.WorldJS;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -41,24 +41,24 @@ import java.util.UUID;
 public class EntityJS implements MessageSender, WrappedJS {
 	private static Map<String, DamageSource> damageSourceMap;
 
-	private final WorldJS level;
+	private final LevelJS level;
 
 	public final Entity minecraftEntity;
 	public final CompoundTag persistentData;
 
-	public EntityJS(WorldJS l, Entity e) {
+	public EntityJS(LevelJS l, Entity e) {
 		level = l;
 		minecraftEntity = e;
 		persistentData = ((EntityKJS) e).getPersistentDataKJS();
 	}
 
 	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.1")
-	public WorldJS getWorld() {
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
+	public LevelJS getWorld() {
 		return level;
 	}
 
-	public final WorldJS getLevel() {
+	public final LevelJS getLevel() {
 		return level;
 	}
 
@@ -324,7 +324,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 
 	@Override
 	public int runCommand(String command) {
-		if (level instanceof ServerWorldJS) {
+		if (level instanceof ServerLevelJS) {
 			return level.getServer().getMinecraftServer().getCommands().performCommand(minecraftEntity.createCommandSourceStack(), command);
 		}
 
@@ -333,7 +333,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 
 	@Override
 	public int runCommandSilent(String command) {
-		if (level instanceof ServerWorldJS) {
+		if (level instanceof ServerLevelJS) {
 			return level.getServer().getMinecraftServer().getCommands().performCommand(minecraftEntity.createCommandSourceStack().withSuppressedOutput(), command);
 		}
 

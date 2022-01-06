@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.item.forge;
 
 import dev.architectury.registry.block.ToolType;
+import dev.latvian.mods.kubejs.level.world.BlockContainerJS;
 import dev.latvian.mods.kubejs.player.PlayerJS;
-import dev.latvian.mods.kubejs.world.BlockContainerJS;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;

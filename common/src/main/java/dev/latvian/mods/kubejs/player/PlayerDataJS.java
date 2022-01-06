@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.player;
 
 import com.mojang.authlib.GameProfile;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.WithAttachedData;
-import dev.latvian.mods.kubejs.world.WorldJS;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +36,7 @@ public abstract class PlayerDataJS<E extends Player, P extends PlayerJS<E>> impl
 		return true;
 	}
 
-	public abstract WorldJS getOverworld();
+	public abstract LevelJS getOverworld();
 
 	@Nullable
 	public abstract E getMinecraftPlayer();

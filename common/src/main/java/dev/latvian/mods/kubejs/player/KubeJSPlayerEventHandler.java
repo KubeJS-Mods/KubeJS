@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.core.EntityKJS;
+import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.stages.Stages;
@@ -43,7 +44,7 @@ public class KubeJSPlayerEventHandler {
 			var p = new ServerPlayerDataJS(ServerJS.instance, player.getUUID(), player.getGameProfile().getName(), KubeJS.nextClientHasClientMod);
 			KubeJS.nextClientHasClientMod = false;
 			p.getServer().playerMap.put(p.getId(), p);
-			new AttachPlayerDataEvent(p).invoke();
+			AttachDataEvent.forPlayer(p).invoke();
 			new SimplePlayerEventJS(player).post(KubeJSEvents.PLAYER_LOGGED_IN);
 			player.inventoryMenu.addSlotListener(new InventoryListener(player));
 		}
