@@ -20,9 +20,8 @@ import dev.latvian.mods.kubejs.client.painter.world.WorldPaintEventJS;
 import dev.latvian.mods.kubejs.core.BucketItemKJS;
 import dev.latvian.mods.kubejs.core.ImageButtonKJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
-import dev.latvian.mods.kubejs.level.world.AttachWorldDataEvent;
 import dev.latvian.mods.kubejs.level.world.ClientLevelJS;
-import dev.latvian.mods.kubejs.player.AttachPlayerDataEvent;
+import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.Tags;
 import net.minecraft.client.Minecraft;
@@ -163,8 +162,8 @@ public class KubeJSClientEventHandler {
 
 	private void loggedIn(LocalPlayer player) {
 		ClientLevelJS.setInstance(new ClientLevelJS(Minecraft.getInstance(), player));
-		new AttachWorldDataEvent(ClientLevelJS.getInstance()).invoke();
-		new AttachPlayerDataEvent(ClientLevelJS.getInstance().clientPlayerData).invoke();
+		AttachDataEvent.forLevel(ClientLevelJS.getInstance()).invoke();
+		AttachDataEvent.forPlayer(ClientLevelJS.getInstance().clientPlayerData).invoke();
 		new ClientLoggedInEventJS().post(KubeJSEvents.CLIENT_LOGGED_IN);
 	}
 
@@ -179,8 +178,8 @@ public class KubeJSClientEventHandler {
 
 	private void respawn(LocalPlayer oldPlayer, LocalPlayer newPlayer) {
 		ClientLevelJS.setInstance(new ClientLevelJS(Minecraft.getInstance(), newPlayer));
-		new AttachWorldDataEvent(ClientLevelJS.getInstance()).invoke();
-		new AttachPlayerDataEvent(ClientLevelJS.getInstance().clientPlayerData).invoke();
+		AttachDataEvent.forLevel(ClientLevelJS.getInstance()).invoke();
+		AttachDataEvent.forPlayer(ClientLevelJS.getInstance().clientPlayerData).invoke();
 	}
 
 	private void inGameScreenDraw(PoseStack matrices, float delta) {

@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.server;
 
-import dev.latvian.mods.kubejs.level.world.AttachWorldDataEvent;
 import dev.latvian.mods.kubejs.level.world.LevelJS;
 import dev.latvian.mods.kubejs.level.world.ServerLevelJS;
 import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
@@ -9,6 +8,7 @@ import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.player.FakeServerPlayerDataJS;
 import dev.latvian.mods.kubejs.player.ServerPlayerDataJS;
 import dev.latvian.mods.kubejs.player.ServerPlayerJS;
+import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.text.Text;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.MessageSender;
@@ -180,7 +180,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 			level = new ServerLevelJS(this, getMinecraftServer().getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(dimension))));
 			levelMap.put(dimension, level);
 			updateWorldList();
-			new AttachWorldDataEvent(level).invoke();
+			AttachDataEvent.forLevel(level).invoke();
 		}
 
 		return level;
@@ -199,7 +199,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 			level = new ServerLevelJS(this, (ServerLevel) minecraftLevel);
 			levelMap.put(minecraftLevel.dimension().location().toString(), level);
 			updateWorldList();
-			new AttachWorldDataEvent(level).invoke();
+			AttachDataEvent.forLevel(level).invoke();
 		}
 
 		return level;

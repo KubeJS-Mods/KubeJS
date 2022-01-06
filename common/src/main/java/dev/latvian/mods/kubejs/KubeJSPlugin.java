@@ -2,12 +2,13 @@ package dev.latvian.mods.kubejs;
 
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
-import dev.latvian.mods.kubejs.level.world.AttachWorldDataEvent;
-import dev.latvian.mods.kubejs.player.AttachPlayerDataEvent;
+import dev.latvian.mods.kubejs.level.world.LevelJS;
+import dev.latvian.mods.kubejs.player.PlayerDataJS;
 import dev.latvian.mods.kubejs.recipe.RegisterRecipeHandlersEvent;
+import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.server.AttachServerDataEvent;
+import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.fabricmc.api.EnvType;
@@ -41,13 +42,13 @@ public class KubeJSPlugin {
 	public void addRecipes(RegisterRecipeHandlersEvent event) {
 	}
 
-	public void attachServerData(AttachServerDataEvent event) {
+	public void attachServerData(AttachDataEvent<ServerJS> event) {
 	}
 
-	public void attachWorldData(AttachWorldDataEvent event) {
+	public void attachWorldData(AttachDataEvent<LevelJS> event) {
 	}
 
-	public void attachPlayerData(AttachPlayerDataEvent event) {
+	public void attachPlayerData(AttachDataEvent<PlayerDataJS> event) {
 	}
 
 	public void generateDataJsons(DataJsonGenerator generator) {

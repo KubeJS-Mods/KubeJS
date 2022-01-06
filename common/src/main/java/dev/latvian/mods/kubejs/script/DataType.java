@@ -1,29 +1,35 @@
 package dev.latvian.mods.kubejs.script;
 
+import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.level.world.LevelJS;
 import dev.latvian.mods.kubejs.player.PlayerDataJS;
 import dev.latvian.mods.kubejs.player.PlayerJS;
 import dev.latvian.mods.kubejs.server.ServerJS;
+import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import dev.latvian.mods.kubejs.util.WithAttachedData;
+
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
  */
-public final class DataType<T> {
-	public static DataType<ServerJS> SERVER = new DataType<>("server", ServerJS.class);
-	public static DataType<LevelJS> WORLD = new DataType<>("world", LevelJS.class);
-	public static DataType<PlayerDataJS> PLAYER = new DataType<>("player", PlayerDataJS.class, PlayerJS.class);
+public record DataType<T extends WithAttachedData>(
+		String name,
+		Class<T> parent,
+		Class actualParent,
+		Consumer<AttachDataEvent<T>> pluginCallback
+) {
 
-	public final String name;
-	public final Class<T> parent;
-	public final Class actualParent;
+	public static DataType<ServerJS> SERVER = new DataType<>("server", ServerJS.class, forEachPlugin(KubeJSPlugin::attachServerData));
+	public static DataType<LevelJS> LEVEL = new DataType<>("leve", LevelJS.class, forEachPlugin(KubeJSPlugin::attachWorldData));
+	public static DataType<PlayerDataJS> PLAYER = new DataType<>("player", PlayerDataJS.class, PlayerJS.class, forEachPlugin(KubeJSPlugin::attachPlayerData));
 
-	public DataType(String s, Class<T> c, Class a) {
-		name = s;
-		parent = c;
-		actualParent = a;
+	public DataType(String s, Class<T> c, Consumer<AttachDataEvent<T>> cb) {
+		this(s, c, c, cb);
 	}
 
-	public DataType(String s, Class<T> c) {
-		this(s, c, c);
+	public static <U extends WithAttachedData> Consumer<AttachDataEvent<U>> forEachPlugin(BiConsumer<KubeJSPlugin, AttachDataEvent<U>> c) {
+		return event -> KubeJSPlugins.forEachPlugin(plugin -> c.accept(plugin, event));
 	}
 }

@@ -48,7 +48,7 @@ public class ClientLevelJS extends LevelJS {
 
 	@Override
 	public EntityArrayList getEntities() {
-		return new EntityArrayList(this, ((ClientLevel) minecraftLevel).entitiesForRendering());
+		return new EntityArrayList(this, getMinecraftLevel().entitiesForRendering());
 	}
 
 	public LocalPlayer getMinecraftPlayer() {
@@ -69,5 +69,10 @@ public class ClientLevelJS extends LevelJS {
 
 	public static void setInstance(ClientLevelJS instance) {
 		ClientLevelJS.instance = instance;
+	}
+
+	@Override
+	public ClientLevel getMinecraftLevel() {
+		return (ClientLevel) super.getMinecraftLevel();
 	}
 }

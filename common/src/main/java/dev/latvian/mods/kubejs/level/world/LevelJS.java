@@ -26,6 +26,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -35,13 +36,11 @@ import java.util.Collection;
  */
 public abstract class LevelJS implements WithAttachedData {
 	public final Level minecraftLevel;
-	public final Level minecraftWorld; // compat
 
 	private AttachedData data;
 
 	public LevelJS(Level w) {
 		minecraftLevel = w;
-		minecraftWorld = w;
 	}
 
 	public abstract ScriptType getSide();
@@ -190,5 +189,10 @@ public abstract class LevelJS implements WithAttachedData {
 
 	public EntityArrayList getEntitiesWithin(AABB aabb) {
 		return new EntityArrayList(this, minecraftLevel.getEntities(null, aabb));
+	}
+
+	@ApiStatus.OverrideOnly
+	public Level getMinecraftLevel() {
+		return minecraftLevel;
 	}
 }

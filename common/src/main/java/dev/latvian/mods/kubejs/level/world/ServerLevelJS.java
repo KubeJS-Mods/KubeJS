@@ -3,10 +3,10 @@ package dev.latvian.mods.kubejs.level.world;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.latvian.mods.kubejs.player.AttachPlayerDataEvent;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.player.FakeServerPlayerDataJS;
 import dev.latvian.mods.kubejs.player.ServerPlayerDataJS;
+import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerJS;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
@@ -43,7 +43,7 @@ public class ServerLevelJS extends LevelJS {
 	}
 
 	public long getSeed() {
-		return ((ServerLevel) minecraftLevel).getSeed();
+		return getMinecraftLevel().getSeed();
 	}
 
 	public void setTime(long time) {
@@ -66,7 +66,7 @@ public class ServerLevelJS extends LevelJS {
 
 		if (fakeData == null) {
 			fakeData = new FakeServerPlayerDataJS(server, (ServerPlayer) player);
-			new AttachPlayerDataEvent(fakeData).invoke();
+			AttachDataEvent.forPlayer(fakeData).invoke();
 		}
 
 		fakeData.player = (ServerPlayer) player;
@@ -80,7 +80,12 @@ public class ServerLevelJS extends LevelJS {
 
 	@Override
 	public EntityArrayList getEntities() {
-		return new EntityArrayList(this, Lists.newArrayList(((ServerLevel) minecraftLevel).getAllEntities()));
+		return new EntityArrayList(this, Lists.newArrayList(getMinecraftLevel().getAllEntities()));
+	}
+
+	@Override
+	public ServerLevel getMinecraftLevel() {
+		return (ServerLevel) super.getMinecraftLevel();
 	}
 
 	public EntityArrayList getEntities(String filter) {

@@ -8,11 +8,11 @@ import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.TickEvent;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.command.KubeJSCommands;
-import dev.latvian.mods.kubejs.level.world.AttachWorldDataEvent;
 import dev.latvian.mods.kubejs.level.world.ServerLevelJS;
 import dev.latvian.mods.kubejs.level.world.SimpleLevelEventJS;
 import dev.latvian.mods.kubejs.player.PlayerDataJS;
 import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
+import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.RhinoException;
@@ -86,11 +86,11 @@ public class KubeJSServerEventHandler {
 
 		ServerJS.instance.updateWorldList();
 
-		new AttachServerDataEvent(ServerJS.instance).invoke();
+		AttachDataEvent.forServer(ServerJS.instance).invoke();
 		new ServerEventJS().post(ScriptType.SERVER, KubeJSEvents.SERVER_LOAD);
 
 		for (var level : ServerJS.instance.allLevels) {
-			new AttachWorldDataEvent(level).invoke();
+			AttachDataEvent.forLevel(level).invoke();
 			new SimpleLevelEventJS(level).post(KubeJSEvents.LEVEL_LOAD);
 		}
 	}
