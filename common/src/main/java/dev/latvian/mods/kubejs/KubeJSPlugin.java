@@ -45,7 +45,7 @@ public class KubeJSPlugin {
 	public void attachServerData(AttachDataEvent<ServerJS> event) {
 	}
 
-	public void attachWorldData(AttachDataEvent<LevelJS> event) {
+	public void attachLevelData(AttachDataEvent<LevelJS> event) {
 	}
 
 	public void attachPlayerData(AttachDataEvent<PlayerDataJS> event) {

@@ -22,7 +22,7 @@ public record DataType<T extends WithAttachedData>(
 ) {
 
 	public static DataType<ServerJS> SERVER = new DataType<>("server", ServerJS.class, forEachPlugin(KubeJSPlugin::attachServerData));
-	public static DataType<LevelJS> LEVEL = new DataType<>("leve", LevelJS.class, forEachPlugin(KubeJSPlugin::attachWorldData));
+	public static DataType<LevelJS> LEVEL = new DataType<>("leve", LevelJS.class, forEachPlugin(KubeJSPlugin::attachLevelData));
 	public static DataType<PlayerDataJS> PLAYER = new DataType<>("player", PlayerDataJS.class, PlayerJS.class, forEachPlugin(KubeJSPlugin::attachPlayerData));
 
 	public DataType(String s, Class<T> c, Consumer<AttachDataEvent<T>> cb) {
