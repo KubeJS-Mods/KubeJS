@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.block;
 
+import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.core.BlockKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
 

@@ -55,6 +55,9 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -71,6 +74,8 @@ public class UtilsJS {
 	public static final Pattern REGEX_PATTERN = Pattern.compile("\\/(.*)\\/([a-z]*)");
 	public static final ResourceLocation AIR_LOCATION = new ResourceLocation("minecraft:air");
 	public static final Pattern SNAKE_CASE_SPLIT = Pattern.compile("[_/]");
+
+	private static Collection<BlockState> ALL_STATE_CACHE = null;
 
 	public interface TryIO {
 		void run() throws IOException;
@@ -588,5 +593,19 @@ public class UtilsJS {
 
 	public static JsonElement numberProviderJson(NumberProvider gen) {
 		return Deserializers.createConditionSerializer().create().toJsonTree(gen);
+	}
+
+	public static Collection<BlockState> getAllBlockStates() {
+		if (ALL_STATE_CACHE != null) {
+			return ALL_STATE_CACHE;
+		}
+
+		var states = new HashSet<BlockState>();
+		for (var block : KubeJSRegistries.blocks()) {
+			states.addAll(block.getStateDefinition().getPossibleStates());
+		}
+
+		ALL_STATE_CACHE = Collections.unmodifiableCollection(states);
+		return ALL_STATE_CACHE;
 	}
 }
