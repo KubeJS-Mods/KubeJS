@@ -16,7 +16,7 @@ import dev.latvian.mods.kubejs.item.ingredient.ModIngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.RegexIngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.WeakNBTIngredientJS;
-import dev.latvian.mods.kubejs.level.world.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.text.Text;

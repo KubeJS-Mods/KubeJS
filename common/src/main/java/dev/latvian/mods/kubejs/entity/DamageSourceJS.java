@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.entity;
 
-import dev.latvian.mods.kubejs.level.world.LevelJS;
+import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.player.PlayerJS;
 import net.minecraft.world.damagesource.DamageSource;
 import org.jetbrains.annotations.ApiStatus;

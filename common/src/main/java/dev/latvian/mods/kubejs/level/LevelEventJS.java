@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.level.world;
+package dev.latvian.mods.kubejs.level;
 
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.server.ServerJS;

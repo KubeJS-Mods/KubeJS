@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.level.world;
+package dev.latvian.mods.kubejs.level;
 
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.StringReader;

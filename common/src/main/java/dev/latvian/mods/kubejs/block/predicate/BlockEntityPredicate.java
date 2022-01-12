@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block.predicate;
 
 import dev.architectury.registry.registries.Registries;
-import dev.latvian.mods.kubejs.level.world.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 

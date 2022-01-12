@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.level.world;
+package dev.latvian.mods.kubejs.level;
 
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;

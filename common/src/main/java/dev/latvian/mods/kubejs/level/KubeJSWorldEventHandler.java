@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.level.world;
+package dev.latvian.mods.kubejs.level;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.ExplosionEvent;

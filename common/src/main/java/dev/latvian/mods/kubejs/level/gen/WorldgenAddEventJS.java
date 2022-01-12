@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.level.world.gen;
+package dev.latvian.mods.kubejs.level.gen;
 
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import net.minecraft.world.entity.MobCategory;

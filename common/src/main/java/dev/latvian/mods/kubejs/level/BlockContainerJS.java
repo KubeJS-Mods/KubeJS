@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.level.world;
+package dev.latvian.mods.kubejs.level;
 
 import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.architectury.injectables.annotations.ExpectPlatform;

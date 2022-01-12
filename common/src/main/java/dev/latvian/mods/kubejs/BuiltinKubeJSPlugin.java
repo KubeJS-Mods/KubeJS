@@ -45,7 +45,7 @@ import dev.latvian.mods.kubejs.item.type.BasicItemType;
 import dev.latvian.mods.kubejs.item.type.ItemType;
 import dev.latvian.mods.kubejs.item.type.ItemTypes;
 import dev.latvian.mods.kubejs.item.type.ToolItemType;
-import dev.latvian.mods.kubejs.level.world.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
 import dev.latvian.mods.kubejs.recipe.RegisterRecipeHandlersEvent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;

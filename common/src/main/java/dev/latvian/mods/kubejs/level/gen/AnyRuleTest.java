@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.level.world.gen;
+package dev.latvian.mods.kubejs.level.gen;
 
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.player;
 
 import dev.latvian.mods.kubejs.entity.EntityJS;
-import dev.latvian.mods.kubejs.level.world.LevelJS;
+import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.text.Text;
 import dev.latvian.mods.kubejs.text.TextString;
 import dev.latvian.mods.kubejs.util.MessageSender;

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.latvian.mods.kubejs.level.world.ClientLevelJS;
+import dev.latvian.mods.kubejs.level.ClientLevelJS;
 import dev.latvian.mods.kubejs.player.ClientPlayerJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;

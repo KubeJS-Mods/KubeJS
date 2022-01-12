@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.level.gen.fabric;
 
-import dev.latvian.mods.kubejs.level.world.gen.WorldgenAddEventJS;
-import dev.latvian.mods.kubejs.level.world.gen.WorldgenEntryList;
+import dev.latvian.mods.kubejs.level.gen.WorldgenAddEventJS;
+import dev.latvian.mods.kubejs.level.gen.WorldgenEntryList;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.fabricmc.fabric.api.biome.v1.BiomeModificationContext;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;

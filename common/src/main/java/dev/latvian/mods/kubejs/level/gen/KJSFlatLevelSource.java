@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.level.world.gen;
+package dev.latvian.mods.kubejs.level.gen;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.world.level.chunk.ChunkGenerator;

@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.level.gen.fabric;
 
-import dev.latvian.mods.kubejs.level.world.gen.RemoveSpawnsByCategoryProperties;
-import dev.latvian.mods.kubejs.level.world.gen.RemoveSpawnsByIDProperties;
-import dev.latvian.mods.kubejs.level.world.gen.WorldgenEntryList;
-import dev.latvian.mods.kubejs.level.world.gen.WorldgenRemoveEventJS;
+import dev.latvian.mods.kubejs.level.gen.RemoveSpawnsByCategoryProperties;
+import dev.latvian.mods.kubejs.level.gen.RemoveSpawnsByIDProperties;
+import dev.latvian.mods.kubejs.level.gen.WorldgenEntryList;
+import dev.latvian.mods.kubejs.level.gen.WorldgenRemoveEventJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.fabricmc.fabric.api.biome.v1.BiomeModificationContext;
