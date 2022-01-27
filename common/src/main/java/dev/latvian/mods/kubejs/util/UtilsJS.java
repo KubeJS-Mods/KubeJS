@@ -62,6 +62,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import static com.google.gson.internal.$Gson$Preconditions.checkArgument;
@@ -494,6 +496,16 @@ public class UtilsJS {
 		}
 
 		return state;
+	}
+
+	public static <T> Predicate<T> onMatchDo(Predicate<T> predicate, Consumer<T> onMatch) {
+		return t -> {
+			var match = predicate.test(t);
+			if (match) {
+				onMatch.accept(t);
+			}
+			return match;
+		};
 	}
 
 	public static ListJS rollChestLoot(ResourceLocation id, @Nullable EntityJS entity) {

@@ -30,6 +30,8 @@ import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.mods.kubejs.item.type.*;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
+import dev.latvian.mods.kubejs.level.gen.filter.mob.MobFilter;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
 import dev.latvian.mods.kubejs.recipe.RegisterRecipeHandlersEvent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
@@ -359,6 +361,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(Text.class, Text::of);
 		typeWrappers.register(BlockStatePredicate.class, BlockStatePredicate::of);
 		typeWrappers.register(RuleTest.class, BlockStatePredicate::ruleTestOf);
+		typeWrappers.register(BiomeFilter.class, BiomeFilter::of);
+		typeWrappers.register(MobFilter.class, MobFilter::of);
 		typeWrappers.register(FluidStackJS.class, FluidStackJS::of);
 		typeWrappers.register(RecipeFilter.class, RecipeFilter::of);
 		typeWrappers.register(MaterialJS.class, MaterialListJS.INSTANCE::of);
