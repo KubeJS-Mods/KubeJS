@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.level.gen;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import dev.architectury.hooks.level.biome.BiomeProperties;
 import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.latvian.mods.kubejs.core.RegistryGetterKJS;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
@@ -23,6 +24,8 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -78,13 +81,40 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 		});
 	}
 
+	public void printFeatures() {
+		printFeatures(null);
+	}
+
+	public void printFiltered() {
+		printFiltered(null);
+	}
+
 	public void printFeatures(@Nullable GenerationStep.Decoration type) {
-		if (type == null) {
-			for (var decoration : GenerationStep.Decoration.values()) {
-				printFeatures(decoration);
-			}
-		} else {
-			BiomeModifications.addProperties((ctx, properties) -> {
+		printFeatures(type, BiomeFilter.ALWAYS_TRUE);
+	}
+
+	public void printFiltered(@Nullable GenerationStep.Decoration type) {
+		printFiltered(type, BiomeFilter.ALWAYS_TRUE);
+	}
+
+	public void printFeatures(@Nullable GenerationStep.Decoration type, BiomeFilter filter) {
+		if (filter == null) {
+			filter = BiomeFilter.ALWAYS_TRUE;
+		}
+		for (var t : type == null ? Set.of(GenerationStep.Decoration.values()) : Set.of(type)) {
+			printFeaturesForType(t, filter, false);
+		}
+	}
+
+	public void printFiltered(@Nullable GenerationStep.Decoration type, BiomeFilter filter) {
+		for (var t : type == null ? Set.of(GenerationStep.Decoration.values()) : Set.of(type)) {
+			printFeaturesForType(t, filter, true);
+		}
+	}
+
+	public void printFeaturesForType(GenerationStep.Decoration type, BiomeFilter filter, boolean afterRemoval) {
+		var printer = (BiConsumer<BiomeModifications.BiomeContext, BiomeProperties.Mutable>) (ctx, properties) -> {
+			if (filter.test(ctx)) {
 				var biome = ctx.getKey();
 				var features = padListAndGet(properties.getGenerationProperties().getFeatures(), type.ordinal());
 
@@ -105,13 +135,14 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 				if (unknown > 0) {
 					ConsoleJS.STARTUP.info("- " + unknown + " features with unknown id");
 				}
+			}
+		};
 
-			});
+		if (afterRemoval) {
+			BiomeModifications.postProcessProperties(printer);
+		} else {
+			BiomeModifications.addProperties(printer);
 		}
-	}
-
-	public void printFeatures() {
-		printFeatures(null);
 	}
 
 	public void removeFeatureById(BiomeFilter filter, GenerationStep.Decoration decoration, ResourceLocation[] id) {
