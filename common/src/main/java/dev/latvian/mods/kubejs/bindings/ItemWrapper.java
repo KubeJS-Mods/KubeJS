@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.bindings;
 
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.level.world.FireworksJS;
+import dev.latvian.mods.kubejs.level.FireworksJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;

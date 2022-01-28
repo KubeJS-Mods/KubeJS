@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.entity;
 
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.level.world.LevelJS;
+import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import org.jetbrains.annotations.Nullable;
 

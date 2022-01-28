@@ -20,7 +20,7 @@ import dev.latvian.mods.kubejs.client.painter.world.WorldPaintEventJS;
 import dev.latvian.mods.kubejs.core.BucketItemKJS;
 import dev.latvian.mods.kubejs.core.ImageButtonKJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
-import dev.latvian.mods.kubejs.level.world.ClientLevelJS;
+import dev.latvian.mods.kubejs.level.ClientLevelJS;
 import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.Tags;

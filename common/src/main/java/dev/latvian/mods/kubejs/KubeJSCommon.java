@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs;
 
-import dev.latvian.mods.kubejs.level.world.LevelJS;
+import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;

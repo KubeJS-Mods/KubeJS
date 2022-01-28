@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.server;
 
-import dev.latvian.mods.kubejs.level.world.LevelJS;
-import dev.latvian.mods.kubejs.level.world.ServerLevelJS;
+import dev.latvian.mods.kubejs.level.LevelJS;
+import dev.latvian.mods.kubejs.level.ServerLevelJS;
 import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
 import dev.latvian.mods.kubejs.player.AdvancementJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;

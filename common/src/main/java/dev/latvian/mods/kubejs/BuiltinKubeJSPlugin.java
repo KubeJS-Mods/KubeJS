@@ -13,13 +13,13 @@ import dev.latvian.mods.kubejs.bindings.RarityWrapper;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
 import dev.latvian.mods.kubejs.block.BlockRegistryEventJS;
-import dev.latvian.mods.kubejs.block.BlockStatePredicate;
 import dev.latvian.mods.kubejs.block.MaterialJS;
 import dev.latvian.mods.kubejs.block.MaterialListJS;
 import dev.latvian.mods.kubejs.block.custom.BasicBlockType;
 import dev.latvian.mods.kubejs.block.custom.BlockType;
 import dev.latvian.mods.kubejs.block.custom.BlockTypes;
 import dev.latvian.mods.kubejs.block.custom.ShapedBlockType;
+import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.screen.AtlasTextureObject;
 import dev.latvian.mods.kubejs.client.painter.screen.GradientObject;
@@ -45,7 +45,9 @@ import dev.latvian.mods.kubejs.item.type.BasicItemType;
 import dev.latvian.mods.kubejs.item.type.ItemType;
 import dev.latvian.mods.kubejs.item.type.ItemTypes;
 import dev.latvian.mods.kubejs.item.type.ToolItemType;
-import dev.latvian.mods.kubejs.level.world.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
+import dev.latvian.mods.kubejs.level.gen.filter.mob.MobFilter;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
 import dev.latvian.mods.kubejs.recipe.RegisterRecipeHandlersEvent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
@@ -93,6 +95,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobCategory;
@@ -101,6 +104,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
@@ -261,6 +265,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("HOUR", 3600000L);
 
 		event.add("Color", ColorWrapper.class);
+		event.add("BlockStatePredicate", BlockStatePredicate.class);
 
 		event.add("EquipmentSlot", EquipmentSlot.class);
 		event.add("SLOT_MAINHAND", EquipmentSlot.MAINHAND);
@@ -372,6 +377,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		typeWrappers.register(AABB.class, AABBWrapper::wrap);
 		typeWrappers.register(Direction.class, o -> o instanceof Direction dir ? dir : DirectionWrapper.ALL.get(o.toString().toLowerCase()));
+		typeWrappers.register(IntProvider.class, UtilsJS::intProviderOf);
 		typeWrappers.register(NumberProvider.class, UtilsJS::numberProviderOf);
 		typeWrappers.register(LootContext.EntityTarget.class, o -> o == null ? null : LootContext.EntityTarget.getByName(o.toString().toLowerCase()));
 		typeWrappers.register(CopyNameFunction.NameSource.class, o -> o == null ? null : CopyNameFunction.NameSource.getByName(o.toString().toLowerCase()));
@@ -384,6 +390,9 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(IngredientStackJS.class, o -> IngredientJS.of(o).asIngredientStack());
 		typeWrappers.register(Text.class, Text::of);
 		typeWrappers.register(BlockStatePredicate.class, BlockStatePredicate::of);
+		typeWrappers.register(RuleTest.class, BlockStatePredicate::ruleTestOf);
+		typeWrappers.register(BiomeFilter.class, BiomeFilter::of);
+		typeWrappers.register(MobFilter.class, MobFilter::of);
 		typeWrappers.register(FluidStackJS.class, FluidStackJS::of);
 		typeWrappers.register(RecipeFilter.class, RecipeFilter::of);
 		typeWrappers.register(MaterialJS.class, MaterialListJS.INSTANCE::of);

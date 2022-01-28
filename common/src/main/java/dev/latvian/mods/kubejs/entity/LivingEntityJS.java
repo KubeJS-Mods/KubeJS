@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.entity;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.level.world.LevelJS;
+import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;

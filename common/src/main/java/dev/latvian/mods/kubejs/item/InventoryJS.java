@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.MatchAllIngredientJS;
-import dev.latvian.mods.kubejs.level.world.BlockContainerJS;
-import dev.latvian.mods.kubejs.level.world.LevelJS;
+import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;

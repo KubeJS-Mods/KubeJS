@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.player;
 
 import dev.latvian.mods.kubejs.core.ServerPlayerGameModeKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.level.world.BlockContainerJS;
-import dev.latvian.mods.kubejs.level.world.ServerLevelJS;
+import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.ServerLevelJS;
 import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
 import dev.latvian.mods.kubejs.server.ServerJS;

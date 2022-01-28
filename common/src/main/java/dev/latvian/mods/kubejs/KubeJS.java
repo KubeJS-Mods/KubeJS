@@ -9,7 +9,7 @@ import dev.latvian.mods.kubejs.entity.KubeJSEntityEventHandler;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.fluid.KubeJSFluidEventHandler;
 import dev.latvian.mods.kubejs.item.KubeJSItemEventHandler;
-import dev.latvian.mods.kubejs.level.world.KubeJSWorldEventHandler;
+import dev.latvian.mods.kubejs.level.KubeJSWorldEventHandler;
 import dev.latvian.mods.kubejs.net.KubeJSNet;
 import dev.latvian.mods.kubejs.player.KubeJSPlayerEventHandler;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;

@@ -11,7 +11,7 @@ import dev.latvian.mods.kubejs.block.BlockModificationEventJS;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.item.ItemModificationEventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.level.world.LevelJS;
+import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.text.Text;
@@ -22,6 +22,7 @@ import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
@@ -31,6 +32,11 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.valueproviders.ClampedInt;
+import net.minecraft.util.valueproviders.ClampedNormalInt;
+import net.minecraft.util.valueproviders.ConstantInt;
+import net.minecraft.util.valueproviders.IntProvider;
+import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -55,10 +61,15 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import static com.google.gson.internal.$Gson$Preconditions.checkArgument;
@@ -71,6 +82,8 @@ public class UtilsJS {
 	public static final Pattern REGEX_PATTERN = Pattern.compile("\\/(.*)\\/([a-z]*)");
 	public static final ResourceLocation AIR_LOCATION = new ResourceLocation("minecraft:air");
 	public static final Pattern SNAKE_CASE_SPLIT = Pattern.compile("[_/]");
+
+	private static Collection<BlockState> ALL_STATE_CACHE = null;
 
 	public interface TryIO {
 		void run() throws IOException;
@@ -491,6 +504,16 @@ public class UtilsJS {
 		return state;
 	}
 
+	public static <T> Predicate<T> onMatchDo(Predicate<T> predicate, Consumer<T> onMatch) {
+		return t -> {
+			var match = predicate.test(t);
+			if (match) {
+				onMatch.accept(t);
+			}
+			return match;
+		};
+	}
+
 	public static ListJS rollChestLoot(ResourceLocation id, @Nullable EntityJS entity) {
 		var list = new ListJS();
 		if (ServerJS.instance != null) {
@@ -563,6 +586,58 @@ public class UtilsJS {
 	}
 
 	@SuppressWarnings("unchecked")
+	public static IntProvider intProviderOf(Object o) {
+		if (o instanceof Number n) {
+			return ConstantInt.of(n.intValue());
+		} else if (o instanceof List l && !l.isEmpty()) {
+			var min = (Number) l.get(0);
+			var max = l.size() >= 2 ? (Number) l.get(1) : min;
+			return UniformInt.of(min.intValue(), max.intValue());
+		} else if (o instanceof Map) {
+			var m = (Map<String, Object>) o;
+
+			var intBounds = parseIntBounds(m);
+			if (intBounds != null) {
+				return intBounds;
+			} else if (m.containsKey("clamped")) {
+				var source = intProviderOf(m.get("clamped"));
+				var clampTo = parseIntBounds(m);
+				if (clampTo != null) {
+					return ClampedInt.of(source, clampTo.getMinValue(), clampTo.getMaxValue());
+				}
+			} else if (m.containsKey("clamped_normal")) {
+				var clampTo = parseIntBounds(m);
+				var mean = ((Number) m.get("mean")).intValue();
+				var deviation = ((Number) m.get("deviation")).intValue();
+				if (clampTo != null) {
+					return ClampedNormalInt.of(mean, deviation, clampTo.getMinValue(), clampTo.getMaxValue());
+				}
+			}
+
+			var decoded = IntProvider.CODEC.parse(NbtOps.INSTANCE, MapJS.nbt(m)).result();
+			if (decoded.isPresent()) {
+				return decoded.get();
+			}
+		}
+
+		return ConstantInt.of(0);
+	}
+
+	private static UniformInt parseIntBounds(Map<String, Object> m) {
+		if (m.get("bounds") instanceof List bounds) {
+			return UniformInt.of(UtilsJS.parseInt(bounds.get(0), 0), UtilsJS.parseInt(bounds.get(1), 0));
+		} else if (m.containsKey("min") && m.containsKey("max")) {
+			return UniformInt.of(((Number) m.get("min")).intValue(), ((Number) m.get("max")).intValue());
+		} else if (m.containsKey("min_inclusive") && m.containsKey("max_inclusive")) {
+			return UniformInt.of(((Number) m.get("min_inclusive")).intValue(), ((Number) m.get("max_inclusive")).intValue());
+		} else if (m.containsKey("value")) {
+			var f = ((Number) m.get("value")).intValue();
+			return UniformInt.of(f, f);
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
 	public static NumberProvider numberProviderOf(Object o) {
 		if (o instanceof Number n) {
 			var f = n.floatValue();
@@ -588,5 +663,19 @@ public class UtilsJS {
 
 	public static JsonElement numberProviderJson(NumberProvider gen) {
 		return Deserializers.createConditionSerializer().create().toJsonTree(gen);
+	}
+
+	public static Collection<BlockState> getAllBlockStates() {
+		if (ALL_STATE_CACHE != null) {
+			return ALL_STATE_CACHE;
+		}
+
+		var states = new HashSet<BlockState>();
+		for (var block : KubeJSRegistries.blocks()) {
+			states.addAll(block.getStateDefinition().getPossibleStates());
+		}
+
+		ALL_STATE_CACHE = Collections.unmodifiableCollection(states);
+		return ALL_STATE_CACHE;
 	}
 }

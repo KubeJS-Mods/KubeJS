@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.client;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.script.data.KubeJSResourcePack;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
@@ -17,7 +18,11 @@ import java.util.Map;
 public class KubeJSClientResourcePack extends KubeJSResourcePack {
 	public static List<PackResources> inject(List<PackResources> packs) {
 		List<PackResources> injected = new ArrayList<>(packs);
-		injected.add(new KubeJSClientResourcePack());
+		// only add the resource pack if KubeJS has loaded
+		// to prevent crashes on mod loading errors
+		if (KubeJS.instance != null) {
+			injected.add(new KubeJSClientResourcePack());
+		}
 		return injected;
 	}
 

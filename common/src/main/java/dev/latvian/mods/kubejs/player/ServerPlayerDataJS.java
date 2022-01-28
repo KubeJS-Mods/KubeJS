@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.player;
 
 import com.mojang.authlib.GameProfile;
-import dev.latvian.mods.kubejs.level.world.LevelJS;
-import dev.latvian.mods.kubejs.level.world.ServerLevelJS;
+import dev.latvian.mods.kubejs.level.LevelJS;
+import dev.latvian.mods.kubejs.level.ServerLevelJS;
 import dev.latvian.mods.kubejs.server.ServerJS;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;

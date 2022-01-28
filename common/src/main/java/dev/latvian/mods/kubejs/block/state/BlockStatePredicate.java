@@ -1,0 +1,468 @@
+package dev.latvian.mods.kubejs.block.state;
+
+import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.level.gen.ruletest.AllMatchRuleTest;
+import dev.latvian.mods.kubejs.level.gen.ruletest.AlwaysFalseRuleTest;
+import dev.latvian.mods.kubejs.level.gen.ruletest.AnyMatchRuleTest;
+import dev.latvian.mods.kubejs.level.gen.ruletest.InvertRuleTest;
+import dev.latvian.mods.kubejs.util.ListJS;
+import dev.latvian.mods.kubejs.util.MapJS;
+import dev.latvian.mods.kubejs.util.Tags;
+import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
+import net.minecraft.world.level.levelgen.structure.templatesystem.*;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+
+public sealed interface BlockStatePredicate {
+	ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
+
+	boolean test(BlockState state);
+
+	@Nullable
+	default RuleTest asRuleTest() {
+		return null;
+	}
+
+	static BlockStatePredicate fromString(String s) {
+		if (s.startsWith("#")) {
+			var tag = Tags.blocks().getTag(new ResourceLocation(s.substring(1)));
+
+			if (tag != null) {
+				return new TagMatch(tag);
+			}
+		} else if (s.indexOf('[') != -1) {
+			var state = UtilsJS.parseBlockState(s);
+
+			if (state != Blocks.AIR.defaultBlockState()) {
+				return new StateMatch(state);
+			}
+		} else {
+			var block = KubeJSRegistries.blocks().get(new ResourceLocation(s));
+
+			if (block != Blocks.AIR) {
+				return new BlockMatch(block);
+			}
+		}
+
+		return Simple.NONE;
+	}
+
+	static BlockStatePredicate of(Object o) {
+		if (o == null || o == Simple.ALL) {
+			return Simple.ALL;
+		} else if (o == Simple.NONE) {
+			return Simple.NONE;
+		}
+
+		var list = ListJS.orSelf(o);
+		if (list.isEmpty()) {
+			return Simple.ALL;
+		} else if (list.size() > 1) {
+			var predicates = new ArrayList<BlockStatePredicate>();
+
+			for (var o1 : list) {
+				var p = of(o1);
+				if (p == Simple.ALL) {
+					return Simple.ALL;
+				} else if (p != Simple.NONE) {
+					predicates.add(p);
+				}
+			}
+
+			return predicates.isEmpty() ? Simple.NONE : predicates.size() == 1 ? predicates.get(0) : new OrMatch(predicates);
+		}
+
+		var map = MapJS.of(o);
+		if (map != null) {
+			if (map.isEmpty()) {
+				return Simple.ALL;
+			}
+
+			var predicates = new ArrayList<BlockStatePredicate>();
+
+			if (map.get("or") != null) {
+				predicates.add(of(map.get("or")));
+			}
+
+			if (map.get("not") != null) {
+				predicates.add(new NotMatch(of(map.get("not"))));
+			}
+
+			return new AndMatch(predicates);
+		}
+
+		return ofSingle(o);
+	}
+
+	static RuleTest ruleTestOf(Object o) {
+		return RuleTest.CODEC.parse(NbtOps.INSTANCE, MapJS.nbt(o))
+				.result()
+				.or(() -> Optional.ofNullable(of(o).asRuleTest()))
+				.orElseThrow(() -> new IllegalArgumentException("Could not parse valid rule test from " + o + "!"));
+	}
+
+	@SuppressWarnings("unchecked")
+	private static BlockStatePredicate ofSingle(Object o) {
+		if (o instanceof Block block) {
+			return new BlockMatch(block);
+		} else if (o instanceof BlockState state) {
+			return new StateMatch(state);
+		} else if (o instanceof Tag tag) {
+			return new TagMatch((Tag<Block>) tag);
+		}
+
+		var pattern = UtilsJS.parseRegex(o);
+		return pattern == null ? BlockStatePredicate.fromString(o.toString()) : new RegexMatch(pattern);
+	}
+
+	default Collection<BlockState> getBlockStates() {
+		var states = new HashSet<BlockState>();
+		for (var state : UtilsJS.getAllBlockStates()) {
+			if (test(state)) {
+				states.add(state);
+			}
+		}
+		return states;
+	}
+
+	default Collection<Block> getBlocks() {
+		var blocks = new HashSet<Block>();
+		for (var state : getBlockStates()) {
+			blocks.add(state.getBlock());
+		}
+		return blocks;
+	}
+
+	default Set<ResourceLocation> getBlockIds() {
+		Set<ResourceLocation> set = new LinkedHashSet<>();
+
+		for (var block : getBlocks()) {
+			var blockId = KubeJSRegistries.blocks().getId(block);
+
+			if (blockId != null) {
+				set.add(blockId);
+			}
+		}
+
+		return set;
+	}
+
+	default boolean check(List<OreConfiguration.TargetBlockState> targetStates) {
+		for (var state : targetStates) {
+			if (test(state.state)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	enum Simple implements BlockStatePredicate {
+		ALL(true),
+		NONE(false);
+
+		private final boolean match;
+
+		Simple(boolean match) {
+			this.match = match;
+		}
+
+		@Override
+		public boolean test(BlockState state) {
+			return match;
+		}
+
+		@Override
+		public RuleTest asRuleTest() {
+			return match ? AlwaysTrueTest.INSTANCE : AlwaysFalseRuleTest.INSTANCE;
+		}
+
+		@Override
+		public Collection<BlockState> getBlockStates() {
+			return match ? UtilsJS.getAllBlockStates() : Collections.emptyList();
+		}
+	}
+
+	record BlockMatch(Block block) implements BlockStatePredicate {
+		@Override
+		public boolean test(BlockState state) {
+			return state.is(block);
+		}
+
+		@Override
+		public Collection<Block> getBlocks() {
+			return Collections.singleton(block);
+		}
+
+		@Override
+		public Collection<BlockState> getBlockStates() {
+			return block.getStateDefinition().getPossibleStates();
+		}
+
+		@Override
+		public Set<ResourceLocation> getBlockIds() {
+			var blockId = KubeJSRegistries.blocks().getId(block);
+			return blockId == null ? Collections.emptySet() : Collections.singleton(blockId);
+		}
+
+		@Override
+		public RuleTest asRuleTest() {
+			return new BlockMatchTest(block);
+		}
+	}
+
+	record StateMatch(BlockState state) implements BlockStatePredicate {
+		@Override
+		public boolean test(BlockState s) {
+			return state == s;
+		}
+
+		@Override
+		public Collection<Block> getBlocks() {
+			return Collections.singleton(state.getBlock());
+		}
+
+		@Override
+		public Collection<BlockState> getBlockStates() {
+			return Collections.singleton(state);
+		}
+
+		@Override
+		public Set<ResourceLocation> getBlockIds() {
+			var blockId = KubeJSRegistries.blocks().getId(state.getBlock());
+			return blockId == null ? Collections.emptySet() : Collections.singleton(blockId);
+		}
+
+		@Override
+		public RuleTest asRuleTest() {
+			return new BlockStateMatchTest(state);
+		}
+	}
+
+	record TagMatch(Tag<Block> tag) implements BlockStatePredicate {
+		@Override
+		public boolean test(BlockState state) {
+			return tag.contains(state.getBlock());
+		}
+
+		@Override
+		public Collection<Block> getBlocks() {
+			return tag.getValues();
+		}
+
+		@Override
+		public RuleTest asRuleTest() {
+			return new TagMatchTest(tag);
+		}
+	}
+
+	final class RegexMatch implements BlockStatePredicate {
+		public final Pattern pattern;
+		private final LinkedHashSet<Block> matchedBlocks;
+
+		public RegexMatch(Pattern p) {
+			pattern = p;
+			matchedBlocks = new LinkedHashSet<>();
+			for (var state : UtilsJS.getAllBlockStates()) {
+				var block = state.getBlock();
+				if (!matchedBlocks.contains(block) && pattern.matcher(KubeJSRegistries.blocks().getId(block).toString()).find()) {
+					matchedBlocks.add(state.getBlock());
+				}
+			}
+		}
+
+		@Override
+		public boolean test(BlockState state) {
+			return matchedBlocks.contains(state.getBlock());
+		}
+
+		@Override
+		public Collection<Block> getBlocks() {
+			return matchedBlocks;
+		}
+
+		@Override
+		public RuleTest asRuleTest() {
+			var test = new AnyMatchRuleTest();
+			for (var block : matchedBlocks) {
+				test.rules.add(new BlockMatchTest(block));
+			}
+			return test;
+		}
+	}
+
+	record OrMatch(List<BlockStatePredicate> list) implements BlockStatePredicate {
+		@Override
+		public boolean test(BlockState state) {
+			for (var predicate : list) {
+				if (predicate.test(state)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		@Override
+		public Collection<Block> getBlocks() {
+			var set = new HashSet<Block>();
+
+			for (var predicate : list) {
+				set.addAll(predicate.getBlocks());
+			}
+
+			return set;
+		}
+
+		@Override
+		public Collection<BlockState> getBlockStates() {
+			var set = new HashSet<BlockState>();
+
+			for (var predicate : list) {
+				set.addAll(predicate.getBlockStates());
+			}
+
+			return set;
+		}
+
+		@Override
+		public Set<ResourceLocation> getBlockIds() {
+			Set<ResourceLocation> set = new LinkedHashSet<>();
+
+			for (var predicate : list) {
+				set.addAll(predicate.getBlockIds());
+			}
+
+			return set;
+		}
+
+		@Override
+		public RuleTest asRuleTest() {
+			var test = new AnyMatchRuleTest();
+			for (var predicate : list) {
+				test.rules.add(predicate.asRuleTest());
+			}
+			return test;
+		}
+	}
+
+	final class NotMatch implements BlockStatePredicate {
+		private final BlockStatePredicate predicate;
+		private final Collection<BlockState> cachedStates;
+
+		public NotMatch(BlockStatePredicate predicate) {
+			this.predicate = predicate;
+
+			cachedStates = new LinkedHashSet<>();
+
+			for (var entry : KubeJSRegistries.blocks().entrySet()) {
+				for (var state : entry.getValue().getStateDefinition().getPossibleStates()) {
+					if (!predicate.test(state)) {
+						cachedStates.add(state);
+					}
+				}
+			}
+		}
+
+		@Override
+		public boolean test(BlockState state) {
+			return !predicate.test(state);
+		}
+
+		@Override
+		public Collection<Block> getBlocks() {
+			Set<Block> set = new HashSet<>();
+			for (var blockState : getBlockStates()) {
+				set.add(blockState.getBlock());
+			}
+			return set;
+		}
+
+		@Override
+		public Collection<BlockState> getBlockStates() {
+			return cachedStates;
+		}
+
+		@Override
+		public Set<ResourceLocation> getBlockIds() {
+			Set<ResourceLocation> set = new HashSet<>();
+			for (var block : getBlocks()) {
+				set.add(KubeJSRegistries.blocks().getId(block));
+			}
+			return set;
+		}
+
+		@Override
+		public RuleTest asRuleTest() {
+			return new InvertRuleTest(predicate.asRuleTest());
+		}
+	}
+
+	final class AndMatch implements BlockStatePredicate {
+		private final List<BlockStatePredicate> list;
+		private final Collection<BlockState> cachedStates;
+
+		public AndMatch(List<BlockStatePredicate> list) {
+			this.list = list;
+			cachedStates = new LinkedHashSet<>();
+
+			for (var entry : KubeJSRegistries.blocks().entrySet()) {
+				for (var state : entry.getValue().getStateDefinition().getPossibleStates()) {
+					var match = true;
+					for (var predicate : list) {
+						if (!predicate.test(state)) {
+							match = false;
+							break;
+						}
+					}
+					if (match) {
+						cachedStates.add(state);
+					}
+				}
+			}
+		}
+
+		@Override
+		public boolean test(BlockState state) {
+			for (var predicate : list) {
+				if (!predicate.test(state)) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		@Override
+		public Collection<Block> getBlocks() {
+			Set<Block> set = new HashSet<>();
+			for (var blockState : getBlockStates()) {
+				set.add(blockState.getBlock());
+			}
+			return set;
+		}
+
+		@Override
+		public Collection<BlockState> getBlockStates() {
+			return cachedStates;
+		}
+
+		@Override
+		public RuleTest asRuleTest() {
+			var test = new AllMatchRuleTest();
+			for (var predicate : list) {
+				test.rules.add(predicate.asRuleTest());
+			}
+			return test;
+		}
+	}
+}

@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.entity;
 
-import dev.latvian.mods.kubejs.level.world.LevelJS;
+import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 

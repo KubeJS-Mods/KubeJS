@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.player;
 
 import com.mojang.authlib.GameProfile;
-import dev.latvian.mods.kubejs.level.world.LevelJS;
+import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.WithAttachedData;
 import net.minecraft.world.entity.player.Player;

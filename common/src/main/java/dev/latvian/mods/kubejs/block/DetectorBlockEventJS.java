@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.block;
 
-import dev.latvian.mods.kubejs.level.world.BlockContainerJS;
-import dev.latvian.mods.kubejs.level.world.LevelEventJS;
-import dev.latvian.mods.kubejs.level.world.LevelJS;
+import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelEventJS;
+import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 

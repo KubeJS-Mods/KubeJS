@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.entity;
 
 import dev.architectury.hooks.level.entity.ItemEntityHooks;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.level.world.LevelJS;
+import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.world.entity.item.ItemEntity;
 import org.jetbrains.annotations.Nullable;
 
