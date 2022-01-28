@@ -17,7 +17,6 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.KeepAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
 import dev.latvian.mods.kubejs.recipe.minecraft.CustomRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.TechRebornCompat;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonUtilsJS;
@@ -26,17 +25,14 @@ import dev.latvian.mods.kubejs.util.MapJS;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.invoke.MethodHandle;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -396,18 +392,7 @@ public abstract class RecipeJS {
 			}
 		}
 
-		var resultRecipe = Objects.requireNonNull(type.serializer.fromJson(getOrCreateId(), json));
-
-		if (Platform.isFabric()) {
-			// Fabric: we love tech reborn
-			if (type.serializer.getClass().getName().contains("RebornRecipeType")) {
-				var constructor = TechRebornCompat.getTRRecipeConstructor(resultRecipe, this);
-				resultRecipe = (Recipe<?>) constructor.invoke(type.serializer, getOrCreateId());
-				TechRebornCompat.getTRRecipeSerializer(resultRecipe).invoke(resultRecipe, json);
-			}
-		}
-
-		return resultRecipe;
+		return Objects.requireNonNull(type.serializer.fromJson(getOrCreateId(), json));
 	}
 
 	public ItemStackJS getOriginalRecipeResult() {
