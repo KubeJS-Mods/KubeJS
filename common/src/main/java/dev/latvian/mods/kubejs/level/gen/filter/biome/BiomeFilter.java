@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.level.gen.filter.biome;
 
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ListJS;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -30,7 +32,7 @@ public interface BiomeFilter extends Predicate<BiomeModifications.BiomeContext> 
 
 		if (o instanceof String s) {
 			return idFilter(s);
-		} else if(o instanceof NativeRegExp || o instanceof Pattern) {
+		} else if (o instanceof NativeRegExp || o instanceof Pattern) {
 			return idFilter(o.toString());
 		}
 
@@ -80,6 +82,12 @@ public interface BiomeFilter extends Predicate<BiomeModifications.BiomeContext> 
 				filters.add(new CategoryFilter(BiomeCategory.byName(map.get("category").toString())));
 			}
 
+			// allow platform-specific hooks
+			var additional = ofMapAdditional(map);
+			if (additional != null) {
+				filters.add(additional);
+			}
+
 			// TODO: Add other biome property filters
 		} catch (Exception ex) {
 			ScriptType.STARTUP.console.error("Error trying to create BiomeFilter: " + ex.getMessage());
@@ -94,7 +102,29 @@ public interface BiomeFilter extends Predicate<BiomeModifications.BiomeContext> 
 		if (pattern != null) {
 			return new RegexIDFilter(pattern);
 		}
-		return s.startsWith("#") ? new CategoryFilter(BiomeCategory.byName(s.substring(1))) : new IDFilter(UtilsJS.getMCID(s));
+		if (s.charAt(0) == '^') {
+			return new CategoryFilter(BiomeCategory.byName(s.substring(1)));
+		}
+
+		// allow platform-specific hooks
+		var additional = ofStringAdditional(s);
+		if (additional != null) {
+			return additional;
+		}
+
+		return new IDFilter(UtilsJS.getMCID(s));
+	}
+
+	@ExpectPlatform
+	@Nullable
+	static BiomeFilter ofStringAdditional(String s) {
+		throw new UnsupportedOperationException();
+	}
+
+	@ExpectPlatform
+	@Nullable
+	static BiomeFilter ofMapAdditional(Map<String, Object> map) {
+		throw new UnsupportedOperationException();
 	}
 
 }
