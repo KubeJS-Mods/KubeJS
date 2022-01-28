@@ -1,9 +1,11 @@
 package dev.latvian.mods.kubejs.level.gen;
 
+import com.google.common.collect.Iterables;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
+import dev.latvian.mods.kubejs.level.gen.properties.AddLakeProperties;
 import dev.latvian.mods.kubejs.level.gen.properties.AddOreProperties;
 import dev.latvian.mods.kubejs.level.gen.properties.AddSpawnProperties;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -11,10 +13,13 @@ import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.LakeFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.placement.CountPlacement;
 import net.minecraft.world.level.levelgen.placement.InSquarePlacement;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
@@ -26,6 +31,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -168,7 +174,24 @@ public class WorldgenAddEventJS extends StartupEventJS {
 		addSpawn(BiomeFilter.ALWAYS_TRUE, category, spawn);
 	}
 
-	// TODO: readd lakes
+	public void addLake(Consumer<AddLakeProperties> p) {
+		var properties = new AddLakeProperties();
+		p.accept(properties);
+
+		var fluid = Iterables.getFirst(properties.fluid.getBlockStates(), Blocks.AIR.defaultBlockState());
+		if (fluid == null || fluid.isAir()) {
+			return;
+		}
+
+		var barrier = Iterables.getFirst(properties.barrier.getBlockStates(), Blocks.AIR.defaultBlockState());
+		if (barrier == null || barrier.isAir()) {
+			return;
+		}
+
+		addFeature(properties.id, properties.biomes, properties.worldgenLayer,
+				Feature.LAKE.configured(new LakeFeature.Configuration(BlockStateProvider.simple(fluid), BlockStateProvider.simple(barrier))),
+				properties.chance > 0 ? Collections.singletonList(RarityFilter.onAverageOnceEvery(properties.chance)) : Collections.emptyList());
+	}
 
 	/*
 	public void addLake(Consumer<AddLakeProperties> p) {

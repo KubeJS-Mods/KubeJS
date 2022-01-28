@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.level.gen.properties;
 
+import com.google.common.collect.Iterables;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -7,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
@@ -41,11 +43,11 @@ public class AddOreProperties {
 	public int retrogen = 0;
 
 	public void addTarget(RuleTest ruleTest, BlockStatePredicate targetState) {
-		var targetStates = targetState.getBlockStates();
-		if (targetStates.isEmpty()) {
+		var blockState = Iterables.getFirst(targetState.getBlockStates(), Blocks.AIR.defaultBlockState());
+		if (blockState.isAir()) {
 			ConsoleJS.STARTUP.error("Target block state is empty!");
 		} else {
-			targets.add(OreConfiguration.target(ruleTest, targetStates.iterator().next()));
+			targets.add(OreConfiguration.target(ruleTest, blockState));
 		}
 	}
 

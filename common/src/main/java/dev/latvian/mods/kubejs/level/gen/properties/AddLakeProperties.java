@@ -1,26 +1,34 @@
 package dev.latvian.mods.kubejs.level.gen.properties;
 
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
+import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.material.Fluids;
 
 /**
  * @author LatvianModder
  */
 public class AddLakeProperties {
-	public GenerationStep.Decoration _worldgenLayer = GenerationStep.Decoration.LAKES;
-	public BlockState _block = Blocks.AIR.defaultBlockState();
-	public int chance = 20;
-	public int retrogen = 0;
-	// FIXME!
-	// public final WorldgenEntryList biomes = new WorldgenEntryList();
+	public ResourceLocation id = null;
 
-	public void setBlock(String id) {
-		_block = UtilsJS.parseBlockState(id);
+	public GenerationStep.Decoration worldgenLayer = GenerationStep.Decoration.LAKES;
+	public BiomeFilter biomes = BiomeFilter.ALWAYS_TRUE;
+
+	// TODO: (eventually) replace with BlockStateProvider wrapper
+	public BlockStatePredicate fluid = BlockStatePredicate.of(Fluids.WATER.getSource().defaultFluidState().createLegacyBlock());
+	public BlockStatePredicate barrier = BlockStatePredicate.of(Blocks.STONE.defaultBlockState());
+
+	public int chance = 20;
+
+	public int retrogen = 0;
+
+	public void setInner(BlockStatePredicate p) {
+		fluid = p;
 	}
 
-	public void setWorldgenLayer(String id) {
-		_worldgenLayer = GenerationStep.Decoration.valueOf(id.toUpperCase());
+	public void setOuter(BlockStatePredicate p) {
+		barrier = p;
 	}
 }
