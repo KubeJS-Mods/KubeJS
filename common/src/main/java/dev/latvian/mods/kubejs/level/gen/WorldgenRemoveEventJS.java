@@ -24,7 +24,6 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -98,23 +97,20 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 	}
 
 	public void printFeatures(@Nullable GenerationStep.Decoration type, BiomeFilter filter) {
-		if (filter == null) {
-			filter = BiomeFilter.ALWAYS_TRUE;
-		}
-		for (var t : type == null ? Set.of(GenerationStep.Decoration.values()) : Set.of(type)) {
-			printFeaturesForType(t, filter, false);
-		}
+		printFeaturesForType(type, filter, false);
 	}
 
 	public void printFiltered(@Nullable GenerationStep.Decoration type, BiomeFilter filter) {
-		for (var t : type == null ? Set.of(GenerationStep.Decoration.values()) : Set.of(type)) {
-			printFeaturesForType(t, filter, true);
-		}
+		printFeaturesForType(type, filter, true);
 	}
 
-	public void printFeaturesForType(GenerationStep.Decoration type, BiomeFilter filter, boolean afterRemoval) {
-		var printer = (BiConsumer<BiomeModifications.BiomeContext, BiomeProperties.Mutable>) (ctx, properties) -> {
-			if (filter.test(ctx)) {
+	public void printFeaturesForType(@Nullable GenerationStep.Decoration type, BiomeFilter filter, boolean afterRemoval) {
+		if (type == null) {
+			for (var step : GenerationStep.Decoration.values()) {
+				printFeaturesForType(step, filter, afterRemoval);
+			}
+		} else {
+			var printer = (BiConsumer<BiomeModifications.BiomeContext, BiomeProperties.Mutable>) (ctx, properties) -> {
 				var biome = ctx.getKey();
 				var features = padListAndGet(properties.getGenerationProperties().getFeatures(), type.ordinal());
 
@@ -135,13 +131,13 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 				if (unknown > 0) {
 					ConsoleJS.STARTUP.info("- " + unknown + " features with unknown id");
 				}
-			}
-		};
+			};
 
-		if (afterRemoval) {
-			BiomeModifications.postProcessProperties(printer);
-		} else {
-			BiomeModifications.addProperties(printer);
+			if (afterRemoval) {
+				BiomeModifications.postProcessProperties(filter, printer);
+			} else {
+				BiomeModifications.addProperties(filter, printer);
+			}
 		}
 	}
 

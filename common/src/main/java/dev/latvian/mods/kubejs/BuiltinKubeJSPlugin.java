@@ -363,7 +363,13 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		});
 
 		typeWrappers.register(Item.class, ItemStackJS::getRawItem);
-		typeWrappers.register(GenerationStep.Decoration.class, o -> o == null || o.toString().isEmpty() ? null : GenerationStep.Decoration.valueOf(o.toString().toUpperCase()));
+		typeWrappers.register(GenerationStep.Decoration.class, o -> {
+			try {
+				return GenerationStep.Decoration.valueOf(o.toString().toUpperCase());
+			} catch (IllegalArgumentException e) {
+				return null;
+			}
+		});
 		typeWrappers.register(MobCategory.class, o -> o == null ? null : MobCategory.byName(o.toString()));
 		typeWrappers.register(TextColor.class, o -> {
 			if (o instanceof Number number) {
