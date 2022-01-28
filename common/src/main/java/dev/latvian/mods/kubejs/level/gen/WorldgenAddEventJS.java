@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.level.gen;
 
 import com.google.common.collect.Iterables;
 import com.mojang.serialization.JsonOps;
+import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
@@ -46,15 +47,9 @@ import static dev.latvian.mods.kubejs.util.JsonUtilsJS.getJsonHashBytes;
  */
 public class WorldgenAddEventJS extends StartupEventJS {
 
-	private static final KubeJSModifications MODIFICATIONS = new KubeJSModifications();
-
 	private static final Pattern SPAWN_PATTERN = Pattern.compile("(\\w+:\\w+)\\*\\((\\d+)-(\\d+)\\):(\\d+)");
 
 	private static MessageDigest messageDigest;
-
-	public WorldgenAddEventJS() {
-		MODIFICATIONS.clear();
-	}
 
 	private void addFeature(ResourceLocation id, BiomeFilter filter, GenerationStep.Decoration decoration,
 							ConfiguredFeature<?, ?> feature, List<PlacementModifier> modifiers) {
@@ -64,25 +59,19 @@ public class WorldgenAddEventJS extends StartupEventJS {
 			id = new ResourceLocation("kubejs:features/" + getUniqueId(placedFeature));
 		}
 
-		if (!BuiltinRegistries.CONFIGURED_FEATURE.containsKey(id)) {
-			// TODO: we should probably not be registering to BuiltinRegistries directly,
-			//  but rather to the synced registry directly by using the RegistryAccess.
-			BuiltinRegistries.register(BuiltinRegistries.CONFIGURED_FEATURE, id, feature);
-			BuiltinRegistries.register(BuiltinRegistries.PLACED_FEATURE, id, placedFeature);
-		}
+		// TODO: we should probably not be registering to BuiltinRegistries directly,
+		//  but rather to the synced registry directly by using the RegistryAccess.
+		BuiltinRegistries.register(BuiltinRegistries.CONFIGURED_FEATURE, id, feature);
+		BuiltinRegistries.register(BuiltinRegistries.PLACED_FEATURE, id, placedFeature);
 
-		MODIFICATIONS.LATE_MODIFICATIONS.add((context, properties) -> {
-			if (filter.test(context)) {
-				properties.getGenerationProperties().addFeature(decoration, placedFeature);
-			}
+		BiomeModifications.postProcessProperties(filter, (ctx, properties) -> {
+			properties.getGenerationProperties().addFeature(decoration, placedFeature);
 		});
 	}
 
 	private void addEntitySpawn(BiomeFilter filter, MobCategory category, MobSpawnSettings.SpawnerData spawnerData) {
-		MODIFICATIONS.LATE_MODIFICATIONS.add((context, properties) -> {
-			if (filter.test(context)) {
-				properties.getSpawnProperties().addSpawn(category, spawnerData);
-			}
+		BiomeModifications.postProcessProperties(filter, (ctx, properties) -> {
+			properties.getSpawnProperties().addSpawn(category, spawnerData);
 		});
 	}
 

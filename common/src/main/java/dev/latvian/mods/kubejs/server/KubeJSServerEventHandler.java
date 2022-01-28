@@ -10,8 +10,6 @@ import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.command.KubeJSCommands;
 import dev.latvian.mods.kubejs.level.ServerLevelJS;
 import dev.latvian.mods.kubejs.level.SimpleLevelEventJS;
-import dev.latvian.mods.kubejs.level.gen.WorldgenAddEventJS;
-import dev.latvian.mods.kubejs.level.gen.WorldgenRemoveEventJS;
 import dev.latvian.mods.kubejs.player.PlayerDataJS;
 import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
 import dev.latvian.mods.kubejs.script.AttachDataEvent;
@@ -67,9 +65,6 @@ public class KubeJSServerEventHandler {
 				ex.printStackTrace();
 			}
 		}
-
-		new WorldgenRemoveEventJS().post(ScriptType.STARTUP, KubeJSEvents.WORLDGEN_REMOVE);
-		new WorldgenAddEventJS().post(ScriptType.STARTUP, KubeJSEvents.WORLDGEN_ADD);
 	}
 
 	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection selection) {
