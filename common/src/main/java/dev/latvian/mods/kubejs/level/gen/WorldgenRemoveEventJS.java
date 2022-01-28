@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.level.gen;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.latvian.mods.kubejs.core.RegistryGetterKJS;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
@@ -37,6 +36,8 @@ import static dev.latvian.mods.kubejs.util.UtilsJS.onMatchDo;
  */
 public class WorldgenRemoveEventJS extends StartupEventJS {
 
+	private static final KubeJSModifications MODIFICATIONS = new KubeJSModifications();
+
 	private ResourceLocation getId(Supplier<PlacedFeature> feature) {
 		// this is the worst, but if we're still decoding things from network,
 		// this is our only way to get the ID since the instances don't match
@@ -62,24 +63,32 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 		return feature.getFeatures().anyMatch(cf -> checkTree(cf, predicate));
 	}
 
+	public WorldgenRemoveEventJS() {
+		MODIFICATIONS.clear();
+	}
+
 	private void removeFeature(BiomeFilter filter, GenerationStep.Decoration decoration, Predicate<FeatureConfiguration> predicate) {
-		BiomeModifications.replaceProperties(filter, (ctx, properties) -> {
-			padListAndGet(properties.getGenerationProperties().getFeatures(), decoration.ordinal())
-					.removeIf(onMatchDo(sup -> check(sup.get(), predicate), value -> {
-						ConsoleJS.STARTUP.debug("Removing feature %s from generation step %s in biome %s"
-								.formatted(getId(value), decoration.name().toLowerCase(), ctx.getKey()));
-					}));
+		MODIFICATIONS.REPLACEMENTS.add((ctx, properties) -> {
+			if (filter.test(ctx)) {
+				padListAndGet(properties.getGenerationProperties().getFeatures(), decoration.ordinal())
+						.removeIf(onMatchDo(sup -> check(sup.get(), predicate), value -> {
+							ConsoleJS.STARTUP.debug("Removing feature %s from generation step %s in biome %s"
+									.formatted(getId(value), decoration.name().toLowerCase(), ctx.getKey()));
+						}));
+			}
 		});
 	}
 
 	private void removeSpawn(BiomeFilter filter, BiPredicate<MobCategory, MobSpawnSettings.SpawnerData> predicate) {
-		BiomeModifications.replaceProperties(filter, (ctx, properties) -> {
-			properties.getSpawnProperties().removeSpawns(predicate);
+		MODIFICATIONS.REPLACEMENTS.add((ctx, properties) -> {
+			if (filter.test(ctx)) {
+				properties.getSpawnProperties().removeSpawns(predicate);
+			}
 		});
 	}
 
 	public void printFeatures(GenerationStep.Decoration type) {
-		BiomeModifications.addProperties((ctx, properties) -> {
+		MODIFICATIONS.ADDITIONS.add((ctx, properties) -> {
 			var biome = ctx.getKey();
 			var features = padListAndGet(properties.getGenerationProperties().getFeatures(), type.ordinal());
 
@@ -100,7 +109,6 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 			if (unknown > 0) {
 				ConsoleJS.STARTUP.info("- " + unknown + " features with unknown id");
 			}
-
 		});
 	}
 
@@ -112,9 +120,11 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 
 	public void removeFeatureById(BiomeFilter filter, GenerationStep.Decoration decoration, ResourceLocation[] id) {
 		var ids = Sets.newHashSet(id);
-		BiomeModifications.replaceProperties(filter, (ctx, properties) -> {
-			padListAndGet(properties.getGenerationProperties().getFeatures(), decoration.ordinal())
-					.removeIf(sup -> ids.contains(getId(sup)));
+		MODIFICATIONS.REPLACEMENTS.add((ctx, properties) -> {
+			if (filter.test(ctx)) {
+				padListAndGet(properties.getGenerationProperties().getFeatures(), decoration.ordinal())
+						.removeIf(sup -> ids.contains(getId(sup)));
+			}
 		});
 	}
 
@@ -157,7 +167,7 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 	}
 
 	public void printSpawns(@Nullable MobCategory category) {
-		BiomeModifications.addProperties((ctx, properties) -> {
+		MODIFICATIONS.ADDITIONS.add((ctx, properties) -> {
 			var biome = ctx.getKey();
 			var spawns = properties.getSpawnProperties().getSpawners();
 
