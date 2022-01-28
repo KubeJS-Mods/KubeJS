@@ -78,36 +78,40 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 		});
 	}
 
-	public void printFeatures(GenerationStep.Decoration type) {
-		BiomeModifications.addProperties((ctx, properties) -> {
-			var biome = ctx.getKey();
-			var features = padListAndGet(properties.getGenerationProperties().getFeatures(), type.ordinal());
+	public void printFeatures(@Nullable GenerationStep.Decoration type) {
+		if (type == null) {
+			for (var decoration : GenerationStep.Decoration.values()) {
+				printFeatures(decoration);
+			}
+		} else {
+			BiomeModifications.addProperties((ctx, properties) -> {
+				var biome = ctx.getKey();
+				var features = padListAndGet(properties.getGenerationProperties().getFeatures(), type.ordinal());
 
-			ConsoleJS.STARTUP.info("Features with type '%s' in biome '%s':".formatted(type.name().toLowerCase(), biome));
+				ConsoleJS.STARTUP.info("Features with type '%s' in biome '%s':".formatted(type.name().toLowerCase(), biome));
 
-			var unknown = 0;
+				var unknown = 0;
 
-			for (var feature : features) {
-				var id = getId(feature);
+				for (var feature : features) {
+					var id = getId(feature);
 
-				if (id == null) {
-					unknown++;
-				} else {
-					ConsoleJS.STARTUP.info("- " + id);
+					if (id == null) {
+						unknown++;
+					} else {
+						ConsoleJS.STARTUP.info("- " + id);
+					}
 				}
-			}
 
-			if (unknown > 0) {
-				ConsoleJS.STARTUP.info("- " + unknown + " features with unknown id");
-			}
+				if (unknown > 0) {
+					ConsoleJS.STARTUP.info("- " + unknown + " features with unknown id");
+				}
 
-		});
+			});
+		}
 	}
 
 	public void printFeatures() {
-		for (var decoration : GenerationStep.Decoration.values()) {
-			printFeatures(decoration);
-		}
+		printFeatures(null);
 	}
 
 	public void removeFeatureById(BiomeFilter filter, GenerationStep.Decoration decoration, ResourceLocation[] id) {
