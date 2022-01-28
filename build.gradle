@@ -1,6 +1,7 @@
 plugins {
 	id "architectury-plugin" version "3.4-SNAPSHOT"
 	id "dev.architectury.loom" version "0.11.0-SNAPSHOT" apply false
+	id "io.github.juuxel.loom-quiltflower" version "1.6.0" apply false
 }
 
 architectury {
@@ -9,6 +10,7 @@ architectury {
 
 subprojects {
 	apply plugin: "dev.architectury.loom"
+	apply plugin: "io.github.juuxel.loom-quiltflower"
 
 	loom {
 		silentMojangMappingsLicense()
