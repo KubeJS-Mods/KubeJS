@@ -39,7 +39,7 @@ import static dev.latvian.mods.kubejs.util.UtilsJS.onMatchDo;
  */
 public class WorldgenRemoveEventJS extends StartupEventJS {
 
-	private ResourceLocation getId(Supplier<PlacedFeature> feature) {
+	private static ResourceLocation getId(Supplier<PlacedFeature> feature) {
 		// this is the worst, but if we're still decoding things from network,
 		// this is our only way to get the ID since the instances don't match
 		// up with the BuiltinRegistries ones.
@@ -49,7 +49,7 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 		return BuiltinRegistries.PLACED_FEATURE.getKey(feature.get());
 	}
 
-	private <T> List<T> padListAndGet(List<List<T>> features, int i) {
+	private static <T> List<T> padListAndGet(List<List<T>> features, int i) {
 		while (features.size() <= i) {
 			features.add(Lists.newArrayList());
 		}
@@ -110,26 +110,39 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 				printFeaturesForType(step, filter, afterRemoval);
 			}
 		} else {
-			var printer = (BiConsumer<BiomeModifications.BiomeContext, BiomeProperties.Mutable>) (ctx, properties) -> {
-				var biome = ctx.getKey();
-				var features = padListAndGet(properties.getGenerationProperties().getFeatures(), type.ordinal());
+			var printer = new BiConsumer<BiomeModifications.BiomeContext, BiomeProperties.Mutable>() {
+				// this is the worst, but it'll ensure things
+				// only get printed once across world loads
+				boolean called = false;
 
-				ConsoleJS.STARTUP.info("Features with type '%s' in biome '%s':".formatted(type.name().toLowerCase(), biome));
-
-				var unknown = 0;
-
-				for (var feature : features) {
-					var id = getId(feature);
-
-					if (id == null) {
-						unknown++;
-					} else {
-						ConsoleJS.STARTUP.info("- " + id);
+				@Override
+				public void accept(BiomeModifications.BiomeContext ctx, BiomeProperties.Mutable properties) {
+					if (called) {
+						return;
 					}
-				}
 
-				if (unknown > 0) {
-					ConsoleJS.STARTUP.info("- " + unknown + " features with unknown id");
+					called = true;
+
+					var biome = ctx.getKey();
+					var features = padListAndGet(properties.getGenerationProperties().getFeatures(), type.ordinal());
+
+					ConsoleJS.STARTUP.info("Features with type '%s' in biome '%s':".formatted(type.name().toLowerCase(), biome));
+
+					var unknown = 0;
+
+					for (var feature : features) {
+						var id = getId(feature);
+
+						if (id == null) {
+							unknown++;
+						} else {
+							ConsoleJS.STARTUP.info("- " + id);
+						}
+					}
+
+					if (unknown > 0) {
+						ConsoleJS.STARTUP.info("- " + unknown + " features with unknown id");
+					}
 				}
 			};
 
