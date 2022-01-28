@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.level.gen;
+package dev.latvian.mods.kubejs.level.gen.properties;
 
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.level.block.Blocks;
@@ -13,7 +13,8 @@ public class AddLakeProperties {
 	public BlockState _block = Blocks.AIR.defaultBlockState();
 	public int chance = 20;
 	public int retrogen = 0;
-	public final WorldgenEntryList biomes = new WorldgenEntryList();
+	// FIXME!
+	// public final WorldgenEntryList biomes = new WorldgenEntryList();
 
 	public void setBlock(String id) {
 		_block = UtilsJS.parseBlockState(id);

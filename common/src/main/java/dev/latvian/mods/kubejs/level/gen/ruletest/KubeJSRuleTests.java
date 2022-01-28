@@ -7,4 +7,7 @@ public interface KubeJSRuleTests {
 	RuleTestType<AlwaysFalseRuleTest> ALWAYS_FALSE = RuleTestType.register("kubejs:always_false", AlwaysFalseRuleTest.CODEC);
 	RuleTestType<AllMatchRuleTest> ALL_MATCH = RuleTestType.register("kubejs:all_match", AllMatchRuleTest.CODEC);
 	RuleTestType<AnyMatchRuleTest> ANY_MATCH = RuleTestType.register("kubejs:any_match", AnyMatchRuleTest.CODEC);
+
+	static void init() {
+	}
 }
