@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.level.gen;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import dev.architectury.hooks.level.biome.BiomeProperties;
 import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.latvian.mods.kubejs.core.RegistryGetterKJS;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
@@ -23,6 +24,7 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -37,7 +39,7 @@ import static dev.latvian.mods.kubejs.util.UtilsJS.onMatchDo;
  */
 public class WorldgenRemoveEventJS extends StartupEventJS {
 
-	private ResourceLocation getId(Supplier<PlacedFeature> feature) {
+	private static ResourceLocation getId(Supplier<PlacedFeature> feature) {
 		// this is the worst, but if we're still decoding things from network,
 		// this is our only way to get the ID since the instances don't match
 		// up with the BuiltinRegistries ones.
@@ -47,7 +49,7 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 		return BuiltinRegistries.PLACED_FEATURE.getKey(feature.get());
 	}
 
-	private <T> List<T> padListAndGet(List<List<T>> features, int i) {
+	private static <T> List<T> padListAndGet(List<List<T>> features, int i) {
 		while (features.size() <= i) {
 			features.add(Lists.newArrayList());
 		}
@@ -78,35 +80,77 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 		});
 	}
 
-	public void printFeatures(GenerationStep.Decoration type) {
-		BiomeModifications.addProperties((ctx, properties) -> {
-			var biome = ctx.getKey();
-			var features = padListAndGet(properties.getGenerationProperties().getFeatures(), type.ordinal());
-
-			ConsoleJS.STARTUP.info("Features with type '%s' in biome '%s':".formatted(type.name().toLowerCase(), biome));
-
-			var unknown = 0;
-
-			for (var feature : features) {
-				var id = getId(feature);
-
-				if (id == null) {
-					unknown++;
-				} else {
-					ConsoleJS.STARTUP.info("- " + id);
-				}
-			}
-
-			if (unknown > 0) {
-				ConsoleJS.STARTUP.info("- " + unknown + " features with unknown id");
-			}
-
-		});
+	public void printFeatures() {
+		printFeatures(null);
 	}
 
-	public void printFeatures() {
-		for (var decoration : GenerationStep.Decoration.values()) {
-			printFeatures(decoration);
+	public void printFiltered() {
+		printFiltered(null);
+	}
+
+	public void printFeatures(@Nullable GenerationStep.Decoration type) {
+		printFeatures(type, BiomeFilter.ALWAYS_TRUE);
+	}
+
+	public void printFiltered(@Nullable GenerationStep.Decoration type) {
+		printFiltered(type, BiomeFilter.ALWAYS_TRUE);
+	}
+
+	public void printFeatures(@Nullable GenerationStep.Decoration type, BiomeFilter filter) {
+		printFeaturesForType(type, filter, false);
+	}
+
+	public void printFiltered(@Nullable GenerationStep.Decoration type, BiomeFilter filter) {
+		printFeaturesForType(type, filter, true);
+	}
+
+	public void printFeaturesForType(@Nullable GenerationStep.Decoration type, BiomeFilter filter, boolean afterRemoval) {
+		if (type == null) {
+			for (var step : GenerationStep.Decoration.values()) {
+				printFeaturesForType(step, filter, afterRemoval);
+			}
+		} else {
+			var printer = new BiConsumer<BiomeModifications.BiomeContext, BiomeProperties.Mutable>() {
+				// this is the worst, but it'll ensure things
+				// only get printed once across world loads
+				boolean called = false;
+
+				@Override
+				public void accept(BiomeModifications.BiomeContext ctx, BiomeProperties.Mutable properties) {
+					if (called) {
+						return;
+					}
+
+					called = true;
+
+					var biome = ctx.getKey();
+					var features = padListAndGet(properties.getGenerationProperties().getFeatures(), type.ordinal());
+
+					ConsoleJS.STARTUP.info("Features with type '%s' in biome '%s':".formatted(type.name().toLowerCase(), biome));
+
+					var unknown = 0;
+
+					for (var feature : features) {
+						var id = getId(feature);
+
+						if (id == null) {
+							unknown++;
+						} else {
+							ConsoleJS.STARTUP.info("- " + id);
+						}
+					}
+
+					if (unknown > 0) {
+						ConsoleJS.STARTUP.info("- " + unknown + " features with unknown id");
+					}
+				}
+			};
+
+			if (afterRemoval) {
+				BiomeModifications.postProcessProperties(filter, printer);
+			} else {
+				BiomeModifications.addProperties(filter, printer);
+			}
 		}
 	}
 
