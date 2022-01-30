@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.block;
 import dev.latvian.mods.kubejs.core.BlockKJS;
 import dev.latvian.mods.kubejs.core.BlockStateKJS;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
 
 /**
  * @author LatvianModder

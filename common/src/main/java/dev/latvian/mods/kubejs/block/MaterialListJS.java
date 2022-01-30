@@ -45,15 +45,6 @@ public class MaterialListJS {
 		add("honey", Material.CLAY, SoundType.HONEY_BLOCK);
 		add("berry_bush", Material.PLANT, SoundType.SWEET_BERRY_BUSH);
 		add("lantern", Material.METAL, SoundType.LANTERN);
-
-		// Legacy
-		add("rock", Material.STONE, SoundType.STONE);
-		add("iron", Material.METAL, SoundType.METAL);
-		add("organic", Material.GRASS, SoundType.GRASS);
-		add("earth", Material.DIRT, SoundType.GRAVEL);
-		add("plants", Material.PLANT, SoundType.GRASS);
-		add("tnt", Material.EXPLOSIVE, SoundType.GRASS);
-		add("gourd", Material.VEGETABLE, SoundType.GRASS);
 	}
 
 	public MaterialJS of(Object o) {
