@@ -149,7 +149,7 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 			if (afterRemoval) {
 				BiomeModifications.postProcessProperties(filter, printer);
 			} else {
-				BiomeModifications.addProperties(filter, printer);
+				BiomeModifications.removeProperties(filter, printer);
 			}
 		}
 	}
