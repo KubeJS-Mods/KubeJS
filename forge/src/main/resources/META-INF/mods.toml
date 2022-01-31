@@ -22,23 +22,16 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.kubejs]]
-modId = "minecraft"
-mandatory = true
-versionRange = "[1.18,)"
-ordering = "NONE"
-side = "BOTH"
-
-[[dependencies.kubejs]]
 modId = "rhino"
 mandatory = true
-versionRange = "[1800.1.6-build.76,)"
+versionRange = "[1801.1.8-build.97,)"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.kubejs]]
 modId = "architectury"
 mandatory = true
-versionRange = "[3.1.45,)"
+versionRange = "[3.4.9,)"
 ordering = "AFTER"
 side = "BOTH"
 

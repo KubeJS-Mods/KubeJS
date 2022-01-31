@@ -176,14 +176,8 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 		}
 	}
 
-	public void removeAllFeatures(GenerationStep.Decoration type) {
-		removeFeature(BiomeFilter.ALWAYS_TRUE, type, configuredFeature -> true);
-	}
-
 	public void removeAllFeatures() {
-		for (var decoration : GenerationStep.Decoration.values()) {
-			removeAllFeatures(decoration);
-		}
+		removeAllFeatures(BiomeFilter.ALWAYS_TRUE);
 	}
 
 	public void removeOres(Consumer<RemoveOresProperties> p) {

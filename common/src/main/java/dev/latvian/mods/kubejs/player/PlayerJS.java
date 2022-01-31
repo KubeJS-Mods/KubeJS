@@ -93,11 +93,19 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 	}
 
 	public ItemStackJS getMouseItem() {
-		return ItemStackJS.of(minecraftPlayer.inventoryMenu.getCarried());
+		if (minecraftPlayer.containerMenu != null) {
+			return ItemStackJS.of(minecraftPlayer.containerMenu.getCarried());
+		} else {
+			return ItemStackJS.of(minecraftPlayer.inventoryMenu.getCarried());
+		}
 	}
 
 	public void setMouseItem(ItemStackJS item) {
-		minecraftPlayer.inventoryMenu.setCarried(item.getItemStack());
+		if (minecraftPlayer.containerMenu != null) {
+			minecraftPlayer.containerMenu.setCarried(item.getItemStack());
+		} else {
+			minecraftPlayer.inventoryMenu.setCarried(item.getItemStack());
+		}
 	}
 
 	@Override
