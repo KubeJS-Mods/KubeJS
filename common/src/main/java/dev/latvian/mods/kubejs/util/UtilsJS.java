@@ -61,6 +61,7 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -68,6 +69,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -82,6 +84,7 @@ public class UtilsJS {
 	public static final Pattern REGEX_PATTERN = Pattern.compile("\\/(.*)\\/([a-z]*)");
 	public static final ResourceLocation AIR_LOCATION = new ResourceLocation("minecraft:air");
 	public static final Pattern SNAKE_CASE_SPLIT = Pattern.compile("[_/]");
+	public static final Set<String> ALWAYS_LOWER_CASE = new HashSet<>(Arrays.asList("a", "an", "the", "of", "on", "in"));
 
 	private static Collection<BlockState> ALL_STATE_CACHE = null;
 
@@ -677,5 +680,19 @@ public class UtilsJS {
 
 		ALL_STATE_CACHE = Collections.unmodifiableCollection(states);
 		return ALL_STATE_CACHE;
+	}
+
+	public static String toTitleCase(String s) {
+		if (s.isEmpty()) {
+			return "";
+		} else if (ALWAYS_LOWER_CASE.contains(s)) {
+			return s;
+		} else if (s.length() == 1) {
+			return s.toUpperCase();
+		}
+
+		char[] chars = s.toCharArray();
+		chars[0] = Character.toUpperCase(chars[0]);
+		return new String(chars);
 	}
 }
