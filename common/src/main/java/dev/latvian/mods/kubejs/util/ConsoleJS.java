@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.util;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
-import net.minecraft.Util;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -54,7 +54,7 @@ public class ConsoleJS {
 			if (skip) {
 				return;
 			} else if (first && x != null) {
-				console.type.errors.add(x);
+				console.scriptType.errors.add(x);
 				first = false;
 			}
 
@@ -66,7 +66,7 @@ public class ConsoleJS {
 		}
 	}
 
-	private final ScriptType type;
+	private final ScriptType scriptType;
 	private final Logger logger;
 	private final Path logFile;
 	private String group;
@@ -74,9 +74,10 @@ public class ConsoleJS {
 	private boolean muted;
 	private boolean debugEnabled;
 	private boolean writeToFile;
+	private final List<String> writeQueue;
 
 	public ConsoleJS(ScriptType m, Logger log) {
-		type = m;
+		scriptType = m;
 		logger = log;
 		logFile = m.getLogFile();
 		group = "";
@@ -84,6 +85,7 @@ public class ConsoleJS {
 		muted = false;
 		debugEnabled = false;
 		writeToFile = true;
+		writeQueue = new ArrayList<>();
 	}
 
 	public Logger getLogger() {
@@ -119,7 +121,7 @@ public class ConsoleJS {
 	}
 
 	public void resetFile() {
-		Util.ioPool().execute(() -> {
+		scriptType.executor.execute(() -> {
 			try {
 				Files.write(logFile, Collections.emptyList());
 			} catch (Exception ex) {
@@ -217,10 +219,20 @@ public class ConsoleJS {
 		sb.append(']');
 		sb.append(' ');
 		sb.append(line);
+		writeQueue.add(sb.toString());
+	}
 
-		Util.ioPool().execute(() -> {
+	public synchronized void flush() {
+		if (writeQueue.isEmpty()) {
+			return;
+		}
+
+		List<String> lines = new ArrayList<>(writeQueue);
+		writeQueue.clear();
+
+		scriptType.executor.execute(() -> {
 			try {
-				Files.write(logFile, Collections.singleton(sb.toString()), StandardOpenOption.APPEND);
+				Files.write(logFile, lines, StandardOpenOption.APPEND);
 			} catch (Exception ex) {
 				logger.error("Failed to write to the log file: " + ex);
 			}
@@ -242,7 +254,7 @@ public class ConsoleJS {
 	public void warn(Object message) {
 		log(s -> {
 			logger.warn(s);
-			type.warnings.add(s);
+			scriptType.warnings.add(s);
 		}, "WARN ", message);
 	}
 
@@ -266,14 +278,14 @@ public class ConsoleJS {
 	public void warnf(String message, Object... args) {
 		logf(s -> {
 			logger.warn(s);
-			type.warnings.add(s);
+			scriptType.warnings.add(s);
 		}, "WARN ", message, args);
 	}
 
 	public void error(Object message) {
 		log(s -> {
 			logger.error(s);
-			type.errors.add(s);
+			scriptType.errors.add(s);
 		}, "ERR  ", message);
 	}
 
@@ -297,7 +309,7 @@ public class ConsoleJS {
 	public void errorf(String message, Object... args) {
 		logf(s -> {
 			logger.error(s);
-			type.errors.add(s);
+			scriptType.errors.add(s);
 		}, "ERR ", message, args);
 	}
 

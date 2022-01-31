@@ -32,84 +32,84 @@ import java.util.regex.Pattern;
 /**
  * @author LatvianModder
  */
-public class UtilsWrapper {
-	public static ServerJS getServer() {
+public interface UtilsWrapper {
+	static ServerJS getServer() {
 		return ServerJS.instance;
 	}
 
-	public static void queueIO(Runnable runnable) {
+	static void queueIO(Runnable runnable) {
 		UtilsJS.queueIO(runnable);
 	}
 
-	public static Random getRandom() {
+	static Random getRandom() {
 		return UtilsJS.RANDOM;
 	}
 
-	public static Random newRandom(long seed) {
+	static Random newRandom(long seed) {
 		return new Random(seed);
 	}
 
-	public static <T> List<T> emptyList() {
+	static <T> List<T> emptyList() {
 		return Collections.emptyList();
 	}
 
-	public static <K, V> Map<K, V> emptyMap() {
+	static <K, V> Map<K, V> emptyMap() {
 		return Collections.emptyMap();
 	}
 
-	public static ListJS newList() {
+	static ListJS newList() {
 		return new ListJS();
 	}
 
-	public static MapJS newMap() {
+	static MapJS newMap() {
 		return new MapJS();
 	}
 
-	public static CountingMap newCountingMap() {
+	static CountingMap newCountingMap() {
 		return new CountingMap();
 	}
 
-	public static ResourceLocation id(String namespace, String path) {
+	static ResourceLocation id(String namespace, String path) {
 		return new ResourceLocation(namespace, path);
 	}
 
-	public static ResourceLocation id(ResourceLocation id) {
+	static ResourceLocation id(ResourceLocation id) {
 		// TypeWrapper will convert any object into RL
 		return id;
 	}
 
-	public static ConsoleJS createConsole(String name) {
+	static ConsoleJS createConsole(String name) {
 		return new ConsoleJS(ScriptType.STARTUP, LogManager.getLogger(name));
 	}
 
-	public static Pattern regex(Object s) {
+	static Pattern regex(Object s) {
 		var pattern = UtilsJS.parseRegex(s);
 		return pattern == null ? Pattern.compile(s.toString()) : pattern;
 	}
 
-	public static Pattern regex(String pattern, int flags) {
+	static Pattern regex(String pattern, int flags) {
 		return Pattern.compile(pattern, flags);
 	}
 
-	public static int parseInt(@Nullable Object object, int def) {
+	static int parseInt(@Nullable Object object, int def) {
 		return UtilsJS.parseInt(object, def);
 	}
 
-	public static double parseDouble(@Nullable Object object, double def) {
+	static double parseDouble(@Nullable Object object, double def) {
 		return UtilsJS.parseDouble(object, def);
 	}
 
-	public static Stat<ResourceLocation> getStat(ResourceLocation id) {
+	static Stat<ResourceLocation> getStat(ResourceLocation id) {
 		return Stats.CUSTOM.get(id);
 	}
 
 	@Deprecated(forRemoval = true)
 	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
-	public static LevelJS getWorld(Level level) {
+	static LevelJS getWorld(Level level) {
 		return getLevel(level);
 	}
 
-	public static LevelJS getLevel(Level level) {
+	static LevelJS getLevel(Level level) {
 		if (level.isClientSide()) {
 			return getClientLevel();
 		} else {
@@ -119,20 +119,20 @@ public class UtilsWrapper {
 
 	@Deprecated(forRemoval = true)
 	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
-	public static LevelJS getClientWorld() {
+	static LevelJS getClientWorld() {
 		return getClientLevel();
 	}
 
-	public static LevelJS getClientLevel() {
+	static LevelJS getClientLevel() {
 		return ClientLevelJS.getInstance();
 	}
 
 	@Nullable
-	public static SoundEvent getSound(ResourceLocation id) {
+	static SoundEvent getSound(ResourceLocation id) {
 		return KubeJSRegistries.soundEvents().get(id);
 	}
 
-	public static Object randomOf(Random random, Collection<Object> objects) {
+	static Object randomOf(Random random, Collection<Object> objects) {
 		if (objects.isEmpty()) {
 			return null;
 		}
@@ -144,38 +144,42 @@ public class UtilsWrapper {
 		}
 	}
 
-	public static long getSystemTime() {
+	static long getSystemTime() {
 		return System.currentTimeMillis();
 	}
 
-	public static ListJS rollChestLoot(ResourceLocation id) {
+	static ListJS rollChestLoot(ResourceLocation id) {
 		return rollChestLoot(id, null);
 	}
 
-	public static ListJS rollChestLoot(ResourceLocation id, @Nullable EntityJS entity) {
+	static ListJS rollChestLoot(ResourceLocation id, @Nullable EntityJS entity) {
 		return UtilsJS.rollChestLoot(id, entity);
 	}
 
 	@Nullable
-	public static ListJS listOf(@Nullable Object o) {
+	static ListJS listOf(@Nullable Object o) {
 		return ListJS.of(o);
 	}
 
-	public static ListJS listOrSelf(@Nullable Object o) {
+	static ListJS listOrSelf(@Nullable Object o) {
 		return ListJS.orSelf(o);
 	}
 
 	@Nullable
-	public static MapJS mapOf(@Nullable Object o) {
+	static MapJS mapOf(@Nullable Object o) {
 		return MapJS.of(o);
 	}
 
 	@Nullable
-	public static Object copy(@Nullable Object o) {
+	static Object copy(@Nullable Object o) {
 		return UtilsJS.copy(o);
 	}
 
-	public static boolean isWrapped(@Nullable Object o) {
+	static boolean isWrapped(@Nullable Object o) {
 		return o instanceof WrappedJS;
+	}
+
+	static String toTitleCase(String s) {
+		return UtilsJS.toTitleCase(s);
 	}
 }

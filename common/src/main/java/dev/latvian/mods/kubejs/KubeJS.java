@@ -19,6 +19,7 @@ import dev.latvian.mods.kubejs.script.ScriptPack;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.mods.kubejs.server.KubeJSServerEventHandler;
+import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
@@ -57,6 +58,7 @@ public class KubeJS {
 	public KubeJS() throws Throwable {
 		instance = this;
 		Locale.setDefault(Locale.US);
+		new KubeJSBackgroundThread().start();
 
 		if (Files.notExists(KubeJSPaths.README)) {
 			UtilsJS.tryIO(() -> Files.writeString(KubeJSPaths.README,

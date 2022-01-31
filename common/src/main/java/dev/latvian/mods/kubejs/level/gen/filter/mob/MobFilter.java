@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.level.gen.filter.mob;
 
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -9,7 +9,6 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import org.jetbrains.annotations.Nullable;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.function.BiPredicate;
 import java.util.regex.Pattern;
@@ -30,7 +29,7 @@ public interface MobFilter extends BiPredicate<MobCategory, MobSpawnSettings.Spa
 
 		if (o instanceof String s) {
 			return idFilter(s);
-		} else if(o instanceof NativeRegExp || o instanceof Pattern) {
+		} else if (o instanceof NativeRegExp || o instanceof Pattern) {
 			return idFilter(o.toString());
 		}
 
@@ -83,7 +82,7 @@ public interface MobFilter extends BiPredicate<MobCategory, MobSpawnSettings.Spa
 
 			// TODO: Add other mob filters
 		} catch (Exception ex) {
-			ScriptType.STARTUP.console.error("Error trying to create MobFilter: " + ex.getMessage());
+			ConsoleJS.STARTUP.error("Error trying to create MobFilter: " + ex.getMessage());
 			return ALWAYS_FALSE;
 		}
 

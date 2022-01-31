@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.level.gen;
 
 import com.google.common.collect.Iterables;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
@@ -12,6 +14,7 @@ import dev.latvian.mods.kubejs.level.gen.properties.AddSpawnProperties;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Blocks;
@@ -27,6 +30,7 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
 import net.minecraft.world.level.levelgen.placement.RarityFilter;
 import org.apache.commons.codec.binary.Hex;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -75,6 +79,21 @@ public class WorldgenAddEventJS extends StartupEventJS {
 		});
 	}
 
+	public void addFeatureJson(BiomeFilter filter, JsonObject json) {
+		var id = json.has("id") ? new ResourceLocation(json.get("id").getAsString()) : null;
+		addFeatureJson(filter, id, json);
+	}
+
+	public void addFeatureJson(BiomeFilter filter, @Nullable ResourceLocation id, JsonObject json) {
+		var featureJson = json.get("feature").getAsJsonObject();
+		var placementJson = GsonHelper.getAsJsonArray(json, "placements", new JsonArray());
+
+		var feature = ConfiguredFeature.DIRECT_CODEC.parse(JsonOps.INSTANCE, featureJson).get().orThrow();
+		var placements = PlacementModifier.CODEC.listOf().parse(JsonOps.INSTANCE, placementJson).get().orThrow();
+
+		addFeature(id, filter, GenerationStep.Decoration.SURFACE_STRUCTURES, feature, placements);
+	}
+
 	public void addOre(Consumer<AddOreProperties> p) {
 		var properties = new AddOreProperties();
 		p.accept(properties);
@@ -106,26 +125,23 @@ public class WorldgenAddEventJS extends StartupEventJS {
 		addFeature(properties.id, properties.biomes, properties.worldgenLayer, oreFeature, modifiers);
 	}
 
-	public static String getUniqueId(PlacedFeature feature) {
-		if (messageDigest == null) {
-			try {
-				messageDigest = MessageDigest.getInstance("MD5");
-			} catch (NoSuchAlgorithmException nsae) {
-				throw new InternalError("MD5 not supported", nsae);
-			}
+	public void addLake(Consumer<AddLakeProperties> p) {
+		var properties = new AddLakeProperties();
+		p.accept(properties);
+
+		var fluid = Iterables.getFirst(properties.fluid.getBlockStates(), Blocks.AIR.defaultBlockState());
+		if (fluid == null || fluid.isAir()) {
+			return;
 		}
 
-		var json = PlacedFeature.DIRECT_CODEC.encodeStart(JsonOps.COMPRESSED, feature)
-				.getOrThrow(false, str -> {
-					throw new RuntimeException("Could not encode feature to JSON: " + str);
-				});
-
-		if (messageDigest == null) {
-			return new BigInteger(Hex.encodeHexString(getJsonHashBytes(json)), 16).toString(36);
-		} else {
-			messageDigest.reset();
-			return new BigInteger(Hex.encodeHexString(messageDigest.digest(getJsonHashBytes(json))), 16).toString(36);
+		var barrier = Iterables.getFirst(properties.barrier.getBlockStates(), Blocks.AIR.defaultBlockState());
+		if (barrier == null || barrier.isAir()) {
+			return;
 		}
+
+		addFeature(properties.id, properties.biomes, properties.worldgenLayer,
+				Feature.LAKE.configured(new LakeFeature.Configuration(BlockStateProvider.simple(fluid), BlockStateProvider.simple(barrier))),
+				properties.chance > 0 ? Collections.singletonList(RarityFilter.onAverageOnceEvery(properties.chance)) : Collections.emptyList());
 	}
 
 	public void addSpawn(Consumer<AddSpawnProperties> p) {
@@ -163,23 +179,26 @@ public class WorldgenAddEventJS extends StartupEventJS {
 		addSpawn(BiomeFilter.ALWAYS_TRUE, category, spawn);
 	}
 
-	public void addLake(Consumer<AddLakeProperties> p) {
-		var properties = new AddLakeProperties();
-		p.accept(properties);
-
-		var fluid = Iterables.getFirst(properties.fluid.getBlockStates(), Blocks.AIR.defaultBlockState());
-		if (fluid == null || fluid.isAir()) {
-			return;
+	public static String getUniqueId(PlacedFeature feature) {
+		if (messageDigest == null) {
+			try {
+				messageDigest = MessageDigest.getInstance("MD5");
+			} catch (NoSuchAlgorithmException nsae) {
+				throw new InternalError("MD5 not supported", nsae);
+			}
 		}
 
-		var barrier = Iterables.getFirst(properties.barrier.getBlockStates(), Blocks.AIR.defaultBlockState());
-		if (barrier == null || barrier.isAir()) {
-			return;
-		}
+		var json = PlacedFeature.DIRECT_CODEC.encodeStart(JsonOps.COMPRESSED, feature)
+				.getOrThrow(false, str -> {
+					throw new RuntimeException("Could not encode feature to JSON: " + str);
+				});
 
-		addFeature(properties.id, properties.biomes, properties.worldgenLayer,
-				Feature.LAKE.configured(new LakeFeature.Configuration(BlockStateProvider.simple(fluid), BlockStateProvider.simple(barrier))),
-				properties.chance > 0 ? Collections.singletonList(RarityFilter.onAverageOnceEvery(properties.chance)) : Collections.emptyList());
+		if (messageDigest == null) {
+			return new BigInteger(Hex.encodeHexString(getJsonHashBytes(json)), 16).toString(36);
+		} else {
+			messageDigest.reset();
+			return new BigInteger(Hex.encodeHexString(messageDigest.digest(getJsonHashBytes(json))), 16).toString(36);
+		}
 	}
 
 	/*

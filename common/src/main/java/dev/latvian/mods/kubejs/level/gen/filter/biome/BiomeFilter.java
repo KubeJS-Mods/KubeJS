@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.level.gen.filter.biome;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.registry.level.biome.BiomeModifications;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -90,7 +90,7 @@ public interface BiomeFilter extends Predicate<BiomeModifications.BiomeContext> 
 
 			// TODO: Add other biome property filters
 		} catch (Exception ex) {
-			ScriptType.STARTUP.console.error("Error trying to create BiomeFilter: " + ex.getMessage());
+			ConsoleJS.STARTUP.error("Error trying to create BiomeFilter: " + ex.getMessage());
 			return ALWAYS_FALSE;
 		}
 

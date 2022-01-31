@@ -5,8 +5,8 @@ import dev.architectury.registry.block.BlockProperties;
 import dev.latvian.mods.kubejs.block.custom.BasicBlockType;
 import dev.latvian.mods.kubejs.block.custom.BlockType;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.BuilderBase;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -306,16 +306,16 @@ public class BlockBuilder extends BuilderBase {
 	}
 
 	public BlockBuilder tag(ResourceLocation tag) {
-		ScriptType.STARTUP.console.warn("BlockBuilder.tag's behaviour is going to change in a future version to tag both the block and the item!");
-		ScriptType.SERVER.console.warn("If you do not want this, use tagBlock and tagItem instead!");
+		ConsoleJS.STARTUP.warn("BlockBuilder.tag's behaviour is going to change in a future version to tag both the block and the item!");
+		ConsoleJS.STARTUP.warn("If you do not want this, use tagBlock and tagItem instead!");
 		return tagBlock(tag);
 	}
 
 	@Deprecated
 	@ApiStatus.ScheduledForRemoval
 	public BlockBuilder tagBlockAndItem(ResourceLocation tag) {
-		ScriptType.STARTUP.console.warn("BlockBuilder.tagBoth will be migrated to BlockBuilder.tag in the future!");
-		ScriptType.STARTUP.console.warn("For now, use tagBoth instead to avoid this message!");
+		ConsoleJS.STARTUP.warn("BlockBuilder.tagBoth will be migrated to BlockBuilder.tag in the future!");
+		ConsoleJS.STARTUP.warn("For now, use tagBoth instead to avoid this message!");
 		return tagBoth(tag);
 	}
 

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.mixin.common;
 
 import dev.latvian.mods.kubejs.core.EntityKJS;
-import dev.latvian.mods.rhino.util.MapLike;
+import dev.latvian.mods.rhino.util.CustomJavaObjectWrapper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,7 +28,7 @@ public abstract class EntityMixin implements EntityKJS {
 
 	@Inject(method = "load", at = @At("RETURN"))
 	private void loadKJS(CompoundTag tag, CallbackInfo ci) {
-		((MapLike<?, ?>) persistentDataKJS).clearML();
+		((CustomJavaObjectWrapper.AsMap) persistentDataKJS).wrapAsJavaMap().clear();
 		persistentDataKJS.merge(tag.getCompound("KubeJSPersistentData"));
 	}
 }

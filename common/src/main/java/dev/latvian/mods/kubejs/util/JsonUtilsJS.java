@@ -16,11 +16,19 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -241,34 +249,34 @@ public class JsonUtilsJS {
 		return a;
 	}
 
-    public static void writeJsonHash(DataOutputStream stream, @Nullable JsonElement element) throws IOException {
-        if (element == null || element.isJsonNull()) {
-            stream.writeByte('-');
-        } else if (element instanceof JsonArray arr) {
-            stream.writeByte('[');
-            for (var e : arr) {
-                writeJsonHash(stream, e);
-            }
-        } else if (element instanceof JsonObject obj) {
-            stream.writeByte('{');
-            for (var e : obj.entrySet()) {
-                stream.writeBytes(e.getKey());
-                writeJsonHash(stream, e.getValue());
-            }
-        } else if (element instanceof JsonPrimitive primitive) {
-            stream.writeByte('=');
-            if (primitive.isBoolean()) {
-                stream.writeBoolean(element.getAsBoolean());
-            } else if (primitive.isNumber()) {
-                stream.writeDouble(element.getAsDouble());
-            } else {
-                stream.writeBytes(element.getAsString());
-            }
-        } else {
-            stream.writeByte('?');
-            stream.writeInt(element.hashCode());
-        }
-    }
+	public static void writeJsonHash(DataOutputStream stream, @Nullable JsonElement element) throws IOException {
+		if (element == null || element.isJsonNull()) {
+			stream.writeByte('-');
+		} else if (element instanceof JsonArray arr) {
+			stream.writeByte('[');
+			for (var e : arr) {
+				writeJsonHash(stream, e);
+			}
+		} else if (element instanceof JsonObject obj) {
+			stream.writeByte('{');
+			for (var e : obj.entrySet()) {
+				stream.writeBytes(e.getKey());
+				writeJsonHash(stream, e.getValue());
+			}
+		} else if (element instanceof JsonPrimitive primitive) {
+			stream.writeByte('=');
+			if (primitive.isBoolean()) {
+				stream.writeBoolean(element.getAsBoolean());
+			} else if (primitive.isNumber()) {
+				stream.writeDouble(element.getAsDouble());
+			} else {
+				stream.writeBytes(element.getAsString());
+			}
+		} else {
+			stream.writeByte('?');
+			stream.writeInt(element.hashCode());
+		}
+	}
 
 	public static byte[] getJsonHashBytes(JsonElement json) {
 		var baos = new ByteArrayOutputStream();
