@@ -11,6 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 /**
@@ -36,6 +38,7 @@ public enum ScriptType {
 	public final List<String> warnings;
 	public final ConsoleJS console;
 	public final Supplier<ScriptManager> manager;
+	public final ExecutorService executor;
 
 	ScriptType(String n, String cname, Supplier<ScriptManager> m) {
 		name = n;
@@ -43,6 +46,7 @@ public enum ScriptType {
 		warnings = new ArrayList<>();
 		console = new ConsoleJS(this, LogManager.getLogger(cname));
 		manager = m;
+		executor = Executors.newSingleThreadExecutor();
 	}
 
 	public Path getLogFile() {

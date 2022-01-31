@@ -29,7 +29,8 @@
 		"SimpleReloadableResourceManagerMixin",
 		"TagBuilderMixin",
 		"TagCollectionReaderMixin",
-		"TieredItemMixin"
+		"TieredItemMixin",
+		"UtilMixin"
 	],
 	"client": [
 		"AbstractSelectionListMixin",

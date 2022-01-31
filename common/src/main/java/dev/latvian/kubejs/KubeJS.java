@@ -15,6 +15,7 @@ import dev.latvian.kubejs.script.ScriptPack;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.kubejs.server.KubeJSServerEventHandler;
+import dev.latvian.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
@@ -62,6 +63,7 @@ public class KubeJS {
 	public KubeJS() throws Throwable {
 		instance = this;
 		Locale.setDefault(Locale.US);
+		new KubeJSBackgroundThread().start();
 
 		if (Files.notExists(KubeJSPaths.README)) {
 			UtilsJS.tryIO(() -> {
