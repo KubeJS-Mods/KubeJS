@@ -26,10 +26,10 @@ import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.ChangeListener;
-import dev.latvian.mods.rhino.mod.util.CompoundTagWrapper;
 import dev.latvian.mods.rhino.mod.util.NBTSerializable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.mod.util.NbtType;
+import dev.latvian.mods.rhino.mod.util.TagUtils;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import net.minecraft.core.NonNullList;
@@ -1011,7 +1011,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 		if (nbt != null) {
 			if (RecipeJS.currentRecipe != null && RecipeJS.currentRecipe.serializeNBTAsJson()) {
-				json.add("nbt", new CompoundTagWrapper(nbt).toJson());
+				json.add("nbt", TagUtils.toJson(nbt));
 			} else {
 				json.addProperty("nbt", nbt.toString());
 			}
