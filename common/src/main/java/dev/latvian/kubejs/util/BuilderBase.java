@@ -3,6 +3,9 @@ package dev.latvian.kubejs.util;
 import dev.latvian.kubejs.KubeJS;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 /**
  * @author LatvianModder
  */
@@ -14,7 +17,7 @@ public abstract class BuilderBase {
 	public BuilderBase(String s) {
 		id = UtilsJS.getMCID(KubeJS.appendModId(s));
 		translationKey = getBuilderType() + "." + id.getNamespace() + "." + id.getPath();
-		displayName = "";
+		displayName = Arrays.stream(id.getPath().split("_")).map(UtilsJS::toTitleCase).collect(Collectors.joining(" "));
 	}
 
 	public abstract String getBuilderType();
