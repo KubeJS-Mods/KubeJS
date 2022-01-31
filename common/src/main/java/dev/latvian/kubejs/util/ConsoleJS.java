@@ -3,7 +3,6 @@ package dev.latvian.kubejs.util;
 import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
-import net.minecraft.Util;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -75,6 +75,7 @@ public class ConsoleJS {
 	private boolean muted;
 	private boolean debugEnabled;
 	private boolean writeToFile;
+	private final List<String> writeQueue;
 
 	public ConsoleJS(ScriptType m, Logger log) {
 		type = m;
@@ -85,6 +86,7 @@ public class ConsoleJS {
 		muted = false;
 		debugEnabled = false;
 		writeToFile = true;
+		writeQueue = new ArrayList<>();
 	}
 
 	public Logger getLogger() {
@@ -120,7 +122,7 @@ public class ConsoleJS {
 	}
 
 	public void resetFile() {
-		Util.ioPool().execute(() -> {
+		type.executor.execute(() -> {
 			try {
 				Files.write(logFile, Collections.emptyList());
 			} catch (Exception ex) {
@@ -218,10 +220,20 @@ public class ConsoleJS {
 		sb.append(']');
 		sb.append(' ');
 		sb.append(line);
+		writeQueue.add(sb.toString());
+	}
 
-		Util.ioPool().execute(() -> {
+	public synchronized void flush() {
+		if (writeQueue.isEmpty()) {
+			return;
+		}
+
+		List<String> lines = new ArrayList<>(writeQueue);
+		writeQueue.clear();
+
+		type.executor.execute(() -> {
 			try {
-				Files.write(logFile, Collections.singleton(sb.toString()), StandardOpenOption.APPEND);
+				Files.write(logFile, lines, StandardOpenOption.APPEND);
 			} catch (Exception ex) {
 				logger.error("Failed to write to the log file: " + ex);
 			}
