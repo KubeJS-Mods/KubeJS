@@ -8,7 +8,7 @@ import net.minecraft.world.damagesource.DamageSource;
 
 public class DamageProtectionCallbackJS {
 	public final int enchantLevel;
-	public final LevelJS world;
+	public final LevelJS level;
 	public final DamageSourceJS source;
 	public final EnchantmentJS enchantment;
 	public int bonus;
@@ -16,14 +16,14 @@ public class DamageProtectionCallbackJS {
     public DamageProtectionCallbackJS(int enchantLevel, DamageSource source, EnchantmentJS enchantment) {
         this.enchantLevel = enchantLevel;
 		if(source.getDirectEntity() != null) {
-			this.world = UtilsJS.getLevel(source.getDirectEntity().level);
+			this.level = UtilsJS.getLevel(source.getDirectEntity().level);
 		}else if(source.getEntity() != null) {
-			this.world = UtilsJS.getLevel(source.getEntity().level);
+			this.level = UtilsJS.getLevel(source.getEntity().level);
 		} else {
 			// Rare edge case where both entities are null.
-			this.world = null;
+			this.level = null;
 		}
-        this.source = new DamageSourceJS(world,source);
+        this.source = new DamageSourceJS(level,source);
         this.enchantment = enchantment;
     }
 
@@ -31,8 +31,8 @@ public class DamageProtectionCallbackJS {
         return enchantLevel;
     }
 
-    public LevelJS getWorld() {
-        return world;
+    public LevelJS getLevel() {
+        return level;
     }
 
     public DamageSourceJS getSource() {
@@ -55,7 +55,7 @@ public class DamageProtectionCallbackJS {
 	public String toString() {
 		return "DamageProtectionCallbackJS{" +
 				"level=" + enchantLevel +
-				", world=" + world +
+				", world=" + level +
 				", source=" + source +
 				", enchantment=" + enchantment +
 				", bonus=" + bonus +
