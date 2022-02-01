@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.DetectorInstance;
+import dev.latvian.mods.kubejs.enchantment.EnchantmentBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.util.BuilderBase;
@@ -20,6 +21,7 @@ public class KubeJSObjects {
 	public static final Map<ResourceLocation, ItemBuilder> ITEMS = new LinkedHashMap<>();
 	public static final Map<ResourceLocation, BlockBuilder> BLOCKS = new LinkedHashMap<>();
 	public static final Map<ResourceLocation, FluidBuilder> FLUIDS = new LinkedHashMap<>();
+	public static final Map<ResourceLocation, EnchantmentBuilder> ENCHANTMENTS = new LinkedHashMap<>();
 	public static final Map<String, DetectorInstance> DETECTORS = new LinkedHashMap<>();
 
 	public static void register() {
@@ -27,5 +29,6 @@ public class KubeJSObjects {
 		ITEMS.clear();
 		BLOCKS.clear();
 		FLUIDS.clear();
+		ENCHANTMENTS.clear();
 	}
 }

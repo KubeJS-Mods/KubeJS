@@ -3,15 +3,7 @@ package dev.latvian.mods.kubejs;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.architectury.platform.Platform;
-import dev.latvian.mods.kubejs.bindings.BlockWrapper;
-import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
-import dev.latvian.mods.kubejs.bindings.ItemWrapper;
-import dev.latvian.mods.kubejs.bindings.JsonIOWrapper;
-import dev.latvian.mods.kubejs.bindings.JsonWrapper;
-import dev.latvian.mods.kubejs.bindings.NBTIOWrapper;
-import dev.latvian.mods.kubejs.bindings.RarityWrapper;
-import dev.latvian.mods.kubejs.bindings.TextWrapper;
-import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
+import dev.latvian.mods.kubejs.bindings.*;
 import dev.latvian.mods.kubejs.block.BlockRegistryEventJS;
 import dev.latvian.mods.kubejs.block.MaterialJS;
 import dev.latvian.mods.kubejs.block.MaterialListJS;
@@ -21,11 +13,7 @@ import dev.latvian.mods.kubejs.block.custom.BlockTypes;
 import dev.latvian.mods.kubejs.block.custom.ShapedBlockType;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.client.painter.Painter;
-import dev.latvian.mods.kubejs.client.painter.screen.AtlasTextureObject;
-import dev.latvian.mods.kubejs.client.painter.screen.GradientObject;
-import dev.latvian.mods.kubejs.client.painter.screen.RectangleObject;
-import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
-import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
+import dev.latvian.mods.kubejs.client.painter.screen.*;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.event.DataEvent;
 import dev.latvian.mods.kubejs.event.IEventHandler;
@@ -40,14 +28,8 @@ import dev.latvian.mods.kubejs.item.custom.ItemArmorTierEventJS;
 import dev.latvian.mods.kubejs.item.custom.ItemToolTierEventJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStackJS;
-import dev.latvian.mods.kubejs.item.type.ArmorItemType;
-import dev.latvian.mods.kubejs.item.type.BasicItemType;
-import dev.latvian.mods.kubejs.item.type.ItemType;
-import dev.latvian.mods.kubejs.item.type.ItemTypes;
-import dev.latvian.mods.kubejs.item.type.ToolItemType;
+import dev.latvian.mods.kubejs.item.type.*;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
-import dev.latvian.mods.kubejs.level.gen.filter.mob.MobFilter;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
 import dev.latvian.mods.kubejs.recipe.RegisterRecipeHandlersEvent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
@@ -55,25 +37,13 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
 import dev.latvian.mods.kubejs.recipe.minecraft.CookingRecipeJS;
 import dev.latvian.mods.kubejs.recipe.minecraft.SmithingRecipeJS;
 import dev.latvian.mods.kubejs.recipe.minecraft.StonecuttingRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.ArsNouveauEnchantingApparatusRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.ArsNouveauEnchantmentRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.ArsNouveauGlyphPressRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.BotaniaRunicAltarRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.BotanyPotsCropRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.IDSqueezerRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.MATagRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.ShapedArtisanRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.ShapelessArtisanRecipeJS;
+import dev.latvian.mods.kubejs.recipe.mod.*;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.text.Text;
-import dev.latvian.mods.kubejs.util.ClassFilter;
-import dev.latvian.mods.kubejs.util.KubeJSPlugins;
-import dev.latvian.mods.kubejs.util.ListJS;
-import dev.latvian.mods.kubejs.util.MapJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.*;
 import dev.latvian.mods.rhino.mod.util.NBTWrapper;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.wrapper.AABBWrapper;
@@ -95,7 +65,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobCategory;
@@ -363,13 +332,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		});
 
 		typeWrappers.register(Item.class, ItemStackJS::getRawItem);
-		typeWrappers.register(GenerationStep.Decoration.class, o -> {
-			try {
-				return GenerationStep.Decoration.valueOf(o.toString().toUpperCase());
-			} catch (IllegalArgumentException e) {
-				return null;
-			}
-		});
+		typeWrappers.register(GenerationStep.Decoration.class, o -> o == null || o.toString().isEmpty() ? null : GenerationStep.Decoration.valueOf(o.toString().toUpperCase()));
 		typeWrappers.register(MobCategory.class, o -> o == null ? null : MobCategory.byName(o.toString()));
 		typeWrappers.register(TextColor.class, o -> {
 			if (o instanceof Number number) {
@@ -380,10 +343,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 			return TextColor.parseColor(o.toString());
 		});
-
 		typeWrappers.register(AABB.class, AABBWrapper::wrap);
 		typeWrappers.register(Direction.class, o -> o instanceof Direction dir ? dir : DirectionWrapper.ALL.get(o.toString().toLowerCase()));
-		typeWrappers.register(IntProvider.class, UtilsJS::intProviderOf);
 		typeWrappers.register(NumberProvider.class, UtilsJS::numberProviderOf);
 		typeWrappers.register(LootContext.EntityTarget.class, o -> o == null ? null : LootContext.EntityTarget.getByName(o.toString().toLowerCase()));
 		typeWrappers.register(CopyNameFunction.NameSource.class, o -> o == null ? null : CopyNameFunction.NameSource.getByName(o.toString().toLowerCase()));
@@ -397,8 +358,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(Text.class, Text::of);
 		typeWrappers.register(BlockStatePredicate.class, BlockStatePredicate::of);
 		typeWrappers.register(RuleTest.class, BlockStatePredicate::ruleTestOf);
-		typeWrappers.register(BiomeFilter.class, BiomeFilter::of);
-		typeWrappers.register(MobFilter.class, MobFilter::of);
 		typeWrappers.register(FluidStackJS.class, FluidStackJS::of);
 		typeWrappers.register(RecipeFilter.class, RecipeFilter::of);
 		typeWrappers.register(MaterialJS.class, MaterialListJS.INSTANCE::of);
@@ -406,6 +365,10 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(BlockType.class, BlockTypes::get);
 		typeWrappers.register(Color.class, ColorWrapper::of);
 		typeWrappers.register(IngredientActionFilter.class, IngredientActionFilter::filterOf);
+
+		typeWrappers.register(EnchantmentCategoryWrapper.class, EnchantmentCategoryWrapper::of);
+		typeWrappers.register(EnchantmentRarityWrapper.class, EnchantmentRarityWrapper::of);
+		typeWrappers.register(MobTypeWrapper.class, MobTypeWrapper::of);
 
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
 	}

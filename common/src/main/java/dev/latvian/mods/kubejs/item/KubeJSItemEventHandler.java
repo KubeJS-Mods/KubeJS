@@ -7,6 +7,8 @@ import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.latvian.mods.kubejs.*;
 import dev.latvian.mods.kubejs.core.ItemKJS;
+import dev.latvian.mods.kubejs.enchantment.EnchantmentBuilder;
+import dev.latvian.mods.kubejs.enchantment.EnchantmentJS;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.player.InventoryChangedEventJS;
 import net.minecraft.server.level.ServerPlayer;
@@ -79,6 +81,11 @@ public class KubeJSItemEventHandler {
 
 		if (!CommonProperties.get().serverOnly) {
 			DUMMY_FLUID_ITEM = KubeJSRegistries.items().register(KubeJS.id("dummy_fluid_item"), () -> new Item(new Item.Properties().stacksTo(1).tab(KubeJS.tab)));
+		}
+
+		for (EnchantmentBuilder builder : KubeJSObjects.ENCHANTMENTS.values()) {
+			builder.enchantment = new EnchantmentJS(builder);
+			KubeJSRegistries.enchantments().register(builder.id, () -> builder.enchantment);
 		}
 	}
 

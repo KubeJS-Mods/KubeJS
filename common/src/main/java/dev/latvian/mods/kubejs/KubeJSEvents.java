@@ -88,4 +88,6 @@ public interface KubeJSEvents {
 	String FLUID_REGISTRY = "fluid.registry";
 
 	String SOUND_REGISTRY = "sound.registry";
+
+	String ENCHANTMENT_REGISTRY = "enchantment.registry";
 }
