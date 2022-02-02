@@ -33,12 +33,9 @@ import java.util.function.Supplier;
 import static dev.latvian.mods.kubejs.util.UtilsJS.onMatchDo;
 
 /**
- * FIXME: Move to {@link dev.architectury.registry.level.biome.BiomeModifications} once it's ready.
- *
  * @author LatvianModder
  */
 public class WorldgenRemoveEventJS extends StartupEventJS {
-
 	private static ResourceLocation getId(Supplier<PlacedFeature> feature) {
 		// this is the worst, but if we're still decoding things from network,
 		// this is our only way to get the ID since the instances don't match
