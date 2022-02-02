@@ -33,6 +33,11 @@ public class DummyFluidItemStackJS extends ItemStackJS {
 	}
 
 	@Override
+	public JsonElement toResultJson() {
+		return fluid.toJson();
+	}
+
+	@Override
 	public FluidStackJS getFluidStack() {
 		return fluid;
 	}
