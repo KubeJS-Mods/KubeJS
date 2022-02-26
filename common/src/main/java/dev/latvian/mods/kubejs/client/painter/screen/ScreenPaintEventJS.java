@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.client.painter.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import dev.latvian.mods.kubejs.client.painter.PaintEventJS;
 import dev.latvian.mods.kubejs.client.painter.Painter;

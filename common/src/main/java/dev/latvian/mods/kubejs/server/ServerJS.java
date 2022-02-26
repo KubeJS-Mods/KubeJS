@@ -92,7 +92,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	}
 
 	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
 	public List<ServerLevelJS> getWorlds() {
 		return getAllLevels();
 	}
@@ -187,7 +187,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	}
 
 	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
 	public final LevelJS getWorld(String dimension) {
 		return getLevel(dimension);
 	}
@@ -206,7 +206,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	}
 
 	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
 	public final LevelJS getWorld(Level minecraftLevel) {
 		return getLevel(minecraftLevel);
 	}

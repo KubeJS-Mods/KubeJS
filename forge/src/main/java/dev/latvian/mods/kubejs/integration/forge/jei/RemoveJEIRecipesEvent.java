@@ -2,13 +2,13 @@ package dev.latvian.mods.kubejs.integration.forge.jei;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.event.EventJS;
-import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,7 +24,7 @@ public class RemoveJEIRecipesEvent extends EventJS {
 	public RemoveJEIRecipesEvent(IJeiRuntime r) {
 		runtime = r;
 		recipesRemoved = new HashMap<>();
-		allCategories = runtime.getRecipeManager().getRecipeCategories(null, false);
+		allCategories = runtime.getRecipeManager().getRecipeCategories(Collections.emptyList(), false);
 	}
 
 	public Collection<IRecipeCategory<?>> getCategories() {
@@ -59,7 +59,7 @@ public class RemoveJEIRecipesEvent extends EventJS {
 					for (var id : recipesRemoved.get(cat)) {
 						try {
                             var found = false;
-							for (Object o : rm.getRecipes(category, null, false)) {
+							for (Object o : rm.getRecipes(category, Collections.emptyList(), false)) {
                                 var recipe = (Recipe<?>) o;
 								if (id.equals(recipe.getId())) {
 									rm.hideRecipe(recipe, cat);

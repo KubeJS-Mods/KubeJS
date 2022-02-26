@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.client.painter.screen;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.math.Matrix4f;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.rhino.util.unit.Unit;
 import net.minecraft.resources.ResourceLocation;

@@ -1,12 +1,11 @@
 package dev.latvian.mods.kubejs.client.painter;
 
-import dev.architectury.utils.NbtType;
-import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import dev.latvian.mods.rhino.util.unit.ColorUnit;
 import dev.latvian.mods.rhino.util.unit.FixedUnit;
 import dev.latvian.mods.rhino.util.unit.Unit;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,15 +27,15 @@ public class PainterObjectProperties {
 	}
 
 	public boolean hasNumber(String key) {
-		return tag.contains(key, NbtType.NUMBER);
+		return tag.contains(key, Tag.TAG_ANY_NUMERIC);
 	}
 
 	public boolean hasString(String key) {
-		return tag.contains(key, NbtType.STRING);
+		return tag.contains(key, Tag.TAG_STRING);
 	}
 
 	public String getString(String key, String def) {
-		return has(key, NbtType.STRING) ? tag.getString(key) : def;
+		return has(key, Tag.TAG_STRING) ? tag.getString(key) : def;
 	}
 
 	@Nullable

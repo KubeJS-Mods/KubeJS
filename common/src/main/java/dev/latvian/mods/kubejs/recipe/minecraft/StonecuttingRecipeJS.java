@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.recipe.minecraft;
 
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 

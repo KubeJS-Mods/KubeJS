@@ -6,7 +6,6 @@ import dev.architectury.networking.simple.MessageType;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
 /**

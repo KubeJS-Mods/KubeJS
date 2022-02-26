@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.level.gen.filter.biome;
 
 import dev.architectury.registry.level.biome.BiomeModifications;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public record OrFilter(List<BiomeFilter> list) implements BiomeFilter {

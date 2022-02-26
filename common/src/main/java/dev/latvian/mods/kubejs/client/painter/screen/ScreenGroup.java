@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.client.painter.PainterObjectStorage;
 import dev.latvian.mods.rhino.util.unit.FixedUnit;
 import dev.latvian.mods.rhino.util.unit.Unit;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 
 public class ScreenGroup extends ScreenPainterObject {
 	private final PainterObjectStorage storage = new PainterObjectStorage();

@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.item.fabric;
 
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 public class ContainerInventoryImpl {

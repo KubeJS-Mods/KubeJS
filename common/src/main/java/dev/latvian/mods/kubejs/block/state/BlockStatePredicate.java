@@ -20,7 +20,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public sealed interface BlockStatePredicate {

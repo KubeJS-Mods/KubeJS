@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.mod;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
@@ -9,7 +8,6 @@ import dev.latvian.mods.kubejs.util.ListJS;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author LatvianModder
