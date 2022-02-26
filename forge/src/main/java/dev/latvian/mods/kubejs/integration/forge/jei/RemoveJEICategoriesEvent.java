@@ -7,6 +7,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -22,7 +23,7 @@ public class RemoveJEICategoriesEvent extends EventJS {
 	public RemoveJEICategoriesEvent(IJeiRuntime r) {
 		runtime = r;
 		categoriesRemoved = new HashSet<>();
-		allCategories = runtime.getRecipeManager().getRecipeCategories(null, false);
+		allCategories = runtime.getRecipeManager().getRecipeCategories(Collections.emptyList(), false);
 	}
 
 	public Collection<IRecipeCategory<?>> getCategories() {
