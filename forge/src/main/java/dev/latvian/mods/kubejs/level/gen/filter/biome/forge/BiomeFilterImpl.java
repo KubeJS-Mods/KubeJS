@@ -2,10 +2,8 @@ package dev.latvian.mods.kubejs.level.gen.filter.biome.forge;
 
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.forge.BiomeDictionaryWrapper;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 
-import java.io.Console;
 import java.util.Map;
 
 public class BiomeFilterImpl {

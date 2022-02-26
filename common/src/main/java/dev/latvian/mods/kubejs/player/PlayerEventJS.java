@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.player;
 
-import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.entity.LivingEntityEventJS;
 import dev.latvian.mods.kubejs.stages.Stages;
 import net.minecraft.world.entity.player.Player;

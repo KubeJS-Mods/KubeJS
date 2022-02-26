@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.item.custom;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ModifiedArmorTier;
-import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ArmorMaterials;
 
 import java.util.function.Consumer;

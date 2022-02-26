@@ -1,8 +1,6 @@
 package dev.latvian.mods.kubejs.util;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import dev.architectury.utils.NbtType;
 import dev.latvian.mods.rhino.mod.util.ChangeListener;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
@@ -480,7 +478,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 			}
 		}
 
-		if (commmonId == NbtType.INT) {
+		if (commmonId == Tag.TAG_INT) {
 			var array = new int[s];
 
 			for (var i = 0; i < s; i++) {
@@ -488,7 +486,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 			}
 
 			return new IntArrayTag(array);
-		} else if (commmonId == NbtType.BYTE) {
+		} else if (commmonId == Tag.TAG_BYTE) {
 			var array = new byte[s];
 
 			for (var i = 0; i < s; i++) {
@@ -496,7 +494,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 			}
 
 			return new ByteArrayTag(array);
-		} else if (commmonId == NbtType.LONG) {
+		} else if (commmonId == Tag.TAG_LONG) {
 			var array = new long[s];
 
 			for (var i = 0; i < s; i++) {

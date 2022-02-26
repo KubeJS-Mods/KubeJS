@@ -1,11 +1,9 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.KubeJSEvents;
-import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemFoodEatenEventJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 /**

@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.minecraft;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;

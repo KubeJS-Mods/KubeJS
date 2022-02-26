@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 

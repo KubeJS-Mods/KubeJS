@@ -10,7 +10,6 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder

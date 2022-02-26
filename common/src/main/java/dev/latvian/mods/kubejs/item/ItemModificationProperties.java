@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.item;
 import dev.latvian.mods.kubejs.bindings.RarityWrapper;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.core.TieredItemKJS;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 
 import java.util.function.Consumer;

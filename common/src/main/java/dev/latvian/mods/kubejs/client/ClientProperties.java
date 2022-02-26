@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 
-import java.io.InputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;

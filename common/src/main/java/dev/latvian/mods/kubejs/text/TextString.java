@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.text;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.network.chat.TextComponent;
 import org.jetbrains.annotations.Nullable;

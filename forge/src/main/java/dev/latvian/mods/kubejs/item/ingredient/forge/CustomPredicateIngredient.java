@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.item.ingredient.forge;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.core.IngredientKJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicateJS;
 import dev.latvian.mods.kubejs.recipe.RecipeEventJS;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.FriendlyByteBuf;

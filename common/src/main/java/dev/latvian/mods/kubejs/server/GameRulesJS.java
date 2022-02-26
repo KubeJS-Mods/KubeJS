@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.server;
 
 import com.mojang.serialization.Dynamic;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.level.GameRules;
 import org.jetbrains.annotations.Nullable;

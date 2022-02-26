@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.loot;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;

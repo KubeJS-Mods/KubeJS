@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.util;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.rhino.Undefined;
@@ -12,7 +11,6 @@ import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.mod.util.OrderedCompoundTag;
 import dev.latvian.mods.rhino.mod.util.StringBuilderAppendable;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
 import org.jetbrains.annotations.Nullable;
 

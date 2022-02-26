@@ -9,7 +9,6 @@ import dev.latvian.mods.kubejs.block.predicate.BlockPredicate;
 import dev.latvian.mods.kubejs.util.Tags;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
 import net.minecraft.world.level.block.Block;
 
 import java.util.ArrayList;

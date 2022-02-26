@@ -13,7 +13,6 @@ import net.minecraft.world.item.Item;
 
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 

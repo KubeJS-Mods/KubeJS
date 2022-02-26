@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.client.painter;
 
-import dev.architectury.utils.NbtType;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenPainterObject;
 import dev.latvian.mods.kubejs.client.painter.world.WorldPainterObject;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.unit.FixedUnit;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -42,7 +42,7 @@ public class PainterObjectStorage {
 				}
 			} else if (key.equals("$")) {
 				for (var k : tag.getAllKeys()) {
-					if (tag.contains(k, NbtType.NUMBER)) {
+					if (tag.contains(k, Tag.TAG_ANY_NUMERIC)) {
 						Painter.INSTANCE.setVariable(k, FixedUnit.of(tag.getFloat(k)));
 					} else {
 						Painter.INSTANCE.setVariable(k, Painter.INSTANCE.unitStorage.parse(tag.getString(k)));
