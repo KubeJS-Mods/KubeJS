@@ -38,7 +38,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 	}
 
 	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
 	public final LevelJS getWorld() {
 		return getLevel();
 	}

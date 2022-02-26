@@ -21,7 +21,7 @@ public class RandomTickCallbackJS {
 	}
 
 	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.2")
+	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
 	public LevelJS getWorld() {
 		return getLevel();
 	}
