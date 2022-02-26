@@ -24,14 +24,14 @@ side = "BOTH"
 [[dependencies.kubejs]]
 modId = "rhino"
 mandatory = true
-versionRange = "[1801.1.8-build.97,)"
+versionRange = "[1801.1.8-build.102,)"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.kubejs]]
 modId = "architectury"
 mandatory = true
-versionRange = "[3.4.9,)"
+versionRange = "[3.7.22,)"
 ordering = "AFTER"
 side = "BOTH"
 
