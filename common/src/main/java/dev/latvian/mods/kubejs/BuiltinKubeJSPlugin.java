@@ -1,7 +1,9 @@
 package dev.latvian.mods.kubejs;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
@@ -326,6 +328,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(Pattern.class, UtilsJS::parseRegex);
 		typeWrappers.register(JsonObject.class, MapJS::json);
 		typeWrappers.register(JsonArray.class, ListJS::json);
+		typeWrappers.register(JsonElement.class, JsonIO::of);
+		typeWrappers.register(JsonPrimitive.class, JsonIO::primitiveOf);
 		typeWrappers.register(Path.class, UtilsJS::getPath);
 		typeWrappers.register(File.class, UtilsJS::getFileFromPath);
 

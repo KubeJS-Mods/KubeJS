@@ -12,21 +12,18 @@ import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import dev.latvian.mods.rhino.mod.util.JsonSerializable;
-import dev.latvian.mods.rhino.util.HideFromJS;
+import dev.latvian.mods.rhino.mod.util.JsonUtils;
+import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -35,136 +32,46 @@ public class JsonIO {
 	public static final transient Gson GSON = new GsonBuilder().disableHtmlEscaping().setLenient().create();
 
 	public static JsonElement copy(@Nullable JsonElement element) {
-		if (element == null || element.isJsonNull()) {
-			return JsonNull.INSTANCE;
-		} else if (element instanceof JsonArray jsonArr) {
-			var a = new JsonArray();
-
-			for (var e : jsonArr) {
-				a.add(copy(e));
-			}
-
-			return a;
-		} else if (element instanceof JsonObject jsonObj) {
-			var o = new JsonObject();
-
-			for (var entry : jsonObj.entrySet()) {
-				o.add(entry.getKey(), copy(entry.getValue()));
-			}
-
-			return o;
-		}
-
-		return element;
+		return JsonUtils.copy(element);
 	}
 
 	public static JsonElement of(@Nullable Object o) {
-		if (o == null) {
-			return JsonNull.INSTANCE;
-		} else if (o instanceof JsonSerializable serializable) {
-			return serializable.toJson();
-		} else if (o instanceof JsonElement json) {
-			return json;
-		} else if (o instanceof CharSequence) {
-			return new JsonPrimitive(o.toString());
-		} else if (o instanceof Boolean bool) {
-			return new JsonPrimitive(bool);
-		} else if (o instanceof Number num) {
-			return new JsonPrimitive(num);
-		} else if (o instanceof Character c) {
-			return new JsonPrimitive(c);
+		if (o instanceof JsonElement) {
+			return (JsonElement) o;
+		} else if (o instanceof Map || o instanceof CompoundTag) {
+			return MapJS.json(o);
+		} else if (o instanceof Collection) {
+			return ListJS.json(o);
 		}
 
-		return JsonNull.INSTANCE;
+		JsonElement e = JsonUtils.of(o);
+		return e == JsonNull.INSTANCE ? null : e;
+	}
+
+	public static JsonPrimitive primitiveOf(@Nullable Object o) {
+		JsonElement e = of(o);
+		return e instanceof JsonPrimitive ? (JsonPrimitive) e : null;
 	}
 
 	@Nullable
 	public static Object toObject(@Nullable JsonElement json) {
-		if (json == null || json.isJsonNull()) {
-			return null;
-		} else if (json.isJsonObject()) {
-			var map = new LinkedHashMap<String, Object>();
-			var o = json.getAsJsonObject();
-
-			for (var entry : o.entrySet()) {
-				map.put(entry.getKey(), toObject(entry.getValue()));
-			}
-
-			return map;
-		} else if (json.isJsonArray()) {
-			var a = json.getAsJsonArray();
-			List<Object> objects = new ArrayList<>(a.size());
-
-			for (var e : a) {
-				objects.add(toObject(e));
-			}
-
-			return objects;
-		}
-
-		return toPrimitive(json);
+		return JsonUtils.toObject(json);
 	}
 
 	public static String toString(JsonElement json) {
-		var writer = new StringWriter();
-
-		try {
-			var jsonWriter = new JsonWriter(writer);
-			jsonWriter.setSerializeNulls(true);
-			jsonWriter.setLenient(true);
-			jsonWriter.setHtmlSafe(false);
-			Streams.write(json, jsonWriter);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-
-		return writer.toString();
+		return JsonUtils.toString(json);
 	}
 
 	public static String toPrettyString(JsonElement json) {
-		var writer = new StringWriter();
-
-		try {
-			var jsonWriter = new JsonWriter(writer);
-			jsonWriter.setIndent("\t");
-			jsonWriter.setSerializeNulls(true);
-			jsonWriter.setLenient(true);
-			jsonWriter.setHtmlSafe(false);
-			Streams.write(json, jsonWriter);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-
-		return writer.toString();
+		return JsonUtils.toPrettyString(json);
 	}
 
-	@HideFromJS
-	public static JsonElement fromString(@Nullable String string) {
-		if (string == null || string.isEmpty() || string.equals("null")) {
-			return JsonNull.INSTANCE;
-		}
-
-		try {
-			var jsonReader = new JsonReader(new StringReader(string));
-			JsonElement element;
-			var lenient = jsonReader.isLenient();
-			jsonReader.setLenient(true);
-			element = Streams.parse(jsonReader);
-
-			if (!element.isJsonNull() && jsonReader.peek() != JsonToken.END_DOCUMENT) {
-				throw new JsonSyntaxException("Did not consume the entire document.");
-			}
-
-			return element;
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		return JsonNull.INSTANCE;
+	public static JsonElement parseRaw(@Nullable String string) {
+		return JsonUtils.fromString(string);
 	}
 
 	public static Object parse(String string) {
-		return UtilsJS.wrap(fromString(string), JSObjectType.ANY);
+		return UtilsJS.wrap(parseRaw(string), JSObjectType.ANY);
 	}
 
 	@Nullable
@@ -212,8 +119,8 @@ public class JsonIO {
 		}
 	}
 
-	public static void write(Path path, @Nullable JsonObject json) throws IOException {
-		if (json == null) {
+	public static void write(Path path, @Nullable JsonElement json) throws IOException {
+		if (json == null || json.isJsonNull()) {
 			Files.deleteIfExists(path);
 			return;
 		}
