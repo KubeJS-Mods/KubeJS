@@ -26,7 +26,6 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.scores.Team;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Modifier;
@@ -50,12 +49,6 @@ public class EntityJS implements MessageSender, WrappedJS {
 		level = l;
 		minecraftEntity = e;
 		persistentData = ((EntityKJS) e).getPersistentDataKJS();
-	}
-
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
-	public LevelJS getWorld() {
-		return level;
 	}
 
 	public final LevelJS getLevel() {

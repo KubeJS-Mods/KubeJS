@@ -5,16 +5,8 @@ import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.level.ClientLevelJS;
 import dev.latvian.mods.kubejs.player.ClientPlayerJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import org.jetbrains.annotations.ApiStatus;
 
 public class ClientEventJS extends EventJS {
-
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
-	public final ClientLevelJS getWorld() {
-		return getLevel();
-	}
-
 	public ClientLevelJS getLevel() {
 		return ClientLevelJS.getInstance();
 	}

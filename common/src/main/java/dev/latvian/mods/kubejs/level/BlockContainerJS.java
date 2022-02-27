@@ -29,7 +29,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.AABB;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -61,12 +60,6 @@ public class BlockContainerJS implements SpecialEquality {
 
 	public LevelJS getLevel() {
 		return UtilsJS.getLevel(minecraftLevel);
-	}
-
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
-	public final LevelJS getWorld() {
-		return getLevel();
 	}
 
 	public BlockPos getPos() {

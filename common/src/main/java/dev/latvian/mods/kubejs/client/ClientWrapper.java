@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.level.ClientLevelJS;
 import dev.latvian.mods.kubejs.player.ClientPlayerJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -14,13 +13,6 @@ import org.jetbrains.annotations.Nullable;
 public class ClientWrapper {
 	public Minecraft getMinecraft() {
 		return Minecraft.getInstance();
-	}
-
-	@Nullable
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
-	public final ClientLevelJS getWorld() {
-		return getLevel();
 	}
 
 	@Nullable
@@ -38,11 +30,11 @@ public class ClientWrapper {
 	}
 
 	@Nullable
-	public Screen getCurrentGui() {
+	public Screen getCurrentScreen() {
 		return getMinecraft().screen;
 	}
 
-	public void setCurrentGui(Screen gui) {
+	public void setCurrentScreen(Screen gui) {
 		getMinecraft().setScreen(gui);
 	}
 

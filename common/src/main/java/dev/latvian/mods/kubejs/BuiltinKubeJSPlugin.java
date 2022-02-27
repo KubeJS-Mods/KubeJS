@@ -1,14 +1,13 @@
 package dev.latvian.mods.kubejs;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
-import dev.latvian.mods.kubejs.bindings.JsonIOWrapper;
-import dev.latvian.mods.kubejs.bindings.JsonWrapper;
-import dev.latvian.mods.kubejs.bindings.NBTIOWrapper;
 import dev.latvian.mods.kubejs.bindings.RarityWrapper;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
@@ -71,9 +70,11 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.text.Text;
 import dev.latvian.mods.kubejs.util.ClassFilter;
+import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
+import dev.latvian.mods.kubejs.util.NBTIOWrapper;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.NBTWrapper;
 import dev.latvian.mods.rhino.mod.util.color.Color;
@@ -112,6 +113,8 @@ import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -248,8 +251,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("Utils", UtilsWrapper.class);
 		event.add("Text", TextWrapper.class);
 		event.add("UUID", UUIDWrapper.class);
-		event.add("JsonUtils", JsonWrapper.class);
-		event.add("JsonIO", JsonIOWrapper.class);
+		event.add("JsonIO", JsonIO.class);
 		event.add("Block", BlockWrapper.class);
 		event.add("Item", ItemWrapper.class);
 		event.add("Ingredient", IngredientWrapper.class);
@@ -326,6 +328,10 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(Pattern.class, UtilsJS::parseRegex);
 		typeWrappers.register(JsonObject.class, MapJS::json);
 		typeWrappers.register(JsonArray.class, ListJS::json);
+		typeWrappers.register(JsonElement.class, JsonIO::of);
+		typeWrappers.register(JsonPrimitive.class, JsonIO::primitiveOf);
+		typeWrappers.register(Path.class, UtilsJS::getPath);
+		typeWrappers.register(File.class, UtilsJS::getFileFromPath);
 
 		typeWrappers.register(ResourceLocation.class, UtilsJS::getMCID);
 		typeWrappers.register(ItemStack.class, o -> ItemStackJS.of(o).getItemStack());

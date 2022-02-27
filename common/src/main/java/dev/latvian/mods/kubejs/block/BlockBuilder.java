@@ -15,7 +15,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -305,18 +304,11 @@ public class BlockBuilder extends BuilderBase {
 		return defaultCutout().renderType("translucent");
 	}
 
+	@Override
 	public BlockBuilder tag(ResourceLocation tag) {
 		ConsoleJS.STARTUP.warn("BlockBuilder.tag's behaviour is going to change in a future version to tag both the block and the item!");
 		ConsoleJS.STARTUP.warn("If you do not want this, use tagBlock and tagItem instead!");
 		return tagBlock(tag);
-	}
-
-	@Deprecated
-	@ApiStatus.ScheduledForRemoval
-	public BlockBuilder tagBlockAndItem(ResourceLocation tag) {
-		ConsoleJS.STARTUP.warn("BlockBuilder.tagBoth will be migrated to BlockBuilder.tag in the future!");
-		ConsoleJS.STARTUP.warn("For now, use tagBoth instead to avoid this message!");
-		return tagBoth(tag);
 	}
 
 	public BlockBuilder tagBoth(ResourceLocation tag) {

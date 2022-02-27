@@ -14,7 +14,6 @@ import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraft.world.level.levelgen.placement.HeightRangePlacement;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,27 +119,5 @@ public class AddOreProperties {
 
 	public VerticalAnchor top() {
 		return VerticalAnchor.top();
-	}
-
-	// just here to inform players to **switch their scripts over**
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
-	public void setBlock(String id) {
-		ConsoleJS.STARTUP.error("setBlock no longer works with the new worldgen system! Use the target system (addTarget(toReplace, with)) instead!");
-	}
-
-	// just here to inform players to **switch their scripts over**
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
-	public Object getSpawnsIn() {
-		ConsoleJS.STARTUP.error("spawnsIn no longer works with the new worldgen system! Use the target system (addTarget(toReplace, with)) instead!");
-		return null;
-	}
-
-	// just here to inform players to **switch their scripts over**
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
-	public void setSpawnsIn() {
-		ConsoleJS.STARTUP.error("spawnsIn no longer works with the new worldgen system! Use the target system (addTarget(toReplace, with)) instead!");
 	}
 }

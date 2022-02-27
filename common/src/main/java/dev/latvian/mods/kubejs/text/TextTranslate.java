@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.text;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.util.JsonUtilsJS;
+import dev.latvian.mods.kubejs.util.JsonIO;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 
@@ -22,7 +22,7 @@ public class TextTranslate extends Text {
 		objects = o;
 
 		for (var i = 0; i < objects.length; i++) {
-			if (objects[i] instanceof Component || !(objects[i] instanceof Text) && JsonUtilsJS.toPrimitive(JsonUtilsJS.of(objects[i])) == null) {
+			if (objects[i] instanceof Component || !(objects[i] instanceof Text) && JsonIO.toPrimitive(JsonIO.of(objects[i])) == null) {
 				objects[i] = of(objects[i]);
 			}
 		}
@@ -84,7 +84,7 @@ public class TextTranslate extends Text {
 			var array = new JsonArray();
 
 			for (var ob : objects) {
-				array.add(JsonUtilsJS.of(ob));
+				array.add(JsonIO.of(ob));
 			}
 
 			o.add("with", array);

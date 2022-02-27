@@ -19,7 +19,7 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
 import dev.latvian.mods.kubejs.recipe.minecraft.CustomRecipeJS;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.JsonUtilsJS;
+import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import net.minecraft.Util;
@@ -67,7 +67,7 @@ public abstract class RecipeJS {
 		deserialize();
 
 		if (CommonProperties.get().debugInfo) {
-			originalJson = (JsonObject) JsonUtilsJS.copy(json);
+			originalJson = (JsonObject) JsonIO.copy(json);
 		}
 
 		currentRecipe = null;
@@ -361,10 +361,10 @@ public abstract class RecipeJS {
 		}
 
 		if (messageDigest == null) {
-			return new BigInteger(HexFormat.of().formatHex(JsonUtilsJS.getJsonHashBytes(json)), 16).toString(36);
+			return new BigInteger(HexFormat.of().formatHex(JsonIO.getJsonHashBytes(json)), 16).toString(36);
 		} else {
 			messageDigest.reset();
-			return new BigInteger(HexFormat.of().formatHex(messageDigest.digest(JsonUtilsJS.getJsonHashBytes(json))), 16).toString(36);
+			return new BigInteger(HexFormat.of().formatHex(messageDigest.digest(JsonIO.getJsonHashBytes(json))), 16).toString(36);
 		}
 	}
 

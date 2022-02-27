@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -13,12 +12,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class LevelEventJS extends EventJS {
 	public abstract LevelJS getLevel();
-
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
-	public final LevelJS getWorld() {
-		return getLevel();
-	}
 
 	@Nullable
 	public ServerJS getServer() {

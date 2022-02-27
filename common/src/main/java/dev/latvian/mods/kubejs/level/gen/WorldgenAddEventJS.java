@@ -12,6 +12,7 @@ import dev.latvian.mods.kubejs.level.gen.properties.AddLakeProperties;
 import dev.latvian.mods.kubejs.level.gen.properties.AddOreProperties;
 import dev.latvian.mods.kubejs.level.gen.properties.AddSpawnProperties;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.JsonIO;
 import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -41,8 +42,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
-
-import static dev.latvian.mods.kubejs.util.JsonUtilsJS.getJsonHashBytes;
 
 /**
  * FIXME: Move to {@link dev.architectury.registry.level.biome.BiomeModifications} once it's ready.
@@ -194,10 +193,10 @@ public class WorldgenAddEventJS extends StartupEventJS {
 				});
 
 		if (messageDigest == null) {
-			return new BigInteger(Hex.encodeHexString(getJsonHashBytes(json)), 16).toString(36);
+			return new BigInteger(Hex.encodeHexString(JsonIO.getJsonHashBytes(json)), 16).toString(36);
 		} else {
 			messageDigest.reset();
-			return new BigInteger(Hex.encodeHexString(messageDigest.digest(getJsonHashBytes(json))), 16).toString(36);
+			return new BigInteger(Hex.encodeHexString(messageDigest.digest(JsonIO.getJsonHashBytes(json))), 16).toString(36);
 		}
 	}
 

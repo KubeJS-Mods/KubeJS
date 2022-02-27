@@ -49,9 +49,9 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
@@ -195,8 +195,34 @@ public class UtilsJS {
 		}
 	}
 
-	public static Path getFile(String path) throws IOException {
-		return KubeJS.verifyFilePath(KubeJS.getGameDirectory().resolve(path));
+	@Nullable
+	public static Path getPath(Object o) {
+		try {
+			if (o instanceof Path) {
+				return KubeJS.verifyFilePath((Path) o);
+			} else if (o == null || o.toString().isEmpty()) {
+				return null;
+			}
+
+			return KubeJS.verifyFilePath(KubeJS.getGameDirectory().resolve(o.toString()));
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+
+	@Nullable
+	public static File getFileFromPath(Object o) {
+		try {
+			if (o instanceof File) {
+				return KubeJS.verifyFilePath(((File) o).toPath()).toFile();
+			} else if (o == null || o.toString().isEmpty()) {
+				return null;
+			}
+
+			return KubeJS.verifyFilePath(KubeJS.getGameDirectory().resolve(o.toString())).toFile();
+		} catch (Exception ex) {
+			return null;
+		}
 	}
 
 	@Nullable
@@ -204,7 +230,7 @@ public class UtilsJS {
 		if (o instanceof Copyable copyable) {
 			return copyable.copy();
 		} else if (o instanceof JsonElement json) {
-			return JsonUtilsJS.copy(json);
+			return JsonIO.copy(json);
 		} else if (o instanceof Tag tag) {
 			return tag.copy();
 		}
@@ -305,7 +331,7 @@ public class UtilsJS {
 		}
 		// GSON Primitives
 		else if (o instanceof JsonPrimitive json) {
-			return JsonUtilsJS.toPrimitive(json);
+			return JsonIO.toPrimitive(json);
 		}
 		// GSON Objects
 		else if (o instanceof JsonObject json) {
@@ -407,24 +433,12 @@ public class UtilsJS {
 		}
 	}
 
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
-	public static LevelJS getWorld(Level level) {
-		return getLevel(level);
-	}
-
 	public static LevelJS getLevel(Level level) {
 		if (level.isClientSide()) {
 			return getClientLevel();
 		} else {
 			return ServerJS.instance.getLevel(level);
 		}
-	}
-
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
-	public static LevelJS getClientWorld() {
-		return getClientLevel();
 	}
 
 	public static LevelJS getClientLevel() {

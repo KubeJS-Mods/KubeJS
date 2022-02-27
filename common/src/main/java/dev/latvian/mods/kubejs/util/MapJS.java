@@ -60,7 +60,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 			return json;
 		} else if (map instanceof CharSequence) {
 			try {
-				return JsonUtilsJS.GSON.fromJson(map.toString(), JsonObject.class);
+				return JsonIO.GSON.fromJson(map.toString(), JsonObject.class);
 			} catch (Exception ex) {
 				return null;
 			}
@@ -270,7 +270,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 		var json = new JsonObject();
 
 		for (var entry : entrySet()) {
-			var e = JsonUtilsJS.of(entry.getValue());
+			var e = JsonIO.of(entry.getValue());
 
 			if (!e.isJsonNull()) {
 				json.add(entry.getKey(), e);
