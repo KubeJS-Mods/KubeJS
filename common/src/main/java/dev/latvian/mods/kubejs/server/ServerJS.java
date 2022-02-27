@@ -24,7 +24,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -89,12 +88,6 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		}
 
 		return data;
-	}
-
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
-	public List<ServerLevelJS> getWorlds() {
-		return getAllLevels();
 	}
 
 	public List<ServerLevelJS> getAllLevels() {
@@ -186,12 +179,6 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		return level;
 	}
 
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
-	public final LevelJS getWorld(String dimension) {
-		return getLevel(dimension);
-	}
-
 	public LevelJS getLevel(Level minecraftLevel) {
 		var level = levelMap.get(minecraftLevel.dimension().location().toString());
 
@@ -203,12 +190,6 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		}
 
 		return level;
-	}
-
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
-	public final LevelJS getWorld(Level minecraftLevel) {
-		return getLevel(minecraftLevel);
 	}
 
 	@Nullable

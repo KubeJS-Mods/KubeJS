@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.block;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.server.ServerJS;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Random;
 
@@ -18,12 +17,6 @@ public class RandomTickCallbackJS {
 
 	public LevelJS getLevel() {
 		return this.block.getLevel();
-	}
-
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "4.3")
-	public LevelJS getWorld() {
-		return getLevel();
 	}
 
 	public ServerJS getServer() {

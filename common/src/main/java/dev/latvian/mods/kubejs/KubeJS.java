@@ -48,6 +48,7 @@ public class KubeJS {
 	}
 
 	public static KubeJS instance;
+	private static Path gameDirectory;
 
 	public static KubeJSCommon PROXY;
 	public static boolean nextClientHasClientMod = false;
@@ -57,6 +58,7 @@ public class KubeJS {
 
 	public KubeJS() throws Throwable {
 		instance = this;
+		gameDirectory = Platform.getGameFolder().normalize().toAbsolutePath();
 		Locale.setDefault(Locale.US);
 		new KubeJSBackgroundThread().start();
 
@@ -145,19 +147,15 @@ public class KubeJS {
 	}
 
 	public static Path getGameDirectory() {
-		return Platform.getGameFolder();
+		return gameDirectory;
 	}
 
 	public static Path verifyFilePath(Path path) throws IOException {
-		if (!path.normalize().toAbsolutePath().startsWith(getGameDirectory())) {
+		if (!path.normalize().toAbsolutePath().startsWith(gameDirectory)) {
 			throw new IOException("You can't access files outside Minecraft directory!");
 		}
 
 		return path;
-	}
-
-	public static void verifyFilePath(File file) throws IOException {
-		verifyFilePath(file.toPath());
 	}
 
 	public void setup() {

@@ -150,7 +150,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 			return arr;
 		} else if (array instanceof CharSequence) {
 			try {
-				return JsonUtilsJS.GSON.fromJson(array.toString(), JsonArray.class);
+				return JsonIO.GSON.fromJson(array.toString(), JsonArray.class);
 			} catch (Exception ex) {
 				return null;
 			}
@@ -444,7 +444,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 		var json = new JsonArray();
 
 		for (var o : this) {
-			var e = JsonUtilsJS.of(o);
+			var e = JsonIO.of(o);
 
 			if (!e.isJsonNull()) {
 				json.add(e);

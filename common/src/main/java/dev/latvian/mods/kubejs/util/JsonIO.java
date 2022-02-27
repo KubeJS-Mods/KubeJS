@@ -12,20 +12,18 @@ import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,8 +31,8 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-public class JsonUtilsJS {
-	public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setLenient().create();
+public class JsonIO {
+	public static final transient Gson GSON = new GsonBuilder().disableHtmlEscaping().setLenient().create();
 
 	public static JsonElement copy(@Nullable JsonElement element) {
 		if (element == null || element.isJsonNull()) {
@@ -140,6 +138,7 @@ public class JsonUtilsJS {
 		return writer.toString();
 	}
 
+	@HideFromJS
 	public static JsonElement fromString(@Nullable String string) {
 		if (string == null || string.isEmpty() || string.equals("null")) {
 			return JsonNull.INSTANCE;
@@ -162,6 +161,10 @@ public class JsonUtilsJS {
 		}
 
 		return JsonNull.INSTANCE;
+	}
+
+	public static Object parse(String string) {
+		return UtilsJS.wrap(fromString(string), JSObjectType.ANY);
 	}
 
 	@Nullable
@@ -189,15 +192,13 @@ public class JsonUtilsJS {
 	}
 
 	@Nullable
-	public static MapJS read(File file) throws IOException {
-		KubeJS.verifyFilePath(file);
-
-		if (!file.exists()) {
+	public static MapJS read(Path path) throws IOException {
+		if (Files.notExists(path)) {
 			return null;
 		}
 
-		try (var fileReader = new FileReader(file);
-			 var jsonReader = new JsonReader(fileReader)) {
+		try (var fileReader = Files.newBufferedReader(path)) {
+			var jsonReader = new JsonReader(fileReader);
 			JsonElement element;
 			var lenient = jsonReader.isLenient();
 			jsonReader.setLenient(true);
@@ -211,32 +212,19 @@ public class JsonUtilsJS {
 		}
 	}
 
-	public static void write(File file, @Nullable MapJS o) throws IOException {
-		KubeJS.verifyFilePath(file);
-
-		if (o == null) {
-			file.delete();
+	public static void write(Path path, @Nullable JsonObject json) throws IOException {
+		if (json == null) {
+			Files.deleteIfExists(path);
 			return;
 		}
 
-		var json = o.toJson();
-
-		try (Writer fileWriter = new FileWriter(file);
-			 var jsonWriter = new JsonWriter(new BufferedWriter(fileWriter))) {
+		try (Writer fileWriter = Files.newBufferedWriter(path)) {
+			var jsonWriter = new JsonWriter(fileWriter);
 			jsonWriter.setIndent("\t");
 			jsonWriter.setSerializeNulls(true);
 			jsonWriter.setLenient(true);
 			Streams.write(json, jsonWriter);
 		}
-	}
-
-	@Nullable
-	public static MapJS read(String file) throws IOException {
-		return read(KubeJS.getGameDirectory().resolve(file).toFile());
-	}
-
-	public static void write(String file, @Nullable MapJS json) throws IOException {
-		write(KubeJS.getGameDirectory().resolve(file).toFile(), json);
 	}
 
 	public static JsonArray toArray(JsonElement element) {

@@ -6,7 +6,7 @@ import dev.architectury.registry.registries.Registrar;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.util.JsonUtilsJS;
+import dev.latvian.mods.kubejs.util.JsonIO;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
@@ -74,7 +74,7 @@ public class ServerSettings {
 		dataExport.add("warnings", warnings);
 
 		try (var writer = Files.newBufferedWriter(KubeJSPaths.EXPORTED.resolve("kubejs-server-export.json"))) {
-			JsonUtilsJS.GSON.toJson(dataExport, writer);
+			JsonIO.GSON.toJson(dataExport, writer);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

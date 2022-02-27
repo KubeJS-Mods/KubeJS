@@ -19,7 +19,7 @@ import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.JsonUtilsJS;
+import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -577,7 +577,7 @@ public class RecipeEventJS extends EventJS {
 
 		for (var i = 0; i < Math.min(list.size(), 5); i++) {
 			var r = list.get(i);
-			ConsoleJS.SERVER.info("- " + r.getOrCreateId() + ":\n" + JsonUtilsJS.toPrettyString(r.json));
+			ConsoleJS.SERVER.info("- " + r.getOrCreateId() + ":\n" + JsonIO.toPrettyString(r.json));
 		}
 	}
 
