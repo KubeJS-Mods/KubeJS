@@ -33,6 +33,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -52,6 +53,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
@@ -111,26 +113,20 @@ public class KubeJSClientEventHandler {
 		var advanced = flag.isAdvanced();
 
 		if (advanced && ClientProperties.get().getShowTagNames() && Screen.hasShiftDown()) {
-			for (var tag : Tags.byItemStack(stack)) {
-				tempTagNames.computeIfAbsent(tag, TagInstance::new).item = true;
-			}
+			var addToTempTags = (Consumer<TagKey<?>>) tag -> tempTagNames.computeIfAbsent(tag.location(), TagInstance::new).registries.add(tag.registry());
+
+			Tags.byItemStack(stack).forEach(addToTempTags);
 
 			if (stack.getItem() instanceof BlockItem item) {
-				for (var tag : Tags.byBlock(item.getBlock())) {
-					tempTagNames.computeIfAbsent(tag, TagInstance::new).block = true;
-				}
+				Tags.byBlock(item.getBlock()).forEach(addToTempTags);
 			}
 
 			if (stack.getItem() instanceof BucketItemKJS item) {
-				for (var tag : Tags.byFluid(item.getFluidKJS())) {
-					tempTagNames.computeIfAbsent(tag, TagInstance::new).fluid = true;
-				}
+				Tags.byFluid(item.getFluidKJS()).forEach(addToTempTags);
 			}
 
 			if (stack.getItem() instanceof SpawnEggItem item) {
-				for (var tag : Tags.byEntityType(item.getType(stack.getTag()))) {
-					tempTagNames.computeIfAbsent(tag, TagInstance::new).entity = true;
-				}
+				Tags.byEntityType(item.getType(stack.getTag())).forEach(addToTempTags);
 			}
 
 			for (var instance : tempTagNames.values()) {

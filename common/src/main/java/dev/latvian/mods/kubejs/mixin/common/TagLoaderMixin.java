@@ -19,6 +19,8 @@ import java.util.function.Function;
 /**
  * @author LatvianModder
  */
+// TODO: we might consider moving this to inject into TagManager
+//  for the extra context provided by that
 @Mixin(TagLoader.class)
 public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 	@Inject(method = "load", at = @At("RETURN"))

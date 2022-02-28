@@ -14,7 +14,6 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.SetTag;
 import net.minecraft.tags.Tag;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,11 +69,11 @@ public class TagEventJS<T> extends EventJS {
 	public static class TagWrapper<T> {
 		private final TagEventJS<T> event;
 		private final ResourceLocation id;
-		private final SetTag.Builder builder;
+		private final Tag.Builder builder;
 		private final List<Tag.BuilderEntry> proxyList;
 		private List<Predicate<String>> priorityList;
 
-		private TagWrapper(TagEventJS<T> e, ResourceLocation i, SetTag.Builder t) {
+		private TagWrapper(TagEventJS<T> e, ResourceLocation i, Tag.Builder t) {
 			event = e;
 			id = i;
 			builder = t;
@@ -148,7 +147,7 @@ public class TagEventJS<T> extends EventJS {
 					var w = event.get(new ResourceLocation(s.substring(1)));
 					var entryId = w.id.toString();
 					var originalSize = proxyList.size();
-					proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(s));
+					proxyList.removeIf(proxy -> getIdOfEntry(proxy.entry().toString()).equals(s));
 					var removedCount = proxyList.size() - originalSize;
 
 					if (removedCount == 0) {
@@ -172,7 +171,7 @@ public class TagEventJS<T> extends EventJS {
 
 								if (v.isPresent()) {
 									var originalSize = proxyList.size();
-									proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(s));
+									proxyList.removeIf(proxy -> getIdOfEntry(proxy.entry().toString()).equals(s));
 									var removedCount = proxyList.size() - originalSize;
 
 									if (removedCount == 0) {
@@ -197,7 +196,7 @@ public class TagEventJS<T> extends EventJS {
 
 						if (v.isPresent()) {
 							var originalSize = proxyList.size();
-							proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(s));
+							proxyList.removeIf(proxy -> getIdOfEntry(proxy.entry().toString()).equals(s));
 							var removedCount = proxyList.size() - originalSize;
 
 							if (removedCount == 0) {
@@ -241,6 +240,7 @@ public class TagEventJS<T> extends EventJS {
 		}
 
 		private void gatherAllItemIDs(HashSet<String> set, Tag.Entry entry) {
+			// FIXME: use AW? or maybe we could do something better
 			if (entry instanceof Tag.ElementEntry) {
 				set.add(entry.toString());
 			} else if (entry instanceof Tag.TagEntry) {
@@ -268,7 +268,7 @@ public class TagEventJS<T> extends EventJS {
 				var added = false;
 
 				var set = new HashSet<String>();
-				gatherAllItemIDs(set, proxy.getEntry());
+				gatherAllItemIDs(set, proxy.entry());
 
 				for (var id : set) {
 					for (var i = 0; i < priorityList.size(); i++) {
@@ -306,7 +306,7 @@ public class TagEventJS<T> extends EventJS {
 	}
 
 	private final String type;
-	private final Map<ResourceLocation, SetTag.Builder> map;
+	private final Map<ResourceLocation, Tag.Builder> map;
 	private final Function<ResourceLocation, Optional<T>> registry;
 	private Map<ResourceLocation, TagWrapper<T>> tags;
 	private int addedCount;
@@ -314,7 +314,7 @@ public class TagEventJS<T> extends EventJS {
 	private List<Predicate<String>> globalPriorityList;
 	private Registrar<T> registrar;
 
-	public TagEventJS(String t, Map<ResourceLocation, SetTag.Builder> m, Function<ResourceLocation, Optional<T>> r) {
+	public TagEventJS(String t, Map<ResourceLocation, Tag.Builder> m, Function<ResourceLocation, Optional<T>> r) {
 		type = t;
 		map = m;
 		registry = r;
@@ -349,7 +349,7 @@ public class TagEventJS<T> extends EventJS {
 				map.forEach((tagId, tagBuilder) -> {
 					lines.add("");
 					lines.add("#" + tagId);
-					tagBuilder.getEntries().forEach(builderEntry -> lines.add("- " + builderEntry.getEntry()));
+					tagBuilder.getEntries().forEach(builderEntry -> lines.add("- " + builderEntry.entry()));
 				});
 
 				lines.add(0, "To refresh this file, delete it and run /reload command again! Last updated: " + DateFormat.getDateTimeInstance().format(new Date()));
@@ -423,7 +423,7 @@ public class TagEventJS<T> extends EventJS {
 
 			for (var entry : map.entrySet()) {
 				var a = new JsonArray();
-				entry.getValue().getEntries().forEach(e -> a.add(e.getEntry().toString()));
+				entry.getValue().getEntries().forEach(e -> a.add(e.entry().toString()));
 				tj1.add(entry.getKey().toString(), a);
 			}
 		}
@@ -435,7 +435,7 @@ public class TagEventJS<T> extends EventJS {
 		var t = tags.get(id);
 
 		if (t == null) {
-			t = new TagWrapper<>(this, id, SetTag.Builder.tag());
+			t = new TagWrapper<>(this, id, Tag.Builder.tag());
 			tags.put(id, t);
 			map.put(id, t.builder);
 		}
@@ -460,7 +460,7 @@ public class TagEventJS<T> extends EventJS {
 			var id = String.valueOf(o);
 
 			for (var tagWrapper : tags.values()) {
-				tagWrapper.proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(id));
+				tagWrapper.proxyList.removeIf(proxy -> getIdOfEntry(proxy.entry().toString()).equals(id));
 			}
 		}
 	}

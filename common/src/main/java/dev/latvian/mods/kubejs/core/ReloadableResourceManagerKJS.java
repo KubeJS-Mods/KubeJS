@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public interface SimpleReloadableResourceManagerKJS {
+public interface ReloadableResourceManagerKJS {
 	Map<String, FallbackResourceManager> getNamespaceResourceManagersKJS();
 
 	List<PreparableReloadListener> getReloadListenersKJS();

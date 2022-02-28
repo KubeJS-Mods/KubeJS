@@ -22,11 +22,11 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.ServerResources;
+import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimpleReloadableResourceManager;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class ServerScriptManager {
 
 	public final ScriptManager scriptManager = new ScriptManager(ScriptType.SERVER, KubeJSPaths.SERVER_SCRIPTS, "/data/kubejs/example_server_script.js");
 
-	public void init(ServerResources serverResources) {
+	public void init(ReloadableServerResources serverResources) {
 		try {
 			if (Files.notExists(KubeJSPaths.DATA)) {
 				Files.createDirectories(KubeJSPaths.DATA);
@@ -100,7 +100,7 @@ public class ServerScriptManager {
 		list.add(new KubeJSServerResourcePack());
 		list.add(virtualDataPackHigh);
 
-		var resourceManager = new SimpleReloadableResourceManager(PackType.SERVER_DATA);
+		var resourceManager = new ReloadableResourceManager(PackType.SERVER_DATA);
 
 		for (var p : list) {
 			resourceManager.add(p);

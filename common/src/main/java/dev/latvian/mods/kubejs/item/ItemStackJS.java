@@ -38,6 +38,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.EnchantedBookItem;
@@ -60,6 +61,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
@@ -574,11 +576,11 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	}
 
 	public Collection<ResourceLocation> getTags() {
-		return Tags.byItem(getItem());
+		return Tags.byItem(getItem()).map(TagKey::location).collect(Collectors.toSet());
 	}
 
 	public boolean hasTag(ResourceLocation tag) {
-		return Tags.items().getTagOrEmpty(tag).contains(getItem());
+		return getItemStack().is(Tags.item(tag));
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.core.MinecraftServerKJS;
@@ -41,7 +40,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.commands.ReloadCommand;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.TagCollection;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
@@ -117,18 +116,14 @@ public class KubeJSCommands {
 				 */
 				.then(Commands.literal("list_tag")
 						.then(Commands.argument("tag", ResourceLocationArgument.id())
-								.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.items(), Registry.ITEM_REGISTRY, ResourceLocationArgument.getId(context, "tag")))
-								.then(Commands.literal("item")
-										.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.items(), Registry.ITEM_REGISTRY, ResourceLocationArgument.getId(context, "tag")))
-								)
-								.then(Commands.literal("block")
-										.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.blocks(), Registry.BLOCK_REGISTRY, ResourceLocationArgument.getId(context, "tag")))
-								)
-								.then(Commands.literal("fluid")
-										.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.fluids(), Registry.FLUID_REGISTRY, ResourceLocationArgument.getId(context, "tag")))
-								)
-								.then(Commands.literal("entity_type")
-										.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.entityTypes(), Registry.ENTITY_TYPE_REGISTRY, ResourceLocationArgument.getId(context, "tag")))
+								.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.item(ResourceLocationArgument.getId(context, "tag"))))
+								.then(Commands.argument("registry", ResourceLocationArgument.id())
+										.executes(context -> tagObjects(context.getSource().getPlayerOrException(),
+												TagKey.create(
+														ResourceKey.createRegistryKey(ResourceLocationArgument.getId(context, "registry")),
+														ResourceLocationArgument.getId(context, "tag")
+												)
+										))
 								)
 						)
 				)
@@ -194,7 +189,7 @@ public class KubeJSCommands {
 		var stack = ItemStackJS.of(player.getItemInHand(hand));
 		player.sendMessage(copy(stack.toString(), ChatFormatting.GREEN, "Item ID"), Util.NIL_UUID);
 
-		List<ResourceLocation> tags = new ArrayList<>(Tags.byItem(stack.getItem()));
+		List<ResourceLocation> tags = new ArrayList<>(stack.getTags());
 		tags.sort(null);
 
 		for (var id : tags) {
@@ -340,26 +335,26 @@ public class KubeJSCommands {
 		return Command.SINGLE_SUCCESS;
 	}
 
-	private static <T> int tagObjects(ServerPlayer player, TagCollection<T> collection, ResourceKey<Registry<T>> reg, ResourceLocation t) {
-		var tag = collection.getTag(t);
+	@SuppressWarnings("unchecked")
+	private static <T> int tagObjects(ServerPlayer player, TagKey<T> key) {
+		var registry = ((Registry<Registry<T>>) Registry.REGISTRY).get((ResourceKey<Registry<T>>) key.registry());
+		var tag = registry.getTag(key);
 
-		if (tag == null || tag.getValues().isEmpty()) {
-			player.sendMessage(new TextComponent("Tag not found!"), Util.NIL_UUID);
+		if (tag.isEmpty()) {
+			player.sendMessage(new TextComponent("Tag not found or empty!"), Util.NIL_UUID);
 			return 0;
 		}
 
-		player.sendMessage(new TextComponent(t + ":"), Util.NIL_UUID);
+		player.sendMessage(new TextComponent(key.location() + ":"), Util.NIL_UUID);
 
-		for (var item : tag.getValues()) {
-			var id = Registries.getId(item, reg);
-			if (id == null) {
-				player.sendMessage(new TextComponent("- " + item), Util.NIL_UUID);
-			} else {
-				player.sendMessage(new TextComponent("- " + id), Util.NIL_UUID);
-			}
+		var items = tag.get();
+
+		for (var holder : items) {
+			var id = holder.unwrap().map(o -> o.location().toString(), o -> o + " (unknown ID)");
+			player.sendMessage(new TextComponent("- " + id), Util.NIL_UUID);
 		}
 
-		player.sendMessage(new TextComponent(tag.getValues().size() + " elements"), Util.NIL_UUID);
+		player.sendMessage(new TextComponent(items.size() + " elements"), Util.NIL_UUID);
 		return Command.SINGLE_SUCCESS;
 	}
 

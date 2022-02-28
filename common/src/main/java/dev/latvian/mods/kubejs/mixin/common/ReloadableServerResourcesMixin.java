@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.server.ServerResources;
+import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.PackResources;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,13 +17,13 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
-@Mixin(ServerResources.class)
-public abstract class ServerResourcesMixin {
+@Mixin(ReloadableServerResources.class)
+public abstract class ReloadableServerResourcesMixin {
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void init(RegistryAccess registryAccess, Commands.CommandSelection commandSelection, int i, CallbackInfo ci) {
 		ServerScriptManager.instance = new ServerScriptManager();
-		ServerScriptManager.instance.init((ServerResources) (Object) this);
-		KubeJSReloadListener.resources = (ServerResources) (Object) this;
+		ServerScriptManager.instance.init((ReloadableServerResources) (Object) this);
+		KubeJSReloadListener.resources = (ReloadableServerResources) (Object) this;
 	}
 
 	@ModifyArg(method = "loadResources", at = @At(value = "INVOKE", ordinal = 0,
