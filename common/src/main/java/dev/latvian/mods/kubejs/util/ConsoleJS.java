@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.util;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
