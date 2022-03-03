@@ -20,7 +20,7 @@
 		"PlayerListMixin",
 		"PlayerMixin",
 		"RecipeManagerMixin",
-		"RegistryGetterSupplierMixin",
+		"RegistryReadOpsMixin",
 		"ServerPlayerGameModeMixin",
 		"ServerResourcesMixin",
 		"SimpleReloadableResourceManagerMixin",

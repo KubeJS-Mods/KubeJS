@@ -3,7 +3,9 @@ package dev.latvian.mods.kubejs.core;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 
-public interface RegistryGetterKJS<E> {
+import java.util.function.Supplier;
+
+public interface RegistryGetterKJS<E> extends Supplier<E> {
 	Registry<E> getRegistry();
 
 	ResourceLocation getId();
