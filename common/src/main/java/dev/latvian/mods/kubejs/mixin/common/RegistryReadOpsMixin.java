@@ -13,10 +13,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.function.Supplier;
 
 @Mixin(RegistryReadOps.class)
-public abstract class RegistryGetterSupplierMixin<E> implements RegistryGetterKJS<E> {
+public abstract class RegistryReadOpsMixin {
 	@Inject(method = "createRegistryGetter", at = @At(value = "RETURN"), cancellable = true)
 	private static <E> void delegateRegistryGetter(Registry<E> registry, ResourceKey<E> resourceKey, CallbackInfoReturnable<Supplier<E>> cir) {
-		Supplier<E> delegate = cir.getReturnValue();
+		var delegate = cir.getReturnValue();
 		RegistryGetterKJS<E> registryGetter = new RegistryGetterKJS<>() {
 			@Override
 			public E get() {
