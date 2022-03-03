@@ -5,8 +5,9 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.core.MinecraftServerKJS;
@@ -20,18 +21,17 @@ import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.stages.Stages;
-import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.CompoundTagArgument;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -50,11 +50,17 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * @author LatvianModder
  */
 public class KubeJSCommands {
+
+	public static final DynamicCommandExceptionType NO_REGISTRY = new DynamicCommandExceptionType((id) ->
+			new TextComponent("No builtin or static registry found for " + id)
+	);
+
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 		dispatcher.register(Commands.literal("kubejs")
 				.then(Commands.literal("custom_command")
@@ -118,15 +124,33 @@ public class KubeJSCommands {
 				)
 				 */
 				.then(Commands.literal("list_tag")
-						.then(Commands.argument("tag", ResourceLocationArgument.id())
-								.executes(context -> tagObjects(context.getSource(), Tags.item(ResourceLocationArgument.getId(context, "tag"))))
-								.then(Commands.argument("registry", ResourceLocationArgument.id())
-										.executes(context -> tagObjects(context.getSource(),
-												TagKey.create(
-														ResourceKey.createRegistryKey(ResourceLocationArgument.getId(context, "registry")),
-														ResourceLocationArgument.getId(context, "tag")
-												)
-										))
+						.then(Commands.argument("registry", ResourceLocationArgument.id())
+								.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+										ctx.getSource().registryAccess()
+												.registries()
+												.map(entry -> entry.key().location().toString()), builder)
+
+								)
+								.executes(ctx -> {
+									var reg = registry(ctx, "registry");
+									allTags(ctx.getSource(), reg)
+											.map(TagKey::location)
+											.map(ResourceLocation::toString)
+											.map(tag -> new TextComponent(tag).withStyle(Style.EMPTY
+													.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs list_tag " + reg.location() + " " + tag))
+													.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("[Show all entries for " + tag + "]")))
+											)).forEach(msg -> ctx.getSource().sendSuccess(msg, false));
+									return Command.SINGLE_SUCCESS;
+								})
+								.then(Commands.argument("tag", ResourceLocationArgument.id())
+										.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+												allTags(ctx.getSource(), registry(ctx, "registry"))
+														.map(TagKey::location)
+														.map(ResourceLocation::toString), builder)
+										)
+										.executes(ctx -> tagObjects(ctx.getSource(), TagKey.create(registry(ctx, "registry"),
+												ResourceLocationArgument.getId(ctx, "tag")))
+										)
 								)
 						)
 				)
@@ -171,6 +195,16 @@ public class KubeJSCommands {
 		dispatcher.register(Commands.literal("kjs_hand")
 				.executes(context -> hand(context.getSource().getPlayerOrException(), InteractionHand.MAIN_HAND))
 		);
+	}
+
+	private static <T> ResourceKey<Registry<T>> registry(CommandContext<CommandSourceStack> ctx, String arg) {
+		return ResourceKey.createRegistryKey(ResourceLocationArgument.getId(ctx, arg));
+	}
+
+	private static <T> Stream<TagKey<T>> allTags(CommandSourceStack source, ResourceKey<Registry<T>> registry) throws CommandSyntaxException {
+		return source.registryAccess().registry(registry)
+				.orElseThrow(() -> NO_REGISTRY.create(registry.location()))
+				.getTagNames();
 	}
 
 	private static Component copy(String s, ChatFormatting col, String info) {
@@ -340,18 +374,9 @@ public class KubeJSCommands {
 
 	@SuppressWarnings("unchecked")
 	private static <T> int tagObjects(CommandSourceStack player, TagKey<T> key) throws CommandSyntaxException {
-		var typedKey = (ResourceKey<Registry<T>>) key.registry();
 		var registry = player.registryAccess()
-				.registry(typedKey)
-				.orElseThrow(() -> new SimpleCommandExceptionType(
-						new TextComponent("No builtin or static registry found for " + typedKey.toString())
-				).create());
-		/*var registry = ((Registry<Registry<T>>) Registry.REGISTRY)
-				.getOptional(typedKey)
-				.or(() -> ((Registry<Registry<T>>) BuiltinRegistries.REGISTRY).getOptional(typedKey))
-				.orElseThrow(() -> new SimpleCommandExceptionType(
-						new TextComponent("No builtin or static registry found for " + typedKey.toString())
-				).create());*/
+				.registry(key.registry())
+				.orElseThrow(() -> NO_REGISTRY.create(key.registry().location()));
 
 		var tag = registry.getTag(key);
 
