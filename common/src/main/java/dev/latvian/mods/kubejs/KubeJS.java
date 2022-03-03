@@ -22,6 +22,7 @@ import dev.latvian.mods.kubejs.server.KubeJSServerEventHandler;
 import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.SharedConstants;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;

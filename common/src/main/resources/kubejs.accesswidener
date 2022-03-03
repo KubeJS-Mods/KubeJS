@@ -1,0 +1,5 @@
+accessWidener v2 named
+
+accessible class net/minecraft/server/MinecraftServer$ReloadableResources
+accessible class net/minecraft/tags/Tag$ElementEntry
+accessible class net/minecraft/tags/Tag$TagEntry

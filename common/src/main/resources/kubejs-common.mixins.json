@@ -22,7 +22,6 @@
 		"RecipeManagerMixin",
 		"ServerPlayerGameModeMixin",
 		"ReloadableServerResourcesMixin",
-		"ReloadableResourceManagerMixin",
 		"TagBuilderMixin",
 		"TagLoaderMixin",
 		"TieredItemMixin",

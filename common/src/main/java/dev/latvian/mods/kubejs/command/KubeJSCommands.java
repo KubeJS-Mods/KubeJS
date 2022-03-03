@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.core.MinecraftServerKJS;
@@ -29,6 +31,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -116,9 +119,9 @@ public class KubeJSCommands {
 				 */
 				.then(Commands.literal("list_tag")
 						.then(Commands.argument("tag", ResourceLocationArgument.id())
-								.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.item(ResourceLocationArgument.getId(context, "tag"))))
+								.executes(context -> tagObjects(context.getSource(), Tags.item(ResourceLocationArgument.getId(context, "tag"))))
 								.then(Commands.argument("registry", ResourceLocationArgument.id())
-										.executes(context -> tagObjects(context.getSource().getPlayerOrException(),
+										.executes(context -> tagObjects(context.getSource(),
 												TagKey.create(
 														ResourceKey.createRegistryKey(ResourceLocationArgument.getId(context, "registry")),
 														ResourceLocationArgument.getId(context, "tag")
@@ -271,7 +274,7 @@ public class KubeJSCommands {
 	}
 
 	private static int reloadServer(CommandSourceStack source) {
-		ServerScriptManager.instance.reloadScriptManager(((MinecraftServerKJS) source.getServer()).getServerResourcesKJS().getResourceManager());
+		ServerScriptManager.instance.reloadScriptManager(((MinecraftServerKJS) source.getServer()).getReloadableResourcesKJS().resourceManager());
 		UtilsJS.postModificationEvents();
 		source.sendSuccess(new TextComponent("Done! To reload recipes, tags, loot tables and other datapack things, run /reload"), false);
 		return 1;
@@ -336,25 +339,37 @@ public class KubeJSCommands {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T> int tagObjects(ServerPlayer player, TagKey<T> key) {
-		var registry = ((Registry<Registry<T>>) Registry.REGISTRY).get((ResourceKey<Registry<T>>) key.registry());
+	private static <T> int tagObjects(CommandSourceStack player, TagKey<T> key) throws CommandSyntaxException {
+		var typedKey = (ResourceKey<Registry<T>>) key.registry();
+		var registry = player.registryAccess()
+				.registry(typedKey)
+				.orElseThrow(() -> new SimpleCommandExceptionType(
+						new TextComponent("No builtin or static registry found for " + typedKey.toString())
+				).create());
+		/*var registry = ((Registry<Registry<T>>) Registry.REGISTRY)
+				.getOptional(typedKey)
+				.or(() -> ((Registry<Registry<T>>) BuiltinRegistries.REGISTRY).getOptional(typedKey))
+				.orElseThrow(() -> new SimpleCommandExceptionType(
+						new TextComponent("No builtin or static registry found for " + typedKey.toString())
+				).create());*/
+
 		var tag = registry.getTag(key);
 
 		if (tag.isEmpty()) {
-			player.sendMessage(new TextComponent("Tag not found or empty!"), Util.NIL_UUID);
+			player.sendFailure(new TextComponent("Tag not found or empty!"));
 			return 0;
 		}
 
-		player.sendMessage(new TextComponent(key.location() + ":"), Util.NIL_UUID);
+		player.sendSuccess(new TextComponent(key.location() + ":"), false);
 
 		var items = tag.get();
 
 		for (var holder : items) {
 			var id = holder.unwrap().map(o -> o.location().toString(), o -> o + " (unknown ID)");
-			player.sendMessage(new TextComponent("- " + id), Util.NIL_UUID);
+			player.sendSuccess(new TextComponent("- " + id), false);
 		}
 
-		player.sendMessage(new TextComponent(items.size() + " elements"), Util.NIL_UUID);
+		player.sendSuccess(new TextComponent(items.size() + " elements"), false);
 		return Command.SINGLE_SUCCESS;
 	}
 

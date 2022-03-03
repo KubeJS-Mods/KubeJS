@@ -248,7 +248,7 @@ public class TagEventJS<T> extends EventJS {
 
 				if (w != null && w != this) {
 					for (var proxy : w.proxyList) {
-						gatherAllItemIDs(set, proxy.getEntry());
+						gatherAllItemIDs(set, proxy.entry());
 					}
 				}
 			}

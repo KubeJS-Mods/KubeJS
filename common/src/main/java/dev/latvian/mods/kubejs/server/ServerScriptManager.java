@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.server;
 
+import com.google.common.collect.ImmutableList;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSEvents;
@@ -25,14 +26,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
@@ -91,22 +94,20 @@ public class ServerScriptManager {
 		scriptManager.load();
 	}
 
-	public List<PackResources> resourcePackList(List<PackResources> list0) {
+	public ResourceManager wrapResourceManager(ResourceManager original) {
+		// TODO: Wrap the resource manager to inject KubeJS' virtual data packs and server scripts.
 		var virtualDataPackLow = new VirtualKubeJSDataPack(false);
 		var virtualDataPackHigh = new VirtualKubeJSDataPack(true);
-		List<PackResources> list = new ArrayList<>();
-		list.add(virtualDataPackLow);
-		list.addAll(list0);
-		list.add(new KubeJSServerResourcePack());
-		list.add(virtualDataPackHigh);
 
-		var resourceManager = new ReloadableResourceManager(PackType.SERVER_DATA);
+		var list = original.listPacks().collect(Collectors.toCollection(LinkedList::new));
 
-		for (var p : list) {
-			resourceManager.add(p);
-		}
+		list.addFirst(virtualDataPackLow);
+		list.addLast(new KubeJSServerResourcePack());
+		list.addLast(virtualDataPackHigh);
 
-		reloadScriptManager(resourceManager);
+		var wrappedResourceManager = new MultiPackResourceManager(PackType.SERVER_DATA, list);
+
+		reloadScriptManager(wrappedResourceManager);
 
 		ConsoleJS.SERVER.setLineNumber(true);
 		new DataPackEventJS(virtualDataPackLow).post(ScriptType.SERVER, "server.datapack.last");
@@ -132,6 +133,7 @@ public class ServerScriptManager {
 		CustomIngredientAction.MAP.clear();
 
 		RecipeEventJS.instance = new RecipeEventJS(typeMap);
-		return list;
+
+		return wrappedResourceManager;
 	}
 }

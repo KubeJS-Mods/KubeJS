@@ -5,7 +5,8 @@ import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
 
-public class KJSFlatLevelSource extends FlatLevelSource {
+// TODO: readd
+/*public class KJSFlatLevelSource extends FlatLevelSource {
 	public static final Codec<KJSFlatLevelSource> CODEC = FlatLevelGeneratorSettings.CODEC.fieldOf("settings")
 			.xmap(KJSFlatLevelSource::new, KJSFlatLevelSource::settings).codec();
 
@@ -24,4 +25,4 @@ public class KJSFlatLevelSource extends FlatLevelSource {
 		return -64;
 	}
 
-}
+}*/

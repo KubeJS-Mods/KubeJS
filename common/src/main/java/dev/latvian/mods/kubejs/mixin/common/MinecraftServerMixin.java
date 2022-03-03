@@ -13,5 +13,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	@Override
 	@Accessor("resources")
-	public abstract ReloadableServerResources getReloadableServerResourcesKJS();
+	public abstract MinecraftServer.ReloadableResources getReloadableResourcesKJS();
 }

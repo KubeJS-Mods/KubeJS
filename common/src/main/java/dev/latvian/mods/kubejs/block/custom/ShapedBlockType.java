@@ -48,38 +48,38 @@ public class ShapedBlockType extends BlockType {
 		}
 
 		if (this == SLAB) {
-			builder.tagBoth(BlockTags.SLABS.getName());
+			builder.tagBoth(BlockTags.SLABS.location());
 		} else if (this == STAIRS) {
-			builder.tagBoth(BlockTags.STAIRS.getName());
+			builder.tagBoth(BlockTags.STAIRS.location());
 		} else if (this == FENCE) {
-			builder.tagBoth(BlockTags.FENCES.getName());
+			builder.tagBoth(BlockTags.FENCES.location());
 
 			if (Platform.isForge()) {
 				builder.tagBoth(new ResourceLocation("forge:fences"));
 			}
 		} else if (this == FENCE_GATE) {
-			builder.tagBoth(BlockTags.FENCE_GATES.getName());
+			builder.tagBoth(BlockTags.FENCE_GATES.location());
 
 			if (Platform.isForge()) {
 				builder.tagBoth(new ResourceLocation("forge:fence_gates"));
 			}
 		} else if (this == WALL) {
-			builder.tagBoth(BlockTags.WALLS.getName());
+			builder.tagBoth(BlockTags.WALLS.location());
 		} else if (this == WOODEN_PRESSURE_PLATE) {
 			builder.noCollission();
-			builder.tagBoth(BlockTags.PRESSURE_PLATES.getName());
-			builder.tagBoth(BlockTags.WOODEN_PRESSURE_PLATES.getName());
+			builder.tagBoth(BlockTags.PRESSURE_PLATES.location());
+			builder.tagBoth(BlockTags.WOODEN_PRESSURE_PLATES.location());
 		} else if (this == STONE_PRESSURE_PLATE) {
 			builder.noCollission();
-			builder.tagBoth(BlockTags.PRESSURE_PLATES.getName());
-			builder.tagBoth(BlockTags.STONE_PRESSURE_PLATES.getName());
+			builder.tagBoth(BlockTags.PRESSURE_PLATES.location());
+			builder.tagBoth(BlockTags.STONE_PRESSURE_PLATES.location());
 		} else if (this == WOODEN_BUTTON) {
 			builder.noCollission();
-			builder.tagBoth(BlockTags.BUTTONS.getName());
-			builder.tagBoth(BlockTags.WOODEN_BUTTONS.getName());
+			builder.tagBoth(BlockTags.BUTTONS.location());
+			builder.tagBoth(BlockTags.WOODEN_BUTTONS.location());
 		} else if (this == STONE_BUTTON) {
 			builder.noCollission();
-			builder.tagBoth(BlockTags.BUTTONS.getName());
+			builder.tagBoth(BlockTags.BUTTONS.location());
 		}
 	}
 

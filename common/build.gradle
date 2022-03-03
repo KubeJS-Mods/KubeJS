@@ -18,6 +18,10 @@ configurations {
 	dev
 }
 
+loom {
+	accessWidenerPath = file("src/main/resources/kubejs.accesswidener")
+}
+
 artifacts {
 	dev(jar)
 }

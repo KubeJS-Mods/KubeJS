@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.server.ServerJS;
-import net.minecraft.server.ReloadableServerResources;
+import net.minecraft.server.MinecraftServer;
 
 public interface MinecraftServerKJS extends AsKJS {
 	@Override
@@ -9,5 +9,5 @@ public interface MinecraftServerKJS extends AsKJS {
 		return ServerJS.instance;
 	}
 
-	ReloadableServerResources getReloadableServerResourcesKJS();
+	MinecraftServer.ReloadableResources getReloadableResourcesKJS();
 }

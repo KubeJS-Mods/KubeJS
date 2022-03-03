@@ -19,6 +19,21 @@ configurations {
 	dev
 }
 
+def generatedResources = file("src/generated/resources")
+def accessWidenerFile = project(":common").file("src/main/resources/kubejs.accesswidener")
+
+loom {
+	accessWidenerPath = accessWidenerFile
+}
+
+sourceSets {
+	main {
+		resources {
+			srcDir generatedResources
+		}
+	}
+}
+
 artifacts {
 	dev(jar)
 }
@@ -41,7 +56,14 @@ dependencies {
 	shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
 
+// The AW file is needed in :fabric project resources when the game is run.
+task copyAccessWidener(type: Copy) {
+	from accessWidenerFile
+	into generatedResources
+}
+
 processResources {
+	dependsOn copyAccessWidener
 	inputs.property "version", project.version
 
 	filesMatching("fabric.mod.json") {

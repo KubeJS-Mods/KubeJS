@@ -31,6 +31,7 @@
 		"kubejs-common.mixins.json",
 		"kubejs.mixins.json"
 	],
+	"accessWidener": "kubejs.accesswidener",
 	"depends": {
 		"minecraft": ">=1.18.2",
 		"rhino": ">=1801.1.8-build.102",
