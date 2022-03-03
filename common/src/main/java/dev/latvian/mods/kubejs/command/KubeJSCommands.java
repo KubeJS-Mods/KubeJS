@@ -131,17 +131,7 @@ public class KubeJSCommands {
 												.map(entry -> entry.key().location().toString()), builder)
 
 								)
-								.executes(ctx -> {
-									var reg = registry(ctx, "registry");
-									allTags(ctx.getSource(), reg)
-											.map(TagKey::location)
-											.map(ResourceLocation::toString)
-											.map(tag -> new TextComponent(tag).withStyle(Style.EMPTY
-													.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs list_tag " + reg.location() + " " + tag))
-													.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("[Show all entries for " + tag + "]")))
-											)).forEach(msg -> ctx.getSource().sendSuccess(msg, false));
-									return Command.SINGLE_SUCCESS;
-								})
+								.executes(ctx -> listTagsFor(ctx.getSource(), registry(ctx, "registry")))
 								.then(Commands.argument("tag", ResourceLocationArgument.id())
 										.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
 												allTags(ctx.getSource(), registry(ctx, "registry"))
@@ -372,29 +362,54 @@ public class KubeJSCommands {
 		return Command.SINGLE_SUCCESS;
 	}
 
-	@SuppressWarnings("unchecked")
-	private static <T> int tagObjects(CommandSourceStack player, TagKey<T> key) throws CommandSyntaxException {
-		var registry = player.registryAccess()
+	private static <T> int listTagsFor(CommandSourceStack source, ResourceKey<Registry<T>> registry) throws CommandSyntaxException {
+		var tags = allTags(source, registry);
+
+		source.sendSuccess(TextComponent.EMPTY, false);
+		source.sendSuccess(new TextComponent("List of all Tags for " + registry.location() + ":"), false);
+		source.sendSuccess(TextComponent.EMPTY, false);
+
+		var size = tags.map(TagKey::location).map(tag -> new TextComponent("- " + tag).withStyle(Style.EMPTY
+				.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs list_tag " + registry.location() + " " + tag))
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("[Show all entries for " + tag + "]")))
+		)).mapToLong(msg -> {
+			source.sendSuccess(msg, false);
+			return 1;
+		}).sum();
+
+		source.sendSuccess(TextComponent.EMPTY, false);
+		source.sendSuccess(new TextComponent("Total: " + size + " tags"), false);
+		source.sendSuccess(new TextComponent("(Click on any of the above tags to list their contents!)"), false);
+		source.sendSuccess(TextComponent.EMPTY, false);
+
+		return Command.SINGLE_SUCCESS;
+	}
+
+	private static <T> int tagObjects(CommandSourceStack source, TagKey<T> key) throws CommandSyntaxException {
+		var registry = source.registryAccess()
 				.registry(key.registry())
 				.orElseThrow(() -> NO_REGISTRY.create(key.registry().location()));
 
 		var tag = registry.getTag(key);
 
 		if (tag.isEmpty()) {
-			player.sendFailure(new TextComponent("Tag not found or empty!"));
+			source.sendFailure(new TextComponent("Tag not found or empty!"));
 			return 0;
 		}
-
-		player.sendSuccess(new TextComponent(key.location() + ":"), false);
+		source.sendSuccess(TextComponent.EMPTY, false);
+		source.sendSuccess(new TextComponent("Contents of #" + key.location() + " [" + key.registry().location() + "]:"), false);
+		source.sendSuccess(TextComponent.EMPTY, false);
 
 		var items = tag.get();
 
 		for (var holder : items) {
 			var id = holder.unwrap().map(o -> o.location().toString(), o -> o + " (unknown ID)");
-			player.sendSuccess(new TextComponent("- " + id), false);
+			source.sendSuccess(new TextComponent("- " + id), false);
 		}
 
-		player.sendSuccess(new TextComponent(items.size() + " elements"), false);
+		source.sendSuccess(TextComponent.EMPTY, false);
+		source.sendSuccess(new TextComponent("Total: " + items.size() + " elements"), false);
+		source.sendSuccess(TextComponent.EMPTY, false);
 		return Command.SINGLE_SUCCESS;
 	}
 
