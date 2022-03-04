@@ -2,17 +2,16 @@ package dev.latvian.mods.kubejs.server;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.architectury.registry.registries.Registrar;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSObjects;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.core.TagBuilderKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.Tag;
 import org.jetbrains.annotations.Nullable;
@@ -25,8 +24,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -101,10 +98,10 @@ public class TagEventJS<T> extends EventJS {
 				} else {
 					var pattern = UtilsJS.parseRegex(s);
 
-					if (pattern != null && event.registrar != null) {
-						for (var sid : event.registrar.getIds()) {
+					if (pattern != null) {
+						for (var sid : event.registry.keySet()) {
 							if (pattern.matcher(sid.toString()).find()) {
-								var v = event.registry.apply(sid);
+								var v = event.registry.getOptional(sid);
 
 								if (v.isPresent()) {
 									builder.addElement(sid, KubeJS.MOD_ID);
@@ -120,7 +117,7 @@ public class TagEventJS<T> extends EventJS {
 						}
 					} else {
 						var sid = new ResourceLocation(s);
-						var v = event.registry.apply(sid);
+						var v = event.registry.getOptional(sid);
 
 						if (v.isPresent()) {
 							builder.addElement(sid, KubeJS.MOD_ID);
@@ -164,10 +161,10 @@ public class TagEventJS<T> extends EventJS {
 				} else {
 					var pattern = UtilsJS.parseRegex(s);
 
-					if (pattern != null && event.registrar != null) {
-						for (var sid : event.registrar.getIds()) {
+					if (pattern != null) {
+						for (var sid : event.registry.keySet()) {
 							if (pattern.matcher(sid.toString()).find()) {
-								var v = event.registry.apply(sid);
+								var v = event.registry.getOptional(sid);
 
 								if (v.isPresent()) {
 									var originalSize = proxyList.size();
@@ -192,7 +189,7 @@ public class TagEventJS<T> extends EventJS {
 						}
 					} else {
 						var sid = new ResourceLocation(s);
-						var v = event.registry.apply(sid);
+						var v = event.registry.getOptional(sid);
 
 						if (v.isPresent()) {
 							var originalSize = proxyList.size();
@@ -307,28 +304,19 @@ public class TagEventJS<T> extends EventJS {
 
 	private final String type;
 	private final Map<ResourceLocation, Tag.Builder> map;
-	private final Function<ResourceLocation, Optional<T>> registry;
+	private final Registry<T> registry;
 	private Map<ResourceLocation, TagWrapper<T>> tags;
 	private int addedCount;
 	private int removedCount;
 	private List<Predicate<String>> globalPriorityList;
-	private Registrar<T> registrar;
 
-	public TagEventJS(String t, Map<ResourceLocation, Tag.Builder> m, Function<ResourceLocation, Optional<T>> r) {
+	public TagEventJS(String t, Map<ResourceLocation, Tag.Builder> m, Registry<T> r) {
 		type = t;
 		map = m;
 		registry = r;
 		addedCount = 0;
 		removedCount = 0;
 		globalPriorityList = null;
-		registrar = null;
-
-		switch (type) {
-			case "items" -> registrar = UtilsJS.cast(KubeJSRegistries.items());
-			case "blocks" -> registrar = UtilsJS.cast(KubeJSRegistries.blocks());
-			case "fluids" -> registrar = UtilsJS.cast(KubeJSRegistries.fluids());
-			case "entity_types" -> registrar = UtilsJS.cast(KubeJSRegistries.entityTypes());
-		}
 	}
 
 	public String getType() {
@@ -406,7 +394,7 @@ public class TagEventJS<T> extends EventJS {
 			}
 		}
 
-		if (ServerSettings.dataExport != null && registrar != null) {
+		if (ServerSettings.dataExport != null && registry != null) {
 			var tj = ServerSettings.dataExport.getAsJsonObject("tags");
 
 			if (tj == null) {
