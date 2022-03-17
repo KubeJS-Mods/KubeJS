@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 /**
  * @author LatvianModder
@@ -146,9 +145,9 @@ public class TagEventJS<T> extends EventJS {
 				}).ifRight(matches -> {
 					var originalSize = proxyList.size();
 
-					for(var holder : matches) {
+					for (var holder : matches) {
 						var id = holder.key();
-						for(var iterator = proxyList.listIterator(); iterator.hasNext(); ) {
+						for (var iterator = proxyList.listIterator(); iterator.hasNext(); ) {
 							var proxy = iterator.next();
 							if (getIdOfEntry(proxy.entry()).equals(id.toString())) {
 								iterator.remove();
@@ -397,7 +396,9 @@ public class TagEventJS<T> extends EventJS {
 			}
 		}
 
-		ConsoleJS.SERVER.info("[" + type + "] Found " + tags.size() + " tags, added " + addedCount + " objects, removed " + removedCount + " objects"/*, reordered " + reordered + " tags"*/);
+		if (addedCount > 0 || removedCount > 0 || ConsoleJS.SERVER.shouldPrintDebug()) {
+			ConsoleJS.SERVER.info("[" + type + "] Found " + tags.size() + " tags, added " + addedCount + " objects, removed " + removedCount + " objects"/*, reordered " + reordered + " tags"*/);
+		}
 	}
 
 	public TagWrapper<T> get(ResourceLocation id) {

@@ -17,8 +17,17 @@ public interface TagLoaderKJS<T> {
 		TagIngredientJS.clearTagCache();
 		var c = getDirectory().substring(5);
 		var reg = getRegistryKJS();
+
 		if (reg != null) {
-			new TagEventJS<>(c, map, reg).post("tags." + c.replaceAll("([/:])", "."));
+			var event = new TagEventJS<>(c, map, reg);
+			String id = c.replaceAll("([/:])", ".");
+			event.post("tags." + id);
+
+			switch (id) {
+				case "items" -> event.post("item.tags");
+				case "blocks" -> event.post("block.tags");
+				case "fluids" -> event.post("fluid.tags");
+			}
 		}
 	}
 
