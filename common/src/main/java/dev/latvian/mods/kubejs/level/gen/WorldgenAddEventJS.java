@@ -15,13 +15,13 @@ import dev.latvian.mods.kubejs.level.gen.properties.AddOreProperties;
 import dev.latvian.mods.kubejs.level.gen.properties.AddSpawnProperties;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
+import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Blocks;
@@ -68,17 +68,26 @@ public class WorldgenAddEventJS extends StartupEventJS {
 		return ((WritableRegistry<T>) registry).registerOrOverride(OptionalInt.empty(), key, object, Lifecycle.experimental());
 	}
 
-	private void addFeature(ResourceLocation id, BiomeFilter filter, GenerationStep.Decoration decoration,
+	private void addFeature(ResourceLocation id, BiomeFilter filter, GenerationStep.Decoration step,
 							ConfiguredFeature<?, ?> feature, List<PlacementModifier> modifiers) {
 		if (id == null) {
 			id = new ResourceLocation("kubejs:features/" + getUniqueId(feature, ConfiguredFeature.DIRECT_CODEC));
 		}
 
-		var featureHolder = registerFeature(BuiltinRegistries.CONFIGURED_FEATURE, id, feature);
-		var placed = new PlacedFeature(featureHolder, modifiers);
-		var placedHolder = registerFeature(BuiltinRegistries.PLACED_FEATURE, id, placed);
+		var holder = registerFeature(BuiltinRegistries.CONFIGURED_FEATURE, id, feature);
+		var placed = new PlacedFeature(holder, modifiers);
 
-		BiomeModifications.postProcessProperties(filter, (ctx, props) -> props.getGenerationProperties().addFeature(decoration, placedHolder));
+		addFeature(id, filter, step, placed);
+	}
+
+	private void addFeature(ResourceLocation id, BiomeFilter filter, GenerationStep.Decoration step, PlacedFeature feature) {
+		if (id == null) {
+			id = new ResourceLocation("kubejs:features/" + getUniqueId(feature, PlacedFeature.DIRECT_CODEC));
+		}
+
+		var holder = registerFeature(BuiltinRegistries.PLACED_FEATURE, id, feature);
+
+		BiomeModifications.postProcessProperties(filter, (ctx, props) -> props.getGenerationProperties().addFeature(step, holder));
 	}
 
 	private void addEntitySpawn(BiomeFilter filter, MobCategory category, MobSpawnSettings.SpawnerData spawnerData) {
@@ -91,15 +100,15 @@ public class WorldgenAddEventJS extends StartupEventJS {
 	}
 
 	public void addFeatureJson(BiomeFilter filter, @Nullable ResourceLocation id, JsonObject json) {
-		var featureJson = json.get("feature").getAsJsonObject();
-		var placementJson = GsonHelper.getAsJsonArray(json, "placements", new JsonArray());
+		var featureJson = json.has("feature") ? json : Util.make(new JsonObject(), o -> o.add("feature", json));
 
-		var feature = ConfiguredFeature.DIRECT_CODEC.parse(JsonOps.INSTANCE, featureJson).get().orThrow();
-		var placements = PlacementModifier.CODEC.listOf().parse(JsonOps.INSTANCE, placementJson).get().orThrow();
+		if (!featureJson.has("placement")) {
+			featureJson.add("placement", new JsonArray());
+		}
 
-		PlacedFeature.CODEC.decode(JsonOps.INSTANCE, featureJson);
+		var feature = PlacedFeature.DIRECT_CODEC.parse(JsonOps.INSTANCE, featureJson).get().orThrow();
 
-		addFeature(id, filter, GenerationStep.Decoration.SURFACE_STRUCTURES, feature, placements);
+		addFeature(id, filter, GenerationStep.Decoration.SURFACE_STRUCTURES, feature);
 	}
 
 	public void addOre(Consumer<AddOreProperties> p) {
