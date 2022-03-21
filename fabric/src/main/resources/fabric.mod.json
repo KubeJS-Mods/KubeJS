@@ -34,8 +34,8 @@
 	"accessWidener": "kubejs.accesswidener",
 	"depends": {
 		"minecraft": ">=1.18.2",
-		"rhino": ">=1801.1.8-build.102",
-		"architectury": ">=4.0.29"
+		"rhino": ">=1801.1.8-build.104",
+		"architectury": ">=4.1.34"
 	},
 	"breaks": {
 		"techreborn": "<5.1.0-beta.6"
