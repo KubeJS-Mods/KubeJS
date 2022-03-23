@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.mixin.common;
 
 import dev.latvian.mods.kubejs.core.MinecraftServerKJS;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.ReloadableServerResources;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 

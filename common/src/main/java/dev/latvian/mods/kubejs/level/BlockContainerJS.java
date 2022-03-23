@@ -161,7 +161,7 @@ public class BlockContainerJS implements SpecialEquality {
 				var property = pmap.get(String.valueOf(entry.getKey()));
 
 				if (property != null) {
-					state = state.setValue(property, UtilsJS.cast(property.getValue(String.valueOf(entry.getValue())).get()));
+					state = state.setValue(property, UtilsJS.cast(property.getValue(String.valueOf(entry.getValue())).orElseThrow()));
 				}
 			}
 		}

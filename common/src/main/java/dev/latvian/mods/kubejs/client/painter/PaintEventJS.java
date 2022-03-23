@@ -13,6 +13,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
 import org.jetbrains.annotations.Nullable;
 
 public class PaintEventJS extends ClientEventJS {
@@ -85,7 +86,7 @@ public class PaintEventJS extends ClientEventJS {
 
 	public TextureAtlas getTextureAtlas() {
 		if (textureAtlas == null) {
-			textureAtlas = mc.getModelManager().getAtlas(TextureAtlas.LOCATION_BLOCKS);
+			textureAtlas = mc.getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
 		}
 
 		return textureAtlas;

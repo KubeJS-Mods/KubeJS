@@ -12,6 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -328,7 +329,7 @@ public class BlockBuilder extends BuilderBase {
 	}
 
 	public Block.Properties createProperties() {
-		var properties = BlockProperties.of(material.getMinecraftMaterial());
+		var properties = BlockBehaviour.Properties.of(material.getMinecraftMaterial());
 		properties.sound(material.getSound());
 
 		if (resistance >= 0F) {

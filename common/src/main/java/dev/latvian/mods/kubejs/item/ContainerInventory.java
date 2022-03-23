@@ -106,11 +106,10 @@ public class ContainerInventory implements ItemHandler.Mutable {
 					copy.grow(stackInSlot.getCount());
 					getInv().setItem(slot, copy);
 					getInv().setChanged();
-					return stack;
 				} else {
 					stack.shrink(m);
-					return stack;
 				}
+				return stack;
 			}
 		} else {
 			if (!getInv().canPlaceItem(slot, stack)) {

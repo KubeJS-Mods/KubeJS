@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.rhino.util.unit.Unit;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
 
 public class AtlasTextureObject extends ScreenPainterObject {
 	private Unit color = PainterObjectProperties.WHITE_COLOR;
@@ -36,7 +37,7 @@ public class AtlasTextureObject extends ScreenPainterObject {
 		var v0 = sprite.getV0();
 		var u1 = sprite.getU1();
 		var v1 = sprite.getV1();
-		event.bindTexture(TextureAtlas.LOCATION_BLOCKS);
+		event.bindTexture(InventoryMenu.BLOCK_ATLAS);
 		event.beginQuads(DefaultVertexFormat.POSITION_COLOR_TEX);
 		event.rectangle(ax, ay, az, aw, ah, color.getAsInt(), u0, v0, u1, v1);
 		event.end();

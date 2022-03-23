@@ -1,10 +1,5 @@
 package dev.latvian.mods.kubejs.level.gen;
 
-import com.mojang.serialization.Codec;
-import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.FlatLevelSource;
-import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
-
 // TODO: readd
 /*public class KJSFlatLevelSource extends FlatLevelSource {
 	public static final Codec<KJSFlatLevelSource> CODEC = FlatLevelGeneratorSettings.CODEC.fieldOf("settings")

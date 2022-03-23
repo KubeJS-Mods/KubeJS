@@ -10,7 +10,6 @@ import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
-import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;

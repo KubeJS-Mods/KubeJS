@@ -3,9 +3,6 @@ package dev.latvian.mods.kubejs.level.gen.filter.biome.fabric;
 import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import net.minecraft.core.Holder;
-import net.minecraft.data.BuiltinRegistries;
-import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 
