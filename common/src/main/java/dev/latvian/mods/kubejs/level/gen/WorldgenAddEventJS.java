@@ -3,7 +3,9 @@ package dev.latvian.mods.kubejs.level.gen;
 import com.google.common.collect.Iterables;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.Lifecycle;
 import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
@@ -13,9 +15,13 @@ import dev.latvian.mods.kubejs.level.gen.properties.AddOreProperties;
 import dev.latvian.mods.kubejs.level.gen.properties.AddSpawnProperties;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
+import net.minecraft.Util;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.WritableRegistry;
 import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Blocks;
@@ -40,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.OptionalInt;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
@@ -54,28 +61,37 @@ public class WorldgenAddEventJS extends StartupEventJS {
 
 	private static MessageDigest messageDigest;
 
-	private void addFeature(ResourceLocation id, BiomeFilter filter, GenerationStep.Decoration decoration,
-							ConfiguredFeature<?, ?> feature, List<PlacementModifier> modifiers) {
-		var placedFeature = feature.placed(modifiers);
+	// TODO: we should probably not be registering to BuiltinRegistries directly,
+	//  but rather to the synced registry directly by using the RegistryAccess.
+	private static <T> Holder<T> registerFeature(Registry<T> registry, ResourceLocation id, T object) {
+		var key = ResourceKey.create(registry.key(), id);
+		return ((WritableRegistry<T>) registry).registerOrOverride(OptionalInt.empty(), key, object, Lifecycle.experimental());
+	}
 
+	private void addFeature(ResourceLocation id, BiomeFilter filter, GenerationStep.Decoration step,
+							ConfiguredFeature<?, ?> feature, List<PlacementModifier> modifiers) {
 		if (id == null) {
-			id = new ResourceLocation("kubejs:features/" + getUniqueId(placedFeature));
+			id = new ResourceLocation("kubejs:features/" + getUniqueId(feature, ConfiguredFeature.DIRECT_CODEC));
 		}
 
-		// TODO: we should probably not be registering to BuiltinRegistries directly,
-		//  but rather to the synced registry directly by using the RegistryAccess.
-		BuiltinRegistries.register(BuiltinRegistries.CONFIGURED_FEATURE, id, feature);
-		BuiltinRegistries.register(BuiltinRegistries.PLACED_FEATURE, id, placedFeature);
+		var holder = registerFeature(BuiltinRegistries.CONFIGURED_FEATURE, id, feature);
+		var placed = new PlacedFeature(holder, modifiers);
 
-		BiomeModifications.postProcessProperties(filter, (ctx, properties) -> {
-			properties.getGenerationProperties().addFeature(decoration, placedFeature);
-		});
+		addFeature(id, filter, step, placed);
+	}
+
+	private void addFeature(ResourceLocation id, BiomeFilter filter, GenerationStep.Decoration step, PlacedFeature feature) {
+		if (id == null) {
+			id = new ResourceLocation("kubejs:features/" + getUniqueId(feature, PlacedFeature.DIRECT_CODEC));
+		}
+
+		var holder = registerFeature(BuiltinRegistries.PLACED_FEATURE, id, feature);
+
+		BiomeModifications.postProcessProperties(filter, (ctx, props) -> props.getGenerationProperties().addFeature(step, holder));
 	}
 
 	private void addEntitySpawn(BiomeFilter filter, MobCategory category, MobSpawnSettings.SpawnerData spawnerData) {
-		BiomeModifications.postProcessProperties(filter, (ctx, properties) -> {
-			properties.getSpawnProperties().addSpawn(category, spawnerData);
-		});
+		BiomeModifications.postProcessProperties(filter, (ctx, props) -> props.getSpawnProperties().addSpawn(category, spawnerData));
 	}
 
 	public void addFeatureJson(BiomeFilter filter, JsonObject json) {
@@ -84,13 +100,15 @@ public class WorldgenAddEventJS extends StartupEventJS {
 	}
 
 	public void addFeatureJson(BiomeFilter filter, @Nullable ResourceLocation id, JsonObject json) {
-		var featureJson = json.get("feature").getAsJsonObject();
-		var placementJson = GsonHelper.getAsJsonArray(json, "placements", new JsonArray());
+		var featureJson = json.has("feature") ? json : Util.make(new JsonObject(), o -> o.add("feature", json));
 
-		var feature = ConfiguredFeature.DIRECT_CODEC.parse(JsonOps.INSTANCE, featureJson).get().orThrow();
-		var placements = PlacementModifier.CODEC.listOf().parse(JsonOps.INSTANCE, placementJson).get().orThrow();
+		if (!featureJson.has("placement")) {
+			featureJson.add("placement", new JsonArray());
+		}
 
-		addFeature(id, filter, GenerationStep.Decoration.SURFACE_STRUCTURES, feature, placements);
+		var feature = PlacedFeature.DIRECT_CODEC.parse(JsonOps.INSTANCE, featureJson).get().orThrow();
+
+		addFeature(id, filter, GenerationStep.Decoration.SURFACE_STRUCTURES, feature);
 	}
 
 	public void addOre(Consumer<AddOreProperties> p) {
@@ -101,9 +119,7 @@ public class WorldgenAddEventJS extends StartupEventJS {
 			return;
 		}
 
-		ConfiguredFeature<OreConfiguration, ?> oreFeature =
-				// TODO: should we just turn noSurface into a float like vanilla has?
-				Feature.ORE.configured(new OreConfiguration(properties.targets, properties.size, properties.noSurface ? 1.0F : 0.0F));
+		var oreFeature = new ConfiguredFeature<>(Feature.ORE, new OreConfiguration(properties.targets, properties.size, properties.noSurface));
 
 		var modifiers = new ArrayList<PlacementModifier>();
 
@@ -139,7 +155,7 @@ public class WorldgenAddEventJS extends StartupEventJS {
 		}
 
 		addFeature(properties.id, properties.biomes, properties.worldgenLayer,
-				Feature.LAKE.configured(new LakeFeature.Configuration(BlockStateProvider.simple(fluid), BlockStateProvider.simple(barrier))),
+				new ConfiguredFeature<>(Feature.LAKE, new LakeFeature.Configuration(BlockStateProvider.simple(fluid), BlockStateProvider.simple(barrier))),
 				properties.chance > 0 ? Collections.singletonList(RarityFilter.onAverageOnceEvery(properties.chance)) : Collections.emptyList());
 	}
 
@@ -178,7 +194,7 @@ public class WorldgenAddEventJS extends StartupEventJS {
 		addSpawn(BiomeFilter.ALWAYS_TRUE, category, spawn);
 	}
 
-	public static String getUniqueId(PlacedFeature feature) {
+	public static <T> String getUniqueId(T feature, Codec<T> codec) {
 		if (messageDigest == null) {
 			try {
 				messageDigest = MessageDigest.getInstance("MD5");
@@ -187,7 +203,7 @@ public class WorldgenAddEventJS extends StartupEventJS {
 			}
 		}
 
-		var json = PlacedFeature.DIRECT_CODEC.encodeStart(JsonOps.COMPRESSED, feature)
+		var json = codec.encodeStart(JsonOps.COMPRESSED, feature)
 				.getOrThrow(false, str -> {
 					throw new RuntimeException("Could not encode feature to JSON: " + str);
 				});
@@ -199,21 +215,4 @@ public class WorldgenAddEventJS extends StartupEventJS {
 			return new BigInteger(Hex.encodeHexString(messageDigest.digest(JsonIO.getJsonHashBytes(json))), 16).toString(36);
 		}
 	}
-
-	/*
-	public void addLake(Consumer<AddLakeProperties> p) {
-		AddLakeProperties properties = new AddLakeProperties();
-		p.accept(properties);
-
-		if (properties._block == Blocks.AIR.defaultBlockState()) {
-			return;
-		}
-
-		if (!verifyBiomes(properties.biomes)) {
-			return;
-		}
-
-		addFeature(properties._worldgenLayer, Feature.LAKE.configured(new BlockStateConfiguration(properties._block)).decorated((FeatureDecorator.WATER_LAKE).configured(new ChanceDecoratorConfiguration(properties.chance))));
-	}
-	*/
 }

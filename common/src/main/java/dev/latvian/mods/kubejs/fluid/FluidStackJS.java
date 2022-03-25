@@ -17,12 +17,14 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
@@ -119,11 +121,11 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 	public abstract String getId();
 
 	public Collection<ResourceLocation> getTags() {
-		return Tags.byFluid(getFluid());
+		return Tags.byFluid(getFluid()).map(TagKey::location).collect(Collectors.toSet());
 	}
 
 	public boolean hasTag(ResourceLocation tag) {
-		return Tags.fluids().getTagOrEmpty(tag).contains(getFluid());
+		return getFluid().is(Tags.fluid(tag));
 	}
 
 	public Fluid getFluid() {

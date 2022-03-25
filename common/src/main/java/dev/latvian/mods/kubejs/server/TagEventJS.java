@@ -2,19 +2,20 @@ package dev.latvian.mods.kubejs.server;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.architectury.registry.registries.Registrar;
+import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSObjects;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.core.TagBuilderKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.SetTag;
 import net.minecraft.tags.Tag;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,15 +27,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
  * @author LatvianModder
  */
 public class TagEventJS<T> extends EventJS {
-	private static String getIdOfEntry(String s) {
+	private static String getIdOfEntry(Tag.Entry entry) {
+		var s = entry.toString();
 		if (s.length() > 0 && s.charAt(s.length() - 1) == '?') {
 			return s.substring(0, s.length() - 1);
 		}
@@ -70,11 +70,11 @@ public class TagEventJS<T> extends EventJS {
 	public static class TagWrapper<T> {
 		private final TagEventJS<T> event;
 		private final ResourceLocation id;
-		private final SetTag.Builder builder;
+		private final Tag.Builder builder;
 		private final List<Tag.BuilderEntry> proxyList;
 		private List<Predicate<String>> priorityList;
 
-		private TagWrapper(TagEventJS<T> e, ResourceLocation i, SetTag.Builder t) {
+		private TagWrapper(TagEventJS<T> e, ResourceLocation i, Tag.Builder t) {
 			event = e;
 			id = i;
 			builder = t;
@@ -84,138 +84,94 @@ public class TagEventJS<T> extends EventJS {
 
 		@Override
 		public String toString() {
-			return event.type + ":" + id;
+			return "<%s / %s>".formatted(event.type, id);
 		}
 
-		public TagWrapper<T> add(Object ids) {
-			for (var o : ListJS.orSelf(ids)) {
-				var s = String.valueOf(o);
-
-				if (s.startsWith("#")) {
-					var w = event.get(new ResourceLocation(s.substring(1)));
-					builder.addTag(w.id, KubeJS.MOD_ID);
-					event.addedCount += w.proxyList.size();
+		public TagWrapper<T> add(String... ids) {
+			for (var stringId : ids) {
+				gatherTargets(stringId).ifLeft(wrapper -> {
+					builder.addTag(wrapper.id, KubeJS.MOD_ID);
+					event.addedCount += wrapper.proxyList.size();
 
 					if (ConsoleJS.SERVER.shouldPrintDebug()) {
-						ConsoleJS.SERVER.debug("+ " + this + " // " + w.id);
+						ConsoleJS.SERVER.debug("+ %s // #%s".formatted(this, wrapper.id));
 					}
-				} else {
-					var pattern = UtilsJS.parseRegex(s);
+				}).ifRight(matches -> {
+					if (matches.isEmpty()) {
+						if (ServerSettings.instance.logSkippedRecipes) {
+							ConsoleJS.SERVER.warn("+ %s // %s [No matches found!]".formatted(this, stringId));
+						}
+						return;
+					}
 
-					if (pattern != null && event.registrar != null) {
-						for (var sid : event.registrar.getIds()) {
-							if (pattern.matcher(sid.toString()).find()) {
-								var v = event.registry.apply(sid);
+					event.addedCount += matches.size();
+					for (var holder : matches) {
+						var id = holder.key().location();
+						builder.addElement(id, KubeJS.MOD_ID);
 
-								if (v.isPresent()) {
-									builder.addElement(sid, KubeJS.MOD_ID);
-									event.addedCount++;
-
-									if (ConsoleJS.SERVER.shouldPrintDebug()) {
-										ConsoleJS.SERVER.debug("+ " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
-									}
-								} else {
-									ConsoleJS.SERVER.error("+ " + this + " // " + s + " [Not found!]");
-								}
+						if (ConsoleJS.SERVER.shouldPrintDebug()) {
+							if (id.toString().equals(stringId)) {
+								ConsoleJS.SERVER.debug("+ %s // %s".formatted(this, id));
+							} else {
+								ConsoleJS.SERVER.debug("+ %s // %s (via %s)".formatted(this, id, stringId));
 							}
 						}
-					} else {
-						var sid = new ResourceLocation(s);
-						var v = event.registry.apply(sid);
-
-						if (v.isPresent()) {
-							builder.addElement(sid, KubeJS.MOD_ID);
-							event.addedCount++;
-
-							if (ConsoleJS.SERVER.shouldPrintDebug()) {
-								ConsoleJS.SERVER.debug("+ " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
-							}
-						} else {
-							ConsoleJS.SERVER.error("+ " + this + " // " + s + " [Not found!]");
-						}
 					}
-				}
+				});
 			}
 
 			return this;
 		}
 
-		public TagWrapper<T> remove(Object ids) {
-			for (var o : ListJS.orSelf(ids)) {
-				var s = String.valueOf(o);
-
-				if (s.startsWith("#")) {
-					var w = event.get(new ResourceLocation(s.substring(1)));
-					var entryId = w.id.toString();
+		public TagWrapper<T> remove(String... ids) {
+			for (var stringId : ids) {
+				gatherTargets(stringId).ifLeft(wrapper -> {
+					var entryId = wrapper.id.toString();
 					var originalSize = proxyList.size();
-					proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(s));
-					var removedCount = proxyList.size() - originalSize;
+					proxyList.removeIf(proxy -> getIdOfEntry(proxy.entry()).equals(entryId));
 
+					var removedCount = proxyList.size() - originalSize;
 					if (removedCount == 0) {
 						if (ServerSettings.instance.logSkippedRecipes) {
-							ConsoleJS.SERVER.warn(s + " didn't contain tag " + this + ", skipped");
+							ConsoleJS.SERVER.warn("- %s // #%s [No matches found!]".formatted(this, entryId));
 						}
 					} else {
 						event.removedCount -= removedCount;
 
 						if (ConsoleJS.SERVER.shouldPrintDebug()) {
-							ConsoleJS.SERVER.debug("- " + this + " // " + w.id);
+							ConsoleJS.SERVER.debug("- " + this + " // " + entryId);
 						}
 					}
-				} else {
-					var pattern = UtilsJS.parseRegex(s);
+				}).ifRight(matches -> {
+					var originalSize = proxyList.size();
 
-					if (pattern != null && event.registrar != null) {
-						for (var sid : event.registrar.getIds()) {
-							if (pattern.matcher(sid.toString()).find()) {
-								var v = event.registry.apply(sid);
-
-								if (v.isPresent()) {
-									var originalSize = proxyList.size();
-									proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(s));
-									var removedCount = proxyList.size() - originalSize;
-
-									if (removedCount == 0) {
-										if (ServerSettings.instance.logSkippedRecipes) {
-											ConsoleJS.SERVER.warn(s + " didn't contain tag " + id + ", skipped");
-										}
+					for (var holder : matches) {
+						var id = holder.key();
+						for (var iterator = proxyList.listIterator(); iterator.hasNext(); ) {
+							var proxy = iterator.next();
+							if (getIdOfEntry(proxy.entry()).equals(id.toString())) {
+								iterator.remove();
+								if (ConsoleJS.SERVER.shouldPrintDebug()) {
+									if (id.toString().equals(stringId)) {
+										ConsoleJS.SERVER.debug("- %s // %s".formatted(this, id));
 									} else {
-										event.removedCount -= removedCount;
-
-										if (ConsoleJS.SERVER.shouldPrintDebug()) {
-											ConsoleJS.SERVER.debug("- " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
-										}
+										ConsoleJS.SERVER.debug("- %s // %s (via %s)".formatted(this, id, stringId));
 									}
-								} else {
-									ConsoleJS.SERVER.error("- " + this + " // " + s + " [Not found!]");
 								}
+								break;
 							}
+						}
+					}
+
+					var removedCount = proxyList.size() - originalSize;
+					if (removedCount == 0) {
+						if (ServerSettings.instance.logSkippedRecipes) {
+							ConsoleJS.SERVER.warn("- %s // %s [No matches found!]".formatted(this, stringId));
 						}
 					} else {
-						var sid = new ResourceLocation(s);
-						var v = event.registry.apply(sid);
-
-						if (v.isPresent()) {
-							var originalSize = proxyList.size();
-							proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(s));
-							var removedCount = proxyList.size() - originalSize;
-
-							if (removedCount == 0) {
-								if (ServerSettings.instance.logSkippedRecipes) {
-									ConsoleJS.SERVER.warn(s + " didn't contain tag " + id + ", skipped");
-								}
-							} else {
-								event.removedCount -= removedCount;
-
-								if (ConsoleJS.SERVER.shouldPrintDebug()) {
-									ConsoleJS.SERVER.debug("- " + this + " // " + s + " [" + v.get().getClass().getName() + "]");
-								}
-							}
-						} else {
-							ConsoleJS.SERVER.error("- " + this + " // " + s + " [Not found!]");
-						}
+						event.removedCount -= removedCount;
 					}
-				}
+				});
 			}
 
 			return this;
@@ -241,6 +197,7 @@ public class TagEventJS<T> extends EventJS {
 		}
 
 		private void gatherAllItemIDs(HashSet<String> set, Tag.Entry entry) {
+			// FIXME: use AW? or maybe we could do something better
 			if (entry instanceof Tag.ElementEntry) {
 				set.add(entry.toString());
 			} else if (entry instanceof Tag.TagEntry) {
@@ -248,10 +205,30 @@ public class TagEventJS<T> extends EventJS {
 
 				if (w != null && w != this) {
 					for (var proxy : w.proxyList) {
-						gatherAllItemIDs(set, proxy.getEntry());
+						gatherAllItemIDs(set, proxy.entry());
 					}
 				}
 			}
+		}
+
+		private Either<TagWrapper<T>, List<Holder.Reference<T>>> gatherTargets(String target) {
+			if (target.isEmpty()) {
+				return Either.right(List.of());
+			}
+			var suffix = target.substring(1);
+			return switch (target.charAt(0)) {
+				case '#' -> Either.left(event.get(new ResourceLocation(suffix)));
+				case '@' -> Either.right(ofKeySet(id -> id.location().getNamespace().equals(suffix)));
+				case '/' -> Either.right(ofKeySet(id -> UtilsJS.parseRegex(target).matcher(id.location().toString()).find()));
+				default -> {
+					var id = ResourceKey.create(event.registry.key(), new ResourceLocation(target));
+					yield UtilsJS.cast(Either.right(List.of(event.registry.getHolderOrThrow(id))));
+				}
+			};
+		}
+
+		private List<Holder.Reference<T>> ofKeySet(Predicate<ResourceKey<T>> predicate) {
+			return event.registry.holders().filter(ref -> ref.is(predicate)).toList();
 		}
 
 		/**
@@ -268,7 +245,7 @@ public class TagEventJS<T> extends EventJS {
 				var added = false;
 
 				var set = new HashSet<String>();
-				gatherAllItemIDs(set, proxy.getEntry());
+				gatherAllItemIDs(set, proxy.entry());
 
 				for (var id : set) {
 					for (var i = 0; i < priorityList.size(); i++) {
@@ -306,29 +283,20 @@ public class TagEventJS<T> extends EventJS {
 	}
 
 	private final String type;
-	private final Map<ResourceLocation, SetTag.Builder> map;
-	private final Function<ResourceLocation, Optional<T>> registry;
+	private final Map<ResourceLocation, Tag.Builder> map;
+	private final Registry<T> registry;
 	private Map<ResourceLocation, TagWrapper<T>> tags;
 	private int addedCount;
 	private int removedCount;
 	private List<Predicate<String>> globalPriorityList;
-	private Registrar<T> registrar;
 
-	public TagEventJS(String t, Map<ResourceLocation, SetTag.Builder> m, Function<ResourceLocation, Optional<T>> r) {
+	public TagEventJS(String t, Map<ResourceLocation, Tag.Builder> m, Registry<T> r) {
 		type = t;
 		map = m;
 		registry = r;
 		addedCount = 0;
 		removedCount = 0;
 		globalPriorityList = null;
-		registrar = null;
-
-		switch (type) {
-			case "items" -> registrar = UtilsJS.cast(KubeJSRegistries.items());
-			case "blocks" -> registrar = UtilsJS.cast(KubeJSRegistries.blocks());
-			case "fluids" -> registrar = UtilsJS.cast(KubeJSRegistries.fluids());
-			case "entity_types" -> registrar = UtilsJS.cast(KubeJSRegistries.entityTypes());
-		}
 	}
 
 	public String getType() {
@@ -349,7 +317,7 @@ public class TagEventJS<T> extends EventJS {
 				map.forEach((tagId, tagBuilder) -> {
 					lines.add("");
 					lines.add("#" + tagId);
-					tagBuilder.getEntries().forEach(builderEntry -> lines.add("- " + builderEntry.getEntry()));
+					tagBuilder.getEntries().forEach(builderEntry -> lines.add("- " + builderEntry.entry()));
 				});
 
 				lines.add(0, "To refresh this file, delete it and run /reload command again! Last updated: " + DateFormat.getDateTimeInstance().format(new Date()));
@@ -371,13 +339,13 @@ public class TagEventJS<T> extends EventJS {
 		if (type.equals("items")) {
 			for (var item : KubeJSObjects.ITEMS.values()) {
 				for (var s : item.defaultTags) {
-					add(s, item.id);
+					add(s, item.id.toString());
 				}
 
 				for (var block : KubeJSObjects.BLOCKS.values()) {
 					if (block.itemBuilder != null) {
 						for (var s : block.itemBuilder.defaultTags) {
-							add(s, block.itemBuilder.id);
+							add(s, block.itemBuilder.id.toString());
 						}
 					}
 				}
@@ -385,7 +353,7 @@ public class TagEventJS<T> extends EventJS {
 		} else if (type.equals("blocks")) {
 			for (var block : KubeJSObjects.BLOCKS.values()) {
 				for (var s : block.defaultTags) {
-					add(s, block.id);
+					add(s, block.id.toString());
 				}
 			}
 		}
@@ -406,7 +374,7 @@ public class TagEventJS<T> extends EventJS {
 			}
 		}
 
-		if (ServerSettings.dataExport != null && registrar != null) {
+		if (ServerSettings.dataExport != null && registry != null) {
 			var tj = ServerSettings.dataExport.getAsJsonObject("tags");
 
 			if (tj == null) {
@@ -423,19 +391,21 @@ public class TagEventJS<T> extends EventJS {
 
 			for (var entry : map.entrySet()) {
 				var a = new JsonArray();
-				entry.getValue().getEntries().forEach(e -> a.add(e.getEntry().toString()));
+				entry.getValue().getEntries().forEach(e -> a.add(e.entry().toString()));
 				tj1.add(entry.getKey().toString(), a);
 			}
 		}
 
-		ConsoleJS.SERVER.info("[" + type + "] Found " + tags.size() + " tags, added " + addedCount + " objects, removed " + removedCount + " objects"/*, reordered " + reordered + " tags"*/);
+		if (addedCount > 0 || removedCount > 0 || ConsoleJS.SERVER.shouldPrintDebug()) {
+			ConsoleJS.SERVER.info("[" + type + "] Found " + tags.size() + " tags, added " + addedCount + " objects, removed " + removedCount + " objects"/*, reordered " + reordered + " tags"*/);
+		}
 	}
 
 	public TagWrapper<T> get(ResourceLocation id) {
 		var t = tags.get(id);
 
 		if (t == null) {
-			t = new TagWrapper<>(this, id, SetTag.Builder.tag());
+			t = new TagWrapper<>(this, id, Tag.Builder.tag());
 			tags.put(id, t);
 			map.put(id, t.builder);
 		}
@@ -443,11 +413,11 @@ public class TagEventJS<T> extends EventJS {
 		return t;
 	}
 
-	public TagWrapper<T> add(ResourceLocation tag, Object ids) {
+	public TagWrapper<T> add(ResourceLocation tag, String... ids) {
 		return get(tag).add(ids);
 	}
 
-	public TagWrapper<T> remove(ResourceLocation tag, Object ids) {
+	public TagWrapper<T> remove(ResourceLocation tag, String... ids) {
 		return get(tag).remove(ids);
 	}
 
@@ -455,12 +425,10 @@ public class TagEventJS<T> extends EventJS {
 		return get(tag).removeAll();
 	}
 
-	public void removeAllTagsFrom(Object ids) {
-		for (var o : ListJS.orSelf(ids)) {
-			var id = String.valueOf(o);
-
+	public void removeAllTagsFrom(String... ids) {
+		for (var id : ids) {
 			for (var tagWrapper : tags.values()) {
-				tagWrapper.proxyList.removeIf(proxy -> getIdOfEntry(proxy.getEntry().toString()).equals(id));
+				tagWrapper.proxyList.removeIf(proxy -> getIdOfEntry(proxy.entry()).equals(id));
 			}
 		}
 	}

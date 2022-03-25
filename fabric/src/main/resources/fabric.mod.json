@@ -31,10 +31,11 @@
 		"kubejs-common.mixins.json",
 		"kubejs.mixins.json"
 	],
+	"accessWidener": "kubejs.accesswidener",
 	"depends": {
-		"fabric": "*",
-		"rhino": ">=1801.1.8-build.102",
-		"architectury": ">=3.7.22"
+		"minecraft": ">=1.18.2",
+		"rhino": ">=1801.1.8-build.104",
+		"architectury": ">=4.1.34"
 	},
 	"breaks": {
 		"techreborn": "<5.1.0-beta.6"

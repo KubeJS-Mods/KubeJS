@@ -16,16 +16,16 @@
 		"LevelMixin",
 		"LivingEntityMixin",
 		"LootTablesMixin",
+		"MaterialMixin",
 		"MinecraftServerMixin",
 		"PlayerListMixin",
 		"PlayerMixin",
 		"RecipeManagerMixin",
-		"RegistryReadOpsMixin",
+		"ReloadableServerResourcesMixin",
 		"ServerPlayerGameModeMixin",
-		"ServerResourcesMixin",
-		"SimpleReloadableResourceManagerMixin",
 		"TagBuilderMixin",
 		"TagLoaderMixin",
+		"TagManagerMixin",
 		"TieredItemMixin",
 		"UtilMixin"
 	],
@@ -40,7 +40,8 @@
 		"WindowMixin"
 	],
 	"injectors": {
-		"defaultRequire": 1
+		"defaultRequire": 1,
+		"maxShiftBy": 2
 	},
 	"minVersion": "0.8"
 }

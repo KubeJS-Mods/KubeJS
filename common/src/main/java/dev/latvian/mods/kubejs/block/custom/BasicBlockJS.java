@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.block.custom;
 
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
@@ -91,7 +92,7 @@ public class BasicBlockJS extends Block {
 			try {
 				properties.randomTickCallback.accept(new RandomTickCallbackJS(containerJS, random));
 			} catch (Exception e) {
-				LOGGER.error("Error while random ticking custom block {}: {}", this, e);
+				KubeJS.LOGGER.error("Error while random ticking custom block {}: {}", this, e);
 			}
 		}
 	}

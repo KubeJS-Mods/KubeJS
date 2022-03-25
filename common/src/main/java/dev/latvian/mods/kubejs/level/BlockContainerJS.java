@@ -21,9 +21,11 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,6 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
@@ -136,11 +139,11 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public Collection<ResourceLocation> getTags() {
-		return Tags.byBlockState(getBlockState());
+		return Tags.byBlockState(getBlockState()).map(TagKey::location).collect(Collectors.toSet());
 	}
 
 	public boolean hasTag(ResourceLocation tag) {
-		return Tags.blocks().getTagOrEmpty(tag).contains(getBlockState().getBlock());
+		return getBlockState().is(Tags.block(tag));
 	}
 
 	public void set(ResourceLocation id, Map<?, ?> properties, int flags) {
@@ -158,7 +161,7 @@ public class BlockContainerJS implements SpecialEquality {
 				var property = pmap.get(String.valueOf(entry.getKey()));
 
 				if (property != null) {
-					state = state.setValue(property, UtilsJS.cast(property.getValue(String.valueOf(entry.getValue())).get()));
+					state = state.setValue(property, UtilsJS.cast(property.getValue(String.valueOf(entry.getValue())).orElseThrow()));
 				}
 			}
 		}
@@ -363,9 +366,9 @@ public class BlockContainerJS implements SpecialEquality {
 		return getPlayersInRadius(8D);
 	}
 
-	public String getBiomeId() {
-		var key = minecraftLevel.getBiomeName(pos);
-		return key.isPresent() ? key.get().location().toString() : "";
+	public ResourceLocation getBiomeId() {
+		var key = minecraftLevel.getBiome(pos).unwrapKey().orElse(Biomes.PLAINS);
+		return key.location();
 	}
 
 	@Override

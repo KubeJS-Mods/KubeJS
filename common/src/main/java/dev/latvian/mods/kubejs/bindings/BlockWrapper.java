@@ -7,13 +7,16 @@ import dev.latvian.mods.kubejs.block.predicate.BlockEntityPredicate;
 import dev.latvian.mods.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.mods.kubejs.block.predicate.BlockPredicate;
 import dev.latvian.mods.kubejs.util.Tags;
+import net.minecraft.Util;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -75,23 +78,11 @@ public class BlockWrapper {
 		return list;
 	}
 
-	public static List<String> getTaggedIds(ResourceLocation tag) {
-		var t = Tags.blocks().getTag(tag);
-
-		if (t != null && t.getValues().size() > 0) {
-			List<String> list = new ArrayList<>();
-
-			for (var b : t.getValues()) {
-				var id = KubeJSRegistries.blocks().getId(b);
-
-				if (id != null) {
-					list.add(id.toString());
-				}
+	public static List<ResourceLocation> getTaggedIds(ResourceLocation tag) {
+		return Util.make(new LinkedList<>(), list -> {
+			for (var holder : Registry.BLOCK.getTagOrEmpty(Tags.block(tag))) {
+				holder.unwrapKey().map(ResourceKey::location).ifPresent(list::add);
 			}
-
-			return list;
-		}
-
-		return Collections.emptyList();
+		});
 	}
 }
