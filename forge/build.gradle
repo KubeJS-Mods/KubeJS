@@ -117,8 +117,7 @@ if (ENV.CURSEFORGE_KEY) {
 			id = project.curseforge_id_forge
 			releaseType = project.curseforge_type
 			addGameVersion "Forge"
-			addGameVersion "1.18"
-			addGameVersion "1.18.1"
+			addGameVersion "1.18.2"
 			mainArtifact(remapJar.archivePath)
 			relations {
 				requiredDependency 'rhino'
