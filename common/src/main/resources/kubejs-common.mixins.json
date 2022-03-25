@@ -16,7 +16,6 @@
 		"LevelMixin",
 		"LivingEntityMixin",
 		"LootTablesMixin",
-		"MaterialMixin",
 		"MinecraftServerMixin",
 		"PlayerListMixin",
 		"PlayerMixin",
