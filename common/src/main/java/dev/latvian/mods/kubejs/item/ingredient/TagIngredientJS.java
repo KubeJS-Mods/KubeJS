@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -39,8 +40,8 @@ public class TagIngredientJS implements IngredientJS {
 		tag = Tags.item(UtilsJS.getMCID(t));
 	}
 
-	public String getTag() {
-		return tag.toString();
+	public ResourceLocation getTag() {
+		return tag.location();
 	}
 
 	public Iterable<Holder<Item>> getHolders() {
@@ -101,13 +102,13 @@ public class TagIngredientJS implements IngredientJS {
 
 	@Override
 	public String toString() {
-		return "'#" + tag + "'";
+		return "'#%s'".formatted(getTag());
 	}
 
 	@Override
 	public JsonElement toJson() {
 		var json = new JsonObject();
-		json.addProperty("tag", tag.toString());
+		json.addProperty("tag", getTag().toString());
 		return json;
 	}
 
@@ -122,7 +123,7 @@ public class TagIngredientJS implements IngredientJS {
 
 	private TagIngredientJS validateTag() {
 		if (RecipeJS.itemErrors && isEmpty()) {
-			throw new RecipeExceptionJS(String.format("Tag '#%s' doesn't contain any items!", tag)).error();
+			throw new RecipeExceptionJS("Tag %s doesn't contain any items!".formatted(this)).error();
 		}
 		return this;
 	}
