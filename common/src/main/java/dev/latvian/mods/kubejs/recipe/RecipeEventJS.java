@@ -9,7 +9,6 @@ import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
-import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
@@ -369,8 +368,8 @@ public class RecipeEventJS extends EventJS {
 		});
 
 		pingNewRecipes(newRecipeMap);
-		((RecipeManagerKJS) recipeManager).setByNameKJS(recipesByName);
-		((RecipeManagerKJS) recipeManager).setRecipesKJS(newRecipeMap);
+		recipeManager.byName = recipesByName;
+		recipeManager.recipes = newRecipeMap;
 		ConsoleJS.SERVER.info("Added " + added.getValue() + " recipes, removed " + removed.getValue() + " recipes, modified " + modifiedRecipesCount.get() + " recipes, with " + failed.getValue() + " failed recipes and " + fallbacked.getValue() + " fall-backed recipes");
 		RecipeJS.itemErrors = false;
 

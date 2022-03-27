@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.KubeJSEvents;
-import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.minecraft.CustomRecipeJS;
@@ -11,6 +10,7 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.apache.commons.lang3.mutable.MutableInt;
 
@@ -96,8 +96,8 @@ public class RecipesAfterLoadEventJS extends EventJS {
 	}
 
 	@HideFromJS
-	public static void post(RecipeManagerKJS recipeManager) {
-		var e = new RecipesAfterLoadEventJS(recipeManager.getRecipesKJS());
+	public static void post(RecipeManager recipeManager) {
+		var e = new RecipesAfterLoadEventJS(recipeManager.recipes);
 		var b = ServerSettings.instance.useOriginalRecipeForFilters;
 		ServerSettings.instance.useOriginalRecipeForFilters = true;
 		e.post(ScriptType.SERVER, KubeJSEvents.RECIPES_AFTER_LOAD);
@@ -114,8 +114,8 @@ public class RecipesAfterLoadEventJS extends EventJS {
 				newByName.put(r.id, r.originalRecipe);
 			}
 
-			recipeManager.setRecipesKJS(newMap);
-			recipeManager.setByNameKJS(newByName);
+			recipeManager.recipes = newMap;
+			recipeManager.byName = newByName;
 		}
 	}
 }

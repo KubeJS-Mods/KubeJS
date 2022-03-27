@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.server;
 
-import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.recipe.RecipesAfterLoadEventJS;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -11,8 +10,8 @@ public class KubeJSReloadListener implements ResourceManagerReloadListener {
 
 	@Override
 	public void onResourceManagerReload(ResourceManager resourceManager) {
-		if (resources != null && resources.getRecipeManager() instanceof RecipeManagerKJS rm) {
-			RecipesAfterLoadEventJS.post(rm);
+		if (resources != null) {
+			RecipesAfterLoadEventJS.post(resources.getRecipeManager());
 		}
 	}
 }
