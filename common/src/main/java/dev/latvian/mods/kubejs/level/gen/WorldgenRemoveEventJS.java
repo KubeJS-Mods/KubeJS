@@ -18,9 +18,12 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.ReplaceBlockConfiguration;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -37,14 +40,19 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 
 	private void removeFeature(BiomeFilter filter, GenerationStep.Decoration decoration, Predicate<FeatureConfiguration> predicate) {
 		BiomeModifications.replaceProperties(filter, (ctx, properties) -> {
-			for (var feature : properties.getGenerationProperties().getFeatures(decoration)) {
-				if (checkTree(feature.value().feature().value(), predicate)) {
-					feature.unwrapKey().ifPresentOrElse(key -> {
-						ConsoleJS.STARTUP.debug("Removing feature %s from generation step %s in biome %s"
-								.formatted(key, decoration.name().toLowerCase(), ctx.getKey()));
-						properties.getGenerationProperties().removeFeature(decoration, key);
-					}, () -> ConsoleJS.STARTUP.warn("Feature %s was not removed since it was not found in the registry!".formatted(feature.value())));
+			Collection<ResourceKey<PlacedFeature>> features = new HashSet<>();
+
+			for (var holder : properties.getGenerationProperties().getFeatures(decoration)) {
+				if (checkTree(holder.value().feature().value(), predicate)) {
+					holder.unwrapKey().ifPresentOrElse(features::add,
+							() -> ConsoleJS.STARTUP.warn("Feature %s was not removed since it was not found in the registry!".formatted(holder.value())));
 				}
+			}
+
+			for (var feature : features) {
+				ConsoleJS.STARTUP.debug("Removing feature %s from generation step %s in biome %s"
+						.formatted(feature, decoration.name().toLowerCase(), ctx.getKey()));
+				properties.getGenerationProperties().removeFeature(decoration, feature);
 			}
 		});
 	}
