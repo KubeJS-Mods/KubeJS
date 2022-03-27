@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.properties.RemoveOresProperties;
 import dev.latvian.mods.kubejs.level.gen.properties.RemoveSpawnsProperties;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -18,9 +19,12 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.ReplaceBlockConfiguration;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -37,22 +41,25 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 
 	private void removeFeature(BiomeFilter filter, GenerationStep.Decoration decoration, Predicate<FeatureConfiguration> predicate) {
 		BiomeModifications.replaceProperties(filter, (ctx, properties) -> {
+			List<Holder<PlacedFeature>> removedFeatures = new ArrayList<>();
+
 			for (var feature : properties.getGenerationProperties().getFeatures(decoration)) {
 				if (checkTree(feature.value().feature().value(), predicate)) {
 					feature.unwrapKey().ifPresentOrElse(key -> {
-						ConsoleJS.STARTUP.debug("Removing feature %s from generation step %s in biome %s"
-								.formatted(key, decoration.name().toLowerCase(), ctx.getKey()));
-						properties.getGenerationProperties().removeFeature(decoration, key);
+						ConsoleJS.STARTUP.debug("Removing feature %s from generation step %s in biome %s".formatted(key, decoration.name().toLowerCase(), ctx.getKey()));
+						removedFeatures.add(feature);
 					}, () -> ConsoleJS.STARTUP.warn("Feature %s was not removed since it was not found in the registry!".formatted(feature.value())));
 				}
+			}
+
+			for (var feature : removedFeatures) {
+				properties.getGenerationProperties().removeFeature(decoration, feature.unwrapKey().get());
 			}
 		});
 	}
 
 	private void removeSpawn(BiomeFilter filter, BiPredicate<MobCategory, MobSpawnSettings.SpawnerData> predicate) {
-		BiomeModifications.replaceProperties(filter, (ctx, properties) -> {
-			properties.getSpawnProperties().removeSpawns(predicate);
-		});
+		BiomeModifications.replaceProperties(filter, (ctx, properties) -> properties.getSpawnProperties().removeSpawns(predicate));
 	}
 
 	public void printFeatures() {

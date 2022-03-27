@@ -158,11 +158,14 @@ public class ScriptManager {
 	}
 
 	public NativeJavaClass loadJavaClass(Scriptable scope, Object[] args) {
-		var name = args[0].toString();
+		var name0 = args[0].toString();
 
-		if (name.isEmpty()) {
+		if (name0.isEmpty()) {
 			throw Context.reportRuntimeError("Class name can't be empty!");
 		}
+
+		String rname = RemappingHelper.getMojMapRemapper().unmapClass(name0);
+		String name = rname.isEmpty() ? name0 : rname;
 
 		if (javaClassCache == null) {
 			javaClassCache = new HashMap<>();
