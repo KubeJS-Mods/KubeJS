@@ -23,8 +23,8 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.mod.util.MojangMappingRemapper;
 import dev.latvian.mods.rhino.mod.util.RemappingHelper;
+import dev.latvian.mods.rhino.util.Remapper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
-import java.util.function.Function;
 
 /**
  * @author LatvianModder
@@ -153,8 +152,7 @@ public class KubeJS {
 			ConsoleJS.STARTUP.info(remapper.classMap.size() + " classes");
 
 			Class<?> testClass = CactusBlock.class;
-			String cn = remapper.remapClass(testClass);
-			ConsoleJS.STARTUP.info("Test: " + testClass.getName() + " => " + (cn.isEmpty() ? testClass.getName() : cn));
+			ConsoleJS.STARTUP.info("Test: " + testClass.getName() + " => " + remapper.getMappedClass(testClass));
 
 			for (var field : CactusBlock.class.getDeclaredFields()) {
 				ConsoleJS.STARTUP.info("  " + field.getName() + " -> " + remapper.getMappedField(testClass, field));
@@ -166,7 +164,7 @@ public class KubeJS {
 				sb.append('(');
 				if (method.getParameterCount() > 0) {
 					for (Class<?> param : method.getParameterTypes()) {
-						sb.append(MojangMappingRemapper.getTypeName(param.getTypeName(), Function.identity()));
+						sb.append(Remapper.getTypeName(param.getTypeName()));
 					}
 				}
 
