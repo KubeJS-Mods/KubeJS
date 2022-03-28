@@ -19,21 +19,26 @@ import dev.latvian.mods.kubejs.script.ScriptPack;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.mods.kubejs.server.KubeJSServerEventHandler;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.mod.util.MojangMappingRemapper;
+import dev.latvian.mods.rhino.mod.util.RemappingHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.slf4j.LoggerFactory;
+import net.minecraft.world.level.block.CactusBlock;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
+import java.util.function.Function;
 
 /**
  * @author LatvianModder
@@ -124,6 +129,51 @@ public class KubeJS {
 		KubeJSRecipeEventHandler.init();
 
 		PROXY.init();
+
+		if (CommonProperties.get().disableClassFilter) {
+			ConsoleJS.STARTUP.warn("Class filter is disabled!");
+		}
+
+		if (CommonProperties.get().printRemappedClasses) {
+			ConsoleJS.STARTUP.info("Remapped classes:");
+			var remapper = RemappingHelper.getMojMapRemapper();
+
+			for (var entry : remapper.classMap.entrySet()) {
+				ConsoleJS.STARTUP.info("");
+				ConsoleJS.STARTUP.info("- " + entry.getKey() + " => " + entry.getValue());
+
+				for (var child : entry.getValue().children.entrySet()) {
+					ConsoleJS.STARTUP.info("  " + child.getKey() + " -> " + child.getValue());
+				}
+			}
+
+			ConsoleJS.STARTUP.info("");
+			ConsoleJS.STARTUP.info(remapper.classMap.size() + " classes");
+
+			Class<?> testClass = CactusBlock.class;
+			String cn = remapper.remapClass(testClass);
+			ConsoleJS.STARTUP.info("Test: " + testClass.getName() + " => " + (cn.isEmpty() ? testClass.getName() : cn));
+
+			for (var field : CactusBlock.class.getDeclaredFields()) {
+				ConsoleJS.STARTUP.info("  " + field.getName() + " -> " + remapper.getMappedField(testClass, field));
+			}
+
+			for (var method : CactusBlock.class.getDeclaredMethods()) {
+				StringBuilder sb = new StringBuilder("  ");
+				sb.append(method.getName());
+				sb.append('(');
+				if (method.getParameterCount() > 0) {
+					for (Class<?> param : method.getParameterTypes()) {
+						sb.append(MojangMappingRemapper.getTypeName(param.getTypeName(), Function.identity()));
+					}
+				}
+
+				sb.append(") -> ");
+				sb.append(remapper.getMappedMethod(testClass, method));
+
+				ConsoleJS.STARTUP.info(sb);
+			}
+		}
 	}
 
 	public static void loadScripts(ScriptPack pack, Path dir, String path) {
