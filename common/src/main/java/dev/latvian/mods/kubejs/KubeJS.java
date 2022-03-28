@@ -135,7 +135,7 @@ public class KubeJS {
 
 		if (CommonProperties.get().printRemappedClasses) {
 			ConsoleJS.STARTUP.info("Remapped classes:");
-			var remapper = RemappingHelper.getMojMapRemapper();
+			var remapper = RemappingHelper.getMinecraftRemapper();
 
 			for (var entry : remapper.classMap.entrySet()) {
 				ConsoleJS.STARTUP.info("");
