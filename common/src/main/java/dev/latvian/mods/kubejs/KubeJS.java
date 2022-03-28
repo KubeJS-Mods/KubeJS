@@ -142,8 +142,10 @@ public class KubeJS {
 				ConsoleJS.STARTUP.info("");
 				ConsoleJS.STARTUP.info("- " + entry.getKey() + " => " + entry.getValue());
 
-				for (var child : entry.getValue().children.entrySet()) {
-					ConsoleJS.STARTUP.info("  " + child.getKey() + " -> " + child.getValue());
+				if (entry.getValue().children != null) {
+					for (var child : entry.getValue().children.entrySet()) {
+						ConsoleJS.STARTUP.info("  " + child.getKey() + " -> " + child.getValue());
+					}
 				}
 			}
 
