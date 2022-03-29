@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.item.forge;
 
-import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.BucketItem;
@@ -10,16 +10,16 @@ import net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper;
 import org.jetbrains.annotations.Nullable;
 
 public class KubeJSItemEventHandlerImpl {
-	public static BucketItem buildBucket(FluidBuilder builder) {
-		return new BucketItemJS(builder);
+	public static BucketItem buildBucket(FluidBuilder builder, FluidBucketItemBuilder itemBuilder) {
+		return new BucketItemJS(builder, itemBuilder);
 	}
 
 	public static class BucketItemJS extends BucketItem {
-		public final FluidBuilder properties;
+		public final FluidBuilder fluidBuilder;
 
-		public BucketItemJS(FluidBuilder b) {
-			super(() -> b.stillFluid, new Properties().stacksTo(1).tab(KubeJS.tab));
-			properties = b;
+		public BucketItemJS(FluidBuilder b, FluidBucketItemBuilder itemBuilder) {
+			super(b, itemBuilder.createItemProperties());
+			fluidBuilder = b;
 		}
 
 		@Override

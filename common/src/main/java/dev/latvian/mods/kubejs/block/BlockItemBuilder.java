@@ -1,21 +1,27 @@
 package dev.latvian.mods.kubejs.block;
 
 import dev.latvian.mods.kubejs.item.ItemBuilder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 
 /**
  * @author LatvianModder
  */
 public class BlockItemBuilder extends ItemBuilder {
 	public BlockBuilder blockBuilder;
-	public BlockItem blockItem;
 
-	public BlockItemBuilder(String i) {
+	public BlockItemBuilder(ResourceLocation i) {
 		super(i);
 	}
 
 	@Override
-	public String getBuilderType() {
+	public Item createObject() {
+		return new BlockItem(blockBuilder.get(), createItemProperties());
+	}
+
+	@Override
+	public String getTranslationKeyGroup() {
 		return "block";
 	}
 }

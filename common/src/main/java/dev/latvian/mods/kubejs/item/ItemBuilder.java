@@ -1,15 +1,20 @@
 package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonObject;
+import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.bindings.RarityWrapper;
-import dev.latvian.mods.kubejs.item.type.ArmorItemType;
-import dev.latvian.mods.kubejs.item.type.BasicItemType;
-import dev.latvian.mods.kubejs.item.type.ItemType;
+import dev.latvian.mods.kubejs.core.ItemKJS;
+import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.util.BuilderBase;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ArmorMaterial;
@@ -32,7 +37,7 @@ import java.util.function.Function;
 /**
  * @author LatvianModder
  */
-public class ItemBuilder extends BuilderBase {
+public abstract class ItemBuilder extends BuilderBase<Item> {
 	public static final Map<String, Tier> TOOL_TIERS = new HashMap<>();
 	public static final Map<String, ArmorMaterial> ARMOR_TIERS = new HashMap<>();
 
@@ -46,7 +51,6 @@ public class ItemBuilder extends BuilderBase {
 		}
 	}
 
-	public transient ItemType type;
 	public transient int maxStackSize;
 	public transient int maxDamage;
 	public transient int burnTime;
@@ -64,21 +68,10 @@ public class ItemBuilder extends BuilderBase {
 	public String parentModel;
 	public transient FoodBuilder foodBuilder;
 
-	// Tools //
-	public transient Tier toolTier;
-	public transient float attackDamageBaseline;
-	public transient float attackSpeedBaseline;
-
-	// Armor //
-	public transient ArmorMaterial armorTier;
-
-	public transient Item item;
-
 	public JsonObject modelJson;
 
-	public ItemBuilder(String i) {
+	public ItemBuilder(ResourceLocation i) {
 		super(i);
-		type = BasicItemType.INSTANCE;
 		maxStackSize = 64;
 		maxDamage = 0;
 		burnTime = 0;
@@ -94,33 +87,47 @@ public class ItemBuilder extends BuilderBase {
 		texture = "";
 		parentModel = "";
 		foodBuilder = null;
-		toolTier = Tiers.IRON;
-		armorTier = ArmorMaterials.IRON;
 		displayName = "";
 		modelJson = null;
 	}
 
 	@Override
-	public String getBuilderType() {
-		return "item";
+	public RegistryObjectBuilderTypes<Item> getRegistryType() {
+		return RegistryObjectBuilderTypes.ITEM;
 	}
 
-	public ItemBuilder type(ItemType t) {
-		type = t;
-		type.applyDefaults(this);
-		return this;
-	}
-
-	public ItemBuilder tier(String t) {
-		if (type == BasicItemType.INSTANCE) {
-			return this;
-		} else if (type instanceof ArmorItemType) {
-			armorTier = ARMOR_TIERS.getOrDefault(t, ArmorMaterials.IRON);
-			return this;
+	@Override
+	public Item transformObject(Item obj) {
+		if (obj instanceof ItemKJS itemKJS) {
+			itemKJS.setItemBuilderKJS(this);
 		}
 
-		toolTier = TOOL_TIERS.getOrDefault(t, Tiers.IRON);
-		return this;
+		return obj;
+	}
+
+	@Override
+	public void generateDataJsons(DataJsonGenerator generator) {
+	}
+
+	@Override
+	public void generateAssetJsons(AssetJsonGenerator generator) {
+		generator.itemModel(id, m -> {
+			if (!parentModel.isEmpty()) {
+				m.parent(parentModel);
+			} else {
+				m.parent("minecraft:item/generated");
+			}
+
+			m.texture("layer0", texture.isEmpty() ? newID("item/", "").toString() : texture);
+		});
+	}
+
+	@Override
+	@Environment(EnvType.CLIENT)
+	public void clientRegistry(Minecraft minecraft) {
+		if (!color.isEmpty()) {
+			ColorHandlerRegistry.registerItemColors((stack, index) -> color.get(index), this);
+		}
 	}
 
 	public ItemBuilder maxStackSize(int v) {

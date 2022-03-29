@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.block.KubeJSBlockEventHandler;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.entity.KubeJSEntityEventHandler;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
-import dev.latvian.mods.kubejs.fluid.KubeJSFluidEventHandler;
 import dev.latvian.mods.kubejs.item.KubeJSItemEventHandler;
 import dev.latvian.mods.kubejs.level.KubeJSWorldEventHandler;
 import dev.latvian.mods.kubejs.net.KubeJSNet;
@@ -123,9 +122,9 @@ public class KubeJS {
 		KubeJSEntityEventHandler.init();
 		KubeJSBlockEventHandler.init();
 		KubeJSItemEventHandler.init();
-		KubeJSFluidEventHandler.init();
 		KubeJSServerEventHandler.init();
 		KubeJSRecipeEventHandler.init();
+		RegistryObjectBuilderTypes.registerAll(!CommonProperties.get().serverOnly);
 
 		PROXY.init();
 

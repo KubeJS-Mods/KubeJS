@@ -1,19 +1,29 @@
 package dev.latvian.mods.kubejs.block.custom;
 
-import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WoodButtonBlock;
 
-public class WoodenButtonBlockJS extends WoodButtonBlock implements CustomBlockJS {
-	public WoodenButtonBlockJS(Properties properties) {
-		super(properties);
+public class WoodenButtonBlockBuilder extends ShapedBlockBuilder {
+	public WoodenButtonBlockBuilder(ResourceLocation i) {
+		super(i, "_wooden_button", "_button");
+		noCollission();
+		tagBoth(BlockTags.BUTTONS.location());
+		tagBoth(BlockTags.WOODEN_BUTTONS.location());
 	}
 
 	@Override
-	public void generateAssets(BlockBuilder builder, AssetJsonGenerator generator) {
-		generator.blockState(builder.id, bs -> {
-			var mod0 = builder.newID("block/", "").toString();
-			var mod1 = builder.newID("block/", "_pressed").toString();
+	public Block createObject() {
+		return new WoodButtonBlock(createProperties());
+	}
+
+	@Override
+	public void generateAssetJsons(AssetJsonGenerator generator) {
+		generator.blockState(id, bs -> {
+			var mod0 = newID("block/", "").toString();
+			var mod1 = newID("block/", "_pressed").toString();
 
 			bs.variant("face=ceiling,facing=east,powered=false", v -> v.model(mod0).x(180).y(270));
 			bs.variant("face=ceiling,facing=east,powered=true", v -> v.model(mod1).x(180).y(270));
@@ -41,19 +51,19 @@ public class WoodenButtonBlockJS extends WoodButtonBlock implements CustomBlockJ
 			bs.variant("face=wall,facing=west,powered=true", v -> v.model(mod1).x(90).y(270).uvlock());
 		});
 
-		final var texture = builder.textures.get("texture").getAsString();
+		final var texture = textures.get("texture").getAsString();
 
-		generator.blockModel(builder.id, m -> {
+		generator.blockModel(id, m -> {
 			m.parent("minecraft:block/button");
 			m.texture("texture", texture);
 		});
 
-		generator.blockModel(builder.newID("", "_pressed"), m -> {
+		generator.blockModel(newID("", "_pressed"), m -> {
 			m.parent("minecraft:block/button_pressed");
 			m.texture("texture", texture);
 		});
 
-		generator.itemModel(builder.itemBuilder.id, m -> {
+		generator.itemModel(itemBuilder.id, m -> {
 			m.parent("minecraft:block/button_inventory");
 			m.texture("texture", texture);
 		});

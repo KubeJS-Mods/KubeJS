@@ -4,8 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSObjects;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.core.TagBuilderKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -336,24 +336,12 @@ public class TagEventJS<T> extends EventJS {
 			ConsoleJS.SERVER.debug(type + "/#" + entry.getKey() + "; " + w.proxyList.size());
 		}
 
-		if (type.equals("items")) {
-			for (var item : KubeJSObjects.ITEMS.values()) {
-				for (var s : item.defaultTags) {
-					add(s, item.id.toString());
-				}
+		var types = RegistryObjectBuilderTypes.MAP.get(registry.key());
 
-				for (var block : KubeJSObjects.BLOCKS.values()) {
-					if (block.itemBuilder != null) {
-						for (var s : block.itemBuilder.defaultTags) {
-							add(s, block.itemBuilder.id.toString());
-						}
-					}
-				}
-			}
-		} else if (type.equals("blocks")) {
-			for (var block : KubeJSObjects.BLOCKS.values()) {
-				for (var s : block.defaultTags) {
-					add(s, block.id.toString());
+		if (types != null) {
+			for (var builder : types.objects.values()) {
+				for (var s : builder.defaultTags) {
+					add(s, builder.id.toString());
 				}
 			}
 		}

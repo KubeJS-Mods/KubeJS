@@ -8,7 +8,7 @@ public class DummyFluidItemStackJS extends ItemStackJS {
 	public final FluidStackJS fluid;
 
 	public DummyFluidItemStackJS(FluidStackJS f) {
-		super(new ItemStack(KubeJSItemEventHandler.DUMMY_FLUID_ITEM.get()));
+		super(f.getFluid().getBucket().getDefaultInstance());
 		fluid = f;
 	}
 

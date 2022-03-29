@@ -1,21 +1,29 @@
 package dev.latvian.mods.kubejs.block.custom;
 
-import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.StairBlock;
 
-public class StairBlockJS extends StairBlock implements CustomBlockJS {
-	public StairBlockJS(Properties properties) {
-		super(Blocks.OAK_PLANKS.defaultBlockState(), properties);
+public class StairBlockBuilder extends ShapedBlockBuilder {
+	public StairBlockBuilder(ResourceLocation i) {
+		super(i, "_stairs");
+		tagBoth(BlockTags.STAIRS.location());
 	}
 
 	@Override
-	public void generateAssets(BlockBuilder builder, AssetJsonGenerator generator) {
-		generator.blockState(builder.id, bs -> {
-			var mod = builder.newID("block/", "").toString();
-			var modInner = builder.newID("block/", "_inner").toString();
-			var modOuter = builder.newID("block/", "_outer").toString();
+	public Block createObject() {
+		return new StairBlock(Blocks.OAK_PLANKS.defaultBlockState(), createProperties());
+	}
+
+	@Override
+	public void generateAssetJsons(AssetJsonGenerator generator) {
+		generator.blockState(id, bs -> {
+			var mod = newID("block/", "").toString();
+			var modInner = newID("block/", "_inner").toString();
+			var modOuter = newID("block/", "_outer").toString();
 
 			bs.variant("facing=east,half=bottom,shape=inner_left", v -> v.model(modInner).y(270).uvlock());
 			bs.variant("facing=east,half=bottom,shape=inner_right", v -> v.model(modInner));
@@ -59,29 +67,29 @@ public class StairBlockJS extends StairBlock implements CustomBlockJS {
 			bs.variant("facing=west,half=top,shape=straight", v -> v.model(mod).x(180).y(180).uvlock());
 		});
 
-		final var texture = builder.textures.get("texture").getAsString();
+		final var texture = textures.get("texture").getAsString();
 
-		generator.blockModel(builder.id, m -> {
+		generator.blockModel(id, m -> {
 			m.parent("minecraft:block/stairs");
 			m.texture("bottom", texture);
 			m.texture("top", texture);
 			m.texture("side", texture);
 		});
 
-		generator.blockModel(builder.newID("", "_inner"), m -> {
+		generator.blockModel(newID("", "_inner"), m -> {
 			m.parent("minecraft:block/inner_stairs");
 			m.texture("bottom", texture);
 			m.texture("top", texture);
 			m.texture("side", texture);
 		});
 
-		generator.blockModel(builder.newID("", "_outer"), m -> {
+		generator.blockModel(newID("", "_outer"), m -> {
 			m.parent("minecraft:block/outer_stairs");
 			m.texture("bottom", texture);
 			m.texture("top", texture);
 			m.texture("side", texture);
 		});
 
-		generator.itemModel(builder.itemBuilder.id, m -> m.parent(builder.newID("block/", "").toString()));
+		generator.itemModel(itemBuilder.id, m -> m.parent(newID("block/", "").toString()));
 	}
 }

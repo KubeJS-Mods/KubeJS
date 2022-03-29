@@ -1,15 +1,24 @@
 package dev.latvian.mods.kubejs.block;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.architectury.registry.block.BlockProperties;
-import dev.latvian.mods.kubejs.block.custom.BasicBlockType;
-import dev.latvian.mods.kubejs.block.custom.BlockType;
+import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
+import dev.architectury.registry.client.rendering.RenderTypeRegistry;
+import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.core.BlockKJS;
+import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
 import dev.latvian.mods.kubejs.util.BuilderBase;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -19,16 +28,15 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
  */
-public class BlockBuilder extends BuilderBase {
-	public static BlockBuilder current;
-
-	public transient BlockType type;
+public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient MaterialJS material;
 	public transient float hardness;
 	public transient float resistance;
@@ -58,11 +66,8 @@ public class BlockBuilder extends BuilderBase {
 	public transient boolean redstoneConductor;
 	public transient boolean transparent;
 
-	public transient Block block;
-
-	public BlockBuilder(String i) {
+	public BlockBuilder(ResourceLocation i) {
 		super(i);
-		type = BasicBlockType.INSTANCE;
 		material = MaterialListJS.INSTANCE.map.get("wood");
 		hardness = 0.5F;
 		resistance = -1F;
@@ -86,7 +91,7 @@ public class BlockBuilder extends BuilderBase {
 
 		lootTable = loot -> loot.addPool(pool -> {
 			pool.survivesExplosion();
-			pool.addItem(new ItemStack(block));
+			pool.addItem(new ItemStack(get()));
 		});
 
 		blockstateJson = null;
@@ -99,14 +104,180 @@ public class BlockBuilder extends BuilderBase {
 	}
 
 	@Override
-	public String getBuilderType() {
-		return "block";
+	public final RegistryObjectBuilderTypes<Block> getRegistryType() {
+		return RegistryObjectBuilderTypes.BLOCK;
 	}
 
-	public BlockBuilder type(BlockType t) {
-		type = t;
-		type.applyDefaults(this);
-		return this;
+	@Override
+	public Block transformObject(Block obj) {
+		if (obj instanceof BlockKJS blockKJS) {
+			blockKJS.setBlockBuilderKJS(this);
+		}
+
+		return obj;
+	}
+
+	@Override
+	public void createAdditionalObjects() {
+		if (itemBuilder != null) {
+			RegistryObjectBuilderTypes.ITEM.addBuilder(itemBuilder);
+		}
+	}
+
+	@Override
+	public void generateDataJsons(DataJsonGenerator generator) {
+		if (lootTable != null) {
+			var lootBuilder = new LootBuilder(null);
+			lootBuilder.type = "minecraft:block";
+			lootTable.accept(lootBuilder);
+			generator.json(newID("loot_tables/blocks/", ""), lootBuilder.toJson());
+		}
+	}
+
+	@Override
+	public void generateAssetJsons(AssetJsonGenerator generator) {
+		if (blockstateJson != null) {
+			generator.json(newID("blockstates/", ""), blockstateJson);
+		} else {
+			generator.blockState(id, bs -> bs.variant("", model.isEmpty() ? (id.getNamespace() + ":block/" + id.getPath()) : model));
+		}
+
+		if (modelJson != null) {
+			generator.json(newID("models/block/", ""), modelJson);
+		} else {
+			generator.blockModel(id, m -> {
+				var particle = textures.get("particle").getAsString();
+
+				if (areAllTexturesEqual(textures, particle)) {
+					m.parent("minecraft:block/cube_all");
+					m.texture("all", particle);
+				} else {
+					m.parent("block/cube");
+					m.textures(textures);
+				}
+
+				if (!color.isEmpty() || !customShape.isEmpty()) {
+					List<AABB> boxes = new ArrayList<>(customShape);
+
+					if (boxes.isEmpty()) {
+						boxes.add(new AABB(0D, 0D, 0D, 1D, 1D, 1D));
+					}
+
+					for (var box : boxes) {
+						m.element(e -> {
+							e.box(box);
+
+							for (var direction : Direction.values()) {
+								e.face(direction, face -> {
+									face.tex("#" + direction.getSerializedName());
+									face.cull();
+
+									if (!color.isEmpty()) {
+										face.tintindex(0);
+									}
+								});
+							}
+						});
+					}
+				}
+			});
+		}
+
+		if (itemBuilder != null) {
+			generator.itemModel(itemBuilder.id, m -> {
+				if (!model.isEmpty()) {
+					m.parent(model);
+				} else {
+					m.parent(newID("block/", "").toString());
+				}
+			});
+		}
+	}
+
+	public Map<ResourceLocation, JsonObject> generateBlockModels(BlockBuilder builder) {
+		Map<ResourceLocation, JsonObject> map = new HashMap<>();
+
+		if (builder.modelJson != null) {
+			map.put(builder.newID("models/block/", ""), builder.modelJson);
+		} else {
+			var modelJson = new JsonObject();
+
+			var particle = builder.textures.get("particle").getAsString();
+
+			if (areAllTexturesEqual(builder.textures, particle)) {
+				modelJson.addProperty("parent", "block/cube_all");
+				var textures = new JsonObject();
+				textures.addProperty("all", particle);
+				modelJson.add("textures", textures);
+			} else {
+				modelJson.addProperty("parent", "block/cube");
+				modelJson.add("textures", builder.textures);
+			}
+
+			if (!builder.color.isEmpty()) {
+				var cube = new JsonObject();
+				var from = new JsonArray();
+				from.add(0);
+				from.add(0);
+				from.add(0);
+				cube.add("from", from);
+				var to = new JsonArray();
+				to.add(16);
+				to.add(16);
+				to.add(16);
+				cube.add("to", to);
+				var faces = new JsonObject();
+
+				for (var direction : Direction.values()) {
+					var f = new JsonObject();
+					f.addProperty("texture", "#" + direction.getSerializedName());
+					f.addProperty("cullface", direction.getSerializedName());
+					f.addProperty("tintindex", 0);
+					faces.add(direction.getSerializedName(), f);
+				}
+
+				cube.add("faces", faces);
+
+				var elements = new JsonArray();
+				elements.add(cube);
+				modelJson.add("elements", elements);
+			}
+
+			map.put(builder.newID("models/block/", ""), modelJson);
+		}
+
+		return map;
+	}
+
+	private boolean areAllTexturesEqual(JsonObject tex, String t) {
+		for (var direction : Direction.values()) {
+			if (!tex.get(direction.getSerializedName()).getAsString().equals(t)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	@Override
+	@Environment(EnvType.CLIENT)
+	public void clientRegistry(Minecraft minecraft) {
+		switch (renderType) {
+			case "cutout" -> RenderTypeRegistry.register(RenderType.cutout(), get());
+			case "cutout_mipped" -> RenderTypeRegistry.register(RenderType.cutoutMipped(), get());
+			case "translucent" -> RenderTypeRegistry.register(RenderType.translucent(), get());
+		}
+
+		if (!color.isEmpty()) {
+			ColorHandlerRegistry.registerBlockColors((state, level, pos, index) -> color.get(index), this);
+		}
+	}
+
+	@Override
+	public void addResourcePackLocations(String path, List<ResourceLocation> list, PackType packType) {
+		if (path.equals("loot_tables")) {
+			list.add(new ResourceLocation(id.getNamespace(), "loot_tables/blocks/" + id.getPath() + ".json"));
+		}
 	}
 
 	public BlockBuilder material(MaterialJS m) {

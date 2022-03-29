@@ -9,11 +9,9 @@ import dev.architectury.event.events.client.ClientTextureStitchEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import dev.architectury.hooks.client.screen.ScreenAccess;
-import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
-import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.latvian.mods.kubejs.KubeJSEvents;
-import dev.latvian.mods.kubejs.KubeJSObjects;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenPaintEventJS;
 import dev.latvian.mods.kubejs.client.painter.world.WorldPaintEventJS;
@@ -29,7 +27,6 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -52,7 +49,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -79,21 +75,8 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void clientSetup(Minecraft minecraft) {
-		renderLayers();
-		blockColors();
-		itemColors();
-	}
-
-	private void renderLayers() {
-		for (var builder : KubeJSObjects.BLOCKS.values()) {
-			switch (builder.renderType) {
-				case "cutout" -> RenderTypeRegistry.register(RenderType.cutout(), builder.block);
-				case "cutout_mipped" -> RenderTypeRegistry.register(RenderType.cutoutMipped(), builder.block);
-				case "translucent" -> RenderTypeRegistry.register(RenderType.translucent(), builder.block);
-
-				//default:
-				//	RenderTypeLookup.setRenderLayer(block, RenderType.getSolid());
-			}
+		for (var builder : RegistryObjectBuilderTypes.ALL_BUILDERS) {
+			builder.clientRegistry(minecraft);
 		}
 	}
 
@@ -256,34 +239,6 @@ public class KubeJSClientEventHandler {
 					iterator.remove();
 					return;
 				}
-			}
-		}
-	}
-
-	private void itemColors() {
-		for (var builder : KubeJSObjects.ITEMS.values()) {
-			if (!builder.color.isEmpty()) {
-				ColorHandlerRegistry.registerItemColors((stack, index) -> builder.color.get(index), Objects.requireNonNull(builder.item, "Item " + builder.id + " is null!"));
-			}
-		}
-
-		for (var builder : KubeJSObjects.BLOCKS.values()) {
-			if (builder.itemBuilder != null && !builder.color.isEmpty()) {
-				ColorHandlerRegistry.registerItemColors((stack, index) -> builder.color.get(index), Objects.requireNonNull(builder.itemBuilder.blockItem, "Block Item " + builder.id + " is null!"));
-			}
-		}
-
-		for (var builder : KubeJSObjects.FLUIDS.values()) {
-			if (builder.bucketColor != 0xFFFFFFFF) {
-				ColorHandlerRegistry.registerItemColors((stack, index) -> index == 1 ? builder.bucketColor : 0xFFFFFFFF, Objects.requireNonNull(builder.bucketItem, "Bucket Item " + builder.id + " is null!"));
-			}
-		}
-	}
-
-	private void blockColors() {
-		for (var builder : KubeJSObjects.BLOCKS.values()) {
-			if (!builder.color.isEmpty()) {
-				ColorHandlerRegistry.registerBlockColors((state, level, pos, index) -> builder.color.get(index), builder.block);
 			}
 		}
 	}
