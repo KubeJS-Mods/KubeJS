@@ -15,8 +15,8 @@ import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenPaintEventJS;
 import dev.latvian.mods.kubejs.client.painter.world.WorldPaintEventJS;
-import dev.latvian.mods.kubejs.core.BucketItemKJS;
 import dev.latvian.mods.kubejs.core.ImageButtonKJS;
+import dev.latvian.mods.kubejs.fluid.KubeJSFluidHelper;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
 import dev.latvian.mods.kubejs.level.ClientLevelJS;
 import dev.latvian.mods.kubejs.script.AttachDataEvent;
@@ -37,6 +37,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -104,8 +106,10 @@ public class KubeJSClientEventHandler {
 				Tags.byBlock(item.getBlock()).forEach(addToTempTags);
 			}
 
-			if (stack.getItem() instanceof BucketItemKJS item) {
-				Tags.byFluid(item.getFluidKJS()).forEach(addToTempTags);
+			Fluid fluid = KubeJSFluidHelper.getActualContainedFluid(stack.getItem());
+
+			if (fluid != Fluids.EMPTY) {
+				Tags.byFluid(fluid).forEach(addToTempTags);
 			}
 
 			if (stack.getItem() instanceof SpawnEggItem item) {

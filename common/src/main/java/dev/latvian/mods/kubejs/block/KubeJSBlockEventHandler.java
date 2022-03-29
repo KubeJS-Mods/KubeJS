@@ -3,10 +3,8 @@ package dev.latvian.mods.kubejs.block;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.BlockEvent;
 import dev.architectury.event.events.common.InteractionEvent;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.utils.value.IntValue;
 import dev.latvian.mods.kubejs.KubeJSEvents;
-import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,8 +12,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,11 +25,6 @@ public class KubeJSBlockEventHandler {
 		InteractionEvent.LEFT_CLICK_BLOCK.register(KubeJSBlockEventHandler::leftClick);
 		BlockEvent.BREAK.register(KubeJSBlockEventHandler::blockBreak);
 		BlockEvent.PLACE.register(KubeJSBlockEventHandler::blockPlace);
-	}
-
-	@ExpectPlatform
-	public static LiquidBlock buildFluidBlock(FluidBuilder builder, BlockBehaviour.Properties properties) {
-		throw new AssertionError();
 	}
 
 	private static EventResult rightClick(Player player, InteractionHand hand, BlockPos pos, Direction direction) {

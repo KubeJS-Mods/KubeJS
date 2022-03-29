@@ -1,10 +1,8 @@
 package dev.latvian.mods.kubejs.fluid;
 
-import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.bindings.RarityWrapper;
-import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.util.BuilderBase;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
@@ -29,9 +27,6 @@ public class FluidBuilder extends BuilderBase<Fluid> {
 	public FluidBlockBuilder block;
 	public FluidBucketItemBuilder bucketItem;
 
-	private JsonObject blockstateJson;
-	private JsonObject blockModelJson;
-
 	public FluidBuilder(ResourceLocation i) {
 		super(i);
 		textureStill(KubeJS.id("fluid/fluid_thin"));
@@ -39,24 +34,27 @@ public class FluidBuilder extends BuilderBase<Fluid> {
 		flowingFluid = new FlowingFluidBuilder(this);
 		block = new FluidBlockBuilder(this);
 		bucketItem = new FluidBucketItemBuilder(this);
+		bucketItem.displayName(displayName + " Bucket");
 	}
 
 	@Override
-	public RegistryObjectBuilderTypes<Fluid> getRegistryType() {
+	public BuilderBase<Fluid> displayName(String name) {
+		bucketItem.displayName(name + " Bucket");
+		return super.displayName(name);
+	}
+
+	@Override
+	public final RegistryObjectBuilderTypes<Fluid> getRegistryType() {
 		return RegistryObjectBuilderTypes.FLUID;
 	}
 
 	@Override
 	public Fluid createObject() {
-		return KubeJSFluidEventHandler.buildFluid(true, this);
+		return KubeJSFluidHelper.buildFluid(true, this);
 	}
 
 	@Override
 	public void createAdditionalObjects() {
-		if (bucketItem.displayName.isEmpty() && !displayName.isEmpty()) {
-			bucketItem.displayName(displayName + " Bucket");
-		}
-
 		RegistryObjectBuilderTypes.FLUID.addBuilder(flowingFluid);
 		RegistryObjectBuilderTypes.BLOCK.addBuilder(block);
 		RegistryObjectBuilderTypes.ITEM.addBuilder(bucketItem);
@@ -128,48 +126,5 @@ public class FluidBuilder extends BuilderBase<Fluid> {
 	public FluidBuilder rarity(RarityWrapper rarity) {
 		this.rarity = rarity;
 		return this;
-	}
-
-	public void setBlockstateJson(JsonObject o) {
-		blockstateJson = o;
-	}
-
-	public JsonObject getBlockstateJson() {
-		if (blockstateJson == null) {
-			blockstateJson = new JsonObject();
-			var variants = new JsonObject();
-			var modelo = new JsonObject();
-			modelo.addProperty("model", newID("block/", "").toString());
-			variants.add("", modelo);
-			blockstateJson.add("variants", variants);
-		}
-
-		return blockstateJson;
-	}
-
-	public void setBlockModelJson(JsonObject o) {
-		blockModelJson = o;
-	}
-
-	public JsonObject getBlockModelJson() {
-		if (blockModelJson == null) {
-			blockModelJson = new JsonObject();
-			var textures = new JsonObject();
-			textures.addProperty("particle", stillTexture);
-			blockModelJson.add("textures", textures);
-			return blockModelJson;
-		}
-
-		return blockModelJson;
-	}
-
-	@Override
-	public void generateAssetJsons(AssetJsonGenerator generator) {
-		generator.json(newID("blockstates/", ""), getBlockstateJson());
-		generator.json(newID("models/block/", ""), getBlockModelJson());
-
-		var bucketModel = new JsonObject();
-		bucketModel.addProperty("parent", "kubejs:item/generated_bucket");
-		generator.json(newID("models/item/", "_bucket"), bucketModel);
 	}
 }

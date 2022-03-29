@@ -34,7 +34,7 @@ import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.event.DataEvent;
 import dev.latvian.mods.kubejs.event.IEventHandler;
-import dev.latvian.mods.kubejs.fluid.BasicFluidBuilder;
+import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
@@ -157,7 +157,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		RegistryObjectBuilderTypes.ITEM.addType("leggings", ArmorItemBuilder.Leggings.class, ArmorItemBuilder.Leggings::new);
 		RegistryObjectBuilderTypes.ITEM.addType("boots", ArmorItemBuilder.Boots.class, ArmorItemBuilder.Boots::new);
 
-		RegistryObjectBuilderTypes.FLUID.addType("basic", BasicFluidBuilder.class, BasicFluidBuilder::new);
+		RegistryObjectBuilderTypes.FLUID.addType("basic", FluidBuilder.class, FluidBuilder::new);
 	}
 
 	@Override

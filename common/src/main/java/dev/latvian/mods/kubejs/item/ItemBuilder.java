@@ -87,12 +87,11 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		texture = "";
 		parentModel = "";
 		foodBuilder = null;
-		displayName = "";
 		modelJson = null;
 	}
 
 	@Override
-	public RegistryObjectBuilderTypes<Item> getRegistryType() {
+	public final RegistryObjectBuilderTypes<Item> getRegistryType() {
 		return RegistryObjectBuilderTypes.ITEM;
 	}
 

@@ -50,7 +50,10 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	}
 
 	public final T createTransformedObject() {
-		return transformObject(createObject());
+		getRegistryType().current = this;
+		T o = transformObject(createObject());
+		getRegistryType().current = null;
+		return o;
 	}
 
 	@Override

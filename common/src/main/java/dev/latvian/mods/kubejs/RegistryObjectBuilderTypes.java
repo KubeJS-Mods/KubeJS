@@ -13,7 +13,7 @@ import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +51,7 @@ public final class RegistryObjectBuilderTypes<T> {
 		}
 	}
 
-	public static final Map<ResourceKey<?>, RegistryObjectBuilderTypes<?>> MAP = new HashMap<>();
+	public static final Map<ResourceKey<?>, RegistryObjectBuilderTypes<?>> MAP = new LinkedHashMap<>();
 	public static final List<BuilderBase<?>> ALL_BUILDERS = new ArrayList<>();
 
 	public static <T> RegistryObjectBuilderTypes<T> add(ResourceKey<Registry<T>> key, Class<T> baseClass, String def) {
@@ -61,8 +61,8 @@ public final class RegistryObjectBuilderTypes<T> {
 	}
 
 	public static final RegistryObjectBuilderTypes<Block> BLOCK = add(Registry.BLOCK_REGISTRY, Block.class, "basic");
-	public static final RegistryObjectBuilderTypes<Item> ITEM = add(Registry.ITEM_REGISTRY, Item.class, "basic");
 	public static final RegistryObjectBuilderTypes<Fluid> FLUID = add(Registry.FLUID_REGISTRY, Fluid.class, "basic");
+	public static final RegistryObjectBuilderTypes<Item> ITEM = add(Registry.ITEM_REGISTRY, Item.class, "basic");
 
 	public final ResourceKey<Registry<T>> registryKey;
 	public final Class<T> objectBaseClass;
@@ -70,7 +70,7 @@ public final class RegistryObjectBuilderTypes<T> {
 	public final DeferredRegister<T> deferredRegister;
 	public final Map<String, BuilderType<T>> types;
 	public final Map<ResourceLocation, BuilderBase<T>> objects;
-	private BuilderBase<T> current;
+	public BuilderBase<T> current;
 	public boolean bypassServerOnly;
 
 	private RegistryObjectBuilderTypes(ResourceKey<Registry<T>> key, Class<T> baseClass, String def) {
@@ -78,8 +78,8 @@ public final class RegistryObjectBuilderTypes<T> {
 		objectBaseClass = baseClass;
 		defaultBuilder = def;
 		deferredRegister = DeferredRegister.create(KubeJS.MOD_ID, registryKey);
-		types = new HashMap<>();
-		objects = new HashMap<>();
+		types = new LinkedHashMap<>();
+		objects = new LinkedHashMap<>();
 		current = null;
 		bypassServerOnly = false;
 	}
@@ -124,12 +124,11 @@ public final class RegistryObjectBuilderTypes<T> {
 	private void register() {
 		for (var builder : objects.values()) {
 			if (!builder.dummyBuilder) {
-				current = builder;
 				builder.object = deferredRegister.register(builder.id, builder::createTransformedObject);
 			}
 		}
 
-		current = null;
+		deferredRegister.register();
 	}
 
 	public static void registerAll(boolean all) {

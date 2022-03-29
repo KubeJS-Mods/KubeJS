@@ -44,7 +44,7 @@ public class RegistryTypeWrapperFactory<T> implements TypeWrapperFactory<T> {
 
 							all.add(new RegistryTypeWrapperFactory(rawType, KubeJSRegistries.genericRegistry(key), key.location().toString()));
 						} catch (Throwable t) {
-							KubeJS.LOGGER.error("Failed to create TypeWrapper for registry " + id + ": " + t);
+							// KubeJS.LOGGER.error("Failed to create TypeWrapper for registry " + id + ": " + t);
 						}
 					}
 				}

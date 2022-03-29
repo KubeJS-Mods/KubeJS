@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.fluid;
 
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
+import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
-import dev.latvian.mods.kubejs.item.KubeJSItemEventHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -19,7 +19,12 @@ public class FluidBucketItemBuilder extends ItemBuilder {
 
 	@Override
 	public Item createObject() {
-		return KubeJSItemEventHandler.buildBucket(fluidBuilder, this);
+		return KubeJSFluidHelper.buildBucket(fluidBuilder, this);
+	}
+
+	@Override
+	public void generateAssetJsons(AssetJsonGenerator generator) {
+		generator.itemModel(id, m -> m.parent("kubejs:item/generated_bucket"));
 	}
 
 	@Override

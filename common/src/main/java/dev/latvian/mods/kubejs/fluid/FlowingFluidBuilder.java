@@ -13,12 +13,12 @@ public class FlowingFluidBuilder extends BuilderBase<Fluid> {
 	}
 
 	@Override
-	public RegistryObjectBuilderTypes<Fluid> getRegistryType() {
+	public final RegistryObjectBuilderTypes<Fluid> getRegistryType() {
 		return RegistryObjectBuilderTypes.FLUID;
 	}
 
 	@Override
 	public Fluid createObject() {
-		return KubeJSFluidEventHandler.buildFluid(false, fluidBuilder);
+		return KubeJSFluidHelper.buildFluid(false, fluidBuilder);
 	}
 }

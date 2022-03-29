@@ -4,10 +4,7 @@ import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.event.events.common.PlayerEvent;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.latvian.mods.kubejs.KubeJSEvents;
-import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
-import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.player.InventoryChangedEventJS;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -15,7 +12,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -31,11 +27,6 @@ public class KubeJSItemEventHandler {
 		InteractionEvent.INTERACT_ENTITY.register(KubeJSItemEventHandler::entityInteract);
 		PlayerEvent.CRAFT_ITEM.register(KubeJSItemEventHandler::crafted);
 		PlayerEvent.SMELT_ITEM.register(KubeJSItemEventHandler::smelted);
-	}
-
-	@ExpectPlatform
-	public static BucketItem buildBucket(FluidBuilder builder, FluidBucketItemBuilder itemBuilder) {
-		throw new AssertionError();
 	}
 
 	private static CompoundEventResult<ItemStack> rightClick(Player player, InteractionHand hand) {
