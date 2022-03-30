@@ -55,8 +55,10 @@ public final class RegistryObjectBuilderTypes<T> {
 	public static final List<BuilderBase<?>> ALL_BUILDERS = new ArrayList<>();
 
 	public static <T> RegistryObjectBuilderTypes<T> add(ResourceKey<Registry<T>> key, Class<T> baseClass, String def) {
-		RegistryObjectBuilderTypes<T> types = new RegistryObjectBuilderTypes<>(key, baseClass, def);
-		MAP.put(key, types);
+		var types = new RegistryObjectBuilderTypes<>(key, baseClass, def);
+		if (MAP.put(key, types) != null) {
+			throw new IllegalStateException("Registry with id '" + key + "' already exists!");
+		}
 		return types;
 	}
 
