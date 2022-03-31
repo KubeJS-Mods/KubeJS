@@ -22,5 +22,6 @@ public interface KubeJSRuleTests {
 	}
 
 	static void init() {
+		RULE_TEST_TYPES.register();
 	}
 }
