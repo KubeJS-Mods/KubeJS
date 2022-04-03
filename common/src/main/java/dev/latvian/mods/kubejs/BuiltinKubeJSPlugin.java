@@ -15,6 +15,7 @@ import dev.latvian.mods.kubejs.block.DetectorBlock;
 import dev.latvian.mods.kubejs.block.MaterialJS;
 import dev.latvian.mods.kubejs.block.MaterialListJS;
 import dev.latvian.mods.kubejs.block.custom.BasicBlockJS;
+import dev.latvian.mods.kubejs.block.custom.FallingBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.FenceBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.FenceGateBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.SlabBlockBuilder;
@@ -143,6 +144,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		RegistryObjectBuilderTypes.BLOCK.addType("stone_pressure_plate", StonePressurePlateBlockBuilder.class, StonePressurePlateBlockBuilder::new);
 		RegistryObjectBuilderTypes.BLOCK.addType("wooden_button", WoodenButtonBlockBuilder.class, WoodenButtonBlockBuilder::new);
 		RegistryObjectBuilderTypes.BLOCK.addType("stone_button", StoneButtonBlockBuilder.class, StoneButtonBlockBuilder::new);
+		RegistryObjectBuilderTypes.BLOCK.addType("falling", FallingBlockBuilder.class, FallingBlockBuilder::new);
 
 		RegistryObjectBuilderTypes.ITEM.addType("basic", BasicItemJS.Builder.class, BasicItemJS.Builder::new);
 
