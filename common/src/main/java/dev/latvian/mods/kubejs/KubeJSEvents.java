@@ -60,7 +60,6 @@ public interface KubeJSEvents {
 	String ENTITY_CHECK_SPAWN = "entity.check_spawn";
 	String ENTITY_SPAWNED = "entity.spawned";
 
-	String BLOCK_REGISTRY = "block.registry";
 	String BLOCK_MISSING_MAPPINGS = "block.missing_mappings";
 	String BLOCK_RIGHT_CLICK = "block.right_click";
 	String BLOCK_LEFT_CLICK = "block.left_click";
@@ -68,7 +67,6 @@ public interface KubeJSEvents {
 	String BLOCK_BREAK = "block.break";
 	String BLOCK_MODIFICATION = "block.modification";
 
-	String ITEM_REGISTRY = "item.registry";
 	String ITEM_REGISTRY_TOOL_TIERS = "item.registry.tool_tiers";
 	String ITEM_REGISTRY_ARMOR_TIERS = "item.registry.armor_tiers";
 	String ITEM_MISSING_MAPPINGS = "item.missing_mappings";
@@ -84,8 +82,6 @@ public interface KubeJSEvents {
 	String ITEM_FOOD_EATEN = "item.food_eaten";
 	String ITEM_TOOLTIP = "item.tooltip";
 	String ITEM_MODIFICATION = "item.modification";
-
-	String FLUID_REGISTRY = "fluid.registry";
 
 	String SOUND_REGISTRY = "sound.registry";
 }

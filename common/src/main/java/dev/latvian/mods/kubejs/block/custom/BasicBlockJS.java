@@ -1,10 +1,13 @@
 package dev.latvian.mods.kubejs.block.custom;
 
+import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -26,6 +29,17 @@ import java.util.Random;
  * @author LatvianModder
  */
 public class BasicBlockJS extends Block {
+	public static class Builder extends BlockBuilder {
+		public Builder(ResourceLocation i) {
+			super(i);
+		}
+
+		@Override
+		public Block createObject() {
+			return new BasicBlockJS(this);
+		}
+	}
+
 	public final BlockBuilder properties;
 	public final VoxelShape shape;
 
@@ -47,8 +61,10 @@ public class BasicBlockJS extends Block {
 
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-		if (BlockBuilder.current.waterlogged) {
-			builder.add(BlockStateProperties.WATERLOGGED);
+		if (RegistryObjectBuilderTypes.BLOCK.getCurrent() instanceof BlockBuilder current) {
+			if (current.waterlogged) {
+				builder.add(BlockStateProperties.WATERLOGGED);
+			}
 		}
 	}
 
@@ -91,7 +107,7 @@ public class BasicBlockJS extends Block {
 			try {
 				properties.randomTickCallback.accept(new RandomTickCallbackJS(containerJS, random));
 			} catch (Exception e) {
-				LOGGER.error("Error while random ticking custom block {}: {}", this, e);
+				KubeJS.LOGGER.error("Error while random ticking custom block {}: {}", this, e);
 			}
 		}
 	}

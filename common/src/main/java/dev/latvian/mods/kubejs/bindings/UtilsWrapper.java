@@ -17,7 +17,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.level.Level;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.LoggerFactory;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -78,7 +78,7 @@ public interface UtilsWrapper {
 	}
 
 	static ConsoleJS createConsole(String name) {
-		return new ConsoleJS(ScriptType.STARTUP, LogManager.getLogger(name));
+		return new ConsoleJS(ScriptType.STARTUP, LoggerFactory.getLogger(name));
 	}
 
 	static Pattern regex(Object s) {

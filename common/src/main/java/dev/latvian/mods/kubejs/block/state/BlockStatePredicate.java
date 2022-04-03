@@ -9,17 +9,30 @@ import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.Util;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
-import net.minecraft.world.level.levelgen.structure.templatesystem.*;
+import net.minecraft.world.level.levelgen.structure.templatesystem.AlwaysTrueTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.BlockStateMatchTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public sealed interface BlockStatePredicate {
@@ -34,11 +47,7 @@ public sealed interface BlockStatePredicate {
 
 	static BlockStatePredicate fromString(String s) {
 		if (s.startsWith("#")) {
-			var tag = Tags.blocks().getTag(new ResourceLocation(s.substring(1)));
-
-			if (tag != null) {
-				return new TagMatch(tag);
-			}
+			return new TagMatch(Tags.block(new ResourceLocation(s.substring(1))));
 		} else if (s.indexOf('[') != -1) {
 			var state = UtilsJS.parseBlockState(s);
 
@@ -116,8 +125,8 @@ public sealed interface BlockStatePredicate {
 			return new BlockMatch(block);
 		} else if (o instanceof BlockState state) {
 			return new StateMatch(state);
-		} else if (o instanceof Tag tag) {
-			return new TagMatch((Tag<Block>) tag);
+		} else if (o instanceof TagKey tag) {
+			return new TagMatch((TagKey<Block>) tag);
 		}
 
 		var pattern = UtilsJS.parseRegex(o);
@@ -248,15 +257,19 @@ public sealed interface BlockStatePredicate {
 		}
 	}
 
-	record TagMatch(Tag<Block> tag) implements BlockStatePredicate {
+	record TagMatch(TagKey<Block> tag) implements BlockStatePredicate {
 		@Override
 		public boolean test(BlockState state) {
-			return tag.contains(state.getBlock());
+			return state.is(tag);
 		}
 
 		@Override
 		public Collection<Block> getBlocks() {
-			return tag.getValues();
+			return Util.make(new LinkedHashSet<>(), set -> {
+				for (var holder : Registry.BLOCK.getTagOrEmpty(tag)) {
+					set.add(holder.value());
+				}
+			});
 		}
 
 		@Override

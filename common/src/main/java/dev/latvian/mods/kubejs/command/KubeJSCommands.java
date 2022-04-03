@@ -5,7 +5,9 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import dev.architectury.registry.registries.Registries;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.core.MinecraftServerKJS;
@@ -19,12 +21,12 @@ import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.stages.Stages;
-import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.CompoundTagArgument;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
@@ -41,18 +43,24 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.commands.ReloadCommand;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.TagCollection;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * @author LatvianModder
  */
 public class KubeJSCommands {
+
+	public static final DynamicCommandExceptionType NO_REGISTRY = new DynamicCommandExceptionType((id) ->
+			new TextComponent("No builtin or static registry found for " + id)
+	);
+
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 		dispatcher.register(Commands.literal("kubejs")
 				.then(Commands.literal("custom_command")
@@ -116,19 +124,23 @@ public class KubeJSCommands {
 				)
 				 */
 				.then(Commands.literal("list_tag")
-						.then(Commands.argument("tag", ResourceLocationArgument.id())
-								.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.items(), Registry.ITEM_REGISTRY, ResourceLocationArgument.getId(context, "tag")))
-								.then(Commands.literal("item")
-										.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.items(), Registry.ITEM_REGISTRY, ResourceLocationArgument.getId(context, "tag")))
+						.then(Commands.argument("registry", ResourceLocationArgument.id())
+								.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+										ctx.getSource().registryAccess()
+												.registries()
+												.map(entry -> entry.key().location().toString()), builder)
+
 								)
-								.then(Commands.literal("block")
-										.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.blocks(), Registry.BLOCK_REGISTRY, ResourceLocationArgument.getId(context, "tag")))
-								)
-								.then(Commands.literal("fluid")
-										.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.fluids(), Registry.FLUID_REGISTRY, ResourceLocationArgument.getId(context, "tag")))
-								)
-								.then(Commands.literal("entity_type")
-										.executes(context -> tagObjects(context.getSource().getPlayerOrException(), Tags.entityTypes(), Registry.ENTITY_TYPE_REGISTRY, ResourceLocationArgument.getId(context, "tag")))
+								.executes(ctx -> listTagsFor(ctx.getSource(), registry(ctx, "registry")))
+								.then(Commands.argument("tag", ResourceLocationArgument.id())
+										.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+												allTags(ctx.getSource(), registry(ctx, "registry"))
+														.map(TagKey::location)
+														.map(ResourceLocation::toString), builder)
+										)
+										.executes(ctx -> tagObjects(ctx.getSource(), TagKey.create(registry(ctx, "registry"),
+												ResourceLocationArgument.getId(ctx, "tag")))
+										)
 								)
 						)
 				)
@@ -175,6 +187,16 @@ public class KubeJSCommands {
 		);
 	}
 
+	private static <T> ResourceKey<Registry<T>> registry(CommandContext<CommandSourceStack> ctx, String arg) {
+		return ResourceKey.createRegistryKey(ResourceLocationArgument.getId(ctx, arg));
+	}
+
+	private static <T> Stream<TagKey<T>> allTags(CommandSourceStack source, ResourceKey<Registry<T>> registry) throws CommandSyntaxException {
+		return source.registryAccess().registry(registry)
+				.orElseThrow(() -> NO_REGISTRY.create(registry.location()))
+				.getTagNames();
+	}
+
 	private static Component copy(String s, ChatFormatting col, String info) {
 		var component = new TextComponent("- ");
 		component.setStyle(component.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.GRAY)));
@@ -194,7 +216,7 @@ public class KubeJSCommands {
 		var stack = ItemStackJS.of(player.getItemInHand(hand));
 		player.sendMessage(copy(stack.toString(), ChatFormatting.GREEN, "Item ID"), Util.NIL_UUID);
 
-		List<ResourceLocation> tags = new ArrayList<>(Tags.byItem(stack.getItem()));
+		List<ResourceLocation> tags = new ArrayList<>(stack.getTags());
 		tags.sort(null);
 
 		for (var id : tags) {
@@ -276,7 +298,7 @@ public class KubeJSCommands {
 	}
 
 	private static int reloadServer(CommandSourceStack source) {
-		ServerScriptManager.instance.reloadScriptManager(((MinecraftServerKJS) source.getServer()).getServerResourcesKJS().getResourceManager());
+		ServerScriptManager.instance.reloadScriptManager(((MinecraftServerKJS) source.getServer()).getReloadableResourcesKJS().resourceManager());
 		UtilsJS.postModificationEvents();
 		source.sendSuccess(new TextComponent("Done! To reload recipes, tags, loot tables and other datapack things, run /reload"), false);
 		return 1;
@@ -340,26 +362,54 @@ public class KubeJSCommands {
 		return Command.SINGLE_SUCCESS;
 	}
 
-	private static <T> int tagObjects(ServerPlayer player, TagCollection<T> collection, ResourceKey<Registry<T>> reg, ResourceLocation t) {
-		var tag = collection.getTag(t);
+	private static <T> int listTagsFor(CommandSourceStack source, ResourceKey<Registry<T>> registry) throws CommandSyntaxException {
+		var tags = allTags(source, registry);
 
-		if (tag == null || tag.getValues().isEmpty()) {
-			player.sendMessage(new TextComponent("Tag not found!"), Util.NIL_UUID);
+		source.sendSuccess(TextComponent.EMPTY, false);
+		source.sendSuccess(new TextComponent("List of all Tags for " + registry.location() + ":"), false);
+		source.sendSuccess(TextComponent.EMPTY, false);
+
+		var size = tags.map(TagKey::location).map(tag -> new TextComponent("- " + tag).withStyle(Style.EMPTY
+				.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs list_tag " + registry.location() + " " + tag))
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("[Show all entries for " + tag + "]")))
+		)).mapToLong(msg -> {
+			source.sendSuccess(msg, false);
+			return 1;
+		}).sum();
+
+		source.sendSuccess(TextComponent.EMPTY, false);
+		source.sendSuccess(new TextComponent("Total: " + size + " tags"), false);
+		source.sendSuccess(new TextComponent("(Click on any of the above tags to list their contents!)"), false);
+		source.sendSuccess(TextComponent.EMPTY, false);
+
+		return Command.SINGLE_SUCCESS;
+	}
+
+	private static <T> int tagObjects(CommandSourceStack source, TagKey<T> key) throws CommandSyntaxException {
+		var registry = source.registryAccess()
+				.registry(key.registry())
+				.orElseThrow(() -> NO_REGISTRY.create(key.registry().location()));
+
+		var tag = registry.getTag(key);
+
+		if (tag.isEmpty()) {
+			source.sendFailure(new TextComponent("Tag not found or empty!"));
 			return 0;
 		}
+		source.sendSuccess(TextComponent.EMPTY, false);
+		source.sendSuccess(new TextComponent("Contents of #" + key.location() + " [" + key.registry().location() + "]:"), false);
+		source.sendSuccess(TextComponent.EMPTY, false);
 
-		player.sendMessage(new TextComponent(t + ":"), Util.NIL_UUID);
+		var items = tag.get();
 
-		for (var item : tag.getValues()) {
-			var id = Registries.getId(item, reg);
-			if (id == null) {
-				player.sendMessage(new TextComponent("- " + item), Util.NIL_UUID);
-			} else {
-				player.sendMessage(new TextComponent("- " + id), Util.NIL_UUID);
-			}
+		for (var holder : items) {
+			var id = holder.unwrap().map(o -> o.location().toString(), o -> o + " (unknown ID)");
+			source.sendSuccess(new TextComponent("- " + id), false);
 		}
 
-		player.sendMessage(new TextComponent(tag.getValues().size() + " elements"), Util.NIL_UUID);
+		source.sendSuccess(TextComponent.EMPTY, false);
+		source.sendSuccess(new TextComponent("Total: " + items.size() + " elements"), false);
+		source.sendSuccess(TextComponent.EMPTY, false);
 		return Command.SINGLE_SUCCESS;
 	}
 

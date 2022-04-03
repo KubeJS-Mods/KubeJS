@@ -6,6 +6,7 @@ import dev.architectury.registry.fuel.FuelRegistry;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -21,14 +22,25 @@ import java.util.function.Function;
  * @author LatvianModder
  */
 public class BasicItemJS extends Item {
+	public static class Builder extends ItemBuilder {
+		public Builder(ResourceLocation i) {
+			super(i);
+		}
+
+		@Override
+		public Item createObject() {
+			return new BasicItemJS(this);
+		}
+	}
+
 	private final ImmutableMultimap<Attribute, AttributeModifier> attributes;
 	private ItemStack containerItem;
-	private Function<ItemStackJS, Collection<ItemStackJS>> subtypes;
+	private final Function<ItemStackJS, Collection<ItemStackJS>> subtypes;
 
 	public BasicItemJS(ItemBuilder p) {
 		super(p.createItemProperties());
-        var attackDamage = p.getAttackDamage();
-        var attackSpeed = p.getAttackSpeed();
+		var attackDamage = p.getAttackDamage();
+		var attackSpeed = p.getAttackSpeed();
 
 		if (p.burnTime > 0) {
 			FuelRegistry.register(p.burnTime, this);

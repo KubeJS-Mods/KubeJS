@@ -1,18 +1,16 @@
 package dev.latvian.mods.kubejs.fluid;
 
-import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.bindings.RarityWrapper;
 import dev.latvian.mods.kubejs.util.BuilderBase;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraft.world.level.material.Fluid;
 
 /**
  * @author LatvianModder
  */
-public class FluidBuilder extends BuilderBase {
+public class FluidBuilder extends BuilderBase<Fluid> {
 	public String stillTexture;
 	public String flowingTexture;
 	public int color = 0xFFFFFFFF;
@@ -25,23 +23,41 @@ public class FluidBuilder extends BuilderBase {
 	public RarityWrapper rarity = RarityWrapper.COMMON;
 	public Object extraPlatformInfo;
 
-	public FlowingFluid stillFluid;
-	public FlowingFluid flowingFluid;
-	public BucketItem bucketItem;
-	public LiquidBlock block;
+	public FlowingFluidBuilder flowingFluid;
+	public FluidBlockBuilder block;
+	public FluidBucketItemBuilder bucketItem;
 
-	private JsonObject blockstateJson;
-	private JsonObject blockModelJson;
-
-	public FluidBuilder(String i) {
+	public FluidBuilder(ResourceLocation i) {
 		super(i);
 		textureStill(KubeJS.id("fluid/fluid_thin"));
 		textureFlowing(KubeJS.id("fluid/fluid_thin_flow"));
+		flowingFluid = new FlowingFluidBuilder(this);
+		block = new FluidBlockBuilder(this);
+		bucketItem = new FluidBucketItemBuilder(this);
+		bucketItem.displayName(displayName + " Bucket");
 	}
 
 	@Override
-	public String getBuilderType() {
-		return "fluid";
+	public BuilderBase<Fluid> displayName(String name) {
+		bucketItem.displayName(name + " Bucket");
+		return super.displayName(name);
+	}
+
+	@Override
+	public final RegistryObjectBuilderTypes<Fluid> getRegistryType() {
+		return RegistryObjectBuilderTypes.FLUID;
+	}
+
+	@Override
+	public Fluid createObject() {
+		return KubeJSFluidHelper.buildFluid(true, this);
+	}
+
+	@Override
+	public void createAdditionalObjects() {
+		RegistryObjectBuilderTypes.FLUID.addBuilder(flowingFluid);
+		RegistryObjectBuilderTypes.BLOCK.addBuilder(block);
+		RegistryObjectBuilderTypes.ITEM.addBuilder(bucketItem);
 	}
 
 	public FluidBuilder color(int c) {
@@ -110,38 +126,5 @@ public class FluidBuilder extends BuilderBase {
 	public FluidBuilder rarity(RarityWrapper rarity) {
 		this.rarity = rarity;
 		return this;
-	}
-
-	public void setBlockstateJson(JsonObject o) {
-		blockstateJson = o;
-	}
-
-	public JsonObject getBlockstateJson() {
-		if (blockstateJson == null) {
-			blockstateJson = new JsonObject();
-			var variants = new JsonObject();
-			var modelo = new JsonObject();
-			modelo.addProperty("model", newID("block/", "").toString());
-			variants.add("", modelo);
-			blockstateJson.add("variants", variants);
-		}
-
-		return blockstateJson;
-	}
-
-	public void setBlockModelJson(JsonObject o) {
-		blockModelJson = o;
-	}
-
-	public JsonObject getBlockModelJson() {
-		if (blockModelJson == null) {
-			blockModelJson = new JsonObject();
-			var textures = new JsonObject();
-			textures.addProperty("particle", stillTexture);
-			blockModelJson.add("textures", textures);
-			return blockModelJson;
-		}
-
-		return blockModelJson;
 	}
 }

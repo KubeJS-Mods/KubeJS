@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.world.level.LevelReader;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,7 +44,7 @@ public enum ScriptType {
 		name = n;
 		errors = new ArrayList<>();
 		warnings = new ArrayList<>();
-		console = new ConsoleJS(this, LogManager.getLogger(cname));
+		console = new ConsoleJS(this, LoggerFactory.getLogger(cname));
 		manager = m;
 		executor = Executors.newSingleThreadExecutor();
 	}

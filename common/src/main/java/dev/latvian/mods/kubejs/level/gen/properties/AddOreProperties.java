@@ -31,7 +31,7 @@ public class AddOreProperties {
 	// feature configuration
 	public List<OreConfiguration.TargetBlockState> targets = new ArrayList<>();
 	public int size = 9;
-	public boolean noSurface = false;
+	public float noSurface = 0.0f;
 
 	// placement configuration
 	public IntProvider count = ConstantInt.of(1);

@@ -81,7 +81,7 @@ public class ClassFilter {
 			}
 		}
 
-		return CommonProperties.get().invertClassLoader ? V_ALLOW : V_DENY;
+		return CommonProperties.get().disableClassFilter ? V_ALLOW : V_DENY;
 	}
 
 	public boolean isAllowed(String s) {

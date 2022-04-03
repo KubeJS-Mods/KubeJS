@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[38,)"
+loaderVersion = "[40,)"
 issueTrackerURL = "https://github.com/KubeJS-Mods/KubeJS/issues"
 license = "GNU LGPLv3"
 
@@ -17,21 +17,21 @@ license = "GNU LGPLv3"
 [[dependencies.kubejs]]
 modId = "forge"
 mandatory = true
-versionRange = "[38,)"
+versionRange = "[40,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.kubejs]]
 modId = "rhino"
 mandatory = true
-versionRange = "[1801.1.8-build.102,)"
+versionRange = "[1801.1.9-build.125,)"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.kubejs]]
 modId = "architectury"
 mandatory = true
-versionRange = "[3.7.22,)"
+versionRange = "[4.1.34,)"
 ordering = "AFTER"
 side = "BOTH"
 

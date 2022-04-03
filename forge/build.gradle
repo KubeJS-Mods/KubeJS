@@ -19,12 +19,11 @@ configurations {
 	dev
 }
 
-artifacts {
-	dev(jar)
-}
-
 loom {
+	accessWidenerPath = project(":common").file("src/main/resources/kubejs.accesswidener")
 	forge {
+		convertAccessWideners = true
+		extraAccessWideners.add("kubejs.accesswidener")
 		mixinConfigs = [
 				"kubejs.mixins.json",
 				"kubejs-common.mixins.json"
@@ -118,8 +117,7 @@ if (ENV.CURSEFORGE_KEY) {
 			id = project.curseforge_id_forge
 			releaseType = project.curseforge_type
 			addGameVersion "Forge"
-			addGameVersion "1.18"
-			addGameVersion "1.18.1"
+			addGameVersion "1.18.2"
 			mainArtifact(remapJar.archivePath)
 			relations {
 				requiredDependency 'rhino'

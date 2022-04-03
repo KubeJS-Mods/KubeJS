@@ -7,8 +7,11 @@ import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.Util;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -30,74 +33,63 @@ public class TagIngredientJS implements IngredientJS {
 		tagIngredientCache.clear();
 	}
 
-	private final ResourceLocation tag;
-	private Tag<Item> actualTag;
+	private final TagKey<Item> tag;
+	private Iterable<Holder<Item>> holders;
 
 	private TagIngredientJS(String t) {
-		tag = UtilsJS.getMCID(t);
+		tag = Tags.item(UtilsJS.getMCID(t));
 	}
 
-	public String getTag() {
-		return tag.toString();
+	public ResourceLocation getTag() {
+		return tag.location();
 	}
 
-	public Tag<Item> getActualTag() {
-		if (actualTag == null) {
-			actualTag = Tags.items().getTagOrEmpty(tag);
+	public Iterable<Holder<Item>> getHolders() {
+		if (holders == null) {
+			holders = Registry.ITEM.getTagOrEmpty(tag);
 		}
-
-		return actualTag;
+		return holders;
 	}
 
 	@Override
 	public boolean test(ItemStackJS stack) {
-		return !stack.isEmpty() && getActualTag().contains(stack.getItem());
+		return !stack.isEmpty() && stack.getItemStack().is(tag);
 	}
 
 	@Override
 	public boolean testVanilla(ItemStack stack) {
-		return !stack.isEmpty() && getActualTag().contains(stack.getItem());
+		return !stack.isEmpty() && stack.is(tag);
 	}
 
 	@Override
 	public boolean testVanillaItem(Item item) {
-		return item != Items.AIR && getActualTag().contains(item);
+		return item != Items.AIR && item.builtInRegistryHolder().is(tag);
 	}
 
 	@Override
 	public Set<ItemStackJS> getStacks() {
-		var t = getActualTag();
-
-		if (t.getValues().size() > 0) {
-			Set<ItemStackJS> set = new LinkedHashSet<>();
-
-			for (var item : t.getValues()) {
-				set.add(new ItemStackJS(new ItemStack(item)));
+		return Util.make(new LinkedHashSet<>(), set -> {
+			for (var holder : getHolders()) {
+				set.add(new ItemStackJS(new ItemStack(holder)));
 			}
-
-			return set;
-		}
-
-		return Collections.emptySet();
+		});
 	}
 
 	@Override
 	public Set<Item> getVanillaItems() {
-		var t = getActualTag();
-
-		if (t.getValues().size() > 0) {
-			return new LinkedHashSet<>(t.getValues());
-		}
-
-		return Collections.emptySet();
+		return Util.make(new LinkedHashSet<>(), set -> {
+			for (var holder : getHolders()) {
+				set.add(holder.value());
+			}
+		});
 	}
 
 	@Override
 	public ItemStackJS getFirst() {
 		validateTag();
 
-		for (var item : getActualTag().getValues()) {
-			return new ItemStackJS(new ItemStack(item));
+		for (var holder : getHolders()) {
+			return new ItemStackJS(new ItemStack(holder));
 		}
 
 		return ItemStackJS.EMPTY;
@@ -105,18 +97,18 @@ public class TagIngredientJS implements IngredientJS {
 
 	@Override
 	public boolean isEmpty() {
-		return getActualTag().getValues().isEmpty();
+		return !getHolders().iterator().hasNext();
 	}
 
 	@Override
 	public String toString() {
-		return "'#" + tag + "'";
+		return "'#%s'".formatted(getTag());
 	}
 
 	@Override
 	public JsonElement toJson() {
 		var json = new JsonObject();
-		json.addProperty("tag", tag.toString());
+		json.addProperty("tag", getTag().toString());
 		return json;
 	}
 
@@ -131,13 +123,13 @@ public class TagIngredientJS implements IngredientJS {
 
 	private TagIngredientJS validateTag() {
 		if (RecipeJS.itemErrors && isEmpty()) {
-			throw new RecipeExceptionJS(String.format("Tag '#%s' doesn't contain any items!", tag)).error();
+			throw new RecipeExceptionJS("Tag %s doesn't contain any items!".formatted(this)).error();
 		}
 		return this;
 	}
 
 	@Override
 	public Ingredient createVanillaIngredient() {
-		return Ingredient.of(getActualTag());
+		return Ingredient.of(tag);
 	}
 }

@@ -3,28 +3,16 @@ package dev.latvian.mods.kubejs.block;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.BlockEvent;
 import dev.architectury.event.events.common.InteractionEvent;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.utils.value.IntValue;
-import dev.latvian.mods.kubejs.CommonProperties;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSEvents;
-import dev.latvian.mods.kubejs.KubeJSObjects;
-import dev.latvian.mods.kubejs.KubeJSRegistries;
-import dev.latvian.mods.kubejs.core.BlockKJS;
-import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -33,44 +21,10 @@ import org.jetbrains.annotations.Nullable;
 public class KubeJSBlockEventHandler {
 
 	public static void init() {
-		if (!CommonProperties.get().serverOnly) {
-			registry();
-		}
-
 		InteractionEvent.RIGHT_CLICK_BLOCK.register(KubeJSBlockEventHandler::rightClick);
 		InteractionEvent.LEFT_CLICK_BLOCK.register(KubeJSBlockEventHandler::leftClick);
 		BlockEvent.BREAK.register(KubeJSBlockEventHandler::blockBreak);
 		BlockEvent.PLACE.register(KubeJSBlockEventHandler::blockPlace);
-	}
-
-	@ExpectPlatform
-	private static LiquidBlock buildFluidBlock(FluidBuilder builder, BlockBehaviour.Properties properties) {
-		throw new AssertionError();
-	}
-
-	private static void registry() {
-		for (var builder : KubeJSObjects.BLOCKS.values()) {
-			BlockBuilder.current = builder;
-
-			builder.block = builder.type.createBlock(builder);
-
-			if (builder.block instanceof BlockKJS blockKJS) {
-				blockKJS.setBlockBuilderKJS(builder);
-			}
-
-			KubeJSRegistries.blocks().register(builder.id, () -> builder.block);
-		}
-
-		BlockBuilder.current = null;
-
-		for (var builder : KubeJSObjects.FLUIDS.values()) {
-			builder.block = buildFluidBlock(builder, Block.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops());
-			KubeJSRegistries.blocks().register(builder.id, () -> builder.block);
-		}
-
-		for (var detector : KubeJSObjects.DETECTORS.values()) {
-			detector.block = KubeJSRegistries.blocks().register(new ResourceLocation(KubeJS.MOD_ID, "detector_" + detector.id), () -> new DetectorBlock(detector.id));
-		}
 	}
 
 	private static EventResult rightClick(Player player, InteractionHand hand, BlockPos pos, Direction direction) {

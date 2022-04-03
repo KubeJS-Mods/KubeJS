@@ -13,6 +13,7 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaClass;
 import dev.latvian.mods.rhino.RhinoException;
 import dev.latvian.mods.rhino.Scriptable;
+import dev.latvian.mods.rhino.mod.util.RemappingHelper;
 import org.apache.commons.io.IOUtils;
 
 import java.nio.file.Files;
@@ -97,6 +98,7 @@ public class ScriptManager {
 	public void load() {
 		var context = Context.enterWithNewFactory();
 		context.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || isClassAllowed(fullClassName));
+		context.setRemapper(RemappingHelper.createModRemapper());
 		var typeWrappers = context.getTypeWrappers();
 		// typeWrappers.removeAll();
 		KubeJSPlugins.forEachPlugin(plugin -> plugin.addTypeWrappers(type, typeWrappers));
@@ -156,7 +158,7 @@ public class ScriptManager {
 	}
 
 	public NativeJavaClass loadJavaClass(Scriptable scope, Object[] args) {
-		var name = args[0].toString();
+		String name = RemappingHelper.getMinecraftRemapper().getUnmappedClass(args[0].toString());
 
 		if (name.isEmpty()) {
 			throw Context.reportRuntimeError("Class name can't be empty!");

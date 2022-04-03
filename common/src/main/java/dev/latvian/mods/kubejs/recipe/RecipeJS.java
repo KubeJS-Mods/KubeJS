@@ -75,7 +75,7 @@ public abstract class RecipeJS {
 
 	public final void serializeJson() {
 		currentRecipe = this;
-		json.addProperty("type", type.getId());
+		json.addProperty("type", type.getId().toString());
 		serialize();
 		currentRecipe = null;
 	}
@@ -250,7 +250,7 @@ public abstract class RecipeJS {
 
 	public ResourceLocation getOrCreateId() {
 		if (id == null) {
-			id = new ResourceLocation(type.getIdRL().getNamespace() + ":kjs_" + getUniqueId());
+			id = new ResourceLocation(type.getId().getNamespace() + ":kjs_" + getUniqueId());
 		}
 
 		return id;

@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.util;
 
-import com.google.common.collect.Sets;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.SerializationTags;
-import net.minecraft.tags.TagCollection;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -13,60 +13,65 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 
-import java.util.Collection;
+import java.util.stream.Stream;
 
 public class Tags {
-	public static TagCollection<Item> items() {
-		return SerializationTags.getInstance().getOrEmpty(Registry.ITEM_REGISTRY);
+	public static TagKey<Item> item(ResourceLocation id) {
+		return generic(id, Registry.ITEM_REGISTRY);
 	}
 
-	public static TagCollection<Block> blocks() {
-		return SerializationTags.getInstance().getOrEmpty(Registry.BLOCK_REGISTRY);
+	public static TagKey<Block> block(ResourceLocation id) {
+		return generic(id, Registry.BLOCK_REGISTRY);
 	}
 
-	public static TagCollection<Fluid> fluids() {
-		return SerializationTags.getInstance().getOrEmpty(Registry.FLUID_REGISTRY);
+	public static TagKey<Fluid> fluid(ResourceLocation id) {
+		return generic(id, Registry.FLUID_REGISTRY);
 	}
 
-	public static TagCollection<EntityType<?>> entityTypes() {
-		return SerializationTags.getInstance().getOrEmpty(Registry.ENTITY_TYPE_REGISTRY);
+	public static TagKey<EntityType<?>> entityType(ResourceLocation id) {
+		return generic(id, Registry.ENTITY_TYPE_REGISTRY);
 	}
 
-	public static Collection<ResourceLocation> byItemStack(ItemStack stack) {
+	public static Stream<TagKey<Item>> byItemStack(ItemStack stack) {
 		return byItem(stack.getItem());
 	}
 
-	public static Collection<ResourceLocation> byItem(Item item) {
-		return forType(item, items());
+	public static Stream<TagKey<Item>> byItem(Item item) {
+		return forHolder(item.builtInRegistryHolder());
 	}
 
-	public static Collection<ResourceLocation> byBlockState(BlockState state) {
-		return forType(state.getBlock(), blocks());
+	public static Stream<TagKey<Block>> byBlockState(BlockState state) {
+		return byBlock(state.getBlock());
 	}
 
-	public static Collection<ResourceLocation> byBlock(Block block) {
-		return forType(block, blocks());
+	public static Stream<TagKey<Block>> byBlock(Block block) {
+		return forHolder(block.builtInRegistryHolder());
 	}
 
-	public static Collection<ResourceLocation> byFluid(Fluid fluid) {
-		return forType(fluid, fluids());
+	public static Stream<TagKey<Fluid>> byFluid(Fluid fluid) {
+		return forHolder(fluid.builtInRegistryHolder());
 	}
 
-	public static Collection<ResourceLocation> byEntity(Entity entity) {
-		return forType(entity.getType(), entityTypes());
+	public static Stream<TagKey<EntityType<?>>> byEntity(Entity entity) {
+		return byEntityType(entity.getType());
 	}
 
-	public static Collection<ResourceLocation> byEntityType(EntityType<?> entityType) {
-		return forType(entityType, entityTypes());
+	public static Stream<TagKey<EntityType<?>>> byEntityType(EntityType<?> entityType) {
+		return forHolder(entityType.builtInRegistryHolder());
 	}
 
-	public static <T> Collection<ResourceLocation> forType(T item, TagCollection<T> tags) {
-		Collection<ResourceLocation> list = Sets.newHashSet();
-		for (var entry : tags.getAllTags().entrySet()) {
-			if (entry.getValue().contains(item)) {
-				list.add(entry.getKey());
-			}
-		}
-		return list;
+	public static <T> Stream<TagKey<T>> forType(T object, Registry<T> registry) {
+		return registry.getResourceKey(object)
+				.flatMap(registry::getHolder)
+				.stream()
+				.flatMap(Holder::tags);
+	}
+
+	private static <T> TagKey<T> generic(ResourceLocation id, ResourceKey<Registry<T>> registry) {
+		return TagKey.create(registry, id);
+	}
+
+	private static <T> Stream<TagKey<T>> forHolder(Holder.Reference<T> registryHolder) {
+		return registryHolder.tags();
 	}
 }

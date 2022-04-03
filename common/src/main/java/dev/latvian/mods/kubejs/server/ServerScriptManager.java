@@ -22,17 +22,18 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.ServerResources;
-import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimpleReloadableResourceManager;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
@@ -42,7 +43,7 @@ public class ServerScriptManager {
 
 	public final ScriptManager scriptManager = new ScriptManager(ScriptType.SERVER, KubeJSPaths.SERVER_SCRIPTS, "/data/kubejs/example_server_script.js");
 
-	public void init(ServerResources serverResources) {
+	public void init(ReloadableServerResources serverResources) {
 		try {
 			if (Files.notExists(KubeJSPaths.DATA)) {
 				Files.createDirectories(KubeJSPaths.DATA);
@@ -91,22 +92,20 @@ public class ServerScriptManager {
 		scriptManager.load();
 	}
 
-	public List<PackResources> resourcePackList(List<PackResources> list0) {
+	public ResourceManager wrapResourceManager(ResourceManager original) {
+		// TODO: Wrap the resource manager to inject KubeJS' virtual data packs and server scripts.
 		var virtualDataPackLow = new VirtualKubeJSDataPack(false);
 		var virtualDataPackHigh = new VirtualKubeJSDataPack(true);
-		List<PackResources> list = new ArrayList<>();
-		list.add(virtualDataPackLow);
-		list.addAll(list0);
-		list.add(new KubeJSServerResourcePack());
-		list.add(virtualDataPackHigh);
 
-		var resourceManager = new SimpleReloadableResourceManager(PackType.SERVER_DATA);
+		var list = original.listPacks().collect(Collectors.toCollection(LinkedList::new));
 
-		for (var p : list) {
-			resourceManager.add(p);
-		}
+		list.addFirst(virtualDataPackLow);
+		list.addLast(new KubeJSServerResourcePack());
+		list.addLast(virtualDataPackHigh);
 
-		reloadScriptManager(resourceManager);
+		var wrappedResourceManager = new MultiPackResourceManager(PackType.SERVER_DATA, list);
+
+		reloadScriptManager(wrappedResourceManager);
 
 		ConsoleJS.SERVER.setLineNumber(true);
 		new DataPackEventJS(virtualDataPackLow).post(ScriptType.SERVER, "server.datapack.last");
@@ -132,6 +131,7 @@ public class ServerScriptManager {
 		CustomIngredientAction.MAP.clear();
 
 		RecipeEventJS.instance = new RecipeEventJS(typeMap);
-		return list;
+
+		return wrappedResourceManager;
 	}
 }

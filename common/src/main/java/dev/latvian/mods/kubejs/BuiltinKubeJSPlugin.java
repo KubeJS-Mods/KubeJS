@@ -11,13 +11,20 @@ import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.bindings.RarityWrapper;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
-import dev.latvian.mods.kubejs.block.BlockRegistryEventJS;
+import dev.latvian.mods.kubejs.block.DetectorBlock;
 import dev.latvian.mods.kubejs.block.MaterialJS;
 import dev.latvian.mods.kubejs.block.MaterialListJS;
-import dev.latvian.mods.kubejs.block.custom.BasicBlockType;
-import dev.latvian.mods.kubejs.block.custom.BlockType;
-import dev.latvian.mods.kubejs.block.custom.BlockTypes;
-import dev.latvian.mods.kubejs.block.custom.ShapedBlockType;
+import dev.latvian.mods.kubejs.block.custom.BasicBlockJS;
+import dev.latvian.mods.kubejs.block.custom.FallingBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.FenceBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.FenceGateBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.SlabBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.StairBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.StoneButtonBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.StonePressurePlateBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.WallBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.WoodenButtonBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.WoodenPressurePlateBlockBuilder;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.screen.AtlasTextureObject;
@@ -28,26 +35,26 @@ import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.event.DataEvent;
 import dev.latvian.mods.kubejs.event.IEventHandler;
-import dev.latvian.mods.kubejs.fluid.FluidRegistryEventJS;
+import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
-import dev.latvian.mods.kubejs.item.ItemRegistryEventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
+import dev.latvian.mods.kubejs.item.custom.AxeItemBuilder;
+import dev.latvian.mods.kubejs.item.custom.BasicItemJS;
+import dev.latvian.mods.kubejs.item.custom.HoeItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.ItemArmorTierEventJS;
 import dev.latvian.mods.kubejs.item.custom.ItemToolTierEventJS;
+import dev.latvian.mods.kubejs.item.custom.PickaxeItemBuilder;
+import dev.latvian.mods.kubejs.item.custom.ShovelItemBuilder;
+import dev.latvian.mods.kubejs.item.custom.SwordItemBuilder;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStackJS;
-import dev.latvian.mods.kubejs.item.type.ArmorItemType;
-import dev.latvian.mods.kubejs.item.type.BasicItemType;
-import dev.latvian.mods.kubejs.item.type.ItemType;
-import dev.latvian.mods.kubejs.item.type.ItemTypes;
-import dev.latvian.mods.kubejs.item.type.ToolItemType;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.filter.mob.MobFilter;
-import dev.latvian.mods.kubejs.loot.LootBuilder;
 import dev.latvian.mods.kubejs.recipe.RegisterRecipeHandlersEvent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
@@ -126,27 +133,33 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void init() {
-		BlockTypes.register(BasicBlockType.INSTANCE);
-		BlockTypes.register(ShapedBlockType.SLAB);
-		BlockTypes.register(ShapedBlockType.STAIRS);
-		BlockTypes.register(ShapedBlockType.FENCE);
-		BlockTypes.register(ShapedBlockType.FENCE_GATE);
-		BlockTypes.register(ShapedBlockType.WALL);
-		BlockTypes.register(ShapedBlockType.WOODEN_PRESSURE_PLATE);
-		BlockTypes.register(ShapedBlockType.STONE_PRESSURE_PLATE);
-		BlockTypes.register(ShapedBlockType.WOODEN_BUTTON);
-		BlockTypes.register(ShapedBlockType.STONE_BUTTON);
+		RegistryObjectBuilderTypes.BLOCK.addType("basic", BasicBlockJS.Builder.class, BasicBlockJS.Builder::new);
+		RegistryObjectBuilderTypes.BLOCK.addType("detector", DetectorBlock.Builder.class, DetectorBlock.Builder::new);
+		RegistryObjectBuilderTypes.BLOCK.addType("slab", SlabBlockBuilder.class, SlabBlockBuilder::new);
+		RegistryObjectBuilderTypes.BLOCK.addType("stairs", StairBlockBuilder.class, StairBlockBuilder::new);
+		RegistryObjectBuilderTypes.BLOCK.addType("fence", FenceBlockBuilder.class, FenceBlockBuilder::new);
+		RegistryObjectBuilderTypes.BLOCK.addType("fence_gate", FenceGateBlockBuilder.class, FenceGateBlockBuilder::new);
+		RegistryObjectBuilderTypes.BLOCK.addType("wall", WallBlockBuilder.class, WallBlockBuilder::new);
+		RegistryObjectBuilderTypes.BLOCK.addType("wooden_pressure_plate", WoodenPressurePlateBlockBuilder.class, WoodenPressurePlateBlockBuilder::new);
+		RegistryObjectBuilderTypes.BLOCK.addType("stone_pressure_plate", StonePressurePlateBlockBuilder.class, StonePressurePlateBlockBuilder::new);
+		RegistryObjectBuilderTypes.BLOCK.addType("wooden_button", WoodenButtonBlockBuilder.class, WoodenButtonBlockBuilder::new);
+		RegistryObjectBuilderTypes.BLOCK.addType("stone_button", StoneButtonBlockBuilder.class, StoneButtonBlockBuilder::new);
+		RegistryObjectBuilderTypes.BLOCK.addType("falling", FallingBlockBuilder.class, FallingBlockBuilder::new);
 
-		ItemTypes.register(BasicItemType.INSTANCE);
-		ItemTypes.register(ToolItemType.SWORD);
-		ItemTypes.register(ToolItemType.PICKAXE);
-		ItemTypes.register(ToolItemType.AXE);
-		ItemTypes.register(ToolItemType.SHOVEL);
-		ItemTypes.register(ToolItemType.HOE);
-		ItemTypes.register(ArmorItemType.HELMET);
-		ItemTypes.register(ArmorItemType.CHESTPLATE);
-		ItemTypes.register(ArmorItemType.LEGGINGS);
-		ItemTypes.register(ArmorItemType.BOOTS);
+		RegistryObjectBuilderTypes.ITEM.addType("basic", BasicItemJS.Builder.class, BasicItemJS.Builder::new);
+
+		RegistryObjectBuilderTypes.ITEM.addType("sword", SwordItemBuilder.class, SwordItemBuilder::new);
+		RegistryObjectBuilderTypes.ITEM.addType("pickaxe", PickaxeItemBuilder.class, PickaxeItemBuilder::new);
+		RegistryObjectBuilderTypes.ITEM.addType("axe", AxeItemBuilder.class, AxeItemBuilder::new);
+		RegistryObjectBuilderTypes.ITEM.addType("shovel", ShovelItemBuilder.class, ShovelItemBuilder::new);
+		RegistryObjectBuilderTypes.ITEM.addType("hoe", HoeItemBuilder.class, HoeItemBuilder::new);
+
+		RegistryObjectBuilderTypes.ITEM.addType("helmet", ArmorItemBuilder.Helmet.class, ArmorItemBuilder.Helmet::new);
+		RegistryObjectBuilderTypes.ITEM.addType("chestplate", ArmorItemBuilder.Chestplate.class, ArmorItemBuilder.Chestplate::new);
+		RegistryObjectBuilderTypes.ITEM.addType("leggings", ArmorItemBuilder.Leggings.class, ArmorItemBuilder.Leggings::new);
+		RegistryObjectBuilderTypes.ITEM.addType("boots", ArmorItemBuilder.Boots.class, ArmorItemBuilder.Boots::new);
+
+		RegistryObjectBuilderTypes.FLUID.addType("basic", FluidBuilder.class, FluidBuilder::new);
 	}
 
 	@Override
@@ -154,9 +167,13 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		new ItemToolTierEventJS().post(KubeJSEvents.ITEM_REGISTRY_TOOL_TIERS);
 		new ItemArmorTierEventJS().post(KubeJSEvents.ITEM_REGISTRY_ARMOR_TIERS);
 
-		new BlockRegistryEventJS().post(KubeJSEvents.BLOCK_REGISTRY);
-		new ItemRegistryEventJS().post(KubeJSEvents.ITEM_REGISTRY);
-		new FluidRegistryEventJS().post(KubeJSEvents.FLUID_REGISTRY);
+		for (var types : RegistryObjectBuilderTypes.MAP.values()) {
+			types.postEvent(types.registryKey.location().getNamespace() + "." + types.registryKey.location().getPath().replace('/', '.') + ".registry");
+
+			if (types.registryKey.location().getNamespace().equals("minecraft")) {
+				types.postEvent(types.registryKey.location().getPath().replace('/', '.') + ".registry");
+			}
+		}
 	}
 
 	@Override
@@ -409,8 +426,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(FluidStackJS.class, FluidStackJS::of);
 		typeWrappers.register(RecipeFilter.class, RecipeFilter::of);
 		typeWrappers.register(MaterialJS.class, MaterialListJS.INSTANCE::of);
-		typeWrappers.register(ItemType.class, ItemTypes::get);
-		typeWrappers.register(BlockType.class, BlockTypes::get);
 		typeWrappers.register(Color.class, ColorWrapper::of);
 		typeWrappers.register(IngredientActionFilter.class, IngredientActionFilter::filterOf);
 
@@ -500,50 +515,15 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void generateDataJsons(DataJsonGenerator generator) {
-		for (var builder : KubeJSObjects.BLOCKS.values()) {
-			if (builder.lootTable != null) {
-				var lootBuilder = new LootBuilder(null);
-				lootBuilder.type = "minecraft:block";
-				builder.lootTable.accept(lootBuilder);
-				generator.json(builder.newID("loot_tables/blocks/", ""), lootBuilder.toJson());
-			}
-
-			builder.type.generateData(builder, generator);
-		}
-
-		for (var builder : KubeJSObjects.ITEMS.values()) {
-			builder.type.generateData(builder, generator);
+		for (var builder : RegistryObjectBuilderTypes.ALL_BUILDERS) {
+			builder.generateDataJsons(generator);
 		}
 	}
 
 	@Override
 	public void generateAssetJsons(AssetJsonGenerator generator) {
-		for (var detector : KubeJSObjects.DETECTORS.values()) {
-			generator.blockState(new ResourceLocation(KubeJS.MOD_ID, "detector_" + detector.id), bs -> {
-				bs.variant("powered=false", "kubejs:block/detector");
-				bs.variant("powered=true", "kubejs:block/detector_on");
-			});
-
-			generator.itemModel(new ResourceLocation(KubeJS.MOD_ID, "detector_" + detector.id), m -> {
-				m.parent(KubeJS.MOD_ID + ":block/detector");
-			});
-		}
-
-		for (var builder : KubeJSObjects.BLOCKS.values()) {
-			builder.type.generateAssets(builder, generator);
-		}
-
-		for (var builder : KubeJSObjects.ITEMS.values()) {
-			builder.type.generateAssets(builder, generator);
-		}
-
-		for (var builder : KubeJSObjects.FLUIDS.values()) {
-			generator.json(builder.newID("blockstates/", ""), builder.getBlockstateJson());
-			generator.json(builder.newID("models/block/", ""), builder.getBlockModelJson());
-
-			var bucketModel = new JsonObject();
-			bucketModel.addProperty("parent", "kubejs:item/generated_bucket");
-			generator.json(builder.newID("models/item/", "_bucket"), bucketModel);
+		for (var builder : RegistryObjectBuilderTypes.ALL_BUILDERS) {
+			builder.generateAssetJsons(generator);
 		}
 	}
 
@@ -552,20 +532,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		lang.put("itemGroup.kubejs.kubejs", "KubeJS");
 		lang.put("item.kubejs.dummy_fluid_item", "Dummy Fluid Item");
 
-		for (var builder : KubeJSObjects.ALL) {
-			if (!builder.displayName.isEmpty()) {
-				lang.put(builder.translationKey, builder.displayName);
-			}
-		}
-
-		for (var detector : KubeJSObjects.DETECTORS.values()) {
-			lang.put("block.kubejs.detector_" + detector.id, "KubeJS Detector [" + detector.id + "]");
-		}
-
-		for (var builder : KubeJSObjects.FLUIDS.values()) {
-			if (!builder.displayName.isEmpty()) {
-				lang.put(builder.bucketItem.getDescriptionId(), builder.displayName + " Bucket");
-			}
+		for (var builder : RegistryObjectBuilderTypes.ALL_BUILDERS) {
+			builder.generateLang(lang);
 		}
 	}
 }

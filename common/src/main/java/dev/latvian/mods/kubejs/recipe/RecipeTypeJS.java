@@ -14,13 +14,11 @@ public class RecipeTypeJS {
 	public final RecipeSerializer<?> serializer;
 	public final Supplier<RecipeJS> factory;
 	private final ResourceLocation id;
-	private final String string;
 
 	public RecipeTypeJS(RecipeSerializer<?> s, Supplier<RecipeJS> f) {
 		serializer = s;
 		factory = f;
 		id = Registries.getId(s, Registry.RECIPE_SERIALIZER_REGISTRY);
-		string = id.toString();
 	}
 
 	public boolean isCustom() {
@@ -29,28 +27,24 @@ public class RecipeTypeJS {
 
 	@Override
 	public String toString() {
-		return string;
-	}
-
-	public String getId() {
-		return string;
+		return id.toString();
 	}
 
 	public String getMod() {
 		return id.getNamespace();
 	}
 
-	public ResourceLocation getIdRL() {
+	public ResourceLocation getId() {
 		return id;
 	}
 
 	@Override
 	public int hashCode() {
-		return string.hashCode();
+		return id.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		return string.equals(obj.toString());
+		return id.toString().equals(obj.toString());
 	}
 }

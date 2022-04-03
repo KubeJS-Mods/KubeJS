@@ -1,17 +1,16 @@
 package dev.latvian.mods.kubejs.level.gen;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import dev.architectury.hooks.level.biome.BiomeProperties;
 import dev.architectury.registry.level.biome.BiomeModifications;
-import dev.latvian.mods.kubejs.core.RegistryGetterKJS;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.properties.RemoveOresProperties;
 import dev.latvian.mods.kubejs.level.gen.properties.RemoveSpawnsProperties;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
@@ -21,60 +20,46 @@ import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfigur
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.ReplaceBlockConfiguration;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
-
-import static dev.latvian.mods.kubejs.util.UtilsJS.onMatchDo;
+import java.util.stream.Stream;
 
 /**
  * @author LatvianModder
  */
 public class WorldgenRemoveEventJS extends StartupEventJS {
-	private static ResourceLocation getId(Supplier<PlacedFeature> feature) {
-		// this is the worst, but if we're still decoding things from network,
-		// this is our only way to get the ID since the instances don't match
-		// up with the BuiltinRegistries ones.
-		if (feature instanceof RegistryGetterKJS<?> reg) {
-			return reg.getId();
-		}
-		return BuiltinRegistries.PLACED_FEATURE.getKey(feature.get());
-	}
-
-	private static <T> List<T> padListAndGet(List<List<T>> features, int i) {
-		while (features.size() <= i) {
-			features.add(Lists.newArrayList());
-		}
-		return features.get(i);
-	}
-
 	protected static boolean checkTree(ConfiguredFeature<?, ?> configuredFeature, Predicate<FeatureConfiguration> predicate) {
-		return predicate.test(configuredFeature.config) || configuredFeature.config.getFeatures().anyMatch(cf -> checkTree(cf, predicate));
-	}
-
-	protected static boolean check(PlacedFeature feature, Predicate<FeatureConfiguration> predicate) {
-		return feature.getFeatures().anyMatch(cf -> checkTree(cf, predicate));
+		return predicate.test(configuredFeature.config()) || configuredFeature.config().getFeatures().anyMatch(cf -> checkTree(cf, predicate));
 	}
 
 	private void removeFeature(BiomeFilter filter, GenerationStep.Decoration decoration, Predicate<FeatureConfiguration> predicate) {
 		BiomeModifications.replaceProperties(filter, (ctx, properties) -> {
-			padListAndGet(properties.getGenerationProperties().getFeatures(), decoration.ordinal())
-					.removeIf(onMatchDo(sup -> check(sup.get(), predicate), value -> {
-						ConsoleJS.STARTUP.debug("Removing feature %s from generation step %s in biome %s"
-								.formatted(getId(value), decoration.name().toLowerCase(), ctx.getKey()));
-					}));
+			List<Holder<PlacedFeature>> removedFeatures = new ArrayList<>();
+
+			for (var feature : properties.getGenerationProperties().getFeatures(decoration)) {
+				if (checkTree(feature.value().feature().value(), predicate)) {
+					feature.unwrapKey().ifPresentOrElse(key -> {
+						ConsoleJS.STARTUP.debug("Removing feature %s from generation step %s in biome %s".formatted(key, decoration.name().toLowerCase(), ctx.getKey()));
+						removedFeatures.add(feature);
+					}, () -> ConsoleJS.STARTUP.warn("Feature %s was not removed since it was not found in the registry!".formatted(feature.value())));
+				}
+			}
+
+			for (var feature : removedFeatures) {
+				properties.getGenerationProperties().removeFeature(decoration, feature.unwrapKey().get());
+			}
 		});
 	}
 
 	private void removeSpawn(BiomeFilter filter, BiPredicate<MobCategory, MobSpawnSettings.SpawnerData> predicate) {
-		BiomeModifications.replaceProperties(filter, (ctx, properties) -> {
-			properties.getSpawnProperties().removeSpawns(predicate);
-		});
+		BiomeModifications.replaceProperties(filter, (ctx, properties) -> properties.getSpawnProperties().removeSpawns(predicate));
 	}
 
 	public void printFeatures() {
@@ -121,23 +106,17 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 					called = true;
 
 					var biome = ctx.getKey();
-					var features = padListAndGet(properties.getGenerationProperties().getFeatures(), type.ordinal());
+					var features = properties.getGenerationProperties().getFeatures(type);
 
 					ConsoleJS.STARTUP.info("Features with type '%s' in biome '%s':".formatted(type.name().toLowerCase(), biome));
 
-					var unknown = 0;
+					var unknown = new MutableInt(0);
 
 					for (var feature : features) {
-						var id = getId(feature);
-
-						if (id == null) {
-							unknown++;
-						} else {
-							ConsoleJS.STARTUP.info("- " + id);
-						}
+						feature.unwrapKey().ifPresentOrElse(key -> ConsoleJS.STARTUP.info("- " + key), unknown::increment);
 					}
 
-					if (unknown > 0) {
+					if (unknown.intValue() > 0) {
 						ConsoleJS.STARTUP.info("- " + unknown + " features with unknown id");
 					}
 				}
@@ -151,16 +130,15 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 		}
 	}
 
-	public void removeFeatureById(BiomeFilter filter, GenerationStep.Decoration decoration, ResourceLocation[] id) {
-		var ids = Sets.newHashSet(id);
+	public void removeFeatureById(BiomeFilter filter, GenerationStep.Decoration decoration, ResourceLocation[] ids) {
 		BiomeModifications.replaceProperties(filter, (ctx, properties) -> {
-			padListAndGet(properties.getGenerationProperties().getFeatures(), decoration.ordinal())
-					.removeIf(sup -> ids.contains(getId(sup)));
+			Stream.of(ids).map(id -> ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id))
+					.forEach(id -> properties.getGenerationProperties().removeFeature(decoration, id));
 		});
 	}
 
-	public void removeFeatureById(GenerationStep.Decoration type, ResourceLocation[] id) {
-		removeFeatureById(BiomeFilter.ALWAYS_TRUE, type, id);
+	public void removeFeatureById(GenerationStep.Decoration type, ResourceLocation[] ids) {
+		removeFeatureById(BiomeFilter.ALWAYS_TRUE, type, ids);
 	}
 
 	public void removeAllFeatures(BiomeFilter filter, GenerationStep.Decoration type) {

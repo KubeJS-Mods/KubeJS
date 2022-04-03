@@ -9,16 +9,14 @@ import dev.architectury.event.events.client.ClientTextureStitchEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import dev.architectury.hooks.client.screen.ScreenAccess;
-import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
-import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.latvian.mods.kubejs.KubeJSEvents;
-import dev.latvian.mods.kubejs.KubeJSObjects;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenPaintEventJS;
 import dev.latvian.mods.kubejs.client.painter.world.WorldPaintEventJS;
-import dev.latvian.mods.kubejs.core.BucketItemKJS;
 import dev.latvian.mods.kubejs.core.ImageButtonKJS;
+import dev.latvian.mods.kubejs.fluid.KubeJSFluidHelper;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
 import dev.latvian.mods.kubejs.level.ClientLevelJS;
 import dev.latvian.mods.kubejs.script.AttachDataEvent;
@@ -29,16 +27,18 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -51,7 +51,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
@@ -77,21 +77,8 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void clientSetup(Minecraft minecraft) {
-		renderLayers();
-		blockColors();
-		itemColors();
-	}
-
-	private void renderLayers() {
-		for (var builder : KubeJSObjects.BLOCKS.values()) {
-			switch (builder.renderType) {
-				case "cutout" -> RenderTypeRegistry.register(RenderType.cutout(), builder.block);
-				case "cutout_mipped" -> RenderTypeRegistry.register(RenderType.cutoutMipped(), builder.block);
-				case "translucent" -> RenderTypeRegistry.register(RenderType.translucent(), builder.block);
-
-				//default:
-				//	RenderTypeLookup.setRenderLayer(block, RenderType.getSolid());
-			}
+		for (var builder : RegistryObjectBuilderTypes.ALL_BUILDERS) {
+			builder.clientRegistry(minecraft);
 		}
 	}
 
@@ -111,26 +98,22 @@ public class KubeJSClientEventHandler {
 		var advanced = flag.isAdvanced();
 
 		if (advanced && ClientProperties.get().getShowTagNames() && Screen.hasShiftDown()) {
-			for (var tag : Tags.byItemStack(stack)) {
-				tempTagNames.computeIfAbsent(tag, TagInstance::new).item = true;
-			}
+			var addToTempTags = (Consumer<TagKey<?>>) tag -> tempTagNames.computeIfAbsent(tag.location(), TagInstance::new).registries.add(tag.registry());
+
+			Tags.byItemStack(stack).forEach(addToTempTags);
 
 			if (stack.getItem() instanceof BlockItem item) {
-				for (var tag : Tags.byBlock(item.getBlock())) {
-					tempTagNames.computeIfAbsent(tag, TagInstance::new).block = true;
-				}
+				Tags.byBlock(item.getBlock()).forEach(addToTempTags);
 			}
 
-			if (stack.getItem() instanceof BucketItemKJS item) {
-				for (var tag : Tags.byFluid(item.getFluidKJS())) {
-					tempTagNames.computeIfAbsent(tag, TagInstance::new).fluid = true;
-				}
+			Fluid fluid = KubeJSFluidHelper.getActualContainedFluid(stack.getItem());
+
+			if (fluid != Fluids.EMPTY) {
+				Tags.byFluid(fluid).forEach(addToTempTags);
 			}
 
 			if (stack.getItem() instanceof SpawnEggItem item) {
-				for (var tag : Tags.byEntityType(item.getType(stack.getTag()))) {
-					tempTagNames.computeIfAbsent(tag, TagInstance::new).entity = true;
-				}
+				Tags.byEntityType(item.getType(stack.getTag())).forEach(addToTempTags);
 			}
 
 			for (var instance : tempTagNames.values()) {
@@ -260,34 +243,6 @@ public class KubeJSClientEventHandler {
 					iterator.remove();
 					return;
 				}
-			}
-		}
-	}
-
-	private void itemColors() {
-		for (var builder : KubeJSObjects.ITEMS.values()) {
-			if (!builder.color.isEmpty()) {
-				ColorHandlerRegistry.registerItemColors((stack, index) -> builder.color.get(index), Objects.requireNonNull(builder.item, "Item " + builder.id + " is null!"));
-			}
-		}
-
-		for (var builder : KubeJSObjects.BLOCKS.values()) {
-			if (builder.itemBuilder != null && !builder.color.isEmpty()) {
-				ColorHandlerRegistry.registerItemColors((stack, index) -> builder.color.get(index), Objects.requireNonNull(builder.itemBuilder.blockItem, "Block Item " + builder.id + " is null!"));
-			}
-		}
-
-		for (var builder : KubeJSObjects.FLUIDS.values()) {
-			if (builder.bucketColor != 0xFFFFFFFF) {
-				ColorHandlerRegistry.registerItemColors((stack, index) -> index == 1 ? builder.bucketColor : 0xFFFFFFFF, Objects.requireNonNull(builder.bucketItem, "Bucket Item " + builder.id + " is null!"));
-			}
-		}
-	}
-
-	private void blockColors() {
-		for (var builder : KubeJSObjects.BLOCKS.values()) {
-			if (!builder.color.isEmpty()) {
-				ColorHandlerRegistry.registerBlockColors((state, level, pos, index) -> builder.color.get(index), builder.block);
 			}
 		}
 	}

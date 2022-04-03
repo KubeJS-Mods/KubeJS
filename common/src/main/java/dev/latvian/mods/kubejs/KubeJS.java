@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.block.KubeJSBlockEventHandler;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.entity.KubeJSEntityEventHandler;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
-import dev.latvian.mods.kubejs.fluid.KubeJSFluidEventHandler;
 import dev.latvian.mods.kubejs.item.KubeJSItemEventHandler;
 import dev.latvian.mods.kubejs.level.KubeJSWorldEventHandler;
 import dev.latvian.mods.kubejs.net.KubeJSNet;
@@ -19,15 +18,19 @@ import dev.latvian.mods.kubejs.script.ScriptPack;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.mods.kubejs.server.KubeJSServerEventHandler;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.mod.util.RemappingHelper;
+import dev.latvian.mods.rhino.util.Remapper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.world.level.block.CactusBlock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +44,7 @@ import java.util.Locale;
 public class KubeJS {
 	public static final String MOD_ID = "kubejs";
 	public static final String MOD_NAME = "KubeJS";
-	public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
+	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
 	public static ResourceLocation id(String path) {
 		return new ResourceLocation(MOD_ID, path);
@@ -119,11 +122,57 @@ public class KubeJS {
 		KubeJSEntityEventHandler.init();
 		KubeJSBlockEventHandler.init();
 		KubeJSItemEventHandler.init();
-		KubeJSFluidEventHandler.init();
 		KubeJSServerEventHandler.init();
 		KubeJSRecipeEventHandler.init();
+		RegistryObjectBuilderTypes.registerAll(!CommonProperties.get().serverOnly);
 
 		PROXY.init();
+
+		if (CommonProperties.get().disableClassFilter) {
+			ConsoleJS.STARTUP.warn("Class filter is disabled!");
+		}
+
+		if (CommonProperties.get().printRemappedClasses) {
+			ConsoleJS.STARTUP.info("Remapped classes:");
+			var remapper = RemappingHelper.getMinecraftRemapper();
+
+			for (var entry : remapper.classMap.entrySet()) {
+				ConsoleJS.STARTUP.info("");
+				ConsoleJS.STARTUP.info("- " + entry.getKey() + " => " + entry.getValue());
+
+				if (entry.getValue().children != null) {
+					for (var child : entry.getValue().children.entrySet()) {
+						ConsoleJS.STARTUP.info("  " + child.getKey() + " -> " + child.getValue());
+					}
+				}
+			}
+
+			ConsoleJS.STARTUP.info("");
+			ConsoleJS.STARTUP.info(remapper.classMap.size() + " classes");
+
+			Class<?> testClass = CactusBlock.class;
+			ConsoleJS.STARTUP.info("Test: " + testClass.getName() + " => " + remapper.getMappedClass(testClass));
+
+			for (var field : CactusBlock.class.getDeclaredFields()) {
+				ConsoleJS.STARTUP.info("  " + field.getName() + " -> " + remapper.getMappedField(testClass, field));
+			}
+
+			for (var method : CactusBlock.class.getDeclaredMethods()) {
+				StringBuilder sb = new StringBuilder("  ");
+				sb.append(method.getName());
+				sb.append('(');
+				if (method.getParameterCount() > 0) {
+					for (Class<?> param : method.getParameterTypes()) {
+						sb.append(Remapper.getTypeName(param.getTypeName()));
+					}
+				}
+
+				sb.append(") -> ");
+				sb.append(remapper.getMappedMethod(testClass, method));
+
+				ConsoleJS.STARTUP.info(sb);
+			}
+		}
 	}
 
 	public static void loadScripts(ScriptPack pack, Path dir, String path) {

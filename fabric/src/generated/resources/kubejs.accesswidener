@@ -1,0 +1,8 @@
+accessWidener v2 named
+
+accessible class net/minecraft/server/MinecraftServer$ReloadableResources
+accessible class net/minecraft/tags/Tag$ElementEntry
+accessible class net/minecraft/tags/Tag$TagEntry
+
+accessible field net/minecraft/world/item/crafting/RecipeManager byName Ljava/util/Map;
+accessible field net/minecraft/world/item/crafting/RecipeManager recipes Ljava/util/Map;

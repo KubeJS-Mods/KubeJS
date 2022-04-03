@@ -25,9 +25,10 @@ public class CommonProperties {
 	public boolean hideServerScriptErrors;
 	public boolean serverOnly;
 	public boolean announceReload;
-	public boolean invertClassLoader;
+	public boolean disableClassFilter;
 	public String packMode;
 	public boolean debugInfo;
+	public boolean printRemappedClasses;
 
 	private CommonProperties() {
 		properties = new Properties();
@@ -47,9 +48,10 @@ public class CommonProperties {
 			hideServerScriptErrors = get("hideServerScriptErrors", false);
 			serverOnly = get("serverOnly", false);
 			announceReload = get("announceReload", true);
-			invertClassLoader = "true".equals(properties.getProperty("invertClassLoader")); // Advanced option, not recommended to be set to true
+			disableClassFilter = get("disableClassFilter", false);
 			packMode = get("packmode", "default");
 			debugInfo = get("debugInfo", false);
+			printRemappedClasses = get("printRemappedClasses", false);
 
 			if (writeProperties) {
 				try (Writer writer = Files.newBufferedWriter(propertiesFile)) {

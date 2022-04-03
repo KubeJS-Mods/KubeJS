@@ -4,8 +4,8 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSObjects;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
@@ -116,21 +116,19 @@ public abstract class KubeJSResourcePack implements PackResources {
 
 		List<ResourceLocation> list = Lists.newArrayList();
 
-		if (type == PackType.CLIENT_RESOURCES) {
+		if (packType == PackType.CLIENT_RESOURCES) {
 			if (path.equals("lang")) {
 				list.add(new ResourceLocation(KubeJS.MOD_ID, "lang/en_us.json"));
 			}
-		} else {
-			if (path.equals("loot_tables")) {
-				for (var id : KubeJSObjects.BLOCKS.keySet()) {
-					list.add(new ResourceLocation(id.getNamespace(), "loot_tables/blocks/" + id.getPath() + ".json"));
-				}
-			}
+		}
+
+		for (var builder : RegistryObjectBuilderTypes.ALL_BUILDERS) {
+			builder.addResourcePackLocations(path, list, packType);
 		}
 
 		UtilsJS.tryIO(() ->
 		{
-			var root = KubeJSPaths.get(type).toAbsolutePath();
+			var root = KubeJSPaths.get(packType).toAbsolutePath();
 
 			if (Files.exists(root) && Files.isDirectory(root)) {
 				var inputPath = root.getFileSystem().getPath(path);
@@ -150,8 +148,8 @@ public abstract class KubeJSResourcePack implements PackResources {
 	}
 
 	@Override
-	public Set<String> getNamespaces(PackType type) {
-		if (type != packType) {
+	public Set<String> getNamespaces(PackType type0) {
+		if (type0 != packType) {
 			return Collections.emptySet();
 		}
 
@@ -159,13 +157,13 @@ public abstract class KubeJSResourcePack implements PackResources {
 		namespaces.add("kubejs_generated");
 		namespaces.add(KubeJS.MOD_ID);
 
-		for (var builder : KubeJSObjects.ALL) {
+		for (var builder : RegistryObjectBuilderTypes.ALL_BUILDERS) {
 			namespaces.add(builder.id.getNamespace());
 		}
 
 		UtilsJS.tryIO(() ->
 		{
-			var root = KubeJSPaths.get(type).toAbsolutePath();
+			var root = KubeJSPaths.get(packType).toAbsolutePath();
 
 			if (Files.exists(root) && Files.isDirectory(root)) {
 				Files.walk(root, 1)
