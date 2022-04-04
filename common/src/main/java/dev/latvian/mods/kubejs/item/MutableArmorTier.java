@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 /**
  * @author LatvianModder
  */
-public class ModifiedArmorTier implements ArmorMaterial {
+public class MutableArmorTier implements ArmorMaterial {
 	private static final int[] HEALTH_PER_SLOT = new int[]{13, 15, 16, 11};
 
 	public final ArmorMaterial parent;
@@ -25,7 +25,7 @@ public class ModifiedArmorTier implements ArmorMaterial {
 	private Supplier<Ingredient> repairIngredient;
 	private String name;
 
-	public ModifiedArmorTier(String id, ArmorMaterial p) {
+	public MutableArmorTier(String id, ArmorMaterial p) {
 		parent = p;
 		enchantmentValue = p.getEnchantmentValue();
 		sound = p.getEquipSound();

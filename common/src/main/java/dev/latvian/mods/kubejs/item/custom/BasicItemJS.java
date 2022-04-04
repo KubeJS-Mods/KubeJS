@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -34,13 +33,12 @@ public class BasicItemJS extends Item {
 	}
 
 	private final ImmutableMultimap<Attribute, AttributeModifier> attributes;
-	private ItemStack containerItem;
 	private final Function<ItemStackJS, Collection<ItemStackJS>> subtypes;
 
 	public BasicItemJS(ItemBuilder p) {
 		super(p.createItemProperties());
-		var attackDamage = p.getAttackDamage();
-		var attackSpeed = p.getAttackSpeed();
+		// var attackDamage = p.getAttackDamage();
+		// var attackSpeed = p.getAttackSpeed();
 
 		if (p.burnTime > 0) {
 			FuelRegistry.register(p.burnTime, this);
@@ -50,6 +48,7 @@ public class BasicItemJS extends Item {
 
 		ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
 
+		/*
 		if (attackDamage != null) {
 			builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", attackDamage.doubleValue(), AttributeModifier.Operation.ADDITION));
 		}
@@ -57,6 +56,7 @@ public class BasicItemJS extends Item {
 		if (attackSpeed != null) {
 			builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", attackSpeed.doubleValue(), AttributeModifier.Operation.ADDITION));
 		}
+		*/
 
 		attributes = builder.build();
 	}

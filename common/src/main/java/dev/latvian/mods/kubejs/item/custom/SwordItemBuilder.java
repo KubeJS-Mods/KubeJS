@@ -11,6 +11,6 @@ public class SwordItemBuilder extends HandheldItemBuilder {
 
 	@Override
 	public Item createObject() {
-		return new SwordItem(toolTier, (int) attackDamageBaseline, attackSpeedBaseline, createItemProperties());
+		return new SwordItem(toolTier, (int) attackDamageBaseline, speedBaseline, createItemProperties());
 	}
 }

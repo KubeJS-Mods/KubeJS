@@ -11,6 +11,6 @@ public class AxeItemBuilder extends HandheldItemBuilder {
 
 	@Override
 	public Item createObject() {
-		return new AxeItem(toolTier, attackDamageBaseline, attackSpeedBaseline, createItemProperties());
+		return new AxeItem(toolTier, attackDamageBaseline, speedBaseline, createItemProperties());
 	}
 }

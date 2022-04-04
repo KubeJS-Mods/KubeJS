@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.PressurePlateBlock;
 public class WoodenPressurePlateBlockBuilder extends ShapedBlockBuilder {
 	public WoodenPressurePlateBlockBuilder(ResourceLocation i) {
 		super(i, "_wooden_pressure_plate", "_pressure_plate");
-		noCollission();
+		noCollision();
 		tagBoth(BlockTags.PRESSURE_PLATES.location());
 		tagBoth(BlockTags.WOODEN_PRESSURE_PLATES.location());
 	}

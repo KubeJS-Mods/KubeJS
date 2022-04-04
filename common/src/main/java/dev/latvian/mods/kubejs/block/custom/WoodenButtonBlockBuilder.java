@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.WoodButtonBlock;
 public class WoodenButtonBlockBuilder extends ShapedBlockBuilder {
 	public WoodenButtonBlockBuilder(ResourceLocation i) {
 		super(i, "_wooden_button", "_button");
-		noCollission();
+		noCollision();
 		tagBoth(BlockTags.BUTTONS.location());
 		tagBoth(BlockTags.WOODEN_BUTTONS.location());
 	}

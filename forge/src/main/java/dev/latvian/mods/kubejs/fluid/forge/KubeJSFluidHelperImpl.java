@@ -36,7 +36,7 @@ public class KubeJSFluidHelperImpl {
 						new ResourceLocation(fluidBuilder.flowingTexture))
 				.translationKey("fluid." + fluidBuilder.id.getNamespace() + "." + fluidBuilder.id.getPath())
 				.color(fluidBuilder.color)
-				.rarity(fluidBuilder.rarity.rarity)
+				.rarity(fluidBuilder.rarity)
 				.density(fluidBuilder.density)
 				.viscosity(fluidBuilder.viscosity)
 				.luminosity(fluidBuilder.luminosity)

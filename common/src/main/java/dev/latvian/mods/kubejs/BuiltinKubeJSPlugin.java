@@ -8,7 +8,6 @@ import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
-import dev.latvian.mods.kubejs.bindings.RarityWrapper;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
 import dev.latvian.mods.kubejs.block.DetectorBlock;
@@ -111,6 +110,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
@@ -295,11 +295,11 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("SLOT_CHEST", EquipmentSlot.CHEST);
 		event.add("SLOT_HEAD", EquipmentSlot.HEAD);
 
-		event.add("Rarity", RarityWrapper.class);
-		event.add("RARITY_COMMON", RarityWrapper.COMMON);
-		event.add("RARITY_UNCOMMON", RarityWrapper.UNCOMMON);
-		event.add("RARITY_RARE", RarityWrapper.RARE);
-		event.add("RARITY_EPIC", RarityWrapper.EPIC);
+		event.add("Rarity", Rarity.class);
+		event.add("RARITY_COMMON", Rarity.COMMON);
+		event.add("RARITY_UNCOMMON", Rarity.UNCOMMON);
+		event.add("RARITY_RARE", Rarity.RARE);
+		event.add("RARITY_EPIC", Rarity.EPIC);
 
 		event.add("AIR_ITEM", Items.AIR);
 		event.add("AIR_BLOCK", Blocks.AIR);
@@ -428,6 +428,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(MaterialJS.class, MaterialListJS.INSTANCE::of);
 		typeWrappers.register(Color.class, ColorWrapper::of);
 		typeWrappers.register(IngredientActionFilter.class, IngredientActionFilter::filterOf);
+		typeWrappers.register(Rarity.class, o -> Rarity.valueOf(o.toString().toUpperCase()));
 
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
 	}

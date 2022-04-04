@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.PressurePlateBlock;
 public class StonePressurePlateBlockBuilder extends ShapedBlockBuilder {
 	public StonePressurePlateBlockBuilder(ResourceLocation i) {
 		super(i, "_stone_pressure_plate", "_pressure_plate");
-		noCollission();
+		noCollision();
 		tagBoth(BlockTags.PRESSURE_PLATES.location());
 		tagBoth(BlockTags.STONE_PRESSURE_PLATES.location());
 	}

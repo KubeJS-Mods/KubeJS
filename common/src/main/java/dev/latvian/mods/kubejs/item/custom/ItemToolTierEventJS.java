@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.item.custom;
 
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
-import dev.latvian.mods.kubejs.item.ModifiedToolTier;
+import dev.latvian.mods.kubejs.item.MutableToolTier;
 import net.minecraft.world.item.Tiers;
 
 import java.util.function.Consumer;
@@ -11,8 +11,8 @@ import java.util.function.Consumer;
  * @author LatvianModder
  */
 public class ItemToolTierEventJS extends StartupEventJS {
-	public void add(String id, Consumer<ModifiedToolTier> tier) {
-		var t = new ModifiedToolTier(Tiers.IRON);
+	public void add(String id, Consumer<MutableToolTier> tier) {
+		var t = new MutableToolTier(Tiers.IRON);
 		tier.accept(t);
 		ItemBuilder.TOOL_TIERS.put(id, t);
 	}
