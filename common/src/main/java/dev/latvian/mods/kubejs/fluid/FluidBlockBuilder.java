@@ -22,6 +22,6 @@ public class FluidBlockBuilder extends BlockBuilder {
 	@Override
 	public void generateAssetJsons(AssetJsonGenerator generator) {
 		generator.blockState(id, m -> m.variant("", id.getNamespace() + ":block/" + id.getPath()));
-		generator.blockModel(id, m -> m.texture("particle", fluidBuilder.stillTexture));
+		generator.blockModel(id, m -> m.texture("particle", fluidBuilder.stillTexture.toString()));
 	}
 }

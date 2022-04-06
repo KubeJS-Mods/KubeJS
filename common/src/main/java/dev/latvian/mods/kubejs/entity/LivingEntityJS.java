@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -101,8 +102,8 @@ public class LivingEntityJS extends EntityJS {
 	}
 
 	@Nullable
-	public DamageSourceJS getLastDamageSource() {
-		return minecraftLivingEntity.getLastDamageSource() == null ? null : new DamageSourceJS(getLevel(), minecraftLivingEntity.getLastDamageSource());
+	public DamageSource getLastDamageSource() {
+		return minecraftLivingEntity.getLastDamageSource();
 	}
 
 	@Nullable

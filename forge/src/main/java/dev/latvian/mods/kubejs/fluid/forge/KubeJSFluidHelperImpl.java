@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.fluid.forge;
 import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -31,9 +30,7 @@ public class KubeJSFluidHelperImpl {
 			return (ForgeFlowingFluid.Properties) fluidBuilder.extraPlatformInfo;
 		}
 
-		var builder = FluidAttributes.builder(
-						new ResourceLocation(fluidBuilder.stillTexture),
-						new ResourceLocation(fluidBuilder.flowingTexture))
+		var builder = FluidAttributes.builder(fluidBuilder.stillTexture, fluidBuilder.flowingTexture)
 				.translationKey("fluid." + fluidBuilder.id.getNamespace() + "." + fluidBuilder.id.getPath())
 				.color(fluidBuilder.color)
 				.rarity(fluidBuilder.rarity)

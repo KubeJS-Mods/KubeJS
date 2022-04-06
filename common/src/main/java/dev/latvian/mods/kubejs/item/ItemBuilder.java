@@ -2,13 +2,13 @@ package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonObject;
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
+import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
-import dev.latvian.mods.kubejs.util.BuilderBase;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.fabricmc.api.EnvType;

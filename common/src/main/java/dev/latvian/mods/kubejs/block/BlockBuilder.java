@@ -4,12 +4,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
+import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.core.BlockKJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
-import dev.latvian.mods.kubejs.util.BuilderBase;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -70,8 +70,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public BlockBuilder(ResourceLocation i) {
 		super(i);
 		material = MaterialListJS.INSTANCE.map.get("wood");
-		hardness = 0.5F;
-		resistance = -1F;
+		hardness = 1.5F;
+		resistance = 3F;
 		lightLevel = 0F;
 		opaque = true;
 		fullBlock = false;

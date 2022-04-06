@@ -13,20 +13,27 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 public class DetectorBlock extends Block {
 	public static class Builder extends BlockBuilder {
-		private static String verifyId(String id) {
-			if (id.isEmpty() || !id.equals(id.toLowerCase()) || id.matches("\\W")) {
-				throw new IllegalArgumentException("Detector ID can only contain a-z _ and 0-9!");
-			}
-
-			return id;
-		}
-
-		public final String detectorId;
+		public transient String detectorId;
 
 		public Builder(ResourceLocation i) {
-			super(new ResourceLocation(i.getNamespace(), "detector_" + verifyId(i.getPath())));
-			detectorId = i.getPath();
+			super(i);
+			detectorId = (id.getNamespace().equals(KubeJS.MOD_ID) ? "" : (id.getNamespace() + ".")) + id.getPath().replace('/', '.');
+
+			if (detectorId.endsWith("_detector")) {
+				detectorId = detectorId.substring(0, detectorId.length() - 9);
+			}
+
+			if (detectorId.startsWith("detector_")) {
+				detectorId = detectorId.substring(9);
+			}
+
 			displayName("KubeJS Detector [" + detectorId + "]");
+		}
+
+		public Builder detectorId(String id) {
+			detectorId = id;
+			displayName("KubeJS Detector [" + detectorId + "]");
+			return this;
 		}
 
 		@Override

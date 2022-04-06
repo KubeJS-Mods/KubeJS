@@ -34,7 +34,7 @@ public class MissingMappingEventJS<T extends IForgeRegistryEntry<T>> extends Eve
 	public void remap(ResourceLocation key, ResourceLocation value) {
 		findMapping(key, mapping ->
 		{
-            var to = valueProvider.apply(value);
+			var to = valueProvider.apply(value);
 
 			if (to != null) {
 				ConsoleJS.STARTUP.info("Remapping " + mapping.key + " to " + value + " (" + to.getClass() + ")");
