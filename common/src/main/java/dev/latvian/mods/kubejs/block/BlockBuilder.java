@@ -4,13 +4,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
+import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.core.BlockKJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
-import dev.latvian.mods.kubejs.util.BuilderBase;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.rhino.mod.util.color.Color;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -50,7 +51,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient String model;
 	public transient BlockItemBuilder itemBuilder;
 	public transient List<AABB> customShape;
-	public transient boolean noCollission;
+	public transient boolean noCollision;
 	public transient boolean notSolid;
 	public transient boolean waterlogged;
 	public transient float slipperiness = 0.6F;
@@ -69,8 +70,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public BlockBuilder(ResourceLocation i) {
 		super(i);
 		material = MaterialListJS.INSTANCE.map.get("wood");
-		hardness = 0.5F;
-		resistance = -1F;
+		hardness = 1.5F;
+		resistance = 3F;
 		lightLevel = 0F;
 		opaque = true;
 		fullBlock = false;
@@ -84,7 +85,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		itemBuilder = new BlockItemBuilder(i);
 		itemBuilder.blockBuilder = this;
 		customShape = new ArrayList<>();
-		noCollission = false;
+		noCollision = false;
 		notSolid = false;
 		waterlogged = false;
 		randomTickCallback = null;
@@ -326,8 +327,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	public BlockBuilder color(int index, int c) {
-		color.put(index, 0xFF000000 | c);
+	public BlockBuilder color(int index, Color c) {
+		color.put(index, c.getArgbKJS());
 		return this;
 	}
 
@@ -398,9 +399,14 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return shape;
 	}
 
-	public BlockBuilder noCollission() {
-		noCollission = true;
+	public BlockBuilder noCollision() {
+		noCollision = true;
 		return this;
+	}
+
+	@Deprecated
+	public BlockBuilder noCollission() {
+		return noCollision();
 	}
 
 	public BlockBuilder notSolid() {
@@ -511,7 +517,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 		properties.lightLevel(state -> (int) (lightLevel * 15F));
 
-		if (noCollission) {
+		if (noCollision) {
 			properties.noCollission();
 		}
 

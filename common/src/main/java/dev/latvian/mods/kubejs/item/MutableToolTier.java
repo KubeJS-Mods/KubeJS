@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 /**
  * @author LatvianModder
  */
-public class ModifiedToolTier implements Tier {
+public class MutableToolTier implements Tier {
 	public final Tier parent;
 	private int uses;
 	private float speed;
@@ -19,7 +19,7 @@ public class ModifiedToolTier implements Tier {
 	private int enchantmentValue;
 	private Supplier<Ingredient> repairIngredient;
 
-	public ModifiedToolTier(Tier p) {
+	public MutableToolTier(Tier p) {
 		parent = p;
 		uses = parent.getUses();
 		speed = parent.getSpeed();

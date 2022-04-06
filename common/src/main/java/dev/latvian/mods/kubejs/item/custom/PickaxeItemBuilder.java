@@ -11,6 +11,6 @@ public class PickaxeItemBuilder extends HandheldItemBuilder {
 
 	@Override
 	public Item createObject() {
-		return new PickaxeItem(toolTier, (int) attackDamageBaseline, attackSpeedBaseline, createItemProperties());
+		return new PickaxeItem(toolTier, (int) attackDamageBaseline, speedBaseline, createItemProperties());
 	}
 }

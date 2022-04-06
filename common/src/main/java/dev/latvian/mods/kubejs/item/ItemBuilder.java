@@ -2,15 +2,14 @@ package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonObject;
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
+import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
-import dev.latvian.mods.kubejs.bindings.RarityWrapper;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
-import dev.latvian.mods.kubejs.util.BuilderBase;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.rhino.mod.util.color.Color;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -22,9 +21,9 @@ import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,10 +55,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient int burnTime;
 	public transient String containerItem;
 	public transient Function<ItemStackJS, Collection<ItemStackJS>> subtypes;
-	public transient float miningSpeed;
-	public transient Float attackDamage;
-	public transient Float attackSpeed;
-	public transient RarityWrapper rarity;
+	public transient Rarity rarity;
 	public transient boolean glow;
 	public transient final List<Component> tooltip;
 	public transient CreativeModeTab group;
@@ -77,8 +73,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		burnTime = 0;
 		containerItem = "minecraft:air";
 		subtypes = null;
-		miningSpeed = 1.0F;
-		rarity = RarityWrapper.COMMON;
+		rarity = Rarity.COMMON;
 		glow = false;
 		tooltip = new ArrayList<>();
 		group = KubeJS.tab;
@@ -158,25 +153,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	public ItemBuilder miningSpeed(float f) {
-		miningSpeed = f;
-		ConsoleJS.STARTUP.warn("You should be using a 'pickaxe' or other tool type item if you want to modify mining speed!");
-		return this;
-	}
-
-	public ItemBuilder attackDamage(float f) {
-		attackDamage = f;
-		ConsoleJS.STARTUP.warn("You should be using a 'sword' type item if you want to modify attack damage!");
-		return this;
-	}
-
-	public ItemBuilder attackSpeed(float f) {
-		attackSpeed = f;
-		ConsoleJS.STARTUP.warn("You should be using a 'sword' type item if you want to modify attack speed!");
-		return this;
-	}
-
-	public ItemBuilder rarity(RarityWrapper v) {
+	public ItemBuilder rarity(Rarity v) {
 		rarity = v;
 		return this;
 	}
@@ -202,8 +179,8 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	public ItemBuilder color(int index, int c) {
-		color.put(index, 0xFF000000 | c);
+	public ItemBuilder color(int index, Color c) {
+		color.put(index, c.getArgbKJS());
 		return this;
 	}
 
@@ -223,20 +200,6 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	public float getMiningSpeed() {
-		return miningSpeed;
-	}
-
-	@Nullable
-	public Float getAttackDamage() {
-		return attackDamage;
-	}
-
-	@Nullable
-	public Float getAttackSpeed() {
-		return attackSpeed;
-	}
-
 	public Item.Properties createItemProperties() {
 		var properties = new Item.Properties();
 
@@ -248,7 +211,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 			properties.stacksTo(maxStackSize);
 		}
 
-		properties.rarity(rarity.rarity);
+		properties.rarity(rarity);
 
 		var item = KubeJSRegistries.items().get(new ResourceLocation(containerItem));
 

@@ -11,6 +11,6 @@ public class HoeItemBuilder extends HandheldItemBuilder {
 
 	@Override
 	public Item createObject() {
-		return new HoeItem(toolTier, (int) attackDamageBaseline, attackSpeedBaseline, createItemProperties());
+		return new HoeItem(toolTier, (int) attackDamageBaseline, speedBaseline, createItemProperties());
 	}
 }

@@ -37,6 +37,7 @@ import net.minecraft.util.valueproviders.ClampedNormalInt;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.entity.MobType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -708,5 +709,19 @@ public class UtilsJS {
 		char[] chars = s.toCharArray();
 		chars[0] = Character.toUpperCase(chars[0]);
 		return new String(chars);
+	}
+
+	public static String getMobTypeId(MobType type) {
+		if (type == MobType.UNDEAD) {
+			return "undead";
+		} else if (type == MobType.ARTHROPOD) {
+			return "arthropod";
+		} else if (type == MobType.ILLAGER) {
+			return "illager";
+		} else if (type == MobType.WATER) {
+			return "water";
+		} else {
+			return "unknown";
+		}
 	}
 }

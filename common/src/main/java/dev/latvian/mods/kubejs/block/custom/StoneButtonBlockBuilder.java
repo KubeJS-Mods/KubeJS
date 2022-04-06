@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.StoneButtonBlock;
 public class StoneButtonBlockBuilder extends ShapedBlockBuilder {
 	public StoneButtonBlockBuilder(ResourceLocation i) {
 		super(i, "_stone_button", "_button");
-		noCollission();
+		noCollision();
 		tagBoth(BlockTags.BUTTONS.location());
 	}
 

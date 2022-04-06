@@ -25,7 +25,7 @@ public class LivingEntityDeathEventJS extends LivingEntityEventJS {
 		return entityOf(entity);
 	}
 
-	public DamageSourceJS getSource() {
-		return new DamageSourceJS(getLevel(), source);
+	public DamageSource getSource() {
+		return source;
 	}
 }

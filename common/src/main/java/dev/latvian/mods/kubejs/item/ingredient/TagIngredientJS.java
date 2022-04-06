@@ -17,20 +17,22 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @author LatvianModder
  */
 public class TagIngredientJS implements IngredientJS {
-	private static final Map<String, TagIngredientJS> tagIngredientCache = new HashMap<>();
+	// private static final Map<String, TagIngredientJS> tagIngredientCache = new HashMap<>();
 
 	public static TagIngredientJS createTag(String tag) {
-		return tagIngredientCache.computeIfAbsent(tag, TagIngredientJS::new).validateTag();
+		return new TagIngredientJS(tag).validateTag();
+		// return tagIngredientCache.computeIfAbsent(tag, TagIngredientJS::new).validateTag();
 	}
 
 	public static void clearTagCache() {
-		tagIngredientCache.clear();
+		// tagIngredientCache.clear();
 	}
 
 	private final TagKey<Item> tag;

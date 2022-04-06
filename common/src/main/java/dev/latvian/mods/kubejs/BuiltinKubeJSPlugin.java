@@ -8,7 +8,6 @@ import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
-import dev.latvian.mods.kubejs.bindings.RarityWrapper;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
 import dev.latvian.mods.kubejs.block.DetectorBlock;
@@ -55,6 +54,16 @@ import dev.latvian.mods.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.filter.mob.MobFilter;
+import dev.latvian.mods.kubejs.misc.BasicMobEffect;
+import dev.latvian.mods.kubejs.misc.CustomStatBuilder;
+import dev.latvian.mods.kubejs.misc.EnchantmentBuilder;
+import dev.latvian.mods.kubejs.misc.MotiveBuilder;
+import dev.latvian.mods.kubejs.misc.ParticleTypeBuilder;
+import dev.latvian.mods.kubejs.misc.PoiTypeBuilder;
+import dev.latvian.mods.kubejs.misc.PotionBuilder;
+import dev.latvian.mods.kubejs.misc.SoundEventBuilder;
+import dev.latvian.mods.kubejs.misc.VillagerProfessionBuilder;
+import dev.latvian.mods.kubejs.misc.VillagerTypeBuilder;
 import dev.latvian.mods.kubejs.recipe.RegisterRecipeHandlersEvent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
@@ -111,6 +120,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
@@ -147,19 +157,29 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		RegistryObjectBuilderTypes.BLOCK.addType("falling", FallingBlockBuilder.class, FallingBlockBuilder::new);
 
 		RegistryObjectBuilderTypes.ITEM.addType("basic", BasicItemJS.Builder.class, BasicItemJS.Builder::new);
-
 		RegistryObjectBuilderTypes.ITEM.addType("sword", SwordItemBuilder.class, SwordItemBuilder::new);
 		RegistryObjectBuilderTypes.ITEM.addType("pickaxe", PickaxeItemBuilder.class, PickaxeItemBuilder::new);
 		RegistryObjectBuilderTypes.ITEM.addType("axe", AxeItemBuilder.class, AxeItemBuilder::new);
 		RegistryObjectBuilderTypes.ITEM.addType("shovel", ShovelItemBuilder.class, ShovelItemBuilder::new);
 		RegistryObjectBuilderTypes.ITEM.addType("hoe", HoeItemBuilder.class, HoeItemBuilder::new);
-
 		RegistryObjectBuilderTypes.ITEM.addType("helmet", ArmorItemBuilder.Helmet.class, ArmorItemBuilder.Helmet::new);
 		RegistryObjectBuilderTypes.ITEM.addType("chestplate", ArmorItemBuilder.Chestplate.class, ArmorItemBuilder.Chestplate::new);
 		RegistryObjectBuilderTypes.ITEM.addType("leggings", ArmorItemBuilder.Leggings.class, ArmorItemBuilder.Leggings::new);
 		RegistryObjectBuilderTypes.ITEM.addType("boots", ArmorItemBuilder.Boots.class, ArmorItemBuilder.Boots::new);
 
 		RegistryObjectBuilderTypes.FLUID.addType("basic", FluidBuilder.class, FluidBuilder::new);
+		RegistryObjectBuilderTypes.SOUND_EVENT.addType("basic", SoundEventBuilder.class, SoundEventBuilder::new);
+		RegistryObjectBuilderTypes.ENCHANTMENT.addType("basic", EnchantmentBuilder.class, EnchantmentBuilder::new);
+		RegistryObjectBuilderTypes.MOB_EFFECT.addType("basic", BasicMobEffect.Builder.class, BasicMobEffect.Builder::new);
+		// ENTITY_TYPE
+		// BLOCK_ENTITY_TYPE
+		RegistryObjectBuilderTypes.POTION.addType("basic", PotionBuilder.class, PotionBuilder::new);
+		RegistryObjectBuilderTypes.PARTICLE_TYPE.addType("basic", ParticleTypeBuilder.class, ParticleTypeBuilder::new);
+		RegistryObjectBuilderTypes.MOTIVE.addType("basic", MotiveBuilder.class, MotiveBuilder::new);
+		RegistryObjectBuilderTypes.CUSTOM_STAT.addType("basic", CustomStatBuilder.class, CustomStatBuilder::new);
+		RegistryObjectBuilderTypes.POINT_OF_INTEREST_TYPE.addType("basic", PoiTypeBuilder.class, PoiTypeBuilder::new);
+		RegistryObjectBuilderTypes.VILLAGER_TYPE.addType("basic", VillagerTypeBuilder.class, VillagerTypeBuilder::new);
+		RegistryObjectBuilderTypes.VILLAGER_PROFESSION.addType("basic", VillagerProfessionBuilder.class, VillagerProfessionBuilder::new);
 	}
 
 	@Override
@@ -295,11 +315,11 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("SLOT_CHEST", EquipmentSlot.CHEST);
 		event.add("SLOT_HEAD", EquipmentSlot.HEAD);
 
-		event.add("Rarity", RarityWrapper.class);
-		event.add("RARITY_COMMON", RarityWrapper.COMMON);
-		event.add("RARITY_UNCOMMON", RarityWrapper.UNCOMMON);
-		event.add("RARITY_RARE", RarityWrapper.RARE);
-		event.add("RARITY_EPIC", RarityWrapper.EPIC);
+		event.add("Rarity", Rarity.class);
+		event.add("RARITY_COMMON", Rarity.COMMON);
+		event.add("RARITY_UNCOMMON", Rarity.UNCOMMON);
+		event.add("RARITY_RARE", Rarity.RARE);
+		event.add("RARITY_EPIC", Rarity.EPIC);
 
 		event.add("AIR_ITEM", Items.AIR);
 		event.add("AIR_BLOCK", Blocks.AIR);
@@ -428,6 +448,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(MaterialJS.class, MaterialListJS.INSTANCE::of);
 		typeWrappers.register(Color.class, ColorWrapper::of);
 		typeWrappers.register(IngredientActionFilter.class, IngredientActionFilter::filterOf);
+		typeWrappers.register(Rarity.class, o -> Rarity.valueOf(o.toString().toUpperCase()));
 
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
 	}

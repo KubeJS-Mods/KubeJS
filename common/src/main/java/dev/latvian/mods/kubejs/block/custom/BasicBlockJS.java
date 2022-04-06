@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.block.custom;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
+import dev.latvian.mods.kubejs.block.EntityBlockKJS;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import net.minecraft.core.BlockPos;
@@ -28,7 +29,7 @@ import java.util.Random;
 /**
  * @author LatvianModder
  */
-public class BasicBlockJS extends Block {
+public class BasicBlockJS extends Block implements EntityBlockKJS {
 	public static class Builder extends BlockBuilder {
 		public Builder(ResourceLocation i) {
 			super(i);
@@ -40,17 +41,22 @@ public class BasicBlockJS extends Block {
 		}
 	}
 
-	public final BlockBuilder properties;
+	public final BlockBuilder blockBuilder;
 	public final VoxelShape shape;
 
 	public BasicBlockJS(BlockBuilder p) {
 		super(p.createProperties());
-		properties = p;
+		blockBuilder = p;
 		shape = p.createShape();
 
-		if (properties.waterlogged) {
+		if (blockBuilder.waterlogged) {
 			registerDefaultState(stateDefinition.any().setValue(BlockStateProperties.WATERLOGGED, false));
 		}
+	}
+
+	@Override
+	public BlockBuilder getBlockBuilderKJS() {
+		return blockBuilder;
 	}
 
 	@Override
@@ -71,13 +77,13 @@ public class BasicBlockJS extends Block {
 	@Override
 	@Deprecated
 	public FluidState getFluidState(BlockState state) {
-		return properties.waterlogged && state.getValue(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+		return blockBuilder.waterlogged && state.getValue(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
 	}
 
 	@Nullable
 	@Override
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
-		if (!properties.waterlogged) {
+		if (!blockBuilder.waterlogged) {
 			return defaultBlockState();
 		}
 
@@ -87,7 +93,7 @@ public class BasicBlockJS extends Block {
 	@Override
 	@Deprecated
 	public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor world, BlockPos pos, BlockPos facingPos) {
-		if (properties.waterlogged && state.getValue(BlockStateProperties.WATERLOGGED)) {
+		if (blockBuilder.waterlogged && state.getValue(BlockStateProperties.WATERLOGGED)) {
 			world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
 		}
 
@@ -96,16 +102,16 @@ public class BasicBlockJS extends Block {
 
 	@Override
 	public boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
-		return properties.transparent || !(properties.waterlogged && state.getValue(BlockStateProperties.WATERLOGGED));
+		return blockBuilder.transparent || !(blockBuilder.waterlogged && state.getValue(BlockStateProperties.WATERLOGGED));
 	}
 
 	@Override
 	@Deprecated
 	public void randomTick(BlockState state, ServerLevel level, BlockPos pos, Random random) {
-		if (properties.randomTickCallback != null) {
+		if (blockBuilder.randomTickCallback != null) {
 			var containerJS = new BlockContainerJS(level, pos);
 			try {
-				properties.randomTickCallback.accept(new RandomTickCallbackJS(containerJS, random));
+				blockBuilder.randomTickCallback.accept(new RandomTickCallbackJS(containerJS, random));
 			} catch (Exception e) {
 				KubeJS.LOGGER.error("Error while random ticking custom block {}: {}", this, e);
 			}
@@ -114,24 +120,24 @@ public class BasicBlockJS extends Block {
 
 	@Override
 	public boolean isRandomlyTicking(BlockState state) {
-		return properties.randomTickCallback != null;
+		return blockBuilder.randomTickCallback != null;
 	}
 
 	@Override
 	@Deprecated
 	public VoxelShape getVisualShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
-		return properties.transparent ? Shapes.empty() : super.getVisualShape(state, level, pos, ctx);
+		return blockBuilder.transparent ? Shapes.empty() : super.getVisualShape(state, level, pos, ctx);
 	}
 
 	@Override
 	@Deprecated
 	public float getShadeBrightness(BlockState state, BlockGetter level, BlockPos pos) {
-		return properties.transparent ? 1F : super.getShadeBrightness(state, level, pos);
+		return blockBuilder.transparent ? 1F : super.getShadeBrightness(state, level, pos);
 	}
 
 	@Override
 	@Deprecated
 	public boolean skipRendering(BlockState state, BlockState state2, Direction direction) {
-		return properties.transparent ? (state2.is(this) || super.skipRendering(state, state2, direction)) : super.skipRendering(state, state2, direction);
+		return blockBuilder.transparent ? (state2.is(this) || super.skipRendering(state, state2, direction)) : super.skipRendering(state, state2, direction);
 	}
 }

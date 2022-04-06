@@ -1,26 +1,27 @@
 package dev.latvian.mods.kubejs.fluid;
 
+import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
-import dev.latvian.mods.kubejs.bindings.RarityWrapper;
-import dev.latvian.mods.kubejs.util.BuilderBase;
+import dev.latvian.mods.rhino.mod.util.color.Color;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.material.Fluid;
 
 /**
  * @author LatvianModder
  */
 public class FluidBuilder extends BuilderBase<Fluid> {
-	public String stillTexture;
-	public String flowingTexture;
-	public int color = 0xFFFFFFFF;
-	public int bucketColor = 0xFFFFFFFF;
-	public int luminosity = 0;
-	public int density = 1000;
-	public int temperature = 300;
-	public int viscosity = 1000;
-	public boolean isGaseous;
-	public RarityWrapper rarity = RarityWrapper.COMMON;
+	public transient ResourceLocation stillTexture;
+	public transient ResourceLocation flowingTexture;
+	public transient int color = 0xFFFFFFFF;
+	public transient int bucketColor = 0xFFFFFFFF;
+	public transient int luminosity = 0;
+	public transient int density = 1000;
+	public transient int temperature = 300;
+	public transient int viscosity = 1000;
+	public transient boolean isGaseous;
+	public transient Rarity rarity = Rarity.COMMON;
 	public Object extraPlatformInfo;
 
 	public FlowingFluidBuilder flowingFluid;
@@ -29,8 +30,8 @@ public class FluidBuilder extends BuilderBase<Fluid> {
 
 	public FluidBuilder(ResourceLocation i) {
 		super(i);
-		textureStill(KubeJS.id("fluid/fluid_thin"));
-		textureFlowing(KubeJS.id("fluid/fluid_thin_flow"));
+		stillTexture = newID("block/", "_still");
+		flowingTexture = newID("block/", "_flow");
 		flowingFluid = new FlowingFluidBuilder(this);
 		block = new FluidBlockBuilder(this);
 		bucketItem = new FluidBucketItemBuilder(this);
@@ -60,42 +61,38 @@ public class FluidBuilder extends BuilderBase<Fluid> {
 		RegistryObjectBuilderTypes.ITEM.addBuilder(bucketItem);
 	}
 
-	public FluidBuilder color(int c) {
-		color = c;
-
-		if ((color & 0xFFFFFF) == color) {
-			color |= 0xFF000000;
-		}
-
-		return bucketColor(color);
-	}
-
-	public FluidBuilder bucketColor(int c) {
-		bucketColor = c;
-
-		if ((bucketColor & 0xFFFFFF) == bucketColor) {
-			bucketColor |= 0xFF000000;
-		}
-
+	public FluidBuilder color(Color c) {
+		color = bucketColor = c.getArgbKJS();
 		return this;
 	}
 
-	public FluidBuilder textureStill(ResourceLocation id) {
-		stillTexture = id.toString();
+	public FluidBuilder bucketColor(Color c) {
+		bucketColor = c.getArgbKJS();
 		return this;
 	}
 
-	public FluidBuilder textureFlowing(ResourceLocation id) {
-		flowingTexture = id.toString();
+	public FluidBuilder builtinTextures() {
+		stillTexture(KubeJS.id("fluid/fluid_thin"));
+		flowingTexture(KubeJS.id("fluid/fluid_thin_flow"));
 		return this;
 	}
 
-	public FluidBuilder textureThick(int color) {
-		return textureStill(KubeJS.id("fluid/fluid_thick")).textureFlowing(KubeJS.id("fluid/fluid_thick_flow")).color(color);
+	public FluidBuilder stillTexture(ResourceLocation id) {
+		stillTexture = id;
+		return this;
 	}
 
-	public FluidBuilder textureThin(int color) {
-		return textureStill(KubeJS.id("fluid/fluid_thin")).textureFlowing(KubeJS.id("fluid/fluid_thin_flow")).color(color);
+	public FluidBuilder flowingTexture(ResourceLocation id) {
+		flowingTexture = id;
+		return this;
+	}
+
+	public FluidBuilder thickTexture(Color color) {
+		return stillTexture(KubeJS.id("block/thick_fluid_still")).flowingTexture(KubeJS.id("block/thick_fluid_flow")).color(color);
+	}
+
+	public FluidBuilder thinTexture(Color color) {
+		return stillTexture(KubeJS.id("block/thin_fluid_still")).flowingTexture(KubeJS.id("block/thin_fluid_flow")).color(color);
 	}
 
 	public FluidBuilder luminosity(int luminosity) {
@@ -123,7 +120,7 @@ public class FluidBuilder extends BuilderBase<Fluid> {
 		return this;
 	}
 
-	public FluidBuilder rarity(RarityWrapper rarity) {
+	public FluidBuilder rarity(Rarity rarity) {
 		this.rarity = rarity;
 		return this;
 	}

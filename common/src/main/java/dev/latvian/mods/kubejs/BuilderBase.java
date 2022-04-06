@@ -1,8 +1,9 @@
-package dev.latvian.mods.kubejs.util;
+package dev.latvian.mods.kubejs;
 
-import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
  */
 public abstract class BuilderBase<T> implements Supplier<T> {
 	public final ResourceLocation id;
-	public transient Supplier<T> object;
+	private Supplier<T> object;
 	public String translationKey;
 	public String displayName;
 	public transient boolean dummyBuilder;
@@ -47,13 +48,6 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 
 	public T transformObject(T obj) {
 		return obj;
-	}
-
-	public final T createTransformedObject() {
-		getRegistryType().current = this;
-		T o = transformObject(createObject());
-		getRegistryType().current = null;
-		return o;
 	}
 
 	@Override
@@ -114,5 +108,25 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	}
 
 	public void addResourcePackLocations(String path, List<ResourceLocation> list, PackType packType) {
+	}
+
+	private T createTransformedObject() {
+		getRegistryType().current = this;
+		T o = transformObject(createObject());
+		getRegistryType().current = null;
+		return o;
+	}
+
+	final boolean registerObject(boolean all) {
+		if (!dummyBuilder && (all || getRegistryType().bypassServerOnly)) {
+			if (CommonProperties.get().debugInfo) {
+				ConsoleJS.STARTUP.info("+ " + getRegistryType().registryKey.location() + " | " + id);
+			}
+
+			object = getRegistryType().deferredRegister.register(id, this::createTransformedObject);
+			return true;
+		}
+
+		return false;
 	}
 }

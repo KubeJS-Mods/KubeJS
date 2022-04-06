@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.fluid;
 
+import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
-import dev.latvian.mods.kubejs.util.BuilderBase;
 import net.minecraft.world.level.material.Fluid;
 
 public class FlowingFluidBuilder extends BuilderBase<Fluid> {

@@ -11,6 +11,6 @@ public class ShovelItemBuilder extends HandheldItemBuilder {
 
 	@Override
 	public Item createObject() {
-		return new ShovelItem(toolTier, attackDamageBaseline, attackSpeedBaseline, createItemProperties());
+		return new ShovelItem(toolTier, attackDamageBaseline, speedBaseline, createItemProperties());
 	}
 }
