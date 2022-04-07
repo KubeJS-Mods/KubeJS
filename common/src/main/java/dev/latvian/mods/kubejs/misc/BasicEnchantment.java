@@ -93,14 +93,14 @@ public class BasicEnchantment extends Enchantment {
 	@Override
 	public void doPostAttack(LivingEntity entity, Entity target, int level) {
 		if (enchantmentBuilder.doPostAttack != null) {
-			enchantmentBuilder.doPostAttack.apply((LivingEntityJS) ((EntityKJS) entity).asKJS(), (EntityJS) ((EntityKJS) entity).asKJS(), level);
+			enchantmentBuilder.doPostAttack.apply((LivingEntityJS) ((EntityKJS) entity).asKJS(), (EntityJS) ((EntityKJS) target).asKJS(), level);
 		}
 	}
 
 	@Override
 	public void doPostHurt(LivingEntity entity, Entity target, int level) {
 		if (enchantmentBuilder.doPostHurt != null) {
-			enchantmentBuilder.doPostHurt.apply((LivingEntityJS) ((EntityKJS) entity).asKJS(), (EntityJS) ((EntityKJS) entity).asKJS(), level);
+			enchantmentBuilder.doPostHurt.apply((LivingEntityJS) ((EntityKJS) entity).asKJS(), (EntityJS) ((EntityKJS) target).asKJS(), level);
 		}
 	}
 
