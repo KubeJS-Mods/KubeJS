@@ -39,6 +39,7 @@ import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
+import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.AxeItemBuilder;
@@ -103,7 +104,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.CompoundTag;
@@ -117,10 +117,14 @@ import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
@@ -407,13 +411,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		});
 
 		typeWrappers.register(Item.class, ItemStackJS::getRawItem);
-		typeWrappers.register(GenerationStep.Decoration.class, o -> {
-			try {
-				return GenerationStep.Decoration.valueOf(o.toString().toUpperCase());
-			} catch (IllegalArgumentException e) {
-				return null;
-			}
-		});
 		typeWrappers.register(MobCategory.class, o -> o == null ? null : MobCategory.byName(o.toString()));
 		typeWrappers.register(TextColor.class, o -> {
 			if (o instanceof Number number) {
@@ -426,7 +423,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		});
 
 		typeWrappers.register(AABB.class, AABBWrapper::wrap);
-		typeWrappers.register(Direction.class, o -> o instanceof Direction dir ? dir : DirectionWrapper.ALL.get(o.toString().toLowerCase()));
 		typeWrappers.register(IntProvider.class, UtilsJS::intProviderOf);
 		typeWrappers.register(NumberProvider.class, UtilsJS::numberProviderOf);
 		typeWrappers.register(LootContext.EntityTarget.class, o -> o == null ? null : LootContext.EntityTarget.getByName(o.toString().toLowerCase()));
@@ -448,7 +444,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(MaterialJS.class, MaterialListJS.INSTANCE::of);
 		typeWrappers.register(Color.class, ColorWrapper::of);
 		typeWrappers.register(IngredientActionFilter.class, IngredientActionFilter::filterOf);
-		typeWrappers.register(Rarity.class, o -> Rarity.valueOf(o.toString().toUpperCase()));
+		typeWrappers.register(Tier.class, o -> ItemBuilder.TOOL_TIERS.getOrDefault(String.valueOf(o), Tiers.IRON));
+		typeWrappers.register(ArmorMaterial.class, o -> ItemBuilder.ARMOR_TIERS.getOrDefault(String.valueOf(o), ArmorMaterials.IRON));
 
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
 	}

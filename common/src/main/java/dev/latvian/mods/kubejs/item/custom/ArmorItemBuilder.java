@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.item.MutableArmorTier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.Item;
 
@@ -53,8 +54,8 @@ public class ArmorItemBuilder extends ItemBuilder {
 		return new ArmorItem(armorTier, equipmentSlot, createItemProperties());
 	}
 
-	public ArmorItemBuilder tier(String t) {
-		armorTier = new MutableArmorTier(id.toString(), ARMOR_TIERS.getOrDefault(t, ArmorMaterials.IRON));
+	public ArmorItemBuilder tier(ArmorMaterial t) {
+		armorTier = new MutableArmorTier(id.toString(), t);
 		return this;
 	}
 
