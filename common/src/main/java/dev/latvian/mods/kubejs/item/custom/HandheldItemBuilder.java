@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.item.custom;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.MutableToolTier;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 
 import java.util.function.Consumer;
@@ -21,8 +22,8 @@ public abstract class HandheldItemBuilder extends ItemBuilder {
 		unstackable();
 	}
 
-	public HandheldItemBuilder tier(String t) {
-		toolTier = new MutableToolTier(TOOL_TIERS.getOrDefault(t, Tiers.IRON));
+	public HandheldItemBuilder tier(Tier t) {
+		toolTier = new MutableToolTier(t);
 		return this;
 	}
 

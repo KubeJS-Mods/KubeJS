@@ -24,7 +24,7 @@ side = "BOTH"
 [[dependencies.kubejs]]
 modId = "rhino"
 mandatory = true
-versionRange = "[1801.1.9-build.125,)"
+versionRange = "[1801.1.9-build.133,)"
 ordering = "AFTER"
 side = "BOTH"
 
