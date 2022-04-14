@@ -12,6 +12,7 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -34,12 +35,12 @@ import java.util.function.Predicate;
  */
 public class TagEventJS<T> extends EventJS {
 	private static String getIdOfEntry(Tag.Entry entry) {
-		var s = entry.toString();
-		if (s.length() > 0 && s.charAt(s.length() - 1) == '?') {
-			return s.substring(0, s.length() - 1);
+		var asJson = Util.make(new JsonArray(), entry::serializeTo).get(0);
+		if (asJson instanceof JsonObject obj) {
+			return obj.get("id").getAsString();
+		} else {
+			return asJson.getAsString();
 		}
-
-		return s;
 	}
 
 	@Nullable
@@ -146,7 +147,7 @@ public class TagEventJS<T> extends EventJS {
 					var originalSize = proxyList.size();
 
 					for (var holder : matches) {
-						var id = holder.key();
+						var id = holder.key().location();
 						for (var iterator = proxyList.listIterator(); iterator.hasNext(); ) {
 							var proxy = iterator.next();
 							if (getIdOfEntry(proxy.entry()).equals(id.toString())) {
@@ -331,9 +332,9 @@ public class TagEventJS<T> extends EventJS {
 		tags = new HashMap<>();
 
 		for (var entry : map.entrySet()) {
-			var w = new TagWrapper<T>(this, entry.getKey(), entry.getValue());
+			var w = new TagWrapper<>(this, entry.getKey(), entry.getValue());
 			tags.put(entry.getKey(), w);
-			ConsoleJS.SERVER.debug(type + "/#" + entry.getKey() + "; " + w.proxyList.size());
+			ConsoleJS.SERVER.debug("%s/#%s; %d".formatted(type, entry.getKey(), w.proxyList.size()));
 		}
 
 		var types = RegistryObjectBuilderTypes.MAP.get(registry.key());
