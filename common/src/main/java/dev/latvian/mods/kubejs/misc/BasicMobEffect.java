@@ -19,11 +19,12 @@ public class BasicMobEffect extends MobEffect {
 
 	@Override
 	public void applyEffectTick(@NotNull LivingEntity livingEntity, int i) {
-		if (this.effectTickCallback != null) {
-			effectTickCallback.applyEffectTick((LivingEntityJS) ((EntityKJS) livingEntity).asKJS(), i);
-		} else {
-			super.applyEffectTick(livingEntity, i);
-		}
+		effectTickCallback.applyEffectTick((LivingEntityJS) ((EntityKJS) livingEntity).asKJS(), i);
+	}
+
+	@Override
+	public boolean isDurationEffectTick(int i, int j) {
+		return this.effectTickCallback != null;
 	}
 
 	public static class Builder extends MobEffectBuilder {
