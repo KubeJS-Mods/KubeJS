@@ -146,7 +146,7 @@ public class RecipeEventJS extends EventJS {
 
 				recipeIdAndType = recipeId + "[" + type + "]";
 
-				if (!processConditions(json, "conditions")) {
+				if (!processConditions(recipeManager, json, "conditions")) {
 					if (ServerSettings.instance.logSkippedRecipes) {
 						ConsoleJS.SERVER.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");
 					}
@@ -167,7 +167,7 @@ public class RecipeEventJS extends EventJS {
 
 						var o = e.getAsJsonObject();
 
-						if (processConditions(o, "conditions")) {
+						if (processConditions(recipeManager, o, "conditions")) {
 							json = o.get("recipe").getAsJsonObject();
 							type = GsonHelper.getAsString(json, "type");
 							recipeIdAndType = recipeId + "[" + type + "]";
@@ -589,7 +589,7 @@ public class RecipeEventJS extends EventJS {
 	}
 
 	@ExpectPlatform
-	private static boolean processConditions(JsonObject json, String key) {
+	private static boolean processConditions(RecipeManager recipeManager, JsonObject json, String key) {
 		throw new AssertionError();
 	}
 }

@@ -17,7 +17,7 @@ license = "GNU LGPLv3"
 [[dependencies.kubejs]]
 modId = "forge"
 mandatory = true
-versionRange = "[40,)"
+versionRange = "[40.0.52,)"
 ordering = "NONE"
 side = "BOTH"
 
