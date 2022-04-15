@@ -13,7 +13,7 @@ public class BasicMobEffect extends MobEffect {
 
 	public BasicMobEffect(Builder builder) {
 		super(builder.category, builder.color);
-		this.effectTickCallback = builder.effectTickCallback;
+		this.effectTickCallback = builder.effectTick;
 		this.getAttributeModifiers().putAll(builder.attributeModifiers);
 	}
 
