@@ -60,7 +60,7 @@ public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 		return category(MobEffectCategory.BENEFICIAL);
 	}
 
-	public MobEffectBuilder onEffectTick(EffectTickCallback effectTick) {
+	public MobEffectBuilder effectTick(EffectTickCallback effectTick) {
 		this.effectTick = effectTick;
 		return this;
 	}
