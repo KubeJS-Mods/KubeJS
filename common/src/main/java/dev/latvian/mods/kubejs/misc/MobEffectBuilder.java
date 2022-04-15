@@ -23,7 +23,7 @@ public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 	}
 
 	public transient MobEffectCategory category;
-	public transient EffectTickCallback effectTick;
+	public transient EffectTickCallback effectTickCallback;
 	public transient Map<Attribute, AttributeModifier> attributeModifiers;
 	public transient int color;
 
@@ -31,7 +31,7 @@ public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 		super(i);
 		category = MobEffectCategory.NEUTRAL;
 		color = 0xFFFFFF;
-		effectTick = null;
+		effectTickCallback = null;
 		attributeModifiers = new HashMap<>();
 	}
 
@@ -61,7 +61,7 @@ public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 	}
 
 	public MobEffectBuilder effectTick(EffectTickCallback effectTick) {
-		this.effectTick = effectTick;
+		this.effectTickCallback = effectTick;
 		return this;
 	}
 
