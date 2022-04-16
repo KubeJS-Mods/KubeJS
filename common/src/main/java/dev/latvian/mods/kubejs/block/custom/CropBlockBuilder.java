@@ -143,6 +143,12 @@ public class CropBlockBuilder extends BlockBuilder {
 		return this;
 	}
 
+	public CropBlockBuilder age(int age) {
+		age(age, (builder) -> {
+		});
+		return this;
+	}
+
 	public CropBlockBuilder age(int age, Consumer<ShapeBuilder> builder) {
 		this.age = age;
 		ShapeBuilder shapes = new ShapeBuilder(age);
@@ -154,7 +160,7 @@ public class CropBlockBuilder extends BlockBuilder {
 		return this;
 	}
 
-	public CropBlockBuilder fertilize(ToIntFunction<RandomTickCallbackJS> bonemealCallback) {
+	public CropBlockBuilder bonemeal(ToIntFunction<RandomTickCallbackJS> bonemealCallback) {
 		this.fertilizerCallback = bonemealCallback;
 		return this;
 	}
