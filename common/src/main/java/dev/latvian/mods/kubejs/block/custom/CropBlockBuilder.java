@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -137,6 +138,8 @@ public class CropBlockBuilder extends BlockBuilder {
 		for (int a = 0; a <= age; a++) {
 			texture(String.valueOf(a), id.getNamespace() + ":block/" + id.getPath() + a);
 		}
+
+		tagBoth(BlockTags.CROPS.location());
 	}
 
 	public CropBlockBuilder output(Object output) {
