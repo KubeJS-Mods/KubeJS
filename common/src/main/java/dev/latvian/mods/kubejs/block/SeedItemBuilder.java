@@ -14,6 +14,11 @@ public class SeedItemBuilder extends BlockItemBuilder {
 	}
 
 	@Override
+	public String getTranslationKeyGroup() {
+		return "item";
+	}
+
+	@Override
 	public Item createObject() {
 		return new ItemNameBlockItem(blockBuilder.get(), createItemProperties());
 	}
