@@ -174,6 +174,16 @@ public class CropBlockBuilder extends BlockBuilder {
 		return this;
 	}
 
+	@Override
+	public BlockBuilder texture(String id, String tex) {
+		try {
+			int intId = (int) Double.parseDouble(id);
+			return super.texture(String.valueOf(intId), tex);
+		} catch (NumberFormatException e) {
+			return super.texture(id, tex);
+		}
+	}
+
 	public CropBlockBuilder bonemeal(ToIntFunction<RandomTickCallbackJS> bonemealCallback) {
 		this.fertilizerCallback = bonemealCallback;
 		return this;
