@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
@@ -67,6 +68,7 @@ public class CropBlockBuilder extends BlockBuilder {
 
 	public transient int age;
 	protected transient List<VoxelShape> shapeByAge;
+	public transient boolean dropSeed;
 	public transient ToDoubleFunction<RandomTickCallbackJS> growSpeedCallback;
 	public transient ToIntFunction<RandomTickCallbackJS> fertilizerCallback;
 	public transient SurviveCallback surviveCallback;
@@ -87,6 +89,7 @@ public class CropBlockBuilder extends BlockBuilder {
 		itemBuilder.blockBuilder = this;
 		hardness = 0.0f;
 		resistance = 0.0f;
+		dropSeed = true;
 		minFertilizerEffect = 1;
 		maxFertilizerEffect = 1;
 		outputs = new ArrayList<>();
@@ -109,14 +112,17 @@ public class CropBlockBuilder extends BlockBuilder {
 			parameters.addProperty("probability", 0.5714286); //Same as vanilla
 			function.add("parameters", parameters);
 
-			loot.addPool(bonuses -> {
-				bonuses.rolls = ConstantValue.exactly(1.0f);
-				bonuses.bonusRolls = ConstantValue.exactly(0.0f);
-				bonuses.addItem(new ItemStack(itemBuilder.get()))
-						.addCondition(condition)
-						.addFunction(function);
-				bonuses.addItem(new ItemStack(itemBuilder.get()));
-			});
+			if (dropSeed) {
+				loot.addPool(bonuses -> {
+					bonuses.rolls = ConstantValue.exactly(1.0f);
+					bonuses.bonusRolls = ConstantValue.exactly(0.0f);
+					bonuses.addItem(new ItemStack(itemBuilder.get()))
+							.addCondition(condition)
+							.addFunction(function);
+					bonuses.addItem(new ItemStack(itemBuilder.get()));
+				});
+			}
+
 			for (Pair<Object, Double> output : outputs) {
 				loot.addPool(crops -> {
 					crops.rolls = ConstantValue.exactly(1.0f);
@@ -146,6 +152,11 @@ public class CropBlockBuilder extends BlockBuilder {
 	public CropBlockBuilder age(int age) {
 		age(age, (builder) -> {
 		});
+		return this;
+	}
+
+	public CropBlockBuilder dropSeed(boolean dropSeed) {
+		this.dropSeed = dropSeed;
 		return this;
 	}
 
@@ -225,7 +236,7 @@ public class CropBlockBuilder extends BlockBuilder {
 
 			@Override
 			protected ItemLike getBaseSeedId() {
-				return itemBuilder.get();
+				return dropSeed ? itemBuilder.get() : Items.AIR;
 			}
 
 			@Override
