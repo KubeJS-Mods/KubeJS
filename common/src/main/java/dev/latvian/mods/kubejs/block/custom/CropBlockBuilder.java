@@ -142,16 +142,17 @@ public class CropBlockBuilder extends BlockBuilder {
 		}
 
 		tagBlock(BlockTags.CROPS.location());
-		if (Platform.isForge())
+		if (Platform.isForge()) {
 			tagItem(new ResourceLocation("forge", "seeds"));
+		}
 	}
 
-	public CropBlockBuilder output(Object output) {
-		output(output, 1.0);
+	public CropBlockBuilder crop(Object output) {
+		crop(output, 1.0);
 		return this;
 	}
 
-	public CropBlockBuilder output(Object output, double chance) {
+	public CropBlockBuilder crop(Object output, double chance) {
 		outputs.add(new Pair<>(output, chance));
 		return this;
 	}
