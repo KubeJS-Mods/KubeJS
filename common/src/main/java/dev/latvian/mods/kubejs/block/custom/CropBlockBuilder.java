@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.block.custom;
 
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
+import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.MaterialListJS;
@@ -14,6 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -139,7 +141,9 @@ public class CropBlockBuilder extends BlockBuilder {
 			texture(String.valueOf(a), id.getNamespace() + ":block/" + id.getPath() + a);
 		}
 
-		tagBoth(BlockTags.CROPS.location());
+		tagBlock(BlockTags.CROPS.location());
+		if (Platform.isForge())
+			tagItem(new ResourceLocation("forge", "seeds"));
 	}
 
 	public CropBlockBuilder output(Object output) {
