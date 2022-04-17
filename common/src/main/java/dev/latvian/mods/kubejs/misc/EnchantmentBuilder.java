@@ -40,8 +40,8 @@ public class EnchantmentBuilder extends BuilderBase<Enchantment> {
 	public transient DamageBonusFunction damageBonus;
 	public transient Object2BooleanFunction<ResourceLocation> checkCompatibility;
 	public transient Object2BooleanFunction<ItemStackJS> canEnchant;
-	public transient PostFunction doPostAttack;
-	public transient PostFunction doPostHurt;
+	public transient PostFunction postAttack;
+	public transient PostFunction postHurt;
 	public transient boolean treasureOnly;
 	public transient boolean curse;
 	public transient boolean tradeable;
@@ -60,8 +60,8 @@ public class EnchantmentBuilder extends BuilderBase<Enchantment> {
 		damageBonus = null;
 		checkCompatibility = null;
 		canEnchant = null;
-		doPostAttack = null;
-		doPostHurt = null;
+		postAttack = null;
+		postHurt = null;
 		treasureOnly = false;
 		curse = false;
 		tradeable = true;
@@ -197,13 +197,13 @@ public class EnchantmentBuilder extends BuilderBase<Enchantment> {
 		return this;
 	}
 
-	public EnchantmentBuilder doPostAttack(PostFunction i) {
-		doPostAttack = i;
+	public EnchantmentBuilder postAttack(PostFunction i) {
+		postAttack = i;
 		return this;
 	}
 
-	public EnchantmentBuilder doPostHurt(PostFunction i) {
-		doPostHurt = i;
+	public EnchantmentBuilder postHurt(PostFunction i) {
+		postHurt = i;
 		return this;
 	}
 
