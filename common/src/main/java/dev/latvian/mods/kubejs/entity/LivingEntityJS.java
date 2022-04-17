@@ -4,21 +4,28 @@ import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
  */
 public class LivingEntityJS extends EntityJS {
+	public static final UUID PLAYER_CUSTOM_SPEED = UUID.fromString("6715D9C6-1DA0-4B78-971A-5C32F5709F66");
+	public static final String PLAYER_CUSTOM_SPEED_NAME = "kubejs.player.speed.modifier";
+
 	public final LivingEntity minecraftLivingEntity;
 
 	public LivingEntityJS(LevelJS l, LivingEntity e) {
@@ -219,11 +226,50 @@ public class LivingEntityJS extends EntityJS {
 	}
 
 	public float getMovementSpeed() {
+		ConsoleJS.SERVER.warn("'getMovementSpeed' is deprecated. Use 'getDefaultMovementSpeed' or 'getTotalMovementSpeed'");
 		return minecraftLivingEntity.getSpeed();
 	}
 
+	@Deprecated
 	public void setMovementSpeed(float speed) {
+		ConsoleJS.SERVER.warn("'setMovementSpeed' is deprecated. Use 'setDefaultMovementSpeed', 'setMovementSpeedAddition', 'setDefaultMovementSpeedMultiplier' or 'setTotalMovementSpeedMultiplier'.");
 		minecraftLivingEntity.setSpeed(speed);
+	}
+
+	public double getTotalMovementSpeed() {
+		return minecraftLivingEntity.getAttributeValue(Attributes.MOVEMENT_SPEED);
+	}
+
+	public double getDefaultMovementSpeed() {
+		return minecraftLivingEntity.getAttributeBaseValue(Attributes.MOVEMENT_SPEED);
+	}
+
+	public void setDefaultMovementSpeed(double speed) {
+		minecraftLivingEntity.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(speed);
+	}
+
+	public void setMovementSpeedAddition(double speed) {
+		AttributeInstance instance = minecraftLivingEntity.getAttribute(Attributes.MOVEMENT_SPEED);
+		if (instance != null) {
+			instance.removeModifier(PLAYER_CUSTOM_SPEED);
+			instance.addTransientModifier(createSpeedModifier(speed, AttributeModifier.Operation.ADDITION));
+		}
+	}
+
+	public void setDefaultMovementSpeedMultiplier(double speed) {
+		AttributeInstance instance = minecraftLivingEntity.getAttribute(Attributes.MOVEMENT_SPEED);
+		if (instance != null) {
+			instance.removeModifier(PLAYER_CUSTOM_SPEED);
+			instance.addTransientModifier(createSpeedModifier(speed, AttributeModifier.Operation.MULTIPLY_BASE));
+		}
+	}
+
+	public void setTotalMovementSpeedMultiplier(double speed) {
+		AttributeInstance instance = minecraftLivingEntity.getAttribute(Attributes.MOVEMENT_SPEED);
+		if (instance != null) {
+			instance.removeModifier(PLAYER_CUSTOM_SPEED);
+			instance.addTransientModifier(createSpeedModifier(speed, AttributeModifier.Operation.MULTIPLY_TOTAL));
+		}
 	}
 
 	public boolean canEntityBeSeen(LivingEntityJS entity) {
@@ -249,5 +295,13 @@ public class LivingEntityJS extends EntityJS {
 	@ExpectPlatform
 	private static double getReachDistance(LivingEntity livingEntity) {
 		throw new AssertionError();
+	}
+
+	private AttributeModifier createSpeedModifier(double speed, AttributeModifier.Operation operation) {
+		return new AttributeModifier(
+				PLAYER_CUSTOM_SPEED,
+				PLAYER_CUSTOM_SPEED_NAME,
+				speed,
+				operation);
 	}
 }
