@@ -126,6 +126,14 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Override
+	public BuilderBase<Block> displayName(String name) {
+		if(itemBuilder != null) {
+			itemBuilder.displayName(name);
+		}
+		return super.displayName(name);
+	}
+
+	@Override
 	public void generateDataJsons(DataJsonGenerator generator) {
 		if (lootTable != null) {
 			var lootBuilder = new LootBuilder(null);

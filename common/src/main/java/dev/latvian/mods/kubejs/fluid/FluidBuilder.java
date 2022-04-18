@@ -40,6 +40,7 @@ public class FluidBuilder extends BuilderBase<Fluid> {
 
 	@Override
 	public BuilderBase<Fluid> displayName(String name) {
+		block.displayName(name);
 		bucketItem.displayName(name + " Bucket");
 		return super.displayName(name);
 	}
