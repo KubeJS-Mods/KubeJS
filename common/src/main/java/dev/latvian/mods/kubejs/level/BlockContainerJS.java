@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.level;
 
 import dev.architectury.hooks.level.entity.PlayerHooks;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.block.MaterialJS;
@@ -313,15 +312,10 @@ public class BlockContainerJS implements SpecialEquality {
 		var tileEntity = getEntity();
 
 		if (tileEntity != null) {
-			return getInventoryFromBlockEntity(tileEntity, facing);
+			return LevelPlatformHelper.getInventoryFromBlockEntity(tileEntity, facing);
 		}
 
 		return null;
-	}
-
-	@ExpectPlatform
-	private static InventoryJS getInventoryFromBlockEntity(BlockEntity tileEntity, Direction facing) {
-		throw new AssertionError();
 	}
 
 	public MaterialJS getMaterial() {

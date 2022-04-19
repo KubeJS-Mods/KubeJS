@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.entity;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
+import dev.latvian.mods.kubejs.level.LevelPlatformHelper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
@@ -285,16 +285,11 @@ public class LivingEntityJS extends EntityJS {
 	}
 
 	public double getReachDistance() {
-		return getReachDistance(minecraftLivingEntity);
+		return LevelPlatformHelper.getReachDistance(minecraftLivingEntity);
 	}
 
 	public RayTraceResultJS rayTrace() {
 		return rayTrace(getReachDistance());
-	}
-
-	@ExpectPlatform
-	private static double getReachDistance(LivingEntity livingEntity) {
-		throw new AssertionError();
 	}
 
 	private AttributeModifier createSpeedModifier(double speed, AttributeModifier.Operation operation) {

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.level.gen.filter.biome;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.registry.level.biome.BiomeModifications;
+import dev.latvian.mods.kubejs.level.LevelPlatformHelper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -21,6 +20,7 @@ public interface BiomeFilter extends Predicate<BiomeModifications.BiomeContext> 
 	BiomeFilter ALWAYS_TRUE = ctx -> true;
 	BiomeFilter ALWAYS_FALSE = ctx -> false;
 
+	@Override
 	boolean test(BiomeModifications.BiomeContext ctx);
 
 	static BiomeFilter of(@Nullable Object o) {
@@ -83,7 +83,7 @@ public interface BiomeFilter extends Predicate<BiomeModifications.BiomeContext> 
 			}
 
 			// allow platform-specific hooks
-			var additional = ofMapAdditional(map);
+			var additional = LevelPlatformHelper.ofMapAdditional(map);
 			if (additional != null) {
 				filters.add(additional);
 			}
@@ -107,24 +107,11 @@ public interface BiomeFilter extends Predicate<BiomeModifications.BiomeContext> 
 		}
 
 		// allow platform-specific hooks
-		var additional = ofStringAdditional(s);
+		var additional = LevelPlatformHelper.ofStringAdditional(s);
 		if (additional != null) {
 			return additional;
 		}
 
 		return new IDFilter(UtilsJS.getMCID(s));
 	}
-
-	@ExpectPlatform
-	@Nullable
-	static BiomeFilter ofStringAdditional(String s) {
-		throw new UnsupportedOperationException();
-	}
-
-	@ExpectPlatform
-	@Nullable
-	static BiomeFilter ofMapAdditional(Map<String, Object> map) {
-		throw new UnsupportedOperationException();
-	}
-
 }

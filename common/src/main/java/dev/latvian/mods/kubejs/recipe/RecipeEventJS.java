@@ -4,7 +4,6 @@ import com.google.common.base.Stopwatch;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJSEvents;
@@ -146,7 +145,7 @@ public class RecipeEventJS extends EventJS {
 
 				recipeIdAndType = recipeId + "[" + type + "]";
 
-				if (!processConditions(recipeManager, json, "conditions")) {
+				if (!RecipePlatformHelper.processConditions(recipeManager, json, "conditions")) {
 					if (ServerSettings.instance.logSkippedRecipes) {
 						ConsoleJS.SERVER.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");
 					}
@@ -167,7 +166,7 @@ public class RecipeEventJS extends EventJS {
 
 						var o = e.getAsJsonObject();
 
-						if (processConditions(recipeManager, o, "conditions")) {
+						if (RecipePlatformHelper.processConditions(recipeManager, o, "conditions")) {
 							json = o.get("recipe").getAsJsonObject();
 							type = GsonHelper.getAsString(json, "type");
 							recipeIdAndType = recipeId + "[" + type + "]";
@@ -367,7 +366,7 @@ public class RecipeEventJS extends EventJS {
 			});
 		});
 
-		pingNewRecipes(newRecipeMap);
+		RecipePlatformHelper.pingNewRecipes(newRecipeMap);
 		recipeManager.byName = recipesByName;
 		recipeManager.recipes = newRecipeMap;
 		ConsoleJS.SERVER.info("Added " + added.getValue() + " recipes, removed " + removed.getValue() + " recipes, modified " + modifiedRecipesCount.get() + " recipes, with " + failed.getValue() + " failed recipes and " + fallbacked.getValue() + " fall-backed recipes");
@@ -392,10 +391,6 @@ public class RecipeEventJS extends EventJS {
 				ConsoleJS.SERVER.info(r.id + ": " + r.json);
 			}
 		}
-	}
-
-	@ExpectPlatform
-	private static void pingNewRecipes(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map) {
 	}
 
 	public Map<String, Object> getRecipes() {
@@ -586,10 +581,5 @@ public class RecipeEventJS extends EventJS {
 
 	public void stage(RecipeFilter filter, String stage) {
 		forEachRecipe(filter, r -> r.stage(stage));
-	}
-
-	@ExpectPlatform
-	private static boolean processConditions(RecipeManager recipeManager, JsonObject json, String key) {
-		throw new AssertionError();
 	}
 }

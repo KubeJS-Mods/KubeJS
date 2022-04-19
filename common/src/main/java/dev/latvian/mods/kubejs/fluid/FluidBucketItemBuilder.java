@@ -19,7 +19,7 @@ public class FluidBucketItemBuilder extends ItemBuilder {
 
 	@Override
 	public Item createObject() {
-		return KubeJSFluidHelper.buildBucket(fluidBuilder, this);
+		return FluidPlatformHelper.buildBucket(fluidBuilder, this);
 	}
 
 	@Override

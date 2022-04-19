@@ -16,7 +16,7 @@ import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenPaintEventJS;
 import dev.latvian.mods.kubejs.client.painter.world.WorldPaintEventJS;
 import dev.latvian.mods.kubejs.core.ImageButtonKJS;
-import dev.latvian.mods.kubejs.fluid.KubeJSFluidHelper;
+import dev.latvian.mods.kubejs.fluid.FluidPlatformHelper;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
 import dev.latvian.mods.kubejs.level.ClientLevelJS;
 import dev.latvian.mods.kubejs.script.AttachDataEvent;
@@ -106,7 +106,7 @@ public class KubeJSClientEventHandler {
 				Tags.byBlock(item.getBlock()).forEach(addToTempTags);
 			}
 
-			Fluid fluid = KubeJSFluidHelper.getActualContainedFluid(stack.getItem());
+			Fluid fluid = FluidPlatformHelper.getActualContainedFluid(stack.getItem());
 
 			if (fluid != Fluids.EMPTY) {
 				Tags.byFluid(fluid).forEach(addToTempTags);

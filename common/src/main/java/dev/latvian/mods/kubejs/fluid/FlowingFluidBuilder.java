@@ -19,6 +19,6 @@ public class FlowingFluidBuilder extends BuilderBase<Fluid> {
 
 	@Override
 	public Fluid createObject() {
-		return KubeJSFluidHelper.buildFluid(false, fluidBuilder);
+		return FluidPlatformHelper.buildFluid(false, fluidBuilder);
 	}
 }

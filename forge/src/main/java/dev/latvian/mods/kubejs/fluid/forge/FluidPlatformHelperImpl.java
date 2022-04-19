@@ -16,7 +16,7 @@ import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper;
 import org.jetbrains.annotations.Nullable;
 
-public class KubeJSFluidHelperImpl {
+public class FluidPlatformHelperImpl {
 	public static FlowingFluid buildFluid(boolean source, FluidBuilder builder) {
 		if (source) {
 			return new ForgeFlowingFluid.Source(createProperties(builder));

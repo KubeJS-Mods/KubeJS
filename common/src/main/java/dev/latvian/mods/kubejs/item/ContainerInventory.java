@@ -19,7 +19,6 @@
 
 package dev.latvian.mods.kubejs.item;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +26,7 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import org.jetbrains.annotations.NotNull;
 
 public class ContainerInventory implements ItemHandler.Mutable {
-	private final Container container;
+	public final Container container;
 
 	public ContainerInventory(Container container) {
 		this.container = container;
@@ -186,16 +185,6 @@ public class ContainerInventory implements ItemHandler.Mutable {
 
 	public Container getInv() {
 		return container;
-	}
-
-	@ExpectPlatform
-	public static boolean areCapsCompatible(ItemStack a, ItemStack b) {
-		throw new AssertionError();
-	}
-
-	@ExpectPlatform
-	public static ItemStack getContainerItem(ItemStack stack) {
-		throw new AssertionError();
 	}
 
 	@Override

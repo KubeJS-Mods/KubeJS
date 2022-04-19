@@ -19,6 +19,7 @@
 
 package dev.latvian.mods.kubejs.item;
 
+import dev.latvian.mods.kubejs.level.LevelPlatformHelper;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -135,7 +136,7 @@ public class ItemHandlerUtils {
 		}
 
 		if ((!a.hasTag() || Objects.equals(a.getTag(), b.getTag()))) {
-			return ContainerInventory.areCapsCompatible(a, b);
+			return LevelPlatformHelper.areCapsCompatible(a, b);
 		}
 
 		return false;
@@ -147,7 +148,7 @@ public class ItemHandlerUtils {
 		}
 
 		if ((!a.hasTag() || Objects.equals(a.getTag(), b.getTag()))) {
-			return ContainerInventory.areCapsCompatible(a, b);
+			return LevelPlatformHelper.areCapsCompatible(a, b);
 		}
 
 		return false;

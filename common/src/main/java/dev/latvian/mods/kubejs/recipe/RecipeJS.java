@@ -392,7 +392,7 @@ public abstract class RecipeJS {
 			}
 		}
 
-		return Objects.requireNonNull(type.serializer.fromJson(getOrCreateId(), json));
+		return Objects.requireNonNull(RecipePlatformHelper.fromJson(this));
 	}
 
 	public ItemStackJS getOriginalRecipeResult() {
