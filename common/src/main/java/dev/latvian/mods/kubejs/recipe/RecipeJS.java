@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
@@ -17,6 +18,7 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.KeepAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
 import dev.latvian.mods.kubejs.recipe.minecraft.CustomRecipeJS;
+import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
@@ -24,7 +26,9 @@ import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagManager;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigInteger;
@@ -392,7 +396,13 @@ public abstract class RecipeJS {
 			}
 		}
 
-		return Objects.requireNonNull(type.serializer.fromJson(getOrCreateId(), json));
+		return Objects.requireNonNull(fromJson(this, KubeJSReloadListener.resources.tagManager));
+	}
+
+	// FIXME: **extremely** temporary
+	@ExpectPlatform
+	public static <T extends Recipe<?>> T fromJson(RecipeJS self, TagManager tagManager) throws Throwable {
+		throw new UnsupportedOperationException();
 	}
 
 	public ItemStackJS getOriginalRecipeResult() {
