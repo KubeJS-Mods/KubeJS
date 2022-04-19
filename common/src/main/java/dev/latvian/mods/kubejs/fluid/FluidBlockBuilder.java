@@ -16,7 +16,7 @@ public class FluidBlockBuilder extends BlockBuilder {
 
 	@Override
 	public Block createObject() {
-		return KubeJSFluidHelper.buildFluidBlock(fluidBuilder, Block.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops());
+		return FluidPlatformHelper.buildFluidBlock(fluidBuilder, Block.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops());
 	}
 
 	@Override

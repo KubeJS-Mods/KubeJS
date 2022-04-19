@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.ContainerInventory;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.level.LevelPlatformHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -107,7 +107,7 @@ public abstract class IngredientAction extends IngredientActionFilter {
 			}
 		}
 
-		return ContainerInventory.getContainerItem(stack);
+		return LevelPlatformHelper.getContainerItem(stack);
 	}
 
 	public abstract ItemStack transform(ItemStack old, int index, CraftingContainer container);

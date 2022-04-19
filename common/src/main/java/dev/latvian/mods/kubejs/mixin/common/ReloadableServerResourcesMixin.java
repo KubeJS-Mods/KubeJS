@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.mixin.common;
 
-import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.RegistryAccess;
@@ -21,7 +20,6 @@ public abstract class ReloadableServerResourcesMixin {
 	private void init(RegistryAccess.Frozen frozen, Commands.CommandSelection commandSelection, int i, CallbackInfo ci) {
 		ServerScriptManager.instance = new ServerScriptManager();
 		ServerScriptManager.instance.init((ReloadableServerResources) (Object) this);
-		KubeJSReloadListener.resources = (ReloadableServerResources) (Object) this;
 	}
 
 	@ModifyArg(method = "loadResources", at = @At(value = "INVOKE", ordinal = 0,

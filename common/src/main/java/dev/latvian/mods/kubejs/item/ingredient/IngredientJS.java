@@ -2,8 +2,6 @@ package dev.latvian.mods.kubejs.item.ingredient;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.core.IngredientKJS;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
@@ -11,6 +9,7 @@ import dev.latvian.mods.kubejs.item.DummyFluidItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -154,7 +153,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 					var json = map.toJson();
 
 					try {
-						var ingredient = getCustomIngredient(json);
+						var ingredient = RecipePlatformHelper.getCustomIngredient(json);
 						return new CustomIngredient(ingredient, json);
 					} catch (Exception ex) {
 						throw new RecipeExceptionJS("Failed to parse custom ingredient (" + json.get("type") + ") from " + json + ": " + ex).fallback();
@@ -190,11 +189,6 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 		return ItemStackJS.of(o);
 	}
 
-	@ExpectPlatform
-	static Ingredient getCustomIngredient(JsonObject object) {
-		throw new AssertionError();
-	}
-
 	static IngredientJS ingredientFromRecipeJson(JsonElement json) {
 		if (json.isJsonArray()) {
 			var any = new MatchAnyIngredientJS();
@@ -216,7 +210,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 					in = ItemStackJS.of(o.get("item").getAsString()).withNBT(MapJS.nbt(o.get("nbt")));
 				} else {
 					try {
-						var ingredient = getCustomIngredient(o);
+						var ingredient = RecipePlatformHelper.getCustomIngredient(o);
 						return new CustomIngredient(ingredient, o);
 					} catch (Exception ex) {
 						throw new RecipeExceptionJS("Failed to parse custom ingredient (" + o.get("type") + ") from " + o + ": " + ex);

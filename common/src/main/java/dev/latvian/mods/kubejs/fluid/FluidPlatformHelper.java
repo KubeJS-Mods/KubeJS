@@ -13,7 +13,7 @@ import net.minecraft.world.level.material.Fluids;
 /**
  * @author LatvianModder
  */
-public class KubeJSFluidHelper {
+public class FluidPlatformHelper {
 	@ExpectPlatform
 	public static FlowingFluid buildFluid(boolean source, FluidBuilder builder) {
 		throw new AssertionError();

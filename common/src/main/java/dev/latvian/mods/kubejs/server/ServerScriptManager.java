@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.recipe.RecipeEventJS;
+import dev.latvian.mods.kubejs.recipe.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeRegistryEventJS;
 import dev.latvian.mods.kubejs.recipe.RegisterRecipeHandlersEvent;
@@ -51,6 +52,9 @@ public class ServerScriptManager {
 		} catch (Throwable ex) {
 			throw new RuntimeException("KubeJS failed to register it's script loader!", ex);
 		}
+
+		KubeJSReloadListener.resources = serverResources;
+		KubeJSReloadListener.recipeContext = RecipePlatformHelper.createRecipeContext(serverResources);
 	}
 
 	public void reloadScriptManager(ResourceManager resourceManager) {

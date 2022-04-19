@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 
-public class KubeJSFluidHelperImpl {
+public class FluidPlatformHelperImpl {
 	public static FlowingFluid buildFluid(boolean source, FluidBuilder builder) {
 		throw new RuntimeException("Fluid registry isn't implemented on Fabric yet!");
 	}
