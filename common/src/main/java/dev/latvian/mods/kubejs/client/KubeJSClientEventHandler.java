@@ -17,7 +17,7 @@ import dev.latvian.mods.kubejs.client.painter.screen.ScreenPaintEventJS;
 import dev.latvian.mods.kubejs.client.painter.world.WorldPaintEventJS;
 import dev.latvian.mods.kubejs.core.ImageButtonKJS;
 import dev.latvian.mods.kubejs.fluid.FluidPlatformHelper;
-import dev.latvian.mods.kubejs.item.ItemPropertiesEventJS;
+import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
 import dev.latvian.mods.kubejs.level.ClientLevelJS;
 import dev.latvian.mods.kubejs.script.AttachDataEvent;
@@ -81,7 +81,7 @@ public class KubeJSClientEventHandler {
 		for (var builder : RegistryObjectBuilderTypes.ALL_BUILDERS) {
 			builder.clientRegistry(minecraft);
 		}
-		new ItemPropertiesEventJS().post(KubeJSEvents.ITEM_PROPERTIES);
+		new ItemModelPropertiesEventJS().post(KubeJSEvents.ITEM_MODEL_PROPERTIES);
 	}
 
 	private void debugInfoLeft(List<String> lines) {

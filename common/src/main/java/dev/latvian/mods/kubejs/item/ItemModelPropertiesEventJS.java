@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 
-public class ItemPropertiesEventJS extends StartupEventJS {
+public class ItemModelPropertiesEventJS extends StartupEventJS {
 	public void register(IngredientJS ingredient, String overwriteId, ItemPropertiesCallback callback) {
 		if (ingredient instanceof MatchAllIngredientJS) {
 			registerAll(overwriteId, callback);
