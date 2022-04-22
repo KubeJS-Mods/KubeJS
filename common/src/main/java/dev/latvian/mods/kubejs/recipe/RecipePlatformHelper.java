@@ -12,9 +12,9 @@ import net.minecraft.world.item.crafting.RecipeType;
 import java.util.Map;
 
 public class RecipePlatformHelper {
-	// FIXME: **extremely** temporary
+
 	@ExpectPlatform
-	public static <T extends Recipe<?>> T fromJson(RecipeJS self) throws Throwable {
+	public static Recipe<?> fromJson(RecipeJS self) throws Throwable {
 		throw new UnsupportedOperationException();
 	}
 

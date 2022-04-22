@@ -194,7 +194,7 @@ public class RecipeEventJS extends EventJS {
 				recipe.id = recipeId;
 				recipe.type = function.type;
 				recipe.json = json;
-				recipe.originalRecipe = function.type.serializer.fromJson(recipeId, json);
+				recipe.originalRecipe = RecipePlatformHelper.fromJson(recipe);
 
 				if (recipe.originalRecipe == null) {
 					if (ServerSettings.instance.logSkippedRecipes) {
