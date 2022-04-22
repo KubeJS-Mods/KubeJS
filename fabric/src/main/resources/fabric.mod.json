@@ -29,7 +29,7 @@
 	},
 	"mixins": [
 		"kubejs-common.mixins.json",
-		"kubejs.mixins.json"
+		"kubejs-fabric.mixins.json"
 	],
 	"accessWidener": "kubejs.accesswidener",
 	"depends": {

@@ -25,7 +25,7 @@ loom {
 		convertAccessWideners = true
 		extraAccessWideners.add("kubejs.accesswidener")
 		mixinConfigs = [
-				"kubejs.mixins.json",
+				"kubejs-forge.mixins.json",
 				"kubejs-common.mixins.json"
 		]
 	}

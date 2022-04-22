@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.forge;
 
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.mixin.forge.RecipeManagerAccessor;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -35,16 +36,6 @@ public class RecipePlatformHelperImpl {
 	}
 
 	public static Object createRecipeContext(ReloadableServerResources resources) {
-		try {
-			ICondition.IContext context = ObfuscationReflectionHelper.getPrivateValue(RecipeManager.class, resources.getRecipeManager(), "context");
-
-			if (context != null) {
-				return context;
-			}
-		} catch (Exception ex) {
-			ConsoleJS.SERVER.warn("Failed to get RecipeManager.context through reflection, falling back to new ConditionContext()");
-		}
-
-		return new ConditionContext(resources.tagManager);
+		return ((RecipeManagerAccessor) resources.getRecipeManager()).getContext();
 	}
 }
