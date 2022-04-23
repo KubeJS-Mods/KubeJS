@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
 /**
  * @author LatvianModder
@@ -63,6 +64,8 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public String texture;
 	public String parentModel;
 	public transient FoodBuilder foodBuilder;
+	public transient Function<ItemStackJS, Color> barColor;
+	public transient ToIntFunction<ItemStackJS> barWidth;
 
 	public JsonObject modelJson;
 
@@ -194,6 +197,16 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
+	public ItemBuilder barColor(Function<ItemStackJS, Color> barColor) {
+		this.barColor = barColor;
+		return this;
+	}
+
+	public ItemBuilder barWidth(ToIntFunction<ItemStackJS> barWidth) {
+		this.barWidth = barWidth;
+		return this;
+	}
+
 	public ItemBuilder food(Consumer<FoodBuilder> b) {
 		foodBuilder = new FoodBuilder();
 		b.accept(foodBuilder);
@@ -225,4 +238,5 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 		return properties;
 	}
+
 }
