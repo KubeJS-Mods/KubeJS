@@ -5,13 +5,11 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.block.forge.MissingMappingEventJS;
-import dev.latvian.mods.kubejs.entity.forge.CheckLivingEntitySpawnEventJS;
 import dev.latvian.mods.kubejs.entity.forge.LivingEntityDropsEventJS;
 import dev.latvian.mods.kubejs.item.forge.ItemDestroyedEventJS;
 import dev.latvian.mods.kubejs.item.ingredient.forge.CustomPredicateIngredient;
 import dev.latvian.mods.kubejs.item.ingredient.forge.IgnoreNBTIngredient;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.server.ServerJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -22,9 +20,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
-import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -47,7 +43,6 @@ public class KubeJSForge {
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::itemDestroyed);
 
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::livingDrops);
-		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::checkLivingSpawn);
 
 		if (!CommonProperties.get().serverOnly) {
 			ForgeMod.enableMilkFluid();
@@ -80,7 +75,7 @@ public class KubeJSForge {
 			return;
 		}
 
-        var e = new LivingEntityDropsEventJS(event);
+		var e = new LivingEntityDropsEventJS(event);
 
 		if (e.post(KubeJSEvents.ENTITY_DROPS)) {
 			event.setCanceled(true);
@@ -90,12 +85,6 @@ public class KubeJSForge {
 			for (var ie : e.eventDrops) {
 				event.getDrops().add((ItemEntity) ie.minecraftEntity);
 			}
-		}
-	}
-
-	private static void checkLivingSpawn(LivingSpawnEvent.CheckSpawn event) {
-		if (ServerJS.instance != null && ServerJS.instance.overworld != null && !event.getWorld().isClientSide() && new CheckLivingEntitySpawnEventJS(event).post(ScriptType.SERVER, KubeJSEvents.ENTITY_CHECK_SPAWN)) {
-			event.setResult(Event.Result.DENY);
 		}
 	}
 }
