@@ -82,6 +82,7 @@ public interface KubeJSEvents {
 	String ITEM_FOOD_EATEN = "item.food_eaten";
 	String ITEM_TOOLTIP = "item.tooltip";
 	String ITEM_MODIFICATION = "item.modification";
+	String ITEM_MODEL_PROPERTIES = "item.model_properties";
 
 	String SOUND_REGISTRY = "sound.registry";
 }
