@@ -21,8 +21,7 @@ public class HoeItemBuilder extends HandheldItemBuilder {
 			private boolean modified = false;
 
 			{
-				defaultModifiers = ArrayListMultimap.<Attribute, AttributeModifier>create();
-				defaultModifiers.putAll(defaultModifiers);
+				defaultModifiers = ArrayListMultimap.create(defaultModifiers);
 			}
 
 			@Override

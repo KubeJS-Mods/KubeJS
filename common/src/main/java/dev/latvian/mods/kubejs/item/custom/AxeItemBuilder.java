@@ -22,8 +22,7 @@ public class AxeItemBuilder extends HandheldItemBuilder {
 			private boolean modified = false;
 
 			{
-				defaultModifiers = ArrayListMultimap.<Attribute, AttributeModifier>create();
-				defaultModifiers.putAll(defaultModifiers);
+				defaultModifiers = ArrayListMultimap.create(defaultModifiers);
 			}
 
 			@Override
