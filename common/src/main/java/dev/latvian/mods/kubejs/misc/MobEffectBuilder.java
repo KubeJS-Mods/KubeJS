@@ -40,10 +40,9 @@ public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 		return RegistryObjectBuilderTypes.MOB_EFFECT;
 	}
 
-	public MobEffectBuilder modifyAttribute(ResourceLocation attribute, String identifier, double d, AttributeModifier.Operation operation) {
+	public MobEffectBuilder modifyAttribute(Attribute attribute, String identifier, double d, AttributeModifier.Operation operation) {
 		AttributeModifier attributeModifier = new AttributeModifier(new UUID(identifier.hashCode(), identifier.hashCode()), identifier, d, operation);
-		Attribute attr = KubeJSRegistries.attributes().get(attribute);
-		attributeModifiers.put(attr, attributeModifier);
+		attributeModifiers.put(attribute, attributeModifier);
 		return this;
 	}
 

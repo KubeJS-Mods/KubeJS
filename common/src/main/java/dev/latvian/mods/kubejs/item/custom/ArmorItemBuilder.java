@@ -1,9 +1,15 @@
 package dev.latvian.mods.kubejs.item.custom;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
+import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.MutableArmorTier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ArmorMaterials;
@@ -51,7 +57,23 @@ public class ArmorItemBuilder extends ItemBuilder {
 
 	@Override
 	public Item createObject() {
-		return new ArmorItem(armorTier, equipmentSlot, createItemProperties());
+		return new ArmorItem(armorTier, equipmentSlot, createItemProperties()) {
+			private boolean modified = false;
+
+			{
+				defaultModifiers = ArrayListMultimap.<Attribute, AttributeModifier>create();
+				defaultModifiers.putAll(defaultModifiers);
+			}
+
+			@Override
+			public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
+				if (!modified) {
+					modified = true;
+					attributes.forEach((r, m) -> defaultModifiers.put(KubeJSRegistries.attributes().get(r), m));
+				}
+				return super.getDefaultAttributeModifiers(equipmentSlot);
+			}
+		};
 	}
 
 	public ArmorItemBuilder tier(ArmorMaterial t) {
