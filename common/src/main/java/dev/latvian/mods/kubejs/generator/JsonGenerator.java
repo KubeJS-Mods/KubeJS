@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class JsonGenerator {
@@ -22,5 +23,9 @@ public class JsonGenerator {
 		if (console.getDebugEnabled() || console == ConsoleJS.SERVER && ServerSettings.instance.dataPackOutput) {
 			console.info("Generated " + id + ": " + json);
 		}
+	}
+
+	public Map<ResourceLocation, JsonElement> getAllJsons() {
+		return Collections.unmodifiableMap(map);
 	}
 }
