@@ -19,6 +19,7 @@ public interface KubeJSEvents {
 	String CLIENT_PAINT_SCREEN = "client.paint_screen";
 	String CLIENT_PAINT_WORLD = "client.paint_world";
 	String CLIENT_PAINTER_UPDATED = "client.painter_updated";
+	String CLIENT_GENERATE_ASSETS = "client.generate_assets";
 
 	String SERVER_LOAD = "server.load";
 	String SERVER_UNLOAD = "server.unload";
