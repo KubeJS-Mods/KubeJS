@@ -87,6 +87,7 @@ public class CropBlockBuilder extends BlockBuilder {
 		fertilizerCallback = null;
 		surviveCallback = null;
 		material = MaterialListJS.INSTANCE.map.get("plant");
+		renderType = "cutout";
 		noCollision = true;
 		itemBuilder = new SeedItemBuilder(newID("", "_seed"));
 		itemBuilder.blockBuilder = this;
