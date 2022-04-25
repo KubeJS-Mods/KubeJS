@@ -9,6 +9,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -290,6 +291,45 @@ public class LivingEntityJS extends EntityJS {
 
 	public RayTraceResultJS rayTrace() {
 		return rayTrace(getReachDistance());
+	}
+
+	public double getAttributeTotalValue(Attribute attribute) {
+		AttributeInstance instance = minecraftLivingEntity.getAttribute(attribute);
+		if (instance != null) {
+			return instance.getValue();
+		}
+		return 0.0;
+	}
+
+	public double getAttributeBaseValue(Attribute attribute) {
+		AttributeInstance instance = minecraftLivingEntity.getAttribute(attribute);
+		if (instance != null) {
+			return instance.getBaseValue();
+		}
+		return 0.0;
+	}
+
+	public void setAttributeBaseValue(Attribute attribute, double value) {
+		AttributeInstance instance = minecraftLivingEntity.getAttribute(attribute);
+		if (instance != null) {
+			instance.setBaseValue(value);
+		}
+	}
+
+	public void modifyAttribute(Attribute attribute, String identifier, double d, AttributeModifier.Operation operation) {
+		AttributeInstance instance = minecraftLivingEntity.getAttribute(attribute);
+		if (instance != null) {
+			UUID uuid = new UUID(identifier.hashCode(), identifier.hashCode());
+			instance.removeModifier(uuid);
+			instance.addTransientModifier(new AttributeModifier(uuid, identifier, d, operation));
+		}
+	}
+
+	public void removeAttribute(Attribute attribute, String identifier) {
+		AttributeInstance instance = minecraftLivingEntity.getAttribute(attribute);
+		if (instance != null) {
+			instance.removeModifier(new UUID(identifier.hashCode(), identifier.hashCode()));
+		}
 	}
 
 	private AttributeModifier createSpeedModifier(double speed, AttributeModifier.Operation operation) {
