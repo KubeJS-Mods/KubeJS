@@ -25,6 +25,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -239,6 +240,14 @@ public class BlockContainerJS implements SpecialEquality {
 
 	public int getLight() {
 		return minecraftLevel.getMaxLocalRawBrightness(pos);
+	}
+
+	public int getSkyLight() {
+		return minecraftLevel.getBrightness(LightLayer.SKY, pos) - minecraftLevel.getSkyDarken();
+	}
+
+	public int getBlockLight() {
+		return minecraftLevel.getBrightness(LightLayer.BLOCK, pos);
 	}
 
 	public boolean getCanSeeSky() {
