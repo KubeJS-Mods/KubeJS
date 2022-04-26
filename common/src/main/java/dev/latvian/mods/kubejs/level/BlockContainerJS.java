@@ -5,6 +5,7 @@ import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.block.MaterialJS;
 import dev.latvian.mods.kubejs.block.MaterialListJS;
+import dev.latvian.mods.kubejs.core.BlockKJS;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.item.InventoryJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
@@ -241,6 +242,10 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public boolean getCanSeeSky() {
+		return minecraftLevel.canSeeSky(pos);
+	}
+
+	public boolean canSeeSkyFromBelowWater() {
 		return minecraftLevel.canSeeSkyFromBelowWater(pos);
 	}
 
@@ -361,8 +366,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public ResourceLocation getBiomeId() {
-		var key = minecraftLevel.getBiome(pos).unwrapKey().orElse(Biomes.PLAINS);
-		return key.location();
+		return minecraftLevel.getBiome(pos).unwrapKey().orElse(Biomes.PLAINS).location();
 	}
 
 	@Override
@@ -372,5 +376,9 @@ public class BlockContainerJS implements SpecialEquality {
 		}
 
 		return equals(o);
+	}
+
+	public CompoundTag getTypeData() {
+		return ((BlockKJS) getBlockState().getBlock()).getTypeDataKJS();
 	}
 }

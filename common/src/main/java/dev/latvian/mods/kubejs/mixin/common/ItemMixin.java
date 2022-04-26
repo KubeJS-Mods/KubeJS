@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
@@ -35,8 +36,12 @@ public abstract class ItemMixin implements ItemKJS {
 	@Shadow
 	@Final
 	public static int MAX_BAR_WIDTH;
+
 	@Unique
 	private ItemBuilder itemBuilderKJS;
+
+	@Unique
+	private final CompoundTag typeDataKJS = new CompoundTag();
 
 	@Override
 	@Nullable
@@ -47,6 +52,12 @@ public abstract class ItemMixin implements ItemKJS {
 	@Override
 	public void setItemBuilderKJS(ItemBuilder b) {
 		itemBuilderKJS = b;
+	}
+
+	@Override
+	@RemapForJS("getTypeData")
+	public CompoundTag getTypeDataKJS() {
+		return typeDataKJS;
 	}
 
 	@Override
