@@ -1,8 +1,10 @@
 package dev.latvian.mods.kubejs.item.custom;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import dev.architectury.registry.fuel.FuelRegistry;
+import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.core.NonNullList;
@@ -32,33 +34,20 @@ public class BasicItemJS extends Item {
 		}
 	}
 
-	private final ImmutableMultimap<Attribute, AttributeModifier> attributes;
+	private final Multimap<Attribute, AttributeModifier> attributes;
+	private final Multimap<ResourceLocation, AttributeModifier> modifiers;
+	private boolean modified = false;
 	private final Function<ItemStackJS, Collection<ItemStackJS>> subtypes;
 
 	public BasicItemJS(ItemBuilder p) {
 		super(p.createItemProperties());
-		// var attackDamage = p.getAttackDamage();
-		// var attackSpeed = p.getAttackSpeed();
-
 		if (p.burnTime > 0) {
 			FuelRegistry.register(p.burnTime, this);
 		}
 
 		subtypes = p.subtypes;
-
-		ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-
-		/*
-		if (attackDamage != null) {
-			builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", attackDamage.doubleValue(), AttributeModifier.Operation.ADDITION));
-		}
-
-		if (attackSpeed != null) {
-			builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", attackSpeed.doubleValue(), AttributeModifier.Operation.ADDITION));
-		}
-		*/
-
-		attributes = builder.build();
+		attributes = ArrayListMultimap.create();
+		modifiers = p.attributes;
 	}
 
 	@Override
@@ -74,6 +63,10 @@ public class BasicItemJS extends Item {
 
 	@Override
 	public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) {
+		if (!modified) {
+			modifiers.forEach((r, m) -> attributes.put(KubeJSRegistries.attributes().get(r), m));
+			modified = true;
+		}
 		return slot == EquipmentSlot.MAINHAND ? attributes : super.getDefaultAttributeModifiers(slot);
 	}
 }
