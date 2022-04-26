@@ -149,6 +149,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void init() {
+		RegistryObjectBuilderTypes.SOUND_EVENT.addType("basic", SoundEventBuilder.class, SoundEventBuilder::new);
+
 		RegistryObjectBuilderTypes.BLOCK.addType("basic", BasicBlockJS.Builder.class, BasicBlockJS.Builder::new);
 		RegistryObjectBuilderTypes.BLOCK.addType("detector", DetectorBlock.Builder.class, DetectorBlock.Builder::new);
 		RegistryObjectBuilderTypes.BLOCK.addType("slab", SlabBlockBuilder.class, SlabBlockBuilder::new);
@@ -176,7 +178,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		RegistryObjectBuilderTypes.ITEM.addType("music_disc", MusicDiscItemBuilderJS.class, MusicDiscItemBuilderJS::new);
 
 		RegistryObjectBuilderTypes.FLUID.addType("basic", FluidBuilder.class, FluidBuilder::new);
-		RegistryObjectBuilderTypes.SOUND_EVENT.addType("basic", SoundEventBuilder.class, SoundEventBuilder::new);
 		RegistryObjectBuilderTypes.ENCHANTMENT.addType("basic", EnchantmentBuilder.class, EnchantmentBuilder::new);
 		RegistryObjectBuilderTypes.MOB_EFFECT.addType("basic", BasicMobEffect.Builder.class, BasicMobEffect.Builder::new);
 		// ENTITY_TYPE
