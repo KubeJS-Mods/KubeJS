@@ -38,7 +38,7 @@ public class RecordItemJS extends RecordItem {
 
 		@Override
 		public Item createObject() {
-			return new RecordItemJS(this, analogOutput, SoundEvents.MUSIC_DISC_11, createItemProperties());
+			return new RecordItemJS(this, analogOutput, SoundEvents.ITEM_PICKUP, createItemProperties());
 		}
 	}
 
