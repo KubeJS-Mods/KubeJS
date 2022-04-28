@@ -94,9 +94,9 @@ public final class RegistryObjectBuilderTypes<T> {
 	}
 
 	public static final RegistryObjectBuilderTypes<SoundEvent> SOUND_EVENT = add(Registry.SOUND_EVENT_REGISTRY, SoundEvent.class);
+	public static final RegistryObjectBuilderTypes<Fluid> FLUID = add(Registry.FLUID_REGISTRY, Fluid.class);
 	public static final RegistryObjectBuilderTypes<Block> BLOCK = add(Registry.BLOCK_REGISTRY, Block.class);
 	public static final RegistryObjectBuilderTypes<Item> ITEM = add(Registry.ITEM_REGISTRY, Item.class);
-	public static final RegistryObjectBuilderTypes<Fluid> FLUID = add(Registry.FLUID_REGISTRY, Fluid.class);
 	public static final RegistryObjectBuilderTypes<Enchantment> ENCHANTMENT = add(Registry.ENCHANTMENT_REGISTRY, Enchantment.class);
 	public static final RegistryObjectBuilderTypes<MobEffect> MOB_EFFECT = add(Registry.MOB_EFFECT_REGISTRY, MobEffect.class);
 	public static final RegistryObjectBuilderTypes<EntityType<?>> ENTITY_TYPE = add(Registry.ENTITY_TYPE_REGISTRY, EntityType.class);
