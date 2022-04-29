@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs;
 
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.CreativeTabRegistry;
+import dev.architectury.registry.registries.Registries;
 import dev.architectury.utils.EnvExecutor;
 import dev.latvian.mods.kubejs.block.KubeJSBlockEventHandler;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
@@ -24,6 +25,7 @@ import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.RemappingHelper;
 import dev.latvian.mods.rhino.util.Remapper;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -124,7 +126,6 @@ public class KubeJS {
 		KubeJSItemEventHandler.init();
 		KubeJSServerEventHandler.init();
 		KubeJSRecipeEventHandler.init();
-		RegistryObjectBuilderTypes.registerAll(!CommonProperties.get().serverOnly);
 
 		PROXY.init();
 

@@ -83,4 +83,8 @@ public class KubeJSRegistries {
 	public static Registrar<MobEffect> mobEffects() {
 		return genericRegistry(MOB_EFFECT_REGISTRY);
 	}
+
+	public static void init() {
+		RegistryObjectBuilderTypes.registerAll(!CommonProperties.get().serverOnly);
+	}
 }
