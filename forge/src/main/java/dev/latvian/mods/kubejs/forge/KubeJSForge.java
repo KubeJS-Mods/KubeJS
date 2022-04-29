@@ -38,7 +38,7 @@ public class KubeJSForge {
 	public KubeJSForge() throws Throwable {
 		EventBuses.registerModEventBus(KubeJS.MOD_ID, FMLJavaModLoadingContext.get().getModEventBus());
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(KubeJSForge::loadComplete);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.HIGHEST, KubeJSForge::initRegistries);
+		FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Block.class, EventPriority.HIGHEST, KubeJSForge::initRegistries);
 		KubeJS.instance = new KubeJS();
 		KubeJS.instance.setup();
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
