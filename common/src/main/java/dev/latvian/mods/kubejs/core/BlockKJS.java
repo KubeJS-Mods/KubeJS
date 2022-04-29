@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -14,6 +15,8 @@ import java.util.List;
  */
 public interface BlockKJS extends BlockBuilderProvider {
 	void setBlockBuilderKJS(BlockBuilder b);
+
+	CompoundTag getTypeDataKJS();
 
 	void setMaterialKJS(Material v);
 

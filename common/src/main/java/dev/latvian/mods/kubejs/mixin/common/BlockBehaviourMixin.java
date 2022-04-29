@@ -2,6 +2,8 @@ package dev.latvian.mods.kubejs.mixin.common;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.core.BlockKJS;
+import dev.latvian.mods.rhino.util.RemapForJS;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
@@ -19,6 +21,9 @@ public abstract class BlockBehaviourMixin implements BlockKJS {
 	@Unique
 	private BlockBuilder blockBuilderKJS;
 
+	@Unique
+	private final CompoundTag typeDataKJS = new CompoundTag();
+
 	@Override
 	@Nullable
 	public BlockBuilder getBlockBuilderKJS() {
@@ -28,6 +33,12 @@ public abstract class BlockBehaviourMixin implements BlockKJS {
 	@Override
 	public void setBlockBuilderKJS(BlockBuilder b) {
 		blockBuilderKJS = b;
+	}
+
+	@Override
+	@RemapForJS("getTypeData")
+	public CompoundTag getTypeDataKJS() {
+		return typeDataKJS;
 	}
 
 	@Override

@@ -1,14 +1,12 @@
 package dev.latvian.mods.kubejs.misc;
 
 import dev.latvian.mods.kubejs.BuilderBase;
-import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.entity.LivingEntityJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 import java.util.HashMap;
@@ -24,7 +22,7 @@ public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 
 	public transient MobEffectCategory category;
 	public transient EffectTickCallback effectTick;
-	public transient Map<Attribute, AttributeModifier> attributeModifiers;
+	public transient Map<ResourceLocation, AttributeModifier> attributeModifiers;
 	public transient int color;
 
 	public MobEffectBuilder(ResourceLocation i) {
@@ -42,8 +40,7 @@ public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 
 	public MobEffectBuilder modifyAttribute(ResourceLocation attribute, String identifier, double d, AttributeModifier.Operation operation) {
 		AttributeModifier attributeModifier = new AttributeModifier(new UUID(identifier.hashCode(), identifier.hashCode()), identifier, d, operation);
-		Attribute attr = KubeJSRegistries.attributes().get(attribute);
-		attributeModifiers.put(attr, attributeModifier);
+		attributeModifiers.put(attribute, attributeModifier);
 		return this;
 	}
 

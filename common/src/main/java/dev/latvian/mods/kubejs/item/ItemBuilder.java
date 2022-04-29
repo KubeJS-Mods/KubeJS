@@ -1,5 +1,7 @@
 package dev.latvian.mods.kubejs.item;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.google.gson.JsonObject;
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.latvian.mods.kubejs.BuilderBase;
@@ -16,6 +18,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.CreativeModeTab;
@@ -30,6 +34,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
@@ -66,6 +71,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient FoodBuilder foodBuilder;
 	public transient Function<ItemStackJS, Color> barColor;
 	public transient ToIntFunction<ItemStackJS> barWidth;
+	public transient Multimap<ResourceLocation, AttributeModifier> attributes;
 
 	public JsonObject modelJson;
 
@@ -86,6 +92,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		parentModel = "";
 		foodBuilder = null;
 		modelJson = null;
+		attributes = ArrayListMultimap.create();
 	}
 
 	@Override
@@ -239,4 +246,8 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return properties;
 	}
 
+	public ItemBuilder modifyAttribute(ResourceLocation attribute, String identifier, double d, AttributeModifier.Operation operation) {
+		attributes.put(attribute, new AttributeModifier(new UUID(identifier.hashCode(), identifier.hashCode()), identifier, d, operation));
+		return this;
+	}
 }

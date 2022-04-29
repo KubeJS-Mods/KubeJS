@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.item.ItemBuilder;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -14,6 +15,8 @@ public interface ItemKJS {
 	ItemBuilder getItemBuilderKJS();
 
 	void setItemBuilderKJS(ItemBuilder b);
+
+	CompoundTag getTypeDataKJS();
 
 	void setMaxStackSizeKJS(int i);
 
