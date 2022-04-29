@@ -211,7 +211,6 @@ public class KubeJS {
 	public void setup() {
 		UtilsJS.init();
 		KubeJSNet.init();
-		KubeJSRegistries.init();
 		new StartupEventJS().post(ScriptType.STARTUP, KubeJSEvents.INIT);
 		// KubeJSRegistries.chunkGenerators().register(new ResourceLocation(KubeJS.MOD_ID, "flat"), () -> KJSFlatLevelSource.CODEC);
 	}

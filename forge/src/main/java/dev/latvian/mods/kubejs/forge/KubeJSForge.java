@@ -4,6 +4,7 @@ import dev.architectury.platform.forge.EventBuses;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSEvents;
+import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.block.forge.MissingMappingEventJS;
 import dev.latvian.mods.kubejs.entity.forge.LivingEntityDropsEventJS;
 import dev.latvian.mods.kubejs.item.forge.ItemDestroyedEventJS;
@@ -21,6 +22,7 @@ import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -28,12 +30,14 @@ import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkConstants;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.NewRegistryEvent;
 
 @Mod(KubeJS.MOD_ID)
 public class KubeJSForge {
 	public KubeJSForge() throws Throwable {
 		EventBuses.registerModEventBus(KubeJS.MOD_ID, FMLJavaModLoadingContext.get().getModEventBus());
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(KubeJSForge::loadComplete);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(KubeJSForge::initRegistries);
 		KubeJS.instance = new KubeJS();
 		KubeJS.instance.setup();
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
@@ -50,6 +54,10 @@ public class KubeJSForge {
 			CraftingHelper.register(new ResourceLocation("kubejs:ignore_nbt"), IgnoreNBTIngredient.SERIALIZER);
 		}
 
+	}
+
+	private static void initRegistries(NewRegistryEvent event) {
+		KubeJSRegistries.init();
 	}
 
 	private static void loadComplete(FMLLoadCompleteEvent event) {

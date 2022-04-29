@@ -85,6 +85,6 @@ public class KubeJSRegistries {
 	}
 
 	public static void init() {
-		REGISTRIES.forRegistry(BLOCK_REGISTRY, (__) -> RegistryObjectBuilderTypes.registerAll(!CommonProperties.get().serverOnly));
+		RegistryObjectBuilderTypes.registerAll(!CommonProperties.get().serverOnly);
 	}
 }
