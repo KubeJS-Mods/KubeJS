@@ -450,7 +450,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(Color.class, ColorWrapper::of);
 		typeWrappers.register(IngredientActionFilter.class, IngredientActionFilter::filterOf);
 		typeWrappers.register(Tier.class, o -> ItemBuilder.TOOL_TIERS.getOrDefault(String.valueOf(o), Tiers.IRON));
-		typeWrappers.register(ArmorMaterial.class, o -> ItemBuilder.ARMOR_TIERS.getOrDefault(String.valueOf(o), ArmorMaterials.IRON));
+		typeWrappers.register(ArmorMaterial.class, ItemBuilder::ofArmorMaterial);
 
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
 	}

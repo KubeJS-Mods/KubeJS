@@ -76,7 +76,7 @@ public class ArmorItemBuilder extends ItemBuilder {
 	}
 
 	public ArmorItemBuilder tier(ArmorMaterial t) {
-		armorTier = new MutableArmorTier(id.toString(), t);
+		armorTier = new MutableArmorTier(t.getName(), t);
 		return this;
 	}
 

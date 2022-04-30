@@ -29,6 +29,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -54,6 +55,18 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		for (var tier : ArmorMaterials.values()) {
 			ARMOR_TIERS.put(tier.toString().toLowerCase(), tier);
 		}
+	}
+
+	public static ArmorMaterial ofArmorMaterial(Object o) {
+		String asString = String.valueOf(o);
+
+		ArmorMaterial armorMaterial = ItemBuilder.ARMOR_TIERS.get(asString);
+		if (armorMaterial != null) {
+			return armorMaterial;
+		}
+
+		String withKube = KubeJS.appendModId(asString);
+		return ItemBuilder.ARMOR_TIERS.getOrDefault(withKube, ArmorMaterials.IRON);
 	}
 
 	public transient int maxStackSize;
