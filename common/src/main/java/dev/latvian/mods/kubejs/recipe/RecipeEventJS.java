@@ -276,7 +276,7 @@ public class RecipeEventJS extends EventJS {
 
 		TagIngredientJS.context = KubeJSReloadListener.resources.tagManager.getResult()
 				.stream()
-				.filter(result -> result.key().isFor(Registry.ITEM_REGISTRY))
+				.filter(result -> result.key() == Registry.ITEM_REGISTRY)
 				.findFirst()
 				.map(result -> TagIngredientJS.Context.usingResult(UtilsJS.cast(result)))
 				.orElseGet(() -> {
