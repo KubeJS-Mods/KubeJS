@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.item.ingredient;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJS;
@@ -21,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,7 +44,7 @@ public class TagIngredientJS implements IngredientJS {
 	}
 
 	private final TagKey<Item> tag;
-	private Iterable<Holder<Item>> holders;
+	private ContextualResult cachedResult;
 
 	private TagIngredientJS(String t) {
 		tag = Tags.item(UtilsJS.getMCID(t));
@@ -52,33 +54,39 @@ public class TagIngredientJS implements IngredientJS {
 		return tag.location();
 	}
 
-	public Iterable<Holder<Item>> getHolders() {
-		if (holders == null) {
+	public Collection<Holder<Item>> getHolders() {
+		if (cachedResult == null || cachedResult.context != context) {
 			if (context.areTagsBound()) {
-				// tags are bound, so we can cache the result from the registry
-				holders = Registry.ITEM.getTagOrEmpty(tag);
+				// tags are bound, so we can use the result from the registry
+				cachedResult = new ContextualResult(context, Sets.newLinkedHashSet(Registry.ITEM.getTagOrEmpty(tag)));
 			} else {
-				// tags have not been bound yet, so we can't trust that the tag won't change
-				// (for example as a result of other mods' modifications)
-				return context.getTag(tag);
+				// tags have not been bound yet, so we need to use the result from the tag loader
+				cachedResult = new ContextualResult(context, Sets.newLinkedHashSet(context.getTag(tag)));
 			}
 		}
-		return holders;
+		return cachedResult.holders();
 	}
 
 	@Override
 	public boolean test(ItemStackJS stack) {
-		return !stack.isEmpty() && stack.getItemStack().is(tag);
+		return !stack.isEmpty() && testVanilla(stack.getItemStack());
 	}
 
 	@Override
 	public boolean testVanilla(ItemStack stack) {
-		return !stack.isEmpty() && stack.is(tag);
+		if(stack.isEmpty()) {
+			return false;
+		}
+		return context.areTagsBound() ? stack.is(tag) : getHolders().contains(stack.getItem().builtInRegistryHolder());
 	}
 
 	@Override
 	public boolean testVanillaItem(Item item) {
-		return item != Items.AIR && item.builtInRegistryHolder().is(tag);
+		if(item == Items.AIR) {
+			return false;
+		}
+		var holder = item.builtInRegistryHolder();
+		return context.areTagsBound() ? holder.is(tag) : getHolders().contains(holder);
 	}
 
 	@Override
@@ -144,6 +152,9 @@ public class TagIngredientJS implements IngredientJS {
 	@Override
 	public Ingredient createVanillaIngredient() {
 		return Ingredient.of(tag);
+	}
+
+	public record ContextualResult(Context context, Collection<Holder<Item>> holders) {
 	}
 
 	public interface Context {
