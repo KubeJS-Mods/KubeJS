@@ -55,9 +55,9 @@ modImplementation("dev.latvian.mods:kubejs-<loader>:${kubejs_version}")
 // ForgeGradle
 implementation fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
 
-// these two are unfortunately needed since fg.deobf doesn't respect transitive dependencies as of yet
+// these two are unfortunately needed since fg.deobf doesn't respect transitive dependencies yet
 implementation fg.deobf("dev.latvian.mods:rhino:${rhino_version}")
-implementation fg.deobf("me.shedaniel:architectury-forge:${architectury_version}")
+implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
 ```
 
 Just set the versions with most up-to-date version of the required mod(s), which you also find using these badges:
@@ -69,10 +69,12 @@ Just set the versions with most up-to-date version of the required mod(s), which
 	<a href="https://vers.saps.dev">
         <img src="https://flat.badgen.net/maven/v/metadata-url/https/mvn.saps.dev/minecraft/dev/latvian/mods/rhino/maven-metadata.xml?color=3498DB&label=Rhino" alt="Rhino Latest Version">
     </a>
-		<a href="https://niceme.me">
-        <img src="https://flat.badgen.net/maven/v/metadata-url/https/maven.architectury.dev/me/shedaniel/architectury/maven-metadata.xml?color=F95F1E&label=Architectury" alt="Architectury Latest Version">
+		<a href="https://maven.architectury.dev/dev/architectury/architectury">
+        <img src="https://flat.badgen.net/badge/Architectury/use%20v4%20for%201.18.2/F95F1E" alt="Architectury Latest Version">
     </a>
 </p>
+
+(Note: The above badges may not represent the *true* latest version of these mods. As a basic rule of thumb, for KubeJS and Rhino, you should always be using the latest version compiled against your version of Minecraft, for example `1802.+` for Minecraft 1.18.2, while for Architectury, the corresponding major version will be provided. You can also click on the badge to see all versions of each mod)
 
 You should of course use `kubejs-forge` for Forge projects and `kubejs-fabric` for Fabric projects. KubeJS' dependencies (notably, Rhino and Architectury) ***should*** all be downloaded automatically; otherwise, you may need to add them manually.
 
@@ -102,8 +104,6 @@ KubeJS [plugins](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src
 - add global bindings (`addBindings` - [Example](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/forge/src/main/java/dev/latvian/mods/kubejs/forge/BuiltinKubeJSForgePlugin.java#L27-L31)) *(this replaces `BindingsEvent` listeners)*
 - add type wrappers for automatic native type conversion, for example to allow `String`s to be automatically converted to `ResourceLocation`s. (`addTypeWrappers` - [Example](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/BuiltinKubeJSPlugin.java#L211-L252))
 - attach data to [players](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/player/AttachPlayerDataEvent.java), [worlds](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/world/AttachWorldDataEvent.java) or the [server](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/server/AttachServerDataEvent.java) that may then be used by script makers (`attach(Player|World|Server)Data` - [Example](https://github.com/FTBTeam/FTB-Quests/blob/1.18/main/common/src/main/java/dev/ftb/mods/ftbquests/integration/kubejs/KubeJSIntegration.java#L40-L42), please note this example currently uses the deprecated way of listening to `AttachPlayerDataEvent` itself)
-
-A newer, more convenient way to add bindings, set class filters and even add **Native Type Wrappers** (which can convert an untyped JavaScript input (most likely a String) to a corresponding Java object automatically) comes in the form of KubeJS , which is a very simple class you can extend in your own mod to:
 
 ### Adding recipe handlers
 
@@ -146,7 +146,7 @@ public class MyRecipeJS extends RecipeJS {
 
 ### Adding bindings
 
-Similarly to adding custom recipe types, you may also add **custom bindings** to KubeJS (see [Simply Seasons](https://github.com/Harvest-Festival/Simply-Seasons/blob/1.18/main/src/main/java/uk/joshiejack/simplyseasons/plugins/KubeJSPlugin.java#L17-L21) for a *very* simple example). Bindings can be anything from [single value constants](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/BuiltinKubeJSPlugin.java#L188) to Java [class](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/BuiltinKubeJSPlugin.java#L170) and [method wrappers](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/BuiltinKubeJSPlugin.java#L167), and can be constrained to individual scopes, contexts and script types, as well!
+Similarly to adding custom recipe types, you may also add **custom bindings** to KubeJS (see [AntimatterAPI](https://github.com/GregTech-Intergalactical/AntimatterAPI/blob/dev-1.18/src/main/java/muramasa/antimatter/integration/kubejs/AntimatterKubeJS.java#L18-L21) for a simple example). Bindings can be anything from [single value constants](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/BuiltinKubeJSPlugin.java#L188) to Java [class](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/BuiltinKubeJSPlugin.java#L170) and [method wrappers](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/BuiltinKubeJSPlugin.java#L167), and can be constrained to individual scopes, contexts and script types, as well!
 
 ### Setting class filters
 

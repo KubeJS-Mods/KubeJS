@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public interface TagLoaderKJS<T> {
 	default void customTagsKJS(Map<ResourceLocation, Tag.Builder> map) {
-		TagIngredientJS.clearTagCache();
+		TagIngredientJS.resetContext();
 		var c = getDirectory().substring(5);
 		var reg = getRegistryKJS();
 
