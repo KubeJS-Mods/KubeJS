@@ -61,6 +61,8 @@ allprojects {
 				includeGroup "org.parchmentmc.data"
 			}
 		}
+
+		mavenLocal()
 	}
 
 	java {

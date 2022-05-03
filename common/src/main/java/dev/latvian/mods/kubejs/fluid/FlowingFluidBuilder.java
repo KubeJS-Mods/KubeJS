@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.fluid;
 
+import dev.architectury.core.fluid.ArchitecturyFlowingFluid;
 import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import net.minecraft.world.level.material.Fluid;
@@ -19,6 +20,6 @@ public class FlowingFluidBuilder extends BuilderBase<Fluid> {
 
 	@Override
 	public Fluid createObject() {
-		return FluidPlatformHelper.buildFluid(false, fluidBuilder);
+		return new ArchitecturyFlowingFluid.Flowing(fluidBuilder.createAttributes());
 	}
 }

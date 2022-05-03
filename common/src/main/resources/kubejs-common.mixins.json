@@ -6,7 +6,6 @@
 		"BlockBehaviourMixin",
 		"BlockMixin",
 		"BlockStateBaseMixin",
-		"BucketItemMixin",
 		"DamageSourceMixin",
 		"EntityMixin",
 		"EntityTargetMixin",
