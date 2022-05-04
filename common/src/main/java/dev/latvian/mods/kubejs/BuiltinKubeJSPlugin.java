@@ -258,6 +258,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		filter.allow("com.mojang.authlib.GameProfile");
 		filter.allow("com.mojang.util.UUIDTypeAdapter");
 		filter.allow("com.mojang.brigadier");
+		filter.allow("com.mojang.blaze3d");
 
 		filter.allow("dev.architectury"); // Architectury
 
