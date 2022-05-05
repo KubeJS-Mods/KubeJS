@@ -27,7 +27,9 @@
 		"TagLoaderMixin",
 		"TagManagerMixin",
 		"TieredItemMixin",
-		"UtilMixin"
+		"UtilMixin",
+		"inject_resources.MinecraftServerMixin",
+		"inject_resources.WorldStemMixin"
 	],
 	"client": [
 		"AbstractSelectionListMixin",
