@@ -24,6 +24,7 @@ import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
+import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -34,7 +35,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
@@ -44,7 +44,7 @@ public class ServerScriptManager {
 
 	public final ScriptManager scriptManager = new ScriptManager(ScriptType.SERVER, KubeJSPaths.SERVER_SCRIPTS, "/data/kubejs/example_server_script.js");
 
-	public void init(ReloadableServerResources serverResources) {
+	public ServerScriptManager() {
 		try {
 			if (Files.notExists(KubeJSPaths.DATA)) {
 				Files.createDirectories(KubeJSPaths.DATA);
@@ -52,7 +52,9 @@ public class ServerScriptManager {
 		} catch (Throwable ex) {
 			throw new RuntimeException("KubeJS failed to register it's script loader!", ex);
 		}
+	}
 
+	public void updateResources(ReloadableServerResources serverResources) {
 		KubeJSReloadListener.resources = serverResources;
 		KubeJSReloadListener.recipeContext = RecipePlatformHelper.createRecipeContext(serverResources);
 	}
@@ -96,26 +98,27 @@ public class ServerScriptManager {
 		scriptManager.load();
 	}
 
-	public ResourceManager wrapResourceManager(ResourceManager original) {
+	public MultiPackResourceManager wrapResourceManager(PackType type, List<PackResources> packs) {
 		// TODO: Wrap the resource manager to inject KubeJS' virtual data packs and server scripts.
 		var virtualDataPackLow = new VirtualKubeJSDataPack(false);
 		var virtualDataPackHigh = new VirtualKubeJSDataPack(true);
 
-		var list = original.listPacks().collect(Collectors.toCollection(LinkedList::new));
+		var list = new LinkedList<>(packs);
 
 		list.addFirst(virtualDataPackLow);
 		list.addLast(new KubeJSServerResourcePack());
 		list.addLast(virtualDataPackHigh);
 
-		var wrappedResourceManager = new MultiPackResourceManager(PackType.SERVER_DATA, list);
+		var wrappedResourceManager = new MultiPackResourceManager(type, list);
 
 		reloadScriptManager(wrappedResourceManager);
 
 		ConsoleJS.SERVER.setLineNumber(true);
-		new DataPackEventJS(virtualDataPackLow).post(ScriptType.SERVER, "server.datapack.last");
-		new DataPackEventJS(virtualDataPackLow).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_LOW_PRIORITY);
-		new DataPackEventJS(virtualDataPackHigh).post(ScriptType.SERVER, "server.datapack.first");
-		new DataPackEventJS(virtualDataPackHigh).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_HIGH_PRIORITY);
+
+		new DataPackEventJS(virtualDataPackLow, wrappedResourceManager).post(ScriptType.SERVER, "server.datapack.last");
+		new DataPackEventJS(virtualDataPackLow, wrappedResourceManager).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_LOW_PRIORITY);
+		new DataPackEventJS(virtualDataPackHigh, wrappedResourceManager).post(ScriptType.SERVER, "server.datapack.first");
+		new DataPackEventJS(virtualDataPackHigh, wrappedResourceManager).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_HIGH_PRIORITY);
 
 		UtilsJS.postModificationEvents();
 

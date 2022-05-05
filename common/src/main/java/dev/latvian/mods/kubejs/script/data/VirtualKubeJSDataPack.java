@@ -15,6 +15,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -124,7 +126,20 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 
 	@Override
 	public String getName() {
+		return this.toString();
+	}
+
+	@Override
+	public String toString() {
 		return "KubeJS Virtual Data Pack [" + (high ? "high" : "low") + " priority]";
+	}
+
+	public void export(FileSystem fs) throws IOException {
+		for (var file : pathToData.entrySet()) {
+			var path = fs.getPath(file.getKey());
+			Files.createDirectories(path.getParent());
+			Files.writeString(path, file.getValue(), StandardCharsets.UTF_8);
+		}
 	}
 
 	@Override
