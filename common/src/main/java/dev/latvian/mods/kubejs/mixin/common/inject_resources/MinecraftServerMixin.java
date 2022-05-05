@@ -21,9 +21,9 @@ public abstract class MinecraftServerMixin {
 	@Final
 	private PackRepository packRepository;
 
-	@SuppressWarnings({"UnresolvedMixinReference", "DefaultAnnotationParam"})
+	@SuppressWarnings({"DefaultAnnotationParam"})
 	@Redirect(
-			method = {"lambda$reloadResources$17", "method_29437", "m_212911_"},
+			method = {"*"},
 			at = @At(
 					value = "NEW",
 					target = "net/minecraft/server/packs/resources/MultiPackResourceManager",
