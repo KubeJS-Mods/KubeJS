@@ -1,7 +1,9 @@
 package dev.latvian.mods.kubejs.fluid;
 
+import dev.architectury.core.block.ArchitecturyLiquidBlock;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Material;
 
@@ -12,11 +14,12 @@ public class FluidBlockBuilder extends BlockBuilder {
 		super(b.id);
 		fluidBuilder = b;
 		defaultTranslucent();
+		noItem();
 	}
 
 	@Override
 	public Block createObject() {
-		return FluidPlatformHelper.buildFluidBlock(fluidBuilder, Block.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops());
+		return new ArchitecturyLiquidBlock(UtilsJS.cast(fluidBuilder.flowingFluid), Block.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops());
 	}
 
 	@Override

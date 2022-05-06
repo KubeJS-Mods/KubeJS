@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs;
 
+import dev.architectury.registry.registries.RegistrySupplier;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -14,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -23,7 +25,7 @@ import java.util.stream.Collectors;
  */
 public abstract class BuilderBase<T> implements Supplier<T> {
 	public final ResourceLocation id;
-	private Supplier<T> object;
+	private RegistrySupplier<T> object;
 	public String translationKey;
 	public String displayName;
 	public transient boolean dummyBuilder;
@@ -38,7 +40,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		defaultTags = new HashSet<>();
 	}
 
-	public abstract RegistryObjectBuilderTypes<T> getRegistryType();
+	public abstract RegistryObjectBuilderTypes<? super T> getRegistryType();
 
 	public abstract T createObject();
 
@@ -128,5 +130,9 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		}
 
 		return false;
+	}
+
+	protected final RegistrySupplier<T> asRegistrySupplier() {
+		return Objects.requireNonNull(object, () -> "Object '%s' of registry '%s' hasn't been registered yet!".formatted(id, getRegistryType().registryKey.location()));
 	}
 }
