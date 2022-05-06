@@ -284,7 +284,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	public void addResourcePackLocations(String path, List<ResourceLocation> list, PackType packType) {
-		if (path.equals("loot_tables")) {
+		if (lootTable != null && path.equals("loot_tables")) {
 			list.add(new ResourceLocation(id.getNamespace(), "loot_tables/blocks/" + id.getPath() + ".json"));
 		}
 	}
