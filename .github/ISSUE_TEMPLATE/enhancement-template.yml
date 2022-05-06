@@ -1,6 +1,6 @@
 name: Feature Request
 description: Suggest a feature/enhancement for KubeJS
-labels: [enhancement]
+labels: [ enhancement ]
 body:
 
   - type: textarea

@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.mixin.forge.RecipeManagerAccessor;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -12,9 +11,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.conditions.ConditionContext;
 import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 import java.util.Map;
 

@@ -15,14 +15,14 @@ public class IgnoreNBTIngredient extends Ingredient {
 	public static final IIngredientSerializer<IgnoreNBTIngredient> SERIALIZER = new IIngredientSerializer<>() {
 		@Override
 		public IgnoreNBTIngredient parse(FriendlyByteBuf buf) {
-            var stack = buf.readItem();
+			var stack = buf.readItem();
 			stack.setTag(null);
 			return new IgnoreNBTIngredient(stack);
 		}
 
 		@Override
 		public IgnoreNBTIngredient parse(JsonObject json) {
-            var stack = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(json.get("item").getAsString())));
+			var stack = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(json.get("item").getAsString())));
 			stack.setTag(null);
 			return new IgnoreNBTIngredient(stack);
 		}
@@ -52,7 +52,7 @@ public class IgnoreNBTIngredient extends Ingredient {
 
 	@Override
 	public JsonObject toJson() {
-        var json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("type", "kubejs:ignore_nbt");
 		json.addProperty("item", item.getItem().getRegistryName().toString());
 		return json;

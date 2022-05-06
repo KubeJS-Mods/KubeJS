@@ -31,7 +31,7 @@ public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 	private void customTags(ResourceManager resourceManager, CallbackInfoReturnable<Map<ResourceLocation, Tag.Builder>> cir) {
 		// band-aid fix for #237, as some mods use tags on the client side;
 		// technically not an intended use case, but easy enough to fix
-		if(ServerScriptManager.instance != null) {
+		if (ServerScriptManager.instance != null) {
 			customTagsKJS(cir.getReturnValue());
 		}
 	}
