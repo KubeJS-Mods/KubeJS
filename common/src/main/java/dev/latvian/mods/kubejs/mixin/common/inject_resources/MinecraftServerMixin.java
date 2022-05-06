@@ -32,6 +32,7 @@ public abstract class MinecraftServerMixin {
 			remap = false
 	)
 	public MultiPackResourceManager wrapResourceManager(PackType packType, List<PackResources> list) {
+		ServerScriptManager.instance = new ServerScriptManager();
 		return ServerScriptManager.instance.wrapResourceManager(packType, list);
 	}
 }

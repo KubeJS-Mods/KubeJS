@@ -18,19 +18,12 @@ import java.util.concurrent.Executor;
 @Mixin(WorldStem.class)
 public abstract class WorldStemMixin {
 
-	@Inject(method = "load", at = @At("HEAD"))
-	private static void init(WorldStem.InitConfig initConfig, WorldStem.DataPackConfigSupplier packConfig, WorldStem.WorldDataSupplier dataSupplier,
-							 Executor bg, Executor fg, CallbackInfoReturnable<CompletableFuture<WorldStem>> cir) {
-		// **way** too early to do anything with this, but we need it to be initialised before wrapping the resource manager
-		ServerScriptManager.instance = new ServerScriptManager();
-	}
-
-
 	@Redirect(method = "load", at = @At(
 			value = "NEW",
 			target = "net/minecraft/server/packs/resources/MultiPackResourceManager"
 	))
 	private static MultiPackResourceManager injectKubeJSPacks(PackType packType, List<PackResources> list) {
+		ServerScriptManager.instance = new ServerScriptManager();
 		return ServerScriptManager.instance.wrapResourceManager(packType, list);
 	}
 }
