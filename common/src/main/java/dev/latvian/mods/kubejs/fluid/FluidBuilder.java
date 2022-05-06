@@ -48,8 +48,12 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 
 	@Override
 	public BuilderBase<FlowingFluid> displayName(String name) {
-		block.displayName(name);
-		bucketItem.displayName(name + " Bucket");
+		if (block != null) {
+			block.displayName(name);
+		}
+		if (bucketItem != null) {
+			bucketItem.displayName(name + " Bucket");
+		}
 		return super.displayName(name);
 	}
 
@@ -68,7 +72,7 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 			return this.attributes;
 		}
 
-		var attributes = new SimpleArchitecturyFluidAttributes(this.flowingFluid, this)
+		var attributes = SimpleArchitecturyFluidAttributes.of(this.flowingFluid, this)
 				.flowingTexture(flowingTexture)
 				.sourceTexture(stillTexture)
 				.color(color)
@@ -88,8 +92,12 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	@Override
 	public void createAdditionalObjects() {
 		RegistryObjectBuilderTypes.FLUID.addBuilder(flowingFluid);
-		RegistryObjectBuilderTypes.BLOCK.addBuilder(block);
-		RegistryObjectBuilderTypes.ITEM.addBuilder(bucketItem);
+		if(block != null) {
+			RegistryObjectBuilderTypes.BLOCK.addBuilder(block);
+		}
+		if(bucketItem != null) {
+			RegistryObjectBuilderTypes.ITEM.addBuilder(bucketItem);
+		}
 	}
 
 	public FluidBuilder color(Color c) {
@@ -153,6 +161,16 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 
 	public FluidBuilder rarity(Rarity rarity) {
 		this.rarity = rarity;
+		return this;
+	}
+
+	public FluidBuilder noBucket() {
+		bucketItem = null;
+		return this;
+	}
+
+	public FluidBuilder noBlock() {
+		block = null;
 		return this;
 	}
 }
