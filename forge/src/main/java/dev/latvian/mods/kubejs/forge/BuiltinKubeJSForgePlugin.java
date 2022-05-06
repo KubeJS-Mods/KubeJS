@@ -2,11 +2,11 @@ package dev.latvian.mods.kubejs.forge;
 
 import dev.latvian.mods.kubejs.BuiltinKubeJSPlugin;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.level.gen.forge.BiomeDictionaryWrapper;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.level.gen.forge.BiomeDictionaryWrapper;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.MinecraftForge;
@@ -53,7 +53,7 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 
 		try {
 			Class type = Class.forName(args[0].toString());
-            var handler = (KubeJSForgeEventHandlerWrapper) args[1];
+			var handler = (KubeJSForgeEventHandlerWrapper) args[1];
 			MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, type, handler);
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);

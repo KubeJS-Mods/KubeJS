@@ -30,10 +30,10 @@ import java.util.Map;
 
 public final class RegistryObjectBuilderTypes<T> {
 	public interface BuilderFactory<T> {
-		BuilderBase<T> createBuilder(ResourceLocation id);
+		BuilderBase<? extends T> createBuilder(ResourceLocation id);
 	}
 
-	public record BuilderType<T>(String type, Class<? extends BuilderBase<T>> builderClass, BuilderFactory<T> factory) {
+	public record BuilderType<T>(String type, Class<? extends BuilderBase<? extends T>> builderClass, BuilderFactory<T> factory) {
 	}
 
 	public static class RegistryEventJS<T> extends StartupEventJS {
@@ -43,7 +43,7 @@ public final class RegistryObjectBuilderTypes<T> {
 			registry = r;
 		}
 
-		public BuilderBase<T> create(String id, String type) {
+		public BuilderBase<? extends T> create(String id, String type) {
 			var t = registry.types.get(type);
 
 			if (t == null) {
@@ -61,7 +61,7 @@ public final class RegistryObjectBuilderTypes<T> {
 			return b;
 		}
 
-		public BuilderBase<T> create(String id) {
+		public BuilderBase<? extends T> create(String id) {
 			var t = registry.getDefaultType();
 
 			if (t == null) {
@@ -94,9 +94,10 @@ public final class RegistryObjectBuilderTypes<T> {
 	}
 
 	public static final RegistryObjectBuilderTypes<SoundEvent> SOUND_EVENT = add(Registry.SOUND_EVENT_REGISTRY, SoundEvent.class);
+	// before blocks because FluidBlock needs the fluid to exist first on Fabric
+	public static final RegistryObjectBuilderTypes<Fluid> FLUID = add(Registry.FLUID_REGISTRY, Fluid.class);
 	public static final RegistryObjectBuilderTypes<Block> BLOCK = add(Registry.BLOCK_REGISTRY, Block.class);
 	public static final RegistryObjectBuilderTypes<Item> ITEM = add(Registry.ITEM_REGISTRY, Item.class);
-	public static final RegistryObjectBuilderTypes<Fluid> FLUID = add(Registry.FLUID_REGISTRY, Fluid.class);
 	public static final RegistryObjectBuilderTypes<Enchantment> ENCHANTMENT = add(Registry.ENCHANTMENT_REGISTRY, Enchantment.class);
 	public static final RegistryObjectBuilderTypes<MobEffect> MOB_EFFECT = add(Registry.MOB_EFFECT_REGISTRY, MobEffect.class);
 	public static final RegistryObjectBuilderTypes<EntityType<?>> ENTITY_TYPE = add(Registry.ENTITY_TYPE_REGISTRY, EntityType.class);
@@ -113,9 +114,9 @@ public final class RegistryObjectBuilderTypes<T> {
 	public final Class<T> objectBaseClass;
 	public final DeferredRegister<T> deferredRegister;
 	public final Map<String, BuilderType<T>> types;
-	public final Map<ResourceLocation, BuilderBase<T>> objects;
+	public final Map<ResourceLocation, BuilderBase<? extends T>> objects;
 	private BuilderType<T> defaultType;
-	public BuilderBase<T> current;
+	public BuilderBase<? extends T> current;
 	public boolean bypassServerOnly;
 
 	private RegistryObjectBuilderTypes(ResourceKey<Registry<T>> key, Class<T> baseClass) {
@@ -133,7 +134,7 @@ public final class RegistryObjectBuilderTypes<T> {
 		return this;
 	}
 
-	public void addType(String type, Class<? extends BuilderBase<T>> builderType, BuilderFactory<T> factory, boolean isDefault) {
+	public void addType(String type, Class<? extends BuilderBase<? extends T>> builderType, BuilderFactory<T> factory, boolean isDefault) {
 		var b = new BuilderType<>(type, builderType, factory);
 		types.put(type, b);
 
@@ -146,11 +147,11 @@ public final class RegistryObjectBuilderTypes<T> {
 		}
 	}
 
-	public void addType(String type, Class<? extends BuilderBase<T>> builderType, BuilderFactory<T> factory) {
+	public void addType(String type, Class<? extends BuilderBase<? extends T>> builderType, BuilderFactory<T> factory) {
 		addType(type, builderType, factory, type.equals("basic"));
 	}
 
-	public void addBuilder(BuilderBase<T> builder) {
+	public void addBuilder(BuilderBase<? extends T> builder) {
 		if (builder == null) {
 			throw new IllegalArgumentException("Can't add null builder in registry '" + registryKey.location() + "'!");
 		}
@@ -207,7 +208,7 @@ public final class RegistryObjectBuilderTypes<T> {
 	}
 
 	@Nullable
-	public BuilderBase<T> getCurrent() {
+	public BuilderBase<? extends T> getCurrent() {
 		return current;
 	}
 }

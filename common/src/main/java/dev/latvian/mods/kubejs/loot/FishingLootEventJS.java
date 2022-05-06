@@ -25,8 +25,8 @@ public class FishingLootEventJS extends LootEventJS {
 	}
 
 	public void addFishing(ResourceLocation id, Consumer<LootBuilder> b) {
-        var builder = createLootBuilder(null, b);
-        var json = builder.toJson();
+		var builder = createLootBuilder(null, b);
+		var json = builder.toJson();
 		addJson(builder.customId == null ? id : builder.customId, json);
 	}
 }

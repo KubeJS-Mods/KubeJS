@@ -13,7 +13,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class BasicMobEffect extends MobEffect {

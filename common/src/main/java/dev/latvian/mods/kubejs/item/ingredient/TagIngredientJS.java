@@ -74,7 +74,7 @@ public class TagIngredientJS implements IngredientJS {
 
 	@Override
 	public boolean testVanilla(ItemStack stack) {
-		if(stack.isEmpty()) {
+		if (stack.isEmpty()) {
 			return false;
 		}
 		return context.areTagsBound() ? stack.is(tag) : getHolders().contains(stack.getItem().builtInRegistryHolder());
@@ -82,7 +82,7 @@ public class TagIngredientJS implements IngredientJS {
 
 	@Override
 	public boolean testVanillaItem(Item item) {
-		if(item == Items.AIR) {
+		if (item == Items.AIR) {
 			return false;
 		}
 		var holder = item.builtInRegistryHolder();

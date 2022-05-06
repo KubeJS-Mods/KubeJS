@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ReloadableServerResourcesMixin {
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void init(RegistryAccess.Frozen frozen, Commands.CommandSelection commandSelection, int i, CallbackInfo ci) {
-		ServerScriptManager.instance = new ServerScriptManager();
 		ServerScriptManager.instance.updateResources((ReloadableServerResources) (Object) this);
 	}
 

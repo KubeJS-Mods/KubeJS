@@ -43,7 +43,7 @@ public class RemoveJEICategoriesEvent extends EventJS {
 	public Collection<ResourceLocation> getCategoryIds() {
 		Set<ResourceLocation> set = new HashSet<>();
 		for (var allCategory : allCategories) {
-            var uid = allCategory.getUid();
+			var uid = allCategory.getUid();
 			set.add(uid);
 		}
 		return set;

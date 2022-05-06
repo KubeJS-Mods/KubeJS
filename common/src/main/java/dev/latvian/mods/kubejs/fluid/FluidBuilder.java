@@ -1,17 +1,25 @@
 package dev.latvian.mods.kubejs.fluid;
 
+import dev.architectury.core.fluid.ArchitecturyFlowingFluid;
+import dev.architectury.core.fluid.ArchitecturyFluidAttributes;
+import dev.architectury.core.fluid.SimpleArchitecturyFluidAttributes;
 import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
+
+import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
  */
-public class FluidBuilder extends BuilderBase<Fluid> {
+public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	public transient ResourceLocation stillTexture;
 	public transient ResourceLocation flowingTexture;
 	public transient int color = 0xFFFFFFFF;
@@ -22,7 +30,7 @@ public class FluidBuilder extends BuilderBase<Fluid> {
 	public transient int viscosity = 1000;
 	public transient boolean isGaseous;
 	public transient Rarity rarity = Rarity.COMMON;
-	public Object extraPlatformInfo;
+	public ArchitecturyFluidAttributes attributes;
 
 	public FlowingFluidBuilder flowingFluid;
 	public FluidBlockBuilder block;
@@ -39,9 +47,13 @@ public class FluidBuilder extends BuilderBase<Fluid> {
 	}
 
 	@Override
-	public BuilderBase<Fluid> displayName(String name) {
-		block.displayName(name);
-		bucketItem.displayName(name + " Bucket");
+	public BuilderBase<FlowingFluid> displayName(String name) {
+		if (block != null) {
+			block.displayName(name);
+		}
+		if (bucketItem != null) {
+			bucketItem.displayName(name + " Bucket");
+		}
 		return super.displayName(name);
 	}
 
@@ -51,15 +63,41 @@ public class FluidBuilder extends BuilderBase<Fluid> {
 	}
 
 	@Override
-	public Fluid createObject() {
-		return FluidPlatformHelper.buildFluid(true, this);
+	public FlowingFluid createObject() {
+		return new ArchitecturyFlowingFluid.Source(createAttributes());
+	}
+
+	public ArchitecturyFluidAttributes createAttributes() {
+		if (this.attributes != null) {
+			return this.attributes;
+		}
+
+		var attributes = SimpleArchitecturyFluidAttributes.of(this.flowingFluid, this)
+				.flowingTexture(flowingTexture)
+				.sourceTexture(stillTexture)
+				.color(color)
+				.rarity(rarity)
+				.density(density)
+				.viscosity(viscosity)
+				.luminosity(luminosity)
+				.temperature(temperature)
+				.lighterThanAir(isGaseous)
+				.bucketItem(() -> Optional.ofNullable(bucketItem).map(Supplier::get))
+				.block(() -> Optional.ofNullable(block).map(Supplier::get).map(UtilsJS::cast));
+
+		this.attributes = attributes;
+		return attributes;
 	}
 
 	@Override
 	public void createAdditionalObjects() {
 		RegistryObjectBuilderTypes.FLUID.addBuilder(flowingFluid);
-		RegistryObjectBuilderTypes.BLOCK.addBuilder(block);
-		RegistryObjectBuilderTypes.ITEM.addBuilder(bucketItem);
+		if(block != null) {
+			RegistryObjectBuilderTypes.BLOCK.addBuilder(block);
+		}
+		if(bucketItem != null) {
+			RegistryObjectBuilderTypes.ITEM.addBuilder(bucketItem);
+		}
 	}
 
 	public FluidBuilder color(Color c) {
@@ -123,6 +161,16 @@ public class FluidBuilder extends BuilderBase<Fluid> {
 
 	public FluidBuilder rarity(Rarity rarity) {
 		this.rarity = rarity;
+		return this;
+	}
+
+	public FluidBuilder noBucket() {
+		bucketItem = null;
+		return this;
+	}
+
+	public FluidBuilder noBlock() {
+		block = null;
 		return this;
 	}
 }
