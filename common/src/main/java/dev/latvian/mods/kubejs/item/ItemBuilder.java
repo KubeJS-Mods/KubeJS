@@ -61,6 +61,18 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		}
 	}
 
+	public static ArmorMaterial ofArmorMaterial(Object o) {
+		String asString = String.valueOf(o);
+
+		ArmorMaterial armorMaterial = ItemBuilder.ARMOR_TIERS.get(asString);
+		if (armorMaterial != null) {
+			return armorMaterial;
+		}
+
+		String withKube = KubeJS.appendModId(asString);
+		return ItemBuilder.ARMOR_TIERS.getOrDefault(withKube, ArmorMaterials.IRON);
+	}
+
 	public transient int maxStackSize;
 	public transient int maxDamage;
 	public transient int burnTime;
