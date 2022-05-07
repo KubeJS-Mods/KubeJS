@@ -104,8 +104,9 @@ if (ENV.CURSEFORGE_KEY) {
 			mainArtifact(remapJar.archivePath)
 			relations {
 				requiredDependency 'rhino'
-				requiredDependency 'architectury-fabric'
 				requiredDependency 'fabric-api'
+				requiredDependency 'architectury-api'
+				optionalDependency 'roughly-enough-items'
 			}
 			changelog = getGitChangelog
 			changelogType = 'markdown'
