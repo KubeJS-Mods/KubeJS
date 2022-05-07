@@ -23,9 +23,11 @@ import org.jetbrains.annotations.Nullable;
 import java.nio.file.Files;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -44,24 +46,24 @@ public class TagEventJS<T> extends EventJS {
 	}
 
 	@Nullable
-	private static List<Predicate<String>> parsePriorityList(@Nullable Object o) {
+	private static List<Predicate<ResourceLocation>> parsePriorityList(@Nullable Object o) {
 		if (o == null) {
 			return null;
 		}
 
-		List<Predicate<String>> list = new ArrayList<>();
+		List<Predicate<ResourceLocation>> list = new ArrayList<>();
 
 		for (var o1 : ListJS.orSelf(o)) {
 			var s = String.valueOf(o1);
 
 			if (s.startsWith("@")) {
 				var m = s.substring(1);
-				list.add(id -> id.startsWith(m));
+				list.add(id -> id.getNamespace().equals(m));
 			} else if (s.startsWith("!@")) {
 				var m = s.substring(2);
-				list.add(id -> !id.startsWith(m));
+				list.add(id -> !id.getNamespace().equals(m));
 			} else {
-				list.add(id -> id.equals(s));
+				list.add(id -> id.equals(UtilsJS.getMCID(s)));
 			}
 		}
 
@@ -73,7 +75,7 @@ public class TagEventJS<T> extends EventJS {
 		private final ResourceLocation id;
 		private final Tag.Builder builder;
 		private final List<Tag.BuilderEntry> proxyList;
-		private List<Predicate<String>> priorityList;
+		private List<Predicate<ResourceLocation>> priorityList;
 
 		private TagWrapper(TagEventJS<T> e, ResourceLocation i, Tag.Builder t) {
 			event = e;
@@ -193,21 +195,33 @@ public class TagEventJS<T> extends EventJS {
 			return this;
 		}
 
+		public Collection<ResourceLocation> getAllItemIds() {
+			var set = new LinkedHashSet<ResourceLocation>();
+			for (var proxy : proxyList) {
+				gatherItemIds(set, proxy.entry());
+			}
+			return set;
+		}
+
 		public void setPriorityList(@Nullable Object o) {
 			priorityList = parsePriorityList(o);
 		}
 
-		private void gatherAllItemIDs(HashSet<String> set, Tag.Entry entry) {
-			// FIXME: use AW? or maybe we could do something better
-			if (entry instanceof Tag.ElementEntry) {
-				set.add(entry.toString());
-			} else if (entry instanceof Tag.TagEntry) {
-				var w = event.tags.get(new ResourceLocation(entry.toString().substring(1)));
-
+		private void gatherItemIds(Collection<ResourceLocation> collection, Tag.Entry entry) {
+			var id = getIdOfEntry(entry);
+			if (id.startsWith("#")) {
+				// tag entry, recurse
+				var w = event.tags.get(new ResourceLocation(id.substring(1)));
 				if (w != null && w != this) {
 					for (var proxy : w.proxyList) {
-						gatherAllItemIDs(set, proxy.entry());
+						gatherItemIds(collection, proxy.entry());
 					}
+				}
+			} else {
+				// verify that the entry is actually contained in the registry
+				var entryId = new ResourceLocation(id);
+				if (event.registry.containsKey(entryId)) {
+					collection.add(entryId);
 				}
 			}
 		}
@@ -245,8 +259,8 @@ public class TagEventJS<T> extends EventJS {
 			for (var proxy : proxyList) {
 				var added = false;
 
-				var set = new HashSet<String>();
-				gatherAllItemIDs(set, proxy.entry());
+				var set = new HashSet<ResourceLocation>();
+				gatherItemIds(set, proxy.entry());
 
 				for (var id : set) {
 					for (var i = 0; i < priorityList.size(); i++) {
@@ -289,7 +303,7 @@ public class TagEventJS<T> extends EventJS {
 	private Map<ResourceLocation, TagWrapper<T>> tags;
 	private int addedCount;
 	private int removedCount;
-	private List<Predicate<String>> globalPriorityList;
+	private List<Predicate<ResourceLocation>> globalPriorityList;
 
 	public TagEventJS(String t, Map<ResourceLocation, Tag.Builder> m, Registry<T> r) {
 		type = t;
