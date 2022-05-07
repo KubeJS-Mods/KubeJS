@@ -281,7 +281,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	public interface ItemColorJS {
-		Object getColor(ItemStackJS itemStack, int tintIndex);
+		Color getColor(ItemStackJS itemStack, int tintIndex);
 	}
 
 	public static class MappedItemColor implements ItemColor {
@@ -310,8 +310,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 		@Override
 		public int getColor(ItemStack itemStack, int tintIndex) {
-			Object color = colorCallback.getColor(new ItemStackJS(itemStack), tintIndex);
-			return ColorWrapper.of(color).getRgbKJS();
+			return colorCallback.getColor(new ItemStackJS(itemStack), tintIndex).getRgbKJS();
 		}
 	}
 }
