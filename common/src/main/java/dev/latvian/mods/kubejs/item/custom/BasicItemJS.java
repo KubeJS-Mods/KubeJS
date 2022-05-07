@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.item.custom;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import dev.architectury.registry.fuel.FuelRegistry;
 import dev.latvian.mods.kubejs.KubeJSRegistries;

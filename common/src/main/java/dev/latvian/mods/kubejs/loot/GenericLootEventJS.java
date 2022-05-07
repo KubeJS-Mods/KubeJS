@@ -25,8 +25,8 @@ public class GenericLootEventJS extends LootEventJS {
 	}
 
 	public void addGeneric(ResourceLocation id, Consumer<LootBuilder> b) {
-        var builder = createLootBuilder(null, b);
-        var json = builder.toJson();
+		var builder = createLootBuilder(null, b);
+		var json = builder.toJson();
 		addJson(builder.customId == null ? id : builder.customId, json);
 	}
 }

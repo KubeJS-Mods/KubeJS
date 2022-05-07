@@ -35,7 +35,7 @@ public class HideJEIEventJS<T> extends EventJS {
 	}
 
 	public void hide(Object o) {
-        var p = function.apply(o);
+		var p = function.apply(o);
 
 		for (var value : allIngredients) {
 			if (p.test(value)) {

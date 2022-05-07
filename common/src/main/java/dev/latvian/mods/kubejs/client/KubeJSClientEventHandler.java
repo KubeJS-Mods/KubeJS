@@ -9,6 +9,7 @@ import dev.architectury.event.events.client.ClientTextureStitchEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import dev.architectury.hooks.client.screen.ScreenAccess;
+import dev.architectury.hooks.fluid.FluidBucketHooks;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
@@ -16,7 +17,6 @@ import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenPaintEventJS;
 import dev.latvian.mods.kubejs.client.painter.world.WorldPaintEventJS;
 import dev.latvian.mods.kubejs.core.ImageButtonKJS;
-import dev.latvian.mods.kubejs.fluid.FluidPlatformHelper;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
 import dev.latvian.mods.kubejs.level.ClientLevelJS;
@@ -33,6 +33,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -108,10 +109,12 @@ public class KubeJSClientEventHandler {
 				Tags.byBlock(item.getBlock()).forEach(addToTempTags);
 			}
 
-			Fluid fluid = FluidPlatformHelper.getActualContainedFluid(stack.getItem());
+			if (stack.getItem() instanceof BucketItem bucket) {
+				Fluid fluid = FluidBucketHooks.getFluid(bucket);
 
-			if (fluid != Fluids.EMPTY) {
-				Tags.byFluid(fluid).forEach(addToTempTags);
+				if (fluid != Fluids.EMPTY) {
+					Tags.byFluid(fluid).forEach(addToTempTags);
+				}
 			}
 
 			if (stack.getItem() instanceof SpawnEggItem item) {

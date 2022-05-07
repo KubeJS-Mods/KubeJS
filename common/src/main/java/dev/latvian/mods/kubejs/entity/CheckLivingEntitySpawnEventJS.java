@@ -5,9 +5,7 @@ import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * @author LatvianModder

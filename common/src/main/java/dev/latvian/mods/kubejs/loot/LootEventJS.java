@@ -32,14 +32,14 @@ public abstract class LootEventJS extends EventJS {
 	public abstract String getDirectory();
 
 	LootBuilder createLootBuilder(@Nullable ResourceLocation id, Consumer<LootBuilder> consumer) {
-        var builder = new LootBuilder(id == null ? null : lootMap.get(id));
+		var builder = new LootBuilder(id == null ? null : lootMap.get(id));
 		builder.type = getType();
 		consumer.accept(builder);
 		return builder;
 	}
 
 	public void modify(ResourceLocation id, Consumer<LootBuilder> b) {
-        var builder = createLootBuilder(getDirectory().isEmpty() ? id : new ResourceLocation(id.getNamespace(), getDirectory() + "/" + id.getPath()), b);
+		var builder = createLootBuilder(getDirectory().isEmpty() ? id : new ResourceLocation(id.getNamespace(), getDirectory() + "/" + id.getPath()), b);
 		addJson(id, builder.toJson());
 	}
 

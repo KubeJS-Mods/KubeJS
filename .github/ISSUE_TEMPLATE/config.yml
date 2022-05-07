@@ -1,8 +1,8 @@
 blank_issues_enabled: true
 contact_links:
- - name: Discord
-   url: https://discord.gg/bPFfH6P
-   about: Looking for general scripting help, or more examples? Ask in one of the support channels!
- - name: Wiki
-   url: https://mods.latvian.dev/books/kubejs
-   about: How to get started with KubeJS scripts and some examples!
+  - name: Discord
+    url: https://discord.gg/bPFfH6P
+    about: Looking for general scripting help, or more examples? Ask in one of the support channels!
+  - name: Wiki
+    url: https://mods.latvian.dev/books/kubejs
+    about: How to get started with KubeJS scripts and some examples!

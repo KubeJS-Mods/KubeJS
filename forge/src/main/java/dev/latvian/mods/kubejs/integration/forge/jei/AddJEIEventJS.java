@@ -31,7 +31,7 @@ public class AddJEIEventJS<T> extends EventJS {
 
 	public void add(Object o) {
 		for (var o1 : ListJS.orSelf(o)) {
-            var t = function.apply(o1);
+			var t = function.apply(o1);
 
 			if (t != null) {
 				added.add(t);
@@ -42,7 +42,7 @@ public class AddJEIEventJS<T> extends EventJS {
 	@Override
 	protected void afterPosted(boolean result) {
 		if (!added.isEmpty()) {
-            var items = added.stream().filter(isValid).collect(Collectors.toList());
+			var items = added.stream().filter(isValid).collect(Collectors.toList());
 			runtime.getIngredientManager().addIngredientsAtRuntime(type, items);
 		}
 	}

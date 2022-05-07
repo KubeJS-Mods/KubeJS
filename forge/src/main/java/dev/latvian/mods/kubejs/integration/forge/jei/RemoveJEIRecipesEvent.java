@@ -51,16 +51,16 @@ public class RemoveJEIRecipesEvent extends EventJS {
 
 	@Override
 	protected void afterPosted(boolean result) {
-        var rm = runtime.getRecipeManager();
+		var rm = runtime.getRecipeManager();
 		for (var cat : recipesRemoved.keySet()) {
 			try {
-                var category = rm.getRecipeCategory(cat, false);
+				var category = rm.getRecipeCategory(cat, false);
 				if (Recipe.class.isAssignableFrom(category.getRecipeClass())) {
 					for (var id : recipesRemoved.get(cat)) {
 						try {
-                            var found = false;
+							var found = false;
 							for (Object o : rm.getRecipes(category, Collections.emptyList(), false)) {
-                                var recipe = (Recipe<?>) o;
+								var recipe = (Recipe<?>) o;
 								if (id.equals(recipe.getId())) {
 									rm.hideRecipe(recipe, cat);
 									found = true;

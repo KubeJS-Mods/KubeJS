@@ -12,9 +12,11 @@ import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicateJS;
+import dev.latvian.mods.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
@@ -23,6 +25,7 @@ import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.Util;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.Recipe;
@@ -267,10 +270,23 @@ public class RecipeEventJS extends EventJS {
 		modifiedRecipesCount = new AtomicInteger(0);
 
 		ConsoleJS.SERVER.info("Found " + originalRecipes.size() + " recipes and " + fallbackedRecipes.size() + " failed recipes in " + timer.stop());
+
 		timer.reset().start();
+
+		TagIngredientJS.context = KubeJSReloadListener.resources.tagManager.getResult()
+				.stream()
+				.filter(result -> result.key() == Registry.ITEM_REGISTRY)
+				.findFirst()
+				.map(result -> TagIngredientJS.Context.usingResult(UtilsJS.cast(result)))
+				.orElseGet(() -> {
+					ConsoleJS.SERVER.warn("Failed to load item tags during recipe event! Using replaceInput etc. will not work!");
+					return TagIngredientJS.Context.EMPTY;
+				});
+
 		ConsoleJS.SERVER.setLineNumber(true);
 		post(ScriptType.SERVER, KubeJSEvents.RECIPES);
 		ConsoleJS.SERVER.setLineNumber(false);
+
 		ConsoleJS.SERVER.info("Posted recipe events in " + timer.stop());
 
 		var recipesByName = new HashMap<ResourceLocation, Recipe<?>>();

@@ -4,13 +4,13 @@ package dev.latvian.mods.kubejs;
  * @author LatvianModder
  */
 public interface KubeJSEvents {
-	String INIT = "init";
+	String INIT = "updateResources";
 	String POSTINIT = "postinit";
 	String LOADED = "loaded";
 	String COMMAND_REGISTRY = "command.registry";
 	String COMMAND_RUN = "command.run";
 
-	String CLIENT_INIT = "client.init";
+	String CLIENT_INIT = "client.updateResources";
 	String CLIENT_DEBUG_INFO_LEFT = "client.debug_info.left";
 	String CLIENT_DEBUG_INFO_RIGHT = "client.debug_info.right";
 	String CLIENT_LOGGED_IN = "client.logged_in";

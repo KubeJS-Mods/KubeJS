@@ -3,8 +3,8 @@ package dev.latvian.mods.kubejs.util;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
-import org.slf4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 import java.io.PrintStream;
 import java.lang.reflect.Method;

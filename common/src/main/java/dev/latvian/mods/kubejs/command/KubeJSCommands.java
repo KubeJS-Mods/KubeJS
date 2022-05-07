@@ -10,6 +10,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSEvents;
+import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.core.MinecraftServerKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.GroupIngredientJS;
@@ -17,6 +18,7 @@ import dev.latvian.mods.kubejs.item.ingredient.ModIngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.server.ServerSettings;
@@ -47,9 +49,13 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -112,6 +118,9 @@ public class KubeJSCommands {
 						.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
 						.executes(context -> export(context.getSource()))
 				)
+				.then(Commands.literal("export_virtual_data")
+						.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
+						.executes(context -> exportVirtualData(context.getSource())))
 				/*
 				.then(Commands.literal("output_recipes")
 						.executes(context -> outputRecipes(context.getSource().getPlayerOrException()))
@@ -186,6 +195,7 @@ public class KubeJSCommands {
 				.executes(context -> hand(context.getSource().getPlayerOrException(), InteractionHand.MAIN_HAND))
 		);
 	}
+
 
 	private static <T> ResourceKey<Registry<T>> registry(CommandContext<CommandSourceStack> ctx, String arg) {
 		return ResourceKey.createRegistryKey(ResourceLocationArgument.getId(ctx, arg));
@@ -345,6 +355,31 @@ public class KubeJSCommands {
 
 		ReloadCommand.reloadPacks(collection2, source);
 		return 1;
+	}
+
+	private static int exportVirtualData(CommandSourceStack source) {
+		return source.getServer().getResourceManager()
+				.listPacks()
+				.filter(pack -> pack instanceof VirtualKubeJSDataPack)
+				.map(pack -> (VirtualKubeJSDataPack) pack)
+				.mapToInt(pack -> {
+							var path = KubeJSPaths.EXPORTED.resolve(pack.getName() + ".zip");
+							try {
+								Files.deleteIfExists(path);
+								try (var fs = FileSystems.newFileSystem(path, Map.of("create", true))) {
+									pack.export(fs);
+								}
+								source.sendSuccess(new TextComponent("Successfully exported %s to %s".formatted(pack, path)).withStyle(ChatFormatting.GREEN), false);
+								return 1;
+							} catch (IOException e) {
+								e.printStackTrace();
+								source.sendFailure(new TextComponent("Failed to export %s!".formatted(pack)).withStyle(style ->
+										style.withColor(ChatFormatting.RED)
+												.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent(e.getMessage())))));
+								return 0;
+							}
+						}
+				).sum();
 	}
 
 	private static int outputRecipes(ServerPlayer player) {

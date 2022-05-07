@@ -35,10 +35,10 @@ public class PlayerMainInvWrapper extends RangedWrapper {
 	@Override
 	@NotNull
 	public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-        var rest = super.insertItem(slot, stack, simulate);
+		var rest = super.insertItem(slot, stack, simulate);
 		if (rest.getCount() != stack.getCount()) {
 			// the stack in the slot changed, animate it
-            var inSlot = getStackInSlot(slot);
+			var inSlot = getStackInSlot(slot);
 			if (!inSlot.isEmpty()) {
 				if (getInventoryPlayer().player.level.isClientSide) {
 					inSlot.setPopTime(5);
