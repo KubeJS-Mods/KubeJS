@@ -19,21 +19,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.ArmorMaterials;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
@@ -65,6 +53,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient final List<Component> tooltip;
 	public transient CreativeModeTab group;
 	public transient Int2IntOpenHashMap color;
+	public JsonObject textureJson;
 	public String texture;
 	public String parentModel;
 	public transient FoodBuilder foodBuilder;
@@ -87,7 +76,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		group = KubeJS.tab;
 		color = new Int2IntOpenHashMap();
 		color.defaultReturnValue(0xFFFFFFFF);
-		texture = "";
+		textureJson = new JsonObject();
 		parentModel = "";
 		foodBuilder = null;
 		modelJson = null;
@@ -114,6 +103,11 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	@Override
 	public void generateAssetJsons(AssetJsonGenerator generator) {
+		if (modelJson != null) {
+			generator.json(AssetJsonGenerator.asItemModelLocation(id), modelJson);
+			return;
+		}
+
 		generator.itemModel(id, m -> {
 			if (!parentModel.isEmpty()) {
 				m.parent(parentModel);
@@ -121,7 +115,10 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 				m.parent("minecraft:item/generated");
 			}
 
-			m.texture("layer0", texture.isEmpty() ? newID("item/", "").toString() : texture);
+			if (textureJson.size() == 0) {
+				texture(newID("item/", "").toString());
+			}
+			m.textures(textureJson);
 		});
 	}
 
@@ -194,7 +191,22 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	public ItemBuilder texture(String tex) {
-		texture = tex;
+		textureJson.addProperty("layer0", tex);
+		return this;
+	}
+
+	public ItemBuilder texture(String key, String tex) {
+		textureJson.addProperty(key, tex);
+		return this;
+	}
+
+	public ItemBuilder textureJson(JsonObject json) {
+		textureJson = json;
+		return this;
+	}
+
+	public ItemBuilder modelJson(JsonObject json) {
+		modelJson = json;
 		return this;
 	}
 
