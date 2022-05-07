@@ -9,8 +9,11 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.core.ItemKJS;
+import dev.latvian.mods.kubejs.entity.LivingEntityJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
+import dev.latvian.mods.kubejs.level.LevelJS;
+import dev.latvian.mods.kubejs.player.PlayerJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -21,6 +24,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ArmorMaterials;
@@ -31,6 +36,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -48,6 +55,23 @@ import java.util.function.ToIntFunction;
  * @author LatvianModder
  */
 public abstract class ItemBuilder extends BuilderBase<Item> {
+
+	@FunctionalInterface
+	public interface UseCallback {
+		boolean use(LevelJS level, PlayerJS<?> player, InteractionHand interactionHand);
+	}
+
+	@FunctionalInterface
+	public interface FinishUsingCallback {
+		ItemStackJS finishUsingItem(ItemStackJS itemStack, LevelJS level, LivingEntityJS livingEntity);
+	}
+
+	@FunctionalInterface
+	public interface ReleaseUsingCallback {
+		void releaseUsing(ItemStackJS itemStack, LevelJS level, LivingEntityJS user, int tick);
+	}
+
+
 	public static final Map<String, Tier> TOOL_TIERS = new HashMap<>();
 	public static final Map<String, ArmorMaterial> ARMOR_TIERS = new HashMap<>();
 
@@ -92,6 +116,12 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient Function<ItemStackJS, Color> barColor;
 	public transient ToIntFunction<ItemStackJS> barWidth;
 	public transient Multimap<ResourceLocation, AttributeModifier> attributes;
+	public transient UseAnim anim;
+	public transient ToIntFunction<ItemStackJS> useDuration;
+	public transient UseCallback use;
+	public transient FinishUsingCallback finishUsing;
+	public transient ReleaseUsingCallback releaseUsing;
+
 
 	public JsonObject modelJson;
 
@@ -111,6 +141,11 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		foodBuilder = null;
 		modelJson = null;
 		attributes = ArrayListMultimap.create();
+		anim = null;
+		useDuration = null;
+		use = null;
+		finishUsing = null;
+		releaseUsing = null;
 	}
 
 	@Override
@@ -310,6 +345,30 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		attributes.put(attribute, new AttributeModifier(new UUID(identifier.hashCode(), identifier.hashCode()), identifier, d, operation));
 		return this;
 	}
+
+	public ItemBuilder useAnimation(UseAnim animation) {
+		this.anim = animation;
+		return this;
+	}
+
+	public ItemBuilder useDuration(ToIntFunction<ItemStackJS> useDuration) {
+		this.useDuration = useDuration;
+		return this;
+	}
+
+	public ItemBuilder use(UseCallback use) {
+		this.use = use;
+		return this;
+	}
+
+	public ItemBuilder finishUsing(FinishUsingCallback finishUsing) {
+		this.finishUsing = finishUsing;
+		return this;
+	}
+
+	public ItemBuilder releaseUsing(ReleaseUsingCallback releaseUsing) {
+		this.releaseUsing = releaseUsing;
+		return this;
 
 	public static class IndexedItemColor implements ItemColor {
 		Int2IntOpenHashMap colors = new Int2IntOpenHashMap();
