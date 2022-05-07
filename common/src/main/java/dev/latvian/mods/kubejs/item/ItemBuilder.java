@@ -11,20 +11,35 @@ import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
-import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.ArmorMaterials;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.Tiers;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
@@ -128,7 +143,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	@Override
 	@Environment(EnvType.CLIENT)
 	public void clientRegistry(Minecraft minecraft) {
-		if(colorCallback != null) {
+		if (colorCallback != null) {
 			ColorHandlerRegistry.registerItemColors(colorCallback, this);
 		}
 	}
@@ -178,7 +193,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	public ItemBuilder group(@Nullable String g) {
-		if(g == null) {
+		if (g == null) {
 			group = null;
 			return this;
 		}
@@ -194,15 +209,19 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	public ItemBuilder color(int index, Color c) {
-		if(!(colorCallback instanceof MappedItemColor)) {
-			colorCallback = new MappedItemColor();
+		if (!(colorCallback instanceof IndexedItemColor indexed)) {
+			if (colorCallback != null) {
+				ConsoleJS.STARTUP.warnf("Overwriting existing dynamic item color for {} with an indexed color", id);
+			}
+			colorCallback = Util.make(new IndexedItemColor(), col -> col.add(index, c));
+		} else {
+			indexed.add(index, c);
 		}
-		((MappedItemColor)colorCallback).add(index, c);
 		return this;
 	}
 
-	public ItemBuilder color(ItemColorJS callback) {
-		colorCallback = new DynamicItemColor(callback);
+	public ItemBuilder color(DynamicItemColor callback) {
+		colorCallback = callback;
 		return this;
 	}
 
@@ -250,10 +269,10 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public Item.Properties createItemProperties() {
 		var properties = new Item.Properties();
 
-		if(group != null) {
+		if (group != null) {
 			properties.tab(group);
 		}
-		
+
 		if (maxDamage > 0) {
 			properties.durability(maxDamage);
 		} else {
@@ -280,19 +299,15 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	public interface ItemColorJS {
-		Color getColor(ItemStackJS itemStack, int tintIndex);
-	}
-
-	public static class MappedItemColor implements ItemColor {
+	public static class IndexedItemColor implements ItemColor {
 		Int2IntOpenHashMap colors = new Int2IntOpenHashMap();
 
-		public MappedItemColor() {
+		public IndexedItemColor() {
 			colors.defaultReturnValue(0xFFFFFFFF);
 		}
 
 		@Override
-		public int getColor(ItemStack itemStack, int tintIndex) {
+		public int getColor(@NotNull ItemStack stack, int tintIndex) {
 			return colors.get(tintIndex);
 		}
 
@@ -301,16 +316,12 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		}
 	}
 
-	public static class DynamicItemColor implements ItemColor {
-		private final ItemColorJS colorCallback;
+	@FunctionalInterface
+	public interface DynamicItemColor extends ItemColor {
+		Color getColor(ItemStackJS stackJS, int tintIndex);
 
-		public DynamicItemColor(ItemColorJS colorCallback) {
-			this.colorCallback = colorCallback;
-		}
-
-		@Override
-		public int getColor(ItemStack itemStack, int tintIndex) {
-			return colorCallback.getColor(new ItemStackJS(itemStack), tintIndex).getRgbKJS();
+		default int getColor(@NotNull ItemStack stack, int tintIndex) {
+			return getColor(new ItemStackJS(stack), tintIndex).getRgbKJS();
 		}
 	}
 }
