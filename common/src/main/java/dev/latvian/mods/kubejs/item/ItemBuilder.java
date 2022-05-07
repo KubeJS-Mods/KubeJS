@@ -11,11 +11,14 @@ import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -23,11 +26,14 @@ import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -63,8 +69,11 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient Rarity rarity;
 	public transient boolean glow;
 	public transient final List<Component> tooltip;
+	@Nullable
 	public transient CreativeModeTab group;
-	public transient Int2IntOpenHashMap color;
+	@Nullable
+	public transient ItemColor colorCallback;
+	public JsonObject textureJson;
 	public String texture;
 	public String parentModel;
 	public transient FoodBuilder foodBuilder;
@@ -85,9 +94,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		glow = false;
 		tooltip = new ArrayList<>();
 		group = KubeJS.tab;
-		color = new Int2IntOpenHashMap();
-		color.defaultReturnValue(0xFFFFFFFF);
-		texture = "";
+		textureJson = new JsonObject();
 		parentModel = "";
 		foodBuilder = null;
 		modelJson = null;
@@ -114,6 +121,11 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	@Override
 	public void generateAssetJsons(AssetJsonGenerator generator) {
+		if (modelJson != null) {
+			generator.json(AssetJsonGenerator.asItemModelLocation(id), modelJson);
+			return;
+		}
+
 		generator.itemModel(id, m -> {
 			if (!parentModel.isEmpty()) {
 				m.parent(parentModel);
@@ -121,15 +133,18 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 				m.parent("minecraft:item/generated");
 			}
 
-			m.texture("layer0", texture.isEmpty() ? newID("item/", "").toString() : texture);
+			if (textureJson.size() == 0) {
+				texture(newID("item/", "").toString());
+			}
+			m.textures(textureJson);
 		});
 	}
 
 	@Override
 	@Environment(EnvType.CLIENT)
 	public void clientRegistry(Minecraft minecraft) {
-		if (!color.isEmpty()) {
-			ColorHandlerRegistry.registerItemColors((stack, index) -> color.get(index), this);
+		if (colorCallback != null) {
+			ColorHandlerRegistry.registerItemColors(colorCallback, this);
 		}
 	}
 
@@ -177,7 +192,12 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	public ItemBuilder group(String g) {
+	public ItemBuilder group(@Nullable String g) {
+		if (g == null) {
+			group = null;
+			return this;
+		}
+
 		for (var ig : CreativeModeTab.TABS) {
 			if (ig.getRecipeFolderName().equals(g)) {
 				group = ig;
@@ -189,12 +209,39 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	public ItemBuilder color(int index, Color c) {
-		color.put(index, c.getArgbKJS());
+		if (!(colorCallback instanceof IndexedItemColor indexed)) {
+			if (colorCallback != null) {
+				ConsoleJS.STARTUP.warnf("Overwriting existing dynamic item color for {} with an indexed color", id);
+			}
+			colorCallback = Util.make(new IndexedItemColor(), col -> col.add(index, c));
+		} else {
+			indexed.add(index, c);
+		}
+		return this;
+	}
+
+	public ItemBuilder color(DynamicItemColor callback) {
+		colorCallback = callback;
 		return this;
 	}
 
 	public ItemBuilder texture(String tex) {
-		texture = tex;
+		textureJson.addProperty("layer0", tex);
+		return this;
+	}
+
+	public ItemBuilder texture(String key, String tex) {
+		textureJson.addProperty(key, tex);
+		return this;
+	}
+
+	public ItemBuilder textureJson(JsonObject json) {
+		textureJson = json;
+		return this;
+	}
+
+	public ItemBuilder modelJson(JsonObject json) {
+		modelJson = json;
 		return this;
 	}
 
@@ -222,7 +269,9 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public Item.Properties createItemProperties() {
 		var properties = new Item.Properties();
 
-		properties.tab(group);
+		if (group != null) {
+			properties.tab(group);
+		}
 
 		if (maxDamage > 0) {
 			properties.durability(maxDamage);
@@ -248,5 +297,31 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public ItemBuilder modifyAttribute(ResourceLocation attribute, String identifier, double d, AttributeModifier.Operation operation) {
 		attributes.put(attribute, new AttributeModifier(new UUID(identifier.hashCode(), identifier.hashCode()), identifier, d, operation));
 		return this;
+	}
+
+	public static class IndexedItemColor implements ItemColor {
+		Int2IntOpenHashMap colors = new Int2IntOpenHashMap();
+
+		public IndexedItemColor() {
+			colors.defaultReturnValue(0xFFFFFFFF);
+		}
+
+		@Override
+		public int getColor(@NotNull ItemStack stack, int tintIndex) {
+			return colors.get(tintIndex);
+		}
+
+		public void add(int tintIndex, Color color) {
+			colors.put(tintIndex, color.getRgbKJS());
+		}
+	}
+
+	@FunctionalInterface
+	public interface DynamicItemColor extends ItemColor {
+		Color getColor(ItemStackJS stackJS, int tintIndex);
+
+		default int getColor(@NotNull ItemStack stack, int tintIndex) {
+			return getColor(new ItemStackJS(stack), tintIndex).getRgbKJS();
+		}
 	}
 }
