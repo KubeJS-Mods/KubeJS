@@ -56,13 +56,8 @@ public class TagIngredientJS implements IngredientJS {
 
 	public Collection<Holder<Item>> getHolders() {
 		if (cachedResult == null || cachedResult.context != context) {
-			if (context.areTagsBound()) {
-				// tags are bound, so we can use the result from the registry
-				cachedResult = new ContextualResult(context, Sets.newLinkedHashSet(Registry.ITEM.getTagOrEmpty(tag)));
-			} else {
-				// tags have not been bound yet, so we need to use the result from the tag loader
-				cachedResult = new ContextualResult(context, Sets.newLinkedHashSet(context.getTag(tag)));
-			}
+			// results are cached depending on the current tag context
+			cachedResult = new ContextualResult(context, Sets.newLinkedHashSet(context.getTag(tag)));
 		}
 		return cachedResult.holders();
 	}

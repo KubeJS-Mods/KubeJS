@@ -33,6 +33,10 @@ public class AssetJsonGenerator extends JsonGenerator {
 
 	public void itemModel(ResourceLocation id, Consumer<ModelGenerator> consumer) {
 		var gen = Util.make(new ModelGenerator(), consumer);
-		json(new ResourceLocation(id.getNamespace(), "models/item/" + id.getPath()), gen.toJson());
+		json(asItemModelLocation(id), gen.toJson());
+	}
+
+	public static ResourceLocation asItemModelLocation(ResourceLocation id) {
+		return new ResourceLocation(id.getNamespace(), "models/item/" + id.getPath());
 	}
 }
