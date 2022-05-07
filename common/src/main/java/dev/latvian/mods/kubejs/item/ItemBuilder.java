@@ -55,23 +55,6 @@ import java.util.function.ToIntFunction;
  * @author LatvianModder
  */
 public abstract class ItemBuilder extends BuilderBase<Item> {
-
-	@FunctionalInterface
-	public interface UseCallback {
-		boolean use(LevelJS level, PlayerJS<?> player, InteractionHand interactionHand);
-	}
-
-	@FunctionalInterface
-	public interface FinishUsingCallback {
-		ItemStackJS finishUsingItem(ItemStackJS itemStack, LevelJS level, LivingEntityJS livingEntity);
-	}
-
-	@FunctionalInterface
-	public interface ReleaseUsingCallback {
-		void releaseUsing(ItemStackJS itemStack, LevelJS level, LivingEntityJS user, int tick);
-	}
-
-
 	public static final Map<String, Tier> TOOL_TIERS = new HashMap<>();
 	public static final Map<String, ArmorMaterial> ARMOR_TIERS = new HashMap<>();
 
@@ -369,6 +352,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public ItemBuilder releaseUsing(ReleaseUsingCallback releaseUsing) {
 		this.releaseUsing = releaseUsing;
 		return this;
+	}
 
 	public static class IndexedItemColor implements ItemColor {
 		Int2IntOpenHashMap colors = new Int2IntOpenHashMap();
@@ -394,5 +378,20 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		default int getColor(@NotNull ItemStack stack, int tintIndex) {
 			return getColor(new ItemStackJS(stack), tintIndex).getRgbKJS();
 		}
+	}
+
+	@FunctionalInterface
+	public interface UseCallback {
+		boolean use(LevelJS level, PlayerJS<?> player, InteractionHand interactionHand);
+	}
+
+	@FunctionalInterface
+	public interface FinishUsingCallback {
+		ItemStackJS finishUsingItem(ItemStackJS itemStack, LevelJS level, LivingEntityJS livingEntity);
+	}
+
+	@FunctionalInterface
+	public interface ReleaseUsingCallback {
+		void releaseUsing(ItemStackJS itemStack, LevelJS level, LivingEntityJS user, int tick);
 	}
 }
