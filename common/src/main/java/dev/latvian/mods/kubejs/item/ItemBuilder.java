@@ -25,7 +25,6 @@ import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ArmorMaterials;
@@ -37,7 +36,6 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.UseAnim;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -92,9 +90,6 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient CreativeModeTab group;
 	@Nullable
 	public transient ItemColor colorCallback;
-	public JsonObject textureJson;
-	public String texture;
-	public String parentModel;
 	public transient FoodBuilder foodBuilder;
 	public transient Function<ItemStackJS, Color> barColor;
 	public transient ToIntFunction<ItemStackJS> barWidth;
@@ -105,7 +100,9 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient FinishUsingCallback finishUsing;
 	public transient ReleaseUsingCallback releaseUsing;
 
-
+	public String texture;
+	public String parentModel;
+	public JsonObject textureJson;
 	public JsonObject modelJson;
 
 	public ItemBuilder(ResourceLocation i) {

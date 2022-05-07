@@ -70,15 +70,13 @@ public class TagEventJS<T> extends EventJS {
 		return list.isEmpty() ? null : list;
 	}
 
-	public static class TagWrapper<T> {
-		private final TagEventJS<T> event;
+	public class TagWrapper {
 		private final ResourceLocation id;
 		private final Tag.Builder builder;
 		private final List<Tag.BuilderEntry> proxyList;
 		private List<Predicate<ResourceLocation>> priorityList;
 
-		private TagWrapper(TagEventJS<T> e, ResourceLocation i, Tag.Builder t) {
-			event = e;
+		private TagWrapper(ResourceLocation i, Tag.Builder t) {
 			id = i;
 			builder = t;
 			proxyList = ((TagBuilderKJS) builder).getProxyListKJS();
@@ -87,14 +85,14 @@ public class TagEventJS<T> extends EventJS {
 
 		@Override
 		public String toString() {
-			return "<%s / %s>".formatted(event.type, id);
+			return "<%s / %s>".formatted(type, id);
 		}
 
-		public TagWrapper<T> add(String... ids) {
+		public TagWrapper add(String... ids) {
 			for (var stringId : ids) {
 				gatherTargets(stringId).ifLeft(wrapper -> {
 					builder.addTag(wrapper.id, KubeJS.MOD_ID);
-					event.addedCount += wrapper.proxyList.size();
+					totalAdded += wrapper.proxyList.size();
 
 					if (ConsoleJS.SERVER.shouldPrintDebug()) {
 						ConsoleJS.SERVER.debug("+ %s // #%s".formatted(this, wrapper.id));
@@ -107,7 +105,7 @@ public class TagEventJS<T> extends EventJS {
 						return;
 					}
 
-					event.addedCount += matches.size();
+					totalAdded += matches.size();
 					for (var holder : matches) {
 						var id = holder.key().location();
 						builder.addElement(id, KubeJS.MOD_ID);
@@ -126,20 +124,20 @@ public class TagEventJS<T> extends EventJS {
 			return this;
 		}
 
-		public TagWrapper<T> remove(String... ids) {
+		public TagWrapper remove(String... ids) {
 			for (var stringId : ids) {
 				gatherTargets(stringId).ifLeft(wrapper -> {
 					var entryId = wrapper.id.toString();
 					var originalSize = proxyList.size();
 					proxyList.removeIf(proxy -> getIdOfEntry(proxy.entry()).equals(entryId));
 
-					var removedCount = proxyList.size() - originalSize;
+					var removedCount = originalSize - proxyList.size();
 					if (removedCount == 0) {
 						if (ServerSettings.instance.logSkippedRecipes) {
 							ConsoleJS.SERVER.warn("- %s // #%s [No matches found!]".formatted(this, entryId));
 						}
 					} else {
-						event.removedCount -= removedCount;
+						totalRemoved += removedCount;
 
 						if (ConsoleJS.SERVER.shouldPrintDebug()) {
 							ConsoleJS.SERVER.debug("- " + this + " // " + entryId);
@@ -166,13 +164,13 @@ public class TagEventJS<T> extends EventJS {
 						}
 					}
 
-					var removedCount = proxyList.size() - originalSize;
+					var removedCount = originalSize - proxyList.size();
 					if (removedCount == 0) {
 						if (ServerSettings.instance.logSkippedRecipes) {
 							ConsoleJS.SERVER.warn("- %s // %s [No matches found!]".formatted(this, stringId));
 						}
 					} else {
-						event.removedCount -= removedCount;
+						totalRemoved += removedCount;
 					}
 				});
 			}
@@ -180,13 +178,13 @@ public class TagEventJS<T> extends EventJS {
 			return this;
 		}
 
-		public TagWrapper<T> removeAll() {
+		public TagWrapper removeAll() {
 			if (ConsoleJS.SERVER.shouldPrintDebug()) {
 				ConsoleJS.SERVER.debug("- " + this + " // (all)");
 			}
 
 			if (!proxyList.isEmpty()) {
-				event.removedCount += proxyList.size();
+				totalRemoved += proxyList.size();
 				proxyList.clear();
 			} else if (ServerSettings.instance.logSkippedRecipes) {
 				ConsoleJS.SERVER.warn("Tag " + this + " didn't contain any elements, skipped");
@@ -195,55 +193,35 @@ public class TagEventJS<T> extends EventJS {
 			return this;
 		}
 
-		public Collection<ResourceLocation> getAllItemIds() {
+		public Collection<ResourceLocation> getObjectIds() {
 			var set = new LinkedHashSet<ResourceLocation>();
 			for (var proxy : proxyList) {
-				gatherItemIds(set, proxy.entry());
+				gatherIdsFor(set, proxy.entry());
 			}
 			return set;
 		}
 
-		public void setPriorityList(@Nullable Object o) {
-			priorityList = parsePriorityList(o);
-		}
-
-		private void gatherItemIds(Collection<ResourceLocation> collection, Tag.Entry entry) {
+		private void gatherIdsFor(Collection<ResourceLocation> collection, Tag.Entry entry) {
 			var id = getIdOfEntry(entry);
 			if (id.startsWith("#")) {
 				// tag entry, recurse
-				var w = event.tags.get(new ResourceLocation(id.substring(1)));
+				var w = tags.get(new ResourceLocation(id.substring(1)));
 				if (w != null && w != this) {
 					for (var proxy : w.proxyList) {
-						gatherItemIds(collection, proxy.entry());
+						gatherIdsFor(collection, proxy.entry());
 					}
 				}
 			} else {
 				// verify that the entry is actually contained in the registry
 				var entryId = new ResourceLocation(id);
-				if (event.registry.containsKey(entryId)) {
+				if (registry.containsKey(entryId)) {
 					collection.add(entryId);
 				}
 			}
 		}
 
-		private Either<TagWrapper<T>, List<Holder.Reference<T>>> gatherTargets(String target) {
-			if (target.isEmpty()) {
-				return Either.right(List.of());
-			}
-			var suffix = target.substring(1);
-			return switch (target.charAt(0)) {
-				case '#' -> Either.left(event.get(new ResourceLocation(suffix)));
-				case '@' -> Either.right(ofKeySet(id -> id.location().getNamespace().equals(suffix)));
-				case '/' -> Either.right(ofKeySet(id -> UtilsJS.parseRegex(target).matcher(id.location().toString()).find()));
-				default -> {
-					var id = ResourceKey.create(event.registry.key(), new ResourceLocation(target));
-					yield UtilsJS.cast(Either.right(List.of(event.registry.getHolderOrThrow(id))));
-				}
-			};
-		}
-
-		private List<Holder.Reference<T>> ofKeySet(Predicate<ResourceKey<T>> predicate) {
-			return event.registry.holders().filter(ref -> ref.is(predicate)).toList();
+		public void setPriorityList(@Nullable Object o) {
+			priorityList = parsePriorityList(o);
 		}
 
 		/**
@@ -260,7 +238,7 @@ public class TagEventJS<T> extends EventJS {
 				var added = false;
 
 				var set = new HashSet<ResourceLocation>();
-				gatherItemIds(set, proxy.entry());
+				gatherIdsFor(set, proxy.entry());
 
 				for (var id : set) {
 					for (var i = 0; i < priorityList.size(); i++) {
@@ -300,17 +278,17 @@ public class TagEventJS<T> extends EventJS {
 	private final String type;
 	private final Map<ResourceLocation, Tag.Builder> map;
 	private final Registry<T> registry;
-	private Map<ResourceLocation, TagWrapper<T>> tags;
-	private int addedCount;
-	private int removedCount;
+	private Map<ResourceLocation, TagWrapper> tags;
+	private int totalAdded;
+	private int totalRemoved;
 	private List<Predicate<ResourceLocation>> globalPriorityList;
 
 	public TagEventJS(String t, Map<ResourceLocation, Tag.Builder> m, Registry<T> r) {
 		type = t;
 		map = m;
 		registry = r;
-		addedCount = 0;
-		removedCount = 0;
+		totalAdded = 0;
+		totalRemoved = 0;
 		globalPriorityList = null;
 	}
 
@@ -346,7 +324,7 @@ public class TagEventJS<T> extends EventJS {
 		tags = new HashMap<>();
 
 		for (var entry : map.entrySet()) {
-			var w = new TagWrapper<>(this, entry.getKey(), entry.getValue());
+			var w = new TagWrapper(entry.getKey(), entry.getValue());
 			tags.put(entry.getKey(), w);
 			ConsoleJS.SERVER.debug("%s/#%s; %d".formatted(type, entry.getKey(), w.proxyList.size()));
 		}
@@ -399,16 +377,16 @@ public class TagEventJS<T> extends EventJS {
 			}
 		}
 
-		if (addedCount > 0 || removedCount > 0 || ConsoleJS.SERVER.shouldPrintDebug()) {
-			ConsoleJS.SERVER.info("[" + type + "] Found " + tags.size() + " tags, added " + addedCount + " objects, removed " + removedCount + " objects"/*, reordered " + reordered + " tags"*/);
+		if (totalAdded > 0 || totalRemoved > 0 || ConsoleJS.SERVER.shouldPrintDebug()) {
+			ConsoleJS.SERVER.info("[" + type + "] Found " + tags.size() + " tags, added " + totalAdded + " objects, removed " + totalRemoved + " objects"/*, reordered " + reordered + " tags"*/);
 		}
 	}
 
-	public TagWrapper<T> get(ResourceLocation id) {
+	public TagWrapper get(ResourceLocation id) {
 		var t = tags.get(id);
 
 		if (t == null) {
-			t = new TagWrapper<>(this, id, Tag.Builder.tag());
+			t = new TagWrapper(id, Tag.Builder.tag());
 			tags.put(id, t);
 			map.put(id, t.builder);
 		}
@@ -416,15 +394,15 @@ public class TagEventJS<T> extends EventJS {
 		return t;
 	}
 
-	public TagWrapper<T> add(ResourceLocation tag, String... ids) {
+	public TagWrapper add(ResourceLocation tag, String... ids) {
 		return get(tag).add(ids);
 	}
 
-	public TagWrapper<T> remove(ResourceLocation tag, String... ids) {
+	public TagWrapper remove(ResourceLocation tag, String... ids) {
 		return get(tag).remove(ids);
 	}
 
-	public TagWrapper<T> removeAll(ResourceLocation tag) {
+	public TagWrapper removeAll(ResourceLocation tag) {
 		return get(tag).removeAll();
 	}
 
@@ -438,5 +416,25 @@ public class TagEventJS<T> extends EventJS {
 
 	public void setGlobalPriorityList(@Nullable Object o) {
 		globalPriorityList = parsePriorityList(o);
+	}
+
+	private Either<TagWrapper, List<Holder.Reference<T>>> gatherTargets(String target) {
+		if (target.isEmpty()) {
+			return Either.right(List.of());
+		}
+		var suffix = target.substring(1);
+		return switch (target.charAt(0)) {
+			case '#' -> Either.left(get(new ResourceLocation(suffix)));
+			case '@' -> Either.right(ofKeySet(id -> id.location().getNamespace().equals(suffix)));
+			case '/' -> Either.right(ofKeySet(id -> UtilsJS.parseRegex(target).matcher(id.location().toString()).find()));
+			default -> {
+				var id = ResourceKey.create(registry.key(), new ResourceLocation(target));
+				yield UtilsJS.cast(Either.right(List.of(registry.getHolderOrThrow(id))));
+			}
+		};
+	}
+
+	private List<Holder.Reference<T>> ofKeySet(Predicate<ResourceKey<T>> predicate) {
+		return registry.holders().filter(ref -> ref.is(predicate)).toList();
 	}
 }
