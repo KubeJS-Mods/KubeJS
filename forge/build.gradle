@@ -121,7 +121,8 @@ if (ENV.CURSEFORGE_KEY) {
 			mainArtifact(remapJar.archivePath)
 			relations {
 				requiredDependency 'rhino'
-				requiredDependency 'architectury-forge'
+				requiredDependency 'architectury-api'
+				optionalDependency 'roughly-enough-items'
 				optionalDependency 'jei'
 			}
 			changelog = getGitChangelog
