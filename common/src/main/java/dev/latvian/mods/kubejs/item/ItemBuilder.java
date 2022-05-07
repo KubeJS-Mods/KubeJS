@@ -17,6 +17,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -56,8 +57,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	@Nullable
 	public transient CreativeModeTab group;
 	@Nullable
-	public transient ItemColorJS colorCallback;
-	public transient Int2IntOpenHashMap color;
+	public transient ItemColor colorCallback;
 	public JsonObject textureJson;
 	public String texture;
 	public String parentModel;
@@ -79,13 +79,10 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		glow = false;
 		tooltip = new ArrayList<>();
 		group = KubeJS.tab;
-		color = new Int2IntOpenHashMap();
-		color.defaultReturnValue(0xFFFFFFFF);
 		textureJson = new JsonObject();
 		parentModel = "";
 		foodBuilder = null;
 		modelJson = null;
-		colorCallback = null;
 		attributes = ArrayListMultimap.create();
 	}
 
@@ -131,15 +128,8 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	@Override
 	@Environment(EnvType.CLIENT)
 	public void clientRegistry(Minecraft minecraft) {
-		if (!color.isEmpty()) {
-			ColorHandlerRegistry.registerItemColors((stack, index) -> color.get(index), this);
-		}
-
 		if(colorCallback != null) {
-			ColorHandlerRegistry.registerItemColors((itemStack, tintIndex) -> {
-				Object color = colorCallback.getColor(new ItemStackJS(itemStack), tintIndex);
-				return ColorWrapper.of(color).getRgbKJS();
-			}, this);
+			ColorHandlerRegistry.registerItemColors(colorCallback, this);
 		}
 	}
 
@@ -204,12 +194,15 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	public ItemBuilder color(int index, Color c) {
-		color.put(index, c.getArgbKJS());
+		if(!(colorCallback instanceof MappedItemColor)) {
+			colorCallback = new MappedItemColor();
+		}
+		((MappedItemColor)colorCallback).add(index, c);
 		return this;
 	}
 
 	public ItemBuilder color(ItemColorJS callback) {
-		colorCallback = callback;
+		colorCallback = new DynamicItemColor(callback);
 		return this;
 	}
 
@@ -289,5 +282,36 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	public interface ItemColorJS {
 		Object getColor(ItemStackJS itemStack, int tintIndex);
+	}
+
+	public static class MappedItemColor implements ItemColor {
+		Int2IntOpenHashMap colors = new Int2IntOpenHashMap();
+
+		public MappedItemColor() {
+			colors.defaultReturnValue(0xFFFFFFFF);
+		}
+
+		@Override
+		public int getColor(ItemStack itemStack, int tintIndex) {
+			return colors.get(tintIndex);
+		}
+
+		public void add(int tintIndex, Color color) {
+			colors.put(tintIndex, color.getRgbKJS());
+		}
+	}
+
+	public static class DynamicItemColor implements ItemColor {
+		private final ItemColorJS colorCallback;
+
+		public DynamicItemColor(ItemColorJS colorCallback) {
+			this.colorCallback = colorCallback;
+		}
+
+		@Override
+		public int getColor(ItemStack itemStack, int tintIndex) {
+			Object color = colorCallback.getColor(new ItemStackJS(itemStack), tintIndex);
+			return ColorWrapper.of(color).getRgbKJS();
+		}
 	}
 }
