@@ -21,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.*;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -51,6 +52,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient Rarity rarity;
 	public transient boolean glow;
 	public transient final List<Component> tooltip;
+	@Nullable
 	public transient CreativeModeTab group;
 	public transient Int2IntOpenHashMap color;
 	public JsonObject textureJson;
@@ -174,7 +176,12 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	public ItemBuilder group(String g) {
+	public ItemBuilder group(@Nullable String g) {
+		if(g == null) {
+			group = null;
+			return this;
+		}
+
 		for (var ig : CreativeModeTab.TABS) {
 			if (ig.getRecipeFolderName().equals(g)) {
 				group = ig;
@@ -234,8 +241,10 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public Item.Properties createItemProperties() {
 		var properties = new Item.Properties();
 
-		properties.tab(group);
-
+		if(group != null) {
+			properties.tab(group);
+		}
+		
 		if (maxDamage > 0) {
 			properties.durability(maxDamage);
 		} else {
