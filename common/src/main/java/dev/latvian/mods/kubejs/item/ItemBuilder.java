@@ -12,6 +12,7 @@ import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.rhino.mod.util.color.Color;
+import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -54,6 +55,8 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient final List<Component> tooltip;
 	@Nullable
 	public transient CreativeModeTab group;
+	@Nullable
+	public transient ItemColorJS colorCallback;
 	public transient Int2IntOpenHashMap color;
 	public JsonObject textureJson;
 	public String texture;
@@ -82,6 +85,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		parentModel = "";
 		foodBuilder = null;
 		modelJson = null;
+		colorCallback = null;
 		attributes = ArrayListMultimap.create();
 	}
 
@@ -129,6 +133,13 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public void clientRegistry(Minecraft minecraft) {
 		if (!color.isEmpty()) {
 			ColorHandlerRegistry.registerItemColors((stack, index) -> color.get(index), this);
+		}
+
+		if(colorCallback != null) {
+			ColorHandlerRegistry.registerItemColors((itemStack, tintIndex) -> {
+				Object color = colorCallback.getColor(new ItemStackJS(itemStack), tintIndex);
+				return ColorWrapper.of(color).getRgbKJS();
+			}, this);
 		}
 	}
 
@@ -194,6 +205,11 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	public ItemBuilder color(int index, Color c) {
 		color.put(index, c.getArgbKJS());
+		return this;
+	}
+
+	public ItemBuilder color(ItemColorJS callback) {
+		colorCallback = callback;
 		return this;
 	}
 
@@ -269,5 +285,9 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public ItemBuilder modifyAttribute(ResourceLocation attribute, String identifier, double d, AttributeModifier.Operation operation) {
 		attributes.put(attribute, new AttributeModifier(new UUID(identifier.hashCode(), identifier.hashCode()), identifier, d, operation));
 		return this;
+	}
+
+	public interface ItemColorJS {
+		Object getColor(ItemStackJS itemStack, int tintIndex);
 	}
 }
