@@ -37,6 +37,7 @@ public class BasicMobEffect extends MobEffect {
 	private void applyAttributeModifications() {
 		if (!modified) {
 			modifierMap.forEach((r, m) -> attributeMap.put(KubeJSRegistries.attributes().get(r), m));
+			modified = true;
 		}
 	}
 
