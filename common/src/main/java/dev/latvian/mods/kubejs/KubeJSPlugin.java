@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.player.PlayerDataJS;
 import dev.latvian.mods.kubejs.recipe.RegisterRecipeHandlersEvent;
 import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
+import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.util.ClassFilter;
@@ -37,6 +38,9 @@ public class KubeJSPlugin {
 	}
 
 	public void addTypeWrappers(ScriptType type, TypeWrappers typeWrappers) {
+	}
+
+	public void addCustomJavaToJsWrappers(CustomJavaToJsWrappersEvent event) {
 	}
 
 	public void addRecipes(RegisterRecipeHandlersEvent event) {

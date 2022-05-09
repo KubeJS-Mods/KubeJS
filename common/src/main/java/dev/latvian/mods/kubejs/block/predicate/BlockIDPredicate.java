@@ -19,23 +19,21 @@ import java.util.Optional;
  * @author LatvianModder
  */
 public class BlockIDPredicate implements BlockPredicate {
-	private static class PropertyObject {
-		private Property<?> property;
-		private Object value;
-	}
+	public record PropertyObject(Property<?> property, Object value) {}
 
 	private final ResourceLocation id;
-	private Map<String, String> properties;
+	private final Map<String, String> properties;
 	private Block cachedBlock;
 	private List<PropertyObject> cachedProperties;
 
 	public BlockIDPredicate(ResourceLocation i) {
 		id = i;
+		properties = new HashMap<>();
 	}
 
 	@Override
 	public String toString() {
-		if (properties == null || properties.isEmpty()) {
+		if (properties.isEmpty()) {
 			return id.toString();
 		}
 
@@ -61,10 +59,6 @@ public class BlockIDPredicate implements BlockPredicate {
 	}
 
 	public BlockIDPredicate with(String key, String value) {
-		if (properties == null) {
-			properties = new HashMap<>();
-		}
-
 		properties.put(key, value);
 		cachedBlock = null;
 		cachedProperties = null;
@@ -100,9 +94,7 @@ public class BlockIDPredicate implements BlockPredicate {
 					Optional<?> o = property.getValue(entry.getValue());
 
 					if (o.isPresent()) {
-						var po = new PropertyObject();
-						po.property = property;
-						po.value = o.get();
+						var po = new PropertyObject(property, o.get());
 						cachedProperties.add(po);
 					}
 				}
@@ -132,7 +124,7 @@ public class BlockIDPredicate implements BlockPredicate {
 			return false;
 		}
 
-		if (properties == null || properties.isEmpty()) {
+		if (properties.isEmpty()) {
 			return true;
 		}
 

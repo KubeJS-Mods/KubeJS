@@ -84,6 +84,7 @@ import dev.latvian.mods.kubejs.recipe.mod.MalumSpiritFocusingRecipeJS;
 import dev.latvian.mods.kubejs.recipe.mod.ShapedArtisanRecipeJS;
 import dev.latvian.mods.kubejs.recipe.mod.ShapelessArtisanRecipeJS;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
+import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerSettings;
@@ -95,7 +96,9 @@ import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTIOWrapper;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.mod.util.NBTWrapper;
+import dev.latvian.mods.rhino.mod.util.CollectionTagWrapper;
+import dev.latvian.mods.rhino.mod.util.CompoundTagWrapper;
+import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.wrapper.AABBWrapper;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
@@ -110,6 +113,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
@@ -120,7 +124,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -302,7 +305,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("Block", BlockWrapper.class);
 		event.add("Item", ItemWrapper.class);
 		event.add("Ingredient", IngredientWrapper.class);
-		event.add("NBT", NBTWrapper.class);
+		event.add("NBT", NBTUtils.class);
 		event.add("NBTIO", NBTIOWrapper.class);
 		event.add("Direction", DirectionWrapper.class);
 		event.add("Facing", DirectionWrapper.class);
@@ -382,9 +385,10 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		typeWrappers.register(ResourceLocation.class, UtilsJS::getMCID);
 		typeWrappers.register(ItemStack.class, o -> ItemStackJS.of(o).getItemStack());
-		typeWrappers.register(CompoundTag.class, MapJS::isNbt, MapJS::nbt);
-		typeWrappers.register(CollectionTag.class, ListJS::nbt);
-		typeWrappers.register(ListTag.class, o -> (ListTag) ListJS.nbt(o));
+		typeWrappers.register(CompoundTag.class, NBTUtils::isTagCompound, NBTUtils::toTagCompound);
+		typeWrappers.register(CollectionTag.class, NBTUtils::isTagCollection, NBTUtils::toTagCollection);
+		typeWrappers.register(ListTag.class, NBTUtils::isTagCollection, NBTUtils::toTagList);
+		typeWrappers.register(Tag.class, NBTUtils::toTag);
 		typeWrappers.register(Component.class, Text::componentOf);
 		typeWrappers.register(MutableComponent.class, o -> new TextComponent("").append(Text.componentOf(o)));
 
@@ -454,6 +458,12 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(ArmorMaterial.class, ItemBuilder::ofArmorMaterial);
 
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
+	}
+
+	@Override
+	public void addCustomJavaToJsWrappers(CustomJavaToJsWrappersEvent event) {
+		event.add(CompoundTag.class, CompoundTagWrapper::new);
+		event.add(CollectionTag.class, CollectionTagWrapper::new);
 	}
 
 	@Override

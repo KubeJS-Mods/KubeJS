@@ -14,7 +14,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.LongArrayTag;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.nbt.TagParser;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -161,19 +160,9 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 	}
 
 	@Nullable
+	@Deprecated
 	public static CollectionTag<?> nbt(@Nullable Object list) {
-		if (list instanceof CollectionTag tag) {
-			return tag;
-		} else if (list instanceof CharSequence) {
-			try {
-				return (CollectionTag<?>) TagParser.parseTag("{a:" + list + "}").get("a");
-			} catch (Exception ex) {
-				return null;
-			}
-		}
-
-		var l = of(list);
-		return l == null ? null : l.toNBT();
+		return NBTUtils.toTagCollection(list);
 	}
 
 	public ChangeListener<ListJS> changeListener;
@@ -465,7 +454,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 		byte commmonId = -1;
 
 		for (var o : this) {
-			values[s] = NBTUtils.toNBT(o);
+			values[s] = NBTUtils.toTag(o);
 
 			if (values[s] != null) {
 				if (commmonId == -1) {

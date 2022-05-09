@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.fluid;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.architectury.fluid.FluidStack;
 import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
@@ -15,7 +14,6 @@ import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
@@ -63,7 +61,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 			}
 
 			if (map.containsKey("nbt")) {
-				stack.setNbt(MapJS.nbt(map.get("nbt")));
+				stack.setNbt(NBTUtils.toTagCompound(map.get("nbt")));
 			}
 
 			return stack;
@@ -103,13 +101,9 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 
 		if (json.has("nbt")) {
 			if (json.get("nbt").isJsonObject()) {
-				nbt = MapJS.nbt(json.get("nbt"));
+				nbt = NBTUtils.toTagCompound(json.get("nbt"));
 			} else {
-				try {
-					nbt = TagParser.parseTag(json.get("nbt").getAsString());
-				} catch (CommandSyntaxException ex) {
-					return EmptyFluidStackJS.INSTANCE;
-				}
+				nbt = NBTUtils.toTagCompound(json.get("nbt").getAsString());
 			}
 		}
 

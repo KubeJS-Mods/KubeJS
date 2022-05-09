@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.script;
 
-import dev.architectury.annotations.ForgeEvent;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.latvian.mods.rhino.BaseFunction;
@@ -15,7 +14,6 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-@ForgeEvent
 public class BindingsEvent {
 	public static final Event<Consumer<BindingsEvent>> EVENT = EventFactory.createConsumerLoop(BindingsEvent.class);
 	public final ScriptManager manager;

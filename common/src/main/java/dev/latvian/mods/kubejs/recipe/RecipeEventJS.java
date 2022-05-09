@@ -127,6 +127,17 @@ public class RecipeEventJS extends EventJS {
 	@HideFromJS
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap) {
 		RecipeJS.itemErrors = false;
+
+		TagIngredientJS.context = KubeJSReloadListener.resources.tagManager.getResult()
+				.stream()
+				.filter(result -> result.key() == Registry.ITEM_REGISTRY)
+				.findFirst()
+				.map(result -> TagIngredientJS.Context.usingResult(UtilsJS.cast(result)))
+				.orElseGet(() -> {
+					ConsoleJS.SERVER.warn("Failed to load item tags during recipe event! Using replaceInput etc. will not work!");
+					return TagIngredientJS.Context.EMPTY;
+				});
+
 		ConsoleJS.SERVER.setLineNumber(true);
 		var timer = Stopwatch.createStarted();
 
@@ -272,16 +283,6 @@ public class RecipeEventJS extends EventJS {
 		ConsoleJS.SERVER.info("Found " + originalRecipes.size() + " recipes and " + fallbackedRecipes.size() + " failed recipes in " + timer.stop());
 
 		timer.reset().start();
-
-		TagIngredientJS.context = KubeJSReloadListener.resources.tagManager.getResult()
-				.stream()
-				.filter(result -> result.key() == Registry.ITEM_REGISTRY)
-				.findFirst()
-				.map(result -> TagIngredientJS.Context.usingResult(UtilsJS.cast(result)))
-				.orElseGet(() -> {
-					ConsoleJS.SERVER.warn("Failed to load item tags during recipe event! Using replaceInput etc. will not work!");
-					return TagIngredientJS.Context.EMPTY;
-				});
 
 		ConsoleJS.SERVER.setLineNumber(true);
 		post(ScriptType.SERVER, KubeJSEvents.RECIPES);

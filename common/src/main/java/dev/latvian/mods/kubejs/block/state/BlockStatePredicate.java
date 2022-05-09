@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import net.minecraft.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.NbtOps;
@@ -113,7 +114,7 @@ public sealed interface BlockStatePredicate {
 	}
 
 	static RuleTest ruleTestOf(Object o) {
-		return RuleTest.CODEC.parse(NbtOps.INSTANCE, MapJS.nbt(o))
+		return RuleTest.CODEC.parse(NbtOps.INSTANCE, NBTUtils.toTagCompound(o))
 				.result()
 				.or(() -> Optional.ofNullable(of(o).asRuleTest()))
 				.orElseThrow(() -> new IllegalArgumentException("Could not parse valid rule test from " + o + "!"));

@@ -17,6 +17,7 @@ import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
+import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -148,7 +149,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 
 			if (map.containsKey("type")) {
 				if ("forge:nbt".equals(map.get("type"))) {
-					in = ItemStackJS.of(map.get("item")).withNBT(MapJS.nbt(map.get("nbt")));
+					in = ItemStackJS.of(map.get("item")).withNBT(NBTUtils.toTagCompound(map.get("nbt")));
 				} else {
 					var json = map.toJson();
 
@@ -207,7 +208,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 
 			if (o.has("type")) {
 				if ("forge:nbt".equals(o.get("type").getAsString())) {
-					in = ItemStackJS.of(o.get("item").getAsString()).withNBT(MapJS.nbt(o.get("nbt")));
+					in = ItemStackJS.of(o.get("item").getAsString()).withNBT(NBTUtils.toTagCompound(o.get("nbt")));
 				} else {
 					try {
 						var ingredient = RecipePlatformHelper.getCustomIngredient(o);

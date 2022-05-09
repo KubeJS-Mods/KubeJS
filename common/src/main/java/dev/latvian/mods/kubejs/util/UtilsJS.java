@@ -19,6 +19,7 @@ import dev.latvian.mods.kubejs.text.TextString;
 import dev.latvian.mods.kubejs.text.TextTranslate;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.Copyable;
+import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
@@ -632,7 +633,7 @@ public class UtilsJS {
 				}
 			}
 
-			var decoded = IntProvider.CODEC.parse(NbtOps.INSTANCE, MapJS.nbt(m)).result();
+			var decoded = IntProvider.CODEC.parse(NbtOps.INSTANCE, NBTUtils.toTagCompound(m)).result();
 			if (decoded.isPresent()) {
 				return decoded.get();
 			}

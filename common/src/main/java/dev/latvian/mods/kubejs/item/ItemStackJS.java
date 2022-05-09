@@ -402,7 +402,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 				}
 
 				if (map.containsKey("nbt")) {
-					stack.setTag(MapJS.nbt(map.get("nbt")));
+					stack.setTag(NBTUtils.toTagCompound(map.get("nbt")));
 				}
 
 				return new ItemStackJS(stack);
@@ -445,51 +445,46 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			return EMPTY;
 		} else if (json.isJsonPrimitive()) {
 			return of(json.getAsString());
-		} else if (json.isJsonObject()) {
-			var o = json.getAsJsonObject();
-
+		} else if (json instanceof JsonObject jsonObj) {
 			if (RecipeJS.currentRecipe != null) {
-				var is = RecipeJS.currentRecipe.resultFromRecipeJson(o);
+				var is = RecipeJS.currentRecipe.resultFromRecipeJson(jsonObj);
 
 				if (is != null) {
 					return is;
 				}
 			}
 
-			if (o.has("item")) {
-				var stack = of(o.get("item").getAsString());
+			ItemStackJS stack = null;
+			if (jsonObj.has("item")) {
+				stack = of(jsonObj.get("item").getAsString());
+			} else if (jsonObj.has("tag")) {
+				stack = TagIngredientJS.createTag(jsonObj.get("tag").getAsString()).getFirst();
+			}
 
-				if (o.has("count")) {
-					stack.setCount(o.get("count").getAsInt());
+			if (stack != null) {
+				if (jsonObj.has("count")) {
+					stack.setCount(jsonObj.get("count").getAsInt());
+				} else if (jsonObj.has("amount")) {
+					stack.setCount(jsonObj.get("amount").getAsInt());
 				}
 
-				if (o.has("nbt")) {
-					var element = o.get("nbt");
+				if (jsonObj.has("nbt")) {
+					var element = jsonObj.get("nbt");
 
 					if (element.isJsonObject()) {
-						stack = stack.withNBT(MapJS.nbt(element));
+						stack.setNbt(NBTUtils.toTagCompound(element));
 					} else {
-						stack = stack.withNBT(MapJS.nbt(element.getAsString()));
+						stack.setNbt(NBTUtils.toTagCompound(element.getAsString()));
 					}
 				}
 
-				if (o.has("chance")) {
-					var locked = o.has("locked") && o.get("locked").getAsBoolean();
-					var c = o.get("chance").getAsDouble();
+				if (jsonObj.has("chance")) {
+					var locked = jsonObj.has("locked") && jsonObj.get("locked").getAsBoolean();
+					var c = jsonObj.get("chance").getAsDouble();
 					stack.setChance(locked ? -c : c);
 				}
 
 				return stack;
-			} else if (o.has("tag")) {
-				var c = 1;
-
-				if (o.has("count")) {
-					c = o.get("count").getAsInt();
-				} else if (o.has("amount")) {
-					c = o.get("amount").getAsInt();
-				}
-
-				return TagIngredientJS.createTag(o.get("tag").getAsString()).getFirst().withCount(c);
 			}
 		}
 
