@@ -32,7 +32,6 @@ import dev.latvian.mods.kubejs.client.painter.screen.GradientObject;
 import dev.latvian.mods.kubejs.client.painter.screen.RectangleObject;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
 import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
-import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.event.DataEvent;
 import dev.latvian.mods.kubejs.event.IEventHandler;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
@@ -54,7 +53,6 @@ import dev.latvian.mods.kubejs.item.custom.ShovelItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.SwordItemBuilder;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStackJS;
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.filter.mob.MobFilter;
 import dev.latvian.mods.kubejs.misc.BasicMobEffect;
@@ -120,7 +118,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -139,7 +136,6 @@ import net.minecraft.world.phys.Vec3;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -388,33 +384,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(Component.class, Text::componentOf);
 		typeWrappers.register(MutableComponent.class, o -> new TextComponent("").append(Text.componentOf(o)));
 
-		typeWrappers.register(BlockPos.class, o -> {
-			if (o instanceof BlockPos pos) {
-				return pos;
-			} else if (o instanceof List<?> list && list.size() >= 3) {
-				return new BlockPos(UtilsJS.parseInt(list.get(0), 0), UtilsJS.parseInt(list.get(1), 0), UtilsJS.parseInt(list.get(2), 0));
-			} else if (o instanceof BlockContainerJS block) {
-				return block.getPos();
-			}
-
-			return BlockPos.ZERO;
-		});
-
-		typeWrappers.register(Vec3.class, o -> {
-			if (o instanceof Vec3 vec) {
-				return vec;
-			} else if (o instanceof EntityJS entity) {
-				return entity.minecraftEntity.position();
-			} else if (o instanceof List<?> list && list.size() >= 3) {
-				return new Vec3(UtilsJS.parseDouble(list.get(0), 0), UtilsJS.parseDouble(list.get(1), 0), UtilsJS.parseDouble(list.get(2), 0));
-			} else if (o instanceof BlockPos pos) {
-				return new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
-			} else if (o instanceof BlockContainerJS block) {
-				return new Vec3(block.getPos().getX() + 0.5D, block.getPos().getY() + 0.5D, block.getPos().getZ() + 0.5D);
-			}
-
-			return Vec3.ZERO;
-		});
+		typeWrappers.register(BlockPos.class, UtilsJS::blockPosOf);
+		typeWrappers.register(Vec3.class, UtilsJS::vec3Of);
 
 		typeWrappers.register(Item.class, ItemStackJS::getRawItem);
 		typeWrappers.register(MobCategory.class, o -> o == null ? null : MobCategory.byName(o.toString()));
