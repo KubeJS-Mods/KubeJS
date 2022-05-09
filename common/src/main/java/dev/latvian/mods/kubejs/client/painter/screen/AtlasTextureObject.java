@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.client.painter.screen;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.rhino.util.unit.Unit;
 import net.minecraft.resources.ResourceLocation;
@@ -36,8 +35,9 @@ public class AtlasTextureObject extends ScreenPainterObject {
 		var v0 = sprite.getV0();
 		var u1 = sprite.getU1();
 		var v1 = sprite.getV1();
-		event.bindTexture(InventoryMenu.BLOCK_ATLAS);
-		event.beginQuads(DefaultVertexFormat.POSITION_COLOR_TEX);
+		event.setPositionTextureColorShader();
+		event.setTexture(InventoryMenu.BLOCK_ATLAS);
+		event.beginQuads(true);
 		event.rectangle(ax, ay, az, aw, ah, color.getAsInt(), u0, v0, u1, v1);
 		event.end();
 	}

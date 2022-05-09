@@ -11,10 +11,14 @@ import dev.latvian.mods.kubejs.client.ClientEventJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Supplier;
 
 public class PaintEventJS extends ClientEventJS {
 	public final Minecraft mc;
@@ -60,6 +64,10 @@ public class PaintEventJS extends ClientEventJS {
 		mc.getTextureManager().bindForSetup(tex);
 	}
 
+	public void setTexture(ResourceLocation tex) {
+		RenderSystem.setShaderTexture(0, tex);
+	}
+
 	public void begin(VertexFormat.Mode type, VertexFormat format) {
 		buffer.begin(type, format);
 	}
@@ -90,6 +98,18 @@ public class PaintEventJS extends ClientEventJS {
 		}
 
 		return textureAtlas;
+	}
+
+	public void setShaderInstance(Supplier<ShaderInstance> shader) {
+		RenderSystem.setShader(shader);
+	}
+
+	public void setPositionColorShader() {
+		RenderSystem.setShader(GameRenderer::getPositionColorShader);
+	}
+
+	public void setPositionTextureColorShader() {
+		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 	}
 
 	public void setTextureEnabled(boolean enabled) {

@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.client.painter.screen;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.rhino.util.unit.Unit;
 import net.minecraft.resources.ResourceLocation;
@@ -70,17 +69,17 @@ public class GradientObject extends ScreenPainterObject {
 		var m = event.getMatrix();
 
 		if (texture == null) {
-			event.setTextureEnabled(false);
-			event.beginQuads(DefaultVertexFormat.POSITION_COLOR);
+			event.setPositionColorShader();
+			event.beginQuads(false);
 			event.vertex(m, ax, ay + ah, az, colBL);
 			event.vertex(m, ax + aw, ay + ah, az, colBR);
 			event.vertex(m, ax + aw, ay, az, colTR);
 			event.vertex(m, ax, ay, az, colTL);
 			event.end();
-			event.setTextureEnabled(true);
 		} else {
-			event.bindTexture(texture);
-			event.beginQuads(DefaultVertexFormat.POSITION_COLOR_TEX);
+			event.setPositionTextureColorShader();
+			event.setTexture(texture);
+			event.beginQuads(true);
 			event.vertex(m, ax, ay + ah, az, colBL, u0, v1);
 			event.vertex(m, ax + aw, ay + ah, az, colBR, u1, v1);
 			event.vertex(m, ax + aw, ay, az, colTR, u1, v0);
