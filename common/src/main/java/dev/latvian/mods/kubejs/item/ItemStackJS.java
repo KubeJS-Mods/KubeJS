@@ -402,7 +402,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 				}
 
 				if (map.containsKey("nbt")) {
-					stack.setTag(MapJS.nbt(map.get("nbt")));
+					stack.setTag(NBTUtils.toTagCompound(map.get("nbt")));
 				}
 
 				return new ItemStackJS(stack);
@@ -455,13 +455,13 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			}
 
 			ItemStackJS stack = null;
-			if(jsonObj.has("item")) {
+			if (jsonObj.has("item")) {
 				stack = of(jsonObj.get("item").getAsString());
 			} else if (jsonObj.has("tag")) {
 				stack = TagIngredientJS.createTag(jsonObj.get("tag").getAsString()).getFirst();
 			}
 
-			if(stack != null) {
+			if (stack != null) {
 				if (jsonObj.has("count")) {
 					stack.setCount(jsonObj.get("count").getAsInt());
 				} else if (jsonObj.has("amount")) {
@@ -472,9 +472,9 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 					var element = jsonObj.get("nbt");
 
 					if (element.isJsonObject()) {
-						stack.setNbt(MapJS.nbt(element));
+						stack.setNbt(NBTUtils.toTagCompound(element));
 					} else {
-						stack.setNbt(MapJS.nbt(element.getAsString()));
+						stack.setNbt(NBTUtils.toTagCompound(element.getAsString()));
 					}
 				}
 
@@ -483,6 +483,8 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 					var c = jsonObj.get("chance").getAsDouble();
 					stack.setChance(locked ? -c : c);
 				}
+
+				return stack;
 			}
 		}
 

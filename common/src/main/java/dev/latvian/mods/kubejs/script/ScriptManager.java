@@ -120,9 +120,13 @@ public class ScriptManager {
 				pack.context = context;
 				pack.scope = context.initStandardObjects();
 
-				var event = new BindingsEvent(this, pack.context, pack.scope);
-				KubeJSPlugins.forEachPlugin(plugin -> plugin.addBindings(event));
-				BindingsEvent.EVENT.invoker().accept(event);
+				var bindingsEvent = new BindingsEvent(this, pack.context, pack.scope);
+				KubeJSPlugins.forEachPlugin(plugin -> plugin.addBindings(bindingsEvent));
+				BindingsEvent.EVENT.invoker().accept(bindingsEvent);
+
+				var customJavaToJsWrappersEvent = new CustomJavaToJsWrappersEvent(this, pack.context);
+				KubeJSPlugins.forEachPlugin(plugin -> plugin.addCustomJavaToJsWrappers(customJavaToJsWrappersEvent));
+				CustomJavaToJsWrappersEvent.EVENT.invoker().accept(customJavaToJsWrappersEvent);
 
 				for (var file : pack.scripts) {
 					t++;

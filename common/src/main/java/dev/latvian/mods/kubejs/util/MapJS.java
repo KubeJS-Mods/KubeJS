@@ -1,8 +1,6 @@
 package dev.latvian.mods.kubejs.util;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.mod.util.ChangeListener;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
@@ -11,7 +9,6 @@ import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.mod.util.OrderedCompoundTag;
 import dev.latvian.mods.rhino.mod.util.StringBuilderAppendable;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.TagParser;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
@@ -28,30 +25,10 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 		return o1 instanceof MapJS ? (MapJS) o1 : null;
 	}
 
-	public static boolean isNbt(Object o) {
-		return o == null || Undefined.isUndefined(o) || o instanceof CompoundTag || o instanceof CharSequence || o instanceof Map;
-	}
-
 	@Nullable
+	@Deprecated
 	public static CompoundTag nbt(@Nullable Object map) {
-		if (map instanceof CompoundTag nbt) {
-			return nbt;
-		} else if (map instanceof CharSequence) {
-			try {
-				return TagParser.parseTag(map.toString());
-			} catch (Exception ex) {
-				return null;
-			}
-		} else if (map instanceof JsonPrimitive json) {
-			try {
-				return TagParser.parseTag(json.getAsString());
-			} catch (Exception ex) {
-				return null;
-			}
-		}
-
-		var m = of(map);
-		return m == null ? null : m.toNBT();
+		return NBTUtils.toTagCompound(map);
 	}
 
 	@Nullable
@@ -285,7 +262,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 		CompoundTag nbt = new OrderedCompoundTag();
 
 		for (var entry : entrySet()) {
-			var nbt1 = NBTUtils.toNBT(entry.getValue());
+			var nbt1 = NBTUtils.toTag(entry.getValue());
 
 			if (nbt1 != null) {
 				nbt.put(entry.getKey(), nbt1);
