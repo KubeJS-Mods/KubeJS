@@ -209,6 +209,7 @@ public class KubeJSClientEventHandler {
 		}
 
 		RenderSystem.enableBlend();
+		RenderSystem.defaultBlendFunc();
 		//RenderSystem.disableLighting();
 
 		var event = new ScreenPaintEventJS(mc, screen, matrices, mouseX, mouseY, delta);

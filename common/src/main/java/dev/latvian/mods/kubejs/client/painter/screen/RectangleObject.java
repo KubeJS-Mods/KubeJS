@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.client.painter.screen;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.rhino.util.unit.Unit;
 import net.minecraft.resources.ResourceLocation;
@@ -34,14 +33,16 @@ public class RectangleObject extends ScreenPainterObject {
 		var az = z.get();
 
 		if (texture == null) {
+			event.setPositionColorShader();
 			event.setTextureEnabled(false);
-			event.beginQuads(DefaultVertexFormat.POSITION_COLOR);
+			event.beginQuads(false);
 			event.rectangle(ax, ay, az, aw, ah, color.getAsInt());
 			event.end();
 			event.setTextureEnabled(true);
 		} else {
-			event.bindTexture(texture);
-			event.beginQuads(DefaultVertexFormat.POSITION_COLOR_TEX);
+			event.setPositionTextureColorShader();
+			event.setTexture(texture);
+			event.beginQuads(true);
 			event.rectangle(ax, ay, az, aw, ah, color.getAsInt(), u0, v0, u1, v1);
 			event.end();
 		}
