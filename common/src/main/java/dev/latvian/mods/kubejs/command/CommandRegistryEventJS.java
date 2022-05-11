@@ -28,7 +28,7 @@ public class CommandRegistryEventJS extends ServerEventJS {
 		return selection.includeDedicated;
 	}
 
-	public LiteralCommandNode<CommandSourceStack> register(final LiteralArgumentBuilder<CommandSourceStack> command) {
+	public LiteralCommandNode<CommandSourceStack> register(LiteralArgumentBuilder<CommandSourceStack> command) {
 		return dispatcher.register(command);
 	}
 

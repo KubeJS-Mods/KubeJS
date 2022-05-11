@@ -45,8 +45,6 @@ import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 public enum ArgumentTypeWrapper {
@@ -114,19 +112,25 @@ public enum ArgumentTypeWrapper {
 	private final Supplier<? extends ArgumentType<?>> factory;
 	private final ArgumentFunction<?> getter;
 
-	private static final Map<ResourceLocation, ClassWrapper<?>> byName = new HashMap<>();
+	private static HashMap<ResourceLocation, ClassWrapper<?>> byNameCache;
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public static ClassWrapper byName(ResourceLocation name) {
-		if (byName.containsKey(name)) {
-			return byName.get(name);
+		if (byNameCache == null) {
+			byNameCache = new HashMap<>();
+
+			for (var argType : ArgumentTypes.BY_CLASS.entrySet()) {
+				byNameCache.putIfAbsent(argType.getValue().name, new ClassWrapper(argType.getKey()));
+			}
 		}
 
-		for (var argType : ArgumentTypes.BY_CLASS.entrySet()) {
-			byName.putIfAbsent(argType.getValue().name, new ClassWrapper(argType.getKey()));
+		var wrapper = byNameCache.get(name);
+
+		if (wrapper == null) {
+			throw new IllegalStateException("No argument type found for " + name);
 		}
 
-		return Objects.requireNonNull(byName.get(name), "No argument type found for " + name);
+		return wrapper;
 	}
 
 	ArgumentTypeWrapper(Supplier<? extends ArgumentType<?>> factory, ArgumentFunction<?> getter) {
@@ -140,9 +144,5 @@ public enum ArgumentTypeWrapper {
 
 	public Object getResult(CommandContext<CommandSourceStack> context, String input) throws CommandSyntaxException {
 		return getter.getResult(context, input);
-	}
-
-	interface ArgumentFunction<U> {
-		U getResult(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException;
 	}
 }
