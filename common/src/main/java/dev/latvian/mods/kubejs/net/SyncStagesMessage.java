@@ -29,7 +29,7 @@ public class SyncStagesMessage extends BaseS2CMessage {
 		stages = new ArrayList<>(s);
 
 		for (var i = 0; i < s; i++) {
-			stages.add(buf.readUtf(Short.MAX_VALUE));
+			stages.add(buf.readUtf());
 		}
 	}
 
@@ -44,7 +44,7 @@ public class SyncStagesMessage extends BaseS2CMessage {
 		buf.writeVarInt(stages.size());
 
 		for (var s : stages) {
-			buf.writeUtf(s, Short.MAX_VALUE);
+			buf.writeUtf(s);
 		}
 	}
 
