@@ -135,6 +135,8 @@ public class ServerScriptManager {
 			RecipeEventJS.customIngredientMap = new HashMap<>();
 		}
 
+		RecipeEventJS.modifyResultCallbackMap = new HashMap<>();
+
 		CustomIngredientAction.MAP.clear();
 
 		RecipeEventJS.instance = new RecipeEventJS(typeMap);

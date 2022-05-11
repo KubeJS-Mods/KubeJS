@@ -56,6 +56,7 @@ public class RecipeEventJS extends EventJS {
 	public static final String FORGE_CONDITIONAL = "forge:conditional";
 	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.mods.kubejs.recipe.RecipeEventJS.post");
 	public static Map<UUID, IngredientWithCustomPredicateJS> customIngredientMap = null;
+	public static Map<UUID, ModifyRecipeResultCallback> modifyResultCallbackMap = null;
 
 	public static RecipeEventJS instance;
 

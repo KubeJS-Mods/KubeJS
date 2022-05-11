@@ -62,12 +62,12 @@ public abstract class IngredientAction extends IngredientActionFilter {
 		List<IngredientAction> list = new ArrayList<>();
 
 		for (var i = 0; i < s; i++) {
-			var factory = FACTORY_MAP.get(buf.readUtf(Short.MAX_VALUE));
-			var action = factory == null ? null : factory.apply(GSON.fromJson(buf.readUtf(Short.MAX_VALUE), JsonObject.class));
+			var factory = FACTORY_MAP.get(buf.readUtf());
+			var action = factory == null ? null : factory.apply(GSON.fromJson(buf.readUtf(), JsonObject.class));
 
 			if (action != null) {
 				action.filterIndex = buf.readVarInt();
-				var ij = buf.readUtf(Short.MAX_VALUE);
+				var ij = buf.readUtf();
 				action.filterIngredient = ij.isEmpty() ? null : IngredientJS.of(GSON.fromJson(ij, JsonObject.class));
 				list.add(action);
 			}
@@ -85,12 +85,12 @@ public abstract class IngredientAction extends IngredientActionFilter {
 		buf.writeVarInt(list.size());
 
 		for (var action : list) {
-			buf.writeUtf(action.getType(), Short.MAX_VALUE);
+			buf.writeUtf(action.getType());
 			var json = new JsonObject();
 			action.toJson(json);
-			buf.writeUtf(GSON.toJson(json), Short.MAX_VALUE);
+			buf.writeUtf(GSON.toJson(json));
 			buf.writeVarInt(action.filterIndex);
-			buf.writeUtf(action.filterIngredient == null ? "" : GSON.toJson(action.filterIngredient.toJson()), Short.MAX_VALUE);
+			buf.writeUtf(action.filterIngredient == null ? "" : GSON.toJson(action.filterIngredient.toJson()));
 		}
 	}
 
