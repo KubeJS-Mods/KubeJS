@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.item.ingredient.MatchAllIngredientJS;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 
@@ -16,7 +17,7 @@ public class ModifyRecipeCraftingGrid {
 	}
 
 	public ItemStackJS get(int index) {
-		return ItemStackJS.of(container.getItem(index));
+		return ItemStackJS.of(container.getItem(index).copy());
 	}
 
 	public List<ItemStackJS> findAll(IngredientJS ingredient) {
@@ -25,23 +26,27 @@ public class ModifyRecipeCraftingGrid {
 		for (int i = 0; i < container.getContainerSize(); i++) {
 			ItemStack stack = container.getItem(i);
 
-			if (!stack.isEmpty() && ingredient.testVanilla(stack)) {
-				list.add(ItemStackJS.of(stack));
+			if (ingredient.testVanilla(stack)) {
+				list.add(ItemStackJS.of(stack.copy()));
 			}
 		}
 
 		return list;
 	}
 
+	public List<ItemStackJS> findAll() {
+		return findAll(MatchAllIngredientJS.INSTANCE);
+	}
+
 	public ItemStackJS find(IngredientJS ingredient, int skip) {
 		for (int i = 0; i < container.getContainerSize(); i++) {
 			ItemStack stack = container.getItem(i);
 
-			if (!stack.isEmpty() && ingredient.testVanilla(stack)) {
+			if (ingredient.testVanilla(stack)) {
 				if (skip > 0) {
 					skip--;
 				} else {
-					return ItemStackJS.of(stack);
+					return ItemStackJS.of(stack.copy());
 				}
 			}
 		}
