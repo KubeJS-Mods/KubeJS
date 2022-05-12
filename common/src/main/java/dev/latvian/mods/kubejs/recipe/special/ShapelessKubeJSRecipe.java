@@ -3,8 +3,13 @@ package dev.latvian.mods.kubejs.recipe.special;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.util.UUIDTypeAdapter;
 import dev.architectury.core.AbstractRecipeSerializer;
+import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
+import dev.latvian.mods.kubejs.recipe.ModifyRecipeCraftingGrid;
+import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
+import dev.latvian.mods.kubejs.recipe.RecipeEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
@@ -26,6 +31,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe {
 	private ItemStack result;
 	private NonNullList<Ingredient> ingredients;
 	private List<IngredientAction> ingredientActions;
+	private ModifyRecipeResultCallback modifyResult;
 
 	public ShapelessKubeJSRecipe(ResourceLocation _id) {
 		super(_id, "", ItemStack.EMPTY, NonNullList.withSize(0, Ingredient.EMPTY));
@@ -70,7 +76,11 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe {
 
 	@Override
 	public ItemStack assemble(CraftingContainer craftingContainer) {
-		return result.copy();
+		if (modifyResult != null) {
+			return modifyResult.modify(new ModifyRecipeCraftingGrid(craftingContainer), ItemStackJS.of(getResultItem().copy())).getItemStack();
+		}
+
+		return getResultItem().copy();
 	}
 
 	@Override
@@ -104,6 +114,11 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe {
 
 			r.result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
 			r.ingredientActions = IngredientAction.parseList(json.get("kubejs_actions"));
+
+			if (json.has("kubejs_modify_result")) {
+				r.modifyResult = RecipeEventJS.modifyResultCallbackMap.get(UUIDTypeAdapter.fromString(json.get("kubejs_modify_result").getAsString()));
+			}
+
 			return r;
 		}
 
@@ -124,7 +139,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe {
 		@Override
 		public ShapelessKubeJSRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
 			var r = new ShapelessKubeJSRecipe(id);
-			r.group = buf.readUtf(32767);
+			r.group = buf.readUtf();
 			var s = buf.readVarInt();
 			r.ingredients = NonNullList.withSize(s, Ingredient.EMPTY);
 

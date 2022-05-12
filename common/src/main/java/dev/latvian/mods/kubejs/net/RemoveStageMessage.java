@@ -22,7 +22,7 @@ public class RemoveStageMessage extends BaseS2CMessage {
 
 	RemoveStageMessage(FriendlyByteBuf buf) {
 		player = buf.readUUID();
-		stage = buf.readUtf(Short.MAX_VALUE);
+		stage = buf.readUtf();
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class RemoveStageMessage extends BaseS2CMessage {
 	@Override
 	public void write(FriendlyByteBuf buf) {
 		buf.writeUUID(player);
-		buf.writeUtf(stage, Short.MAX_VALUE);
+		buf.writeUtf(stage);
 	}
 
 	@Override

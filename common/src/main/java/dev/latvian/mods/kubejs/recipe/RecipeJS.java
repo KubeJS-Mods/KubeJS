@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.mojang.util.UUIDTypeAdapter;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -452,4 +454,11 @@ public abstract class RecipeJS {
 		return ingredientAction(filter, new KeepAction());
 	}
 
+	public final RecipeJS modifyResult(ModifyRecipeResultCallback callback) {
+		UUID id = UUID.randomUUID();
+		RecipeEventJS.modifyResultCallbackMap.put(id, callback);
+		json.addProperty("kubejs_modify_result", UUIDTypeAdapter.fromUUID(id));
+		save();
+		return this;
+	}
 }

@@ -233,10 +233,7 @@ public class CropBlockBuilder extends BlockBuilder {
 			}
 		}
 		if (itemBuilder != null) {
-			generator.itemModel(itemBuilder.id, m -> {
-				m.parent("minecraft:item/generated");
-				m.texture("layer0", itemBuilder.texture.isEmpty() ? itemBuilder.newID("item/", "").toString() : itemBuilder.texture);
-			});
+			itemBuilder.generateAssetJsons(generator);
 		}
 	}
 

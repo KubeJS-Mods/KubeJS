@@ -5,8 +5,13 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.util.UUIDTypeAdapter;
 import dev.architectury.core.AbstractRecipeSerializer;
+import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
+import dev.latvian.mods.kubejs.recipe.ModifyRecipeCraftingGrid;
+import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
+import dev.latvian.mods.kubejs.recipe.RecipeEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
@@ -32,6 +37,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 	private boolean mirror;
 	private boolean shrink;
 	private List<IngredientAction> ingredientActions;
+	private ModifyRecipeResultCallback modifyResult;
 
 	public ShapedKubeJSRecipe(ResourceLocation _id) {
 		super(_id, "", 0, 0, NonNullList.withSize(0, Ingredient.EMPTY), ItemStack.EMPTY);
@@ -105,13 +111,19 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 
 	@Override
 	public ItemStack assemble(CraftingContainer craftingContainer) {
+		if (modifyResult != null) {
+			return modifyResult.modify(new ModifyRecipeCraftingGrid(craftingContainer), ItemStackJS.of(getResultItem().copy())).getItemStack();
+		}
+
 		return getResultItem().copy();
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}
@@ -265,13 +277,18 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 			r.ingredients = ShapedKubeJSRecipe.dissolvePattern(pattern, key, r.width, r.height);
 			r.result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
 			r.ingredientActions = IngredientAction.parseList(json.get("kubejs_actions"));
+
+			if (json.has("kubejs_modify_result")) {
+				r.modifyResult = RecipeEventJS.modifyResultCallbackMap.get(UUIDTypeAdapter.fromString(json.get("kubejs_modify_result").getAsString()));
+			}
+
 			return r;
 		}
 
 		@Override
 		public ShapedKubeJSRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
 			var r = new ShapedKubeJSRecipe(id);
-			r.group = buf.readUtf(32767);
+			r.group = buf.readUtf();
 			r.width = buf.readVarInt();
 			r.height = buf.readVarInt();
 			r.ingredients = NonNullList.withSize(r.width * r.height, Ingredient.EMPTY);
