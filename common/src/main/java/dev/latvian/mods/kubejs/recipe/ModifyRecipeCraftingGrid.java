@@ -1,10 +1,16 @@
 package dev.latvian.mods.kubejs.recipe;
 
+import dev.latvian.mods.kubejs.core.AsKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.MatchAllIngredientJS;
+import dev.latvian.mods.kubejs.player.PlayerJS;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.CraftingMenu;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,5 +70,21 @@ public class ModifyRecipeCraftingGrid {
 
 	public int getHeight() {
 		return container.getHeight();
+	}
+
+	@Nullable
+	public AbstractContainerMenu getMenu() {
+		return container.menu;
+	}
+
+	@Nullable
+	public PlayerJS<?> getPlayer() {
+		if (container.menu instanceof CraftingMenu menu && menu.player instanceof AsKJS asKJS && asKJS instanceof PlayerJS<?> player) {
+			return player;
+		} else if (container.menu instanceof InventoryMenu menu && menu.owner instanceof AsKJS asKJS && asKJS instanceof PlayerJS<?> player) {
+			return player;
+		}
+
+		return null;
 	}
 }
