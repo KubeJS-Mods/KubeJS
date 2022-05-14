@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.level;
 
+import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.entity.ItemEntityJS;
 import dev.latvian.mods.kubejs.entity.ItemFrameEntityJS;
@@ -113,7 +114,7 @@ public abstract class LevelJS implements WithAttachedData {
 	public EntityJS getEntity(@Nullable Entity e) {
 		if (e == null) {
 			return null;
-		} else if (e instanceof Player player) {
+		} else if (e instanceof Player player && !PlayerHooks.isFake(player)) {
 			return getPlayerData(player).getPlayer();
 		} else if (e instanceof LivingEntity living) {
 			return new LivingEntityJS(this, living);
