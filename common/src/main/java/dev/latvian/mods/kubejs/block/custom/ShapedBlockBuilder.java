@@ -17,4 +17,10 @@ public abstract class ShapedBlockBuilder extends BlockBuilder {
 			}
 		}
 	}
+
+	@Override
+	public BlockBuilder textureAll(String tex) {
+		super.textureAll(tex);
+		return texture("texture", tex);
+	}
 }
