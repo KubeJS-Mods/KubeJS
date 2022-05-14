@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.level;
 
+import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.latvian.mods.kubejs.player.ClientPlayerDataJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -34,7 +35,7 @@ public class ClientLevelJS extends LevelJS {
 
 	@Override
 	public ClientPlayerDataJS getPlayerData(Player player) {
-		if (player == minecraft.player || player.getUUID().equals(clientPlayerData.getId())) {
+		if (player == minecraft.player || !PlayerHooks.isFake(player) && player.getUUID().equals(clientPlayerData.getId())) {
 			return clientPlayerData;
 		} else {
 			return new ClientPlayerDataJS(this, player, false);

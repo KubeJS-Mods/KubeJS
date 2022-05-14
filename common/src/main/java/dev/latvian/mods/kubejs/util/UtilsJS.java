@@ -558,6 +558,8 @@ public class UtilsJS {
 		return list;
 	}
 
+	// TODO: We could probably make these generic for RegistryObjectBuilderTypes,
+	//  so maybe look into that to allow people to modify builtin fluids, etc. as well.
 	public static void postModificationEvents() {
 		new BlockModificationEventJS().post(ScriptType.STARTUP, KubeJSEvents.BLOCK_MODIFICATION);
 		new ItemModificationEventJS().post(ScriptType.STARTUP, KubeJSEvents.ITEM_MODIFICATION);
