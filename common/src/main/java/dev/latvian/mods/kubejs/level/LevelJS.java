@@ -114,7 +114,7 @@ public abstract class LevelJS implements WithAttachedData {
 	public EntityJS getEntity(@Nullable Entity e) {
 		if (e == null) {
 			return null;
-		} else if (e instanceof Player player && !PlayerHooks.isFake(player)) {
+		} else if (e instanceof Player player) {
 			return getPlayerData(player).getPlayer();
 		} else if (e instanceof LivingEntity living) {
 			return new LivingEntityJS(this, living);
