@@ -179,15 +179,15 @@ public class ScriptManager {
 
 			try {
 				if (!isClassAllowed(name)) {
-					throw Context.reportRuntimeError("Class '" + name + "' is not allowed!");
+					throw Context.reportRuntimeError("Failed to dynamically load class '%s': Class is not allowed by class filter!".formatted(name));
 				}
 
 				var c = Class.forName(name);
 				var njc = new NativeJavaClass(scope, c);
 				javaClassCache.put(name, Optional.of(njc));
 				return njc;
-			} catch (Throwable ex) {
-				throw Context.reportRuntimeError("Class '" + name + "' is not allowed!");
+			} catch (ClassNotFoundException cnf) {
+				throw Context.reportRuntimeError("Failed to dynamically load class '%s': Class could not be found!\n%s".formatted(name, cnf.getMessage()));
 			}
 		}
 
@@ -195,6 +195,6 @@ public class ScriptManager {
 			return ch.get();
 		}
 
-		throw Context.reportRuntimeError("Class '" + name + "' is not allowed!");
+		throw Context.reportRuntimeError("Failed to dynamically load class '%s'!".formatted(name));
 	}
 }
