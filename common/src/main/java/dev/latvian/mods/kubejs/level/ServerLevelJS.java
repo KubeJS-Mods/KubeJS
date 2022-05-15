@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.level;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.player.FakeServerPlayerDataJS;
 import dev.latvian.mods.kubejs.player.ServerPlayerDataJS;
@@ -58,7 +59,7 @@ public class ServerLevelJS extends LevelJS {
 	public ServerPlayerDataJS getPlayerData(Player player) {
 		var data = server.playerMap.get(player.getUUID());
 
-		if (data != null) {
+		if (!PlayerHooks.isFake(player) && data != null) {
 			return data;
 		}
 
