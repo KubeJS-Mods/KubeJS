@@ -708,6 +708,8 @@ public class UtilsJS {
 			return new BlockPos(UtilsJS.parseInt(list.get(0), 0), UtilsJS.parseInt(list.get(1), 0), UtilsJS.parseInt(list.get(2), 0));
 		} else if (o instanceof BlockContainerJS block) {
 			return block.getPos();
+		} else if(o instanceof Vec3 vec) {
+			return new BlockPos(vec.x, vec.y, vec.z);
 		}
 
 		return BlockPos.ZERO;
