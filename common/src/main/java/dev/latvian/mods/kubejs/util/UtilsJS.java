@@ -11,6 +11,7 @@ import dev.latvian.mods.kubejs.block.BlockModificationEventJS;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.item.ItemModificationEventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerJS;
@@ -21,6 +22,7 @@ import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
 import net.minecraft.nbt.NbtOps;
@@ -684,6 +686,36 @@ public class UtilsJS {
 
 	public static JsonElement numberProviderJson(NumberProvider gen) {
 		return Deserializers.createConditionSerializer().create().toJsonTree(gen);
+	}
+
+	public static Vec3 vec3Of(@Nullable Object o) {
+		if (o instanceof Vec3 vec) {
+			return vec;
+		} else if (o instanceof EntityJS entity) {
+			return entity.minecraftEntity.position();
+		} else if (o instanceof List<?> list && list.size() >= 3) {
+			return new Vec3(UtilsJS.parseDouble(list.get(0), 0), UtilsJS.parseDouble(list.get(1), 0), UtilsJS.parseDouble(list.get(2), 0));
+		} else if (o instanceof BlockPos pos) {
+			return new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
+		} else if (o instanceof BlockContainerJS block) {
+			return new Vec3(block.getPos().getX() + 0.5D, block.getPos().getY() + 0.5D, block.getPos().getZ() + 0.5D);
+		}
+
+		return Vec3.ZERO;
+	}
+
+	public static BlockPos blockPosOf(@Nullable Object o) {
+		if (o instanceof BlockPos pos) {
+			return pos;
+		} else if (o instanceof List<?> list && list.size() >= 3) {
+			return new BlockPos(UtilsJS.parseInt(list.get(0), 0), UtilsJS.parseInt(list.get(1), 0), UtilsJS.parseInt(list.get(2), 0));
+		} else if (o instanceof BlockContainerJS block) {
+			return block.getPos();
+		} else if(o instanceof Vec3 vec) {
+			return new BlockPos(vec.x, vec.y, vec.z);
+		}
+
+		return BlockPos.ZERO;
 	}
 
 	public static Collection<BlockState> getAllBlockStates() {
