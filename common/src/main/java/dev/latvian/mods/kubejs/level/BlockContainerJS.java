@@ -353,10 +353,13 @@ public class BlockContainerJS implements SpecialEquality {
 		return getDrops(null, null);
 	}
 
-	public ListJS getDrops(PlayerJS player, ItemStackJS heldItem) {
+	public ListJS getDrops(EntityJS entity, ItemStackJS heldItem) {
 		if (minecraftLevel instanceof ServerLevel) {
 			var drops = new ListJS();
-			Block.getDrops(getBlockState(), (ServerLevel) minecraftLevel, pos, getEntity(), player != null ? player.minecraftPlayer : null, heldItem != null ? heldItem.getItemStack() : null).forEach((drop) -> {
+			Block.getDrops(getBlockState(), (ServerLevel) minecraftLevel, pos, getEntity(),
+					entity != null ? entity.minecraftEntity : null,
+					heldItem != null ? heldItem.getItemStack() : null
+			).forEach((drop) -> {
 				drops.add(new ItemStackJS(drop));
 			});
 			return  drops;
