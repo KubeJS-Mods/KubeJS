@@ -368,7 +368,7 @@ public class BlockContainerJS implements SpecialEquality {
 		Block.popResource(minecraftLevel, pos, item.getItemStack());
 	}
 
-	public void popItemFromface(ItemStackJS item, Direction dir) {
+	public void popItemFromFace(ItemStackJS item, Direction dir) {
 		Block.popResourceFromFace(minecraftLevel, pos, dir, item.getItemStack());
 	}
 
