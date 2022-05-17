@@ -72,18 +72,18 @@ public class ScreenPaintEventJS extends PaintEventJS {
 
 	public void rectangle(float x, float y, float z, float w, float h, int color) {
 		var m = getMatrix();
-		vertex(m, x, y + h, z, color);
-		vertex(m, x + w, y + h, z, color);
 		vertex(m, x + w, y, z, color);
 		vertex(m, x, y, z, color);
+		vertex(m, x, y + h, z, color);
+		vertex(m, x + w, y + h, z, color);
 	}
 
 	public void rectangle(float x, float y, float z, float w, float h, int color, float u0, float v0, float u1, float v1) {
 		var m = getMatrix();
-		vertex(m, x, y + h, z, color, u0, v1);
-		vertex(m, x + w, y + h, z, color, u1, v1);
 		vertex(m, x + w, y, z, color, u1, v0);
 		vertex(m, x, y, z, color, u0, v0);
+		vertex(m, x, y + h, z, color, u0, v1);
+		vertex(m, x + w, y + h, z, color, u1, v1);
 	}
 
 	public void text(Component text, float x, float y, int color, boolean shadow) {
