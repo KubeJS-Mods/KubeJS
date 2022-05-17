@@ -44,6 +44,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.OptionalInt;
@@ -209,10 +210,10 @@ public class WorldgenAddEventJS extends StartupEventJS {
 				});
 
 		if (messageDigest == null) {
-			return new BigInteger(Hex.encodeHexString(JsonIO.getJsonHashBytes(json)), 16).toString(36);
+			return new BigInteger(HexFormat.of().formatHex(JsonIO.getJsonHashBytes(json)), 16).toString(36);
 		} else {
 			messageDigest.reset();
-			return new BigInteger(Hex.encodeHexString(messageDigest.digest(JsonIO.getJsonHashBytes(json))), 16).toString(36);
+			return new BigInteger(HexFormat.of().formatHex(messageDigest.digest(JsonIO.getJsonHashBytes(json))), 16).toString(36);
 		}
 	}
 }

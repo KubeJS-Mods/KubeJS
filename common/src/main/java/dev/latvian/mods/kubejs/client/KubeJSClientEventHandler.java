@@ -213,6 +213,7 @@ public class KubeJSClientEventHandler {
 		//RenderSystem.disableLighting();
 
 		var event = new ScreenPaintEventJS(mc, screen, matrices, mouseX, mouseY, delta);
+		event.resetShaderColor();
 		event.post(KubeJSEvents.CLIENT_PAINT_SCREEN);
 
 		for (var object : Painter.INSTANCE.getScreenObjects()) {

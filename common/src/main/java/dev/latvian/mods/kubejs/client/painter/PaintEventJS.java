@@ -13,9 +13,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
@@ -28,7 +26,6 @@ public class PaintEventJS extends ClientEventJS {
 	public final BufferBuilder buffer;
 	public final float delta;
 	public final Screen screen;
-	private TextureAtlas textureAtlas;
 
 	public PaintEventJS(Minecraft m, PoseStack p, float d, @Nullable Screen s) {
 		mc = m;
@@ -60,11 +57,19 @@ public class PaintEventJS extends ClientEventJS {
 		return matrices.last().pose();
 	}
 
-	public void bindTexture(ResourceLocation tex) {
+	public void bindTextureForSetup(ResourceLocation tex) {
 		mc.getTextureManager().bindForSetup(tex);
 	}
 
-	public void setTexture(ResourceLocation tex) {
+	public void setShaderColor(float r, float g, float b, float a) {
+		RenderSystem.setShaderColor(r, g, b, a);
+	}
+
+	public void resetShaderColor() {
+		RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+	}
+
+	public void setShaderTexture(ResourceLocation tex) {
 		RenderSystem.setShaderTexture(0, tex);
 	}
 
@@ -92,14 +97,6 @@ public class PaintEventJS extends ClientEventJS {
 		tesselator.end();
 	}
 
-	public TextureAtlas getTextureAtlas() {
-		if (textureAtlas == null) {
-			textureAtlas = mc.getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
-		}
-
-		return textureAtlas;
-	}
-
 	public void setShaderInstance(Supplier<ShaderInstance> shader) {
 		RenderSystem.setShader(shader);
 	}
@@ -108,15 +105,7 @@ public class PaintEventJS extends ClientEventJS {
 		RenderSystem.setShader(GameRenderer::getPositionColorShader);
 	}
 
-	public void setPositionTextureColorShader() {
-		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-	}
-
-	public void setTextureEnabled(boolean enabled) {
-		if (enabled) {
-			RenderSystem.enableTexture();
-		} else {
-			RenderSystem.disableTexture();
-		}
+	public void setPositionColorTextureShader() {
+		RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
 	}
 }
