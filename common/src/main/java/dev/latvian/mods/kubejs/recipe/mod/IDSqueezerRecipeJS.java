@@ -42,7 +42,7 @@ public class IDSqueezerRecipeJS extends RecipeJS {
 				if (stack.getFluidStack() != null) {
 					o.add("fluid", stack.toResultJson());
 				} else {
-					a.add(stack.toResultJson());
+					a.add(toIDResultJson(stack.toResultJson()));
 				}
 			}
 
@@ -62,5 +62,26 @@ public class IDSqueezerRecipeJS extends RecipeJS {
 		json.addProperty("duration", i);
 		save();
 		return this;
+	}
+
+	@Override
+	public ItemStackJS parseResultItem(@Nullable Object o) {
+		if (o instanceof JsonObject obj) {
+			if (obj.has("item")) {
+				var item = obj.get("item");
+				return super.parseResultItem(item.isJsonObject() ? item.getAsJsonObject() : item.getAsString());
+			} else {
+				return parseIngredientItem(o).getFirst();
+			}
+		} else {
+			return super.parseResultItem(o);
+		}
+
+	}
+
+	private JsonElement toIDResultJson(JsonElement result) {
+		var o = new JsonObject();
+		o.add("item", result);
+		return o;
 	}
 }
