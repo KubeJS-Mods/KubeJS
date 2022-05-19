@@ -3,16 +3,16 @@ package dev.latvian.mods.kubejs.client.painter.screen;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.PainterObject;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
-import dev.latvian.mods.rhino.util.unit.FixedUnit;
-import dev.latvian.mods.rhino.util.unit.Unit;
+import dev.latvian.mods.unit.FixedNumberUnit;
+import dev.latvian.mods.unit.Unit;
 import org.intellij.lang.annotations.MagicConstant;
 
 public abstract class ScreenPainterObject extends PainterObject {
-	private static final Unit DEFAULT_SIZE = FixedUnit.of(16F);
+	private static final Unit DEFAULT_SIZE = FixedNumberUnit.ofFixed(16D);
 
-	public Unit x = FixedUnit.ZERO;
-	public Unit y = FixedUnit.ZERO;
-	public Unit z = FixedUnit.ZERO;
+	public Unit x = FixedNumberUnit.ZERO;
+	public Unit y = FixedNumberUnit.ZERO;
+	public Unit z = FixedNumberUnit.ZERO;
 	public Unit w = DEFAULT_SIZE;
 	public Unit h = DEFAULT_SIZE;
 
@@ -34,11 +34,11 @@ public abstract class ScreenPainterObject extends PainterObject {
 	protected void load(PainterObjectProperties properties) {
 		super.load(properties);
 
-		x = properties.getUnit("x", x).add(properties.getUnit("moveX", FixedUnit.ZERO));
-		y = properties.getUnit("y", y).add(properties.getUnit("moveY", FixedUnit.ZERO));
+		x = properties.getUnit("x", x).add(properties.getUnit("moveX", FixedNumberUnit.ZERO));
+		y = properties.getUnit("y", y).add(properties.getUnit("moveY", FixedNumberUnit.ZERO));
 		z = properties.getUnit("z", z);
-		w = properties.getUnit("w", w).add(properties.getUnit("expandW", FixedUnit.ZERO));
-		h = properties.getUnit("h", h).add(properties.getUnit("expandH", FixedUnit.ZERO));
+		w = properties.getUnit("w", w).add(properties.getUnit("expandW", FixedNumberUnit.ZERO));
+		h = properties.getUnit("h", h).add(properties.getUnit("expandH", FixedNumberUnit.ZERO));
 
 		if (properties.hasString("draw")) {
 			switch (properties.getString("draw", "ingame")) {

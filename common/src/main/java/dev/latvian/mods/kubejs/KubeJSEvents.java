@@ -17,7 +17,6 @@ public interface KubeJSEvents {
 	String CLIENT_LOGGED_OUT = "client.logged_out";
 	String CLIENT_TICK = "client.tick";
 	String CLIENT_PAINT_SCREEN = "client.paint_screen";
-	String CLIENT_PAINT_WORLD = "client.paint_world";
 	String CLIENT_PAINTER_UPDATED = "client.painter_updated";
 	String CLIENT_GENERATE_ASSETS = "client.generate_assets";
 

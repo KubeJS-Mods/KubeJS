@@ -12,9 +12,6 @@ import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.net.NetworkEventJS;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
-import dev.latvian.mods.rhino.util.unit.FixedUnit;
-import dev.latvian.mods.rhino.util.unit.Unit;
-import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -83,21 +80,6 @@ public class KubeJSClient extends KubeJSCommon {
 	public void clientBindings(BindingsEvent event) {
 		event.add("Client", new ClientWrapper());
 		event.add("Painter", Painter.INSTANCE);
-	}
-
-	@Override
-	public void clientTypeWrappers(TypeWrappers typeWrappers) {
-		typeWrappers.register(Unit.class, o -> {
-			if (o instanceof Unit unit) {
-				return unit;
-			} else if (o instanceof Number number) {
-				return FixedUnit.of(number.floatValue());
-			} else if (o instanceof String) {
-				return Painter.INSTANCE.unitStorage.parse(o.toString());
-			}
-
-			return FixedUnit.ZERO;
-		});
 	}
 
 	private void setup() {

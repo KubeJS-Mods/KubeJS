@@ -2,20 +2,21 @@ package dev.latvian.mods.kubejs.client.painter.screen;
 
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.kubejs.text.Text;
-import dev.latvian.mods.rhino.util.unit.FixedUnit;
-import dev.latvian.mods.rhino.util.unit.Unit;
+import dev.latvian.mods.unit.FixedBooleanUnit;
+import dev.latvian.mods.unit.FixedColorUnit;
+import dev.latvian.mods.unit.FixedNumberUnit;
+import dev.latvian.mods.unit.Unit;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.FormattedCharSequence;
 
 public class TextObject extends ScreenPainterObject {
 	private FormattedCharSequence[] text = new FormattedCharSequence[0];
-	private boolean shadow = false;
-	private float scale = 1F;
-	private Unit color = PainterObjectProperties.WHITE_COLOR;
-	private boolean centered = false;
-	private float lineSpacing = 10F;
+	private Unit shadow = FixedBooleanUnit.FALSE;
+	private Unit scale = FixedNumberUnit.ONE;
+	private Unit color = FixedColorUnit.WHITE;
+	private Unit centered = FixedBooleanUnit.FALSE;
+	private Unit lineSpacing = FixedNumberUnit.TEN;
 
-	private float maxTextWidth = 0F;
 	private float[] textWidth = new float[0];
 
 	@Override
@@ -34,40 +35,43 @@ public class TextObject extends ScreenPainterObject {
 			};
 		}
 
-		shadow = properties.getBoolean("shadow", shadow);
-		scale = properties.getFloat("scale", scale);
+		shadow = properties.getUnit("shadow", shadow);
+		scale = properties.getUnit("scale", scale);
 		color = properties.getColor("color", color);
-		centered = properties.getBoolean("centered", centered);
-		lineSpacing = properties.getFloat("lineSpacing", lineSpacing);
+		centered = properties.getUnit("centered", centered);
+		lineSpacing = properties.getUnit("lineSpacing", lineSpacing);
 
 		textWidth = new float[text.length];
 	}
 
 	@Override
 	public void preDraw(ScreenPaintEventJS event) {
-		maxTextWidth = 0F;
+		float maxTextWidth = 0F;
 
 		for (int i = 0; i < text.length; i++) {
 			textWidth[i] = event.font.getSplitter().stringWidth(text[i]);
 			maxTextWidth = Math.max(maxTextWidth, textWidth[i]);
 		}
 
-		w = FixedUnit.of(maxTextWidth * scale);
-		h = FixedUnit.of(9F * scale);
+		w = scale.mul(FixedNumberUnit.ofFixed(maxTextWidth));
+		h = scale.mul(lineSpacing).mul(FixedNumberUnit.ofFixed(text.length));
 	}
 
 	@Override
 	public void draw(ScreenPaintEventJS event) {
-		var ax = event.alignX(x.get(), maxTextWidth, alignX);
-		var ay = event.alignY(y.get(), text.length * lineSpacing, alignY);
-		var az = z.get();
+		var ls = lineSpacing.getFloat(event);
+		var ax = event.alignX(x.getFloat(event), w.getFloat(event), alignX);
+		var ay = event.alignY(y.getFloat(event), h.getFloat(event), alignY);
+		var az = z.getFloat(event);
+		boolean c = centered.getBoolean(event);
+		boolean s = shadow.getBoolean(event);
 
 		event.push();
 		event.translate(ax, ay, az);
-		event.scale(scale);
+		event.scale(scale.getFloat(event));
 
 		for (int i = 0; i < text.length; i++) {
-			event.rawText(text[i], centered ? -(textWidth[i] / 2F) : 0, i * lineSpacing, color.getAsInt(), shadow);
+			event.rawText(text[i], c ? -(textWidth[i] / 2F) : 0, i * ls, color.getInt(event), s);
 		}
 
 		event.pop();
