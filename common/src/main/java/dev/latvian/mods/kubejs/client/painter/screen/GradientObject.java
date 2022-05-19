@@ -1,20 +1,21 @@
 package dev.latvian.mods.kubejs.client.painter.screen;
 
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
-import dev.latvian.mods.rhino.util.unit.FixedUnit;
-import dev.latvian.mods.rhino.util.unit.Unit;
+import dev.latvian.mods.unit.FixedColorUnit;
+import dev.latvian.mods.unit.FixedNumberUnit;
+import dev.latvian.mods.unit.Unit;
 import net.minecraft.resources.ResourceLocation;
 
 public class GradientObject extends ScreenPainterObject {
-	private Unit colorTL = PainterObjectProperties.WHITE_COLOR;
-	private Unit colorTR = PainterObjectProperties.WHITE_COLOR;
-	private Unit colorBL = PainterObjectProperties.WHITE_COLOR;
-	private Unit colorBR = PainterObjectProperties.WHITE_COLOR;
+	private Unit colorTL = FixedColorUnit.WHITE;
+	private Unit colorTR = FixedColorUnit.WHITE;
+	private Unit colorBL = FixedColorUnit.WHITE;
+	private Unit colorBR = FixedColorUnit.WHITE;
 	private ResourceLocation texture = null;
-	private Unit u0 = FixedUnit.ZERO;
-	private Unit v0 = FixedUnit.ZERO;
-	private Unit u1 = FixedUnit.ONE;
-	private Unit v1 = FixedUnit.ONE;
+	private Unit u0 = FixedNumberUnit.ZERO;
+	private Unit v0 = FixedNumberUnit.ZERO;
+	private Unit u1 = FixedNumberUnit.ONE;
+	private Unit v1 = FixedNumberUnit.ONE;
 
 	@Override
 	protected void load(PainterObjectProperties properties) {
@@ -25,23 +26,23 @@ public class GradientObject extends ScreenPainterObject {
 		colorBR = properties.getColor("colorBR", colorBR);
 
 		if (properties.hasAny("colorT")) {
-			colorTL = colorTR = properties.getColor("colorT", PainterObjectProperties.WHITE_COLOR);
+			colorTL = colorTR = properties.getColor("colorT", FixedColorUnit.WHITE);
 		}
 
 		if (properties.hasAny("colorB")) {
-			colorBL = colorBR = properties.getColor("colorB", PainterObjectProperties.WHITE_COLOR);
+			colorBL = colorBR = properties.getColor("colorB", FixedColorUnit.WHITE);
 		}
 
 		if (properties.hasAny("colorL")) {
-			colorTL = colorBL = properties.getColor("colorL", PainterObjectProperties.WHITE_COLOR);
+			colorTL = colorBL = properties.getColor("colorL", FixedColorUnit.WHITE);
 		}
 
 		if (properties.hasAny("colorR")) {
-			colorTR = colorBR = properties.getColor("colorR", PainterObjectProperties.WHITE_COLOR);
+			colorTR = colorBR = properties.getColor("colorR", FixedColorUnit.WHITE);
 		}
 
 		if (properties.hasAny("color")) {
-			colorTL = colorTR = colorBL = colorBR = properties.getColor("color", PainterObjectProperties.WHITE_COLOR);
+			colorTL = colorTR = colorBL = colorBR = properties.getColor("color", FixedColorUnit.WHITE);
 		}
 
 		texture = properties.getResourceLocation("texture", texture);
@@ -53,20 +54,20 @@ public class GradientObject extends ScreenPainterObject {
 
 	@Override
 	public void draw(ScreenPaintEventJS event) {
-		var colBL = colorBL.getAsInt();
-		var colBR = colorBR.getAsInt();
-		var colTR = colorTR.getAsInt();
-		var colTL = colorTL.getAsInt();
+		var colBL = colorBL.getInt(event);
+		var colBR = colorBR.getInt(event);
+		var colTR = colorTR.getInt(event);
+		var colTL = colorTL.getInt(event);
 
 		if (((colBL >> 24) & 0xFF) < 2 && ((colBR >> 24) & 0xFF) < 2 && ((colTR >> 24) & 0xFF) < 2 && ((colTL >> 24) & 0xFF) < 2) {
 			return;
 		}
 
-		var aw = w.get();
-		var ah = h.get();
-		var ax = event.alignX(x.get(), aw, alignX);
-		var ay = event.alignY(y.get(), ah, alignY);
-		var az = z.get();
+		var aw = w.getFloat(event);
+		var ah = h.getFloat(event);
+		var ax = event.alignX(x.getFloat(event), aw, alignX);
+		var ay = event.alignY(y.getFloat(event), ah, alignY);
+		var az = z.getFloat(event);
 		var m = event.getMatrix();
 
 		if (texture == null) {
@@ -78,10 +79,10 @@ public class GradientObject extends ScreenPainterObject {
 			event.vertex(m, ax + aw, ay + ah, az, colBR);
 			event.end();
 		} else {
-			float u0f = u0.get();
-			float v0f = v0.get();
-			float u1f = u1.get();
-			float v1f = v1.get();
+			float u0f = u0.getFloat(event);
+			float v0f = v0.getFloat(event);
+			float u1f = u1.getFloat(event);
+			float v1f = v1.getFloat(event);
 
 			event.setPositionColorTextureShader();
 			event.setShaderTexture(texture);

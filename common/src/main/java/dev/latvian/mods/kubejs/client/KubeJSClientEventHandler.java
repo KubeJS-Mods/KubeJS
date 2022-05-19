@@ -15,7 +15,6 @@ import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenPaintEventJS;
-import dev.latvian.mods.kubejs.client.painter.world.WorldPaintEventJS;
 import dev.latvian.mods.kubejs.core.ImageButtonKJS;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
@@ -189,13 +188,13 @@ public class KubeJSClientEventHandler {
 		event.post(KubeJSEvents.CLIENT_PAINT_SCREEN);
 
 		for (var object : Painter.INSTANCE.getScreenObjects()) {
-			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
+			if (object.visible.getBoolean(event) && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
 				object.preDraw(event);
 			}
 		}
 
 		for (var object : Painter.INSTANCE.getScreenObjects()) {
-			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
+			if (object.visible.getBoolean(event) && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
 				object.draw(event);
 			}
 		}
@@ -217,13 +216,13 @@ public class KubeJSClientEventHandler {
 		event.post(KubeJSEvents.CLIENT_PAINT_SCREEN);
 
 		for (var object : Painter.INSTANCE.getScreenObjects()) {
-			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
+			if (object.visible.getBoolean(event) && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
 				object.preDraw(event);
 			}
 		}
 
 		for (var object : Painter.INSTANCE.getScreenObjects()) {
-			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
+			if (object.visible.getBoolean(event) && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
 				object.draw(event);
 			}
 		}
@@ -300,32 +299,6 @@ public class KubeJSClientEventHandler {
 			ImageIO.write(image, "PNG", stream);
 		} catch (Exception ex) {
 			ex.printStackTrace();
-		}
-	}
-
-	private void renderWorldLast(PoseStack ps, float delta) {
-		var mc = Minecraft.getInstance();
-
-		if (mc.player == null) {
-			return;
-		}
-
-		// RenderSystem.enableBlend();
-		// RenderSystem.disableLighting();
-
-		var event = new WorldPaintEventJS(mc, ps, delta);
-		event.post(KubeJSEvents.CLIENT_PAINT_WORLD);
-
-		for (var object : Painter.INSTANCE.getWorldObjects()) {
-			if (object.visible) {
-				object.preDraw(event);
-			}
-		}
-
-		for (var object : Painter.INSTANCE.getWorldObjects()) {
-			if (object.visible) {
-				object.draw(event);
-			}
 		}
 	}
 }

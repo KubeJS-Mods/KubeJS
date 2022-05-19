@@ -103,6 +103,7 @@ import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import dev.latvian.mods.rhino.mod.wrapper.DirectionWrapper;
 import dev.latvian.mods.rhino.mod.wrapper.UUIDWrapper;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
+import dev.latvian.mods.unit.Unit;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
@@ -379,6 +380,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(JsonPrimitive.class, JsonIO::primitiveOf);
 		typeWrappers.register(Path.class, UtilsJS::getPath);
 		typeWrappers.register(File.class, UtilsJS::getFileFromPath);
+		typeWrappers.register(Unit.class, Painter.INSTANCE::unitOf);
 
 		typeWrappers.register(ResourceLocation.class, UtilsJS::getMCID);
 		typeWrappers.register(ItemStack.class, o -> ItemStackJS.of(o).getItemStack());

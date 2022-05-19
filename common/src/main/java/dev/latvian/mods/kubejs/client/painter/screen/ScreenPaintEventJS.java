@@ -4,12 +4,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import dev.latvian.mods.kubejs.client.painter.PaintEventJS;
 import dev.latvian.mods.kubejs.client.painter.Painter;
+import dev.latvian.mods.unit.UnitVariables;
+import dev.latvian.mods.unit.VariableSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 
-public class ScreenPaintEventJS extends PaintEventJS {
+public class ScreenPaintEventJS extends PaintEventJS implements UnitVariables {
 	public final int mouseX;
 	public final int mouseY;
 	public final int width;
@@ -96,5 +98,10 @@ public class ScreenPaintEventJS extends PaintEventJS {
 		} else {
 			font.draw(matrices, text, x, y, color);
 		}
+	}
+
+	@Override
+	public VariableSet getVariables() {
+		return Painter.INSTANCE.getVariables();
 	}
 }
