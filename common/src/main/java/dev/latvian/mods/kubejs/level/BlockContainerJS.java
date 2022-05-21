@@ -12,7 +12,6 @@ import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.player.PlayerJS;
 import dev.latvian.mods.kubejs.player.ServerPlayerJS;
-import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
@@ -25,6 +24,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biomes;
@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -349,30 +350,29 @@ public class BlockContainerJS implements SpecialEquality {
 		return ItemStackJS.of(state.getBlock().getCloneItemStack(minecraftLevel, pos, state));
 	}
 
-	public ListJS getDrops() {
-		return getDrops(null, null);
+	public List<ItemStackJS> getDrops() {
+		return getDrops(null, ItemStack.EMPTY);
 	}
 
-	public ListJS getDrops(EntityJS entity, ItemStackJS heldItem) {
+	public List<ItemStackJS> getDrops(@Nullable EntityJS entity, ItemStack heldItem) {
 		if (minecraftLevel instanceof ServerLevel) {
-			var drops = new ListJS();
-			Block.getDrops(getBlockState(), (ServerLevel) minecraftLevel, pos, getEntity(),
-					entity != null ? entity.minecraftEntity : null,
-					heldItem != null ? heldItem.getItemStack() : null
-			).forEach((drop) -> {
-				drops.add(new ItemStackJS(drop));
-			});
-			return  drops;
+			var drops = new ArrayList<ItemStackJS>();
+
+			for (var item : Block.getDrops(getBlockState(), (ServerLevel) minecraftLevel, pos, getEntity(), entity != null ? entity.minecraftEntity : null, heldItem)) {
+				drops.add(ItemStackJS.of(item));
+			}
+
+			return drops;
 		}
 		return null;
 	}
 
-	public void popItem(ItemStackJS item) {
-		Block.popResource(minecraftLevel, pos, item.getItemStack());
+	public void popItem(ItemStack item) {
+		Block.popResource(minecraftLevel, pos, item);
 	}
 
-	public void popItemFromFace(ItemStackJS item, Direction dir) {
-		Block.popResourceFromFace(minecraftLevel, pos, dir, item.getItemStack());
+	public void popItemFromFace(ItemStack item, Direction dir) {
+		Block.popResourceFromFace(minecraftLevel, pos, dir, item);
 	}
 
 	@Override
