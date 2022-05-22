@@ -60,6 +60,12 @@ public class LootBuilder implements FunctionContainer, ConditionContainer {
 		pools.add(pool.toJson());
 	}
 
+	public void modifyPool(int index, Consumer<LootBuilderPool> p) {
+		var pool = new LootBuilderPool(pools.get(index));
+		p.accept((pool));
+		pools.set(index, pool.toJson());
+	}
+
 	public LootBuilder addFunction(JsonObject o) {
 		functions.add(o);
 		return this;

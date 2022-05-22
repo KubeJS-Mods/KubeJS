@@ -1,8 +1,11 @@
 package dev.latvian.mods.kubejs.loot;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -18,9 +21,27 @@ import org.jetbrains.annotations.Nullable;
 public class LootBuilderPool implements FunctionContainer, ConditionContainer {
 	public NumberProvider rolls = ConstantValue.exactly(1);
 	public NumberProvider bonusRolls = null;
-	public final JsonArray conditions = new JsonArray();
-	public final JsonArray functions = new JsonArray();
-	public final JsonArray entries = new JsonArray();
+	public JsonArray conditions = new JsonArray();
+	public JsonArray functions = new JsonArray();
+	public JsonArray entries = new JsonArray();
+
+	public LootBuilderPool() {}
+
+	public LootBuilderPool(JsonElement existing) {
+		if (existing instanceof JsonObject o) {
+			if (o.has("conditions")) {
+				conditions = o.get("conditions").getAsJsonArray();
+			}
+
+			if (o.has("functions")) {
+				functions = o.get("functions").getAsJsonArray();
+			}
+
+			if (o.has("entries")) {
+				entries = o.get("entries").getAsJsonArray();
+			}
+		}
+	}
 
 	public JsonObject toJson() {
 		var json = new JsonObject();
@@ -70,6 +91,57 @@ public class LootBuilderPool implements FunctionContainer, ConditionContainer {
 		entries.add(json);
 		return new LootTableEntry(json);
 	}
+
+	public boolean removeItemEntry(IngredientJS ing, boolean strict) {
+		var index  = -1;
+		for (var i = 0;i < entries.size();i++) {
+			var entry = entries.get(i);
+			if (entry instanceof JsonObject o) {
+				if ("minecraft:item".equals(o.get("type").getAsString()) || !strict && "minecraft:tag".equals(o.get("type").getAsString())) {
+					if (ing.test(ItemStackJS.of(o.get("name")))) {
+						index = i;
+						break;
+					}
+				}
+			}
+		}
+		if (index != -1) {
+			entries.remove((index));
+			return true;
+		}
+		return false;
+	}
+
+	public boolean removeItemEntry(IngredientJS ing) {
+		return removeItemEntry(ing, false);
+	}
+
+	public boolean removeLootTableEntry(ResourceLocation rl) {
+		var index  = -1;
+		for (var i = 0;i < entries.size();i++) {
+			var entry = entries.get(i);
+			if (entry instanceof JsonObject o) {
+				if (o.get("type").equals("minecraft:loot_table")) {
+					if (rl.toString().equals(o.get("name").getAsString())) {
+						index = i;
+						break;
+					}
+				}
+			}
+		}
+		if (index != -1) {
+			entries.remove((index));
+			return true;
+		}
+		return false;
+	}
+
+	public void clearEntries(){ entries = new JsonArray(); }
+
+	public void clearFunctions() { functions = new JsonArray(); }
+
+	public void clearConditions() {	conditions = new JsonArray(); }
+
 
 	public LootTableEntry addEmpty(int weight) {
 		var json = new JsonObject();
