@@ -29,6 +29,7 @@ import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.screen.AtlasTextureObject;
 import dev.latvian.mods.kubejs.client.painter.screen.GradientObject;
+import dev.latvian.mods.kubejs.client.painter.screen.ItemObject;
 import dev.latvian.mods.kubejs.client.painter.screen.RectangleObject;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
 import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
@@ -214,6 +215,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		Painter.INSTANCE.registerObject("text", TextObject::new);
 		Painter.INSTANCE.registerObject("atlas_texture", AtlasTextureObject::new);
 		Painter.INSTANCE.registerObject("gradient", GradientObject::new);
+		Painter.INSTANCE.registerObject("item", ItemObject::new);
 	}
 
 	@Override
