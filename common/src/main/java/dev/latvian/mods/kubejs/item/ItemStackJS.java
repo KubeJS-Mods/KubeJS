@@ -36,6 +36,7 @@ import dev.latvian.mods.rhino.util.SpecialEquality;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -321,6 +322,8 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			return new ItemStackJS(new ItemStack(itemLike.asItem()));
 		} else if (o instanceof JsonElement json) {
 			return resultFromRecipeJson(json);
+		} else if (o instanceof StringTag tag) {
+			return of(tag.getAsString());
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
 			var reg = UtilsJS.parseRegex(o);
 

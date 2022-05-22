@@ -177,6 +177,7 @@ public class KubeJSClientEventHandler {
 		}
 
 		RenderSystem.enableBlend();
+		RenderSystem.enableDepthTest();
 		//RenderSystem.disableLighting();
 
 		var event = new ScreenPaintEventJS(mc, matrices, delta);

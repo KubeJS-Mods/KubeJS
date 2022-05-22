@@ -24,9 +24,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -34,9 +36,11 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -322,6 +326,11 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	@Nullable
+	public InventoryJS getInventory() {
+		return getInventory(Direction.UP);
+	}
+
+	@Nullable
 	public InventoryJS getInventory(Direction facing) {
 		var tileEntity = getEntity();
 
@@ -339,6 +348,31 @@ public class BlockContainerJS implements SpecialEquality {
 	public ItemStackJS getItem() {
 		var state = getBlockState();
 		return ItemStackJS.of(state.getBlock().getCloneItemStack(minecraftLevel, pos, state));
+	}
+
+	public List<ItemStackJS> getDrops() {
+		return getDrops(null, ItemStack.EMPTY);
+	}
+
+	public List<ItemStackJS> getDrops(@Nullable EntityJS entity, ItemStack heldItem) {
+		if (minecraftLevel instanceof ServerLevel) {
+			var drops = new ArrayList<ItemStackJS>();
+
+			for (var item : Block.getDrops(getBlockState(), (ServerLevel) minecraftLevel, pos, getEntity(), entity != null ? entity.minecraftEntity : null, heldItem)) {
+				drops.add(ItemStackJS.of(item));
+			}
+
+			return drops;
+		}
+		return null;
+	}
+
+	public void popItem(ItemStack item) {
+		Block.popResource(minecraftLevel, pos, item);
+	}
+
+	public void popItemFromFace(ItemStack item, Direction dir) {
+		Block.popResourceFromFace(minecraftLevel, pos, dir, item);
 	}
 
 	@Override
