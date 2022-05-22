@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix4f;
+import com.mojang.math.Quaternion;
 import dev.latvian.mods.kubejs.client.ClientEventJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -51,6 +52,14 @@ public class PaintEventJS extends ClientEventJS {
 
 	public void scale(float x, float y, float z) {
 		matrices.scale(x, y, z);
+	}
+
+	public void multiply(Quaternion q) {
+		matrices.mulPose(q);
+	}
+
+	public void multiplyWithMatrix(Matrix4f m) {
+		matrices.mulPoseMatrix(m);
 	}
 
 	public Matrix4f getMatrix() {
