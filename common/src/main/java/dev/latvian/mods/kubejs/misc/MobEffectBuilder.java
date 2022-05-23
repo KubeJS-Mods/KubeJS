@@ -63,7 +63,7 @@ public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 	}
 
 	public MobEffectBuilder color(Color col) {
-		color = col.getRgbKJS();
+		color = col.getRgbJS();
 		return this;
 	}
 }

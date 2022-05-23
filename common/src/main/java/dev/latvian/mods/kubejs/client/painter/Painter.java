@@ -65,7 +65,7 @@ public class Painter implements UnitVariables {
 		if (o instanceof Unit unit) {
 			return unit;
 		} else if (o instanceof Number number) {
-			return FixedNumberUnit.ofFixed(number.floatValue());
+			return FixedNumberUnit.of(number.floatValue());
 		} else if (o instanceof String) {
 			return unitContext.parse(o.toString());
 		}

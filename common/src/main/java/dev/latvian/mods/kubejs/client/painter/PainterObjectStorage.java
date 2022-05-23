@@ -42,7 +42,7 @@ public class PainterObjectStorage {
 			} else if (key.equals("$")) {
 				for (var k : tag.getAllKeys()) {
 					if (tag.contains(k, Tag.TAG_ANY_NUMERIC)) {
-						Painter.INSTANCE.setVariable(k, FixedNumberUnit.ofFixed(tag.getFloat(k)));
+						Painter.INSTANCE.setVariable(k, FixedNumberUnit.of(tag.getFloat(k)));
 					} else {
 						Painter.INSTANCE.setVariable(k, UnitContext.DEFAULT.parse(tag.getString(k)));
 					}
