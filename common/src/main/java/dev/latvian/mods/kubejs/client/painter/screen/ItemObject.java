@@ -29,7 +29,7 @@ public class ItemObject extends ScreenPainterObject {
 	private Unit rotation = FixedNumberUnit.ZERO;
 
 	public ItemObject() {
-		z = FixedNumberUnit.ofFixed(100);
+		z = FixedNumberUnit.of(100);
 	}
 
 	@Override

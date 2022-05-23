@@ -47,7 +47,7 @@ public class PainterObjectProperties {
 		if (hasString(key)) {
 			return UnitContext.DEFAULT.parse(tag.getString(key));
 		} else if (hasNumber(key)) {
-			return FixedNumberUnit.ofFixed(tag.getFloat(key));
+			return FixedNumberUnit.of(tag.getFloat(key));
 		}
 
 		return def;
@@ -58,7 +58,7 @@ public class PainterObjectProperties {
 			var col = ColorWrapper.MAP.get(getString(key, ""));
 
 			if (col != null) {
-				return new FixedColorUnit(col.getArgbKJS(), true);
+				return FixedColorUnit.of(col.getArgbJS(), true);
 			}
 		}
 

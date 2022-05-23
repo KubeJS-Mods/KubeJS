@@ -336,7 +336,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	public BlockBuilder color(int index, Color c) {
-		color.put(index, c.getArgbKJS());
+		color.put(index, c.getArgbJS());
 		return this;
 	}
 

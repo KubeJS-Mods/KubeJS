@@ -107,7 +107,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 			}
 
 			if (map.containsKey("color")) {
-				text.color = ColorWrapper.of(map.get("color")).getRgbKJS();
+				text.color = ColorWrapper.of(map.get("color")).getRgbJS();
 			}
 
 			text.bold = (Boolean) map.getOrDefault("bold", null);
@@ -319,7 +319,7 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 	}
 
 	public final Text color(Color c) {
-		color = c.getRgbKJS() & 0xFFFFFF;
+		color = c.getRgbJS() & 0xFFFFFF;
 		return this;
 	}
 

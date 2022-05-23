@@ -53,8 +53,8 @@ public class TextObject extends ScreenPainterObject {
 			maxTextWidth = Math.max(maxTextWidth, textWidth[i]);
 		}
 
-		w = scale.mul(FixedNumberUnit.ofFixed(maxTextWidth));
-		h = scale.mul(lineSpacing).mul(FixedNumberUnit.ofFixed(text.length));
+		w = scale.mul(FixedNumberUnit.of(maxTextWidth));
+		h = scale.mul(lineSpacing).mul(FixedNumberUnit.of(text.length));
 	}
 
 	@Override

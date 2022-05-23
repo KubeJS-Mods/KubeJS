@@ -8,7 +8,7 @@ import dev.latvian.mods.unit.Unit;
 import org.intellij.lang.annotations.MagicConstant;
 
 public abstract class ScreenPainterObject extends PainterObject {
-	private static final Unit DEFAULT_SIZE = FixedNumberUnit.ofFixed(16D);
+	private static final Unit DEFAULT_SIZE = FixedNumberUnit.SIXTEEN;
 
 	public Unit x = FixedNumberUnit.ZERO;
 	public Unit y = FixedNumberUnit.ZERO;

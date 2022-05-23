@@ -170,7 +170,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	@Environment(EnvType.CLIENT)
 	public void clientRegistry(Minecraft minecraft) {
 		if (colorCallback != null) {
-			ColorHandlerRegistry.registerItemColors((stack, tintIndex) -> colorCallback.getColor(ItemStackJS.of(stack), tintIndex).getArgbKJS(), this);
+			ColorHandlerRegistry.registerItemColors((stack, tintIndex) -> colorCallback.getColor(ItemStackJS.of(stack), tintIndex).getArgbJS(), this);
 		}
 	}
 
@@ -363,7 +363,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		}
 
 		public void add(int tintIndex, Color color) {
-			colors.put(tintIndex, color.getRgbKJS());
+			colors.put(tintIndex, color.getRgbJS());
 		}
 	}
 
