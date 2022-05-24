@@ -309,7 +309,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
-		if (Level.isInSpawnableBounds(new BlockPos(x, y, z))) {
+		if (!Level.isInSpawnableBounds(new BlockPos(x, y, z))) {
 			throw new IllegalArgumentException("Invalid coordinates!");
 		} else if(Float.isNaN(yaw) || Float.isNaN(pitch)) {
 			throw new IllegalArgumentException("Invalid rotation!");
