@@ -24,6 +24,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.scores.Team;
 import org.jetbrains.annotations.Nullable;
@@ -308,6 +309,11 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
+		if (Level.isInSpawnableBounds(new BlockPos(x, y, z))) {
+			throw new IllegalArgumentException("Invalid coordinates!");
+		} else if(Float.isNaN(yaw) || Float.isNaN(pitch)) {
+			throw new IllegalArgumentException("Invalid rotation!");
+		}
 		minecraftEntity.moveTo(x, y, z, yaw, pitch);
 	}
 
