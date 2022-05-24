@@ -67,10 +67,15 @@ dependencies {
 }
 
 processResources {
-	inputs.property "version", project.version
+	def toReplace = [
+			"version"             : project.version,
+			"rhino_version"       : rootProject.rhino_version,
+			"architectury_version": rootProject.architectury_version
+	]
 
+	inputs.properties toReplace
 	filesMatching("META-INF/mods.toml") {
-		expand "version": project.version
+		expand toReplace
 	}
 }
 

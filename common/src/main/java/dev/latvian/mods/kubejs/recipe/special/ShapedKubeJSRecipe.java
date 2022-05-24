@@ -1,18 +1,16 @@
 package dev.latvian.mods.kubejs.recipe.special;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import com.mojang.util.UUIDTypeAdapter;
 import dev.architectury.core.AbstractRecipeSerializer;
+import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeCraftingGrid;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.RecipeEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -24,23 +22,21 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 
+import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class ShapedKubeJSRecipe extends ShapedRecipe {
-	private String group;
-	private int width;
-	private int height;
-	private NonNullList<Ingredient> ingredients;
-	private ItemStack result;
-	private boolean mirror;
-	private boolean shrink;
-	private List<IngredientAction> ingredientActions;
-	private ModifyRecipeResultCallback modifyResult;
 
-	public ShapedKubeJSRecipe(ResourceLocation _id) {
-		super(_id, "", 0, 0, NonNullList.withSize(0, Ingredient.EMPTY), ItemStack.EMPTY);
+	private final boolean mirror;
+	private final List<IngredientAction> ingredientActions;
+	private final ModifyRecipeResultCallback modifyResult;
+
+	public ShapedKubeJSRecipe(ResourceLocation id, String group, int width, int height, NonNullList<Ingredient> ingredients, ItemStack result,
+							  boolean mirror, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult) {
+		super(id, group, width, height, ingredients, result);
+		this.mirror = mirror;
+		this.ingredientActions = ingredientActions;
+		this.modifyResult = modifyResult;
 	}
 
 	@Override
@@ -48,35 +44,14 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 		return KubeJSRecipeEventHandler.SHAPED.get();
 	}
 
-	@Override
-	public String getGroup() {
-		return group;
-	}
-
-	@Override
-	public ItemStack getResultItem() {
-		return result;
-	}
-
-	@Override
-	public NonNullList<Ingredient> getIngredients() {
-		return ingredients;
-	}
-
-	@Override
-	public boolean canCraftInDimensions(int w, int h) {
-		return w >= width && h >= height;
-	}
-
-	@Override
 	public boolean matches(CraftingContainer craftingContainer, Level level) {
-		for (var x = 0; x <= craftingContainer.getWidth() - width; x++) {
-			for (var y = 0; y <= craftingContainer.getHeight() - height; y++) {
-				if (mirror && matches(craftingContainer, x, y, true)) {
+		for (var i = 0; i <= craftingContainer.getWidth() - this.width; ++i) {
+			for (var j = 0; j <= craftingContainer.getHeight() - this.height; ++j) {
+				if (mirror && this.matches(craftingContainer, i, j, true)) {
 					return true;
 				}
 
-				if (matches(craftingContainer, x, y, false)) {
+				if (this.matches(craftingContainer, i, j, false)) {
 					return true;
 				}
 			}
@@ -85,47 +60,13 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 		return false;
 	}
 
-	private boolean matches(CraftingContainer craftingContainer, int x0, int y0, boolean mirrorPattern) {
-		for (var x = 0; x < craftingContainer.getWidth(); x++) {
-			for (var y = 0; y < craftingContainer.getHeight(); y++) {
-				var m = x - x0;
-				var n = y - y0;
-				var ingredient = Ingredient.EMPTY;
-
-				if (m >= 0 && n >= 0 && m < width && n < height) {
-					if (mirrorPattern) {
-						ingredient = ingredients.get(width - m - 1 + n * width);
-					} else {
-						ingredient = ingredients.get(m + n * width);
-					}
-				}
-
-				if (!ingredient.test(craftingContainer.getItem(x + y * craftingContainer.getWidth()))) {
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
 	@Override
-	public ItemStack assemble(CraftingContainer craftingContainer) {
+	public ItemStack assemble(CraftingContainer container) {
 		if (modifyResult != null) {
-			return modifyResult.modify(new ModifyRecipeCraftingGrid(craftingContainer), ItemStackJS.of(getResultItem().copy())).getItemStack();
+			return modifyResult.modify(new ModifyRecipeCraftingGrid(container), ItemStackJS.of(getResultItem().copy())).getItemStack();
 		}
 
 		return getResultItem().copy();
-	}
-
-	@Override
-	public int getWidth() {
-		return width;
-	}
-
-	@Override
-	public int getHeight() {
-		return height;
 	}
 
 	@Override
@@ -139,184 +80,63 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 		return list;
 	}
 
-	private static NonNullList<Ingredient> dissolvePattern(String[] pattern, Map<String, Ingredient> key, int w, int h) {
-		var nonNullList = NonNullList.withSize(w * h, Ingredient.EMPTY);
-		Set<String> set = Sets.newHashSet(key.keySet());
-		set.remove(" ");
-
-		for (var k = 0; k < pattern.length; ++k) {
-			for (var l = 0; l < pattern[k].length(); ++l) {
-				var string = pattern[k].substring(l, l + 1);
-				var ingredient = key.get(string);
-				if (ingredient == null) {
-					throw new JsonSyntaxException("Pattern references symbol '" + string + "' but it's not defined in the key");
-				}
-
-				set.remove(string);
-				nonNullList.set(l + w * k, ingredient);
-			}
-		}
-
-		if (!set.isEmpty()) {
-			throw new JsonSyntaxException("Key defines symbols that aren't used in pattern: " + set);
-		} else {
-			return nonNullList;
-		}
-	}
-
-	private static String[] shrink(String[] strings) {
-		var i = Integer.MAX_VALUE;
-		var j = 0;
-		var k = 0;
-		var l = 0;
-
-		for (var m = 0; m < strings.length; ++m) {
-			var string = strings[m];
-			i = Math.min(i, firstNonSpace(string));
-			var n = lastNonSpace(string);
-			j = Math.max(j, n);
-			if (n < 0) {
-				if (k == m) {
-					++k;
-				}
-
-				++l;
-			} else {
-				l = 0;
-			}
-		}
-
-		if (strings.length == l) {
-			return new String[0];
-		} else {
-			var strings2 = new String[strings.length - l - k];
-
-			for (var o = 0; o < strings2.length; ++o) {
-				strings2[o] = strings[o + k].substring(i, j + 1);
-			}
-
-			return strings2;
-		}
-	}
-
-	private static int firstNonSpace(String string) {
-		int i;
-		for (i = 0; i < string.length() && string.charAt(i) == ' '; ++i) {
-		}
-
-		return i;
-	}
-
-	private static int lastNonSpace(String string) {
-		int i;
-		for (i = string.length() - 1; i >= 0 && string.charAt(i) == ' '; --i) {
-		}
-
-		return i;
-	}
-
-	private static String[] patternFromJson(JsonArray jsonArray) {
-		var strings = new String[jsonArray.size()];
-		if (strings.length > 3) {
-			throw new JsonSyntaxException("Invalid pattern: too many rows, 3 is maximum");
-		} else if (strings.length == 0) {
-			throw new JsonSyntaxException("Invalid pattern: empty pattern not allowed");
-		} else {
-			for (var i = 0; i < strings.length; ++i) {
-				var string = GsonHelper.convertToString(jsonArray.get(i), "pattern[" + i + "]");
-				if (string.length() > 3) {
-					throw new JsonSyntaxException("Invalid pattern: too many columns, 3 is maximum");
-				}
-
-				if (i > 0 && strings[0].length() != string.length()) {
-					throw new JsonSyntaxException("Invalid pattern: each row must be the same width");
-				}
-
-				strings[i] = string;
-			}
-
-			return strings;
-		}
-	}
-
-	private static Map<String, Ingredient> keyFromJson(JsonObject jsonObject) {
-		Map<String, Ingredient> map = Maps.newHashMap();
-
-		for (var entry : jsonObject.entrySet()) {
-			if (entry.getKey().length() != 1) {
-				throw new JsonSyntaxException("Invalid key entry: '" + entry.getKey() + "' is an invalid symbol (must be 1 character only).");
-			}
-
-			if (" ".equals(entry.getKey())) {
-				throw new JsonSyntaxException("Invalid key entry: ' ' is a reserved symbol.");
-			}
-
-			map.put(entry.getKey(), Ingredient.fromJson(entry.getValue()));
-		}
-
-		map.put(" ", Ingredient.EMPTY);
-		return map;
-	}
-
 	public static class SerializerKJS extends AbstractRecipeSerializer<ShapedKubeJSRecipe> {
+
+		// registry replacement... you never know
+		private static final RecipeSerializer<ShapedRecipe> SHAPED = UtilsJS.cast(KubeJSRegistries.recipeSerializers().get(new ResourceLocation("shapeless")));
+
 		@Override
 		public ShapedKubeJSRecipe fromJson(ResourceLocation id, JsonObject json) {
-			var r = new ShapedKubeJSRecipe(id);
-			r.mirror = !json.has("mirror") || json.get("mirror").getAsBoolean();
-			r.shrink = !json.has("shrink") || json.get("shrink").getAsBoolean();
-			r.group = GsonHelper.getAsString(json, "group", "");
-			var key = ShapedKubeJSRecipe.keyFromJson(GsonHelper.getAsJsonObject(json, "key"));
-			var pattern = ShapedKubeJSRecipe.patternFromJson(GsonHelper.getAsJsonArray(json, "pattern"));
+			var shapedRecipe = SHAPED.fromJson(id, json);
 
-			if (r.shrink) {
-				pattern = shrink(pattern);
+			var mirror = GsonHelper.getAsBoolean(json, "mirror", true);
+			var shrink = GsonHelper.getAsBoolean(json, "shrink", true);
+
+			// it sucks that we can't reuse the ShapedRecipe directly here,
+			// but the pattern is shrunk automatically, so we need to recreate it
+			// TODO: maybe these classes *would* be better off as a mixin, after all
+			var key = ShapedRecipe.keyFromJson(GsonHelper.getAsJsonObject(json, "key"));
+			var pattern = ShapedRecipe.patternFromJson(GsonHelper.getAsJsonArray(json, "pattern"));
+
+			if (shrink) {
+				pattern = ShapedRecipe.shrink(pattern);
 			}
 
-			r.width = pattern[0].length();
-			r.height = pattern.length;
-			r.ingredients = ShapedKubeJSRecipe.dissolvePattern(pattern, key, r.width, r.height);
-			r.result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-			r.ingredientActions = IngredientAction.parseList(json.get("kubejs_actions"));
+			int w = pattern[0].length(), h = pattern.length;
+			var ingredients = ShapedRecipe.dissolvePattern(pattern, key, w, h);
 
+			var ingredientActions = IngredientAction.parseList(json.get("kubejs_actions"));
+
+			ModifyRecipeResultCallback modifyResult = null;
 			if (json.has("kubejs_modify_result")) {
-				r.modifyResult = RecipeEventJS.modifyResultCallbackMap.get(UUIDTypeAdapter.fromString(json.get("kubejs_modify_result").getAsString()));
+				modifyResult = RecipeEventJS.modifyResultCallbackMap.get(UUIDTypeAdapter.fromString(json.get("kubejs_modify_result").getAsString()));
 			}
 
-			return r;
+			return new ShapedKubeJSRecipe(id, shapedRecipe.getGroup(), w, h, ingredients, shapedRecipe.getResultItem(), mirror, ingredientActions, modifyResult);
 		}
 
 		@Override
 		public ShapedKubeJSRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-			var r = new ShapedKubeJSRecipe(id);
-			r.group = buf.readUtf();
-			r.width = buf.readVarInt();
-			r.height = buf.readVarInt();
-			r.ingredients = NonNullList.withSize(r.width * r.height, Ingredient.EMPTY);
+			var shapedRecipe = SHAPED.fromNetwork(id, buf);
+			var mirror = buf.readBoolean();
+			var ingredientActions = IngredientAction.readList(buf);
 
-			for (var i = 0; i < r.width * r.height; ++i) {
-				r.ingredients.set(i, Ingredient.fromNetwork(buf));
-			}
+			// original values
+			var group = shapedRecipe.getGroup();
+			var width = shapedRecipe.getWidth();
+			var height = shapedRecipe.getHeight();
+			var ingredients = shapedRecipe.getIngredients();
+			var result = shapedRecipe.getResultItem();
 
-			r.result = buf.readItem();
-			r.mirror = buf.readBoolean();
-			r.shrink = buf.readBoolean();
-			r.ingredientActions = IngredientAction.readList(buf);
-			return r;
+			// the pattern can be used as-is because the shrinking logic is done serverside
+			// additionally, result modification callbacks do not need to be synced to clients
+			return new ShapedKubeJSRecipe(id, group, width, height, ingredients, result, mirror, ingredientActions, null);
 		}
 
 		@Override
 		public void toNetwork(FriendlyByteBuf buf, ShapedKubeJSRecipe r) {
-			buf.writeUtf(r.group);
-			buf.writeVarInt(r.width);
-			buf.writeVarInt(r.height);
-
-			for (var ingredient : r.ingredients) {
-				ingredient.toNetwork(buf);
-			}
-
-			buf.writeItem(r.result);
+			SHAPED.toNetwork(buf, r);
 			buf.writeBoolean(r.mirror);
-			buf.writeBoolean(r.shrink);
 			IngredientAction.writeList(buf, r.ingredientActions);
 		}
 	}
