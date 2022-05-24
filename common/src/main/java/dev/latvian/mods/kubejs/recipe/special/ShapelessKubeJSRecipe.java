@@ -64,7 +64,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe {
 	public static class SerializerKJS extends AbstractRecipeSerializer<ShapelessKubeJSRecipe> {
 
 		// registry replacement... you never know
-		private static final RecipeSerializer<ShapelessRecipe> SHAPELESS = UtilsJS.cast(KubeJSRegistries.recipeSerializers().get(new ResourceLocation("shapeless")));
+		private static final RecipeSerializer<ShapelessRecipe> SHAPELESS = UtilsJS.cast(KubeJSRegistries.recipeSerializers().get(new ResourceLocation("crafting_shapeless")));
 
 		@Override
 		public ShapelessKubeJSRecipe fromJson(ResourceLocation id, JsonObject json) {
