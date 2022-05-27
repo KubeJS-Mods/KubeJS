@@ -136,7 +136,7 @@ public class ItemHandlerUtils {
 		}
 
 		if ((!a.hasTag() || Objects.equals(a.getTag(), b.getTag()))) {
-			return LevelPlatformHelper.areCapsCompatible(a, b);
+			return LevelPlatformHelper.get().areCapsCompatible(a, b);
 		}
 
 		return false;
@@ -148,7 +148,7 @@ public class ItemHandlerUtils {
 		}
 
 		if ((!a.hasTag() || Objects.equals(a.getTag(), b.getTag()))) {
-			return LevelPlatformHelper.areCapsCompatible(a, b);
+			return LevelPlatformHelper.get().areCapsCompatible(a, b);
 		}
 
 		return false;

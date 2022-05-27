@@ -7,6 +7,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(RecipeManager.class)
 public interface RecipeManagerAccessor {
-	@Accessor("context")
+	@Accessor(value = "context", remap = false)
 	ICondition.IContext getContext();
 }

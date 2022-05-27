@@ -286,7 +286,7 @@ public class LivingEntityJS extends EntityJS {
 	}
 
 	public double getReachDistance() {
-		return LevelPlatformHelper.getReachDistance(minecraftLivingEntity);
+		return LevelPlatformHelper.get().getReachDistance(minecraftLivingEntity);
 	}
 
 	public RayTraceResultJS rayTrace() {

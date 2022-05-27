@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.script;
 
-import dev.architectury.injectables.targets.ArchitecturyTarget;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import dev.latvian.mods.kubejs.KubeJS;
@@ -52,8 +51,12 @@ public class PlatformWrapper {
 		}
 	}
 
+	/**
+	 * @deprecated Use isForge and isFabric for checks instead
+	 */
+	@Deprecated
 	public static String getName() {
-		return ArchitecturyTarget.getCurrentTarget();
+		return isForge() ? "forge" : "fabric";
 	}
 
 	public static boolean isForge() {

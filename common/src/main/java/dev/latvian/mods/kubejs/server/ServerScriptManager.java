@@ -56,7 +56,7 @@ public class ServerScriptManager {
 
 	public void updateResources(ReloadableServerResources serverResources) {
 		KubeJSReloadListener.resources = serverResources;
-		KubeJSReloadListener.recipeContext = RecipePlatformHelper.createRecipeContext(serverResources);
+		KubeJSReloadListener.recipeContext = RecipePlatformHelper.get().createRecipeContext(serverResources);
 	}
 
 	public void reloadScriptManager(ResourceManager resourceManager) {

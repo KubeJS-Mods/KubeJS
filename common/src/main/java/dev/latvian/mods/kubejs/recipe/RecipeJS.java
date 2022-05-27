@@ -394,7 +394,7 @@ public abstract class RecipeJS {
 			}
 		}
 
-		return Objects.requireNonNull(RecipePlatformHelper.fromJson(this));
+		return Objects.requireNonNull(RecipePlatformHelper.get().fromJson(this));
 	}
 
 	public ItemStackJS getOriginalRecipeResult() {
