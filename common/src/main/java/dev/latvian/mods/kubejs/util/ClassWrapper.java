@@ -10,4 +10,9 @@ public record ClassWrapper<T>(Class<T> wrappedClass) implements CustomJavaToJsWr
 	public Scriptable convertJavaToJs(Context cx, Scriptable scope, Class<?> staticType) {
 		return new NativeJavaClass(scope, wrappedClass);
 	}
+
+	@Override
+	public String toString() {
+		return "ClassWrapper[" + wrappedClass.getName() + "]";
+	}
 }
