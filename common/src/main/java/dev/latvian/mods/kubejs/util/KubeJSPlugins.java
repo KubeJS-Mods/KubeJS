@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.ScriptType;
 
+import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,55 +12,56 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class KubeJSPlugins {
 	private static final List<KubeJSPlugin> LIST = new ArrayList<>();
 	private static final List<String> GLOBAL_CLASS_FILTER = new ArrayList<>();
 
-	public static void load(String id, Path path) throws Exception {
+	public static void load(Path path, String source) throws IOException {
 		if (Files.isDirectory(path)) {
-			var pp = path.resolve("kubejs.plugins.txt");
-			if (Files.exists(pp)) {
-				loadFromFile(id, Files.readAllLines(pp));
-			}
-
-			var pc = path.resolve("kubejs.classfilter.txt");
-			if (Files.exists(pc)) {
-				GLOBAL_CLASS_FILTER.addAll(Files.readAllLines(pc));
-			}
+			loadFromPath(path::resolve, source);
 		} else if (Files.isRegularFile(path) && (path.getFileName().toString().endsWith(".jar") || path.getFileName().toString().endsWith(".zip"))) {
 			try (var fs = FileSystems.newFileSystem(path, Map.of("create", false))) {
-				var pp = fs.getPath("kubejs.plugins.txt");
-				if (Files.exists(pp)) {
-					loadFromFile(id, Files.readAllLines(pp));
-				}
-
-				var pc = path.resolve("kubejs.classfilter.txt");
-				if (Files.exists(pc)) {
-					GLOBAL_CLASS_FILTER.addAll(Files.readAllLines(pc));
-				}
+				loadFromPath(fs::getPath, source);
 			}
 		}
 	}
 
-	private static void loadFromFile(String id, List<String> list) {
-		KubeJS.LOGGER.info("Found " + id + " plugin");
-
-		for (var s : list) {
-			if (s.trim().isEmpty()) {
-				continue;
-			}
-
-			try {
-				var c = Class.forName(s);
-
-				if (KubeJSPlugin.class.isAssignableFrom(c)) {
-					LIST.add((KubeJSPlugin) c.getDeclaredConstructor().newInstance());
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+	private static <T> void loadFromPath(Function<String, Path> resolver, String source) throws IOException {
+		var pp = resolver.apply("kubejs.plugins.txt");
+		if (Files.exists(pp)) {
+			loadFromFile(Files.lines(pp), source);
 		}
+
+		var pc = resolver.apply("kubejs.classfilter.txt");
+		if (Files.exists(pc)) {
+			GLOBAL_CLASS_FILTER.addAll(Files.readAllLines(pc));
+		}
+	}
+
+	private static void loadFromFile(Stream<String> contents, String source) {
+		KubeJS.LOGGER.info("Found plugin source {}", source);
+
+		contents.filter(s -> !s.trim().isBlank()) // ignore empty lines
+				.filter(s -> !s.startsWith("#")) // allow comments
+				.flatMap(s -> {
+					try {
+						return Stream.of(Class.forName(s)); // try to load plugin class
+					} catch (Throwable t) {
+						KubeJS.LOGGER.error("Failed to load plugin {} from source {}: {}", s, source, t);
+						return null;
+					}
+				})
+				.filter(KubeJSPlugin.class::isAssignableFrom)
+				.forEach(c -> {
+					try {
+						LIST.add((KubeJSPlugin) c.getDeclaredConstructor().newInstance()); // create the actual plugin instance
+					} catch (Throwable t) {
+						KubeJS.LOGGER.error("Failed to init KubeJS plugin {} from source {}: {}", c.getName(), source, t);
+					}
+				});
 	}
 
 	public static ClassFilter createClassFilter(ScriptType type) {

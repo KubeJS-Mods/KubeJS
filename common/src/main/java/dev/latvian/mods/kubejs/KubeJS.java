@@ -93,7 +93,9 @@ public class KubeJS {
 
 		for (var mod : Platform.getMods()) {
 			try {
-				KubeJSPlugins.load(mod.getModId(), mod.getFilePath());
+				for (var path : mod.getFilePaths()) {
+					KubeJSPlugins.load(path, mod.getModId());
+				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
