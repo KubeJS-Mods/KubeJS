@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs;
 
+import com.google.common.base.Stopwatch;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.utils.EnvExecutor;
@@ -88,20 +89,18 @@ public class KubeJS {
 
 		PROXY = EnvExecutor.getEnvSpecific(() -> KubeJSClient::new, () -> KubeJSCommon::new);
 
-		var now = System.currentTimeMillis();
+		var pluginTimer = Stopwatch.createStarted();
 		LOGGER.info("Looking for KubeJS plugins...");
 
 		for (var mod : Platform.getMods()) {
 			try {
-				for (var path : mod.getFilePaths()) {
-					KubeJSPlugins.load(path, mod.getModId());
-				}
+				KubeJSPlugins.load(mod);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
 
-		LOGGER.info("Done in " + (System.currentTimeMillis() - now) / 1000L + " s");
+		LOGGER.info("Done in " + pluginTimer.stop());
 
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS, "/data/kubejs/example_startup_script.js");
 		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS, "/data/kubejs/example_client_script.js");

@@ -1,51 +1,38 @@
 package dev.latvian.mods.kubejs.util;
 
+import dev.architectury.platform.Mod;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.ScriptType;
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class KubeJSPlugins {
 	private static final List<KubeJSPlugin> LIST = new ArrayList<>();
 	private static final List<String> GLOBAL_CLASS_FILTER = new ArrayList<>();
 
-	public static void load(Path path, String source) throws IOException {
-		if (Files.isDirectory(path)) {
-			loadFromPath(path::resolve, source);
-		} else if (Files.isRegularFile(path) && (path.getFileName().toString().endsWith(".jar") || path.getFileName().toString().endsWith(".zip"))) {
-			try (var fs = FileSystems.newFileSystem(path, Map.of("create", false))) {
-				loadFromPath(fs::getPath, source);
-			}
-		}
-	}
-
-	private static <T> void loadFromPath(Function<String, Path> resolver, String source) throws IOException {
-		var pp = resolver.apply("kubejs.plugins.txt");
-		if (Files.exists(pp)) {
-			loadFromFile(Files.lines(pp), source);
+	public static void load(Mod mod) throws IOException {
+		var pp = mod.findResource("kubejs.plugins.txt");
+		if (pp.isPresent()) {
+			loadFromFile(Files.lines(pp.get()), mod.getModId());
 		}
 
-		var pc = resolver.apply("kubejs.classfilter.txt");
-		if (Files.exists(pc)) {
-			GLOBAL_CLASS_FILTER.addAll(Files.readAllLines(pc));
+		var pc = mod.findResource("kubejs.classfilter.txt");
+		if (pc.isPresent()) {
+			GLOBAL_CLASS_FILTER.addAll(Files.readAllLines(pc.get()));
 		}
 	}
 
 	private static void loadFromFile(Stream<String> contents, String source) {
 		KubeJS.LOGGER.info("Found plugin source {}", source);
 
-		contents.filter(s -> !s.trim().isBlank()) // ignore empty lines
-				.filter(s -> !s.startsWith("#")) // allow comments
+		contents.map(s -> s.split("#", 2)[0].trim()) // allow comments (#)
+				.filter(s -> !s.isBlank()) // filter empty lines
 				.flatMap(s -> {
 					try {
 						return Stream.of(Class.forName(s)); // try to load plugin class
