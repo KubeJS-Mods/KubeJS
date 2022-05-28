@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe;
 
+import com.google.common.base.Suppliers;
 import com.google.gson.JsonObject;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -10,31 +10,27 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 
 import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.function.Supplier;
 
-public class RecipePlatformHelper {
+public interface RecipePlatformHelper {
 
-	@ExpectPlatform
-	public static Recipe<?> fromJson(RecipeJS self) throws Throwable {
-		throw new UnsupportedOperationException();
+	Supplier<RecipePlatformHelper> INSTANCE = Suppliers.memoize(() -> {
+		var serviceLoader = ServiceLoader.load(RecipePlatformHelper.class);
+		return serviceLoader.findFirst().orElseThrow(() -> new RuntimeException("Could not find platform implementation for RecipePlatformHelper!"));
+	});
+
+	static RecipePlatformHelper get() {
+		return INSTANCE.get();
 	}
 
-	@ExpectPlatform
-	public static Ingredient getCustomIngredient(JsonObject object) {
-		throw new AssertionError();
-	}
+	Recipe<?> fromJson(RecipeJS self) throws Throwable;
 
-	@ExpectPlatform
-	public static void pingNewRecipes(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map) {
-		throw new AssertionError();
-	}
+	Ingredient getCustomIngredient(JsonObject object);
 
-	@ExpectPlatform
-	public static boolean processConditions(RecipeManager recipeManager, JsonObject json, String key) {
-		throw new AssertionError();
-	}
+	void pingNewRecipes(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map);
 
-	@ExpectPlatform
-	public static Object createRecipeContext(ReloadableServerResources resources) {
-		throw new AssertionError();
-	}
+	boolean processConditions(RecipeManager recipeManager, JsonObject json, String key);
+
+	Object createRecipeContext(ReloadableServerResources resources);
 }

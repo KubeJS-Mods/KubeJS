@@ -1,7 +1,8 @@
-package dev.latvian.mods.kubejs.level.forge;
+package dev.latvian.mods.kubejs.platform;
 
 import dev.latvian.mods.kubejs.item.InventoryJS;
 import dev.latvian.mods.kubejs.item.ItemHandler;
+import dev.latvian.mods.kubejs.level.LevelPlatformHelper;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.forge.BiomeDictionaryFilter;
 import dev.latvian.mods.kubejs.level.gen.forge.BiomeDictionaryWrapper;
@@ -17,8 +18,8 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import javax.annotation.Nonnull;
 import java.util.Map;
 
-public class LevelPlatformHelperImpl {
-	public static InventoryJS getInventoryFromBlockEntity(BlockEntity tileEntity, Direction facing) {
+public class LevelPlatformHelperImpl implements LevelPlatformHelper {
+	public InventoryJS getInventoryFromBlockEntity(BlockEntity tileEntity, Direction facing) {
 		var handler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).orElse(null);
 
 		if (handler != null) {
@@ -97,7 +98,7 @@ public class LevelPlatformHelperImpl {
 		return null;
 	}
 
-	public static BiomeFilter ofStringAdditional(String s) {
+	public BiomeFilter ofStringAdditional(String s) {
 		return switch (s.charAt(0)) {
 			case '#' -> {
 				ConsoleJS.STARTUP.error("Biome Tag filters are currently not supported on Forge!");
@@ -109,7 +110,7 @@ public class LevelPlatformHelperImpl {
 		};
 	}
 
-	public static BiomeFilter ofMapAdditional(Map<String, Object> map) {
+	public BiomeFilter ofMapAdditional(Map<String, Object> map) {
 		if (map.containsKey("biome_type")) {
 			var type = BiomeDictionaryWrapper.getBiomeType(map.get("biome_type"));
 			return new BiomeDictionaryFilter(type);
@@ -117,15 +118,15 @@ public class LevelPlatformHelperImpl {
 		return null;
 	}
 
-	public static boolean areCapsCompatible(ItemStack a, ItemStack b) {
+	public boolean areCapsCompatible(ItemStack a, ItemStack b) {
 		return a.areCapsCompatible(b);
 	}
 
-	public static ItemStack getContainerItem(ItemStack stack) {
+	public ItemStack getContainerItem(ItemStack stack) {
 		return stack.getContainerItem();
 	}
 
-	public static double getReachDistance(LivingEntity livingEntity) {
+	public double getReachDistance(LivingEntity livingEntity) {
 		return livingEntity.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue();
 	}
 }

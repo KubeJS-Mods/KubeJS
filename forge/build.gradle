@@ -1,24 +1,3 @@
-plugins {
-	id "com.github.johnrengelman.shadow" version "7.0.0"
-	id "com.matthewprenger.cursegradle" version "1.4.0"
-}
-
-def ENV = System.getenv()
-
-architectury {
-	platformSetupLoomIde()
-	forge()
-}
-
-configurations {
-	common
-	shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-	compileClasspath.extendsFrom common
-	runtimeClasspath.extendsFrom common
-	developmentForge.extendsFrom common
-	dev
-}
-
 loom {
 	accessWidenerPath = project(":common").file("src/main/resources/kubejs.accesswidener")
 	forge {
@@ -29,10 +8,6 @@ loom {
 				"kubejs-common.mixins.json"
 		]
 	}
-}
-
-artifacts {
-	dev(jar)
 }
 
 repositories {
@@ -48,7 +23,7 @@ repositories {
 }
 
 dependencies {
-	forge("net.minecraftforge:forge:${rootProject.architectury.minecraft}-${rootProject.forge_version}")
+	forge("net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}")
 
 	modApi("dev.architectury:architectury-forge:${rootProject.architectury_version}")
 
@@ -62,8 +37,8 @@ dependencies {
 	// modLocalRuntime("mezz.jei:jei-1.18:${rootProject.forge_jei_version}")
 	modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}")
 
-	common(project(path: ":common", configuration: "dev")) { transitive false }
-	shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
+	implementation(project(path: ":common", configuration: "namedElements")) { transitive false }
+	bundle(project(path: ":common", configuration: "namedElements")) { transitive false }
 }
 
 processResources {
@@ -79,20 +54,6 @@ processResources {
 	}
 }
 
-shadowJar {
-	exclude "fabric.mod.json"
-
-	configurations = [project.configurations.shadowCommon]
-	classifier "dev-shadow"
-}
-
-remapJar {
-	input.set shadowJar.archiveFile
-	dependsOn shadowJar
-	archiveBaseName.set "${rootProject.archives_base_name}-${project.name}"
-	archiveClassifier.set null
-}
-
 jar {
 	manifest {
 		attributes([
@@ -105,8 +66,6 @@ jar {
 				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
 		])
 	}
-
-	classifier "dev"
 }
 
 components.java {
@@ -120,7 +79,7 @@ if (ENV.CURSEFORGE_KEY) {
 		apiKey = ENV.CURSEFORGE_KEY
 		project {
 			id = project.curseforge_id
-			releaseType = project.curseforge_type
+			releaseType = project.artifact_type
 			addGameVersion "Forge"
 			addGameVersion "1.18.2"
 			mainArtifact(remapJar.archivePath)
@@ -132,6 +91,23 @@ if (ENV.CURSEFORGE_KEY) {
 			}
 			changelog = getGitChangelog
 			changelogType = 'markdown'
+		}
+	}
+}
+
+if(ENV.MODRINTH_TOKEN) {
+	modrinth {
+		token = MODRINTH_TOKEN
+		projectId = rootProject.modrinth_id
+		versionType = "$rootProject.artifact_type"
+		versionNumber = "$project.version+$project.name"
+		changelog = getGitChangelog
+		uploadFile = remapJar
+		gameVersions = ["1.18.2"]
+		loaders = ["forge"]
+		dependencies {
+			required.project('lhGA9TYQ') // arch
+			required.project('sk9knFPE') // rhino
 		}
 	}
 }
@@ -166,5 +142,3 @@ publishing {
 		}
 	}
 }
-
-rootProject.tasks.getByName("curseforgePublish").dependsOn tasks.getByName("curseforge")

@@ -1,11 +1,9 @@
 plugins {
-	id "architectury-plugin" version "3.4-SNAPSHOT"
 	id "dev.architectury.loom" version "0.12.0-SNAPSHOT" apply false
 	id "io.github.juuxel.loom-quiltflower" version "1.7.2" apply false
-}
-
-architectury {
-	minecraft = rootProject.minecraft_version
+	id "com.github.johnrengelman.shadow" version "7.0.0" apply false
+	id "com.matthewprenger.cursegradle" version "1.4.0" apply false
+	id "com.modrinth.minotaur" version "2.2.0" apply false
 }
 
 subprojects {
@@ -23,15 +21,56 @@ subprojects {
 			// parchment("org.parchmentmc.data:parchment-1.17.1:2021.10.10")
 		}
 	}
+
+	if (project.path != ':common') {
+		apply plugin: "com.github.johnrengelman.shadow"
+		apply plugin: "com.matthewprenger.cursegradle"
+		apply plugin: "com.modrinth.minotaur"
+
+		loom {
+			runConfigs.configureEach { ideConfigGenerated = true }
+			mods {
+				main { // to match the default mod generated for Forge
+					sourceSet project.sourceSets.main
+					sourceSet project(':common').sourceSets.main
+				}
+			}
+		}
+
+		configurations {
+			bundle {
+				canBeResolved(true)
+				canBeConsumed(false)
+			}
+		}
+
+		jar {
+			archiveClassifier.set "dev-slim"
+		}
+
+		shadowJar {
+			archiveClassifier.set "dev-shadow"
+			configurations = [
+					project.configurations.bundle
+			]
+		}
+
+		remapJar {
+			dependsOn shadowJar
+			inputFile.set shadowJar.archiveFile
+			archiveBaseName.set "${rootProject.archives_base_name}-${project.name}"
+			archiveClassifier.set null
+		}
+	}
 }
 
 allprojects {
 	apply plugin: "java"
-	apply plugin: "architectury-plugin"
 	apply plugin: "maven-publish"
 	apply from: "https://files.latmod.com/public/markdown-git-changelog.gradle"
 
-	def ENV = System.getenv()
+	ext.ENV = System.getenv()
+
 	version = "${mod_version}-build.${ENV.GITHUB_RUN_NUMBER ?: 9999}"
 	group = project.maven_group
 	archivesBaseName = project.archives_base_name
@@ -69,5 +108,3 @@ allprojects {
 		withSourcesJar()
 	}
 }
-
-task curseforgePublish

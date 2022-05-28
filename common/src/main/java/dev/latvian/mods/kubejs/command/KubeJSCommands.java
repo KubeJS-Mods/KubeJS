@@ -33,6 +33,7 @@ import net.minecraft.commands.arguments.CompoundTagArgument;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.ClickEvent;
@@ -138,7 +139,6 @@ public class KubeJSCommands {
 										ctx.getSource().registryAccess()
 												.registries()
 												.map(entry -> entry.key().location().toString()), builder)
-
 								)
 								.executes(ctx -> listTagsFor(ctx.getSource(), registry(ctx, "registry")))
 								.then(Commands.argument("tag", ResourceLocationArgument.id())
@@ -151,6 +151,16 @@ public class KubeJSCommands {
 												ResourceLocationArgument.getId(ctx, "tag")))
 										)
 								)
+						)
+				)
+				.then(Commands.literal("dump_registry")
+						.then(Commands.argument("registry", ResourceLocationArgument.id())
+								.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+										ctx.getSource().registryAccess()
+												.registries()
+												.map(entry -> entry.key().location().toString()), builder)
+								)
+								.executes(ctx -> dumpRegistry(ctx.getSource(), registry(ctx, "registry")))
 						)
 				)
 				.then(Commands.literal("wiki")
@@ -195,7 +205,6 @@ public class KubeJSCommands {
 				.executes(context -> hand(context.getSource().getPlayerOrException(), InteractionHand.MAIN_HAND))
 		);
 	}
-
 
 	private static <T> ResourceKey<Registry<T>> registry(CommandContext<CommandSourceStack> ctx, String arg) {
 		return ResourceKey.createRegistryKey(ResourceLocationArgument.getId(ctx, arg));
@@ -404,16 +413,16 @@ public class KubeJSCommands {
 		source.sendSuccess(new TextComponent("List of all Tags for " + registry.location() + ":"), false);
 		source.sendSuccess(TextComponent.EMPTY, false);
 
-		var size = tags.map(TagKey::location).map(tag -> new TextComponent("- " + tag).withStyle(Style.EMPTY
-				.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs list_tag " + registry.location() + " " + tag))
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("[Show all entries for " + tag + "]")))
+		var size = tags.map(TagKey::location).map(tag -> new TextComponent("- %s".formatted(tag)).withStyle(Style.EMPTY
+				.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs list_tag %s %s".formatted(registry.location(), tag)))
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("[Show all entries for %s]".formatted(tag))))
 		)).mapToLong(msg -> {
 			source.sendSuccess(msg, false);
 			return 1;
 		}).sum();
 
 		source.sendSuccess(TextComponent.EMPTY, false);
-		source.sendSuccess(new TextComponent("Total: " + size + " tags"), false);
+		source.sendSuccess(new TextComponent("Total: %d tags".formatted(size)), false);
 		source.sendSuccess(new TextComponent("(Click on any of the above tags to list their contents!)"), false);
 		source.sendSuccess(TextComponent.EMPTY, false);
 
@@ -446,6 +455,33 @@ public class KubeJSCommands {
 		source.sendSuccess(new TextComponent("Total: " + items.size() + " elements"), false);
 		source.sendSuccess(TextComponent.EMPTY, false);
 		return Command.SINGLE_SUCCESS;
+	}
+
+	private static <T> int dumpRegistry(CommandSourceStack source, ResourceKey<Registry<T>> registry) throws CommandSyntaxException {
+		var ids = source.registryAccess().registry(registry)
+				.orElseThrow(() -> NO_REGISTRY.create(registry.location()))
+				.holders();
+
+		source.sendSuccess(TextComponent.EMPTY, false);
+		source.sendSuccess(new TextComponent("List of all entries for registry " + registry.location() + ":"), false);
+		source.sendSuccess(TextComponent.EMPTY, false);
+
+		var size = ids.map(holder -> {
+			var id = holder.key().location();
+			return new TextComponent("- %s".formatted(id)).withStyle(Style.EMPTY
+					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("%s [%s]".formatted(holder.value(), holder.value().getClass().getName()))))
+			);
+		}).mapToLong(msg -> {
+			source.sendSuccess(msg, false);
+			return 1;
+		}).sum();
+
+		source.sendSuccess(TextComponent.EMPTY, false);
+		source.sendSuccess(new TextComponent("Total: %d entries".formatted(size)), false);
+		source.sendSuccess(TextComponent.EMPTY, false);
+
+
+		return 1;
 	}
 
 	private static int wiki(CommandSourceStack source) {

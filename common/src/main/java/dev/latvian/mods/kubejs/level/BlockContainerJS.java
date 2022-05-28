@@ -335,7 +335,7 @@ public class BlockContainerJS implements SpecialEquality {
 		var tileEntity = getEntity();
 
 		if (tileEntity != null) {
-			return LevelPlatformHelper.getInventoryFromBlockEntity(tileEntity, facing);
+			return LevelPlatformHelper.get().getInventoryFromBlockEntity(tileEntity, facing);
 		}
 
 		return null;

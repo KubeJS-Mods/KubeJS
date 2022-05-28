@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.level;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
+import com.google.common.base.Suppliers;
 import dev.latvian.mods.kubejs.item.InventoryJS;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import net.minecraft.core.Direction;
@@ -10,37 +10,31 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.function.Supplier;
 
-public class LevelPlatformHelper {
-	@ExpectPlatform
-	public static InventoryJS getInventoryFromBlockEntity(BlockEntity tileEntity, Direction facing) {
-		throw new AssertionError();
+public interface LevelPlatformHelper {
+
+	Supplier<LevelPlatformHelper> INSTANCE = Suppliers.memoize(() -> {
+		var serviceLoader = ServiceLoader.load(LevelPlatformHelper.class);
+		return serviceLoader.findFirst().orElseThrow(() -> new RuntimeException("Could not find platform implementation for LevelPlatformHelper!"));
+	});
+
+	static LevelPlatformHelper get() {
+		return INSTANCE.get();
 	}
 
-	@ExpectPlatform
+	InventoryJS getInventoryFromBlockEntity(BlockEntity tileEntity, Direction facing);
+
 	@Nullable
-	public static BiomeFilter ofStringAdditional(String s) {
-		throw new AssertionError();
-	}
+	BiomeFilter ofStringAdditional(String s);
 
-	@ExpectPlatform
 	@Nullable
-	public static BiomeFilter ofMapAdditional(Map<String, Object> map) {
-		throw new AssertionError();
-	}
+	BiomeFilter ofMapAdditional(Map<String, Object> map);
 
-	@ExpectPlatform
-	public static boolean areCapsCompatible(ItemStack a, ItemStack b) {
-		throw new AssertionError();
-	}
+	boolean areCapsCompatible(ItemStack a, ItemStack b);
 
-	@ExpectPlatform
-	public static ItemStack getContainerItem(ItemStack stack) {
-		throw new AssertionError();
-	}
+	ItemStack getContainerItem(ItemStack stack);
 
-	@ExpectPlatform
-	public static double getReachDistance(LivingEntity livingEntity) {
-		throw new AssertionError();
-	}
+	double getReachDistance(LivingEntity livingEntity);
 }
