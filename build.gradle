@@ -3,6 +3,7 @@ plugins {
 	id "io.github.juuxel.loom-quiltflower" version "1.7.2" apply false
 	id "com.github.johnrengelman.shadow" version "7.0.0" apply false
 	id "com.matthewprenger.cursegradle" version "1.4.0" apply false
+	id "com.modrinth.minotaur" version "2.2.0" apply false
 }
 
 subprojects {
@@ -24,6 +25,7 @@ subprojects {
 	if (project.path != ':common') {
 		apply plugin: "com.github.johnrengelman.shadow"
 		apply plugin: "com.matthewprenger.cursegradle"
+		apply plugin: "com.modrinth.minotaur"
 
 		loom {
 			runConfigs.configureEach { ideConfigGenerated = true }
