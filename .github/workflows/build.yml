@@ -44,5 +44,6 @@ jobs:
           GIT_COMMIT: ${{ github.event.after }}
           GIT_PREVIOUS_COMMIT: ${{ github.event.before }}
           CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
         with:
-          arguments: build curseforge --stacktrace --no-daemon
+          arguments: build curseforge modrinth --stacktrace --no-daemon
