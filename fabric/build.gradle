@@ -23,7 +23,6 @@ sourceSets {
 }
 
 dependencies {
-
 	modApi("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
 	modApi("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
 
@@ -38,6 +37,10 @@ dependencies {
 
 	implementation(project(path: ":common", configuration: "namedElements")) { transitive false }
 	bundle(project(path: ":common", configuration: "namedElements")) { transitive false }
+}
+
+compileJava {
+	source(project(":common").sourceSets.getByName("mixin").allJava)
 }
 
 // The AW file is needed in :fabric project resources when the game is run.
@@ -59,6 +62,8 @@ processResources {
 	filesMatching("fabric.mod.json") {
 		expand toReplace
 	}
+
+	from(project(":common").sourceSets.getByName("mixin").resources)
 }
 
 components.java {
