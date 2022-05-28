@@ -1,10 +1,6 @@
-configurations {
-	common
-	shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-	compileClasspath.extendsFrom common
-	runtimeClasspath.extendsFrom common
-	developmentFabric.extendsFrom common
-	dev
+architectury {
+	platformSetupLoomIde()
+	fabric()
 }
 
 def generatedResources = file("src/generated/resources")
@@ -36,11 +32,8 @@ dependencies {
 	modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:${rootProject.rei_version}")
 
 	implementation(project(path: ":common", configuration: "namedElements")) { transitive false }
-	bundle(project(path: ":common", configuration: "namedElements")) { transitive false }
-}
-
-compileJava {
-	source(project(":common").sourceSets.getByName("mixin").allJava)
+	developmentFabric(project(path: ":common", configuration: "namedElements")) { transitive false }
+	bundle(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
 
 // The AW file is needed in :fabric project resources when the game is run.
@@ -62,8 +55,6 @@ processResources {
 	filesMatching("fabric.mod.json") {
 		expand toReplace
 	}
-
-	from(project(":common").sourceSets.getByName("mixin").resources)
 }
 
 components.java {
