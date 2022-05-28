@@ -101,6 +101,7 @@ if(ENV.MODRINTH_TOKEN) {
 		projectId = rootProject.modrinth_id
 		versionType = "$rootProject.artifact_type"
 		versionNumber = "$project.version+$project.name"
+		versionName = "[Forge] $project.version"
 		changelog = getGitChangelog()
 		uploadFile = remapJar
 		gameVersions = ["1.18.2"]
