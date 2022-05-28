@@ -1,0 +1,48 @@
+{
+	"required": true,
+	"package": "dev.latvian.mods.kubejs.mixin.common",
+	"compatibilityLevel": "JAVA_17",
+	"mixins": [
+		"mixin.common.BlockBehaviourMixin",
+		"mixin.common.BlockMixin",
+		"mixin.common.BlockStateBaseMixin",
+		"mixin.common.DamageSourceMixin",
+		"mixin.common.EntityMixin",
+		"mixin.common.EntityTargetMixin",
+		"mixin.common.FireworkRocketEntityMixin",
+		"mixin.common.IngredientMixin",
+		"mixin.common.ItemMixin",
+		"mixin.common.ItemStackMixin",
+		"mixin.common.LevelMixin",
+		"mixin.common.LivingEntityMixin",
+		"mixin.common.LootTablesMixin",
+		"mixin.common.MinecraftServerMixin",
+		"mixin.common.PlayerListMixin",
+		"mixin.common.PlayerMixin",
+		"mixin.common.RecipeManagerMixin",
+		"mixin.common.ReloadableServerResourcesMixin",
+		"mixin.common.ServerPlayerGameModeMixin",
+		"mixin.common.TagBuilderMixin",
+		"mixin.common.TagLoaderMixin",
+		"mixin.common.TagManagerMixin",
+		"mixin.common.TieredItemMixin",
+		"mixin.common.UtilMixin",
+		"mixin.common.inject_resources.MinecraftServerMixin",
+		"mixin.common.inject_resources.WorldStemMixin"
+	],
+	"client": [
+		"mixin.common.AbstractSelectionListMixin",
+		"mixin.common.ImageButtonMixin",
+		"mixin.common.KeyboardHandlerMixin",
+		"mixin.common.LoadingOverlayMixin",
+		"mixin.common.MinecraftMixin",
+		"mixin.common.OptionsMixin",
+		"mixin.common.ScreenMixin",
+		"mixin.common.WindowMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1,
+		"maxShiftBy": 2
+	},
+	"minVersion": "0.8"
+}

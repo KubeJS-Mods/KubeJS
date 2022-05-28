@@ -105,6 +105,14 @@ subprojects {
 			archiveBaseName.set "${rootProject.archives_base_name}-${project.name}"
 			archiveClassifier.set null
 		}
+
+		compileJava {
+			source(project(":common").sourceSets.getByName("mixin").allJava)
+		}
+
+		processResources {
+			from(project(":common").sourceSets.getByName("mixin").resources)
+		}
 	}
 }
 
