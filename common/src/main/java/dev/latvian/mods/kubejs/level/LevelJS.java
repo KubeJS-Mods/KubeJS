@@ -72,8 +72,8 @@ public abstract class LevelJS implements WithAttachedData {
 		return minecraftLevel.getDayTime();
 	}
 
-	public String getDimension() {
-		return minecraftLevel.dimension().location().toString();
+	public ResourceLocation getDimension() {
+		return minecraftLevel.dimension().location();
 	}
 
 	public boolean isOverworld() {

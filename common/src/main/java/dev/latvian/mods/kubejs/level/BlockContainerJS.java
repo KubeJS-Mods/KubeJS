@@ -74,8 +74,8 @@ public class BlockContainerJS implements SpecialEquality {
 		return pos;
 	}
 
-	public String getDimension() {
-		return minecraftLevel.dimension().location().toString();
+	public ResourceLocation getDimension() {
+		return minecraftLevel.dimension().location();
 	}
 
 	public int getX() {

@@ -24,6 +24,7 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelResource;
 
 import java.nio.file.Files;
@@ -75,13 +76,13 @@ public class KubeJSServerEventHandler {
 
 	public static void serverStarted(MinecraftServer server) {
 		ServerJS.instance.overworld = new ServerLevelJS(ServerJS.instance, server.getLevel(Level.OVERWORLD));
-		ServerJS.instance.levelMap.put("minecraft:overworld", ServerJS.instance.overworld);
+		ServerJS.instance.levelMap.put(DimensionType.OVERWORLD_LOCATION.location(), ServerJS.instance.overworld);
 		ServerJS.instance.allLevels.add(ServerJS.instance.overworld);
 
 		for (var level : server.getAllLevels()) {
 			if (level != ServerJS.instance.overworld.minecraftLevel) {
 				var l = new ServerLevelJS(ServerJS.instance, level);
-				ServerJS.instance.levelMap.put(level.dimension().location().toString(), l);
+				ServerJS.instance.levelMap.put(level.dimension().location(), l);
 			}
 		}
 

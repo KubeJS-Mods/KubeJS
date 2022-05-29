@@ -1,8 +1,3 @@
-architectury {
-	platformSetupLoomIde()
-	forge()
-}
-
 loom {
 	accessWidenerPath = project(":common").file("src/main/resources/kubejs.accesswidener")
 	forge {
@@ -43,8 +38,11 @@ dependencies {
 	modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}")
 
 	implementation(project(path: ":common", configuration: "namedElements")) { transitive false }
-	developmentForge(project(path: ":common", configuration: "namedElements")) { transitive false }
-	bundle(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
+	bundle(project(path: ":common", configuration: "namedElements")) { transitive false }
+}
+
+compileJava {
+	source(project(":common").sourceSets.getByName("mixin").allJava)
 }
 
 processResources {
@@ -58,6 +56,8 @@ processResources {
 	filesMatching("META-INF/mods.toml") {
 		expand toReplace
 	}
+
+	from(project(":common").sourceSets.getByName("mixin").resources)
 }
 
 jar {
