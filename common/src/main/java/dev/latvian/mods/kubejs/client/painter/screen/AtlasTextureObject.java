@@ -45,15 +45,18 @@ public class AtlasTextureObject extends ScreenPainterObject {
 
 		var sprite = textureAtlas.getSprite(texture);
 
-		var u0 = sprite.getU0();
-		var v0 = sprite.getV0();
-		var u1 = sprite.getU1();
-		var v1 = sprite.getV1();
-		event.resetShaderColor();
-		event.setPositionColorTextureShader();
-		event.setShaderTexture(atlas);
-		event.beginQuads(true);
-		event.rectangle(ax, ay, az, aw, ah, color.getInt(event), u0, v0, u1, v1);
-		event.end();
+		// Happens when painter is used server side and then trigger client reload
+		if(sprite != null) {
+			var u0 = sprite.getU0();
+			var v0 = sprite.getV0();
+			var u1 = sprite.getU1();
+			var v1 = sprite.getV1();
+			event.resetShaderColor();
+			event.setPositionColorTextureShader();
+			event.setShaderTexture(atlas);
+			event.beginQuads(true);
+			event.rectangle(ax, ay, az, aw, ah, color.getInt(event), u0, v0, u1, v1);
+			event.end();
+		}
 	}
 }
