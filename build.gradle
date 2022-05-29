@@ -1,6 +1,5 @@
 plugins {
 	id 'base'
-	id "architectury-plugin" version "3.4-SNAPSHOT"
 	id "dev.architectury.loom" version "0.12.0-SNAPSHOT" apply false
 	id "io.github.juuxel.loom-quiltflower" version "1.7.2" apply false
 	id "com.github.johnrengelman.shadow" version "7.0.0" apply false
@@ -9,8 +8,6 @@ plugins {
 }
 
 allprojects {
-	apply plugin: "architectury-plugin"
-
 	ext.ENV = System.getenv()
 
 	repositories {
@@ -28,10 +25,6 @@ allprojects {
 
 		mavenLocal()
 	}
-}
-
-architectury {
-	minecraft = rootProject.minecraft_version
 }
 
 version = "${mod_version}-build.${ENV.GITHUB_RUN_NUMBER ?: 9999}"
@@ -78,7 +71,7 @@ subprojects {
 		apply plugin: "com.matthewprenger.cursegradle"
 		apply plugin: "com.modrinth.minotaur"
 
-		/*loom {
+		loom {
 			runConfigs.configureEach { ideConfigGenerated = true }
 			mods {
 				main { // to match the default mod generated for Forge
@@ -86,7 +79,7 @@ subprojects {
 					sourceSet project(':common').sourceSets.main
 				}
 			}
-		}*/
+		}
 
 		configurations {
 			bundle {
@@ -111,6 +104,12 @@ subprojects {
 			inputFile.set shadowJar.archiveFile
 			archiveBaseName.set "${rootProject.archives_base_name}-${project.name}"
 			archiveClassifier.set null
+		}
+
+		loom {
+			mixin {
+				defaultRefmapName = "kubejs.refmap.json"
+			}
 		}
 	}
 }

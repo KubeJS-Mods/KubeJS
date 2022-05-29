@@ -12,8 +12,10 @@ loom {
 	accessWidenerPath = file("src/main/resources/kubejs.accesswidener")
 }
 
-architectury {
-	common("fabric", "forge")
+def mixinSources = sourceSets.create("mixin") {
+	compileClasspath = project.files(
+			sourceSets.main.compileClasspath, sourceSets.main.output
+	)
 }
 
 publishing {
