@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.server;
 
+import dev.latvian.mods.kubejs.core.PlayerSelector;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.level.ServerLevelJS;
 import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
@@ -13,7 +14,7 @@ import dev.latvian.mods.kubejs.text.Text;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.MessageSender;
 import dev.latvian.mods.kubejs.util.WithAttachedData;
-import dev.latvian.mods.rhino.mod.wrapper.UUIDWrapper;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -22,7 +23,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +43,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	public final transient ServerScriptManager serverScriptManager;
 	public final transient List<ScheduledEvent> scheduledEvents;
 	public final transient List<ScheduledEvent> scheduledTickEvents;
-	public final transient Map<String, ServerLevelJS> levelMap;
+	public final transient Map<ResourceLocation, ServerLevelJS> levelMap;
 	public final transient Map<UUID, ServerPlayerDataJS> playerMap;
 	public final transient Map<UUID, FakeServerPlayerDataJS> fakePlayerMap;
 	public final transient List<ServerLevelJS> allLevels;
@@ -166,25 +166,30 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		return getMinecraftServer().getCommands().performCommand(getMinecraftServer().createCommandSourceStack().withSuppressedOutput(), command);
 	}
 
-	public LevelJS getLevel(String dimension) {
+	public LevelJS getLevel(ResourceLocation dimension) {
 		var level = levelMap.get(dimension);
 
-		if (level == null) {
-			level = new ServerLevelJS(this, getMinecraftServer().getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(dimension))));
-			levelMap.put(dimension, level);
-			updateWorldList();
-			AttachDataEvent.forLevel(level).invoke();
+		if (level != null) {
+			return level;
 		}
 
-		return level;
+		var minecraftLevel = getMinecraftServer().getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, dimension));
+		if (minecraftLevel == null) {
+			return null;
+		} else {
+			return wrapMinecraftLevel(minecraftLevel);
+		}
 	}
 
-	public LevelJS getLevel(Level minecraftLevel) {
-		var level = levelMap.get(minecraftLevel.dimension().location().toString());
+	// If you're a script dev, use Level.asKJS() instead,
+	// I'm too lazy to make a wrapper for it
+	@HideFromJS
+	public LevelJS wrapMinecraftLevel(Level minecraftLevel) {
+		var level = levelMap.get(minecraftLevel.dimension().location());
 
 		if (level == null) {
 			level = new ServerLevelJS(this, (ServerLevel) minecraftLevel);
-			levelMap.put(minecraftLevel.dimension().location().toString(), level);
+			levelMap.put(minecraftLevel.dimension().location(), level);
 			updateWorldList();
 			AttachDataEvent.forLevel(level).invoke();
 		}
@@ -193,48 +198,13 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	}
 
 	@Nullable
-	public ServerPlayerJS getPlayer(UUID uuid) {
-		var p = playerMap.get(uuid);
-
-		if (p == null) {
-			return null;
-		}
-
-		return p.getPlayer();
+	public ServerPlayerJS getPlayer(PlayerSelector selector) {
+		return selector.getPlayer(playerMap);
 	}
 
 	@Nullable
-	public ServerPlayerJS getPlayer(String name) {
-		name = name.trim().toLowerCase();
-
-		if (name.isEmpty()) {
-			return null;
-		}
-
-		var uuid = UUIDWrapper.fromString(name);
-
-		if (uuid != null) {
-			return getPlayer(uuid);
-		}
-
-		for (var p : playerMap.values()) {
-			if (p.getName().equalsIgnoreCase(name)) {
-				return p.getPlayer();
-			}
-		}
-
-		for (var p : playerMap.values()) {
-			if (p.getName().toLowerCase().contains(name)) {
-				return p.getPlayer();
-			}
-		}
-
-		return null;
-	}
-
-	@Nullable
-	public ServerPlayerJS getPlayer(Player minecraftPlayer) {
-		return getPlayer(minecraftPlayer.getUUID());
+	public ServerPlayerJS getFakePlayer(PlayerSelector selector) {
+		return selector.getPlayer(fakePlayerMap);
 	}
 
 	public EntityArrayList getPlayers() {

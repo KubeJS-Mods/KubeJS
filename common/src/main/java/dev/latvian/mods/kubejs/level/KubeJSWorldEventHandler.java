@@ -28,9 +28,9 @@ public class KubeJSWorldEventHandler {
 	}
 
 	private static void levelLoad(ServerLevel level) {
-		if (ServerJS.instance != null && ServerJS.instance.overworld != null && !ServerJS.instance.levelMap.containsKey(level.dimension().location().toString())) {
+		if (ServerJS.instance != null && ServerJS.instance.overworld != null && !ServerJS.instance.levelMap.containsKey(level.dimension().location())) {
 			var l = new ServerLevelJS(ServerJS.instance, level);
-			ServerJS.instance.levelMap.put(level.dimension().location().toString(), l);
+			ServerJS.instance.levelMap.put(level.dimension().location(), l);
 			ServerJS.instance.updateWorldList();
 			AttachDataEvent.forLevel(l).invoke();
 			new SimpleLevelEventJS(l).post(ScriptType.SERVER, KubeJSEvents.LEVEL_LOAD);
@@ -38,8 +38,8 @@ public class KubeJSWorldEventHandler {
 	}
 
 	private static void levelUnload(ServerLevel level) {
-		if (ServerJS.instance != null && ServerJS.instance.overworld != null && ServerJS.instance.levelMap.containsKey(level.dimension().location().toString())) {
-			var l = ServerJS.instance.getLevel(level);
+		if (ServerJS.instance != null && ServerJS.instance.overworld != null && ServerJS.instance.levelMap.containsKey(level.dimension().location())) {
+			var l = ServerJS.instance.wrapMinecraftLevel(level);
 			new SimpleLevelEventJS(l).post(ScriptType.SERVER, KubeJSEvents.LEVEL_UNLOAD);
 			ServerJS.instance.levelMap.remove(l.getDimension());
 			ServerJS.instance.updateWorldList();
@@ -47,7 +47,7 @@ public class KubeJSWorldEventHandler {
 	}
 
 	private static void levelPostTick(ServerLevel level) {
-		var l = ServerJS.instance.getLevel(level);
+		var l = ServerJS.instance.wrapMinecraftLevel(level);
 		new SimpleLevelEventJS(l).post(ScriptType.SERVER, KubeJSEvents.LEVEL_TICK);
 	}
 

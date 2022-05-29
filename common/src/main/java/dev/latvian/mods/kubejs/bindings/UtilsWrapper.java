@@ -103,15 +103,11 @@ public interface UtilsWrapper {
 	}
 
 	static LevelJS getLevel(Level level) {
-		if (level.isClientSide()) {
-			return getClientLevel();
-		} else {
-			return ServerJS.instance.getLevel(level);
-		}
+		return UtilsJS.getLevel(level);
 	}
 
 	static LevelJS getClientLevel() {
-		return ClientLevelJS.getInstance();
+		return UtilsJS.getClientLevel();
 	}
 
 	@Nullable

@@ -441,7 +441,7 @@ public class UtilsJS {
 		if (level.isClientSide()) {
 			return getClientLevel();
 		} else {
-			return ServerJS.instance.getLevel(level);
+			return ServerJS.instance.wrapMinecraftLevel(level);
 		}
 	}
 

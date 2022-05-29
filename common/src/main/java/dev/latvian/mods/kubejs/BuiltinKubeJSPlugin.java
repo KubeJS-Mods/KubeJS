@@ -33,6 +33,7 @@ import dev.latvian.mods.kubejs.client.painter.screen.ItemObject;
 import dev.latvian.mods.kubejs.client.painter.screen.RectangleObject;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
 import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
+import dev.latvian.mods.kubejs.core.PlayerSelector;
 import dev.latvian.mods.kubejs.event.DataEvent;
 import dev.latvian.mods.kubejs.event.IEventHandler;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
@@ -432,6 +433,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(IngredientActionFilter.class, IngredientActionFilter::filterOf);
 		typeWrappers.register(Tier.class, o -> ItemBuilder.TOOL_TIERS.getOrDefault(String.valueOf(o), Tiers.IRON));
 		typeWrappers.register(ArmorMaterial.class, ItemBuilder::ofArmorMaterial);
+		typeWrappers.register(PlayerSelector.class, PlayerSelector::of);
 
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
 	}

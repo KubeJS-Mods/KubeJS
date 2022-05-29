@@ -45,7 +45,7 @@ public class KubeJSCommon {
 			return getClientLevel();
 		}
 
-		return ServerJS.instance.getLevel(level);
+		return ServerJS.instance.wrapMinecraftLevel(level);
 	}
 
 	public void reloadTextures() {
