@@ -2,19 +2,26 @@ package dev.latvian.mods.kubejs.client.painter.screen;
 
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectStorage;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.unit.FixedNumberUnit;
 import dev.latvian.mods.unit.Unit;
+import dev.latvian.mods.unit.UnitVariables;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ScreenGroup extends ScreenPainterObject {
-	private final PainterObjectStorage storage = new PainterObjectStorage();
+	private PainterObjectStorage storage;
 	private Unit scaleX = FixedNumberUnit.ONE;
 	private Unit scaleY = FixedNumberUnit.ONE;
 	private Unit paddingW = FixedNumberUnit.ZERO;
 	private Unit paddingH = FixedNumberUnit.ZERO;
+
+	@Override
+	public void init(UnitVariables variables) {
+		storage = new PainterObjectStorage(variables);
+	}
 
 	@Override
 	protected void load(PainterObjectProperties properties) {
@@ -23,7 +30,11 @@ public class ScreenGroup extends ScreenPainterObject {
 		var c = properties.tag.get("children");
 
 		if (c instanceof CompoundTag tag) {
-			storage.handle(tag);
+			if (storage != null) {
+				storage.handle(tag);
+			} else {
+				ConsoleJS.CLIENT.warn("ScreenGroup was not correctly initialized!");
+			}
 		}
 
 		paddingW = properties.getUnit("paddingW", paddingW);

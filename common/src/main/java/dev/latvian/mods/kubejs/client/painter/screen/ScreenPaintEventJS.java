@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.client.painter.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
-import dev.latvian.mods.kubejs.client.painter.PaintEventJS;
 import dev.latvian.mods.kubejs.client.painter.Painter;
+import dev.latvian.mods.kubejs.client.painter.PaintEventJS;
 import dev.latvian.mods.unit.UnitVariables;
 import dev.latvian.mods.unit.VariableSet;
 import net.minecraft.client.Minecraft;
@@ -14,12 +14,14 @@ import net.minecraft.util.FormattedCharSequence;
 public class ScreenPaintEventJS extends PaintEventJS implements UnitVariables {
 	public final int mouseX;
 	public final int mouseY;
-	public final int width;
-	public final int height;
 	public final boolean inventory;
+	private final UnitVariables unitVariables;
+	public int width;
+	public int height;
 
-	public ScreenPaintEventJS(Minecraft m, Screen s, PoseStack ps, int mx, int my, float d) {
+	public ScreenPaintEventJS(UnitVariables unitVariables, Minecraft m, Screen s, PoseStack ps, int mx, int my, float d) {
 		super(m, ps, d, s);
+		this.unitVariables = unitVariables;
 		mouseX = mx;
 		mouseY = my;
 		width = mc.getWindow().getGuiScaledWidth();
@@ -27,13 +29,19 @@ public class ScreenPaintEventJS extends PaintEventJS implements UnitVariables {
 		inventory = true;
 	}
 
-	public ScreenPaintEventJS(Minecraft m, PoseStack ps, float d) {
+	public ScreenPaintEventJS(UnitVariables unitVariables, Minecraft m, PoseStack ps, float d) {
 		super(m, ps, d, null);
+		this.unitVariables = unitVariables;
 		mouseX = -1;
 		mouseY = -1;
 		width = mc.getWindow().getGuiScaledWidth();
 		height = mc.getWindow().getGuiScaledHeight();
 		inventory = false;
+	}
+
+	public void updateSize(int width, int height) {
+		this.width = width;
+		this.height = height;
 	}
 
 	public float alignX(float x, float w, int alignX) {
@@ -102,6 +110,6 @@ public class ScreenPaintEventJS extends PaintEventJS implements UnitVariables {
 
 	@Override
 	public VariableSet getVariables() {
-		return Painter.INSTANCE.getVariables();
+		return unitVariables.getVariables();
 	}
 }

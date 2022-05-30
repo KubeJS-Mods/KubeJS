@@ -1,29 +1,41 @@
 package dev.latvian.mods.kubejs.client.painter;
 
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import dev.latvian.mods.unit.FixedBooleanUnit;
 import dev.latvian.mods.unit.Unit;
+import dev.latvian.mods.unit.UnitVariables;
 import net.minecraft.nbt.CompoundTag;
+
+import java.util.function.Consumer;
 
 public abstract class PainterObject implements SpecialEquality {
 	public String id = "";
-	public PainterObjectStorage parent;
 	public Unit visible = FixedBooleanUnit.TRUE;
+	public Consumer<PainterObject> removeListener;
 
 	public PainterObject id(String i) {
 		id = i;
 		return this;
 	}
 
+	@HideFromJS
+	public void setRemoveListener(Consumer<PainterObject> listener) {
+		removeListener = listener;
+	}
+
 	protected void load(PainterObjectProperties properties) {
 		visible = properties.getUnit("visible", visible);
 	}
 
+	@HideFromJS
+	public void init(UnitVariables variables) {}
+
 	public final void update(CompoundTag tag) {
 		if (tag.getBoolean("remove")) {
-			if (parent != null) {
-				parent.remove(id);
+			if (removeListener != null) {
+				removeListener.accept(this);
 			}
 		} else {
 			try {

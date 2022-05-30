@@ -18,10 +18,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
-
 public class Painter implements UnitVariables {
 	public static final Painter INSTANCE = new Painter();
 
@@ -34,31 +30,28 @@ public class Painter implements UnitVariables {
 	public static final int RIGHT = 1;
 	public static final int TOP = -1;
 	public static final int BOTTOM = 1;
-
-	private final Object lock;
-	private final Map<String, Supplier<PainterObject>> objectRegistry;
-	private final PainterObjectStorage storage;
-	private ScreenPainterObject[] screenObjects;
 	public final UnitContext unitContext;
-	private final VariableSet variables;
+	protected final Object lock;
+	protected final PainterObjectStorage storage;
+	protected final VariableSet variables;
+	protected ScreenPainterObject[] screenObjects;
 	public final MutableNumberUnit deltaUnit;
 	public final MutableNumberUnit screenWidthUnit;
 	public final MutableNumberUnit screenHeightUnit;
 	public final MutableNumberUnit mouseXUnit;
 	public final MutableNumberUnit mouseYUnit;
 
-	private Painter() {
+	protected Painter() {
 		lock = new Object();
-		objectRegistry = new HashMap<>();
-		storage = new PainterObjectStorage();
 		screenObjects = null;
 		unitContext = UnitContext.DEFAULT.sub();
 		variables = new VariableSet();
-		deltaUnit = variables.setMutable("$delta", 1D);
-		screenWidthUnit = variables.setMutable("$screenW", 1D);
-		screenHeightUnit = variables.setMutable("$screenH", 1D);
-		mouseXUnit = variables.setMutable("$mouseX", 0D);
-		mouseYUnit = variables.setMutable("$mouseY", 0D);
+		storage = new PainterObjectStorage(this);
+		deltaUnit = getVariables().setMutable("$delta", 1D);
+		screenWidthUnit = getVariables().setMutable("$screenW", 1D);
+		screenHeightUnit = getVariables().setMutable("$screenH", 1D);
+		mouseXUnit = getVariables().setMutable("$mouseX", 0D);
+		mouseYUnit = getVariables().setMutable("$mouseY", 0D);
 	}
 
 	public Unit unitOf(Object o) {
@@ -71,17 +64,6 @@ public class Painter implements UnitVariables {
 		}
 
 		return FixedNumberUnit.ZERO;
-	}
-
-	@HideFromJS
-	public void registerObject(String name, Supplier<PainterObject> supplier) {
-		objectRegistry.put(name, supplier);
-	}
-
-	@Nullable
-	public PainterObject make(String type) {
-		var supplier = objectRegistry.get(type);
-		return supplier == null ? null : supplier.get();
 	}
 
 	@Nullable
@@ -118,15 +100,6 @@ public class Painter implements UnitVariables {
 		return screenObjects;
 	}
 
-	public void setVariable(String key, Unit variable) {
-		variables.set(key, variable);
-	}
-
-	@Override
-	public VariableSet getVariables() {
-		return variables;
-	}
-
 	public void inGameScreenDraw(PoseStack matrices, float delta) {
 		var mc = Minecraft.getInstance();
 
@@ -138,7 +111,7 @@ public class Painter implements UnitVariables {
 		RenderSystem.enableDepthTest();
 		//RenderSystem.disableLighting();
 
-		var event = new ScreenPaintEventJS(mc, matrices, delta);
+		var event = new ScreenPaintEventJS(this, mc, matrices, delta);
 		deltaUnit.set(delta);
 		screenWidthUnit.set(event.width);
 		screenHeightUnit.set(event.height);
@@ -170,7 +143,7 @@ public class Painter implements UnitVariables {
 		RenderSystem.defaultBlendFunc();
 		//RenderSystem.disableLighting();
 
-		var event = new ScreenPaintEventJS(mc, screen, matrices, mouseX, mouseY, delta);
+		var event = new ScreenPaintEventJS(this, mc, screen, matrices, mouseX, mouseY, delta);
 		deltaUnit.set(delta);
 		screenWidthUnit.set(event.width);
 		screenHeightUnit.set(event.height);
@@ -191,5 +164,10 @@ public class Painter implements UnitVariables {
 				object.draw(event);
 			}
 		}
+	}
+
+	@Override
+	public VariableSet getVariables() {
+		return variables;
 	}
 }

@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.client.painter.screen.ScreenPainterObject;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.unit.FixedNumberUnit;
 import dev.latvian.mods.unit.UnitContext;
+import dev.latvian.mods.unit.UnitVariables;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import org.jetbrains.annotations.Nullable;
@@ -17,6 +18,11 @@ public class PainterObjectStorage {
 	private static final ScreenPainterObject[] NO_SCREEN_OBJECTS = new ScreenPainterObject[0];
 
 	private final Map<String, PainterObject> objects = new LinkedHashMap<>();
+	private final UnitVariables variables;
+
+	public PainterObjectStorage(UnitVariables variables) {
+		this.variables = variables;
+	}
 
 	@Nullable
 	public PainterObject getObject(String key) {
@@ -42,9 +48,9 @@ public class PainterObjectStorage {
 			} else if (key.equals("$")) {
 				for (var k : tag.getAllKeys()) {
 					if (tag.contains(k, Tag.TAG_ANY_NUMERIC)) {
-						Painter.INSTANCE.setVariable(k, FixedNumberUnit.of(tag.getFloat(k)));
+						variables.getVariables().set(k, FixedNumberUnit.of(tag.getFloat(k)));
 					} else {
-						Painter.INSTANCE.setVariable(k, UnitContext.DEFAULT.parse(tag.getString(k)));
+						variables.getVariables().set(k, UnitContext.DEFAULT.parse(tag.getString(k)));
 					}
 				}
 			} else {
@@ -56,11 +62,12 @@ public class PainterObjectStorage {
 					ConsoleJS.CLIENT.error("Painter id can't contain spaces!");
 				} else {
 					var type = tag.getString("type");
-					var o1 = Painter.INSTANCE.make(type);
+					var o1 = PainterRegistry.make(type);
 
 					if (o1 != null) {
 						o1.id = key;
-						o1.parent = this;
+						o1.setRemoveListener(this::remove);
+						o1.init(variables);
 						o1.update(tag);
 						objects.put(key, o1);
 					} else {
@@ -79,7 +86,7 @@ public class PainterObjectStorage {
 		return objects.isEmpty() ? NO_SCREEN_OBJECTS : objects.values().stream().filter(o -> o instanceof ScreenPainterObject).map(o -> (ScreenPainterObject) o).toArray(ScreenPainterObject[]::new);
 	}
 
-	public void remove(String id) {
-		objects.remove(id);
+	public void remove(PainterObject painterObject) {
+		objects.remove(painterObject.id);
 	}
 }
