@@ -12,6 +12,7 @@ import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -83,7 +84,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		textures = new JsonObject();
 		textureAll(id.getNamespace() + ":block/" + id.getPath());
 		model = "";
-		itemBuilder = new BlockItemBuilder(i);
+		itemBuilder = newItemBuilder();
 		itemBuilder.blockBuilder = this;
 		customShape = new ArrayList<>();
 		noCollision = false;
@@ -361,7 +362,9 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	public BlockBuilder model(String m) {
 		model = m;
-		itemBuilder.parentModel = model;
+		if (itemBuilder != null) {
+			itemBuilder.parentModel(m);
+		}
 		return this;
 	}
 
@@ -370,10 +373,15 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 			itemBuilder = null;
 			lootTable = null;
 		} else {
-			i.accept(itemBuilder);
+			i.accept(newItemBuilder());
 		}
 
 		return this;
+	}
+
+	@HideFromJS
+	protected BlockItemBuilder newItemBuilder() {
+		return new BlockItemBuilder(id);
 	}
 
 	public BlockBuilder noItem() {
