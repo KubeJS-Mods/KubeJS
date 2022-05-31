@@ -501,9 +501,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	public BlockBuilder tag(ResourceLocation tag) {
-		ConsoleJS.STARTUP.warn("BlockBuilder.tag's behaviour is going to change in a future version to tag both the block and the item!");
-		ConsoleJS.STARTUP.warn("If you do not want this, use tagBlock and tagItem instead!");
-		return tagBlock(tag);
+		return tagBoth(tag);
 	}
 
 	public BlockBuilder tagBoth(ResourceLocation tag) {
