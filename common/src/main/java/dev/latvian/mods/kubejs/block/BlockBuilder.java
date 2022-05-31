@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
@@ -270,7 +271,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	@Environment(EnvType.CLIENT)
-	public void clientRegistry(Minecraft minecraft) {
+	public void clientRegistry(Supplier<Minecraft> minecraft) {
 		switch (renderType) {
 			case "cutout" -> RenderTypeRegistry.register(RenderType.cutout(), get());
 			case "cutout_mipped" -> RenderTypeRegistry.register(RenderType.cutoutMipped(), get());

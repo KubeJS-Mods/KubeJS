@@ -76,7 +76,7 @@ public class KubeJSClientEventHandler {
 
 	private void clientSetup(Minecraft minecraft) {
 		for (var builder : RegistryObjectBuilderTypes.ALL_BUILDERS) {
-			builder.clientRegistry(minecraft);
+			builder.clientRegistry(() -> minecraft);
 		}
 		new ItemModelPropertiesEventJS().post(KubeJSEvents.ITEM_MODEL_PROPERTIES);
 	}
