@@ -33,6 +33,13 @@ import java.util.concurrent.CompletableFuture;
  */
 public class KubeJSClient extends KubeJSCommon {
 	@Override
+	public void startThread() {
+		if (Minecraft.getInstance() != null) {
+			super.startThread();
+		}
+	}
+
+	@Override
 	public void init() {
 		// You'd think that this is impossible, but not when you use runData gradle task
 		if (Minecraft.getInstance() == null) {

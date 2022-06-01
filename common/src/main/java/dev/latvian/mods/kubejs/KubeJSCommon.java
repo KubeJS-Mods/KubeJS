@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.server.ServerJS;
+import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -13,6 +14,10 @@ import org.jetbrains.annotations.Nullable;
  * @author LatvianModder
  */
 public class KubeJSCommon {
+	public void startThread() {
+		new KubeJSBackgroundThread().start();
+	}
+
 	public void init() {
 	}
 
