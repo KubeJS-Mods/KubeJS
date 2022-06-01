@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
 /**
@@ -168,7 +169,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	@Override
 	@Environment(EnvType.CLIENT)
-	public void clientRegistry(Minecraft minecraft) {
+	public void clientRegistry(Supplier<Minecraft> minecraft) {
 		if (colorCallback != null) {
 			ColorHandlerRegistry.registerItemColors((stack, tintIndex) -> colorCallback.getColor(ItemStackJS.of(stack), tintIndex).getArgbJS(), this);
 		}

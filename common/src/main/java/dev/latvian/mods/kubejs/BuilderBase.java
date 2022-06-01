@@ -106,7 +106,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void clientRegistry(Minecraft minecraft) {
+	public void clientRegistry(Supplier<Minecraft> minecraft) {
 	}
 
 	public void addResourcePackLocations(String path, List<ResourceLocation> list, PackType packType) {

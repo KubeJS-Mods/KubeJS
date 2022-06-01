@@ -54,11 +54,20 @@ public class Painter implements UnitVariables {
 		screenObjects = null;
 		unitContext = UnitContext.DEFAULT.sub();
 		variables = new VariableSet();
-		deltaUnit = variables.setMutable("$delta", 1D);
-		screenWidthUnit = variables.setMutable("$screenW", 1D);
-		screenHeightUnit = variables.setMutable("$screenH", 1D);
-		mouseXUnit = variables.setMutable("$mouseX", 0D);
-		mouseYUnit = variables.setMutable("$mouseY", 0D);
+		deltaUnit = variables.setMutable("$Delta", 1D);
+		variables.set("$ScreenX", 0D);
+		variables.set("$ScreenY", 0D);
+		screenWidthUnit = variables.setMutable("$ScreenW", 1D);
+		screenHeightUnit = variables.setMutable("$ScreenH", 1D);
+		mouseXUnit = variables.setMutable("$MouseX", 0D);
+		mouseYUnit = variables.setMutable("MouseY", 0D);
+
+		// Legacy
+		variables.set("$delta", deltaUnit);
+		variables.set("$screenW", screenWidthUnit);
+		variables.set("$screenH", screenHeightUnit);
+		variables.set("$mouseX", mouseXUnit);
+		variables.set("$mouseY", mouseYUnit);
 	}
 
 	public Unit unitOf(Object o) {
