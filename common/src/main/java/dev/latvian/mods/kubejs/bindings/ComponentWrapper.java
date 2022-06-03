@@ -8,7 +8,10 @@ import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.KeybindComponent;
@@ -111,6 +114,43 @@ public class ComponentWrapper {
 		return new TextComponent(o.toString());
 	}
 
+	public static ClickEvent clickEventOf(Object o) {
+		if (o == null) {
+			return null;
+		} else if (o instanceof ClickEvent ce) {
+			return ce;
+		} else if (o instanceof JsonSerializable jsonSerializable) {
+			if (jsonSerializable.toJson() instanceof JsonObject json) {
+				var action = GsonHelper.getAsString(json, "action");
+				var value = GsonHelper.getAsString(json, "value");
+				return new ClickEvent(Objects.requireNonNull(ClickEvent.Action.getByName(action), "Invalid click event action %s!".formatted(action)), value);
+			}
+		}
+
+		var s = o.toString();
+
+		var split = s.split(":", 2);
+
+		return switch (split[0]) {
+			case "command" -> new ClickEvent(ClickEvent.Action.RUN_COMMAND, split[1]);
+			case "suggest_command" -> new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, split[1]);
+			case "copy" -> new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, split[1]);
+			case "file" -> new ClickEvent(ClickEvent.Action.OPEN_FILE, split[1]);
+			default -> {
+				var action = ClickEvent.Action.getByName(split[0]);
+				if (action != null) {
+					yield new ClickEvent(action, split[1]);
+				}
+
+				yield new ClickEvent(ClickEvent.Action.OPEN_URL, s);
+			}
+		};
+	}
+
+	public static Component prettyPrintNbt(Tag tag) {
+		return NbtUtils.toPrettyComponent(tag);
+	}
+
 	public static MutableComponent join(MutableComponent separator, Iterable<? extends Component> texts) {
 		var joined = TextComponent.EMPTY.plainCopy();
 		var first = true;
@@ -206,38 +246,5 @@ public class ComponentWrapper {
 
 	public static MutableComponent white(Object text) {
 		return of(text).white();
-	}
-
-	public static ClickEvent clickEventOf(Object o) {
-		if (o == null) {
-			return null;
-		} else if (o instanceof ClickEvent ce) {
-			return ce;
-		} else if (o instanceof JsonSerializable jsonSerializable) {
-			if (jsonSerializable.toJson() instanceof JsonObject json) {
-				var action = GsonHelper.getAsString(json, "action");
-				var value = GsonHelper.getAsString(json, "value");
-				return new ClickEvent(Objects.requireNonNull(ClickEvent.Action.getByName(action), "Invalid click event action %s!".formatted(action)), value);
-			}
-		}
-
-		var s = o.toString();
-
-		var split = s.split(":", 2);
-
-		return switch (split[0]) {
-			case "command" -> new ClickEvent(ClickEvent.Action.RUN_COMMAND, split[1]);
-			case "suggest_command" -> new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, split[1]);
-			case "copy" -> new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, split[1]);
-			case "file" -> new ClickEvent(ClickEvent.Action.OPEN_FILE, split[1]);
-			default -> {
-				var action = ClickEvent.Action.getByName(split[0]);
-				if (action != null) {
-					yield new ClickEvent(action, split[1]);
-				}
-
-				yield new ClickEvent(ClickEvent.Action.OPEN_URL, s);
-			}
-		};
 	}
 }
