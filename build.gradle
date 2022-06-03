@@ -113,11 +113,11 @@ subprojects {
 			archiveClassifier.set null
 		}
 
-		loom {
+		/*loom {
 			mixin {
 				defaultRefmapName = "kubejs.refmap.json"
 			}
-		}
+		}*/
 	}
 }
 
