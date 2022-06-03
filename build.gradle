@@ -1,10 +1,16 @@
 plugins {
 	id 'base'
+	id 'architectury-plugin' version '3.4-SNAPSHOT'
 	id "dev.architectury.loom" version "0.12.0-SNAPSHOT" apply false
 	id "io.github.juuxel.loom-quiltflower" version "1.7.2" apply false
 	id "com.github.johnrengelman.shadow" version "7.0.0" apply false
 	id "com.matthewprenger.cursegradle" version "1.4.0" apply false
 	id "com.modrinth.minotaur" version "2.2.0" apply false
+}
+
+architectury {
+	minecraft = project.minecraft_version
+	injectInjectables = false
 }
 
 allprojects {
@@ -34,6 +40,7 @@ base.archivesBaseName = project.archives_base_name
 subprojects {
 	apply plugin: "java"
 	apply plugin: "dev.architectury.loom"
+	apply plugin: 'architectury-plugin'
 	apply plugin: "io.github.juuxel.loom-quiltflower"
 	apply plugin: "maven-publish"
 	apply from: "https://files.latmod.com/public/markdown-git-changelog.gradle"
@@ -71,7 +78,7 @@ subprojects {
 		apply plugin: "com.matthewprenger.cursegradle"
 		apply plugin: "com.modrinth.minotaur"
 
-		loom {
+		/*loom {
 			runConfigs.configureEach { ideConfigGenerated = true }
 			mods {
 				main { // to match the default mod generated for Forge
@@ -79,7 +86,7 @@ subprojects {
 					sourceSet project(':common').sourceSets.main
 				}
 			}
-		}
+		}*/
 
 		configurations {
 			bundle {

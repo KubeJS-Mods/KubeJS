@@ -10,6 +10,11 @@ configurations {
 def generatedResources = file("src/generated/resources")
 def accessWidenerFile = project(":common").file("src/main/resources/kubejs.accesswidener")
 
+architectury {
+	platformSetupLoomIde()
+	fabric()
+}
+
 loom {
 	accessWidenerPath = accessWidenerFile
 }
@@ -36,11 +41,8 @@ dependencies {
 	modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:${rootProject.rei_version}")
 
 	implementation(project(path: ":common", configuration: "namedElements")) { transitive false }
-	bundle(project(path: ":common", configuration: "namedElements")) { transitive false }
-}
-
-compileJava {
-	source(project(":common").sourceSets.getByName("mixin").allJava)
+	developmentFabric(project(path: ":common", configuration: "namedElements")) { transitive false }
+	bundle(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
 
 // The AW file is needed in :fabric project resources when the game is run.
@@ -62,8 +64,6 @@ processResources {
 	filesMatching("fabric.mod.json") {
 		expand toReplace
 	}
-
-	from(project(":common").sourceSets.getByName("mixin").resources)
 }
 
 components.java {
