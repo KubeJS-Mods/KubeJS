@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.bindings;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import dev.latvian.mods.kubejs.core.ComponentKJS;
 import dev.latvian.mods.kubejs.util.JSObjectType;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -12,7 +11,6 @@ import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.KeybindComponent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
@@ -86,7 +84,7 @@ public class ComponentWrapper {
 				text = new TranslatableComponent(map.get("translate").toString(), with);
 			}
 
-			if(map.containsKey("color")) {
+			if (map.containsKey("color")) {
 				text.color(ColorWrapper.of(map.get("color")));
 			}
 

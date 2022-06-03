@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.loot;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.core.ComponentKJS;
 import dev.latvian.mods.kubejs.core.EntityTargetKJS;
 import dev.latvian.mods.kubejs.core.JsonSerializableKJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;

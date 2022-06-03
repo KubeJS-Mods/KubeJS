@@ -10,7 +10,6 @@ import dev.latvian.mods.kubejs.core.BlockKJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;

@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.level;
 
-import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.entity.ItemEntityJS;
 import dev.latvian.mods.kubejs.entity.ItemFrameEntityJS;

@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.player;
 
-import dev.latvian.mods.kubejs.core.ComponentKJS;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.util.MessageSender;
