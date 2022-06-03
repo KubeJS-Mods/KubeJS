@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
 import com.google.gson.JsonElement;
+import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import net.minecraft.ChatFormatting;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
  * Extensions for components, will be injected into
  * {@link MutableComponent} at runtime.
  */
-public interface ComponentKJS extends Iterable<Component>, JsonSerializable {
+public interface ComponentKJS extends Iterable<Component>, JsonSerializable, WrappedJS {
 
 	MutableComponent withStyle(ChatFormatting... args);
 
