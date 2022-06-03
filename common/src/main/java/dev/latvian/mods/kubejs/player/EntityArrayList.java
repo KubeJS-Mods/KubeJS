@@ -47,7 +47,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 	@Override
 	public Component getDisplayName() {
-		return ((ComponentKJS) new TextComponent(toString())).lightPurple();
+		return new TextComponent(toString()).lightPurple();
 	}
 
 	@Override

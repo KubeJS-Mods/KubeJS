@@ -86,24 +86,20 @@ public class ComponentWrapper {
 				text = new TranslatableComponent(map.get("translate").toString(), with);
 			}
 
-			text.withStyle(style -> {
-				if (map.containsKey("color")) {
-					style.withColor(ColorWrapper.of(map.get("color")).createTextColorJS());
-				}
+			if(map.containsKey("color")) {
+				text.color(ColorWrapper.of(map.get("color")));
+			}
 
-				style.withBold((Boolean) map.getOrDefault("bold", null));
-				style.withItalic((Boolean) map.getOrDefault("italic", null));
-				style.withUnderlined((Boolean) map.getOrDefault("underlined", null));
-				style.withStrikethrough((Boolean) map.getOrDefault("strikethrough", null));
-				style.withObfuscated((Boolean) map.getOrDefault("obfuscated", null));
+			text.bold((Boolean) map.getOrDefault("bold", null));
+			text.italic((Boolean) map.getOrDefault("italic", null));
+			text.underlined((Boolean) map.getOrDefault("underlined", null));
+			text.strikethrough((Boolean) map.getOrDefault("strikethrough", null));
+			text.obfuscated((Boolean) map.getOrDefault("obfuscated", null));
 
-				style.withInsertion((String) map.getOrDefault("insertion", null));
-				style.withFont(map.containsKey("font") ? new ResourceLocation(map.get("font").toString()) : null);
-				style.withClickEvent(map.containsKey("click") ? clickEventOf(map.get("click")) : null);
-				style.withHoverEvent(map.containsKey("hover") ? new HoverEvent(HoverEvent.Action.SHOW_TEXT, of(map.get("hover"))) : null);
-
-				return style;
-			});
+			text.insertion((String) map.getOrDefault("insertion", null));
+			text.font(map.containsKey("font") ? new ResourceLocation(map.get("font").toString()) : null);
+			text.click(map.containsKey("click") ? clickEventOf(map.get("click")) : null);
+			text.hover(map.containsKey("hover") ? of(map.get("hover")) : null);
 
 			if (map.containsKey("extra")) {
 				for (var e : map.getOrNewList("extra")) {
@@ -151,67 +147,67 @@ public class ComponentWrapper {
 	}
 
 	public static MutableComponent black(Object text) {
-		return ((ComponentKJS) of(text)).black();
+		return of(text).black();
 	}
 
 	public static MutableComponent darkBlue(Object text) {
-		return ((ComponentKJS) of(text)).darkBlue();
+		return of(text).darkBlue();
 	}
 
 	public static MutableComponent darkGreen(Object text) {
-		return ((ComponentKJS) of(text)).darkGreen();
+		return of(text).darkGreen();
 	}
 
 	public static MutableComponent darkAqua(Object text) {
-		return ((ComponentKJS) of(text)).darkAqua();
+		return of(text).darkAqua();
 	}
 
 	public static MutableComponent darkRed(Object text) {
-		return ((ComponentKJS) of(text)).darkRed();
+		return of(text).darkRed();
 	}
 
 	public static MutableComponent darkPurple(Object text) {
-		return ((ComponentKJS) of(text)).darkPurple();
+		return of(text).darkPurple();
 	}
 
 	public static MutableComponent gold(Object text) {
-		return ((ComponentKJS) of(text)).gold();
+		return of(text).gold();
 	}
 
 	public static MutableComponent gray(Object text) {
-		return ((ComponentKJS) of(text)).gray();
+		return of(text).gray();
 	}
 
 	public static MutableComponent darkGray(Object text) {
-		return ((ComponentKJS) of(text)).darkGray();
+		return of(text).darkGray();
 	}
 
 	public static MutableComponent blue(Object text) {
-		return ((ComponentKJS) of(text)).blue();
+		return of(text).blue();
 	}
 
 	public static MutableComponent green(Object text) {
-		return ((ComponentKJS) of(text)).green();
+		return of(text).green();
 	}
 
 	public static MutableComponent aqua(Object text) {
-		return ((ComponentKJS) of(text)).aqua();
+		return of(text).aqua();
 	}
 
 	public static MutableComponent red(Object text) {
-		return ((ComponentKJS) of(text)).red();
+		return of(text).red();
 	}
 
 	public static MutableComponent lightPurple(Object text) {
-		return ((ComponentKJS) of(text)).lightPurple();
+		return of(text).lightPurple();
 	}
 
 	public static MutableComponent yellow(Object text) {
-		return ((ComponentKJS) of(text)).yellow();
+		return of(text).yellow();
 	}
 
 	public static MutableComponent white(Object text) {
-		return ((ComponentKJS) of(text)).white();
+		return of(text).white();
 	}
 
 	public static ClickEvent clickEventOf(Object o) {

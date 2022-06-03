@@ -97,7 +97,7 @@ public interface FunctionContainer {
 	default FunctionContainer name(Component name, @Nullable LootContext.EntityTarget entity) {
 		var o = new JsonObject();
 		o.addProperty("function", "minecraft:set_name");
-		o.add("name", ((ComponentKJS) name).toJson());
+		o.add("name", Component.Serializer.toJsonTree(name));
 
 		if (entity != null) {
 			o.addProperty("entity", EntityTargetKJS.getNameKJS(entity));

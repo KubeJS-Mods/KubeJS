@@ -1,0 +1,8 @@
+{
+	"accessWidener": "kubejs.accesswidener",
+	"injected_interfaces": {
+		"net/minecraft/class_5250": [
+			"dev/latvian/mods/kubejs/core/ComponentKJS"
+		]
+	}
+}

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.core;
 
 import com.google.gson.JsonElement;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
+import dev.latvian.mods.rhino.mod.util.color.Color;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -12,6 +13,10 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Extensions for components, will be injected into
+ * {@link MutableComponent} at runtime.
+ */
 public interface ComponentKJS extends Iterable<Component>, JsonSerializable {
 
 	MutableComponent withStyle(ChatFormatting... args);
@@ -93,14 +98,10 @@ public interface ComponentKJS extends Iterable<Component>, JsonSerializable {
 	// endregion ChatFormatting extensions
 
 	// region Style extensions
-	default MutableComponent color(@Nullable TextColor c) {
-		return setStyle(getStyle().withColor(c));
+	default MutableComponent color(@Nullable Color c) {
+		var col = c == null ? null : c.createTextColorJS();
+		return setStyle(getStyle().withColor(col));
 	}
-
-	// removed due to ambiguity with color(TextColor c)
-	/*default MutableComponent color(Color c) {
-		return color(c.createTextColorJS());
-	}*/
 
 	default MutableComponent noColor() {
 		return color(null);
