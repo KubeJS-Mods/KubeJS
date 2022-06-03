@@ -1,15 +1,14 @@
 package dev.latvian.mods.kubejs.util;
 
-import dev.latvian.mods.kubejs.text.Text;
 import net.minecraft.network.chat.Component;
 
 /**
  * @author LatvianModder
  */
 public interface MessageSender {
-	Text getName();
+	Component getName();
 
-	default Text getDisplayName() {
+	default Component getDisplayName() {
 		return getName();
 	}
 

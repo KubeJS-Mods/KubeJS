@@ -31,7 +31,7 @@ public class ItemModelPropertiesEventJS extends StartupEventJS {
 	private ClampedItemPropertyFunction wrap(ItemPropertiesCallback callback) {
 		return (itemStack, level, entity, id) -> {
 			LevelJS levelJS = level == null ? null : KubeJS.PROXY.getLevel(level);
-			EntityJS entityJS = entity == null ? null : (EntityJS) ((EntityKJS) entity).asKJS();
+			EntityJS entityJS = entity == null ? null : entity.asKJS();
 			return callback.accept(ItemStackJS.of(itemStack), levelJS, entityJS, id);
 		};
 	}

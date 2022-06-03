@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.command;
 
-import com.google.common.collect.Maps;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;

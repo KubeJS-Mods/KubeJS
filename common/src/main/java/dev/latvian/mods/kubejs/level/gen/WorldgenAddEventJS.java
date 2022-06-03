@@ -36,7 +36,6 @@ import net.minecraft.world.level.levelgen.placement.InSquarePlacement;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
 import net.minecraft.world.level.levelgen.placement.RarityFilter;
-import org.apache.commons.codec.binary.Hex;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigInteger;

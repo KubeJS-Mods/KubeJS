@@ -1,9 +1,10 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.core.ItemKJS;
-import dev.latvian.mods.kubejs.core.TieredItemKJS;
+import net.minecraft.Util;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TieredItem;
 
 import java.util.function.Consumer;
 
@@ -42,10 +43,8 @@ public class ItemModificationProperties {
 	}
 
 	public void setTier(Consumer<MutableToolTier> c) {
-		if (item instanceof TieredItemKJS kjs) {
-			var t = new MutableToolTier(kjs.getTierKJS());
-			c.accept(t);
-			kjs.setTierKJS(t);
+		if (item instanceof TieredItem tiered) {
+			tiered.tier = Util.make(new MutableToolTier(tiered.tier), c);
 		} else {
 			throw new IllegalArgumentException("Item is not a tool/tiered item!");
 		}

@@ -70,7 +70,7 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	public static void cloned(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean wonGame) {
-		((EntityKJS) newPlayer).getPersistentDataKJS().merge(((EntityKJS) oldPlayer).getPersistentDataKJS());
+		newPlayer.getPersistentDataKJS().merge(oldPlayer.getPersistentDataKJS());
 		newPlayer.inventoryMenu.addSlotListener(new InventoryListener(newPlayer));
 	}
 

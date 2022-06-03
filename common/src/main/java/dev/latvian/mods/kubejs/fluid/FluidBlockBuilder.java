@@ -4,7 +4,6 @@ import dev.architectury.core.block.ArchitecturyLiquidBlock;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.BlockItemBuilder;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
-import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Material;
@@ -39,7 +38,7 @@ public class FluidBlockBuilder extends BlockBuilder {
 
 	@Override
 	public BlockBuilder item(@Nullable Consumer<BlockItemBuilder> i) {
-		if(i != null) {
+		if (i != null) {
 			throw new IllegalStateException("Fluid blocks cannot have items!");
 		} else {
 			return super.item(null);

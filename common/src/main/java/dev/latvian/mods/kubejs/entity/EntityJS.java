@@ -2,14 +2,12 @@ package dev.latvian.mods.kubejs.entity;
 
 import com.mojang.authlib.GameProfile;
 import dev.architectury.registry.registries.Registries;
-import dev.latvian.mods.kubejs.core.EntityKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.level.ServerLevelJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.server.ServerJS;
-import dev.latvian.mods.kubejs.text.Text;
 import dev.latvian.mods.kubejs.util.MessageSender;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import net.minecraft.Util;
@@ -49,7 +47,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	public EntityJS(LevelJS l, Entity e) {
 		level = l;
 		minecraftEntity = e;
-		persistentData = ((EntityKJS) e).getPersistentDataKJS();
+		persistentData = e.getPersistentDataKJS();
 	}
 
 	public final LevelJS getLevel() {
@@ -70,8 +68,8 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	@Override
-	public Text getName() {
-		return Text.of(minecraftEntity.getName());
+	public Component getName() {
+		return minecraftEntity.getName();
 	}
 
 	public GameProfile getProfile() {
@@ -79,8 +77,8 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	@Override
-	public Text getDisplayName() {
-		return Text.of(minecraftEntity.getDisplayName());
+	public Component getDisplayName() {
+		return minecraftEntity.getDisplayName();
 	}
 
 	@Override
@@ -311,7 +309,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
 		if (!Level.isInSpawnableBounds(new BlockPos(x, y, z))) {
 			throw new IllegalArgumentException("Invalid coordinates!");
-		} else if(Float.isNaN(yaw) || Float.isNaN(pitch)) {
+		} else if (Float.isNaN(yaw) || Float.isNaN(pitch)) {
 			throw new IllegalArgumentException("Invalid rotation!");
 		}
 		minecraftEntity.moveTo(x, y, z, yaw, pitch);
@@ -390,8 +388,8 @@ public class EntityJS implements MessageSender, WrappedJS {
 		minecraftEntity.setCustomName(name);
 	}
 
-	public Text getCustomName() {
-		return Text.of(minecraftEntity.getCustomName());
+	public Component getCustomName() {
+		return minecraftEntity.getCustomName();
 	}
 
 	public boolean getHasCustomName() {

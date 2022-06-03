@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.integration.rei;
 
+import dev.latvian.mods.kubejs.bindings.ComponentWrapper;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.text.Text;
 import dev.latvian.mods.kubejs.util.ListJS;
 import me.shedaniel.rei.api.common.util.CollectionUtils;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
@@ -26,7 +26,7 @@ public class InformationREIEventJS extends EventJS {
 				EntryIngredients.ofItemStacks(CollectionUtils.map(IngredientJS.of(stacks).getStacks(), ItemStackJS::getItemStack)),
 				title,
 				components -> {
-					components.addAll(CollectionUtils.map(ListJS.orSelf(description), Text::componentOf));
+					components.addAll(CollectionUtils.map(ListJS.orSelf(description), ComponentWrapper::of));
 					return components;
 				}
 		);

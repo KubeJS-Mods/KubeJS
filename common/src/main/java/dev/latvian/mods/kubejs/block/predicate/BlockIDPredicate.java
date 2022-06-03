@@ -19,7 +19,8 @@ import java.util.Optional;
  * @author LatvianModder
  */
 public class BlockIDPredicate implements BlockPredicate {
-	public record PropertyObject(Property<?> property, Object value) {}
+	public record PropertyObject(Property<?> property, Object value) {
+	}
 
 	private final ResourceLocation id;
 	private final Map<String, String> properties;

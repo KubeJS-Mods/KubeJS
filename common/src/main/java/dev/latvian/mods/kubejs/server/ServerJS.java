@@ -10,7 +10,6 @@ import dev.latvian.mods.kubejs.player.FakeServerPlayerDataJS;
 import dev.latvian.mods.kubejs.player.ServerPlayerDataJS;
 import dev.latvian.mods.kubejs.player.ServerPlayerJS;
 import dev.latvian.mods.kubejs.script.AttachDataEvent;
-import dev.latvian.mods.kubejs.text.Text;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.MessageSender;
 import dev.latvian.mods.kubejs.util.WithAttachedData;
@@ -19,6 +18,7 @@ import net.minecraft.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -131,13 +131,13 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	}
 
 	@Override
-	public Text getName() {
-		return Text.of(getMinecraftServer().name());
+	public Component getName() {
+		return new TextComponent(getMinecraftServer().name());
 	}
 
 	@Override
-	public Text getDisplayName() {
-		return Text.of(getMinecraftServer().createCommandSourceStack().getDisplayName());
+	public Component getDisplayName() {
+		return getMinecraftServer().createCommandSourceStack().getDisplayName();
 	}
 
 	@Override

@@ -8,14 +8,12 @@ dependencies {
 	modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin:${rootProject.rei_version}")
 }
 
-loom {
-	accessWidenerPath = file("src/main/resources/kubejs.accesswidener")
+architectury {
+	common("forge", "fabric")
 }
 
-def mixinSources = sourceSets.create("mixin") {
-	compileClasspath = project.files(
-			sourceSets.main.compileClasspath, sourceSets.main.output
-	)
+loom {
+	accessWidenerPath = file("src/main/resources/kubejs.accesswidener")
 }
 
 publishing {

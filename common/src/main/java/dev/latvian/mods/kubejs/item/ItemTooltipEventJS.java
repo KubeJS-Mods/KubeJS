@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.item;
 
+import dev.latvian.mods.kubejs.bindings.ComponentWrapper;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.text.Text;
 import dev.latvian.mods.kubejs.util.ListJS;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -39,7 +39,7 @@ public class ItemTooltipEventJS extends EventJS {
 			lines = new ArrayList<>();
 
 			for (var o1 : ListJS.orSelf(o)) {
-				lines.add(Text.componentOf(o1));
+				lines.add(ComponentWrapper.of(o1));
 			}
 		}
 
@@ -64,7 +64,7 @@ public class ItemTooltipEventJS extends EventJS {
 			components.clear();
 
 			for (var o : text) {
-				components.add(Text.componentOf(o));
+				components.add(ComponentWrapper.of(o));
 			}
 		}
 	}
