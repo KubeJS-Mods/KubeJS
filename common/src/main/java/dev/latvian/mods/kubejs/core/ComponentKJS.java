@@ -11,7 +11,10 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Iterator;
 
 /**
  * Extensions for components, will be injected into
@@ -25,7 +28,14 @@ public interface ComponentKJS extends Iterable<Component>, JsonSerializable, Wra
 
 	MutableComponent setStyle(Style arg);
 
-	Component self();
+	@Override
+	default Iterator<Component> iterator() {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
+
+	default MutableComponent self() {
+		return (MutableComponent) this;
+	}
 
 	default JsonElement toJson() {
 		return Component.Serializer.toJsonTree(self());

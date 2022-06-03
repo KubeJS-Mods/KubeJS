@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.JsonIO;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
@@ -30,8 +31,10 @@ public class ServerSettings {
 	public boolean logInvalidRecipeHandlers = true;
 	public boolean useOriginalRecipeForFilters = true;
 
-	public static transient CommandSourceStack source;
-	public static transient JsonObject dataExport;
+	@HideFromJS
+	public static CommandSourceStack source;
+	@HideFromJS
+	public static JsonObject dataExport;
 
 	public static void exportData() {
 		if (dataExport != null) {

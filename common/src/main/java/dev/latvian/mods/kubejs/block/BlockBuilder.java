@@ -6,7 +6,6 @@ import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
-import dev.latvian.mods.kubejs.core.BlockKJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
@@ -112,9 +111,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	public Block transformObject(Block obj) {
-		if (obj instanceof BlockKJS blockKJS) {
-			blockKJS.setBlockBuilderKJS(this);
-		}
+		obj.setBlockBuilderKJS(this);
 
 		return obj;
 	}

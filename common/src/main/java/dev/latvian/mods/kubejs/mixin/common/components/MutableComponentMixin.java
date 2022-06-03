@@ -59,10 +59,6 @@ public interface MutableComponentMixin extends Component, ComponentKJS {
 		return !getSiblings().isEmpty();
 	}
 
-	default MutableComponent self() {
-		return (MutableComponent) this;
-	}
-
 	// These following methods only exist for interoperability with old scripts using the Text class
 	// region Deprecated
 	@Deprecated(forRemoval = true)
