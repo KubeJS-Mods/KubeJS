@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
+import org.apache.commons.lang3.NotImplementedException;
 
 public interface EntityKJS extends AsKJS {
 	@Override
@@ -12,5 +13,7 @@ public interface EntityKJS extends AsKJS {
 		return KubeJS.PROXY.getLevel(entity.level).getEntity(entity);
 	}
 
-	CompoundTag getPersistentDataKJS();
+	default CompoundTag getPersistentDataKJS() {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 }

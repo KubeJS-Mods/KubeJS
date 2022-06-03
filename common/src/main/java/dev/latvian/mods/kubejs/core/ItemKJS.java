@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -12,23 +13,43 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface ItemKJS {
 	@Nullable
-	ItemBuilder getItemBuilderKJS();
+	default ItemBuilder getItemBuilderKJS() {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	void setItemBuilderKJS(ItemBuilder b);
+	default void setItemBuilderKJS(ItemBuilder b) {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	CompoundTag getTypeDataKJS();
+	default CompoundTag getTypeDataKJS() {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	void setMaxStackSizeKJS(int i);
+	default void setMaxStackSizeKJS(int i) {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	void setMaxDamageKJS(int i);
+	default void setMaxDamageKJS(int i) {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	void setCraftingRemainderKJS(Item i);
+	default void setCraftingRemainderKJS(Item i) {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	void setFireResistantKJS(boolean b);
+	default void setFireResistantKJS(boolean b) {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	void setRarityKJS(Rarity r);
+	default void setRarityKJS(Rarity r) {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	void setBurnTimeKJS(int i);
+	default void setBurnTimeKJS(int i) {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	void setFoodPropertiesKJS(FoodProperties properties);
+	default void setFoodPropertiesKJS(FoodProperties properties) {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 }

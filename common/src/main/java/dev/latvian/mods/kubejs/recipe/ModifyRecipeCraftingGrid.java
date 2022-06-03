@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import dev.latvian.mods.kubejs.core.AsKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.MatchAllIngredientJS;
@@ -79,9 +78,9 @@ public class ModifyRecipeCraftingGrid {
 
 	@Nullable
 	public PlayerJS<?> getPlayer() {
-		if (container.menu instanceof CraftingMenu menu && menu.player instanceof AsKJS asKJS && asKJS instanceof PlayerJS<?> player) {
+		if (container.menu instanceof CraftingMenu menu && menu.player.asKJS() instanceof PlayerJS<?> player) {
 			return player;
-		} else if (container.menu instanceof InventoryMenu menu && menu.owner instanceof AsKJS asKJS && asKJS instanceof PlayerJS<?> player) {
+		} else if (container.menu instanceof InventoryMenu menu && menu.owner.asKJS() instanceof PlayerJS<?> player) {
 			return player;
 		}
 

@@ -13,6 +13,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import dev.latvian.mods.rhino.mod.util.JsonUtils;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +30,8 @@ import java.util.Map;
  * @author LatvianModder
  */
 public class JsonIO {
-	public static final transient Gson GSON = new GsonBuilder().disableHtmlEscaping().setLenient().create();
+	@HideFromJS
+	public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setLenient().create();
 
 	public static JsonElement copy(@Nullable JsonElement element) {
 		return JsonUtils.copy(element);

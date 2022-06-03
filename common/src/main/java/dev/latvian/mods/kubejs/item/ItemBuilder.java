@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
-import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.entity.LivingEntityJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
@@ -135,9 +134,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	@Override
 	public Item transformObject(Item obj) {
-		if (obj instanceof ItemKJS itemKJS) {
-			itemKJS.setItemBuilderKJS(this);
-		}
+		obj.setItemBuilderKJS(this);
 
 		return obj;
 	}
