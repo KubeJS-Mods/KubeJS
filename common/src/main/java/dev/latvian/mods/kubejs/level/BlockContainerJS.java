@@ -422,6 +422,6 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public CompoundTag getTypeData() {
-		return ((BlockKJS) getBlockState().getBlock()).getTypeDataKJS();
+		return getBlockState().getBlock().getTypeDataKJS();
 	}
 }

@@ -3,6 +3,15 @@
 	"injected_interfaces": {
 		"net/minecraft/class_5250": [
 			"dev/latvian/mods/kubejs/core/ComponentKJS"
+		],
+		"net/minecraft/class_1297": [
+			"dev/latvian/mods/kubejs/core/EntityKJS"
+		],
+		"net/minecraft/class_4970": [
+			"dev/latvian/mods/kubejs/core/BlockKJS"
+		],
+		"net/minecraft/class_1792": [
+			"dev/latvian/mods/kubejs/core/ItemKJS"
 		]
 	}
 }

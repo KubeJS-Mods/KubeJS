@@ -3,8 +3,8 @@ package dev.latvian.mods.kubejs.loot;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.core.EntityTargetKJS;
-import dev.latvian.mods.kubejs.core.JsonSerializableKJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -31,7 +31,7 @@ public interface FunctionContainer {
 	}
 
 	default FunctionContainer count(NumberProvider count) {
-		if (count instanceof JsonSerializableKJS) {
+		if (count instanceof JsonSerializable) {
 			var o = new JsonObject();
 			o.addProperty("function", "minecraft:set_count");
 			o.add("count", UtilsJS.numberProviderJson(count));

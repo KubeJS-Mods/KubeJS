@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.util.ListJS;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 
 import java.util.HashSet;

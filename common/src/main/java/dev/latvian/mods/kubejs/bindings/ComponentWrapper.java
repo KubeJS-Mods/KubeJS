@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;

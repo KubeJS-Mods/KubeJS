@@ -1,10 +1,8 @@
 package dev.latvian.mods.kubejs.mixin.common.components;
 
-import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.core.ComponentKJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;

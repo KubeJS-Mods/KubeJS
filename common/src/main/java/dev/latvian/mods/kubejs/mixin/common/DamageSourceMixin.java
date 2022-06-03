@@ -32,20 +32,20 @@ public abstract class DamageSourceMixin {
 	@RemapForJS("getImmediate")
 	public EntityJS getImmediateKJS() {
 		Entity e = getDirectEntity();
-		return e == null ? null : (EntityJS) ((EntityKJS) e).asKJS();
+		return e == null ? null : e.asKJS();
 	}
 
 	@Nullable
 	@RemapForJS("getActual")
 	public EntityJS getActualKJS() {
 		Entity e = getEntity();
-		return e == null ? null : (EntityJS) ((EntityKJS) e).asKJS();
+		return e == null ? null : e.asKJS();
 	}
 
 	@Nullable
 	@RemapForJS("getPlayer")
 	public PlayerJS<?> getPlayerKJS() {
 		Entity e = getEntity();
-		return e == null ? null : (PlayerJS<?>) ((EntityKJS) e).asKJS();
+		return e == null ? null : (PlayerJS<?>) e.asKJS();
 	}
 }

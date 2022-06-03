@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.entity;
 
 import com.mojang.authlib.GameProfile;
 import dev.architectury.registry.registries.Registries;
-import dev.latvian.mods.kubejs.core.EntityKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
@@ -48,7 +47,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	public EntityJS(LevelJS l, Entity e) {
 		level = l;
 		minecraftEntity = e;
-		persistentData = ((EntityKJS) e).getPersistentDataKJS();
+		persistentData = e.getPersistentDataKJS();
 	}
 
 	public final LevelJS getLevel() {
