@@ -22,6 +22,7 @@ import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
+import net.minecraft.ResourceLocationException;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
@@ -463,15 +464,15 @@ public class UtilsJS {
 
 	public static ResourceLocation getMCID(@Nullable Object o) {
 		if (o == null) {
-			return AIR_LOCATION;
+			return null;
 		} else if (o instanceof ResourceLocation id) {
 			return id;
 		}
 
 		var s = o.toString();
 
-		if (s == null || s.isEmpty()) {
-			return AIR_LOCATION;
+		if (s.isBlank()) {
+			throw new ResourceLocationException("Cannot get ID from an empty string!");
 		}
 
 		return new ResourceLocation(s);
