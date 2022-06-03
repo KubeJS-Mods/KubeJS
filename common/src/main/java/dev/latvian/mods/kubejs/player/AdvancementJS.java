@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.player;
 
-import dev.latvian.mods.kubejs.text.Text;
-import dev.latvian.mods.kubejs.text.TextString;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,19 +61,19 @@ public class AdvancementJS {
 		advancement.addChild(a.advancement);
 	}
 
-	public Text getDisplayText() {
-		return Text.of(advancement.getChatComponent());
+	public Component getDisplayText() {
+		return advancement.getChatComponent();
 	}
 
 	public boolean hasDisplay() {
 		return advancement.getDisplay() != null;
 	}
 
-	public Text getTitle() {
-		return Text.of(advancement.getDisplay() != null ? advancement.getDisplay().getTitle() : new TextString(""));
+	public Component getTitle() {
+		return advancement.getDisplay() != null ? advancement.getDisplay().getTitle() : TextComponent.EMPTY;
 	}
 
-	public Text getDescription() {
-		return Text.of(advancement.getDisplay() != null ? advancement.getDisplay().getDescription() : new TextString(""));
+	public Component getDescription() {
+		return advancement.getDisplay() != null ? advancement.getDisplay().getDescription() : TextComponent.EMPTY;
 	}
 }

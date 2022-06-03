@@ -1,17 +1,16 @@
 package dev.latvian.mods.kubejs.player;
 
+import dev.latvian.mods.kubejs.core.ComponentKJS;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
-import dev.latvian.mods.kubejs.text.Text;
-import dev.latvian.mods.kubejs.text.TextString;
 import dev.latvian.mods.kubejs.util.MessageSender;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -42,13 +41,13 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 	}
 
 	@Override
-	public Text getName() {
-		return new TextString("EntityList");
+	public Component getName() {
+		return new TextComponent("EntityList");
 	}
 
 	@Override
-	public Text getDisplayName() {
-		return new TextString(toString()).lightPurple();
+	public Component getDisplayName() {
+		return ((ComponentKJS) new TextComponent(toString())).lightPurple();
 	}
 
 	@Override

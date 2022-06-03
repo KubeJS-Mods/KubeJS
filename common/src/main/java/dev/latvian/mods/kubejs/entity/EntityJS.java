@@ -9,7 +9,6 @@ import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.level.ServerLevelJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.server.ServerJS;
-import dev.latvian.mods.kubejs.text.Text;
 import dev.latvian.mods.kubejs.util.MessageSender;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import net.minecraft.Util;
@@ -70,8 +69,8 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	@Override
-	public Text getName() {
-		return Text.of(minecraftEntity.getName());
+	public Component getName() {
+		return minecraftEntity.getName();
 	}
 
 	public GameProfile getProfile() {
@@ -79,8 +78,8 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	@Override
-	public Text getDisplayName() {
-		return Text.of(minecraftEntity.getDisplayName());
+	public Component getDisplayName() {
+		return minecraftEntity.getDisplayName();
 	}
 
 	@Override
@@ -390,8 +389,8 @@ public class EntityJS implements MessageSender, WrappedJS {
 		minecraftEntity.setCustomName(name);
 	}
 
-	public Text getCustomName() {
-		return Text.of(minecraftEntity.getCustomName());
+	public Component getCustomName() {
+		return minecraftEntity.getCustomName();
 	}
 
 	public boolean getHasCustomName() {

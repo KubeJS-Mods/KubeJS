@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.client.painter.screen;
 
+import dev.latvian.mods.kubejs.bindings.ComponentWrapper;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
-import dev.latvian.mods.kubejs.text.Text;
 import dev.latvian.mods.unit.FixedBooleanUnit;
 import dev.latvian.mods.unit.FixedColorUnit;
 import dev.latvian.mods.unit.FixedNumberUnit;
@@ -27,11 +27,11 @@ public class TextObject extends ScreenPainterObject {
 			text = new FormattedCharSequence[list.size()];
 
 			for (int i = 0; i < list.size(); i++) {
-				text[i] = Text.componentOf(list.get(i)).getVisualOrderText();
+				text[i] = ComponentWrapper.of(list.get(i)).getVisualOrderText();
 			}
 		} else {
 			text = new FormattedCharSequence[]{
-					Text.componentOf(properties.tag.get("text")).getVisualOrderText()
+					ComponentWrapper.of(properties.tag.get("text")).getVisualOrderText()
 			};
 		}
 

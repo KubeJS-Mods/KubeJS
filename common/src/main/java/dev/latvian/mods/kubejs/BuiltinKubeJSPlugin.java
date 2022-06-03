@@ -6,9 +6,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
+import dev.latvian.mods.kubejs.bindings.ComponentWrapper;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
-import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
 import dev.latvian.mods.kubejs.block.DetectorBlock;
 import dev.latvian.mods.kubejs.block.MaterialJS;
@@ -88,7 +88,6 @@ import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerSettings;
-import dev.latvian.mods.kubejs.text.Text;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
@@ -108,13 +107,13 @@ import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import dev.latvian.mods.unit.Unit;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
@@ -300,7 +299,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("ResourceLocation", ResourceLocation.class);
 
 		event.add("Utils", UtilsWrapper.class);
-		event.add("Text", TextWrapper.class);
+		event.add("Component", ComponentWrapper.class);
+		event.add("Text", ComponentWrapper.class);
 		event.add("UUID", UUIDWrapper.class);
 		event.add("JsonIO", JsonIO.class);
 		event.add("Block", BlockWrapper.class);
@@ -391,23 +391,12 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(CollectionTag.class, NBTUtils::isTagCollection, NBTUtils::toTagCollection);
 		typeWrappers.register(ListTag.class, NBTUtils::isTagCollection, NBTUtils::toTagList);
 		typeWrappers.register(Tag.class, NBTUtils::toTag);
-		typeWrappers.register(Component.class, Text::componentOf);
-		typeWrappers.register(MutableComponent.class, o -> new TextComponent("").append(Text.componentOf(o)));
 
 		typeWrappers.register(BlockPos.class, UtilsJS::blockPosOf);
 		typeWrappers.register(Vec3.class, UtilsJS::vec3Of);
 
 		typeWrappers.register(Item.class, ItemStackJS::getRawItem);
 		typeWrappers.register(MobCategory.class, o -> o == null ? null : MobCategory.byName(o.toString()));
-		typeWrappers.register(TextColor.class, o -> {
-			if (o instanceof Number number) {
-				return TextColor.fromRgb(number.intValue() & 0xFFFFFF);
-			} else if (o instanceof ChatFormatting legacyColor) {
-				return TextColor.fromLegacyFormat(legacyColor);
-			}
-
-			return TextColor.parseColor(o.toString());
-		});
 
 		typeWrappers.register(AABB.class, AABBWrapper::wrap);
 		typeWrappers.register(IntProvider.class, UtilsJS::intProviderOf);
@@ -421,7 +410,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(ItemStackJS.class, ItemStackJS::of);
 		typeWrappers.register(IngredientJS.class, IngredientJS::of);
 		typeWrappers.register(IngredientStackJS.class, o -> IngredientJS.of(o).asIngredientStack());
-		typeWrappers.register(Text.class, Text::of);
 		typeWrappers.register(BlockStatePredicate.class, BlockStatePredicate::of);
 		typeWrappers.register(RuleTest.class, BlockStatePredicate::ruleTestOf);
 		typeWrappers.register(BiomeFilter.class, BiomeFilter::of);
@@ -429,11 +417,17 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(FluidStackJS.class, FluidStackJS::of);
 		typeWrappers.register(RecipeFilter.class, RecipeFilter::of);
 		typeWrappers.register(MaterialJS.class, MaterialListJS.INSTANCE::of);
-		typeWrappers.register(Color.class, ColorWrapper::of);
 		typeWrappers.register(IngredientActionFilter.class, IngredientActionFilter::filterOf);
 		typeWrappers.register(Tier.class, o -> ItemBuilder.TOOL_TIERS.getOrDefault(String.valueOf(o), Tiers.IRON));
 		typeWrappers.register(ArmorMaterial.class, ItemBuilder::ofArmorMaterial);
 		typeWrappers.register(PlayerSelector.class, PlayerSelector::of);
+
+		// components //
+		typeWrappers.register(Component.class, ComponentWrapper::of);
+		typeWrappers.register(MutableComponent.class, o -> new TextComponent("").append(ComponentWrapper.of(o)));
+		typeWrappers.register(Color.class, ColorWrapper::of);
+		typeWrappers.register(TextColor.class, o -> ColorWrapper.of(o).createTextColorJS());
+		typeWrappers.register(ClickEvent.class, ComponentWrapper::clickEventOf);
 
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
 	}

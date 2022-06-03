@@ -29,7 +29,9 @@
 		"TieredItemMixin",
 		"UtilMixin",
 		"inject_resources.MinecraftServerMixin",
-		"inject_resources.WorldStemMixin"
+		"inject_resources.WorldStemMixin",
+		"components.ClickEventMixin",
+		"components.MutableComponentMixin"
 	],
 	"client": [
 		"AbstractSelectionListMixin",
