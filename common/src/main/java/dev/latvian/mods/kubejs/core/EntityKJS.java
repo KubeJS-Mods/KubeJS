@@ -6,7 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import org.apache.commons.lang3.NotImplementedException;
 
-public interface EntityKJS extends AsKJS {
+public interface EntityKJS extends AsKJS<EntityJS> {
 	@Override
 	default EntityJS asKJS() {
 		var entity = (Entity) this;

@@ -12,6 +12,9 @@
 		],
 		"net/minecraft/class_1792": [
 			"dev/latvian/mods/kubejs/core/ItemKJS"
+		],
+		"net/minecraft/class_1937": [
+			"dev/latvian/mods/kubejs/core/LevelKJS"
 		]
 	}
 }

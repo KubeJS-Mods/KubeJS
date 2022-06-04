@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.entity.LivingEntityJS;
 import dev.latvian.mods.kubejs.item.InventoryJS;
 import dev.latvian.mods.kubejs.item.ItemHandlerUtils;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.stages.Stages;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.WithAttachedData;
@@ -23,21 +22,26 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author LatvianModder
  */
-public abstract class PlayerJS<E extends Player> extends LivingEntityJS implements WithAttachedData {
-	public final E minecraftPlayer;
+public abstract class PlayerJS<P extends Player> extends LivingEntityJS implements WithAttachedData {
+	public final P minecraftPlayer;
 
 	private final PlayerDataJS playerData;
 	private InventoryJS inventory;
 
-	public PlayerJS(PlayerDataJS d, LevelJS l, E p) {
-		super(l, p);
-		playerData = d;
-		minecraftPlayer = p;
+	public PlayerJS(PlayerDataJS data, P player) {
+		super(player);
+		this.playerData = data;
+		this.minecraftPlayer = player;
 	}
 
 	@Override
 	public AttachedData getData() {
 		return playerData.getData();
+	}
+
+	@Override
+	public PlayerJS<?> getPlayer() {
+		return this;
 	}
 
 	@Override

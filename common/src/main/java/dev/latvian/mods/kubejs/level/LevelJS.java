@@ -30,6 +30,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.UUID;
 
 /**
  * @author LatvianModder
@@ -116,14 +117,14 @@ public abstract class LevelJS implements WithAttachedData {
 		} else if (e instanceof Player player) {
 			return getPlayerData(player).getPlayer();
 		} else if (e instanceof LivingEntity living) {
-			return new LivingEntityJS(this, living);
+			return new LivingEntityJS(living);
 		} else if (e instanceof ItemEntity item) {
-			return new ItemEntityJS(this, item);
+			return new ItemEntityJS(item);
 		} else if (e instanceof ItemFrame frame) {
-			return new ItemFrameEntityJS(this, frame);
+			return new ItemFrameEntityJS(frame);
 		}
 
-		return new EntityJS(this, e);
+		return new EntityJS(e);
 	}
 
 	@Nullable
