@@ -1,12 +1,15 @@
 package dev.latvian.mods.kubejs.entity;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.architectury.registry.registries.Registries;
+import dev.latvian.mods.kubejs.core.AsKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.level.ServerLevelJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
+import dev.latvian.mods.kubejs.player.PlayerJS;
 import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.util.MessageSender;
 import dev.latvian.mods.kubejs.util.WrappedJS;
@@ -17,6 +20,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.commands.TeleportCommand;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -39,19 +44,18 @@ import java.util.UUID;
 public class EntityJS implements MessageSender, WrappedJS {
 	private static Map<String, DamageSource> damageSourceMap;
 
-	private final LevelJS level;
+	public transient Entity minecraftEntity;
 
-	public final Entity minecraftEntity;
-	public final CompoundTag persistentData;
-
-	public EntityJS(LevelJS l, Entity e) {
-		level = l;
+	public EntityJS(Entity e) {
 		minecraftEntity = e;
-		persistentData = e.getPersistentDataKJS();
+	}
+
+	public Entity getMinecraftEntity() {
+		return minecraftEntity;
 	}
 
 	public final LevelJS getLevel() {
-		return level;
+		return minecraftEntity.level.asKJS();
 	}
 
 	@Nullable
@@ -88,6 +92,11 @@ public class EntityJS implements MessageSender, WrappedJS {
 
 	public String toString() {
 		return minecraftEntity.getName().getString() + "-" + getId();
+	}
+
+	@Nullable
+	public PlayerJS<?> getPlayer() {
+		return isPlayer() ? (PlayerJS<?>) this : null;
 	}
 
 	@Nullable
@@ -295,7 +304,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public void setPosition(BlockContainerJS block) {
-		setPosition(block.getX() + 0.5D, block.getY() + 0.05D, block.getZ() + 0.5D);
+		teleportTo(block.getDimension(), block.getX(), block.getY(), block.getZ(), getYaw(), getPitch());
 	}
 
 	public void setPosition(double x, double y, double z) {
@@ -307,12 +316,40 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
+		minecraftEntity.moveTo(x, y, z, yaw, pitch);
+	}
+
+	public void teleportTo(ResourceLocation dimension, double x, double y, double z, float yaw, float pitch) {
+		var level = getServer().getLevel(dimension);
+		if (level == null) {
+			throw new IllegalArgumentException("Invalid dimension!");
+		}
+
 		if (!Level.isInSpawnableBounds(new BlockPos(x, y, z))) {
 			throw new IllegalArgumentException("Invalid coordinates!");
 		} else if (Float.isNaN(yaw) || Float.isNaN(pitch)) {
 			throw new IllegalArgumentException("Invalid rotation!");
 		}
-		minecraftEntity.moveTo(x, y, z, yaw, pitch);
+
+		try {
+			var previousLevel = getLevel();
+			TeleportCommand.performTeleport(
+					minecraftEntity.createCommandSourceStack(),
+					minecraftEntity,
+					level.getMinecraftLevel(),
+					x, y, z,
+					Set.of(),
+					yaw, pitch,
+					null
+			);
+
+			// ah yes, i sure do love when entities get cloned
+			if (previousLevel != level) {
+				minecraftEntity = level.getMinecraftLevel().getEntity(getId());
+			}
+		} catch (CommandSyntaxException e) {
+			throw new IllegalArgumentException(e.getRawMessage().getString());
+		}
 	}
 
 	public void addMotion(double x, double y, double z) {
@@ -321,7 +358,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 
 	@Override
 	public int runCommand(String command) {
-		if (level instanceof ServerLevelJS) {
+		if (getLevel() instanceof ServerLevelJS level) {
 			return level.getServer().getMinecraftServer().getCommands().performCommand(minecraftEntity.createCommandSourceStack(), command);
 		}
 
@@ -330,7 +367,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 
 	@Override
 	public int runCommandSilent(String command) {
-		if (level instanceof ServerLevelJS) {
+		if (getLevel() instanceof ServerLevelJS level) {
 			return level.getServer().getMinecraftServer().getCommands().performCommand(minecraftEntity.createCommandSourceStack().withSuppressedOutput(), command);
 		}
 
@@ -354,7 +391,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public EntityArrayList getPassengers() {
-		return new EntityArrayList(level, minecraftEntity.getPassengers());
+		return new EntityArrayList(getLevel(), minecraftEntity.getPassengers());
 	}
 
 	public boolean isPassenger(EntityJS e) {
@@ -362,12 +399,12 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public EntityArrayList getRecursivePassengers() {
-		return new EntityArrayList(level, minecraftEntity.getIndirectPassengers());
+		return new EntityArrayList(getLevel(), minecraftEntity.getIndirectPassengers());
 	}
 
 	@Nullable
 	public EntityJS getRidingEntity() {
-		return level.getEntity(minecraftEntity.getVehicle());
+		return AsKJS.wrapSafe(minecraftEntity.getVehicle());
 	}
 
 	public String getTeamId() {
@@ -469,7 +506,11 @@ public class EntityJS implements MessageSender, WrappedJS {
 
 	@Deprecated
 	public CompoundTag getNbt() {
-		return persistentData;
+		return getPersistentData();
+	}
+
+	public CompoundTag getPersistentData() {
+		return minecraftEntity.getPersistentDataKJS();
 	}
 
 	public void playSound(SoundEvent id, float volume, float pitch) {
@@ -481,7 +522,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public void spawn() {
-		level.minecraftLevel.addFreshEntity(minecraftEntity);
+		getLevel().minecraftLevel.addFreshEntity(minecraftEntity);
 	}
 
 	public void attack(String source, float hp) {

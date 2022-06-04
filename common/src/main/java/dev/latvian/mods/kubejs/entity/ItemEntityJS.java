@@ -14,8 +14,8 @@ import java.util.UUID;
 public class ItemEntityJS extends EntityJS {
 	private final ItemEntity itemEntity;
 
-	public ItemEntityJS(LevelJS l, ItemEntity e) {
-		super(l, e);
+	public ItemEntityJS(ItemEntity e) {
+		super(e);
 		itemEntity = e;
 	}
 

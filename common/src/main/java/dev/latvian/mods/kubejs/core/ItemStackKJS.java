@@ -2,9 +2,9 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 
-public interface ItemStackKJS extends AsKJS {
+public interface ItemStackKJS extends AsKJS<ItemStackJS> {
 	@Override
-	default Object asKJS() {
+	default ItemStackJS asKJS() {
 		return ItemStackJS.of(this);
 	}
 

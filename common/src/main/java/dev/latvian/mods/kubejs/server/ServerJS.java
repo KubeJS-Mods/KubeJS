@@ -166,7 +166,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 		return getMinecraftServer().getCommands().performCommand(getMinecraftServer().createCommandSourceStack().withSuppressedOutput(), command);
 	}
 
-	public LevelJS getLevel(ResourceLocation dimension) {
+	public ServerLevelJS getLevel(ResourceLocation dimension) {
 		var level = levelMap.get(dimension);
 
 		if (level != null) {
@@ -184,7 +184,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 	// If you're a script dev, use Level.asKJS() instead,
 	// I'm too lazy to make a wrapper for it
 	@HideFromJS
-	public LevelJS wrapMinecraftLevel(Level minecraftLevel) {
+	public ServerLevelJS wrapMinecraftLevel(Level minecraftLevel) {
 		var level = levelMap.get(minecraftLevel.dimension().location());
 
 		if (level == null) {

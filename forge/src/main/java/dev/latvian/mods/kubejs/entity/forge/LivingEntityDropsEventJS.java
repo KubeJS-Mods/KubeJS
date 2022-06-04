@@ -50,7 +50,7 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS {
 			eventDrops = new ArrayList<>();
 
 			for (var entity : event.getDrops()) {
-				eventDrops.add(new ItemEntityJS(getLevel(), entity));
+				eventDrops.add(new ItemEntityJS(entity));
 			}
 		}
 
@@ -65,7 +65,7 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS {
 			var e = event.getEntity();
 			var ei = new ItemEntity(e.level, e.getX(), e.getY(), e.getZ(), i);
 			ei.setPickUpDelay(10);
-			var ie = new ItemEntityJS(getLevel(), ei);
+			var ie = new ItemEntityJS(ei);
 			getDrops().add(ie);
 			return ie;
 		}
