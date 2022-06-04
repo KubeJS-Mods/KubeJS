@@ -47,3 +47,4 @@ accessible method net/minecraft/world/item/crafting/ShapedRecipe dissolvePattern
 accessible method net/minecraft/world/item/crafting/ShapedRecipe matches (Lnet/minecraft/world/inventory/CraftingContainer;IIZ)Z
 
 accessible field net/minecraft/server/level/ServerPlayerGameMode isDestroyingBlock Z
+accessible method net/minecraft/server/commands/TeleportCommand performTeleport (Lnet/minecraft/commands/CommandSourceStack;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/server/level/ServerLevel;DDDLjava/util/Set;FFLnet/minecraft/server/commands/TeleportCommand$LookAt;)V
