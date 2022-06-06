@@ -96,7 +96,7 @@ subprojects {
 		}
 
 		jar {
-			archiveClassifier.set "dev-slim"
+			archiveClassifier.set "dev"
 		}
 
 		shadowJar {

@@ -1,12 +1,3 @@
-configurations {
-	common
-	shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-	compileClasspath.extendsFrom common
-	runtimeClasspath.extendsFrom common
-	developmentFabric.extendsFrom common
-	dev
-}
-
 def generatedResources = file("src/generated/resources")
 def accessWidenerFile = project(":common").file("src/main/resources/kubejs.accesswidener")
 

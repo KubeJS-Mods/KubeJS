@@ -16,20 +16,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Mixin(MutableComponent.class)
-public interface MutableComponentMixin extends Component, ComponentKJS {
+public interface MutableComponentMixin extends ComponentKJS {
 
 	// hidden to avoid ambiguity, the type wrapper should wrap strings to TextComponent anyways
 	@HideFromJS
 	@Shadow
 	MutableComponent append(String string);
-
-	@Override
-	@Shadow
-	MutableComponent withStyle(ChatFormatting... args);
-
-	@Override
-	@Shadow
-	MutableComponent setStyle(Style arg);
 
 	@Override
 	default Iterator<Component> iterator() {
