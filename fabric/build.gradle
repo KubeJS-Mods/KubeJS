@@ -6,6 +6,10 @@ architectury {
 	fabric()
 }
 
+configurations {
+	developmentFabric.extendsFrom common
+}
+
 loom {
 	accessWidenerPath = accessWidenerFile
 }
@@ -31,8 +35,7 @@ dependencies {
 
 	modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:${rootProject.rei_version}")
 
-	implementation(project(path: ":common", configuration: "namedElements")) { transitive false }
-	developmentFabric(project(path: ":common", configuration: "namedElements")) { transitive false }
+	common(project(path: ":common", configuration: "namedElements")) { transitive false }
 	bundle(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }
 

@@ -93,6 +93,10 @@ subprojects {
 				canBeResolved(true)
 				canBeConsumed(false)
 			}
+
+			common
+			compileClasspath.extendsFrom common
+			runtimeClasspath.extendsFrom common
 		}
 
 		jar {

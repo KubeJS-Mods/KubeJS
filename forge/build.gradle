@@ -3,6 +3,10 @@ architectury {
 	forge()
 }
 
+configurations {
+	developmentForge.extendsFrom common
+}
+
 loom {
 	accessWidenerPath = project(":common").file("src/main/resources/kubejs.accesswidener")
 	forge {
@@ -42,8 +46,7 @@ dependencies {
 	// modLocalRuntime("mezz.jei:jei-1.18:${rootProject.forge_jei_version}")
 	modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}")
 
-	implementation(project(path: ":common", configuration: "namedElements")) { transitive false }
-	developmentForge(project(path: ":common", configuration: "namedElements")) { transitive false }
+	common(project(path: ":common", configuration: "namedElements")) { transitive false }
 	bundle(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
 }
 
