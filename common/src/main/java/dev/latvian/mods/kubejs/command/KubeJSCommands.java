@@ -284,10 +284,19 @@ public class KubeJSCommands {
 			source.sendSuccess(new TextComponent("[" + (i + 1) + "] " + ScriptType.SERVER.errors.get(i)).withStyle(ChatFormatting.RED), false);
 		}
 
-		source.sendSuccess(new TextComponent("More info in 'logs/kubejs/server.txt'").withStyle(ChatFormatting.DARK_RED), false);
+		source.sendSuccess(new TextComponent("More info in ")
+				.append(new TextComponent("'logs/kubejs/server.txt'")
+						.click(new ClickEvent(ClickEvent.Action.OPEN_FILE, ScriptType.SERVER.getLogFile().toString()))
+						.hover(new TextComponent("Click to open"))).withStyle(ChatFormatting.DARK_RED),
+				false);
 
 		if (!ScriptType.SERVER.warnings.isEmpty()) {
-			source.sendSuccess(new TextComponent(ScriptType.SERVER.warnings.size() + " warnings found. Run '/kubejs warnings' to see them").withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))), false);
+			source.sendSuccess(new TextComponent(ScriptType.SERVER.warnings.size() + " warnings found. Run ")
+							.append(new TextComponent("'/kubejs warnings'")
+									.click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs warnings"))
+									.hover(new TextComponent("Click to run"))).append(" to see them")
+							.withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))),
+			false);
 		}
 
 		return 1;
@@ -318,7 +327,11 @@ public class KubeJSCommands {
 	private static int reloadServer(CommandSourceStack source) {
 		ServerScriptManager.instance.reloadScriptManager(((MinecraftServerKJS) source.getServer()).getReloadableResourcesKJS().resourceManager());
 		UtilsJS.postModificationEvents();
-		source.sendSuccess(new TextComponent("Done! To reload recipes, tags, loot tables and other datapack things, run /reload"), false);
+		source.sendSuccess(new TextComponent("Done! To reload recipes, tags, loot tables and other datapack things, run ")
+						.append(new TextComponent("'/reload'")
+						.click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/reload"))
+						.hover(new TextComponent("Click to run"))),
+		false);
 		return 1;
 	}
 
