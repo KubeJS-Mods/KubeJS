@@ -60,7 +60,6 @@ public interface KubeJSEvents {
 	String ENTITY_CHECK_SPAWN = "entity.check_spawn";
 	String ENTITY_SPAWNED = "entity.spawned";
 
-	String BLOCK_MISSING_MAPPINGS = "block.missing_mappings";
 	String BLOCK_RIGHT_CLICK = "block.right_click";
 	String BLOCK_LEFT_CLICK = "block.left_click";
 	String BLOCK_PLACE = "block.place";
@@ -69,7 +68,6 @@ public interface KubeJSEvents {
 
 	String ITEM_REGISTRY_TOOL_TIERS = "item.registry.tool_tiers";
 	String ITEM_REGISTRY_ARMOR_TIERS = "item.registry.armor_tiers";
-	String ITEM_MISSING_MAPPINGS = "item.missing_mappings";
 	String ITEM_RIGHT_CLICK = "item.right_click";
 	String ITEM_RIGHT_CLICK_EMPTY = "item.right_click_empty";
 	String ITEM_LEFT_CLICK = "item.left_click";

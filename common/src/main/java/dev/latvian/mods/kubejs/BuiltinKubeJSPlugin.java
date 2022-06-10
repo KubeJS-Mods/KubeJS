@@ -196,14 +196,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	public void initStartup() {
 		new ItemToolTierEventJS().post(KubeJSEvents.ITEM_REGISTRY_TOOL_TIERS);
 		new ItemArmorTierEventJS().post(KubeJSEvents.ITEM_REGISTRY_ARMOR_TIERS);
-
-		for (var types : RegistryObjectBuilderTypes.MAP.values()) {
-			types.postEvent(types.registryKey.location().getNamespace() + "." + types.registryKey.location().getPath().replace('/', '.') + ".registry");
-
-			if (types.registryKey.location().getNamespace().equals("minecraft")) {
-				types.postEvent(types.registryKey.location().getPath().replace('/', '.') + ".registry");
-			}
-		}
 	}
 
 	@Override

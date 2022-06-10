@@ -24,9 +24,12 @@ import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public final class RegistryObjectBuilderTypes<T> {
 	public interface BuilderFactory<T> {
@@ -80,22 +83,31 @@ public final class RegistryObjectBuilderTypes<T> {
 		}
 	}
 
-	public static final Map<ResourceKey<?>, RegistryObjectBuilderTypes<?>> MAP = new LinkedHashMap<>();
+	public static final Map<ResourceKey<? extends Registry<?>>, RegistryObjectBuilderTypes<?>> MAP = new LinkedHashMap<>();
+
+	public static final Map<ResourceKey<? extends Registry<?>>, List<RegistryObjectBuilderTypes<?>>> POST_AT = new HashMap<>();
+
 	public static final List<BuilderBase<?>> ALL_BUILDERS = new ArrayList<>();
 
 	public static <T> RegistryObjectBuilderTypes<T> add(ResourceKey<Registry<T>> key, Class<?> baseClass) {
+		return add(key, baseClass, key);
+	}
+
+	private static <T> RegistryObjectBuilderTypes<T> add(ResourceKey<Registry<T>> key, Class<?> baseClass, ResourceKey<? extends Registry<?>> registerWith) {
 		var types = new RegistryObjectBuilderTypes<>(key, UtilsJS.cast(baseClass));
 
 		if (MAP.put(key, types) != null) {
 			throw new IllegalStateException("Registry with id '" + key + "' already exists!");
 		}
 
+		POST_AT.computeIfAbsent(registerWith, (k) -> new LinkedList<>()).add(types);
+
 		return types;
 	}
 
 	public static final RegistryObjectBuilderTypes<SoundEvent> SOUND_EVENT = add(Registry.SOUND_EVENT_REGISTRY, SoundEvent.class);
 	// before blocks because FluidBlock needs the fluid to exist first on Fabric
-	public static final RegistryObjectBuilderTypes<Fluid> FLUID = add(Registry.FLUID_REGISTRY, Fluid.class);
+	public static final RegistryObjectBuilderTypes<Fluid> FLUID = add(Registry.FLUID_REGISTRY, Fluid.class, Registry.BLOCK_REGISTRY);
 	public static final RegistryObjectBuilderTypes<Block> BLOCK = add(Registry.BLOCK_REGISTRY, Block.class);
 	public static final RegistryObjectBuilderTypes<Item> ITEM = add(Registry.ITEM_REGISTRY, Item.class);
 	public static final RegistryObjectBuilderTypes<Enchantment> ENCHANTMENT = add(Registry.ENCHANTMENT_REGISTRY, Enchantment.class);
@@ -187,13 +199,19 @@ public final class RegistryObjectBuilderTypes<T> {
 		}
 	}
 
-	static void registerAll(boolean all) {
-		for (var builder : new ArrayList<>(ALL_BUILDERS)) {
-			builder.createAdditionalObjects();
-		}
-
-		for (var type : MAP.values()) {
+	static void registerFor(ResourceKey<? extends Registry<?>> registry, boolean all) {
+		for (var type : POST_AT.getOrDefault(registry, List.of())) {
 			boolean any = false;
+
+			var regId = type.registryKey.location();
+			type.postEvent(regId.getNamespace() + "." + regId.getPath().replace('/', '.') + ".registry");
+			if (regId.getNamespace().equals("minecraft")) {
+				type.postEvent(regId.getPath().replace('/', '.') + ".registry");
+			}
+
+			// this needs to be separate to avoid a CME, for example if a (source) fluid adds a flowing fluid builder;
+			// as a side effect of this, objects of the same type that are added by createAdditionalObjects cannot create yet more objects
+			Set.copyOf(type.objects.values()).forEach(BuilderBase::createAdditionalObjects);
 
 			for (var builder : type.objects.values()) {
 				if (builder.registerObject(all)) {

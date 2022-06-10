@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.item.ingredient.forge;
 
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.KubeJSRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -54,7 +55,7 @@ public class IgnoreNBTIngredient extends Ingredient {
 	public JsonObject toJson() {
 		var json = new JsonObject();
 		json.addProperty("type", "kubejs:ignore_nbt");
-		json.addProperty("item", item.getItem().getRegistryName().toString());
+		json.addProperty("item", KubeJSRegistries.items().getId(item.getItem()).toString());
 		return json;
 	}
 }
