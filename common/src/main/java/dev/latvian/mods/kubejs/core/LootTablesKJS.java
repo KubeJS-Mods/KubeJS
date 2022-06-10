@@ -50,7 +50,7 @@ public interface LootTablesKJS {
 			} else {
 				ServerJS.instance.tell(new TextComponent("KubeJS errors found [" + ScriptType.SERVER.errors.size() + "]! Run ")
 						.append(new TextComponent("'/kubejs errors'")
-								.click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "kubejs errors")))
+								.click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs errors")))
 								.hover(new TextComponent("Click to run"))
 						.append(new TextComponent(" for more info"))
 						.withStyle(ChatFormatting.DARK_RED)
