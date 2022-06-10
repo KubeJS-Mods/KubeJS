@@ -36,7 +36,7 @@ public class DataPackEventJS extends ServerEventJS {
 	protected void afterPosted(boolean result) {
 		for (var namespace : virtualDataPack.getNamespaces(PackType.SERVER_DATA)) {
 			// this is terrible, but it works for now
-			wrappedManager.namespacedManagers.computeIfAbsent(namespace, ns -> new FallbackResourceManager(PackType.SERVER_DATA, ns)).add(virtualDataPack);
+			wrappedManager.namespacedManagers.computeIfAbsent(namespace, ns -> new FallbackResourceManager(PackType.SERVER_DATA, ns)).push(virtualDataPack);
 		}
 	}
 }

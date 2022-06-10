@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.player;
 
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 
 /**
@@ -9,12 +10,10 @@ import net.minecraft.server.level.ServerPlayer;
  */
 public class PlayerChatEventJS extends PlayerEventJS {
 	private final ServerPlayer player;
-	private final String message;
 	public Component component;
 
-	public PlayerChatEventJS(ServerPlayer player, String message, Component component) {
+	public PlayerChatEventJS(ServerPlayer player, Component component) {
 		this.player = player;
-		this.message = message;
 		this.component = component;
 	}
 
@@ -33,7 +32,11 @@ public class PlayerChatEventJS extends PlayerEventJS {
 	}
 
 	public String getMessage() {
-		return message;
+		return component.getString();
+	}
+
+	public MutableComponent getComponent() {
+		return component.copy();
 	}
 
 	public void setMessage(Component text) {

@@ -17,7 +17,7 @@ public class PoiTypeBuilder extends BuilderBase<PoiType> {
 
 	public PoiTypeBuilder(ResourceLocation i) {
 		super(i);
-		blockStates = ImmutableSet.of();
+		blockStates = Set.of();
 		maxTickets = 1;
 		validRange = 1;
 	}
@@ -29,16 +29,16 @@ public class PoiTypeBuilder extends BuilderBase<PoiType> {
 
 	@Override
 	public PoiType createObject() {
-		return new PoiType(id.getPath(), blockStates, maxTickets, validRange);
+		return new PoiType(blockStates, maxTickets, validRange);
 	}
 
 	public PoiTypeBuilder blocks(BlockState[] r) {
-		blockStates = ImmutableSet.copyOf(r);
+		blockStates = Set.of(r);
 		return this;
 	}
 
 	public PoiTypeBuilder block(Block r) {
-		blockStates = ImmutableSet.copyOf(r.getStateDefinition().getPossibleStates());
+		blockStates = Set.copyOf(r.getStateDefinition().getPossibleStates());
 		return this;
 	}
 

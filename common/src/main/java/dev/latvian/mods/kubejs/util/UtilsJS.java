@@ -29,11 +29,13 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.util.valueproviders.ClampedInt;
 import net.minecraft.util.valueproviders.ClampedNormalInt;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -701,5 +703,10 @@ public class UtilsJS {
 		} else {
 			return "unknown";
 		}
+	}
+
+	public static MobCategory mobCategoryByName(String s) {
+		// safe cast, mojang just specified too general of a type
+		return ((StringRepresentable.EnumCodec<MobCategory>) MobCategory.CODEC).byName(s);
 	}
 }

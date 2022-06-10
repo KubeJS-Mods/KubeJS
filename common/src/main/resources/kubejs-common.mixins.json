@@ -21,12 +21,11 @@
 		"PlayerMixin",
 		"RecipeManagerMixin",
 		"ReloadableServerResourcesMixin",
-		"TagBuilderMixin",
 		"TagLoaderMixin",
 		"TagManagerMixin",
 		"UtilMixin",
 		"inject_resources.MinecraftServerMixin",
-		"inject_resources.WorldStemMixin",
+		"inject_resources.WorldLoaderPackConfigMixin",
 		"components.ClickEventMixin",
 		"components.MutableComponentMixin"
 	],

@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.mods.kubejs.server.TagEventJS;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -13,7 +13,7 @@ import java.util.Map;
  * @author LatvianModder
  */
 public interface TagLoaderKJS<T> {
-	default void customTagsKJS(Map<ResourceLocation, Tag.Builder> map) {
+	default void customTagsKJS(Map<ResourceLocation, TagBuilder> map) {
 		TagIngredientJS.resetContext();
 		var c = getDirectory().substring(5);
 		var reg = getRegistryKJS();

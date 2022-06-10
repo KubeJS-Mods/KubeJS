@@ -14,7 +14,7 @@ import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
@@ -46,13 +46,13 @@ public interface LootTablesKJS {
 
 		if (CommonProperties.get().announceReload && ServerJS.instance != null && !CommonProperties.get().hideServerScriptErrors) {
 			if (ScriptType.SERVER.errors.isEmpty()) {
-				ServerJS.instance.tell(new TextComponent("Reloaded with no KubeJS errors!").withStyle(ChatFormatting.GREEN));
+				ServerJS.instance.tell(Component.literal("Reloaded with no KubeJS errors!").withStyle(ChatFormatting.GREEN));
 			} else {
-				ServerJS.instance.tell(new TextComponent("KubeJS errors found [" + ScriptType.SERVER.errors.size() + "]! Run ")
-						.append(new TextComponent("'/kubejs errors'")
+				ServerJS.instance.tell(Component.literal("KubeJS errors found [" + ScriptType.SERVER.errors.size() + "]! Run ")
+						.append(Component.literal("'/kubejs errors'")
 								.click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs errors")))
-								.hover(new TextComponent("Click to run"))
-						.append(new TextComponent(" for more info"))
+						.hover(Component.literal("Click to run"))
+						.append(Component.literal(" for more info"))
 						.withStyle(ChatFormatting.DARK_RED)
 				);
 			}

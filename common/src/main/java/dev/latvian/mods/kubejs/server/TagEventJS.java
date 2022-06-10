@@ -3,21 +3,19 @@ package dev.latvian.mods.kubejs.server;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
-import dev.latvian.mods.kubejs.core.TagBuilderKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagBuilder;
+import net.minecraft.tags.TagEntry;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
@@ -36,15 +34,6 @@ import java.util.function.Predicate;
  * @author LatvianModder
  */
 public class TagEventJS<T> extends EventJS {
-	private static String getIdOfEntry(Tag.Entry entry) {
-		var asJson = Util.make(new JsonArray(), entry::serializeTo).get(0);
-		if (asJson instanceof JsonObject obj) {
-			return obj.get("id").getAsString();
-		} else {
-			return asJson.getAsString();
-		}
-	}
-
 	@Nullable
 	private static List<Predicate<ResourceLocation>> parsePriorityList(@Nullable Object o) {
 		if (o == null) {
@@ -72,14 +61,14 @@ public class TagEventJS<T> extends EventJS {
 
 	public class TagWrapper {
 		private final ResourceLocation id;
-		private final Tag.Builder builder;
-		private final List<Tag.BuilderEntry> proxyList;
+		private final TagBuilder builder;
+		private final List<TagEntry> proxyList;
 		private List<Predicate<ResourceLocation>> priorityList;
 
-		private TagWrapper(ResourceLocation i, Tag.Builder t) {
+		private TagWrapper(ResourceLocation i, TagBuilder t) {
 			id = i;
 			builder = t;
-			proxyList = ((TagBuilderKJS) builder).getProxyListKJS();
+			proxyList = builder.entries;
 			priorityList = null;
 		}
 
@@ -91,7 +80,7 @@ public class TagEventJS<T> extends EventJS {
 		public TagWrapper add(String... ids) {
 			for (var stringId : ids) {
 				gatherTargets(stringId).ifLeft(wrapper -> {
-					builder.addTag(wrapper.id, KubeJS.MOD_ID);
+					builder.addTag(wrapper.id);
 					totalAdded += wrapper.proxyList.size();
 
 					if (ConsoleJS.SERVER.shouldPrintDebug()) {
@@ -108,7 +97,7 @@ public class TagEventJS<T> extends EventJS {
 					totalAdded += matches.size();
 					for (var holder : matches) {
 						var id = holder.key().location();
-						builder.addElement(id, KubeJS.MOD_ID);
+						builder.addElement(id);
 
 						if (ConsoleJS.SERVER.shouldPrintDebug()) {
 							if (id.toString().equals(stringId)) {
@@ -129,7 +118,7 @@ public class TagEventJS<T> extends EventJS {
 				gatherTargets(stringId).ifLeft(wrapper -> {
 					var entryId = wrapper.id.toString();
 					var originalSize = proxyList.size();
-					proxyList.removeIf(proxy -> getIdOfEntry(proxy.entry()).equals(entryId));
+					proxyList.removeIf(proxy -> proxy.elementOrTag().decoratedId().equals(entryId));
 
 					var removedCount = originalSize - proxyList.size();
 					if (removedCount == 0) {
@@ -150,7 +139,7 @@ public class TagEventJS<T> extends EventJS {
 						var id = holder.key().location();
 						for (var iterator = proxyList.listIterator(); iterator.hasNext(); ) {
 							var proxy = iterator.next();
-							if (getIdOfEntry(proxy.entry()).equals(id.toString())) {
+							if (proxy.elementOrTag().decoratedId().equals(id.toString())) {
 								iterator.remove();
 								if (ConsoleJS.SERVER.shouldPrintDebug()) {
 									if (id.toString().equals(stringId)) {
@@ -196,24 +185,24 @@ public class TagEventJS<T> extends EventJS {
 		public Collection<ResourceLocation> getObjectIds() {
 			var set = new LinkedHashSet<ResourceLocation>();
 			for (var proxy : proxyList) {
-				gatherIdsFor(set, proxy.entry());
+				gatherIdsFor(set, proxy);
 			}
 			return set;
 		}
 
-		private void gatherIdsFor(Collection<ResourceLocation> collection, Tag.Entry entry) {
-			var id = getIdOfEntry(entry);
-			if (id.startsWith("#")) {
+		private void gatherIdsFor(Collection<ResourceLocation> collection, TagEntry entry) {
+			var id = entry.elementOrTag();
+			if (id.tag()) {
 				// tag entry, recurse
-				var w = tags.get(new ResourceLocation(id.substring(1)));
+				var w = tags.get(id.id());
 				if (w != null && w != this) {
 					for (var proxy : w.proxyList) {
-						gatherIdsFor(collection, proxy.entry());
+						gatherIdsFor(collection, proxy);
 					}
 				}
 			} else {
 				// verify that the entry is actually contained in the registry
-				var entryId = new ResourceLocation(id);
+				var entryId = id.id();
 				if (registry.containsKey(entryId)) {
 					collection.add(entryId);
 				}
@@ -228,7 +217,7 @@ public class TagEventJS<T> extends EventJS {
 		 * Yes its not as efficient as it could be, but this doesn't get run too often. This way it keeps order of original tags.
 		 */
 		public boolean sort() {
-			List<List<Tag.BuilderEntry>> listOfLists = new ArrayList<>();
+			List<List<TagEntry>> listOfLists = new ArrayList<>();
 
 			for (var i = 0; i < priorityList.size() + 1; i++) {
 				listOfLists.add(new ArrayList<>());
@@ -238,7 +227,7 @@ public class TagEventJS<T> extends EventJS {
 				var added = false;
 
 				var set = new HashSet<ResourceLocation>();
-				gatherIdsFor(set, proxy.entry());
+				gatherIdsFor(set, proxy);
 
 				for (var id : set) {
 					for (var i = 0; i < priorityList.size(); i++) {
@@ -255,7 +244,7 @@ public class TagEventJS<T> extends EventJS {
 				}
 			}
 
-			List<Tag.BuilderEntry> proxyList0 = new ArrayList<>(proxyList);
+			List<TagEntry> proxyList0 = new ArrayList<>(proxyList);
 
 			proxyList.clear();
 
@@ -276,14 +265,14 @@ public class TagEventJS<T> extends EventJS {
 	}
 
 	private final String type;
-	private final Map<ResourceLocation, Tag.Builder> map;
+	private final Map<ResourceLocation, TagBuilder> map;
 	private final Registry<T> registry;
 	private Map<ResourceLocation, TagWrapper> tags;
 	private int totalAdded;
 	private int totalRemoved;
 	private List<Predicate<ResourceLocation>> globalPriorityList;
 
-	public TagEventJS(String t, Map<ResourceLocation, Tag.Builder> m, Registry<T> r) {
+	public TagEventJS(String t, Map<ResourceLocation, TagBuilder> m, Registry<T> r) {
 		type = t;
 		map = m;
 		registry = r;
@@ -310,7 +299,7 @@ public class TagEventJS<T> extends EventJS {
 				map.forEach((tagId, tagBuilder) -> {
 					lines.add("");
 					lines.add("#" + tagId);
-					tagBuilder.getEntries().forEach(builderEntry -> lines.add("- " + builderEntry.entry()));
+					tagBuilder.entries.forEach(builderEntry -> lines.add("- " + builderEntry));
 				});
 
 				lines.add(0, "To refresh this file, delete it and run /reload command again! Last updated: " + DateFormat.getDateTimeInstance().format(new Date()));
@@ -372,7 +361,7 @@ public class TagEventJS<T> extends EventJS {
 
 			for (var entry : map.entrySet()) {
 				var a = new JsonArray();
-				entry.getValue().getEntries().forEach(e -> a.add(e.entry().toString()));
+				entry.getValue().entries.forEach(e -> a.add(e.toString()));
 				tj1.add(entry.getKey().toString(), a);
 			}
 		}
@@ -386,7 +375,7 @@ public class TagEventJS<T> extends EventJS {
 		var t = tags.get(id);
 
 		if (t == null) {
-			t = new TagWrapper(id, Tag.Builder.tag());
+			t = new TagWrapper(id, new TagBuilder());
 			tags.put(id, t);
 			map.put(id, t.builder);
 		}
@@ -409,7 +398,7 @@ public class TagEventJS<T> extends EventJS {
 	public void removeAllTagsFrom(String... ids) {
 		for (var id : ids) {
 			for (var tagWrapper : tags.values()) {
-				tagWrapper.proxyList.removeIf(proxy -> getIdOfEntry(proxy.entry()).equals(id));
+				tagWrapper.proxyList.removeIf(proxy -> proxy.elementOrTag().decoratedId().equals(id));
 			}
 		}
 	}

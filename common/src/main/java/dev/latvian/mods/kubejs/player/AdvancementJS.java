@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.player;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,10 +69,10 @@ public class AdvancementJS {
 	}
 
 	public Component getTitle() {
-		return advancement.getDisplay() != null ? advancement.getDisplay().getTitle() : TextComponent.EMPTY;
+		return advancement.getDisplay() != null ? advancement.getDisplay().getTitle() : Component.empty();
 	}
 
 	public Component getDescription() {
-		return advancement.getDisplay() != null ? advancement.getDisplay().getDescription() : TextComponent.EMPTY;
+		return advancement.getDisplay() != null ? advancement.getDisplay().getDescription() : Component.empty();
 	}
 }

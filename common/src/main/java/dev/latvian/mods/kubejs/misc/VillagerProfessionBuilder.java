@@ -1,24 +1,34 @@
 package dev.latvian.mods.kubejs.misc;
 
 import com.google.common.collect.ImmutableSet;
+import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.tags.PoiTypeTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Predicate;
 
 public class VillagerProfessionBuilder extends BuilderBase<VillagerProfession> {
-	public transient PoiType poiType;
+	public transient Either<ResourceKey<PoiType>, TagKey<PoiType>> poiType;
+
 	public transient ImmutableSet<Item> requestedItems;
 	public transient ImmutableSet<Block> secondaryPoi;
-	public transient SoundEvent workSound;
+	public transient @Nullable SoundEvent workSound;
 
 	public VillagerProfessionBuilder(ResourceLocation i) {
 		super(i);
-		poiType = PoiType.HOME;
+		poiType = Either.right(PoiTypeTags.ACQUIRABLE_JOB_SITE);
 		requestedItems = ImmutableSet.of();
 		secondaryPoi = ImmutableSet.of();
 		workSound = null;
@@ -31,11 +41,17 @@ public class VillagerProfessionBuilder extends BuilderBase<VillagerProfession> {
 
 	@Override
 	public VillagerProfession createObject() {
-		return new VillagerProfession(id.getPath(), poiType, requestedItems, secondaryPoi, workSound);
+		Predicate<Holder<PoiType>> validPois = holder -> poiType.map(holder::is, holder::is);
+		return new VillagerProfession(id.getPath(), validPois, validPois, requestedItems, secondaryPoi, workSound);
 	}
 
-	public VillagerProfessionBuilder poiType(PoiType t) {
-		poiType = t;
+	public VillagerProfessionBuilder poiType(ResourceLocation t) {
+		poiType = Either.left(ResourceKey.create(Registry.POINT_OF_INTEREST_TYPE_REGISTRY, t));
+		return this;
+	}
+
+	public VillagerProfessionBuilder poiTypeTag(ResourceLocation t) {
+		poiType = Either.right(TagKey.create(Registry.POINT_OF_INTEREST_TYPE_REGISTRY, t));
 		return this;
 	}
 
@@ -49,7 +65,7 @@ public class VillagerProfessionBuilder extends BuilderBase<VillagerProfession> {
 		return this;
 	}
 
-	public VillagerProfessionBuilder workSound(SoundEvent t) {
+	public VillagerProfessionBuilder workSound(@Nullable SoundEvent t) {
 		workSound = t;
 		return this;
 	}

@@ -14,7 +14,6 @@ import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.tags.TagManager;
 import net.minecraft.world.item.Item;
@@ -208,7 +207,7 @@ public class TagIngredientJS implements IngredientJS {
 
 				@Override
 				public Iterable<Holder<Item>> getTag(TagKey<Item> tag) {
-					return manager.tags().getOrDefault(tag.location(), Tag.empty()).getValues();
+					return manager.tags().getOrDefault(tag.location(), Set.of());
 				}
 			};
 		}

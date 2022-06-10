@@ -12,7 +12,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 import java.nio.file.Files;
 
@@ -82,8 +82,8 @@ public class ServerSettings {
 			ex.printStackTrace();
 		}
 
-		source.sendSuccess(new TextComponent("Done! Export in kubejs/exported/kubejs-server-export.json"), false);
-		source.sendSuccess(new TextComponent("You can now upload it on ").append(new TextComponent("https://export.kubejs.com/").withStyle(ChatFormatting.BLUE, ChatFormatting.UNDERLINE).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://export.kubejs.com/")))), false);
+		source.sendSuccess(Component.literal("Done! Export in kubejs/exported/kubejs-server-export.json"), false);
+		source.sendSuccess(Component.literal("You can now upload it on ").append(Component.literal("https://export.kubejs.com/").withStyle(ChatFormatting.BLUE, ChatFormatting.UNDERLINE).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://export.kubejs.com/")))), false);
 		source = null;
 		dataExport = null;
 	}

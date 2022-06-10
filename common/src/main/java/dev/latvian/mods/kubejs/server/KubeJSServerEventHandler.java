@@ -76,7 +76,7 @@ public class KubeJSServerEventHandler {
 
 	public static void serverStarted(MinecraftServer server) {
 		ServerJS.instance.overworld = new ServerLevelJS(ServerJS.instance, server.getLevel(Level.OVERWORLD));
-		ServerJS.instance.levelMap.put(DimensionType.OVERWORLD_LOCATION.location(), ServerJS.instance.overworld);
+		ServerJS.instance.levelMap.put(Level.OVERWORLD.location(), ServerJS.instance.overworld);
 		ServerJS.instance.allLevels.add(ServerJS.instance.overworld);
 
 		for (var level : server.getAllLevels()) {

@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.server;
 
 import dev.latvian.mods.kubejs.core.PlayerSelector;
-import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.level.ServerLevelJS;
 import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
 import dev.latvian.mods.kubejs.player.AdvancementJS;
@@ -14,11 +13,9 @@ import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.MessageSender;
 import dev.latvian.mods.kubejs.util.WithAttachedData;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -132,7 +129,7 @@ public class ServerJS implements MessageSender, WithAttachedData {
 
 	@Override
 	public Component getName() {
-		return new TextComponent(getMinecraftServer().name());
+		return Component.literal(getMinecraftServer().name());
 	}
 
 	@Override
@@ -142,10 +139,10 @@ public class ServerJS implements MessageSender, WithAttachedData {
 
 	@Override
 	public void tell(Component message) {
-		getMinecraftServer().sendMessage(message, Util.NIL_UUID);
+		getMinecraftServer().sendSystemMessage(message);
 
 		for (var player : getMinecraftServer().getPlayerList().getPlayers()) {
-			player.sendMessage(message, Util.NIL_UUID);
+			player.sendSystemMessage(message);
 		}
 	}
 

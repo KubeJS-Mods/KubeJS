@@ -60,7 +60,7 @@ import dev.latvian.mods.kubejs.level.gen.filter.mob.MobFilter;
 import dev.latvian.mods.kubejs.misc.BasicMobEffect;
 import dev.latvian.mods.kubejs.misc.CustomStatBuilder;
 import dev.latvian.mods.kubejs.misc.EnchantmentBuilder;
-import dev.latvian.mods.kubejs.misc.MotiveBuilder;
+import dev.latvian.mods.kubejs.misc.PaintingVariantBuilder;
 import dev.latvian.mods.kubejs.misc.ParticleTypeBuilder;
 import dev.latvian.mods.kubejs.misc.PoiTypeBuilder;
 import dev.latvian.mods.kubejs.misc.PotionBuilder;
@@ -117,7 +117,6 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.InteractionHand;
@@ -186,7 +185,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		// BLOCK_ENTITY_TYPE
 		RegistryObjectBuilderTypes.POTION.addType("basic", PotionBuilder.class, PotionBuilder::new);
 		RegistryObjectBuilderTypes.PARTICLE_TYPE.addType("basic", ParticleTypeBuilder.class, ParticleTypeBuilder::new);
-		RegistryObjectBuilderTypes.MOTIVE.addType("basic", MotiveBuilder.class, MotiveBuilder::new);
+		RegistryObjectBuilderTypes.PAINTING_VARIANT.addType("basic", PaintingVariantBuilder.class, PaintingVariantBuilder::new);
 		RegistryObjectBuilderTypes.CUSTOM_STAT.addType("basic", CustomStatBuilder.class, CustomStatBuilder::new);
 		RegistryObjectBuilderTypes.POINT_OF_INTEREST_TYPE.addType("basic", PoiTypeBuilder.class, PoiTypeBuilder::new);
 		RegistryObjectBuilderTypes.VILLAGER_TYPE.addType("basic", VillagerTypeBuilder.class, VillagerTypeBuilder::new);
@@ -396,7 +395,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(Vec3.class, UtilsJS::vec3Of);
 
 		typeWrappers.register(Item.class, ItemStackJS::getRawItem);
-		typeWrappers.register(MobCategory.class, o -> o == null ? null : MobCategory.byName(o.toString()));
+		typeWrappers.register(MobCategory.class, o -> o == null ? null : UtilsJS.mobCategoryByName(o.toString()));
 
 		typeWrappers.register(AABB.class, AABBWrapper::wrap);
 		typeWrappers.register(IntProvider.class, UtilsJS::intProviderOf);
@@ -424,7 +423,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		// components //
 		typeWrappers.register(Component.class, ComponentWrapper::of);
-		typeWrappers.register(MutableComponent.class, o -> new TextComponent("").append(ComponentWrapper.of(o)));
+		typeWrappers.register(MutableComponent.class, o -> Component.literal("").append(ComponentWrapper.of(o)));
 		typeWrappers.register(Color.class, ColorWrapper::of);
 		typeWrappers.register(TextColor.class, o -> ColorWrapper.of(o).createTextColorJS());
 		typeWrappers.register(ClickEvent.class, ComponentWrapper::clickEventOf);

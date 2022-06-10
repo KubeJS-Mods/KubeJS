@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.forge;
 
 import dev.latvian.mods.kubejs.BuiltinKubeJSPlugin;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.level.gen.forge.BiomeDictionaryWrapper;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassFilter;
@@ -34,13 +33,11 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 			event.addFunction("onForgeEvent", args -> onPlatformEvent(event, args), null, KubeJSForgeEventHandlerWrapper.class);
 		}
 
-		event.add("BiomeDictionary", BiomeDictionaryWrapper.class);
 	}
 
 	@Override
 	public void addTypeWrappers(ScriptType type, TypeWrappers typeWrappers) {
 		super.addTypeWrappers(type, typeWrappers);
-		typeWrappers.register(BiomeDictionary.Type.class, BiomeDictionaryWrapper::getBiomeType);
 	}
 
 	public static Object onPlatformEvent(BindingsEvent event, Object[] args) {

@@ -9,6 +9,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
@@ -30,6 +31,10 @@ public class Tags {
 
 	public static TagKey<EntityType<?>> entityType(ResourceLocation id) {
 		return generic(id, Registry.ENTITY_TYPE_REGISTRY);
+	}
+
+	public static TagKey<Biome> biome(ResourceLocation id) {
+		return generic(id, Registry.BIOME_REGISTRY);
 	}
 
 	public static Stream<TagKey<Item>> byItemStack(ItemStack stack) {

@@ -2,13 +2,11 @@ package dev.latvian.mods.kubejs.player;
 
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.level.ServerLevelJS;
 import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
 import dev.latvian.mods.kubejs.server.ServerJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -68,14 +66,14 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	}
 
 	public void kick() {
-		kick(new TranslatableComponent("multiplayer.disconnect.kicked"));
+		kick(Component.translatable("multiplayer.disconnect.kicked"));
 	}
 
 	public void ban(String banner, String reason, long expiresInMillis) {
 		var date = new Date();
 		var userlistbansentry = new UserBanListEntry(minecraftPlayer.getGameProfile(), date, banner, new Date(date.getTime() + (expiresInMillis <= 0L ? 315569260000L : expiresInMillis)), reason);
 		server.getMinecraftServer().getPlayerList().getBans().add(userlistbansentry);
-		kick(new TranslatableComponent("multiplayer.disconnect.banned"));
+		kick(Component.translatable("multiplayer.disconnect.banned"));
 	}
 
 	public boolean getHasClientMod() {

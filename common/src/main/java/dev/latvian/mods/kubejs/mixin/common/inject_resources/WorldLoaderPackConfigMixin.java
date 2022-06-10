@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.mixin.common.inject_resources;
 
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
-import net.minecraft.server.WorldStem;
+import net.minecraft.server.WorldLoader;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
@@ -11,10 +11,10 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.List;
 
-@Mixin(WorldStem.class)
-public abstract class WorldStemMixin {
+@Mixin(WorldLoader.PackConfig.class)
+public abstract class WorldLoaderPackConfigMixin {
 
-	@Redirect(method = "load", at = @At(
+	@Redirect(method = "createResourceManager", at = @At(
 			value = "NEW",
 			target = "net/minecraft/server/packs/resources/MultiPackResourceManager"
 	))

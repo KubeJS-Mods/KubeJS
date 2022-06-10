@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
@@ -109,7 +110,7 @@ public abstract class KubeJSResourcePack implements PackResources {
 	}
 
 	@Override
-	public Collection<ResourceLocation> getResources(PackType type, String namespace, String path, int maxDepth, Predicate<String> filter) {
+	public Collection<ResourceLocation> getResources(PackType type, String namespace, String path, Predicate<ResourceLocation> filter) {
 		if (type != packType) {
 			return Collections.emptySet();
 		}
@@ -134,12 +135,12 @@ public abstract class KubeJSResourcePack implements PackResources {
 				var inputPath = root.getFileSystem().getPath(path);
 
 				Files.walk(root)
-						.map(p -> root.relativize(p.toAbsolutePath()))
-						.filter(p -> p.getNameCount() > 1 && p.getNameCount() - 1 <= maxDepth)
+						.map(root::relativize)
+						.filter(p -> p.getNameCount() > 1)
 						.filter(p -> !p.toString().endsWith(".mcmeta"))
 						.filter(p -> p.subpath(1, p.getNameCount()).startsWith(inputPath))
-						.filter(p -> filter.test(p.getFileName().toString()))
-						.map(p -> new ResourceLocation(p.getName(0).toString(), Joiner.on('/').join(p.subpath(1, Math.min(maxDepth, p.getNameCount())))))
+						.map(p -> new ResourceLocation(p.getName(0).toString(), Joiner.on('/').join(p.subpath(1, p.getNameCount()))))
+						.filter(filter)
 						.forEach(list::add);
 			}
 		});

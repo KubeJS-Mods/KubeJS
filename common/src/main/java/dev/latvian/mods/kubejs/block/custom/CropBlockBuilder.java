@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
@@ -275,7 +276,7 @@ public class CropBlockBuilder extends BlockBuilder {
 			}
 
 			@Override
-			public void randomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, Random random) {
+			public void randomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource random) {
 				double f = growSpeedCallback == null ? -1 : growSpeedCallback.applyAsDouble(new RandomTickCallbackJS(new BlockContainerJS(serverLevel, blockPos), random));
 				int age = this.getAge(blockState);
 				if (age < this.getMaxAge()) {

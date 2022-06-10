@@ -1,13 +1,11 @@
 package dev.latvian.mods.kubejs.level.gen.filter.biome;
 
 import dev.architectury.registry.level.biome.BiomeModifications;
-import dev.latvian.mods.kubejs.level.LevelPlatformHelper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
-import net.minecraft.world.level.biome.Biome.BiomeCategory;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -78,14 +76,8 @@ public interface BiomeFilter extends Predicate<BiomeModifications.BiomeContext> 
 				filters.add(idFilter(map.get("type").toString()));
 			}
 
-			if (map.get("category") != null) {
-				filters.add(new CategoryFilter(BiomeCategory.byName(map.get("category").toString())));
-			}
-
-			// allow platform-specific hooks
-			var additional = LevelPlatformHelper.get().ofMapAdditional(map);
-			if (additional != null) {
-				filters.add(additional);
+			if (map.get("tag") != null) {
+				filters.add(new TagFilter(map.get("tag").toString()));
 			}
 
 			// TODO: Add other biome property filters
@@ -102,14 +94,8 @@ public interface BiomeFilter extends Predicate<BiomeModifications.BiomeContext> 
 		if (pattern != null) {
 			return new RegexIDFilter(pattern);
 		}
-		if (s.charAt(0) == '^') {
-			return new CategoryFilter(BiomeCategory.byName(s.substring(1)));
-		}
-
-		// allow platform-specific hooks
-		var additional = LevelPlatformHelper.get().ofStringAdditional(s);
-		if (additional != null) {
-			return additional;
+		if (s.charAt(0) == '#') {
+			return new TagFilter(s.substring(1));
 		}
 
 		return new IDFilter(UtilsJS.getMCID(s));

@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.script;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +18,6 @@ public class ScriptPackInfo {
 		namespace = n;
 		scripts = new ArrayList<>();
 		pathStart = p;
-		displayName = new TextComponent(namespace); // Load custom properties
+		displayName = Component.literal(namespace); // Load custom properties
 	}
 }

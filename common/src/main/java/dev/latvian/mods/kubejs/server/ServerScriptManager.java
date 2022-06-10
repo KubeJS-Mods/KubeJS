@@ -65,7 +65,7 @@ public class ServerScriptManager {
 
 		Map<String, List<ResourceLocation>> packs = new HashMap<>();
 
-		for (var resource : resourceManager.listResources("kubejs", s -> s.endsWith(".js"))) {
+		for (var resource : resourceManager.listResources("kubejs", s -> s.getPath().endsWith(".js")).keySet()) {
 			packs.computeIfAbsent(resource.getNamespace(), s -> new ArrayList<>()).add(resource);
 		}
 
@@ -77,7 +77,7 @@ public class ServerScriptManager {
 			}
 
 			for (var fileInfo : pack.info.scripts) {
-				var scriptSource = (ScriptSource.FromResource) info -> resourceManager.getResource(info.id);
+				var scriptSource = (ScriptSource.FromResource) info -> resourceManager.getResourceOrThrow(info.id);
 				var error = fileInfo.preload(scriptSource);
 
 				if (fileInfo.isIgnored()) {

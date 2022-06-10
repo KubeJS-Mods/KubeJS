@@ -3,10 +3,8 @@ package dev.latvian.mods.kubejs.player;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.util.MessageSender;
-import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
@@ -41,18 +39,18 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 	@Override
 	public Component getName() {
-		return new TextComponent("EntityList");
+		return Component.literal("EntityList");
 	}
 
 	@Override
 	public Component getDisplayName() {
-		return new TextComponent(toString()).lightPurple();
+		return Component.literal(toString()).lightPurple();
 	}
 
 	@Override
 	public void tell(Component message) {
 		for (var entity : this) {
-			entity.minecraftEntity.sendMessage(message, Util.NIL_UUID);
+			entity.minecraftEntity.sendSystemMessage(message);
 		}
 	}
 

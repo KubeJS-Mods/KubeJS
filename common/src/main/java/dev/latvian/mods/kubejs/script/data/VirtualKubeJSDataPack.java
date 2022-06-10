@@ -93,24 +93,13 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 	}
 
 	@Override
-	public Collection<ResourceLocation> getResources(PackType type, String namespace, String path, int maxDepth, Predicate<String> filter) {
-		List<ResourceLocation> list = Lists.newArrayList();
-
-		for (var key : locationToData.keySet()) {
-			if (namespace.equals(key.getNamespace())) {
-				try {
-					var i = key.getPath().lastIndexOf('/');
-					var p = i == -1 ? key.getPath() : key.getPath().substring(i + 1);
-
-					if (key.getPath().startsWith(path) && filter.test(p)) {
-						list.add(key);
-					}
-				} catch (Exception ignored) {
-				}
-			}
-		}
-
-		return list;
+	public Collection<ResourceLocation> getResources(PackType type, String namespace, String path, Predicate<ResourceLocation> filter) {
+		return locationToData.keySet()
+				.stream()
+				.filter(r -> !r.getPath().endsWith(".mcmeta"))
+				.filter(r -> r.getNamespace().equals(namespace) && r.getPath().startsWith(path))
+				.filter(filter)
+				.toList();
 	}
 
 	@Override

@@ -4,10 +4,8 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.core.ComponentKJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -16,15 +14,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Mixin(MutableComponent.class)
-public interface MutableComponentMixin extends ComponentKJS {
+public abstract class MutableComponentMixin implements ComponentKJS {
 
 	// hidden to avoid ambiguity, the type wrapper should wrap strings to TextComponent anyways
 	@HideFromJS
 	@Shadow
-	MutableComponent append(String string);
+	public abstract MutableComponent append(String string);
 
 	@Override
-	default Iterator<Component> iterator() {
+	public Iterator<Component> iterator() {
 		if (!hasSiblings()) {
 			return UtilsJS.cast(List.of(self()).iterator());
 		}
@@ -43,30 +41,30 @@ public interface MutableComponentMixin extends ComponentKJS {
 		return list.iterator();
 	}
 
-	default boolean hasStyle() {
+	public boolean hasStyle() {
 		return getStyle() != null && !getStyle().isEmpty();
 	}
 
-	default boolean hasSiblings() {
+	public boolean hasSiblings() {
 		return !getSiblings().isEmpty();
 	}
 
 	// These following methods only exist for interoperability with old scripts using the Text class
 	// region Deprecated
 	@Deprecated(forRemoval = true)
-	default MutableComponent rawComponent() {
+	public MutableComponent rawComponent() {
 		KubeJS.LOGGER.warn("Using rawComponent() is deprecated, since components no longer need to be wrapped to Text! You can safely remove this method.");
 		return self();
 	}
 
 	@Deprecated(forRemoval = true)
-	default MutableComponent rawCopy() {
+	public MutableComponent rawCopy() {
 		KubeJS.LOGGER.warn("Using rawCopy() is deprecated, since components no longer need to be wrapped to Text! Use copy() instead.");
 		return copy();
 	}
 
 	@Deprecated(forRemoval = true)
-	default Component component() {
+	public Component component() {
 		KubeJS.LOGGER.warn("Using component() is deprecated, since components no longer need to be wrapped to Text! You can safely remove this method.");
 		return self();
 	}

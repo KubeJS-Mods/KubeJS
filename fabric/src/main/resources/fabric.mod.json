@@ -23,7 +23,7 @@
 		"server": [
 			"dev.latvian.mods.kubejs.fabric.KubeJSFabric"
 		],
-		"rei_plugins": [
+		"rei_client": [
 			"dev.latvian.mods.kubejs.integration.rei.KubeJSREIPlugin"
 		]
 	},

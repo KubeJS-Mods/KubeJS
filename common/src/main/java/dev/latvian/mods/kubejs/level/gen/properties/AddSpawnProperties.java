@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.level.gen.properties;
 
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 
@@ -16,7 +17,7 @@ public class AddSpawnProperties {
 	public int maxCount = 4;
 
 	public void setCategory(String s) {
-		_category = MobCategory.byName(s);
+		_category = UtilsJS.mobCategoryByName(s);
 	}
 
 	public void setEntity(String s) {

@@ -26,12 +26,6 @@ public interface LevelPlatformHelper {
 
 	InventoryJS getInventoryFromBlockEntity(BlockEntity tileEntity, Direction facing);
 
-	@Nullable
-	BiomeFilter ofStringAdditional(String s);
-
-	@Nullable
-	BiomeFilter ofMapAdditional(Map<String, Object> map);
-
 	boolean areCapsCompatible(ItemStack a, ItemStack b);
 
 	ItemStack getContainerItem(ItemStack stack);

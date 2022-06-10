@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import org.jetbrains.annotations.Nullable;
@@ -77,7 +78,7 @@ public interface MobFilter extends BiPredicate<MobCategory, MobSpawnSettings.Spa
 			}
 
 			if (map.get("category") != null) {
-				filters.add(new CategoryFilter(MobCategory.byName(map.get("category").toString())));
+				filters.add(new CategoryFilter(UtilsJS.mobCategoryByName(map.get("category").toString())));
 			}
 
 			// TODO: Add other mob filters
@@ -95,7 +96,7 @@ public interface MobFilter extends BiPredicate<MobCategory, MobSpawnSettings.Spa
 			return new RegexIDFilter(pattern);
 		}
 
-		return s.charAt(0) == '#' ? new CategoryFilter(MobCategory.byName(s.substring(1))) : new IDFilter(UtilsJS.getMCID(s));
+		return s.charAt(0) == '#' ? new CategoryFilter(UtilsJS.mobCategoryByName(s.substring(1))) : new IDFilter(UtilsJS.getMCID(s));
 	}
 
 }

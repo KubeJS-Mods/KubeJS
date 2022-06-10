@@ -12,7 +12,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
-import net.minecraft.world.entity.decoration.Motive;
+import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerType;
 import net.minecraft.world.item.Item;
@@ -104,7 +104,7 @@ public final class RegistryObjectBuilderTypes<T> {
 	public static final RegistryObjectBuilderTypes<BlockEntityType<?>> BLOCK_ENTITY_TYPE = add(Registry.BLOCK_ENTITY_TYPE_REGISTRY, BlockEntityType.class);
 	public static final RegistryObjectBuilderTypes<Potion> POTION = add(Registry.POTION_REGISTRY, Potion.class);
 	public static final RegistryObjectBuilderTypes<ParticleType<?>> PARTICLE_TYPE = add(Registry.PARTICLE_TYPE_REGISTRY, ParticleType.class);
-	public static final RegistryObjectBuilderTypes<Motive> MOTIVE = add(Registry.MOTIVE_REGISTRY, Motive.class);
+	public static final RegistryObjectBuilderTypes<PaintingVariant> PAINTING_VARIANT = add(Registry.PAINTING_VARIANT_REGISTRY, PaintingVariant.class);
 	public static final RegistryObjectBuilderTypes<ResourceLocation> CUSTOM_STAT = add(Registry.CUSTOM_STAT_REGISTRY, ResourceLocation.class);
 	public static final RegistryObjectBuilderTypes<PoiType> POINT_OF_INTEREST_TYPE = add(Registry.POINT_OF_INTEREST_TYPE_REGISTRY, PoiType.class);
 	public static final RegistryObjectBuilderTypes<VillagerType> VILLAGER_TYPE = add(Registry.VILLAGER_TYPE_REGISTRY, VillagerType.class);

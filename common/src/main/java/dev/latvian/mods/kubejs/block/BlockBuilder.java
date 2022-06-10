@@ -21,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -541,7 +542,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		}
 
 		if (lootTable == null) {
-			properties.noDrops();
+			properties.noLootTable();
 		}
 
 		properties.friction(slipperiness);

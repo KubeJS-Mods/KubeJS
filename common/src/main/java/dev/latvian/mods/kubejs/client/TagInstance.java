@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.client;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
@@ -30,6 +29,6 @@ public class TagInstance {
 				})
 				.collect(Collectors.joining(" + ", " [", "]"));
 
-		return new TextComponent(string).withStyle(ChatFormatting.DARK_GRAY);
+		return Component.literal(string).withStyle(ChatFormatting.DARK_GRAY);
 	}
 }

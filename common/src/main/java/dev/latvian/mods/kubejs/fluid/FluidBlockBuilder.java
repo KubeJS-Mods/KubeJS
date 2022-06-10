@@ -24,7 +24,7 @@ public class FluidBlockBuilder extends BlockBuilder {
 
 	@Override
 	public Block createObject() {
-		return new ArchitecturyLiquidBlock(UtilsJS.cast(fluidBuilder.flowingFluid), Block.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops());
+		return new ArchitecturyLiquidBlock(UtilsJS.cast(fluidBuilder.flowingFluid), Block.Properties.of(Material.WATER).noCollission().strength(100.0F).noLootTable());
 	}
 
 	@Override

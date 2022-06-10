@@ -28,7 +28,7 @@ public interface ScriptSource {
 
 		@Override
 		default InputStream createStream(ScriptFileInfo info) throws IOException {
-			return getResource(info).getInputStream();
+			return getResource(info).open();
 		}
 	}
 }

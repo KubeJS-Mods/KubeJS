@@ -4,7 +4,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.util.UUIDTypeAdapter;
 import dev.latvian.mods.kubejs.server.ServerEventJS;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 
 import java.net.SocketAddress;
 import java.util.UUID;
@@ -41,7 +40,7 @@ public class CheckPlayerLoginEventJS extends ServerEventJS {
 
 	public Component getReason() {
 		if (reason == null) {
-			reason = new TextComponent("No reason specified");
+			reason = Component.literal("No reason specified");
 		}
 
 		return reason;

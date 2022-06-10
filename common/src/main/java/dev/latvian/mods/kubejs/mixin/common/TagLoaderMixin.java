@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagBuilder;
 import net.minecraft.tags.TagLoader;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,7 +28,7 @@ public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 	private Registry<T> kjs$storedRegistry;
 
 	@Inject(method = "load", at = @At("RETURN"))
-	private void customTags(ResourceManager resourceManager, CallbackInfoReturnable<Map<ResourceLocation, Tag.Builder>> cir) {
+	private void customTags(ResourceManager resourceManager, CallbackInfoReturnable<Map<ResourceLocation, TagBuilder>> cir) {
 		// band-aid fix for #237, as some mods use tags on the client side;
 		// technically not an intended use case, but easy enough to fix
 		if (ServerScriptManager.instance != null) {

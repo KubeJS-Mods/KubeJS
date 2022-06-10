@@ -13,10 +13,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.KeybindComponent;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import org.jetbrains.annotations.Nullable;
@@ -31,26 +28,26 @@ public class ComponentWrapper {
 	public static MutableComponent of(@Nullable Object o) {
 		o = UtilsJS.wrap(o, JSObjectType.ANY);
 		if (o == null) {
-			return new TextComponent("null");
+			return Component.literal("null");
 		} else if (o instanceof Component component) {
 			return component.copy();
 		} else if (o instanceof CharSequence || o instanceof Number || o instanceof Character) {
-			return new TextComponent(o.toString());
+			return Component.literal(o.toString());
 		} else if (o instanceof Enum<?> e) {
-			return new TextComponent(e.name());
+			return Component.literal(e.name());
 		} else if (o instanceof StringTag tag) {
 			var s = tag.getAsString();
 			if (s.startsWith("{") && s.endsWith("}")) {
 				try {
 					return Component.Serializer.fromJson(s);
 				} catch (JsonParseException ex) {
-					return new TextComponent("Error: " + ex);
+					return Component.literal("Error: " + ex);
 				}
 			} else {
-				return new TextComponent(s);
+				return Component.literal(s);
 			}
 		} else if (o instanceof ListJS list) {
-			var text = TextComponent.EMPTY.copy();
+			var text = Component.empty().copy();
 
 			for (var e1 : list) {
 				text.append(of(e1));
@@ -61,7 +58,7 @@ public class ComponentWrapper {
 			MutableComponent text;
 
 			if (map.containsKey("text")) {
-				text = new TextComponent(map.get("text").toString());
+				text = Component.literal(map.get("text").toString());
 			} else {
 				Object[] with;
 
@@ -83,7 +80,7 @@ public class ComponentWrapper {
 					with = new Object[0];
 				}
 
-				text = new TranslatableComponent(map.get("translate").toString(), with);
+				text = Component.translatable(map.get("translate").toString(), with);
 			}
 
 			if (map.containsKey("color")) {
@@ -110,7 +107,7 @@ public class ComponentWrapper {
 			return text;
 		}
 
-		return new TextComponent(o.toString());
+		return Component.literal(o.toString());
 	}
 
 	public static ClickEvent clickEventOf(Object o) {
@@ -151,7 +148,7 @@ public class ComponentWrapper {
 	}
 
 	public static MutableComponent join(MutableComponent separator, Iterable<? extends Component> texts) {
-		var joined = TextComponent.EMPTY.plainCopy();
+		var joined = Component.empty().plainCopy();
 		var first = true;
 
 		for (var t : texts) {
@@ -168,19 +165,19 @@ public class ComponentWrapper {
 	}
 
 	public static MutableComponent string(String text) {
-		return new TextComponent(text);
+		return Component.literal(text);
 	}
 
 	public static MutableComponent translate(String key) {
-		return new TranslatableComponent(key, new Object[0]);
+		return Component.translatable(key, new Object[0]);
 	}
 
 	public static MutableComponent translate(String key, Object... objects) {
-		return new TranslatableComponent(key, objects);
+		return Component.translatable(key, objects);
 	}
 
 	public static MutableComponent keybind(String keybind) {
-		return new KeybindComponent(keybind);
+		return Component.keybind(keybind);
 	}
 
 	public static MutableComponent black(Object text) {

@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.recipe.special;
 
 import com.google.gson.JsonObject;
 import com.mojang.util.UUIDTypeAdapter;
-import dev.architectury.core.AbstractRecipeSerializer;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
@@ -80,7 +79,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 		return list;
 	}
 
-	public static class SerializerKJS extends AbstractRecipeSerializer<ShapedKubeJSRecipe> {
+	public static class SerializerKJS implements RecipeSerializer<ShapedKubeJSRecipe> {
 
 		// registry replacement... you never know
 		private static final RecipeSerializer<ShapedRecipe> SHAPED = UtilsJS.cast(KubeJSRegistries.recipeSerializers().get(new ResourceLocation("crafting_shaped")));

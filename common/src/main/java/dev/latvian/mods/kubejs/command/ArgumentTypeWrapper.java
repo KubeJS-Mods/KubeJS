@@ -1,60 +1,24 @@
 package dev.latvian.mods.kubejs.command;
 
 import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.DoubleArgumentType;
-import com.mojang.brigadier.arguments.FloatArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.LongArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.mods.kubejs.util.ClassWrapper;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.arguments.AngleArgument;
-import net.minecraft.commands.arguments.ColorArgument;
-import net.minecraft.commands.arguments.ComponentArgument;
-import net.minecraft.commands.arguments.CompoundTagArgument;
-import net.minecraft.commands.arguments.DimensionArgument;
-import net.minecraft.commands.arguments.EntityAnchorArgument;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.EntitySummonArgument;
-import net.minecraft.commands.arguments.GameProfileArgument;
-import net.minecraft.commands.arguments.ItemEnchantmentArgument;
-import net.minecraft.commands.arguments.MessageArgument;
-import net.minecraft.commands.arguments.MobEffectArgument;
-import net.minecraft.commands.arguments.NbtPathArgument;
-import net.minecraft.commands.arguments.NbtTagArgument;
-import net.minecraft.commands.arguments.ParticleArgument;
-import net.minecraft.commands.arguments.RangeArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.commands.arguments.SlotArgument;
-import net.minecraft.commands.arguments.TimeArgument;
-import net.minecraft.commands.arguments.UuidArgument;
-import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
-import net.minecraft.commands.arguments.blocks.BlockStateArgument;
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
-import net.minecraft.commands.arguments.coordinates.ColumnPosArgument;
-import net.minecraft.commands.arguments.coordinates.RotationArgument;
-import net.minecraft.commands.arguments.coordinates.SwizzleArgument;
-import net.minecraft.commands.arguments.coordinates.Vec2Argument;
-import net.minecraft.commands.arguments.coordinates.Vec3Argument;
-import net.minecraft.commands.arguments.item.ItemArgument;
-import net.minecraft.commands.arguments.item.ItemPredicateArgument;
-import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
+// FIXME: implement! (thanks forge)
 public enum ArgumentTypeWrapper {
 	// builtin types, other argument types can still be accessed through byName(),
 	// however those will be using class wrappers
 
 	// numeric types
-	BOOLEAN(BoolArgumentType::bool, BoolArgumentType::getBool),
+	/*BOOLEAN(BoolArgumentType::bool, BoolArgumentType::getBool),
 	FLOAT(FloatArgumentType::floatArg, FloatArgumentType::getFloat),
 	DOUBLE(DoubleArgumentType::doubleArg, DoubleArgumentType::getDouble),
 	INTEGER(IntegerArgumentType::integer, IntegerArgumentType::getInteger),
@@ -108,47 +72,54 @@ public enum ArgumentTypeWrapper {
 	ENTITY_SUMMON(EntitySummonArgument::id, EntitySummonArgument::getSummonableEntity),
 	DIMENSION(DimensionArgument::dimension, DimensionArgument::getDimension),
 	TIME(TimeArgument::time, IntegerArgumentType::getInteger),
-	UUID(UuidArgument::uuid, UuidArgument::getUuid),
+	UUID(UuidArgument::uuid, UuidArgument::getUuid),*/
 	;
 
-	private final Supplier<? extends ArgumentType<?>> factory;
+	private final Function<CommandBuildContext, ? extends ArgumentType<?>> factory;
 	private final ArgumentFunction<?> getter;
 
 	private static Map<ResourceLocation, ClassWrapper<?>> byNameCache;
 
-	public static ClassWrapper<?> byName(ResourceLocation name) {
+	/*public static ClassWrapper<?> byName(ResourceLocation name) {
 		var wrapper = getOrCacheByName().get(name);
 		if (wrapper == null) {
 			throw new IllegalStateException("No argument type found for " + name);
 		}
 		return wrapper;
-	}
+	}*/
 
 	public static void printAll() {
-		for (var argType : getOrCacheByName().entrySet()) {
+		/*for (var argType : getOrCacheByName().entrySet()) {
 			ConsoleJS.SERVER.info("Argument type: " + argType.getKey() + " -> " + argType.getValue());
-		}
+		}*/
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	private static Map<ResourceLocation, ClassWrapper<?>> getOrCacheByName() {
+	/*private static Map<ResourceLocation, ClassWrapper<?>> getOrCacheByName() {
 		if (byNameCache == null) {
 			byNameCache = new HashMap<>();
 
-			for (var argType : ArgumentTypes.BY_CLASS.entrySet()) {
+			for (var argType : ArgumentTypeInfos.BY_CLASS.entrySet()) {
 				byNameCache.putIfAbsent(argType.getValue().name, new ClassWrapper(argType.getKey()));
 			}
 		}
 		return byNameCache;
-	}
+	}*/
 
 	ArgumentTypeWrapper(Supplier<? extends ArgumentType<?>> factory, ArgumentFunction<?> getter) {
-		this.factory = factory;
+		this.factory = (ctx) -> factory.get();
+		this.getter = getter;
+	}
+
+	ArgumentTypeWrapper(Function<CommandBuildContext, ? extends ArgumentType<?>> argType, ArgumentFunction<?> getter) {
+		this.factory = argType;
 		this.getter = getter;
 	}
 
 	public ArgumentType<?> create() {
-		return factory.get();
+		CommandBuildContext ctx = null;
+		throw new UnsupportedOperationException("Not implemented");
+		// return factory.apply(ctx);
 	}
 
 	public Object getResult(CommandContext<CommandSourceStack> context, String input) throws CommandSyntaxException {

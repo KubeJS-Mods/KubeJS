@@ -7,7 +7,6 @@ import dev.architectury.event.events.common.TickEvent;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSEvents;
-import dev.latvian.mods.kubejs.core.EntityKJS;
 import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerJS;
@@ -15,9 +14,8 @@ import dev.latvian.mods.kubejs.stages.Stages;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.TextFilter;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
@@ -51,13 +49,13 @@ public class KubeJSPlayerEventHandler {
 		}
 
 		if (!ScriptType.SERVER.errors.isEmpty() && !CommonProperties.get().hideServerScriptErrors) {
-			player.displayClientMessage(new TextComponent("KubeJS errors found [" + ScriptType.SERVER.errors.size() + "]! Run ")
-					.append(new TextComponent("'/kubejs errors'")
-							.click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs errors"))
-							.hover(new TextComponent("Click to run")))
-					.append(new TextComponent(" for more info"))
-					.withStyle(ChatFormatting.DARK_RED),
-			false);
+			player.displayClientMessage(Component.literal("KubeJS errors found [" + ScriptType.SERVER.errors.size() + "]! Run ")
+							.append(Component.literal("'/kubejs errors'")
+									.click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs errors"))
+									.hover(Component.literal("Click to run")))
+							.append(Component.literal(" for more info"))
+							.withStyle(ChatFormatting.DARK_RED),
+					false);
 		}
 
 		Stages.get(player).sync();
@@ -88,12 +86,12 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	@NotNull
-	public static EventResult chat(ServerPlayer player, TextFilter.FilteredText message, ChatEvent.ChatComponent component) {
-		var event = new PlayerChatEventJS(player, message.getRaw(), component.getRaw());
-		component.setRaw(event.component);
+	public static EventResult chat(ServerPlayer player, ChatEvent.ChatComponent component) {
+		var event = new PlayerChatEventJS(player, component.getRaw());
 		if (event.post(KubeJSEvents.PLAYER_CHAT)) {
 			return EventResult.interruptFalse();
 		}
+		component.setRaw(event.component);
 		return EventResult.pass();
 	}
 
