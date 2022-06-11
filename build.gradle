@@ -4,8 +4,7 @@ plugins {
 	id "dev.architectury.loom" version "0.12.0-SNAPSHOT" apply false
 	id "io.github.juuxel.loom-quiltflower" version "1.7.2" apply false
 	id "com.github.johnrengelman.shadow" version "7.0.0" apply false
-	id "com.matthewprenger.cursegradle" version "1.4.0" apply false
-	id "com.modrinth.minotaur" version "2.2.0" apply false
+	id "me.shedaniel.unified-publishing" version "0.1.+" apply false
 }
 
 architectury {
@@ -75,8 +74,6 @@ subprojects {
 subprojects {
 	if (project.path != ':common') {
 		apply plugin: "com.github.johnrengelman.shadow"
-		apply plugin: "com.matthewprenger.cursegradle"
-		apply plugin: "com.modrinth.minotaur"
 
 		/*loom {
 			runConfigs.configureEach { ideConfigGenerated = true }
@@ -86,6 +83,9 @@ subprojects {
 					sourceSet project(':common').sourceSets.main
 				}
 			}
+			mixin {
+				defaultRefmapName = "kubejs.refmap.json"
+			}
 		}*/
 
 		configurations {
@@ -93,6 +93,10 @@ subprojects {
 				canBeResolved(true)
 				canBeConsumed(false)
 			}
+
+			common
+			compileClasspath.extendsFrom common
+			runtimeClasspath.extendsFrom common
 		}
 
 		jar {
@@ -112,12 +116,6 @@ subprojects {
 			archiveBaseName.set "${rootProject.archives_base_name}-${project.name}"
 			archiveClassifier.set null
 		}
-
-		/*loom {
-			mixin {
-				defaultRefmapName = "kubejs.refmap.json"
-			}
-		}*/
 	}
 }
 
