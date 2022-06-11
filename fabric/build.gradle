@@ -91,9 +91,6 @@ unifiedPublishing {
 			depends {
 				curseforge = modrinth = "fabric-api"
 			}
-			optional {
-				curseforge = modrinth = "roughly-enough-items"
-			}
 		}
 
 		if (ENV.CURSEFORGE_KEY) {
