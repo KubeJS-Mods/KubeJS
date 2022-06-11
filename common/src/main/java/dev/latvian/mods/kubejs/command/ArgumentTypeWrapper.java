@@ -43,6 +43,7 @@ import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemPredicateArgument;
 import net.minecraft.commands.synchronization.ArgumentTypes;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
@@ -147,7 +148,14 @@ public enum ArgumentTypeWrapper {
 		this.getter = getter;
 	}
 
+	@Deprecated(forRemoval = true)
 	public ArgumentType<?> create() {
+		ConsoleJS.SERVER.warn("Using argument types without the event as context is deprecated and will be removed soon!");
+		ConsoleJS.SERVER.warn("Please consider using create(event) instead!");
+		return create(null);
+	}
+
+	public ArgumentType<?> create(CommandRegistryEventJS event) {
 		return factory.get();
 	}
 
