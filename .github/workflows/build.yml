@@ -36,7 +36,7 @@ jobs:
           SAPS_TOKEN: ${{ secrets.SAPS_TOKEN }}
         with:
           arguments: build publish --stacktrace --no-daemon
-      - name: Release to CurseForge
+      - name: Publish Release JAR
         uses: gradle/gradle-build-action@v2
         if: |
           contains(github.ref, 'main') && !contains(github.event.head_commit.message, '[norelease]') && github.event.inputs.norelease != 'true'
