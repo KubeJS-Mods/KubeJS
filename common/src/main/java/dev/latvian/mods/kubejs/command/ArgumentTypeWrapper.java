@@ -9,6 +9,7 @@ import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassWrapper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.Util;
@@ -47,10 +48,12 @@ import net.minecraft.commands.arguments.item.ItemPredicateArgument;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -165,9 +168,15 @@ public enum ArgumentTypeWrapper {
 		this.getter = getter;
 	}
 
+	@Deprecated(forRemoval = true)
 	public ArgumentType<?> create() {
-		var ctx = CommandRegistryEventJS.getContextOrThrow();
-		return factory.apply(ctx);
+		ConsoleJS.SERVER.warn("Using argument types without the event as context is deprecated and will be removed soon!");
+		ConsoleJS.SERVER.warn("Please consider using create(event) instead!");
+		return factory.apply(new CommandBuildContext(RegistryAccess.BUILTIN.get()));
+	}
+
+	public ArgumentType<?> create(CommandRegistryEventJS event) {
+		return factory.apply(event.context);
 	}
 
 	public Object getResult(CommandContext<CommandSourceStack> context, String input) throws CommandSyntaxException {

@@ -18,13 +18,13 @@ import java.util.Objects;
 public class CommandRegistryEventJS extends ServerEventJS {
 	public final CommandDispatcher<CommandSourceStack> dispatcher;
 	public final Commands.CommandSelection selection;
-	private static CommandBuildContext context;
+	public final CommandBuildContext context;
 
 	public CommandRegistryEventJS(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection selection) {
 		this.dispatcher = dispatcher;
 		this.selection = selection;
-		// TODO: remove this
-		context = new CommandBuildContext(RegistryAccess.BUILTIN.get());
+		// TODO: swap this with context from the event when forge fixes their stuff
+		this.context = new CommandBuildContext(RegistryAccess.BUILTIN.get());
 	}
 
 	public boolean isForSinglePlayer() {
@@ -46,10 +46,4 @@ public class CommandRegistryEventJS extends ServerEventJS {
 	public ClassWrapper<ArgumentTypeWrapper> getArguments() {
 		return new ClassWrapper<>(ArgumentTypeWrapper.class);
 	}
-
-	// i hate this so much...
-	public static CommandBuildContext getContextOrThrow() {
-		return Objects.requireNonNull(context, "CommandBuildContext is not set!");
-	}
-
 }
