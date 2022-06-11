@@ -32,8 +32,7 @@ accessible field net/minecraft/server/packs/resources/MultiPackResourceManager n
 
 accessible field net/minecraft/commands/Commands$CommandSelection includeIntegrated Z
 accessible field net/minecraft/commands/Commands$CommandSelection includeDedicated Z
-#accessible field net/minecraft/commands/synchronization/ArgumentTypes BY_CLASS Ljava/util/Map;
-#accessible class net/minecraft/commands/synchronization/ArgumentTypes$Entry
+accessible field net/minecraft/commands/synchronization/ArgumentTypeInfos BY_CLASS Ljava/util/Map;
 
 accessible field net/minecraft/world/inventory/CraftingContainer menu Lnet/minecraft/world/inventory/AbstractContainerMenu;
 accessible field net/minecraft/world/inventory/CraftingMenu player Lnet/minecraft/world/entity/player/Player;
