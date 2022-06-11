@@ -46,4 +46,4 @@ jobs:
           CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
         with:
-          arguments: build curseforge modrinth --stacktrace --no-daemon
+          arguments: build publishUnified --stacktrace --no-daemon
