@@ -105,12 +105,6 @@ unifiedPublishing {
 			depends {
 				curseforge = modrinth = "rhino"
 			}
-			optional {
-				curseforge = modrinth = "roughly-enough-items"
-			}
-			optional {
-				curseforge = "jei"
-			}
 		}
 
 		if (ENV.CURSEFORGE_KEY) {
