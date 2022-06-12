@@ -1,3 +1,7 @@
+plugins {
+	id 'me.shedaniel.unified-publishing'
+}
+
 def generatedResources = file("src/generated/resources")
 def accessWidenerFile = project(":common").file("src/main/resources/kubejs.accesswidener")
 
@@ -66,42 +70,42 @@ components.java {
 	}
 }
 
-if (ENV.CURSEFORGE_KEY) {
-	curseforge {
-		apiKey = ENV.CURSEFORGE_KEY
-		project {
-			id = project.curseforge_id
-			releaseType = project.artifact_type
-			addGameVersion "Fabric"
-			addGameVersion "1.18.2"
-			mainArtifact(remapJar.archivePath)
-			relations {
-				requiredDependency 'rhino'
-				requiredDependency 'fabric-api'
-				requiredDependency 'architectury-api'
-				optionalDependency 'roughly-enough-items'
-			}
-			changelog = getGitChangelog
-			changelogType = 'markdown'
-		}
-	}
-}
-
-if(ENV.MODRINTH_TOKEN) {
-	modrinth {
-		token = ENV.MODRINTH_TOKEN
-		projectId = rootProject.modrinth_id
-		versionType = "$rootProject.artifact_type"
-		versionNumber = "$project.version+$project.name"
-		versionName = "[Fabric] $project.version"
+unifiedPublishing {
+	project {
+		releaseType = rootProject.artifact_type
+		gameVersions = [
+				rootProject.minecraft_version
+		]
+		gameLoaders = ["fabric", "quilt"]
+		displayName = "$mod_name Fabric $project.version"
 		changelog = getGitChangelog()
-		uploadFile = remapJar
-		gameVersions = ["1.18.2"]
-		loaders = ["fabric", "quilt"]
-		dependencies {
-			required.project('lhGA9TYQ') // arch
-			required.project('sk9knFPE') // rhino
-			required.project('P7dR8mSH') // fabric api
+		mainPublication remapJar
+
+		relations {
+			depends {
+				curseforge = modrinth = "architectury-api"
+			}
+			depends {
+				curseforge = modrinth = "rhino"
+			}
+			depends {
+				curseforge = modrinth = "fabric-api"
+			}
+		}
+
+		if (ENV.CURSEFORGE_KEY) {
+			curseforge {
+				token = ENV.CURSEFORGE_KEY
+				id = project.curseforge_id
+			}
+		}
+
+		if (ENV.MODRINTH_TOKEN) {
+			modrinth {
+				token = ENV.MODRINTH_TOKEN
+				id = project.modrinth_id
+				version = "$project.version+$project.name"
+			}
 		}
 	}
 }

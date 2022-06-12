@@ -66,4 +66,9 @@ public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 		color = col.getRgbJS();
 		return this;
 	}
+
+	@Override
+	public String getTranslationKeyGroup() {
+		return "effect";
+	}
 }
