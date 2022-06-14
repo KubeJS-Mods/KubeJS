@@ -5,43 +5,47 @@ import dev.latvian.mods.kubejs.event.EventJS;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.Recipe;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RemoveJEIRecipesEvent extends EventJS {
 	private final IJeiRuntime runtime;
-	private final HashMap<ResourceLocation, Collection<ResourceLocation>> recipesRemoved;
-	private final Collection<IRecipeCategory<?>> allCategories;
+	private final Map<IRecipeCategory, Collection<ResourceLocation>> recipesRemoved;
+	private final Map<ResourceLocation, IRecipeCategory> categoryById;
 
 	public RemoveJEIRecipesEvent(IJeiRuntime r) {
 		runtime = r;
 		recipesRemoved = new HashMap<>();
-		allCategories = runtime.getRecipeManager().getRecipeCategories(Collections.emptyList(), false);
+		categoryById = runtime.getRecipeManager().createRecipeCategoryLookup()
+				.get()
+				.collect(Collectors.toMap(cat -> cat.getRecipeType().getUid(), Function.identity()));
 	}
 
-	public Collection<IRecipeCategory<?>> getCategories() {
-		return allCategories;
+	public Collection<IRecipeCategory> getCategories() {
+		return categoryById.values();
 	}
 
 	public Collection<ResourceLocation> getCategoryIds() {
-		Set<ResourceLocation> set = new HashSet<>();
-		for (var allCategory : allCategories) {
-			set.add(allCategory.getUid());
-		}
-		return set;
+		return categoryById.keySet();
 	}
 
 	public void remove(ResourceLocation category, ResourceLocation[] recipesToRemove) {
 		for (var toRemove : recipesToRemove) {
-			recipesRemoved.computeIfAbsent(category, _0 -> new HashSet<>()).add(toRemove);
+			if (!categoryById.containsKey(category)) {
+				KubeJS.LOGGER.warn("Failed to remove recipes for type {}: Category doesn't exist!", category);
+				KubeJS.LOGGER.info("Use event.categoryIds to get a list of all categories.");
+				continue;
+			}
+			recipesRemoved.computeIfAbsent(categoryById.get(category), _0 -> new HashSet<>()).add(toRemove);
 		}
 	}
 
@@ -53,34 +57,35 @@ public class RemoveJEIRecipesEvent extends EventJS {
 	protected void afterPosted(boolean result) {
 		var rm = runtime.getRecipeManager();
 		for (var cat : recipesRemoved.keySet()) {
-			try {
-				var category = rm.getRecipeCategory(cat, false);
-				if (Recipe.class.isAssignableFrom(category.getRecipeClass())) {
-					for (var id : recipesRemoved.get(cat)) {
-						try {
-							var found = false;
-							for (Object o : rm.getRecipes(category, Collections.emptyList(), false)) {
-								var recipe = (Recipe<?>) o;
-								if (id.equals(recipe.getId())) {
-									rm.hideRecipe(recipe, cat);
-									found = true;
-									break;
-								}
-							}
-							if (!found) {
-								KubeJS.LOGGER.warn("Failed to remove recipe {} for category {}: Recipe doesn't exist!", id, cat);
-							}
-						} catch (Exception e) {
-							KubeJS.LOGGER.warn("Failed to remove recipe {} for category {}: An unexpected error was thrown!", id, cat);
-						}
+			var type = cat.getRecipeType();
+			var allRecipes = rm.createRecipeLookup(cat.getRecipeType()).get().toList();
+			var ids = recipesRemoved.get(cat);
+			var recipesHidden = new HashSet<>(ids.size());
+
+			for (var id : ids) {
+				var found = false;
+				for (var recipe : allRecipes) {
+					var recipeId = cat.getRegistryName(recipe);
+
+					if (recipeId == null) {
+						KubeJS.LOGGER.warn("Failed to remove recipe {} for type {}: Category does not support removal by id!", id, type);
+						break;
 					}
-				} else {
-					KubeJS.LOGGER.warn("Failed to remove recipes for category {}: Recipe type is unsupported!", cat);
+
+					if (recipeId.equals(id)) {
+						found = true;
+						recipesHidden.add(recipe);
+						break;
+					}
+
 				}
-			} catch (NullPointerException | IllegalStateException e) {
-				KubeJS.LOGGER.warn("Failed to remove recipes for category {}: Category doesn't exist!", cat);
-				KubeJS.LOGGER.info("Available categories: " + getCategoryIds());
+
+				if (!found) {
+					KubeJS.LOGGER.warn("Failed to remove recipe {} for type {}: Recipe doesn't exist!", id, type);
+				}
 			}
+
+			rm.hideRecipes(type, recipesHidden);
 		}
 	}
 }

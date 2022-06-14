@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.integration.forge.jei;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.ISubtypeRegistration;
@@ -45,7 +46,7 @@ public class JEISubtypesEventJS extends EventJS {
 	}
 
 	public void registerInterpreter(Object id, Interpreter interpreter) {
-		registration.registerSubtypeInterpreter(ItemStackJS.of(id).getItem(), (stack, context) -> {
+		registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, ItemStackJS.of(id).getItem(), (stack, context) -> {
 			var o = interpreter.apply(ItemStackJS.of(stack));
 			return o == null ? "" : o.toString();
 		});
@@ -59,7 +60,7 @@ public class JEISubtypesEventJS extends EventJS {
 		var in = new NBTKeyInterpreter(key);
 
 		for (var item : items.getVanillaItems()) {
-			registration.registerSubtypeInterpreter(item, new NBTKeyInterpreter(key));
+			registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, new NBTKeyInterpreter(key));
 		}
 	}
 }

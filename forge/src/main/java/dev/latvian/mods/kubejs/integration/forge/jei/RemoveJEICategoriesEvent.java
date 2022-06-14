@@ -2,12 +2,13 @@ package dev.latvian.mods.kubejs.integration.forge.jei;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.event.EventJS;
+import mezz.jei.api.recipe.IRecipeCategoriesLookup;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -17,44 +18,40 @@ import java.util.function.Predicate;
  */
 public class RemoveJEICategoriesEvent extends EventJS {
 	private final IJeiRuntime runtime;
-	private final HashSet<ResourceLocation> categoriesRemoved;
-	private final Collection<IRecipeCategory<?>> allCategories;
+	private final Collection<RecipeType<?>> categoriesRemoved;
+	private final IRecipeCategoriesLookup categoryLookup;
 
 	public RemoveJEICategoriesEvent(IJeiRuntime r) {
 		runtime = r;
 		categoriesRemoved = new HashSet<>();
-		allCategories = runtime.getRecipeManager().getRecipeCategories(Collections.emptyList(), false);
+		categoryLookup = runtime.getRecipeManager().createRecipeCategoryLookup();
 	}
 
 	public Collection<IRecipeCategory<?>> getCategories() {
-		return allCategories;
+		return categoryLookup.get().toList();
 	}
 
-	public void remove(String... categoriesToYeet) {
-		for (var toYeet : categoriesToYeet) {
-			categoriesRemoved.add(new ResourceLocation(toYeet));
-		}
+	public void remove(ResourceLocation... categoriesToYeet) {
+		var idSet = Set.of(categoriesToYeet);
+		categoryLookup.get()
+				.map(IRecipeCategory::getRecipeType)
+				.filter(type -> idSet.contains(type.getUid()))
+				.forEach(categoriesRemoved::add);
 	}
 
-	public void yeet(String... categoriesToRemove) {
+	public void yeet(ResourceLocation... categoriesToRemove) {
 		remove(categoriesToRemove);
 	}
 
 	public Collection<ResourceLocation> getCategoryIds() {
-		Set<ResourceLocation> set = new HashSet<>();
-		for (var allCategory : allCategories) {
-			var uid = allCategory.getUid();
-			set.add(uid);
-		}
-		return set;
+		return categoryLookup.get().map(IRecipeCategory::getRecipeType).map(RecipeType::getUid).toList();
 	}
 
 	public void removeIf(Predicate<IRecipeCategory<?>> filter) {
-		allCategories.stream()
+		categoryLookup.get()
 				.filter(filter)
-				.map(IRecipeCategory::getUid)
-				.map(ResourceLocation::toString)
-				.forEach(this::yeet);
+				.map(IRecipeCategory::getRecipeType)
+				.forEach(categoriesRemoved::add);
 	}
 
 	public void yeetIf(Predicate<IRecipeCategory<?>> filter) {
