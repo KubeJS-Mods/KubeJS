@@ -160,7 +160,7 @@ public class RecipeEventJS extends EventJS {
 
 				recipeIdAndType = recipeId + "[" + type + "]";
 
-				if (!RecipePlatformHelper.processConditions(recipeManager, json, "conditions")) {
+				if (!RecipePlatformHelper.get().processConditions(recipeManager, json, "conditions")) {
 					if (ServerSettings.instance.logSkippedRecipes) {
 						ConsoleJS.SERVER.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");
 					}
@@ -181,7 +181,7 @@ public class RecipeEventJS extends EventJS {
 
 						var o = e.getAsJsonObject();
 
-						if (RecipePlatformHelper.processConditions(recipeManager, o, "conditions")) {
+						if (RecipePlatformHelper.get().processConditions(recipeManager, o, "conditions")) {
 							json = o.get("recipe").getAsJsonObject();
 							type = GsonHelper.getAsString(json, "type");
 							recipeIdAndType = recipeId + "[" + type + "]";
@@ -209,7 +209,7 @@ public class RecipeEventJS extends EventJS {
 				recipe.id = recipeId;
 				recipe.type = function.type;
 				recipe.json = json;
-				recipe.originalRecipe = RecipePlatformHelper.fromJson(recipe);
+				recipe.originalRecipe = RecipePlatformHelper.get().fromJson(recipe);
 
 				if (recipe.originalRecipe == null) {
 					if (ServerSettings.instance.logSkippedRecipes) {
@@ -384,7 +384,7 @@ public class RecipeEventJS extends EventJS {
 			});
 		});
 
-		RecipePlatformHelper.pingNewRecipes(newRecipeMap);
+		RecipePlatformHelper.get().pingNewRecipes(newRecipeMap);
 		recipeManager.byName = recipesByName;
 		recipeManager.recipes = newRecipeMap;
 		ConsoleJS.SERVER.info("Added " + added.getValue() + " recipes, removed " + removed.getValue() + " recipes, modified " + modifiedRecipesCount.get() + " recipes, with " + failed.getValue() + " failed recipes and " + fallbacked.getValue() + " fall-backed recipes");

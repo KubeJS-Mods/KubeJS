@@ -1,7 +1,5 @@
 package dev.latvian.mods.kubejs.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
@@ -14,8 +12,6 @@ import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.client.painter.Painter;
-import dev.latvian.mods.kubejs.client.painter.screen.ScreenPaintEventJS;
-import dev.latvian.mods.kubejs.client.painter.world.WorldPaintEventJS;
 import dev.latvian.mods.kubejs.core.ImageButtonKJS;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
@@ -72,15 +68,15 @@ public class KubeJSClientEventHandler {
 		ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(this::loggedIn);
 		ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(this::loggedOut);
 		ClientPlayerEvent.CLIENT_PLAYER_RESPAWN.register(this::respawn);
-		ClientGuiEvent.RENDER_HUD.register(this::inGameScreenDraw);
-		ClientGuiEvent.RENDER_POST.register(this::guiScreenDraw);
+		ClientGuiEvent.RENDER_HUD.register(Painter.INSTANCE::inGameScreenDraw);
+		ClientGuiEvent.RENDER_POST.register(Painter.INSTANCE::guiScreenDraw);
 		ClientGuiEvent.INIT_POST.register(this::guiPostInit);
 		ClientTextureStitchEvent.POST.register(this::postAtlasStitch);
 	}
 
 	private void clientSetup(Minecraft minecraft) {
 		for (var builder : RegistryObjectBuilderTypes.ALL_BUILDERS) {
-			builder.clientRegistry(minecraft);
+			builder.clientRegistry(() -> minecraft);
 		}
 		new ItemModelPropertiesEventJS().post(KubeJSEvents.ITEM_MODEL_PROPERTIES);
 	}
@@ -170,74 +166,6 @@ public class KubeJSClientEventHandler {
 		AttachDataEvent.forPlayer(ClientLevelJS.getInstance().clientPlayerData).invoke();
 	}
 
-	private void inGameScreenDraw(PoseStack matrices, float delta) {
-		var mc = Minecraft.getInstance();
-
-		if (mc.player == null || mc.options.renderDebug || mc.screen != null) {
-			return;
-		}
-
-		RenderSystem.enableBlend();
-		//RenderSystem.disableLighting();
-
-		var event = new ScreenPaintEventJS(mc, matrices, delta);
-		Painter.INSTANCE.deltaUnit.set(delta);
-		Painter.INSTANCE.screenWidthUnit.set(event.width);
-		Painter.INSTANCE.screenHeightUnit.set(event.height);
-		Painter.INSTANCE.mouseXUnit.set(event.mouseX);
-		Painter.INSTANCE.mouseYUnit.set(event.mouseY);
-		event.post(KubeJSEvents.CLIENT_PAINT_SCREEN);
-
-		for (var object : Painter.INSTANCE.getScreenObjects()) {
-			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
-				object.preDraw(event);
-			}
-		}
-
-		for (var object : Painter.INSTANCE.getScreenObjects()) {
-			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
-				object.draw(event);
-			}
-		}
-	}
-
-	private void guiScreenDraw(Screen screen, PoseStack matrices, int mouseX, int mouseY, float delta) {
-		var mc = Minecraft.getInstance();
-
-		if (mc.player == null) {
-			return;
-		}
-
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
-		//RenderSystem.disableLighting();
-
-		var event = new ScreenPaintEventJS(mc, screen, matrices, mouseX, mouseY, delta);
-		event.post(KubeJSEvents.CLIENT_PAINT_SCREEN);
-
-		for (var object : Painter.INSTANCE.getScreenObjects()) {
-			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
-				object.preDraw(event);
-			}
-		}
-
-		for (var object : Painter.INSTANCE.getScreenObjects()) {
-			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
-				object.draw(event);
-			}
-		}
-	}
-
-	private boolean isOver(List<AbstractWidget> list, int x, int y) {
-		for (var w : list) {
-			if (w.visible && x >= w.x && y >= w.y && x < w.x + w.getWidth() && y < w.y + w.getHeight()) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	private void guiPostInit(Screen screen, ScreenAccess access) {
 		if (ClientProperties.get().getDisableRecipeBook() && screen instanceof RecipeUpdateListener) {
 			var iterator = screen.children().iterator();
@@ -299,32 +227,6 @@ public class KubeJSClientEventHandler {
 			ImageIO.write(image, "PNG", stream);
 		} catch (Exception ex) {
 			ex.printStackTrace();
-		}
-	}
-
-	private void renderWorldLast(PoseStack ps, float delta) {
-		var mc = Minecraft.getInstance();
-
-		if (mc.player == null) {
-			return;
-		}
-
-		// RenderSystem.enableBlend();
-		// RenderSystem.disableLighting();
-
-		var event = new WorldPaintEventJS(mc, ps, delta);
-		event.post(KubeJSEvents.CLIENT_PAINT_WORLD);
-
-		for (var object : Painter.INSTANCE.getWorldObjects()) {
-			if (object.visible) {
-				object.preDraw(event);
-			}
-		}
-
-		for (var object : Painter.INSTANCE.getWorldObjects()) {
-			if (object.visible) {
-				object.draw(event);
-			}
 		}
 	}
 }

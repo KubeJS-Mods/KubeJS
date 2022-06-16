@@ -59,18 +59,18 @@ public class FireworksJS {
 
 				if (m.containsKey("colors")) {
 					for (var o2 : ListJS.orSelf(m.get("colors"))) {
-						e.colors.add(ColorWrapper.of(o2).getFireworkColorKJS());
+						e.colors.add(ColorWrapper.of(o2).getFireworkColorJS());
 					}
 				}
 
 				if (m.containsKey("fadeColors")) {
 					for (var o2 : ListJS.orSelf(m.get("fadeColors"))) {
-						e.fadeColors.add(ColorWrapper.of(o2).getFireworkColorKJS());
+						e.fadeColors.add(ColorWrapper.of(o2).getFireworkColorJS());
 					}
 				}
 
 				if (e.colors.isEmpty()) {
-					e.colors.add(ColorWrapper.YELLOW_DYE.getFireworkColorKJS());
+					e.colors.add(ColorWrapper.YELLOW_DYE.getFireworkColorJS());
 				}
 
 				fireworks.explosions.add(e);
@@ -79,7 +79,7 @@ public class FireworksJS {
 
 		if (fireworks.explosions.isEmpty()) {
 			var e = new Explosion();
-			e.colors.add(ColorWrapper.YELLOW_DYE.getFireworkColorKJS());
+			e.colors.add(ColorWrapper.YELLOW_DYE.getFireworkColorJS());
 			fireworks.explosions.add(e);
 		}
 

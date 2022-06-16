@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.bindings;
 
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.entity.EntityJS;
-import dev.latvian.mods.kubejs.level.ClientLevelJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerJS;
@@ -103,15 +102,11 @@ public interface UtilsWrapper {
 	}
 
 	static LevelJS getLevel(Level level) {
-		if (level.isClientSide()) {
-			return getClientLevel();
-		} else {
-			return ServerJS.instance.getLevel(level);
-		}
+		return UtilsJS.getLevel(level);
 	}
 
 	static LevelJS getClientLevel() {
-		return ClientLevelJS.getInstance();
+		return UtilsJS.getClientLevel();
 	}
 
 	@Nullable

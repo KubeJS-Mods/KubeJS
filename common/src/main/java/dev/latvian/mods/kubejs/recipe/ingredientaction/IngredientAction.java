@@ -107,7 +107,7 @@ public abstract class IngredientAction extends IngredientActionFilter {
 			}
 		}
 
-		return LevelPlatformHelper.getContainerItem(stack);
+		return LevelPlatformHelper.get().getContainerItem(stack);
 	}
 
 	public abstract ItemStack transform(ItemStack old, int index, CraftingContainer container);

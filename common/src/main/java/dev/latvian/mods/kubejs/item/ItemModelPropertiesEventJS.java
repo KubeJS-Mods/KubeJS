@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.architectury.registry.item.ItemPropertiesRegistry;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.core.AsKJS;
 import dev.latvian.mods.kubejs.core.EntityKJS;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
@@ -29,11 +30,7 @@ public class ItemModelPropertiesEventJS extends StartupEventJS {
 	}
 
 	private ClampedItemPropertyFunction wrap(ItemPropertiesCallback callback) {
-		return (itemStack, level, entity, id) -> {
-			LevelJS levelJS = level == null ? null : KubeJS.PROXY.getLevel(level);
-			EntityJS entityJS = entity == null ? null : (EntityJS) ((EntityKJS) entity).asKJS();
-			return callback.accept(ItemStackJS.of(itemStack), levelJS, entityJS, id);
-		};
+		return (itemStack, level, entity, id) -> callback.accept(ItemStackJS.of(itemStack), AsKJS.wrapSafe(level), AsKJS.wrapSafe(entity), id);
 	}
 
 	@FunctionalInterface

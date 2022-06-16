@@ -1,16 +1,18 @@
 package dev.latvian.mods.kubejs.client.painter.screen;
 
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
-import dev.latvian.mods.rhino.util.unit.Unit;
+import dev.latvian.mods.unit.FixedColorUnit;
+import dev.latvian.mods.unit.FixedNumberUnit;
+import dev.latvian.mods.unit.Unit;
 import net.minecraft.resources.ResourceLocation;
 
 public class RectangleObject extends ScreenPainterObject {
-	private Unit color = PainterObjectProperties.WHITE_COLOR;
+	private Unit color = FixedColorUnit.WHITE;
 	private ResourceLocation texture = null;
-	private float u0 = 0F;
-	private float v0 = 0F;
-	private float u1 = 1F;
-	private float v1 = 1F;
+	private Unit u0 = FixedNumberUnit.ZERO;
+	private Unit v0 = FixedNumberUnit.ZERO;
+	private Unit u1 = FixedNumberUnit.ONE;
+	private Unit v1 = FixedNumberUnit.ONE;
 
 	@Override
 	protected void load(PainterObjectProperties properties) {
@@ -18,32 +20,35 @@ public class RectangleObject extends ScreenPainterObject {
 
 		color = properties.getColor("color", color);
 		texture = properties.getResourceLocation("texture", texture);
-		u0 = properties.getFloat("u0", u0);
-		v0 = properties.getFloat("v0", v0);
-		u1 = properties.getFloat("u1", u1);
-		v1 = properties.getFloat("v1", v1);
+		u0 = properties.getUnit("u0", u0);
+		v0 = properties.getUnit("v0", v0);
+		u1 = properties.getUnit("u1", u1);
+		v1 = properties.getUnit("v1", v1);
 	}
 
 	@Override
 	public void draw(ScreenPaintEventJS event) {
-		var aw = w.get();
-		var ah = h.get();
-		var ax = event.alignX(x.get(), aw, alignX);
-		var ay = event.alignY(y.get(), ah, alignY);
-		var az = z.get();
+		var aw = w.getFloat(event);
+		var ah = h.getFloat(event);
+		var ax = event.alignX(x.getFloat(event), aw, alignX);
+		var ay = event.alignY(y.getFloat(event), ah, alignY);
+		var az = z.getFloat(event);
 
 		if (texture == null) {
 			event.setPositionColorShader();
-			event.setTextureEnabled(false);
 			event.beginQuads(false);
-			event.rectangle(ax, ay, az, aw, ah, color.getAsInt());
+			event.rectangle(ax, ay, az, aw, ah, color.getInt(event));
 			event.end();
-			event.setTextureEnabled(true);
 		} else {
-			event.setPositionTextureColorShader();
-			event.setTexture(texture);
+			float u0f = u0.getFloat(event);
+			float v0f = v0.getFloat(event);
+			float u1f = u1.getFloat(event);
+			float v1f = v1.getFloat(event);
+
+			event.setPositionColorTextureShader();
+			event.setShaderTexture(texture);
 			event.beginQuads(true);
-			event.rectangle(ax, ay, az, aw, ah, color.getAsInt(), u0, v0, u1, v1);
+			event.rectangle(ax, ay, az, aw, ah, color.getInt(event), u0f, v0f, u1f, v1f);
 			event.end();
 		}
 	}

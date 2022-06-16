@@ -249,10 +249,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable {
 	public JsonObject toJson() {
 		var o = new JsonObject();
 		o.addProperty("fluid", getId());
-
-		if (getAmount() != FluidStack.bucketAmount()) {
-			o.addProperty("amount", getAmount());
-		}
+		o.addProperty("amount", getAmount());
 
 		if (getNbt() != null) {
 			o.add("nbt", MapJS.json(getNbt()));

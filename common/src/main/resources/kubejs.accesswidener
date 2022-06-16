@@ -15,6 +15,9 @@ mutable field net/minecraft/world/item/DiggerItem defaultModifiers Lcom/google/c
 accessible field net/minecraft/world/item/SwordItem defaultModifiers Lcom/google/common/collect/Multimap;
 mutable field net/minecraft/world/item/SwordItem defaultModifiers Lcom/google/common/collect/Multimap;
 
+accessible field net/minecraft/world/item/TieredItem tier Lnet/minecraft/world/item/Tier;
+mutable field net/minecraft/world/item/TieredItem tier Lnet/minecraft/world/item/Tier;
+
 accessible method net/minecraft/world/entity/ai/village/poi/PoiType <init> (Ljava/lang/String;Ljava/util/Set;II)V
 accessible method net/minecraft/world/entity/npc/VillagerType <init> (Ljava/lang/String;)V
 accessible method net/minecraft/world/entity/npc/VillagerProfession <init> (Ljava/lang/String;Lnet/minecraft/world/entity/ai/village/poi/PoiType;Lcom/google/common/collect/ImmutableSet;Lcom/google/common/collect/ImmutableSet;Lnet/minecraft/sounds/SoundEvent;)V
@@ -29,3 +32,19 @@ accessible class net/minecraft/commands/synchronization/ArgumentTypes$Entry
 accessible field net/minecraft/world/inventory/CraftingContainer menu Lnet/minecraft/world/inventory/AbstractContainerMenu;
 accessible field net/minecraft/world/inventory/CraftingMenu player Lnet/minecraft/world/entity/player/Player;
 accessible field net/minecraft/world/inventory/InventoryMenu owner Lnet/minecraft/world/entity/player/Player;
+
+# recipes
+accessible field net/minecraft/world/item/crafting/ShapelessRecipe ingredients Lnet/minecraft/core/NonNullList;
+accessible field net/minecraft/world/item/crafting/ShapelessRecipe group Ljava/lang/String;
+accessible field net/minecraft/world/item/crafting/ShapelessRecipe result Lnet/minecraft/world/item/ItemStack;
+
+accessible field net/minecraft/world/item/crafting/ShapedRecipe width I
+accessible field net/minecraft/world/item/crafting/ShapedRecipe height I
+accessible method net/minecraft/world/item/crafting/ShapedRecipe keyFromJson (Lcom/google/gson/JsonObject;)Ljava/util/Map;
+accessible method net/minecraft/world/item/crafting/ShapedRecipe patternFromJson (Lcom/google/gson/JsonArray;)[Ljava/lang/String;
+accessible method net/minecraft/world/item/crafting/ShapedRecipe shrink ([Ljava/lang/String;)[Ljava/lang/String;
+accessible method net/minecraft/world/item/crafting/ShapedRecipe dissolvePattern ([Ljava/lang/String;Ljava/util/Map;II)Lnet/minecraft/core/NonNullList;
+accessible method net/minecraft/world/item/crafting/ShapedRecipe matches (Lnet/minecraft/world/inventory/CraftingContainer;IIZ)Z
+
+accessible field net/minecraft/server/level/ServerPlayerGameMode isDestroyingBlock Z
+accessible method net/minecraft/server/commands/TeleportCommand performTeleport (Lnet/minecraft/commands/CommandSourceStack;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/server/level/ServerLevel;DDDLjava/util/Set;FFLnet/minecraft/server/commands/TeleportCommand$LookAt;)V

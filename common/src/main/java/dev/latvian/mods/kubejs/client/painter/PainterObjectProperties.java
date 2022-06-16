@@ -1,17 +1,16 @@
 package dev.latvian.mods.kubejs.client.painter;
 
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
-import dev.latvian.mods.rhino.util.unit.ColorUnit;
-import dev.latvian.mods.rhino.util.unit.FixedUnit;
-import dev.latvian.mods.rhino.util.unit.Unit;
+import dev.latvian.mods.unit.FixedColorUnit;
+import dev.latvian.mods.unit.FixedNumberUnit;
+import dev.latvian.mods.unit.Unit;
+import dev.latvian.mods.unit.UnitContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 public class PainterObjectProperties {
-	public static final Unit WHITE_COLOR = new ColorUnit(FixedUnit.of(255F), FixedUnit.of(255F), FixedUnit.of(255F), FixedUnit.of(255F));
-
 	public final CompoundTag tag;
 
 	public PainterObjectProperties(CompoundTag t) {
@@ -44,27 +43,11 @@ public class PainterObjectProperties {
 		return s.isEmpty() ? def : new ResourceLocation(s);
 	}
 
-	public int getInt(String key, int def) {
-		return hasNumber(key) ? tag.getInt(key) : def;
-	}
-
-	public float getFloat(String key, float def) {
-		return hasNumber(key) ? tag.getFloat(key) : def;
-	}
-
-	public double getDouble(String key, double def) {
-		return hasNumber(key) ? tag.getDouble(key) : def;
-	}
-
-	public boolean getBoolean(String key, boolean def) {
-		return hasNumber(key) ? tag.getBoolean(key) : def;
-	}
-
 	public Unit getUnit(String key, Unit def) {
 		if (hasString(key)) {
-			return Painter.INSTANCE.unitStorage.parse(tag.getString(key));
+			return UnitContext.DEFAULT.parse(tag.getString(key));
 		} else if (hasNumber(key)) {
-			return FixedUnit.of(tag.getFloat(key));
+			return FixedNumberUnit.of(tag.getFloat(key));
 		}
 
 		return def;
@@ -75,8 +58,7 @@ public class PainterObjectProperties {
 			var col = ColorWrapper.MAP.get(getString(key, ""));
 
 			if (col != null) {
-				var i = col.getArgbKJS();
-				return new ColorUnit(FixedUnit.of((i >> 16) & 0xFF), FixedUnit.of((i >> 8) & 0xFF), FixedUnit.of(i & 0xFF), FixedUnit.of((i >> 24) & 0xFF));
+				return FixedColorUnit.of(col.getArgbJS(), true);
 			}
 		}
 

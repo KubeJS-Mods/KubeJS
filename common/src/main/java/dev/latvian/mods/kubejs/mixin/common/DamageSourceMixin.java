@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.mixin.common;
 
+import dev.latvian.mods.kubejs.core.AsKJS;
 import dev.latvian.mods.kubejs.core.EntityKJS;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.player.PlayerJS;
@@ -31,21 +32,22 @@ public abstract class DamageSourceMixin {
 	@Nullable
 	@RemapForJS("getImmediate")
 	public EntityJS getImmediateKJS() {
-		Entity e = getDirectEntity();
-		return e == null ? null : (EntityJS) ((EntityKJS) e).asKJS();
+		return AsKJS.wrapSafe(getDirectEntity());
 	}
 
 	@Nullable
 	@RemapForJS("getActual")
 	public EntityJS getActualKJS() {
-		Entity e = getEntity();
-		return e == null ? null : (EntityJS) ((EntityKJS) e).asKJS();
+		return AsKJS.wrapSafe(getEntity());
 	}
 
 	@Nullable
 	@RemapForJS("getPlayer")
 	public PlayerJS<?> getPlayerKJS() {
-		Entity e = getEntity();
-		return e == null ? null : (PlayerJS<?>) ((EntityKJS) e).asKJS();
+		var entity = getEntity();
+		if(entity != null) {
+			return entity.asKJS().getPlayer();
+		}
+		return null;
 	}
 }

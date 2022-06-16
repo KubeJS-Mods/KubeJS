@@ -8,22 +8,12 @@ dependencies {
 	modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin:${rootProject.rei_version}")
 }
 
-def ENV = System.getenv()
-
 architectury {
-	common("fabric", "forge")
-}
-
-configurations {
-	dev
+	common("forge", "fabric")
 }
 
 loom {
 	accessWidenerPath = file("src/main/resources/kubejs.accesswidener")
-}
-
-artifacts {
-	dev(jar)
 }
 
 publishing {

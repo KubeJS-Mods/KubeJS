@@ -4,12 +4,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import dev.latvian.mods.kubejs.client.painter.PaintEventJS;
 import dev.latvian.mods.kubejs.client.painter.Painter;
+import dev.latvian.mods.unit.UnitVariables;
+import dev.latvian.mods.unit.VariableSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 
-public class ScreenPaintEventJS extends PaintEventJS {
+public class ScreenPaintEventJS extends PaintEventJS implements UnitVariables {
 	public final int mouseX;
 	public final int mouseY;
 	public final int width;
@@ -72,18 +74,18 @@ public class ScreenPaintEventJS extends PaintEventJS {
 
 	public void rectangle(float x, float y, float z, float w, float h, int color) {
 		var m = getMatrix();
-		vertex(m, x, y + h, z, color);
-		vertex(m, x + w, y + h, z, color);
 		vertex(m, x + w, y, z, color);
 		vertex(m, x, y, z, color);
+		vertex(m, x, y + h, z, color);
+		vertex(m, x + w, y + h, z, color);
 	}
 
 	public void rectangle(float x, float y, float z, float w, float h, int color, float u0, float v0, float u1, float v1) {
 		var m = getMatrix();
-		vertex(m, x, y + h, z, color, u0, v1);
-		vertex(m, x + w, y + h, z, color, u1, v1);
 		vertex(m, x + w, y, z, color, u1, v0);
 		vertex(m, x, y, z, color, u0, v0);
+		vertex(m, x, y + h, z, color, u0, v1);
+		vertex(m, x + w, y + h, z, color, u1, v1);
 	}
 
 	public void text(Component text, float x, float y, int color, boolean shadow) {
@@ -96,5 +98,10 @@ public class ScreenPaintEventJS extends PaintEventJS {
 		} else {
 			font.draw(matrices, text, x, y, color);
 		}
+	}
+
+	@Override
+	public VariableSet getVariables() {
+		return Painter.INSTANCE.getVariables();
 	}
 }

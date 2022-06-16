@@ -15,13 +15,11 @@ import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerJS;
-import dev.latvian.mods.kubejs.text.Text;
-import dev.latvian.mods.kubejs.text.TextString;
-import dev.latvian.mods.kubejs.text.TextTranslate;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
+import net.minecraft.ResourceLocationException;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
@@ -29,10 +27,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.valueproviders.ClampedInt;
@@ -64,7 +58,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -251,56 +244,6 @@ public class UtilsJS {
 		} else if (o instanceof Wrapper w) {
 			return wrap(w.unwrap(), type);
 		}
-		// Vanilla text component
-		else if (o instanceof Component component) {
-			Text t = new TextString("");
-
-			List<Component> list = new ArrayList<>();
-			list.add(component);
-			list.addAll(component.getSiblings());
-
-			for (var c : list) {
-				Text t1;
-
-				if (c instanceof TranslatableComponent tlc) {
-					t1 = new TextTranslate(tlc.getKey(), tlc.getArgs());
-				} else {
-					t1 = new TextString(c.getContents());
-				}
-
-				//TODO: Replace with AT
-				t1.bold(c.getStyle().isBold());
-				t1.italic(c.getStyle().isItalic());
-				t1.underlined(c.getStyle().isUnderlined());
-				t1.strikethrough(c.getStyle().isStrikethrough());
-				t1.obfuscated(c.getStyle().isObfuscated());
-				t1.insertion(c.getStyle().getInsertion());
-
-				var ce = c.getStyle().getClickEvent();
-
-				if (ce != null) {
-					if (ce.getAction() == ClickEvent.Action.RUN_COMMAND) {
-						t1.click("command:" + ce.getValue());
-					} else if (ce.getAction() == ClickEvent.Action.SUGGEST_COMMAND) {
-						t1.click("suggest_command:" + ce.getValue());
-					} else if (ce.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD) {
-						t1.click("copy:" + ce.getValue());
-					} else if (ce.getAction() == ClickEvent.Action.OPEN_URL) {
-						t1.click(ce.getValue());
-					}
-				}
-
-				var he = c.getStyle().getHoverEvent();
-
-				if (he != null && he.getAction() == HoverEvent.Action.SHOW_TEXT) {
-					t1.hover(Text.of(he.getValue(HoverEvent.Action.SHOW_TEXT)));
-				}
-
-				t.append(t1);
-			}
-
-			return t;
-		}
 		// Maps
 		else if (o instanceof Map) {
 			if (!type.checkMap()) {
@@ -441,7 +384,7 @@ public class UtilsJS {
 		if (level.isClientSide()) {
 			return getClientLevel();
 		} else {
-			return ServerJS.instance.getLevel(level);
+			return ServerJS.instance.wrapMinecraftLevel(level);
 		}
 	}
 
@@ -463,15 +406,15 @@ public class UtilsJS {
 
 	public static ResourceLocation getMCID(@Nullable Object o) {
 		if (o == null) {
-			return AIR_LOCATION;
+			return null;
 		} else if (o instanceof ResourceLocation id) {
 			return id;
 		}
 
 		var s = o.toString();
 
-		if (s == null || s.isEmpty()) {
-			return AIR_LOCATION;
+		if (s.isBlank()) {
+			throw new ResourceLocationException("Cannot get ID from an empty string!");
 		}
 
 		return new ResourceLocation(s);
@@ -711,7 +654,7 @@ public class UtilsJS {
 			return new BlockPos(UtilsJS.parseInt(list.get(0), 0), UtilsJS.parseInt(list.get(1), 0), UtilsJS.parseInt(list.get(2), 0));
 		} else if (o instanceof BlockContainerJS block) {
 			return block.getPos();
-		} else if(o instanceof Vec3 vec) {
+		} else if (o instanceof Vec3 vec) {
 			return new BlockPos(vec.x, vec.y, vec.z);
 		}
 

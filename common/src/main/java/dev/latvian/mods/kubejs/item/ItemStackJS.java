@@ -20,7 +20,6 @@ import dev.latvian.mods.kubejs.item.ingredient.WeakNBTIngredientJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import dev.latvian.mods.kubejs.text.Text;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.Tags;
@@ -36,6 +35,7 @@ import dev.latvian.mods.rhino.util.SpecialEquality;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -321,6 +321,8 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			return new ItemStackJS(new ItemStack(itemLike.asItem()));
 		} else if (o instanceof JsonElement json) {
 			return resultFromRecipeJson(json);
+		} else if (o instanceof StringTag tag) {
+			return of(tag.getAsString());
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
 			var reg = UtilsJS.parseRegex(o);
 
@@ -690,8 +692,8 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		return is;
 	}
 
-	public Text getName() {
-		return Text.of(getItemStack().getHoverName());
+	public Component getName() {
+		return getItemStack().getHoverName();
 	}
 
 	public ItemStackJS withName(@Nullable Component displayName) {
@@ -911,7 +913,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 				ListJS lore1 = new ListJS(lore.size());
 
 				for (var o1 : lore) {
-					lore1.add(Component.Serializer.toJson(Text.componentOf(o1)));
+					lore1.add(Component.Serializer.toJson(Text.of(o1)));
 				}
 
 				nbt.put("Lore", lore1);
@@ -1053,6 +1055,6 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	}
 
 	public CompoundTag getTypeData() {
-		return ((ItemKJS) getItem()).getTypeDataKJS();
+		return getItem().getTypeDataKJS();
 	}
 }

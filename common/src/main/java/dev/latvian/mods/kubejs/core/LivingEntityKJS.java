@@ -15,12 +15,9 @@ public interface LivingEntityKJS {
 			var event = new ItemFoodEatenEventJS(player, is);
 			var i = is.getItem();
 
-			if (i instanceof ItemKJS itemKJS) {
-				var b = itemKJS.getItemBuilderKJS();
-
-				if (b != null && b.foodBuilder != null && b.foodBuilder.eaten != null) {
-					b.foodBuilder.eaten.accept(event);
-				}
+			var b = i.getItemBuilderKJS();
+			if (b != null && b.foodBuilder != null && b.foodBuilder.eaten != null) {
+				b.foodBuilder.eaten.accept(event);
 			}
 
 			event.post(ScriptType.SERVER, KubeJSEvents.ITEM_FOOD_EATEN);

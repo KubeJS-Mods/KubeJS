@@ -27,7 +27,7 @@ public class FallingBlockBuilder extends BlockBuilder {
 	}
 
 	public FallingBlockBuilder dustColor(Color color) {
-		dustColor = color.getRgbKJS();
+		dustColor = color.getRgbJS();
 		return this;
 	}
 }

@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.client.painter;
 
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenPainterObject;
-import dev.latvian.mods.kubejs.client.painter.world.WorldPainterObject;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.rhino.util.unit.FixedUnit;
+import dev.latvian.mods.unit.FixedNumberUnit;
+import dev.latvian.mods.unit.UnitContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +15,6 @@ import java.util.Map;
 
 public class PainterObjectStorage {
 	private static final ScreenPainterObject[] NO_SCREEN_OBJECTS = new ScreenPainterObject[0];
-	private static final WorldPainterObject[] NO_WORLD_OBJECTS = new WorldPainterObject[0];
 
 	private final Map<String, PainterObject> objects = new LinkedHashMap<>();
 
@@ -43,9 +42,9 @@ public class PainterObjectStorage {
 			} else if (key.equals("$")) {
 				for (var k : tag.getAllKeys()) {
 					if (tag.contains(k, Tag.TAG_ANY_NUMERIC)) {
-						Painter.INSTANCE.setVariable(k, FixedUnit.of(tag.getFloat(k)));
+						Painter.INSTANCE.setVariable(k, FixedNumberUnit.of(tag.getFloat(k)));
 					} else {
-						Painter.INSTANCE.setVariable(k, Painter.INSTANCE.unitStorage.parse(tag.getString(k)));
+						Painter.INSTANCE.setVariable(k, UnitContext.DEFAULT.parse(tag.getString(k)));
 					}
 				}
 			} else {
@@ -78,10 +77,6 @@ public class PainterObjectStorage {
 
 	public ScreenPainterObject[] createScreenObjects() {
 		return objects.isEmpty() ? NO_SCREEN_OBJECTS : objects.values().stream().filter(o -> o instanceof ScreenPainterObject).map(o -> (ScreenPainterObject) o).toArray(ScreenPainterObject[]::new);
-	}
-
-	public WorldPainterObject[] createWorldObjects() {
-		return objects.isEmpty() ? NO_WORLD_OBJECTS : objects.values().stream().filter(o -> o instanceof WorldPainterObject).map(o -> (WorldPainterObject) o).toArray(WorldPainterObject[]::new);
 	}
 
 	public void remove(String id) {

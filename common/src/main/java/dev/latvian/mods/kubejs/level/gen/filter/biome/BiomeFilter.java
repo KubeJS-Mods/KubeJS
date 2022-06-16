@@ -83,7 +83,7 @@ public interface BiomeFilter extends Predicate<BiomeModifications.BiomeContext> 
 			}
 
 			// allow platform-specific hooks
-			var additional = LevelPlatformHelper.ofMapAdditional(map);
+			var additional = LevelPlatformHelper.get().ofMapAdditional(map);
 			if (additional != null) {
 				filters.add(additional);
 			}
@@ -107,7 +107,7 @@ public interface BiomeFilter extends Predicate<BiomeModifications.BiomeContext> 
 		}
 
 		// allow platform-specific hooks
-		var additional = LevelPlatformHelper.ofStringAdditional(s);
+		var additional = LevelPlatformHelper.get().ofStringAdditional(s);
 		if (additional != null) {
 			return additional;
 		}

@@ -10,6 +10,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.mods.kubejs.util.ClassWrapper;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.AngleArgument;
 import net.minecraft.commands.arguments.ColorArgument;
@@ -42,9 +43,11 @@ import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemPredicateArgument;
 import net.minecraft.commands.synchronization.ArgumentTypes;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public enum ArgumentTypeWrapper {
@@ -112,10 +115,24 @@ public enum ArgumentTypeWrapper {
 	private final Supplier<? extends ArgumentType<?>> factory;
 	private final ArgumentFunction<?> getter;
 
-	private static HashMap<ResourceLocation, ClassWrapper<?>> byNameCache;
+	private static Map<ResourceLocation, ClassWrapper<?>> byNameCache;
+
+	public static ClassWrapper<?> byName(ResourceLocation name) {
+		var wrapper = getOrCacheByName().get(name);
+		if (wrapper == null) {
+			throw new IllegalStateException("No argument type found for " + name);
+		}
+		return wrapper;
+	}
+
+	public static void printAll() {
+		for (var argType : getOrCacheByName().entrySet()) {
+			ConsoleJS.SERVER.info("Argument type: " + argType.getKey() + " -> " + argType.getValue());
+		}
+	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public static ClassWrapper byName(ResourceLocation name) {
+	private static Map<ResourceLocation, ClassWrapper<?>> getOrCacheByName() {
 		if (byNameCache == null) {
 			byNameCache = new HashMap<>();
 
@@ -123,14 +140,7 @@ public enum ArgumentTypeWrapper {
 				byNameCache.putIfAbsent(argType.getValue().name, new ClassWrapper(argType.getKey()));
 			}
 		}
-
-		var wrapper = byNameCache.get(name);
-
-		if (wrapper == null) {
-			throw new IllegalStateException("No argument type found for " + name);
-		}
-
-		return wrapper;
+		return byNameCache;
 	}
 
 	ArgumentTypeWrapper(Supplier<? extends ArgumentType<?>> factory, ArgumentFunction<?> getter) {
@@ -138,7 +148,14 @@ public enum ArgumentTypeWrapper {
 		this.getter = getter;
 	}
 
+	@Deprecated(forRemoval = true)
 	public ArgumentType<?> create() {
+		ConsoleJS.SERVER.warn("Using argument types without the event as context is deprecated and will be removed soon!");
+		ConsoleJS.SERVER.warn("Please consider using create(event) instead!");
+		return create(null);
+	}
+
+	public ArgumentType<?> create(CommandRegistryEventJS event) {
 		return factory.get();
 	}
 

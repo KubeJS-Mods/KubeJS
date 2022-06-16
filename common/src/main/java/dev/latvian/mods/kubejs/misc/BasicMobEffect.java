@@ -31,7 +31,7 @@ public class BasicMobEffect extends MobEffect {
 
 	@Override
 	public void applyEffectTick(@NotNull LivingEntity livingEntity, int i) {
-		effectTickCallback.applyEffectTick((LivingEntityJS) ((EntityKJS) livingEntity).asKJS(), i);
+		effectTickCallback.applyEffectTick((LivingEntityJS) livingEntity.asKJS(), i);
 	}
 
 	private void applyAttributeModifications() {

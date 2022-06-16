@@ -6,12 +6,11 @@ import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
-import dev.latvian.mods.kubejs.core.BlockKJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -33,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
@@ -82,7 +82,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		textures = new JsonObject();
 		textureAll(id.getNamespace() + ":block/" + id.getPath());
 		model = "";
-		itemBuilder = new BlockItemBuilder(i);
+		itemBuilder = newItemBuilder();
 		itemBuilder.blockBuilder = this;
 		customShape = new ArrayList<>();
 		noCollision = false;
@@ -111,9 +111,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	public Block transformObject(Block obj) {
-		if (obj instanceof BlockKJS blockKJS) {
-			blockKJS.setBlockBuilderKJS(this);
-		}
+		obj.setBlockBuilderKJS(this);
 
 		return obj;
 	}
@@ -270,7 +268,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	@Environment(EnvType.CLIENT)
-	public void clientRegistry(Minecraft minecraft) {
+	public void clientRegistry(Supplier<Minecraft> minecraft) {
 		switch (renderType) {
 			case "cutout" -> RenderTypeRegistry.register(RenderType.cutout(), get());
 			case "cutout_mipped" -> RenderTypeRegistry.register(RenderType.cutoutMipped(), get());
@@ -336,7 +334,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	public BlockBuilder color(int index, Color c) {
-		color.put(index, c.getArgbKJS());
+		color.put(index, c.getArgbJS());
 		return this;
 	}
 
@@ -360,7 +358,9 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	public BlockBuilder model(String m) {
 		model = m;
-		itemBuilder.parentModel = model;
+		if (itemBuilder != null) {
+			itemBuilder.parentModel(m);
+		}
 		return this;
 	}
 
@@ -369,10 +369,15 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 			itemBuilder = null;
 			lootTable = null;
 		} else {
-			i.accept(itemBuilder);
+			i.accept(newItemBuilder());
 		}
 
 		return this;
+	}
+
+	@HideFromJS
+	protected BlockItemBuilder newItemBuilder() {
+		return new BlockItemBuilder(id);
 	}
 
 	public BlockBuilder noItem() {
@@ -492,9 +497,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	public BlockBuilder tag(ResourceLocation tag) {
-		ConsoleJS.STARTUP.warn("BlockBuilder.tag's behaviour is going to change in a future version to tag both the block and the item!");
-		ConsoleJS.STARTUP.warn("If you do not want this, use tagBlock and tagItem instead!");
-		return tagBlock(tag);
+		return tagBoth(tag);
 	}
 
 	public BlockBuilder tagBoth(ResourceLocation tag) {

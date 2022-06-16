@@ -65,7 +65,7 @@ public class ServerPlayerDataJS extends PlayerDataJS<ServerPlayer, ServerPlayerJ
 			throw new NullPointerException("Player entity for " + getName() + " not found!");
 		}
 
-		return new ServerPlayerJS(this, (ServerLevelJS) server.getLevel(p.level), p);
+		return new ServerPlayerJS(this, p);
 	}
 
 	@Override

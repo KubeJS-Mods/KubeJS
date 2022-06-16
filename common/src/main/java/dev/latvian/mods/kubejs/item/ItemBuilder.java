@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
-import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.entity.LivingEntityJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
@@ -46,6 +45,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
 /**
@@ -134,9 +134,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	@Override
 	public Item transformObject(Item obj) {
-		if (obj instanceof ItemKJS itemKJS) {
-			itemKJS.setItemBuilderKJS(this);
-		}
+		obj.setItemBuilderKJS(this);
 
 		return obj;
 	}
@@ -168,9 +166,9 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	@Override
 	@Environment(EnvType.CLIENT)
-	public void clientRegistry(Minecraft minecraft) {
+	public void clientRegistry(Supplier<Minecraft> minecraft) {
 		if (colorCallback != null) {
-			ColorHandlerRegistry.registerItemColors((stack, tintIndex) -> colorCallback.getColor(ItemStackJS.of(stack), tintIndex).getArgbKJS(), this);
+			ColorHandlerRegistry.registerItemColors((stack, tintIndex) -> colorCallback.getColor(ItemStackJS.of(stack), tintIndex).getArgbJS(), this);
 		}
 	}
 
@@ -363,7 +361,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		}
 
 		public void add(int tintIndex, Color color) {
-			colors.put(tintIndex, color.getRgbKJS());
+			colors.put(tintIndex, color.getRgbJS());
 		}
 	}
 

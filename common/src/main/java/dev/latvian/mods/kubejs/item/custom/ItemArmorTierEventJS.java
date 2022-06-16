@@ -4,8 +4,6 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.MutableArmorTier;
-import dev.latvian.mods.kubejs.util.UtilsJS;
-import net.minecraft.world.item.ArmorMaterials;
 
 import java.util.function.Consumer;
 

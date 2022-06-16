@@ -3,10 +3,10 @@ package dev.latvian.mods.kubejs.loot;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.core.EntityTargetKJS;
-import dev.latvian.mods.kubejs.core.JsonSerializableKJS;
-import dev.latvian.mods.kubejs.text.Text;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
@@ -31,7 +31,7 @@ public interface FunctionContainer {
 	}
 
 	default FunctionContainer count(NumberProvider count) {
-		if (count instanceof JsonSerializableKJS) {
+		if (count instanceof JsonSerializable) {
 			var o = new JsonObject();
 			o.addProperty("function", "minecraft:set_count");
 			o.add("count", UtilsJS.numberProviderJson(count));
@@ -93,10 +93,10 @@ public interface FunctionContainer {
 
 	// set_attributes
 
-	default FunctionContainer name(Text name, @Nullable LootContext.EntityTarget entity) {
+	default FunctionContainer name(Component name, @Nullable LootContext.EntityTarget entity) {
 		var o = new JsonObject();
 		o.addProperty("function", "minecraft:set_name");
-		o.add("name", name.toJson());
+		o.add("name", Component.Serializer.toJsonTree(name));
 
 		if (entity != null) {
 			o.addProperty("entity", EntityTargetKJS.getNameKJS(entity));
@@ -105,7 +105,7 @@ public interface FunctionContainer {
 		return addFunction(o);
 	}
 
-	default FunctionContainer name(Text name) {
+	default FunctionContainer name(Component name) {
 		return name(name, null);
 	}
 

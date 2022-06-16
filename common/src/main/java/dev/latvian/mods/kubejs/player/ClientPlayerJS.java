@@ -15,9 +15,9 @@ import org.jetbrains.annotations.Nullable;
 public class ClientPlayerJS extends PlayerJS<Player> {
 	private final boolean isSelf;
 
-	public ClientPlayerJS(ClientPlayerDataJS d, Player p, boolean s) {
-		super(d, d.getLevel(), p);
-		isSelf = s;
+	public ClientPlayerJS(ClientPlayerDataJS data, Player player, boolean self) {
+		super(data, player);
+		isSelf = self;
 	}
 
 	public boolean isSelf() {

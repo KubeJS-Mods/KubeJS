@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs;
 
+import com.google.common.base.Stopwatch;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.utils.EnvExecutor;
@@ -19,7 +20,6 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.mods.kubejs.server.KubeJSServerEventHandler;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.RemappingHelper;
@@ -63,7 +63,6 @@ public class KubeJS {
 		instance = this;
 		gameDirectory = Platform.getGameFolder().normalize().toAbsolutePath();
 		Locale.setDefault(Locale.US);
-		new KubeJSBackgroundThread().start();
 
 		if (Files.notExists(KubeJSPaths.README)) {
 			UtilsJS.tryIO(() -> Files.writeString(KubeJSPaths.README,
@@ -87,19 +86,20 @@ public class KubeJS {
 		}
 
 		PROXY = EnvExecutor.getEnvSpecific(() -> KubeJSClient::new, () -> KubeJSCommon::new);
+		PROXY.startThread();
 
-		var now = System.currentTimeMillis();
+		var pluginTimer = Stopwatch.createStarted();
 		LOGGER.info("Looking for KubeJS plugins...");
 
 		for (var mod : Platform.getMods()) {
 			try {
-				KubeJSPlugins.load(mod.getModId(), mod.getFilePath());
+				KubeJSPlugins.load(mod);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
 
-		LOGGER.info("Done in " + (System.currentTimeMillis() - now) / 1000L + " s");
+		LOGGER.info("Done in " + pluginTimer.stop());
 
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS, "/data/kubejs/example_startup_script.js");
 		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS, "/data/kubejs/example_client_script.js");

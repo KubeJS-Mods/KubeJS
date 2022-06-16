@@ -154,7 +154,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 					var json = map.toJson();
 
 					try {
-						var ingredient = RecipePlatformHelper.getCustomIngredient(json);
+						var ingredient = RecipePlatformHelper.get().getCustomIngredient(json);
 						return new CustomIngredient(ingredient, json);
 					} catch (Exception ex) {
 						throw new RecipeExceptionJS("Failed to parse custom ingredient (" + json.get("type") + ") from " + json + ": " + ex).fallback();
@@ -211,7 +211,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 					in = ItemStackJS.of(o.get("item").getAsString()).withNBT(NBTUtils.toTagCompound(o.get("nbt")));
 				} else {
 					try {
-						var ingredient = RecipePlatformHelper.getCustomIngredient(o);
+						var ingredient = RecipePlatformHelper.get().getCustomIngredient(o);
 						return new CustomIngredient(ingredient, o);
 					} catch (Exception ex) {
 						throw new RecipeExceptionJS("Failed to parse custom ingredient (" + o.get("type") + ") from " + o + ": " + ex);

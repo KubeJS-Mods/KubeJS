@@ -92,21 +92,21 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	@Override
 	public void createAdditionalObjects() {
 		RegistryObjectBuilderTypes.FLUID.addBuilder(flowingFluid);
-		if(block != null) {
+		if (block != null) {
 			RegistryObjectBuilderTypes.BLOCK.addBuilder(block);
 		}
-		if(bucketItem != null) {
+		if (bucketItem != null) {
 			RegistryObjectBuilderTypes.ITEM.addBuilder(bucketItem);
 		}
 	}
 
 	public FluidBuilder color(Color c) {
-		color = bucketColor = c.getArgbKJS();
+		color = bucketColor = c.getArgbJS();
 		return this;
 	}
 
 	public FluidBuilder bucketColor(Color c) {
-		bucketColor = c.getArgbKJS();
+		bucketColor = c.getArgbJS();
 		return this;
 	}
 

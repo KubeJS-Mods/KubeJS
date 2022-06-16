@@ -2,17 +2,19 @@ package dev.latvian.mods.kubejs.client.painter.screen;
 
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectStorage;
-import dev.latvian.mods.rhino.util.unit.FixedUnit;
-import dev.latvian.mods.rhino.util.unit.Unit;
+import dev.latvian.mods.unit.FixedNumberUnit;
+import dev.latvian.mods.unit.Unit;
 import net.minecraft.nbt.CompoundTag;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ScreenGroup extends ScreenPainterObject {
 	private final PainterObjectStorage storage = new PainterObjectStorage();
-	private float scaleX = 1F;
-	private float scaleY = 1F;
-	private float scaleZ = 1F;
-	private Unit paddingW = FixedUnit.ZERO;
-	private Unit paddingH = FixedUnit.ZERO;
+	private Unit scaleX = FixedNumberUnit.ONE;
+	private Unit scaleY = FixedNumberUnit.ONE;
+	private Unit paddingW = FixedNumberUnit.ZERO;
+	private Unit paddingH = FixedNumberUnit.ZERO;
 
 	@Override
 	protected void load(PainterObjectProperties properties) {
@@ -24,43 +26,51 @@ public class ScreenGroup extends ScreenPainterObject {
 			storage.handle(tag);
 		}
 
-		scaleX = properties.getFloat("scaleX", scaleX);
-		scaleY = properties.getFloat("scaleY", scaleY);
-		scaleZ = properties.getFloat("scaleZ", scaleZ);
 		paddingW = properties.getUnit("paddingW", paddingW);
 		paddingH = properties.getUnit("paddingH", paddingH);
 
-		if (properties.hasNumber("scale")) {
-			scaleX = scaleY = properties.getFloat("scale", 1F);
+		if (properties.hasAny("scale")) {
+			scaleX = scaleY = properties.getUnit("scale", FixedNumberUnit.ONE);
+		} else {
+			scaleX = properties.getUnit("scaleX", scaleX);
+			scaleY = properties.getUnit("scaleY", scaleY);
 		}
 	}
 
 	@Override
 	public void preDraw(ScreenPaintEventJS event) {
-		w = FixedUnit.ZERO;
-		h = FixedUnit.ZERO;
+		w = FixedNumberUnit.ZERO;
+		h = FixedNumberUnit.ZERO;
+		var objects = storage.getObjects();
 
-		for (var object : storage.getObjects()) {
+		if (objects.isEmpty()) {
+			return;
+		}
+
+		List<Unit> wunits = new ArrayList<>(objects.size());
+		List<Unit> hunits = new ArrayList<>(objects.size());
+
+		for (var object : objects) {
 			if (object instanceof ScreenPainterObject s) {
 				s.preDraw(event);
-				w = w.max(s.x.add(s.w));
-				h = h.max(s.y.add(s.h));
+				wunits.add(s.x.add(s.w));
+				hunits.add(s.y.add(s.h));
 			}
 		}
 
-		w = w.add(paddingW);
-		h = w.add(paddingH);
+		w = new MultiMaxFunc(wunits).add(paddingW);
+		h = new MultiMaxFunc(hunits).add(paddingH);
 	}
 
 	@Override
 	public void draw(ScreenPaintEventJS event) {
-		var ax = event.alignX(x.get(), w.get(), alignX);
-		var ay = event.alignY(y.get(), h.get(), alignY);
-		var az = z.get();
+		var ax = event.alignX(x.getFloat(event), w.getFloat(event), alignX);
+		var ay = event.alignY(y.getFloat(event), h.getFloat(event), alignY);
+		var az = z.getFloat(event);
 
 		event.push();
 		event.translate(ax, ay, az);
-		event.scale(scaleX, scaleY, scaleZ);
+		event.scale(scaleX.getFloat(event), scaleY.getFloat(event), 1F);
 
 		for (var object : storage.getObjects()) {
 			if (object instanceof ScreenPainterObject s) {

@@ -6,6 +6,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,25 +15,45 @@ import java.util.List;
  * @author LatvianModder
  */
 public interface BlockKJS extends BlockBuilderProvider {
-	void setBlockBuilderKJS(BlockBuilder b);
+	default void setBlockBuilderKJS(BlockBuilder b) {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	CompoundTag getTypeDataKJS();
+	default CompoundTag getTypeDataKJS() {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	void setMaterialKJS(Material v);
+	default void setMaterialKJS(Material v) {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	void setHasCollisionKJS(boolean v);
+	default void setHasCollisionKJS(boolean v) {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	void setExplosionResistanceKJS(float v);
+	default void setExplosionResistanceKJS(float v) {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	void setIsRandomlyTickingKJS(boolean v);
+	default void setIsRandomlyTickingKJS(boolean v) {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	void setSoundTypeKJS(SoundType v);
+	default void setSoundTypeKJS(SoundType v) {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	void setFrictionKJS(float v);
+	default void setFrictionKJS(float v) {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	void setSpeedFactorKJS(float v);
+	default void setSpeedFactorKJS(float v) {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
-	void setJumpFactorKJS(float v);
+	default void setJumpFactorKJS(float v) {
+		throw new NotImplementedException("A mixin should have implemented this method!");
+	}
 
 	default List<BlockState> getBlockStatesKJS() {
 		return this instanceof Block block ? block.getStateDefinition().getPossibleStates() : Collections.emptyList();

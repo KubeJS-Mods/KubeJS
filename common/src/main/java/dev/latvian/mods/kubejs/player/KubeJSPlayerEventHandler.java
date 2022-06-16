@@ -14,6 +14,7 @@ import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.stages.Stages;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.TextFilter;
@@ -50,7 +51,13 @@ public class KubeJSPlayerEventHandler {
 		}
 
 		if (!ScriptType.SERVER.errors.isEmpty() && !CommonProperties.get().hideServerScriptErrors) {
-			player.displayClientMessage(new TextComponent("KubeJS errors found [" + ScriptType.SERVER.errors.size() + "]! Run '/kubejs errors' for more info").withStyle(ChatFormatting.DARK_RED), false);
+			player.displayClientMessage(new TextComponent("KubeJS errors found [" + ScriptType.SERVER.errors.size() + "]! Run ")
+					.append(new TextComponent("'/kubejs errors'")
+							.click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs errors"))
+							.hover(new TextComponent("Click to run")))
+					.append(new TextComponent(" for more info"))
+					.withStyle(ChatFormatting.DARK_RED),
+			false);
 		}
 
 		Stages.get(player).sync();
@@ -70,7 +77,7 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	public static void cloned(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean wonGame) {
-		((EntityKJS) newPlayer).getPersistentDataKJS().merge(((EntityKJS) oldPlayer).getPersistentDataKJS());
+		newPlayer.getPersistentDataKJS().merge(oldPlayer.getPersistentDataKJS());
 		newPlayer.inventoryMenu.addSlotListener(new InventoryListener(newPlayer));
 	}
 
