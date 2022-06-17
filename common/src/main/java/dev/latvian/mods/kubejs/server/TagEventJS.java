@@ -308,6 +308,8 @@ public class TagEventJS<T> extends EventJS {
 			}
 		}
 
+		tags = new HashMap<>();
+
 		for (var entry : map.entrySet()) {
 			var w = new TagWrapper(entry.getKey(), entry.getValue());
 			tags.put(entry.getKey(), w);
