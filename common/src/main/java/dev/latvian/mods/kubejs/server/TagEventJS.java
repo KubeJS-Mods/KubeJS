@@ -308,8 +308,6 @@ public class TagEventJS<T> extends EventJS {
 			}
 		}
 
-		tags = new HashMap<>();
-
 		for (var entry : map.entrySet()) {
 			var w = new TagWrapper(entry.getKey(), entry.getValue());
 			tags.put(entry.getKey(), w);
@@ -375,6 +373,7 @@ public class TagEventJS<T> extends EventJS {
 		if (t == null) {
 			t = new TagWrapper(id, new ArrayList<>());
 			tags.put(id, t);
+			map.put(id, t.entries);
 		}
 
 		return t;

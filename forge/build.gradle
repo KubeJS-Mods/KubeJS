@@ -49,6 +49,7 @@ dependencies {
 	// but if you want to use it at runtime, you can use this next line and remove the modLocalRuntime from REI.
 	// modLocalRuntime("mezz.jei:jei-1.18:${rootProject.forge_jei_version}")
 	modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}")
+	modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-plugin-compatibilities-forge:${rootProject.rei_version}")
 
 	common(project(path: ":common", configuration: "namedElements")) { transitive false }
 	bundle(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
