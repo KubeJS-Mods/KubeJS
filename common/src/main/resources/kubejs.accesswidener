@@ -14,6 +14,10 @@ accessible field net/minecraft/world/item/DiggerItem defaultModifiers Lcom/googl
 mutable field net/minecraft/world/item/DiggerItem defaultModifiers Lcom/google/common/collect/Multimap;
 accessible field net/minecraft/world/item/SwordItem defaultModifiers Lcom/google/common/collect/Multimap;
 mutable field net/minecraft/world/item/SwordItem defaultModifiers Lcom/google/common/collect/Multimap;
+accessible field net/minecraft/world/item/TridentItem defaultModifiers Lcom/google/common/collect/Multimap;
+mutable field net/minecraft/world/item/TridentItem defaultModifiers Lcom/google/common/collect/Multimap;
+accessible field net/minecraft/world/item/DiggerItem speed F
+mutable field net/minecraft/world/item/DiggerItem speed F
 
 accessible field net/minecraft/world/item/TieredItem tier Lnet/minecraft/world/item/Tier;
 mutable field net/minecraft/world/item/TieredItem tier Lnet/minecraft/world/item/Tier;
