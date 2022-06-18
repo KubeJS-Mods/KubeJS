@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,40 +33,13 @@ import java.util.function.Predicate;
  * @author LatvianModder
  */
 public class TagEventJS<T> extends EventJS {
-	@Nullable
-	private static List<Predicate<ResourceLocation>> parsePriorityList(@Nullable Object o) {
-		if (o == null) {
-			return null;
-		}
-
-		List<Predicate<ResourceLocation>> list = new ArrayList<>();
-
-		for (var o1 : ListJS.orSelf(o)) {
-			var s = String.valueOf(o1);
-
-			if (s.startsWith("@")) {
-				var m = s.substring(1);
-				list.add(id -> id.getNamespace().equals(m));
-			} else if (s.startsWith("!@")) {
-				var m = s.substring(2);
-				list.add(id -> !id.getNamespace().equals(m));
-			} else {
-				list.add(id -> id.equals(UtilsJS.getMCID(s)));
-			}
-		}
-
-		return list.isEmpty() ? null : list;
-	}
-
 	public class TagWrapper {
 		private final ResourceLocation id;
 		private final List<TagLoader.EntryWithSource> entries;
-		private List<Predicate<ResourceLocation>> priorityList;
 
 		private TagWrapper(ResourceLocation i, List<TagLoader.EntryWithSource> t) {
 			id = i;
 			entries = t;
-			priorityList = null;
 		}
 
 		@Override
@@ -127,7 +99,7 @@ public class TagEventJS<T> extends EventJS {
 						totalRemoved += removedCount;
 
 						if (ConsoleJS.SERVER.shouldPrintDebug()) {
-							ConsoleJS.SERVER.debug("- " + this + " // " + entryId);
+							ConsoleJS.SERVER.debug("- %s // %s".formatted(this, entryId));
 						}
 					}
 				}).ifRight(matches -> {
@@ -167,7 +139,7 @@ public class TagEventJS<T> extends EventJS {
 
 		public TagWrapper removeAll() {
 			if (ConsoleJS.SERVER.shouldPrintDebug()) {
-				ConsoleJS.SERVER.debug("- " + this + " // (all)");
+				ConsoleJS.SERVER.debug("- %s // (all)".formatted(this));
 			}
 
 			if (!entries.isEmpty()) {
@@ -206,60 +178,6 @@ public class TagEventJS<T> extends EventJS {
 				}
 			}
 		}
-
-		public void setPriorityList(@Nullable Object o) {
-			priorityList = parsePriorityList(o);
-		}
-
-		/**
-		 * Yes its not as efficient as it could be, but this doesn't get run too often. This way it keeps order of original tags.
-		 */
-		public boolean sort() {
-			List<List<TagLoader.EntryWithSource>> listOfLists = new ArrayList<>();
-
-			for (var i = 0; i < priorityList.size() + 1; i++) {
-				listOfLists.add(new ArrayList<>());
-			}
-
-			for (var proxy : entries) {
-				var added = false;
-
-				var set = new HashSet<ResourceLocation>();
-				gatherIdsFor(set, proxy);
-
-				for (var id : set) {
-					for (var i = 0; i < priorityList.size(); i++) {
-						if (priorityList.get(i).test(id)) {
-							listOfLists.get(i).add(proxy);
-							added = true;
-							break;
-						}
-					}
-				}
-
-				if (!added) {
-					listOfLists.get(priorityList.size()).add(proxy);
-				}
-			}
-
-			List<TagLoader.EntryWithSource> proxyList0 = new ArrayList<>(entries);
-
-			entries.clear();
-
-			for (var list : listOfLists) {
-				entries.addAll(list);
-			}
-
-			if (!proxyList0.equals(entries)) {
-				if (ConsoleJS.SERVER.shouldPrintDebug()) {
-					ConsoleJS.SERVER.debug("* Re-arranged " + this);
-				}
-
-				return true;
-			}
-
-			return false;
-		}
 	}
 
 	private final String type;
@@ -268,7 +186,6 @@ public class TagEventJS<T> extends EventJS {
 	private Map<ResourceLocation, TagWrapper> tags;
 	private int totalAdded;
 	private int totalRemoved;
-	private List<Predicate<ResourceLocation>> globalPriorityList;
 
 	public TagEventJS(String t, Map<ResourceLocation, List<TagLoader.EntryWithSource>> m, Registry<T> r) {
 		type = t;
@@ -276,7 +193,6 @@ public class TagEventJS<T> extends EventJS {
 		registry = r;
 		totalAdded = 0;
 		totalRemoved = 0;
-		globalPriorityList = null;
 	}
 
 	public String getType() {
@@ -330,18 +246,6 @@ public class TagEventJS<T> extends EventJS {
 		post(ScriptType.SERVER, event);
 		ConsoleJS.SERVER.setLineNumber(false);
 
-		var reordered = 0;
-
-		for (var wrapper : tags.values()) {
-			if (wrapper.priorityList == null) {
-				wrapper.priorityList = globalPriorityList;
-			}
-
-			if (wrapper.priorityList != null && wrapper.sort()) {
-				reordered++;
-			}
-		}
-
 		if (ServerSettings.dataExport != null && registry != null) {
 			var tj = ServerSettings.dataExport.getAsJsonObject("tags");
 
@@ -365,7 +269,7 @@ public class TagEventJS<T> extends EventJS {
 		}
 
 		if (totalAdded > 0 || totalRemoved > 0 || ConsoleJS.SERVER.shouldPrintDebug()) {
-			ConsoleJS.SERVER.info("[" + type + "] Found " + tags.size() + " tags, added " + totalAdded + " objects, removed " + totalRemoved + " objects"/*, reordered " + reordered + " tags"*/);
+			ConsoleJS.SERVER.info("[%s] Found %d tags, added %d objects, removed %d objects".formatted(type, tags.size(), totalAdded, totalRemoved));
 		}
 	}
 
@@ -399,10 +303,6 @@ public class TagEventJS<T> extends EventJS {
 				tagWrapper.entries.removeIf(proxy -> proxy.entry().elementOrTag().decoratedId().equals(id));
 			}
 		}
-	}
-
-	public void setGlobalPriorityList(@Nullable Object o) {
-		globalPriorityList = parsePriorityList(o);
 	}
 
 	private Either<TagWrapper, List<Holder.Reference<T>>> gatherTargets(String target) {
