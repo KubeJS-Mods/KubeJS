@@ -70,7 +70,7 @@ public class ItemModificationProperties {
 		}
 	}
 
-	public float getDigSpeed(float speed) {
+	public float getDigSpeed() {
 		if (item instanceof DiggerItem diggerItem) {
 			return diggerItem.speed;
 		} else {
