@@ -8,13 +8,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.apache.commons.lang3.NotImplementedException;
 
 public interface ModifiableItemKJS {
-	default Multimap<Attribute, AttributeModifier> getAttributeMapKJS() {
-		throw new NotImplementedException("A mixin should have implemented this method!");
-	}
+	Multimap<Attribute, AttributeModifier> getAttributeMapKJS();
 
-	default void setAttributeMapKJS(Multimap<Attribute, AttributeModifier> attributes) {
-		throw new NotImplementedException("A mixin should have implemented this method!");
-	}
+	void setAttributeMapKJS(Multimap<Attribute, AttributeModifier> attributes);
 
 	default Multimap<Attribute, AttributeModifier> getMutableAttributeMap() {
 		Multimap<Attribute, AttributeModifier> attributes = getAttributeMapKJS();
