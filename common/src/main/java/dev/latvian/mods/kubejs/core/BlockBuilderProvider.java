@@ -5,5 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface BlockBuilderProvider {
 	@Nullable
-	BlockBuilder getBlockBuilderKJS();
+	default BlockBuilder getBlockBuilderKJS() {
+		return null;
+	}
 }
