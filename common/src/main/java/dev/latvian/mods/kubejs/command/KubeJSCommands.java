@@ -318,14 +318,12 @@ public class KubeJSCommands {
 		KubeJS.startupScriptManager.unload();
 		KubeJS.startupScriptManager.loadFromDirectory();
 		KubeJS.startupScriptManager.load();
-		UtilsJS.postModificationEvents();
 		source.sendSuccess(Component.literal("Done!"), false);
 		return 1;
 	}
 
 	private static int reloadServer(CommandSourceStack source) {
 		ServerScriptManager.instance.reloadScriptManager(((MinecraftServerKJS) source.getServer()).getReloadableResourcesKJS().resourceManager());
-		UtilsJS.postModificationEvents();
 		source.sendSuccess(Component.literal("Done! To reload recipes, tags, loot tables and other datapack things, run ")
 						.append(Component.literal("'/reload'")
 								.click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/reload"))
