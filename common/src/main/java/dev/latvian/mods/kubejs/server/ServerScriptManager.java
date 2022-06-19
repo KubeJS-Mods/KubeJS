@@ -120,8 +120,6 @@ public class ServerScriptManager {
 		new DataPackEventJS(virtualDataPackHigh, wrappedResourceManager).post(ScriptType.SERVER, "server.datapack.first");
 		new DataPackEventJS(virtualDataPackHigh, wrappedResourceManager).post(ScriptType.SERVER, KubeJSEvents.SERVER_DATAPACK_HIGH_PRIORITY);
 
-		UtilsJS.postModificationEvents();
-
 		ConsoleJS.SERVER.setLineNumber(false);
 		ConsoleJS.SERVER.info("Scripts loaded");
 

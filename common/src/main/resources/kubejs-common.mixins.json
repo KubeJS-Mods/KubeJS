@@ -27,7 +27,11 @@
 		"inject_resources.MinecraftServerMixin",
 		"inject_resources.WorldLoaderPackConfigMixin",
 		"components.ClickEventMixin",
-		"components.MutableComponentMixin"
+		"components.MutableComponentMixin",
+		"tools.DiggerItemMixin",
+		"tools.ArmorItemMixin",
+		"tools.SwordItemMixin",
+		"tools.TridentItemMixin"
 	],
 	"client": [
 		"AbstractSelectionListMixin",
