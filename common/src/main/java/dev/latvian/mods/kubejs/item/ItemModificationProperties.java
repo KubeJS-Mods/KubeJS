@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.item;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.core.ModifiableItemKJS;
@@ -17,6 +18,7 @@ import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.item.TridentItem;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -63,6 +65,14 @@ public class ItemModificationProperties {
 	public void setDigSpeed(float speed) {
 		if (item instanceof DiggerItem diggerItem) {
 			diggerItem.speed = speed;
+		} else {
+			throw new IllegalArgumentException("Item is not a digger item (axe, shovel, etc.)!");
+		}
+	}
+
+	public float getDigSpeed(float speed) {
+		if (item instanceof DiggerItem diggerItem) {
+			return diggerItem.speed;
 		} else {
 			throw new IllegalArgumentException("Item is not a digger item (axe, shovel, etc.)!");
 		}
@@ -143,5 +153,13 @@ public class ItemModificationProperties {
 		Collection<AttributeModifier> modifiers = attributes.get(attribute);
 		Optional<AttributeModifier> value = modifiers.stream().filter(modifier -> uuid.equals(modifier.getId())).findFirst();
 		value.ifPresent(modifier -> attributes.remove(attribute, modifier));
+	}
+
+	public List<AttributeModifier> getAttributes(Attribute attribute) {
+		if (!(item instanceof ModifiableItemKJS modifiableItem)) {
+			throw new UnsupportedOperationException("Getting attribute in unsupported item: " + item.toString());
+		}
+		Multimap<Attribute, AttributeModifier> attributes = modifiableItem.getAttributeMapKJS();
+		return ImmutableList.copyOf(attributes.get(attribute));
 	}
 }
