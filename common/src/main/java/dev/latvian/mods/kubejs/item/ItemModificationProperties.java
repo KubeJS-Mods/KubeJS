@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.item;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import dev.latvian.mods.kubejs.core.ItemKJS;
+import dev.latvian.mods.kubejs.core.ModifiableItemKJS;
 import net.minecraft.Util;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -83,56 +84,25 @@ public class ItemModificationProperties {
 		item.setFoodPropertiesKJS(builder.build());
 	}
 
-	private Multimap<Attribute, AttributeModifier> mutateAttributeMap() {
-		Multimap<Attribute, AttributeModifier> attributes = null;
-		if (item instanceof DiggerItem diggerItem) {
-			diggerItem.defaultModifiers = ArrayListMultimap.create(diggerItem.defaultModifiers);
-			attributes = diggerItem.defaultModifiers;
-		} else if (item instanceof SwordItem swordItem) {
-			swordItem.defaultModifiers = ArrayListMultimap.create(swordItem.defaultModifiers);
-			attributes = swordItem.defaultModifiers;
-		} else if (item instanceof TridentItem tridentItem) {
-			tridentItem.defaultModifiers = ArrayListMultimap.create(tridentItem.defaultModifiers);
-			attributes = tridentItem.defaultModifiers;
-		} else if (item instanceof ArmorItem armorItem) {
-			armorItem.defaultModifiers = ArrayListMultimap.create(armorItem.defaultModifiers);
-			attributes = armorItem.defaultModifiers;
-		}
-		return attributes;
-	}
-
-	public void removeAttribute(Attribute attribute, UUID uuid) {
-		Multimap<Attribute, AttributeModifier> attributes = mutateAttributeMap();
-		if (attributes == null) {
-			throw new UnsupportedOperationException("Removing attribute is not supported in item: " + item.toString());
-		}
-		Collection<AttributeModifier> modifiers = attributes.get(attribute);
-		Optional<AttributeModifier> value = modifiers.stream().filter(modifier -> uuid.equals(modifier.getId())).findFirst();
-		value.ifPresent(modifier -> attributes.remove(attribute, modifier));
-	}
-
 	public void setAttackDamage(double attackDamage) {
-		Multimap<Attribute, AttributeModifier> attributes = mutateAttributeMap();
-		if (attributes == null || item instanceof ArmorItem) {
-			throw new UnsupportedOperationException("Modifying attack damage of unsupported item: " + item.toString());
+		if (item instanceof ArmorItem) {
+			throw new UnsupportedOperationException("Modifying attack damage of unsupported item: " + item);
 		}
 		removeAttribute(Attributes.ATTACK_DAMAGE, BASE_ATTACK_DAMAGE_UUID);
 		addAttribute(Attributes.ATTACK_DAMAGE, BASE_ATTACK_DAMAGE_UUID, "Tool modifier", attackDamage, AttributeModifier.Operation.ADDITION);
 	}
 
 	public void setAttackSpeed(double attackSpeed) {
-		Multimap<Attribute, AttributeModifier> attributes = mutateAttributeMap();
-		if (attributes == null || item instanceof ArmorItem) {
-			throw new UnsupportedOperationException("Modifying attack speed of unsupported item: " + item.toString());
+		if (item instanceof ArmorItem) {
+			throw new UnsupportedOperationException("Modifying attack speed of unsupported item: " + item);
 		}
 		removeAttribute(Attributes.ATTACK_SPEED, BASE_ATTACK_SPEED_UUID);
 		addAttribute(Attributes.ATTACK_SPEED, BASE_ATTACK_SPEED_UUID, "Tool modifier", attackSpeed, AttributeModifier.Operation.ADDITION);
 	}
 
 	public void setArmorProtection(double armorProtection) {
-		Multimap<Attribute, AttributeModifier> attributes = mutateAttributeMap();
-		if (attributes == null || !(item instanceof ArmorItem armor)) {
-			throw new UnsupportedOperationException("Modifying protection of unsupported item: " + item.toString());
+		if (!(item instanceof ArmorItem armor)) {
+			throw new UnsupportedOperationException("Modifying armor value of unsupported item: " + item.toString());
 		}
 		UUID uuid = ARMOR_MODIFIER_UUID_PER_SLOT[armor.getSlot().getIndex()];
 		removeAttribute(Attributes.ARMOR, uuid);
@@ -140,8 +110,7 @@ public class ItemModificationProperties {
 	}
 
 	public void setArmorToughness(double armorToughness) {
-		Multimap<Attribute, AttributeModifier> attributes = mutateAttributeMap();
-		if (attributes == null || !(item instanceof ArmorItem armor)) {
+		if (!(item instanceof ArmorItem armor)) {
 			throw new UnsupportedOperationException("Modifying protection of unsupported item: " + item.toString());
 		}
 		UUID uuid = ARMOR_MODIFIER_UUID_PER_SLOT[armor.getSlot().getIndex()];
@@ -150,8 +119,7 @@ public class ItemModificationProperties {
 	}
 
 	public void setArmorKnockbackResistance(double knockbackResistance) {
-		Multimap<Attribute, AttributeModifier> attributes = mutateAttributeMap();
-		if (attributes == null || !(item instanceof ArmorItem armor)) {
+		if (!(item instanceof ArmorItem armor)) {
 			throw new UnsupportedOperationException("Modifying protection of unsupported item: " + item.toString());
 		}
 		UUID uuid = ARMOR_MODIFIER_UUID_PER_SLOT[armor.getSlot().getIndex()];
@@ -160,7 +128,20 @@ public class ItemModificationProperties {
 	}
 
 	public void addAttribute(Attribute attribute, UUID uuid, String name, double d, AttributeModifier.Operation operation) {
-		Multimap<Attribute, AttributeModifier> attributes = mutateAttributeMap();
+		if (!(item instanceof ModifiableItemKJS modifiableItemKJS)) {
+			throw new UnsupportedOperationException("Adding attribute in unsupported item: " + item.toString());
+		}
+		Multimap<Attribute, AttributeModifier> attributes = modifiableItemKJS.getMutableAttributeMap();
 		attributes.put(attribute, new AttributeModifier(uuid, name, d, operation));
+	}
+
+	public void removeAttribute(Attribute attribute, UUID uuid) {
+		if (!(item instanceof ModifiableItemKJS modifiableItem)) {
+			throw new UnsupportedOperationException("Removing attribute in unsupported item: " + item.toString());
+		}
+		Multimap<Attribute, AttributeModifier> attributes = modifiableItem.getMutableAttributeMap();
+		Collection<AttributeModifier> modifiers = attributes.get(attribute);
+		Optional<AttributeModifier> value = modifiers.stream().filter(modifier -> uuid.equals(modifier.getId())).findFirst();
+		value.ifPresent(modifier -> attributes.remove(attribute, modifier));
 	}
 }
