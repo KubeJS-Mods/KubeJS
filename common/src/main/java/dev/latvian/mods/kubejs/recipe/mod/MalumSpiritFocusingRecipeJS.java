@@ -34,7 +34,7 @@ public class MalumSpiritFocusingRecipeJS extends RecipeJS {
 	@Override
 	public void deserialize() {
 		outputItems.add(parseResultItem(json.get("output")));
-		inputItems.add(parseIngredientItem("input"));
+		inputItems.add(parseIngredientItem(json.get("input"), "input"));
 		inputItems.addAll(parseIngredientItemList(json.get("spirits")));
 	}
 
