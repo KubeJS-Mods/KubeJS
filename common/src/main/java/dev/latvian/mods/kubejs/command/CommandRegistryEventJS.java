@@ -9,6 +9,7 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.commands.SharedSuggestionProvider;
 
 import java.util.Objects;
 
@@ -46,4 +47,12 @@ public class CommandRegistryEventJS extends ServerEventJS {
 	public ClassWrapper<ArgumentTypeWrapper> getArguments() {
 		return new ClassWrapper<>(ArgumentTypeWrapper.class);
 	}
+
+	// Used to access the static members of SharedSuggestionProvider
+	// can be used within commands like so:
+	// [cmd] .suggests((ctx, builder) => event.builtinSuggestions.suggest(["123", "456"], builder))
+	public ClassWrapper<SharedSuggestionProvider> getBuiltinSuggestions() {
+		return new ClassWrapper<>(SharedSuggestionProvider.class);
+	}
+
 }
