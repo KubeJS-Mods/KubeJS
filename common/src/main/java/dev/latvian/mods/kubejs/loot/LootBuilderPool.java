@@ -92,7 +92,7 @@ public class LootBuilderPool implements FunctionContainer, ConditionContainer {
 		return new LootTableEntry(json);
 	}
 
-	public boolean removeItemEntry(IngredientJS ing, boolean strict) {
+	public boolean removeItem(IngredientJS ing, boolean strict) {
 		var index  = -1;
 		for (var i = 0;i < entries.size();i++) {
 			var entry = entries.get(i);
@@ -112,11 +112,11 @@ public class LootBuilderPool implements FunctionContainer, ConditionContainer {
 		return false;
 	}
 
-	public boolean removeItemEntry(IngredientJS ing) {
-		return removeItemEntry(ing, false);
+	public boolean removeItem(IngredientJS ing) {
+		return removeItem(ing, false);
 	}
 
-	public boolean removeLootTableEntry(ResourceLocation rl) {
+	public boolean removeTable(ResourceLocation rl) {
 		var index  = -1;
 		for (var i = 0;i < entries.size();i++) {
 			var entry = entries.get(i);
