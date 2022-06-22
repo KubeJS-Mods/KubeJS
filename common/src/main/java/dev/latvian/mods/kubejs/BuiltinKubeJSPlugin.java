@@ -80,7 +80,6 @@ import dev.latvian.mods.kubejs.recipe.mod.BotaniaRunicAltarRecipeJS;
 import dev.latvian.mods.kubejs.recipe.mod.BotanyPotsCropRecipeJS;
 import dev.latvian.mods.kubejs.recipe.mod.IDSqueezerRecipeJS;
 import dev.latvian.mods.kubejs.recipe.mod.MATagRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.MalumSpiritFocusingRecipeJS;
 import dev.latvian.mods.kubejs.recipe.mod.ShapedArtisanRecipeJS;
 import dev.latvian.mods.kubejs.recipe.mod.ShapelessArtisanRecipeJS;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
@@ -503,10 +502,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 			event.register(new ResourceLocation("ars_nouveau:enchanting_apparatus"), ArsNouveauEnchantingApparatusRecipeJS::new);
 			event.register(new ResourceLocation("ars_nouveau:enchantment"), ArsNouveauEnchantmentRecipeJS::new);
 			event.register(new ResourceLocation("ars_nouveau:glyph_recipe"), ArsNouveauGlyphPressRecipeJS::new);
-		}
-
-		if (Platform.isModLoaded("malum")) {
-			event.register(new ResourceLocation("malum:spirit_focusing"), MalumSpiritFocusingRecipeJS::new);
 		}
 	}
 
