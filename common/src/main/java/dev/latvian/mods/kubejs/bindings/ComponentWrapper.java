@@ -1,12 +1,11 @@
 package dev.latvian.mods.kubejs.bindings;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import dev.latvian.mods.kubejs.util.JSObjectType;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.mod.util.JsonSerializable;
+import dev.latvian.mods.rhino.mod.util.JsonUtils;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.StringTag;
@@ -115,12 +114,13 @@ public class ComponentWrapper {
 			return null;
 		} else if (o instanceof ClickEvent ce) {
 			return ce;
-		} else if (o instanceof JsonSerializable jsonSerializable) {
-			if (jsonSerializable.toJson() instanceof JsonObject json) {
-				var action = GsonHelper.getAsString(json, "action");
-				var value = GsonHelper.getAsString(json, "value");
-				return new ClickEvent(Objects.requireNonNull(ClickEvent.Action.getByName(action), "Invalid click event action %s!".formatted(action)), value);
-			}
+		}
+
+		var json = MapJS.json(o);
+		if (json != null) {
+			var action = GsonHelper.getAsString(json, "action");
+			var value = GsonHelper.getAsString(json, "value");
+			return new ClickEvent(Objects.requireNonNull(ClickEvent.Action.getByName(action), "Invalid click event action %s!".formatted(action)), value);
 		}
 
 		var s = o.toString();
