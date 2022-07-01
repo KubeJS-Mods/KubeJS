@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -16,8 +15,6 @@ import java.util.Set;
  * @author LatvianModder
  */
 public final class WeakNBTIngredientJS implements IngredientJS {
-	private static final boolean NBTIP_INSTALLED = Platform.isModLoaded("nbt_ingredient_predicate");
-
 	private final ItemStackJS item;
 
 	public WeakNBTIngredientJS(ItemStackJS i) {
@@ -86,15 +83,7 @@ public final class WeakNBTIngredientJS implements IngredientJS {
 		json.addProperty("item", item.getId());
 
 		if (item.hasNBT()) {
-			if (NBTIP_INSTALLED) {
-				json.addProperty("type", "nbt_ingredient_predicate:nbt_includes");
-			} else {
-				json.addProperty("type", "forge:nbt");
-				ConsoleJS.SERVER.setLineNumber(true);
-				ConsoleJS.SERVER.error("weakNBT() requires 'NBT Ingredient Predicate' mod to be installed! Defaulting to exact match");
-				ConsoleJS.SERVER.setLineNumber(false);
-			}
-
+			json.addProperty("type", "forge:partial_nbt");
 			json.addProperty("nbt", item.getNbtString());
 		}
 

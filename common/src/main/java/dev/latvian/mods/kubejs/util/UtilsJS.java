@@ -702,4 +702,12 @@ public class UtilsJS {
 			return "unknown";
 		}
 	}
+
+	public static String stripIdForEvent(ResourceLocation id) {
+		return stripEventName(id.toString());
+	}
+
+	public static String stripEventName(String s) {
+		return s.replaceAll("[/:]", ".").replace('-', '_');
+	}
 }

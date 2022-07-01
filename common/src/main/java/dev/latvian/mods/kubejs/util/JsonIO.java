@@ -51,8 +51,7 @@ public class JsonIO {
 	}
 
 	public static JsonPrimitive primitiveOf(@Nullable Object o) {
-		JsonElement e = of(o);
-		return e instanceof JsonPrimitive ? (JsonPrimitive) e : null;
+		return of(o) instanceof JsonPrimitive p ? p : null;
 	}
 
 	@Nullable

@@ -122,10 +122,6 @@ public class LevelPlatformHelperImpl implements LevelPlatformHelper {
 		return a.areCapsCompatible(b);
 	}
 
-	public ItemStack getContainerItem(ItemStack stack) {
-		return stack.getContainerItem();
-	}
-
 	public double getReachDistance(LivingEntity livingEntity) {
 		return livingEntity.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue();
 	}

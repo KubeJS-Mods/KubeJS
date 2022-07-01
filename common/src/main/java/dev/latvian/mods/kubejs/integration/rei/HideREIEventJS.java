@@ -10,7 +10,6 @@ import me.shedaniel.rei.api.common.entry.type.EntryType;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 
 import java.util.Collection;
-import java.util.function.Function;
 
 /**
  * @author shedaniel
@@ -18,14 +17,14 @@ import java.util.function.Function;
 public class HideREIEventJS<T> extends EventJS {
 	private final EntryRegistry registry;
 	private final EntryType<T> type;
-	private final Function<Object, Collection<EntryStack<?>>> serializer;
+	private final EntryWrapper entryWrapper;
 	private final LongSet hidden = new LongOpenHashSet();
 	private boolean hideAll = false;
 
-	public HideREIEventJS(EntryRegistry registry, EntryType<T> type, Function<Object, Collection<EntryStack<?>>> serializer) {
+	public HideREIEventJS(EntryRegistry registry, EntryType<T> type, EntryWrapper entryWrapper) {
 		this.registry = registry;
 		this.type = type;
-		this.serializer = serializer;
+		this.entryWrapper = entryWrapper;
 	}
 
 	public Collection<T> getAllIngredients() {
@@ -38,7 +37,7 @@ public class HideREIEventJS<T> extends EventJS {
 
 	public void hide(Object o) {
 		if (!hideAll) {
-			for (var stack : serializer.apply(o)) {
+			for (var stack : entryWrapper.wrap(o)) {
 				hidden.add(EntryStacks.hashExact(stack));
 			}
 		}
