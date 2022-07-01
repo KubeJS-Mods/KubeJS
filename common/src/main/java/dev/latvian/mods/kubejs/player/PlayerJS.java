@@ -15,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodData;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
@@ -144,15 +145,27 @@ public abstract class PlayerJS<P extends Player> extends LivingEntityJS implemen
 	}
 
 	public void addFood(int f, float m) {
-		minecraftPlayer.getFoodData().eat(f, m);
+		getFoodData().eat(f, m);
 	}
 
 	public int getFoodLevel() {
-		return minecraftPlayer.getFoodData().getFoodLevel();
+		return getFoodData().getFoodLevel();
 	}
 
 	public void setFoodLevel(int foodLevel) {
-		minecraftPlayer.getFoodData().setFoodLevel(foodLevel);
+		getFoodData().setFoodLevel(foodLevel);
+	}
+
+	public float getSaturation() {
+		return getFoodData().getSaturationLevel();
+	}
+
+	public void setSaturation(float saturation) {
+		getFoodData().setSaturation(saturation);
+	}
+
+	public FoodData getFoodData() {
+		return minecraftPlayer.getFoodData();
 	}
 
 	public void addExhaustion(float exhaustion) {
