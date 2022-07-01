@@ -41,3 +41,10 @@ mandatory = false
 versionRange = "[1.0.0,)"
 ordering = "AFTER"
 side = "BOTH"
+
+[[dependencies.kubejs]]
+modId = "roughlyenoughitems"
+mandatory = false
+versionRange = "[8.3.501,)"
+ordering = "AFTER"
+side = "BOTH"

@@ -248,10 +248,7 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 
 		for (var entry : entrySet()) {
 			var e = JsonIO.of(entry.getValue());
-
-			if (!e.isJsonNull()) {
 				json.add(entry.getKey(), e);
-			}
 		}
 
 		return json;

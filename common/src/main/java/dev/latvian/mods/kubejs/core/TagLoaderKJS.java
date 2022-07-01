@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.mods.kubejs.server.TagEventJS;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagLoader;
@@ -21,8 +22,8 @@ public interface TagLoaderKJS<T> {
 
 		if (reg != null) {
 			var event = new TagEventJS<>(c, map, reg);
-			String id = c.replaceAll("([/:])", ".");
-			event.post("tags." + id);
+			var id = UtilsJS.stripEventName(c);
+			event.post("tags.%s".formatted(id));
 
 			switch (id) {
 				case "items" -> event.post("item.tags");

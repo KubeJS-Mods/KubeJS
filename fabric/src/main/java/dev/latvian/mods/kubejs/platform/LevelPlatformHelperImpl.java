@@ -16,16 +16,6 @@ public class LevelPlatformHelperImpl implements LevelPlatformHelper {
 		return true;
 	}
 
-	public ItemStack getContainerItem(ItemStack stack) {
-		var item = stack.getItem();
-
-		if (item.hasCraftingRemainingItem()) {
-			return new ItemStack(item.getCraftingRemainingItem());
-		}
-
-		return ItemStack.EMPTY;
-	}
-
 	public double getReachDistance(LivingEntity livingEntity) {
 		return 5;
 	}

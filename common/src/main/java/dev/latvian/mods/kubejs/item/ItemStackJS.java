@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
-import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.core.ItemStackKJS;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.GroupIngredientJS;

@@ -6,26 +6,24 @@ import dev.latvian.mods.kubejs.util.ListJS;
 import me.shedaniel.rei.api.client.registry.entry.EntryRegistry;
 import me.shedaniel.rei.api.common.entry.EntryStack;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * @author shedaniel
  */
 public class AddREIEventJS extends EventJS {
 	private final EntryRegistry registry;
-	private final Function<Object, Collection<EntryStack<?>>> function;
+	private final EntryWrapper entryWrapper;
 	private final List<EntryStack<?>> added = Lists.newArrayList();
 
-	public AddREIEventJS(EntryRegistry registry, Function<Object, Collection<EntryStack<?>>> function) {
+	public AddREIEventJS(EntryRegistry registry, EntryWrapper entryWrapper) {
 		this.registry = registry;
-		this.function = function;
+		this.entryWrapper = entryWrapper;
 	}
 
 	public void add(Object o) {
 		for (var o1 : ListJS.orSelf(o)) {
-			var stacks = function.apply(o1);
+			var stacks = entryWrapper.wrap(o1);
 
 			if (stacks != null && !stacks.isEmpty()) {
 				for (var stack : stacks) {

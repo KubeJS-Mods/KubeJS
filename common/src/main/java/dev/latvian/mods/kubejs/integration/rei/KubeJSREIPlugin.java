@@ -5,28 +5,42 @@ import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.ListJS;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
 import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
 import me.shedaniel.rei.api.client.registry.entry.EntryRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
-import me.shedaniel.rei.api.common.entry.EntryStack;
+import me.shedaniel.rei.api.common.entry.type.EntryType;
 import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
 import me.shedaniel.rei.api.common.plugins.PluginManager;
 import me.shedaniel.rei.api.common.registry.ReloadStage;
 import me.shedaniel.rei.api.common.util.CollectionUtils;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
 /**
  * @author shedaniel
  */
 public class KubeJSREIPlugin implements REIClientPlugin {
 	private final Set<CategoryIdentifier<?>> categoriesRemoved = new HashSet<>();
+
+	private static final Map<EntryType<?>, EntryWrapper> entryWrappers = new HashMap<>();
+
+	public KubeJSREIPlugin() {
+		entryWrappers.clear();
+		entryWrappers.put(VanillaEntryTypes.ITEM, o -> EntryIngredients.ofItemStacks(CollectionUtils.map(IngredientJS.of(o).getStacks(), ItemStackJS::getItemStack)));
+		entryWrappers.put(VanillaEntryTypes.FLUID, o -> EntryIngredients.of(FluidStackJS.of(o).getFluidStack()));
+		KubeJSAddREIWrapperEvent.EVENT.invoker().accept(entryWrappers::put);
+	}
 
 	/**
 	 * We want to run as late as possible, so we can remove other
@@ -39,22 +53,32 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 
 	@Override
 	public void registerEntries(EntryRegistry registry) {
-		// TODO: i would like this system to be more extendable,
-		//  such that other mod creators can registers serializers for their own
-		//  entry types and we'd just handle firing the KubeJS events for them.
-		var itemSerializer = (Function<Object, Collection<EntryStack<?>>>) o -> EntryIngredients.ofItemStacks(
-				CollectionUtils.map(IngredientJS.of(o).getStacks(), ItemStackJS::getItemStack));
-		var fluidSerializer = (Function<Object, Collection<EntryStack<?>>>) o -> EntryIngredients.of(FluidStackJS.of(o).getFluidStack());
+		entryWrappers.forEach((type, wrapper) -> {
+			var typeId = UtilsJS.stripIdForEvent(type.getId());
 
-		new HideREIEventJS<>(registry, VanillaEntryTypes.ITEM, itemSerializer).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_ITEMS);
-		new HideREIEventJS<>(registry, VanillaEntryTypes.FLUID, fluidSerializer).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_FLUIDS);
-		new AddREIEventJS(registry, itemSerializer).post(ScriptType.CLIENT, REIIntegration.REI_ADD_ITEMS);
-		new AddREIEventJS(registry, fluidSerializer).post(ScriptType.CLIENT, REIIntegration.REI_ADD_FLUIDS);
+			new HideREIEventJS<>(registry, UtilsJS.cast(type), wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted(typeId));
+			new AddREIEventJS(registry, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_ADD_EVENTS.formatted(typeId));
+
+			if (type.getId().getNamespace().equals("minecraft")) {
+				var shortId = UtilsJS.stripEventName(type.getId().getPath());
+
+				new HideREIEventJS<>(registry, UtilsJS.cast(type), wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted(shortId));
+				new AddREIEventJS(registry, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_ADD_EVENTS.formatted(shortId));
+			}
+
+			// legacy event ids with "plural s"
+			if(type == VanillaEntryTypes.ITEM) {
+				new HideREIEventJS<>(registry, VanillaEntryTypes.ITEM, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted("items"));
+				new AddREIEventJS(registry, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_ADD_EVENTS.formatted("items"));
+			} else if(type == VanillaEntryTypes.FLUID) {
+				new HideREIEventJS<>(registry, VanillaEntryTypes.FLUID, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted("fluids"));
+				new AddREIEventJS(registry, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_ADD_EVENTS.formatted("fluids"));
+			}
+		});
 	}
 
 	@Override
 	public void registerDisplays(DisplayRegistry registry) {
-		// TODO: can we make this fire for more entry types than just items?
 		new InformationREIEventJS().post(ScriptType.CLIENT, REIIntegration.REI_INFORMATION);
 	}
 
@@ -70,5 +94,21 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 			categoriesRemoved.clear();
 			new RemoveREICategoryEventJS(categoriesRemoved).post(ScriptType.CLIENT, REIIntegration.REI_REMOVE_CATEGORIES);
 		}
+	}
+
+	public static EntryWrapper getWrapperOrFallback(EntryType<?> type) {
+		var wrapper = entryWrappers.get(type);
+		if (wrapper != null) {
+			return wrapper;
+		}
+
+		ConsoleJS.CLIENT.warn("No wrapper found for entry type '%s', trying to fall back to id-based wrapper!".formatted(type.getId()));
+		return o -> {
+			Collection<ResourceLocation> ids = CollectionUtils.mapToSet(ListJS.orSelf(o), UtilsJS::getMCID);
+			return EntryRegistry.getInstance().getEntryStacks()
+					.filter(stack -> stack.getType().equals(type))
+					.filter(stack -> ids.contains(stack.getIdentifier()))
+					.toList();
+		};
 	}
 }

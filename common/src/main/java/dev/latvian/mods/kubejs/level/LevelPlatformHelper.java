@@ -28,7 +28,5 @@ public interface LevelPlatformHelper {
 
 	boolean areCapsCompatible(ItemStack a, ItemStack b);
 
-	ItemStack getContainerItem(ItemStack stack);
-
 	double getReachDistance(LivingEntity livingEntity);
 }

@@ -709,4 +709,12 @@ public class UtilsJS {
 		// safe cast, mojang just specified too general of a type
 		return ((StringRepresentable.EnumCodec<MobCategory>) MobCategory.CODEC).byName(s);
 	}
+
+	public static String stripIdForEvent(ResourceLocation id) {
+		return stripEventName(id.toString());
+	}
+
+	public static String stripEventName(String s) {
+		return s.replaceAll("[/:]", ".").replace('-', '_');
+	}
 }

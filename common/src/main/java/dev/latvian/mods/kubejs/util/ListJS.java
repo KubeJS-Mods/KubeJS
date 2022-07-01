@@ -433,11 +433,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 		var json = new JsonArray();
 
 		for (var o : this) {
-			var e = JsonIO.of(o);
-
-			if (!e.isJsonNull()) {
-				json.add(e);
-			}
+			json.add(JsonIO.of(o));
 		}
 
 		return json;
