@@ -28,15 +28,15 @@ public class RemoveREICategoryEventJS extends EventJS {
 		return registry;
 	}
 
-	public Collection<String> getCategoryIds() {
-		return CollectionUtils.map(registry, category -> category.getIdentifier().toString());
+	public Collection<ResourceLocation> getCategoryIds() {
+		return CollectionUtils.map(registry, CategoryConfiguration::getIdentifier);
 	}
 
-	public void remove(String... categoriesToYeet) {
+	public void remove(ResourceLocation... categoriesToYeet) {
 		yeet(categoriesToYeet);
 	}
 
-	public void yeet(String... categoriesToYeet) {
+	public void yeet(ResourceLocation... categoriesToYeet) {
 		for (var toYeet : categoriesToYeet) {
 			categoriesRemoved.add(CategoryIdentifier.of(toYeet));
 		}
@@ -50,7 +50,6 @@ public class RemoveREICategoryEventJS extends EventJS {
 		registry.stream()
 				.filter(filter)
 				.map(CategoryConfiguration::getIdentifier)
-				.map(ResourceLocation::toString)
 				.forEach(this::yeet);
 	}
 

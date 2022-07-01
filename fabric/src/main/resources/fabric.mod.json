@@ -38,6 +38,7 @@
 		"architectury": ">=${architectury_version}"
 	},
 	"breaks": {
-		"techreborn": "<5.1.0-beta.6"
+		"techreborn": "<5.1.0-beta.6",
+		"roughlyenoughitems": "<8.3.501"
 	}
 }
