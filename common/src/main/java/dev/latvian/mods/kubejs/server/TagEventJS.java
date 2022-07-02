@@ -129,7 +129,13 @@ public class TagEventJS<T> extends EventJS {
 				gatherTargets(stringId).ifLeft(wrapper -> {
 					var entryId = wrapper.id.toString();
 					var originalSize = proxyList.size();
-					proxyList.removeIf(proxy -> getIdOfEntry(proxy.entry()).equals(entryId));
+					proxyList.removeIf(proxy -> {
+						String proxyId = getIdOfEntry(proxy.entry());
+						if(proxyId.startsWith("#")) {
+							return proxyId.substring(1).equals(entryId);
+						}
+						return false;
+					});
 
 					var removedCount = originalSize - proxyList.size();
 					if (removedCount == 0) {
