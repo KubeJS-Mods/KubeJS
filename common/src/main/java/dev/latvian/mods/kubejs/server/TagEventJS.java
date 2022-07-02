@@ -86,9 +86,12 @@ public class TagEventJS<T> extends EventJS {
 		public TagWrapper remove(String... ids) {
 			for (var stringId : ids) {
 				gatherTargets(stringId).ifLeft(wrapper -> {
-					var entryId = wrapper.id.toString();
+					var entryId = wrapper.id;
 					var originalSize = entries.size();
-					entries.removeIf(proxy -> proxy.entry().elementOrTag().decoratedId().equals(entryId));
+					entries.removeIf(proxy -> {
+                        var proxyEntry = proxy.entry();
+                        return proxyEntry.tag && proxyEntry.id.equals(entryId);
+                    });
 
 					var removedCount = originalSize - entries.size();
 					if (removedCount == 0) {
