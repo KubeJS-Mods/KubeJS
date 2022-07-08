@@ -15,6 +15,9 @@ import dev.latvian.mods.rhino.Scriptable;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -44,19 +47,18 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 				throw new RecipeExceptionJS("Unknown recipe type!");
 			}
 
-			var args = ListJS.of(args0);
+			var args1 = ListJS.of(args0);
 
-			if (args == null || args.isEmpty()) {
+			if (args1 == null || args1.isEmpty()) {
 				throw new RecipeExceptionJS("Recipe requires at least one argument!");
-			} else if (type.isCustom() && args.size() != 1) {
+			} else if (type.isCustom() && args1.size() != 1) {
 				throw new RecipeExceptionJS("Custom recipe has to use a single json object argument!");
-			}
-
-			if (args.size() == 1) {
-				var map = MapJS.of(args.get(0));
+			} else if (args1.size() == 1) {
+				var map = MapJS.of(args1.get(0));
 
 				if (map != null) {
 					var recipe = type.factory.get();
+					RecipeArguments args = new RecipeArguments(recipe, args1);
 					recipe.type = type;
 					recipe.json = ((MapJS) normalize(map)).toJson();
 
@@ -71,6 +73,7 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 			}
 
 			var recipe = type.factory.get();
+			RecipeArguments args = new RecipeArguments(recipe, args1);
 			recipe.type = type;
 			recipe.json = new JsonObject();
 			recipe.serializeInputs = true;
@@ -97,22 +100,22 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 				return TagIngredientJS.createTag(s.substring(1)).toJson();
 			}
 			return o;
-		} else if (o instanceof ListJS) {
-			var list = new ListJS();
+		} else if (o instanceof Map<?, ?> m) {
+			var map = new HashMap<>();
 
-			for (var o1 : (ListJS) o) {
-				list.add(normalize(o1));
-			}
-
-			return list;
-		} else if (o instanceof MapJS) {
-			var map = new MapJS();
-
-			for (var entry : ((MapJS) o).entrySet()) {
+			for (var entry : m.entrySet()) {
 				map.put(entry.getKey(), normalize(entry.getValue()));
 			}
 
 			return map;
+		} else if (o instanceof Iterable<?> itr) {
+			var list = new ArrayList<>();
+
+			for (var o1 : itr) {
+				list.add(normalize(o1));
+			}
+
+			return list;
 		}
 
 		return o;

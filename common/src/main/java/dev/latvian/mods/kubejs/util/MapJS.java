@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author LatvianModder
@@ -147,8 +146,6 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 			return false;
 		} else if (v instanceof MapJS map) {
 			map.changeListener = this::onChanged;
-		} else if (v instanceof ListJS list) {
-			list.changeListener = this::onChanged;
 		}
 
 		return true;
@@ -267,55 +264,5 @@ public class MapJS extends LinkedHashMap<String, Object> implements StringBuilde
 		}
 
 		return nbt;
-	}
-
-	public MapJS getOrNewMap(String id) {
-		var map = of(get(id));
-
-		if (map == null) {
-			map = new MapJS();
-			put(id, map);
-		}
-
-		return map;
-	}
-
-	public ListJS getOrNewList(String id) {
-		var list = ListJS.of(get(id));
-
-		if (list == null) {
-			list = new ListJS();
-			put(id, list);
-		}
-
-		return list;
-	}
-
-	public boolean containsAll(@Nullable MapJS other) {
-		if (other == null || other.isEmpty()) {
-			return true;
-		}
-
-		for (var entry : other.entrySet()) {
-			if (!Objects.equals(entry.getValue(), get(entry.getKey()))) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	public boolean containsAny(@Nullable MapJS other) {
-		if (other == null || other.isEmpty()) {
-			return false;
-		}
-
-		for (var entry : other.entrySet()) {
-			if (Objects.equals(entry.getValue(), get(entry.getKey()))) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 }

@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.ListJS;
@@ -21,7 +22,7 @@ public class ShapedRecipeJS extends RecipeJS {
 	private final List<String> key = new ArrayList<>();
 
 	@Override
-	public void create(ListJS args) {
+	public void create(RecipeArguments args) {
 		if (args.size() < 3) {
 			if (args.size() < 2) {
 				throw new RecipeExceptionJS("Requires 3 arguments - result, pattern and keys!");

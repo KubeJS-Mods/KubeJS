@@ -1,15 +1,15 @@
 package dev.latvian.mods.kubejs.recipe.mod;
 
+import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
-import dev.latvian.mods.kubejs.util.ListJS;
 
 /**
  * @author LatvianModder
  */
 public class ArsNouveauEnchantmentRecipeJS extends RecipeJS {
 	@Override
-	public void create(ListJS args) {
+	public void create(RecipeArguments args) {
 		json.addProperty("enchantment", args.get(0).toString());
 		json.addProperty("level", ((Number) args.get(1)).intValue());
 		inputItems.addAll(parseIngredientItemList(args.get(2)));

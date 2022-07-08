@@ -1,14 +1,14 @@
 package dev.latvian.mods.kubejs.recipe.mod;
 
+import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import dev.latvian.mods.kubejs.util.ListJS;
 
 /**
  * @author LatvianModder
  */
 public class ArsNouveauGlyphPressRecipeJS extends RecipeJS {
 	@Override
-	public void create(ListJS args) {
+	public void create(RecipeArguments args) {
 		outputItems.add(parseResultItem(args.get(0)));
 		inputItems.add(parseIngredientItem(args.get(1)));
 		json.addProperty("tier", args.get(2).toString());

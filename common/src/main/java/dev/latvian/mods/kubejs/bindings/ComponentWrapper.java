@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.util.JSObjectType;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.mod.util.JsonUtils;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.StringTag;
@@ -17,6 +16,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -45,15 +46,7 @@ public class ComponentWrapper {
 			} else {
 				return Component.literal(s);
 			}
-		} else if (o instanceof ListJS list) {
-			var text = Component.empty().copy();
-
-			for (var e1 : list) {
-				text.append(of(e1));
-			}
-
-			return text;
-		} else if (o instanceof MapJS map && (map.containsKey("text") || map.containsKey("translate"))) {
+		} else if (o instanceof Map<?, ?> map && (map.containsKey("text") || map.containsKey("translate"))) {
 			MutableComponent text;
 
 			if (map.containsKey("text")) {
@@ -61,8 +54,7 @@ public class ComponentWrapper {
 			} else {
 				Object[] with;
 
-				if (map.containsKey("with")) {
-					var a = map.getOrNewList("with");
+				if (map.get("with") instanceof Collection<?> a) {
 					with = new Object[a.size()];
 					var i = 0;
 
@@ -97,10 +89,18 @@ public class ComponentWrapper {
 			text.click(map.containsKey("click") ? clickEventOf(map.get("click")) : null);
 			text.hover(map.containsKey("hover") ? of(map.get("hover")) : null);
 
-			if (map.containsKey("extra")) {
-				for (var e : map.getOrNewList("extra")) {
+			if (map.get("extra") instanceof Iterable<?> itr) {
+				for (var e : itr) {
 					text.append(of(e));
 				}
+			}
+
+			return text;
+		} else if (o instanceof Iterable<?> list) {
+			var text = Component.empty().copy();
+
+			for (var e1 : list) {
+				text.append(of(e1));
 			}
 
 			return text;

@@ -125,7 +125,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			return of(in);
 		}
 
-		List<Object> list = ListJS.of(o);
+		List<?> list = ListJS.of(o);
 
 		if (list != null) {
 			var l = new MatchAnyIngredientJS();

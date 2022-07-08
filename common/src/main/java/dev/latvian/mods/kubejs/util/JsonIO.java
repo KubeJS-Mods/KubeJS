@@ -37,6 +37,7 @@ public class JsonIO {
 		return JsonUtils.copy(element);
 	}
 
+	@Nullable
 	public static JsonElement of(@Nullable Object o) {
 		if (o instanceof JsonElement) {
 			return (JsonElement) o;

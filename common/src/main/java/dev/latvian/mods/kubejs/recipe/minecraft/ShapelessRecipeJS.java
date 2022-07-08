@@ -1,15 +1,15 @@
 package dev.latvian.mods.kubejs.recipe.minecraft;
 
 import com.google.gson.JsonArray;
+import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import dev.latvian.mods.kubejs.util.ListJS;
 
 /**
  * @author LatvianModder
  */
 public class ShapelessRecipeJS extends RecipeJS {
 	@Override
-	public void create(ListJS args) {
+	public void create(RecipeArguments args) {
 		outputItems.add(parseResultItem(args.get(0)));
 		inputItems.addAll(parseIngredientItemList(args.get(1)));
 	}

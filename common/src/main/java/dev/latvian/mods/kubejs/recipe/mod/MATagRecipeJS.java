@@ -2,9 +2,9 @@ package dev.latvian.mods.kubejs.recipe.mod;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import dev.latvian.mods.kubejs.util.ListJS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ public class MATagRecipeJS extends RecipeJS {
 	private final List<String> key = new ArrayList<>();
 
 	@Override
-	public void create(ListJS args) {
+	public void create(RecipeArguments args) {
 		throw new RecipeExceptionJS("Can't create recipe with this type! Use regular shaped crafting");
 	}
 

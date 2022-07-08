@@ -3,13 +3,13 @@ package dev.latvian.mods.kubejs.bindings;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.FireworksJS;
-import dev.latvian.mods.kubejs.util.ListJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,11 +43,11 @@ public class ItemWrapper {
 		return in.withChance(c);
 	}
 
-	public static ListJS getList() {
-		return ListJS.of(ItemStackJS.getList());
+	public static List<ItemStackJS> getList() {
+		return ItemStackJS.getList();
 	}
 
-	public static ListJS getTypeList() {
+	public static List<String> getTypeList() {
 		return ItemStackJS.getTypeList();
 	}
 

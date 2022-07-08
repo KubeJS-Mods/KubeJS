@@ -6,8 +6,8 @@ import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStackJS;
+import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import dev.latvian.mods.kubejs.util.ListJS;
 import net.minecraft.resources.ResourceLocation;
 
 /**
@@ -40,7 +40,7 @@ public class TRRecipeJS extends RecipeJS {
 	}
 
 	@Override
-	public void create(ListJS args) {
+	public void create(RecipeArguments args) {
 		outputItems.addAll(parseResultItemList(args.get(0)));
 		inputItems.addAll(parseIngredientItemList(args.get(1)));
 		json.addProperty("power", 2);

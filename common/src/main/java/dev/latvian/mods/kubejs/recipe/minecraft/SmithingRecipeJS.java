@@ -1,14 +1,14 @@
 package dev.latvian.mods.kubejs.recipe.minecraft;
 
+import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import dev.latvian.mods.kubejs.util.ListJS;
 
 /**
  * @author LatvianModder
  */
 public class SmithingRecipeJS extends RecipeJS {
 	@Override
-	public void create(ListJS args) {
+	public void create(RecipeArguments args) {
 		outputItems.add(parseResultItem(args.get(0)));
 		inputItems.add(parseIngredientItem(args.get(1)));
 		inputItems.add(parseIngredientItem(args.get(2)));

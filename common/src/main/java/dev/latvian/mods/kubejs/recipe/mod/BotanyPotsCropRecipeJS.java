@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe.mod;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 
@@ -17,7 +18,7 @@ public class BotanyPotsCropRecipeJS extends RecipeJS {
 	public final List<Integer> maxRolls = new ArrayList<>();
 
 	@Override
-	public void create(ListJS args) {
+	public void create(RecipeArguments args) {
 		for (var o : ListJS.orSelf(args.get(0))) {
 			if (o instanceof Map) {
 				var m = (Map<String, Object>) o;

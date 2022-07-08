@@ -4,13 +4,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import dev.latvian.mods.kubejs.util.ListJS;
 import org.jetbrains.annotations.Nullable;
 
 public class IDSqueezerRecipeJS extends RecipeJS {
 	@Override
-	public void create(ListJS args) {
+	public void create(RecipeArguments args) {
 		outputItems.addAll(parseResultItemList(args.get(0)));
 		inputItems.add(parseIngredientItem(args.get(1)));
 		json.addProperty("duration", 40);

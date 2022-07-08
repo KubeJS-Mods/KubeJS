@@ -60,6 +60,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -248,23 +249,17 @@ public class UtilsJS {
 		}
 		// Maps
 		else if (o instanceof Map) {
-			if (!type.checkMap()) {
-				return null;
-			}
-
-			var map = new MapJS(((Map) o).size());
-			map.putAll((Map) o);
-			return map;
+			return o;
 		}
 		// Lists, Collections, Iterables, GSON Arrays
-		else if (o instanceof Iterable) {
+		else if (o instanceof Iterable<?> itr) {
 			if (!type.checkList()) {
 				return null;
 			}
 
-			var list = new ListJS();
+			var list = new ArrayList<>();
 
-			for (var o1 : (Iterable) o) {
+			for (var o1 : itr) {
 				list.add(o1);
 			}
 
@@ -480,8 +475,8 @@ public class UtilsJS {
 		};
 	}
 
-	public static ListJS rollChestLoot(ResourceLocation id, @Nullable EntityJS entity) {
-		var list = new ListJS();
+	public static List<ItemStackJS> rollChestLoot(ResourceLocation id, @Nullable EntityJS entity) {
+		var list = new ArrayList<ItemStackJS>();
 		if (ServerJS.instance != null) {
 			var server = ServerJS.instance.getMinecraftServer();
 			var tables = ServerJS.instance.getMinecraftServer().getLootTables();

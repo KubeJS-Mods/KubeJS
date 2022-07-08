@@ -1,46 +1,52 @@
 package dev.latvian.mods.kubejs.util;
 
 import com.google.gson.JsonArray;
-import dev.latvian.mods.rhino.mod.util.ChangeListener;
-import dev.latvian.mods.rhino.mod.util.Copyable;
-import dev.latvian.mods.rhino.mod.util.JsonSerializable;
-import dev.latvian.mods.rhino.mod.util.NBTSerializable;
-import dev.latvian.mods.rhino.mod.util.NBTUtils;
-import dev.latvian.mods.rhino.mod.util.StringBuilderAppendable;
-import net.minecraft.nbt.ByteArrayTag;
-import net.minecraft.nbt.CollectionTag;
-import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.LongArrayTag;
-import net.minecraft.nbt.NumericTag;
-import net.minecraft.nbt.Tag;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author LatvianModder
  */
-public class ListJS extends ArrayList<Object> implements StringBuilderAppendable, ChangeListener<Object>, Copyable, JsonSerializable, NBTSerializable {
+public interface ListJS {
 	@Nullable
-	public static ListJS of(@Nullable Object o) {
-		var o1 = UtilsJS.wrap(o, JSObjectType.LIST);
-		return o1 instanceof ListJS ? (ListJS) o1 : null;
+	static List<?> of(@Nullable Object o) {
+		if (o instanceof List<?> l) {
+			return l;
+		} else if (o instanceof Iterable<?> itr) {
+			var list = new ArrayList<>(itr instanceof Collection<?> c ? c.size() : 4);
+
+			for (Object o1 : itr) {
+				list.add(o1);
+			}
+
+			return list;
+		}
+
+		return ofArray(o);
 	}
 
-	public static ListJS orSelf(@Nullable Object o) {
+	static List<?> orEmpty(@Nullable Object o) {
+		var l = of(o);
+		return l == null ? Collections.emptyList() : l;
+	}
+
+	static List<?> orSelf(@Nullable Object o) {
 		var l = of(o);
 
 		if (l != null) {
 			return l;
 		}
 
-		var list = new ListJS(1);
+		var list = new ArrayList<>(1);
 
 		if (o != null) {
 			list.add(o);
@@ -49,11 +55,10 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 		return list;
 	}
 
-	public static ListJS ofArray(Object array) {
+	@Nullable
+	static List<?> ofArray(@Nullable Object array) {
 		if (array instanceof Object[]) {
-			var list = new ListJS();
-			Collections.addAll(list, (Object[]) array);
-			return list;
+			return new ArrayList<>(Arrays.asList((Object[]) array));
 		} else if (array instanceof int[]) {
 			return ListJS.of((int[]) array);
 		} else if (array instanceof byte[]) {
@@ -68,13 +73,22 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 			return ListJS.of((double[]) array);
 		} else if (array instanceof char[]) {
 			return ListJS.of((char[]) array);
+		} else if (array != null && array.getClass().isArray()) {
+			var length = Array.getLength(array);
+			var list = new ArrayList<>(length);
+
+			for (var i = 0; i < length; i++) {
+				list.add(Array.get(array, i));
+			}
+
+			return list;
 		}
 
-		return new ListJS(0);
+		return null;
 	}
 
-	public static ListJS of(byte[] array) {
-		var list = new ListJS(array.length);
+	static List<Byte> of(byte[] array) {
+		var list = new ArrayList<Byte>(array.length);
 
 		for (var v : array) {
 			list.add(v);
@@ -83,8 +97,8 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 		return list;
 	}
 
-	public static ListJS of(short[] array) {
-		var list = new ListJS(array.length);
+	static List<Short> of(short[] array) {
+		var list = new ArrayList<Short>(array.length);
 
 		for (var v : array) {
 			list.add(v);
@@ -93,8 +107,8 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 		return list;
 	}
 
-	public static ListJS of(int[] array) {
-		var list = new ListJS(array.length);
+	static List<Integer> of(int[] array) {
+		var list = new ArrayList<Integer>(array.length);
 
 		for (var v : array) {
 			list.add(v);
@@ -103,8 +117,8 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 		return list;
 	}
 
-	public static ListJS of(long[] array) {
-		var list = new ListJS(array.length);
+	static List<Long> of(long[] array) {
+		var list = new ArrayList<Long>(array.length);
 
 		for (var v : array) {
 			list.add(v);
@@ -113,8 +127,8 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 		return list;
 	}
 
-	public static ListJS of(float[] array) {
-		var list = new ListJS(array.length);
+	static List<Float> of(float[] array) {
+		var list = new ArrayList<Float>(array.length);
 
 		for (var v : array) {
 			list.add(v);
@@ -123,8 +137,8 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 		return list;
 	}
 
-	public static ListJS of(double[] array) {
-		var list = new ListJS(array.length);
+	static List<Double> of(double[] array) {
+		var list = new ArrayList<Double>(array.length);
 
 		for (var v : array) {
 			list.add(v);
@@ -133,8 +147,8 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 		return list;
 	}
 
-	public static ListJS of(char[] array) {
-		var list = new ListJS(array.length);
+	static List<Character> of(char[] array) {
+		var list = new ArrayList<Character>(array.length);
 
 		for (var v : array) {
 			list.add(v);
@@ -144,7 +158,7 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 	}
 
 	@Nullable
-	public static JsonArray json(@Nullable Object array) {
+	static JsonArray json(@Nullable Object array) {
 		if (array instanceof JsonArray arr) {
 			return arr;
 		} else if (array instanceof CharSequence) {
@@ -153,354 +167,36 @@ public class ListJS extends ArrayList<Object> implements StringBuilderAppendable
 			} catch (Exception ex) {
 				return null;
 			}
-		}
+		} else if (array instanceof Iterable<?> itr) {
+			JsonArray json = new JsonArray();
 
-		var l = of(array);
-		return l == null ? null : l.toJson();
-	}
+			for (Object o1 : itr) {
+				json.add(JsonIO.of(o1));
+			}
 
-	@Nullable
-	@Deprecated
-	public static CollectionTag<?> nbt(@Nullable Object list) {
-		return NBTUtils.toTagCollection(list);
-	}
-
-	public ChangeListener<ListJS> changeListener;
-
-	public ListJS() {
-		this(0);
-	}
-
-	public ListJS(int s) {
-		super(s);
-	}
-
-	public int getLength() {
-		return size();
-	}
-
-	public ListJS push(Object... o) {
-		if (o.length == 0) {
-			return this;
-		} else if (o.length == 1) {
-			add(o[0]);
-			return this;
-		}
-
-		for (var i = 0; i < o.length; i++) {
-			o[i] = UtilsJS.wrap(o[i], JSObjectType.ANY);
-			setChangeListener(o[i]);
-		}
-
-		super.addAll(Arrays.asList(o));
-		onChanged(null);
-		return this;
-	}
-
-	@Nullable
-	public Object pop() {
-		if (!isEmpty()) {
-			return remove(size() - 1);
+			return json;
 		}
 
 		return null;
 	}
 
 	@Nullable
-	public Object shift() {
-		if (!isEmpty()) {
-			return remove(0);
-		}
+	static Set<?> ofSet(@Nullable Object o) {
+		if (o instanceof Set<?> s) {
+			return s;
+		} else if (o instanceof Collection<?> c) {
+			return new LinkedHashSet<>(c);
+		} else if (o instanceof Iterable<?> itr) {
+			var set = new HashSet<>();
 
-		return null;
-	}
-
-	public ListJS unshift(Object... o) {
-		if (o.length == 0) {
-			return this;
-		} else if (o.length == 1) {
-			add(0, o[0]);
-			return this;
-		}
-
-		for (var i = 0; i < o.length; i++) {
-			o[i] = UtilsJS.wrap(o[i], JSObjectType.ANY);
-			setChangeListener(o[i]);
-		}
-
-		super.addAll(0, Arrays.asList(o));
-		onChanged(null);
-		return this;
-	}
-
-	public ListJS reverse() {
-		Collections.reverse(this);
-		onChanged(null);
-		return this;
-	}
-
-	public ListJS filter(Predicate<Object> predicate) {
-		var list = new ListJS();
-
-		for (var o : this) {
-			if (predicate.test(o)) {
-				list.add(o);
-			}
-		}
-
-		return list;
-	}
-
-	public ListJS map(Function<Object, Object> transformer) {
-		var list = new ListJS();
-
-		for (var o : this) {
-			list.add(transformer.apply(o));
-		}
-
-		return list;
-	}
-
-	public ListJS splice(int pos, int deleteCount, Object... items) {
-		for (var i = 0; i < deleteCount; i++) {
-			remove(pos);
-		}
-
-		if (items.length == 0) {
-			return this;
-		} else if (items.length == 1) {
-			add(pos, items[0]);
-			return this;
-		}
-
-		for (var i = 0; i < items.length; i++) {
-			items[i] = UtilsJS.wrap(items[i], JSObjectType.ANY);
-			setChangeListener(items[i]);
-		}
-
-		super.addAll(pos, Arrays.asList(items));
-		onChanged(null);
-		return this;
-	}
-
-	@Override
-	public String toString() {
-		if (isEmpty()) {
-			return "[]";
-		}
-
-		var builder = new StringBuilder();
-		appendString(builder);
-		return builder.toString();
-	}
-
-	@Override
-	public void appendString(StringBuilder builder) {
-		if (isEmpty()) {
-			builder.append("[]");
-			return;
-		}
-
-		builder.append('[');
-
-		for (var i = 0; i < size(); i++) {
-			if (i > 0) {
-				builder.append(',');
+			for (Object o1 : itr) {
+				set.add(o1);
 			}
 
-			var o = get(i);
-
-			if (o instanceof StringBuilderAppendable appendable) {
-				appendable.appendString(builder);
-			} else {
-				builder.append(o);
-			}
+			return set;
 		}
 
-		builder.append(']');
-	}
-
-	@Override
-	public ListJS copy() {
-		var list = new ListJS(size());
-
-		for (var object : this) {
-			list.add(UtilsJS.copy(object));
-		}
-
-		return list;
-	}
-
-	protected boolean setChangeListener(@Nullable Object v) {
-		if (v instanceof MapJS map) {
-			map.changeListener = this::onChanged;
-		} else if (v instanceof ListJS list) {
-			list.changeListener = this::onChanged;
-		}
-
-		return true;
-	}
-
-	@Override
-	public void onChanged(@Nullable Object o) {
-		if (changeListener != null) {
-			changeListener.onChanged(this);
-		}
-	}
-
-	@Override
-	public boolean add(Object value) {
-		var v = UtilsJS.wrap(value, JSObjectType.ANY);
-
-		if (setChangeListener(v)) {
-			return super.add(v);
-		}
-
-		return false;
-	}
-
-	@Override
-	public void add(int index, Object value) {
-		var v = UtilsJS.wrap(value, JSObjectType.ANY);
-
-		if (setChangeListener(v)) {
-			super.add(index, v);
-		}
-	}
-
-	@Override
-	public boolean addAll(Collection c) {
-		if (c == null || c.isEmpty()) {
-			return false;
-		}
-
-		var o = c.toArray();
-
-		for (var i = 0; i < o.length; i++) {
-			o[i] = UtilsJS.wrap(o[i], JSObjectType.ANY);
-			setChangeListener(o[i]);
-		}
-
-		super.addAll(Arrays.asList(o));
-		onChanged(null);
-		return true;
-	}
-
-	@Override
-	public boolean addAll(int index, Collection c) {
-		if (c == null || c.isEmpty()) {
-			return false;
-		}
-
-		var o = c.toArray();
-
-		for (var i = 0; i < o.length; i++) {
-			o[i] = UtilsJS.wrap(o[i], JSObjectType.ANY);
-			setChangeListener(o[i]);
-		}
-
-		super.addAll(index, Arrays.asList(o));
-		onChanged(null);
-		return true;
-	}
-
-	@Override
-	public Object remove(int index) {
-		var o = super.remove(index);
-		onChanged(null);
-		return o;
-	}
-
-	@Override
-	public boolean remove(Object o) {
-		var b = super.remove(o);
-
-		if (b) {
-			onChanged(null);
-		}
-
-		return b;
-	}
-
-	@Override
-	public void clear() {
-		super.clear();
-		onChanged(null);
-	}
-
-	@Override
-	public JsonArray toJson() {
-		var json = new JsonArray();
-
-		for (var o : this) {
-			json.add(JsonIO.of(o));
-		}
-
-		return json;
-	}
-
-	@Override
-	public CollectionTag<?> toNBT() {
-		if (isEmpty()) {
-			return new ListTag();
-		}
-
-		var values = new Tag[size()];
-		var s = 0;
-		byte commmonId = -1;
-
-		for (var o : this) {
-			values[s] = NBTUtils.toTag(o);
-
-			if (values[s] != null) {
-				if (commmonId == -1) {
-					commmonId = values[s].getId();
-				} else if (commmonId != values[s].getId()) {
-					commmonId = 0;
-				}
-
-				s++;
-			}
-		}
-
-		if (commmonId == Tag.TAG_INT) {
-			var array = new int[s];
-
-			for (var i = 0; i < s; i++) {
-				array[i] = ((NumericTag) values[i]).getAsInt();
-			}
-
-			return new IntArrayTag(array);
-		} else if (commmonId == Tag.TAG_BYTE) {
-			var array = new byte[s];
-
-			for (var i = 0; i < s; i++) {
-				array[i] = ((NumericTag) values[i]).getAsByte();
-			}
-
-			return new ByteArrayTag(array);
-		} else if (commmonId == Tag.TAG_LONG) {
-			var array = new long[s];
-
-			for (var i = 0; i < s; i++) {
-				array[i] = ((NumericTag) values[i]).getAsLong();
-			}
-
-			return new LongArrayTag(array);
-		} else if (commmonId == 0 || commmonId == -1) {
-			return new ListTag();
-		}
-
-		var nbt = new ListTag();
-
-		for (var nbt1 : values) {
-			if (nbt1 == null) {
-				return nbt;
-			}
-
-			nbt.add(nbt1);
-		}
-
-		return nbt;
+		var list = of(o);
+		return list == null ? null : new LinkedHashSet<>(list);
 	}
 }

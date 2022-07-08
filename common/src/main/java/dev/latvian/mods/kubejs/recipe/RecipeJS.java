@@ -58,7 +58,7 @@ public abstract class RecipeJS {
 	public boolean serializeInputs;
 	private String recipeStage = "";
 
-	public abstract void create(ListJS args);
+	public abstract void create(RecipeArguments args);
 
 	public abstract void deserialize();
 

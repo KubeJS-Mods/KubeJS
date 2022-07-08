@@ -19,7 +19,6 @@ import dev.latvian.mods.kubejs.item.ingredient.WeakNBTIngredientJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -286,8 +285,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	};
 
 	private static List<ItemStackJS> cachedItemList;
-	private static ListJS cachedItemListJS;
-	private static ListJS cachedItemTypeListJS;
+	private static List<String> cachedItemTypeList;
 
 	public static ItemStackJS of(@Nullable Object o) {
 		if (o instanceof Wrapper w) {
@@ -517,29 +515,20 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		return cachedItemList;
 	}
 
-	public static ListJS getListJS() {
-		if (cachedItemListJS == null) {
-			cachedItemListJS = Objects.requireNonNull(ListJS.of(getList()));
-		}
-
-		return cachedItemListJS;
-	}
-
 	public static void clearListCache() {
 		cachedItemList = null;
-		cachedItemListJS = null;
 	}
 
-	public static ListJS getTypeList() {
-		if (cachedItemTypeListJS == null) {
-			cachedItemTypeListJS = new ListJS();
+	public static List<String> getTypeList() {
+		if (cachedItemTypeList == null) {
+			cachedItemTypeList = new ArrayList<>();
 
 			for (var id : KubeJSRegistries.items().getIds()) {
-				cachedItemTypeListJS.add(id.toString());
+				cachedItemTypeList.add(id.toString());
 			}
 		}
 
-		return cachedItemTypeListJS;
+		return cachedItemTypeList;
 	}
 
 	@Nullable

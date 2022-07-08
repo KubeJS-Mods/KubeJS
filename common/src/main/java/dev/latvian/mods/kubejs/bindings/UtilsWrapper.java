@@ -2,12 +2,11 @@ package dev.latvian.mods.kubejs.bindings;
 
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.entity.EntityJS;
+import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.ListJS;
-import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.mod.util.CountingMap;
@@ -22,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -55,12 +55,12 @@ public interface UtilsWrapper {
 		return Collections.emptyMap();
 	}
 
-	static ListJS newList() {
-		return new ListJS();
+	static List<?> newList() {
+		return new ArrayList<>();
 	}
 
-	static MapJS newMap() {
-		return new MapJS();
+	static Map<?, ?> newMap() {
+		return new LinkedHashMap<>();
 	}
 
 	static CountingMap newCountingMap() {
@@ -130,26 +130,12 @@ public interface UtilsWrapper {
 		return System.currentTimeMillis();
 	}
 
-	static ListJS rollChestLoot(ResourceLocation id) {
+	static List<ItemStackJS> rollChestLoot(ResourceLocation id) {
 		return rollChestLoot(id, null);
 	}
 
-	static ListJS rollChestLoot(ResourceLocation id, @Nullable EntityJS entity) {
+	static List<ItemStackJS> rollChestLoot(ResourceLocation id, @Nullable EntityJS entity) {
 		return UtilsJS.rollChestLoot(id, entity);
-	}
-
-	@Nullable
-	static ListJS listOf(@Nullable Object o) {
-		return ListJS.of(o);
-	}
-
-	static ListJS listOrSelf(@Nullable Object o) {
-		return ListJS.orSelf(o);
-	}
-
-	@Nullable
-	static MapJS mapOf(@Nullable Object o) {
-		return MapJS.of(o);
 	}
 
 	@Nullable

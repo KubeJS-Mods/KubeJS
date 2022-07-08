@@ -9,7 +9,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.network.chat.Component;
 
-import java.util.HashSet;
+import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
@@ -31,7 +31,7 @@ public class InformationJEIEventJS extends EventJS {
 	}
 
 	public <T> void addForType(IIngredientType<T> type, Object o, Component[] s) {
-		var targets = new HashSet<>(ListJS.orSelf(o).map(String::valueOf));
+		var targets = ListJS.orSelf(o).stream().map(String::valueOf).collect(Collectors.toSet());
 		var manager = registration.getIngredientManager();
 		var helper = manager.getIngredientHelper(type);
 		registration.addIngredientInfo(

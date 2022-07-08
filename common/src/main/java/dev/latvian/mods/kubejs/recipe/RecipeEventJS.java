@@ -20,7 +20,6 @@ import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
-import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -415,7 +414,7 @@ public class RecipeEventJS extends EventJS {
 		return recipeFunctions;
 	}
 
-	public RecipeJS addRecipe(RecipeJS r, RecipeTypeJS type, ListJS args1) {
+	public RecipeJS addRecipe(RecipeJS r, RecipeTypeJS type, RecipeArguments args) {
 		addedRecipes.add(r);
 
 		if (ServerSettings.instance.logAddedRecipes) {

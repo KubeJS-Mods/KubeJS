@@ -139,8 +139,11 @@ import net.minecraft.world.phys.Vec3;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -403,8 +406,11 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(CopyNameFunction.NameSource.class, o -> o == null ? null : CopyNameFunction.NameSource.getByName(o.toString().toLowerCase()));
 
 		// KubeJS //
-		typeWrappers.register(MapJS.class, MapJS::of);
-		typeWrappers.register(ListJS.class, ListJS::of);
+		typeWrappers.register(Map.class, MapJS::of);
+		typeWrappers.register(List.class, ListJS::of);
+		typeWrappers.register(Iterable.class, ListJS::of);
+		typeWrappers.register(Collection.class, ListJS::of);
+		typeWrappers.register(Set.class, ListJS::ofSet);
 		typeWrappers.register(ItemStackJS.class, ItemStackJS::of);
 		typeWrappers.register(IngredientJS.class, IngredientJS::of);
 		typeWrappers.register(IngredientStackJS.class, o -> IngredientJS.of(o).asIngredientStack());

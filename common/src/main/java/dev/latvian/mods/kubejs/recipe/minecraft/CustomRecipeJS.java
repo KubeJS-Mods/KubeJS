@@ -3,11 +3,11 @@ package dev.latvian.mods.kubejs.recipe.minecraft;
 import com.google.gson.JsonArray;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.ListJS;
 
 /**
  * @author LatvianModder
@@ -26,7 +26,7 @@ public class CustomRecipeJS extends RecipeJS {
 	}
 
 	@Override
-	public void create(ListJS args) {
+	public void create(RecipeArguments args) {
 		throw new RecipeExceptionJS("Can't create custom recipe for type " + getOrCreateId() + "!");
 	}
 
