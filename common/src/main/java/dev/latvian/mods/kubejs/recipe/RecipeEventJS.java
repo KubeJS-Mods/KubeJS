@@ -20,7 +20,6 @@ import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
-import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.Util;
@@ -560,9 +559,12 @@ public class RecipeEventJS extends EventJS {
 		return func;
 	}
 
-	public RecipeJS custom(Object o) {
-		var json = Objects.requireNonNull(MapJS.of(o));
-		return getRecipeFunction(json.getOrDefault("type", "").toString()).createRecipe(new Object[]{json});
+	public RecipeJS custom(JsonObject json) {
+		if (json == null || !json.has("type")) {
+			throw new RecipeExceptionJS("JSON does not contain 'type' key!");
+		}
+
+		return getRecipeFunction(json.get("type").getAsString()).createRecipe(new Object[]{json});
 	}
 
 	public void printTypes() {

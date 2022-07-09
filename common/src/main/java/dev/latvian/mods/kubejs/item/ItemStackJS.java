@@ -55,8 +55,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -74,7 +76,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 		@Override
 		public Collection<ResourceLocation> getTags() {
-			return Collections.emptySet();
+			return Set.of();
 		}
 
 		@Override
@@ -176,12 +178,12 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 		@Override
 		public Set<ItemStackJS> getStacks() {
-			return Collections.emptySet();
+			return Set.of();
 		}
 
 		@Override
 		public Set<Item> getVanillaItems() {
-			return Collections.emptySet();
+			return Set.of();
 		}
 
 		@Override
@@ -200,13 +202,8 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		}
 
 		@Override
-		public MapJS getEnchantments() {
-			return new MapJS() {
-				@Override
-				protected boolean setChangeListener(@Nullable Object v) {
-					return false;
-				}
-			};
+		public Map<String, Integer> getEnchantments() {
+			return Map.of();
 		}
 
 		@Override
@@ -215,7 +212,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		}
 
 		@Override
-		public ItemStackJS enchant(MapJS map) {
+		public ItemStackJS enchant(Map<?, ?> map) {
 			return this;
 		}
 
@@ -840,8 +837,8 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		return getCount() == s.getCount() && areItemsEqual(s) && isNBTEqual(s);
 	}
 
-	public MapJS getEnchantments() {
-		var map = new MapJS();
+	public Map<String, Integer> getEnchantments() {
+		var map = new HashMap<String, Integer>();
 
 		for (var entry : EnchantmentHelper.getEnchantments(getItemStack()).entrySet()) {
 			var id = KubeJSRegistries.enchantments().getId(entry.getKey());
@@ -858,7 +855,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		return EnchantmentHelper.getItemEnchantmentLevel(enchantment, stack) >= level;
 	}
 
-	public ItemStackJS enchant(MapJS enchantments) {
+	public ItemStackJS enchant(Map<?, ?> enchantments) {
 		var is = this;
 
 		for (var entry : enchantments.entrySet()) {

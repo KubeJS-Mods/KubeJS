@@ -83,8 +83,9 @@ public class ShapedRecipeJS extends RecipeJS {
 			throw new RecipeExceptionJS("Key map is empty!");
 		}
 
-		for (var k : key1.keySet()) {
-			var o = key1.get(k);
+		for (var kr : key1.keySet()) {
+			var k = String.valueOf(kr);
+			var o = key1.get(kr);
 
 			if (o == ItemStackJS.EMPTY || o.equals("minecraft:air")) {
 				airs.add(k);

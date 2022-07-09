@@ -101,7 +101,7 @@ public class JsonIO {
 	}
 
 	@Nullable
-	public static MapJS read(Path path) throws IOException {
+	public static Map<?, ?> read(Path path) throws IOException {
 		if (Files.notExists(path)) {
 			return null;
 		}
@@ -121,7 +121,7 @@ public class JsonIO {
 		}
 	}
 
-	public static void write(Path path, @Nullable JsonElement json) throws IOException {
+	public static void write(Path path, @Nullable JsonObject json) throws IOException {
 		if (json == null || json.isJsonNull()) {
 			Files.deleteIfExists(path);
 			return;

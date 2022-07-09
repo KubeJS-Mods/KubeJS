@@ -158,6 +158,26 @@ public interface ListJS {
 	}
 
 	@Nullable
+	static Set<?> ofSet(@Nullable Object o) {
+		if (o instanceof Set<?> s) {
+			return s;
+		} else if (o instanceof Collection<?> c) {
+			return new LinkedHashSet<>(c);
+		} else if (o instanceof Iterable<?> itr) {
+			var set = new HashSet<>();
+
+			for (Object o1 : itr) {
+				set.add(o1);
+			}
+
+			return set;
+		}
+
+		var list = of(o);
+		return list == null ? null : new LinkedHashSet<>(list);
+	}
+
+	@Nullable
 	static JsonArray json(@Nullable Object array) {
 		if (array instanceof JsonArray arr) {
 			return arr;
@@ -178,25 +198,5 @@ public interface ListJS {
 		}
 
 		return null;
-	}
-
-	@Nullable
-	static Set<?> ofSet(@Nullable Object o) {
-		if (o instanceof Set<?> s) {
-			return s;
-		} else if (o instanceof Collection<?> c) {
-			return new LinkedHashSet<>(c);
-		} else if (o instanceof Iterable<?> itr) {
-			var set = new HashSet<>();
-
-			for (Object o1 : itr) {
-				set.add(o1);
-			}
-
-			return set;
-		}
-
-		var list = of(o);
-		return list == null ? null : new LinkedHashSet<>(list);
 	}
 }

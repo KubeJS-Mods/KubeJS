@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -283,7 +284,7 @@ public class UtilsJS {
 				return null;
 			}
 
-			var map = new MapJS(json.size());
+			var map = new HashMap<String, Object>(json.size());
 
 			for (var entry : json.entrySet()) {
 				map.put(entry.getKey(), entry.getValue());
@@ -301,7 +302,7 @@ public class UtilsJS {
 				return null;
 			}
 
-			var map = new MapJS(tag.size());
+			var map = new HashMap<String, Tag>(tag.size());
 
 			for (var s : tag.getAllKeys()) {
 				map.put(s, tag.get(s));

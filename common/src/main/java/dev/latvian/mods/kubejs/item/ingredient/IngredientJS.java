@@ -151,7 +151,11 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 				if ("forge:nbt".equals(map.get("type"))) {
 					in = ItemStackJS.of(map.get("item")).withNBT(NBTUtils.toTagCompound(map.get("nbt")));
 				} else {
-					var json = map.toJson();
+					var json = MapJS.json(o);
+
+					if (json == null) {
+						throw new RecipeExceptionJS("Failed to parse custom ingredient (" + o + " is not a json object").fallback();
+					}
 
 					try {
 						var ingredient = RecipePlatformHelper.get().getCustomIngredient(json);

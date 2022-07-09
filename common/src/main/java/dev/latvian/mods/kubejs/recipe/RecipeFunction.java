@@ -54,13 +54,13 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 			} else if (type.isCustom() && args1.size() != 1) {
 				throw new RecipeExceptionJS("Custom recipe has to use a single json object argument!");
 			} else if (args1.size() == 1) {
-				var map = MapJS.of(args1.get(0));
+				var map = MapJS.json(args1.get(0));
 
 				if (map != null) {
 					var recipe = type.factory.get();
 					RecipeArguments args = new RecipeArguments(recipe, args1);
 					recipe.type = type;
-					recipe.json = ((MapJS) normalize(map)).toJson();
+					recipe.json = MapJS.json(normalize(map));
 
 					if (!(recipe instanceof CustomRecipeJS)) {
 						recipe.serializeInputs = true;
