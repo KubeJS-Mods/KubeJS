@@ -67,7 +67,7 @@ public abstract class LevelJS implements WithAttachedData {
 		return minecraftLevel.getGameTime();
 	}
 
-	public long getLocalTime() {
+	public long getDayTime() {
 		return minecraftLevel.getDayTime();
 	}
 
@@ -79,7 +79,7 @@ public abstract class LevelJS implements WithAttachedData {
 		return minecraftLevel.dimension() == Level.OVERWORLD;
 	}
 
-	public boolean isDaytime() {
+	public boolean isDay() {
 		return minecraftLevel.isDay();
 	}
 
