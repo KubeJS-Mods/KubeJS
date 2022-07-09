@@ -9,7 +9,6 @@ import dev.latvian.mods.kubejs.player.PlayerDataJS;
 import dev.latvian.mods.kubejs.player.PlayerJS;
 import dev.latvian.mods.kubejs.player.ServerPlayerJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.server.GameRulesJS;
 import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.WithAttachedData;
@@ -23,6 +22,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
@@ -30,7 +30,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.UUID;
 
 /**
  * @author LatvianModder
@@ -55,8 +54,8 @@ public abstract class LevelJS implements WithAttachedData {
 		return data;
 	}
 
-	public GameRulesJS getGameRules() {
-		return new GameRulesJS(minecraftLevel.getGameRules());
+	public GameRules getGameRules() {
+		return minecraftLevel.getGameRules();
 	}
 
 	@Nullable

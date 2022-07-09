@@ -17,7 +17,7 @@ public class GameStagesPlayerData {
 	}
 
 	public Stages getStages() {
-		return ((PlayerKJS) playerData.getMinecraftPlayer()).getStagesKJS();
+		return ((PlayerKJS) playerData.getMinecraftPlayer()).kjs$getStages();
 	}
 
 	public boolean has(String stage) {

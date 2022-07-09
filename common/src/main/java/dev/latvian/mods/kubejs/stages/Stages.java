@@ -68,7 +68,7 @@ public abstract class Stages {
 
 		if (stages == null) {
 			stages = createEntityStages(player);
-			playerKJS.setStagesKJS(stages);
+			playerKJS.kjs$setStages(stages);
 		}
 
 		return stages;

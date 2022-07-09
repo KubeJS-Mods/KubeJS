@@ -10,7 +10,7 @@ public interface PlayerKJS {
 	@Nullable
 	Stages getStagesRawKJS();
 
-	void setStagesKJS(Stages p);
+	void kjs$setStages(Stages p);
 
-	Stages getStagesKJS();
+	Stages kjs$getStages();
 }

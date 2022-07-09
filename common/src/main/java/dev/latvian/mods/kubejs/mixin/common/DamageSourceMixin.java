@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.mixin.common;
 
 import dev.latvian.mods.kubejs.core.AsKJS;
-import dev.latvian.mods.kubejs.core.EntityKJS;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.player.PlayerJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
+import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.Shadow;
  * @author LatvianModder
  */
 @Mixin(DamageSource.class)
+@RemapPrefixForJS("kjs$")
 public abstract class DamageSourceMixin {
 	@Shadow
 	@RemapForJS("getType")
@@ -30,22 +31,19 @@ public abstract class DamageSourceMixin {
 	public abstract Entity getEntity();
 
 	@Nullable
-	@RemapForJS("getImmediate")
-	public EntityJS getImmediateKJS() {
+	public EntityJS kjs$getImmediate() {
 		return AsKJS.wrapSafe(getDirectEntity());
 	}
 
 	@Nullable
-	@RemapForJS("getActual")
-	public EntityJS getActualKJS() {
+	public EntityJS kjs$getActual() {
 		return AsKJS.wrapSafe(getEntity());
 	}
 
 	@Nullable
-	@RemapForJS("getPlayer")
-	public PlayerJS<?> getPlayerKJS() {
+	public PlayerJS<?> kjs$getPlayer() {
 		var entity = getEntity();
-		if(entity != null) {
+		if (entity != null) {
 			return entity.asKJS().getPlayer();
 		}
 		return null;

@@ -66,6 +66,7 @@ import java.util.stream.Collectors;
 /**
  * @author LatvianModder
  */
+@SuppressWarnings("unused")
 public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListener<Tag>, SpecialEquality {
 	public static final ItemStackJS EMPTY = new ItemStackJS(ItemStack.EMPTY) {
 		@Override
@@ -550,7 +551,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	}
 
 	public String getId() {
-		return Registries.getId(getItem(), Registry.ITEM_REGISTRY).toString();
+		return String.valueOf(Registries.getId(getItem(), Registry.ITEM_REGISTRY));
 	}
 
 	public Collection<ResourceLocation> getTags() {
