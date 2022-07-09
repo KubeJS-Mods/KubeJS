@@ -6,7 +6,6 @@ import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.core.ItemStackKJS;
-import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IgnoreNBTIngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
@@ -293,8 +292,6 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			return EMPTY;
 		} else if (o instanceof ItemStackJS js) {
 			return js;
-		} else if (o instanceof FluidStackJS fluidStack) {
-			return new DummyFluidItemStackJS(fluidStack);
 		} else if (o instanceof IngredientJS ingr) {
 			return ingr.getFirst();
 		} else if (o instanceof ItemStack stack) {
@@ -410,8 +407,6 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 				}
 
 				return stack;
-			} else if (map.get("fluid") instanceof CharSequence) {
-				return new DummyFluidItemStackJS(FluidStackJS.of(map));
 			}
 		}
 
@@ -1032,11 +1027,6 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	@Override
 	public Set<String> getItemIds() {
 		return Collections.singleton(getId());
-	}
-
-	@Nullable
-	public FluidStackJS getFluidStack() {
-		return null;
 	}
 
 	public CompoundTag getTypeData() {

@@ -34,8 +34,8 @@ public class InventoryJS {
 	}
 
 	public void set(int slot, ItemStack item) {
-		if (minecraftInventory instanceof ItemHandler.Mutable) {
-			((ItemHandler.Mutable) minecraftInventory).setStackInSlot(slot, item);
+		if (minecraftInventory instanceof ItemHandler.Mutable m) {
+			m.setStackInSlot(slot, item);
 		} else {
 			throw new IllegalStateException("This inventory can't be modified directly! Use insert/extract methods!");
 		}
@@ -58,7 +58,7 @@ public class InventoryJS {
 	}
 
 	public void clear() {
-		var modInv = minecraftInventory instanceof ItemHandler.Mutable ? (ItemHandler.Mutable) minecraftInventory : null;
+		var modInv = minecraftInventory instanceof ItemHandler.Mutable m ? m : null;
 
 		for (var i = minecraftInventory.getSlots(); i >= 0; i--) {
 			if (modInv != null) {
@@ -74,7 +74,7 @@ public class InventoryJS {
 			clear();
 		}
 
-		var modInv = minecraftInventory instanceof ItemHandler.Mutable ? (ItemHandler.Mutable) minecraftInventory : null;
+		var modInv = minecraftInventory instanceof ItemHandler.Mutable m ? m : null;
 
 		for (var i = minecraftInventory.getSlots(); i >= 0; i--) {
 			if (ingredient.testVanilla(minecraftInventory.getStackInSlot(i))) {

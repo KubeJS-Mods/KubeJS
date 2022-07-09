@@ -9,20 +9,16 @@ import java.util.NoSuchElementException;
 public interface ItemHandler extends Iterable<ItemStack> {
 	int getSlots();
 
-	@NotNull
 	ItemStack getStackInSlot(int slot);
 
-	@NotNull
-	ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate);
+	ItemStack insertItem(int slot, ItemStack stack, boolean simulate);
 
-	@NotNull
 	ItemStack extractItem(int slot, int amount, boolean simulate);
 
 	int getSlotLimit(int slot);
 
-	boolean isItemValid(int slot, @NotNull ItemStack stack);
+	boolean isItemValid(int slot, ItemStack stack);
 
-	@NotNull
 	@Override
 	default Iterator<ItemStack> iterator() {
 		return new Iterator<>() {
