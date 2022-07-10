@@ -186,7 +186,9 @@ public class KubeJSServerEventHandler {
 	}
 
 	public static EventResult command(CommandPerformEvent event) {
-		if (CommandEventJS.EVENT.post(new CommandEventJS(event), event.getResults().getContext().getRootNode().getName())) {
+		var e = new CommandEventJS(event);
+
+		if (CommandEventJS.EVENT.post(e, e.getCommandName())) {
 			return EventResult.interruptFalse();
 		}
 

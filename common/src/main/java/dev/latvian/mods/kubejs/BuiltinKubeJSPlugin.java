@@ -243,6 +243,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		Painter.INSTANCE.registerObject("item", ItemObject::new);
 	}
 
+	@SuppressWarnings({"StringOperationCanBeSimplified", "ResultOfMethodCallIgnored"})
 	@Override
 	public void registerEvents() {
 		StartupEventJS.INIT_EVENT.register();
@@ -254,6 +255,16 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		ServerEventJS.LOAD_EVENT.register();
 		ServerEventJS.UNLOAD_EVENT.register();
 		ServerEventJS.TICK_EVENT.register();
+		KubeJSEvents.SERVER_DATAPACK_HIGH_PRIORITY.toString();
+		KubeJSEvents.SERVER_DATAPACK_LOW_PRIORITY.toString();
+		KubeJSEvents.SERVER_CUSTOM_COMMAND.toString();
+		KubeJSEvents.RECIPES.toString();
+		KubeJSEvents.RECIPES_AFTER_LOAD.toString();
+		KubeJSEvents.RECIPES_SERIALIZER_SPECIAL_FLAG.toString();
+		KubeJSEvents.RECIPES_COMPOSTABLES.toString();
+		KubeJSEvents.RECIPES_TYPE_REGISTRY.toString();
+		KubeJSEvents.WORLDGEN_ADD.toString();
+		KubeJSEvents.WORLDGEN_REMOVE.toString();
 
 		SimpleLevelEventJS.LOAD_EVENT.register();
 		SimpleLevelEventJS.UNLOAD_EVENT.register();
@@ -267,11 +278,23 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		NetworkEventJS.FROM_CLIENT.register();
 		NetworkEventJS.FROM_SERVER.register();
 		PlayerChatEventJS.EVENT.register();
+		KubeJSEvents.PLAYER_ADVANCEMENT.toString();
 		InventoryEventJS.OPENED_EVENT.register();
 		InventoryEventJS.CLOSED_EVENT.register();
 		InventoryChangedEventJS.EVENT.register();
 		ChestEventJS.CHEST_OPENED_EVENT.register();
 		ChestEventJS.CHEST_CLOSED_EVENT.register();
+
+		KubeJSEvents.ENTITY_DEATH.toString();
+		KubeJSEvents.ENTITY_HURT.toString();
+		KubeJSEvents.ENTITY_CHECK_SPAWN.toString();
+		KubeJSEvents.ENTITY_SPAWNED.toString();
+
+		KubeJSEvents.BLOCK_RIGHT_CLICK.toString();
+		KubeJSEvents.BLOCK_LEFT_CLICK.toString();
+		KubeJSEvents.BLOCK_PLACE.toString();
+		KubeJSEvents.BLOCK_BREAK.toString();
+		KubeJSEvents.BLOCK_MODIFICATION.toString();
 
 		ItemToolTierEventJS.EVENT.register();
 		ItemArmorTierEventJS.EVENT.register();
@@ -281,6 +304,10 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		ItemEntityInteractEventJS.EVENT.register();
 		ItemCraftedEventJS.EVENT.register();
 		ItemSmeltedEventJS.EVENT.register();
+		KubeJSEvents.ITEM_FOOD_EATEN.toString();
+		KubeJSEvents.ITEM_TOOLTIP.toString();
+		KubeJSEvents.ITEM_MODIFICATION.toString();
+		KubeJSEvents.ITEM_MODEL_PROPERTIES.toString();
 	}
 
 	@Override

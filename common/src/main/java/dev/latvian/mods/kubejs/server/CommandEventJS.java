@@ -12,13 +12,15 @@ public class CommandEventJS extends ServerEventJS {
 	public static final EventHandler EVENT = EventHandler.server(CommandEventJS.class).cancelable().legacy("command.run");
 
 	private final CommandPerformEvent event;
+	private final String commandName;
 
 	public CommandEventJS(CommandPerformEvent e) {
 		event = e;
+		commandName = event.getResults().getContext().getNodes().isEmpty() ? "" : event.getResults().getContext().getNodes().get(0).getNode().getName();
 	}
 
 	public String getCommandName() {
-		return event.getResults().getContext().getRootNode().getName();
+		return commandName;
 	}
 
 	public String getInput() {
