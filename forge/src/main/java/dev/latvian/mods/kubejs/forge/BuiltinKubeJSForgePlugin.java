@@ -12,8 +12,8 @@ import net.minecraftforge.eventbus.api.EventPriority;
 
 public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 	@Override
-	public void addClasses(ScriptType type, ClassFilter filter) {
-		super.addClasses(type, filter);
+	public void registerClasses(ScriptType type, ClassFilter filter) {
+		super.registerClasses(type, filter);
 
 		filter.allow("net.minecraftforge"); // Forge
 		filter.deny("net.minecraftforge.fml");
@@ -25,8 +25,8 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 	}
 
 	@Override
-	public void addBindings(BindingsEvent event) {
-		super.addBindings(event);
+	public void registerBindings(BindingsEvent event) {
+		super.registerBindings(event);
 
 		if (event.type == ScriptType.STARTUP) {
 			event.addFunction("onForgeEvent", args -> onPlatformEvent(event, args), null, KubeJSForgeEventHandlerWrapper.class);
@@ -35,8 +35,8 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 	}
 
 	@Override
-	public void addTypeWrappers(ScriptType type, TypeWrappers typeWrappers) {
-		super.addTypeWrappers(type, typeWrappers);
+	public void registerTypeWrappers(ScriptType type, TypeWrappers typeWrappers) {
+		super.registerTypeWrappers(type, typeWrappers);
 	}
 
 	public static Object onPlatformEvent(BindingsEvent event, Object[] args) {

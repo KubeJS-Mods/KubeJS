@@ -6,8 +6,8 @@ import dev.latvian.mods.kubejs.util.ClassFilter;
 
 public class BuiltinKubeJSFabricPlugin extends BuiltinKubeJSPlugin {
 	@Override
-	public void addClasses(ScriptType type, ClassFilter filter) {
-		super.addClasses(type, filter);
+	public void registerClasses(ScriptType type, ClassFilter filter) {
+		super.registerClasses(type, filter);
 
 		filter.allow("net.fabricmc");
 		filter.deny("net.fabricmc.accesswidener");

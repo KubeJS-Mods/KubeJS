@@ -42,6 +42,7 @@ import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
+import dev.latvian.mods.kubejs.item.ItemRightClickEventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.AxeItemBuilder;
@@ -67,7 +68,7 @@ import dev.latvian.mods.kubejs.misc.PotionBuilder;
 import dev.latvian.mods.kubejs.misc.SoundEventBuilder;
 import dev.latvian.mods.kubejs.misc.VillagerProfessionBuilder;
 import dev.latvian.mods.kubejs.misc.VillagerTypeBuilder;
-import dev.latvian.mods.kubejs.recipe.RegisterRecipeHandlersEvent;
+import dev.latvian.mods.kubejs.recipe.RegisterRecipeTypesEvent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
 import dev.latvian.mods.kubejs.recipe.minecraft.CookingRecipeJS;
@@ -220,7 +221,12 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	}
 
 	@Override
-	public void addClasses(ScriptType type, ClassFilter filter) {
+	public void registerEvents() {
+		ItemRightClickEventJS.EVENT.register();
+	}
+
+	@Override
+	public void registerClasses(ScriptType type, ClassFilter filter) {
 		filter.allow("java.lang.Number"); // java.lang
 		filter.allow("java.lang.String");
 		filter.allow("java.lang.Character");
@@ -281,7 +287,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	}
 
 	@Override
-	public void addBindings(BindingsEvent event) {
+	public void registerBindings(BindingsEvent event) {
 		event.add("global", GLOBAL);
 
 		if (event.type == ScriptType.SERVER) {
@@ -372,7 +378,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	}
 
 	@Override
-	public void addTypeWrappers(ScriptType type, TypeWrappers typeWrappers) {
+	public void registerTypeWrappers(ScriptType type, TypeWrappers typeWrappers) {
 		// Java / Minecraft //
 		typeWrappers.register(String.class, String::valueOf);
 		typeWrappers.register(CharSequence.class, String::valueOf);
@@ -437,13 +443,13 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	}
 
 	@Override
-	public void addCustomJavaToJsWrappers(CustomJavaToJsWrappersEvent event) {
+	public void registerCustomJavaToJsWrappers(CustomJavaToJsWrappersEvent event) {
 		event.add(CompoundTag.class, CompoundTagWrapper::new);
 		event.add(CollectionTag.class, CollectionTagWrapper::new);
 	}
 
 	@Override
-	public void addRecipes(RegisterRecipeHandlersEvent event) {
+	public void registerRecipeTypes(RegisterRecipeTypesEvent event) {
 		event.registerShaped(new ResourceLocation("kubejs:shaped"));
 		event.registerShapeless(new ResourceLocation("kubejs:shapeless"));
 		event.registerShaped(new ResourceLocation("minecraft:crafting_shaped"));

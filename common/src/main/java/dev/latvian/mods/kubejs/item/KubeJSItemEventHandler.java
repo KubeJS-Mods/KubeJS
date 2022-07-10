@@ -6,6 +6,7 @@ import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.player.InventoryChangedEventJS;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
@@ -30,8 +31,8 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static CompoundEventResult<ItemStack> rightClick(Player player, InteractionHand hand) {
-		if (!player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem()) && new ItemRightClickEventJS(player, hand).post(KubeJSEvents.ITEM_RIGHT_CLICK)) {
-			return CompoundEventResult.interruptTrue(player.getItemInHand(hand));
+		if (player != null && player.level instanceof ServerLevel && !player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem()) && new ItemRightClickEventJS(player, hand).post(KubeJSEvents.ITEM_RIGHT_CLICK)) {
+			return CompoundEventResult.interruptFalse(player.getItemInHand(hand));
 		}
 
 		return CompoundEventResult.pass();
@@ -50,7 +51,7 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static EventResult pickup(Player player, ItemEntity entity, ItemStack stack) {
-		if (player != null && entity != null && player.level != null && new ItemPickupEventJS(player, entity, stack).post(KubeJSEvents.ITEM_PICKUP)) {
+		if (player != null && entity != null && player.level instanceof ServerLevel && new ItemPickupEventJS(player, entity, stack).post(KubeJSEvents.ITEM_PICKUP)) {
 			return EventResult.interruptFalse();
 		}
 
@@ -58,7 +59,7 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static EventResult drop(Player player, ItemEntity entity) {
-		if (player != null && entity != null && player.level != null && new ItemTossEventJS(player, entity).post(KubeJSEvents.ITEM_TOSS)) {
+		if (player != null && entity != null && player.level instanceof ServerLevel && new ItemTossEventJS(player, entity).post(KubeJSEvents.ITEM_TOSS)) {
 			return EventResult.interruptFalse();
 		}
 
@@ -66,7 +67,7 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static EventResult entityInteract(Player player, Entity entity, InteractionHand hand) {
-		if (player != null && entity != null && player.level != null && new ItemEntityInteractEventJS(player, entity, hand).post(KubeJSEvents.ITEM_ENTITY_INTERACT)) {
+		if (player != null && entity != null && player.level instanceof ServerLevel && new ItemEntityInteractEventJS(player, entity, hand).post(KubeJSEvents.ITEM_ENTITY_INTERACT)) {
 			return EventResult.interruptFalse();
 		}
 

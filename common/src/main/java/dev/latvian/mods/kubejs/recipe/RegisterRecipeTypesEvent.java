@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public record RegisterRecipeHandlersEvent(Map<ResourceLocation, RecipeTypeJS> map) {
+public record RegisterRecipeTypesEvent(Map<ResourceLocation, RecipeTypeJS> map) {
 	public void register(RecipeTypeJS type) {
 		map.put(Registries.getId(type.serializer, Registry.RECIPE_SERIALIZER_REGISTRY), type);
 		KubeJS.LOGGER.info("Registered custom recipe handler for type " + type);

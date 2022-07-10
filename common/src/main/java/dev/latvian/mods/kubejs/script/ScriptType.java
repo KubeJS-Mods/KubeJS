@@ -2,15 +2,19 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.world.level.LevelReader;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
@@ -34,11 +38,12 @@ public enum ScriptType {
 	}
 
 	public final String name;
-	public final List<String> errors;
-	public final List<String> warnings;
+	public final transient List<String> errors;
+	public final transient List<String> warnings;
 	public final ConsoleJS console;
-	public final Supplier<ScriptManager> manager;
-	public final ExecutorService executor;
+	public final transient Supplier<ScriptManager> manager;
+	public final transient ExecutorService executor;
+	public final transient Map<String, EventHandler> eventHandlers;
 
 	ScriptType(String n, String cname, Supplier<ScriptManager> m) {
 		name = n;
@@ -47,6 +52,7 @@ public enum ScriptType {
 		console = new ConsoleJS(this, LoggerFactory.getLogger(cname));
 		manager = m;
 		executor = Executors.newSingleThreadExecutor();
+		eventHandlers = new HashMap<>();
 	}
 
 	public Path getLogFile() {
@@ -74,5 +80,13 @@ public enum ScriptType {
 
 	public boolean isServer() {
 		return this == SERVER;
+	}
+
+	@HideFromJS
+	public void unload() {
+		errors.clear();
+		warnings.clear();
+		console.resetFile();
+		eventHandlers.values().forEach(EventHandler::clear);
 	}
 }

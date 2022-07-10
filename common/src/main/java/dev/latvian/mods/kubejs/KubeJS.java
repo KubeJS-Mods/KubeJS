@@ -99,6 +99,8 @@ public class KubeJS {
 			}
 		}
 
+		KubeJSPlugins.forEachPlugin(KubeJSPlugin::registerEvents);
+
 		LOGGER.info("Done in " + pluginTimer.stop());
 
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS, "/data/kubejs/example_startup_script.js");

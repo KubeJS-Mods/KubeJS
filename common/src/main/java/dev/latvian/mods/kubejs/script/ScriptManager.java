@@ -49,9 +49,7 @@ public class ScriptManager {
 	public void unload() {
 		events.clear();
 		packs.clear();
-		type.errors.clear();
-		type.warnings.clear();
-		type.console.resetFile();
+		type.unload();
 		javaClassCache = null;
 	}
 
@@ -101,7 +99,7 @@ public class ScriptManager {
 		context.setRemapper(RemappingHelper.createModRemapper());
 		var typeWrappers = context.getTypeWrappers();
 		// typeWrappers.removeAll();
-		KubeJSPlugins.forEachPlugin(plugin -> plugin.addTypeWrappers(type, typeWrappers));
+		KubeJSPlugins.forEachPlugin(plugin -> plugin.registerTypeWrappers(type, typeWrappers));
 
 		for (var registryTypeWrapperFactory : RegistryTypeWrapperFactory.getAll()) {
 			try {
@@ -121,11 +119,11 @@ public class ScriptManager {
 				pack.scope = context.initStandardObjects();
 
 				var bindingsEvent = new BindingsEvent(this, pack.context, pack.scope);
-				KubeJSPlugins.forEachPlugin(plugin -> plugin.addBindings(bindingsEvent));
+				KubeJSPlugins.forEachPlugin(plugin -> plugin.registerBindings(bindingsEvent));
 				BindingsEvent.EVENT.invoker().accept(bindingsEvent);
 
 				var customJavaToJsWrappersEvent = new CustomJavaToJsWrappersEvent(this, pack.context);
-				KubeJSPlugins.forEachPlugin(plugin -> plugin.addCustomJavaToJsWrappers(customJavaToJsWrappersEvent));
+				KubeJSPlugins.forEachPlugin(plugin -> plugin.registerCustomJavaToJsWrappers(customJavaToJsWrappersEvent));
 				CustomJavaToJsWrappersEvent.EVENT.invoker().accept(customJavaToJsWrappersEvent);
 
 				for (var file : pack.scripts) {

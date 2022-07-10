@@ -2,12 +2,12 @@ package dev.latvian.mods.kubejs.integration.fabric.techreborn;
 
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.recipe.RegisterRecipeHandlersEvent;
+import dev.latvian.mods.kubejs.recipe.RegisterRecipeTypesEvent;
 import net.minecraft.resources.ResourceLocation;
 
 public class TechRebornKubeJSPlugin extends KubeJSPlugin {
 	@Override
-	public void addRecipes(RegisterRecipeHandlersEvent event) {
+	public void registerRecipeTypes(RegisterRecipeTypesEvent event) {
 		if (Platform.isModLoaded("techreborn")) {
 			for (var s : new String[]{
 					// Default recipes

@@ -1,10 +1,11 @@
 package dev.latvian.mods.kubejs;
 
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.player.PlayerDataJS;
-import dev.latvian.mods.kubejs.recipe.RegisterRecipeHandlersEvent;
+import dev.latvian.mods.kubejs.recipe.RegisterRecipeTypesEvent;
 import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
@@ -31,19 +32,25 @@ public class KubeJSPlugin {
 	public void afterInit() {
 	}
 
-	public void addClasses(ScriptType type, ClassFilter filter) {
+	/**
+	 * Call {@link EventHandler#register()} of events your mod adds
+	 */
+	public void registerEvents() {
 	}
 
-	public void addBindings(BindingsEvent event) {
+	public void registerClasses(ScriptType type, ClassFilter filter) {
 	}
 
-	public void addTypeWrappers(ScriptType type, TypeWrappers typeWrappers) {
+	public void registerBindings(BindingsEvent event) {
 	}
 
-	public void addCustomJavaToJsWrappers(CustomJavaToJsWrappersEvent event) {
+	public void registerTypeWrappers(ScriptType type, TypeWrappers typeWrappers) {
 	}
 
-	public void addRecipes(RegisterRecipeHandlersEvent event) {
+	public void registerCustomJavaToJsWrappers(CustomJavaToJsWrappersEvent event) {
+	}
+
+	public void registerRecipeTypes(RegisterRecipeTypesEvent event) {
 	}
 
 	public void attachServerData(AttachDataEvent<ServerJS> event) {

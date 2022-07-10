@@ -53,7 +53,7 @@ public class KubeJSPlugins {
 
 	public static ClassFilter createClassFilter(ScriptType type) {
 		var filter = new ClassFilter();
-		forEachPlugin(plugin -> plugin.addClasses(type, filter));
+		forEachPlugin(plugin -> plugin.registerClasses(type, filter));
 
 		for (var s : GLOBAL_CLASS_FILTER) {
 			if (s.length() >= 2) {
