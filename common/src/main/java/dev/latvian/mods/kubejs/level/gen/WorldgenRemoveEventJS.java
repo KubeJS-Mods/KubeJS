@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.level.gen;
 import com.google.common.collect.ImmutableSet;
 import dev.architectury.hooks.level.biome.BiomeProperties;
 import dev.architectury.registry.level.biome.BiomeModifications;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.properties.RemoveOresProperties;
@@ -35,6 +36,8 @@ import java.util.stream.Stream;
  * @author LatvianModder
  */
 public class WorldgenRemoveEventJS extends StartupEventJS {
+	public static final EventHandler EVENT = EventHandler.startup(WorldgenRemoveEventJS.class).legacy("worldgen.remove");
+
 	protected static boolean checkTree(ConfiguredFeature<?, ?> configuredFeature, Predicate<FeatureConfiguration> predicate) {
 		return predicate.test(configuredFeature.config()) || configuredFeature.config().getFeatures().anyMatch(cf -> checkTree(cf, predicate));
 	}

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.block;
 
 import dev.latvian.mods.kubejs.entity.EntityEventJS;
 import dev.latvian.mods.kubejs.entity.EntityJS;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.core.BlockPos;
@@ -14,6 +15,8 @@ import org.jetbrains.annotations.Nullable;
  * @author LatvianModder
  */
 public class BlockPlaceEventJS extends EntityEventJS {
+	public static final EventHandler EVENT = EventHandler.server(BlockPlaceEventJS.class).cancelable().legacy("block.place");
+
 	private final Entity entity;
 	private final Level level;
 	private final BlockPos pos;
@@ -24,11 +27,6 @@ public class BlockPlaceEventJS extends EntityEventJS {
 		this.level = level;
 		this.pos = pos;
 		this.state = state;
-	}
-
-	@Override
-	public boolean canCancel() {
-		return true;
 	}
 
 	@Override

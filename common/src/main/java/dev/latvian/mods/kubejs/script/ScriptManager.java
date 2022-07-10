@@ -93,6 +93,7 @@ public class ScriptManager {
 	}
 
 	public void load() {
+		ScriptType.current = type;
 		var context = Context.enterWithNewFactory();
 		context.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || isClassAllowed(fullClassName));
 		context.setRemapper(RemappingHelper.createModRemapper());
@@ -148,6 +149,7 @@ public class ScriptManager {
 
 		type.console.info("Loaded " + i + "/" + t + " KubeJS " + type.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s");
 		Context.exit();
+		ScriptType.current = null;
 
 		StartupEventJS.LOADED_EVENT.post(new StartupEventJS());
 

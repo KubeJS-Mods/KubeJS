@@ -68,6 +68,11 @@ public class ItemWrapper {
 	}
 
 	@Nullable
+	public static ResourceLocation getId(Item item) {
+		return KubeJSRegistries.items().getId(item);
+	}
+
+	@Nullable
 	public static CreativeModeTab findGroup(String id) {
 		return ItemStackJS.findGroup(id);
 	}

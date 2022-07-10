@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.recipe;
 import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.recipe.minecraft.ShapedRecipeJS;
 import dev.latvian.mods.kubejs.recipe.minecraft.ShapelessRecipeJS;
@@ -17,6 +18,8 @@ import java.util.function.Supplier;
  * @author LatvianModder
  */
 public class RecipeTypeRegistryEventJS extends EventJS {
+	public static final EventHandler EVENT = EventHandler.server(RecipeTypeRegistryEventJS.class).legacy("recipes.type_registry");
+
 	private final Map<ResourceLocation, RecipeTypeJS> map;
 
 	public RecipeTypeRegistryEventJS(Map<ResourceLocation, RecipeTypeJS> m) {

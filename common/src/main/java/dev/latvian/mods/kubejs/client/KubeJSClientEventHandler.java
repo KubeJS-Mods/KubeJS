@@ -8,7 +8,6 @@ import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import dev.architectury.hooks.client.screen.ScreenAccess;
 import dev.architectury.hooks.fluid.FluidBucketHooks;
-import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.client.painter.Painter;
@@ -17,7 +16,6 @@ import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
 import dev.latvian.mods.kubejs.level.ClientLevelJS;
 import dev.latvian.mods.kubejs.script.AttachDataEvent;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.Tags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -78,7 +76,8 @@ public class KubeJSClientEventHandler {
 		for (var builder : RegistryObjectBuilderTypes.ALL_BUILDERS) {
 			builder.clientRegistry(() -> minecraft);
 		}
-		new ItemModelPropertiesEventJS().post(KubeJSEvents.ITEM_MODEL_PROPERTIES);
+
+		ItemModelPropertiesEventJS.EVENT.post(new ItemModelPropertiesEventJS());
 	}
 
 	private void debugInfoLeft(List<String> lines) {
@@ -126,7 +125,7 @@ public class KubeJSClientEventHandler {
 
 		if (staticItemTooltips == null) {
 			staticItemTooltips = new HashMap<>();
-			new ItemTooltipEventJS(staticItemTooltips).post(ScriptType.CLIENT, KubeJSEvents.ITEM_TOOLTIP);
+			ItemTooltipEventJS.EVENT.post(new ItemTooltipEventJS(staticItemTooltips));
 		}
 
 		for (var handler : staticItemTooltips.getOrDefault(Items.AIR, Collections.emptyList())) {

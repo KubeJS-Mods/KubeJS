@@ -21,11 +21,6 @@ public class PlayerChatEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	public boolean canCancel() {
-		return true;
-	}
-
-	@Override
 	public EntityJS getEntity() {
 		return entityOf(player);
 	}

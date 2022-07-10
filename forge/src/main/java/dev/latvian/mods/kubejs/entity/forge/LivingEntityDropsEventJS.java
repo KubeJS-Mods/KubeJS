@@ -17,18 +17,13 @@ import java.util.List;
  * @author LatvianModder
  */
 public class LivingEntityDropsEventJS extends LivingEntityEventJS {
-	public static final EventHandler EVENT = EventHandler.server(LivingEntityDropsEventJS.class).legacy("entity.drops");
+	public static final EventHandler EVENT = EventHandler.server(LivingEntityDropsEventJS.class).cancelable().legacy("entity.drops");
 
 	private final LivingDropsEvent event;
 	public List<ItemEntityJS> eventDrops;
 
 	public LivingEntityDropsEventJS(LivingDropsEvent e) {
 		event = e;
-	}
-
-	@Override
-	public boolean canCancel() {
-		return true;
 	}
 
 	@Override

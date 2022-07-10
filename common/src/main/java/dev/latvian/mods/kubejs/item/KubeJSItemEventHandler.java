@@ -4,7 +4,7 @@ import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.event.events.common.PlayerEvent;
-import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.player.InventoryChangedEventJS;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,7 +31,7 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static String getItemId(ItemStack stack) {
-		return String.valueOf(KubeJSRegistries.items().getId(stack.getItem()));
+		return String.valueOf(ItemWrapper.getId(stack.getItem()));
 	}
 
 	private static CompoundEventResult<ItemStack> rightClick(Player player, InteractionHand hand) {

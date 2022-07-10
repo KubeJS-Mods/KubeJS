@@ -6,7 +6,6 @@ import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.TickEvent;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerJS;
@@ -96,7 +95,7 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	public static void advancement(ServerPlayer player, Advancement advancement) {
-		new PlayerAdvancementEventJS(player, advancement).post(KubeJSEvents.PLAYER_ADVANCEMENT);
+		PlayerAdvancementEventJS.EVENT.post(new PlayerAdvancementEventJS(player, advancement));
 	}
 
 	public static void inventoryOpened(Player player, AbstractContainerMenu menu) {

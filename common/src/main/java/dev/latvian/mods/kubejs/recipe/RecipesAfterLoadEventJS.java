@@ -1,10 +1,9 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import dev.latvian.mods.kubejs.KubeJSEvents;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.minecraft.CustomRecipeJS;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -26,6 +25,8 @@ import java.util.function.Consumer;
  * @author LatvianModder
  */
 public class RecipesAfterLoadEventJS extends EventJS {
+	public static final EventHandler EVENT = EventHandler.server(RecipesAfterLoadEventJS.class).legacy("recipes.after_loaded");
+
 	private final Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipeMap;
 	private List<RecipeJS> originalRecipes;
 	private final Set<RecipeJS> removedRecipes = new HashSet<>();
@@ -100,7 +101,7 @@ public class RecipesAfterLoadEventJS extends EventJS {
 		var e = new RecipesAfterLoadEventJS(recipeManager.recipes);
 		var b = ServerSettings.instance.useOriginalRecipeForFilters;
 		ServerSettings.instance.useOriginalRecipeForFilters = true;
-		e.post(ScriptType.SERVER, KubeJSEvents.RECIPES_AFTER_LOAD);
+		RecipesAfterLoadEventJS.EVENT.post(e);
 		ServerSettings.instance.useOriginalRecipeForFilters = b;
 
 		if (e.originalRecipes != null) {

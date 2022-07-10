@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.entity;
 
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -8,17 +9,14 @@ import net.minecraft.world.level.Level;
  * @author LatvianModder
  */
 public class EntitySpawnedEventJS extends EntityEventJS {
+	public static final EventHandler EVENT = EventHandler.server(EntitySpawnedEventJS.class).cancelable().legacy("entity.spawned");
+
 	private final Entity entity;
 	private final Level level;
 
 	public EntitySpawnedEventJS(Entity entity, Level level) {
 		this.entity = entity;
 		this.level = level;
-	}
-
-	@Override
-	public boolean canCancel() {
-		return true;
 	}
 
 	@Override

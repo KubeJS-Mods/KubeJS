@@ -7,6 +7,7 @@ import dev.architectury.utils.EnvExecutor;
 import dev.latvian.mods.kubejs.block.KubeJSBlockEventHandler;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.entity.KubeJSEntityEventHandler;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.item.KubeJSItemEventHandler;
 import dev.latvian.mods.kubejs.level.KubeJSWorldEventHandler;
@@ -36,7 +37,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -58,6 +61,9 @@ public class KubeJS {
 	public static CreativeModeTab tab = CreativeModeTab.TAB_MISC;
 
 	public static ScriptManager startupScriptManager, clientScriptManager;
+
+	public static final Map<String, EventHandler> EVENT_HANDLERS = new HashMap<>();
+	public static final Map<String, EventHandler> LEGACY_EVENT_HANDLERS = new HashMap<>();
 
 	public KubeJS() throws Throwable {
 		instance = this;

@@ -8,6 +8,7 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
 import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.properties.AddLakeProperties;
@@ -56,6 +57,7 @@ import java.util.regex.Pattern;
  * @author LatvianModder
  */
 public class WorldgenAddEventJS extends StartupEventJS {
+	public static final EventHandler EVENT = EventHandler.startup(WorldgenAddEventJS.class).legacy("worldgen.add");
 
 	private static final Pattern SPAWN_PATTERN = Pattern.compile("(\\w+:\\w+)\\*\\((\\d+)-(\\d+)\\):(\\d+)");
 

@@ -1,8 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.latvian.mods.kubejs.KubeJSEvents;
+import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.item.ItemFoodEatenEventJS;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
@@ -20,7 +19,7 @@ public interface LivingEntityKJS {
 				b.foodBuilder.eaten.accept(event);
 			}
 
-			event.post(ScriptType.SERVER, KubeJSEvents.ITEM_FOOD_EATEN);
+			ItemFoodEatenEventJS.EVENT.post(event, String.valueOf(ItemWrapper.getId(i)));
 		}
 	}
 }

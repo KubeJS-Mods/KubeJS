@@ -4,9 +4,9 @@ import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.BlockEvent;
 import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.utils.value.IntValue;
-import dev.latvian.mods.kubejs.KubeJSEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -28,7 +28,7 @@ public class KubeJSBlockEventHandler {
 	}
 
 	private static EventResult rightClick(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
-		if (player != null && player.level != null && !player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem()) && new BlockRightClickEventJS(player, hand, pos, direction).post(KubeJSEvents.BLOCK_RIGHT_CLICK)) {
+		if (player != null && player.level instanceof ServerLevel && !player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem()) && BlockRightClickEventJS.EVENT.post(new BlockRightClickEventJS(player, hand, pos, direction))) {
 			return EventResult.interruptFalse();
 		}
 
@@ -36,7 +36,7 @@ public class KubeJSBlockEventHandler {
 	}
 
 	private static EventResult leftClick(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
-		if (player != null && player.level != null && new BlockLeftClickEventJS(player, hand, pos, direction).post(KubeJSEvents.BLOCK_LEFT_CLICK)) {
+		if (player != null && player.level instanceof ServerLevel && BlockLeftClickEventJS.EVENT.post(new BlockLeftClickEventJS(player, hand, pos, direction))) {
 			return EventResult.interruptFalse();
 		}
 
@@ -44,7 +44,7 @@ public class KubeJSBlockEventHandler {
 	}
 
 	private static EventResult blockBreak(Level level, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp) {
-		if (player != null && player.level != null && new BlockBreakEventJS(player, level, pos, state, xp).post(KubeJSEvents.BLOCK_BREAK)) {
+		if (level instanceof ServerLevel && player != null && BlockBreakEventJS.EVENT.post(new BlockBreakEventJS(player, level, pos, state, xp))) {
 			return EventResult.interruptFalse();
 		}
 
@@ -52,7 +52,7 @@ public class KubeJSBlockEventHandler {
 	}
 
 	private static EventResult blockPlace(Level level, BlockPos pos, BlockState state, @Nullable Entity placer) {
-		if (level != null && (placer == null || placer.level != null) && new BlockPlaceEventJS(placer, level, pos, state).post(KubeJSEvents.BLOCK_PLACE)) {
+		if (level instanceof ServerLevel && (placer == null || placer.level != null) && BlockPlaceEventJS.EVENT.post(new BlockPlaceEventJS(placer, level, pos, state))) {
 			return EventResult.interruptFalse();
 		}
 

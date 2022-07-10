@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.recipe.special;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.EventJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SpecialRecipeSerializerManager extends EventJS {
+	public static final EventHandler JS_EVENT = EventHandler.server(SpecialRecipeSerializerManager.class).legacy("recipes.serializer.special.flag");
 	public static final SpecialRecipeSerializerManager INSTANCE = new SpecialRecipeSerializerManager();
 	public static final Event<Runnable> EVENT = EventFactory.createLoop();
 	private final Map<ResourceLocation, Boolean> data = new HashMap<>();

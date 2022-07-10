@@ -7,8 +7,6 @@ import dev.latvian.mods.rhino.RhinoException;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -37,13 +35,16 @@ public final class EventHandler {
 		return of(ScriptType.CLIENT, eventType);
 	}
 
+	public record Container(ScriptType type, IEventHandler handler) {
+	}
+
 	public final EventHandler parent;
 	public final String subId;
 	public final ScriptType scriptType;
 	public final Class<? extends EventJS> eventType;
 	private boolean cancelable;
 	private String name;
-	private IEventHandler[] handlers;
+	private Container[] eventContainers;
 	private Map<String, EventHandler> subHandlers;
 	private final Set<String> legacyEventIds;
 
@@ -59,7 +60,7 @@ public final class EventHandler {
 			name = name.substring(0, 1).toLowerCase() + name.substring(1);
 		}
 
-		handlers = null;
+		eventContainers = null;
 		subHandlers = null;
 		legacyEventIds = new HashSet<>();
 	}
@@ -99,8 +100,8 @@ public final class EventHandler {
 	}
 
 	@HideFromJS
-	public void clear() {
-		handlers = null;
+	public void clear(ScriptType type) {
+		eventContainers = null;
 		subHandlers = null;
 	}
 
@@ -113,10 +114,10 @@ public final class EventHandler {
 			throw new IllegalArgumentException("Event name is empty! Use .name(string) to override it");
 		}
 
-		scriptType.eventHandlers.put(name, this);
+		KubeJS.EVENT_HANDLERS.put(name, this);
 
 		for (String s : legacyEventIds) {
-			scriptType.legacyEventHandlers.put(s, this);
+			KubeJS.LEGACY_EVENT_HANDLERS.put(s, this);
 		}
 
 		KubeJS.LOGGER.info("Registered '" + eventType.getName() + "' event handler '" + name + "' for " + scriptType.name + " scripts" + (legacyEventIds.isEmpty() ? "" : (" with legacy IDs " + legacyEventIds.stream().map(s -> "'" + s + "'").collect(Collectors.joining(", ", "[", "]")))));
@@ -149,13 +150,17 @@ public final class EventHandler {
 
 	// x.listen(event => {}) syntax
 	public void listen(IEventHandler handler) {
-		if (handlers == null) {
-			handlers = new IEventHandler[]{handler};
+		if (ScriptType.current == null) {
+			throw new IllegalStateException("Tried to listen to event outside script loading time!");
+		}
+
+		if (eventContainers == null) {
+			eventContainers = new Container[]{new Container(ScriptType.current, handler)};
 		} else {
-			ArrayList<IEventHandler> list = new ArrayList<>(handlers.length + 1);
-			list.addAll(Arrays.asList(handlers));
-			list.add(handler);
-			handlers = list.toArray(new IEventHandler[0]);
+			var h = new Container[eventContainers.length + 1];
+			System.arraycopy(eventContainers, 0, h, 0, eventContainers.length);
+			h[eventContainers.length] = new Container(ScriptType.current, handler);
+			eventContainers = h;
 		}
 	}
 
@@ -170,7 +175,7 @@ public final class EventHandler {
 	@HideFromJS
 	public boolean post(EventJS event, String sub) {
 		if (parent != null) {
-			return parent.post(event, sub);
+			throw new IllegalStateException("Can't call EventHandler.post() from sub-handler!");
 		}
 
 		boolean b = false;
@@ -178,30 +183,40 @@ public final class EventHandler {
 		var subHandler = sub.isEmpty() || subHandlers == null ? null : subHandlers.get(sub);
 
 		if (subHandler != null) {
-			b = subHandler.postToHandlers(event);
+			b = subHandler.postToHandlers(scriptType, event);
+
+			if (!b && scriptType != ScriptType.STARTUP) {
+				b = subHandler.postToHandlers(ScriptType.STARTUP, event);
+			}
 		}
 
 		if (!b) {
-			b = postToHandlers(event);
+			b = postToHandlers(scriptType, event);
+
+			if (!b && scriptType != ScriptType.STARTUP) {
+				b = postToHandlers(ScriptType.STARTUP, event);
+			}
 		}
 
 		event.afterPosted(b);
 		return b;
 	}
 
-	private boolean postToHandlers(EventJS event) {
-		if (handlers == null || handlers.length == 0) {
+	private boolean postToHandlers(ScriptType type, EventJS event) {
+		if (eventContainers == null || eventContainers.length == 0) {
 			return false;
 		}
 
 		boolean c = isCancelable() || event.canCancel();
 
-		for (var handler : handlers) {
+		for (var container : eventContainers) {
 			try {
-				handler.onEvent(event);
+				if (container.type == type) {
+					container.handler.onEvent(event);
 
-				if (c && event.isCanceled()) {
-					return true;
+					if (c && event.isCanceled()) {
+						return true;
+					}
 				}
 			} catch (RhinoException ex) {
 				scriptType.console.error("Error occurred while handling event '" + name + "': " + ex.getMessage());

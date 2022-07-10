@@ -25,12 +25,4 @@ public abstract class LevelEventJS extends EventJS {
 	protected LevelJS levelOf(Entity entity) {
 		return levelOf(entity.level);
 	}
-
-	public final boolean post(String id) {
-		return post(getLevel().getSide(), id);
-	}
-
-	public final boolean post(String id, String sub) {
-		return post(getLevel().getSide(), id, sub);
-	}
 }

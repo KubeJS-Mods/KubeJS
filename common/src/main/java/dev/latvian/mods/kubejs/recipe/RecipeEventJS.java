@@ -6,8 +6,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
-import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
@@ -15,7 +15,6 @@ import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicateJS;
 import dev.latvian.mods.kubejs.item.ingredient.TagIngredientJS;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -51,6 +50,7 @@ import java.util.stream.Collectors;
  * @author LatvianModder
  */
 public class RecipeEventJS extends EventJS {
+	public static final EventHandler EVENT = EventHandler.server(RecipeEventJS.class).legacy("recipes");
 	public static final String FORGE_CONDITIONAL = "forge:conditional";
 	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.mods.kubejs.recipe.RecipeEventJS.post");
 	public static Map<UUID, IngredientWithCustomPredicateJS> customIngredientMap = null;
@@ -111,7 +111,7 @@ public class RecipeEventJS extends EventJS {
 		}
 
 		SpecialRecipeSerializerManager.INSTANCE.reset();
-		SpecialRecipeSerializerManager.INSTANCE.post(ScriptType.SERVER, KubeJSEvents.RECIPES_SERIALIZER_SPECIAL_FLAG);
+		SpecialRecipeSerializerManager.JS_EVENT.post(SpecialRecipeSerializerManager.INSTANCE);
 
 		shaped = getRecipeFunction(CommonProperties.get().serverOnly ? "minecraft:crafting_shaped" : "kubejs:shaped");
 		shapeless = getRecipeFunction(CommonProperties.get().serverOnly ? "minecraft:crafting_shapeless" : "kubejs:shapeless");
@@ -284,7 +284,7 @@ public class RecipeEventJS extends EventJS {
 		timer.reset().start();
 
 		ConsoleJS.SERVER.setLineNumber(true);
-		post(ScriptType.SERVER, KubeJSEvents.RECIPES);
+		EVENT.post(this);
 		ConsoleJS.SERVER.setLineNumber(false);
 
 		ConsoleJS.SERVER.info("Posted recipe events in " + timer.stop());

@@ -3,8 +3,8 @@ package dev.latvian.mods.kubejs.item;
 import dev.architectury.registry.item.ItemPropertiesRegistry;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.core.AsKJS;
-import dev.latvian.mods.kubejs.core.EntityKJS;
 import dev.latvian.mods.kubejs.entity.EntityJS;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.MatchAllIngredientJS;
@@ -15,6 +15,8 @@ import net.minecraft.resources.ResourceLocation;
 import javax.annotation.Nullable;
 
 public class ItemModelPropertiesEventJS extends StartupEventJS {
+	public static final EventHandler EVENT = EventHandler.startup(ItemModelPropertiesEventJS.class).legacy("item.model_properties");
+
 	public void register(IngredientJS ingredient, String overwriteId, ItemPropertiesCallback callback) {
 		if (ingredient instanceof MatchAllIngredientJS) {
 			registerAll(overwriteId, callback);

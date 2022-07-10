@@ -19,7 +19,7 @@ import java.util.List;
  * @author LatvianModder
  */
 public abstract class ExplosionEventJS extends LevelEventJS {
-	public static final EventHandler PRE_EVENT = EventHandler.server(ExplosionEventJS.Pre.class).legacy("level.explosion.pre");
+	public static final EventHandler PRE_EVENT = EventHandler.server(ExplosionEventJS.Pre.class).cancelable().legacy("level.explosion.pre");
 	public static final EventHandler POST_EVENT = EventHandler.server(ExplosionEventJS.Post.class).legacy("level.explosion.post");
 
 	protected final Level level;
@@ -63,11 +63,6 @@ public abstract class ExplosionEventJS extends LevelEventJS {
 	public static class Pre extends ExplosionEventJS {
 		public Pre(Level level, Explosion explosion) {
 			super(level, explosion);
-		}
-
-		@Override
-		public boolean canCancel() {
-			return true;
 		}
 
 		public float getSize() {

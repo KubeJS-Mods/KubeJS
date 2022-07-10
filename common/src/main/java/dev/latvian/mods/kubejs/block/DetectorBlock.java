@@ -68,7 +68,14 @@ public class DetectorBlock extends Block {
 
 			if (p == level.hasNeighborSignal(blockPos)) {
 				level.setBlock(blockPos, blockState.setValue(BlockStateProperties.POWERED, p), 2);
-				new DetectorBlockEventJS(builder.detectorId, level, blockPos, p).post("block.detector." + builder.detectorId, p ? "powered" : "unpowered");
+				var e = new DetectorBlockEventJS(builder.detectorId, level, blockPos, p);
+				DetectorBlockEventJS.EVENT.post(e, builder.detectorId);
+
+				if (p) {
+					DetectorBlockEventJS.POWERED_EVENT.post(e, builder.detectorId);
+				} else {
+					DetectorBlockEventJS.UNPOWERED_EVENT.post(e, builder.detectorId);
+				}
 			}
 		}
 	}

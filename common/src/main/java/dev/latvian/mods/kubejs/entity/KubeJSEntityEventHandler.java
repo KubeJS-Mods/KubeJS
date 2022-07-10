@@ -2,9 +2,8 @@ package dev.latvian.mods.kubejs.entity;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
-import dev.latvian.mods.kubejs.KubeJSEvents;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerJS;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,28 +25,29 @@ public class KubeJSEntityEventHandler {
 
 	private static EventResult checkSpawn(LivingEntity entity, LevelAccessor la, double x, double y, double z, MobSpawnType type, BaseSpawner spawner) {
 		if (ServerJS.instance != null && ServerJS.instance.overworld != null && !la.isClientSide() && la instanceof Level level &&
-				new CheckLivingEntitySpawnEventJS(entity, level, x, y, z, type).post(ScriptType.SERVER, KubeJSEvents.ENTITY_CHECK_SPAWN)) {
+				CheckLivingEntitySpawnEventJS.EVENT.post(new CheckLivingEntitySpawnEventJS(entity, level, x, y, z, type))) {
 			return EventResult.interruptFalse();
 		}
 		return EventResult.pass();
 	}
 
 	private static EventResult livingDeath(LivingEntity entity, DamageSource source) {
-		if (entity != null && new LivingEntityDeathEventJS(entity, source).post(KubeJSEvents.ENTITY_DEATH)) {
+		if (entity != null && entity.level instanceof ServerLevel && LivingEntityDeathEventJS.EVENT.post(new LivingEntityDeathEventJS(entity, source))) {
 			return EventResult.interruptFalse();
 		}
+
 		return EventResult.pass();
 	}
 
 	private static EventResult livingHurt(LivingEntity entity, DamageSource source, float amount) {
-		if (entity != null && amount > 0F && new LivingEntityHurtEventJS(entity, source, amount).post(KubeJSEvents.ENTITY_HURT)) {
+		if (entity != null && entity.level instanceof ServerLevel && amount > 0F && LivingEntityHurtEventJS.EVENT.post(new LivingEntityHurtEventJS(entity, source, amount))) {
 			return EventResult.interruptFalse();
 		}
 		return EventResult.pass();
 	}
 
 	private static EventResult entitySpawned(Entity entity, Level level) {
-		if (entity != null && ServerJS.instance != null && ServerJS.instance.overworld != null && !level.isClientSide() && new EntitySpawnedEventJS(entity, level).post(ScriptType.SERVER, KubeJSEvents.ENTITY_SPAWNED)) {
+		if (entity != null && ServerJS.instance != null && ServerJS.instance.overworld != null && !level.isClientSide() && EntitySpawnedEventJS.EVENT.post(new EntitySpawnedEventJS(entity, level))) {
 			return EventResult.interruptFalse();
 		}
 		return EventResult.pass();
