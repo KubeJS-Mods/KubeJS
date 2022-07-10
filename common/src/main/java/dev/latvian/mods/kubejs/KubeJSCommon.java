@@ -18,6 +18,9 @@ public class KubeJSCommon {
 		new KubeJSBackgroundThread().start();
 	}
 
+	public void registerClientEvents() {
+	}
+
 	public void init() {
 	}
 
@@ -30,7 +33,7 @@ public class KubeJSCommon {
 	public void clientTypeWrappers(TypeWrappers typeWrappers) {
 	}
 
-	public void handleDataToClientPacket(String channel, @Nullable CompoundTag data) {
+	public void handleDataFromServerPacket(String channel, @Nullable CompoundTag data) {
 	}
 
 	@Nullable

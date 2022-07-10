@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.net;
 
 import dev.latvian.mods.kubejs.entity.EntityJS;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -10,6 +11,9 @@ import org.jetbrains.annotations.Nullable;
  * @author LatvianModder
  */
 public class NetworkEventJS extends PlayerEventJS {
+	public static final EventHandler FROM_CLIENT = EventHandler.server(NetworkEventJS.class).cancelable().legacy("player.data_from_server");
+	public static final EventHandler FROM_SERVER = EventHandler.client(NetworkEventJS.class).cancelable().legacy("player.data_from_client");
+
 	private final Player player;
 	private final String channel;
 	private final CompoundTag data;
@@ -18,11 +22,6 @@ public class NetworkEventJS extends PlayerEventJS {
 		player = p;
 		channel = c;
 		data = d;
-	}
-
-	@Override
-	public boolean canCancel() {
-		return true;
 	}
 
 	@Override

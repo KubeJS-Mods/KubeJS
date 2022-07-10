@@ -38,6 +38,14 @@ public class KubeJSPlugin {
 	public void registerEvents() {
 	}
 
+
+	/**
+	 * Call {@link EventHandler#register()} of client events your mod adds
+	 */
+	@Environment(EnvType.CLIENT)
+	public void registerClientEvents() {
+	}
+
 	public void registerClasses(ScriptType type, ClassFilter filter) {
 	}
 

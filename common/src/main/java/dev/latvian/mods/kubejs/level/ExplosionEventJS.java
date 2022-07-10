@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.level;
 import dev.architectury.hooks.level.ExplosionHooks;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.entity.LivingEntityJS;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -18,6 +19,9 @@ import java.util.List;
  * @author LatvianModder
  */
 public abstract class ExplosionEventJS extends LevelEventJS {
+	public static final EventHandler PRE_EVENT = EventHandler.server(ExplosionEventJS.Pre.class).legacy("level.explosion.pre");
+	public static final EventHandler POST_EVENT = EventHandler.server(ExplosionEventJS.Post.class).legacy("level.explosion.post");
+
 	protected final Level level;
 	protected final Explosion explosion;
 

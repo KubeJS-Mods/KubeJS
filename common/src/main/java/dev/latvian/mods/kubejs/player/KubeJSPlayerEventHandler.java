@@ -44,7 +44,7 @@ public class KubeJSPlayerEventHandler {
 			KubeJS.nextClientHasClientMod = false;
 			p.getServer().playerMap.put(p.getId(), p);
 			AttachDataEvent.forPlayer(p).invoke();
-			new SimplePlayerEventJS(player).post(KubeJSEvents.PLAYER_LOGGED_IN);
+			SimplePlayerEventJS.LOGGED_IN_EVENT.post(new SimplePlayerEventJS(player));
 			player.inventoryMenu.addSlotListener(new InventoryListener(player));
 		}
 
@@ -70,7 +70,7 @@ public class KubeJSPlayerEventHandler {
 			return;
 		}
 
-		new SimplePlayerEventJS(player).post(KubeJSEvents.PLAYER_LOGGED_OUT);
+		SimplePlayerEventJS.LOGGED_OUT_EVENT.post(new SimplePlayerEventJS(player));
 		ServerJS.instance.playerMap.remove(player.getUUID());
 	}
 
@@ -81,14 +81,14 @@ public class KubeJSPlayerEventHandler {
 
 	public static void tick(Player player) {
 		if (ServerJS.instance != null && player instanceof ServerPlayer) {
-			new SimplePlayerEventJS(player).post(KubeJSEvents.PLAYER_TICK);
+			SimplePlayerEventJS.TICK_EVENT.post(new SimplePlayerEventJS(player));
 		}
 	}
 
 	@NotNull
 	public static EventResult chat(ServerPlayer player, ChatEvent.ChatComponent component) {
 		var event = new PlayerChatEventJS(player, component.getRaw());
-		if (event.post(KubeJSEvents.PLAYER_CHAT)) {
+		if (PlayerChatEventJS.EVENT.post(event)) {
 			return EventResult.interruptFalse();
 		}
 		component.setRaw(event.component);

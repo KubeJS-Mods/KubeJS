@@ -83,13 +83,13 @@ public class KubeJSClientEventHandler {
 
 	private void debugInfoLeft(List<String> lines) {
 		if (Minecraft.getInstance().player != null) {
-			new DebugInfoEventJS(lines).post(ScriptType.CLIENT, KubeJSEvents.CLIENT_DEBUG_INFO_LEFT);
+			DebugInfoEventJS.LEFT_EVENT.post(new DebugInfoEventJS(lines));
 		}
 	}
 
 	private void debugInfoRight(List<String> lines) {
 		if (Minecraft.getInstance().player != null) {
-			new DebugInfoEventJS(lines).post(ScriptType.CLIENT, KubeJSEvents.CLIENT_DEBUG_INFO_RIGHT);
+			DebugInfoEventJS.RIGHT_EVENT.post(new DebugInfoEventJS(lines));
 		}
 	}
 
@@ -140,7 +140,7 @@ public class KubeJSClientEventHandler {
 
 	private void clientTick(Minecraft minecraft) {
 		if (Minecraft.getInstance().player != null && ClientLevelJS.getInstance() != null) {
-			new ClientTickEventJS().post(KubeJSEvents.CLIENT_TICK);
+			ClientEventJS.TICK_EVENT.post(new ClientEventJS());
 		}
 	}
 
@@ -148,12 +148,12 @@ public class KubeJSClientEventHandler {
 		ClientLevelJS.setInstance(new ClientLevelJS(Minecraft.getInstance(), player));
 		AttachDataEvent.forLevel(ClientLevelJS.getInstance()).invoke();
 		AttachDataEvent.forPlayer(ClientLevelJS.getInstance().clientPlayerData).invoke();
-		new ClientLoggedInEventJS().post(KubeJSEvents.CLIENT_LOGGED_IN);
+		ClientEventJS.LOGGED_IN_EVENT.post(new ClientEventJS());
 	}
 
 	private void loggedOut(LocalPlayer player) {
 		if (ClientLevelJS.getInstance() != null) {
-			new ClientLoggedInEventJS().post(KubeJSEvents.CLIENT_LOGGED_OUT);
+			ClientEventJS.LOGGED_OUT_EVENT.post(new ClientEventJS());
 		}
 
 		ClientLevelJS.setInstance(null);

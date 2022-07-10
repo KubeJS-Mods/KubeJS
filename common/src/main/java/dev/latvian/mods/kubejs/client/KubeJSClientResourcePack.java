@@ -3,9 +3,7 @@ package dev.latvian.mods.kubejs.client;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.KubeJSResourcePack;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.minecraft.resources.ResourceLocation;
@@ -40,7 +38,7 @@ public class KubeJSClientResourcePack extends KubeJSResourcePack {
 		Map<String, String> langMap = new HashMap<>();
 		KubeJSPlugins.forEachPlugin(p -> p.generateLang(langMap));
 
-		new ClientGenerateAssetsEventJS(generator, langMap).post(ScriptType.CLIENT, KubeJSEvents.CLIENT_GENERATE_ASSETS);
+		ClientGenerateAssetsEventJS.EVENT.post(new ClientGenerateAssetsEventJS(generator, langMap));
 
 		var lang = new JsonObject();
 

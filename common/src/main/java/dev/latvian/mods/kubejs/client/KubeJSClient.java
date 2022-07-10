@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.client;
 import dev.architectury.hooks.PackRepositoryHooks;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCommon;
-import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.client.painter.Painter;
@@ -37,6 +36,11 @@ public class KubeJSClient extends KubeJSCommon {
 		if (Minecraft.getInstance() != null) {
 			super.startThread();
 		}
+	}
+
+	@Override
+	public void registerClientEvents() {
+		KubeJSPlugins.forEachPlugin(KubeJSPlugin::registerClientEvents);
 	}
 
 	@Override
@@ -90,12 +94,12 @@ public class KubeJSClient extends KubeJSCommon {
 	}
 
 	private void setup() {
-		new ClientEventJS().post(KubeJSEvents.CLIENT_INIT);
+		ClientEventJS.INIT_EVENT.post(new ClientEventJS());
 	}
 
 	@Override
-	public void handleDataToClientPacket(String channel, @Nullable CompoundTag data) {
-		new NetworkEventJS(Minecraft.getInstance().player, channel, data).post(KubeJSEvents.PLAYER_DATA_FROM_SERVER, channel);
+	public void handleDataFromServerPacket(String channel, @Nullable CompoundTag data) {
+		NetworkEventJS.FROM_SERVER.post(new NetworkEventJS(Minecraft.getInstance().player, channel, data), channel);
 	}
 
 	@Override

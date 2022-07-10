@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.client;
 
 import com.google.gson.JsonElement;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import net.minecraft.Util;
@@ -13,6 +14,8 @@ import java.util.function.Consumer;
  * @author LatvianModder
  */
 public class ClientGenerateAssetsEventJS extends EventJS {
+	public static final EventHandler EVENT = EventHandler.client(ClientGenerateAssetsEventJS.class).legacy("client.generate_assets");
+
 	public final AssetJsonGenerator generator;
 	private final Map<String, String> langMap;
 

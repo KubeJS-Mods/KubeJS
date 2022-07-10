@@ -39,7 +39,7 @@ public class SendDataFromServerMessage extends BaseS2CMessage {
 	@Override
 	public void handle(PacketContext context) {
 		if (!channel.isEmpty()) {
-			KubeJS.PROXY.handleDataToClientPacket(channel, data);
+			KubeJS.PROXY.handleDataFromServerPacket(channel, data);
 		}
 	}
 }

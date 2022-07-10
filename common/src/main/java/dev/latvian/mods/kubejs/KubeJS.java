@@ -100,6 +100,7 @@ public class KubeJS {
 		}
 
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::registerEvents);
+		PROXY.registerClientEvents();
 
 		LOGGER.info("Done in " + pluginTimer.stop());
 

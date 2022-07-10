@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.entity.forge;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.entity.ItemEntityJS;
 import dev.latvian.mods.kubejs.entity.LivingEntityEventJS;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -16,6 +17,8 @@ import java.util.List;
  * @author LatvianModder
  */
 public class LivingEntityDropsEventJS extends LivingEntityEventJS {
+	public static final EventHandler EVENT = EventHandler.server(LivingEntityDropsEventJS.class).legacy("entity.drops");
+
 	private final LivingDropsEvent event;
 	public List<ItemEntityJS> eventDrops;
 

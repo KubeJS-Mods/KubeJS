@@ -17,6 +17,10 @@ public class CommandEventJS extends ServerEventJS {
 		event = e;
 	}
 
+	public String getCommandName() {
+		return event.getResults().getContext().getRootNode().getName();
+	}
+
 	public String getInput() {
 		return event.getResults().getReader().getString();
 	}
