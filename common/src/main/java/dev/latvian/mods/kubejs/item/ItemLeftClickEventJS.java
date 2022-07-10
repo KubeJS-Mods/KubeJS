@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.entity.EntityJS;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -9,6 +10,8 @@ import net.minecraft.world.entity.player.Player;
  * @author LatvianModder
  */
 public class ItemLeftClickEventJS extends PlayerEventJS {
+	public static final EventHandler EVENT = EventHandler.client(ItemLeftClickEventJS.class).legacy("item.left_click");
+
 	private final Player player;
 	private final InteractionHand hand;
 

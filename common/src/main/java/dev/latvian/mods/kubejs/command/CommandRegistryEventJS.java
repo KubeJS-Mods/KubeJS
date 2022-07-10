@@ -3,20 +3,21 @@ package dev.latvian.mods.kubejs.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.server.ServerEventJS;
 import dev.latvian.mods.kubejs.util.ClassWrapper;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.commands.SharedSuggestionProvider;
-
-import java.util.Objects;
+import net.minecraft.core.RegistryAccess;
 
 /**
  * @author LatvianModder
  */
 public class CommandRegistryEventJS extends ServerEventJS {
+	public static final EventHandler EVENT = EventHandler.server(CommandRegistryEventJS.class).legacy("command.registry");
+
 	public final CommandDispatcher<CommandSourceStack> dispatcher;
 	public final Commands.CommandSelection selection;
 	public final CommandBuildContext context;

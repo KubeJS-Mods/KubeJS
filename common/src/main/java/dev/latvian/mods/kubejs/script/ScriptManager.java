@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.event.EventsJS;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.util.ClassFilter;
@@ -150,7 +149,7 @@ public class ScriptManager {
 		type.console.info("Loaded " + i + "/" + t + " KubeJS " + type.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s");
 		Context.exit();
 
-		events.postToHandlers(KubeJSEvents.LOADED, events.handlers(KubeJSEvents.LOADED), new StartupEventJS());
+		StartupEventJS.LOADED_EVENT.post(new StartupEventJS());
 
 		if (i != t && type == ScriptType.STARTUP) {
 			throw new RuntimeException("There were startup script syntax errors! See logs/kubejs/startup.txt for more info");

@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.entity.EntityJS;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -9,6 +10,8 @@ import net.minecraft.world.item.ItemStack;
  * @author LatvianModder
  */
 public class ItemSmeltedEventJS extends PlayerEventJS {
+	public static final EventHandler EVENT = EventHandler.server(ItemSmeltedEventJS.class).legacy("item.smelted");
+
 	private final Player player;
 	private final ItemStack smelted;
 

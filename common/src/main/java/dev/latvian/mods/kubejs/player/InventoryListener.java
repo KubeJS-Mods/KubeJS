@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.player;
 
-import dev.latvian.mods.kubejs.KubeJSEvents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerListener;
@@ -19,7 +18,7 @@ public class InventoryListener implements ContainerListener {
 	@Override
 	public void slotChanged(AbstractContainerMenu container, int index, ItemStack stack) {
 		if (!stack.isEmpty() && container.getSlot(index).container == player.getInventory()) {
-			new InventoryChangedEventJS(player, stack, index).post(KubeJSEvents.PLAYER_INVENTORY_CHANGED);
+			InventoryChangedEventJS.EVENT.post(new InventoryChangedEventJS(player, stack, index));
 		}
 	}
 

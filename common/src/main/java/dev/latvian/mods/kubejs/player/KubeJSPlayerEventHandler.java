@@ -100,22 +100,26 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	public static void inventoryOpened(Player player, AbstractContainerMenu menu) {
-		if (player instanceof ServerPlayer serverPlayer && !(menu instanceof InventoryMenu)) {
-			menu.addSlotListener(new InventoryListener(serverPlayer));
-		}
+		if (player instanceof ServerPlayer serverPlayer) {
+			if (!(menu instanceof InventoryMenu)) {
+				menu.addSlotListener(new InventoryListener(serverPlayer));
+			}
 
-		new InventoryEventJS(player, menu).post(KubeJSEvents.PLAYER_INVENTORY_OPENED);
+			InventoryEventJS.OPENED_EVENT.post(new InventoryEventJS(serverPlayer, menu));
 
-		if (menu instanceof ChestMenu) {
-			new ChestEventJS(player, menu).post(KubeJSEvents.PLAYER_CHEST_OPENED);
+			if (menu instanceof ChestMenu) {
+				ChestEventJS.CHEST_OPENED_EVENT.post(new ChestEventJS(serverPlayer, menu));
+			}
 		}
 	}
 
 	public static void inventoryClosed(Player player, AbstractContainerMenu menu) {
-		new InventoryEventJS(player, menu).post(KubeJSEvents.PLAYER_INVENTORY_CLOSED);
+		if (player instanceof ServerPlayer serverPlayer) {
+			InventoryEventJS.CLOSED_EVENT.post(new InventoryEventJS(serverPlayer, menu));
 
-		if (menu instanceof ChestMenu) {
-			new ChestEventJS(player, menu).post(KubeJSEvents.PLAYER_CHEST_CLOSED);
+			if (menu instanceof ChestMenu) {
+				ChestEventJS.CHEST_CLOSED_EVENT.post(new ChestEventJS(serverPlayer, menu));
+			}
 		}
 	}
 }

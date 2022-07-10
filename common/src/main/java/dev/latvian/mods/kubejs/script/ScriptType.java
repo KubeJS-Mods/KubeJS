@@ -44,6 +44,7 @@ public enum ScriptType {
 	public final transient Supplier<ScriptManager> manager;
 	public final transient ExecutorService executor;
 	public final transient Map<String, EventHandler> eventHandlers;
+	public final transient Map<String, EventHandler> legacyEventHandlers;
 
 	ScriptType(String n, String cname, Supplier<ScriptManager> m) {
 		name = n;
@@ -53,6 +54,7 @@ public enum ScriptType {
 		manager = m;
 		executor = Executors.newSingleThreadExecutor();
 		eventHandlers = new HashMap<>();
+		legacyEventHandlers = new HashMap<>();
 	}
 
 	public Path getLogFile() {

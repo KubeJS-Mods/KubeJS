@@ -6,21 +6,22 @@ import dev.latvian.mods.kubejs.script.ScriptType;
  * @author LatvianModder
  */
 public class EventJS {
-	private boolean cancelled = false;
+	private boolean canceled = false;
 
+	@Deprecated
 	public boolean canCancel() {
 		return false;
 	}
 
 	public final void cancel() {
-		cancelled = true;
+		canceled = true;
 	}
 
-	public final boolean isCancelled() {
-		return cancelled;
+	public final boolean isCanceled() {
+		return canceled;
 	}
 
-	protected void afterPosted(boolean result) {
+	protected void afterPosted(boolean isCanceled) {
 	}
 
 	public final boolean post(ScriptType t, String id) {

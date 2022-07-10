@@ -33,17 +33,26 @@ import dev.latvian.mods.kubejs.client.painter.screen.ItemObject;
 import dev.latvian.mods.kubejs.client.painter.screen.RectangleObject;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
 import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
+import dev.latvian.mods.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.mods.kubejs.core.PlayerSelector;
 import dev.latvian.mods.kubejs.event.DataEvent;
 import dev.latvian.mods.kubejs.event.IEventHandler;
+import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
+import dev.latvian.mods.kubejs.item.ItemCraftedEventJS;
+import dev.latvian.mods.kubejs.item.ItemEntityInteractEventJS;
+import dev.latvian.mods.kubejs.item.ItemLeftClickEventJS;
+import dev.latvian.mods.kubejs.item.ItemPickupEventJS;
+import dev.latvian.mods.kubejs.item.ItemRightClickEmptyEventJS;
 import dev.latvian.mods.kubejs.item.ItemRightClickEventJS;
+import dev.latvian.mods.kubejs.item.ItemSmeltedEventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.ItemTossEventJS;
 import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.AxeItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.BasicItemJS;
@@ -68,6 +77,9 @@ import dev.latvian.mods.kubejs.misc.PotionBuilder;
 import dev.latvian.mods.kubejs.misc.SoundEventBuilder;
 import dev.latvian.mods.kubejs.misc.VillagerProfessionBuilder;
 import dev.latvian.mods.kubejs.misc.VillagerTypeBuilder;
+import dev.latvian.mods.kubejs.player.ChestEventJS;
+import dev.latvian.mods.kubejs.player.InventoryChangedEventJS;
+import dev.latvian.mods.kubejs.player.InventoryEventJS;
 import dev.latvian.mods.kubejs.recipe.RegisterRecipeTypesEvent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
@@ -87,6 +99,7 @@ import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.server.CommandEventJS;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.JsonIO;
@@ -197,8 +210,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void initStartup() {
-		new ItemToolTierEventJS().post(KubeJSEvents.ITEM_REGISTRY_TOOL_TIERS);
-		new ItemArmorTierEventJS().post(KubeJSEvents.ITEM_REGISTRY_ARMOR_TIERS);
+		ItemToolTierEventJS.EVENT.post(new ItemToolTierEventJS());
+		ItemArmorTierEventJS.EVENT.post(new ItemArmorTierEventJS());
 
 		for (var types : RegistryObjectBuilderTypes.MAP.values()) {
 			types.postEvent("%s.registry".formatted(UtilsJS.stripIdForEvent(types.registryKey.location())));
@@ -222,7 +235,84 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void registerEvents() {
+		StartupEventJS.INIT_EVENT.register();
+		StartupEventJS.POST_INIT_EVENT.register();
+		StartupEventJS.LOADED_EVENT.register();
+		CommandRegistryEventJS.EVENT.register();
+		CommandEventJS.EVENT.register();
+
+//		String CLIENT_INIT = "client.init";
+//		String CLIENT_DEBUG_INFO_LEFT = "client.debug_info.left";
+//		String CLIENT_DEBUG_INFO_RIGHT = "client.debug_info.right";
+//		String CLIENT_LOGGED_IN = "client.logged_in";
+//		String CLIENT_LOGGED_OUT = "client.logged_out";
+//		String CLIENT_TICK = "client.tick";
+//		String CLIENT_PAINT_SCREEN = "client.paint_screen";
+//		String CLIENT_PAINTER_UPDATED = "client.painter_updated";
+//		String CLIENT_GENERATE_ASSETS = "client.generate_assets";
+
+//		String SERVER_LOAD = "server.load";
+//		String SERVER_UNLOAD = "server.unload";
+//		String SERVER_TICK = "server.tick";
+//		String SERVER_DATAPACK_HIGH_PRIORITY = "server.datapack.high_priority";
+//		String SERVER_DATAPACK_LOW_PRIORITY = "server.datapack.low_priority";
+//		String SERVER_CUSTOM_COMMAND = "server.custom_command";
+//		String RECIPES = "recipes";
+//		String RECIPES_AFTER_LOAD = "recipes.after_load";
+//		String RECIPES_SERIALIZER_SPECIAL_FLAG = "recipes.serializer.special.flag";
+//		String RECIPES_COMPOSTABLES = "recipes.compostables";
+//		String RECIPES_TYPE_REGISTRY = "recipes.type_registry";
+//		String WORLDGEN_ADD = "worldgen.add";
+//		String WORLDGEN_REMOVE = "worldgen.remove";
+
+//		String LEVEL_LOAD = "level.load";
+//		String LEVEL_UNLOAD = "level.unload";
+//		String LEVEL_TICK = "level.tick";
+//		String LEVEL_EXPLOSION_PRE = "level.explosion.pre";
+//		String LEVEL_EXPLOSION_POST = "level.explosion.post";
+
+//		String PLAYER_LOGGED_IN = "player.logged_in";
+//		String PLAYER_LOGGED_OUT = "player.logged_out";
+//		String PLAYER_TICK = "player.tick";
+//		String PLAYER_DATA_FROM_SERVER = "player.data_from_server";
+//		String PLAYER_DATA_FROM_CLIENT = "player.data_from_client";
+//		String PLAYER_CHAT = "player.chat";
+//		String PLAYER_ADVANCEMENT = "player.advancement";
+		InventoryEventJS.OPENED_EVENT.register();
+		InventoryEventJS.CLOSED_EVENT.register();
+		InventoryChangedEventJS.EVENT.register();
+		ChestEventJS.CHEST_OPENED_EVENT.register();
+		ChestEventJS.CHEST_CLOSED_EVENT.register();
+
+//		String ENTITY_DEATH = "entity.death";
+//		String ENTITY_HURT = "entity.hurt";
+//		String ENTITY_DROPS = "entity.drops";
+//		String ENTITY_CHECK_SPAWN = "entity.check_spawn";
+//		String ENTITY_SPAWNED = "entity.spawned";
+
+//		String BLOCK_RIGHT_CLICK = "block.right_click";
+//		String BLOCK_LEFT_CLICK = "block.left_click";
+//		String BLOCK_PLACE = "block.place";
+//		String BLOCK_BREAK = "block.break";
+//		String BLOCK_MODIFICATION = "block.modification";
+
+		ItemToolTierEventJS.EVENT.register();
+		ItemArmorTierEventJS.EVENT.register();
 		ItemRightClickEventJS.EVENT.register();
+		ItemRightClickEmptyEventJS.EVENT.register();
+		ItemLeftClickEventJS.EVENT.register();
+		ItemPickupEventJS.EVENT.register();
+		ItemTossEventJS.EVENT.register();
+		ItemEntityInteractEventJS.EVENT.register();
+		ItemCraftedEventJS.EVENT.register();
+		ItemSmeltedEventJS.EVENT.register();
+//		String ITEM_DESTROYED = "item.destroyed";
+//		String ITEM_FOOD_EATEN = "item.food_eaten";
+//		String ITEM_TOOLTIP = "item.tooltip";
+//		String ITEM_MODIFICATION = "item.modification";
+//		String ITEM_MODEL_PROPERTIES = "item.model_properties";
+//
+//		String SOUND_REGISTRY = "sound.registry";
 	}
 
 	@Override

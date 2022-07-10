@@ -24,7 +24,6 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelResource;
 
 import java.nio.file.Files;
@@ -71,7 +70,7 @@ public class KubeJSServerEventHandler {
 
 	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection selection) {
 		KubeJSCommands.register(dispatcher);
-		new CommandRegistryEventJS(dispatcher, selection).post(ScriptType.SERVER, KubeJSEvents.COMMAND_REGISTRY);
+		CommandRegistryEventJS.EVENT.post(new CommandRegistryEventJS(dispatcher, selection));
 	}
 
 	public static void serverStarted(MinecraftServer server) {
@@ -189,9 +188,10 @@ public class KubeJSServerEventHandler {
 	}
 
 	public static EventResult command(CommandPerformEvent event) {
-		if (new CommandEventJS(event).post(ScriptType.SERVER, KubeJSEvents.COMMAND_RUN)) {
+		if (CommandEventJS.EVENT.post(new CommandEventJS(event))) {
 			return EventResult.interruptFalse();
 		}
+
 		return EventResult.pass();
 	}
 }

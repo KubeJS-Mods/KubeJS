@@ -57,7 +57,7 @@ public class EventsJS {
 			try {
 				handler.handler.onEvent(event);
 
-				if (c && event.isCancelled()) {
+				if (c && event.isCanceled()) {
 					return true;
 				}
 			} catch (RhinoException ex) {

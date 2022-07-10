@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.player;
 
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.item.InventoryJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import net.minecraft.world.Container;
@@ -13,6 +14,9 @@ import org.jetbrains.annotations.Nullable;
  * @author LatvianModder
  */
 public class ChestEventJS extends InventoryEventJS {
+	public static final EventHandler CHEST_OPENED_EVENT = EventHandler.server(ChestEventJS.class).legacy("player.chest.opened");
+	public static final EventHandler CHEST_CLOSED_EVENT = EventHandler.server(ChestEventJS.class).legacy("player.chest.closed");
+
 	private InventoryJS inventory;
 
 	public ChestEventJS(Player player, AbstractContainerMenu menu) {
