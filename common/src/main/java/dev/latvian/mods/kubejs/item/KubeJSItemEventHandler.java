@@ -80,15 +80,17 @@ public class KubeJSItemEventHandler {
 
 	private static void crafted(Player player, ItemStack stack, Container grid) {
 		if (player instanceof ServerPlayer serverPlayer && !stack.isEmpty()) {
-			ItemCraftedEventJS.EVENT.post(new ItemCraftedEventJS(player, stack, grid));
-			InventoryChangedEventJS.EVENT.post(new InventoryChangedEventJS(serverPlayer, stack, -1), getItemId(stack));
+			String id = getItemId(stack);
+			ItemCraftedEventJS.EVENT.post(new ItemCraftedEventJS(player, stack, grid), id);
+			InventoryChangedEventJS.EVENT.post(new InventoryChangedEventJS(serverPlayer, stack, -1), id);
 		}
 	}
 
 	private static void smelted(Player player, ItemStack stack) {
 		if (player instanceof ServerPlayer serverPlayer && !stack.isEmpty()) {
-			ItemSmeltedEventJS.EVENT.post(new ItemSmeltedEventJS(player, stack));
-			InventoryChangedEventJS.EVENT.post(new InventoryChangedEventJS(serverPlayer, stack, -1), getItemId(stack));
+			String id = getItemId(stack);
+			ItemSmeltedEventJS.EVENT.post(new ItemSmeltedEventJS(player, stack), id);
+			InventoryChangedEventJS.EVENT.post(new InventoryChangedEventJS(serverPlayer, stack, -1), id);
 		}
 	}
 }

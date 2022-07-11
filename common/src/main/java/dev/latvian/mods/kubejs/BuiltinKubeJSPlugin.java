@@ -130,7 +130,7 @@ import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.DataPackEventJS;
-import dev.latvian.mods.kubejs.server.CommandRunEventJS;
+import dev.latvian.mods.kubejs.server.CommandEventJS;
 import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
 import dev.latvian.mods.kubejs.server.ServerEventJS;
 import dev.latvian.mods.kubejs.server.ServerSettings;
@@ -272,7 +272,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		StartupEventJS.POST_INIT_EVENT.register();
 		StartupEventJS.LOADED_EVENT.register();
 		CommandRegistryEventJS.EVENT.register();
-		CommandRunEventJS.EVENT.register();
+		CommandEventJS.EVENT.register();
 
 		ServerEventJS.LOAD_EVENT.register();
 		ServerEventJS.UNLOAD_EVENT.register();

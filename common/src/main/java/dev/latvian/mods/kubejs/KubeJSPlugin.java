@@ -38,7 +38,6 @@ public class KubeJSPlugin {
 	public void registerEvents() {
 	}
 
-
 	/**
 	 * Call {@link EventHandler#register()} of client events your mod adds
 	 */
