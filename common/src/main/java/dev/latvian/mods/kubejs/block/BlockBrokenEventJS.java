@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.block;
 
 import dev.architectury.utils.value.IntValue;
 import dev.latvian.mods.kubejs.entity.EntityJS;
-import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
 import net.minecraft.core.BlockPos;
@@ -15,8 +14,6 @@ import org.jetbrains.annotations.Nullable;
  * @author LatvianModder
  */
 public class BlockBrokenEventJS extends PlayerEventJS {
-	public static final EventHandler EVENT = EventHandler.server(BlockBrokenEventJS.class).cancelable().legacy("block.break");
-
 	private final ServerPlayer entity;
 	private final Level level;
 	private final BlockPos pos;

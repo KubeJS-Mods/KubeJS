@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -16,7 +15,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagLoader;
-import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
 import java.text.DateFormat;
@@ -89,9 +87,9 @@ public class TagEventJS<T> extends EventJS {
 					var entryId = wrapper.id;
 					var originalSize = entries.size();
 					entries.removeIf(proxy -> {
-                        var proxyEntry = proxy.entry();
-                        return proxyEntry.tag && proxyEntry.id.equals(entryId);
-                    });
+						var proxyEntry = proxy.entry();
+						return proxyEntry.tag && proxyEntry.id.equals(entryId);
+					});
 
 					var removedCount = originalSize - entries.size();
 					if (removedCount == 0) {
@@ -245,11 +243,11 @@ public class TagEventJS<T> extends EventJS {
 			}
 		}
 
-		ConsoleJS.SERVER.setLineNumber(true);
+		ConsoleJS.SERVER.pushLineNumber();
 		post(ScriptType.SERVER, event);
-		ConsoleJS.SERVER.setLineNumber(false);
+		ConsoleJS.SERVER.popLineNumber();
 
-		if (ServerSettings.dataExport != null && registry != null) {
+		if (ServerSettings.dataExport != null) {
 			var tj = ServerSettings.dataExport.getAsJsonObject("tags");
 
 			if (tj == null) {

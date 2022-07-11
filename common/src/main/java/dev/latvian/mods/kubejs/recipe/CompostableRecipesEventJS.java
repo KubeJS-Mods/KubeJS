@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
@@ -13,8 +12,6 @@ import net.minecraft.world.level.block.ComposterBlock;
  * @author LatvianModder
  */
 public class CompostableRecipesEventJS extends EventJS {
-	public static final EventHandler EVENT = EventHandler.server(CompostableRecipesEventJS.class).legacy("recipes.compostables");
-
 	public static Object2FloatMap<ItemLike> originalMap = null;
 
 	public CompostableRecipesEventJS() {

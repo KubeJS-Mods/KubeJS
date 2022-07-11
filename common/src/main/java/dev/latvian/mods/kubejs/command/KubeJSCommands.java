@@ -9,6 +9,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.core.MinecraftServerKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
@@ -221,7 +222,7 @@ public class KubeJSCommands {
 	}
 
 	private static int customCommand(CommandSourceStack source, String id) {
-		CustomCommandEventJS.EVENT.post(new CustomCommandEventJS(source.getLevel(), source.getEntity(), new BlockPos(source.getPosition()), id), id);
+		KubeJSEvents.SERVER_CUSTOM_COMMAND.post(new CustomCommandEventJS(source.getLevel(), source.getEntity(), new BlockPos(source.getPosition()), id), id);
 		return 1;
 	}
 

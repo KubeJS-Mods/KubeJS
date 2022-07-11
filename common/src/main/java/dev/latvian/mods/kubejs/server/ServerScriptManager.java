@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.server;
 
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.recipe.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeJS;
@@ -111,18 +112,18 @@ public class ServerScriptManager {
 
 		reloadScriptManager(wrappedResourceManager);
 
-		ConsoleJS.SERVER.setLineNumber(true);
+		ConsoleJS.SERVER.pushLineNumber();
 
-		DataPackEventJS.LOW_EVENT.post(new DataPackEventJS(virtualDataPackLow, wrappedResourceManager));
-		DataPackEventJS.HIGH_EVENT.post(new DataPackEventJS(virtualDataPackHigh, wrappedResourceManager));
+		KubeJSEvents.DATAGEN_LOW_DATA.post(new DataPackEventJS(virtualDataPackLow, wrappedResourceManager));
+		KubeJSEvents.DATAGEN_HIGH_DATA.post(new DataPackEventJS(virtualDataPackHigh, wrappedResourceManager));
 
-		ConsoleJS.SERVER.setLineNumber(false);
+		ConsoleJS.SERVER.popLineNumber();
 		ConsoleJS.SERVER.info("Scripts loaded");
 
 		Map<ResourceLocation, RecipeTypeJS> typeMap = new HashMap<>();
 		var modEvent = new RegisterRecipeTypesEvent(typeMap);
 		KubeJSPlugins.forEachPlugin(plugin -> plugin.registerRecipeTypes(modEvent));
-		RecipeTypeRegistryEventJS.EVENT.post(new RecipeTypeRegistryEventJS(typeMap));
+		KubeJSEvents.SERVER_RECIPE_TYPE_REGISTRY.post(new RecipeTypeRegistryEventJS(typeMap));
 
 		// Currently custom ingredients are only supported on Forge
 		if (Platform.isForge()) {

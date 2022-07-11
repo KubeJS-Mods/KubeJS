@@ -55,7 +55,7 @@ public class KubeJSForge {
 
 	private static void itemDestroyed(PlayerDestroyItemEvent event) {
 		if (event.getPlayer() instanceof ServerPlayer) {
-			ItemDestroyedEventJS.EVENT.post(new ItemDestroyedEventJS(event));
+			ForgeKubeJSEvents.ITEM_DESTROYED.post(new ItemDestroyedEventJS(event));
 		}
 	}
 
@@ -66,7 +66,7 @@ public class KubeJSForge {
 
 		var e = new LivingEntityDropsEventJS(event);
 
-		if (LivingEntityDropsEventJS.EVENT.post(e)) {
+		if (ForgeKubeJSEvents.ENTITY_DROPS.post(e)) {
 			event.setCanceled(true);
 		} else if (e.eventDrops != null) {
 			event.getDrops().clear();

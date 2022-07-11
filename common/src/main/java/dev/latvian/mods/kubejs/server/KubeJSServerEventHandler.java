@@ -6,6 +6,7 @@ import dev.architectury.event.events.common.CommandPerformEvent;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.TickEvent;
+import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.mods.kubejs.command.KubeJSCommands;
 import dev.latvian.mods.kubejs.level.ServerLevelJS;
@@ -68,7 +69,7 @@ public class KubeJSServerEventHandler {
 
 	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection selection) {
 		KubeJSCommands.register(dispatcher);
-		CommandRegistryEventJS.EVENT.post(new CommandRegistryEventJS(dispatcher, selection));
+		KubeJSEvents.SERVER_COMMAND_REGISTRY.post(new CommandRegistryEventJS(dispatcher, selection));
 	}
 
 	public static void serverStarted(MinecraftServer server) {
@@ -86,11 +87,11 @@ public class KubeJSServerEventHandler {
 		ServerJS.instance.updateWorldList();
 
 		AttachDataEvent.forServer(ServerJS.instance).invoke();
-		ServerEventJS.LOAD_EVENT.post(new ServerEventJS());
+		KubeJSEvents.SERVER_LOAD.post(new ServerEventJS());
 
 		for (var level : ServerJS.instance.allLevels) {
 			AttachDataEvent.forLevel(level).invoke();
-			SimpleLevelEventJS.LOAD_EVENT.post(new SimpleLevelEventJS(level), level.getDimension().toString());
+			KubeJSEvents.LEVEL_LOAD.post(new SimpleLevelEventJS(level), level.getDimension().toString());
 		}
 	}
 
@@ -102,14 +103,14 @@ public class KubeJSServerEventHandler {
 		var s = ServerJS.instance;
 
 		for (PlayerDataJS<?, ?> p : s.playerMap.values()) {
-			SimplePlayerEventJS.LOGGED_OUT_EVENT.post(new SimplePlayerEventJS(p.getMinecraftPlayer()));
+			KubeJSEvents.PLAYER_LOGGED_OUT.post(new SimplePlayerEventJS(p.getMinecraftPlayer()));
 		}
 
 		for (var level : s.levelMap.values()) {
-			SimpleLevelEventJS.UNLOAD_EVENT.post(new SimpleLevelEventJS(level), level.getDimension().toString());
+			KubeJSEvents.LEVEL_UNLOAD.post(new SimpleLevelEventJS(level), level.getDimension().toString());
 		}
 
-		ServerEventJS.UNLOAD_EVENT.post(new ServerEventJS());
+		KubeJSEvents.SERVER_UNLOAD.post(new ServerEventJS());
 		s.release();
 		ServerJS.instance = null;
 	}
@@ -182,13 +183,13 @@ public class KubeJSServerEventHandler {
 			}
 		}
 
-		ServerEventJS.TICK_EVENT.post(new ServerEventJS());
+		KubeJSEvents.SERVER_TICK.post(new ServerEventJS());
 	}
 
 	public static EventResult command(CommandPerformEvent event) {
 		var e = new CommandEventJS(event);
 
-		if (CommandEventJS.EVENT.post(e, e.getCommandName())) {
+		if (KubeJSEvents.SERVER_COMMAND.post(e, e.getCommandName())) {
 			return EventResult.interruptFalse();
 		}
 

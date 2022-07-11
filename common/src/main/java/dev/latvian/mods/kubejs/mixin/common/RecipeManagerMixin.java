@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.mixin.common;
 
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.recipe.CompostableRecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -24,7 +25,7 @@ public abstract class RecipeManagerMixin {
 	private void customRecipesHead(Map<ResourceLocation, JsonObject> map, ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfo ci) {
 		if (RecipesEventJS.instance != null) {
 			RecipesEventJS.instance.post(UtilsJS.cast(this), map);
-			CompostableRecipesEventJS.EVENT.post(new CompostableRecipesEventJS());
+			KubeJSEvents.SERVER_COMPOSTABLE.post(new CompostableRecipesEventJS());
 			RecipesEventJS.instance = null;
 		}
 		ci.cancel();

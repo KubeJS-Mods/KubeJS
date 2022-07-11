@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.client;
 
-import dev.latvian.mods.kubejs.event.EventHandler;
 import net.minecraft.client.Minecraft;
 
 import java.util.List;
@@ -9,8 +8,6 @@ import java.util.List;
  * @author LatvianModder
  */
 public class DebugInfoEventJS extends ClientEventJS {
-	public static final EventHandler LEFT_EVENT = EventHandler.client(DebugInfoEventJS.class).name("leftDebugInfo").legacy("client.debug_info.left");
-	public static final EventHandler RIGHT_EVENT = EventHandler.client(DebugInfoEventJS.class).name("rightDebugInfo").legacy("client.debug_info.right");
 
 	private final List<String> lines;
 

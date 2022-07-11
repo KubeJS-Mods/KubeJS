@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.event.EventsJS;
-import dev.latvian.mods.kubejs.event.StartupEventJS;
+import dev.latvian.mods.kubejs.event.EventGroup;
+import dev.latvian.mods.kubejs.event.EventMap;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -29,27 +29,27 @@ public class ScriptManager {
 	public final ScriptType type;
 	public final Path directory;
 	public final String exampleScript;
-	public final EventsJS events;
 	public final Map<String, ScriptPack> packs;
 	private final ClassFilter classFilter;
 	public boolean firstLoad;
 	private Map<String, Optional<NativeJavaClass>> javaClassCache;
+	private final Map<String, EventMap.EventHandlerWrapper> legacyEventHandlers;
 
 	public ScriptManager(ScriptType t, Path p, String e) {
 		type = t;
 		directory = p;
 		exampleScript = e;
-		events = new EventsJS(this);
 		packs = new LinkedHashMap<>();
 		firstLoad = true;
 		classFilter = KubeJSPlugins.createClassFilter(type);
+		legacyEventHandlers = new HashMap<>();
 	}
 
 	public void unload() {
-		events.clear();
 		packs.clear();
 		type.unload();
 		javaClassCache = null;
+
 	}
 
 	public void loadFromDirectory() {
@@ -93,7 +93,6 @@ public class ScriptManager {
 	}
 
 	public void load() {
-		ScriptType.current = type;
 		var context = Context.enterWithNewFactory();
 		context.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || isClassAllowed(fullClassName));
 		context.setRemapper(RemappingHelper.createModRemapper());
@@ -149,9 +148,6 @@ public class ScriptManager {
 
 		type.console.info("Loaded " + i + "/" + t + " KubeJS " + type.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s");
 		Context.exit();
-		ScriptType.current = null;
-
-		StartupEventJS.LOADED_EVENT.post(new StartupEventJS());
 
 		if (i != t && type == ScriptType.STARTUP) {
 			throw new RuntimeException("There were startup script syntax errors! See logs/kubejs/startup.txt for more info");
@@ -195,5 +191,25 @@ public class ScriptManager {
 		}
 
 		throw Context.reportRuntimeError("Failed to dynamically load class '%s'!".formatted(name));
+	}
+
+	public EventMap.EventHandlerWrapper getLegacy(String key) {
+		EventMap.EventHandlerWrapper wrapper = legacyEventHandlers.get(key);
+
+		if (wrapper == null) {
+			var handler = EventGroup.getLegacyMap().get(key);
+
+			if (handler == null) {
+				type.console.pushLineNumber();
+				type.console.error("Unknown event '" + key + "'!");
+				type.console.popLineNumber();
+				return EventMap.EventHandlerWrapper.NONE;
+			} else {
+				wrapper = new EventMap.EventHandlerWrapper(type, handler);
+				legacyEventHandlers.put(String.valueOf(key), wrapper);
+			}
+		}
+
+		return wrapper;
 	}
 }

@@ -16,7 +16,7 @@ public class KubeJSOtherEventHandler {
 
 	// perform anything that needs to be done post-registry here
 	private static void setup() {
-		RemoveWorldgenEventJS.EVENT.post(new RemoveWorldgenEventJS());
-		AddWorldgenEventJS.EVENT.post(new AddWorldgenEventJS());
+		KubeJSEvents.WORLDGEN_REMOVE.post(new RemoveWorldgenEventJS());
+		KubeJSEvents.WORLDGEN_ADD.post(new AddWorldgenEventJS());
 	}
 }

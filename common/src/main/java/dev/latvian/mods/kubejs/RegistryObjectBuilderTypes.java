@@ -169,9 +169,9 @@ public final class RegistryObjectBuilderTypes<T> {
 		}
 
 		if (CommonProperties.get().debugInfo) {
-			ConsoleJS.STARTUP.setLineNumber(true);
+			ConsoleJS.STARTUP.pushLineNumber();
 			ConsoleJS.STARTUP.info("~ " + registryKey.location() + " | " + builder.id);
-			ConsoleJS.STARTUP.setLineNumber(false);
+			ConsoleJS.STARTUP.popLineNumber();
 		}
 
 		if (objects.containsKey(builder.id)) {

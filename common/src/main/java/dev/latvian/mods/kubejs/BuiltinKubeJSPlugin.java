@@ -10,13 +10,7 @@ import dev.latvian.mods.kubejs.bindings.ComponentWrapper;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
-import dev.latvian.mods.kubejs.block.BlockBrokenEventJS;
-import dev.latvian.mods.kubejs.block.BlockLeftClickedEventJS;
-import dev.latvian.mods.kubejs.block.BlockModificationEventJS;
-import dev.latvian.mods.kubejs.block.BlockPlacedEventJS;
-import dev.latvian.mods.kubejs.block.BlockRightClickedEventJS;
 import dev.latvian.mods.kubejs.block.DetectorBlock;
-import dev.latvian.mods.kubejs.block.DetectorBlockEventJS;
 import dev.latvian.mods.kubejs.block.MaterialJS;
 import dev.latvian.mods.kubejs.block.MaterialListJS;
 import dev.latvian.mods.kubejs.block.custom.BasicBlockJS;
@@ -32,44 +26,24 @@ import dev.latvian.mods.kubejs.block.custom.WallBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.WoodenButtonBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.WoodenPressurePlateBlockBuilder;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
-import dev.latvian.mods.kubejs.client.ClientEventJS;
-import dev.latvian.mods.kubejs.client.DebugInfoEventJS;
-import dev.latvian.mods.kubejs.client.GenerateClientAssetsEventJS;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.screen.AtlasTextureObject;
 import dev.latvian.mods.kubejs.client.painter.screen.GradientObject;
 import dev.latvian.mods.kubejs.client.painter.screen.ItemObject;
-import dev.latvian.mods.kubejs.client.painter.screen.PaintScreenEventJS;
 import dev.latvian.mods.kubejs.client.painter.screen.RectangleObject;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
 import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
-import dev.latvian.mods.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.mods.kubejs.core.PlayerSelector;
-import dev.latvian.mods.kubejs.entity.CheckLivingEntitySpawnEventJS;
-import dev.latvian.mods.kubejs.entity.EntitySpawnedEventJS;
-import dev.latvian.mods.kubejs.entity.LivingEntityDeathEventJS;
-import dev.latvian.mods.kubejs.entity.LivingEntityHurtEventJS;
+import dev.latvian.mods.kubejs.event.EventGroup;
+import dev.latvian.mods.kubejs.event.EventMap;
 import dev.latvian.mods.kubejs.event.IEventHandler;
-import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
-import dev.latvian.mods.kubejs.item.FoodEatenEventJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
-import dev.latvian.mods.kubejs.item.ItemCraftedEventJS;
-import dev.latvian.mods.kubejs.item.ItemDroppedEventJS;
-import dev.latvian.mods.kubejs.item.ItemEntityInteractedEventJS;
-import dev.latvian.mods.kubejs.item.ItemLeftClickedEventJS;
-import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
-import dev.latvian.mods.kubejs.item.ItemModificationEventJS;
-import dev.latvian.mods.kubejs.item.ItemPickedUpEventJS;
-import dev.latvian.mods.kubejs.item.ItemRightClickedEmptyEventJS;
-import dev.latvian.mods.kubejs.item.ItemRightClickedEventJS;
-import dev.latvian.mods.kubejs.item.ItemSmeltedEventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
 import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.AxeItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.BasicItemJS;
@@ -82,10 +56,6 @@ import dev.latvian.mods.kubejs.item.custom.ShovelItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.SwordItemBuilder;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStackJS;
-import dev.latvian.mods.kubejs.level.ExplosionEventJS;
-import dev.latvian.mods.kubejs.level.SimpleLevelEventJS;
-import dev.latvian.mods.kubejs.level.gen.AddWorldgenEventJS;
-import dev.latvian.mods.kubejs.level.gen.RemoveWorldgenEventJS;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.filter.mob.MobFilter;
 import dev.latvian.mods.kubejs.misc.BasicMobEffect;
@@ -98,17 +68,6 @@ import dev.latvian.mods.kubejs.misc.PotionBuilder;
 import dev.latvian.mods.kubejs.misc.SoundEventBuilder;
 import dev.latvian.mods.kubejs.misc.VillagerProfessionBuilder;
 import dev.latvian.mods.kubejs.misc.VillagerTypeBuilder;
-import dev.latvian.mods.kubejs.net.NetworkEventJS;
-import dev.latvian.mods.kubejs.player.ChestEventJS;
-import dev.latvian.mods.kubejs.player.InventoryChangedEventJS;
-import dev.latvian.mods.kubejs.player.InventoryEventJS;
-import dev.latvian.mods.kubejs.player.PlayerAdvancementEventJS;
-import dev.latvian.mods.kubejs.player.PlayerChatEventJS;
-import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
-import dev.latvian.mods.kubejs.recipe.AfterRecipesLoadedEventJS;
-import dev.latvian.mods.kubejs.recipe.CompostableRecipesEventJS;
-import dev.latvian.mods.kubejs.recipe.RecipeTypeRegistryEventJS;
-import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.RegisterRecipeTypesEvent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
@@ -124,15 +83,10 @@ import dev.latvian.mods.kubejs.recipe.mod.IDSqueezerRecipeJS;
 import dev.latvian.mods.kubejs.recipe.mod.MATagRecipeJS;
 import dev.latvian.mods.kubejs.recipe.mod.ShapedArtisanRecipeJS;
 import dev.latvian.mods.kubejs.recipe.mod.ShapelessArtisanRecipeJS;
-import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.script.data.DataPackEventJS;
-import dev.latvian.mods.kubejs.server.CommandEventJS;
-import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
-import dev.latvian.mods.kubejs.server.ServerEventJS;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.JsonIO;
@@ -243,8 +197,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void initStartup() {
-		ItemToolTierRegistryEventJS.EVENT.post(new ItemToolTierRegistryEventJS());
-		ItemArmorTierRegistryEventJS.EVENT.post(new ItemArmorTierRegistryEventJS());
+		KubeJSEvents.ITEM_TOOL_TIER_REGISTRY.post(new ItemToolTierRegistryEventJS());
+		KubeJSEvents.ITEM_ARMOR_TIER_REGISTRY.post(new ItemArmorTierRegistryEventJS());
 
 		for (var types : RegistryObjectBuilderTypes.MAP.values()) {
 			types.postEvent("%s.registry".formatted(UtilsJS.stripIdForEvent(types.registryKey.location())));
@@ -268,88 +222,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void registerEvents() {
-		StartupEventJS.INIT_EVENT.register();
-		StartupEventJS.POST_INIT_EVENT.register();
-		StartupEventJS.LOADED_EVENT.register();
-		CommandRegistryEventJS.EVENT.register();
-		CommandEventJS.EVENT.register();
-
-		ServerEventJS.LOAD_EVENT.register();
-		ServerEventJS.UNLOAD_EVENT.register();
-		ServerEventJS.TICK_EVENT.register();
-		DataPackEventJS.LOW_EVENT.register();
-		DataPackEventJS.HIGH_EVENT.register();
-		CustomCommandEventJS.EVENT.register();
-		RecipesEventJS.EVENT.register();
-		AfterRecipesLoadedEventJS.EVENT.register();
-		SpecialRecipeSerializerManager.JS_EVENT.register();
-		CompostableRecipesEventJS.EVENT.register();
-		RecipeTypeRegistryEventJS.EVENT.register();
-		AddWorldgenEventJS.EVENT.register();
-		RemoveWorldgenEventJS.EVENT.register();
-
-		SimpleLevelEventJS.LOAD_EVENT.register();
-		SimpleLevelEventJS.UNLOAD_EVENT.register();
-		SimpleLevelEventJS.TICK_EVENT.register();
-		ExplosionEventJS.PRE_EVENT.register();
-		ExplosionEventJS.POST_EVENT.register();
-
-		SimplePlayerEventJS.LOGGED_IN_EVENT.register();
-		SimplePlayerEventJS.LOGGED_OUT_EVENT.register();
-		SimplePlayerEventJS.TICK_EVENT.register();
-		NetworkEventJS.FROM_CLIENT.register();
-		NetworkEventJS.FROM_SERVER.register();
-		PlayerChatEventJS.EVENT.register();
-		PlayerAdvancementEventJS.EVENT.register();
-		InventoryEventJS.OPENED_EVENT.register();
-		InventoryEventJS.CLOSED_EVENT.register();
-		InventoryChangedEventJS.EVENT.register();
-		ChestEventJS.CHEST_OPENED_EVENT.register();
-		ChestEventJS.CHEST_CLOSED_EVENT.register();
-
-		LivingEntityDeathEventJS.EVENT.register();
-		LivingEntityHurtEventJS.EVENT.register();
-		CheckLivingEntitySpawnEventJS.EVENT.register();
-		EntitySpawnedEventJS.EVENT.register();
-
-		BlockRightClickedEventJS.EVENT.register();
-		BlockLeftClickedEventJS.EVENT.register();
-		BlockPlacedEventJS.EVENT.register();
-		BlockBrokenEventJS.EVENT.register();
-		BlockModificationEventJS.EVENT.register();
-		DetectorBlockEventJS.EVENT.register();
-		DetectorBlockEventJS.POWERED_EVENT.register();
-		DetectorBlockEventJS.UNPOWERED_EVENT.register();
-
-		ItemToolTierRegistryEventJS.EVENT.register();
-		ItemArmorTierRegistryEventJS.EVENT.register();
-		ItemRightClickedEventJS.EVENT.register();
-		ItemPickedUpEventJS.EVENT.register();
-		ItemDroppedEventJS.EVENT.register();
-		ItemEntityInteractedEventJS.EVENT.register();
-		ItemCraftedEventJS.EVENT.register();
-		ItemSmeltedEventJS.EVENT.register();
-		FoodEatenEventJS.EVENT.register();
-		ItemModificationEventJS.EVENT.register();
-	}
-
-	@Override
-	@Environment(EnvType.CLIENT)
-	public void registerClientEvents() {
-		ClientEventJS.INIT_EVENT.register();
-		ClientEventJS.LOGGED_IN_EVENT.register();
-		ClientEventJS.LOGGED_OUT_EVENT.register();
-		ClientEventJS.TICK_EVENT.register();
-		ClientEventJS.PAINTER_UPDATED_EVENT.register();
-		DebugInfoEventJS.LEFT_EVENT.register();
-		DebugInfoEventJS.RIGHT_EVENT.register();
-		PaintScreenEventJS.EVENT.register();
-		GenerateClientAssetsEventJS.EVENT.register();
-
-		ItemRightClickedEmptyEventJS.EVENT.register();
-		ItemLeftClickedEventJS.EVENT.register();
-		ItemTooltipEventJS.EVENT.register();
-		ItemModelPropertiesEventJS.EVENT.register();
+		KubeJSEvents.register();
 	}
 
 	@Override
@@ -425,7 +298,11 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("Platform", PlatformWrapper.class);
 		event.add("console", event.type.console);
 
-		event.addFunction("onEvent", args -> onEvent(event, args), null, IEventHandler.class);
+		for (var group : EventGroup.getGroups().values()) {
+			event.add(group.name, new EventMap(event.type, group));
+		}
+
+		event.addFunction("onEvent", args -> onLegacyEvent(event, args[0], (IEventHandler) args[1]), null, IEventHandler.class);
 		event.addFunction("java", args -> event.manager.loadJavaClass(event.scope, args), new Class[]{null});
 
 		event.add("JavaMath", Math.class);
@@ -485,9 +362,17 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		KubeJS.PROXY.clientBindings(event);
 	}
 
-	private static Object onEvent(BindingsEvent event, Object[] args) {
-		for (var o : ListJS.orSelf(args[0])) {
-			event.type.manager.get().events.listen(String.valueOf(o), (IEventHandler) args[1]);
+	private static Object onLegacyEvent(BindingsEvent event, Object ids, IEventHandler handler) {
+		for (var o : ListJS.orSelf(ids)) {
+			event.type.console.pushLineNumber();
+			event.type.console.warn("Legacy '" + o + "' event handler!");
+			event.type.console.popLineNumber();
+
+			var h = EventGroup.getLegacyMap().get(String.valueOf(o));
+
+			if (h != null) {
+				h.listen(event.type, handler);
+			}
 		}
 
 		return null;

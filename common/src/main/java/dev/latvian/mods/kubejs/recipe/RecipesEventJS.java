@@ -6,8 +6,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
+import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
-import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
@@ -50,7 +50,6 @@ import java.util.stream.Collectors;
  * @author LatvianModder
  */
 public class RecipesEventJS extends EventJS {
-	public static final EventHandler EVENT = EventHandler.server(RecipesEventJS.class).legacy("recipes");
 	public static final String FORGE_CONDITIONAL = "forge:conditional";
 	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.mods.kubejs.recipe.RecipeEventJS.post");
 	public static Map<UUID, IngredientWithCustomPredicateJS> customIngredientMap = null;
@@ -111,7 +110,7 @@ public class RecipesEventJS extends EventJS {
 		}
 
 		SpecialRecipeSerializerManager.INSTANCE.reset();
-		SpecialRecipeSerializerManager.JS_EVENT.post(SpecialRecipeSerializerManager.INSTANCE);
+		KubeJSEvents.SERVER_SPECIAL_RECIPES.post(SpecialRecipeSerializerManager.INSTANCE);
 
 		shaped = getRecipeFunction(CommonProperties.get().serverOnly ? "minecraft:crafting_shaped" : "kubejs:shaped");
 		shapeless = getRecipeFunction(CommonProperties.get().serverOnly ? "minecraft:crafting_shapeless" : "kubejs:shapeless");
@@ -137,7 +136,7 @@ public class RecipesEventJS extends EventJS {
 					return TagIngredientJS.Context.EMPTY;
 				});
 
-		ConsoleJS.SERVER.setLineNumber(true);
+		ConsoleJS.SERVER.pushLineNumber();
 		var timer = Stopwatch.createStarted();
 
 		var allRecipeMap = new JsonObject();
@@ -283,9 +282,9 @@ public class RecipesEventJS extends EventJS {
 
 		timer.reset().start();
 
-		ConsoleJS.SERVER.setLineNumber(true);
-		EVENT.post(this);
-		ConsoleJS.SERVER.setLineNumber(false);
+		ConsoleJS.SERVER.pushLineNumber();
+		KubeJSEvents.SERVER_RECIPES.post(this);
+		ConsoleJS.SERVER.popLineNumber();
 
 		ConsoleJS.SERVER.info("Posted recipe events in " + timer.stop());
 
@@ -407,6 +406,8 @@ public class RecipesEventJS extends EventJS {
 				ConsoleJS.SERVER.info(r.id + ": " + r.json);
 			}
 		}
+
+		ConsoleJS.SERVER.popLineNumber();
 	}
 
 	public Map<String, Object> getRecipes() {

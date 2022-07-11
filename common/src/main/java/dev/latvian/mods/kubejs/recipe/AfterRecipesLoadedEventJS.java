@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import dev.latvian.mods.kubejs.event.EventHandler;
+import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.minecraft.CustomRecipeJS;
@@ -25,8 +25,6 @@ import java.util.function.Consumer;
  * @author LatvianModder
  */
 public class AfterRecipesLoadedEventJS extends EventJS {
-	public static final EventHandler EVENT = EventHandler.server(AfterRecipesLoadedEventJS.class).legacy("recipes.after_loaded");
-
 	private final Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipeMap;
 	private List<RecipeJS> originalRecipes;
 	private final Set<RecipeJS> removedRecipes = new HashSet<>();
@@ -101,7 +99,7 @@ public class AfterRecipesLoadedEventJS extends EventJS {
 		var e = new AfterRecipesLoadedEventJS(recipeManager.recipes);
 		var b = ServerSettings.instance.useOriginalRecipeForFilters;
 		ServerSettings.instance.useOriginalRecipeForFilters = true;
-		AfterRecipesLoadedEventJS.EVENT.post(e);
+		KubeJSEvents.SERVER_RECIPES_AFTER_LOADED.post(e);
 		ServerSettings.instance.useOriginalRecipeForFilters = b;
 
 		if (e.originalRecipes != null) {

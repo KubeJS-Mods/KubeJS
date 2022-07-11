@@ -1,17 +1,16 @@
 package dev.latvian.mods.kubejs.event;
 
-import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.RhinoException;
-import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.function.Supplier;
 
 /**
  * Example
@@ -19,56 +18,34 @@ import java.util.stream.Collectors;
  * <code>public static final EventHandler EVENT = EventHandler.of(ScriptType.SERVER, ItemRightClickEventJS.class).cancellable();</code>
  */
 public final class EventHandler {
-	public static EventHandler of(ScriptType scriptType, Class<? extends EventJS> eventType) {
-		return new EventHandler(null, "", scriptType, eventType);
-	}
-
-	public static EventHandler startup(Class<? extends EventJS> eventType) {
-		return of(ScriptType.STARTUP, eventType);
-	}
-
-	public static EventHandler server(Class<? extends EventJS> eventType) {
-		return of(ScriptType.SERVER, eventType);
-	}
-
-	public static EventHandler client(Class<? extends EventJS> eventType) {
-		return of(ScriptType.CLIENT, eventType);
-	}
-
 	public record Container(ScriptType type, IEventHandler handler) {
 	}
 
+	public final EventGroup group;
+	public final String name;
 	public final EventHandler parent;
-	public final String subId;
 	public final ScriptType scriptType;
-	public final Class<? extends EventJS> eventType;
+	public final Supplier<Class<? extends EventJS>> eventType;
 	private boolean cancelable;
-	private String name;
-	private Container[] eventContainers;
+	private List<Container> eventContainers;
 	private Map<String, EventHandler> subHandlers;
-	private final Set<String> legacyEventIds;
+	private Set<String> legacyEventIds;
 
-	private EventHandler(@Nullable EventHandler p, String sid, ScriptType st, Class<? extends EventJS> e) {
+	EventHandler(EventGroup g, String n, ScriptType st, Supplier<Class<? extends EventJS>> e, @Nullable EventHandler p) {
+		group = g;
+		name = n;
 		parent = p;
-		subId = sid;
 		scriptType = st;
 		eventType = e;
 		cancelable = false;
-		name = eventType.getSimpleName().replace("EventJS", "");
-
-		if (!name.isEmpty()) {
-			name = name.substring(0, 1).toLowerCase() + name.substring(1);
-		}
-
 		eventContainers = null;
 		subHandlers = null;
-		legacyEventIds = new HashSet<>();
+		legacyEventIds = null;
 	}
 
 	/**
 	 * Allow event.cancel() to be called
 	 */
-	@HideFromJS
 	public EventHandler cancelable() {
 		cancelable = true;
 		return this;
@@ -78,49 +55,37 @@ public final class EventHandler {
 		return cancelable;
 	}
 
-	/**
-	 * Override name of event handler, defaults to simplified version of class name with EventJS removed
-	 * <p>
-	 * E.g. ItemRightClickEventJS -> ItemRightClick
-	 */
-	@HideFromJS
-	public EventHandler name(String n) {
-		name = n;
-		return this;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	@HideFromJS
 	public EventHandler legacy(String eventId) {
+		if (legacyEventIds == null) {
+			legacyEventIds = new HashSet<>(1);
+		}
+
 		legacyEventIds.add(eventId);
 		return this;
 	}
 
-	@HideFromJS
-	public void clear(ScriptType type) {
-		eventContainers = null;
-		subHandlers = null;
+	public Set<String> getLegacyEventIds() {
+		return legacyEventIds == null ? Set.of() : legacyEventIds;
 	}
 
-	/**
-	 * Call this inside {@link KubeJSPlugin#registerEvents()} or {@link KubeJSPlugin#registerClientEvents()}
-	 */
-	@HideFromJS
-	public void register() {
-		if (name.isBlank()) {
-			throw new IllegalArgumentException("Event name is empty! Use .name(string) to override it");
+	public boolean clear(ScriptType type) {
+		if (subHandlers != null) {
+			subHandlers.values().removeIf(h -> h.clear(type));
+
+			if (subHandlers.isEmpty()) {
+				subHandlers = null;
+			}
 		}
 
-		KubeJS.EVENT_HANDLERS.put(name, this);
+		if (eventContainers != null) {
+			eventContainers.removeIf(container -> container.type == type);
 
-		for (String s : legacyEventIds) {
-			KubeJS.LEGACY_EVENT_HANDLERS.put(s, this);
+			if (eventContainers.isEmpty()) {
+				eventContainers = null;
+			}
 		}
 
-		KubeJS.LOGGER.info("Registered '" + eventType.getName() + "' event handler '" + name + "' for " + scriptType.name + " scripts" + (legacyEventIds.isEmpty() ? "" : (" with legacy IDs " + legacyEventIds.stream().map(s -> "'" + s + "'").collect(Collectors.joining(", ", "[", "]")))));
+		return subHandlers == null && eventContainers == null;
 	}
 
 	public EventHandler of(String sub) {
@@ -139,37 +104,22 @@ public final class EventHandler {
 		var h = subHandlers.get(sub);
 
 		if (h == null) {
-			h = new EventHandler(this, sub, scriptType, eventType);
+			h = new EventHandler(group, sub, scriptType, eventType, this);
 			h.cancelable = cancelable;
-			h.name = name;
 			subHandlers.put(sub, h);
 		}
 
 		return h;
 	}
 
-	// x.listen(event => {}) syntax
-	public void listen(IEventHandler handler) {
-		if (ScriptType.current == null) {
-			throw new IllegalStateException("Tried to listen to event outside script loading time!");
-		}
-
+	public void listen(ScriptType type, IEventHandler handler) {
 		if (eventContainers == null) {
-			eventContainers = new Container[]{new Container(ScriptType.current, handler)};
-		} else {
-			var h = new Container[eventContainers.length + 1];
-			System.arraycopy(eventContainers, 0, h, 0, eventContainers.length);
-			h[eventContainers.length] = new Container(ScriptType.current, handler);
-			eventContainers = h;
+			eventContainers = new ArrayList<>(1);
 		}
+
+		eventContainers.add(new Container(type, handler));
 	}
 
-	// x.listen('id', event => {}) syntax
-	public void listen(String sub, IEventHandler handler) {
-		of(sub).listen(handler);
-	}
-
-	@HideFromJS
 	public boolean post(EventJS event) {
 		return post(event, "");
 	}
@@ -177,7 +127,6 @@ public final class EventHandler {
 	/**
 	 * @return true if event was canceled
 	 */
-	@HideFromJS
 	public boolean post(EventJS event, String sub) {
 		if (parent != null) {
 			throw new IllegalStateException("Can't call EventHandler.post() from sub-handler!");
@@ -208,7 +157,7 @@ public final class EventHandler {
 	}
 
 	private boolean postToHandlers(ScriptType type, EventJS event) {
-		if (eventContainers == null || eventContainers.length == 0) {
+		if (eventContainers == null || eventContainers.isEmpty()) {
 			return false;
 		}
 
@@ -231,5 +180,10 @@ public final class EventHandler {
 		}
 
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		return group + "." + name;
 	}
 }

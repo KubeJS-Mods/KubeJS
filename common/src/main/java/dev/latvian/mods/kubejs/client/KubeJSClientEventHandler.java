@@ -8,6 +8,7 @@ import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import dev.architectury.hooks.client.screen.ScreenAccess;
 import dev.architectury.hooks.fluid.FluidBucketHooks;
+import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.client.painter.Painter;
@@ -77,18 +78,18 @@ public class KubeJSClientEventHandler {
 			builder.clientRegistry(() -> minecraft);
 		}
 
-		ItemModelPropertiesEventJS.EVENT.post(new ItemModelPropertiesEventJS());
+		KubeJSEvents.ITEM_MODEL_PROPERTIES.post(new ItemModelPropertiesEventJS());
 	}
 
 	private void debugInfoLeft(List<String> lines) {
 		if (Minecraft.getInstance().player != null) {
-			DebugInfoEventJS.LEFT_EVENT.post(new DebugInfoEventJS(lines));
+			KubeJSEvents.CLIENT_DEBUG_LEFT.post(new DebugInfoEventJS(lines));
 		}
 	}
 
 	private void debugInfoRight(List<String> lines) {
 		if (Minecraft.getInstance().player != null) {
-			DebugInfoEventJS.RIGHT_EVENT.post(new DebugInfoEventJS(lines));
+			KubeJSEvents.CLIENT_DEBUG_RIGHT.post(new DebugInfoEventJS(lines));
 		}
 	}
 
@@ -125,7 +126,7 @@ public class KubeJSClientEventHandler {
 
 		if (staticItemTooltips == null) {
 			staticItemTooltips = new HashMap<>();
-			ItemTooltipEventJS.EVENT.post(new ItemTooltipEventJS(staticItemTooltips));
+			KubeJSEvents.ITEM_TOOLTIP.post(new ItemTooltipEventJS(staticItemTooltips));
 		}
 
 		for (var handler : staticItemTooltips.getOrDefault(Items.AIR, Collections.emptyList())) {
@@ -139,7 +140,7 @@ public class KubeJSClientEventHandler {
 
 	private void clientTick(Minecraft minecraft) {
 		if (Minecraft.getInstance().player != null && ClientLevelJS.getInstance() != null) {
-			ClientEventJS.TICK_EVENT.post(new ClientEventJS());
+			KubeJSEvents.CLIENT_TICK.post(new ClientEventJS());
 		}
 	}
 
@@ -147,12 +148,12 @@ public class KubeJSClientEventHandler {
 		ClientLevelJS.setInstance(new ClientLevelJS(Minecraft.getInstance(), player));
 		AttachDataEvent.forLevel(ClientLevelJS.getInstance()).invoke();
 		AttachDataEvent.forPlayer(ClientLevelJS.getInstance().clientPlayerData).invoke();
-		ClientEventJS.LOGGED_IN_EVENT.post(new ClientEventJS());
+		KubeJSEvents.CLIENT_LOGGED_IN.post(new ClientEventJS());
 	}
 
 	private void loggedOut(LocalPlayer player) {
 		if (ClientLevelJS.getInstance() != null) {
-			ClientEventJS.LOGGED_OUT_EVENT.post(new ClientEventJS());
+			KubeJSEvents.CLIENT_LOGGED_OUT.post(new ClientEventJS());
 		}
 
 		ClientLevelJS.setInstance(null);

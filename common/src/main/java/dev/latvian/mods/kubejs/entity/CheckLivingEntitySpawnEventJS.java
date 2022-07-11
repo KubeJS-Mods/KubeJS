@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.entity;
 
-import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.core.BlockPos;
@@ -12,8 +11,6 @@ import net.minecraft.world.level.Level;
  * @author LatvianModder
  */
 public class CheckLivingEntitySpawnEventJS extends LivingEntityEventJS {
-	public static final EventHandler EVENT = EventHandler.server(CheckLivingEntitySpawnEventJS.class).name("checkEntitySpawn").cancelable().legacy("entity.check_spawn");
-
 	private final LivingEntity entity;
 	private final Level level;
 

@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.block;
 
 import dev.latvian.mods.kubejs.entity.EntityJS;
-import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
@@ -14,8 +13,6 @@ import net.minecraft.world.entity.player.Player;
  * @author LatvianModder
  */
 public class BlockRightClickedEventJS extends PlayerEventJS {
-	public static final EventHandler EVENT = EventHandler.server(BlockRightClickedEventJS.class).cancelable().legacy("block.right_click");
-
 	private final Player player;
 	private final InteractionHand hand;
 	private final BlockPos pos;

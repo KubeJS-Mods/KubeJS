@@ -20,12 +20,7 @@ public class EventJS {
 	}
 
 	public final boolean post(ScriptType t, String id) {
-		if (t != ScriptType.STARTUP) {
-			post(ScriptType.STARTUP, id);
-		}
-
-		var e = t.manager.get().events;
-		e.postToHandlers(id, e.handlers(id), this);
+		t.console.error("post() for event '" + id + "' is no longer supported!");
 		afterPosted(false);
 		return false;
 	}

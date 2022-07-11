@@ -18,9 +18,6 @@ public class KubeJSCommon {
 		new KubeJSBackgroundThread().start();
 	}
 
-	public void registerClientEvents() {
-	}
-
 	public void init() {
 	}
 

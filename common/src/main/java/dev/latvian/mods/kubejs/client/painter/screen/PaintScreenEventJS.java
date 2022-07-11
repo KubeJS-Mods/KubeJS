@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import dev.latvian.mods.kubejs.client.painter.PaintEventJS;
 import dev.latvian.mods.kubejs.client.painter.Painter;
-import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.unit.UnitVariables;
 import dev.latvian.mods.unit.VariableSet;
 import net.minecraft.client.Minecraft;
@@ -13,8 +12,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 
 public class PaintScreenEventJS extends PaintEventJS implements UnitVariables {
-	public static final EventHandler EVENT = EventHandler.client(PaintScreenEventJS.class).legacy("client.paint_screen");
-
 	public final int mouseX;
 	public final int mouseY;
 	public final int width;

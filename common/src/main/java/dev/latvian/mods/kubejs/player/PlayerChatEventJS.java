@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.player;
 
 import dev.latvian.mods.kubejs.entity.EntityJS;
-import dev.latvian.mods.kubejs.event.EventHandler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -10,8 +9,6 @@ import net.minecraft.server.level.ServerPlayer;
  * @author LatvianModder
  */
 public class PlayerChatEventJS extends PlayerEventJS {
-	public static final EventHandler EVENT = EventHandler.server(PlayerChatEventJS.class).cancelable().legacy("player.chat");
-
 	private final ServerPlayer player;
 	public Component component;
 

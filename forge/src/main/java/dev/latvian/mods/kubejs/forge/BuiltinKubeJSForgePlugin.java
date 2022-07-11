@@ -2,15 +2,10 @@ package dev.latvian.mods.kubejs.forge;
 
 import dev.latvian.mods.kubejs.BuiltinKubeJSPlugin;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.entity.forge.LivingEntityDropsEventJS;
-import dev.latvian.mods.kubejs.item.forge.ItemDestroyedEventJS;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 
@@ -18,14 +13,7 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 	@Override
 	public void registerEvents() {
 		super.registerEvents();
-		ItemDestroyedEventJS.EVENT.register();
-		LivingEntityDropsEventJS.EVENT.register();
-	}
-
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public void registerClientEvents() {
-		super.registerClientEvents();
+		ForgeKubeJSEvents.register();
 	}
 
 	@Override
@@ -48,12 +36,6 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 		if (event.type == ScriptType.STARTUP) {
 			event.addFunction("onForgeEvent", args -> onPlatformEvent(event, args), null, KubeJSForgeEventHandlerWrapper.class);
 		}
-
-	}
-
-	@Override
-	public void registerTypeWrappers(ScriptType type, TypeWrappers typeWrappers) {
-		super.registerTypeWrappers(type, typeWrappers);
 	}
 
 	public static Object onPlatformEvent(BindingsEvent event, Object[] args) {

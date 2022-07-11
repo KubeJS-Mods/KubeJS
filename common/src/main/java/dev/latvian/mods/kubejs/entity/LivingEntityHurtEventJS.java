@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.entity;
 
-import dev.latvian.mods.kubejs.event.EventHandler;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -8,8 +7,6 @@ import net.minecraft.world.entity.LivingEntity;
  * @author LatvianModder
  */
 public class LivingEntityHurtEventJS extends LivingEntityEventJS {
-	public static final EventHandler EVENT = EventHandler.server(LivingEntityHurtEventJS.class).name("entityHurt").cancelable().legacy("entity.hurt");
-
 	private final LivingEntity entity;
 	private final DamageSource source;
 	private final float amount;

@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.player;
 
 import dev.latvian.mods.kubejs.entity.EntityJS;
-import dev.latvian.mods.kubejs.event.EventHandler;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -9,8 +8,6 @@ import net.minecraft.server.level.ServerPlayer;
  * @author LatvianModder
  */
 public class PlayerAdvancementEventJS extends PlayerEventJS {
-	public static final EventHandler EVENT = EventHandler.server(PlayerAdvancementEventJS.class).cancelable().legacy("player.advancement");
-
 	private final ServerPlayer player;
 	private final Advancement advancement;
 

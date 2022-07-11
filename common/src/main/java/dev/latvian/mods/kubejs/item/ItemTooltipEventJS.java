@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.bindings.ComponentWrapper;
-import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.util.ListJS;
@@ -19,8 +18,6 @@ import java.util.Map;
  * @author LatvianModder
  */
 public class ItemTooltipEventJS extends EventJS {
-	public static final EventHandler EVENT = EventHandler.client(ItemTooltipEventJS.class).legacy("item.tooltip");
-
 	@FunctionalInterface
 	public interface StaticTooltipHandler {
 		void tooltip(ItemStack stack, boolean advanced, List<Component> components);

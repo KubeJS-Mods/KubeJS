@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.script.data;
 
 import com.google.gson.JsonElement;
-import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.server.ServerEventJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import net.minecraft.resources.ResourceLocation;
@@ -13,9 +12,6 @@ import net.minecraft.server.packs.resources.MultiPackResourceManager;
  * @author LatvianModder
  */
 public class DataPackEventJS extends ServerEventJS {
-	public static final EventHandler LOW_EVENT = EventHandler.server(DataPackEventJS.class).name("lowPriorityDataPack").legacy("server.datapack.low_priority");
-	public static final EventHandler HIGH_EVENT = EventHandler.server(DataPackEventJS.class).name("highPriorityDataPack").legacy("server.datapack.high_priority");
-
 	private final VirtualKubeJSDataPack virtualDataPack;
 	private final MultiPackResourceManager wrappedManager;
 

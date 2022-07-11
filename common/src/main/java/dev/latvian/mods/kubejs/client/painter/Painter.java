@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.client.painter;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.client.ClientEventJS;
 import dev.latvian.mods.kubejs.client.painter.screen.PaintScreenEventJS;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenPainterObject;
@@ -103,7 +104,7 @@ public class Painter implements UnitVariables {
 		synchronized (lock) {
 			storage.handle(root);
 			screenObjects = null;
-			ClientEventJS.PAINTER_UPDATED_EVENT.post(new ClientEventJS());
+			KubeJSEvents.CLIENT_PAINTER_UPDATED.post(new ClientEventJS());
 		}
 	}
 
@@ -111,7 +112,7 @@ public class Painter implements UnitVariables {
 		synchronized (lock) {
 			storage.clear();
 			screenObjects = null;
-			ClientEventJS.PAINTER_UPDATED_EVENT.post(new ClientEventJS());
+			KubeJSEvents.CLIENT_PAINTER_UPDATED.post(new ClientEventJS());
 		}
 	}
 
@@ -152,7 +153,7 @@ public class Painter implements UnitVariables {
 		screenHeightUnit.set(event.height);
 		mouseXUnit.set(event.width / 2D);
 		mouseYUnit.set(event.height / 2D);
-		PaintScreenEventJS.EVENT.post(event);
+		KubeJSEvents.CLIENT_PAINT_SCREEN.post(event);
 
 		for (var object : getScreenObjects()) {
 			if (object.visible.getBoolean(event) && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
@@ -186,7 +187,7 @@ public class Painter implements UnitVariables {
 		mouseYUnit.set(mouseY);
 
 		event.resetShaderColor();
-		PaintScreenEventJS.EVENT.post(event);
+		KubeJSEvents.CLIENT_PAINT_SCREEN.post(event);
 
 		for (var object : getScreenObjects()) {
 			if (object.visible.getBoolean(event) && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {

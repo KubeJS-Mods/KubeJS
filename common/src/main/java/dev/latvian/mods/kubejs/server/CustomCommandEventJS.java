@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.server;
 
 import dev.latvian.mods.kubejs.entity.EntityJS;
-import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
@@ -14,8 +13,6 @@ import org.jetbrains.annotations.Nullable;
  * @author LatvianModder
  */
 public class CustomCommandEventJS extends PlayerEventJS {
-	public static final EventHandler EVENT = EventHandler.server(CustomCommandEventJS.class).name("customCommand").cancelable().legacy("server.custom_command");
-
 	private final Level level;
 	private final Entity entity;
 	private final BlockPos blockPos;

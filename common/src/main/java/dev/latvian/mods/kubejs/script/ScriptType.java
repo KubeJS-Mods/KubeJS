@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -33,9 +34,6 @@ public enum ScriptType {
 	public static ScriptType of(LevelReader level) {
 		return level.isClientSide() ? CLIENT : SERVER;
 	}
-
-	// Yes this isnt threadsafe, what you gonna do about it, max?
-	public static ScriptType current = null;
 
 	public final String name;
 	public final transient List<String> errors;
@@ -86,8 +84,10 @@ public enum ScriptType {
 		warnings.clear();
 		console.resetFile();
 
-		for (var handler : KubeJS.EVENT_HANDLERS.values()) {
-			handler.clear(this);
+		for (var group : EventGroup.getGroups().values()) {
+			for (var handler : group.getHandlers().values()) {
+				handler.clear(this);
+			}
 		}
 	}
 }

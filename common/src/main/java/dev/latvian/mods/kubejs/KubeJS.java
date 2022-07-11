@@ -7,7 +7,6 @@ import dev.architectury.utils.EnvExecutor;
 import dev.latvian.mods.kubejs.block.KubeJSBlockEventHandler;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.entity.KubeJSEntityEventHandler;
-import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.item.KubeJSItemEventHandler;
 import dev.latvian.mods.kubejs.level.KubeJSWorldEventHandler;
@@ -37,9 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -61,9 +58,6 @@ public class KubeJS {
 	public static CreativeModeTab tab = CreativeModeTab.TAB_MISC;
 
 	public static ScriptManager startupScriptManager, clientScriptManager;
-
-	public static final Map<String, EventHandler> EVENT_HANDLERS = new HashMap<>();
-	public static final Map<String, EventHandler> LEGACY_EVENT_HANDLERS = new HashMap<>();
 
 	public KubeJS() throws Throwable {
 		instance = this;
@@ -107,12 +101,11 @@ public class KubeJS {
 
 		LOGGER.info("Done in " + pluginTimer.stop());
 
-		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS, "/data/kubejs/example_startup_script.js");
-		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS, "/data/kubejs/example_client_script.js");
-
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::init);
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::registerEvents);
-		PROXY.registerClientEvents();
+
+		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS, "/data/kubejs/example_startup_script.js");
+		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS, "/data/kubejs/example_client_script.js");
 
 		if (!CommonProperties.get().serverOnly) {
 			tab = CreativeTabRegistry.create(new ResourceLocation(KubeJS.MOD_ID, KubeJS.MOD_ID), () -> new ItemStack(Items.PURPLE_DYE));
@@ -217,14 +210,14 @@ public class KubeJS {
 	public void setup() {
 		UtilsJS.init();
 		KubeJSNet.init();
-		StartupEventJS.INIT_EVENT.post(new StartupEventJS());
+		KubeJSEvents.STARTUP_INIT.post(new StartupEventJS());
 		// KubeJSRegistries.chunkGenerators().register(new ResourceLocation(KubeJS.MOD_ID, "flat"), () -> KJSFlatLevelSource.CODEC);
 	}
 
 	public void loadComplete() {
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::afterInit);
 		ScriptsLoadedEvent.EVENT.invoker().run();
-		StartupEventJS.POST_INIT_EVENT.post(new StartupEventJS());
+		KubeJSEvents.STARTUP_POST_INIT.post(new StartupEventJS());
 		UtilsJS.postModificationEvents();
 	}
 }

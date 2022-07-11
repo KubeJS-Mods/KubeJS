@@ -130,8 +130,12 @@ public class ConsoleJS {
 		});
 	}
 
-	public void setLineNumber(boolean b) {
-		lineNumber += b ? 1 : -1;
+	public void pushLineNumber() {
+		lineNumber++;
+	}
+
+	public void popLineNumber() {
+		lineNumber--;
 	}
 
 	private String string(Object object) {
@@ -355,7 +359,7 @@ public class ConsoleJS {
 	}
 
 	public void printClass(String className, boolean tree) {
-		setLineNumber(true);
+		pushLineNumber();
 
 		try {
 			var c = Class.forName(className);
@@ -428,7 +432,7 @@ public class ConsoleJS {
 			error(ex.toString());
 		}
 
-		setLineNumber(false);
+		popLineNumber();
 	}
 
 	public void printClass(String className) {
@@ -453,7 +457,7 @@ public class ConsoleJS {
 	}
 
 	public void printObject(@Nullable Object o, boolean tree) {
-		setLineNumber(true);
+		pushLineNumber();
 
 		if (o == null) {
 			info("=== null ===");
@@ -467,7 +471,7 @@ public class ConsoleJS {
 			printClass(o.getClass().getName(), tree);
 		}
 
-		setLineNumber(false);
+		popLineNumber();
 	}
 
 	public void printObject(@Nullable Object o) {

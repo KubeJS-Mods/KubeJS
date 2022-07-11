@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs;
 
-import dev.latvian.mods.kubejs.event.EventHandler;
+import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.level.LevelJS;
@@ -33,16 +33,9 @@ public class KubeJSPlugin {
 	}
 
 	/**
-	 * Call {@link EventHandler#register()} of events your mod adds
+	 * Call {@link EventGroup#register()} of events your mod adds
 	 */
 	public void registerEvents() {
-	}
-
-	/**
-	 * Call {@link EventHandler#register()} of client events your mod adds
-	 */
-	@Environment(EnvType.CLIENT)
-	public void registerClientEvents() {
 	}
 
 	public void registerClasses(ScriptType type, ClassFilter filter) {

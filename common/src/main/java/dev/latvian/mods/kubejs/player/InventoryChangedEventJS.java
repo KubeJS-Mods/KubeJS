@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.player;
 
 import dev.latvian.mods.kubejs.entity.EntityJS;
-import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -10,8 +9,6 @@ import net.minecraft.world.item.ItemStack;
  * @author LatvianModder
  */
 public class InventoryChangedEventJS extends PlayerEventJS {
-	public static final EventHandler EVENT = EventHandler.server(InventoryChangedEventJS.class).legacy("player.inventory.changed");
-
 	private final ServerPlayer player;
 	private final ItemStack item;
 	private final int slot;
