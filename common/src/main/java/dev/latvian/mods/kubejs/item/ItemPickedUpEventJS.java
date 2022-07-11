@@ -10,14 +10,14 @@ import net.minecraft.world.item.ItemStack;
 /**
  * @author LatvianModder
  */
-public class ItemPickupEventJS extends PlayerEventJS {
-	public static final EventHandler EVENT = EventHandler.server(ItemPickupEventJS.class).legacy("item.pickup").cancelable();
+public class ItemPickedUpEventJS extends PlayerEventJS {
+	public static final EventHandler EVENT = EventHandler.server(ItemPickedUpEventJS.class).legacy("item.pickup").cancelable();
 
 	private final Player player;
 	private final ItemEntity entity;
 	private final ItemStack stack;
 
-	public ItemPickupEventJS(Player player, ItemEntity entity, ItemStack stack) {
+	public ItemPickedUpEventJS(Player player, ItemEntity entity, ItemStack stack) {
 		this.player = player;
 		this.entity = entity;
 		this.stack = stack;

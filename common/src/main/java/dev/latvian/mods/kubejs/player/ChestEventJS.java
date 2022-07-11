@@ -14,8 +14,8 @@ import org.jetbrains.annotations.Nullable;
  * @author LatvianModder
  */
 public class ChestEventJS extends InventoryEventJS {
-	public static final EventHandler CHEST_OPENED_EVENT = EventHandler.server(ChestEventJS.class).legacy("player.chest.opened");
-	public static final EventHandler CHEST_CLOSED_EVENT = EventHandler.server(ChestEventJS.class).legacy("player.chest.closed");
+	public static final EventHandler CHEST_OPENED_EVENT = EventHandler.server(ChestEventJS.class).name("chestOpened").legacy("player.chest.opened");
+	public static final EventHandler CHEST_CLOSED_EVENT = EventHandler.server(ChestEventJS.class).name("chestClosed").legacy("player.chest.closed");
 
 	private InventoryJS inventory;
 

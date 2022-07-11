@@ -10,11 +10,11 @@ import dev.latvian.mods.kubejs.bindings.ComponentWrapper;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
-import dev.latvian.mods.kubejs.block.BlockBreakEventJS;
-import dev.latvian.mods.kubejs.block.BlockLeftClickEventJS;
+import dev.latvian.mods.kubejs.block.BlockBrokenEventJS;
+import dev.latvian.mods.kubejs.block.BlockLeftClickedEventJS;
 import dev.latvian.mods.kubejs.block.BlockModificationEventJS;
-import dev.latvian.mods.kubejs.block.BlockPlaceEventJS;
-import dev.latvian.mods.kubejs.block.BlockRightClickEventJS;
+import dev.latvian.mods.kubejs.block.BlockPlacedEventJS;
+import dev.latvian.mods.kubejs.block.BlockRightClickedEventJS;
 import dev.latvian.mods.kubejs.block.DetectorBlock;
 import dev.latvian.mods.kubejs.block.DetectorBlockEventJS;
 import dev.latvian.mods.kubejs.block.MaterialJS;
@@ -56,26 +56,26 @@ import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
+import dev.latvian.mods.kubejs.item.FoodEatenEventJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemCraftedEventJS;
-import dev.latvian.mods.kubejs.item.ItemEntityInteractEventJS;
-import dev.latvian.mods.kubejs.item.ItemFoodEatenEventJS;
+import dev.latvian.mods.kubejs.item.ItemDroppedEventJS;
+import dev.latvian.mods.kubejs.item.ItemEntityInteractedEventJS;
 import dev.latvian.mods.kubejs.item.ItemLeftClickEventJS;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
 import dev.latvian.mods.kubejs.item.ItemModificationEventJS;
-import dev.latvian.mods.kubejs.item.ItemPickupEventJS;
+import dev.latvian.mods.kubejs.item.ItemPickedUpEventJS;
 import dev.latvian.mods.kubejs.item.ItemRightClickEmptyEventJS;
-import dev.latvian.mods.kubejs.item.ItemRightClickEventJS;
+import dev.latvian.mods.kubejs.item.ItemRightClickedEventJS;
 import dev.latvian.mods.kubejs.item.ItemSmeltedEventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
-import dev.latvian.mods.kubejs.item.ItemTossEventJS;
 import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.AxeItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.BasicItemJS;
 import dev.latvian.mods.kubejs.item.custom.HoeItemBuilder;
-import dev.latvian.mods.kubejs.item.custom.ItemArmorTierEventJS;
-import dev.latvian.mods.kubejs.item.custom.ItemToolTierEventJS;
+import dev.latvian.mods.kubejs.item.custom.ItemArmorTierRegistryEventJS;
+import dev.latvian.mods.kubejs.item.custom.ItemToolTierRegistryEventJS;
 import dev.latvian.mods.kubejs.item.custom.PickaxeItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.RecordItemJS;
 import dev.latvian.mods.kubejs.item.custom.ShovelItemBuilder;
@@ -84,8 +84,8 @@ import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.mods.kubejs.level.ExplosionEventJS;
 import dev.latvian.mods.kubejs.level.SimpleLevelEventJS;
-import dev.latvian.mods.kubejs.level.gen.WorldgenAddEventJS;
-import dev.latvian.mods.kubejs.level.gen.WorldgenRemoveEventJS;
+import dev.latvian.mods.kubejs.level.gen.AddWorldgenEventJS;
+import dev.latvian.mods.kubejs.level.gen.RemoveWorldgenEventJS;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.filter.mob.MobFilter;
 import dev.latvian.mods.kubejs.misc.BasicMobEffect;
@@ -105,10 +105,10 @@ import dev.latvian.mods.kubejs.player.InventoryEventJS;
 import dev.latvian.mods.kubejs.player.PlayerAdvancementEventJS;
 import dev.latvian.mods.kubejs.player.PlayerChatEventJS;
 import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
-import dev.latvian.mods.kubejs.recipe.CompostablesRecipeEventJS;
-import dev.latvian.mods.kubejs.recipe.RecipeEventJS;
+import dev.latvian.mods.kubejs.recipe.AfterRecipesLoadedEventJS;
+import dev.latvian.mods.kubejs.recipe.CompostableRecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeRegistryEventJS;
-import dev.latvian.mods.kubejs.recipe.RecipesAfterLoadEventJS;
+import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.RegisterRecipeTypesEvent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
@@ -130,7 +130,7 @@ import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.DataPackEventJS;
-import dev.latvian.mods.kubejs.server.CommandEventJS;
+import dev.latvian.mods.kubejs.server.CommandRunEventJS;
 import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
 import dev.latvian.mods.kubejs.server.ServerEventJS;
 import dev.latvian.mods.kubejs.server.ServerSettings;
@@ -243,8 +243,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void initStartup() {
-		ItemToolTierEventJS.EVENT.post(new ItemToolTierEventJS());
-		ItemArmorTierEventJS.EVENT.post(new ItemArmorTierEventJS());
+		ItemToolTierRegistryEventJS.EVENT.post(new ItemToolTierRegistryEventJS());
+		ItemArmorTierRegistryEventJS.EVENT.post(new ItemArmorTierRegistryEventJS());
 
 		for (var types : RegistryObjectBuilderTypes.MAP.values()) {
 			types.postEvent("%s.registry".formatted(UtilsJS.stripIdForEvent(types.registryKey.location())));
@@ -272,7 +272,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		StartupEventJS.POST_INIT_EVENT.register();
 		StartupEventJS.LOADED_EVENT.register();
 		CommandRegistryEventJS.EVENT.register();
-		CommandEventJS.EVENT.register();
+		CommandRunEventJS.EVENT.register();
 
 		ServerEventJS.LOAD_EVENT.register();
 		ServerEventJS.UNLOAD_EVENT.register();
@@ -280,13 +280,13 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		DataPackEventJS.LOW_EVENT.register();
 		DataPackEventJS.HIGH_EVENT.register();
 		CustomCommandEventJS.EVENT.register();
-		RecipeEventJS.EVENT.register();
-		RecipesAfterLoadEventJS.EVENT.register();
+		RecipesEventJS.EVENT.register();
+		AfterRecipesLoadedEventJS.EVENT.register();
 		SpecialRecipeSerializerManager.JS_EVENT.register();
-		CompostablesRecipeEventJS.EVENT.register();
+		CompostableRecipesEventJS.EVENT.register();
 		RecipeTypeRegistryEventJS.EVENT.register();
-		WorldgenAddEventJS.EVENT.register();
-		WorldgenRemoveEventJS.EVENT.register();
+		AddWorldgenEventJS.EVENT.register();
+		RemoveWorldgenEventJS.EVENT.register();
 
 		SimpleLevelEventJS.LOAD_EVENT.register();
 		SimpleLevelEventJS.UNLOAD_EVENT.register();
@@ -312,24 +312,24 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		CheckLivingEntitySpawnEventJS.EVENT.register();
 		EntitySpawnedEventJS.EVENT.register();
 
-		BlockRightClickEventJS.EVENT.register();
-		BlockLeftClickEventJS.EVENT.register();
-		BlockPlaceEventJS.EVENT.register();
-		BlockBreakEventJS.EVENT.register();
+		BlockRightClickedEventJS.EVENT.register();
+		BlockLeftClickedEventJS.EVENT.register();
+		BlockPlacedEventJS.EVENT.register();
+		BlockBrokenEventJS.EVENT.register();
 		BlockModificationEventJS.EVENT.register();
 		DetectorBlockEventJS.EVENT.register();
 		DetectorBlockEventJS.POWERED_EVENT.register();
 		DetectorBlockEventJS.UNPOWERED_EVENT.register();
 
-		ItemToolTierEventJS.EVENT.register();
-		ItemArmorTierEventJS.EVENT.register();
-		ItemRightClickEventJS.EVENT.register();
-		ItemPickupEventJS.EVENT.register();
-		ItemTossEventJS.EVENT.register();
-		ItemEntityInteractEventJS.EVENT.register();
+		ItemToolTierRegistryEventJS.EVENT.register();
+		ItemArmorTierRegistryEventJS.EVENT.register();
+		ItemRightClickedEventJS.EVENT.register();
+		ItemPickedUpEventJS.EVENT.register();
+		ItemDroppedEventJS.EVENT.register();
+		ItemEntityInteractedEventJS.EVENT.register();
 		ItemCraftedEventJS.EVENT.register();
 		ItemSmeltedEventJS.EVENT.register();
-		ItemFoodEatenEventJS.EVENT.register();
+		FoodEatenEventJS.EVENT.register();
 		ItemModificationEventJS.EVENT.register();
 	}
 

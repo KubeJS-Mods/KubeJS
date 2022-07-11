@@ -9,13 +9,13 @@ import net.minecraft.world.entity.player.Player;
 /**
  * @author LatvianModder
  */
-public class ItemTossEventJS extends PlayerEventJS {
-	public static final EventHandler EVENT = EventHandler.server(ItemTossEventJS.class).legacy("item.toss").cancelable();
+public class ItemDroppedEventJS extends PlayerEventJS {
+	public static final EventHandler EVENT = EventHandler.server(ItemDroppedEventJS.class).legacy("item.toss").cancelable();
 
 	private final Player player;
 	private final ItemEntity entity;
 
-	public ItemTossEventJS(Player player, ItemEntity entity) {
+	public ItemDroppedEventJS(Player player, ItemEntity entity) {
 		this.player = player;
 		this.entity = entity;
 	}

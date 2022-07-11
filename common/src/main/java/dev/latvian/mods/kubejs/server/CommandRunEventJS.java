@@ -8,13 +8,13 @@ import net.minecraft.commands.CommandSourceStack;
 /**
  * @author LatvianModder
  */
-public class CommandEventJS extends ServerEventJS {
-	public static final EventHandler EVENT = EventHandler.server(CommandEventJS.class).cancelable().legacy("command.run");
+public class CommandRunEventJS extends ServerEventJS {
+	public static final EventHandler EVENT = EventHandler.server(CommandRunEventJS.class).cancelable().legacy("command.run");
 
 	private final CommandPerformEvent event;
 	private final String commandName;
 
-	public CommandEventJS(CommandPerformEvent e) {
+	public CommandRunEventJS(CommandPerformEvent e) {
 		event = e;
 		commandName = event.getResults().getContext().getNodes().isEmpty() ? "" : event.getResults().getContext().getNodes().get(0).getNode().getName();
 	}

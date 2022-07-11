@@ -49,14 +49,14 @@ import java.util.stream.Collectors;
 /**
  * @author LatvianModder
  */
-public class RecipeEventJS extends EventJS {
-	public static final EventHandler EVENT = EventHandler.server(RecipeEventJS.class).legacy("recipes");
+public class RecipesEventJS extends EventJS {
+	public static final EventHandler EVENT = EventHandler.server(RecipesEventJS.class).legacy("recipes");
 	public static final String FORGE_CONDITIONAL = "forge:conditional";
 	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.mods.kubejs.recipe.RecipeEventJS.post");
 	public static Map<UUID, IngredientWithCustomPredicateJS> customIngredientMap = null;
 	public static Map<UUID, ModifyRecipeResultCallback> modifyResultCallbackMap = null;
 
-	public static RecipeEventJS instance;
+	public static RecipesEventJS instance;
 
 	private final List<Recipe<?>> fallbackedRecipes = new ArrayList<>();
 	private final List<RecipeJS> originalRecipes;
@@ -75,7 +75,7 @@ public class RecipeEventJS extends EventJS {
 	public final RecipeFunction stonecutting;
 	public final RecipeFunction smithing;
 
-	public RecipeEventJS(Map<ResourceLocation, RecipeTypeJS> t) {
+	public RecipesEventJS(Map<ResourceLocation, RecipeTypeJS> t) {
 		originalRecipes = new ArrayList<>();
 
 		ConsoleJS.SERVER.info("Scanning recipes...");

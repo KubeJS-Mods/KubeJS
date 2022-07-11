@@ -8,11 +8,6 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 public class EventJS {
 	private boolean canceled = false;
 
-	@Deprecated
-	public boolean canCancel() {
-		return false;
-	}
-
 	public final void cancel() {
 		canceled = true;
 	}
@@ -25,30 +20,13 @@ public class EventJS {
 	}
 
 	public final boolean post(ScriptType t, String id) {
-		if (t != ScriptType.STARTUP && post(ScriptType.STARTUP, id) && canCancel()) {
-			return true;
-		}
-
-		var e = t.manager.get().events;
-		var b = e.postToHandlers(id, e.handlers(id), this);
-		afterPosted(b);
-		return b;
-	}
-
-	public final boolean post(ScriptType t, String id, String sub) {
-		var id1 = id + '.' + sub;
-
 		if (t != ScriptType.STARTUP) {
-			var e = ScriptType.STARTUP.manager.get().events;
-			if ((e.postToHandlers(id1, e.handlers(id1), this) || e.postToHandlers(id, e.handlers(id), this)) && canCancel()) {
-				afterPosted(true);
-				return true;
-			}
+			post(ScriptType.STARTUP, id);
 		}
 
 		var e = t.manager.get().events;
-		var b = e.postToHandlers(id1, e.handlers(id1), this) || e.postToHandlers(id, e.handlers(id), this);
-		afterPosted(b);
-		return b;
+		e.postToHandlers(id, e.handlers(id), this);
+		afterPosted(false);
+		return false;
 	}
 }

@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicateJS;
 import dev.latvian.mods.kubejs.item.ingredient.MatchAllIngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.MatchAnyIngredientJS;
-import dev.latvian.mods.kubejs.recipe.RecipeEventJS;
+import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientActionCallback;
 import net.minecraft.nbt.CompoundTag;
@@ -39,9 +39,9 @@ public class IngredientWrapper {
 	}
 
 	public static IngredientJS custom(IngredientJS in, Predicate<ItemStackJS> predicate) {
-		if (RecipeEventJS.customIngredientMap != null) {
+		if (RecipesEventJS.customIngredientMap != null) {
 			var ingredient = new IngredientWithCustomPredicateJS(UUID.randomUUID(), in, i -> predicate.test(new ItemStackJS(i)));
-			RecipeEventJS.customIngredientMap.put(ingredient.uuid, ingredient);
+			RecipesEventJS.customIngredientMap.put(ingredient.uuid, ingredient);
 			return ingredient;
 		}
 

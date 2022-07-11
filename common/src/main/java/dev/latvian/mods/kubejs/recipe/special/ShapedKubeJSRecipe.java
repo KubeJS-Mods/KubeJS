@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeCraftingGrid;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
-import dev.latvian.mods.kubejs.recipe.RecipeEventJS;
+import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.NonNullList;
@@ -43,6 +43,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 		return KubeJSRecipeEventHandler.SHAPED.get();
 	}
 
+	@Override
 	public boolean matches(CraftingContainer craftingContainer, Level level) {
 		for (var i = 0; i <= craftingContainer.getWidth() - this.width; ++i) {
 			for (var j = 0; j <= craftingContainer.getHeight() - this.height; ++j) {
@@ -108,7 +109,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 
 			ModifyRecipeResultCallback modifyResult = null;
 			if (json.has("kubejs_modify_result")) {
-				modifyResult = RecipeEventJS.modifyResultCallbackMap.get(UUIDTypeAdapter.fromString(json.get("kubejs_modify_result").getAsString()));
+				modifyResult = RecipesEventJS.modifyResultCallbackMap.get(UUIDTypeAdapter.fromString(json.get("kubejs_modify_result").getAsString()));
 			}
 
 			return new ShapedKubeJSRecipe(id, shapedRecipe.getGroup(), w, h, ingredients, shapedRecipe.getResultItem(), mirror, ingredientActions, modifyResult);

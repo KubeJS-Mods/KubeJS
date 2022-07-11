@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.item.ingredient.forge;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.core.IngredientKJS;
-import dev.latvian.mods.kubejs.recipe.RecipeEventJS;
+import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
@@ -60,8 +60,8 @@ public class CustomPredicateIngredient extends Ingredient {
 
 	@Override
 	public boolean test(@Nullable ItemStack target) {
-		if (isServer && target != null && ingredient.test(target) && RecipeEventJS.customIngredientMap != null) {
-			var i = RecipeEventJS.customIngredientMap.get(uuid);
+		if (isServer && target != null && ingredient.test(target) && RecipesEventJS.customIngredientMap != null) {
+			var i = RecipesEventJS.customIngredientMap.get(uuid);
 			return i != null && i.predicate.test(target);
 		}
 

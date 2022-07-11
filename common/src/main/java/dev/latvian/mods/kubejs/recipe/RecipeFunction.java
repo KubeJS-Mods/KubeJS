@@ -26,11 +26,11 @@ import java.util.regex.Pattern;
 public class RecipeFunction extends BaseFunction implements WrappedJS {
 	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.mods.kubejs.recipe.RecipeFunction.call");
 
-	private final RecipeEventJS event;
+	private final RecipesEventJS event;
 	public final ResourceLocation typeID;
 	public final RecipeTypeJS type;
 
-	public RecipeFunction(RecipeEventJS e, ResourceLocation id, @Nullable RecipeTypeJS t) {
+	public RecipeFunction(RecipesEventJS e, ResourceLocation id, @Nullable RecipeTypeJS t) {
 		event = e;
 		typeID = id;
 		type = t;

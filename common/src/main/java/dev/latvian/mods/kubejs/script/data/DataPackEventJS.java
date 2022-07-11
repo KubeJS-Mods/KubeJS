@@ -13,8 +13,8 @@ import net.minecraft.server.packs.resources.MultiPackResourceManager;
  * @author LatvianModder
  */
 public class DataPackEventJS extends ServerEventJS {
-	public static final EventHandler LOW_EVENT = EventHandler.server(DataPackEventJS.class).legacy("server.datapack.low_priority");
-	public static final EventHandler HIGH_EVENT = EventHandler.server(DataPackEventJS.class).legacy("server.datapack.high_priority");
+	public static final EventHandler LOW_EVENT = EventHandler.server(DataPackEventJS.class).name("lowPriorityDataPack").legacy("server.datapack.low_priority");
+	public static final EventHandler HIGH_EVENT = EventHandler.server(DataPackEventJS.class).name("highPriorityDataPack").legacy("server.datapack.high_priority");
 
 	private final VirtualKubeJSDataPack virtualDataPack;
 	private final MultiPackResourceManager wrappedManager;

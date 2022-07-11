@@ -11,8 +11,8 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class ItemToolTierEventJS extends StartupEventJS {
-	public static final EventHandler EVENT = EventHandler.startup(ItemToolTierEventJS.class).legacy("item.registry.tool_tiers");
+public class ItemToolTierRegistryEventJS extends StartupEventJS {
+	public static final EventHandler EVENT = EventHandler.startup(ItemToolTierRegistryEventJS.class).legacy("item.registry.tool_tiers");
 
 	public void add(String id, Consumer<MutableToolTier> tier) {
 		var t = new MutableToolTier(Tiers.IRON);

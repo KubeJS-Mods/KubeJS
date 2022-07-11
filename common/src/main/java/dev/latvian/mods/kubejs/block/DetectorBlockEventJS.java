@@ -8,9 +8,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
 public class DetectorBlockEventJS extends LevelEventJS {
-	public static final EventHandler EVENT = EventHandler.server(DetectorBlockEventJS.class).legacy("block.detector");
-	public static final EventHandler POWERED_EVENT = EventHandler.server(DetectorBlockEventJS.class).legacy("block.detector.powered");
-	public static final EventHandler UNPOWERED_EVENT = EventHandler.server(DetectorBlockEventJS.class).legacy("block.detector.unpowered");
+	public static final EventHandler EVENT = EventHandler.server(DetectorBlockEventJS.class).name("detectorBlock").legacy("block.detector");
+	public static final EventHandler POWERED_EVENT = EventHandler.server(DetectorBlockEventJS.class).name("detectorBlockPowered").legacy("block.detector.powered");
+	public static final EventHandler UNPOWERED_EVENT = EventHandler.server(DetectorBlockEventJS.class).name("detectorBlockUnpowered").legacy("block.detector.unpowered");
 
 	private final String detectorId;
 	private final Level level;

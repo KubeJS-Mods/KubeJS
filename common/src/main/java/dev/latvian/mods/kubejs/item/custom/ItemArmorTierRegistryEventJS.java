@@ -11,8 +11,8 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class ItemArmorTierEventJS extends StartupEventJS {
-	public static final EventHandler EVENT = EventHandler.startup(ItemArmorTierEventJS.class).legacy("item.registry.armor_tiers");
+public class ItemArmorTierRegistryEventJS extends StartupEventJS {
+	public static final EventHandler EVENT = EventHandler.startup(ItemArmorTierRegistryEventJS.class).legacy("item.registry.armor_tiers");
 
 	public void add(String id, String parent, Consumer<MutableArmorTier> tier) {
 		var material = ItemBuilder.ofArmorMaterial(parent);

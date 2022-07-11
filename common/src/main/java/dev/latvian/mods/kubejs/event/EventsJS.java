@@ -46,29 +46,20 @@ public class EventsJS {
 		return list == null ? Collections.emptyList() : list;
 	}
 
-	public boolean postToHandlers(String id, List<ScriptEventHandler> list, EventJS event) {
+	public void postToHandlers(String id, List<ScriptEventHandler> list, EventJS event) {
 		if (list.isEmpty()) {
-			return false;
+			return;
 		}
-
-		var c = event.canCancel();
 
 		for (var handler : list) {
 			try {
 				handler.handler.onEvent(event);
-
-				if (c && event.isCanceled()) {
-					return true;
-				}
 			} catch (RhinoException ex) {
 				scriptManager.type.console.error("Error occurred while handling event '" + id + "': " + ex.getMessage());
 			} catch (Throwable ex) {
 				ex.printStackTrace();
 			}
 		}
-
-		//ScriptManager.instance.currentFile = null;
-		return false;
 	}
 
 	public void clear() {

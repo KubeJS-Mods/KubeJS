@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs;
 
 import dev.architectury.event.events.common.LifecycleEvent;
-import dev.latvian.mods.kubejs.level.gen.WorldgenAddEventJS;
-import dev.latvian.mods.kubejs.level.gen.WorldgenRemoveEventJS;
+import dev.latvian.mods.kubejs.level.gen.AddWorldgenEventJS;
+import dev.latvian.mods.kubejs.level.gen.RemoveWorldgenEventJS;
 import dev.latvian.mods.kubejs.level.gen.ruletest.KubeJSRuleTests;
 
 /**
@@ -16,7 +16,7 @@ public class KubeJSOtherEventHandler {
 
 	// perform anything that needs to be done post-registry here
 	private static void setup() {
-		WorldgenRemoveEventJS.EVENT.post(new WorldgenRemoveEventJS());
-		WorldgenAddEventJS.EVENT.post(new WorldgenAddEventJS());
+		RemoveWorldgenEventJS.EVENT.post(new RemoveWorldgenEventJS());
+		AddWorldgenEventJS.EVENT.post(new AddWorldgenEventJS());
 	}
 }

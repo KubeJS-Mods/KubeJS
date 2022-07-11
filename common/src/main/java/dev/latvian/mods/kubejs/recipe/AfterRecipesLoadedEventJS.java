@@ -24,14 +24,14 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class RecipesAfterLoadEventJS extends EventJS {
-	public static final EventHandler EVENT = EventHandler.server(RecipesAfterLoadEventJS.class).legacy("recipes.after_loaded");
+public class AfterRecipesLoadedEventJS extends EventJS {
+	public static final EventHandler EVENT = EventHandler.server(AfterRecipesLoadedEventJS.class).legacy("recipes.after_loaded");
 
 	private final Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipeMap;
 	private List<RecipeJS> originalRecipes;
 	private final Set<RecipeJS> removedRecipes = new HashSet<>();
 
-	private RecipesAfterLoadEventJS(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> r) {
+	private AfterRecipesLoadedEventJS(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> r) {
 		recipeMap = r;
 	}
 
@@ -98,10 +98,10 @@ public class RecipesAfterLoadEventJS extends EventJS {
 
 	@HideFromJS
 	public static void post(RecipeManager recipeManager) {
-		var e = new RecipesAfterLoadEventJS(recipeManager.recipes);
+		var e = new AfterRecipesLoadedEventJS(recipeManager.recipes);
 		var b = ServerSettings.instance.useOriginalRecipeForFilters;
 		ServerSettings.instance.useOriginalRecipeForFilters = true;
-		RecipesAfterLoadEventJS.EVENT.post(e);
+		AfterRecipesLoadedEventJS.EVENT.post(e);
 		ServerSettings.instance.useOriginalRecipeForFilters = b;
 
 		if (e.originalRecipes != null) {

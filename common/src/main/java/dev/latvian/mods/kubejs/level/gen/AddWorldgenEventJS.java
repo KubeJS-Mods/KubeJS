@@ -56,8 +56,8 @@ import java.util.regex.Pattern;
  *
  * @author LatvianModder
  */
-public class WorldgenAddEventJS extends StartupEventJS {
-	public static final EventHandler EVENT = EventHandler.startup(WorldgenAddEventJS.class).legacy("worldgen.add");
+public class AddWorldgenEventJS extends StartupEventJS {
+	public static final EventHandler EVENT = EventHandler.startup(AddWorldgenEventJS.class).legacy("worldgen.add");
 
 	private static final Pattern SPAWN_PATTERN = Pattern.compile("(\\w+:\\w+)\\*\\((\\d+)-(\\d+)\\):(\\d+)");
 

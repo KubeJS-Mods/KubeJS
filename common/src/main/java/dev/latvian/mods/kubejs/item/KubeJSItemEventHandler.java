@@ -35,7 +35,7 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static CompoundEventResult<ItemStack> rightClick(Player player, InteractionHand hand) {
-		if (player != null && player.level instanceof ServerLevel && !player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem()) && ItemRightClickEventJS.EVENT.post(new ItemRightClickEventJS(player, hand), getItemId(player.getItemInHand(hand)))) {
+		if (player != null && player.level instanceof ServerLevel && !player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem()) && ItemRightClickedEventJS.EVENT.post(new ItemRightClickedEventJS(player, hand), getItemId(player.getItemInHand(hand)))) {
 			return CompoundEventResult.interruptFalse(player.getItemInHand(hand));
 		}
 
@@ -55,7 +55,7 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static EventResult pickup(Player player, ItemEntity entity, ItemStack stack) {
-		if (player != null && entity != null && player.level instanceof ServerLevel && ItemPickupEventJS.EVENT.post(new ItemPickupEventJS(player, entity, stack), getItemId(stack))) {
+		if (player != null && entity != null && player.level instanceof ServerLevel && ItemPickedUpEventJS.EVENT.post(new ItemPickedUpEventJS(player, entity, stack), getItemId(stack))) {
 			return EventResult.interruptFalse();
 		}
 
@@ -63,7 +63,7 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static EventResult drop(Player player, ItemEntity entity) {
-		if (player != null && entity != null && player.level instanceof ServerLevel && ItemTossEventJS.EVENT.post(new ItemTossEventJS(player, entity), getItemId(entity.getItem()))) {
+		if (player != null && entity != null && player.level instanceof ServerLevel && ItemDroppedEventJS.EVENT.post(new ItemDroppedEventJS(player, entity), getItemId(entity.getItem()))) {
 			return EventResult.interruptFalse();
 		}
 
@@ -71,7 +71,7 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static EventResult entityInteract(Player player, Entity entity, InteractionHand hand) {
-		if (player != null && entity != null && player.level instanceof ServerLevel && ItemEntityInteractEventJS.EVENT.post(new ItemEntityInteractEventJS(player, entity, hand), getItemId(player.getItemInHand(hand)))) {
+		if (player != null && entity != null && player.level instanceof ServerLevel && ItemEntityInteractedEventJS.EVENT.post(new ItemEntityInteractedEventJS(player, entity, hand), getItemId(player.getItemInHand(hand)))) {
 			return EventResult.interruptFalse();
 		}
 

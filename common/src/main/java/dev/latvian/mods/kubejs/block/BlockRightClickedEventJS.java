@@ -9,20 +9,21 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * @author LatvianModder
  */
-public class BlockLeftClickEventJS extends PlayerEventJS {
-	public static final EventHandler EVENT = EventHandler.server(BlockLeftClickEventJS.class).cancelable().legacy("block.left_click");
+public class BlockRightClickedEventJS extends PlayerEventJS {
+	public static final EventHandler EVENT = EventHandler.server(BlockRightClickedEventJS.class).cancelable().legacy("block.right_click");
 
 	private final Player player;
 	private final InteractionHand hand;
 	private final BlockPos pos;
 	private final Direction direction;
+	private BlockContainerJS block;
+	private ItemStackJS item;
 
-	public BlockLeftClickEventJS(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
+	public BlockRightClickedEventJS(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
 		this.player = player;
 		this.hand = hand;
 		this.pos = pos;
@@ -35,14 +36,25 @@ public class BlockLeftClickEventJS extends PlayerEventJS {
 	}
 
 	public BlockContainerJS getBlock() {
-		return new BlockContainerJS(player.level, pos);
+		if (block == null) {
+			block = new BlockContainerJS(player.level, pos);
+		}
+
+		return block;
+	}
+
+	public InteractionHand getHand() {
+		return hand;
 	}
 
 	public ItemStackJS getItem() {
-		return ItemStackJS.of(player.getItemInHand(hand));
+		if (item == null) {
+			item = ItemStackJS.of(player.getItemInHand(hand));
+		}
+
+		return item;
 	}
 
-	@Nullable
 	public Direction getFacing() {
 		return direction;
 	}

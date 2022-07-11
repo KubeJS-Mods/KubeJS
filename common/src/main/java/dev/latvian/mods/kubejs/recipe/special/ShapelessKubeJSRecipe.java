@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeCraftingGrid;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
-import dev.latvian.mods.kubejs.recipe.RecipeEventJS;
+import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.NonNullList;
@@ -68,7 +68,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe {
 			var ingredientActions = IngredientAction.parseList(json.get("kubejs_actions"));
 			ModifyRecipeResultCallback modifyResult = null;
 			if (json.has("kubejs_modify_result")) {
-				modifyResult = RecipeEventJS.modifyResultCallbackMap.get(UUIDTypeAdapter.fromString(json.get("kubejs_modify_result").getAsString()));
+				modifyResult = RecipesEventJS.modifyResultCallbackMap.get(UUIDTypeAdapter.fromString(json.get("kubejs_modify_result").getAsString()));
 			}
 
 			return new ShapelessKubeJSRecipe(shapelessRecipe, ingredientActions, modifyResult);

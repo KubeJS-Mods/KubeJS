@@ -14,8 +14,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author LatvianModder
  */
-public class BlockBreakEventJS extends PlayerEventJS {
-	public static final EventHandler EVENT = EventHandler.server(BlockBreakEventJS.class).cancelable().legacy("block.break");
+public class BlockBrokenEventJS extends PlayerEventJS {
+	public static final EventHandler EVENT = EventHandler.server(BlockBrokenEventJS.class).cancelable().legacy("block.break");
 
 	private final ServerPlayer entity;
 	private final Level level;
@@ -24,7 +24,7 @@ public class BlockBreakEventJS extends PlayerEventJS {
 	@Nullable
 	private final IntValue xp;
 
-	public BlockBreakEventJS(ServerPlayer entity, Level level, BlockPos pos, BlockState state, @Nullable IntValue xp) {
+	public BlockBrokenEventJS(ServerPlayer entity, Level level, BlockPos pos, BlockState state, @Nullable IntValue xp) {
 		this.entity = entity;
 		this.level = level;
 		this.pos = pos;

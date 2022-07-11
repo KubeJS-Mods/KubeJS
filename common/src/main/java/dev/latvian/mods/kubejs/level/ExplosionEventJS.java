@@ -19,8 +19,8 @@ import java.util.List;
  * @author LatvianModder
  */
 public abstract class ExplosionEventJS extends LevelEventJS {
-	public static final EventHandler PRE_EVENT = EventHandler.server(ExplosionEventJS.Pre.class).cancelable().legacy("level.explosion.pre");
-	public static final EventHandler POST_EVENT = EventHandler.server(ExplosionEventJS.Post.class).legacy("level.explosion.post");
+	public static final EventHandler PRE_EVENT = EventHandler.server(ExplosionEventJS.Pre.class).name("preExplosion").cancelable().legacy("level.explosion.pre");
+	public static final EventHandler POST_EVENT = EventHandler.server(ExplosionEventJS.Post.class).name("postExplosion").legacy("level.explosion.post");
 
 	protected final Level level;
 	protected final Explosion explosion;

@@ -24,7 +24,7 @@ public class FoodBuilder {
 	private boolean alwaysEdible;
 	private boolean fastToEat;
 	private final List<Pair<Supplier<MobEffectInstance>, Float>> effects = Lists.newArrayList();
-	public Consumer<ItemFoodEatenEventJS> eaten;
+	public Consumer<FoodEatenEventJS> eaten;
 
 	public FoodBuilder() {
 	}
@@ -96,7 +96,7 @@ public class FoodBuilder {
 		return this;
 	}
 
-	public FoodBuilder eaten(Consumer<ItemFoodEatenEventJS> e) {
+	public FoodBuilder eaten(Consumer<FoodEatenEventJS> e) {
 		eaten = e;
 		return this;
 	}

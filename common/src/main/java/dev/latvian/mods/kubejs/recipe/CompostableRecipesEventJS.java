@@ -12,12 +12,12 @@ import net.minecraft.world.level.block.ComposterBlock;
 /**
  * @author LatvianModder
  */
-public class CompostablesRecipeEventJS extends EventJS {
-	public static final EventHandler EVENT = EventHandler.server(CompostablesRecipeEventJS.class).legacy("recipes.compostables");
+public class CompostableRecipesEventJS extends EventJS {
+	public static final EventHandler EVENT = EventHandler.server(CompostableRecipesEventJS.class).legacy("recipes.compostables");
 
 	public static Object2FloatMap<ItemLike> originalMap = null;
 
-	public CompostablesRecipeEventJS() {
+	public CompostableRecipesEventJS() {
 		if (originalMap == null) {
 			originalMap = new Object2FloatOpenHashMap<>(ComposterBlock.COMPOSTABLES);
 		} else {

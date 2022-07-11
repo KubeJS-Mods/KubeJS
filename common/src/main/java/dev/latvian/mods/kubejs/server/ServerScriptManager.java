@@ -3,10 +3,10 @@ package dev.latvian.mods.kubejs.server;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.recipe.RecipeEventJS;
 import dev.latvian.mods.kubejs.recipe.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeRegistryEventJS;
+import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.RegisterRecipeTypesEvent;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.script.ScriptFile;
@@ -126,14 +126,14 @@ public class ServerScriptManager {
 
 		// Currently custom ingredients are only supported on Forge
 		if (Platform.isForge()) {
-			RecipeEventJS.customIngredientMap = new HashMap<>();
+			RecipesEventJS.customIngredientMap = new HashMap<>();
 		}
 
-		RecipeEventJS.modifyResultCallbackMap = new HashMap<>();
+		RecipesEventJS.modifyResultCallbackMap = new HashMap<>();
 
 		CustomIngredientAction.MAP.clear();
 
-		RecipeEventJS.instance = new RecipeEventJS(typeMap);
+		RecipesEventJS.instance = new RecipesEventJS(typeMap);
 
 		return wrappedResourceManager;
 	}

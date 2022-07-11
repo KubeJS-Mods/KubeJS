@@ -164,12 +164,17 @@ public final class EventHandler {
 		}
 	}
 
-	// x.listener = event => {} syntax
-	public void setListener(IEventHandler handler) {
-		listen(handler);
+	// x.listen('id', event => {}) syntax
+	public void listen(String sub, IEventHandler handler) {
+		of(sub).listen(handler);
 	}
 
-	/***
+	@HideFromJS
+	public boolean post(EventJS event) {
+		return post(event, "");
+	}
+
+	/**
 	 * @return true if event was canceled
 	 */
 	@HideFromJS
@@ -207,7 +212,7 @@ public final class EventHandler {
 			return false;
 		}
 
-		boolean c = isCancelable() || event.canCancel();
+		boolean c = isCancelable();
 
 		for (var container : eventContainers) {
 			try {
@@ -226,10 +231,5 @@ public final class EventHandler {
 		}
 
 		return false;
-	}
-
-	@HideFromJS
-	public boolean post(EventJS event) {
-		return post(event, "");
 	}
 }

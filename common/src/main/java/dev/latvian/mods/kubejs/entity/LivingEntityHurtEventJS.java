@@ -8,7 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
  * @author LatvianModder
  */
 public class LivingEntityHurtEventJS extends LivingEntityEventJS {
-	public static final EventHandler EVENT = EventHandler.server(LivingEntityHurtEventJS.class).cancelable().legacy("entity.hurt");
+	public static final EventHandler EVENT = EventHandler.server(LivingEntityHurtEventJS.class).name("entityHurt").cancelable().legacy("entity.hurt");
 
 	private final LivingEntity entity;
 	private final DamageSource source;

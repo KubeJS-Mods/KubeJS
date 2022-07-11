@@ -4,19 +4,23 @@ import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
 /**
  * @author LatvianModder
  */
-public class ItemRightClickEventJS extends PlayerEventJS {
-	public static final EventHandler EVENT = EventHandler.server(ItemRightClickEventJS.class).cancelable().legacy("item.right_click");
+public class ItemEntityInteractedEventJS extends PlayerEventJS {
+	public static final EventHandler EVENT = EventHandler.server(ItemEntityInteractedEventJS.class).cancelable().legacy("item.entity_interact");
 
 	private final Player player;
+	private final Entity entity;
 	private final InteractionHand hand;
 
-	public ItemRightClickEventJS(Player player, InteractionHand hand) {
+	public ItemEntityInteractedEventJS(Player player, Entity entity, InteractionHand hand) {
+
 		this.player = player;
+		this.entity = entity;
 		this.hand = hand;
 	}
 
@@ -31,5 +35,9 @@ public class ItemRightClickEventJS extends PlayerEventJS {
 
 	public ItemStackJS getItem() {
 		return ItemStackJS.of(player.getItemInHand(hand));
+	}
+
+	public EntityJS getTarget() {
+		return getLevel().getEntity(entity);
 	}
 }

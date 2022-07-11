@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
  * @author LatvianModder
  */
 public class CustomCommandEventJS extends PlayerEventJS {
-	public static final EventHandler EVENT = EventHandler.server(CustomCommandEventJS.class).cancelable().legacy("server.custom_command");
+	public static final EventHandler EVENT = EventHandler.server(CustomCommandEventJS.class).name("customCommand").cancelable().legacy("server.custom_command");
 
 	private final Level level;
 	private final Entity entity;

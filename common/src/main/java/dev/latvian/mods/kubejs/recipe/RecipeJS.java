@@ -419,7 +419,7 @@ public abstract class RecipeJS {
 	 * Only used when a recipe has sub-recipes, e.g. create:sequenced_assembly
 	 */
 	public void dontAdd() {
-		RecipeEventJS.instance.addedRecipes.remove(this);
+		RecipesEventJS.instance.addedRecipes.remove(this);
 	}
 
 	public boolean serializeNBTAsJson() {
@@ -456,7 +456,7 @@ public abstract class RecipeJS {
 
 	public final RecipeJS modifyResult(ModifyRecipeResultCallback callback) {
 		UUID id = UUID.randomUUID();
-		RecipeEventJS.modifyResultCallbackMap.put(id, callback);
+		RecipesEventJS.modifyResultCallbackMap.put(id, callback);
 		json.addProperty("kubejs_modify_result", UUIDTypeAdapter.fromUUID(id));
 		save();
 		return this;

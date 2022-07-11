@@ -17,7 +17,7 @@ import java.util.List;
  * @author LatvianModder
  */
 public class LivingEntityDropsEventJS extends LivingEntityEventJS {
-	public static final EventHandler EVENT = EventHandler.server(LivingEntityDropsEventJS.class).cancelable().legacy("entity.drops");
+	public static final EventHandler EVENT = EventHandler.server(LivingEntityDropsEventJS.class).name("entityDrops").cancelable().legacy("entity.drops");
 
 	private final LivingDropsEvent event;
 	public List<ItemEntityJS> eventDrops;

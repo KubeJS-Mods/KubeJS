@@ -9,13 +9,13 @@ import net.minecraft.world.item.ItemStack;
 /**
  * @author LatvianModder
  */
-public class ItemFoodEatenEventJS extends PlayerEventJS {
-	public static final EventHandler EVENT = EventHandler.server(ItemFoodEatenEventJS.class).cancelable().legacy("item.food_eaten");
+public class FoodEatenEventJS extends PlayerEventJS {
+	public static final EventHandler EVENT = EventHandler.server(FoodEatenEventJS.class).cancelable().legacy("item.food_eaten");
 
 	private final ServerPlayer player;
 	private final ItemStackJS item;
 
-	public ItemFoodEatenEventJS(ServerPlayer p, ItemStack is) {
+	public FoodEatenEventJS(ServerPlayer p, ItemStack is) {
 		player = p;
 		item = ItemStackJS.of(is);
 	}
