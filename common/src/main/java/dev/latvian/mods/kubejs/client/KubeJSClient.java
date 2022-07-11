@@ -95,7 +95,7 @@ public class KubeJSClient extends KubeJSCommon {
 
 	@Override
 	public void handleDataFromServerPacket(String channel, @Nullable CompoundTag data) {
-		KubeJSEvents.NETWORK_FROM_SERVER.post(new NetworkEventJS(Minecraft.getInstance().player, channel, data), channel);
+		KubeJSEvents.NETWORK_FROM_SERVER.post(channel, new NetworkEventJS(Minecraft.getInstance().player, channel, data));
 	}
 
 	@Override

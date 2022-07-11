@@ -96,7 +96,7 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	public static void advancement(ServerPlayer player, Advancement advancement) {
-		KubeJSEvents.PLAYER_ADVANCEMENT.post(new PlayerAdvancementEventJS(player, advancement), String.valueOf(advancement.getId()));
+		KubeJSEvents.PLAYER_ADVANCEMENT.post(String.valueOf(advancement.getId()), new PlayerAdvancementEventJS(player, advancement));
 	}
 
 	public static void inventoryOpened(Player player, AbstractContainerMenu menu) {

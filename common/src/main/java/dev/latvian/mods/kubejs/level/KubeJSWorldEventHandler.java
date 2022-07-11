@@ -32,14 +32,14 @@ public class KubeJSWorldEventHandler {
 			ServerJS.instance.levelMap.put(level.dimension().location(), l);
 			ServerJS.instance.updateWorldList();
 			AttachDataEvent.forLevel(l).invoke();
-			KubeJSEvents.LEVEL_LOAD.post(new SimpleLevelEventJS(l), l.getDimension().toString());
+			KubeJSEvents.LEVEL_LOAD.post(l.getDimension(), new SimpleLevelEventJS(l));
 		}
 	}
 
 	private static void levelUnload(ServerLevel level) {
 		if (ServerJS.instance != null && ServerJS.instance.overworld != null && ServerJS.instance.levelMap.containsKey(level.dimension().location())) {
 			var l = ServerJS.instance.wrapMinecraftLevel(level);
-			KubeJSEvents.LEVEL_UNLOAD.post(new SimpleLevelEventJS(l), l.getDimension().toString());
+			KubeJSEvents.LEVEL_UNLOAD.post(l.getDimension(), new SimpleLevelEventJS(l));
 			ServerJS.instance.levelMap.remove(l.getDimension());
 			ServerJS.instance.updateWorldList();
 		}
@@ -47,7 +47,7 @@ public class KubeJSWorldEventHandler {
 
 	private static void levelPostTick(ServerLevel level) {
 		var l = ServerJS.instance.wrapMinecraftLevel(level);
-		KubeJSEvents.LEVEL_TICK.post(new SimpleLevelEventJS(l), l.getDimension().toString());
+		KubeJSEvents.LEVEL_TICK.post(l.getDimension(), new SimpleLevelEventJS(l));
 	}
 
 	private static EventResult preExplosion(Level level, Explosion explosion) {

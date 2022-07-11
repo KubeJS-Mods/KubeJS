@@ -20,7 +20,7 @@ public interface LivingEntityKJS {
 				b.foodBuilder.eaten.accept(event);
 			}
 
-			KubeJSEvents.ITEM_FOOD_EATEN.post(event, String.valueOf(ItemWrapper.getId(i)));
+			KubeJSEvents.ITEM_FOOD_EATEN.post(ItemWrapper.getId(i), event);
 		}
 	}
 }

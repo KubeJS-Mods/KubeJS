@@ -70,12 +70,12 @@ public class DetectorBlock extends Block {
 			if (p == level.hasNeighborSignal(blockPos)) {
 				level.setBlock(blockPos, blockState.setValue(BlockStateProperties.POWERED, p), 2);
 				var e = new DetectorBlockEventJS(builder.detectorId, level, blockPos, p);
-				KubeJSEvents.BLOCK_DETECTOR_CHANGED.post(e, builder.detectorId);
+				KubeJSEvents.BLOCK_DETECTOR_CHANGED.post(builder.detectorId, e);
 
 				if (p) {
-					KubeJSEvents.BLOCK_DETECTOR_POWERED.post(e, builder.detectorId);
+					KubeJSEvents.BLOCK_DETECTOR_POWERED.post(builder.detectorId, e);
 				} else {
-					KubeJSEvents.BLOCK_DETECTOR_UNPOWERED.post(e, builder.detectorId);
+					KubeJSEvents.BLOCK_DETECTOR_UNPOWERED.post(builder.detectorId, e);
 				}
 			}
 		}

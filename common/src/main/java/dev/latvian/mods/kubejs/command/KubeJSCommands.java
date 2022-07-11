@@ -222,7 +222,7 @@ public class KubeJSCommands {
 	}
 
 	private static int customCommand(CommandSourceStack source, String id) {
-		KubeJSEvents.SERVER_CUSTOM_COMMAND.post(new CustomCommandEventJS(source.getLevel(), source.getEntity(), new BlockPos(source.getPosition()), id), id);
+		KubeJSEvents.SERVER_CUSTOM_COMMAND.post(id, new CustomCommandEventJS(source.getLevel(), source.getEntity(), new BlockPos(source.getPosition()), id));
 		return 1;
 	}
 

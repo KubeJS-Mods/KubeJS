@@ -13,6 +13,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,6 +67,11 @@ public class BlockWrapper {
 
 	public static Block getBlock(ResourceLocation id) {
 		return KubeJSRegistries.blocks().get(id);
+	}
+
+	@Nullable
+	public static ResourceLocation getId(Block block) {
+		return KubeJSRegistries.blocks().getId(block);
 	}
 
 	public static List<String> getTypeList() {

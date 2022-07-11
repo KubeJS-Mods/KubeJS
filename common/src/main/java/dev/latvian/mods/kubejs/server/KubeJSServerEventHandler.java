@@ -91,7 +91,7 @@ public class KubeJSServerEventHandler {
 
 		for (var level : ServerJS.instance.allLevels) {
 			AttachDataEvent.forLevel(level).invoke();
-			KubeJSEvents.LEVEL_LOAD.post(new SimpleLevelEventJS(level), level.getDimension().toString());
+			KubeJSEvents.LEVEL_LOAD.post(level.getDimension(), new SimpleLevelEventJS(level));
 		}
 	}
 
@@ -107,7 +107,7 @@ public class KubeJSServerEventHandler {
 		}
 
 		for (var level : s.levelMap.values()) {
-			KubeJSEvents.LEVEL_UNLOAD.post(new SimpleLevelEventJS(level), level.getDimension().toString());
+			KubeJSEvents.LEVEL_UNLOAD.post(level.getDimension(), new SimpleLevelEventJS(level));
 		}
 
 		KubeJSEvents.SERVER_UNLOAD.post(new ServerEventJS());
@@ -189,7 +189,7 @@ public class KubeJSServerEventHandler {
 	public static EventResult command(CommandPerformEvent event) {
 		var e = new CommandEventJS(event);
 
-		if (KubeJSEvents.SERVER_COMMAND.post(e, e.getCommandName())) {
+		if (KubeJSEvents.SERVER_COMMAND.post(e.getCommandName(), e)) {
 			return EventResult.interruptFalse();
 		}
 

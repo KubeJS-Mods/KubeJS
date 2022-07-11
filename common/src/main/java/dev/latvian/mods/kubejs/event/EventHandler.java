@@ -121,19 +121,20 @@ public final class EventHandler {
 	}
 
 	public boolean post(EventJS event) {
-		return post(event, "");
+		return post(null, event);
 	}
 
 	/**
 	 * @return true if event was canceled
 	 */
-	public boolean post(EventJS event, String sub) {
+	public boolean post(@Nullable Object subId, EventJS event) {
 		if (parent != null) {
 			throw new IllegalStateException("Can't call EventHandler.post() from sub-handler!");
 		}
 
 		boolean b = false;
 
+		var sub = subId == null ? "" : String.valueOf(subId);
 		var subHandler = sub.isEmpty() || subHandlers == null ? null : subHandlers.get(sub);
 
 		if (subHandler != null) {
