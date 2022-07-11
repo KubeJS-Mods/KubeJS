@@ -44,13 +44,13 @@ public class KubeJSItemEventHandler {
 
 	private static void rightClickEmpty(Player player, InteractionHand hand) {
 		if (player != null && player.level != null && player.level.isClientSide()) {
-			ItemRightClickEmptyEventJS.EVENT.post(new ItemRightClickEmptyEventJS(player, hand), getItemId(player.getItemInHand(hand)));
+			ItemRightClickedEmptyEventJS.EVENT.post(new ItemRightClickedEmptyEventJS(player, hand), getItemId(player.getItemInHand(hand)));
 		}
 	}
 
 	private static void leftClickEmpty(Player player, InteractionHand hand) {
 		if (player != null && player.level != null && player.level.isClientSide()) {
-			ItemLeftClickEventJS.EVENT.post(new ItemLeftClickEventJS(player, hand), getItemId(player.getItemInHand(hand)));
+			ItemLeftClickedEventJS.EVENT.post(new ItemLeftClickedEventJS(player, hand), getItemId(player.getItemInHand(hand)));
 		}
 	}
 

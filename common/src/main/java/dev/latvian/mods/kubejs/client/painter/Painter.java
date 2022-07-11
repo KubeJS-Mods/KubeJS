@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.client.painter;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.latvian.mods.kubejs.client.ClientEventJS;
-import dev.latvian.mods.kubejs.client.painter.screen.ScreenPaintEventJS;
+import dev.latvian.mods.kubejs.client.painter.screen.PaintScreenEventJS;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenPainterObject;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.unit.FixedNumberUnit;
@@ -146,13 +146,13 @@ public class Painter implements UnitVariables {
 		RenderSystem.enableDepthTest();
 		//RenderSystem.disableLighting();
 
-		var event = new ScreenPaintEventJS(mc, matrices, delta);
+		var event = new PaintScreenEventJS(mc, matrices, delta);
 		deltaUnit.set(delta);
 		screenWidthUnit.set(event.width);
 		screenHeightUnit.set(event.height);
 		mouseXUnit.set(event.width / 2D);
 		mouseYUnit.set(event.height / 2D);
-		ScreenPaintEventJS.EVENT.post(event);
+		PaintScreenEventJS.EVENT.post(event);
 
 		for (var object : getScreenObjects()) {
 			if (object.visible.getBoolean(event) && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
@@ -178,7 +178,7 @@ public class Painter implements UnitVariables {
 		RenderSystem.defaultBlendFunc();
 		//RenderSystem.disableLighting();
 
-		var event = new ScreenPaintEventJS(mc, screen, matrices, mouseX, mouseY, delta);
+		var event = new PaintScreenEventJS(mc, screen, matrices, mouseX, mouseY, delta);
 		deltaUnit.set(delta);
 		screenWidthUnit.set(event.width);
 		screenHeightUnit.set(event.height);
@@ -186,7 +186,7 @@ public class Painter implements UnitVariables {
 		mouseYUnit.set(mouseY);
 
 		event.resetShaderColor();
-		ScreenPaintEventJS.EVENT.post(event);
+		PaintScreenEventJS.EVENT.post(event);
 
 		for (var object : getScreenObjects()) {
 			if (object.visible.getBoolean(event) && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {

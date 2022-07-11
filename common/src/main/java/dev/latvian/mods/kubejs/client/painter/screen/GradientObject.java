@@ -53,7 +53,7 @@ public class GradientObject extends ScreenPainterObject {
 	}
 
 	@Override
-	public void draw(ScreenPaintEventJS event) {
+	public void draw(PaintScreenEventJS event) {
 		var colBL = colorBL.getInt(event);
 		var colBR = colorBR.getInt(event);
 		var colTR = colorTR.getInt(event);

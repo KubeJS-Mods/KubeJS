@@ -24,7 +24,7 @@ public class AtlasTextureObject extends ScreenPainterObject {
 	}
 
 	@Override
-	public void draw(ScreenPaintEventJS event) {
+	public void draw(PaintScreenEventJS event) {
 		if (texture == null) {
 			return;
 		}

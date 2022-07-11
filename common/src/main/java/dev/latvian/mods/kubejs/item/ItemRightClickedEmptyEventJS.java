@@ -9,13 +9,13 @@ import net.minecraft.world.entity.player.Player;
 /**
  * @author LatvianModder
  */
-public class ItemLeftClickEventJS extends PlayerEventJS {
-	public static final EventHandler EVENT = EventHandler.client(ItemLeftClickEventJS.class).legacy("item.left_click");
+public class ItemRightClickedEmptyEventJS extends PlayerEventJS {
+	public static final EventHandler EVENT = EventHandler.client(ItemRightClickedEmptyEventJS.class).legacy("item.right_click_empty");
 
 	private final Player player;
 	private final InteractionHand hand;
 
-	public ItemLeftClickEventJS(Player player, InteractionHand hand) {
+	public ItemRightClickedEmptyEventJS(Player player, InteractionHand hand) {
 		this.player = player;
 		this.hand = hand;
 	}
@@ -25,7 +25,11 @@ public class ItemLeftClickEventJS extends PlayerEventJS {
 		return entityOf(player);
 	}
 
+	public InteractionHand getHand() {
+		return hand;
+	}
+
 	public ItemStackJS getItem() {
-		return ItemStackJS.of(player.getItemInHand(hand));
+		return ItemStackJS.EMPTY;
 	}
 }

@@ -38,7 +38,7 @@ public class ScreenGroup extends ScreenPainterObject {
 	}
 
 	@Override
-	public void preDraw(ScreenPaintEventJS event) {
+	public void preDraw(PaintScreenEventJS event) {
 		w = FixedNumberUnit.ZERO;
 		h = FixedNumberUnit.ZERO;
 		var objects = storage.getObjects();
@@ -63,7 +63,7 @@ public class ScreenGroup extends ScreenPainterObject {
 	}
 
 	@Override
-	public void draw(ScreenPaintEventJS event) {
+	public void draw(PaintScreenEventJS event) {
 		var ax = event.alignX(x.getFloat(event), w.getFloat(event), alignX);
 		var ay = event.alignY(y.getFloat(event), h.getFloat(event), alignY);
 		var az = z.getFloat(event);

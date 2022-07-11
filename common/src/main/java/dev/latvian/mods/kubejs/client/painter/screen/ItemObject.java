@@ -46,7 +46,7 @@ public class ItemObject extends ScreenPainterObject {
 	}
 
 	@Override
-	public void draw(ScreenPaintEventJS event) {
+	public void draw(PaintScreenEventJS event) {
 		if (itemStack.isEmpty()) {
 			return;
 		}

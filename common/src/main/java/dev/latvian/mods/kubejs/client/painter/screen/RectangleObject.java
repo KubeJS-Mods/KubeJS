@@ -27,7 +27,7 @@ public class RectangleObject extends ScreenPainterObject {
 	}
 
 	@Override
-	public void draw(ScreenPaintEventJS event) {
+	public void draw(PaintScreenEventJS event) {
 		var aw = w.getFloat(event);
 		var ah = h.getFloat(event);
 		var ax = event.alignX(x.getFloat(event), aw, alignX);

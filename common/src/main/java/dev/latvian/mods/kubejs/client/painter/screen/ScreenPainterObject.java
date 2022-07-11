@@ -25,10 +25,10 @@ public abstract class ScreenPainterObject extends PainterObject {
 	@MagicConstant(intValues = {Painter.DRAW_ALWAYS, Painter.DRAW_INGAME, Painter.DRAW_GUI})
 	public int draw = Painter.DRAW_INGAME;
 
-	public void preDraw(ScreenPaintEventJS event) {
+	public void preDraw(PaintScreenEventJS event) {
 	}
 
-	public abstract void draw(ScreenPaintEventJS event);
+	public abstract void draw(PaintScreenEventJS event);
 
 	@Override
 	protected void load(PainterObjectProperties properties) {

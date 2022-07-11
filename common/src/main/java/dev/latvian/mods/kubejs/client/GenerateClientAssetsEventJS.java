@@ -13,13 +13,13 @@ import java.util.function.Consumer;
 /**
  * @author LatvianModder
  */
-public class ClientGenerateAssetsEventJS extends EventJS {
-	public static final EventHandler EVENT = EventHandler.client(ClientGenerateAssetsEventJS.class).legacy("client.generate_assets");
+public class GenerateClientAssetsEventJS extends EventJS {
+	public static final EventHandler EVENT = EventHandler.client(GenerateClientAssetsEventJS.class).legacy("client.generate_assets");
 
 	public final AssetJsonGenerator generator;
 	private final Map<String, String> langMap;
 
-	public ClientGenerateAssetsEventJS(AssetJsonGenerator gen, Map<String, String> langMap) {
+	public GenerateClientAssetsEventJS(AssetJsonGenerator gen, Map<String, String> langMap) {
 		generator = gen;
 		this.langMap = langMap;
 	}

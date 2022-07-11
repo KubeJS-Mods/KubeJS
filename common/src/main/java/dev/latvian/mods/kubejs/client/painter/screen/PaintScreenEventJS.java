@@ -12,8 +12,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 
-public class ScreenPaintEventJS extends PaintEventJS implements UnitVariables {
-	public static final EventHandler EVENT = EventHandler.client(ScreenPaintEventJS.class).legacy("client.paint_screen");
+public class PaintScreenEventJS extends PaintEventJS implements UnitVariables {
+	public static final EventHandler EVENT = EventHandler.client(PaintScreenEventJS.class).legacy("client.paint_screen");
 
 	public final int mouseX;
 	public final int mouseY;
@@ -21,7 +21,7 @@ public class ScreenPaintEventJS extends PaintEventJS implements UnitVariables {
 	public final int height;
 	public final boolean inventory;
 
-	public ScreenPaintEventJS(Minecraft m, Screen s, PoseStack ps, int mx, int my, float d) {
+	public PaintScreenEventJS(Minecraft m, Screen s, PoseStack ps, int mx, int my, float d) {
 		super(m, ps, d, s);
 		mouseX = mx;
 		mouseY = my;
@@ -30,7 +30,7 @@ public class ScreenPaintEventJS extends PaintEventJS implements UnitVariables {
 		inventory = true;
 	}
 
-	public ScreenPaintEventJS(Minecraft m, PoseStack ps, float d) {
+	public PaintScreenEventJS(Minecraft m, PoseStack ps, float d) {
 		super(m, ps, d, null);
 		mouseX = -1;
 		mouseY = -1;

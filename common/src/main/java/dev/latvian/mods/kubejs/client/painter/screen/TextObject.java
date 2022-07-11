@@ -45,7 +45,7 @@ public class TextObject extends ScreenPainterObject {
 	}
 
 	@Override
-	public void preDraw(ScreenPaintEventJS event) {
+	public void preDraw(PaintScreenEventJS event) {
 		float maxTextWidth = 0F;
 
 		for (int i = 0; i < text.length; i++) {
@@ -58,7 +58,7 @@ public class TextObject extends ScreenPainterObject {
 	}
 
 	@Override
-	public void draw(ScreenPaintEventJS event) {
+	public void draw(PaintScreenEventJS event) {
 		var ls = lineSpacing.getFloat(event);
 		var ax = event.alignX(x.getFloat(event), w.getFloat(event), alignX);
 		var ay = event.alignY(y.getFloat(event), h.getFloat(event), alignY);
