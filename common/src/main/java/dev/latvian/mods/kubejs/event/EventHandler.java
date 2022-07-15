@@ -2,12 +2,14 @@ package dev.latvian.mods.kubejs.event;
 
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.RhinoException;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -25,6 +27,7 @@ public final class EventHandler {
 	private Map<String, EventHandlerContainer[]> extraEventContainers;
 	private Set<String> legacyEventIds;
 	private int extraIdType;
+	private Function<String, String> extraTransformer;
 
 	EventHandler(EventGroup g, String n, ScriptType st, Supplier<Class<? extends EventJS>> e) {
 		group = g;
@@ -36,6 +39,7 @@ public final class EventHandler {
 		extraEventContainers = null;
 		legacyEventIds = null;
 		extraIdType = 0;
+		extraTransformer = Function.identity();
 	}
 
 	/**
@@ -68,6 +72,10 @@ public final class EventHandler {
 		return this;
 	}
 
+	public EventHandler requiresNamespacedExtraId() {
+		return namespacedExtraTransformer().requiresExtraId();
+	}
+
 	public boolean getRequiresExtraId() {
 		return extraIdType == 1;
 	}
@@ -77,8 +85,29 @@ public final class EventHandler {
 		return this;
 	}
 
+	public EventHandler supportsNamespacedExtraId() {
+		return namespacedExtraTransformer().supportsExtraId();
+	}
+
 	public boolean getSupportsExtraId() {
 		return extraIdType != 0;
+	}
+
+	public EventHandler extraTransformer(Function<String, String> transformer) {
+		extraTransformer = transformer;
+		return this;
+	}
+
+	public EventHandler namespacedExtraTransformer() {
+		return extraTransformer(EventHandler::transformNamespaced);
+	}
+
+	private static String transformNamespaced(String string) {
+		return new ResourceLocation(string).toString();
+	}
+
+	public Function<String, String> getExtraTransformer() {
+		return extraTransformer;
 	}
 
 	public void clear(ScriptType type) {
@@ -114,6 +143,10 @@ public final class EventHandler {
 		}
 
 		String extra = extraId == null ? "" : extraId;
+
+		if (!extra.isEmpty()) {
+			extra = getExtraTransformer().apply(extra);
+		}
 
 		if (getRequiresExtraId() && extra.isEmpty()) {
 			throw new IllegalArgumentException("Event handler '" + this + "' requires extra id!");

@@ -4,7 +4,6 @@ import dev.architectury.event.EventResult;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -54,32 +53,14 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 	@Override
 	public void registerEntries(EntryRegistry registry) {
 		entryWrappers.forEach((type, wrapper) -> {
-			var typeId = UtilsJS.stripIdForEvent(type.getId());
-
-			new HideREIEventJS<>(registry, UtilsJS.cast(type), wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted(typeId));
-			new AddREIEventJS(registry, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_ADD_EVENTS.formatted(typeId));
-
-			if (type.getId().getNamespace().equals("minecraft")) {
-				var shortId = UtilsJS.stripEventName(type.getId().getPath());
-
-				new HideREIEventJS<>(registry, UtilsJS.cast(type), wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted(shortId));
-				new AddREIEventJS(registry, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_ADD_EVENTS.formatted(shortId));
-			}
-
-			// legacy event ids with "plural s"
-			if(type == VanillaEntryTypes.ITEM) {
-				new HideREIEventJS<>(registry, VanillaEntryTypes.ITEM, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted("items"));
-				new AddREIEventJS(registry, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_ADD_EVENTS.formatted("items"));
-			} else if(type == VanillaEntryTypes.FLUID) {
-				new HideREIEventJS<>(registry, VanillaEntryTypes.FLUID, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted("fluids"));
-				new AddREIEventJS(registry, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_ADD_EVENTS.formatted("fluids"));
-			}
+			REIKubeJSEvents.HIDE.post(type.getId(), new HideREIEventJS<>(registry, UtilsJS.cast(type), wrapper));
+			REIKubeJSEvents.ADD.post(type.getId(), new AddREIEventJS(registry, wrapper));
 		});
 	}
 
 	@Override
 	public void registerDisplays(DisplayRegistry registry) {
-		new InformationREIEventJS().post(ScriptType.CLIENT, REIIntegration.REI_INFORMATION);
+		REIKubeJSEvents.INFORMATION.post(new InformationREIEventJS());
 	}
 
 	@Override
@@ -92,7 +73,7 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 	public void postStage(PluginManager<REIClientPlugin> manager, ReloadStage stage) {
 		if (stage == ReloadStage.END) {
 			categoriesRemoved.clear();
-			new RemoveREICategoryEventJS(categoriesRemoved).post(ScriptType.CLIENT, REIIntegration.REI_REMOVE_CATEGORIES);
+			REIKubeJSEvents.REMOVE_CATEGORIES.post(new RemoveREICategoryEventJS(categoriesRemoved));
 		}
 	}
 

@@ -39,7 +39,7 @@ public class KubeJSClientResourcePack extends KubeJSResourcePack {
 		Map<String, String> langMap = new HashMap<>();
 		KubeJSPlugins.forEachPlugin(p -> p.generateLang(langMap));
 
-		KubeJSEvents.DATAGEN_HIGH_ASSETS.post(new GenerateClientAssetsEventJS(generator, langMap));
+		KubeJSEvents.CLIENT_HIGH_ASSETS.post(new GenerateClientAssetsEventJS(generator, langMap));
 
 		var lang = new JsonObject();
 

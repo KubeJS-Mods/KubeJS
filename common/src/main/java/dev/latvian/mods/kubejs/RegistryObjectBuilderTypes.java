@@ -193,21 +193,16 @@ public final class RegistryObjectBuilderTypes<T> {
 		return defaultType;
 	}
 
-	void postEvent(String id) {
+	void postEvent() {
 		if (!types.isEmpty()) {
-			new RegistryEventJS<>(this).post(id);
+			KubeJSEvents.STARTUP_REGISTRY.post(registryKey.location(), new RegistryEventJS<>(this));
 		}
 	}
 
 	static void registerFor(ResourceKey<? extends Registry<?>> registry, boolean all) {
 		for (var type : POST_AT.getOrDefault(registry, List.of())) {
 			boolean any = false;
-
-			var regId = type.registryKey.location();
-			type.postEvent(regId.getNamespace() + "." + regId.getPath().replace('/', '.') + ".registry");
-			if (regId.getNamespace().equals("minecraft")) {
-				type.postEvent(regId.getPath().replace('/', '.') + ".registry");
-			}
+			type.postEvent();
 
 			// this needs to be separate to avoid a CME, for example if a (source) fluid adds a flowing fluid builder;
 			// as a side effect of this, objects of the same type that are added by createAdditionalObjects cannot create yet more objects

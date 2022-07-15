@@ -3,10 +3,10 @@ package dev.latvian.mods.kubejs.server;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
+import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.event.EventJS;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.Holder;
@@ -42,7 +42,7 @@ public class TagEventJS<T> extends EventJS {
 
 		@Override
 		public String toString() {
-			return "<%s / %s>".formatted(type, id);
+			return "<%s / %s>".formatted(getType(), id);
 		}
 
 		public TagWrapper add(String... ids) {
@@ -181,27 +181,27 @@ public class TagEventJS<T> extends EventJS {
 		}
 	}
 
-	private final String type;
+	public final String directory;
 	private final Map<ResourceLocation, List<TagLoader.EntryWithSource>> map;
 	private final Registry<T> registry;
 	private Map<ResourceLocation, TagWrapper> tags;
 	private int totalAdded;
 	private int totalRemoved;
 
-	public TagEventJS(String t, Map<ResourceLocation, List<TagLoader.EntryWithSource>> m, Registry<T> r) {
-		type = t;
+	public TagEventJS(String dir, Map<ResourceLocation, List<TagLoader.EntryWithSource>> m, Registry<T> r) {
+		directory = dir;
 		map = m;
 		registry = r;
 		totalAdded = 0;
 		totalRemoved = 0;
 	}
 
-	public String getType() {
-		return type;
+	public ResourceLocation getType() {
+		return registry.key().location();
 	}
 
-	public void post(String event) {
-		var dumpFile = KubeJSPaths.EXPORTED.resolve("tags/" + type + ".txt");
+	public void post() {
+		var dumpFile = KubeJSPaths.EXPORTED.resolve("tags/" + getType().getNamespace() + "/" + getType().getPath() + ".txt");
 
 		if (!Files.exists(dumpFile)) {
 			try {
@@ -230,7 +230,7 @@ public class TagEventJS<T> extends EventJS {
 		for (var entry : map.entrySet()) {
 			var w = new TagWrapper(entry.getKey(), entry.getValue());
 			tags.put(entry.getKey(), w);
-			ConsoleJS.SERVER.debug("%s/#%s; %d".formatted(type, entry.getKey(), w.entries.size()));
+			ConsoleJS.SERVER.debug("%s/#%s; %d".formatted(getType(), entry.getKey(), w.entries.size()));
 		}
 
 		var types = RegistryObjectBuilderTypes.MAP.get(registry.key());
@@ -244,7 +244,7 @@ public class TagEventJS<T> extends EventJS {
 		}
 
 		ConsoleJS.SERVER.pushLineNumber();
-		post(ScriptType.SERVER, event);
+		KubeJSEvents.SERVER_TAGS.post(registry.key().location(), this);
 		ConsoleJS.SERVER.popLineNumber();
 
 		if (ServerSettings.dataExport != null) {
@@ -255,11 +255,11 @@ public class TagEventJS<T> extends EventJS {
 				ServerSettings.dataExport.add("tags", tj);
 			}
 
-			var tj1 = tj.getAsJsonObject(type);
+			var tj1 = tj.getAsJsonObject(getType().toString());
 
 			if (tj1 == null) {
 				tj1 = new JsonObject();
-				tj.add(type, tj1);
+				tj.add(getType().toString(), tj1);
 			}
 
 			for (var entry : map.entrySet()) {
@@ -270,7 +270,7 @@ public class TagEventJS<T> extends EventJS {
 		}
 
 		if (totalAdded > 0 || totalRemoved > 0 || ConsoleJS.SERVER.shouldPrintDebug()) {
-			ConsoleJS.SERVER.info("[%s] Found %d tags, added %d objects, removed %d objects".formatted(type, tags.size(), totalAdded, totalRemoved));
+			ConsoleJS.SERVER.info("[%s] Found %d tags, added %d objects, removed %d objects".formatted(getType(), tags.size(), totalAdded, totalRemoved));
 		}
 	}
 

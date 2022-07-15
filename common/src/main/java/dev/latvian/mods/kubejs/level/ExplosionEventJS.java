@@ -56,8 +56,8 @@ public abstract class ExplosionEventJS extends LevelEventJS {
 		return getLevel().getLivingEntity(explosion.getSourceMob());
 	}
 
-	public static class Pre extends ExplosionEventJS {
-		public Pre(Level level, Explosion explosion) {
+	public static class Before extends ExplosionEventJS {
+		public Before(Level level, Explosion explosion) {
 			super(level, explosion);
 		}
 
@@ -70,10 +70,10 @@ public abstract class ExplosionEventJS extends LevelEventJS {
 		}
 	}
 
-	public static class Post extends ExplosionEventJS {
+	public static class After extends ExplosionEventJS {
 		private final List<Entity> affectedEntities;
 
-		public Post(Level level, Explosion explosion, List<Entity> affectedEntities) {
+		public After(Level level, Explosion explosion, List<Entity> affectedEntities) {
 			super(level, explosion);
 			this.affectedEntities = affectedEntities;
 		}

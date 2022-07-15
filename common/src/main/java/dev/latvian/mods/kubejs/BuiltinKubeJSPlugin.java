@@ -201,11 +201,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		KubeJSEvents.ITEM_ARMOR_TIER_REGISTRY.post(new ItemArmorTierRegistryEventJS());
 
 		for (var types : RegistryObjectBuilderTypes.MAP.values()) {
-			types.postEvent("%s.registry".formatted(UtilsJS.stripIdForEvent(types.registryKey.location())));
-
-			if (types.registryKey.location().getNamespace().equals("minecraft")) {
-				types.postEvent("%s.registry".formatted(UtilsJS.stripEventName(types.registryKey.location().getPath())));
-			}
+			types.postEvent();
 		}
 	}
 
@@ -371,7 +367,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 			var h = EventGroup.getLegacyMap().get(str);
 
 			if (h != null) {
-				event.type.console.warn("Legacy '" + str + "' event handler found! Change it to '" + h + "(event => { })'");
+				event.type.console.warn("Legacy '" + str + "' event handler found! Change it to `" + h + "(event => { })`");
 				h.listen(event.type, null, handler);
 			} else {
 				int index = str.lastIndexOf('.');
@@ -383,7 +379,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 					if (h1 != null) {
 						String extra = str.substring(index + 1);
-						event.type.console.warn("Legacy '" + str + "' event handler found! Change it to '" + h1 + "('" + extra + "', event => { })'");
+						event.type.console.warn("Legacy '" + str + "' event handler found! Change it to `" + h1 + "('" + extra + "', event => { })`");
 						h1.listen(event.type, extra, handler);
 					} else {
 						event.type.console.warn("Unknown legacy event handler '" + str + "'!");

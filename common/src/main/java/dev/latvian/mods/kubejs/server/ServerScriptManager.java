@@ -76,8 +76,8 @@ public class ServerScriptManager {
 
 		ConsoleJS.SERVER.pushLineNumber();
 
-		KubeJSEvents.DATAGEN_LOW_DATA.post(new DataPackEventJS(virtualDataPackLow, wrappedResourceManager));
-		KubeJSEvents.DATAGEN_HIGH_DATA.post(new DataPackEventJS(virtualDataPackHigh, wrappedResourceManager));
+		KubeJSEvents.SERVER_LOW_DATA.post(new DataPackEventJS(virtualDataPackLow, wrappedResourceManager));
+		KubeJSEvents.SERVER_HIGH_DATA.post(new DataPackEventJS(virtualDataPackHigh, wrappedResourceManager));
 
 		ConsoleJS.SERVER.popLineNumber();
 		ConsoleJS.SERVER.info("Scripts loaded");

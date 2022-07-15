@@ -51,7 +51,7 @@ public class KubeJSWorldEventHandler {
 	}
 
 	private static EventResult preExplosion(Level level, Explosion explosion) {
-		if (KubeJSEvents.LEVEL_EXPLOSION_PRE.post(new ExplosionEventJS.Pre(level, explosion))) {
+		if (KubeJSEvents.LEVEL_BEFORE_EXPLOSION.post(new ExplosionEventJS.Before(level, explosion))) {
 			return EventResult.interruptFalse();
 		}
 
@@ -59,6 +59,6 @@ public class KubeJSWorldEventHandler {
 	}
 
 	private static void detonateExplosion(Level level, Explosion explosion, List<Entity> affectedEntities) {
-		KubeJSEvents.LEVEL_EXPLOSION_POST.post(new ExplosionEventJS.Post(level, explosion, affectedEntities));
+		KubeJSEvents.LEVEL_AFTER_EXPLOSION.post(new ExplosionEventJS.After(level, explosion, affectedEntities));
 	}
 }

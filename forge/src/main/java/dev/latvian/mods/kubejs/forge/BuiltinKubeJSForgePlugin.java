@@ -2,18 +2,24 @@ package dev.latvian.mods.kubejs.forge;
 
 import dev.latvian.mods.kubejs.BuiltinKubeJSPlugin;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.integration.forge.jei.JEIKubeJSEvents;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.fml.ModList;
 
 public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 	@Override
 	public void registerEvents() {
 		super.registerEvents();
 		ForgeKubeJSEvents.register();
+
+		if (ModList.get().isLoaded("jei")) {
+			JEIKubeJSEvents.register();
+		}
 	}
 
 	@Override
