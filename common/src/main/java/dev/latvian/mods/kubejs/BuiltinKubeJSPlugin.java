@@ -364,15 +364,34 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	private static Object onLegacyEvent(BindingsEvent event, Object ids, IEventHandler handler) {
 		for (var o : ListJS.orSelf(ids)) {
-			event.type.console.pushLineNumber();
-			event.type.console.warn("Legacy '" + o + "' event handler!");
-			event.type.console.popLineNumber();
+			String str = String.valueOf(o);
 
-			var h = EventGroup.getLegacyMap().get(String.valueOf(o));
+			event.type.console.pushLineNumber();
+
+			var h = EventGroup.getLegacyMap().get(str);
 
 			if (h != null) {
-				h.listen(event.type, handler);
+				event.type.console.warn("Legacy '" + str + "' event handler found! Change it to '" + h + "(event => { })'");
+				h.listen(event.type, null, handler);
+			} else {
+				int index = str.lastIndexOf('.');
+
+				if (index == -1) {
+					event.type.console.warn("Unknown legacy event handler '" + str + "'!");
+				} else {
+					var h1 = EventGroup.getLegacyMap().get(str.substring(0, index));
+
+					if (h1 != null) {
+						String extra = str.substring(index + 1);
+						event.type.console.warn("Legacy '" + str + "' event handler found! Change it to '" + h1 + "('" + extra + "', event => { })'");
+						h1.listen(event.type, extra, handler);
+					} else {
+						event.type.console.warn("Unknown legacy event handler '" + str + "'!");
+					}
+				}
 			}
+
+			event.type.console.popLineNumber();
 		}
 
 		return null;

@@ -41,7 +41,7 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 	public static Object onPlatformEvent(BindingsEvent event, Object[] args) {
 		if (args.length < 2 || !(args[0] instanceof CharSequence)) {
 			throw new RuntimeException("Invalid syntax! onPlatformEvent(string, function) required event class and handler");
-		} else if (!KubeJS.startupScriptManager.firstLoad) {
+		} else if (!KubeJS.getStartupScriptManager().firstLoad) {
 			ConsoleJS.STARTUP.warn("onPlatformEvent() can't be reloaded! You will have to restart the game for changes to take effect.");
 			return null;
 		}

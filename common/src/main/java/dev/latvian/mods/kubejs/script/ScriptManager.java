@@ -13,12 +13,17 @@ import dev.latvian.mods.rhino.NativeJavaClass;
 import dev.latvian.mods.rhino.RhinoException;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.mod.util.RemappingHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
 import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -34,6 +39,7 @@ public class ScriptManager {
 	public boolean firstLoad;
 	private Map<String, Optional<NativeJavaClass>> javaClassCache;
 	private final Map<String, EventMap.EventHandlerWrapper> legacyEventHandlers;
+	public boolean canListenEvents;
 
 	public ScriptManager(ScriptType t, Path p, String e) {
 		type = t;
@@ -49,7 +55,51 @@ public class ScriptManager {
 		packs.clear();
 		type.unload();
 		javaClassCache = null;
+	}
 
+	public void reload(@Nullable ResourceManager resourceManager) {
+		unload();
+		loadFromDirectory();
+
+		if (resourceManager != null) {
+			loadFromResources(resourceManager);
+		}
+
+		load();
+	}
+
+	private void loadFromResources(ResourceManager resourceManager) {
+		Map<String, List<ResourceLocation>> packMap = new HashMap<>();
+
+		for (var resource : resourceManager.listResources("kubejs", s -> s.getPath().endsWith(".js")).keySet()) {
+			packMap.computeIfAbsent(resource.getNamespace(), s -> new ArrayList<>()).add(resource);
+		}
+
+		for (var entry : packMap.entrySet()) {
+			var pack = new ScriptPack(this, new ScriptPackInfo(entry.getKey(), "kubejs/"));
+
+			for (var id : entry.getValue()) {
+				pack.info.scripts.add(new ScriptFileInfo(pack.info, id.getPath().substring(7)));
+			}
+
+			for (var fileInfo : pack.info.scripts) {
+				var scriptSource = (ScriptSource.FromResource) info -> resourceManager.getResourceOrThrow(info.id);
+				var error = fileInfo.preload(scriptSource);
+
+				if (fileInfo.isIgnored()) {
+					continue;
+				}
+
+				if (error == null) {
+					pack.scripts.add(new ScriptFile(pack, fileInfo, scriptSource));
+				} else {
+					type.console.error("Failed to pre-load script file " + fileInfo.location + ": " + error);
+				}
+			}
+
+			pack.scripts.sort(null);
+			packs.put(pack.info.namespace, pack);
+		}
 	}
 
 	public void loadFromDirectory() {
@@ -109,6 +159,7 @@ public class ScriptManager {
 
 		var startAll = System.currentTimeMillis();
 
+		canListenEvents = true;
 		var i = 0;
 		var t = 0;
 
@@ -148,12 +199,12 @@ public class ScriptManager {
 
 		type.console.info("Loaded " + i + "/" + t + " KubeJS " + type.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s");
 		Context.exit();
+		firstLoad = false;
+		canListenEvents = false;
 
 		if (i != t && type == ScriptType.STARTUP) {
 			throw new RuntimeException("There were startup script syntax errors! See logs/kubejs/startup.txt for more info");
 		}
-
-		firstLoad = false;
 	}
 
 	public NativeJavaClass loadJavaClass(Scriptable scope, Object[] args) {

@@ -57,7 +57,15 @@ public class KubeJS {
 	public static boolean nextClientHasClientMod = false;
 	public static CreativeModeTab tab = CreativeModeTab.TAB_MISC;
 
-	public static ScriptManager startupScriptManager, clientScriptManager;
+	private static ScriptManager startupScriptManager, clientScriptManager;
+
+	public static ScriptManager getStartupScriptManager() {
+		return startupScriptManager;
+	}
+
+	public static ScriptManager getClientScriptManager() {
+		return clientScriptManager;
+	}
 
 	public KubeJS() throws Throwable {
 		instance = this;
@@ -111,9 +119,7 @@ public class KubeJS {
 			tab = CreativeTabRegistry.create(new ResourceLocation(KubeJS.MOD_ID, KubeJS.MOD_ID), () -> new ItemStack(Items.PURPLE_DYE));
 		}
 
-		startupScriptManager.unload();
-		startupScriptManager.loadFromDirectory();
-		startupScriptManager.load();
+		startupScriptManager.reload(null);
 
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::initStartup);
 

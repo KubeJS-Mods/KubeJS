@@ -313,9 +313,7 @@ public class KubeJSCommands {
 	}
 
 	private static int reloadStartup(CommandSourceStack source) {
-		KubeJS.startupScriptManager.unload();
-		KubeJS.startupScriptManager.loadFromDirectory();
-		KubeJS.startupScriptManager.load();
+		KubeJS.getStartupScriptManager().reload(null);
 		source.sendSuccess(Component.literal("Done!"), false);
 		return 1;
 	}

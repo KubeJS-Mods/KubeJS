@@ -63,7 +63,7 @@ public final class EventGroup {
 	}
 
 	public EventHandler add(String name, ScriptType scriptType, Supplier<Class<? extends EventJS>> eventType) {
-		EventHandler handler = new EventHandler(this, name, scriptType, eventType, null);
+		EventHandler handler = new EventHandler(this, name, scriptType, eventType);
 		handlers.put(name, handler);
 		return handler;
 	}

@@ -21,15 +21,17 @@ import java.util.function.Supplier;
  * @author LatvianModder
  */
 public enum ScriptType {
-	STARTUP("startup", "KubeJS Startup", () -> KubeJS.startupScriptManager),
-	SERVER("server", "KubeJS Server", () -> ServerScriptManager.instance.scriptManager),
-	CLIENT("client", "KubeJS Client", () -> KubeJS.clientScriptManager);
+	STARTUP("startup", "KubeJS Startup", KubeJS::getStartupScriptManager),
+	SERVER("server", "KubeJS Server", ServerScriptManager::getScriptManager),
+	CLIENT("client", "KubeJS Client", KubeJS::getClientScriptManager);
 
 	static {
 		ConsoleJS.STARTUP = STARTUP.console;
 		ConsoleJS.SERVER = SERVER.console;
 		ConsoleJS.CLIENT = CLIENT.console;
 	}
+
+	public static final ScriptType[] VALUES = values();
 
 	public static ScriptType of(LevelReader level) {
 		return level.isClientSide() ? CLIENT : SERVER;
