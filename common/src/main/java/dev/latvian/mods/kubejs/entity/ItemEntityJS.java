@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.entity;
 
 import dev.architectury.hooks.level.entity.ItemEntityHooks;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.world.entity.item.ItemEntity;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,6 +72,22 @@ public class ItemEntityJS extends EntityJS {
 	}
 
 	public void setNoDespawn() {
-		itemEntity.setExtendedLifetime();
+		itemEntity.setUnlimitedLifetime();
+	}
+
+	public int getAge() {
+		return itemEntity.age;
+	}
+
+	public void setAge(int age) {
+		itemEntity.age = age;
+	}
+
+	public int getTicksUntilDespawn() {
+		return ItemEntity.LIFETIME - itemEntity.age;
+	}
+
+	public void setTicksUntilDespawn(int ticks) {
+		setAge(ItemEntity.LIFETIME - ticks);
 	}
 }
