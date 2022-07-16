@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs;
 import com.mojang.serialization.Codec;
 import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.Registries;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -14,6 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.chunk.ChunkGenerator;
@@ -24,6 +26,11 @@ import static net.minecraft.core.Registry.*;
 public class KubeJSRegistries {
 	private static final Registries REGISTRIES = Registries.get(KubeJS.MOD_ID);
 
+	public static <T> Registrar<T> byId(ResourceLocation id) {
+		return genericRegistry(ResourceKey.createRegistryKey(id));
+	}
+
+	@HideFromJS
 	public static <T> Registrar<T> genericRegistry(ResourceKey<Registry<T>> key) {
 		return REGISTRIES.get(key);
 	}
@@ -64,6 +71,10 @@ public class KubeJSRegistries {
 		return genericRegistry(RECIPE_SERIALIZER_REGISTRY);
 	}
 
+	public static Registrar<Biome> biomes() {
+		return genericRegistry(BIOME_REGISTRY);
+	}
+
 	public static Registrar<Codec<? extends ChunkGenerator>> chunkGenerators() {
 		return genericRegistry(CHUNK_GENERATOR_REGISTRY);
 	}
@@ -84,6 +95,7 @@ public class KubeJSRegistries {
 		return genericRegistry(MOB_EFFECT_REGISTRY);
 	}
 
+	@HideFromJS
 	public static void init() {
 		RegistryObjectBuilderTypes.registerAll(!CommonProperties.get().serverOnly);
 	}

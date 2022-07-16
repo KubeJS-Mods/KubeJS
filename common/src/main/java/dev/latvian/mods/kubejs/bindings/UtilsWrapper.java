@@ -1,16 +1,19 @@
 package dev.latvian.mods.kubejs.bindings;
 
+import dev.architectury.registry.registries.Registrar;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerJS;
+import dev.latvian.mods.kubejs.util.ClassWrapper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.mod.util.CountingMap;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stat;
@@ -24,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.regex.Pattern;
 
@@ -163,5 +167,17 @@ public interface UtilsWrapper {
 
 	static String toTitleCase(String s) {
 		return UtilsJS.toTitleCase(s);
+	}
+
+	static ClassWrapper<KubeJSRegistries> getRegistries() {
+		return new ClassWrapper<>(KubeJSRegistries.class);
+	}
+
+	static Registrar<?> getRegistry(ResourceLocation id) {
+		return Objects.requireNonNull(KubeJSRegistries.genericRegistry(ResourceKey.createRegistryKey(id)), "No builtin or static registry found for %s!".formatted(id));
+	}
+
+	static Collection<ResourceLocation> getRegistryIds(ResourceLocation id) {
+		return getRegistry(id).getIds();
 	}
 }
