@@ -378,6 +378,10 @@ public class EntityJS implements MessageSender, WrappedJS {
 		minecraftEntity.kill();
 	}
 
+	public void remove() {
+		minecraftEntity.remove(Entity.RemovalReason.DISCARDED);
+	}
+
 	public boolean startRiding(EntityJS e, boolean force) {
 		return minecraftEntity.startRiding(e.minecraftEntity, force);
 	}

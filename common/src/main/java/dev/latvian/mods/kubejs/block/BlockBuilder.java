@@ -82,7 +82,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		textures = new JsonObject();
 		textureAll(id.getNamespace() + ":block/" + id.getPath());
 		model = "";
-		itemBuilder = newItemBuilder();
+		itemBuilder = getOrCreateItemBuilder();
 		itemBuilder.blockBuilder = this;
 		customShape = new ArrayList<>();
 		noCollision = false;
@@ -369,15 +369,15 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 			itemBuilder = null;
 			lootTable = null;
 		} else {
-			i.accept(newItemBuilder());
+			i.accept(getOrCreateItemBuilder());
 		}
 
 		return this;
 	}
 
 	@HideFromJS
-	protected BlockItemBuilder newItemBuilder() {
-		return new BlockItemBuilder(id);
+	protected BlockItemBuilder getOrCreateItemBuilder() {
+		return itemBuilder == null ? (itemBuilder = new BlockItemBuilder(id)) : itemBuilder;
 	}
 
 	public BlockBuilder noItem() {
