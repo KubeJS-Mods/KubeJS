@@ -105,18 +105,22 @@ public class AddOreProperties {
 	}
 
 	// vertical anchors
+	@Deprecated
 	public VerticalAnchor aboveBottom(int y) {
 		return VerticalAnchor.aboveBottom(y);
 	}
 
+	@Deprecated
 	public VerticalAnchor belowTop(int y) {
 		return VerticalAnchor.belowTop(y);
 	}
 
+	@Deprecated
 	public VerticalAnchor bottom() {
 		return VerticalAnchor.bottom();
 	}
 
+	@Deprecated
 	public VerticalAnchor top() {
 		return VerticalAnchor.top();
 	}
