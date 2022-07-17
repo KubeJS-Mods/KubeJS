@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.block.state;
 
+import com.mojang.serialization.DataResult;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.level.gen.ruletest.AllMatchRuleTest;
 import dev.latvian.mods.kubejs.level.gen.ruletest.AlwaysFalseRuleTest;
@@ -114,8 +115,9 @@ public sealed interface BlockStatePredicate {
 	}
 
 	static RuleTest ruleTestOf(Object o) {
-		return RuleTest.CODEC.parse(NbtOps.INSTANCE, NBTUtils.toTagCompound(o))
-				.result()
+		return Optional.ofNullable(NBTUtils.toTagCompound(o))
+				.map(tag -> RuleTest.CODEC.parse(NbtOps.INSTANCE, tag))
+				.flatMap(DataResult::result)
 				.or(() -> Optional.ofNullable(of(o).asRuleTest()))
 				.orElseThrow(() -> new IllegalArgumentException("Could not parse valid rule test from " + o + "!"));
 	}
