@@ -6,7 +6,7 @@ import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.TickEvent;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSEvents;
+import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
 import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerJS;
@@ -44,7 +44,7 @@ public class KubeJSPlayerEventHandler {
 			KubeJS.nextClientHasClientMod = false;
 			p.getServer().playerMap.put(p.getId(), p);
 			AttachDataEvent.forPlayer(p).invoke();
-			KubeJSEvents.PLAYER_LOGGED_IN.post(new SimplePlayerEventJS(player));
+			PlayerEvents.LOGGED_IN.post(new SimplePlayerEventJS(player));
 			player.inventoryMenu.addSlotListener(new InventoryListener(player));
 		}
 
@@ -70,7 +70,7 @@ public class KubeJSPlayerEventHandler {
 			return;
 		}
 
-		KubeJSEvents.PLAYER_LOGGED_OUT.post(new SimplePlayerEventJS(player));
+		PlayerEvents.LOGGED_OUT.post(new SimplePlayerEventJS(player));
 		ServerJS.instance.playerMap.remove(player.getUUID());
 	}
 
@@ -81,14 +81,14 @@ public class KubeJSPlayerEventHandler {
 
 	public static void tick(Player player) {
 		if (ServerJS.instance != null && player instanceof ServerPlayer) {
-			KubeJSEvents.PLAYER_TICK.post(new SimplePlayerEventJS(player));
+			PlayerEvents.TICK.post(new SimplePlayerEventJS(player));
 		}
 	}
 
 	@NotNull
 	public static EventResult chat(ServerPlayer player, ChatEvent.ChatComponent component) {
 		var event = new PlayerChatEventJS(player, component.getRaw());
-		if (KubeJSEvents.PLAYER_CHAT.post(event)) {
+		if (PlayerEvents.CHAT.post(event)) {
 			return EventResult.interruptFalse();
 		}
 		component.setRaw(event.component);
@@ -96,7 +96,7 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	public static void advancement(ServerPlayer player, Advancement advancement) {
-		KubeJSEvents.PLAYER_ADVANCEMENT.post(String.valueOf(advancement.getId()), new PlayerAdvancementEventJS(player, advancement));
+		PlayerEvents.ADVANCEMENT.post(String.valueOf(advancement.getId()), new PlayerAdvancementEventJS(player, advancement));
 	}
 
 	public static void inventoryOpened(Player player, AbstractContainerMenu menu) {
@@ -105,20 +105,20 @@ public class KubeJSPlayerEventHandler {
 				menu.addSlotListener(new InventoryListener(serverPlayer));
 			}
 
-			KubeJSEvents.PLAYER_INVENTORY_OPENED.post(new InventoryEventJS(serverPlayer, menu));
+			PlayerEvents.INVENTORY_OPENED.post(new InventoryEventJS(serverPlayer, menu));
 
 			if (menu instanceof ChestMenu) {
-				KubeJSEvents.PLAYER_CHEST_OPENED.post(new ChestEventJS(serverPlayer, menu));
+				PlayerEvents.CHEST_OPENED.post(new ChestEventJS(serverPlayer, menu));
 			}
 		}
 	}
 
 	public static void inventoryClosed(Player player, AbstractContainerMenu menu) {
 		if (player instanceof ServerPlayer serverPlayer) {
-			KubeJSEvents.PLAYER_INVENTORY_CLOSED.post(new InventoryEventJS(serverPlayer, menu));
+			PlayerEvents.INVENTORY_CLOSED.post(new InventoryEventJS(serverPlayer, menu));
 
 			if (menu instanceof ChestMenu) {
-				KubeJSEvents.PLAYER_CHEST_CLOSED.post(new ChestEventJS(serverPlayer, menu));
+				PlayerEvents.CHEST_CLOSED.post(new ChestEventJS(serverPlayer, menu));
 			}
 		}
 	}

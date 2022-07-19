@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs;
 
 import dev.architectury.registry.registries.DeferredRegister;
+import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -195,7 +196,7 @@ public final class RegistryObjectBuilderTypes<T> {
 
 	void postEvent() {
 		if (!types.isEmpty()) {
-			KubeJSEvents.STARTUP_REGISTRY.post(registryKey.location(), new RegistryEventJS<>(this));
+			StartupEvents.REGISTRY.post(registryKey.location(), new RegistryEventJS<>(this));
 		}
 	}
 

@@ -10,6 +10,16 @@ import dev.latvian.mods.kubejs.bindings.ComponentWrapper;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
+import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
+import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
+import dev.latvian.mods.kubejs.bindings.event.EntityEvents;
+import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
+import dev.latvian.mods.kubejs.bindings.event.LevelEvents;
+import dev.latvian.mods.kubejs.bindings.event.NetworkEvents;
+import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
+import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
+import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
+import dev.latvian.mods.kubejs.bindings.event.WorldgenEvents;
 import dev.latvian.mods.kubejs.block.DetectorBlock;
 import dev.latvian.mods.kubejs.block.MaterialJS;
 import dev.latvian.mods.kubejs.block.MaterialListJS;
@@ -35,13 +45,14 @@ import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
 import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
 import dev.latvian.mods.kubejs.core.PlayerSelector;
 import dev.latvian.mods.kubejs.event.EventGroup;
-import dev.latvian.mods.kubejs.event.EventMap;
+import dev.latvian.mods.kubejs.event.EventGroupWrapper;
 import dev.latvian.mods.kubejs.event.IEventHandler;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
+import dev.latvian.mods.kubejs.integration.rei.REIKubeJSEvents;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
@@ -197,8 +208,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void initStartup() {
-		KubeJSEvents.ITEM_TOOL_TIER_REGISTRY.post(new ItemToolTierRegistryEventJS());
-		KubeJSEvents.ITEM_ARMOR_TIER_REGISTRY.post(new ItemArmorTierRegistryEventJS());
+		ItemEvents.TOOL_TIER_REGISTRY.post(new ItemToolTierRegistryEventJS());
+		ItemEvents.ARMOR_TIER_REGISTRY.post(new ItemArmorTierRegistryEventJS());
 
 		for (var types : RegistryObjectBuilderTypes.MAP.values()) {
 			types.postEvent();
@@ -218,7 +229,20 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void registerEvents() {
-		KubeJSEvents.register();
+		StartupEvents.GROUP.register();
+		ClientEvents.GROUP.register();
+		ServerEvents.GROUP.register();
+		LevelEvents.GROUP.register();
+		WorldgenEvents.GROUP.register();
+		NetworkEvents.GROUP.register();
+		ItemEvents.GROUP.register();
+		BlockEvents.GROUP.register();
+		EntityEvents.GROUP.register();
+		PlayerEvents.GROUP.register();
+
+		if (Platform.isModLoaded("roughlyenoughitems")) {
+			REIKubeJSEvents.register();
+		}
 	}
 
 	@Override
@@ -295,7 +319,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("console", event.type.console);
 
 		for (var group : EventGroup.getGroups().values()) {
-			event.add(group.name, new EventMap(event.type, group));
+			event.add(group.name, new EventGroupWrapper(event.type, group));
 		}
 
 		event.addFunction("onEvent", args -> onLegacyEvent(event, args[0], (IEventHandler) args[1]), null, IEventHandler.class);

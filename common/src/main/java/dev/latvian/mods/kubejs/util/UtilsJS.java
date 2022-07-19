@@ -5,8 +5,9 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
+import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.block.BlockModificationEventJS;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.item.ItemModificationEventJS;
@@ -503,8 +504,8 @@ public class UtilsJS {
 	// TODO: We could probably make these generic for RegistryObjectBuilderTypes,
 	//  so maybe look into that to allow people to modify builtin fluids, etc. as well.
 	public static void postModificationEvents() {
-		KubeJSEvents.BLOCK_MODIFICATION.post(new BlockModificationEventJS());
-		KubeJSEvents.ITEM_MODIFICATION.post(new ItemModificationEventJS());
+		BlockEvents.MODIFICATION.post(new BlockModificationEventJS());
+		ItemEvents.MODIFICATION.post(new ItemModificationEventJS());
 	}
 
 	public static Class<?> getRawType(Type type) {

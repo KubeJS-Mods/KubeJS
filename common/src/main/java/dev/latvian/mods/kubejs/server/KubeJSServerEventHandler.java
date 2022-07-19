@@ -6,7 +6,9 @@ import dev.architectury.event.events.common.CommandPerformEvent;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.TickEvent;
-import dev.latvian.mods.kubejs.KubeJSEvents;
+import dev.latvian.mods.kubejs.bindings.event.LevelEvents;
+import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
+import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.mods.kubejs.command.KubeJSCommands;
 import dev.latvian.mods.kubejs.level.ServerLevelJS;
@@ -69,7 +71,7 @@ public class KubeJSServerEventHandler {
 
 	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection selection) {
 		KubeJSCommands.register(dispatcher);
-		KubeJSEvents.SERVER_COMMAND_REGISTRY.post(new CommandRegistryEventJS(dispatcher, selection));
+		ServerEvents.COMMAND_REGISTRY.post(new CommandRegistryEventJS(dispatcher, selection));
 	}
 
 	public static void serverStarted(MinecraftServer server) {
@@ -87,11 +89,11 @@ public class KubeJSServerEventHandler {
 		ServerJS.instance.updateWorldList();
 
 		AttachDataEvent.forServer(ServerJS.instance).invoke();
-		KubeJSEvents.SERVER_LOAD.post(new ServerEventJS());
+		ServerEvents.LOADED.post(new ServerEventJS());
 
 		for (var level : ServerJS.instance.allLevels) {
 			AttachDataEvent.forLevel(level).invoke();
-			KubeJSEvents.LEVEL_LOAD.post(level.getDimension(), new SimpleLevelEventJS(level));
+			LevelEvents.LOADED.post(level.getDimension(), new SimpleLevelEventJS(level));
 		}
 	}
 
@@ -103,14 +105,14 @@ public class KubeJSServerEventHandler {
 		var s = ServerJS.instance;
 
 		for (PlayerDataJS<?, ?> p : s.playerMap.values()) {
-			KubeJSEvents.PLAYER_LOGGED_OUT.post(new SimplePlayerEventJS(p.getMinecraftPlayer()));
+			PlayerEvents.LOGGED_OUT.post(new SimplePlayerEventJS(p.getMinecraftPlayer()));
 		}
 
 		for (var level : s.levelMap.values()) {
-			KubeJSEvents.LEVEL_UNLOAD.post(level.getDimension(), new SimpleLevelEventJS(level));
+			LevelEvents.UNLOADED.post(level.getDimension(), new SimpleLevelEventJS(level));
 		}
 
-		KubeJSEvents.SERVER_UNLOAD.post(new ServerEventJS());
+		ServerEvents.UNLOADED.post(new ServerEventJS());
 		s.release();
 		ServerJS.instance = null;
 	}
@@ -183,13 +185,13 @@ public class KubeJSServerEventHandler {
 			}
 		}
 
-		KubeJSEvents.SERVER_TICK.post(new ServerEventJS());
+		ServerEvents.TICK.post(new ServerEventJS());
 	}
 
 	public static EventResult command(CommandPerformEvent event) {
 		var e = new CommandEventJS(event);
 
-		if (KubeJSEvents.SERVER_COMMAND.post(e.getCommandName(), e)) {
+		if (ServerEvents.COMMAND.post(e.getCommandName(), e)) {
 			return EventResult.interruptFalse();
 		}
 

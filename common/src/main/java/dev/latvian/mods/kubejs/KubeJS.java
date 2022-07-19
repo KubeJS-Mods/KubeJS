@@ -4,6 +4,7 @@ import com.google.common.base.Stopwatch;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.utils.EnvExecutor;
+import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.block.KubeJSBlockEventHandler;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.entity.KubeJSEntityEventHandler;
@@ -216,14 +217,14 @@ public class KubeJS {
 	public void setup() {
 		UtilsJS.init();
 		KubeJSNet.init();
-		KubeJSEvents.STARTUP_INIT.post(new StartupEventJS());
+		StartupEvents.INIT.post(new StartupEventJS());
 		// KubeJSRegistries.chunkGenerators().register(new ResourceLocation(KubeJS.MOD_ID, "flat"), () -> KJSFlatLevelSource.CODEC);
 	}
 
 	public void loadComplete() {
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::afterInit);
 		ScriptsLoadedEvent.EVENT.invoker().run();
-		KubeJSEvents.STARTUP_POST_INIT.post(new StartupEventJS());
+		StartupEvents.POST_INIT.post(new StartupEventJS());
 		UtilsJS.postModificationEvents();
 	}
 }

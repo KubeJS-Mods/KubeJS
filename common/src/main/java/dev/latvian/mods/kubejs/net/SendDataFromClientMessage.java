@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.net;
 import dev.architectury.networking.NetworkManager.PacketContext;
 import dev.architectury.networking.simple.BaseC2SMessage;
 import dev.architectury.networking.simple.MessageType;
-import dev.latvian.mods.kubejs.KubeJSEvents;
+import dev.latvian.mods.kubejs.bindings.event.NetworkEvents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -40,7 +40,7 @@ public class SendDataFromClientMessage extends BaseC2SMessage {
 	@Override
 	public void handle(PacketContext context) {
 		if (!channel.isEmpty() && context.getPlayer() instanceof ServerPlayer serverPlayer) {
-			KubeJSEvents.NETWORK_FROM_CLIENT.post(channel, new NetworkEventJS(serverPlayer, channel, data));
+			NetworkEvents.FROM_CLIENT.post(channel, new NetworkEventJS(serverPlayer, channel, data));
 		}
 	}
 }

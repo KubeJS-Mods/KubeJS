@@ -1,7 +1,12 @@
 package dev.latvian.mods.kubejs.event;
 
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.ListJS;
+import dev.latvian.mods.rhino.BaseFunction;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.RhinoException;
+import dev.latvian.mods.rhino.Scriptable;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +22,7 @@ import java.util.function.Supplier;
  * <p>
  * <code>public static final EventHandler EVENT = EventHandler.of(ScriptType.SERVER, ItemRightClickEventJS.class).cancellable();</code>
  */
-public final class EventHandler {
+public final class EventHandler extends BaseFunction {
 	public final EventGroup group;
 	public final String name;
 	public final ScriptType scriptType;
@@ -110,6 +115,7 @@ public final class EventHandler {
 		return extraTransformer;
 	}
 
+	@HideFromJS
 	public void clear(ScriptType type) {
 		if (eventContainers != null) {
 			eventContainers[type.ordinal()] = null;
@@ -248,5 +254,26 @@ public final class EventHandler {
 	@Override
 	public String toString() {
 		return group + "." + name;
+	}
+
+	@Override
+	public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
+		ScriptType type = (ScriptType) cx.getFactory().getExtraProperty("Type");
+
+		if (type == null) {
+			return null;
+		}
+
+		if (args.length == 1) {
+			listen(type, null, (IEventHandler) Context.jsToJava(args[0], IEventHandler.class));
+		} else if (args.length == 2) {
+			var handler = (IEventHandler) Context.jsToJava(args[1], IEventHandler.class);
+
+			for (Object o : ListJS.orSelf(args[0])) {
+				listen(type, String.valueOf(Context.jsToJava(o, String.class)), handler);
+			}
+		}
+
+		return null;
 	}
 }

@@ -13,7 +13,6 @@ import dev.latvian.mods.kubejs.player.PlayerJS;
 import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.util.MessageSender;
 import dev.latvian.mods.kubejs.util.WrappedJS;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
@@ -68,7 +67,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public String getType() {
-		return Registries.getId(minecraftEntity.getType(), Registry.ENTITY_TYPE_REGISTRY).toString();
+		return String.valueOf(Registries.getId(minecraftEntity.getType(), Registry.ENTITY_TYPE_REGISTRY));
 	}
 
 	@Override

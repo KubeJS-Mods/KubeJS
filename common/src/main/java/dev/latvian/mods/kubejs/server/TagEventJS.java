@@ -3,9 +3,9 @@ package dev.latvian.mods.kubejs.server;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
-import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -244,7 +244,7 @@ public class TagEventJS<T> extends EventJS {
 		}
 
 		ConsoleJS.SERVER.pushLineNumber();
-		KubeJSEvents.SERVER_TAGS.post(registry.key().location(), this);
+		ServerEvents.TAGS.post(registry.key().location(), this);
 		ConsoleJS.SERVER.popLineNumber();
 
 		if (ServerSettings.dataExport != null) {

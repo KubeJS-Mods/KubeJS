@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.core;
 
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.CommonProperties;
-import dev.latvian.mods.kubejs.KubeJSEvents;
+import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.loot.BlockLootEventJS;
 import dev.latvian.mods.kubejs.loot.ChestLootEventJS;
 import dev.latvian.mods.kubejs.loot.EntityLootEventJS;
@@ -28,12 +28,12 @@ import java.util.function.BiConsumer;
 public interface LootTablesKJS {
 	default void applyKJS0(Map<ResourceLocation, JsonElement> map, BiConsumer<ResourceLocation, JsonElement> action) {
 		Map<ResourceLocation, JsonElement> map1 = new HashMap<>(map);
-		KubeJSEvents.SERVER_GENERIC_LOOT_TABLES.post(new GenericLootEventJS(map1));
-		KubeJSEvents.SERVER_BLOCK_LOOT_TABLES.post(new BlockLootEventJS(map1));
-		KubeJSEvents.SERVER_ENTITY_LOOT_TABLES.post(new EntityLootEventJS(map1));
-		KubeJSEvents.SERVER_GIFT_LOOT_TABLES.post(new GiftLootEventJS(map1));
-		KubeJSEvents.SERVER_FISHING_LOOT_TABLES.post(new FishingLootEventJS(map1));
-		KubeJSEvents.SERVER_CHEST_LOOT_TABLES.post(new ChestLootEventJS(map1));
+		ServerEvents.GENERIC_LOOT_TABLES.post(new GenericLootEventJS(map1));
+		ServerEvents.BLOCK_LOOT_TABLES.post(new BlockLootEventJS(map1));
+		ServerEvents.ENTITY_LOOT_TABLES.post(new EntityLootEventJS(map1));
+		ServerEvents.GIFT_LOOT_TABLES.post(new GiftLootEventJS(map1));
+		ServerEvents.FISHING_LOOT_TABLES.post(new FishingLootEventJS(map1));
+		ServerEvents.CHEST_LOOT_TABLES.post(new ChestLootEventJS(map1));
 
 		for (var entry : map1.entrySet()) {
 			try {

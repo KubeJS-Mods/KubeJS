@@ -4,6 +4,7 @@ import dev.architectury.platform.forge.EventBuses;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.entity.forge.LivingEntityDropsEventJS;
 import dev.latvian.mods.kubejs.item.forge.ItemDestroyedEventJS;
 import dev.latvian.mods.kubejs.item.ingredient.forge.CustomPredicateIngredient;
@@ -55,7 +56,7 @@ public class KubeJSForge {
 
 	private static void itemDestroyed(PlayerDestroyItemEvent event) {
 		if (event.getPlayer() instanceof ServerPlayer) {
-			ForgeKubeJSEvents.ITEM_DESTROYED.post(new ItemDestroyedEventJS(event));
+			ForgeKubeJSEvents.ITEM_DESTROYED.post(ItemWrapper.getId(event.getOriginal().getItem()), new ItemDestroyedEventJS(event));
 		}
 	}
 
@@ -66,7 +67,7 @@ public class KubeJSForge {
 
 		var e = new LivingEntityDropsEventJS(event);
 
-		if (ForgeKubeJSEvents.ENTITY_DROPS.post(e)) {
+		if (ForgeKubeJSEvents.ENTITY_DROPS.post(e.getEntity().getType(), e)) {
 			event.setCanceled(true);
 		} else if (e.eventDrops != null) {
 			event.getDrops().clear();

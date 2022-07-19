@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import dev.latvian.mods.kubejs.KubeJSEvents;
+import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.minecraft.CustomRecipeJS;
@@ -99,7 +99,7 @@ public class AfterRecipesLoadedEventJS extends EventJS {
 		var e = new AfterRecipesLoadedEventJS(recipeManager.recipes);
 		var b = ServerSettings.instance.useOriginalRecipeForFilters;
 		ServerSettings.instance.useOriginalRecipeForFilters = true;
-		KubeJSEvents.SERVER_RECIPES_AFTER_LOADED.post(e);
+		ServerEvents.RECIPES_AFTER_LOADED.post(e);
 		ServerSettings.instance.useOriginalRecipeForFilters = b;
 
 		if (e.originalRecipes != null) {

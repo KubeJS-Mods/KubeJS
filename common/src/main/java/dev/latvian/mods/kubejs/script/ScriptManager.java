@@ -2,8 +2,6 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.event.EventGroup;
-import dev.latvian.mods.kubejs.event.EventMap;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -38,7 +36,6 @@ public class ScriptManager {
 	private final ClassFilter classFilter;
 	public boolean firstLoad;
 	private Map<String, Optional<NativeJavaClass>> javaClassCache;
-	private final Map<String, EventMap.EventHandlerWrapper> legacyEventHandlers;
 	public boolean canListenEvents;
 
 	public ScriptManager(ScriptType t, Path p, String e) {
@@ -48,7 +45,6 @@ public class ScriptManager {
 		packs = new LinkedHashMap<>();
 		firstLoad = true;
 		classFilter = KubeJSPlugins.createClassFilter(type);
-		legacyEventHandlers = new HashMap<>();
 	}
 
 	public void unload() {
@@ -144,6 +140,7 @@ public class ScriptManager {
 
 	public void load() {
 		var context = Context.enterWithNewFactory();
+		context.getFactory().setExtraProperty("Type", type);
 		context.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || isClassAllowed(fullClassName));
 		context.setRemapper(RemappingHelper.createModRemapper());
 		var typeWrappers = context.getTypeWrappers();
@@ -242,25 +239,5 @@ public class ScriptManager {
 		}
 
 		throw Context.reportRuntimeError("Failed to dynamically load class '%s'!".formatted(name));
-	}
-
-	public EventMap.EventHandlerWrapper getLegacy(String key) {
-		EventMap.EventHandlerWrapper wrapper = legacyEventHandlers.get(key);
-
-		if (wrapper == null) {
-			var handler = EventGroup.getLegacyMap().get(key);
-
-			if (handler == null) {
-				type.console.pushLineNumber();
-				type.console.error("Unknown event '" + key + "'!");
-				type.console.popLineNumber();
-				return EventMap.EventHandlerWrapper.NONE;
-			} else {
-				wrapper = new EventMap.EventHandlerWrapper(type, handler);
-				legacyEventHandlers.put(String.valueOf(key), wrapper);
-			}
-		}
-
-		return wrapper;
 	}
 }

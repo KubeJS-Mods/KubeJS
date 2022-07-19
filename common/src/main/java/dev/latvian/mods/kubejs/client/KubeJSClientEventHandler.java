@@ -8,9 +8,10 @@ import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import dev.architectury.hooks.client.screen.ScreenAccess;
 import dev.architectury.hooks.fluid.FluidBucketHooks;
-import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
+import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.core.ImageButtonKJS;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
@@ -78,18 +79,18 @@ public class KubeJSClientEventHandler {
 			builder.clientRegistry(() -> minecraft);
 		}
 
-		KubeJSEvents.ITEM_MODEL_PROPERTIES.post(new ItemModelPropertiesEventJS());
+		ItemEvents.MODEL_PROPERTIES.post(new ItemModelPropertiesEventJS());
 	}
 
 	private void debugInfoLeft(List<String> lines) {
 		if (Minecraft.getInstance().player != null) {
-			KubeJSEvents.CLIENT_DEBUG_LEFT.post(new DebugInfoEventJS(lines));
+			ClientEvents.DEBUG_LEFT.post(new DebugInfoEventJS(lines));
 		}
 	}
 
 	private void debugInfoRight(List<String> lines) {
 		if (Minecraft.getInstance().player != null) {
-			KubeJSEvents.CLIENT_DEBUG_RIGHT.post(new DebugInfoEventJS(lines));
+			ClientEvents.DEBUG_RIGHT.post(new DebugInfoEventJS(lines));
 		}
 	}
 
@@ -126,7 +127,7 @@ public class KubeJSClientEventHandler {
 
 		if (staticItemTooltips == null) {
 			staticItemTooltips = new HashMap<>();
-			KubeJSEvents.ITEM_TOOLTIP.post(new ItemTooltipEventJS(staticItemTooltips));
+			ItemEvents.TOOLTIP.post(new ItemTooltipEventJS(staticItemTooltips));
 		}
 
 		for (var handler : staticItemTooltips.getOrDefault(Items.AIR, Collections.emptyList())) {
@@ -140,7 +141,7 @@ public class KubeJSClientEventHandler {
 
 	private void clientTick(Minecraft minecraft) {
 		if (Minecraft.getInstance().player != null && ClientLevelJS.getInstance() != null) {
-			KubeJSEvents.CLIENT_TICK.post(new ClientEventJS());
+			ClientEvents.TICK.post(new ClientEventJS());
 		}
 	}
 
@@ -148,12 +149,12 @@ public class KubeJSClientEventHandler {
 		ClientLevelJS.setInstance(new ClientLevelJS(Minecraft.getInstance(), player));
 		AttachDataEvent.forLevel(ClientLevelJS.getInstance()).invoke();
 		AttachDataEvent.forPlayer(ClientLevelJS.getInstance().clientPlayerData).invoke();
-		KubeJSEvents.CLIENT_LOGGED_IN.post(new ClientEventJS());
+		ClientEvents.LOGGED_IN.post(new ClientEventJS());
 	}
 
 	private void loggedOut(LocalPlayer player) {
 		if (ClientLevelJS.getInstance() != null) {
-			KubeJSEvents.CLIENT_LOGGED_OUT.post(new ClientEventJS());
+			ClientEvents.LOGGED_OUT.post(new ClientEventJS());
 		}
 
 		ClientLevelJS.setInstance(null);

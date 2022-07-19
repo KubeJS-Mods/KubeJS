@@ -6,8 +6,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
-import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
@@ -110,7 +110,7 @@ public class RecipesEventJS extends EventJS {
 		}
 
 		SpecialRecipeSerializerManager.INSTANCE.reset();
-		KubeJSEvents.SERVER_SPECIAL_RECIPES.post(SpecialRecipeSerializerManager.INSTANCE);
+		ServerEvents.SPECIAL_RECIPES.post(SpecialRecipeSerializerManager.INSTANCE);
 
 		shaped = getRecipeFunction(CommonProperties.get().serverOnly ? "minecraft:crafting_shaped" : "kubejs:shaped");
 		shapeless = getRecipeFunction(CommonProperties.get().serverOnly ? "minecraft:crafting_shapeless" : "kubejs:shapeless");
@@ -283,7 +283,7 @@ public class RecipesEventJS extends EventJS {
 		timer.reset().start();
 
 		ConsoleJS.SERVER.pushLineNumber();
-		KubeJSEvents.SERVER_RECIPES.post(this);
+		ServerEvents.RECIPES.post(this);
 		ConsoleJS.SERVER.popLineNumber();
 
 		ConsoleJS.SERVER.info("Posted recipe events in " + timer.stop());
