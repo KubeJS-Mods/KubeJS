@@ -18,6 +18,7 @@ public class BlockModificationProperties {
 		var m = v.getMinecraftMaterial();
 
 		block.setMaterialKJS(m);
+		setSoundType(v.getSound());
 
 		for (var state : block.getBlockStatesKJS()) {
 			if (state instanceof BlockStateKJS stateKJS) {
@@ -46,6 +47,7 @@ public class BlockModificationProperties {
 		block.setIsRandomlyTickingKJS(v);
 	}
 
+	// TODO: separate materials and sound types to make this method actually useful
 	public void setSoundType(SoundType v) {
 		block.setSoundTypeKJS(v);
 	}
