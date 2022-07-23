@@ -27,6 +27,7 @@ accessible method net/minecraft/world/entity/npc/VillagerType <init> (Ljava/lang
 accessible method net/minecraft/world/entity/npc/VillagerProfession <init> (Ljava/lang/String;Lnet/minecraft/world/entity/ai/village/poi/PoiType;Lcom/google/common/collect/ImmutableSet;Lcom/google/common/collect/ImmutableSet;Lnet/minecraft/sounds/SoundEvent;)V
 
 accessible field net/minecraft/server/packs/resources/MultiPackResourceManager namespacedManagers Ljava/util/Map;
+accessible field net/minecraft/server/packs/resources/MultiPackResourceManager packs Ljava/util/List;
 
 accessible field net/minecraft/commands/Commands$CommandSelection includeIntegrated Z
 accessible field net/minecraft/commands/Commands$CommandSelection includeDedicated Z
