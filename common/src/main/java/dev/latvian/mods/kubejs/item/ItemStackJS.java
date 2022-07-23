@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
-import dev.latvian.mods.kubejs.core.ItemStackKJS;
 import dev.latvian.mods.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IgnoreNBTIngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
@@ -66,7 +65,6 @@ import java.util.stream.Collectors;
 /**
  * @author LatvianModder
  */
-@SuppressWarnings("unused")
 public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListener<Tag>, SpecialEquality {
 	public static final ItemStackJS EMPTY = new ItemStackJS(ItemStack.EMPTY) {
 		@Override
@@ -568,7 +566,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		s.chance = chance;
 
 		if (!hasNBT()) {
-			((ItemStackKJS) (Object) s.stack).removeTagKJS();
+			s.stack.kjs$removeTag();
 		}
 
 		return s;
@@ -627,7 +625,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 	public ItemStackJS removeNBT() {
 		var s = copy();
-		((ItemStackKJS) (Object) s.stack).removeTagKJS();
+		s.stack.kjs$removeTag();
 		return s;
 	}
 

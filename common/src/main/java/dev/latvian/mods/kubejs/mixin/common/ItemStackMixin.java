@@ -1,32 +1,36 @@
 package dev.latvian.mods.kubejs.mixin.common;
 
 import dev.latvian.mods.kubejs.core.ItemStackKJS;
+import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.item.enchantment.Enchantment;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(ItemStack.class)
 @RemapPrefixForJS("kjs$")
 public abstract class ItemStackMixin implements ItemStackKJS {
+
+	@Override
+	public ItemStack kjs$getSelf() {
+		return (ItemStack) (Object) this;
+	}
+
 	@Shadow
-	private CompoundTag tag;
+	@RemapForJS("enchantTool")
+	public abstract void enchant(Enchantment enchantment, int level);
 
-	@Override
-	public void removeTagKJS() {
-		tag = null;
-	}
+	@Shadow
+	@RemapForJS("getNbt")
+	public abstract CompoundTag getTag();
 
-	@Override
-	@Nullable
-	public CompoundTag kjs$getNbt() {
-		return tag;
-	}
+	@Shadow
+	@RemapForJS("setNbt")
+	public abstract void setTag(CompoundTag tag);
 
-	@Override
-	public void kjs$setNbt(@Nullable CompoundTag nbt) {
-		tag = nbt;
-	}
+	@Shadow
+	@RemapForJS("hasNBT")
+	public abstract boolean hasTag();
 }

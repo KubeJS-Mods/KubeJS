@@ -55,7 +55,7 @@ public class KubeJSForge {
 	}
 
 	private static void itemDestroyed(PlayerDestroyItemEvent event) {
-		if (event.getPlayer() instanceof ServerPlayer) {
+		if (event.getEntity() instanceof ServerPlayer) {
 			ForgeKubeJSEvents.ITEM_DESTROYED.post(ItemWrapper.getId(event.getOriginal().getItem()), new ItemDestroyedEventJS(event));
 		}
 	}
