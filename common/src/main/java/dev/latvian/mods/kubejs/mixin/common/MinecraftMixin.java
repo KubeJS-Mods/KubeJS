@@ -2,6 +2,9 @@ package dev.latvian.mods.kubejs.mixin.common;
 
 import dev.latvian.mods.kubejs.client.ClientProperties;
 import dev.latvian.mods.kubejs.client.KubeJSClientResourcePack;
+import dev.latvian.mods.kubejs.core.MinecraftClientKJS;
+import dev.latvian.mods.rhino.util.RemapForJS;
+import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.repository.PackRepository;
@@ -17,9 +20,16 @@ import java.util.List;
  * @author LatvianModder
  */
 @Mixin(Minecraft.class)
-public abstract class MinecraftMixin {
+@RemapPrefixForJS("kjs$")
+public abstract class MinecraftMixin implements MinecraftClientKJS {
+	@Override
+	@RemapForJS("getMinecraft")
+	public Minecraft kjs$self() {
+		return (Minecraft) (Object) this;
+	}
+
 	@Inject(method = "createTitle", at = @At("HEAD"), cancellable = true)
-	private void getWindowTitleKJS(CallbackInfoReturnable<String> ci) {
+	private void kjs$createTitle(CallbackInfoReturnable<String> ci) {
 		var s = ClientProperties.get().title;
 
 		if (!s.isEmpty()) {
@@ -28,7 +38,7 @@ public abstract class MinecraftMixin {
 	}
 
 	@Redirect(method = {"reloadResourcePacks(Z)Ljava/util/concurrent/CompletableFuture;", "<init>"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;"))
-	private List<PackResources> loadPacksKJS(PackRepository repository) {
+	private List<PackResources> kjs$loadPacks(PackRepository repository) {
 		return KubeJSClientResourcePack.inject(repository.openAllSelected());
 	}
 }

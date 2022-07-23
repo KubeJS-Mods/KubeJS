@@ -509,7 +509,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public CompoundTag getPersistentData() {
-		return minecraftEntity.getPersistentDataKJS();
+		return minecraftEntity.kjs$getPersistentData();
 	}
 
 	public void playSound(SoundEvent id, float volume, float pitch) {

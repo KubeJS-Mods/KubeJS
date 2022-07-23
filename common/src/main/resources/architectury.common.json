@@ -17,6 +17,30 @@
 		],
 		"net/minecraft/class_1799": [
 			"dev/latvian/mods/kubejs/core/ItemStackKJS"
+		],
+		"net/minecraft/class_1657": [
+			"dev/latvian/mods/kubejs/core/PlayerKJS"
+		],
+		"net/minecraft/class_742": [
+			"dev/latvian/mods/kubejs/core/ClientPlayerKJS"
+		],
+		"net/minecraft/class_3222": [
+			"dev/latvian/mods/kubejs/core/ServerPlayerKJS"
+		],
+		"net/minecraft/server/MinecraftServer": [
+			"dev/latvian/mods/kubejs/core/MinecraftServerKJS"
+		],
+		"net.minecraft.class_1309": [
+			"dev/latvian/mods/kubejs/core/LivingEntityKJS"
+		],
+		"net.minecraft.class_1856": [
+			"dev/latvian/mods/kubejs/core/IngredientKJS"
+		],
+		"net.minecraft.class_2680": [
+			"dev/latvian/mods/kubejs/core/BlockStateKJS"
+		],
+		"net.minecraft.class_310": [
+			"dev/latvian/mods/kubejs/core/MinecraftClientKJS"
 		]
 	}
 }

@@ -84,7 +84,7 @@ public class KubeJSClient extends KubeJSCommon {
 
 	@Override
 	public void clientBindings(BindingsEvent event) {
-		event.add("Client", new ClientWrapper());
+		event.add("Client", Minecraft.getInstance());
 		event.add("Painter", Painter.INSTANCE);
 	}
 

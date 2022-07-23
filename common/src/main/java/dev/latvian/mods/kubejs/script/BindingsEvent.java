@@ -33,10 +33,12 @@ public class BindingsEvent {
 	}
 
 	public void add(String name, Object value) {
-		if (value.getClass() == Class.class) {
-			ScriptableObject.putProperty(scope, name, new NativeJavaClass(scope, (Class<?>) value));
-		} else {
-			ScriptableObject.putProperty(scope, name, Context.javaToJS(value, scope));
+		if (value != null) {
+			if (value.getClass() == Class.class) {
+				ScriptableObject.putProperty(scope, name, new NativeJavaClass(scope, (Class<?>) value));
+			} else {
+				ScriptableObject.putProperty(scope, name, Context.javaToJS(value, scope));
+			}
 		}
 	}
 

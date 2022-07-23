@@ -42,7 +42,7 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 		return ItemStackJS.of(this);
 	}
 
-	ItemStack kjs$getSelf();
+	ItemStack kjs$self();
 
 	@Override
 	default boolean specialEquals(Object o, boolean shallow) {
@@ -50,19 +50,19 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 	}
 
 	default String kjs$getId() {
-		return String.valueOf(Registries.getId(kjs$getSelf().getItem(), Registry.ITEM_REGISTRY));
+		return String.valueOf(Registries.getId(kjs$self().getItem(), Registry.ITEM_REGISTRY));
 	}
 
 	default Collection<ResourceLocation> kjs$getTags() {
-		return Tags.byItem(kjs$getSelf().getItem()).map(TagKey::location).collect(Collectors.toSet());
+		return Tags.byItem(kjs$self().getItem()).map(TagKey::location).collect(Collectors.toSet());
 	}
 
 	default boolean kjs$hasTag(ResourceLocation tag) {
-		return kjs$getSelf().is(Tags.item(tag));
+		return kjs$self().is(Tags.item(tag));
 	}
 
 	default boolean kjs$isBlock() {
-		return kjs$getSelf().getItem() instanceof BlockItem;
+		return kjs$self().getItem() instanceof BlockItem;
 	}
 
 	default ItemStack kjs$withCount(int c) {
@@ -70,21 +70,21 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 			return ItemStack.EMPTY;
 		}
 
-		var is = kjs$getSelf().copy();
+		var is = kjs$self().copy();
 		is.setCount(c);
 		return is;
 	}
 
 	default void kjs$removeTag() {
-		kjs$getSelf().setTag(null);
+		kjs$self().setTag(null);
 	}
 
 	default String kjs$getNbtString() {
-		return String.valueOf(kjs$getSelf().getTag());
+		return String.valueOf(kjs$self().getTag());
 	}
 
 	default ItemStack kjs$withNBT(CompoundTag nbt) {
-		var is = kjs$getSelf().copy();
+		var is = kjs$self().copy();
 
 		if (is.getTag() == null) {
 			is.setTag(nbt);
@@ -100,7 +100,7 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 	}
 
 	default ItemStackJS kjs$withName(@Nullable Component displayName) {
-		var is = kjs$getSelf().copy();
+		var is = kjs$self().copy();
 
 		if (displayName != null) {
 			is.setHoverName(displayName);
@@ -114,7 +114,7 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 	default Map<String, Integer> kjs$getEnchantments() {
 		var map = new HashMap<String, Integer>();
 
-		for (var entry : EnchantmentHelper.getEnchantments(kjs$getSelf()).entrySet()) {
+		for (var entry : EnchantmentHelper.getEnchantments(kjs$self()).entrySet()) {
 			var id = KubeJSRegistries.enchantments().getId(entry.getKey());
 
 			if (id != null) {
@@ -126,12 +126,12 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 	}
 
 	default boolean kjs$hasEnchantment(Enchantment enchantment, int level) {
-		return EnchantmentHelper.getItemEnchantmentLevel(enchantment, kjs$getSelf()) >= level;
+		return EnchantmentHelper.getItemEnchantmentLevel(enchantment, kjs$self()) >= level;
 	}
 
 	@RemapForJS("enchant")
 	default ItemStack kjs$enchantCopy(Map<?, ?> enchantments) {
-		var is = kjs$getSelf();
+		var is = kjs$self();
 
 		for (var entry : enchantments.entrySet()) {
 			var enchantment = KubeJSRegistries.enchantments().get(UtilsJS.getMCID(entry.getKey()));
@@ -146,7 +146,7 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 
 	@RemapForJS("enchant")
 	default ItemStack kjs$enchantCopy(Enchantment enchantment, int level) {
-		var is = kjs$getSelf().copy();
+		var is = kjs$self().copy();
 
 		if (is.getItem() == Items.ENCHANTED_BOOK) {
 			EnchantedBookItem.addEnchantment(is, new EnchantmentInstance(enchantment, level));
@@ -158,7 +158,7 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 	}
 
 	default String kjs$getMod() {
-		return Registries.getId(kjs$getSelf().getItem(), Registry.ITEM_REGISTRY).getNamespace();
+		return Registries.getId(kjs$self().getItem(), Registry.ITEM_REGISTRY).getNamespace();
 	}
 
 	default IngredientJS kjs$ignoreNBT() {
@@ -170,12 +170,12 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 	}
 
 	default boolean kjs$areItemsEqual(ItemStack other) {
-		return kjs$getSelf().getItem() == other.getItem();
+		return kjs$self().getItem() == other.getItem();
 	}
 
 	default boolean kjs$isNBTEqual(ItemStack other) {
-		if (kjs$getSelf().hasTag() == other.hasTag()) {
-			var nbt = kjs$getSelf().getTag();
+		if (kjs$self().hasTag() == other.hasTag()) {
+			var nbt = kjs$self().getTag();
 			var nbt2 = other.getTag();
 			return Objects.equals(nbt, nbt2);
 		}
@@ -184,7 +184,7 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 	}
 
 	default float kjs$getHarvestSpeed(@Nullable BlockContainerJS block) {
-		return kjs$getSelf().getDestroySpeed(block == null ? Blocks.AIR.defaultBlockState() : block.getBlockState());
+		return kjs$self().getDestroySpeed(block == null ? Blocks.AIR.defaultBlockState() : block.getBlockState());
 	}
 
 	default float kjs$getHarvestSpeed() {
@@ -193,15 +193,15 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 
 	@Override
 	default CompoundTag toNBT() {
-		return kjs$getSelf().save(new CompoundTag());
+		return kjs$self().save(new CompoundTag());
 	}
 
 	default String kjs$getItemGroup() {
-		var cat = kjs$getSelf().getItem().getItemCategory();
+		var cat = kjs$self().getItem().getItemCategory();
 		return cat == null ? "" : cat.getRecipeFolderName();
 	}
 
 	default CompoundTag kjs$getTypeData() {
-		return kjs$getSelf().getItem().getTypeDataKJS();
+		return kjs$self().getItem().getTypeDataKJS();
 	}
 }
