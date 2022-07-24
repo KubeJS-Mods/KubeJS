@@ -120,7 +120,7 @@ public abstract class ItemMixin implements ItemKJS {
 
 	@Inject(method = "isBarVisible", at = @At("HEAD"), cancellable = true)
 	private void isBarVisible(ItemStack stack, CallbackInfoReturnable<Boolean> ci) {
-		if (kjs$itemBuilder != null && kjs$itemBuilder.barWidth != null && kjs$itemBuilder.barWidth.applyAsInt(ItemStackJS.of(stack)) <= Item.MAX_BAR_WIDTH) {
+		if (kjs$itemBuilder != null && kjs$itemBuilder.barWidth != null && kjs$itemBuilder.barWidth.applyAsInt(stack) <= Item.MAX_BAR_WIDTH) {
 			ci.setReturnValue(true);
 		}
 	}
@@ -128,21 +128,21 @@ public abstract class ItemMixin implements ItemKJS {
 	@Inject(method = "getBarWidth", at = @At("HEAD"), cancellable = true)
 	private void getBarWidth(ItemStack stack, CallbackInfoReturnable<Integer> ci) {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.barWidth != null) {
-			ci.setReturnValue(kjs$itemBuilder.barWidth.applyAsInt(ItemStackJS.of(stack)));
+			ci.setReturnValue(kjs$itemBuilder.barWidth.applyAsInt(stack));
 		}
 	}
 
 	@Inject(method = "getBarColor", at = @At("HEAD"), cancellable = true)
 	private void getBarColor(ItemStack stack, CallbackInfoReturnable<Integer> ci) {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.barColor != null) {
-			ci.setReturnValue(kjs$itemBuilder.barColor.apply(ItemStackJS.of(stack)).getRgbJS());
+			ci.setReturnValue(kjs$itemBuilder.barColor.apply(stack).getRgbJS());
 		}
 	}
 
 	@Inject(method = "getUseDuration", at = @At("HEAD"), cancellable = true)
 	private void getUseDuration(ItemStack itemStack, CallbackInfoReturnable<Integer> ci) {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.useDuration != null) {
-			ci.setReturnValue(kjs$itemBuilder.useDuration.applyAsInt(ItemStackJS.of(itemStack)));
+			ci.setReturnValue(kjs$itemBuilder.useDuration.applyAsInt(itemStack));
 		}
 	}
 

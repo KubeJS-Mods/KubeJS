@@ -28,6 +28,8 @@ mutable field net/minecraft/world/item/DiggerItem speed F
 accessible field net/minecraft/world/item/TieredItem tier Lnet/minecraft/world/item/Tier;
 mutable field net/minecraft/world/item/TieredItem tier Lnet/minecraft/world/item/Tier;
 
+accessible method net/minecraft/world/level/block/state/BlockBehaviour$Properties <init> (Lnet/minecraft/world/level/material/Material;Ljava/util/function/Function;)V
+
 # accessible method net/minecraft/world/entity/ai/village/poi/PoiType <init> (Ljava/lang/String;Ljava/util/Set;II)V
 # accessible method net/minecraft/world/entity/npc/VillagerType <init> (Ljava/lang/String;)V
 # accessible method net/minecraft/world/entity/npc/VillagerProfession <init> (Ljava/lang/String;Lnet/minecraft/world/entity/ai/village/poi/PoiType;Lcom/google/common/collect/ImmutableSet;Lcom/google/common/collect/ImmutableSet;Lnet/minecraft/sounds/SoundEvent;)V

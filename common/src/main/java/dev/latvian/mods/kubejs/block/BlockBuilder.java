@@ -21,7 +21,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -511,8 +512,12 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
+	private MaterialColor getStateColor(BlockState state) {
+		return material.getMinecraftMaterial().getColor();
+	}
+
 	public Block.Properties createProperties() {
-		var properties = BlockBehaviour.Properties.of(material.getMinecraftMaterial());
+		var properties = new KubeJSBlockProperties(this, material.getMinecraftMaterial(), this::getStateColor);
 		properties.sound(material.getSound());
 
 		if (resistance >= 0F) {

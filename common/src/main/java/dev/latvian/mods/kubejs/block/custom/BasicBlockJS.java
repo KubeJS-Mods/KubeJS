@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.EntityBlockKJS;
+import dev.latvian.mods.kubejs.block.KubeJSBlockProperties;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import net.minecraft.core.BlockPos;
@@ -66,10 +66,8 @@ public class BasicBlockJS extends Block implements EntityBlockKJS {
 
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-		if (RegistryObjectBuilderTypes.BLOCK.getCurrent() instanceof BlockBuilder current) {
-			if (current.waterlogged) {
-				builder.add(BlockStateProperties.WATERLOGGED);
-			}
+		if (properties instanceof KubeJSBlockProperties kp && kp.blockBuilder.waterlogged) {
+			builder.add(BlockStateProperties.WATERLOGGED);
 		}
 	}
 

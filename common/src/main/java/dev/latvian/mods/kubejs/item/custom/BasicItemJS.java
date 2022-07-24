@@ -5,7 +5,6 @@ import com.google.common.collect.Multimap;
 import dev.architectury.registry.fuel.FuelRegistry;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -14,9 +13,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.Collection;
-import java.util.function.Function;
 
 /**
  * @author LatvianModder
@@ -34,9 +30,7 @@ public class BasicItemJS extends Item {
 	}
 
 	private final Multimap<Attribute, AttributeModifier> attributes;
-	private final Multimap<ResourceLocation, AttributeModifier> modifiers;
 	private boolean modified = false;
-	private final Function<ItemStackJS, Collection<ItemStackJS>> subtypes;
 
 	public BasicItemJS(ItemBuilder p) {
 		super(p.createItemProperties());
@@ -44,17 +38,13 @@ public class BasicItemJS extends Item {
 			FuelRegistry.register(p.burnTime, this);
 		}
 
-		subtypes = p.subtypes;
 		attributes = ArrayListMultimap.create();
-		modifiers = p.attributes;
 	}
 
 	@Override
 	public void fillItemCategory(CreativeModeTab category, NonNullList<ItemStack> stacks) {
-		if (subtypes != null) {
-			for (var stack : subtypes.apply(ItemStackJS.of(this))) {
-				stacks.add(stack.getItemStack());
-			}
+		if (kjs$getItemBuilder().subtypes != null) {
+			stacks.addAll(kjs$getItemBuilder().subtypes.apply(new ItemStack(this)));
 		} else {
 			super.fillItemCategory(category, stacks);
 		}
@@ -63,7 +53,7 @@ public class BasicItemJS extends Item {
 	@Override
 	public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) {
 		if (!modified) {
-			modifiers.forEach((r, m) -> attributes.put(KubeJSRegistries.attributes().get(r), m));
+			kjs$getItemBuilder().attributes.forEach((r, m) -> attributes.put(KubeJSRegistries.attributes().get(r), m));
 			modified = true;
 		}
 		return slot == EquipmentSlot.MAINHAND ? attributes : super.getDefaultAttributeModifiers(slot);

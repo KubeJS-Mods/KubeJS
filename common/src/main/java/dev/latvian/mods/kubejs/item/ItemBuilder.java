@@ -6,8 +6,8 @@ import com.google.gson.JsonObject;
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.entity.LivingEntityJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
@@ -29,12 +29,12 @@ import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.UseAnim;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -80,8 +80,8 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient int maxStackSize;
 	public transient int maxDamage;
 	public transient int burnTime;
-	public transient String containerItem;
-	public transient Function<ItemStackJS, Collection<ItemStackJS>> subtypes;
+	private ResourceLocation containerItem;
+	public transient Function<ItemStack, Collection<ItemStack>> subtypes;
 	public transient Rarity rarity;
 	public transient boolean glow;
 	public transient final List<Component> tooltip;
@@ -90,11 +90,11 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	@Nullable
 	public transient ItemColorJS colorCallback;
 	public transient FoodBuilder foodBuilder;
-	public transient Function<ItemStackJS, Color> barColor;
-	public transient ToIntFunction<ItemStackJS> barWidth;
+	public transient Function<ItemStack, Color> barColor;
+	public transient ToIntFunction<ItemStack> barWidth;
 	public transient Multimap<ResourceLocation, AttributeModifier> attributes;
 	public transient UseAnim anim;
-	public transient ToIntFunction<ItemStackJS> useDuration;
+	public transient ToIntFunction<ItemStack> useDuration;
 	public transient UseCallback use;
 	public transient FinishUsingCallback finishUsing;
 	public transient ReleaseUsingCallback releaseUsing;
@@ -109,7 +109,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		maxStackSize = 64;
 		maxDamage = 0;
 		burnTime = 0;
-		containerItem = "minecraft:air";
+		containerItem = null;
 		subtypes = null;
 		rarity = Rarity.COMMON;
 		glow = false;
@@ -168,7 +168,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	@Environment(EnvType.CLIENT)
 	public void clientRegistry(Supplier<Minecraft> minecraft) {
 		if (colorCallback != null) {
-			ColorHandlerRegistry.registerItemColors((stack, tintIndex) -> colorCallback.getColor(ItemStackJS.of(stack), tintIndex).getArgbJS(), this);
+			ColorHandlerRegistry.registerItemColors((stack, tintIndex) -> colorCallback.getColor(stack, tintIndex).getArgbJS(), this);
 		}
 	}
 
@@ -191,12 +191,12 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	public ItemBuilder containerItem(String id) {
+	public ItemBuilder containerItem(ResourceLocation id) {
 		containerItem = id;
 		return this;
 	}
 
-	public ItemBuilder subtypes(Function<ItemStackJS, Collection<ItemStackJS>> fn) {
+	public ItemBuilder subtypes(Function<ItemStack, Collection<ItemStack>> fn) {
 		subtypes = fn;
 		return this;
 	}
@@ -274,12 +274,12 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	public ItemBuilder barColor(Function<ItemStackJS, Color> barColor) {
+	public ItemBuilder barColor(Function<ItemStack, Color> barColor) {
 		this.barColor = barColor;
 		return this;
 	}
 
-	public ItemBuilder barWidth(ToIntFunction<ItemStackJS> barWidth) {
+	public ItemBuilder barWidth(ToIntFunction<ItemStack> barWidth) {
 		this.barWidth = barWidth;
 		return this;
 	}
@@ -291,7 +291,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	public Item.Properties createItemProperties() {
-		var properties = new Item.Properties();
+		var properties = new KubeJSItemProperties(this);
 
 		if (group != null) {
 			properties.tab(group);
@@ -305,7 +305,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 		properties.rarity(rarity);
 
-		var item = KubeJSRegistries.items().get(new ResourceLocation(containerItem));
+		var item = containerItem == null ? Items.AIR : ItemWrapper.getItem(containerItem);
 
 		if (item != Items.AIR) {
 			properties.craftRemainder(item);
@@ -328,7 +328,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	public ItemBuilder useDuration(ToIntFunction<ItemStackJS> useDuration) {
+	public ItemBuilder useDuration(ToIntFunction<ItemStack> useDuration) {
 		this.useDuration = useDuration;
 		return this;
 	}
@@ -356,7 +356,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		}
 
 		@Override
-		public Color getColor(@NotNull ItemStackJS stack, int tintIndex) {
+		public Color getColor(ItemStack stack, int tintIndex) {
 			return ColorWrapper.of(colors.get(tintIndex));
 		}
 
@@ -367,7 +367,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	@FunctionalInterface
 	public interface ItemColorJS {
-		Color getColor(ItemStackJS stackJS, int tintIndex);
+		Color getColor(ItemStack stack, int tintIndex);
 	}
 
 	@FunctionalInterface
