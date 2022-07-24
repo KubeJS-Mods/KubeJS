@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.level;
 
 import dev.latvian.mods.kubejs.event.EventJS;
-import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +14,7 @@ public abstract class LevelEventJS extends EventJS {
 	public abstract LevelJS getLevel();
 
 	@Nullable
-	public ServerJS getServer() {
+	public MinecraftServer getServer() {
 		return getLevel().getServer();
 	}
 

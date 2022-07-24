@@ -9,9 +9,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
-import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -24,87 +22,96 @@ public interface ComponentKJS extends Component, Iterable<Component>, JsonSerial
 
 	@Override
 	default Iterator<Component> iterator() {
-		throw new NotImplementedException("A mixin should have implemented this method!");
+		throw new NoMixinException();
 	}
 
-	default MutableComponent self() {
+	default MutableComponent kjs$self() {
 		return (MutableComponent) this;
 	}
 
+	@Override
 	default JsonElement toJson() {
-		return Component.Serializer.toJsonTree(self());
+		return Component.Serializer.toJsonTree(kjs$self());
+	}
+
+	default boolean kjs$hasStyle() {
+		return getStyle() != null && !getStyle().isEmpty();
+	}
+
+	default boolean kjs$hasSiblings() {
+		return !getSiblings().isEmpty();
 	}
 
 	// region ChatFormatting extensions
 	default MutableComponent black() {
-		return self().withStyle(ChatFormatting.BLACK);
+		return kjs$self().withStyle(ChatFormatting.BLACK);
 	}
 
 	default MutableComponent darkBlue() {
-		return self().withStyle(ChatFormatting.DARK_BLUE);
+		return kjs$self().withStyle(ChatFormatting.DARK_BLUE);
 	}
 
 	default MutableComponent darkGreen() {
-		return self().withStyle(ChatFormatting.DARK_GREEN);
+		return kjs$self().withStyle(ChatFormatting.DARK_GREEN);
 	}
 
 	default MutableComponent darkAqua() {
-		return self().withStyle(ChatFormatting.DARK_AQUA);
+		return kjs$self().withStyle(ChatFormatting.DARK_AQUA);
 	}
 
 	default MutableComponent darkRed() {
-		return self().withStyle(ChatFormatting.DARK_RED);
+		return kjs$self().withStyle(ChatFormatting.DARK_RED);
 	}
 
 	default MutableComponent darkPurple() {
-		return self().withStyle(ChatFormatting.DARK_PURPLE);
+		return kjs$self().withStyle(ChatFormatting.DARK_PURPLE);
 	}
 
 	default MutableComponent gold() {
-		return self().withStyle(ChatFormatting.GOLD);
+		return kjs$self().withStyle(ChatFormatting.GOLD);
 	}
 
 	default MutableComponent gray() {
-		return self().withStyle(ChatFormatting.GRAY);
+		return kjs$self().withStyle(ChatFormatting.GRAY);
 	}
 
 	default MutableComponent darkGray() {
-		return self().withStyle(ChatFormatting.DARK_GRAY);
+		return kjs$self().withStyle(ChatFormatting.DARK_GRAY);
 	}
 
 	default MutableComponent blue() {
-		return self().withStyle(ChatFormatting.BLUE);
+		return kjs$self().withStyle(ChatFormatting.BLUE);
 	}
 
 	default MutableComponent green() {
-		return self().withStyle(ChatFormatting.GREEN);
+		return kjs$self().withStyle(ChatFormatting.GREEN);
 	}
 
 	default MutableComponent aqua() {
-		return self().withStyle(ChatFormatting.AQUA);
+		return kjs$self().withStyle(ChatFormatting.AQUA);
 	}
 
 	default MutableComponent red() {
-		return self().withStyle(ChatFormatting.RED);
+		return kjs$self().withStyle(ChatFormatting.RED);
 	}
 
 	default MutableComponent lightPurple() {
-		return self().withStyle(ChatFormatting.LIGHT_PURPLE);
+		return kjs$self().withStyle(ChatFormatting.LIGHT_PURPLE);
 	}
 
 	default MutableComponent yellow() {
-		return self().withStyle(ChatFormatting.YELLOW);
+		return kjs$self().withStyle(ChatFormatting.YELLOW);
 	}
 
 	default MutableComponent white() {
-		return self().withStyle(ChatFormatting.WHITE);
+		return kjs$self().withStyle(ChatFormatting.WHITE);
 	}
 	// endregion ChatFormatting extensions
 
 	// region Style extensions
 	default MutableComponent color(@Nullable Color c) {
 		var col = c == null ? null : c.createTextColorJS();
-		return self().setStyle(getStyle().withColor(col));
+		return kjs$self().setStyle(getStyle().withColor(col));
 	}
 
 	default MutableComponent noColor() {
@@ -112,7 +119,7 @@ public interface ComponentKJS extends Component, Iterable<Component>, JsonSerial
 	}
 
 	default MutableComponent bold(@Nullable Boolean value) {
-		return self().setStyle(getStyle().withBold(value));
+		return kjs$self().setStyle(getStyle().withBold(value));
 	}
 
 	default MutableComponent bold() {
@@ -120,7 +127,7 @@ public interface ComponentKJS extends Component, Iterable<Component>, JsonSerial
 	}
 
 	default MutableComponent italic(@Nullable Boolean value) {
-		return self().setStyle(getStyle().withItalic(value));
+		return kjs$self().setStyle(getStyle().withItalic(value));
 	}
 
 	default MutableComponent italic() {
@@ -128,7 +135,7 @@ public interface ComponentKJS extends Component, Iterable<Component>, JsonSerial
 	}
 
 	default MutableComponent underlined(@Nullable Boolean value) {
-		return self().setStyle(getStyle().withUnderlined(value));
+		return kjs$self().setStyle(getStyle().withUnderlined(value));
 	}
 
 	default MutableComponent underlined() {
@@ -136,7 +143,7 @@ public interface ComponentKJS extends Component, Iterable<Component>, JsonSerial
 	}
 
 	default MutableComponent strikethrough(@Nullable Boolean value) {
-		return self().setStyle(getStyle().withStrikethrough(value));
+		return kjs$self().setStyle(getStyle().withStrikethrough(value));
 	}
 
 	default MutableComponent strikethrough() {
@@ -144,7 +151,7 @@ public interface ComponentKJS extends Component, Iterable<Component>, JsonSerial
 	}
 
 	default MutableComponent obfuscated(@Nullable Boolean value) {
-		return self().setStyle(getStyle().withObfuscated(value));
+		return kjs$self().setStyle(getStyle().withObfuscated(value));
 	}
 
 	default MutableComponent obfuscated() {
@@ -152,19 +159,19 @@ public interface ComponentKJS extends Component, Iterable<Component>, JsonSerial
 	}
 
 	default MutableComponent insertion(@Nullable String s) {
-		return self().setStyle(getStyle().withInsertion(s));
+		return kjs$self().setStyle(getStyle().withInsertion(s));
 	}
 
 	default MutableComponent font(@Nullable ResourceLocation s) {
-		return self().setStyle(getStyle().withFont(s));
+		return kjs$self().setStyle(getStyle().withFont(s));
 	}
 
 	default MutableComponent click(@Nullable ClickEvent s) {
-		return self().setStyle(getStyle().withClickEvent(s));
+		return kjs$self().setStyle(getStyle().withClickEvent(s));
 	}
 
 	default MutableComponent hover(@Nullable Component s) {
-		return self().setStyle(getStyle().withHoverEvent(s == null ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, s)));
+		return kjs$self().setStyle(getStyle().withHoverEvent(s == null ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, s)));
 	}
 	// endregion Style extensions
 }

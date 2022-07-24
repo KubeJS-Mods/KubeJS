@@ -9,7 +9,6 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
 import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.stages.Stages;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
@@ -39,14 +38,12 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	public static void loggedIn(ServerPlayer player) {
-		if (ServerJS.instance != null) {
-			var p = new ServerPlayerDataJS(ServerJS.instance, player.getUUID(), player.getGameProfile().getName(), KubeJS.nextClientHasClientMod);
-			KubeJS.nextClientHasClientMod = false;
-			p.getServer().playerMap.put(p.getId(), p);
-			AttachDataEvent.forPlayer(p).invoke();
-			PlayerEvents.LOGGED_IN.post(new SimplePlayerEventJS(player));
-			player.inventoryMenu.addSlotListener(new InventoryListener(player));
-		}
+		var p = new ServerPlayerDataJS(player.server, player.getUUID(), player.getGameProfile().getName(), KubeJS.nextClientHasClientMod);
+		KubeJS.nextClientHasClientMod = false;
+		player.server.kjs$getPlayerMap().put(p.getId(), p);
+		AttachDataEvent.forPlayer(p).invoke();
+		PlayerEvents.LOGGED_IN.post(new SimplePlayerEventJS(player));
+		player.inventoryMenu.addSlotListener(new InventoryListener(player));
 
 		if (!ScriptType.SERVER.errors.isEmpty() && !CommonProperties.get().hideServerScriptErrors) {
 			player.displayClientMessage(Component.literal("KubeJS errors found [" + ScriptType.SERVER.errors.size() + "]! Run ")
@@ -66,12 +63,12 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	public static void loggedOut(ServerPlayer player) {
-		if (ServerJS.instance == null || !ServerJS.instance.playerMap.containsKey(player.getUUID())) {
+		if (!player.server.kjs$getPlayerMap().containsKey(player.getUUID())) {
 			return;
 		}
 
 		PlayerEvents.LOGGED_OUT.post(new SimplePlayerEventJS(player));
-		ServerJS.instance.playerMap.remove(player.getUUID());
+		player.server.kjs$getPlayerMap().remove(player.getUUID());
 	}
 
 	public static void cloned(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean wonGame) {
@@ -80,7 +77,7 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	public static void tick(Player player) {
-		if (ServerJS.instance != null && player instanceof ServerPlayer) {
+		if (player instanceof ServerPlayer) {
 			PlayerEvents.TICK.post(new SimplePlayerEventJS(player));
 		}
 	}

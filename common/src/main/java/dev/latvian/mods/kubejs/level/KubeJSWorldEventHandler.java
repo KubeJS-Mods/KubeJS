@@ -6,7 +6,6 @@ import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.TickEvent;
 import dev.latvian.mods.kubejs.bindings.event.LevelEvents;
 import dev.latvian.mods.kubejs.script.AttachDataEvent;
-import dev.latvian.mods.kubejs.server.ServerJS;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;
@@ -27,26 +26,26 @@ public class KubeJSWorldEventHandler {
 	}
 
 	private static void levelLoad(ServerLevel level) {
-		if (ServerJS.instance != null && ServerJS.instance.overworld != null && !ServerJS.instance.levelMap.containsKey(level.dimension().location())) {
-			var l = new ServerLevelJS(ServerJS.instance, level);
-			ServerJS.instance.levelMap.put(level.dimension().location(), l);
-			ServerJS.instance.updateWorldList();
+		if (level.getServer().kjs$getLevelMap().containsKey(level.dimension().location())) {
+			var l = new ServerLevelJS(level.getServer(), level);
+			level.getServer().kjs$getLevelMap().put(level.dimension().location(), l);
+			level.getServer().kjs$updateWorldList();
 			AttachDataEvent.forLevel(l).invoke();
 			LevelEvents.LOADED.post(l.getDimension(), new SimpleLevelEventJS(l));
 		}
 	}
 
 	private static void levelUnload(ServerLevel level) {
-		if (ServerJS.instance != null && ServerJS.instance.overworld != null && ServerJS.instance.levelMap.containsKey(level.dimension().location())) {
-			var l = ServerJS.instance.wrapMinecraftLevel(level);
+		if (level.getServer().kjs$getLevelMap().containsKey(level.dimension().location())) {
+			var l = level.getServer().kjs$wrapMinecraftLevel(level);
 			LevelEvents.UNLOADED.post(l.getDimension(), new SimpleLevelEventJS(l));
-			ServerJS.instance.levelMap.remove(l.getDimension());
-			ServerJS.instance.updateWorldList();
+			level.getServer().kjs$getLevelMap().remove(l.getDimension());
+			level.getServer().kjs$updateWorldList();
 		}
 	}
 
 	private static void levelPostTick(ServerLevel level) {
-		var l = ServerJS.instance.wrapMinecraftLevel(level);
+		var l = level.getServer().kjs$wrapMinecraftLevel(level);
 		LevelEvents.TICK.post(l.getDimension(), new SimpleLevelEventJS(l));
 	}
 

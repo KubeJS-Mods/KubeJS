@@ -17,7 +17,7 @@ public interface LivingEntityKJS extends EntityKJS {
 			var event = new FoodEatenEventJS(player, is);
 			var i = is.getItem();
 
-			var b = i.getItemBuilderKJS();
+			var b = i.kjs$getItemBuilder();
 			if (b != null && b.foodBuilder != null && b.foodBuilder.eaten != null) {
 				b.foodBuilder.eaten.accept(event);
 			}

@@ -4,15 +4,15 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.core.AsKJS;
+import dev.latvian.mods.kubejs.core.MessageSenderKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.level.ServerLevelJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.player.PlayerJS;
-import dev.latvian.mods.kubejs.server.ServerJS;
-import dev.latvian.mods.kubejs.util.MessageSender;
 import dev.latvian.mods.kubejs.util.WrappedJS;
+import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
@@ -20,6 +20,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.commands.TeleportCommand;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -40,7 +41,8 @@ import java.util.UUID;
 /**
  * @author LatvianModder
  */
-public class EntityJS implements MessageSender, WrappedJS {
+@RemapPrefixForJS("kjs$")
+public class EntityJS implements MessageSenderKJS, WrappedJS {
 	private static Map<String, DamageSource> damageSourceMap;
 
 	public transient Entity minecraftEntity;
@@ -58,7 +60,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	@Nullable
-	public ServerJS getServer() {
+	public MinecraftServer getServer() {
 		return getLevel().getServer();
 	}
 
@@ -71,7 +73,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	@Override
-	public Component getName() {
+	public Component kjs$getName() {
 		return minecraftEntity.getName();
 	}
 
@@ -80,12 +82,12 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	@Override
-	public Component getDisplayName() {
+	public Component kjs$getDisplayName() {
 		return minecraftEntity.getDisplayName();
 	}
 
 	@Override
-	public void tell(Component message) {
+	public void kjs$tell(Component message) {
 		minecraftEntity.sendSystemMessage(message);
 	}
 
@@ -319,7 +321,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	public void teleportTo(ResourceLocation dimension, double x, double y, double z, float yaw, float pitch) {
-		var level = getServer().getLevel(dimension);
+		var level = getServer().kjs$getLevel(dimension);
 		if (level == null) {
 			throw new IllegalArgumentException("Invalid dimension!");
 		}
@@ -356,18 +358,18 @@ public class EntityJS implements MessageSender, WrappedJS {
 	}
 
 	@Override
-	public int runCommand(String command) {
+	public int kjs$runCommand(String command) {
 		if (getLevel() instanceof ServerLevelJS level) {
-			return level.getServer().getMinecraftServer().getCommands().performCommand(minecraftEntity.createCommandSourceStack(), command);
+			return level.getServer().getCommands().performCommand(minecraftEntity.createCommandSourceStack(), command);
 		}
 
 		return 0;
 	}
 
 	@Override
-	public int runCommandSilent(String command) {
+	public int kjs$runCommandSilent(String command) {
 		if (getLevel() instanceof ServerLevelJS level) {
-			return level.getServer().getMinecraftServer().getCommands().performCommand(minecraftEntity.createCommandSourceStack().withSuppressedOutput(), command);
+			return level.getServer().getCommands().performCommand(minecraftEntity.createCommandSourceStack().withSuppressedOutput(), command);
 		}
 
 		return 0;

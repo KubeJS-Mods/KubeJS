@@ -5,12 +5,12 @@ import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.mod.util.CountingMap;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
@@ -31,8 +31,8 @@ import java.util.regex.Pattern;
  * @author LatvianModder
  */
 public interface UtilsWrapper {
-	static ServerJS getServer() {
-		return ServerJS.instance;
+	static MinecraftServer getServer() {
+		return UtilsJS.staticServer;
 	}
 
 	static void queueIO(Runnable runnable) {

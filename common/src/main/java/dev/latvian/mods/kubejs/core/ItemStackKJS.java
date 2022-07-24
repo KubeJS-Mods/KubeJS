@@ -202,6 +202,6 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 	}
 
 	default CompoundTag kjs$getTypeData() {
-		return kjs$self().getItem().getTypeDataKJS();
+		return kjs$self().getItem().kjs$getTypeData();
 	}
 }

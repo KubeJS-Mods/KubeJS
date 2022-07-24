@@ -1,12 +1,13 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
+import dev.latvian.mods.kubejs.block.MaterialJS;
+import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
-import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,48 +15,85 @@ import java.util.List;
 /**
  * @author LatvianModder
  */
+@RemapPrefixForJS("kjs$")
 public interface BlockKJS extends BlockBuilderProvider {
-	default void setBlockBuilderKJS(BlockBuilder b) {
-		throw new NotImplementedException("A mixin should have implemented this method!");
+	default void kjs$setBlockBuilder(BlockBuilder b) {
+		throw new NoMixinException();
 	}
 
-	default CompoundTag getTypeDataKJS() {
-		throw new NotImplementedException("A mixin should have implemented this method!");
+	default CompoundTag kjs$getTypeData() {
+		throw new NoMixinException();
 	}
 
-	default void setMaterialKJS(Material v) {
-		throw new NotImplementedException("A mixin should have implemented this method!");
+	default void kjs$setMaterialRaw(Material v) {
+		throw new NoMixinException();
 	}
 
-	default void setHasCollisionKJS(boolean v) {
-		throw new NotImplementedException("A mixin should have implemented this method!");
+	default void kjs$setHasCollision(boolean v) {
+		throw new NoMixinException();
 	}
 
-	default void setExplosionResistanceKJS(float v) {
-		throw new NotImplementedException("A mixin should have implemented this method!");
+	default void kjs$setExplosionResistance(float v) {
+		throw new NoMixinException();
 	}
 
-	default void setIsRandomlyTickingKJS(boolean v) {
-		throw new NotImplementedException("A mixin should have implemented this method!");
+	default void kjs$setIsRandomlyTicking(boolean v) {
+		throw new NoMixinException();
 	}
 
-	default void setSoundTypeKJS(SoundType v) {
-		throw new NotImplementedException("A mixin should have implemented this method!");
+	default void kjs$setSoundType(SoundType v) {
+		throw new NoMixinException();
 	}
 
-	default void setFrictionKJS(float v) {
-		throw new NotImplementedException("A mixin should have implemented this method!");
+	default void kjs$setFriction(float v) {
+		throw new NoMixinException();
 	}
 
-	default void setSpeedFactorKJS(float v) {
-		throw new NotImplementedException("A mixin should have implemented this method!");
+	default void kjs$setSpeedFactor(float v) {
+		throw new NoMixinException();
 	}
 
-	default void setJumpFactorKJS(float v) {
-		throw new NotImplementedException("A mixin should have implemented this method!");
+	default void kjs$setJumpFactor(float v) {
+		throw new NoMixinException();
 	}
 
-	default List<BlockState> getBlockStatesKJS() {
+	default void kjs$setMaterial(MaterialJS v) {
+		var m = v.getMinecraftMaterial();
+
+		kjs$setMaterialRaw(m);
+
+		for (var state : kjs$getBlockStates()) {
+			if (state instanceof BlockStateKJS stateKJS) {
+				stateKJS.kjs$setMaterial(m);
+			}
+		}
+	}
+
+	default void kjs$setDestroySpeed(float v) {
+		for (var state : kjs$getBlockStates()) {
+			if (state instanceof BlockStateKJS stateKJS) {
+				stateKJS.kjs$setDestroySpeed(v);
+			}
+		}
+	}
+
+	default void kjs$setLightEmission(int v) {
+		for (var state : kjs$getBlockStates()) {
+			if (state instanceof BlockStateKJS stateKJS) {
+				stateKJS.kjs$setLightEmission(v);
+			}
+		}
+	}
+
+	default void kjs$setRequiresTool(boolean v) {
+		for (var state : kjs$getBlockStates()) {
+			if (state instanceof BlockStateKJS stateKJS) {
+				stateKJS.kjs$setRequiresTool(v);
+			}
+		}
+	}
+
+	default List<BlockState> kjs$getBlockStates() {
 		return this instanceof Block block ? block.getStateDefinition().getPossibleStates() : Collections.emptyList();
 	}
 }

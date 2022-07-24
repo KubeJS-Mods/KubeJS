@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.script;
 
+import dev.latvian.mods.kubejs.core.WithAttachedData;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.player.PlayerDataJS;
-import dev.latvian.mods.kubejs.server.ServerJS;
-import dev.latvian.mods.kubejs.util.WithAttachedData;
+import net.minecraft.server.MinecraftServer;
 
 public record AttachDataEvent<T extends WithAttachedData>(
 		DataType<T> type,
@@ -11,7 +11,7 @@ public record AttachDataEvent<T extends WithAttachedData>(
 ) {
 
 	public void add(String id, Object object) {
-		parent.getData().put(id, object);
+		parent.kjs$getData().put(id, object);
 	}
 
 	public void invoke() {
@@ -22,7 +22,7 @@ public record AttachDataEvent<T extends WithAttachedData>(
 		return new AttachDataEvent<>(DataType.LEVEL, level);
 	}
 
-	public static AttachDataEvent<ServerJS> forServer(ServerJS server) {
+	public static AttachDataEvent<MinecraftServer> forServer(MinecraftServer server) {
 		return new AttachDataEvent<>(DataType.SERVER, server);
 	}
 

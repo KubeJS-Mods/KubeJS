@@ -2,14 +2,13 @@ package dev.latvian.mods.kubejs.player;
 
 import com.mojang.authlib.GameProfile;
 import dev.architectury.hooks.level.entity.PlayerHooks;
-import dev.latvian.mods.kubejs.core.PlayerKJS;
+import dev.latvian.mods.kubejs.core.WithAttachedData;
 import dev.latvian.mods.kubejs.entity.LivingEntityJS;
 import dev.latvian.mods.kubejs.item.InventoryJS;
 import dev.latvian.mods.kubejs.item.ItemHandlerUtils;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.stages.Stages;
 import dev.latvian.mods.kubejs.util.AttachedData;
-import dev.latvian.mods.kubejs.util.WithAttachedData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,8 +35,8 @@ public abstract class PlayerJS<P extends Player> extends LivingEntityJS implemen
 	}
 
 	@Override
-	public AttachedData getData() {
-		return playerData.getData();
+	public AttachedData kjs$getData() {
+		return playerData.kjs$getData();
 	}
 
 	@Override
@@ -123,7 +122,7 @@ public abstract class PlayerJS<P extends Player> extends LivingEntityJS implemen
 	}
 
 	@Override
-	public void setStatusMessage(Component message) {
+	public void kjs$setStatusMessage(Component message) {
 		minecraftPlayer.displayClientMessage(message, true);
 	}
 
@@ -241,6 +240,6 @@ public abstract class PlayerJS<P extends Player> extends LivingEntityJS implemen
 	}
 
 	public Stages getStages() {
-		return ((PlayerKJS) minecraftPlayer).kjs$getStages();
+		return minecraftPlayer.kjs$getStages();
 	}
 }

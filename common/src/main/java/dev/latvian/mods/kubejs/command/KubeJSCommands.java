@@ -11,7 +11,6 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
-import dev.latvian.mods.kubejs.core.MinecraftServerKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.ModIngredientJS;
@@ -222,7 +221,12 @@ public class KubeJSCommands {
 	}
 
 	private static int customCommand(CommandSourceStack source, String id) {
-		ServerEvents.CUSTOM_COMMAND.post(id, new CustomCommandEventJS(source.getLevel(), source.getEntity(), new BlockPos(source.getPosition()), id));
+		try {
+			ServerEvents.CUSTOM_COMMAND.post(id, new CustomCommandEventJS(source.getLevel(), source.getEntity(), new BlockPos(source.getPosition()), id));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
 		return 1;
 	}
 
@@ -319,7 +323,7 @@ public class KubeJSCommands {
 	}
 
 	private static int reloadServer(CommandSourceStack source) {
-		ServerScriptManager.instance.reloadScriptManager(((MinecraftServerKJS) source.getServer()).getReloadableResourcesKJS().resourceManager());
+		ServerScriptManager.instance.reloadScriptManager(source.getServer().kjs$getReloadableResources().resourceManager());
 		source.sendSuccess(Component.literal("Done! To reload recipes, tags, loot tables and other datapack things, run ")
 						.append(Component.literal("'/reload'")
 								.click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/reload"))

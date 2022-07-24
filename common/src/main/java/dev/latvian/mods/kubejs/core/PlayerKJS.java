@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 @RemapPrefixForJS("kjs$")
 public interface PlayerKJS extends LivingEntityKJS {
 	@Nullable
-	Stages getStagesRawKJS();
+	Stages kjs$getStagesRaw();
 
 	void kjs$setStages(Stages p);
 

@@ -4,11 +4,11 @@ import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
-import dev.latvian.mods.kubejs.server.ServerJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.UserBanListEntry;
 import net.minecraft.world.level.GameType;
@@ -20,7 +20,7 @@ import java.util.Date;
  * @author LatvianModder
  */
 public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
-	public final ServerJS server;
+	public final MinecraftServer server;
 	private final boolean hasClientMod;
 
 	public ServerPlayerJS(ServerPlayerDataJS data, ServerPlayer player) {
@@ -58,7 +58,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	}
 
 	public boolean isOp() {
-		return server.getMinecraftServer().getPlayerList().isOp(minecraftPlayer.getGameProfile());
+		return server.getPlayerList().isOp(minecraftPlayer.getGameProfile());
 	}
 
 	public void kick(Component reason) {
@@ -72,7 +72,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	public void ban(String banner, String reason, long expiresInMillis) {
 		var date = new Date();
 		var userlistbansentry = new UserBanListEntry(minecraftPlayer.getGameProfile(), date, banner, new Date(date.getTime() + (expiresInMillis <= 0L ? 315569260000L : expiresInMillis)), reason);
-		server.getMinecraftServer().getPlayerList().getBans().add(userlistbansentry);
+		server.getPlayerList().getBans().add(userlistbansentry);
 		kick(Component.translatable("multiplayer.disconnect.banned"));
 	}
 
@@ -81,12 +81,12 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	}
 
 	public boolean isAdvancementDone(ResourceLocation id) {
-		var a = ServerJS.instance.getAdvancement(id);
+		var a = server.kjs$getAdvancement(id);
 		return a != null && minecraftPlayer.getAdvancements().getOrStartProgress(a.advancement).isDone();
 	}
 
 	public void unlockAdvancement(ResourceLocation id) {
-		var a = ServerJS.instance.getAdvancement(id);
+		var a = server.kjs$getAdvancement(id);
 
 		if (a != null) {
 			var advancementprogress = minecraftPlayer.getAdvancements().getOrStartProgress(a.advancement);
@@ -98,7 +98,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	}
 
 	public void revokeAdvancement(ResourceLocation id) {
-		var a = ServerJS.instance.getAdvancement(id);
+		var a = server.kjs$getAdvancement(id);
 
 		if (a != null) {
 			var advancementprogress = minecraftPlayer.getAdvancements().getOrStartProgress(a.advancement);

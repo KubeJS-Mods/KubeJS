@@ -14,7 +14,6 @@ import dev.latvian.mods.kubejs.item.ItemModificationEventJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
-import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
@@ -28,6 +27,7 @@ import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.util.valueproviders.ClampedInt;
@@ -86,6 +86,7 @@ public class UtilsJS {
 	public static final ResourceLocation AIR_LOCATION = new ResourceLocation("minecraft:air");
 	public static final Pattern SNAKE_CASE_SPLIT = Pattern.compile("[_/]");
 	public static final Set<String> ALWAYS_LOWER_CASE = new HashSet<>(Arrays.asList("a", "an", "the", "of", "on", "in"));
+	public static MinecraftServer staticServer = null;
 
 	private static Collection<BlockState> ALL_STATE_CACHE = null;
 
@@ -382,7 +383,7 @@ public class UtilsJS {
 		if (level.isClientSide()) {
 			return getClientLevel();
 		} else {
-			return ServerJS.instance.wrapMinecraftLevel(level);
+			return level.asKJS();
 		}
 	}
 
@@ -478,9 +479,8 @@ public class UtilsJS {
 
 	public static List<ItemStackJS> rollChestLoot(ResourceLocation id, @Nullable EntityJS entity) {
 		var list = new ArrayList<ItemStackJS>();
-		if (ServerJS.instance != null) {
-			var server = ServerJS.instance.getMinecraftServer();
-			var tables = ServerJS.instance.getMinecraftServer().getLootTables();
+		if (UtilsJS.staticServer != null) {
+			var tables = UtilsJS.staticServer.getLootTables();
 			var table = tables.get(id);
 
 			LootContext.Builder builder;
@@ -491,7 +491,7 @@ public class UtilsJS {
 						.withOptionalParameter(LootContextParams.THIS_ENTITY, mcEntity)
 						.withParameter(LootContextParams.ORIGIN, mcEntity.position());
 			} else {
-				builder = new LootContext.Builder(server.overworld())
+				builder = new LootContext.Builder(UtilsJS.staticServer.overworld())
 						.withOptionalParameter(LootContextParams.THIS_ENTITY, null)
 						.withParameter(LootContextParams.ORIGIN, Vec3.ZERO);
 			}

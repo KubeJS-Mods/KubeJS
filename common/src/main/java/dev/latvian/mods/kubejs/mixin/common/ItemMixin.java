@@ -1,13 +1,13 @@
 package dev.latvian.mods.kubejs.mixin.common;
 
 import dev.architectury.registry.fuel.FuelRegistry;
-import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
+import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -23,10 +23,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
@@ -40,130 +38,127 @@ import java.util.List;
  * @author LatvianModder
  */
 @Mixin(value = Item.class, priority = 1001)
+@RemapPrefixForJS("kjs$")
 public abstract class ItemMixin implements ItemKJS {
-	@Shadow
-	@Final
-	public static int MAX_BAR_WIDTH;
+	@Unique
+	private ItemBuilder kjs$itemBuilder;
 
 	@Unique
-	private ItemBuilder itemBuilderKJS;
-
-	@Unique
-	private final CompoundTag typeDataKJS = new CompoundTag();
+	private final CompoundTag kjs$typeData = new CompoundTag();
 
 	@Override
 	@Nullable
-	public ItemBuilder getItemBuilderKJS() {
-		return itemBuilderKJS;
+	public ItemBuilder kjs$getItemBuilder() {
+		return kjs$itemBuilder;
 	}
 
 	@Override
-	public void setItemBuilderKJS(ItemBuilder b) {
-		itemBuilderKJS = b;
+	@RemapForJS("getItem")
+	public Item kjs$self() {
+		return (Item) (Object) this;
 	}
 
 	@Override
-	@RemapForJS("getTypeData")
-	public CompoundTag getTypeDataKJS() {
-		return typeDataKJS;
+	public void kjs$setItemBuilder(ItemBuilder b) {
+		kjs$itemBuilder = b;
+	}
+
+	@Override
+	public CompoundTag kjs$getTypeData() {
+		return kjs$typeData;
 	}
 
 	@Override
 	@Accessor("maxStackSize")
 	@Mutable
-	public abstract void setMaxStackSizeKJS(int i);
+	public abstract void kjs$setMaxStackSize(int i);
 
 	@Override
 	@Accessor("maxDamage")
 	@Mutable
-	public abstract void setMaxDamageKJS(int i);
+	public abstract void kjs$setMaxDamage(int i);
 
 	@Override
 	@Accessor("craftingRemainingItem")
 	@Mutable
-	public abstract void setCraftingRemainderKJS(Item i);
+	public abstract void kjs$setCraftingRemainder(Item i);
 
 	@Override
 	@Accessor("isFireResistant")
 	@Mutable
-	public abstract void setFireResistantKJS(boolean b);
+	public abstract void kjs$setFireResistant(boolean b);
 
 	@Override
 	@Accessor("rarity")
 	@Mutable
-	public abstract void setRarityKJS(Rarity r);
+	public abstract void kjs$setRarity(Rarity r);
 
 	@Override
 	@RemapForJS("setBurnTime")
-	public void setBurnTimeKJS(int i) {
+	public void kjs$setBurnTime(int i) {
 		FuelRegistry.register(i, (Item) (Object) this);
-	}
-
-	@RemapForJS("getId")
-	public String getIdKJS() {
-		return KubeJSRegistries.items().getId((Item) (Object) this).toString();
 	}
 
 	@Override
 	@Accessor("foodProperties")
 	@Mutable
-	public abstract void setFoodPropertiesKJS(FoodProperties properties);
+	public abstract void kjs$setFoodProperties(FoodProperties properties);
 
 	@Inject(method = "isFoil", at = @At("HEAD"), cancellable = true)
 	private void isFoilKJS(ItemStack itemStack, CallbackInfoReturnable<Boolean> ci) {
-		if (itemBuilderKJS != null && itemBuilderKJS.glow) {
+		if (kjs$itemBuilder != null && kjs$itemBuilder.glow) {
 			ci.setReturnValue(true);
 		}
 	}
 
 	@Inject(method = "appendHoverText", at = @At("RETURN"))
 	private void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flagIn, CallbackInfo ci) {
-		if (itemBuilderKJS != null && !itemBuilderKJS.tooltip.isEmpty()) {
-			tooltip.addAll(itemBuilderKJS.tooltip);
+		if (kjs$itemBuilder != null && !kjs$itemBuilder.tooltip.isEmpty()) {
+			tooltip.addAll(kjs$itemBuilder.tooltip);
 		}
 	}
 
 	@Inject(method = "isBarVisible", at = @At("HEAD"), cancellable = true)
 	private void isBarVisible(ItemStack stack, CallbackInfoReturnable<Boolean> ci) {
-		if (itemBuilderKJS != null && itemBuilderKJS.barWidth != null && itemBuilderKJS.barWidth.applyAsInt(ItemStackJS.of(stack)) <= MAX_BAR_WIDTH) {
+		if (kjs$itemBuilder != null && kjs$itemBuilder.barWidth != null && kjs$itemBuilder.barWidth.applyAsInt(ItemStackJS.of(stack)) <= Item.MAX_BAR_WIDTH) {
 			ci.setReturnValue(true);
 		}
 	}
 
 	@Inject(method = "getBarWidth", at = @At("HEAD"), cancellable = true)
 	private void getBarWidth(ItemStack stack, CallbackInfoReturnable<Integer> ci) {
-		if (itemBuilderKJS != null && itemBuilderKJS.barWidth != null) {
-			ci.setReturnValue(itemBuilderKJS.barWidth.applyAsInt(ItemStackJS.of(stack)));
+		if (kjs$itemBuilder != null && kjs$itemBuilder.barWidth != null) {
+			ci.setReturnValue(kjs$itemBuilder.barWidth.applyAsInt(ItemStackJS.of(stack)));
 		}
 	}
 
 	@Inject(method = "getBarColor", at = @At("HEAD"), cancellable = true)
 	private void getBarColor(ItemStack stack, CallbackInfoReturnable<Integer> ci) {
-		if (itemBuilderKJS != null && itemBuilderKJS.barColor != null) {
-			ci.setReturnValue(itemBuilderKJS.barColor.apply(ItemStackJS.of(stack)).getRgbJS());
+		if (kjs$itemBuilder != null && kjs$itemBuilder.barColor != null) {
+			ci.setReturnValue(kjs$itemBuilder.barColor.apply(ItemStackJS.of(stack)).getRgbJS());
 		}
 	}
 
 	@Inject(method = "getUseDuration", at = @At("HEAD"), cancellable = true)
 	private void getUseDuration(ItemStack itemStack, CallbackInfoReturnable<Integer> ci) {
-		if (itemBuilderKJS != null && itemBuilderKJS.useDuration != null) {
-			ci.setReturnValue(itemBuilderKJS.useDuration.applyAsInt(ItemStackJS.of(itemStack)));
+		if (kjs$itemBuilder != null && kjs$itemBuilder.useDuration != null) {
+			ci.setReturnValue(kjs$itemBuilder.useDuration.applyAsInt(ItemStackJS.of(itemStack)));
 		}
 	}
 
 	@Inject(method = "getUseAnimation", at = @At("HEAD"), cancellable = true)
 	private void getUseAnimation(ItemStack itemStack, CallbackInfoReturnable<UseAnim> ci) {
-		if (itemBuilderKJS != null && itemBuilderKJS.anim != null) {
-			ci.setReturnValue(itemBuilderKJS.anim);
+		if (kjs$itemBuilder != null && kjs$itemBuilder.anim != null) {
+			ci.setReturnValue(kjs$itemBuilder.anim);
 		}
 	}
 
 	@Inject(method = "use", at = @At("HEAD"), cancellable = true)
 	private void use(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> ci) {
-		if (itemBuilderKJS != null && itemBuilderKJS.use != null) {
+		if (kjs$itemBuilder != null && kjs$itemBuilder.use != null) {
 			ItemStack itemStack = player.getItemInHand(interactionHand);
 			LevelJS levelJS = UtilsJS.getLevel(level);
-			if (itemBuilderKJS.use.use(levelJS, levelJS.getPlayer(player), interactionHand)) {
+			if (kjs$itemBuilder.use.use(levelJS, levelJS.getPlayer(player), interactionHand)) {
 				ci.setReturnValue(ItemUtils.startUsingInstantly(level, player, interactionHand));
 			} else {
 				ci.setReturnValue(InteractionResultHolder.fail(itemStack));
@@ -173,17 +168,17 @@ public abstract class ItemMixin implements ItemKJS {
 
 	@Inject(method = "finishUsingItem", at = @At("HEAD"), cancellable = true)
 	private void finishUsingItem(ItemStack itemStack, Level level, LivingEntity livingEntity, CallbackInfoReturnable<ItemStack> ci) {
-		if (itemBuilderKJS != null && itemBuilderKJS.finishUsing != null) {
+		if (kjs$itemBuilder != null && kjs$itemBuilder.finishUsing != null) {
 			LevelJS levelJS = UtilsJS.getLevel(level);
-			ci.setReturnValue(itemBuilderKJS.finishUsing.finishUsingItem(ItemStackJS.of(itemStack), levelJS, levelJS.getLivingEntity(livingEntity)).getItemStack());
+			ci.setReturnValue(kjs$itemBuilder.finishUsing.finishUsingItem(ItemStackJS.of(itemStack), levelJS, levelJS.getLivingEntity(livingEntity)).getItemStack());
 		}
 	}
 
 	@Inject(method = "releaseUsing", at = @At("HEAD"))
 	private void releaseUsing(ItemStack itemStack, Level level, LivingEntity livingEntity, int i, CallbackInfo ci) {
-		if (itemBuilderKJS != null && itemBuilderKJS.releaseUsing != null) {
+		if (kjs$itemBuilder != null && kjs$itemBuilder.releaseUsing != null) {
 			LevelJS levelJS = UtilsJS.getLevel(level);
-			itemBuilderKJS.releaseUsing.releaseUsing(ItemStackJS.of(itemStack), levelJS, levelJS.getLivingEntity(livingEntity), i);
+			kjs$itemBuilder.releaseUsing.releaseUsing(ItemStackJS.of(itemStack), levelJS, levelJS.getLivingEntity(livingEntity), i);
 		}
 	}
 }

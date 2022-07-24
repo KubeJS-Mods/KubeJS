@@ -10,11 +10,11 @@ import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.server.MinecraftServer;
 
 import java.util.Map;
 
@@ -53,7 +53,7 @@ public class KubeJSPlugin {
 	public void registerRecipeTypes(RegisterRecipeTypesEvent event) {
 	}
 
-	public void attachServerData(AttachDataEvent<ServerJS> event) {
+	public void attachServerData(AttachDataEvent<MinecraftServer> event) {
 	}
 
 	public void attachLevelData(AttachDataEvent<LevelJS> event) {

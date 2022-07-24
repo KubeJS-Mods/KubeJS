@@ -64,7 +64,7 @@ public abstract class Stages {
 		}
 
 		var playerKJS = ((PlayerKJS) player);
-		var stages = playerKJS.getStagesRawKJS();
+		var stages = playerKJS.kjs$getStagesRaw();
 
 		if (stages == null) {
 			stages = createEntityStages(player);

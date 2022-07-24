@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.player;
 
 import com.mojang.authlib.GameProfile;
+import dev.latvian.mods.kubejs.core.WithAttachedData;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.util.AttachedData;
-import dev.latvian.mods.kubejs.util.WithAttachedData;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +24,7 @@ public abstract class PlayerDataJS<E extends Player, P extends PlayerJS<E>> impl
 	}
 
 	@Override
-	public AttachedData getData() {
+	public AttachedData kjs$getData() {
 		if (data == null) {
 			data = new AttachedData(this);
 		}

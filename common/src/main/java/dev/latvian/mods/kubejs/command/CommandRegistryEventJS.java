@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import dev.latvian.mods.kubejs.server.ServerEventJS;
+import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.util.ClassWrapper;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -14,7 +14,7 @@ import net.minecraft.core.RegistryAccess;
 /**
  * @author LatvianModder
  */
-public class CommandRegistryEventJS extends ServerEventJS {
+public class CommandRegistryEventJS extends EventJS {
 	public final CommandDispatcher<CommandSourceStack> dispatcher;
 	public final Commands.CommandSelection selection;
 	public final CommandBuildContext context;

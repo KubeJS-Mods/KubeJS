@@ -9,9 +9,9 @@ import dev.latvian.mods.kubejs.player.FakeServerPlayerDataJS;
 import dev.latvian.mods.kubejs.player.ServerPlayerDataJS;
 import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.server.ServerJS;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -21,16 +21,16 @@ import net.minecraft.world.level.storage.ServerLevelData;
  * @author LatvianModder
  */
 public class ServerLevelJS extends LevelJS {
-	private final ServerJS server;
+	private final MinecraftServer server;
 	public final CompoundTag persistentData;
 
-	public ServerLevelJS(ServerJS s, ServerLevel w) {
+	public ServerLevelJS(MinecraftServer s, ServerLevel w) {
 		super(w);
 		server = s;
 
 		var t = w.dimension().location().toString();
-		persistentData = s.persistentData.getCompound(t);
-		s.persistentData.put(t, persistentData);
+		persistentData = s.kjs$getPersistentData().getCompound(t);
+		s.kjs$getPersistentData().put(t, persistentData);
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class ServerLevelJS extends LevelJS {
 	}
 
 	@Override
-	public ServerJS getServer() {
+	public MinecraftServer getServer() {
 		return server;
 	}
 
@@ -57,13 +57,13 @@ public class ServerLevelJS extends LevelJS {
 
 	@Override
 	public ServerPlayerDataJS getPlayerData(Player player) {
-		var data = server.playerMap.get(player.getUUID());
+		var data = server.kjs$getPlayerMap().get(player.getUUID());
 
 		if (!PlayerHooks.isFake(player) && data != null) {
 			return data;
 		}
 
-		var fakeData = server.fakePlayerMap.get(player.getUUID());
+		var fakeData = server.kjs$getFakePlayerMap().get(player.getUUID());
 
 		if (fakeData == null) {
 			fakeData = new FakeServerPlayerDataJS(server, (ServerPlayer) player);

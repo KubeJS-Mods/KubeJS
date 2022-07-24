@@ -10,9 +10,9 @@ import dev.latvian.mods.kubejs.loot.FishingLootEventJS;
 import dev.latvian.mods.kubejs.loot.GenericLootEventJS;
 import dev.latvian.mods.kubejs.loot.GiftLootEventJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -45,11 +45,11 @@ public interface LootTablesKJS {
 
 		ServerSettings.exportData();
 
-		if (CommonProperties.get().announceReload && ServerJS.instance != null && !CommonProperties.get().hideServerScriptErrors) {
+		if (UtilsJS.staticServer != null && CommonProperties.get().announceReload && !CommonProperties.get().hideServerScriptErrors) {
 			if (ScriptType.SERVER.errors.isEmpty()) {
-				ServerJS.instance.tell(Component.literal("Reloaded with no KubeJS errors!").withStyle(ChatFormatting.GREEN));
+				UtilsJS.staticServer.kjs$tell(Component.literal("Reloaded with no KubeJS errors!").withStyle(ChatFormatting.GREEN));
 			} else {
-				ServerJS.instance.tell(Component.literal("KubeJS errors found [" + ScriptType.SERVER.errors.size() + "]! Run ")
+				UtilsJS.staticServer.kjs$tell(Component.literal("KubeJS errors found [" + ScriptType.SERVER.errors.size() + "]! Run ")
 						.append(Component.literal("'/kubejs errors'")
 								.click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs errors")))
 						.hover(Component.literal("Click to run"))

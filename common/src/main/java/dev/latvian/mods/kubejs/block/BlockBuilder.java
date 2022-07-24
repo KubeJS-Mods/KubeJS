@@ -111,7 +111,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	public Block transformObject(Block obj) {
-		obj.setBlockBuilderKJS(this);
+		obj.kjs$setBlockBuilder(this);
 
 		return obj;
 	}

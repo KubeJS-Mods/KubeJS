@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.level;
 
+import dev.latvian.mods.kubejs.core.WithAttachedData;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.entity.ItemEntityJS;
 import dev.latvian.mods.kubejs.entity.ItemFrameEntityJS;
@@ -9,12 +10,11 @@ import dev.latvian.mods.kubejs.player.PlayerDataJS;
 import dev.latvian.mods.kubejs.player.PlayerJS;
 import dev.latvian.mods.kubejs.player.ServerPlayerJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.server.ServerJS;
 import dev.latvian.mods.kubejs.util.AttachedData;
-import dev.latvian.mods.kubejs.util.WithAttachedData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -46,7 +46,7 @@ public abstract class LevelJS implements WithAttachedData {
 	public abstract ScriptType getSide();
 
 	@Override
-	public AttachedData getData() {
+	public AttachedData kjs$getData() {
 		if (data == null) {
 			data = new AttachedData(this);
 		}
@@ -59,7 +59,7 @@ public abstract class LevelJS implements WithAttachedData {
 	}
 
 	@Nullable
-	public ServerJS getServer() {
+	public MinecraftServer getServer() {
 		return null;
 	}
 

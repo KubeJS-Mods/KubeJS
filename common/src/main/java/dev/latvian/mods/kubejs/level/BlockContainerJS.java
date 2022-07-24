@@ -5,7 +5,6 @@ import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.block.MaterialJS;
 import dev.latvian.mods.kubejs.block.MaterialListJS;
-import dev.latvian.mods.kubejs.core.BlockKJS;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.item.InventoryJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
@@ -422,6 +421,6 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public CompoundTag getTypeData() {
-		return getBlockState().getBlock().getTypeDataKJS();
+		return getBlockState().getBlock().kjs$getTypeData();
 	}
 }

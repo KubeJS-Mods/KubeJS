@@ -1,24 +1,22 @@
 package dev.latvian.mods.kubejs.server;
 
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.server.MinecraftServer;
 
 /**
  * @author LatvianModder
  */
 public class ScheduledEvent {
-	private final ServerJS server;
+	private final MinecraftServer server;
 	private final boolean usingTicks;
 	private final long timer;
 	private final long endTime;
-	private final Object data;
 	private final IScheduledEventCallback callback;
 
-	ScheduledEvent(ServerJS s, boolean ut, long t, long e, @Nullable Object d, IScheduledEventCallback c) {
+	public ScheduledEvent(MinecraftServer s, boolean ut, long t, long e, IScheduledEventCallback c) {
 		usingTicks = ut;
 		server = s;
 		timer = t;
 		endTime = e;
-		data = d;
 		callback = c;
 	}
 
@@ -26,7 +24,7 @@ public class ScheduledEvent {
 		return usingTicks;
 	}
 
-	public ServerJS getServer() {
+	public MinecraftServer getServer() {
 		return server;
 	}
 
@@ -36,11 +34,6 @@ public class ScheduledEvent {
 
 	public long getEndTime() {
 		return endTime;
-	}
-
-	@Nullable
-	public Object getData() {
-		return data;
 	}
 
 	public void reschedule() {
@@ -53,9 +46,9 @@ public class ScheduledEvent {
 
 	public ScheduledEvent reschedule(long timer) {
 		if (isUsingTicks()) {
-			return server.scheduleInTicks(timer, data, callback);
+			return server.kjs$scheduleInTicks(timer, callback);
 		} else {
-			return server.schedule(timer, data, callback);
+			return server.kjs$schedule(timer, callback);
 		}
 	}
 

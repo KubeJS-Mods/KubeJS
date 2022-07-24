@@ -25,8 +25,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Random;
-
 /**
  * @author LatvianModder
  */
@@ -56,7 +54,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS {
 	}
 
 	@Override
-	public BlockBuilder getBlockBuilderKJS() {
+	public BlockBuilder kjs$getBlockBuilder() {
 		return blockBuilder;
 	}
 

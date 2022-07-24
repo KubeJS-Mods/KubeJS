@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.script.data;
 
 import com.google.gson.JsonElement;
-import dev.latvian.mods.kubejs.server.ServerEventJS;
+import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -11,7 +11,7 @@ import net.minecraft.server.packs.resources.MultiPackResourceManager;
 /**
  * @author LatvianModder
  */
-public class DataPackEventJS extends ServerEventJS {
+public class DataPackEventJS extends EventJS {
 	private final VirtualKubeJSDataPack virtualDataPack;
 	private final MultiPackResourceManager wrappedManager;
 

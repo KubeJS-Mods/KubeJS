@@ -1,14 +1,19 @@
 package dev.latvian.mods.kubejs.server;
 
 import dev.latvian.mods.kubejs.event.EventJS;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.server.MinecraftServer;
 
 /**
  * @author LatvianModder
  */
 public class ServerEventJS extends EventJS {
-	@Nullable
-	public ServerJS getServer() {
-		return ServerJS.instance;
+	public final MinecraftServer server;
+
+	public ServerEventJS(MinecraftServer s) {
+		server = s;
+	}
+
+	public MinecraftServer getServer() {
+		return server;
 	}
 }

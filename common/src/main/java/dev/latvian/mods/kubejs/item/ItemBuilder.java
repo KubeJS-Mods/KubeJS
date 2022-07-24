@@ -134,7 +134,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	@Override
 	public Item transformObject(Item obj) {
-		obj.setItemBuilderKJS(this);
+		obj.kjs$setItemBuilder(this);
 
 		return obj;
 	}

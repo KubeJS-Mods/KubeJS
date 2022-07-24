@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.mixin.common;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.core.BlockKJS;
-import dev.latvian.mods.rhino.util.RemapForJS;
+import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
  * @author LatvianModder
  */
 @Mixin(BlockBehaviour.class)
+@RemapPrefixForJS("kjs$")
 public abstract class BlockBehaviourMixin implements BlockKJS {
 	@Unique
 	private BlockBuilder blockBuilderKJS;
@@ -26,58 +27,57 @@ public abstract class BlockBehaviourMixin implements BlockKJS {
 
 	@Override
 	@Nullable
-	public BlockBuilder getBlockBuilderKJS() {
+	public BlockBuilder kjs$getBlockBuilder() {
 		return blockBuilderKJS;
 	}
 
 	@Override
-	public void setBlockBuilderKJS(BlockBuilder b) {
+	public void kjs$setBlockBuilder(BlockBuilder b) {
 		blockBuilderKJS = b;
 	}
 
 	@Override
-	@RemapForJS("getTypeData")
-	public CompoundTag getTypeDataKJS() {
+	public CompoundTag kjs$getTypeData() {
 		return typeDataKJS;
 	}
 
 	@Override
 	@Accessor("material")
 	@Mutable
-	public abstract void setMaterialKJS(Material v);
+	public abstract void kjs$setMaterialRaw(Material v);
 
 	@Override
 	@Accessor("hasCollision")
 	@Mutable
-	public abstract void setHasCollisionKJS(boolean v);
+	public abstract void kjs$setHasCollision(boolean v);
 
 	@Override
 	@Accessor("explosionResistance")
 	@Mutable
-	public abstract void setExplosionResistanceKJS(float v);
+	public abstract void kjs$setExplosionResistance(float v);
 
 	@Override
 	@Accessor("isRandomlyTicking")
 	@Mutable
-	public abstract void setIsRandomlyTickingKJS(boolean v);
+	public abstract void kjs$setIsRandomlyTicking(boolean v);
 
 	@Override
 	@Accessor("soundType")
 	@Mutable
-	public abstract void setSoundTypeKJS(SoundType v);
+	public abstract void kjs$setSoundType(SoundType v);
 
 	@Override
 	@Accessor("friction")
 	@Mutable
-	public abstract void setFrictionKJS(float v);
+	public abstract void kjs$setFriction(float v);
 
 	@Override
 	@Accessor("speedFactor")
 	@Mutable
-	public abstract void setSpeedFactorKJS(float v);
+	public abstract void kjs$setSpeedFactor(float v);
 
 	@Override
 	@Accessor("jumpFactor")
 	@Mutable
-	public abstract void setJumpFactorKJS(float v);
+	public abstract void kjs$setJumpFactor(float v);
 }

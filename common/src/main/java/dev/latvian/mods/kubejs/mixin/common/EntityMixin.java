@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.mixin.common;
 
 import dev.latvian.mods.kubejs.core.EntityKJS;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
+import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
@@ -17,6 +18,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class EntityMixin implements EntityKJS {
 	@Unique
 	private final CompoundTag kjs$persistentData = new CompoundTag();
+
+	@Override
+	@RemapForJS("getMinecraftEntity")
+	public Entity kjs$self() {
+		return (Entity) (Object) this;
+	}
 
 	@Override
 	public CompoundTag kjs$getPersistentData() {

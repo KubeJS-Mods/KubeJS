@@ -23,12 +23,12 @@ public abstract class MutableComponentMixin implements ComponentKJS {
 
 	@Override
 	public Iterator<Component> iterator() {
-		if (!hasSiblings()) {
-			return UtilsJS.cast(List.of(self()).iterator());
+		if (!kjs$hasSiblings()) {
+			return UtilsJS.cast(List.of(kjs$self()).iterator());
 		}
 
 		List<Component> list = new LinkedList<>();
-		list.add(self());
+		list.add(kjs$self());
 
 		for (var child : getSiblings()) {
 			if (child instanceof ComponentKJS wrapped) {
@@ -41,20 +41,12 @@ public abstract class MutableComponentMixin implements ComponentKJS {
 		return list.iterator();
 	}
 
-	public boolean hasStyle() {
-		return getStyle() != null && !getStyle().isEmpty();
-	}
-
-	public boolean hasSiblings() {
-		return !getSiblings().isEmpty();
-	}
-
 	// These following methods only exist for interoperability with old scripts using the Text class
 	// region Deprecated
 	@Deprecated(forRemoval = true)
 	public MutableComponent rawComponent() {
 		KubeJS.LOGGER.warn("Using rawComponent() is deprecated, since components no longer need to be wrapped to Text! You can safely remove this method.");
-		return self();
+		return kjs$self();
 	}
 
 	@Deprecated(forRemoval = true)
@@ -66,7 +58,7 @@ public abstract class MutableComponentMixin implements ComponentKJS {
 	@Deprecated(forRemoval = true)
 	public Component component() {
 		KubeJS.LOGGER.warn("Using component() is deprecated, since components no longer need to be wrapped to Text! You can safely remove this method.");
-		return self();
+		return kjs$self();
 	}
 	// endregion Deprecated
 

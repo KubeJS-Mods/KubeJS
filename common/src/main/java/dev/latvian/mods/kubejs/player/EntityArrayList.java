@@ -1,8 +1,9 @@
 package dev.latvian.mods.kubejs.player;
 
+import dev.latvian.mods.kubejs.core.MessageSenderKJS;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
-import dev.latvian.mods.kubejs.util.MessageSender;
+import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,7 +18,8 @@ import java.util.function.Predicate;
 /**
  * @author LatvianModder
  */
-public class EntityArrayList extends ArrayList<EntityJS> implements MessageSender {
+@RemapPrefixForJS("kjs$")
+public class EntityArrayList extends ArrayList<EntityJS> implements MessageSenderKJS {
 	private final LevelJS level;
 
 	public EntityArrayList(LevelJS l, int size) {
@@ -38,24 +40,24 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 	}
 
 	@Override
-	public Component getName() {
+	public Component kjs$getName() {
 		return Component.literal("EntityList");
 	}
 
 	@Override
-	public Component getDisplayName() {
+	public Component kjs$getDisplayName() {
 		return Component.literal(toString()).lightPurple();
 	}
 
 	@Override
-	public void tell(Component message) {
+	public void kjs$tell(Component message) {
 		for (var entity : this) {
 			entity.minecraftEntity.sendSystemMessage(message);
 		}
 	}
 
 	@Override
-	public void setStatusMessage(Component message) {
+	public void kjs$setStatusMessage(Component message) {
 		for (var entity : this) {
 			if (entity.minecraftEntity instanceof ServerPlayer player) {
 				player.displayClientMessage(message, true);
@@ -64,22 +66,22 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 	}
 
 	@Override
-	public int runCommand(String command) {
+	public int kjs$runCommand(String command) {
 		var m = 0;
 
 		for (var entity : this) {
-			m = Math.max(m, entity.runCommand(command));
+			m = Math.max(m, entity.kjs$runCommand(command));
 		}
 
 		return m;
 	}
 
 	@Override
-	public int runCommandSilent(String command) {
+	public int kjs$runCommandSilent(String command) {
 		var m = 0;
 
 		for (var entity : this) {
-			m = Math.max(m, entity.runCommandSilent(command));
+			m = Math.max(m, entity.kjs$runCommandSilent(command));
 		}
 
 		return m;

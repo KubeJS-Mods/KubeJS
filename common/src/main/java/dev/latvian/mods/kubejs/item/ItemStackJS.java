@@ -1029,6 +1029,6 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	}
 
 	public CompoundTag getTypeData() {
-		return getItem().getTypeDataKJS();
+		return getItem().kjs$getTypeData();
 	}
 }

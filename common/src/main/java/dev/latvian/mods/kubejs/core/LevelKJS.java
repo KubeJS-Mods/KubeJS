@@ -2,8 +2,10 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
+import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.level.Level;
 
+@RemapPrefixForJS("kjs$")
 public interface LevelKJS extends AsKJS<LevelJS> {
 	@Override
 	default LevelJS asKJS() {

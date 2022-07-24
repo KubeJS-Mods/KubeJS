@@ -13,7 +13,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public class WorldlyCommandSender extends CommandSourceStack {
 	public WorldlyCommandSender(ServerLevelJS l) {
-		super(CommandSource.NULL, Vec3.ZERO, Vec2.ZERO, l.getMinecraftLevel(), 4, l.getDimension().toString(), Component.literal(l.getDimension().toString()), l.getServer().getMinecraftServer(), null, true, (context, success, result) ->
+		super(CommandSource.NULL, Vec3.ZERO, Vec2.ZERO, l.getMinecraftLevel(), 4, l.getDimension().toString(), Component.literal(l.getDimension().toString()), l.getServer(), null, true, (context, success, result) ->
 		{
 		}, EntityAnchorArgument.Anchor.FEET, CommandSigningContext.NONE);
 	}

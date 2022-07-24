@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.mixin.common;
 
 import dev.latvian.mods.kubejs.core.GameRulesKJS;
-import dev.latvian.mods.kubejs.server.ServerJS;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.level.GameRules;
 import org.jetbrains.annotations.Nullable;
@@ -49,7 +49,10 @@ public abstract class GameRulesMixin implements GameRulesKJS {
 
 		if (r != null) {
 			r.deserialize(value);
-			r.onChanged(ServerJS.instance.getMinecraftServer());
+
+			if (UtilsJS.staticServer != null) {
+				r.onChanged(UtilsJS.staticServer);
+			}
 		}
 	}
 }
