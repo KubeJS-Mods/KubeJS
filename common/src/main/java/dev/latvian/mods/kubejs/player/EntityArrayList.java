@@ -46,7 +46,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 	@Override
 	public Component kjs$getDisplayName() {
-		return Component.literal(toString()).lightPurple();
+		return Component.literal(toString()).kjs$lightPurple();
 	}
 
 	@Override

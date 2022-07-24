@@ -75,19 +75,19 @@ public class ComponentWrapper {
 			}
 
 			if (map.containsKey("color")) {
-				text.color(ColorWrapper.of(map.get("color")));
+				text.kjs$color(ColorWrapper.of(map.get("color")));
 			}
 
-			text.bold((Boolean) map.getOrDefault("bold", null));
-			text.italic((Boolean) map.getOrDefault("italic", null));
-			text.underlined((Boolean) map.getOrDefault("underlined", null));
-			text.strikethrough((Boolean) map.getOrDefault("strikethrough", null));
-			text.obfuscated((Boolean) map.getOrDefault("obfuscated", null));
+			text.kjs$bold((Boolean) map.getOrDefault("bold", null));
+			text.kjs$italic((Boolean) map.getOrDefault("italic", null));
+			text.kjs$underlined((Boolean) map.getOrDefault("underlined", null));
+			text.kjs$strikethrough((Boolean) map.getOrDefault("strikethrough", null));
+			text.kjs$obfuscated((Boolean) map.getOrDefault("obfuscated", null));
 
-			text.insertion((String) map.getOrDefault("insertion", null));
-			text.font(map.containsKey("font") ? new ResourceLocation(map.get("font").toString()) : null);
-			text.click(map.containsKey("click") ? clickEventOf(map.get("click")) : null);
-			text.hover(map.containsKey("hover") ? of(map.get("hover")) : null);
+			text.kjs$insertion((String) map.getOrDefault("insertion", null));
+			text.kjs$font(map.containsKey("font") ? new ResourceLocation(map.get("font").toString()) : null);
+			text.kjs$click(map.containsKey("click") ? clickEventOf(map.get("click")) : null);
+			text.kjs$hover(map.containsKey("hover") ? of(map.get("hover")) : null);
 
 			if (map.get("extra") instanceof Iterable<?> itr) {
 				for (var e : itr) {
@@ -181,66 +181,66 @@ public class ComponentWrapper {
 	}
 
 	public static MutableComponent black(Object text) {
-		return of(text).black();
+		return of(text).kjs$black();
 	}
 
 	public static MutableComponent darkBlue(Object text) {
-		return of(text).darkBlue();
+		return of(text).kjs$darkBlue();
 	}
 
 	public static MutableComponent darkGreen(Object text) {
-		return of(text).darkGreen();
+		return of(text).kjs$darkGreen();
 	}
 
 	public static MutableComponent darkAqua(Object text) {
-		return of(text).darkAqua();
+		return of(text).kjs$darkAqua();
 	}
 
 	public static MutableComponent darkRed(Object text) {
-		return of(text).darkRed();
+		return of(text).kjs$darkRed();
 	}
 
 	public static MutableComponent darkPurple(Object text) {
-		return of(text).darkPurple();
+		return of(text).kjs$darkPurple();
 	}
 
 	public static MutableComponent gold(Object text) {
-		return of(text).gold();
+		return of(text).kjs$gold();
 	}
 
 	public static MutableComponent gray(Object text) {
-		return of(text).gray();
+		return of(text).kjs$gray();
 	}
 
 	public static MutableComponent darkGray(Object text) {
-		return of(text).darkGray();
+		return of(text).kjs$darkGray();
 	}
 
 	public static MutableComponent blue(Object text) {
-		return of(text).blue();
+		return of(text).kjs$blue();
 	}
 
 	public static MutableComponent green(Object text) {
-		return of(text).green();
+		return of(text).kjs$green();
 	}
 
 	public static MutableComponent aqua(Object text) {
-		return of(text).aqua();
+		return of(text).kjs$aqua();
 	}
 
 	public static MutableComponent red(Object text) {
-		return of(text).red();
+		return of(text).kjs$red();
 	}
 
 	public static MutableComponent lightPurple(Object text) {
-		return of(text).lightPurple();
+		return of(text).kjs$lightPurple();
 	}
 
 	public static MutableComponent yellow(Object text) {
-		return of(text).yellow();
+		return of(text).kjs$yellow();
 	}
 
 	public static MutableComponent white(Object text) {
-		return of(text).white();
+		return of(text).kjs$white();
 	}
 }

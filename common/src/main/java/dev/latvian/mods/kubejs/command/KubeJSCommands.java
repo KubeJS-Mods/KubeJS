@@ -287,15 +287,15 @@ public class KubeJSCommands {
 
 		source.sendSuccess(Component.literal("More info in ")
 						.append(Component.literal("'logs/kubejs/server.txt'")
-								.click(new ClickEvent(ClickEvent.Action.OPEN_FILE, ScriptType.SERVER.getLogFile().toString()))
-								.hover(Component.literal("Click to open"))).withStyle(ChatFormatting.DARK_RED),
+								.kjs$click(new ClickEvent(ClickEvent.Action.OPEN_FILE, ScriptType.SERVER.getLogFile().toString()))
+								.kjs$hover(Component.literal("Click to open"))).withStyle(ChatFormatting.DARK_RED),
 				false);
 
 		if (!ScriptType.SERVER.warnings.isEmpty()) {
 			source.sendSuccess(Component.literal(ScriptType.SERVER.warnings.size() + " warnings found. Run ")
 							.append(Component.literal("'/kubejs warnings'")
-									.click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs warnings"))
-									.hover(Component.literal("Click to run"))).append(" to see them")
+									.kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs warnings"))
+									.kjs$hover(Component.literal("Click to run"))).append(" to see them")
 							.withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))),
 					false);
 		}
@@ -326,8 +326,8 @@ public class KubeJSCommands {
 		ServerScriptManager.instance.reloadScriptManager(source.getServer().kjs$getReloadableResources().resourceManager());
 		source.sendSuccess(Component.literal("Done! To reload recipes, tags, loot tables and other datapack things, run ")
 						.append(Component.literal("'/reload'")
-								.click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/reload"))
-								.hover(Component.literal("Click to run"))),
+								.kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/reload"))
+								.kjs$hover(Component.literal("Click to run"))),
 				false);
 		return 1;
 	}

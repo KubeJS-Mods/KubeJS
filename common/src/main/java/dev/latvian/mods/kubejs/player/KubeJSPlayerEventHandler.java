@@ -48,8 +48,8 @@ public class KubeJSPlayerEventHandler {
 		if (!ScriptType.SERVER.errors.isEmpty() && !CommonProperties.get().hideServerScriptErrors) {
 			player.displayClientMessage(Component.literal("KubeJS errors found [" + ScriptType.SERVER.errors.size() + "]! Run ")
 							.append(Component.literal("'/kubejs errors'")
-									.click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs errors"))
-									.hover(Component.literal("Click to run")))
+									.kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs errors"))
+									.kjs$hover(Component.literal("Click to run")))
 							.append(Component.literal(" for more info"))
 							.withStyle(ChatFormatting.DARK_RED),
 					false);
