@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.integration.forge.jei;
 
 import dev.latvian.mods.kubejs.event.EventJS;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
@@ -17,7 +16,7 @@ import java.util.function.Function;
  */
 public class JEISubtypesEventJS extends EventJS {
 	@FunctionalInterface
-	public interface Interpreter extends Function<ItemStackJS, Object> {
+	public interface Interpreter extends Function<ItemStack, Object> {
 	}
 
 	private static class NBTKeyInterpreter implements IIngredientSubtypeInterpreter<ItemStack> {
@@ -45,21 +44,21 @@ public class JEISubtypesEventJS extends EventJS {
 		registration = r;
 	}
 
-	public void registerInterpreter(Object id, Interpreter interpreter) {
-		registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, ItemStackJS.of(id).getItem(), (stack, context) -> {
-			var o = interpreter.apply(ItemStackJS.of(stack));
+	public void registerInterpreter(Item item, Interpreter interpreter) {
+		registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, (stack, context) -> {
+			var o = interpreter.apply(stack);
 			return o == null ? "" : o.toString();
 		});
 	}
 
 	public void useNBT(IngredientJS items) {
-		registration.useNbtForSubtypes(items.getVanillaItems().toArray(new Item[0]));
+		registration.useNbtForSubtypes(items.getItemTypes().toArray(new Item[0]));
 	}
 
 	public void useNBTKey(IngredientJS items, String key) {
 		var in = new NBTKeyInterpreter(key);
 
-		for (var item : items.getVanillaItems()) {
+		for (var item : items.getItemTypes()) {
 			registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, new NBTKeyInterpreter(key));
 		}
 	}

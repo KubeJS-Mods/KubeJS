@@ -24,7 +24,7 @@ public class CompostableRecipesEventJS extends EventJS {
 	}
 
 	public void remove(IngredientJS ingredient) {
-		for (var item : ingredient.getVanillaItems()) {
+		for (var item : ingredient.getItemTypes()) {
 			ComposterBlock.COMPOSTABLES.removeFloat(item);
 		}
 	}
@@ -34,7 +34,7 @@ public class CompostableRecipesEventJS extends EventJS {
 	}
 
 	public void add(IngredientJS ingredient, float f) {
-		for (var item : ingredient.getVanillaItems()) {
+		for (var item : ingredient.getItemTypes()) {
 			ComposterBlock.COMPOSTABLES.put(item, Mth.clamp(f, 0F, 1F));
 		}
 	}

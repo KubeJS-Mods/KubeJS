@@ -25,7 +25,7 @@ public class ItemTooltipEventJS extends EventJS {
 
 	@FunctionalInterface
 	public interface StaticTooltipHandlerFromJS {
-		void accept(ItemStackJS stack, boolean advanced, List<Object> text);
+		void accept(ItemStack stack, boolean advanced, List<Object> text);
 	}
 
 	public static class StaticTooltipHandlerFromLines implements StaticTooltipHandler {
@@ -59,7 +59,7 @@ public class ItemTooltipEventJS extends EventJS {
 		@Override
 		public void tooltip(ItemStack stack, boolean advanced, List<Component> components) {
 			List<Object> text = new ArrayList<>(components);
-			handler.accept(ItemStackJS.of(stack), advanced, text);
+			handler.accept(stack, advanced, text);
 
 			components.clear();
 
@@ -84,7 +84,7 @@ public class ItemTooltipEventJS extends EventJS {
 		var l = new StaticTooltipHandlerFromLines(text);
 
 		if (!l.lines.isEmpty()) {
-			for (var i : IngredientJS.of(item).getVanillaItems()) {
+			for (var i : IngredientJS.of(item).getItemTypes()) {
 				if (i != Items.AIR) {
 					map.computeIfAbsent(i, k -> new ArrayList<>()).add(l);
 				}
@@ -108,7 +108,7 @@ public class ItemTooltipEventJS extends EventJS {
 
 		var l = new StaticTooltipHandlerFromJSWrapper(handler);
 
-		for (var i : IngredientJS.of(item).getVanillaItems()) {
+		for (var i : IngredientJS.of(item).getItemTypes()) {
 			if (i != Items.AIR) {
 				map.computeIfAbsent(i, k -> new ArrayList<>()).add(l);
 			}

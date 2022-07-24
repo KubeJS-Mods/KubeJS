@@ -40,7 +40,7 @@ public class BotanyPotsCropRecipeJS extends RecipeJS {
 		json.addProperty("growthTicks", 1200);
 
 		var display = new JsonObject();
-		display.addProperty("block", inputItems.get(0).getFirst().getId());
+		display.addProperty("block", inputItems.get(0).getFirst().kjs$getId());
 		json.add("display", display);
 	}
 

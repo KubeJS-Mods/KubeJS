@@ -77,7 +77,7 @@ public class InventoryJS {
 		var modInv = minecraftInventory instanceof ItemHandler.Mutable m ? m : null;
 
 		for (var i = minecraftInventory.getSlots(); i >= 0; i--) {
-			if (ingredient.testVanilla(minecraftInventory.getStackInSlot(i))) {
+			if (ingredient.test(minecraftInventory.getStackInSlot(i))) {
 				if (modInv != null) {
 					modInv.setStackInSlot(i, ItemStack.EMPTY);
 				} else {
@@ -107,7 +107,7 @@ public class InventoryJS {
 		for (var i = 0; i < minecraftInventory.getSlots(); i++) {
 			var stack1 = minecraftInventory.getStackInSlot(i);
 
-			if (ingredient.testVanilla(stack1)) {
+			if (ingredient.test(stack1)) {
 				return i;
 			}
 		}
@@ -135,7 +135,7 @@ public class InventoryJS {
 		for (var i = 0; i < minecraftInventory.getSlots(); i++) {
 			var stack1 = minecraftInventory.getStackInSlot(i);
 
-			if (ingredient.testVanilla(stack1)) {
+			if (ingredient.test(stack1)) {
 				count += stack1.getCount();
 			}
 		}
@@ -165,7 +165,7 @@ public class InventoryJS {
 		for (var i = 0; i < minecraftInventory.getSlots(); i++) {
 			var stack1 = minecraftInventory.getStackInSlot(i);
 
-			if (ingredient.testVanilla(stack1)) {
+			if (ingredient.test(stack1)) {
 				count++;
 			}
 		}

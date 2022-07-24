@@ -11,7 +11,7 @@ import java.util.function.Consumer;
  */
 public class ItemModificationEventJS extends EventJS {
 	public void modify(IngredientJS in, Consumer<Item> c) {
-		for (var item : in.getVanillaItems()) {
+		for (var item : in.getItemTypes()) {
 			c.accept(item);
 		}
 	}

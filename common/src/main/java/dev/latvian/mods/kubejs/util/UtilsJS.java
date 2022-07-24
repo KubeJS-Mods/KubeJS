@@ -11,7 +11,6 @@ import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.block.BlockModificationEventJS;
 import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.item.ItemModificationEventJS;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.rhino.Wrapper;
@@ -37,6 +36,7 @@ import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -477,8 +477,9 @@ public class UtilsJS {
 		};
 	}
 
-	public static List<ItemStackJS> rollChestLoot(ResourceLocation id, @Nullable EntityJS entity) {
-		var list = new ArrayList<ItemStackJS>();
+	public static List<ItemStack> rollChestLoot(ResourceLocation id, @Nullable EntityJS entity) {
+		var list = new ArrayList<ItemStack>();
+
 		if (UtilsJS.staticServer != null) {
 			var tables = UtilsJS.staticServer.getLootTables();
 			var table = tables.get(id);
@@ -496,8 +497,9 @@ public class UtilsJS {
 						.withParameter(LootContextParams.ORIGIN, Vec3.ZERO);
 			}
 
-			table.getRandomItems(builder.create(LootContextParamSets.CHEST), (stack) -> list.add(ItemStackJS.of(stack)));
+			table.getRandomItems(builder.create(LootContextParamSets.CHEST), list::add);
 		}
+
 		return list;
 	}
 

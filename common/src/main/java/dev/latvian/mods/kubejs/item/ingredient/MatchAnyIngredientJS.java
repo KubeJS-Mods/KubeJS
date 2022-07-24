@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.item.ingredient;
 
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.ItemStackSet;
 import dev.latvian.mods.kubejs.util.ListJS;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -8,7 +9,6 @@ import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -38,7 +38,7 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	}
 
 	@Override
-	public boolean test(ItemStackJS stack) {
+	public boolean test(ItemStack stack) {
 		if (stack.isEmpty()) {
 			return false;
 		}
@@ -53,28 +53,13 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	}
 
 	@Override
-	public boolean testVanilla(ItemStack stack) {
-		if (stack.isEmpty()) {
-			return false;
-		}
-
-		for (var ingredient : ingredients) {
-			if (ingredient.testVanilla(stack)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	@Override
-	public boolean testVanillaItem(Item item) {
+	public boolean testItem(Item item) {
 		if (item == Items.AIR) {
 			return false;
 		}
 
 		for (var ingredient : ingredients) {
-			if (ingredient.testVanillaItem(item)) {
+			if (ingredient.testItem(item)) {
 				return true;
 			}
 		}
@@ -83,25 +68,17 @@ public class MatchAnyIngredientJS implements IngredientJS, Consumer<IngredientJS
 	}
 
 	@Override
-	public Set<ItemStackJS> getStacks() {
-		Set<ItemStackJS> set = new LinkedHashSet<>();
-
+	public void gatherStacks(ItemStackSet set) {
 		for (var ingredient : ingredients) {
-			set.addAll(ingredient.getStacks());
+			ingredient.gatherStacks(set);
 		}
-
-		return set;
 	}
 
 	@Override
-	public Set<Item> getVanillaItems() {
-		Set<Item> set = new LinkedHashSet<>();
-
+	public void gatherItemTypes(Set<Item> set) {
 		for (var ingredient : ingredients) {
-			set.addAll(ingredient.getVanillaItems());
+			set.addAll(ingredient.getItemTypes());
 		}
-
-		return set;
 	}
 
 	@Override

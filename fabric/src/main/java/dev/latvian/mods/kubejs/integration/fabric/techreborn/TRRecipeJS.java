@@ -3,12 +3,12 @@ package dev.latvian.mods.kubejs.integration.fabric.techreborn;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * @author LatvianModder
@@ -29,7 +29,7 @@ public class TRRecipeJS extends RecipeJS {
 		}
 
 		@Override
-		public boolean test(ItemStackJS stack) {
+		public boolean test(ItemStack stack) {
 			return false;
 		}
 

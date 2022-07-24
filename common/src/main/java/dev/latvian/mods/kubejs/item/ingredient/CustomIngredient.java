@@ -2,14 +2,13 @@ package dev.latvian.mods.kubejs.item.ingredient;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.ItemStackSet;
 import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -25,17 +24,12 @@ public class CustomIngredient implements IngredientJS {
 	}
 
 	@Override
-	public boolean test(ItemStackJS stack) {
-		return ingredient.test(stack.getItemStack());
-	}
-
-	@Override
-	public boolean testVanilla(ItemStack stack) {
+	public boolean test(ItemStack stack) {
 		return ingredient.test(stack);
 	}
 
 	@Override
-	public boolean testVanillaItem(Item item) {
+	public boolean testItem(Item item) {
 		return ingredient.test(new ItemStack(item));
 	}
 
@@ -45,20 +39,14 @@ public class CustomIngredient implements IngredientJS {
 	}
 
 	@Override
-	public Set<ItemStackJS> getStacks() {
-		Set<ItemStackJS> set = new LinkedHashSet<>();
-
+	public void gatherStacks(ItemStackSet set) {
 		for (var i : ingredient.getStackingIds()) {
-			set.add(ItemStackJS.of(StackedContents.fromStackingIndex(i)));
+			set.add(StackedContents.fromStackingIndex(i));
 		}
-
-		return set;
 	}
 
 	@Override
-	public Set<Item> getVanillaItems() {
-		Set<Item> set = new LinkedHashSet<>();
-
+	public void gatherItemTypes(Set<Item> set) {
 		for (var i : ingredient.getStackingIds()) {
 			var item = Item.byId(i);
 
@@ -66,8 +54,6 @@ public class CustomIngredient implements IngredientJS {
 				set.add(item);
 			}
 		}
-
-		return set;
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.ItemStackSet;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipePlatformHelper;
@@ -242,14 +243,14 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 		return ItemStackJS.EMPTY;
 	}
 
-	boolean test(ItemStackJS stack);
+	boolean test(ItemStack stack);
 
-	default boolean testVanilla(ItemStack stack) {
-		return test(new ItemStackJS(stack));
+	default boolean exactMatch(IngredientJS in) {
+		return equals(in);
 	}
 
-	default boolean testVanillaItem(Item item) {
-		return test(new ItemStackJS(new ItemStack(item)));
+	default boolean testItem(Item item) {
+		return test(new ItemStack(item));
 	}
 
 	default Predicate<ItemStack> getVanillaPredicate() {
@@ -264,34 +265,38 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 		return false;
 	}
 
-	default Set<ItemStackJS> getStacks() {
-		Set<ItemStackJS> set = new LinkedHashSet<>();
-
+	default void gatherStacks(ItemStackSet set) {
 		for (var stack : ItemStackJS.getList()) {
 			if (test(stack)) {
 				set.add(stack.copy());
 			}
 		}
+	}
 
+	default ItemStackSet getStacks() {
+		ItemStackSet set = new ItemStackSet();
+		gatherStacks(set);
 		return set;
 	}
 
-	default Set<Item> getVanillaItems() {
-		Set<Item> set = new LinkedHashSet<>();
-
+	default void gatherItemTypes(Set<Item> set) {
 		for (var item : KubeJSRegistries.items()) {
-			if (item != Items.AIR && testVanillaItem(item)) {
+			if (item != Items.AIR && testItem(item)) {
 				set.add(item);
 			}
 		}
+	}
 
+	default Set<Item> getItemTypes() {
+		Set<Item> set = new LinkedHashSet<>();
+		gatherItemTypes(set);
 		return set;
 	}
 
 	default Set<String> getItemIds() {
 		Set<String> ids = new LinkedHashSet<>();
 
-		for (var item : getVanillaItems()) {
+		for (var item : getItemTypes()) {
 			var id = KubeJSRegistries.items().getId(item);
 
 			if (id != null) {
@@ -310,14 +315,14 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 		return new NotIngredientJS(this);
 	}
 
-	default ItemStackJS getFirst() {
+	default ItemStack getFirst() {
 		for (var stack : getStacks()) {
 			if (!stack.isEmpty()) {
-				return stack.withCount(getCount());
+				return stack.kjs$withCount(getCount());
 			}
 		}
 
-		return ItemStackJS.EMPTY;
+		return ItemStack.EMPTY;
 	}
 
 	default IngredientJS withCount(int count) {
@@ -346,13 +351,13 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 		var set = getStacks();
 
 		if (set.size() == 1) {
-			return set.iterator().next().toJson();
+			return set.iterator().next().asKJS().toJson();
 		}
 
 		var array = new JsonArray();
 
 		for (var stackJS : set) {
-			array.add(stackJS.toJson());
+			array.add(stackJS.asKJS().toJson());
 		}
 
 		return array;
@@ -389,6 +394,6 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 	}
 
 	default Ingredient createVanillaIngredient() {
-		return Ingredient.of(getStacks().stream().map(ItemStackJS::getItemStack));
+		return Ingredient.of(getStacks().toList().stream());
 	}
 }

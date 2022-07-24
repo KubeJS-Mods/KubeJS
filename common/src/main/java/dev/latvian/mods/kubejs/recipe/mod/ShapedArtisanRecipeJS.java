@@ -25,7 +25,7 @@ public class ShapedArtisanRecipeJS extends ShapedRecipeJS {
 			getOrCreateArray("tools").add(o);
 		} else {
 			var o = new JsonObject();
-			o.addProperty("item", ingredient.getFirst().getId());
+			o.addProperty("item", ingredient.getFirst().kjs$getId());
 			o.addProperty("damage", damage);
 			getOrCreateArray("tools").add(o);
 		}

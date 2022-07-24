@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.item.ingredient;
 
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import net.minecraft.world.item.CreativeModeTab;
@@ -29,12 +28,7 @@ public class GroupIngredientJS implements IngredientJS {
 	}
 
 	@Override
-	public boolean test(ItemStackJS stack) {
-		return !stack.isEmpty() && stack.getItem().getItemCategory() == group;
-	}
-
-	@Override
-	public boolean testVanilla(ItemStack stack) {
+	public boolean test(ItemStack stack) {
 		return !stack.isEmpty() && stack.getItem().getItemCategory() == group;
 	}
 

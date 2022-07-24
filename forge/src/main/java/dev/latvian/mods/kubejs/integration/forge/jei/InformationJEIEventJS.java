@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.integration.forge.jei;
 
 import dev.latvian.mods.kubejs.event.EventJS;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import mezz.jei.api.constants.VanillaTypes;
@@ -24,7 +23,7 @@ public class InformationJEIEventJS extends EventJS {
 
 	public void add(Object o, Component[] s) {
 		registration.addIngredientInfo(
-				IngredientJS.of(o).getStacks().stream().map(ItemStackJS::getItemStack).toList(),
+				IngredientJS.of(o).getStacks().toList(),
 				VanillaTypes.ITEM_STACK,
 				s
 		);

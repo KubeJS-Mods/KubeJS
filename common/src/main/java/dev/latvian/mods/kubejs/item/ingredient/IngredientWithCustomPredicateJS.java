@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.item.ingredient;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.ItemStackSet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -26,18 +26,13 @@ public class IngredientWithCustomPredicateJS implements IngredientJS {
 	}
 
 	@Override
-	public boolean test(ItemStackJS stack) {
-		return ingredient.test(stack) && predicate.test(stack.getItemStack());
+	public boolean test(ItemStack stack) {
+		return ingredient.test(stack) && predicate.test(stack);
 	}
 
 	@Override
-	public boolean testVanilla(ItemStack stack) {
-		return ingredient.testVanilla(stack) && predicate.test(stack);
-	}
-
-	@Override
-	public boolean testVanillaItem(Item i) {
-		return ingredient.testVanillaItem(i);
+	public boolean testItem(Item i) {
+		return ingredient.testItem(i);
 	}
 
 	@Override
@@ -54,13 +49,13 @@ public class IngredientWithCustomPredicateJS implements IngredientJS {
 	}
 
 	@Override
-	public Set<ItemStackJS> getStacks() {
-		return ingredient.getStacks();
+	public void gatherStacks(ItemStackSet set) {
+		ingredient.gatherStacks(set);
 	}
 
 	@Override
-	public Set<Item> getVanillaItems() {
-		return ingredient.getVanillaItems();
+	public void gatherItemTypes(Set<Item> set) {
+		ingredient.gatherItemTypes(set);
 	}
 
 	@Override
@@ -74,7 +69,7 @@ public class IngredientWithCustomPredicateJS implements IngredientJS {
 	}
 
 	@Override
-	public ItemStackJS getFirst() {
+	public ItemStack getFirst() {
 		return ingredient.getFirst();
 	}
 

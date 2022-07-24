@@ -171,10 +171,10 @@ public abstract class RecipeJS {
 
 		if (originalRecipe != null && this instanceof CustomRecipeJS && ServerSettings.instance.useOriginalRecipeForFilters) {
 			try {
-				var out = ItemStackJS.of(originalRecipe.getResultItem());
+				var out = originalRecipe.getResultItem();
 
 				if (!out.isEmpty()) {
-					return exact ? ingredient.equals(out) : ingredient.test(out);
+					return exact ? ingredient.exactMatch(IngredientJS.of(out)) : ingredient.test(out);
 				}
 			} catch (Exception ignored) {
 			}
@@ -187,7 +187,7 @@ public abstract class RecipeJS {
 		for (var i = 0; i < outputItems.size(); i++) {
 			var out = outputItems.get(i);
 
-			if (exact ? ingredient.equals(out) : ingredient.test(out)) {
+			if (exact ? ingredient.exactMatch(out) : ingredient.test(out.getItemStack())) {
 				return i;
 			}
 		}
@@ -203,7 +203,7 @@ public abstract class RecipeJS {
 		var changed = false;
 
 		for (var j = 0; j < outputItems.size(); j++) {
-			if (exact ? i.equals(outputItems.get(j)) : i.test(outputItems.get(j))) {
+			if (exact ? i.equals(outputItems.get(j)) : i.test(outputItems.get(j).getItemStack())) {
 				outputItems.set(j, convertReplacedOutput(j, outputItems.get(j), func.apply(with.copy(), outputItems.get(j))));
 				changed = true;
 				serializeOutputs = true;

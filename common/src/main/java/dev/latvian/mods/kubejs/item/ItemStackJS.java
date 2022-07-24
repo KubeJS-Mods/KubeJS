@@ -9,11 +9,9 @@ import dev.latvian.mods.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IgnoreNBTIngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStackJS;
-import dev.latvian.mods.kubejs.item.ingredient.MatchAllIngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.ModIngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.RegexIngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.TagIngredientJS;
-import dev.latvian.mods.kubejs.item.ingredient.WeakNBTIngredientJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
@@ -33,30 +31,24 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -66,220 +58,9 @@ import java.util.stream.Collectors;
  * @author LatvianModder
  */
 public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListener<Tag>, SpecialEquality {
-	public static final ItemStackJS EMPTY = new ItemStackJS(ItemStack.EMPTY) {
-		@Override
-		public String getId() {
-			return "minecraft:air";
-		}
+	public static final ItemStackJS EMPTY = new ItemStackJS(ItemStack.EMPTY);
 
-		@Override
-		public Collection<ResourceLocation> getTags() {
-			return Set.of();
-		}
-
-		@Override
-		public boolean hasTag(ResourceLocation tag) {
-			return false;
-		}
-
-		@Override
-		public Item getItem() {
-			return Items.AIR;
-		}
-
-		@Override
-		public ItemStackJS copy() {
-			return this;
-		}
-
-		@Override
-		public void setCount(int c) {
-		}
-
-		@Override
-		public int getCount() {
-			return 0;
-		}
-
-		@Override
-		public ItemStackJS withCount(int c) {
-			return this;
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return true;
-		}
-
-		@Override
-		@Nullable
-		public CompoundTag getNbt() {
-			return null;
-		}
-
-		@Override
-		public void setNbt(@Nullable CompoundTag tag) {
-		}
-
-		@Override
-		public boolean hasNBT() {
-			return false;
-		}
-
-		@Override
-		public String getNbtString() {
-			return "null";
-		}
-
-		@Override
-		public ItemStackJS removeNBT() {
-			return this;
-		}
-
-		@Override
-		public ItemStackJS withNBT(CompoundTag nbt) {
-			return this;
-		}
-
-		@Override
-		public void setChance(double c) {
-		}
-
-		@Override
-		public double getChance() {
-			return Double.NaN;
-		}
-
-		@Override
-		public boolean hasChance() {
-			return false;
-		}
-
-		public String toString() {
-			return "Item.empty";
-		}
-
-		@Override
-		public boolean test(ItemStackJS other) {
-			return false;
-		}
-
-		@Override
-		public boolean testVanilla(ItemStack other) {
-			return false;
-		}
-
-		@Override
-		public boolean testVanillaItem(Item item) {
-			return false;
-		}
-
-		@Override
-		public Set<ItemStackJS> getStacks() {
-			return Set.of();
-		}
-
-		@Override
-		public Set<Item> getVanillaItems() {
-			return Set.of();
-		}
-
-		@Override
-		public ItemStackJS getFirst() {
-			return this;
-		}
-
-		@Override
-		public IngredientJS not() {
-			return MatchAllIngredientJS.INSTANCE;
-		}
-
-		@Override
-		public ItemStackJS withName(@Nullable Component displayName) {
-			return this;
-		}
-
-		@Override
-		public Map<String, Integer> getEnchantments() {
-			return Map.of();
-		}
-
-		@Override
-		public boolean hasEnchantment(Enchantment enchantment, int level) {
-			return false;
-		}
-
-		@Override
-		public ItemStackJS enchant(Map<?, ?> map) {
-			return this;
-		}
-
-		@Override
-		public ItemStackJS enchant(Enchantment enchantment, int level) {
-			return this;
-		}
-
-		@Override
-		public String getMod() {
-			return "minecraft";
-		}
-
-		@Override
-		public boolean areItemsEqual(ItemStackJS other) {
-			return other.isEmpty();
-		}
-
-		@Override
-		public boolean areItemsEqual(ItemStack other) {
-			return other.isEmpty();
-		}
-
-		@Override
-		public boolean isNBTEqual(ItemStackJS other) {
-			return !other.hasNBT();
-		}
-
-		@Override
-		public boolean isNBTEqual(ItemStack other) {
-			return !other.hasTag();
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			return of(o).isEmpty();
-		}
-
-		@Override
-		public boolean strongEquals(Object o) {
-			return of(o).isEmpty();
-		}
-
-		@Override
-		public JsonElement toJson() {
-			var json = new JsonObject();
-			json.addProperty("item", "minecraft:air");
-			return json;
-		}
-
-		@Override
-		public JsonElement toRawResultJson() {
-			var json = new JsonObject();
-			json.addProperty("item", "minecraft:air");
-			json.addProperty("count", 1);
-			return json;
-		}
-
-		@Override
-		public void onChanged(@Nullable Tag o) {
-		}
-
-		@Override
-		public String getItemGroup() {
-			return "";
-		}
-	};
-
-	private static List<ItemStackJS> cachedItemList;
+	private static List<ItemStack> cachedItemList;
 	private static List<String> cachedItemTypeList;
 
 	public static ItemStackJS of(@Nullable Object o) {
@@ -292,7 +73,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		} else if (o instanceof ItemStackJS js) {
 			return js;
 		} else if (o instanceof IngredientJS ingr) {
-			return ingr.getFirst();
+			return ingr.getFirst().asKJS();
 		} else if (o instanceof ItemStack stack) {
 			return stack.isEmpty() ? EMPTY : new ItemStackJS(stack);
 		} else if (o instanceof ResourceLocation id) {
@@ -317,7 +98,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			var reg = UtilsJS.parseRegex(o);
 
 			if (reg != null) {
-				return new RegexIngredientJS(reg).getFirst();
+				return new RegexIngredientJS(reg).getFirst().asKJS();
 			}
 
 			return EMPTY;
@@ -336,9 +117,9 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			}
 
 			if (s.startsWith("#")) {
-				return TagIngredientJS.createTag(s.substring(1)).getFirst().withCount(count);
+				return TagIngredientJS.createTag(s.substring(1)).getFirst().kjs$withCount(count).asKJS();
 			} else if (s.startsWith("@")) {
-				return new ModIngredientJS(s.substring(1)).getFirst().withCount(count);
+				return new ModIngredientJS(s.substring(1)).getFirst().kjs$withCount(count).asKJS();
 			} else if (s.startsWith("%")) {
 				var group = findGroup(s.substring(1));
 
@@ -350,13 +131,13 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 					return EMPTY;
 				}
 
-				return new GroupIngredientJS(group).getFirst().withCount(count);
+				return new GroupIngredientJS(group).getFirst().kjs$withCount(count).asKJS();
 			}
 
 			var reg = UtilsJS.parseRegex(s);
 
 			if (reg != null) {
-				return new RegexIngredientJS(reg).getFirst().withCount(count);
+				return new RegexIngredientJS(reg).getFirst().kjs$withCount(count).asKJS();
 			}
 
 			var item = KubeJSRegistries.items().get(new ResourceLocation(s));
@@ -405,7 +186,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 					stack.setCount(UtilsJS.parseInt(map.get("count"), 1));
 				}
 
-				return stack;
+				return stack.asKJS();
 			}
 		}
 
@@ -448,7 +229,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 			if (jsonObj.has("item")) {
 				stack = of(jsonObj.get("item").getAsString());
 			} else if (jsonObj.has("tag")) {
-				stack = TagIngredientJS.createTag(jsonObj.get("tag").getAsString()).getFirst();
+				stack = TagIngredientJS.createTag(jsonObj.get("tag").getAsString()).getFirst().asKJS();
 			}
 
 			if (stack != null) {
@@ -481,12 +262,16 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		return EMPTY;
 	}
 
-	public static List<ItemStackJS> getList() {
+	public static String toItemString(Object object) {
+		return ItemStackJS.of(object).toString();
+	}
+
+	public static List<ItemStack> getList() {
 		if (cachedItemList != null) {
 			return cachedItemList;
 		}
 
-		var set = new LinkedHashSet<ItemStackJS>();
+		var set = new LinkedHashSet<ItemStack>();
 		NonNullList<ItemStack> stackList = NonNullList.create();
 
 		for (var item : KubeJSRegistries.items()) {
@@ -498,11 +283,11 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 		for (var stack : stackList) {
 			if (!stack.isEmpty()) {
-				set.add(new ItemStackJS(stack).withCount(1));
+				set.add(stack.kjs$withCount(1));
 			}
 		}
 
-		cachedItemList = List.of(set.toArray(new ItemStackJS[0]));
+		cachedItemList = Arrays.asList(set.toArray(new ItemStack[0]));
 		return cachedItemList;
 	}
 
@@ -671,22 +456,6 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		return is;
 	}
 
-	public Component getName() {
-		return getItemStack().getHoverName();
-	}
-
-	public ItemStackJS withName(@Nullable Component displayName) {
-		var is = stack.copy();
-
-		if (displayName != null) {
-			is.setHoverName(displayName);
-		} else {
-			is.resetHoverName();
-		}
-
-		return new ItemStackJS(is);
-	}
-
 	@Override
 	public String toString() {
 		var builder = new StringBuilder();
@@ -768,12 +537,7 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	}
 
 	@Override
-	public boolean test(ItemStackJS other) {
-		return testVanilla(other.stack);
-	}
-
-	@Override
-	public boolean testVanilla(ItemStack other) {
+	public boolean test(ItemStack other) {
 		if (stack.getItem() == other.getItem()) {
 			var nbt = stack.getTag();
 			var nbt2 = other.getTag();
@@ -784,23 +548,23 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	}
 
 	@Override
-	public boolean testVanillaItem(Item item) {
+	public boolean testItem(Item item) {
 		return item == getItem();
 	}
 
 	@Override
-	public Set<ItemStackJS> getStacks() {
-		return Collections.singleton(this);
+	public void gatherStacks(ItemStackSet set) {
+		set.add(getItemStack());
 	}
 
 	@Override
-	public Set<Item> getVanillaItems() {
-		return Collections.singleton(getItem());
+	public void gatherItemTypes(Set<Item> set) {
+		set.add(getItem());
 	}
 
 	@Override
-	public ItemStackJS getFirst() {
-		return copy();
+	public ItemStack getFirst() {
+		return copy().getItemStack();
 	}
 
 	@Override
@@ -820,106 +584,8 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		return !s.isEmpty() && areItemsEqual(s) && isNBTEqual(s);
 	}
 
-	public boolean strongEquals(Object o) {
-		if (o instanceof CharSequence) {
-			return getId().equals(UtilsJS.getID(o.toString())) && getCount() == 1 && !hasNBT();
-		} else if (o instanceof ItemStack s) {
-			return getCount() == s.getCount() && areItemsEqual(s) && isNBTEqual(s);
-		}
-
-		var s = of(o);
-		return getCount() == s.getCount() && areItemsEqual(s) && isNBTEqual(s);
-	}
-
-	public Map<String, Integer> getEnchantments() {
-		var map = new HashMap<String, Integer>();
-
-		for (var entry : EnchantmentHelper.getEnchantments(getItemStack()).entrySet()) {
-			var id = KubeJSRegistries.enchantments().getId(entry.getKey());
-
-			if (id != null) {
-				map.put(id.toString(), entry.getValue());
-			}
-		}
-
-		return map;
-	}
-
-	public boolean hasEnchantment(Enchantment enchantment, int level) {
-		return EnchantmentHelper.getItemEnchantmentLevel(enchantment, stack) >= level;
-	}
-
-	public ItemStackJS enchant(Map<?, ?> enchantments) {
-		var is = this;
-
-		for (var entry : enchantments.entrySet()) {
-			var enchantment = KubeJSRegistries.enchantments().get(UtilsJS.getMCID(entry.getKey()));
-
-			if (enchantment != null && entry.getValue() instanceof Number number) {
-				is = is.enchant(enchantment, number.intValue());
-			}
-		}
-
-		return is;
-	}
-
-	public ItemStackJS enchant(Enchantment enchantment, int level) {
-		var is = stack.copy();
-
-		if (is.getItem() == Items.ENCHANTED_BOOK) {
-			EnchantedBookItem.addEnchantment(is, new EnchantmentInstance(enchantment, level));
-		} else {
-			is.enchant(enchantment, level);
-		}
-
-		return new ItemStackJS(is).withChance(getChance());
-	}
-
-	public String getMod() {
-		return Registries.getId(getItem(), Registry.ITEM_REGISTRY).getNamespace();
-	}
-
-	/*
-	public ListJS getLore() {
-		final MapJS nbt = getNbt();
-		final ListJS lore = new ListJS();
-
-		lore.changeListener = o ->
-		{
-			if (lore.isEmpty()) {
-				nbt.remove("Lore");
-			} else {
-				ListJS lore1 = new ListJS(lore.size());
-
-				for (var o1 : lore) {
-					lore1.add(Component.Serializer.toJson(Text.of(o1)));
-				}
-
-				nbt.put("Lore", lore1);
-			}
-		};
-
-		ListJS list = ListJS.of(nbt.get("Lore"));
-
-		if (list != null) {
-			for (var o : list) {
-				try {
-					lore.add(Component.Serializer.fromJson(o.toString()));
-				} catch (JsonParseException var19) {
-				}
-			}
-		}
-
-		return lore;
-	}
-	 */
-
 	public IngredientJS ignoreNBT() {
 		return new IgnoreNBTIngredientJS(this);
-	}
-
-	public IngredientJS weakNBT() {
-		return new WeakNBTIngredientJS(this);
 	}
 
 	public boolean areItemsEqual(ItemStackJS other) {
@@ -952,10 +618,6 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 
 	public float getHarvestSpeed(@Nullable BlockContainerJS block) {
 		return getItemStack().getDestroySpeed(block == null ? Blocks.AIR.defaultBlockState() : block.getBlockState());
-	}
-
-	public float getHarvestSpeed() {
-		return getHarvestSpeed(null);
 	}
 
 	@Override
@@ -1015,20 +677,8 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		}
 	}
 
-	public String getItemGroup() {
-		if (getItem().getItemCategory() == null) {
-			return "";
-		}
-
-		return getItem().getItemCategory().getRecipeFolderName();
-	}
-
 	@Override
 	public Set<String> getItemIds() {
 		return Collections.singleton(getId());
-	}
-
-	public CompoundTag getTypeData() {
-		return getItem().kjs$getTypeData();
 	}
 }

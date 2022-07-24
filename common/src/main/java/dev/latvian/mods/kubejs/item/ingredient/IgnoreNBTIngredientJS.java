@@ -4,10 +4,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.ItemStackSet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -21,28 +21,23 @@ public final class IgnoreNBTIngredientJS implements IngredientJS {
 	}
 
 	@Override
-	public boolean test(ItemStackJS stack) {
-		return item.areItemsEqual(stack);
-	}
-
-	@Override
-	public boolean testVanilla(ItemStack stack) {
+	public boolean test(ItemStack stack) {
 		return item.getItem() == stack.getItem();
 	}
 
 	@Override
-	public boolean testVanillaItem(Item i) {
+	public boolean testItem(Item i) {
 		return item.getItem() == i;
 	}
 
 	@Override
-	public Set<ItemStackJS> getStacks() {
-		return item.getStacks();
+	public void gatherStacks(ItemStackSet set) {
+		item.gatherStacks(set);
 	}
 
 	@Override
-	public Set<Item> getVanillaItems() {
-		return Collections.singleton(item.getItem());
+	public void gatherItemTypes(Set<Item> set) {
+		set.add(item.getItem());
 	}
 
 	@Override

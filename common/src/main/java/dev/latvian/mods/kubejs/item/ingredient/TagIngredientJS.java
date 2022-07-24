@@ -5,12 +5,11 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.ItemStackSet;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -22,7 +21,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -62,12 +60,7 @@ public class TagIngredientJS implements IngredientJS {
 	}
 
 	@Override
-	public boolean test(ItemStackJS stack) {
-		return !stack.isEmpty() && testVanilla(stack.getItemStack());
-	}
-
-	@Override
-	public boolean testVanilla(ItemStack stack) {
+	public boolean test(ItemStack stack) {
 		if (stack.isEmpty()) {
 			return false;
 		}
@@ -75,7 +68,7 @@ public class TagIngredientJS implements IngredientJS {
 	}
 
 	@Override
-	public boolean testVanillaItem(Item item) {
+	public boolean testItem(Item item) {
 		if (item == Items.AIR) {
 			return false;
 		}
@@ -84,30 +77,26 @@ public class TagIngredientJS implements IngredientJS {
 	}
 
 	@Override
-	public Set<ItemStackJS> getStacks() {
-		return Util.make(new LinkedHashSet<>(), set -> {
-			for (var holder : getHolders()) {
-				set.add(new ItemStackJS(new ItemStack(holder)));
-			}
-		});
-	}
-
-	@Override
-	public Set<Item> getVanillaItems() {
-		return Util.make(new LinkedHashSet<>(), set -> {
-			for (var holder : getHolders()) {
-				set.add(holder.value());
-			}
-		});
-	}
-
-	@Override
-	public ItemStackJS getFirst() {
+	public void gatherStacks(ItemStackSet set) {
 		for (var holder : getHolders()) {
-			return new ItemStackJS(new ItemStack(holder));
+			set.addItem(holder.value());
+		}
+	}
+
+	@Override
+	public void gatherItemTypes(Set<Item> set) {
+		for (var holder : getHolders()) {
+			set.add(holder.value());
+		}
+	}
+
+	@Override
+	public ItemStack getFirst() {
+		for (var holder : getHolders()) {
+			return new ItemStack(holder);
 		}
 
-		return ItemStackJS.EMPTY;
+		return ItemStack.EMPTY;
 	}
 
 	@Override

@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.entity;
 
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.level.LevelPlatformHelper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.world.InteractionHand;
@@ -223,7 +222,7 @@ public class LivingEntityJS extends EntityJS {
 
 	public boolean isHoldingInAnyHand(Object ingredient) {
 		var i = IngredientJS.of(ingredient);
-		return i.testVanilla(minecraftLivingEntity.getItemInHand(InteractionHand.MAIN_HAND)) || i.testVanilla(minecraftLivingEntity.getItemInHand(InteractionHand.OFF_HAND));
+		return i.test(minecraftLivingEntity.getItemInHand(InteractionHand.MAIN_HAND)) || i.test(minecraftLivingEntity.getItemInHand(InteractionHand.OFF_HAND));
 	}
 
 	public float getMovementSpeed() {

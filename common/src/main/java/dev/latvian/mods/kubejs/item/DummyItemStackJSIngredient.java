@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStackJS;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * @author LatvianModder
@@ -17,7 +18,7 @@ public class DummyItemStackJSIngredient implements IngredientJS {
 	}
 
 	@Override
-	public boolean test(ItemStackJS stack) {
+	public boolean test(ItemStack stack) {
 		return false;
 	}
 

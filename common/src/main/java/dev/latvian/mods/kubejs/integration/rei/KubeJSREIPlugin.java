@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.integration.rei;
 
 import dev.architectury.event.EventResult;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
@@ -36,7 +35,7 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 
 	public KubeJSREIPlugin() {
 		entryWrappers.clear();
-		entryWrappers.put(VanillaEntryTypes.ITEM, o -> EntryIngredients.ofItemStacks(CollectionUtils.map(IngredientJS.of(o).getStacks(), ItemStackJS::getItemStack)));
+		entryWrappers.put(VanillaEntryTypes.ITEM, o -> EntryIngredients.ofItemStacks(IngredientJS.of(o).getStacks().toList()));
 		entryWrappers.put(VanillaEntryTypes.FLUID, o -> EntryIngredients.of(FluidStackJS.of(o).getFluidStack()));
 		KubeJSAddREIWrapperEvent.EVENT.invoker().accept(entryWrappers::put);
 	}

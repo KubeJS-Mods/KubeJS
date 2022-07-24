@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.player;
 
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
@@ -11,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.UserBanListEntry;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.Nullable;
 
@@ -123,7 +123,7 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	}
 
 	@Override
-	public void setMouseItem(ItemStackJS item) {
+	public void setMouseItem(ItemStack item) {
 		super.setMouseItem(item);
 
 		if (minecraftPlayer.connection != null) {

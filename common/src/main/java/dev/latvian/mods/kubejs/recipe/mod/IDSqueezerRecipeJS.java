@@ -71,7 +71,7 @@ public class IDSqueezerRecipeJS extends RecipeJS {
 				var item = obj.get("item");
 				return super.parseResultItem(item.isJsonObject() ? item.getAsJsonObject() : item.getAsString());
 			} else {
-				return parseIngredientItem(o).getFirst();
+				return parseIngredientItem(o).getFirst().asKJS();
 			}
 		} else {
 			return super.parseResultItem(o);

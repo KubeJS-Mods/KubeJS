@@ -2,12 +2,10 @@ package dev.latvian.mods.kubejs.item.ingredient;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.architectury.platform.Platform;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.ItemStackSet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
@@ -15,34 +13,17 @@ import java.util.Set;
  * @author LatvianModder
  */
 public final class WeakNBTIngredientJS implements IngredientJS {
-	private final ItemStackJS item;
+	private final ItemStack item;
 
-	public WeakNBTIngredientJS(ItemStackJS i) {
+	public WeakNBTIngredientJS(ItemStack i) {
 		item = i;
 	}
 
 	@Override
-	public boolean test(ItemStackJS stack) {
-		if (item.areItemsEqual(stack) && item.hasNBT() == stack.hasNBT()) {
-			if (item.hasNBT()) {
-				for (var key : item.getNbt().getAllKeys()) {
-					if (!Objects.equals(item.getNbt().get(key), stack.getNbt().get(key))) {
-						return false;
-					}
-				}
-			}
-
-			return true;
-		}
-
-		return false;
-	}
-
-	@Override
-	public boolean testVanilla(ItemStack stack) {
-		if (item.areItemsEqual(stack) && item.hasNBT() == stack.hasTag()) {
-			if (item.hasNBT()) {
-				var t = item.getNbt();
+	public boolean test(ItemStack stack) {
+		if (item.getItem() == stack.getItem() && item.hasTag() == stack.hasTag()) {
+			if (item.hasTag()) {
+				var t = item.getTag();
 
 				for (var key : t.getAllKeys()) {
 					if (!Objects.equals(t.get(key), stack.getTag().get(key))) {
@@ -58,18 +39,18 @@ public final class WeakNBTIngredientJS implements IngredientJS {
 	}
 
 	@Override
-	public boolean testVanillaItem(Item i) {
+	public boolean testItem(Item i) {
 		return item.getItem() == i;
 	}
 
 	@Override
-	public Set<ItemStackJS> getStacks() {
-		return item.getStacks();
+	public void gatherStacks(ItemStackSet set) {
+		set.add(item);
 	}
 
 	@Override
-	public Set<Item> getVanillaItems() {
-		return Collections.singleton(item.getItem());
+	public void gatherItemTypes(Set<Item> set) {
+		set.add(item.getItem());
 	}
 
 	@Override
@@ -80,11 +61,11 @@ public final class WeakNBTIngredientJS implements IngredientJS {
 	@Override
 	public JsonElement toJson() {
 		var json = new JsonObject();
-		json.addProperty("item", item.getId());
+		json.addProperty("item", item.kjs$getId());
 
-		if (item.hasNBT()) {
+		if (item.hasTag()) {
 			json.addProperty("type", "forge:partial_nbt");
-			json.addProperty("nbt", item.getNbtString());
+			json.addProperty("nbt", item.kjs$getNbtString());
 		}
 
 		return json;

@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.item.ingredient;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.ItemStackSet;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -58,18 +59,13 @@ public class IngredientStackJS implements IngredientJS {
 	}
 
 	@Override
-	public boolean test(ItemStackJS stack) {
+	public boolean test(ItemStack stack) {
 		return ingredient.test(stack);
 	}
 
 	@Override
-	public boolean testVanilla(ItemStack stack) {
-		return ingredient.testVanilla(stack);
-	}
-
-	@Override
-	public boolean testVanillaItem(Item item) {
-		return ingredient.testVanillaItem(item);
+	public boolean testItem(Item item) {
+		return ingredient.testItem(item);
 	}
 
 	@Override
@@ -83,13 +79,13 @@ public class IngredientStackJS implements IngredientJS {
 	}
 
 	@Override
-	public Set<ItemStackJS> getStacks() {
-		return ingredient.getStacks();
+	public void gatherStacks(ItemStackSet set) {
+		ingredient.gatherStacks(set);
 	}
 
 	@Override
-	public Set<Item> getVanillaItems() {
-		return ingredient.getVanillaItems();
+	public void gatherItemTypes(Set<Item> set) {
+		ingredient.gatherItemTypes(set);
 	}
 
 	@Override
@@ -103,8 +99,8 @@ public class IngredientStackJS implements IngredientJS {
 	}
 
 	@Override
-	public ItemStackJS getFirst() {
-		return ingredient.getFirst().withCount(getCount());
+	public ItemStack getFirst() {
+		return ingredient.getFirst().kjs$withCount(getCount());
 	}
 
 	@Override

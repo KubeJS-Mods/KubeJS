@@ -232,20 +232,22 @@ public class KubeJSCommands {
 
 	private static int hand(ServerPlayer player, InteractionHand hand) {
 		player.sendSystemMessage(Component.literal("Item in hand:"));
-		var stack = ItemStackJS.of(player.getItemInHand(hand));
-		player.sendSystemMessage(copy(stack.toString(), ChatFormatting.GREEN, "Item ID"));
+		var stack = player.getItemInHand(hand);
+		player.sendSystemMessage(copy(ItemStackJS.toItemString(stack), ChatFormatting.GREEN, "Item ID"));
 
-		List<ResourceLocation> tags = new ArrayList<>(stack.getTags());
+		List<ResourceLocation> tags = new ArrayList<>(stack.kjs$getTags());
 		tags.sort(null);
 
 		for (var id : tags) {
 			player.sendSystemMessage(copy("'#" + id + "'", ChatFormatting.YELLOW, "Item Tag [" + TagIngredientJS.createTag(id.toString()).getStacks().size() + " items]"));
 		}
 
-		player.sendSystemMessage(copy("'@" + stack.getMod() + "'", ChatFormatting.AQUA, "Mod [" + new ModIngredientJS(stack.getMod()).getStacks().size() + " items]"));
+		player.sendSystemMessage(copy("'@" + stack.kjs$getMod() + "'", ChatFormatting.AQUA, "Mod [" + new ModIngredientJS(stack.kjs$getMod()).getStacks().size() + " items]"));
 
-		if (stack.getItem().getItemCategory() != null) {
-			player.sendSystemMessage(copy("'%" + stack.getItemGroup() + "'", ChatFormatting.LIGHT_PURPLE, "Item Group [" + new GroupIngredientJS(stack.getItem().getItemCategory()).getStacks().size() + " items]"));
+		var cat = stack.getItem().getItemCategory();
+
+		if (cat != null) {
+			player.sendSystemMessage(copy("'%" + cat.getRecipeFolderName() + "'", ChatFormatting.LIGHT_PURPLE, "Item Group [" + new GroupIngredientJS(cat).getStacks().size() + " items]"));
 		}
 
 		return 1;

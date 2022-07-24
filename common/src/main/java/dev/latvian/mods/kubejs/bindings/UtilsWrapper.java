@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.bindings;
 
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.entity.EntityJS;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -14,6 +13,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
@@ -130,11 +130,11 @@ public interface UtilsWrapper {
 		return System.currentTimeMillis();
 	}
 
-	static List<ItemStackJS> rollChestLoot(ResourceLocation id) {
+	static List<ItemStack> rollChestLoot(ResourceLocation id) {
 		return rollChestLoot(id, null);
 	}
 
-	static List<ItemStackJS> rollChestLoot(ResourceLocation id, @Nullable EntityJS entity) {
+	static List<ItemStack> rollChestLoot(ResourceLocation id, @Nullable EntityJS entity) {
 		return UtilsJS.rollChestLoot(id, entity);
 	}
 

@@ -1,12 +1,10 @@
 package dev.latvian.mods.kubejs.item.ingredient;
 
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.ItemStackSet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * @author LatvianModder
@@ -18,35 +16,26 @@ public class MatchAllIngredientJS implements IngredientJS {
 	}
 
 	@Override
-	public boolean test(ItemStackJS stack) {
+	public boolean test(ItemStack stack) {
 		return !stack.isEmpty();
 	}
 
 	@Override
-	public boolean testVanilla(ItemStack stack) {
-		return !stack.isEmpty();
-	}
-
-	@Override
-	public boolean testVanillaItem(Item item) {
+	public boolean testItem(Item item) {
 		return item != Items.AIR;
 	}
 
 	@Override
-	public Set<ItemStackJS> getStacks() {
-		Set<ItemStackJS> set = new LinkedHashSet<>();
-
+	public void gatherStacks(ItemStackSet set) {
 		for (var stack : ItemStackJS.getList()) {
 			set.add(stack.copy());
 		}
-
-		return set;
 	}
 
 	@Override
-	public ItemStackJS getFirst() {
+	public ItemStack getFirst() {
 		var list = ItemStackJS.getList();
-		return list.isEmpty() ? ItemStackJS.EMPTY : list.get(0).copy();
+		return list.isEmpty() ? ItemStack.EMPTY : list.get(0).copy();
 	}
 
 	@Override

@@ -35,7 +35,7 @@ public class JEIPlugin implements IModPlugin {
 		runtime = r;
 		BuiltinKubeJSPlugin.GLOBAL.put("jeiRuntime", runtime);
 
-		JEIKubeJSEvents.HIDE_ITEMS.post(new HideJEIEventJS<>(runtime, VanillaTypes.ITEM_STACK, object -> IngredientJS.of(object)::testVanilla, stack -> !stack.isEmpty()));
+		JEIKubeJSEvents.HIDE_ITEMS.post(new HideJEIEventJS<>(runtime, VanillaTypes.ITEM_STACK, object -> IngredientJS.of(object)::test, stack -> !stack.isEmpty()));
 
 		JEIKubeJSEvents.HIDE_FLUIDS.post(new HideJEIEventJS<>(runtime, ForgeTypes.FLUID_STACK, object -> {
 			var fs = FluidStackJS.of(object);

@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -16,34 +17,34 @@ import java.util.Map;
  * @author LatvianModder
  */
 public class ItemWrapper {
-	public static ItemStackJS of(ItemStackJS in) {
+	public static ItemStack of(ItemStack in) {
 		return in;
 	}
 
-	public static ItemStackJS of(ItemStackJS in, int count) {
+	public static ItemStack of(ItemStack in, int count) {
 		in.setCount(count);
 		return in;
 	}
 
-	public static ItemStackJS of(ItemStackJS in, CompoundTag tag) {
-		return in.withNBT(tag);
+	public static ItemStack of(ItemStack in, CompoundTag tag) {
+		return in.kjs$withNBT(tag);
 	}
 
-	public static ItemStackJS of(ItemStackJS in, int count, CompoundTag nbt) {
-		var is = in.withNBT(nbt);
+	public static ItemStack of(ItemStack in, int count, CompoundTag nbt) {
+		var is = in.kjs$withNBT(nbt);
 		is.setCount(count);
 		return is;
 	}
 
-	public static ItemStackJS withNBT(ItemStackJS in, CompoundTag nbt) {
-		return in.withNBT(nbt);
+	public static ItemStack withNBT(ItemStack in, CompoundTag nbt) {
+		return in.kjs$withNBT(nbt);
 	}
 
 	public static ItemStackJS withChance(ItemStackJS in, double c) {
 		return in.withChance(c);
 	}
 
-	public static List<ItemStackJS> getList() {
+	public static List<ItemStack> getList() {
 		return ItemStackJS.getList();
 	}
 

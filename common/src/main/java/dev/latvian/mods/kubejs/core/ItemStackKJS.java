@@ -166,7 +166,7 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 	}
 
 	default IngredientJS kjs$weakNBT() {
-		return new WeakNBTIngredientJS(ItemStackJS.of(this));
+		return new WeakNBTIngredientJS(kjs$self());
 	}
 
 	default boolean kjs$areItemsEqual(ItemStack other) {

@@ -18,9 +18,9 @@ public class ItemModelPropertiesEventJS extends StartupEventJS {
 		if (ingredient instanceof MatchAllIngredientJS) {
 			registerAll(overwriteId, callback);
 		} else {
-			ingredient.getStacks().forEach(stack -> {
+			for (var stack : ingredient.getStacks()) {
 				ItemPropertiesRegistry.register(stack.getItem(), new ResourceLocation(KubeJS.appendModId(overwriteId)), wrap(callback));
-			});
+			}
 		}
 	}
 

@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientActionCallback;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -34,7 +35,7 @@ public class IngredientWrapper {
 		return of(object).withCount(Math.max(1, count));
 	}
 
-	public static IngredientJS custom(Predicate<ItemStackJS> predicate) {
+	public static IngredientJS custom(Predicate<ItemStack> predicate) {
 		return predicate::test;
 	}
 

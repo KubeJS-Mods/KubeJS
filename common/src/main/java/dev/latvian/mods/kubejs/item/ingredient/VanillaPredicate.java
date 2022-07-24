@@ -16,6 +16,6 @@ public class VanillaPredicate implements Predicate<ItemStack> {
 
 	@Override
 	public boolean test(ItemStack stack) {
-		return ingredient.testVanilla(stack);
+		return ingredient.test(stack);
 	}
 }

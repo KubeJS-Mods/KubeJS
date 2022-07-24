@@ -31,7 +31,7 @@ public class ModifyRecipeCraftingGrid {
 		for (int i = 0; i < container.getContainerSize(); i++) {
 			ItemStack stack = container.getItem(i);
 
-			if (ingredient.testVanilla(stack)) {
+			if (ingredient.test(stack)) {
 				list.add(ItemStackJS.of(stack.copy()));
 			}
 		}
@@ -47,7 +47,7 @@ public class ModifyRecipeCraftingGrid {
 		for (int i = 0; i < container.getContainerSize(); i++) {
 			ItemStack stack = container.getItem(i);
 
-			if (ingredient.testVanilla(stack)) {
+			if (ingredient.test(stack)) {
 				if (skip > 0) {
 					skip--;
 				} else {

@@ -17,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -104,11 +105,11 @@ public abstract class PlayerJS<P extends Player> extends LivingEntityJS implemen
 		}
 	}
 
-	public void setMouseItem(ItemStackJS item) {
+	public void setMouseItem(ItemStack item) {
 		if (minecraftPlayer.containerMenu != null) {
-			minecraftPlayer.containerMenu.setCarried(item.getItemStack());
+			minecraftPlayer.containerMenu.setCarried(item);
 		} else {
-			minecraftPlayer.inventoryMenu.setCarried(item.getItemStack());
+			minecraftPlayer.inventoryMenu.setCarried(item);
 		}
 	}
 

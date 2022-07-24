@@ -43,6 +43,6 @@ public class IngredientActionFilter {
 	}
 
 	public boolean checkFilter(int index, ItemStack stack) {
-		return (filterIndex == -1 || filterIndex == index) && (filterIngredient == null || filterIngredient.testVanilla(stack));
+		return (filterIndex == -1 || filterIndex == index) && (filterIngredient == null || filterIngredient.test(stack));
 	}
 }

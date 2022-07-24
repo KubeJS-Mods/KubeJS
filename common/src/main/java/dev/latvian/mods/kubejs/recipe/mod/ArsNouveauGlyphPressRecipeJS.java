@@ -27,7 +27,7 @@ public class ArsNouveauGlyphPressRecipeJS extends RecipeJS {
 		}
 
 		if (serializeInputs) {
-			json.addProperty("input", inputItems.get(0).getFirst().getId());
+			json.addProperty("input", inputItems.get(0).getFirst().kjs$getId());
 		}
 	}
 }
