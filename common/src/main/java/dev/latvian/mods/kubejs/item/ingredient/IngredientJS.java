@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.item.ingredient;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
-import dev.latvian.mods.kubejs.core.IngredientKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
@@ -112,7 +111,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 
 			List<IngredientJS> in = new ArrayList<>();
 
-			for (var stack : ((IngredientKJS) o).getItemsKJS()) {
+			for (var stack : ingr.getItems()) {
 				if (!stack.isEmpty()) {
 					in.add(ItemStackJS.of(stack));
 				}

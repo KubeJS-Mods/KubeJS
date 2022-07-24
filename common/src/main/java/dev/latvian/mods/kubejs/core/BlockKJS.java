@@ -63,33 +63,25 @@ public interface BlockKJS extends BlockBuilderProvider {
 		kjs$setMaterialRaw(m);
 
 		for (var state : kjs$getBlockStates()) {
-			if (state instanceof BlockStateKJS stateKJS) {
-				stateKJS.kjs$setMaterial(m);
-			}
+			state.kjs$setMaterial(m);
 		}
 	}
 
 	default void kjs$setDestroySpeed(float v) {
 		for (var state : kjs$getBlockStates()) {
-			if (state instanceof BlockStateKJS stateKJS) {
-				stateKJS.kjs$setDestroySpeed(v);
-			}
+			state.kjs$setDestroySpeed(v);
 		}
 	}
 
 	default void kjs$setLightEmission(int v) {
 		for (var state : kjs$getBlockStates()) {
-			if (state instanceof BlockStateKJS stateKJS) {
-				stateKJS.kjs$setLightEmission(v);
-			}
+			state.kjs$setLightEmission(v);
 		}
 	}
 
 	default void kjs$setRequiresTool(boolean v) {
 		for (var state : kjs$getBlockStates()) {
-			if (state instanceof BlockStateKJS stateKJS) {
-				stateKJS.kjs$setRequiresTool(v);
-			}
+			state.kjs$setRequiresTool(v);
 		}
 	}
 

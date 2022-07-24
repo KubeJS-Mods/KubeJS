@@ -10,7 +10,6 @@ import net.minecraft.world.level.material.Material;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 /**
@@ -19,26 +18,27 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(BlockBehaviour.class)
 @RemapPrefixForJS("kjs$")
 public abstract class BlockBehaviourMixin implements BlockKJS {
-	@Unique
-	private BlockBuilder blockBuilderKJS;
-
-	@Unique
-	private final CompoundTag typeDataKJS = new CompoundTag();
+	private BlockBuilder kjs$blockBuilder;
+	private CompoundTag kjs$typeData;
 
 	@Override
 	@Nullable
 	public BlockBuilder kjs$getBlockBuilder() {
-		return blockBuilderKJS;
+		return kjs$blockBuilder;
 	}
 
 	@Override
 	public void kjs$setBlockBuilder(BlockBuilder b) {
-		blockBuilderKJS = b;
+		kjs$blockBuilder = b;
 	}
 
 	@Override
 	public CompoundTag kjs$getTypeData() {
-		return typeDataKJS;
+		if (kjs$typeData == null) {
+			kjs$typeData = new CompoundTag();
+		}
+
+		return kjs$typeData;
 	}
 
 	@Override

@@ -1,13 +1,17 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import net.minecraft.world.item.ItemStack;
+import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.world.item.crafting.Ingredient;
 
+@RemapPrefixForJS("kjs$")
 public interface IngredientKJS extends AsKJS<IngredientJS> {
 	@Override
 	default IngredientJS asKJS() {
 		return IngredientJS.of(this);
 	}
 
-	ItemStack[] getItemsKJS();
+	default Ingredient kjs$self() {
+		throw new NoMixinException();
+	}
 }

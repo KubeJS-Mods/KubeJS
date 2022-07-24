@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.item.ingredient.forge;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.core.IngredientKJS;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.FriendlyByteBuf;
@@ -47,9 +46,8 @@ public class CustomPredicateIngredient extends Ingredient {
 	}
 
 	@Override
-	@NotNull
 	public ItemStack[] getItems() {
-		return ((IngredientKJS) ingredient).getItemsKJS();
+		return ingredient.getItems();
 	}
 
 	@Override

@@ -25,7 +25,6 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -40,11 +39,8 @@ import java.util.List;
 @Mixin(value = Item.class, priority = 1001)
 @RemapPrefixForJS("kjs$")
 public abstract class ItemMixin implements ItemKJS {
-	@Unique
 	private ItemBuilder kjs$itemBuilder;
-
-	@Unique
-	private final CompoundTag kjs$typeData = new CompoundTag();
+	private CompoundTag kjs$typeData;
 
 	@Override
 	@Nullable
@@ -65,6 +61,10 @@ public abstract class ItemMixin implements ItemKJS {
 
 	@Override
 	public CompoundTag kjs$getTypeData() {
+		if (kjs$typeData == null) {
+			kjs$typeData = new CompoundTag();
+		}
+
 		return kjs$typeData;
 	}
 
