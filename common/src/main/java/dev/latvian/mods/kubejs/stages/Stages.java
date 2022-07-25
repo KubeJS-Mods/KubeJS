@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.stages;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.architectury.hooks.level.entity.PlayerHooks;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.core.PlayerKJS;
 import dev.latvian.mods.kubejs.net.AddStageMessage;
 import dev.latvian.mods.kubejs.net.RemoveStageMessage;
@@ -24,18 +23,14 @@ public abstract class Stages {
 	private static final Event<Consumer<StageChangeEvent>> REMOVED = EventFactory.createConsumerLoop();
 
 	private static Stages createEntityStages(Player player) {
-		if (PlayerHooks.isFake(player) || KubeJS.PROXY.isClientButNotSelf(player)) {
+		if (PlayerHooks.isFake(player)) {
 			return NoStages.NULL_INSTANCE;
 		}
 
 		var event = new StageCreationEvent(player);
+		event.setPlayerStages(new TagWrapperStages(player));
 		OVERRIDE_CREATION.invoker().accept(event);
-
-		if (event.getPlayerStages() != null) {
-			return event.getPlayerStages();
-		}
-
-		return new TagWrapperStages(player);
+		return event.getPlayerStages();
 	}
 
 	public static void overrideCreation(Consumer<StageCreationEvent> event) {

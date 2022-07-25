@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.item;
 
-import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -18,8 +17,8 @@ public class FoodEatenEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	public EntityJS getEntity() {
-		return entityOf(player);
+	public ServerPlayer getEntity() {
+		return player;
 	}
 
 	public ItemStackJS getItem() {

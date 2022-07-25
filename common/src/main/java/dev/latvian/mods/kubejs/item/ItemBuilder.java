@@ -8,11 +8,8 @@ import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
-import dev.latvian.mods.kubejs.entity.LivingEntityJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
-import dev.latvian.mods.kubejs.level.LevelJS;
-import dev.latvian.mods.kubejs.player.PlayerJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
@@ -24,7 +21,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.CreativeModeTab;
@@ -35,6 +34,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -372,16 +372,16 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	@FunctionalInterface
 	public interface UseCallback {
-		boolean use(LevelJS level, PlayerJS<?> player, InteractionHand interactionHand);
+		boolean use(Level level, Player player, InteractionHand interactionHand);
 	}
 
 	@FunctionalInterface
 	public interface FinishUsingCallback {
-		ItemStackJS finishUsingItem(ItemStackJS itemStack, LevelJS level, LivingEntityJS livingEntity);
+		ItemStack finishUsingItem(ItemStack itemStack, Level level, LivingEntity livingEntity);
 	}
 
 	@FunctionalInterface
 	public interface ReleaseUsingCallback {
-		void releaseUsing(ItemStackJS itemStack, LevelJS level, LivingEntityJS user, int tick);
+		void releaseUsing(ItemStack itemStack, Level level, LivingEntity user, int tick);
 	}
 }

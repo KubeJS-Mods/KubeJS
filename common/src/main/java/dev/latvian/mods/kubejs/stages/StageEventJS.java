@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.stages;
 
-import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * @author LatvianModder
@@ -18,8 +18,8 @@ public class StageEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	public EntityJS getEntity() {
-		return entityOf(event.getPlayer());
+	public Player getEntity() {
+		return event.getPlayer();
 	}
 
 	public String getStage() {

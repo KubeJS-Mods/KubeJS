@@ -5,7 +5,6 @@ import dev.architectury.event.events.common.ExplosionEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.TickEvent;
 import dev.latvian.mods.kubejs.bindings.event.LevelEvents;
-import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;
@@ -26,27 +25,15 @@ public class KubeJSWorldEventHandler {
 	}
 
 	private static void levelLoad(ServerLevel level) {
-		if (level.getServer().kjs$getLevelMap().containsKey(level.dimension().location())) {
-			var l = new ServerLevelJS(level.getServer(), level);
-			level.getServer().kjs$getLevelMap().put(level.dimension().location(), l);
-			level.getServer().kjs$updateWorldList();
-			AttachDataEvent.forLevel(l).invoke();
-			LevelEvents.LOADED.post(l.getDimension(), new SimpleLevelEventJS(l));
-		}
+		LevelEvents.LOADED.post(level.dimension().location(), new SimpleLevelEventJS(level));
 	}
 
 	private static void levelUnload(ServerLevel level) {
-		if (level.getServer().kjs$getLevelMap().containsKey(level.dimension().location())) {
-			var l = level.getServer().kjs$wrapMinecraftLevel(level);
-			LevelEvents.UNLOADED.post(l.getDimension(), new SimpleLevelEventJS(l));
-			level.getServer().kjs$getLevelMap().remove(l.getDimension());
-			level.getServer().kjs$updateWorldList();
-		}
+		LevelEvents.UNLOADED.post(level.dimension().location(), new SimpleLevelEventJS(level));
 	}
 
 	private static void levelPostTick(ServerLevel level) {
-		var l = level.getServer().kjs$wrapMinecraftLevel(level);
-		LevelEvents.TICK.post(l.getDimension(), new SimpleLevelEventJS(l));
+		LevelEvents.TICK.post(level.dimension().location(), new SimpleLevelEventJS(level));
 	}
 
 	private static EventResult preExplosion(Level level, Explosion explosion) {

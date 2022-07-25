@@ -1,30 +1,24 @@
 package dev.latvian.mods.kubejs.integration.forge.gamestages;
 
 import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.player.PlayerDataJS;
-import dev.latvian.mods.kubejs.script.AttachDataEvent;
+import dev.latvian.mods.kubejs.stages.StageCreationEvent;
+import dev.latvian.mods.kubejs.stages.Stages;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.ModList;
 
 /**
  * @author LatvianModder
  */
 public class GameStagesIntegration extends KubeJSPlugin {
 
-	private boolean gameStagesLoaded = false;
-
+	@Override
 	public void init() {
-		if (ModList.get().isLoaded("gamestages")) {
-			gameStagesLoaded = true;
-			MinecraftForge.EVENT_BUS.register(GameStagesIntegration.class);
-			// FIXME: Gamestages Stages.overrideCreation(event -> event.setPlayerStages(new GameStagesWrapper(event.getPlayer())));
-		}
+		MinecraftForge.EVENT_BUS.register(GameStagesIntegration.class);
+		// FIXME: Gamestages Stages.overrideCreation(event -> event.setPlayerStages(new GameStagesWrapper(event.getPlayer())));
+		Stages.overrideCreation(this::override);
 	}
 
-	public void attachPlayerData(AttachDataEvent<PlayerDataJS> event) {
-		if (gameStagesLoaded) {
-			event.add("gamestages", new GameStagesPlayerData(event.parent()));
-		}
+	private void override(StageCreationEvent event) {
+		// event.setPlayerStages(NoStages.NULL_INSTANCE);
 	}
 
 	/* FIXME: Gamestages

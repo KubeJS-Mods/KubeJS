@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.recipe;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.MatchAllIngredientJS;
-import dev.latvian.mods.kubejs.player.PlayerJS;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.CraftingMenu;
@@ -77,11 +77,11 @@ public class ModifyRecipeCraftingGrid {
 	}
 
 	@Nullable
-	public PlayerJS<?> getPlayer() {
-		if (container.menu instanceof CraftingMenu menu && menu.player.asKJS() instanceof PlayerJS<?> player) {
-			return player;
-		} else if (container.menu instanceof InventoryMenu menu && menu.owner.asKJS() instanceof PlayerJS<?> player) {
-			return player;
+	public Player getPlayer() {
+		if (container.menu instanceof CraftingMenu menu && menu.player != null) {
+			return menu.player;
+		} else if (container.menu instanceof InventoryMenu menu && menu.owner != null) {
+			return menu.owner;
 		}
 
 		return null;

@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.entity;
 
-import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
@@ -17,12 +16,12 @@ public class EntitySpawnedEventJS extends EntityEventJS {
 	}
 
 	@Override
-	public LevelJS getLevel() {
-		return levelOf(level);
+	public Level getLevel() {
+		return level;
 	}
 
 	@Override
-	public EntityJS getEntity() {
-		return entityOf(entity);
+	public Entity getEntity() {
+		return entity;
 	}
 }

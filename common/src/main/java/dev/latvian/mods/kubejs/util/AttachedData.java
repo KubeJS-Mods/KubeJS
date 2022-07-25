@@ -5,14 +5,18 @@ import java.util.HashMap;
 /**
  * @author LatvianModder
  */
-public class AttachedData extends HashMap<String, Object> {
-	private final Object parent;
+public class AttachedData<T> extends HashMap<String, Object> {
+	private final T parent;
 
-	public AttachedData(Object p) {
+	public AttachedData(T p) {
 		parent = p;
 	}
 
-	public Object getParent() {
+	public T getParent() {
 		return parent;
+	}
+
+	public void add(String key, Object data) {
+		put(key, data);
 	}
 }

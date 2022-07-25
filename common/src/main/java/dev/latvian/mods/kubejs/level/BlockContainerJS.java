@@ -5,12 +5,9 @@ import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.block.MaterialJS;
 import dev.latvian.mods.kubejs.block.MaterialListJS;
-import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.item.InventoryJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
-import dev.latvian.mods.kubejs.player.PlayerJS;
-import dev.latvian.mods.kubejs.player.ServerPlayerJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
@@ -20,7 +17,9 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -65,8 +64,8 @@ public class BlockContainerJS implements SpecialEquality {
 		cachedEntity = null;
 	}
 
-	public LevelJS getLevel() {
-		return UtilsJS.getLevel(minecraftLevel);
+	public Level getLevel() {
+		return minecraftLevel;
 	}
 
 	public BlockPos getPos() {
@@ -296,21 +295,21 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	@Nullable
-	public EntityJS createEntity(ResourceLocation id) {
-		var entity = getLevel().createEntity(id);
+	public Entity createEntity(ResourceLocation id) {
+		var entity = getLevel().kjs$createEntity(id);
 
 		if (entity != null) {
-			entity.setPosition(this);
+			entity.kjs$setPosition(this);
 		}
 
 		return entity;
 	}
 
-	public void spawnLightning(boolean effectOnly, @Nullable EntityJS player) {
+	public void spawnLightning(boolean effectOnly, @Nullable ServerPlayer player) {
 		if (minecraftLevel instanceof ServerLevel) {
 			var e = EntityType.LIGHTNING_BOLT.create(minecraftLevel);
 			e.moveTo(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D);
-			e.setCause(player instanceof ServerPlayerJS serverPlayer ? serverPlayer.minecraftPlayer : null);
+			e.setCause(player);
 			e.setVisualOnly(effectOnly);
 			minecraftLevel.addFreshEntity(e);
 		}
@@ -318,6 +317,10 @@ public class BlockContainerJS implements SpecialEquality {
 
 	public void spawnLightning(boolean effectOnly) {
 		spawnLightning(effectOnly, null);
+	}
+
+	public void spawnLightning() {
+		spawnLightning(false);
 	}
 
 	public void spawnFireworks(FireworksJS fireworks) {
@@ -353,11 +356,11 @@ public class BlockContainerJS implements SpecialEquality {
 		return getDrops(null, ItemStack.EMPTY);
 	}
 
-	public List<ItemStackJS> getDrops(@Nullable EntityJS entity, ItemStack heldItem) {
+	public List<ItemStackJS> getDrops(@Nullable Entity entity, ItemStack heldItem) {
 		if (minecraftLevel instanceof ServerLevel) {
 			var drops = new ArrayList<ItemStackJS>();
 
-			for (var item : Block.getDrops(getBlockState(), (ServerLevel) minecraftLevel, pos, getEntity(), entity != null ? entity.minecraftEntity : null, heldItem)) {
+			for (var item : Block.getDrops(getBlockState(), (ServerLevel) minecraftLevel, pos, getEntity(), entity, heldItem)) {
 				drops.add(ItemStackJS.of(item));
 			}
 
@@ -390,17 +393,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public EntityArrayList getPlayersInRadius(double radius) {
-		var list = new EntityArrayList(getLevel(), 1);
-
-		for (var player : minecraftLevel.getEntitiesOfClass(Player.class, new AABB(pos.getX() - radius, pos.getY() - radius, pos.getZ() - radius, pos.getX() + 1D + radius, pos.getY() + 1D + radius, pos.getZ() + 1D + radius), BlockContainerJS::isReal)) {
-			PlayerJS<?> p = getLevel().getPlayer(player);
-
-			if (p != null) {
-				list.add(p);
-			}
-		}
-
-		return list;
+		return new EntityArrayList(minecraftLevel, minecraftLevel.getEntitiesOfClass(Player.class, new AABB(pos.getX() - radius, pos.getY() - radius, pos.getZ() - radius, pos.getX() + 1D + radius, pos.getY() + 1D + radius, pos.getZ() + 1D + radius), BlockContainerJS::isReal));
 	}
 
 	public EntityArrayList getPlayersInRadius() {

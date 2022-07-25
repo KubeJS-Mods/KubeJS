@@ -16,8 +16,8 @@ public class LivingEntityDeathEventJS extends LivingEntityEventJS {
 	}
 
 	@Override
-	public EntityJS getEntity() {
-		return entityOf(entity);
+	public LivingEntity getEntity() {
+		return entity;
 	}
 
 	public DamageSource getSource() {

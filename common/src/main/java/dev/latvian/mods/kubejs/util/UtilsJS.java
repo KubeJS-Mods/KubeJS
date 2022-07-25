@@ -4,20 +4,22 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.mojang.brigadier.StringReader;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.block.BlockModificationEventJS;
-import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.item.ItemModificationEventJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import net.minecraft.ResourceLocationException;
+import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
@@ -34,10 +36,10 @@ import net.minecraft.util.valueproviders.ClampedNormalInt;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.Deserializers;
@@ -72,6 +74,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -89,6 +92,8 @@ public class UtilsJS {
 	public static MinecraftServer staticServer = null;
 
 	private static Collection<BlockState> ALL_STATE_CACHE = null;
+	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();
+	private static final EntitySelector ALL_ENTITIES_SELECTOR = new EntitySelector(EntitySelector.INFINITE, true, false, e -> true, MinMaxBounds.Doubles.ANY, Function.identity(), null, EntitySelectorParser.ORDER_ARBITRARY, false, null, null, null, true);
 
 	public interface TryIO {
 		void run() throws IOException;
@@ -379,18 +384,6 @@ public class UtilsJS {
 		}
 	}
 
-	public static LevelJS getLevel(Level level) {
-		if (level.isClientSide()) {
-			return getClientLevel();
-		} else {
-			return level.asKJS();
-		}
-	}
-
-	public static LevelJS getClientLevel() {
-		return KubeJS.PROXY.getClientLevel();
-	}
-
 	public static String getID(@Nullable String s) {
 		if (s == null || s.isEmpty()) {
 			return "minecraft:air";
@@ -477,7 +470,7 @@ public class UtilsJS {
 		};
 	}
 
-	public static List<ItemStack> rollChestLoot(ResourceLocation id, @Nullable EntityJS entity) {
+	public static List<ItemStack> rollChestLoot(ResourceLocation id, @Nullable Entity entity) {
 		var list = new ArrayList<ItemStack>();
 
 		if (UtilsJS.staticServer != null) {
@@ -487,10 +480,9 @@ public class UtilsJS {
 			LootContext.Builder builder;
 
 			if (entity != null) {
-				var mcEntity = entity.minecraftEntity;
-				builder = new LootContext.Builder((ServerLevel) mcEntity.level)
-						.withOptionalParameter(LootContextParams.THIS_ENTITY, mcEntity)
-						.withParameter(LootContextParams.ORIGIN, mcEntity.position());
+				builder = new LootContext.Builder((ServerLevel) entity.level)
+						.withOptionalParameter(LootContextParams.THIS_ENTITY, entity)
+						.withParameter(LootContextParams.ORIGIN, entity.position());
 			} else {
 				builder = new LootContext.Builder(UtilsJS.staticServer.overworld())
 						.withOptionalParameter(LootContextParams.THIS_ENTITY, null)
@@ -634,8 +626,8 @@ public class UtilsJS {
 	public static Vec3 vec3Of(@Nullable Object o) {
 		if (o instanceof Vec3 vec) {
 			return vec;
-		} else if (o instanceof EntityJS entity) {
-			return entity.minecraftEntity.position();
+		} else if (o instanceof Entity entity) {
+			return entity.position();
 		} else if (o instanceof List<?> list && list.size() >= 3) {
 			return new Vec3(UtilsJS.parseDouble(list.get(0), 0), UtilsJS.parseDouble(list.get(1), 0), UtilsJS.parseDouble(list.get(2), 0));
 		} else if (o instanceof BlockPos pos) {
@@ -714,5 +706,34 @@ public class UtilsJS {
 
 	public static String stripEventName(String s) {
 		return s.replaceAll("[/:]", ".").replace('-', '_');
+	}
+
+	public static EntitySelector entitySelector(@Nullable Object o) {
+		if (o == null) {
+			return ALL_ENTITIES_SELECTOR;
+		} else if (o instanceof EntitySelector s) {
+			return s;
+		}
+
+		String s = o.toString();
+
+		if (s.isBlank()) {
+			return ALL_ENTITIES_SELECTOR;
+		}
+
+		var sel = ENTITY_SELECTOR_CACHE.get(s);
+
+		if (sel == null) {
+			sel = ALL_ENTITIES_SELECTOR;
+
+			try {
+				sel = new EntitySelectorParser(new StringReader(s), true).parse();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		ENTITY_SELECTOR_CACHE.put(s, sel);
+		return sel;
 	}
 }

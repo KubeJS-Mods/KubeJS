@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stats;
 import net.minecraft.stats.StatsCounter;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
@@ -11,16 +12,12 @@ import net.minecraft.world.level.block.Block;
  * @author LatvianModder
  */
 public class PlayerStatsJS {
-	private final PlayerJS<?> player;
+	public final Player player;
 	private final StatsCounter statFile;
 
-	public PlayerStatsJS(PlayerJS<?> p, StatsCounter s) {
+	public PlayerStatsJS(Player p, StatsCounter s) {
 		player = p;
 		statFile = s;
-	}
-
-	public PlayerJS<?> getPlayer() {
-		return player;
 	}
 
 	public int get(ResourceLocation id) {
@@ -112,11 +109,11 @@ public class PlayerStatsJS {
 	}
 
 	public void set(ResourceLocation id, int value) {
-		statFile.setValue(player.minecraftPlayer, Stats.CUSTOM.get(id), value);
+		statFile.setValue(player, Stats.CUSTOM.get(id), value);
 	}
 
 	public void add(ResourceLocation id, int value) {
-		statFile.increment(player.minecraftPlayer, Stats.CUSTOM.get(id), value);
+		statFile.increment(player, Stats.CUSTOM.get(id), value);
 	}
 
 	public int getBlocksMined(Block block) {

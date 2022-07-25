@@ -16,8 +16,6 @@ import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.core.ImageButtonKJS;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
-import dev.latvian.mods.kubejs.level.ClientLevelJS;
-import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.util.Tags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -140,31 +138,22 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void clientTick(Minecraft minecraft) {
-		if (Minecraft.getInstance().player != null && ClientLevelJS.getInstance() != null) {
+		if (Minecraft.getInstance().player != null) {
 			ClientEvents.TICK.post(new ClientEventJS());
 		}
 	}
 
 	private void loggedIn(LocalPlayer player) {
-		ClientLevelJS.setInstance(new ClientLevelJS(Minecraft.getInstance(), player));
-		AttachDataEvent.forLevel(ClientLevelJS.getInstance()).invoke();
-		AttachDataEvent.forPlayer(ClientLevelJS.getInstance().clientPlayerData).invoke();
 		ClientEvents.LOGGED_IN.post(new ClientEventJS());
 	}
 
 	private void loggedOut(LocalPlayer player) {
-		if (ClientLevelJS.getInstance() != null) {
-			ClientEvents.LOGGED_OUT.post(new ClientEventJS());
-		}
-
-		ClientLevelJS.setInstance(null);
+		ClientEvents.LOGGED_OUT.post(new ClientEventJS());
 		Painter.INSTANCE.clear();
 	}
 
 	private void respawn(LocalPlayer oldPlayer, LocalPlayer newPlayer) {
-		ClientLevelJS.setInstance(new ClientLevelJS(Minecraft.getInstance(), newPlayer));
-		AttachDataEvent.forLevel(ClientLevelJS.getInstance()).invoke();
-		AttachDataEvent.forPlayer(ClientLevelJS.getInstance().clientPlayerData).invoke();
+		// client respawn event
 	}
 
 	private void guiPostInit(Screen screen, ScreenAccess access) {

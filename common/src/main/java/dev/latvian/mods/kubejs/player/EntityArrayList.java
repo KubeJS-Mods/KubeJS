@@ -1,14 +1,15 @@
 package dev.latvian.mods.kubejs.player;
 
+import dev.latvian.mods.kubejs.core.DataSenderKJS;
 import dev.latvian.mods.kubejs.core.MessageSenderKJS;
-import dev.latvian.mods.kubejs.entity.EntityJS;
-import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -19,24 +20,27 @@ import java.util.function.Predicate;
  * @author LatvianModder
  */
 @RemapPrefixForJS("kjs$")
-public class EntityArrayList extends ArrayList<EntityJS> implements MessageSenderKJS {
-	private final LevelJS level;
+public class EntityArrayList extends ArrayList<Entity> implements MessageSenderKJS, DataSenderKJS {
+	public final Level level;
 
-	public EntityArrayList(LevelJS l, int size) {
+	public EntityArrayList(Level l, int size) {
 		super(size);
 		level = l;
 	}
 
-	public EntityArrayList(LevelJS l, Iterable<? extends Entity> entities) {
-		this(l, entities instanceof Collection c ? c.size() : 10);
-
-		for (var entity : entities) {
-			add(level.getEntity(entity));
-		}
+	public EntityArrayList(Level l, Iterable<? extends Entity> entities) {
+		this(l, entities instanceof Collection c ? c.size() : 4);
+		addAllIterable(entities);
 	}
 
-	public LevelJS getLevel() {
-		return level;
+	public void addAllIterable(Iterable<? extends Entity> entities) {
+		if (entities instanceof Collection c) {
+			addAll(c);
+		} else {
+			for (var entity : entities) {
+				add(entity);
+			}
+		}
 	}
 
 	@Override
@@ -52,14 +56,14 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 	@Override
 	public void kjs$tell(Component message) {
 		for (var entity : this) {
-			entity.minecraftEntity.sendSystemMessage(message);
+			entity.sendSystemMessage(message);
 		}
 	}
 
 	@Override
 	public void kjs$setStatusMessage(Component message) {
 		for (var entity : this) {
-			if (entity.minecraftEntity instanceof ServerPlayer player) {
+			if (entity instanceof Player player) {
 				player.displayClientMessage(message, true);
 			}
 		}
@@ -95,7 +99,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 
 	public void playSound(SoundEvent id, float volume, float pitch) {
 		for (var entity : this) {
-			entity.minecraftEntity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), id, entity.minecraftEntity.getSoundSource(), volume, pitch);
+			entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), id, entity.getSoundSource(), volume, pitch);
 		}
 	}
 
@@ -103,7 +107,7 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		playSound(id, 1F, 1F);
 	}
 
-	public EntityArrayList filter(Predicate<EntityJS> filter) {
+	public EntityArrayList filter(Predicate<Entity> filter) {
 		if (isEmpty()) {
 			return this;
 		}
@@ -119,15 +123,21 @@ public class EntityArrayList extends ArrayList<EntityJS> implements MessageSende
 		return list;
 	}
 
-	public void sendData(String channel, @Nullable CompoundTag data) {
+	public EntityArrayList filterSelector(EntitySelector selector) {
+		return filter(selector.predicate);
+	}
+
+	@Override
+	public void kjs$sendData(String channel, @Nullable CompoundTag data) {
 		for (var entity : this) {
-			if (entity instanceof PlayerJS playerJS) {
-				playerJS.sendData(channel, data);
+			if (entity instanceof Player player) {
+				player.kjs$sendData(channel, data);
 			}
 		}
 	}
 
-	public EntityJS getFirst() {
-		return get(0);
+	@Nullable
+	public Entity getFirst() {
+		return isEmpty() ? null : get(0);
 	}
 }

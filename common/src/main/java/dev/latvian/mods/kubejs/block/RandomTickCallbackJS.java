@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.block;
 
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 
 public class RandomTickCallbackJS {
 	public BlockContainerJS block;
@@ -14,7 +14,7 @@ public class RandomTickCallbackJS {
 		this.random = random;
 	}
 
-	public LevelJS getLevel() {
+	public Level getLevel() {
 		return this.block.getLevel();
 	}
 

@@ -5,9 +5,7 @@ import dev.architectury.event.events.common.ChatEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.TickEvent;
 import dev.latvian.mods.kubejs.CommonProperties;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
-import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.stages.Stages;
 import net.minecraft.ChatFormatting;
@@ -38,10 +36,6 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	public static void loggedIn(ServerPlayer player) {
-		var p = new ServerPlayerDataJS(player.server, player.getUUID(), player.getGameProfile().getName(), KubeJS.nextClientHasClientMod);
-		KubeJS.nextClientHasClientMod = false;
-		player.server.kjs$getPlayerMap().put(p.getId(), p);
-		AttachDataEvent.forPlayer(p).invoke();
 		PlayerEvents.LOGGED_IN.post(new SimplePlayerEventJS(player));
 		player.inventoryMenu.addSlotListener(new InventoryListener(player));
 
@@ -63,17 +57,13 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	public static void loggedOut(ServerPlayer player) {
-		if (!player.server.kjs$getPlayerMap().containsKey(player.getUUID())) {
-			return;
-		}
-
 		PlayerEvents.LOGGED_OUT.post(new SimplePlayerEventJS(player));
-		player.server.kjs$getPlayerMap().remove(player.getUUID());
 	}
 
 	public static void cloned(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean wonGame) {
 		newPlayer.kjs$getPersistentData().merge(oldPlayer.kjs$getPersistentData());
 		newPlayer.inventoryMenu.addSlotListener(new InventoryListener(newPlayer));
+		PlayerEvents.CLONED.post(new PlayerClonedEventJS(newPlayer, oldPlayer, wonGame));
 	}
 
 	public static void tick(Player player) {

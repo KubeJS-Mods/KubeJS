@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.item.forge;
 
-import dev.latvian.mods.kubejs.entity.EntityJS;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 
 import javax.annotation.Nullable;
@@ -16,8 +16,8 @@ public class ItemDestroyedEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	public EntityJS getEntity() {
-		return entityOf(event.getEntity());
+	public ServerPlayer getEntity() {
+		return (ServerPlayer) event.getEntity();
 	}
 
 	@Nullable
@@ -25,7 +25,7 @@ public class ItemDestroyedEventJS extends PlayerEventJS {
 		return event.getHand();
 	}
 
-	public ItemStackJS getItem() {
-		return ItemStackJS.of(event.getOriginal());
+	public ItemStack getItem() {
+		return event.getOriginal();
 	}
 }

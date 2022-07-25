@@ -7,12 +7,14 @@ import dev.latvian.mods.kubejs.player.InventoryChangedEventJS;
 import dev.latvian.mods.kubejs.player.InventoryEventJS;
 import dev.latvian.mods.kubejs.player.PlayerAdvancementEventJS;
 import dev.latvian.mods.kubejs.player.PlayerChatEventJS;
+import dev.latvian.mods.kubejs.player.PlayerClonedEventJS;
 import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
 
 public interface PlayerEvents {
 	EventGroup GROUP = EventGroup.of("PlayerEvents");
 	EventHandler LOGGED_IN = GROUP.server("loggedIn", () -> SimplePlayerEventJS.class).legacy("player.logged_in");
 	EventHandler LOGGED_OUT = GROUP.server("loggedOut", () -> SimplePlayerEventJS.class).legacy("player.logged_out");
+	EventHandler CLONED = GROUP.server("cloned", () -> PlayerClonedEventJS.class);
 	EventHandler TICK = GROUP.server("tick", () -> SimplePlayerEventJS.class).legacy("player.tick");
 	EventHandler CHAT = GROUP.server("chat", () -> PlayerChatEventJS.class).cancelable().legacy("player.chat");
 	EventHandler ADVANCEMENT = GROUP.server("advancement", () -> PlayerAdvancementEventJS.class).supportsNamespacedExtraId().cancelable().legacy("player.advancement");

@@ -47,6 +47,12 @@
 		],
 		"net/minecraft/class_1856": [
 			"dev/latvian/mods/kubejs/core/IngredientKJS"
+		],
+		"net/minecraft/class_1542": [
+			"dev/latvian/mods/kubejs/core/ItemEntityKJS"
+		],
+		"net/minecraft/class_1533": [
+			"dev/latvian/mods/kubejs/core/ItemFrameEntityKJS"
 		]
 	}
 }

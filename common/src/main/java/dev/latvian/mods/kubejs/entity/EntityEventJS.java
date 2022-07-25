@@ -1,31 +1,23 @@
 package dev.latvian.mods.kubejs.entity;
 
 import dev.latvian.mods.kubejs.level.LevelEventJS;
-import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 /**
  * @author LatvianModder
  */
 public abstract class EntityEventJS extends LevelEventJS {
-	private EntityJS cachedEntity;
 
-	public abstract EntityJS getEntity();
+	public abstract Entity getEntity();
 
-	@Override
-	public LevelJS getLevel() {
-		return getEntity().getLevel();
+	public Player getPlayer() {
+		return getEntity() instanceof Player p ? p : null;
 	}
 
-	protected EntityJS entityOf(Entity entity) {
-		if (cachedEntity == null) {
-			cachedEntity = levelOf(entity).getEntity(entity);
-
-			if (cachedEntity == null) {
-				throw new IllegalStateException("Entity can't be null!");
-			}
-		}
-
-		return cachedEntity;
+	@Override
+	public Level getLevel() {
+		return getEntity().getLevel();
 	}
 }

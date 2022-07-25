@@ -2,8 +2,6 @@ package dev.latvian.mods.kubejs.core;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.latvian.mods.kubejs.client.ClientProperties;
-import dev.latvian.mods.kubejs.level.ClientLevelJS;
-import dev.latvian.mods.kubejs.player.ClientPlayerJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -12,20 +10,6 @@ import org.jetbrains.annotations.Nullable;
 @RemapPrefixForJS("kjs$")
 public interface MinecraftClientKJS {
 	Minecraft kjs$self();
-
-	@Nullable
-	default ClientLevelJS kjs$getLevel() {
-		return ClientLevelJS.getInstance();
-	}
-
-	@Nullable
-	default ClientPlayerJS kjs$getPlayer() {
-		if (ClientLevelJS.getInstance() == null) {
-			return null;
-		}
-
-		return ClientLevelJS.getInstance().clientPlayerData.getPlayer();
-	}
 
 	@Nullable
 	default Screen kjs$getCurrentScreen() {

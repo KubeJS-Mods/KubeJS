@@ -2,11 +2,11 @@ package dev.latvian.mods.kubejs.misc;
 
 import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
-import dev.latvian.mods.kubejs.entity.LivingEntityJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 import java.util.HashMap;
@@ -17,7 +17,7 @@ public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 
 	@FunctionalInterface
 	public interface EffectTickCallback {
-		void applyEffectTick(LivingEntityJS livingEntity, int level);
+		void applyEffectTick(LivingEntity livingEntity, int level);
 	}
 
 	public transient MobEffectCategory category;

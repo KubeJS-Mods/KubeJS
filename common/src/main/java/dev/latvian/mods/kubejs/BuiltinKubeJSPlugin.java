@@ -7,6 +7,7 @@ import com.google.gson.JsonPrimitive;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.bindings.ComponentWrapper;
+import dev.latvian.mods.kubejs.bindings.DamageSourceWrapper;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
@@ -118,6 +119,7 @@ import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import dev.latvian.mods.unit.Unit;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CollectionTag;
@@ -130,14 +132,12 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.valueproviders.IntProvider;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Blocks;
@@ -351,26 +351,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("Color", ColorWrapper.class);
 		event.add("BlockStatePredicate", BlockStatePredicate.class);
 
-		event.add("EquipmentSlot", EquipmentSlot.class);
-		event.add("SLOT_MAINHAND", EquipmentSlot.MAINHAND);
-		event.add("SLOT_OFFHAND", EquipmentSlot.OFFHAND);
-		event.add("SLOT_FEET", EquipmentSlot.FEET);
-		event.add("SLOT_LEGS", EquipmentSlot.LEGS);
-		event.add("SLOT_CHEST", EquipmentSlot.CHEST);
-		event.add("SLOT_HEAD", EquipmentSlot.HEAD);
-
-		event.add("Rarity", Rarity.class);
-		event.add("RARITY_COMMON", Rarity.COMMON);
-		event.add("RARITY_UNCOMMON", Rarity.UNCOMMON);
-		event.add("RARITY_RARE", Rarity.RARE);
-		event.add("RARITY_EPIC", Rarity.EPIC);
-
 		event.add("AIR_ITEM", Items.AIR);
 		event.add("AIR_BLOCK", Blocks.AIR);
-
-		event.add("Hand", InteractionHand.class);
-		event.add("MAIN_HAND", InteractionHand.MAIN_HAND);
-		event.add("OFF_HAND", InteractionHand.OFF_HAND);
 
 		event.add("DecorationGenerationStep", GenerationStep.Decoration.class);
 		event.add("CarvingGenerationStep", GenerationStep.Carving.class);
@@ -378,6 +360,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("Vec3d", Vec3.class);
 		event.add("Vec3i", Vec3i.class);
 		event.add("BlockPos", BlockPos.class);
+		event.add("DamageSource", DamageSource.class);
 
 		KubeJS.PROXY.clientBindings(event);
 	}
@@ -471,6 +454,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(Tier.class, o -> ItemBuilder.TOOL_TIERS.getOrDefault(String.valueOf(o), Tiers.IRON));
 		typeWrappers.register(ArmorMaterial.class, ItemBuilder::ofArmorMaterial);
 		typeWrappers.register(PlayerSelector.class, PlayerSelector::of);
+		typeWrappers.register(DamageSource.class, DamageSourceWrapper::of);
+		typeWrappers.register(EntitySelector.class, UtilsJS::entitySelector);
 
 		// components //
 		typeWrappers.register(Component.class, ComponentWrapper::of);

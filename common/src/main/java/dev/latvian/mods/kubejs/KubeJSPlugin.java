@@ -3,18 +3,18 @@ package dev.latvian.mods.kubejs;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
-import dev.latvian.mods.kubejs.level.LevelJS;
-import dev.latvian.mods.kubejs.player.PlayerDataJS;
 import dev.latvian.mods.kubejs.recipe.RegisterRecipeTypesEvent;
-import dev.latvian.mods.kubejs.script.AttachDataEvent;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 import java.util.Map;
 
@@ -53,13 +53,13 @@ public class KubeJSPlugin {
 	public void registerRecipeTypes(RegisterRecipeTypesEvent event) {
 	}
 
-	public void attachServerData(AttachDataEvent<MinecraftServer> event) {
+	public void attachServerData(AttachedData<MinecraftServer> event) {
 	}
 
-	public void attachLevelData(AttachDataEvent<LevelJS> event) {
+	public void attachLevelData(AttachedData<Level> event) {
 	}
 
-	public void attachPlayerData(AttachDataEvent<PlayerDataJS> event) {
+	public void attachPlayerData(AttachedData<Player> event) {
 	}
 
 	public void generateDataJsons(DataJsonGenerator generator) {

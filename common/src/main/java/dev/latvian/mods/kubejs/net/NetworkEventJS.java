@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.net;
 
-import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -21,8 +20,8 @@ public class NetworkEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	public EntityJS getEntity() {
-		return entityOf(player);
+	public Player getEntity() {
+		return player;
 	}
 
 	public String getChannel() {

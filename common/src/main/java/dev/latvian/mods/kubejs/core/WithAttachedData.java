@@ -6,7 +6,7 @@ import dev.latvian.mods.rhino.util.RemapForJS;
 /**
  * @author LatvianModder
  */
-public interface WithAttachedData {
+public interface WithAttachedData<T> {
 	@RemapForJS("getData")
-	AttachedData kjs$getData();
+	AttachedData<T> kjs$getData();
 }

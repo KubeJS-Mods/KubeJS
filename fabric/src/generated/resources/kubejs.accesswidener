@@ -61,5 +61,6 @@ accessible method net/minecraft/world/item/crafting/ShapedRecipe matches (Lnet/m
 
 accessible field net/minecraft/server/level/ServerPlayerGameMode isDestroyingBlock Z
 accessible method net/minecraft/server/commands/TeleportCommand performTeleport (Lnet/minecraft/commands/CommandSourceStack;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/server/level/ServerLevel;DDDLjava/util/Set;FFLnet/minecraft/server/commands/TeleportCommand$LookAt;)V
+accessible field net/minecraft/commands/arguments/selector/EntitySelector predicate Ljava/util/function/Predicate;
 
 accessible method net/minecraft/world/entity/npc/VillagerType <init> (Ljava/lang/String;)V

@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
 import dev.latvian.mods.kubejs.player.InventoryChangedEventJS;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
@@ -37,7 +36,7 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static CompoundEventResult<ItemStack> rightClick(Player player, InteractionHand hand) {
-		if (player != null && player.level instanceof ServerLevel && !player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem()) && ItemEvents.RIGHT_CLICKED.post(getItemId(player.getItemInHand(hand)), new ItemRightClickedEventJS(player, hand))) {
+		if (player instanceof ServerPlayer p && !player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem()) && ItemEvents.RIGHT_CLICKED.post(getItemId(p.getItemInHand(hand)), new ItemRightClickedEventJS(p, hand))) {
 			return CompoundEventResult.interruptFalse(player.getItemInHand(hand));
 		}
 
@@ -57,7 +56,7 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static EventResult pickup(Player player, ItemEntity entity, ItemStack stack) {
-		if (player != null && entity != null && player.level instanceof ServerLevel && ItemEvents.PICKED_UP.post(getItemId(stack), new ItemPickedUpEventJS(player, entity, stack))) {
+		if (player instanceof ServerPlayer p && entity != null && ItemEvents.PICKED_UP.post(getItemId(stack), new ItemPickedUpEventJS(p, entity, stack))) {
 			return EventResult.interruptFalse();
 		}
 
@@ -65,7 +64,7 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static EventResult drop(Player player, ItemEntity entity) {
-		if (player != null && entity != null && player.level instanceof ServerLevel && ItemEvents.DROPPED.post(getItemId(entity.getItem()), new ItemDroppedEventJS(player, entity))) {
+		if (player instanceof ServerPlayer p && entity != null && ItemEvents.DROPPED.post(getItemId(entity.getItem()), new ItemDroppedEventJS(p, entity))) {
 			return EventResult.interruptFalse();
 		}
 
@@ -73,7 +72,7 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static EventResult entityInteract(Player player, Entity entity, InteractionHand hand) {
-		if (player != null && entity != null && player.level instanceof ServerLevel && ItemEvents.ENTITY_INTERACTED.post(getItemId(player.getItemInHand(hand)), new ItemEntityInteractedEventJS(player, entity, hand))) {
+		if (player instanceof ServerPlayer p && entity != null && ItemEvents.ENTITY_INTERACTED.post(getItemId(p.getItemInHand(hand)), new ItemEntityInteractedEventJS(p, entity, hand))) {
 			return EventResult.interruptFalse();
 		}
 
@@ -83,7 +82,7 @@ public class KubeJSItemEventHandler {
 	private static void crafted(Player player, ItemStack stack, Container grid) {
 		if (player instanceof ServerPlayer serverPlayer && !stack.isEmpty()) {
 			String id = getItemId(stack);
-			ItemEvents.CRAFTED.post(id, new ItemCraftedEventJS(player, stack, grid));
+			ItemEvents.CRAFTED.post(id, new ItemCraftedEventJS(serverPlayer, stack, grid));
 			PlayerEvents.INVENTORY_CHANGED.post(id, new InventoryChangedEventJS(serverPlayer, stack, -1));
 		}
 	}
@@ -91,7 +90,7 @@ public class KubeJSItemEventHandler {
 	private static void smelted(Player player, ItemStack stack) {
 		if (player instanceof ServerPlayer serverPlayer && !stack.isEmpty()) {
 			String id = getItemId(stack);
-			ItemEvents.SMELTED.post(id, new ItemSmeltedEventJS(player, stack));
+			ItemEvents.SMELTED.post(id, new ItemSmeltedEventJS(serverPlayer, stack));
 			PlayerEvents.INVENTORY_CHANGED.post(id, new InventoryChangedEventJS(serverPlayer, stack, -1));
 		}
 	}

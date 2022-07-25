@@ -2,14 +2,13 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.architectury.registry.item.ItemPropertiesRegistry;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.core.AsKJS;
-import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.MatchAllIngredientJS;
-import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.client.renderer.item.ClampedItemPropertyFunction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
@@ -29,11 +28,11 @@ public class ItemModelPropertiesEventJS extends StartupEventJS {
 	}
 
 	private ClampedItemPropertyFunction wrap(ItemPropertiesCallback callback) {
-		return (itemStack, level, entity, id) -> callback.accept(ItemStackJS.of(itemStack), AsKJS.wrapSafe(level), AsKJS.wrapSafe(entity), id);
+		return (itemStack, level, entity, id) -> callback.accept(ItemStackJS.of(itemStack), level, entity, id);
 	}
 
 	@FunctionalInterface
 	public interface ItemPropertiesCallback {
-		float accept(ItemStackJS stack, @Nullable LevelJS level, @Nullable EntityJS entity, int id);
+		float accept(ItemStackJS stack, @Nullable Level level, @Nullable LivingEntity entity, int id);
 	}
 }

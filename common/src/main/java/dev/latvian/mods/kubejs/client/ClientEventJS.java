@@ -1,20 +1,17 @@
 package dev.latvian.mods.kubejs.client;
 
-import dev.latvian.mods.kubejs.entity.EntityJS;
-import dev.latvian.mods.kubejs.event.EventJS;
-import dev.latvian.mods.kubejs.level.ClientLevelJS;
-import dev.latvian.mods.kubejs.player.ClientPlayerJS;
+import dev.latvian.mods.kubejs.player.PlayerEventJS;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 
-public class ClientEventJS extends EventJS {
-	public ClientLevelJS getLevel() {
-		return ClientLevelJS.getInstance();
+public class ClientEventJS extends PlayerEventJS {
+	@Override
+	public LocalPlayer getEntity() {
+		return Minecraft.getInstance().player;
 	}
 
-	public EntityJS getEntity() {
-		return getPlayer();
-	}
-
-	public ClientPlayerJS getPlayer() {
-		return ClientLevelJS.getInstance().clientPlayerData.getPlayer();
+	@Override
+	public LocalPlayer getPlayer() {
+		return Minecraft.getInstance().player;
 	}
 }

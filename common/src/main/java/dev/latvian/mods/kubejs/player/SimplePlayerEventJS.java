@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.player;
 
-import dev.latvian.mods.kubejs.entity.EntityJS;
 import net.minecraft.world.entity.player.Player;
 
 /**
@@ -14,7 +13,7 @@ public class SimplePlayerEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	public EntityJS getEntity() {
-		return entityOf(player);
+	public Player getEntity() {
+		return player;
 	}
 }

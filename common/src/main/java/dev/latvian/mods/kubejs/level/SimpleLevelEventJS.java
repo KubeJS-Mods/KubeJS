@@ -1,17 +1,19 @@
 package dev.latvian.mods.kubejs.level;
 
+import net.minecraft.world.level.Level;
+
 /**
  * @author LatvianModder
  */
 public class SimpleLevelEventJS extends LevelEventJS {
-	private final LevelJS level;
+	private final Level level;
 
-	public SimpleLevelEventJS(LevelJS l) {
+	public SimpleLevelEventJS(Level l) {
 		level = l;
 	}
 
 	@Override
-	public LevelJS getLevel() {
+	public Level getLevel() {
 		return level;
 	}
 }

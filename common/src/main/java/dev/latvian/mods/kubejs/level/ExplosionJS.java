@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.level;
 
-import dev.latvian.mods.kubejs.entity.EntityJS;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -11,7 +11,7 @@ import net.minecraft.world.level.LevelAccessor;
 public class ExplosionJS {
 	private final LevelAccessor level;
 	public final double x, y, z;
-	public EntityJS exploder;
+	public Entity exploder;
 	public float strength;
 	public boolean causesFire;
 	public Explosion.BlockInteraction explosionMode;
@@ -27,7 +27,7 @@ public class ExplosionJS {
 		explosionMode = Explosion.BlockInteraction.BREAK;
 	}
 
-	public ExplosionJS exploder(EntityJS entity) {
+	public ExplosionJS exploder(Entity entity) {
 		exploder = entity;
 		return this;
 	}
@@ -54,7 +54,7 @@ public class ExplosionJS {
 
 	public void explode() {
 		if (level instanceof Level level) {
-			level.explode(exploder == null ? null : exploder.minecraftEntity, x, y, z, strength, causesFire, explosionMode);
+			level.explode(exploder, x, y, z, strength, causesFire, explosionMode);
 		}
 	}
 }

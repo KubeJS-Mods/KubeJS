@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.player;
 
-import dev.latvian.mods.kubejs.entity.EntityJS;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -17,8 +16,8 @@ public class PlayerAdvancementEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	public EntityJS getEntity() {
-		return entityOf(player);
+	public ServerPlayer getEntity() {
+		return player;
 	}
 
 	public AdvancementJS getAdvancement() {

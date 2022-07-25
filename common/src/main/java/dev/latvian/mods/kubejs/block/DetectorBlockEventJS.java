@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.block;
 
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.LevelEventJS;
-import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
@@ -26,8 +25,8 @@ public class DetectorBlockEventJS extends LevelEventJS {
 	}
 
 	@Override
-	public LevelJS getLevel() {
-		return levelOf(level);
+	public Level getLevel() {
+		return level;
 	}
 
 	public boolean isPowered() {

@@ -3,9 +3,6 @@ package dev.latvian.mods.kubejs.mixin.common;
 import dev.architectury.registry.fuel.FuelRegistry;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.level.LevelJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
@@ -157,8 +154,7 @@ public abstract class ItemMixin implements ItemKJS {
 	private void use(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> ci) {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.use != null) {
 			ItemStack itemStack = player.getItemInHand(interactionHand);
-			LevelJS levelJS = UtilsJS.getLevel(level);
-			if (kjs$itemBuilder.use.use(levelJS, levelJS.getPlayer(player), interactionHand)) {
+			if (kjs$itemBuilder.use.use(level, player, interactionHand)) {
 				ci.setReturnValue(ItemUtils.startUsingInstantly(level, player, interactionHand));
 			} else {
 				ci.setReturnValue(InteractionResultHolder.fail(itemStack));
@@ -169,16 +165,14 @@ public abstract class ItemMixin implements ItemKJS {
 	@Inject(method = "finishUsingItem", at = @At("HEAD"), cancellable = true)
 	private void finishUsingItem(ItemStack itemStack, Level level, LivingEntity livingEntity, CallbackInfoReturnable<ItemStack> ci) {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.finishUsing != null) {
-			LevelJS levelJS = UtilsJS.getLevel(level);
-			ci.setReturnValue(kjs$itemBuilder.finishUsing.finishUsingItem(ItemStackJS.of(itemStack), levelJS, levelJS.getLivingEntity(livingEntity)).getItemStack());
+			ci.setReturnValue(kjs$itemBuilder.finishUsing.finishUsingItem(itemStack, level, livingEntity));
 		}
 	}
 
 	@Inject(method = "releaseUsing", at = @At("HEAD"))
 	private void releaseUsing(ItemStack itemStack, Level level, LivingEntity livingEntity, int i, CallbackInfo ci) {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.releaseUsing != null) {
-			LevelJS levelJS = UtilsJS.getLevel(level);
-			kjs$itemBuilder.releaseUsing.releaseUsing(ItemStackJS.of(itemStack), levelJS, levelJS.getLivingEntity(livingEntity), i);
+			kjs$itemBuilder.releaseUsing.releaseUsing(itemStack, level, livingEntity, i);
 		}
 	}
 }

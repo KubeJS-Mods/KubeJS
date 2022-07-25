@@ -11,7 +11,6 @@ import dev.latvian.mods.kubejs.item.ingredient.forge.CustomPredicateIngredient;
 import dev.latvian.mods.kubejs.item.ingredient.forge.IgnoreNBTIngredient;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -71,10 +70,7 @@ public class KubeJSForge {
 			event.setCanceled(true);
 		} else if (e.eventDrops != null) {
 			event.getDrops().clear();
-
-			for (var ie : e.eventDrops) {
-				event.getDrops().add((ItemEntity) ie.minecraftEntity);
-			}
+			event.getDrops().addAll(e.eventDrops);
 		}
 	}
 }

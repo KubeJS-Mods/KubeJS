@@ -5,8 +5,8 @@ import net.minecraft.world.entity.player.Player;
 import java.util.Collection;
 import java.util.Collections;
 
-class NoStages extends Stages {
-	static final NoStages NULL_INSTANCE = new NoStages(null);
+public class NoStages extends Stages {
+	public static final NoStages NULL_INSTANCE = new NoStages(null);
 
 	private NoStages(Player player) {
 		super(player);

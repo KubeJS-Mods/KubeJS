@@ -55,7 +55,6 @@ public class KubeJS {
 	private static Path gameDirectory;
 
 	public static KubeJSCommon PROXY;
-	public static boolean nextClientHasClientMod = false;
 	public static CreativeModeTab tab = CreativeModeTab.TAB_MISC;
 
 	private static ScriptManager startupScriptManager, clientScriptManager;

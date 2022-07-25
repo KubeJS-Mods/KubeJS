@@ -1,8 +1,6 @@
 package dev.latvian.mods.kubejs.misc;
 
 import dev.latvian.mods.kubejs.KubeJSRegistries;
-import dev.latvian.mods.kubejs.core.EntityKJS;
-import dev.latvian.mods.kubejs.entity.LivingEntityJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
@@ -31,7 +29,7 @@ public class BasicMobEffect extends MobEffect {
 
 	@Override
 	public void applyEffectTick(@NotNull LivingEntity livingEntity, int i) {
-		effectTickCallback.applyEffectTick((LivingEntityJS) livingEntity.asKJS(), i);
+		effectTickCallback.applyEffectTick(livingEntity, i);
 	}
 
 	private void applyAttributeModifications() {

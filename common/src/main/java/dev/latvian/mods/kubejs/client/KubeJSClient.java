@@ -8,8 +8,6 @@ import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.NetworkEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
-import dev.latvian.mods.kubejs.level.ClientLevelJS;
-import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.net.NetworkEventJS;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
@@ -22,6 +20,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -109,8 +108,8 @@ public class KubeJSClient extends KubeJSCommon {
 	}
 
 	@Override
-	public LevelJS getClientLevel() {
-		return ClientLevelJS.getInstance();
+	public Level getClientLevel() {
+		return Minecraft.getInstance().level;
 	}
 
 	private void reload(PreparableReloadListener listener) {

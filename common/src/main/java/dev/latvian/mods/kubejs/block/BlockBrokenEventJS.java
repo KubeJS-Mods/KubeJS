@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.block;
 
 import dev.architectury.utils.value.IntValue;
-import dev.latvian.mods.kubejs.entity.EntityJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
 import net.minecraft.core.BlockPos;
@@ -30,8 +29,8 @@ public class BlockBrokenEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	public EntityJS getEntity() {
-		return entityOf(entity);
+	public ServerPlayer getEntity() {
+		return entity;
 	}
 
 	public BlockContainerJS getBlock() {

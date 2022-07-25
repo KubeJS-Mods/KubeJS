@@ -1,24 +1,23 @@
 package dev.latvian.mods.kubejs.player;
 
-import dev.latvian.mods.kubejs.entity.EntityJS;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
 /**
  * @author LatvianModder
  */
 public class InventoryEventJS extends PlayerEventJS {
-	private final Player player;
+	private final ServerPlayer player;
 	private final AbstractContainerMenu menu;
 
-	public InventoryEventJS(Player player, AbstractContainerMenu menu) {
+	public InventoryEventJS(ServerPlayer player, AbstractContainerMenu menu) {
 		this.player = player;
 		this.menu = menu;
 	}
 
 	@Override
-	public EntityJS getEntity() {
-		return entityOf(player);
+	public ServerPlayer getEntity() {
+		return player;
 	}
 
 	public AbstractContainerMenu getInventoryContainer() {

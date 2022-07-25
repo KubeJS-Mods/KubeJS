@@ -1,11 +1,10 @@
 package dev.latvian.mods.kubejs.entity.forge;
 
-import dev.latvian.mods.kubejs.entity.EntityJS;
-import dev.latvian.mods.kubejs.entity.ItemEntityJS;
 import dev.latvian.mods.kubejs.entity.LivingEntityEventJS;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 
 import javax.annotation.Nullable;
@@ -17,15 +16,15 @@ import java.util.List;
  */
 public class LivingEntityDropsEventJS extends LivingEntityEventJS {
 	private final LivingDropsEvent event;
-	public List<ItemEntityJS> eventDrops;
+	public List<ItemEntity> eventDrops;
 
 	public LivingEntityDropsEventJS(LivingDropsEvent e) {
 		event = e;
 	}
 
 	@Override
-	public EntityJS getEntity() {
-		return entityOf(event.getEntity());
+	public LivingEntity getEntity() {
+		return event.getEntity();
 	}
 
 	public DamageSource getSource() {
@@ -40,38 +39,31 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS {
 		return event.isRecentlyHit();
 	}
 
-	public List<ItemEntityJS> getDrops() {
+	public List<ItemEntity> getDrops() {
 		if (eventDrops == null) {
-			eventDrops = new ArrayList<>();
-
-			for (var entity : event.getDrops()) {
-				eventDrops.add(new ItemEntityJS(entity));
-			}
+			eventDrops = new ArrayList<>(getDrops());
 		}
 
 		return eventDrops;
 	}
 
 	@Nullable
-	public ItemEntityJS addDrop(Object item) {
-		var i = ItemStackJS.of(item).getItemStack();
-
-		if (!i.isEmpty()) {
+	public ItemEntity addDrop(ItemStack stack) {
+		if (!stack.isEmpty()) {
 			var e = event.getEntity();
-			var ei = new ItemEntity(e.level, e.getX(), e.getY(), e.getZ(), i);
+			var ei = new ItemEntity(e.level, e.getX(), e.getY(), e.getZ(), stack);
 			ei.setPickUpDelay(10);
-			var ie = new ItemEntityJS(ei);
-			getDrops().add(ie);
-			return ie;
+			getDrops().add(ei);
+			return ei;
 		}
 
 		return null;
 	}
 
 	@Nullable
-	public ItemEntityJS addDrop(Object item, float chance) {
+	public ItemEntity addDrop(ItemStack stack, float chance) {
 		if (chance >= 1F || event.getEntity().level.random.nextFloat() <= chance) {
-			return addDrop(item);
+			return addDrop(stack);
 		}
 
 		return null;

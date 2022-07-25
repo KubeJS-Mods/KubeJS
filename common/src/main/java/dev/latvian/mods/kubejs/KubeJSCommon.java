@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs;
 
-import dev.latvian.mods.kubejs.level.LevelJS;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
@@ -40,16 +39,8 @@ public class KubeJSCommon {
 	public void paint(CompoundTag tag) {
 	}
 
-	public LevelJS getClientLevel() {
+	public Level getClientLevel() {
 		throw new IllegalStateException("Can't access client level from server side!");
-	}
-
-	public LevelJS getLevel(Level level) {
-		if (level.isClientSide()) {
-			return getClientLevel();
-		}
-
-		return level.getServer().kjs$wrapMinecraftLevel(level);
 	}
 
 	public void reloadTextures() {

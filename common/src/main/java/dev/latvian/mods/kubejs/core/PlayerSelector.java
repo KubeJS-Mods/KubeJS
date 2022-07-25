@@ -1,13 +1,11 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.latvian.mods.kubejs.player.ServerPlayerDataJS;
-import dev.latvian.mods.kubejs.player.ServerPlayerJS;
 import dev.latvian.mods.rhino.mod.wrapper.UUIDWrapper;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -15,10 +13,8 @@ import java.util.UUID;
 public interface PlayerSelector {
 
 	static PlayerSelector of(Object o) {
-		if (o instanceof ServerPlayerJS sp) {
+		if (o instanceof ServerPlayer sp) {
 			return identity(sp);
-		} else if (o instanceof Player p) {
-			return mc(p);
 		} else if (o instanceof UUID uuid) {
 			return uuid(uuid);
 		}
@@ -38,49 +34,36 @@ public interface PlayerSelector {
 	}
 
 	@Nullable
-	ServerPlayerJS getPlayer(Map<UUID, ? extends ServerPlayerDataJS> knownPlayers);
+	ServerPlayer getPlayer(MinecraftServer server);
 
-	static PlayerSelector identity(ServerPlayerJS player) {
-		return knownPlayers -> player;
-	}
-
-	static PlayerSelector mc(Player player) {
-		return uuid(player.getUUID());
+	static PlayerSelector identity(ServerPlayer player) {
+		return server -> player;
 	}
 
 	static PlayerSelector uuid(UUID uuid) {
-		return knownPlayers -> {
-			var data = knownPlayers.get(uuid);
-			return data == null ? null : data.getPlayer();
-		};
+		return server -> server.getPlayerList().getPlayer(uuid);
 	}
 
 	static PlayerSelector name(String name) {
-		return knownPlayers -> {
-			for (var p : knownPlayers.values()) {
-				if (p.getName().toLowerCase(Locale.ROOT).equals(name)) {
-					return p.getPlayer();
-				}
-			}
-			return null;
-		};
+		return server -> server.getPlayerList().getPlayerByName(name);
 	}
 
 	static PlayerSelector fuzzyName(String name) {
-		return knownPlayers -> {
-			for (var p : knownPlayers.values()) {
-				if (p.getName().toLowerCase(Locale.ROOT).contains(name)) {
-					return p.getPlayer();
+		return server -> {
+			for (var p : server.getPlayerList().getPlayers()) {
+				if (p.getScoreboardName().toLowerCase(Locale.ROOT).contains(name)) {
+					return p;
 				}
 			}
+
 			return null;
 		};
 	}
 
 	default PlayerSelector or(PlayerSelector fallback) {
-		return knownPlayers -> {
-			var p = getPlayer(knownPlayers);
-			return p == null ? fallback.getPlayer(knownPlayers) : p;
+		return server -> {
+			var p = getPlayer(server);
+			return p == null ? fallback.getPlayer(server) : p;
 		};
 	}
 

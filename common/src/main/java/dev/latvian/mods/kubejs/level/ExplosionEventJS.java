@@ -1,11 +1,10 @@
 package dev.latvian.mods.kubejs.level;
 
 import dev.architectury.hooks.level.ExplosionHooks;
-import dev.latvian.mods.kubejs.entity.EntityJS;
-import dev.latvian.mods.kubejs.entity.LivingEntityJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -27,8 +26,8 @@ public abstract class ExplosionEventJS extends LevelEventJS {
 	}
 
 	@Override
-	public LevelJS getLevel() {
-		return levelOf(level);
+	public Level getLevel() {
+		return level;
 	}
 
 	public Vec3 getPosition() {
@@ -52,8 +51,8 @@ public abstract class ExplosionEventJS extends LevelEventJS {
 	}
 
 	@Nullable
-	public LivingEntityJS getExploder() {
-		return getLevel().getLivingEntity(explosion.getSourceMob());
+	public LivingEntity getExploder() {
+		return explosion.getSourceMob();
 	}
 
 	public static class Before extends ExplosionEventJS {
@@ -79,11 +78,11 @@ public abstract class ExplosionEventJS extends LevelEventJS {
 		}
 
 		public EntityArrayList getAffectedEntities() {
-			return new EntityArrayList(getLevel(), affectedEntities);
+			return new EntityArrayList(level, affectedEntities);
 		}
 
-		public void removeAffectedEntity(EntityJS entity) {
-			affectedEntities.remove(entity.minecraftEntity);
+		public void removeAffectedEntity(Entity entity) {
+			affectedEntities.remove(entity);
 		}
 
 		public void removeAllAffectedEntities() {

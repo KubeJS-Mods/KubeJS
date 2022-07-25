@@ -3,9 +3,9 @@ package dev.latvian.mods.kubejs.item;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.MatchAllIngredientJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.level.LevelJS;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
@@ -201,12 +201,12 @@ public class InventoryJS {
 	}
 
 	@Nullable
-	public BlockContainerJS getBlock(LevelJS level) {
+	public BlockContainerJS getBlock(Level level) {
 		if (minecraftInventory instanceof ContainerInventory container) {
 			var inv = container.getInv();
 
 			if (inv instanceof BlockEntity be) {
-				return level.getBlock(be);
+				return level.kjs$getBlock(be);
 			}
 		}
 

@@ -1,9 +1,6 @@
 package dev.latvian.mods.kubejs.misc;
 
 import dev.latvian.mods.kubejs.KubeJSRegistries;
-import dev.latvian.mods.kubejs.core.EntityKJS;
-import dev.latvian.mods.kubejs.entity.EntityJS;
-import dev.latvian.mods.kubejs.entity.LivingEntityJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.damagesource.DamageSource;
@@ -93,14 +90,14 @@ public class BasicEnchantment extends Enchantment {
 	@Override
 	public void doPostAttack(LivingEntity entity, Entity target, int level) {
 		if (enchantmentBuilder.postAttack != null) {
-			enchantmentBuilder.postAttack.apply((LivingEntityJS) entity.asKJS(), target.asKJS(), level);
+			enchantmentBuilder.postAttack.apply(entity, target, level);
 		}
 	}
 
 	@Override
 	public void doPostHurt(LivingEntity entity, Entity target, int level) {
 		if (enchantmentBuilder.postHurt != null) {
-			enchantmentBuilder.postHurt.apply((LivingEntityJS) entity.asKJS(), target.asKJS(), level);
+			enchantmentBuilder.postHurt.apply(entity, target, level);
 		}
 	}
 
