@@ -50,14 +50,14 @@ public interface MinecraftServerKJS extends AsKJS<MinecraftServer>, WithAttached
 		kjs$self().sendSystemMessage(message);
 
 		for (var player : kjs$self().getPlayerList().getPlayers()) {
-			player.sendSystemMessage(message);
+			player.kjs$tell(message);
 		}
 	}
 
 	@Override
 	default void kjs$setStatusMessage(Component message) {
 		for (var player : kjs$self().getPlayerList().getPlayers()) {
-			player.displayClientMessage(message, true);
+			player.kjs$setStatusMessage(message);
 		}
 	}
 

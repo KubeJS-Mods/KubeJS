@@ -36,7 +36,7 @@ public interface ConditionContainer {
 	default ConditionContainer entityProperties(LootContext.EntityTarget entity, JsonObject properties) {
 		var json = new JsonObject();
 		json.addProperty("condition", "minecraft:entity_properties");
-		json.addProperty("entity", EntityTargetKJS.getNameKJS(entity));
+		json.addProperty("entity", EntityTargetKJS.kjs$getName(entity));
 		json.add("predicate", properties);
 		return addCondition(json);
 	}
@@ -52,7 +52,7 @@ public interface ConditionContainer {
 	default ConditionContainer entityScores(LootContext.EntityTarget entity, Map<String, Object> scores) {
 		var json = new JsonObject();
 		json.addProperty("condition", "minecraft:entity_scores");
-		json.addProperty("entity", EntityTargetKJS.getNameKJS(entity));
+		json.addProperty("entity", EntityTargetKJS.kjs$getName(entity));
 
 		var s = new JsonObject();
 

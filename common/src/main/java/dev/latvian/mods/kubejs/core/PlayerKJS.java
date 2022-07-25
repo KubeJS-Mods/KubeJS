@@ -4,7 +4,6 @@ import com.mojang.authlib.GameProfile;
 import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.latvian.mods.kubejs.item.InventoryJS;
 import dev.latvian.mods.kubejs.item.ItemHandlerUtils;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.stages.Stages;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -15,7 +14,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * @author LatvianModder
@@ -27,18 +25,21 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 		return (Player) this;
 	}
 
-	@Nullable
-	Stages kjs$getStagesRaw();
+	default Stages kjs$getStages() {
+		throw new NoMixinException();
+	}
 
-	void kjs$setStages(Stages p);
+	default void kjs$paint(CompoundTag renderer) {
+		throw new NoMixinException();
+	}
 
-	Stages kjs$getStages();
+	default PlayerStatsJS kjs$getStats() {
+		throw new NoMixinException();
+	}
 
-	void kjs$paint(CompoundTag renderer);
-
-	PlayerStatsJS kjs$getStats();
-
-	boolean kjs$isMiningBlock();
+	default boolean kjs$isMiningBlock() {
+		throw new NoMixinException();
+	}
 
 	@Override
 	default boolean kjs$isPlayer() {
@@ -79,33 +80,17 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 		kjs$self().getInventory().selected = Mth.clamp(index, 0, 8);
 	}
 
-	default ItemStackJS kjs$getMouseItem() {
-		if (kjs$self().containerMenu != null) {
-			return ItemStackJS.of(kjs$self().containerMenu.getCarried());
-		} else {
-			return ItemStackJS.of(kjs$self().inventoryMenu.getCarried());
-		}
+	default ItemStack kjs$getMouseItem() {
+		return kjs$self().containerMenu.getCarried();
 	}
 
 	default void kjs$setMouseItem(ItemStack item) {
-		if (kjs$self().containerMenu != null) {
-			kjs$self().containerMenu.setCarried(item);
-		} else {
-			kjs$self().inventoryMenu.setCarried(item);
-		}
+		kjs$self().containerMenu.setCarried(item);
 	}
 
 	@Override
 	default void kjs$setStatusMessage(Component message) {
 		kjs$self().displayClientMessage(message, true);
-	}
-
-	default boolean kjs$isCreativeMode() {
-		return kjs$self().isCreative();
-	}
-
-	default boolean kjs$isSpectator() {
-		return kjs$self().isSpectator();
 	}
 
 	@Override
@@ -174,10 +159,6 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 			var m = kjs$self().getDeltaMovement();
 			kjs$self().setDeltaMovement(m.add(v.x * 0.1D + (v.x * 1.5D - m.x) * 0.5D, v.y * 0.1D + (v.y * 1.5D - m.y) * 0.5D, v.z * 0.1D + (v.z * 1.5D - m.z) * 0.5D));
 		}
-	}
-
-	default void kjs$closeInventory() {
-		kjs$self().closeContainer();
 	}
 
 	default AbstractContainerMenu kjs$getOpenInventory() {

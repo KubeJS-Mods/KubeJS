@@ -9,7 +9,9 @@ import org.jetbrains.annotations.Nullable;
 
 @RemapPrefixForJS("kjs$")
 public interface MinecraftClientKJS {
-	Minecraft kjs$self();
+	default Minecraft kjs$self() {
+		return (Minecraft) this;
+	}
 
 	@Nullable
 	default Screen kjs$getCurrentScreen() {

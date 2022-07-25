@@ -21,7 +21,6 @@ import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.server.ServerSettings;
-import dev.latvian.mods.kubejs.stages.Stages;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -502,7 +501,7 @@ public class KubeJSCommands {
 
 	private static int addStage(CommandSourceStack source, Collection<ServerPlayer> players, String stage) {
 		for (var p : players) {
-			if (Stages.get(p).add(stage)) {
+			if (p.kjs$getStages().add(stage)) {
 				source.sendSuccess(Component.literal("Added '" + stage + "' stage for " + p.getScoreboardName()), false);
 			}
 		}
@@ -512,7 +511,7 @@ public class KubeJSCommands {
 
 	private static int removeStage(CommandSourceStack source, Collection<ServerPlayer> players, String stage) {
 		for (var p : players) {
-			if (Stages.get(p).remove(stage)) {
+			if (p.kjs$getStages().remove(stage)) {
 				source.sendSuccess(Component.literal("Removed '" + stage + "' stage for " + p.getScoreboardName()), false);
 			}
 		}
@@ -522,7 +521,7 @@ public class KubeJSCommands {
 
 	private static int clearStages(CommandSourceStack source, Collection<ServerPlayer> players) {
 		for (var p : players) {
-			if (Stages.get(p).clear()) {
+			if (p.kjs$getStages().clear()) {
 				source.sendSuccess(Component.literal("Cleared stages for " + p.getScoreboardName()), false);
 			}
 		}
@@ -533,7 +532,7 @@ public class KubeJSCommands {
 	private static int listStages(CommandSourceStack source, Collection<ServerPlayer> players) {
 		for (var p : players) {
 			source.sendSuccess(Component.literal(p.getScoreboardName() + " stages:"), false);
-			Stages.get(p).getAll().stream().sorted().forEach(s -> source.sendSuccess(Component.literal("- " + s), false));
+			p.kjs$getStages().getAll().stream().sorted().forEach(s -> source.sendSuccess(Component.literal("- " + s), false));
 		}
 
 		return 1;

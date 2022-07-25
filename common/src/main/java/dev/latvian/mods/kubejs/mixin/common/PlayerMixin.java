@@ -5,11 +5,11 @@ import dev.latvian.mods.kubejs.item.InventoryJS;
 import dev.latvian.mods.kubejs.stages.Stages;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
-import dev.latvian.mods.rhino.util.HideFromJS;
+import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
 /**
  * @author LatvianModder
@@ -22,24 +22,12 @@ public abstract class PlayerMixin implements PlayerKJS {
 	private AttachedData<Player> kjs$attachedData;
 
 	@Override
-	@Nullable
-	public Stages kjs$getStagesRaw() {
-		return kjs$stages;
-	}
-
-	@Override
-	@HideFromJS
-	public void kjs$setStages(Stages p) {
-		kjs$stages = p;
-	}
-
-	@Override
 	public Stages kjs$getStages() {
-		if (kjs$stages != null) {
-			return kjs$stages;
+		if (kjs$stages == null) {
+			kjs$stages = Stages.create(kjs$self());
 		}
 
-		return Stages.get((Player) (Object) this);
+		return kjs$stages;
 	}
 
 	@Override
@@ -65,4 +53,8 @@ public abstract class PlayerMixin implements PlayerKJS {
 
 		return kjs$attachedData;
 	}
+
+	@Shadow
+	@RemapForJS("closeMenu")
+	public abstract void closeContainer();
 }

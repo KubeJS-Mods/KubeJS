@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.net;
 import dev.architectury.networking.NetworkManager.PacketContext;
 import dev.architectury.networking.simple.BaseS2CMessage;
 import dev.architectury.networking.simple.MessageType;
-import dev.latvian.mods.kubejs.stages.Stages;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.UUID;
@@ -42,7 +41,7 @@ public class AddStageMessage extends BaseS2CMessage {
 		var p = player.equals(p0.getUUID()) ? p0 : p0.level.getPlayerByUUID(player);
 
 		if (p != null) {
-			Stages.get(p).add(stage);
+			p.kjs$getStages().add(stage);
 		}
 	}
 }

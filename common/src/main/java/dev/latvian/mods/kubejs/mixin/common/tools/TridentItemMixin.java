@@ -13,10 +13,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public abstract class TridentItemMixin implements ModifiableItemKJS {
 	@Override
 	@Accessor("defaultModifiers")
-	public abstract Multimap<Attribute, AttributeModifier> getAttributeMapKJS();
+	public abstract Multimap<Attribute, AttributeModifier> kjs$getAttributeMap();
 
 	@Override
 	@Accessor("defaultModifiers")
 	@Mutable
-	public abstract void setAttributeMapKJS(Multimap<Attribute, AttributeModifier> attributes);
+	public abstract void kjs$setAttributeMap(Multimap<Attribute, AttributeModifier> attributes);
 }

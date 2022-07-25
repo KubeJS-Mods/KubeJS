@@ -42,7 +42,9 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 		return ItemStackJS.of(this);
 	}
 
-	ItemStack kjs$self();
+	default ItemStack kjs$self() {
+		return (ItemStack) this;
+	}
 
 	@Override
 	default boolean specialEquals(Object o, boolean shallow) {

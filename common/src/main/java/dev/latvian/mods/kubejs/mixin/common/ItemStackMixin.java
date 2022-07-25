@@ -12,13 +12,6 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(ItemStack.class)
 @RemapPrefixForJS("kjs$")
 public abstract class ItemStackMixin implements ItemStackKJS {
-
-	@Override
-	@RemapForJS("getItemStack")
-	public ItemStack kjs$self() {
-		return (ItemStack) (Object) this;
-	}
-
 	@Shadow
 	@RemapForJS("enchantStack")
 	public abstract void enchant(Enchantment enchantment, int level);

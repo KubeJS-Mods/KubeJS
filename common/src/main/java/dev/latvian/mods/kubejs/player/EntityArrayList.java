@@ -56,16 +56,14 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 	@Override
 	public void kjs$tell(Component message) {
 		for (var entity : this) {
-			entity.sendSystemMessage(message);
+			entity.kjs$tell(message);
 		}
 	}
 
 	@Override
 	public void kjs$setStatusMessage(Component message) {
 		for (var entity : this) {
-			if (entity instanceof Player player) {
-				player.displayClientMessage(message, true);
-			}
+			entity.kjs$setStatusMessage(message);
 		}
 	}
 

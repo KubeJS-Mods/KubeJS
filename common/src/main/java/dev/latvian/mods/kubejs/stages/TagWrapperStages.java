@@ -4,7 +4,7 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
 
-class TagWrapperStages extends Stages {
+public class TagWrapperStages extends Stages {
 	public TagWrapperStages(Player player) {
 		super(player);
 	}

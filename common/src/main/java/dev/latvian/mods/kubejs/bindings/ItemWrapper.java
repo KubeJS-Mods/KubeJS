@@ -12,77 +12,82 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author LatvianModder
  */
-public class ItemWrapper {
-	public static ItemStack of(ItemStack in) {
+public interface ItemWrapper {
+	UUID KJS_BASE_ATTACK_DAMAGE_UUID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
+	UUID KJS_BASE_ATTACK_SPEED_UUID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
+	UUID[] KJS_ARMOR_MODIFIER_UUID_PER_SLOT = new UUID[]{UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"), UUID.fromString("D8499B04-0E66-4726-AB29-64469D734E0D"), UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E"), UUID.fromString("2AD3F246-FEE1-4E67-B886-69FD380BB150")};
+
+	static ItemStack of(ItemStack in) {
 		return in;
 	}
 
-	public static ItemStack of(ItemStack in, int count) {
+	static ItemStack of(ItemStack in, int count) {
 		in.setCount(count);
 		return in;
 	}
 
-	public static ItemStack of(ItemStack in, CompoundTag tag) {
+	static ItemStack of(ItemStack in, CompoundTag tag) {
 		return in.kjs$withNBT(tag);
 	}
 
-	public static ItemStack of(ItemStack in, int count, CompoundTag nbt) {
+	static ItemStack of(ItemStack in, int count, CompoundTag nbt) {
 		var is = in.kjs$withNBT(nbt);
 		is.setCount(count);
 		return is;
 	}
 
-	public static ItemStack withNBT(ItemStack in, CompoundTag nbt) {
+	static ItemStack withNBT(ItemStack in, CompoundTag nbt) {
 		return in.kjs$withNBT(nbt);
 	}
 
-	public static ItemStackJS withChance(ItemStackJS in, double c) {
+	static ItemStackJS withChance(ItemStackJS in, double c) {
 		return in.withChance(c);
 	}
 
-	public static List<ItemStack> getList() {
+	static List<ItemStack> getList() {
 		return ItemStackJS.getList();
 	}
 
-	public static List<String> getTypeList() {
+	static List<String> getTypeList() {
 		return ItemStackJS.getTypeList();
 	}
 
-	public static ItemStackJS getEmpty() {
+	static ItemStackJS getEmpty() {
 		return ItemStackJS.EMPTY;
 	}
 
-	public static void clearListCache() {
+	static void clearListCache() {
 		ItemStackJS.clearListCache();
 	}
 
-	public static FireworksJS fireworks(Map<String, Object> properties) {
+	static FireworksJS fireworks(Map<String, Object> properties) {
 		return FireworksJS.of(properties);
 	}
 
-	public static Item getItem(ResourceLocation id) {
+	static Item getItem(ResourceLocation id) {
 		return KubeJSRegistries.items().get(id);
 	}
 
 	@Nullable
-	public static ResourceLocation getId(Item item) {
+	static ResourceLocation getId(Item item) {
 		return KubeJSRegistries.items().getId(item);
 	}
 
 	@Nullable
-	public static CreativeModeTab findGroup(String id) {
+	static CreativeModeTab findGroup(String id) {
 		return ItemStackJS.findGroup(id);
 	}
 
-	public static boolean exists(ResourceLocation id) {
+	static boolean exists(ResourceLocation id) {
 		return KubeJSRegistries.items().contains(id);
 	}
 
-	public static boolean isItem(@Nullable Object o) {
+	static boolean isItem(@Nullable Object o) {
 		return o instanceof ItemStackJS;
 	}
 }

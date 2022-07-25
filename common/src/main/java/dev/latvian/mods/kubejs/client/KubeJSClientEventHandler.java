@@ -161,7 +161,7 @@ public class KubeJSClientEventHandler {
 			var iterator = screen.children().iterator();
 			while (iterator.hasNext()) {
 				var listener = iterator.next();
-				if (listener instanceof AbstractWidget && listener instanceof ImageButtonKJS buttonKJS && RECIPE_BUTTON_TEXTURE.equals(buttonKJS.getButtonTextureKJS())) {
+				if (listener instanceof AbstractWidget && listener instanceof ImageButtonKJS buttonKJS && RECIPE_BUTTON_TEXTURE.equals(buttonKJS.kjs$getButtonTexture())) {
 					access.getRenderables().remove(listener);
 					access.getNarratables().remove(listener);
 					iterator.remove();

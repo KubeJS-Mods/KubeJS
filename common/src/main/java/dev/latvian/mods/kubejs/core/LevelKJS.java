@@ -28,7 +28,9 @@ public interface LevelKJS extends AsKJS<Level>, WithAttachedData<Level> {
 		return (Level) this;
 	}
 
-	ScriptType kjs$getSide();
+	default ScriptType kjs$getSide() {
+		throw new NoMixinException();
+	}
 
 	default ResourceLocation kjs$getDimension() {
 		return kjs$self().dimension().location();

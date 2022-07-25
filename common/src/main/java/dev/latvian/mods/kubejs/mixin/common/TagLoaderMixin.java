@@ -32,21 +32,21 @@ public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 		// band-aid fix for #237, as some mods use tags on the client side;
 		// technically not an intended use case, but easy enough to fix
 		if (ServerScriptManager.instance != null) {
-			customTagsKJS(cir.getReturnValue());
+			kjs$customTags(cir.getReturnValue());
 		}
 	}
 
 	@Override
-	public void setRegistryKJS(Registry<T> registry) {
+	public void kjs$setRegistry(Registry<T> registry) {
 		kjs$storedRegistry = registry;
 	}
 
 	@Override
-	public @Nullable Registry<T> getRegistryKJS() {
+	public @Nullable Registry<T> kjs$getRegistry() {
 		return kjs$storedRegistry;
 	}
 
 	@Override
 	@Accessor("directory")
-	public abstract String getDirectory();
+	public abstract String kjs$getDirectory();
 }

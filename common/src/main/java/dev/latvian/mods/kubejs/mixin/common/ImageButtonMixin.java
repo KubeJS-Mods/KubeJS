@@ -13,5 +13,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public abstract class ImageButtonMixin implements ImageButtonKJS {
 	@Override
 	@Accessor("resourceLocation")
-	public abstract ResourceLocation getButtonTextureKJS();
+	public abstract ResourceLocation kjs$getButtonTexture();
 }

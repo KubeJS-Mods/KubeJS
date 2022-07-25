@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.mixin.common;
 import dev.latvian.mods.kubejs.client.ClientProperties;
 import dev.latvian.mods.kubejs.client.KubeJSClientResourcePack;
 import dev.latvian.mods.kubejs.core.MinecraftClientKJS;
-import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackResources;
@@ -22,12 +21,6 @@ import java.util.List;
 @Mixin(Minecraft.class)
 @RemapPrefixForJS("kjs$")
 public abstract class MinecraftMixin implements MinecraftClientKJS {
-	@Override
-	@RemapForJS("getMinecraft")
-	public Minecraft kjs$self() {
-		return (Minecraft) (Object) this;
-	}
-
 	@Inject(method = "createTitle", at = @At("HEAD"), cancellable = true)
 	private void kjs$createTitle(CallbackInfoReturnable<String> ci) {
 		var s = ClientProperties.get().title;

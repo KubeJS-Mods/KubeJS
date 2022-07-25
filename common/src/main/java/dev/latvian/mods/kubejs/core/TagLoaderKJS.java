@@ -14,20 +14,20 @@ import java.util.Map;
  * @author LatvianModder
  */
 public interface TagLoaderKJS<T> {
-	default void customTagsKJS(Map<ResourceLocation, List<TagLoader.EntryWithSource>> map) {
+	default void kjs$customTags(Map<ResourceLocation, List<TagLoader.EntryWithSource>> map) {
 		TagIngredientJS.resetContext();
-		var dir = getDirectory();
-		var reg = getRegistryKJS();
+		var dir = kjs$getDirectory();
+		var reg = kjs$getRegistry();
 
 		if (reg != null) {
 			new TagEventJS<>(dir, map, reg).post();
 		}
 	}
 
-	void setRegistryKJS(Registry<T> registry);
+	void kjs$setRegistry(Registry<T> registry);
 
 	@Nullable
-	Registry<T> getRegistryKJS();
+	Registry<T> kjs$getRegistry();
 
-	String getDirectory();
+	String kjs$getDirectory();
 }

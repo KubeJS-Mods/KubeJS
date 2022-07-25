@@ -7,7 +7,6 @@ import dev.architectury.event.events.common.TickEvent;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.stages.Stages;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.network.chat.ClickEvent;
@@ -49,11 +48,11 @@ public class KubeJSPlayerEventHandler {
 					false);
 		}
 
-		Stages.get(player).sync();
+		player.kjs$getStages().sync();
 	}
 
 	private static void respawn(ServerPlayer player, boolean b) {
-		Stages.get(player).sync();
+		player.kjs$getStages().sync();
 	}
 
 	public static void loggedOut(ServerPlayer player) {

@@ -5,10 +5,8 @@ import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.entity.EntityPotionEffectsJS;
 import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.item.FoodEatenEventJS;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.level.LevelPlatformHelper;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -76,75 +74,75 @@ public interface LivingEntityKJS extends EntityKJS {
 		kjs$self().swing(InteractionHand.MAIN_HAND, true);
 	}
 
-	default ItemStackJS kjs$getEquipment(EquipmentSlot slot) {
-		return ItemStackJS.of(kjs$self().getItemBySlot(slot));
+	default ItemStack kjs$getEquipment(EquipmentSlot slot) {
+		return kjs$self().getItemBySlot(slot);
 	}
 
-	default void kjs$setEquipment(EquipmentSlot slot, ItemStackJS item) {
-		kjs$self().setItemSlot(slot, item.getItemStack());
+	default void kjs$setEquipment(EquipmentSlot slot, ItemStack item) {
+		kjs$self().setItemSlot(slot, item);
 	}
 
-	default ItemStackJS kjs$getHeldItem(InteractionHand hand) {
-		return ItemStackJS.of(kjs$self().getItemInHand(hand));
+	default ItemStack kjs$getHeldItem(InteractionHand hand) {
+		return kjs$self().getItemInHand(hand);
 	}
 
-	default void kjs$setHeldItem(InteractionHand hand, ItemStackJS item) {
-		kjs$self().setItemInHand(hand, item.getItemStack());
+	default void kjs$setHeldItem(InteractionHand hand, ItemStack item) {
+		kjs$self().setItemInHand(hand, item);
 	}
 
-	default ItemStackJS kjs$getMainHandItem() {
+	default ItemStack kjs$getMainHandItem() {
 		return kjs$getEquipment(EquipmentSlot.MAINHAND);
 	}
 
-	default void kjs$setMainHandItem(ItemStackJS item) {
+	default void kjs$setMainHandItem(ItemStack item) {
 		kjs$setEquipment(EquipmentSlot.MAINHAND, item);
 	}
 
-	default ItemStackJS kjs$getOffHandItem() {
+	default ItemStack kjs$getOffHandItem() {
 		return kjs$getEquipment(EquipmentSlot.OFFHAND);
 	}
 
-	default void kjs$setOffHandItem(ItemStackJS item) {
+	default void kjs$setOffHandItem(ItemStack item) {
 		kjs$setEquipment(EquipmentSlot.OFFHAND, item);
 	}
 
-	default ItemStackJS kjs$getHeadArmorItem() {
+	default ItemStack kjs$getHeadArmorItem() {
 		return kjs$getEquipment(EquipmentSlot.HEAD);
 	}
 
-	default void kjs$setHeadArmorItem(ItemStackJS item) {
+	default void kjs$setHeadArmorItem(ItemStack item) {
 		kjs$setEquipment(EquipmentSlot.HEAD, item);
 	}
 
-	default ItemStackJS kjs$getChestArmorItem() {
+	default ItemStack kjs$getChestArmorItem() {
 		return kjs$getEquipment(EquipmentSlot.CHEST);
 	}
 
-	default void kjs$setChestArmorItem(ItemStackJS item) {
+	default void kjs$setChestArmorItem(ItemStack item) {
 		kjs$setEquipment(EquipmentSlot.CHEST, item);
 	}
 
-	default ItemStackJS kjs$getLegsArmorItem() {
+	default ItemStack kjs$getLegsArmorItem() {
 		return kjs$getEquipment(EquipmentSlot.LEGS);
 	}
 
-	default void kjs$setLegsArmorItem(ItemStackJS item) {
+	default void kjs$setLegsArmorItem(ItemStack item) {
 		kjs$setEquipment(EquipmentSlot.LEGS, item);
 	}
 
-	default ItemStackJS kjs$getFeetArmorItem() {
+	default ItemStack kjs$getFeetArmorItem() {
 		return kjs$getEquipment(EquipmentSlot.FEET);
 	}
 
-	default void kjs$setFeetArmorItem(ItemStackJS item) {
+	default void kjs$setFeetArmorItem(ItemStack item) {
 		kjs$setEquipment(EquipmentSlot.FEET, item);
 	}
 
-	default void kjs$damageEquipment(EquipmentSlot slot, int amount, Consumer<ItemStackJS> onBroken) {
+	default void kjs$damageEquipment(EquipmentSlot slot, int amount, Consumer<ItemStack> onBroken) {
 		var stack = kjs$self().getItemBySlot(slot);
 
 		if (!stack.isEmpty()) {
-			stack.hurtAndBreak(amount, kjs$self(), livingEntity -> onBroken.accept(ItemStackJS.of(stack)));
+			stack.hurtAndBreak(amount, kjs$self(), livingEntity -> onBroken.accept(stack));
 
 			if (stack.isEmpty()) {
 				kjs$self().setItemSlot(slot, ItemStack.EMPTY);
@@ -161,7 +159,7 @@ public interface LivingEntityKJS extends EntityKJS {
 		kjs$damageEquipment(slot, 1);
 	}
 
-	default void kjs$damageHeldItem(InteractionHand hand, int amount, Consumer<ItemStackJS> onBroken) {
+	default void kjs$damageHeldItem(InteractionHand hand, int amount, Consumer<ItemStack> onBroken) {
 		kjs$damageEquipment(hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND, amount, onBroken);
 	}
 
@@ -174,20 +172,8 @@ public interface LivingEntityKJS extends EntityKJS {
 		kjs$damageHeldItem(InteractionHand.MAIN_HAND, 1);
 	}
 
-	default boolean kjs$isHoldingInAnyHand(Object ingredient) {
-		var i = IngredientJS.of(ingredient);
+	default boolean kjs$isHoldingInAnyHand(IngredientJS i) {
 		return i.test(kjs$self().getItemInHand(InteractionHand.MAIN_HAND)) || i.test(kjs$self().getItemInHand(InteractionHand.OFF_HAND));
-	}
-
-	default float kjs$getMovementSpeed() {
-		ConsoleJS.SERVER.warn("'getMovementSpeed' is deprecated. Use 'getDefaultMovementSpeed' or 'getTotalMovementSpeed'");
-		return kjs$self().getSpeed();
-	}
-
-	@Deprecated
-	default void kjs$setMovementSpeed(float speed) {
-		ConsoleJS.SERVER.warn("'setMovementSpeed' is deprecated. Use 'setDefaultMovementSpeed', 'setMovementSpeedAddition', 'setDefaultMovementSpeedMultiplier' or 'setTotalMovementSpeedMultiplier'.");
-		kjs$self().setSpeed(speed);
 	}
 
 	default double kjs$getTotalMovementSpeed() {

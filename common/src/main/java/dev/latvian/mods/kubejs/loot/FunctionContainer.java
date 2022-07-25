@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.core.EntityTargetKJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -95,7 +94,7 @@ public interface FunctionContainer {
 		o.add("name", Component.Serializer.toJsonTree(name));
 
 		if (entity != null) {
-			o.addProperty("entity", EntityTargetKJS.getNameKJS(entity));
+			o.addProperty("entity", EntityTargetKJS.kjs$getName(entity));
 		}
 
 		return addFunction(o);

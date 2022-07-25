@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.stages;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.architectury.hooks.level.entity.PlayerHooks;
-import dev.latvian.mods.kubejs.core.PlayerKJS;
 import dev.latvian.mods.kubejs.net.AddStageMessage;
 import dev.latvian.mods.kubejs.net.RemoveStageMessage;
 import dev.latvian.mods.kubejs.net.SyncStagesMessage;
@@ -22,15 +21,14 @@ public abstract class Stages {
 	private static final Event<Consumer<StageChangeEvent>> ADDED = EventFactory.createConsumerLoop();
 	private static final Event<Consumer<StageChangeEvent>> REMOVED = EventFactory.createConsumerLoop();
 
-	private static Stages createEntityStages(Player player) {
+	public static Stages create(Player player) {
 		if (PlayerHooks.isFake(player)) {
 			return NoStages.NULL_INSTANCE;
 		}
 
 		var event = new StageCreationEvent(player);
-		event.setPlayerStages(new TagWrapperStages(player));
 		OVERRIDE_CREATION.invoker().accept(event);
-		return event.getPlayerStages();
+		return event.getPlayerStages() == null ? new TagWrapperStages(player) : event.getPlayerStages();
 	}
 
 	public static void overrideCreation(Consumer<StageCreationEvent> event) {
@@ -54,19 +52,7 @@ public abstract class Stages {
 	}
 
 	public static Stages get(@Nullable Player player) {
-		if (player == null) {
-			return NoStages.NULL_INSTANCE;
-		}
-
-		var playerKJS = ((PlayerKJS) player);
-		var stages = playerKJS.kjs$getStagesRaw();
-
-		if (stages == null) {
-			stages = createEntityStages(player);
-			playerKJS.kjs$setStages(stages);
-		}
-
-		return stages;
+		return player == null ? NoStages.NULL_INSTANCE : player.kjs$getStages();
 	}
 
 	// End of static //

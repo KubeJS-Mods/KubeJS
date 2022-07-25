@@ -30,6 +30,6 @@ public abstract class TagManagerMixin {
 	private <T> void kjs$saveRegistryToTagLoader(ResourceManager rm, Executor executor, RegistryEntry<T> reg,
 												 CallbackInfoReturnable<CompletableFuture<TagManager.LoadResult<T>>> cir,
 												 ResourceKey<? extends Registry<T>> key, Registry<T> registry, TagLoader<Holder<T>> loader) {
-		((TagLoaderKJS<T>) loader).setRegistryKJS(registry);
+		((TagLoaderKJS<T>) loader).kjs$setRegistry(registry);
 	}
 }

@@ -15,6 +15,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -34,6 +35,10 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	private final List<ScheduledEvent> kjs$scheduledTickEvents = new LinkedList<>();
 	private ServerLevel kjs$overworld;
 	private AttachedData<MinecraftServer> kjs$attachedData;
+
+	@Override
+	@Accessor("resources")
+	public abstract MinecraftServer.ReloadableResources kjs$getReloadableResources();
 
 	@Override
 	public CompoundTag kjs$getPersistentData() {

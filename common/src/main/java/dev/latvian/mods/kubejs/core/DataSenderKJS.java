@@ -9,5 +9,7 @@ import org.jetbrains.annotations.Nullable;
  */
 @RemapPrefixForJS("kjs$")
 public interface DataSenderKJS {
-	void kjs$sendData(String channel, @Nullable CompoundTag data);
+	default void kjs$sendData(String channel, @Nullable CompoundTag data) {
+		throw new NoMixinException();
+	}
 }

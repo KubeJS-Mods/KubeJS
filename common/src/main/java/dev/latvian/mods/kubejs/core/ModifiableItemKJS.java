@@ -7,15 +7,19 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 public interface ModifiableItemKJS {
-	Multimap<Attribute, AttributeModifier> getAttributeMapKJS();
+	default Multimap<Attribute, AttributeModifier> kjs$getAttributeMap() {
+		throw new NoMixinException();
+	}
 
-	void setAttributeMapKJS(Multimap<Attribute, AttributeModifier> attributes);
+	default void kjs$setAttributeMap(Multimap<Attribute, AttributeModifier> attributes) {
+		throw new NoMixinException();
+	}
 
-	default Multimap<Attribute, AttributeModifier> getMutableAttributeMap() {
-		Multimap<Attribute, AttributeModifier> attributes = getAttributeMapKJS();
+	default Multimap<Attribute, AttributeModifier> kjs$getMutableAttributeMap() {
+		Multimap<Attribute, AttributeModifier> attributes = kjs$getAttributeMap();
 		if (attributes instanceof ImmutableMultimap) {
 			attributes = ArrayListMultimap.create(attributes);
-			setAttributeMapKJS(attributes);
+			kjs$setAttributeMap(attributes);
 		}
 
 		return attributes;
