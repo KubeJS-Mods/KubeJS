@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.util;
 
 import dev.architectury.platform.Mod;
+import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -34,11 +35,20 @@ public class KubeJSPlugins {
 		contents.map(s -> s.split("#", 2)[0].trim()) // allow comments (#)
 				.filter(s -> !s.isBlank()) // filter empty lines
 				.flatMap(s -> {
+					String[] line = s.split(" ");
+
+					for (int i = 1; i < line.length; i++) {
+						if (!Platform.isModLoaded(line[i])) {
+							KubeJS.LOGGER.warn("Plugin " + line[0] + " does not have required mod " + line[i] + " loaded, skipping");
+							return Stream.empty();
+						}
+					}
+
 					try {
-						return Stream.of(Class.forName(s)); // try to load plugin class
+						return Stream.of(Class.forName(line[0])); // try to load plugin class
 					} catch (Throwable t) {
 						KubeJS.LOGGER.error("Failed to load plugin {} from source {}: {}", s, source, t);
-						return null;
+						return Stream.empty();
 					}
 				})
 				.filter(KubeJSPlugin.class::isAssignableFrom)
