@@ -37,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
@@ -131,7 +130,7 @@ public class CropBlockBuilder extends BlockBuilder {
 				loot.addPool(crops -> {
 					crops.rolls = ConstantValue.exactly(1.0f);
 					crops.bonusRolls = ConstantValue.exactly(0.0f);
-					crops.addItem(ItemStackJS.of(output.getFirst()).getItemStack())
+					crops.addItem(ItemStackJS.toItemStack(output.getFirst()))
 							.addCondition(condition)
 							.randomChance(output.getSecond());
 				});

@@ -7,32 +7,19 @@ import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.MatchAllIngredientJS;
 import net.minecraft.client.renderer.item.ClampedItemPropertyFunction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Level;
-
-import javax.annotation.Nullable;
 
 public class ItemModelPropertiesEventJS extends StartupEventJS {
-	public void register(IngredientJS ingredient, String overwriteId, ItemPropertiesCallback callback) {
+	public void register(IngredientJS ingredient, String overwriteId, ClampedItemPropertyFunction callback) {
 		if (ingredient instanceof MatchAllIngredientJS) {
 			registerAll(overwriteId, callback);
 		} else {
 			for (var stack : ingredient.getStacks()) {
-				ItemPropertiesRegistry.register(stack.getItem(), new ResourceLocation(KubeJS.appendModId(overwriteId)), wrap(callback));
+				ItemPropertiesRegistry.register(stack.getItem(), new ResourceLocation(KubeJS.appendModId(overwriteId)), callback);
 			}
 		}
 	}
 
-	public void registerAll(String overwriteId, ItemPropertiesCallback callback) {
-		ItemPropertiesRegistry.registerGeneric(new ResourceLocation(KubeJS.appendModId(overwriteId)), wrap(callback));
-	}
-
-	private ClampedItemPropertyFunction wrap(ItemPropertiesCallback callback) {
-		return (itemStack, level, entity, id) -> callback.accept(ItemStackJS.of(itemStack), level, entity, id);
-	}
-
-	@FunctionalInterface
-	public interface ItemPropertiesCallback {
-		float accept(ItemStackJS stack, @Nullable Level level, @Nullable LivingEntity entity, int id);
+	public void registerAll(String overwriteId, ClampedItemPropertyFunction callback) {
+		ItemPropertiesRegistry.registerGeneric(new ResourceLocation(KubeJS.appendModId(overwriteId)), callback);
 	}
 }

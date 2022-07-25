@@ -91,5 +91,5 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 
 	@Shadow
 	@RemapForJS("stop")
-	public abstract void close();
+	public abstract void stopServer();
 }

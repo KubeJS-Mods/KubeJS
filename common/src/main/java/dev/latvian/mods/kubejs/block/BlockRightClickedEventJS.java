@@ -1,12 +1,12 @@
 package dev.latvian.mods.kubejs.block;
 
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * @author LatvianModder
@@ -17,7 +17,7 @@ public class BlockRightClickedEventJS extends PlayerEventJS {
 	private final BlockPos pos;
 	private final Direction direction;
 	private BlockContainerJS block;
-	private ItemStackJS item;
+	private ItemStack item;
 
 	public BlockRightClickedEventJS(ServerPlayer player, InteractionHand hand, BlockPos pos, Direction direction) {
 		this.player = player;
@@ -43,9 +43,9 @@ public class BlockRightClickedEventJS extends PlayerEventJS {
 		return hand;
 	}
 
-	public ItemStackJS getItem() {
+	public ItemStack getItem() {
 		if (item == null) {
-			item = ItemStackJS.of(player.getItemInHand(hand));
+			item = player.getItemInHand(hand);
 		}
 
 		return item;

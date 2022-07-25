@@ -29,8 +29,8 @@ public class InventoryJS {
 		return minecraftInventory.getSlots();
 	}
 
-	public ItemStackJS get(int slot) {
-		return ItemStackJS.of(minecraftInventory.getStackInSlot(slot));
+	public ItemStack get(int slot) {
+		return minecraftInventory.getStackInSlot(slot);
 	}
 
 	public void set(int slot, ItemStack item) {
@@ -41,12 +41,12 @@ public class InventoryJS {
 		}
 	}
 
-	public ItemStackJS insert(int slot, ItemStack item, boolean simulate) {
-		return ItemStackJS.of(minecraftInventory.insertItem(slot, item, simulate));
+	public ItemStack insert(int slot, ItemStack item, boolean simulate) {
+		return minecraftInventory.insertItem(slot, item, simulate);
 	}
 
-	public ItemStackJS extract(int slot, int amount, boolean simulate) {
-		return ItemStackJS.of(minecraftInventory.extractItem(slot, amount, simulate));
+	public ItemStack extract(int slot, int amount, boolean simulate) {
+		return minecraftInventory.extractItem(slot, amount, simulate);
 	}
 
 	public int getSlotLimit(int slot) {

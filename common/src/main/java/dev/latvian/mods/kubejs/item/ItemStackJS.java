@@ -16,7 +16,6 @@ import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.MapJS;
-import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.ChangeListener;
@@ -32,8 +31,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -45,14 +42,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
@@ -266,6 +261,10 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		return ItemStackJS.of(object).toString();
 	}
 
+	public static ItemStack toItemStack(Object o) {
+		return of(o).getItemStack();
+	}
+
 	public static List<ItemStack> getList() {
 		if (cachedItemList != null) {
 			return cachedItemList;
@@ -337,14 +336,6 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 		return String.valueOf(Registries.getId(getItem(), Registry.ITEM_REGISTRY));
 	}
 
-	public Collection<ResourceLocation> getTags() {
-		return Tags.byItem(getItem()).map(TagKey::location).collect(Collectors.toSet());
-	}
-
-	public boolean hasTag(ResourceLocation tag) {
-		return getItemStack().is(Tags.item(tag));
-	}
-
 	@Override
 	public ItemStackJS copy() {
 		var s = new ItemStackJS(stack.copy());
@@ -385,10 +376,6 @@ public class ItemStackJS implements IngredientJS, NBTSerializable, ChangeListene
 	@Override
 	public boolean isInvalidRecipeIngredient() {
 		return stack.isEmpty();
-	}
-
-	public boolean isBlock() {
-		return stack.getItem() instanceof BlockItem;
 	}
 
 	@Nullable

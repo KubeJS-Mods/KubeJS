@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.misc;
 
 import dev.latvian.mods.kubejs.KubeJSRegistries;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -81,7 +80,7 @@ public class BasicEnchantment extends Enchantment {
 		if (super.canEnchant(itemStack)) {
 			return true;
 		} else if (enchantmentBuilder.canEnchant != null) {
-			return enchantmentBuilder.canEnchant.apply(ItemStackJS.of(itemStack));
+			return enchantmentBuilder.canEnchant.apply(itemStack);
 		}
 
 		return false;

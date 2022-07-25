@@ -9,11 +9,11 @@ import net.minecraft.world.item.ItemStack;
  */
 public class FoodEatenEventJS extends PlayerEventJS {
 	private final ServerPlayer player;
-	private final ItemStackJS item;
+	private final ItemStack item;
 
 	public FoodEatenEventJS(ServerPlayer p, ItemStack is) {
 		player = p;
-		item = ItemStackJS.of(is);
+		item = is;
 	}
 
 	@Override
@@ -21,7 +21,7 @@ public class FoodEatenEventJS extends PlayerEventJS {
 		return player;
 	}
 
-	public ItemStackJS getItem() {
+	public ItemStack getItem() {
 		return item;
 	}
 }

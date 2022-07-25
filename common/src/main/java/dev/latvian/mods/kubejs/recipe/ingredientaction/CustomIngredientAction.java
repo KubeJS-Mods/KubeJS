@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.recipe.ingredientaction;
 
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.InventoryJS;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 
@@ -21,7 +20,7 @@ public class CustomIngredientAction extends IngredientAction {
 	@Override
 	public ItemStack transform(ItemStack old, int index, CraftingContainer container) {
 		var callback = MAP.get(id);
-		return callback == null ? ItemStack.EMPTY : ItemStackJS.of(callback.transform(ItemStackJS.of(old), index, new InventoryJS(container))).getItemStack().copy();
+		return callback == null ? ItemStack.EMPTY : callback.transform(old, index, new InventoryJS(container)).copy();
 	}
 
 	@Override

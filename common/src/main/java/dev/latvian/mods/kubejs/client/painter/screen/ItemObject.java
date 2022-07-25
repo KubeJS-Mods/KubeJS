@@ -37,7 +37,7 @@ public class ItemObject extends ScreenPainterObject {
 		super.load(properties);
 
 		if (properties.hasAny("item")) {
-			itemStack = ItemStackJS.of(properties.tag.get("item")).getItemStack();
+			itemStack = ItemStackJS.toItemStack(properties.tag.get("item"));
 		}
 
 		overlay = properties.getUnit("overlay", overlay);

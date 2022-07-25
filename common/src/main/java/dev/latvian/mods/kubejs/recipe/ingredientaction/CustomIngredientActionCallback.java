@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.recipe.ingredientaction;
 
 import dev.latvian.mods.kubejs.item.InventoryJS;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
+import net.minecraft.world.item.ItemStack;
 
 @FunctionalInterface
 public interface CustomIngredientActionCallback {
-	Object transform(ItemStackJS old, int index, InventoryJS craftingTable);
+	ItemStack transform(ItemStack old, int index, InventoryJS craftingTable);
 }

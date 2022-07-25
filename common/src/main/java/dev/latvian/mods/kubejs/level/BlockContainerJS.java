@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.block.MaterialJS;
 import dev.latvian.mods.kubejs.block.MaterialListJS;
 import dev.latvian.mods.kubejs.item.InventoryJS;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -34,7 +33,6 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -347,25 +345,20 @@ public class BlockContainerJS implements SpecialEquality {
 		return MaterialListJS.INSTANCE.get(getBlockState().getMaterial());
 	}
 
-	public ItemStackJS getItem() {
+	public ItemStack getItem() {
 		var state = getBlockState();
-		return ItemStackJS.of(state.getBlock().getCloneItemStack(minecraftLevel, pos, state));
+		return state.getBlock().getCloneItemStack(minecraftLevel, pos, state);
 	}
 
-	public List<ItemStackJS> getDrops() {
+	public List<ItemStack> getDrops() {
 		return getDrops(null, ItemStack.EMPTY);
 	}
 
-	public List<ItemStackJS> getDrops(@Nullable Entity entity, ItemStack heldItem) {
-		if (minecraftLevel instanceof ServerLevel) {
-			var drops = new ArrayList<ItemStackJS>();
-
-			for (var item : Block.getDrops(getBlockState(), (ServerLevel) minecraftLevel, pos, getEntity(), entity, heldItem)) {
-				drops.add(ItemStackJS.of(item));
-			}
-
-			return drops;
+	public List<ItemStack> getDrops(@Nullable Entity entity, ItemStack heldItem) {
+		if (minecraftLevel instanceof ServerLevel s) {
+			return Block.getDrops(getBlockState(), s, pos, getEntity(), entity, heldItem);
 		}
+
 		return null;
 	}
 

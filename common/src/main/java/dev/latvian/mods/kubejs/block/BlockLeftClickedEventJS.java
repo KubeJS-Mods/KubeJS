@@ -1,12 +1,12 @@
 package dev.latvian.mods.kubejs.block;
 
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -34,8 +34,8 @@ public class BlockLeftClickedEventJS extends PlayerEventJS {
 		return new BlockContainerJS(player.level, pos);
 	}
 
-	public ItemStackJS getItem() {
-		return ItemStackJS.of(player.getItemInHand(hand));
+	public ItemStack getItem() {
+		return player.getItemInHand(hand);
 	}
 
 	@Nullable

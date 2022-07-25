@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.recipe.special;
 import com.google.gson.JsonObject;
 import com.mojang.util.UUIDTypeAdapter;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeCraftingGrid;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
@@ -39,7 +38,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe {
 	@Override
 	public ItemStack assemble(CraftingContainer container) {
 		if (modifyResult != null) {
-			return modifyResult.modify(new ModifyRecipeCraftingGrid(container), ItemStackJS.of(getResultItem().copy())).getItemStack();
+			return modifyResult.modify(new ModifyRecipeCraftingGrid(container), getResultItem().copy());
 		}
 
 		return getResultItem().copy();

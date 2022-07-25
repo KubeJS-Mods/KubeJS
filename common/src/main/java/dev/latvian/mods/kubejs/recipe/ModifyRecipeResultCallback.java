@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import dev.latvian.mods.kubejs.item.ItemStackJS;
+import net.minecraft.world.item.ItemStack;
 
 @FunctionalInterface
 public interface ModifyRecipeResultCallback {
-	ItemStackJS modify(ModifyRecipeCraftingGrid grid, ItemStackJS result);
+	ItemStack modify(ModifyRecipeCraftingGrid grid, ItemStack result);
 }

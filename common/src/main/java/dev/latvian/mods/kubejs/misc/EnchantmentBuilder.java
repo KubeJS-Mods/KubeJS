@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.misc;
 
 import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.objects.Object2BooleanFunction;
 import net.minecraft.resources.ResourceLocation;
@@ -10,6 +9,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 
@@ -39,7 +39,7 @@ public class EnchantmentBuilder extends BuilderBase<Enchantment> {
 	public transient DamageProtectionFunction damageProtection;
 	public transient DamageBonusFunction damageBonus;
 	public transient Object2BooleanFunction<ResourceLocation> checkCompatibility;
-	public transient Object2BooleanFunction<ItemStackJS> canEnchant;
+	public transient Object2BooleanFunction<ItemStack> canEnchant;
 	public transient PostFunction postAttack;
 	public transient PostFunction postHurt;
 	public transient boolean treasureOnly;
@@ -192,7 +192,7 @@ public class EnchantmentBuilder extends BuilderBase<Enchantment> {
 		return this;
 	}
 
-	public EnchantmentBuilder canEnchant(Object2BooleanFunction<ItemStackJS> i) {
+	public EnchantmentBuilder canEnchant(Object2BooleanFunction<ItemStack> i) {
 		canEnchant = i;
 		return this;
 	}
