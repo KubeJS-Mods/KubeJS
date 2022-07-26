@@ -23,6 +23,7 @@ public class MaterialListJS {
 		add("stone", Material.STONE, SoundType.STONE);
 		add("metal", Material.METAL, SoundType.METAL);
 		add("grass", Material.GRASS, SoundType.GRASS);
+		add("crop", Material.PLANT, SoundType.CROP);
 		add("dirt", Material.DIRT, SoundType.GRAVEL);
 		add("water", Material.WATER, SoundType.STONE);
 		add("lava", Material.LAVA, SoundType.STONE);
