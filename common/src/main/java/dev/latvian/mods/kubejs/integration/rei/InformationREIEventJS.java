@@ -37,7 +37,7 @@ public class InformationREIEventJS extends EventJS {
 	}
 
 	public void add(ResourceLocation typeId, Object stacks, Component title, Component[] description) {
-		add(Objects.requireNonNull(EntryTypeRegistry.getInstance().get(typeId), "Entry type '%s' not found!".formatted(typeId)).getType(), stacks, title, description);
+		add(KubeJSREIPlugin.getTypeOrThrow(typeId), stacks, title, description);
 	}
 
 	@HideFromJS
