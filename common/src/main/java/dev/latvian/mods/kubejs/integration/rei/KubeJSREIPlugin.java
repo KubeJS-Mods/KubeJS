@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.integration.rei;
 
 import dev.architectury.event.EventResult;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -11,9 +10,11 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
 import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
+import me.shedaniel.rei.api.client.registry.entry.CollapsibleEntryRegistry;
 import me.shedaniel.rei.api.client.registry.entry.EntryRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.entry.type.EntryType;
+import me.shedaniel.rei.api.common.entry.type.EntryTypeRegistry;
 import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
 import me.shedaniel.rei.api.common.plugins.PluginManager;
 import me.shedaniel.rei.api.common.registry.ReloadStage;
@@ -25,6 +26,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -37,7 +39,7 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 
 	public KubeJSREIPlugin() {
 		entryWrappers.clear();
-		entryWrappers.put(VanillaEntryTypes.ITEM, o -> EntryIngredients.ofItemStacks(CollectionUtils.map(IngredientJS.of(o).getStacks(), ItemStackJS::getItemStack)));
+		entryWrappers.put(VanillaEntryTypes.ITEM, o -> EntryIngredients.ofIngredient(IngredientJS.of(o).createVanillaIngredient()));
 		entryWrappers.put(VanillaEntryTypes.FLUID, o -> EntryIngredients.of(FluidStackJS.of(o).getFluidStack()));
 		KubeJSAddREIWrapperEvent.EVENT.invoker().accept(entryWrappers::put);
 	}
@@ -67,10 +69,10 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 			}
 
 			// legacy event ids with "plural s"
-			if(type == VanillaEntryTypes.ITEM) {
+			if (type == VanillaEntryTypes.ITEM) {
 				new HideREIEventJS<>(registry, VanillaEntryTypes.ITEM, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted("items"));
 				new AddREIEventJS(registry, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_ADD_EVENTS.formatted("items"));
-			} else if(type == VanillaEntryTypes.FLUID) {
+			} else if (type == VanillaEntryTypes.FLUID) {
 				new HideREIEventJS<>(registry, VanillaEntryTypes.FLUID, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted("fluids"));
 				new AddREIEventJS(registry, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_ADD_EVENTS.formatted("fluids"));
 			}
@@ -94,6 +96,16 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 			categoriesRemoved.clear();
 			new RemoveREICategoryEventJS(categoriesRemoved).post(ScriptType.CLIENT, REIIntegration.REI_REMOVE_CATEGORIES);
 		}
+	}
+
+	@SuppressWarnings("UnstableApiUsage")
+	@Override
+	public void registerCollapsibleEntries(CollapsibleEntryRegistry registry) {
+		new REIGroupEntriesEventJS(registry).post(ScriptType.CLIENT, REIIntegration.REI_GROUP_ENTRIES);
+	}
+
+	public static EntryType<?> getTypeOrThrow(ResourceLocation typeId) {
+		return Objects.requireNonNull(EntryTypeRegistry.getInstance().get(typeId), "Entry type '%s' not found!".formatted(typeId)).getType();
 	}
 
 	public static EntryWrapper getWrapperOrFallback(EntryType<?> type) {

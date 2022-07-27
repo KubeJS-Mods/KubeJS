@@ -8,4 +8,5 @@ public class REIIntegration {
 	public static final String REI_ADD_EVENTS = "rei.add.%s";
 	public static final String REI_INFORMATION = "rei.information";
 	public static final String REI_REMOVE_CATEGORIES = "rei.remove.categories";
+	public static final String REI_GROUP_ENTRIES = "rei.group";
 }

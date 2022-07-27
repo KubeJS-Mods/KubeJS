@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
@@ -33,8 +33,8 @@ public abstract class MinecraftMixin {
 		}
 	}
 
-	@Redirect(method = {"reloadResourcePacks(Z)Ljava/util/concurrent/CompletableFuture;", "<init>"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;"))
-	private List<PackResources> loadPacksKJS(PackRepository repository) {
-		return KubeJSClientResourcePack.inject(repository.openAllSelected());
+	@ModifyVariable(method = {"<init>", "reloadResourcePacks(Z)Ljava/util/concurrent/CompletableFuture;"}, at = @At("STORE"))
+	private List<PackResources> injectKubeJSResources(List<PackResources> original) {
+		return KubeJSClientResourcePack.inject(original);
 	}
 }

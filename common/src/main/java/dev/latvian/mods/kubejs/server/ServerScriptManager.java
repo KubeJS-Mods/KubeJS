@@ -21,11 +21,10 @@ import dev.latvian.mods.kubejs.script.data.DataPackEventJS;
 import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
-import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.CloseableResourceManager;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 
@@ -98,18 +97,18 @@ public class ServerScriptManager {
 		scriptManager.load();
 	}
 
-	public MultiPackResourceManager wrapResourceManager(PackType type, List<PackResources> packs) {
-		// TODO: Wrap the resource manager to inject KubeJS' virtual data packs and server scripts.
+	public MultiPackResourceManager wrapResourceManager(CloseableResourceManager original) {
 		var virtualDataPackLow = new VirtualKubeJSDataPack(false);
 		var virtualDataPackHigh = new VirtualKubeJSDataPack(true);
 
-		var list = new LinkedList<>(packs);
+		// safety check, should be able to use MultiPackResourceManager unless another mod has messed with it
+		var list = new LinkedList<>(original instanceof MultiPackResourceManager mp ? mp.packs : original.listPacks().toList());
 
 		list.addFirst(virtualDataPackLow);
 		list.addLast(new KubeJSServerResourcePack());
 		list.addLast(virtualDataPackHigh);
 
-		var wrappedResourceManager = new MultiPackResourceManager(type, list);
+		var wrappedResourceManager = new MultiPackResourceManager(PackType.SERVER_DATA, list);
 
 		reloadScriptManager(wrappedResourceManager);
 
