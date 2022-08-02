@@ -10,33 +10,21 @@ import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.block.SeedItemBuilder;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.CropBlock;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
@@ -74,8 +62,7 @@ public class CropBlockBuilder extends BlockBuilder {
 	public transient ToDoubleFunction<RandomTickCallbackJS> growSpeedCallback;
 	public transient ToIntFunction<RandomTickCallbackJS> fertilizerCallback;
 	public transient SurviveCallback surviveCallback;
-	public transient int minFertilizerEffect;
-	public transient int maxFertilizerEffect;
+
 	public transient List<Pair<Object, Double>> outputs;
 
 	public CropBlockBuilder(ResourceLocation i) {
@@ -85,7 +72,7 @@ public class CropBlockBuilder extends BlockBuilder {
 		growSpeedCallback = null;
 		fertilizerCallback = null;
 		surviveCallback = null;
-		material = MaterialListJS.INSTANCE.map.get("plant");
+		material = MaterialListJS.INSTANCE.map.get("crop");
 		renderType = "cutout";
 		noCollision = true;
 		itemBuilder = new SeedItemBuilder(newID("", "_seed"));
@@ -93,9 +80,8 @@ public class CropBlockBuilder extends BlockBuilder {
 		hardness = 0.0f;
 		resistance = 0.0f;
 		dropSeed = true;
-		minFertilizerEffect = 1;
-		maxFertilizerEffect = 1;
 		outputs = new ArrayList<>();
+		notSolid = true;
 
 		//This should work as a minimum crop-like table
 		lootTable = loot -> {
@@ -240,69 +226,15 @@ public class CropBlockBuilder extends BlockBuilder {
 	@Override
 	public Block createObject() {
 		IntegerProperty ageProperty = IntegerProperty.create("age", 0, age);
-
-		return new CropBlock(createProperties()
-				.randomTicks()
-				.sound(SoundType.CROP)) {
-			@Override
-			public int getMaxAge() {
-				return age;
-			}
-
-			@Override
-			protected ItemLike getBaseSeedId() {
-				return dropSeed ? itemBuilder.get() : Items.AIR;
-			}
-
-			@Override
-			public VoxelShape getShape(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos, CollisionContext collisionContext) {
-				return shapeByAge.get(blockState.getValue(this.getAgeProperty()));
-			}
-
-			@Override
-			protected int getBonemealAgeIncrease(Level level) {
-				return Mth.nextInt(level.random, minFertilizerEffect, maxFertilizerEffect);
-			}
-
+		return new BasicCropBlockJS(this) {
 			@Override
 			public IntegerProperty getAgeProperty() {
+				/*
+				 * Overriding getAgeProperty here because Minecraft calls getAgeProperty
+				 * when CropBlock.class initializes. This happens when nothing is registered
+				 * or assigned yet.
+				 */
 				return ageProperty;
-			}
-
-			@Override
-			protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-				builder.add(ageProperty);
-			}
-
-			@Override
-			public void randomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, Random random) {
-				double f = growSpeedCallback == null ? -1 : growSpeedCallback.applyAsDouble(new RandomTickCallbackJS(new BlockContainerJS(serverLevel, blockPos), random));
-				int age = this.getAge(blockState);
-				if (age < this.getMaxAge()) {
-					if (f < 0) {
-						f = getGrowthSpeed(this, serverLevel, blockPos);
-					}
-					if (f > 0 && random.nextInt((int) (25.0F / f) + 1) == 0) {
-						serverLevel.setBlock(blockPos, this.getStateForAge(age + 1), 2);
-					}
-				}
-			}
-
-			@Override
-			public void growCrops(Level level, BlockPos blockPos, BlockState blockState) {
-				if (fertilizerCallback == null) {
-					super.growCrops(level, blockPos, blockState);
-				} else {
-					int effect = fertilizerCallback.applyAsInt(new RandomTickCallbackJS(new BlockContainerJS(level, blockPos), level.random));
-					if (effect > 0) {
-						level.setBlock(blockPos, this.getStateForAge(Integer.min(getAge(blockState) + effect, getMaxAge())), 2);
-					}
-				}
-			}
-
-			@Override
-			public boolean canSurvive(BlockState blockState, LevelReader levelReader, BlockPos blockPos) {
-				return surviveCallback != null ? surviveCallback.survive(blockState, levelReader, blockPos) : super.canSurvive(blockState, levelReader, blockPos);
 			}
 		};
 	}

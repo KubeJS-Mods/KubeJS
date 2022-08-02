@@ -6,6 +6,7 @@ import net.minecraft.world.item.ItemStack;
 public class KeepAction extends IngredientAction {
 	@Override
 	public ItemStack transform(ItemStack old, int index, CraftingContainer container) {
+		old.setCount(1);
 		return old;
 	}
 
