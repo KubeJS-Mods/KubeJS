@@ -457,6 +457,16 @@ public class RecipeEventJS extends EventJS {
 		return 0;
 	}
 
+	public boolean containsRecipe(RecipeFilter filter) {
+		if (filter == RecipeFilter.ALWAYS_TRUE) {
+			return true;
+		} else if (filter != RecipeFilter.ALWAYS_FALSE) {
+			return originalRecipes.parallelStream().anyMatch(filter);
+		}
+
+		return false;
+	}
+
 	public int remove(RecipeFilter filter) {
 		var count = new MutableInt();
 		forEachRecipe(filter, r ->
