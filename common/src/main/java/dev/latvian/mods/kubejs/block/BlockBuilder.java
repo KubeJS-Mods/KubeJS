@@ -266,7 +266,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return map;
 	}
 
-	private boolean areAllTexturesEqual(JsonObject tex, String t) {
+	protected boolean areAllTexturesEqual(JsonObject tex, String t) {
 		for (var direction : Direction.values()) {
 			if (!tex.get(direction.getSerializedName()).getAsString().equals(t)) {
 				return false;
