@@ -1,13 +1,16 @@
 package dev.latvian.mods.kubejs.block.custom;
 
-import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import org.jetbrains.annotations.NotNull;
 
 public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 
@@ -17,7 +20,6 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 
 	@Override
 	public void generateAssetJsons(AssetJsonGenerator generator) {
-		var baseID = newID("block/", "").toString();
 
 		if (blockstateJson != null) {
 			generator.json(newID("blockstates/", ""), blockstateJson);
@@ -30,9 +32,6 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 		} else {
 			generator.blockModel(id, this::generateBlockModelJsons);
 		}
-		generator.blockModel(id, mg -> {
-
-		});
 
 		if (itemBuilder != null) {
 			generator.itemModel(itemBuilder.id, this::generateItemModelJson);
@@ -67,16 +66,6 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 		mg.parent(model.isEmpty() ? newID("block/", "").toString() : model);
 	}
 
-	public HorizontalDirectionalBlockBuilder textureFront(String tex) {
-		texture("front", tex);
-		return this;
-	}
-
-	public HorizontalDirectionalBlockBuilder textureSides(String tex) {
-		texture("side", tex);
-		return this;
-	}
-
 	@Override
 	public HorizontalDirectionalBlockBuilder textureAll(String tex) {
 		super.textureAll(tex);
@@ -85,11 +74,20 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 	}
 
 	private String getTextureOrDefault(String name, String defaultTexture) {
-		return textures.has(name)?textures.get(name).getAsString():defaultTexture;
+		return textures.has(name) ? textures.get(name).getAsString() : defaultTexture;
 	}
 
 	@Override
 	public Block createObject() {
-		return new HorizontalDirectionalBlock(createProperties()) {};
+		return new HorizontalDirectionalBlock(createProperties()) {
+			@Override
+			protected void createBlockStateDefinition(@NotNull StateDefinition.Builder<Block, BlockState> builder) {
+				builder.add(FACING);
+			}
+			@Override
+			public BlockState getStateForPlacement(@NotNull BlockPlaceContext arg) {
+				return this.defaultBlockState().setValue(FACING, arg.getHorizontalDirection().getOpposite());
+			}
+		};
 	}
 }
