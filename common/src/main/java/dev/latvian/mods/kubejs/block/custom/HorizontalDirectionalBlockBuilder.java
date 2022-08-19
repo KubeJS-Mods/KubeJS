@@ -18,27 +18,6 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 		super(i);
 	}
 
-	@Override
-	public void generateAssetJsons(AssetJsonGenerator generator) {
-
-		if (blockstateJson != null) {
-			generator.json(newID("blockstates/", ""), blockstateJson);
-		} else {
-			generator.blockState(id, this::generateBlockStateJson);
-		}
-
-		if (modelJson != null) {
-			generator.json(newID("models/", ""), modelJson);
-		} else {
-			generator.blockModel(id, this::generateBlockModelJsons);
-		}
-
-		if (itemBuilder != null) {
-			generator.itemModel(itemBuilder.id, this::generateItemModelJson);
-		}
-
-	}
-
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
 		var modelLocation = model.isEmpty() ? newID("block/", "").toString() : model;
 		bs.variant("facing=north", v -> v.model(modelLocation));
