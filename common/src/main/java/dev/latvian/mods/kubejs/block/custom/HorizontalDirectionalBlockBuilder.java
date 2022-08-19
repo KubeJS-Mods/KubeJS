@@ -62,8 +62,8 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 		}
 	}
 
-	protected void generateItemModelJson(ModelGenerator mg) {
-		mg.parent(model.isEmpty() ? newID("block/", "").toString() : model);
+	protected void generateItemModelJson(ModelGenerator m) {
+		m.parent(model.isEmpty() ? newID("block/", "").toString() : model);
 	}
 
 	@Override

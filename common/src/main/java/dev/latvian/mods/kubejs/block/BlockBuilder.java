@@ -6,6 +6,8 @@ import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.client.ModelGenerator;
+import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
@@ -153,62 +155,79 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	public void generateAssetJsons(AssetJsonGenerator generator) {
+
 		if (blockstateJson != null) {
 			generator.json(newID("blockstates/", ""), blockstateJson);
 		} else {
-			generator.blockState(id, bs -> bs.variant("", model.isEmpty() ? (id.getNamespace() + ":block/" + id.getPath()) : model));
+			generator.blockState(id, this::generateBlockStateJson);
 		}
 
 		if (modelJson != null) {
-			generator.json(newID("models/block/", ""), modelJson);
+			generator.json(newID("models/", ""), modelJson);
 		} else {
-			generator.blockModel(id, m -> {
-				var particle = textures.get("particle").getAsString();
-
-				if (areAllTexturesEqual(textures, particle)) {
-					m.parent("minecraft:block/cube_all");
-					m.texture("all", particle);
-				} else {
-					m.parent("block/cube");
-					m.textures(textures);
-				}
-
-				if (!color.isEmpty() || !customShape.isEmpty()) {
-					List<AABB> boxes = new ArrayList<>(customShape);
-
-					if (boxes.isEmpty()) {
-						boxes.add(new AABB(0D, 0D, 0D, 1D, 1D, 1D));
-					}
-
-					for (var box : boxes) {
-						m.element(e -> {
-							e.box(box);
-
-							for (var direction : Direction.values()) {
-								e.face(direction, face -> {
-									face.tex("#" + direction.getSerializedName());
-									face.cull();
-
-									if (!color.isEmpty()) {
-										face.tintindex(0);
-									}
-								});
-							}
-						});
-					}
-				}
-			});
+			// This is different because there can be multiple models, so we should let the block handle those
+			generateBlockModelJsons(generator);
 		}
 
 		if (itemBuilder != null) {
-			generator.itemModel(itemBuilder.id, m -> {
-				if (!model.isEmpty()) {
-					m.parent(model);
-				} else {
-					m.parent(newID("block/", "").toString());
-				}
-			});
+			if (itemBuilder.modelJson != null) {
+				generator.json(newID("models/item/", ""), itemBuilder.modelJson);
+			} else {
+				generator.itemModel(itemBuilder.id, this::generateItemModelJson);
+			}
 		}
+
+	}
+
+	protected void generateItemModelJson(ModelGenerator m) {
+		if (!model.isEmpty()) {
+			m.parent(model);
+		} else {
+			m.parent(newID("block/", "").toString());
+		}
+	}
+
+	protected void generateBlockModelJsons(AssetJsonGenerator generator) {
+		generator.blockModel(newID("block/", ""), mg -> {
+			var particle = textures.get("particle").getAsString();
+
+			if (areAllTexturesEqual(textures, particle)) {
+				mg.parent("minecraft:block/cube_all");
+				mg.texture("all", particle);
+			} else {
+				mg.parent("block/cube");
+				mg.textures(textures);
+			}
+
+			if (!color.isEmpty() || !customShape.isEmpty()) {
+				List<AABB> boxes = new ArrayList<>(customShape);
+
+				if (boxes.isEmpty()) {
+					boxes.add(new AABB(0D, 0D, 0D, 1D, 1D, 1D));
+				}
+
+				for (var box : boxes) {
+					mg.element(e -> {
+						e.box(box);
+
+						for (var direction : Direction.values()) {
+							e.face(direction, face -> {
+								face.tex("#" + direction.getSerializedName());
+								face.cull();
+
+								if (!color.isEmpty()) {
+									face.tintindex(0);
+								}
+							});
+						}
+					});
+				}
+			}
+		});
+	}
+
+	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
+		bs.variant("", model.isEmpty() ? (id.getNamespace() + ":block/" + id.getPath()) : model);
 	}
 
 	public Map<ResourceLocation, JsonObject> generateBlockModels(BlockBuilder builder) {

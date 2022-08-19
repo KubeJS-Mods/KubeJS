@@ -1,5 +1,7 @@
 package dev.latvian.mods.kubejs.block.custom;
 
+import dev.latvian.mods.kubejs.client.ModelGenerator;
+import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -20,13 +22,14 @@ public class StonePressurePlateBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	public void generateAssetJsons(AssetJsonGenerator generator) {
-		generator.blockState(id, bs -> {
-			bs.variant("powered=true", v -> v.model(newID("block/", "_down").toString()));
-			bs.variant("powered=false", v -> v.model(newID("block/", "_up").toString()));
-		});
+	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
+		bs.variant("powered=true", v -> v.model(newID("block/", "_down").toString()));
+		bs.variant("powered=false", v -> v.model(newID("block/", "_up").toString()));
+	}
 
-		final var texture = textures.get("texture").getAsString();
+	@Override
+	protected void generateBlockModelJsons(AssetJsonGenerator generator) {
+		var texture = textures.get("texture").getAsString();
 
 		generator.blockModel(newID("", "_down"), m -> {
 			m.parent("minecraft:block/pressure_plate_down");
@@ -37,7 +40,10 @@ public class StonePressurePlateBlockBuilder extends ShapedBlockBuilder {
 			m.parent("minecraft:block/pressure_plate_up");
 			m.texture("texture", texture);
 		});
+	}
 
-		generator.itemModel(itemBuilder.id, m -> m.parent(newID("block/", "_up").toString()));
+	@Override
+	protected void generateItemModelJson(ModelGenerator m) {
+		m.parent(newID("block/", "_up").toString());
 	}
 }
