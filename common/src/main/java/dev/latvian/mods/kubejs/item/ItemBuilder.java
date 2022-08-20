@@ -93,7 +93,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient Function<ItemStackJS, Color> barColor;
 	public transient ToIntFunction<ItemStackJS> barWidth;
 
-	public transient Function<ItemStackJS, Component> getName;
+	public transient NameCallback nameGetter;
 
 	public transient Multimap<ResourceLocation, AttributeModifier> attributes;
 	public transient UseAnim anim;
@@ -287,8 +287,8 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	public ItemBuilder name(Function<ItemStackJS, Component> name) {
-		this.getName = name;
+	public ItemBuilder name(NameCallback name) {
+		this.nameGetter = name;
 		return this;
 	}
 
@@ -391,5 +391,10 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	@FunctionalInterface
 	public interface ReleaseUsingCallback {
 		void releaseUsing(ItemStackJS itemStack, LevelJS level, LivingEntityJS user, int tick);
+	}
+
+	@FunctionalInterface
+	public interface NameCallback {
+		Component apply(ItemStackJS itemStack);
 	}
 }

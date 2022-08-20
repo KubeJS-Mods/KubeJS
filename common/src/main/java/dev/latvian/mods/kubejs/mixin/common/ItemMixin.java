@@ -160,8 +160,8 @@ public abstract class ItemMixin implements ItemKJS {
 
 	@Inject(method = "getName", at = @At("HEAD"), cancellable = true)
 	private void getName(ItemStack itemStack, CallbackInfoReturnable<Component> ci) {
-		if (itemBuilderKJS != null && itemBuilderKJS.getName != null) {
-			ci.setReturnValue(itemBuilderKJS.getName.apply(ItemStackJS.of(itemStack)));
+		if (itemBuilderKJS != null && itemBuilderKJS.nameGetter != null) {
+			ci.setReturnValue(itemBuilderKJS.nameGetter.apply(ItemStackJS.of(itemStack)));
 		}
 	}
 
