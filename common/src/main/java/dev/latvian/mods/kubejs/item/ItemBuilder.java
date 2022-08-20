@@ -92,6 +92,9 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient FoodBuilder foodBuilder;
 	public transient Function<ItemStackJS, Color> barColor;
 	public transient ToIntFunction<ItemStackJS> barWidth;
+
+	public transient Function<ItemStackJS, Component> getName;
+
 	public transient Multimap<ResourceLocation, AttributeModifier> attributes;
 	public transient UseAnim anim;
 	public transient ToIntFunction<ItemStackJS> useDuration;
@@ -281,6 +284,11 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	public ItemBuilder barWidth(ToIntFunction<ItemStackJS> barWidth) {
 		this.barWidth = barWidth;
+		return this;
+	}
+
+	public ItemBuilder name(Function<ItemStackJS, Component> name) {
+		this.getName = name;
 		return this;
 	}
 
