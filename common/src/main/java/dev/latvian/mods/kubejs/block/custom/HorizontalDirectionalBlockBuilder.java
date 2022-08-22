@@ -14,10 +14,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 
+	// Cardinal blocks that can face any horizontal direction (NSEW).
+
 	public HorizontalDirectionalBlockBuilder(ResourceLocation i) {
 		super(i);
 	}
 
+	@Override
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
 		var modelLocation = model.isEmpty() ? newID("block/", "").toString() : model;
 		bs.variant("facing=north", v -> v.model(modelLocation));
@@ -26,21 +29,26 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 		bs.variant("facing=west", v -> v.model(modelLocation).y(270));
 	}
 
-	protected void generateBlockModelJsons(ModelGenerator mg) {
-		var side = getTextureOrDefault("side", newID("block/", "").toString());
-		mg.texture("side", side);
-		mg.texture("front", getTextureOrDefault("front", newID("block/", "_front").toString()));
-		mg.texture("particle", textures.get("particle").getAsString());
-		mg.texture("top", getTextureOrDefault("top", side));
+	@Override
+	protected void generateBlockModelJsons(AssetJsonGenerator gen) {
+		gen.blockModel(id, mg -> {
+			var side = getTextureOrDefault("side", newID("block/", "").toString());
 
-		if (textures.has("bottom")) {
-			mg.parent("block/orientable_with_bottom");
-			mg.texture("bottom", textures.get("bottom").getAsString());
-		} else {
-			mg.parent("minecraft:block/orientable");
-		}
+			mg.texture("side", side);
+			mg.texture("front", getTextureOrDefault("front", newID("block/", "_front").toString()));
+			mg.texture("particle", textures.get("particle").getAsString());
+			mg.texture("top", getTextureOrDefault("top", side));
+
+			if (textures.has("bottom")) {
+				mg.parent("block/orientable_with_bottom");
+				mg.texture("bottom", textures.get("bottom").getAsString());
+			} else {
+				mg.parent("minecraft:block/orientable");
+			}
+		});
 	}
 
+	@Override
 	protected void generateItemModelJson(ModelGenerator m) {
 		m.parent(model.isEmpty() ? newID("block/", "").toString() : model);
 	}
