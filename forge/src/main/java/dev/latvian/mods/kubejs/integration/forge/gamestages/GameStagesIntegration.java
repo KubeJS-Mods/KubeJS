@@ -3,7 +3,10 @@ package dev.latvian.mods.kubejs.integration.forge.gamestages;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.player.PlayerDataJS;
 import dev.latvian.mods.kubejs.script.AttachDataEvent;
+import dev.latvian.mods.kubejs.stages.Stages;
+import net.darkhax.gamestages.event.GameStageEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 
 /**
@@ -17,7 +20,7 @@ public class GameStagesIntegration extends KubeJSPlugin {
 		if (ModList.get().isLoaded("gamestages")) {
 			gameStagesLoaded = true;
 			MinecraftForge.EVENT_BUS.register(GameStagesIntegration.class);
-			// FIXME: Gamestages Stages.overrideCreation(event -> event.setPlayerStages(new GameStagesWrapper(event.getPlayer())));
+			Stages.overrideCreation(event -> event.setPlayerStages(new GameStagesWrapper(event.getPlayer())));
 		}
 	}
 
@@ -27,7 +30,6 @@ public class GameStagesIntegration extends KubeJSPlugin {
 		}
 	}
 
-	/* FIXME: Gamestages
 	@SubscribeEvent
 	public static void gameStageAdded(GameStageEvent.Added e) {
 		new GameStageEventJS(e).post("gamestage.added", e.getStageName());
@@ -39,5 +41,4 @@ public class GameStagesIntegration extends KubeJSPlugin {
 		new GameStageEventJS(e).post("gamestage.removed", e.getStageName());
 		Stages.invokeRemoved(Stages.get(e.getPlayer()), e.getStageName());
 	}
-	 */
 }

@@ -1,6 +1,15 @@
 package dev.latvian.mods.kubejs.integration.forge.gamestages;
 
-public class GameStagesWrapper {/* FIXME: Gamestages extends Stages {
+import dev.latvian.mods.kubejs.stages.Stages;
+import net.darkhax.gamestages.GameStageHelper;
+import net.darkhax.gamestages.data.IStageData;
+import net.darkhax.gamestages.data.StageData;
+import net.minecraft.world.entity.player.Player;
+
+import java.util.Collection;
+import java.util.Collections;
+
+public class GameStagesWrapper extends Stages {
 	public GameStagesWrapper(Player p) {
 		super(p);
 	}
@@ -50,5 +59,4 @@ public class GameStagesWrapper {/* FIXME: Gamestages extends Stages {
 	private void setClientData(IStageData stageData) {
 		GameStageClientHelper.setClientData(stageData);
 	}
-	*/
 }

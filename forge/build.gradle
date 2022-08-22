@@ -42,8 +42,8 @@ dependencies {
 
 	modApi("dev.latvian.mods:rhino-forge:${rootProject.rhino_version}") { transitive false }
 
-	// modLocalRuntime modCompileOnly("net.darkhax.bookshelf:Bookshelf-1.16.5:${rootProject.forge_bookshelf_version}")
-	// modLocalRuntime modCompileOnly("net.darkhax.gamestages:GameStages-1.16.5:${rootProject.forge_gamestages_version}")
+	modLocalRuntime modCompileOnly("net.darkhax.bookshelf:Bookshelf-Forge-1.18.2:13.2.48")
+	modLocalRuntime modCompileOnly("net.darkhax.gamestages:GameStages-Forge-1.18.2:8.0.2")
 
 	// no reason to compile against the JEI API since REI already provides it,
 	// but if you want to use it at runtime, you can use this next line and remove the modLocalRuntime from REI.
