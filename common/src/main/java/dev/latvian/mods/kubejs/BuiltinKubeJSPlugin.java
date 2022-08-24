@@ -130,6 +130,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -347,6 +348,9 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("Vec3d", Vec3.class);
 		event.add("Vec3i", Vec3i.class);
 		event.add("BlockPos", BlockPos.class);
+
+		event.add("Properties", BlockStateProperties.class);
+		event.add("Property", BlockStateProperties.class);
 
 		KubeJS.PROXY.clientBindings(event);
 	}
