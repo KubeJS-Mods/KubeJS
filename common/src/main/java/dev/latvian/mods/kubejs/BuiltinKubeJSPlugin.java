@@ -349,8 +349,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("Vec3i", Vec3i.class);
 		event.add("BlockPos", BlockPos.class);
 
-		event.add("Properties", BlockStateProperties.class);
-		event.add("Property", BlockStateProperties.class);
+		event.add("BlockProperties", BlockStateProperties.class);
 
 		KubeJS.PROXY.clientBindings(event);
 	}
