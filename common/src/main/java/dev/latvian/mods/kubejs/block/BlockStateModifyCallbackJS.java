@@ -19,8 +19,9 @@ public class BlockStateModifyCallbackJS {
 		this.state = state;
 	}
 
-	public <T extends Comparable<T>> BlockState cycle(Property<T> property) {
-		return this.state = state.cycle(property);
+	public <T extends Comparable<T>> BlockStateModifyCallbackJS cycle(Property<T> property) {
+		this.state = state.cycle(property);
+		return this;
 	}
 
 	public BlockState getState() {
@@ -48,27 +49,32 @@ public class BlockStateModifyCallbackJS {
 		return state.getOptionalValue(property);
 	}
 
-	public <T extends Comparable<T>, V extends T> BlockState setValue(Property<T> property, V comparable) {
-		return this.state = state.setValue(property, comparable);
+	public <T extends Comparable<T>, V extends T> BlockStateModifyCallbackJS setValue(Property<T> property, V comparable) {
+		this.state = state.setValue(property, comparable);
+		return this;
 	}
 
-	public void populateNeighbours(Map<Map<Property<?>, Comparable<?>>, BlockState> map) {
+	public BlockStateModifyCallbackJS populateNeighbours(Map<Map<Property<?>, Comparable<?>>, BlockState> map) {
 		state.populateNeighbours(map);
+		return this;
 	}
 
 	public ImmutableMap<Property<?>, Comparable<?>> getValues() {
 		return state.getValues();
 	}
 
-	public BlockState rotate(Rotation rotation) {
-		return this.state = state.rotate(rotation);
+	public BlockStateModifyCallbackJS rotate(Rotation rotation) {
+		this.state = state.rotate(rotation);
+		return this;
 	}
 
-	public BlockState mirror(Mirror mirror) {
-		return this.state = state.mirror(mirror);
+	public BlockStateModifyCallbackJS mirror(Mirror mirror) {
+		this.state = state.mirror(mirror);
+		return this;
 	}
 
-	public BlockState updateShape(Direction direction, BlockState blockState, LevelAccessor levelAccessor, BlockPos blockPos, BlockPos blockPos2) {
-		return this.state = state.updateShape(direction, blockState, levelAccessor, blockPos, blockPos2);
+	public BlockStateModifyCallbackJS updateShape(Direction direction, BlockState blockState, LevelAccessor levelAccessor, BlockPos blockPos, BlockPos blockPos2) {
+		this.state = state.updateShape(direction, blockState, levelAccessor, blockPos, blockPos2);
+		return this;
 	}
 }
