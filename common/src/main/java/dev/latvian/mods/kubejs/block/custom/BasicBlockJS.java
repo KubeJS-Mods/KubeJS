@@ -98,7 +98,8 @@ public class BasicBlockJS extends Block implements EntityBlockKJS {
 			if (!safeCallback(blockBuilder.placementStateModification, callbackJS, "Error while modifying BlockState placement of " + blockBuilder.id)) {
 				return callbackJS.getState();
 			}
-		} else if (!blockBuilder.waterlogged) {
+		}
+		if (!blockBuilder.waterlogged) {
 			return defaultBlockState();
 		}
 
