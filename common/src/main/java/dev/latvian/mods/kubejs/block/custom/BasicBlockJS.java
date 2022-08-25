@@ -12,14 +12,18 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -27,13 +31,15 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
  */
-public class BasicBlockJS extends Block implements EntityBlockKJS {
+public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterloggedBlock {
 	public static class Builder extends BlockBuilder {
 		public Builder(ResourceLocation i) {
 			super(i);
@@ -56,10 +62,10 @@ public class BasicBlockJS extends Block implements EntityBlockKJS {
 		var blockState = stateDefinition.any();
 		if(blockBuilder.defaultStateModification != null) {
 			var callbackJS = new BlockStateModifyCallbackJS(blockState);
-			if (!safeCallback(blockBuilder.defaultStateModification, callbackJS, "Error while creating default blockState for block " + p.id)) {
+			if (safeCallback(blockBuilder.defaultStateModification, callbackJS, "Error while creating default blockState for block " + p.id)) {
 				registerDefaultState(callbackJS.getState());
 			}
-		} else if(p.waterlogged){
+		} else if(blockBuilder.blockStateProperties.contains(BlockStateProperties.WATERLOGGED)){
 			registerDefaultState(blockState.setValue(BlockStateProperties.WATERLOGGED, false));
 		}
 	}
@@ -81,6 +87,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS {
 			for(Property<?> property : current.blockStateProperties) {
 				builder.add(property);
 			}
+			current.blockStateProperties = Collections.unmodifiableSet(current.blockStateProperties);
 		}
 	}
 
@@ -95,11 +102,11 @@ public class BasicBlockJS extends Block implements EntityBlockKJS {
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
 		if(blockBuilder.placementStateModification != null) {
 			var callbackJS = new BlockStateModifyPlacementCallbackJS(context, this);
-			if (!safeCallback(blockBuilder.placementStateModification, callbackJS, "Error while modifying BlockState placement of " + blockBuilder.id)) {
+			if (safeCallback(blockBuilder.placementStateModification, callbackJS, "Error while modifying BlockState placement of " + blockBuilder.id)) {
 				return callbackJS.getState();
 			}
 		}
-		if (!blockBuilder.waterlogged) {
+		if (!blockBuilder.blockStateProperties.contains(BlockStateProperties.WATERLOGGED)) {
 			return defaultBlockState();
 		}
 
@@ -165,5 +172,31 @@ public class BasicBlockJS extends Block implements EntityBlockKJS {
 		return true;
 	}
 
+	@Override
+	public boolean canPlaceLiquid(BlockGetter blockGetter, BlockPos blockPos, BlockState blockState, Fluid fluid) {
+		if(blockBuilder.blockStateProperties.contains(BlockStateProperties.WATERLOGGED))
+			return SimpleWaterloggedBlock.super.canPlaceLiquid(blockGetter, blockPos, blockState, fluid);
+		return false;
+	}
 
+	@Override
+	public boolean placeLiquid(LevelAccessor levelAccessor, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
+		if(blockBuilder.blockStateProperties.contains(BlockStateProperties.WATERLOGGED))
+			return SimpleWaterloggedBlock.super.placeLiquid(levelAccessor, blockPos, blockState, fluidState);
+		return false;
+	}
+
+	@Override
+	public ItemStack pickupBlock(LevelAccessor levelAccessor, BlockPos blockPos, BlockState blockState) {
+		if(blockBuilder.blockStateProperties.contains(BlockStateProperties.WATERLOGGED))
+			return SimpleWaterloggedBlock.super.pickupBlock(levelAccessor, blockPos, blockState);
+		return ItemStack.EMPTY;
+	}
+
+	@Override
+	public Optional<SoundEvent> getPickupSound() {
+		if(blockBuilder.blockStateProperties.contains(BlockStateProperties.WATERLOGGED))
+			return SimpleWaterloggedBlock.super.getPickupSound();
+		return Optional.empty();
+	}
 }

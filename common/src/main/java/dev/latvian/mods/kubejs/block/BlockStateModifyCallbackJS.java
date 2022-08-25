@@ -3,10 +3,14 @@ package dev.latvian.mods.kubejs.block;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 
 import java.util.Collection;
@@ -45,6 +49,10 @@ public class BlockStateModifyCallbackJS {
 		return state.getValue(property);
 	}
 
+	public <T extends Comparable<T>> T get(Property<T> property) {
+		return state.getValue(property);
+	}
+
 	public <T extends Comparable<T>> Optional<T> getOptionalValue(Property<T> property) {
 		return state.getOptionalValue(property);
 	}
@@ -53,6 +61,27 @@ public class BlockStateModifyCallbackJS {
 		this.state = state.setValue(property, comparable);
 		return this;
 	}
+
+	public BlockStateModifyCallbackJS set(BooleanProperty property, boolean value) {
+		this.state = state.setValue(property, value);
+		return this;
+	}
+
+	public BlockStateModifyCallbackJS set(IntegerProperty property, Integer value) {
+		this.state = state.setValue(property, value);
+		return this;
+	}
+
+	public <T extends Enum<T> & StringRepresentable> BlockStateModifyCallbackJS set(EnumProperty<T> property, T value) {
+		this.state = state.setValue(property, value);
+		return this;
+	}
+
+	public <T extends Enum<T> & StringRepresentable> BlockStateModifyCallbackJS set(EnumProperty<T> property, String value) {
+		this.state = state.setValue(property, property.getValue(value).get());
+		return this;
+	}
+
 
 	public BlockStateModifyCallbackJS populateNeighbours(Map<Map<Property<?>, Comparable<?>>, BlockState> map) {
 		state.populateNeighbours(map);
@@ -77,4 +106,6 @@ public class BlockStateModifyCallbackJS {
 		this.state = state.updateShape(direction, blockState, levelAccessor, blockPos, blockPos2);
 		return this;
 	}
+
+
 }

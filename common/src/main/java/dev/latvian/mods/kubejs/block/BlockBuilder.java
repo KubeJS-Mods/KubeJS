@@ -20,15 +20,10 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -37,10 +32,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -76,7 +72,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient boolean viewBlocking;
 	public transient boolean redstoneConductor;
 	public transient boolean transparent;
-	public transient List<Property<?>> blockStateProperties;
+	public transient Set<Property<?>> blockStateProperties;
 	public transient Consumer<BlockStateModifyCallbackJS> defaultStateModification;
 	public transient Consumer<BlockStateModifyPlacementCallbackJS> placementStateModification;
 
@@ -115,7 +111,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		viewBlocking = true;
 		redstoneConductor = true;
 		transparent = false;
-		blockStateProperties = new ArrayList<>();
+		blockStateProperties = new HashSet<>();
 		defaultStateModification = null;
 		placementStateModification = null;
 	}
