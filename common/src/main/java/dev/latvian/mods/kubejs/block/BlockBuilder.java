@@ -555,49 +555,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	public BlockBuilder boolProperty(String propertyName) {
-		property(BooleanProperty.create(propertyName));
-		return this;
-	}
-
-	public BlockBuilder intProperty(String propertyName, int min, int max) {
-		property(IntegerProperty.create(propertyName, min, max));
-		return this;
-	}
-
-	public BlockBuilder dirProperty(String propertyName) {
-		property(DirectionProperty.create(propertyName));
-		return this;
-	}
-
-	public BlockBuilder dirProperty(String propertyName, Predicate<Direction> directionPredicate) {
-		property(DirectionProperty.create(propertyName, directionPredicate));
-		return this;
-	}
-
-
-	public BlockBuilder dirProperty(String propertyName, Direction... directions) {
-		property(DirectionProperty.create(propertyName, directions));
-		return this;
-	}
-
-	public <T extends Enum<T> & StringRepresentable> BlockBuilder enumProperty(String propertyName, Class<T> enumClass, Predicate<T> enumPredicate) {
-		EnumProperty<T> property = EnumProperty.create(propertyName, enumClass, enumPredicate);
-		property(property);
-		return this;
-	}
-
-	public <T extends Enum<T> & StringRepresentable> BlockBuilder enumProperty(String propertyName, Class<T> enumClass, T... enums) {
-		EnumProperty<T> property;
-		if(enums.length <= 1) {
-			property = EnumProperty.create(propertyName, enumClass);
-		} else {
-			property = EnumProperty.create(propertyName, enumClass, enums);
-		}
-		property(property);
-		return this;
-	}
-
 	public Block.Properties createProperties() {
 		var properties = BlockBehaviour.Properties.of(material.getMinecraftMaterial());
 		properties.sound(material.getSound());
