@@ -7,9 +7,11 @@ import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 
 public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
@@ -36,7 +38,7 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 
 			mg.texture("side", side);
 			mg.texture("front", getTextureOrDefault("front", newID("block/", "_front").toString()));
-			mg.texture("particle", textures.get("particle").getAsString());
+			mg.texture("particle", getTextureOrDefault("particle", side));
 			mg.texture("top", getTextureOrDefault("top", side));
 
 			if (textures.has("bottom")) {
@@ -66,15 +68,34 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 
 	@Override
 	public Block createObject() {
-		return new HorizontalDirectionalBlock(createProperties()) {
-			@Override
-			protected void createBlockStateDefinition(@NotNull StateDefinition.Builder<Block, BlockState> builder) {
-				builder.add(FACING);
+		return new HorizontalDirectionalBlockJS(this);
+	}
+
+	public static class HorizontalDirectionalBlockJS extends BasicBlockJS {
+
+		public static DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+
+		public HorizontalDirectionalBlockJS(BlockBuilder p) {
+			super(p);
+		}
+
+		@Override
+		protected void createBlockStateDefinition(@NotNull StateDefinition.Builder<Block, BlockState> builder) {
+			builder.add(FACING);
+			super.createBlockStateDefinition(builder);
+		}
+
+		@Override
+		public BlockState getStateForPlacement(@NotNull BlockPlaceContext context) {
+			var state = defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+
+			if (blockBuilder.waterlogged) {
+				state = state.setValue(BlockStateProperties.WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER);
 			}
-			@Override
-			public BlockState getStateForPlacement(@NotNull BlockPlaceContext arg) {
-				return this.defaultBlockState().setValue(FACING, arg.getHorizontalDirection().getOpposite());
-			}
-		};
+
+			return state;
+
+		}
+
 	}
 }
