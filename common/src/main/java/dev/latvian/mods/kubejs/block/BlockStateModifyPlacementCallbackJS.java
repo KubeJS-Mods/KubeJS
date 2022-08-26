@@ -67,7 +67,7 @@ public class BlockStateModifyPlacementCallbackJS extends BlockStateModifyCallbac
 		return context.isInside();
 	}
 
-	public ItemStackJS getItemInHand() {
+	public ItemStackJS getItem() {
 		return ItemStackJS.of(context.getItemInHand());
 	}
 
