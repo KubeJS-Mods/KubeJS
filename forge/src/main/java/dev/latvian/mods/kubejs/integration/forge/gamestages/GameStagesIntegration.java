@@ -19,7 +19,14 @@ public class GameStagesIntegration extends KubeJSPlugin {
 	public void init() {
 		if (ModList.get().isLoaded("gamestages")) {
 			gameStagesLoaded = true;
-			MinecraftForge.EVENT_BUS.register(GameStagesIntegration.class);
+			MinecraftForge.EVENT_BUS.<GameStageEvent.Added>addListener(e -> {
+				new GameStageEventJS(e).post("gamestage.added", e.getStageName());
+				Stages.invokeAdded(Stages.get(e.getPlayer()), e.getStageName());
+			});
+			MinecraftForge.EVENT_BUS.<GameStageEvent.Removed>addListener(e -> {
+				new GameStageEventJS(e).post("gamestage.removed", e.getStageName());
+				Stages.invokeRemoved(Stages.get(e.getPlayer()), e.getStageName());
+			});
 			Stages.overrideCreation(event -> event.setPlayerStages(new GameStagesWrapper(event.getPlayer())));
 		}
 	}
@@ -28,17 +35,5 @@ public class GameStagesIntegration extends KubeJSPlugin {
 		if (gameStagesLoaded) {
 			event.add("gamestages", new GameStagesPlayerData(event.parent()));
 		}
-	}
-
-	@SubscribeEvent
-	public static void gameStageAdded(GameStageEvent.Added e) {
-		new GameStageEventJS(e).post("gamestage.added", e.getStageName());
-		Stages.invokeAdded(Stages.get(e.getPlayer()), e.getStageName());
-	}
-
-	@SubscribeEvent
-	public static void gameStageRemoved(GameStageEvent.Removed e) {
-		new GameStageEventJS(e).post("gamestage.removed", e.getStageName());
-		Stages.invokeRemoved(Stages.get(e.getPlayer()), e.getStageName());
 	}
 }
