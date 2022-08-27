@@ -12,9 +12,9 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.item.ingredient.GroupIngredientJS;
-import dev.latvian.mods.kubejs.item.ingredient.ModIngredientJS;
-import dev.latvian.mods.kubejs.item.ingredient.TagIngredientJS;
+import dev.latvian.mods.kubejs.item.ingredient.CreativeTabIngredient;
+import dev.latvian.mods.kubejs.item.ingredient.ModIngredient;
+import dev.latvian.mods.kubejs.item.ingredient.TagIngredient;
 import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
@@ -238,15 +238,15 @@ public class KubeJSCommands {
 		tags.sort(null);
 
 		for (var id : tags) {
-			player.sendSystemMessage(copy("'#" + id + "'", ChatFormatting.YELLOW, "Item Tag [" + TagIngredientJS.createTag(id.toString()).getStacks().size() + " items]"));
+			player.sendSystemMessage(copy("'#" + id + "'", ChatFormatting.YELLOW, "Item Tag [" + TagIngredient.ofTag(id.toString()).kjs$getStacks().size() + " items]"));
 		}
 
-		player.sendSystemMessage(copy("'@" + stack.kjs$getMod() + "'", ChatFormatting.AQUA, "Mod [" + new ModIngredientJS(stack.kjs$getMod()).getStacks().size() + " items]"));
+		player.sendSystemMessage(copy("'@" + stack.kjs$getMod() + "'", ChatFormatting.AQUA, "Mod [" + ModIngredient.ofMod(stack.kjs$getMod()).kjs$getStacks().size() + " items]"));
 
 		var cat = stack.getItem().getItemCategory();
 
 		if (cat != null) {
-			player.sendSystemMessage(copy("'%" + cat.getRecipeFolderName() + "'", ChatFormatting.LIGHT_PURPLE, "Item Group [" + new GroupIngredientJS(cat).getStacks().size() + " items]"));
+			player.sendSystemMessage(copy("'%" + cat.getRecipeFolderName() + "'", ChatFormatting.LIGHT_PURPLE, "Item Group [" + new CreativeTabIngredient(cat).kjs$getStacks().size() + " items]"));
 		}
 
 		return 1;
@@ -261,13 +261,7 @@ public class KubeJSCommands {
 	}
 
 	private static int dump(List<ItemStack> stacks, ServerPlayer player, String name) {
-		List<ItemStackJS> stackList = new ArrayList<>(stacks.size());
-		for (var stack : stacks) {
-			if (!stack.isEmpty()) {
-				stackList.add(ItemStackJS.of(stack));
-			}
-		}
-		var dump = stackList.toString();
+		var dump = stacks.toString();
 		player.sendSystemMessage(copy(dump, ChatFormatting.WHITE, name + " Item List"));
 		return 1;
 	}

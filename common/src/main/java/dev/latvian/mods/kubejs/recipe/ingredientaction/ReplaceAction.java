@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.ingredientaction;
 
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 
@@ -24,6 +23,6 @@ public class ReplaceAction extends IngredientAction {
 
 	@Override
 	public void toJson(JsonObject json) {
-		json.add("item", ItemStackJS.of(item).toResultJson());
+		json.add("item", item.kjs$toJson());
 	}
 }

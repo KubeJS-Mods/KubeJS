@@ -1,19 +1,18 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.architectury.registry.registries.Registries;
+import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.item.ingredient.IgnoreNBTIngredientJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.item.ingredient.WeakNBTIngredientJS;
+import dev.latvian.mods.kubejs.item.ingredient.WeakNBTIngredient;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.NBTSerializable;
+import dev.latvian.mods.rhino.mod.util.NBTUtils;
+import dev.latvian.mods.rhino.mod.util.NbtType;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -22,37 +21,58 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.block.Blocks;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 @RemapPrefixForJS("kjs$")
-public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSerializable {
-	@Override
-	default ItemStackJS asKJS() {
-		return ItemStackJS.of(this);
-	}
-
+public interface ItemStackKJS extends SpecialEquality, NBTSerializable {
 	default ItemStack kjs$self() {
 		return (ItemStack) this;
 	}
 
 	@Override
 	default boolean specialEquals(Object o, boolean shallow) {
-		return SpecialEquality.super.specialEquals(o, shallow);
+		if (o instanceof CharSequence) {
+			return kjs$getId().equals(UtilsJS.getID(o.toString()));
+		} else if (o instanceof ItemStack s) {
+			return kjs$equalsIgnoringCount(s);
+		}
+
+		return kjs$equalsIgnoringCount(ItemStackJS.of(o));
+	}
+
+	default boolean kjs$equalsIgnoringCount(ItemStack stack) {
+		var self = kjs$self();
+
+		if (self == stack) {
+			return true;
+		} else if (self.isEmpty()) {
+			return stack.isEmpty();
+		}
+
+		return self.getItem() == stack.getItem() && ItemStack.tagMatches(self, stack);
+	}
+
+	default ResourceLocation kjs$getIdLocation() {
+		return kjs$self().getItem().kjs$getIdLocation();
 	}
 
 	default String kjs$getId() {
-		return String.valueOf(Registries.getId(kjs$self().getItem(), Registry.ITEM_REGISTRY));
+		return kjs$self().getItem().kjs$getId();
 	}
 
 	default Collection<ResourceLocation> kjs$getTags() {
@@ -87,21 +107,18 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 
 	default ItemStack kjs$withNBT(CompoundTag nbt) {
 		var is = kjs$self().copy();
+		var tag0 = is.getTag();
 
-		if (is.getTag() == null) {
+		if (tag0 == null) {
 			is.setTag(nbt);
 		} else {
-			if (nbt != null && !nbt.isEmpty()) {
-				for (var key : nbt.getAllKeys()) {
-					is.getTag().put(key, nbt.get(key));
-				}
-			}
+			is.setTag(tag0.merge(nbt));
 		}
 
 		return is;
 	}
 
-	default ItemStackJS kjs$withName(@Nullable Component displayName) {
+	default ItemStack kjs$withName(@Nullable Component displayName) {
 		var is = kjs$self().copy();
 
 		if (displayName != null) {
@@ -110,7 +127,7 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 			is.resetHoverName();
 		}
 
-		return new ItemStackJS(is);
+		return is;
 	}
 
 	default Map<String, Integer> kjs$getEnchantments() {
@@ -160,15 +177,15 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 	}
 
 	default String kjs$getMod() {
-		return Registries.getId(kjs$self().getItem(), Registry.ITEM_REGISTRY).getNamespace();
+		return kjs$self().getItem().kjs$getMod();
 	}
 
-	default IngredientJS kjs$ignoreNBT() {
-		return new IgnoreNBTIngredientJS(ItemStackJS.of(this));
+	default Ingredient kjs$ignoreNBT() {
+		return kjs$self().getItem().kjs$getTypeIngredient();
 	}
 
-	default IngredientJS kjs$weakNBT() {
-		return new WeakNBTIngredientJS(kjs$self());
+	default Ingredient kjs$weakNBT() {
+		return new WeakNBTIngredient(kjs$self());
 	}
 
 	default boolean kjs$areItemsEqual(ItemStack other) {
@@ -198,12 +215,101 @@ public interface ItemStackKJS extends AsKJS<ItemStackJS>, SpecialEquality, NBTSe
 		return kjs$self().save(new CompoundTag());
 	}
 
-	default String kjs$getItemGroup() {
+	default String kjs$getCreativeTab() {
 		var cat = kjs$self().getItem().getItemCategory();
 		return cat == null ? "" : cat.getRecipeFolderName();
 	}
 
 	default CompoundTag kjs$getTypeData() {
 		return kjs$self().getItem().kjs$getTypeData();
+	}
+
+	default String kjs$toItemString() {
+		var is = kjs$self();
+
+		var builder = new StringBuilder();
+
+		var count = is.getCount();
+		var hasNbt = is.hasTag();
+
+		if (count > 1 && !hasNbt) {
+			builder.append('\'');
+			builder.append(count);
+			builder.append("x ");
+			builder.append(kjs$getId());
+			builder.append('\'');
+		} else if (hasNbt) {
+			builder.append("Item.of('");
+			builder.append(is.kjs$getId());
+			builder.append('\'');
+			List<Pair<String, Integer>> enchants = null;
+
+			if (count > 1) {
+				builder.append(", ");
+				builder.append(count);
+			}
+
+			var t = is.getTag();
+
+			if (t != null && !t.isEmpty()) {
+				var key = is.getItem() == Items.ENCHANTED_BOOK ? "StoredEnchantments" : "Enchantments";
+
+				if (t.contains(key, NbtType.LIST)) {
+					var l = t.getList(key, NbtType.COMPOUND);
+					enchants = new ArrayList<>(l.size());
+
+					for (var i = 0; i < l.size(); i++) {
+						var t1 = l.getCompound(i);
+						enchants.add(Pair.of(t1.getString("id"), t1.getInt("lvl")));
+					}
+
+					t = t.copy();
+					t.remove(key);
+
+					if (t.isEmpty()) {
+						t = null;
+					}
+				}
+			}
+
+			if (t != null) {
+				builder.append(", ");
+				NBTUtils.quoteAndEscapeForJS(builder, t.toString());
+			}
+
+			builder.append(')');
+
+			if (enchants != null) {
+				for (var e : enchants) {
+					builder.append(".enchant('");
+					builder.append(e.getKey());
+					builder.append("', ");
+					builder.append(e.getValue());
+					builder.append(')');
+				}
+			}
+		} else {
+			builder.append('\'');
+			builder.append(kjs$getId());
+			builder.append('\'');
+		}
+
+		return builder.toString();
+	}
+
+	default Ingredient kjs$asIngredient() {
+		return Ingredient.of(kjs$self());
+	}
+
+	default JsonObject kjs$toJson() {
+		JsonObject json = new JsonObject();
+		json.addProperty("item", kjs$getId());
+		json.addProperty("count", kjs$self().getCount());
+
+		if (kjs$self().hasTag()) {
+			json.addProperty("nbt", kjs$self().getTag().toString());
+		}
+
+		return json;
 	}
 }

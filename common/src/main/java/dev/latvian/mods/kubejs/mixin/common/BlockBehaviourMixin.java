@@ -1,9 +1,13 @@
 package dev.latvian.mods.kubejs.mixin.common;
 
+import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.core.BlockKJS;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
@@ -20,6 +24,31 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public abstract class BlockBehaviourMixin implements BlockKJS {
 	private BlockBuilder kjs$blockBuilder;
 	private CompoundTag kjs$typeData;
+	private ResourceLocation kjs$id;
+	private String kjs$idString;
+
+	@Override
+	public ResourceLocation kjs$getIdLocation() {
+		if (kjs$id == null) {
+			if ((Object) this instanceof Block block) {
+				var id = KubeJSRegistries.blocks().getId(block);
+				kjs$id = id == null ? UtilsJS.UNKNOWN_ID : id;
+			} else {
+				kjs$id = UtilsJS.UNKNOWN_ID;
+			}
+		}
+
+		return kjs$id;
+	}
+
+	@Override
+	public String kjs$getId() {
+		if (kjs$idString == null) {
+			kjs$idString = kjs$getIdLocation().toString();
+		}
+
+		return kjs$idString;
+	}
 
 	@Override
 	@Nullable

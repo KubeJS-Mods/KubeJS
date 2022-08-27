@@ -67,7 +67,7 @@ import dev.latvian.mods.kubejs.item.custom.RecordItemJS;
 import dev.latvian.mods.kubejs.item.custom.ShovelItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.SwordItemBuilder;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientStackJS;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.filter.mob.MobFilter;
 import dev.latvian.mods.kubejs.misc.BasicMobEffect;
@@ -86,15 +86,6 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
 import dev.latvian.mods.kubejs.recipe.minecraft.CookingRecipeJS;
 import dev.latvian.mods.kubejs.recipe.minecraft.SmithingRecipeJS;
 import dev.latvian.mods.kubejs.recipe.minecraft.StonecuttingRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.ArsNouveauEnchantingApparatusRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.ArsNouveauEnchantmentRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.ArsNouveauGlyphPressRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.BotaniaRunicAltarRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.BotanyPotsCropRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.IDSqueezerRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.MATagRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.ShapedArtisanRecipeJS;
-import dev.latvian.mods.kubejs.recipe.mod.ShapelessArtisanRecipeJS;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
@@ -140,6 +131,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
@@ -323,7 +315,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		}
 
 		event.addFunction("onEvent", args -> onLegacyEvent(event, args[0], (IEventHandler) args[1]), null, IEventHandler.class);
-		event.addFunction("java", args -> event.manager.loadJavaClass(event.scope, args), new Class[]{null});
+		event.addFunction("java", args -> event.manager.loadJavaClass(event, args), new Class[]{null});
 
 		event.add("JavaMath", Math.class);
 		event.add("ResourceLocation", ResourceLocation.class);
@@ -416,7 +408,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(Unit.class, Painter.INSTANCE::unitOf);
 
 		typeWrappers.register(ResourceLocation.class, UtilsJS::getMCID);
-		typeWrappers.register(ItemStack.class, ItemStackJS::toItemStack);
 		typeWrappers.register(CompoundTag.class, NBTUtils::isTagCompound, NBTUtils::toTagCompound);
 		typeWrappers.register(CollectionTag.class, NBTUtils::isTagCollection, NBTUtils::toTagCollection);
 		typeWrappers.register(ListTag.class, NBTUtils::isTagCollection, NBTUtils::toTagList);
@@ -440,9 +431,9 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(Iterable.class, ListJS::of);
 		typeWrappers.register(Collection.class, ListJS::of);
 		typeWrappers.register(Set.class, ListJS::ofSet);
-		typeWrappers.register(ItemStackJS.class, ItemStackJS::of);
-		typeWrappers.register(IngredientJS.class, IngredientJS::of);
-		typeWrappers.register(IngredientStackJS.class, o -> IngredientJS.of(o).asIngredientStack());
+		typeWrappers.register(ItemStack.class, ItemStackJS::of);
+		typeWrappers.register(Ingredient.class, IngredientJS::of);
+		typeWrappers.register(IngredientStack.class, o -> IngredientJS.of(o).kjs$asStack());
 		typeWrappers.register(BlockStatePredicate.class, BlockStatePredicate::of);
 		typeWrappers.register(RuleTest.class, BlockStatePredicate::ruleTestOf);
 		typeWrappers.register(BiomeFilter.class, BiomeFilter::of);
@@ -459,7 +450,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		// components //
 		typeWrappers.register(Component.class, ComponentWrapper::of);
-		typeWrappers.register(MutableComponent.class, o -> Component.literal("").append(ComponentWrapper.of(o)));
+		typeWrappers.register(MutableComponent.class, ComponentWrapper::ofMutable);
 		typeWrappers.register(Color.class, ColorWrapper::of);
 		typeWrappers.register(TextColor.class, o -> ColorWrapper.of(o).createTextColorJS());
 		typeWrappers.register(ClickEvent.class, ComponentWrapper::clickEventOf);
@@ -492,14 +483,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 			event.registerShaped(new ResourceLocation("cucumber:shaped_no_mirror"));
 		}
 
-		if (Platform.isModLoaded("mysticalagriculture")) {
-			event.register(new ResourceLocation("mysticalagriculture:tag"), MATagRecipeJS::new);
-		}
-
-		if (Platform.isModLoaded("botanypots")) {
-			event.register(new ResourceLocation("botanypots:crop"), BotanyPotsCropRecipeJS::new);
-		}
-
 		if (Platform.isModLoaded("extendedcrafting")) {
 			event.registerShaped(new ResourceLocation("extendedcrafting:shaped_table"));
 			event.registerShapeless(new ResourceLocation("extendedcrafting:shapeless_table"));
@@ -507,46 +490,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		if (Platform.isModLoaded("dankstorage")) {
 			event.registerShaped(new ResourceLocation("dankstorage:upgrade"));
-		}
-
-		if (Platform.isModLoaded("artisanworktables")) {
-			var types = new String[]{
-					"basic",
-					"blacksmith",
-					"carpenter",
-					"chef",
-					"chemist",
-					"designer",
-					"engineer",
-					"farmer",
-					"jeweler",
-					"mage",
-					"mason",
-					"potter",
-					"scribe",
-					"tailor",
-					"tanner"
-			};
-
-			for (var t : types) {
-				event.register(new ResourceLocation("artisanworktables:" + t + "_shaped"), ShapedArtisanRecipeJS::new);
-				event.register(new ResourceLocation("artisanworktables:" + t + "_shapeless"), ShapelessArtisanRecipeJS::new);
-			}
-		}
-
-		if (Platform.isModLoaded("botania")) {
-			event.register(new ResourceLocation("botania:runic_altar"), BotaniaRunicAltarRecipeJS::new);
-		}
-
-		if (Platform.isModLoaded("integrateddynamics") && !Platform.isModLoaded("kubejs_integrated_dynamics")) {
-			event.register(new ResourceLocation("integrateddynamics:squeezer"), IDSqueezerRecipeJS::new);
-			event.register(new ResourceLocation("integrateddynamics:mechanical_squeezer"), IDSqueezerRecipeJS::new);
-		}
-
-		if (Platform.isModLoaded("ars_nouveau")) {
-			event.register(new ResourceLocation("ars_nouveau:enchanting_apparatus"), ArsNouveauEnchantingApparatusRecipeJS::new);
-			event.register(new ResourceLocation("ars_nouveau:enchantment"), ArsNouveauEnchantmentRecipeJS::new);
-			event.register(new ResourceLocation("ars_nouveau:glyph_recipe"), ArsNouveauGlyphPressRecipeJS::new);
 		}
 	}
 

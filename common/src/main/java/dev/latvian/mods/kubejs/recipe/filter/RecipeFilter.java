@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.recipe.filter;
 
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -15,11 +14,12 @@ import java.util.function.Predicate;
  * @author LatvianModder
  */
 @FunctionalInterface
-public interface RecipeFilter extends Predicate<RecipeJS> {
+public interface RecipeFilter extends Predicate<FilteredRecipe> {
 	RecipeFilter ALWAYS_TRUE = r -> true;
 	RecipeFilter ALWAYS_FALSE = r -> false;
 
-	boolean test(RecipeJS r);
+	@Override
+	boolean test(FilteredRecipe r);
 
 	static RecipeFilter of(@Nullable Object o) {
 		if (o == null || o == ALWAYS_TRUE) {
@@ -54,8 +54,6 @@ public interface RecipeFilter extends Predicate<RecipeJS> {
 			return ALWAYS_TRUE;
 		}
 
-		var exact = Boolean.TRUE.equals(map.get("exact"));
-
 		var predicate = new AndFilter();
 
 		if (map.get("or") != null) {
@@ -86,10 +84,12 @@ public interface RecipeFilter extends Predicate<RecipeJS> {
 			}
 
 			if (map.get("input") != null) {
+				var exact = Boolean.TRUE.equals(map.get("exact_input")) || Boolean.TRUE.equals(map.get("exact"));
 				predicate.list.add(new InputFilter(IngredientJS.of(map.get("input")), exact));
 			}
 
 			if (map.get("output") != null) {
+				var exact = Boolean.TRUE.equals(map.get("exact_output")) || Boolean.TRUE.equals(map.get("exact"));
 				predicate.list.add(new OutputFilter(IngredientJS.of(map.get("output")), exact));
 			}
 

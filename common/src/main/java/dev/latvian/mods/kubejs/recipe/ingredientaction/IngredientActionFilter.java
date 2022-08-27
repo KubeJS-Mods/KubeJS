@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.recipe.ingredientaction;
 
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 public class IngredientActionFilter {
 	public static IngredientActionFilter filterOf(Object o) {
@@ -11,12 +11,8 @@ public class IngredientActionFilter {
 
 		if (o instanceof Number num) {
 			filter.filterIndex = num.intValue();
-		} else if (o instanceof String || o instanceof IngredientJS) {
+		} else if (o instanceof String || o instanceof Ingredient) {
 			filter.filterIngredient = IngredientJS.of(o);
-
-			if (filter.filterIngredient instanceof ItemStackJS stack) {
-				filter.filterIngredient = stack.ignoreNBT();
-			}
 		} else {
 			var map = MapJS.of(o);
 
@@ -35,7 +31,7 @@ public class IngredientActionFilter {
 	}
 
 	public int filterIndex = -1;
-	public IngredientJS filterIngredient = null;
+	public Ingredient filterIngredient = null;
 
 	public void copyFrom(IngredientActionFilter filter) {
 		filterIndex = filter.filterIndex;

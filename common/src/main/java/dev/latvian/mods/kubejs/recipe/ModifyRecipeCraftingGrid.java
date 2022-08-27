@@ -1,13 +1,13 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.item.ingredient.MatchAllIngredientJS;
+import dev.latvian.mods.kubejs.item.ingredient.WildcardIngredient;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class ModifyRecipeCraftingGrid {
 		return container.getItem(index).copy();
 	}
 
-	public List<ItemStack> findAll(IngredientJS ingredient) {
+	public List<ItemStack> findAll(Ingredient ingredient) {
 		List<ItemStack> list = new ArrayList<>();
 
 		for (int i = 0; i < container.getContainerSize(); i++) {
@@ -39,10 +39,10 @@ public class ModifyRecipeCraftingGrid {
 	}
 
 	public List<ItemStack> findAll() {
-		return findAll(MatchAllIngredientJS.INSTANCE);
+		return findAll(WildcardIngredient.INSTANCE);
 	}
 
-	public ItemStack find(IngredientJS ingredient, int skip) {
+	public ItemStack find(Ingredient ingredient, int skip) {
 		for (int i = 0; i < container.getContainerSize(); i++) {
 			ItemStack stack = container.getItem(i);
 
@@ -58,7 +58,7 @@ public class ModifyRecipeCraftingGrid {
 		return ItemStack.EMPTY;
 	}
 
-	public ItemStack find(IngredientJS ingredient) {
+	public ItemStack find(Ingredient ingredient) {
 		return find(ingredient, 0);
 	}
 

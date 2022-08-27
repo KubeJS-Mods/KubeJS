@@ -76,4 +76,8 @@ public class FluidWrapper {
 	public static boolean exists(ResourceLocation id) {
 		return KubeJSRegistries.fluids().contains(id);
 	}
+
+	public static ResourceLocation getId(Fluid fluid) {
+		return KubeJSRegistries.fluids().getId(fluid);
+	}
 }

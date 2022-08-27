@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.mixin.common;
 
-import dev.latvian.mods.kubejs.item.ingredient.TagIngredientJS;
+import dev.latvian.mods.kubejs.item.ingredient.TagIngredient;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.RegistryAccess;
@@ -22,6 +22,6 @@ public abstract class ReloadableServerResourcesMixin {
 
 	@Inject(method = "updateRegistryTags(Lnet/minecraft/core/RegistryAccess;)V", at = @At("RETURN"))
 	public void updateRegistryTags(RegistryAccess registryAccess, CallbackInfo ci) {
-		TagIngredientJS.context = TagIngredientJS.Context.REGISTRY;
+		TagIngredient.context = TagIngredient.Context.REGISTRY;
 	}
 }

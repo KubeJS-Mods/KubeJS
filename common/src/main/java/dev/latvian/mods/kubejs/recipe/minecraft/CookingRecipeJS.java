@@ -3,38 +3,43 @@ package dev.latvian.mods.kubejs.recipe.minecraft;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.component.input.RecipeItemInputContainer;
+import dev.latvian.mods.kubejs.recipe.component.output.RecipeItemOutputContainer;
 
 /**
  * @author LatvianModder
  */
 public class CookingRecipeJS extends RecipeJS {
+	public RecipeItemOutputContainer result;
+	public RecipeItemInputContainer ingredient;
+
 	@Override
 	public void create(RecipeArguments args) {
-		outputItems.add(parseResultItem(args.get(0)));
-		inputItems.add(parseIngredientItem(args.get(1)));
+		result = parseItemOutput(args.get(0));
+		ingredient = parseItemInput(args.get(1));
 
 		if (args.size() >= 3) {
-			xp(((Number) args.get(2)).floatValue());
+			xp(args.getFloat(2, 0F));
 		}
 
 		if (args.size() >= 4) {
-			cookingTime(((Number) args.get(3)).intValue());
+			cookingTime(args.getInt(3, 200));
 		}
 	}
 
 	@Override
 	public void deserialize() {
-		outputItems.add(parseResultItem(json.get("result")));
-		inputItems.add(parseIngredientItem(json.get("ingredient")));
+		result = parseItemOutput(json.get("result"));
+		ingredient = parseItemInput(json.get("ingredient"));
 	}
 
 	@Override
 	public void serialize() {
 		if (serializeOutputs) {
 			if (Platform.isForge()) {
-				json.add("result", outputItems.get(0).toResultJson());
+				json.add("result", result.toJson());
 			} else {
-				json.addProperty("result", outputItems.get(0).getId());
+				json.addProperty("result", result.getItem().kjs$getId());
 			}
 		}
 
@@ -45,11 +50,13 @@ public class CookingRecipeJS extends RecipeJS {
 
 	public CookingRecipeJS xp(float xp) {
 		json.addProperty("experience", Math.max(0F, xp));
+		save();
 		return this;
 	}
 
 	public CookingRecipeJS cookingTime(int time) {
 		json.addProperty("cookingtime", Math.max(0, time));
+		save();
 		return this;
 	}
 }

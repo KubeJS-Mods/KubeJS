@@ -84,7 +84,7 @@ public class ItemTooltipEventJS extends EventJS {
 		var l = new StaticTooltipHandlerFromLines(text);
 
 		if (!l.lines.isEmpty()) {
-			for (var i : IngredientJS.of(item).getItemTypes()) {
+			for (var i : IngredientJS.of(item).kjs$getItemTypes()) {
 				if (i != Items.AIR) {
 					map.computeIfAbsent(i, k -> new ArrayList<>()).add(l);
 				}
@@ -108,7 +108,7 @@ public class ItemTooltipEventJS extends EventJS {
 
 		var l = new StaticTooltipHandlerFromJSWrapper(handler);
 
-		for (var i : IngredientJS.of(item).getItemTypes()) {
+		for (var i : IngredientJS.of(item).kjs$getItemTypes()) {
 			if (i != Items.AIR) {
 				map.computeIfAbsent(i, k -> new ArrayList<>()).add(l);
 			}

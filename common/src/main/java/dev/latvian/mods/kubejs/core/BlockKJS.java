@@ -2,8 +2,10 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.MaterialJS;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,6 +21,18 @@ import java.util.List;
 public interface BlockKJS extends BlockBuilderProvider {
 	default void kjs$setBlockBuilder(BlockBuilder b) {
 		throw new NoMixinException();
+	}
+
+	default ResourceLocation kjs$getIdLocation() {
+		return UtilsJS.UNKNOWN_ID;
+	}
+
+	default String kjs$getId() {
+		return kjs$getIdLocation().toString();
+	}
+
+	default String kjs$getMod() {
+		return kjs$getIdLocation().getNamespace();
 	}
 
 	default CompoundTag kjs$getTypeData() {

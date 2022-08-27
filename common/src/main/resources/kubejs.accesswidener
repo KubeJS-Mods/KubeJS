@@ -50,6 +50,8 @@ accessible field net/minecraft/world/inventory/InventoryMenu owner Lnet/minecraf
 accessible field net/minecraft/world/item/crafting/ShapelessRecipe ingredients Lnet/minecraft/core/NonNullList;
 accessible field net/minecraft/world/item/crafting/ShapelessRecipe group Ljava/lang/String;
 accessible field net/minecraft/world/item/crafting/ShapelessRecipe result Lnet/minecraft/world/item/ItemStack;
+extendable class net/minecraft/world/item/crafting/Ingredient
+accessible method net/minecraft/world/item/crafting/Ingredient <init> (Ljava/util/stream/Stream;)V
 
 accessible field net/minecraft/world/item/crafting/ShapedRecipe width I
 accessible field net/minecraft/world/item/crafting/ShapedRecipe height I

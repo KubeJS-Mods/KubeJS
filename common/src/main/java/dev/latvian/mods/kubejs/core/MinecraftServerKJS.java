@@ -17,12 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
 @RemapPrefixForJS("kjs$")
-public interface MinecraftServerKJS extends AsKJS<MinecraftServer>, WithAttachedData<MinecraftServer>, MessageSenderKJS, WithPersistentData, DataSenderKJS {
-	@Override
-	default MinecraftServer asKJS() {
-		return kjs$self();
-	}
-
+public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, MessageSenderKJS, WithPersistentData, DataSenderKJS {
 	default MinecraftServer kjs$self() {
 		return (MinecraftServer) this;
 	}

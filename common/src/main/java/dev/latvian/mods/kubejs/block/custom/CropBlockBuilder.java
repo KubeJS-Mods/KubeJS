@@ -130,7 +130,7 @@ public class CropBlockBuilder extends BlockBuilder {
 				loot.addPool(crops -> {
 					crops.rolls = ConstantValue.exactly(1.0f);
 					crops.bonusRolls = ConstantValue.exactly(0.0f);
-					crops.addItem(ItemStackJS.toItemStack(output.getFirst()))
+					crops.addItem(ItemStackJS.of(output.getFirst()))
 							.addCondition(condition)
 							.randomChance(output.getSecond());
 				});

@@ -109,6 +109,10 @@ public class ComponentWrapper {
 		return Component.literal(o.toString());
 	}
 
+	public static MutableComponent ofMutable(Object o) {
+		return Component.literal("").append(of(o));
+	}
+
 	public static ClickEvent clickEventOf(Object o) {
 		if (o == null) {
 			return null;

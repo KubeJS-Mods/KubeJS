@@ -3,18 +3,18 @@ package dev.latvian.mods.kubejs.integration.fabric.techreborn;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStackJS;
 import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.component.input.ItemInput;
+import dev.latvian.mods.kubejs.recipe.component.input.RecipeItemInputContainer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 
 /**
  * @author LatvianModder
  */
 public class TRRecipeJS extends RecipeJS {
-	private static class DummyRebornIngredient implements IngredientJS {
+	private static class DummyRebornIngredient implements ItemInput {
 		public static final ResourceLocation STACK_RECIPE_TYPE = new ResourceLocation("reborncore", "stack");
 		public static final ResourceLocation FLUID_RECIPE_TYPE = new ResourceLocation("reborncore", "fluid");
 		public static final ResourceLocation TAG_RECIPE_TYPE = new ResourceLocation("reborncore", "tag");
@@ -29,20 +29,15 @@ public class TRRecipeJS extends RecipeJS {
 		}
 
 		@Override
-		public boolean test(ItemStack stack) {
-			return false;
-		}
-
-		@Override
-		public JsonElement toJson() {
+		public JsonElement toJson(RecipeItemInputContainer container) {
 			return json;
 		}
 	}
 
 	@Override
 	public void create(RecipeArguments args) {
-		outputItems.addAll(parseResultItemList(args.get(0)));
-		inputItems.addAll(parseIngredientItemList(args.get(1)));
+		outputItems.addAll(parseItemOutputList(args.get(0)));
+		inputItems.addAll(parseItemInputList(args.get(1)));
 		json.addProperty("power", 2);
 		json.addProperty("time", 200);
 
@@ -53,8 +48,8 @@ public class TRRecipeJS extends RecipeJS {
 
 	@Override
 	public void deserialize() {
-		outputItems.addAll(parseResultItemList(json.get("results")));
-		inputItems.addAll(parseIngredientItemList(json.get("ingredients")));
+		outputItems.addAll(parseItemOutputList(json.get("results")));
+		inputItems.addAll(parseItemInputList(json.get("ingredients")));
 	}
 
 	public TRRecipeJS power(int i) {
@@ -81,7 +76,7 @@ public class TRRecipeJS extends RecipeJS {
 			var array = new JsonArray();
 
 			for (var out : outputItems) {
-				array.add(out.toResultJson());
+				array.add(out.toJson());
 			}
 
 			json.add("results", array);
@@ -99,7 +94,7 @@ public class TRRecipeJS extends RecipeJS {
 	}
 
 	@Override
-	public IngredientJS parseIngredientItem(Object o, String key) {
+	public RecipeItemInputContainer parseItemInput(Object o, String key) {
 		if (o instanceof JsonObject jsonObj) {
 
 			var type = DummyRebornIngredient.STACK_RECIPE_TYPE;
@@ -117,11 +112,14 @@ public class TRRecipeJS extends RecipeJS {
 			}
 
 			if (!type.equals(DummyRebornIngredient.STACK_RECIPE_TYPE) && !type.equals(DummyRebornIngredient.TAG_RECIPE_TYPE)) {
-				return new DummyRebornIngredient(type, jsonObj);
+				RecipeItemInputContainer container = new RecipeItemInputContainer();
+				container.recipe = this;
+				container.input = new DummyRebornIngredient(type, jsonObj);
+				return container;
 			}
 		}
 
-		return super.parseIngredientItem(o, key);
+		return super.parseItemInput(o, key);
 	}
 
 	@Override

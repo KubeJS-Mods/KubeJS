@@ -28,7 +28,7 @@ public class ShapedRecipeJS extends RecipeJS {
 				throw new RecipeExceptionJS("Requires 3 arguments - result, pattern and keys!");
 			}
 
-			outputItems.add(parseResultItem(args.get(0)));
+			outputItems.add(parseItemOutput(args.get(0)));
 			var vertical = ListJS.orSelf(args.get(1));
 
 			if (vertical.isEmpty()) {
@@ -67,7 +67,7 @@ public class ShapedRecipeJS extends RecipeJS {
 			return;
 		}
 
-		outputItems.add(parseResultItem(args.get(0)));
+		outputItems.add(parseItemOutput(args.get(0)));
 
 		var pattern1 = ListJS.orSelf(args.get(1));
 
@@ -90,7 +90,7 @@ public class ShapedRecipeJS extends RecipeJS {
 			if (o == ItemStackJS.EMPTY || o.equals("minecraft:air")) {
 				airs.add(k);
 			} else {
-				inputItems.add(parseIngredientItem(o, k));
+				inputItems.add(parseItemInput(o, k));
 				key.add(k);
 			}
 		}
@@ -108,14 +108,14 @@ public class ShapedRecipeJS extends RecipeJS {
 
 	@Override
 	public void deserialize() {
-		outputItems.add(parseResultItem(json.get("result")));
+		outputItems.add(parseItemOutput(json.get("result")));
 
 		for (var e : json.get("pattern").getAsJsonArray()) {
 			pattern.add(e.getAsString());
 		}
 
 		for (var entry : json.get("key").getAsJsonObject().entrySet()) {
-			inputItems.add(parseIngredientItem(entry.getValue(), entry.getKey()));
+			inputItems.add(parseItemInput(entry.getValue(), entry.getKey()));
 			key.add(entry.getKey());
 		}
 	}

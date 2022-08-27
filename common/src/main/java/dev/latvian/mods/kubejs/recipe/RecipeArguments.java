@@ -14,7 +14,17 @@ public record RecipeArguments(RecipeJS recipe, List<?> list) {
 	}
 
 	public RecipeArguments list(int index) {
-		return get(index) instanceof List<?> l ? new RecipeArguments(recipe, l) : new RecipeArguments(recipe, Collections.emptyList());
+		if (index < 0 || index >= list.size()) {
+			return new RecipeArguments(recipe, Collections.emptyList());
+		} else {
+			var x = get(index);
+
+			if (x instanceof List<?> l) {
+				return new RecipeArguments(recipe, l);
+			} else {
+				return new RecipeArguments(recipe, Collections.singletonList(x));
+			}
+		}
 	}
 
 	public int getInt(int index, int def) {

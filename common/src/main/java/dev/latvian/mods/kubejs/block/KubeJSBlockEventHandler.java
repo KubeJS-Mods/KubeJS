@@ -30,7 +30,7 @@ public class KubeJSBlockEventHandler {
 		BlockEvent.PLACE.register(KubeJSBlockEventHandler::blockPlace);
 	}
 
-	private static String getBlockId(Block block) {
+	public static String getBlockId(Block block) {
 		return String.valueOf(BlockWrapper.getId(block));
 	}
 

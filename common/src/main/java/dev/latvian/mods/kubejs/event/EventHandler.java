@@ -6,6 +6,7 @@ import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.RhinoException;
 import dev.latvian.mods.rhino.Scriptable;
+import dev.latvian.mods.rhino.SharedContextData;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
@@ -193,6 +194,9 @@ public final class EventHandler extends BaseFunction {
 		}
 	}
 
+	/**
+	 * @return true if event was canceled
+	 */
 	public boolean post(EventJS event) {
 		return post(null, event);
 	}
@@ -201,6 +205,13 @@ public final class EventHandler extends BaseFunction {
 	 * @return true if event was canceled
 	 */
 	public boolean post(@Nullable Object extraId, EventJS event) {
+		return post(extraId, event, false);
+	}
+
+	/**
+	 * @return true if event was canceled
+	 */
+	public boolean post(@Nullable Object extraId, EventJS event, boolean onlyPostToExtra) {
 		boolean b = false;
 
 		var extra = extraId == null ? "" : String.valueOf(extraId);
@@ -223,7 +234,7 @@ public final class EventHandler extends BaseFunction {
 			}
 		}
 
-		if (!b && eventContainers != null) {
+		if (!b && eventContainers != null && !onlyPostToExtra) {
 			b = postToHandlers(scriptType, eventContainers, event);
 
 			if (!b && scriptType != ScriptType.STARTUP) {
@@ -258,19 +269,20 @@ public final class EventHandler extends BaseFunction {
 
 	@Override
 	public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-		ScriptType type = (ScriptType) cx.getFactory().getExtraProperty("Type");
+		SharedContextData contextData = SharedContextData.get(cx, scope);
+		ScriptType type = (ScriptType) contextData.getExtraProperty("Type");
 
 		if (type == null) {
 			return null;
 		}
 
 		if (args.length == 1) {
-			listen(type, null, (IEventHandler) Context.jsToJava(args[0], IEventHandler.class));
+			listen(type, null, (IEventHandler) Context.jsToJava(contextData, args[0], IEventHandler.class));
 		} else if (args.length == 2) {
-			var handler = (IEventHandler) Context.jsToJava(args[1], IEventHandler.class);
+			var handler = (IEventHandler) Context.jsToJava(contextData, args[1], IEventHandler.class);
 
 			for (Object o : ListJS.orSelf(args[0])) {
-				listen(type, String.valueOf(Context.jsToJava(o, String.class)), handler);
+				listen(type, String.valueOf(Context.jsToJava(contextData, o, String.class)), handler);
 			}
 		}
 

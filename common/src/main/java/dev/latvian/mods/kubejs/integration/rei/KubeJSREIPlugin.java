@@ -35,7 +35,7 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 
 	public KubeJSREIPlugin() {
 		entryWrappers.clear();
-		entryWrappers.put(VanillaEntryTypes.ITEM, o -> EntryIngredients.ofItemStacks(IngredientJS.of(o).getStacks().toList()));
+		entryWrappers.put(VanillaEntryTypes.ITEM, o -> EntryIngredients.ofItemStacks(IngredientJS.of(o).kjs$getStacks().toList()));
 		entryWrappers.put(VanillaEntryTypes.FLUID, o -> EntryIngredients.of(FluidStackJS.of(o).getFluidStack()));
 		KubeJSAddREIWrapperEvent.EVENT.invoker().accept(entryWrappers::put);
 	}

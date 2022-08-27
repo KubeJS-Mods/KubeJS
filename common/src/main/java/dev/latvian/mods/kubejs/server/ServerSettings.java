@@ -29,7 +29,6 @@ public class ServerSettings {
 	public boolean logSkippedRecipes = false;
 	public boolean logErroringRecipes = true;
 	public boolean logInvalidRecipeHandlers = true;
-	public boolean useOriginalRecipeForFilters = true;
 
 	@HideFromJS
 	public static CommandSourceStack source;

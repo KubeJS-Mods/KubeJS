@@ -2,34 +2,38 @@ package dev.latvian.mods.kubejs.recipe.minecraft;
 
 import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.component.input.RecipeItemInputContainer;
+import dev.latvian.mods.kubejs.recipe.component.output.RecipeItemOutputContainer;
 
 /**
  * @author LatvianModder
  */
 public class StonecuttingRecipeJS extends RecipeJS {
+	public RecipeItemInputContainer ingredient;
+	public RecipeItemOutputContainer result;
+
 	@Override
 	public void create(RecipeArguments args) {
-		outputItems.add(parseResultItem(args.get(0)));
-		inputItems.add(parseIngredientItem(args.get(1)));
+		result = parseItemOutput(args.get(0));
+		ingredient = parseItemInput(args.get(1));
 	}
 
 	@Override
 	public void deserialize() {
-		var result = parseResultItem(json.get("result"));
+		result = parseItemOutput(json.get("result"));
 
 		if (json.has("count")) {
 			result.setCount(json.get("count").getAsInt());
 		}
 
-		outputItems.add(result);
-		inputItems.add(parseIngredientItem(json.get("ingredient")));
+		ingredient = parseItemInput(json.get("ingredient"));
 	}
 
 	@Override
 	public void serialize() {
 		if (serializeOutputs) {
-			json.addProperty("result", outputItems.get(0).getId());
-			json.addProperty("count", outputItems.get(0).getCount());
+			json.addProperty("result", result.output.kjs$getId());
+			json.addProperty("count", result.getCount());
 		}
 
 		if (serializeInputs) {

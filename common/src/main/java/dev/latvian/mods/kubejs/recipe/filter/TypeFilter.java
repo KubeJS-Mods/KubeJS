@@ -20,7 +20,7 @@ public class TypeFilter implements RecipeFilter {
 	}
 
 	@Override
-	public boolean test(RecipeJS r) {
+	public boolean test(FilteredRecipe r) {
 		return r.getType().equals(type);
 	}
 

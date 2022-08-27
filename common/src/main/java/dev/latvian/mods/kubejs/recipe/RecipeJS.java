@@ -10,21 +10,26 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientStackJS;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
+import dev.latvian.mods.kubejs.recipe.component.input.ItemInputTransformer;
+import dev.latvian.mods.kubejs.recipe.component.input.RecipeItemInputContainer;
+import dev.latvian.mods.kubejs.recipe.component.output.ItemOutputTransformer;
+import dev.latvian.mods.kubejs.recipe.component.output.RecipeItemOutputContainer;
+import dev.latvian.mods.kubejs.recipe.filter.FilteredRecipe;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.DamageAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.KeepAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
-import dev.latvian.mods.kubejs.recipe.minecraft.CustomRecipeJS;
-import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,13 +41,11 @@ import java.util.HexFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
  */
-public abstract class RecipeJS {
+public abstract class RecipeJS implements FilteredRecipe {
 	public static RecipeJS currentRecipe = null;
 	public static boolean itemErrors = false;
 	private static MessageDigest messageDigest;
@@ -52,8 +55,8 @@ public abstract class RecipeJS {
 	public JsonObject originalJson = null;
 	public JsonObject json = null;
 	public Recipe<?> originalRecipe = null;
-	public final List<ItemStackJS> outputItems = new ArrayList<>(1);
-	public final List<IngredientJS> inputItems = new ArrayList<>(1);
+	public final List<RecipeItemOutputContainer> outputItems = new ArrayList<>(1);
+	public final List<RecipeItemInputContainer> inputItems = new ArrayList<>(1);
 	public boolean serializeOutputs;
 	public boolean serializeInputs;
 	private String recipeStage = "";
@@ -112,32 +115,16 @@ public abstract class RecipeJS {
 		return this;
 	}
 
-	public final boolean hasInput(IngredientJS ingredient, boolean exact) {
-		if (getInputIndex(ingredient, exact) != -1) {
-			return true;
-		}
-
-		if (originalRecipe != null && this instanceof CustomRecipeJS && ServerSettings.instance.useOriginalRecipeForFilters) {
-			try {
-				for (var in0 : originalRecipe.getIngredients()) {
-					var in = IngredientJS.of(in0);
-
-					if (!in.isEmpty() && (exact ? in.equals(ingredient) : in.anyStackMatches(ingredient))) {
-						return true;
-					}
-				}
-			} catch (Exception ignored) {
-			}
-		}
-
-		return false;
+	@Override
+	public final boolean hasInput(Ingredient match, boolean exact) {
+		return getInputIndex(match, exact) != -1;
 	}
 
-	public final int getInputIndex(IngredientJS ingredient, boolean exact) {
+	public final int getInputIndex(Ingredient match, boolean exact) {
 		for (var i = 0; i < inputItems.size(); i++) {
 			var in = inputItems.get(i);
 
-			if (exact ? in.equals(ingredient) : in.anyStackMatches(ingredient)) {
+			if (exact ? in.input.equals(match) : in.input.contains(match)) {
 				return i;
 			}
 		}
@@ -145,16 +132,18 @@ public abstract class RecipeJS {
 		return -1;
 	}
 
-	public final boolean replaceInput(IngredientJS i, IngredientJS with, boolean exact) {
-		return replaceInput(i, with, exact, (in, original) -> in.withCount(original.getCount()));
+	public final boolean replaceInput(Ingredient match, Ingredient with, boolean exact) {
+		return replaceInput(match, with, exact, ItemInputTransformer.DEFAULT);
 	}
 
-	public final boolean replaceInput(IngredientJS i, IngredientJS with, boolean exact, BiFunction<IngredientJS, IngredientJS, IngredientJS> func) {
+	public final boolean replaceInput(Ingredient match, Ingredient with, boolean exact, ItemInputTransformer transformer) {
 		var changed = false;
 
 		for (var j = 0; j < inputItems.size(); j++) {
-			if (exact ? inputItems.get(j).equals(i) : inputItems.get(j).anyStackMatches(i)) {
-				inputItems.set(j, convertReplacedInput(j, inputItems.get(j), func.apply(with.copy(), inputItems.get(j))));
+			var in = inputItems.get(j);
+
+			if (exact ? in.input.equals(match) : in.input.contains(match)) {
+				in.input = transformReplacedInput(j, in.input, transformer.transform(this, with, in.input));
 				changed = true;
 				serializeInputs = true;
 				save();
@@ -164,30 +153,16 @@ public abstract class RecipeJS {
 		return changed;
 	}
 
-	public final boolean hasOutput(IngredientJS ingredient, boolean exact) {
-		if (getOutputIndex(ingredient, exact) != -1) {
-			return true;
-		}
-
-		if (originalRecipe != null && this instanceof CustomRecipeJS && ServerSettings.instance.useOriginalRecipeForFilters) {
-			try {
-				var out = originalRecipe.getResultItem();
-
-				if (!out.isEmpty()) {
-					return exact ? ingredient.exactMatch(IngredientJS.of(out)) : ingredient.test(out);
-				}
-			} catch (Exception ignored) {
-			}
-		}
-
-		return false;
+	@Override
+	public final boolean hasOutput(Ingredient match, boolean exact) {
+		return getOutputIndex(match, exact) != -1;
 	}
 
-	public final int getOutputIndex(IngredientJS ingredient, boolean exact) {
+	public final int getOutputIndex(Ingredient match, boolean exact) {
 		for (var i = 0; i < outputItems.size(); i++) {
 			var out = outputItems.get(i);
 
-			if (exact ? ingredient.exactMatch(out) : ingredient.test(out.getItemStack())) {
+			if (exact ? match.equalsOutput(out.output) : match.containsOutput(out.output)) {
 				return i;
 			}
 		}
@@ -195,16 +170,18 @@ public abstract class RecipeJS {
 		return -1;
 	}
 
-	public final boolean replaceOutput(IngredientJS i, ItemStackJS with, boolean exact) {
-		return replaceOutput(i, with, exact, (out, original) -> out.withCount(original.getCount()).withChance(original.getChance()));
+	public final boolean replaceOutput(Ingredient match, ItemStack with, boolean exact) {
+		return replaceOutput(match, with, exact, ItemOutputTransformer.DEFAULT);
 	}
 
-	public final boolean replaceOutput(IngredientJS i, ItemStackJS with, boolean exact, BiFunction<ItemStackJS, ItemStackJS, ItemStackJS> func) {
+	public final boolean replaceOutput(Ingredient match, ItemStack with, boolean exact, ItemOutputTransformer transformer) {
 		var changed = false;
 
 		for (var j = 0; j < outputItems.size(); j++) {
-			if (exact ? i.equals(outputItems.get(j)) : i.test(outputItems.get(j).getItemStack())) {
-				outputItems.set(j, convertReplacedOutput(j, outputItems.get(j), func.apply(with.copy(), outputItems.get(j))));
+			var out = outputItems.get(j);
+
+			if (exact ? match.equalsOutput(out.output) : match.containsOutput(out.output)) {
+				out.output = transformReplacedOutput(j, out.output, transformer.transform(this, with, out.output));
 				changed = true;
 				serializeOutputs = true;
 				save();
@@ -214,6 +191,7 @@ public abstract class RecipeJS {
 		return changed;
 	}
 
+	@Override
 	public String getGroup() {
 		var e = json.get("group");
 		return e instanceof JsonPrimitive ? e.getAsString() : "";
@@ -238,6 +216,7 @@ public abstract class RecipeJS {
 		return getOrCreateId().toString();
 	}
 
+	@Override
 	public String getMod() {
 		return getOrCreateId().getNamespace();
 	}
@@ -246,10 +225,12 @@ public abstract class RecipeJS {
 		return getOrCreateId().getPath();
 	}
 
+	@Override
 	public String getType() {
 		return type.toString();
 	}
 
+	@Override
 	public ResourceLocation getOrCreateId() {
 		if (id == null) {
 			id = new ResourceLocation(type.getId().getNamespace() + ":kjs_" + getUniqueId());
@@ -258,34 +239,33 @@ public abstract class RecipeJS {
 		return id;
 	}
 
-	public IngredientJS convertReplacedInput(int index, IngredientJS oldIngredient, IngredientJS newIngredient) {
-		return newIngredient;
+	public Ingredient transformReplacedInput(int index, Ingredient oldInput, Ingredient newInput) {
+		return newInput;
 	}
 
-	public ItemStackJS convertReplacedOutput(int index, ItemStackJS oldStack, ItemStackJS newStack) {
-		return newStack;
+	public ItemStack transformReplacedOutput(int index, ItemStack oldOutput, ItemStack newOutput) {
+		return newOutput;
 	}
 
 	@Nullable
-	public ItemStackJS resultFromRecipeJson(JsonObject json) {
+	public ItemStack resultFromRecipeJson(JsonObject json) {
 		return null;
 	}
 
 	@Nullable
-	public JsonElement serializeIngredientStack(IngredientStackJS in) {
+	public JsonElement serializeIngredientStack(IngredientStack in) {
 		return null;
 	}
 
 	@Nullable
-	public JsonElement serializeItemStack(ItemStackJS stack) {
+	public JsonElement serializeItemStack(ItemStack stack) {
 		return null;
 	}
 
-	public IngredientJS parseIngredientItem(@Nullable Object o, String key) {
+	public RecipeItemInputContainer parseItemInput(@Nullable Object o, String key) {
 		var ingredient = IngredientJS.of(o);
 
-		if (ingredient.isInvalidRecipeIngredient() && !Platform.isFabric()) // This is stupid >:(
-		{
+		if (ingredient.kjs$isInvalidRecipeIngredient()) {
 			if (key.isEmpty()) {
 				throw new RecipeExceptionJS(o + " is not a valid ingredient!");
 			} else {
@@ -293,56 +273,57 @@ public abstract class RecipeJS {
 			}
 		}
 
-		return ingredient;
+		RecipeItemInputContainer container = new RecipeItemInputContainer();
+		container.recipe = this;
+		container.input = ingredient;
+		return container;
 	}
 
-	public IngredientJS parseIngredientItem(@Nullable Object o) {
-		return parseIngredientItem(o, "");
+	public RecipeItemInputContainer parseItemInput(@Nullable Object o) {
+		return parseItemInput(o, "");
 	}
 
-	public ItemStackJS parseResultItem(@Nullable Object o) {
+	public RecipeItemOutputContainer parseItemOutput(@Nullable Object o) {
 		var result = ItemStackJS.of(o);
 
-		if (result.isInvalidRecipeIngredient() && !Platform.isFabric()) // This is stupid >:(
-		{
+		if (result == null || result.isEmpty()) {
 			throw new RecipeExceptionJS(o + " is not a valid result!");
 		}
 
-		return result;
+		RecipeItemOutputContainer container = new RecipeItemOutputContainer();
+		container.recipe = this;
+		container.output = result;
+		return container;
 	}
 
-	public List<IngredientJS> parseIngredientItemList(@Nullable Object o) {
-		List<IngredientJS> list = new ArrayList<>();
+	public List<RecipeItemInputContainer> parseItemInputList(@Nullable Object o) {
+		List<RecipeItemInputContainer> list = new ArrayList<>();
 
 		if (o instanceof JsonElement elem) {
 			var array = elem instanceof JsonArray arr ? arr : Util.make(new JsonArray(), (arr) -> arr.add(elem));
 			for (var e : array) {
-				list.add(parseIngredientItem(e));
+				list.add(parseItemInput(e));
 			}
 		} else {
 			for (var o1 : ListJS.orSelf(o)) {
-				list.add(parseIngredientItem(o1));
+				list.add(parseItemInput(o1));
 			}
 		}
 
 		return list;
 	}
 
-	public List<IngredientStackJS> parseIngredientItemStackList(@Nullable Object o) {
-		return parseIngredientItemList(o).stream().map(IngredientJS::asIngredientStack).collect(Collectors.toList());
-	}
-
-	public List<ItemStackJS> parseResultItemList(@Nullable Object o) {
-		List<ItemStackJS> list = new ArrayList<>();
+	public List<RecipeItemOutputContainer> parseItemOutputList(@Nullable Object o) {
+		List<RecipeItemOutputContainer> list = new ArrayList<>();
 
 		if (o instanceof JsonElement elem) {
 			var array = elem instanceof JsonArray arr ? arr : Util.make(new JsonArray(), (arr) -> arr.add(elem));
 			for (var e : array) {
-				list.add(parseResultItem(e));
+				list.add(parseItemOutput(e));
 			}
 		} else {
 			for (var o1 : ListJS.orSelf(o)) {
-				list.add(parseResultItem(o1));
+				list.add(parseItemOutput(o1));
 			}
 		}
 
@@ -397,22 +378,22 @@ public abstract class RecipeJS {
 		return Objects.requireNonNull(RecipePlatformHelper.get().fromJson(this));
 	}
 
-	public ItemStackJS getOriginalRecipeResult() {
+	public ItemStack getOriginalRecipeResult() {
 		if (originalRecipe == null) {
 			ConsoleJS.SERVER.warn("Original recipe is null - could not get result");
-			return ItemStackJS.EMPTY;
+			return ItemStack.EMPTY;
 		}
 
-		return ItemStackJS.of(originalRecipe.getResultItem());
+		return originalRecipe.getResultItem();
 	}
 
-	public List<IngredientJS> getOriginalRecipeIngredients() {
+	public List<Ingredient> getOriginalRecipeIngredients() {
 		if (originalRecipe == null) {
 			ConsoleJS.SERVER.warn("Original recipe is null - could not get ingredients");
-			return new ArrayList<>();
+			return List.of();
 		}
 
-		return originalRecipe.getIngredients().stream().map(IngredientJS::of).collect(Collectors.toList());
+		return List.copyOf(originalRecipe.getIngredients());
 	}
 
 	/**
@@ -442,8 +423,8 @@ public abstract class RecipeJS {
 		return damageIngredient(filter, 1);
 	}
 
-	public final RecipeJS replaceIngredient(IngredientActionFilter filter, ItemStackJS item) {
-		return ingredientAction(filter, new ReplaceAction(item.getItemStack()));
+	public final RecipeJS replaceIngredient(IngredientActionFilter filter, ItemStack item) {
+		return ingredientAction(filter, new ReplaceAction(item));
 	}
 
 	public final RecipeJS customIngredientAction(IngredientActionFilter filter, String id) {
@@ -460,5 +441,13 @@ public abstract class RecipeJS {
 		json.addProperty("kubejs_modify_result", UUIDTypeAdapter.fromUUID(id));
 		save();
 		return this;
+	}
+
+	public JsonElement getIngredientJson(RecipeItemInputContainer container) {
+		return container.input.toJson();
+	}
+
+	public JsonElement getResultJson(RecipeItemOutputContainer container) {
+		return container.output.kjs$toJson();
 	}
 }

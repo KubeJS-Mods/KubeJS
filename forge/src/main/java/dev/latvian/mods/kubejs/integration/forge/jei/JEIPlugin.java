@@ -47,7 +47,7 @@ public class JEIPlugin implements IModPlugin {
 		JEIKubeJSEvents.REMOVE_CATEGORIES.post(new RemoveJEICategoriesEvent(runtime));
 		JEIKubeJSEvents.REMOVE_RECIPES.post(new RemoveJEIRecipesEvent(runtime));
 
-		JEIKubeJSEvents.ADD_ITEMS.post(new AddJEIEventJS<>(runtime, VanillaTypes.ITEM_STACK, ItemStackJS::toItemStack, stack -> !stack.isEmpty()));
+		JEIKubeJSEvents.ADD_ITEMS.post(new AddJEIEventJS<>(runtime, VanillaTypes.ITEM_STACK, ItemStackJS::of, stack -> !stack.isEmpty()));
 		JEIKubeJSEvents.ADD_FLUIDS.post(new AddJEIEventJS<>(runtime, ForgeTypes.FLUID_STACK, object -> fromArchitectury(FluidStackJS.of(object).getFluidStack()), stack -> !stack.isEmpty()));
 	}
 

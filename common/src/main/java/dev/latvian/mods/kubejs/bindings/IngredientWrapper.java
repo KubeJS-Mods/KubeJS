@@ -1,15 +1,15 @@
 package dev.latvian.mods.kubejs.bindings;
 
-import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.ingredient.CustomIngredient;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicateJS;
-import dev.latvian.mods.kubejs.item.ingredient.MatchAllIngredientJS;
-import dev.latvian.mods.kubejs.item.ingredient.MatchAnyIngredientJS;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
+import dev.latvian.mods.kubejs.item.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientActionCallback;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -18,52 +18,41 @@ import java.util.function.Predicate;
 /**
  * @author LatvianModder
  */
-public class IngredientWrapper {
-	public static IngredientJS getNone() {
-		return ItemStackJS.EMPTY;
-	}
+public interface IngredientWrapper {
+	Ingredient none = Ingredient.EMPTY;
+	Ingredient all = WildcardIngredient.INSTANCE;
 
-	public static IngredientJS getAll() {
-		return MatchAllIngredientJS.INSTANCE;
-	}
-
-	public static IngredientJS of(Object object) {
+	static Ingredient of(Object object) {
 		return IngredientJS.of(object);
 	}
 
-	public static IngredientJS of(Object object, int count) {
-		return of(object).withCount(Math.max(1, count));
-	}
-
-	public static IngredientJS custom(Predicate<ItemStack> predicate) {
-		return predicate::test;
-	}
-
-	public static IngredientJS custom(IngredientJS in, Predicate<ItemStackJS> predicate) {
+	static Ingredient custom(Ingredient in, Predicate<ItemStack> predicate) {
 		if (RecipesEventJS.customIngredientMap != null) {
-			var ingredient = new IngredientWithCustomPredicateJS(UUID.randomUUID(), in, i -> predicate.test(new ItemStackJS(i)));
+			var ingredient = new IngredientWithCustomPredicate(UUID.randomUUID(), in, predicate);
 			RecipesEventJS.customIngredientMap.put(ingredient.uuid, ingredient);
 			return ingredient;
 		}
 
-		return new IngredientWithCustomPredicateJS(null, in, i -> predicate.test(new ItemStackJS(i)));
+		return new IngredientWithCustomPredicate(null, in, predicate);
 	}
 
-	public static IngredientJS customNBT(IngredientJS in, Predicate<CompoundTag> predicate) {
-		return custom(in, is -> is.hasNBT() && predicate.test(is.getNbt()));
+	static Ingredient customNBT(Ingredient in, Predicate<CompoundTag> predicate) {
+		return custom(in, is -> is.hasTag() && predicate.test(is.getTag()));
 	}
 
-	public static IngredientJS matchAny(Object objects) {
-		var ingredient = new MatchAnyIngredientJS();
-		ingredient.addAll(objects);
-		return ingredient;
+	static Ingredient of(Object object, int count) {
+		return of(object).kjs$withCount(Math.max(1, count));
 	}
 
-	public static void registerCustomIngredientAction(String id, CustomIngredientActionCallback callback) {
+	static Ingredient custom(Predicate<ItemStack> predicate) {
+		return new CustomIngredient(predicate);
+	}
+
+	static void registerCustomIngredientAction(String id, CustomIngredientActionCallback callback) {
 		CustomIngredientAction.MAP.put(id, callback);
 	}
 
-	public static boolean isIngredient(@Nullable Object o) {
+	static boolean isIngredient(@Nullable Object o) {
 		return o instanceof IngredientJS;
 	}
 }

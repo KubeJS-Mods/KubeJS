@@ -9,16 +9,16 @@ import dev.latvian.mods.kubejs.recipe.RecipeJS;
 public class SmithingRecipeJS extends RecipeJS {
 	@Override
 	public void create(RecipeArguments args) {
-		outputItems.add(parseResultItem(args.get(0)));
-		inputItems.add(parseIngredientItem(args.get(1)));
-		inputItems.add(parseIngredientItem(args.get(2)));
+		outputItems.add(parseItemOutput(args.get(0)));
+		inputItems.add(parseItemInput(args.get(1)));
+		inputItems.add(parseItemInput(args.get(2)));
 	}
 
 	@Override
 	public void deserialize() {
-		outputItems.add(parseResultItem(json.get("result")));
-		inputItems.add(parseIngredientItem(json.get("base")));
-		inputItems.add(parseIngredientItem(json.get("addition")));
+		outputItems.add(parseItemOutput(json.get("result")));
+		inputItems.add(parseItemInput(json.get("base")));
+		inputItems.add(parseItemInput(json.get("addition")));
 	}
 
 	@Override

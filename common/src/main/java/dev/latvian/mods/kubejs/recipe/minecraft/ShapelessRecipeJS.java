@@ -10,14 +10,14 @@ import dev.latvian.mods.kubejs.recipe.RecipeJS;
 public class ShapelessRecipeJS extends RecipeJS {
 	@Override
 	public void create(RecipeArguments args) {
-		outputItems.add(parseResultItem(args.get(0)));
-		inputItems.addAll(parseIngredientItemList(args.get(1)));
+		outputItems.add(parseItemOutput(args.get(0)));
+		inputItems.addAll(parseItemInputList(args.get(1)));
 	}
 
 	@Override
 	public void deserialize() {
-		outputItems.add(parseResultItem(json.get("result")));
-		inputItems.addAll(parseIngredientItemList(json.get("ingredients")));
+		outputItems.add(parseItemOutput(json.get("result")));
+		inputItems.addAll(parseItemInputList(json.get("ingredients")));
 	}
 
 	@Override

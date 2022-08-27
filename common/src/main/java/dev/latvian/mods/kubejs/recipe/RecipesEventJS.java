@@ -9,10 +9,8 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.event.EventJS;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicateJS;
-import dev.latvian.mods.kubejs.item.ingredient.TagIngredientJS;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
+import dev.latvian.mods.kubejs.item.ingredient.TagIngredient;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
@@ -25,6 +23,8 @@ import net.minecraft.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 public class RecipesEventJS extends EventJS {
 	public static final String FORGE_CONDITIONAL = "forge:conditional";
 	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.mods.kubejs.recipe.RecipeEventJS.post");
-	public static Map<UUID, IngredientWithCustomPredicateJS> customIngredientMap = null;
+	public static Map<UUID, IngredientWithCustomPredicate> customIngredientMap = null;
 	public static Map<UUID, ModifyRecipeResultCallback> modifyResultCallbackMap = null;
 
 	public static RecipesEventJS instance;
@@ -97,7 +97,7 @@ public class RecipesEventJS extends EventJS {
 			for (var entry1 : entry.getValue().entrySet()) {
 				var location = new ResourceLocation(entry.getKey(), entry1.getKey());
 				var typeJS = t.get(location);
-				var func = new RecipeFunction(this, location, typeJS != null ? typeJS : new CustomRecipeTypeJS(entry1.getValue()));
+				var func = new RecipeFunction(this, location, typeJS != null ? typeJS : new JsonRecipeTypeJS(entry1.getValue()));
 				funcs.put(UtilsJS.convertSnakeCaseToCamelCase(entry1.getKey()), func);
 				funcs.put(entry1.getKey(), func);
 
@@ -126,14 +126,14 @@ public class RecipesEventJS extends EventJS {
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap) {
 		RecipeJS.itemErrors = false;
 
-		TagIngredientJS.context = KubeJSReloadListener.resources.tagManager.getResult()
+		TagIngredient.context = KubeJSReloadListener.resources.tagManager.getResult()
 				.stream()
 				.filter(result -> result.key() == Registry.ITEM_REGISTRY)
 				.findFirst()
-				.map(result -> TagIngredientJS.Context.usingResult(UtilsJS.cast(result)))
+				.map(result -> TagIngredient.Context.usingResult(UtilsJS.cast(result)))
 				.orElseGet(() -> {
 					ConsoleJS.SERVER.warn("Failed to load item tags during recipe event! Using replaceInput etc. will not work!");
-					return TagIngredientJS.Context.EMPTY;
+					return TagIngredient.Context.EMPTY;
 				});
 
 		ConsoleJS.SERVER.pushLineNumber();
@@ -245,7 +245,7 @@ public class RecipesEventJS extends EventJS {
 						var array = new JsonArray();
 
 						for (var out : recipe.outputItems) {
-							array.add(out.toResultJson());
+							array.add(out.toJson());
 						}
 
 						exp.add("outputs", array);
@@ -473,13 +473,12 @@ public class RecipesEventJS extends EventJS {
 		return count.getValue();
 	}
 
-	public int replaceInput(RecipeFilter filter, IngredientJS ingredient, IngredientJS with, boolean exact) {
+	public int replaceInput(RecipeFilter filter, Ingredient ingredient, Ingredient with, boolean exact) {
 		var count = new AtomicInteger();
 		var is = ingredient.toString();
 		var ws = with.toString();
 
-		forEachRecipeAsync(filter, r ->
-		{
+		forEachRecipeAsync(filter, r -> {
 			if (r.replaceInput(ingredient, with, exact)) {
 				count.incrementAndGet();
 				modifiedRecipes.add(r);
@@ -496,18 +495,18 @@ public class RecipesEventJS extends EventJS {
 		return count.get();
 	}
 
-	public int replaceInput(RecipeFilter filter, IngredientJS ingredient, IngredientJS with) {
+	public int replaceInput(RecipeFilter filter, Ingredient ingredient, Ingredient with) {
 		return replaceInput(filter, ingredient, with, false);
 	}
 
-	public int replaceInput(IngredientJS ingredient, IngredientJS with) {
+	public int replaceInput(Ingredient ingredient, Ingredient with) {
 		return replaceInput(RecipeFilter.ALWAYS_TRUE, ingredient, with);
 	}
 
-	public int replaceOutput(RecipeFilter filter, IngredientJS ingredient, ItemStackJS with, boolean exact) {
+	public int replaceOutput(RecipeFilter filter, Ingredient ingredient, ItemStack with, boolean exact) {
 		var count = new AtomicInteger();
 		var is = ingredient.toString();
-		var ws = with.toString();
+		var ws = with.kjs$toItemString();
 
 		forEachRecipeAsync(filter, r ->
 		{
@@ -527,11 +526,11 @@ public class RecipesEventJS extends EventJS {
 		return count.get();
 	}
 
-	public int replaceOutput(RecipeFilter filter, IngredientJS ingredient, ItemStackJS with) {
+	public int replaceOutput(RecipeFilter filter, Ingredient ingredient, ItemStack with) {
 		return replaceOutput(filter, ingredient, with, false);
 	}
 
-	public int replaceOutput(IngredientJS ingredient, ItemStackJS with) {
+	public int replaceOutput(Ingredient ingredient, ItemStack with) {
 		return replaceOutput(RecipeFilter.ALWAYS_TRUE, ingredient, with);
 	}
 

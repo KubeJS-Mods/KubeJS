@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.latvian.mods.kubejs.item.ingredient.TagIngredientJS;
+import dev.latvian.mods.kubejs.item.ingredient.TagIngredient;
 import dev.latvian.mods.kubejs.server.TagEventJS;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public interface TagLoaderKJS<T> {
 	default void kjs$customTags(Map<ResourceLocation, List<TagLoader.EntryWithSource>> map) {
-		TagIngredientJS.resetContext();
+		TagIngredient.resetContext();
 		var dir = kjs$getDirectory();
 		var reg = kjs$getRegistry();
 

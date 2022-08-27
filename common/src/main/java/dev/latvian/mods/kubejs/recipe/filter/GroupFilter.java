@@ -1,7 +1,5 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
-
 /**
  * @author LatvianModder
  */
@@ -13,7 +11,7 @@ public class GroupFilter implements RecipeFilter {
 	}
 
 	@Override
-	public boolean test(RecipeJS r) {
+	public boolean test(FilteredRecipe r) {
 		return r.getGroup().equals(group);
 	}
 

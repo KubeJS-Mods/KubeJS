@@ -1,12 +1,15 @@
 package dev.latvian.mods.kubejs.mixin.common;
 
 import dev.architectury.registry.fuel.FuelRegistry;
+import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,6 +21,7 @@ import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,6 +42,9 @@ import java.util.List;
 public abstract class ItemMixin implements ItemKJS {
 	private ItemBuilder kjs$itemBuilder;
 	private CompoundTag kjs$typeData;
+	private Ingredient kjs$typeIngredient;
+	private ResourceLocation kjs$id;
+	private String kjs$idString;
 
 	@Override
 	@Nullable
@@ -49,6 +56,25 @@ public abstract class ItemMixin implements ItemKJS {
 	@RemapForJS("getItem")
 	public Item kjs$self() {
 		return (Item) (Object) this;
+	}
+
+	@Override
+	public ResourceLocation kjs$getIdLocation() {
+		if (kjs$id == null) {
+			var id = KubeJSRegistries.items().getId(kjs$self());
+			kjs$id = id == null ? UtilsJS.UNKNOWN_ID : id;
+		}
+
+		return kjs$id;
+	}
+
+	@Override
+	public String kjs$getId() {
+		if (kjs$idString == null) {
+			kjs$idString = kjs$getIdLocation().toString();
+		}
+
+		return kjs$idString;
 	}
 
 	@Override
@@ -174,5 +200,14 @@ public abstract class ItemMixin implements ItemKJS {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.releaseUsing != null) {
 			kjs$itemBuilder.releaseUsing.releaseUsing(itemStack, level, livingEntity, i);
 		}
+	}
+
+	@Override
+	public Ingredient kjs$getTypeIngredient() {
+		if (kjs$typeIngredient == null) {
+			kjs$typeIngredient = Ingredient.of(kjs$self().getDefaultInstance());
+		}
+
+		return kjs$typeIngredient;
 	}
 }

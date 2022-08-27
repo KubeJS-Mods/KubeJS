@@ -31,7 +31,7 @@ public class KubeJSItemEventHandler {
 		PlayerEvent.SMELT_ITEM.register(KubeJSItemEventHandler::smelted);
 	}
 
-	private static String getItemId(ItemStack stack) {
+	public static String getItemId(ItemStack stack) {
 		return String.valueOf(ItemWrapper.getId(stack.getItem()));
 	}
 

@@ -1,15 +1,17 @@
 package dev.latvian.mods.kubejs.item;
 
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.item.ingredient.MatchAllIngredientJS;
+import dev.latvian.mods.kubejs.item.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author LatvianModder
@@ -69,8 +71,8 @@ public class InventoryJS {
 		}
 	}
 
-	public void clear(IngredientJS ingredient) {
-		if (ingredient == MatchAllIngredientJS.INSTANCE) {
+	public void clear(Ingredient ingredient) {
+		if (ingredient == WildcardIngredient.INSTANCE) {
 			clear();
 		}
 
@@ -99,8 +101,8 @@ public class InventoryJS {
 		return -1;
 	}
 
-	public int find(IngredientJS ingredient) {
-		if (ingredient == MatchAllIngredientJS.INSTANCE) {
+	public int find(Ingredient ingredient) {
+		if (ingredient == WildcardIngredient.INSTANCE) {
 			return find();
 		}
 
@@ -125,8 +127,8 @@ public class InventoryJS {
 		return count;
 	}
 
-	public int count(IngredientJS ingredient) {
-		if (ingredient == MatchAllIngredientJS.INSTANCE) {
+	public int count(Ingredient ingredient) {
+		if (ingredient == WildcardIngredient.INSTANCE) {
 			return count();
 		}
 
@@ -155,8 +157,8 @@ public class InventoryJS {
 		return count;
 	}
 
-	public int countNonEmpty(IngredientJS ingredient) {
-		if (ingredient == MatchAllIngredientJS.INSTANCE) {
+	public int countNonEmpty(Ingredient ingredient) {
+		if (ingredient == WildcardIngredient.INSTANCE) {
 			return countNonEmpty();
 		}
 
@@ -219,5 +221,19 @@ public class InventoryJS {
 
 	public int getHeight() {
 		return minecraftInventory.getHeight();
+	}
+
+	public List<ItemStack> getAllItems() {
+		var list = new ArrayList<ItemStack>();
+
+		for (var i = 0; i < minecraftInventory.getSlots(); i++) {
+			ItemStack is = minecraftInventory.getStackInSlot(i);
+
+			if (!is.isEmpty()) {
+				list.add(is);
+			}
+		}
+
+		return list;
 	}
 }

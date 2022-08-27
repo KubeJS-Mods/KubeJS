@@ -1,22 +1,21 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import net.minecraft.world.item.crafting.Ingredient;
 
 /**
  * @author LatvianModder
  */
 public class InputFilter implements RecipeFilter {
-	private final IngredientJS in;
+	private final Ingredient in;
 	private final boolean exact;
 
-	public InputFilter(IngredientJS i, boolean e) {
+	public InputFilter(Ingredient i, boolean e) {
 		in = i;
 		exact = e;
 	}
 
 	@Override
-	public boolean test(RecipeJS r) {
+	public boolean test(FilteredRecipe r) {
 		return r.hasInput(in, exact);
 	}
 

@@ -1,11 +1,8 @@
 package dev.latvian.mods.kubejs.item;
 
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
-
-import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
@@ -17,7 +14,7 @@ public class MutableToolTier implements Tier {
 	private float attackDamageBonus;
 	private int level;
 	private int enchantmentValue;
-	private Supplier<Ingredient> repairIngredient;
+	private Ingredient repairIngredient;
 
 	public MutableToolTier(Tier p) {
 		parent = p;
@@ -26,7 +23,7 @@ public class MutableToolTier implements Tier {
 		attackDamageBonus = parent.getAttackDamageBonus();
 		level = parent.getLevel();
 		enchantmentValue = parent.getEnchantmentValue();
-		repairIngredient = parent::getRepairIngredient;
+		repairIngredient = parent.getRepairIngredient();
 	}
 
 	@Override
@@ -82,10 +79,10 @@ public class MutableToolTier implements Tier {
 	@Override
 	@RemapForJS("getVanillaRepairIngredient")
 	public Ingredient getRepairIngredient() {
-		return repairIngredient.get();
+		return repairIngredient;
 	}
 
-	public void setRepairIngredient(IngredientJS in) {
-		repairIngredient = in::createVanillaIngredient;
+	public void setRepairIngredient(Ingredient in) {
+		repairIngredient = in;
 	}
 }

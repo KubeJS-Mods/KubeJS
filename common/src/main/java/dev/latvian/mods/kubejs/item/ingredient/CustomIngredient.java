@@ -1,68 +1,24 @@
 package dev.latvian.mods.kubejs.item.ingredient;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.ItemStackSet;
-import net.minecraft.world.entity.player.StackedContents;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * @author LatvianModder
  */
-public class CustomIngredient implements IngredientJS {
-	private final Ingredient ingredient;
-	private final JsonObject json;
+public class CustomIngredient extends Ingredient {
+	private final Predicate<ItemStack> predicate;
 
-	public CustomIngredient(Ingredient i, JsonObject o) {
-		ingredient = i;
-		json = o;
+	public CustomIngredient(Predicate<ItemStack> predicate) {
+		super(Stream.empty());
+		this.predicate = predicate;
 	}
 
 	@Override
 	public boolean test(ItemStack stack) {
-		return ingredient.test(stack);
-	}
-
-	@Override
-	public boolean testItem(Item item) {
-		return ingredient.test(new ItemStack(item));
-	}
-
-	@Override
-	public JsonElement toJson() {
-		return json;
-	}
-
-	@Override
-	public void gatherStacks(ItemStackSet set) {
-		for (var i : ingredient.getStackingIds()) {
-			set.add(StackedContents.fromStackingIndex(i));
-		}
-	}
-
-	@Override
-	public void gatherItemTypes(Set<Item> set) {
-		for (var i : ingredient.getStackingIds()) {
-			var item = Item.byId(i);
-
-			if (item != Items.AIR) {
-				set.add(item);
-			}
-		}
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return false;
-	}
-
-	@Override
-	public String toString() {
-		return json.toString();
+		return predicate.test(stack);
 	}
 }

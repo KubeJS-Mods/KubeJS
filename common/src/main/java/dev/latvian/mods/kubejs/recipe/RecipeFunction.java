@@ -1,10 +1,8 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.item.ingredient.TagIngredientJS;
-import dev.latvian.mods.kubejs.recipe.minecraft.CustomRecipeJS;
+import dev.latvian.mods.kubejs.item.ingredient.TagIngredient;
+import dev.latvian.mods.kubejs.recipe.minecraft.JsonRecipeJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -13,6 +11,8 @@ import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 					recipe.type = type;
 					recipe.json = MapJS.json(normalize(map));
 
-					if (!(recipe instanceof CustomRecipeJS)) {
+					if (!(recipe instanceof JsonRecipeJS)) {
 						recipe.serializeInputs = true;
 						recipe.serializeOutputs = true;
 						recipe.deserializeJson();
@@ -87,17 +87,17 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 			ConsoleJS.SERVER.printStackTrace(ex, SKIP_ERROR);
 		}
 
-		return new CustomRecipeJS();
+		return new JsonRecipeJS();
 	}
 
 	private Object normalize(Object o) {
-		if (o instanceof ItemStackJS stack) {
-			return stack.toResultJson();
-		} else if (o instanceof IngredientJS ingr) {
+		if (o instanceof ItemStack stack) {
+			return stack.kjs$toJson();
+		} else if (o instanceof Ingredient ingr) {
 			return ingr.toJson();
 		} else if (o instanceof String s) {
 			if (s.length() >= 4 && s.startsWith("#") && s.indexOf(':') != -1) {
-				return TagIngredientJS.createTag(s.substring(1)).toJson();
+				return TagIngredient.ofTag(s.substring(1)).toJson();
 			}
 			return o;
 		} else if (o instanceof Map<?, ?> m) {

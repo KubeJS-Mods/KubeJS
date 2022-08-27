@@ -12,6 +12,7 @@ import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
 import me.shedaniel.rei.plugin.client.BuiltinClientPlugin;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -28,7 +29,7 @@ public class InformationREIEventJS extends EventJS {
 		addItem(IngredientJS.of(stacks), title, description);
 	}
 
-	public void addItem(IngredientJS stacks, Component title, Component[] description) {
+	public void addItem(Ingredient stacks, Component title, Component[] description) {
 		add(VanillaEntryTypes.ITEM, stacks, title, description);
 	}
 

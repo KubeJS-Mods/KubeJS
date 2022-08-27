@@ -1,13 +1,10 @@
 package dev.latvian.mods.kubejs.item;
 
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.crafting.Ingredient;
-
-import java.util.function.Supplier;
 
 /**
  * @author LatvianModder
@@ -22,14 +19,14 @@ public class MutableArmorTier implements ArmorMaterial {
 	private SoundEvent sound;
 	private float toughness;
 	private float knockbackResistance;
-	private Supplier<Ingredient> repairIngredient;
+	private Ingredient repairIngredient;
 	private String name;
 
 	public MutableArmorTier(String id, ArmorMaterial p) {
 		parent = p;
 		enchantmentValue = p.getEnchantmentValue();
 		sound = p.getEquipSound();
-		repairIngredient = parent::getRepairIngredient;
+		repairIngredient = parent.getRepairIngredient();
 		toughness = p.getToughness();
 		knockbackResistance = p.getKnockbackResistance();
 		name = id;
@@ -76,11 +73,11 @@ public class MutableArmorTier implements ArmorMaterial {
 	@Override
 	@RemapForJS("getVanillaRepairIngredient")
 	public Ingredient getRepairIngredient() {
-		return repairIngredient.get();
+		return repairIngredient;
 	}
 
-	public void setRepairIngredient(IngredientJS in) {
-		repairIngredient = in::createVanillaIngredient;
+	public void setRepairIngredient(Ingredient in) {
+		repairIngredient = in;
 	}
 
 	@Override

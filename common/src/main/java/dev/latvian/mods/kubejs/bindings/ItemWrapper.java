@@ -45,10 +45,6 @@ public interface ItemWrapper {
 		return in.kjs$withNBT(nbt);
 	}
 
-	static ItemStackJS withChance(ItemStackJS in, double c) {
-		return in.withChance(c);
-	}
-
 	static List<ItemStack> getList() {
 		return ItemStackJS.getList();
 	}
@@ -57,8 +53,8 @@ public interface ItemWrapper {
 		return ItemStackJS.getTypeList();
 	}
 
-	static ItemStackJS getEmpty() {
-		return ItemStackJS.EMPTY;
+	static ItemStack getEmpty() {
+		return ItemStack.EMPTY;
 	}
 
 	static void clearListCache() {
@@ -79,8 +75,8 @@ public interface ItemWrapper {
 	}
 
 	@Nullable
-	static CreativeModeTab findGroup(String id) {
-		return ItemStackJS.findGroup(id);
+	static CreativeModeTab findCreativeTab(String id) {
+		return ItemStackJS.findCreativeTab(id);
 	}
 
 	static boolean exists(ResourceLocation id) {

@@ -33,12 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 @RemapPrefixForJS("kjs$")
-public interface EntityKJS extends AsKJS<Entity>, WithPersistentData, MessageSenderKJS {
-	@Override
-	default Entity asKJS() {
-		return (Entity) this;
-	}
-
+public interface EntityKJS extends WithPersistentData, MessageSenderKJS {
 	default Entity kjs$self() {
 		return (Entity) this;
 	}

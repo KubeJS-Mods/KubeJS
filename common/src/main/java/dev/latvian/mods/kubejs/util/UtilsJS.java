@@ -90,6 +90,7 @@ public class UtilsJS {
 	public static final Pattern SNAKE_CASE_SPLIT = Pattern.compile("[_/]");
 	public static final Set<String> ALWAYS_LOWER_CASE = new HashSet<>(Arrays.asList("a", "an", "the", "of", "on", "in"));
 	public static MinecraftServer staticServer = null;
+	public static final ResourceLocation UNKNOWN_ID = new ResourceLocation("unknown", "unknown");
 
 	private static Collection<BlockState> ALL_STATE_CACHE = null;
 	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();

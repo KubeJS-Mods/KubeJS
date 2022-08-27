@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.player;
 
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
@@ -23,8 +22,8 @@ public class InventoryChangedEventJS extends PlayerEventJS {
 		return player;
 	}
 
-	public ItemStackJS getItem() {
-		return ItemStackJS.of(item);
+	public ItemStack getItem() {
+		return item;
 	}
 
 	public int getSlot() {

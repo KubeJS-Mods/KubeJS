@@ -18,12 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 
 @RemapPrefixForJS("kjs$")
-public interface LevelKJS extends AsKJS<Level>, WithAttachedData<Level> {
-	@Override
-	default Level asKJS() {
-		return (Level) this;
-	}
-
+public interface LevelKJS extends WithAttachedData<Level> {
 	default Level kjs$self() {
 		return (Level) this;
 	}

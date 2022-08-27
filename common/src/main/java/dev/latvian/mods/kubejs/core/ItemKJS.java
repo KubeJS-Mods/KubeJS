@@ -7,9 +7,11 @@ import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.item.FoodBuilder;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.MutableToolTier;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -19,6 +21,7 @@ import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -41,8 +44,21 @@ public interface ItemKJS {
 		throw new NoMixinException();
 	}
 
+	default ResourceLocation kjs$getIdLocation() {
+		return UtilsJS.UNKNOWN_ID;
+	}
+
 	default String kjs$getId() {
-		return KubeJSRegistries.items().getId((Item) this).toString();
+		return kjs$getIdLocation().toString();
+	}
+
+	default String kjs$getMod() {
+		return kjs$getIdLocation().getNamespace();
+	}
+
+	default String kjs$getCreativeTab() {
+		var id = KubeJSRegistries.items().getId((Item) this);
+		return id == null ? "unknown" : id.getNamespace();
 	}
 
 	default void kjs$setItemBuilder(ItemBuilder b) {
@@ -187,5 +203,9 @@ public interface ItemKJS {
 
 		Multimap<Attribute, AttributeModifier> attributes = modifiableItem.kjs$getAttributeMap();
 		return ImmutableList.copyOf(attributes.get(attribute));
+	}
+
+	default Ingredient kjs$getTypeIngredient() {
+		throw new NoMixinException();
 	}
 }
