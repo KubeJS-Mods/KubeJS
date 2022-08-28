@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import dev.latvian.mods.kubejs.recipe.minecraft.JsonRecipeJS;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 /**

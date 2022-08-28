@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
  */
 public class ItemStackJS {
 	public static final ItemStack EMPTY = ItemStack.EMPTY;
+	public static final ItemStack[] EMPTY_ARRAY = new ItemStack[0];
 
 	private static List<ItemStack> cachedItemList;
 	private static List<String> cachedItemTypeList;

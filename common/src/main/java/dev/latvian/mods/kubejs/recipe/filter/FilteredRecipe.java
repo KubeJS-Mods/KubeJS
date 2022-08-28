@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
+import dev.latvian.mods.kubejs.recipe.IngredientMatch;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.Ingredient;
 
 public interface FilteredRecipe {
 	String getGroup();
@@ -10,9 +10,9 @@ public interface FilteredRecipe {
 
 	String getMod();
 
-	String getType();
+	ResourceLocation getType();
 
-	boolean hasInput(Ingredient in, boolean exact);
+	boolean hasInput(IngredientMatch match);
 
-	boolean hasOutput(Ingredient out, boolean exact);
+	boolean hasOutput(IngredientMatch match);
 }

@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.item;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -9,73 +8,44 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public class ItemStackSet implements Iterable<ItemStack> {
-	private static class Key {
-
-		private final Item item;
-
-		private final CompoundTag tag;
-		private int hashCode = 0;
-
-		private Key(ItemStack is) {
-			item = is.getItem();
-			tag = is.getTag();
-		}
-
-		@Override
-		public int hashCode() {
-			if (hashCode == 0) {
-				hashCode = item == Items.AIR ? 0 : tag == null ? item.hashCode() : (item.hashCode() * 31 + tag.hashCode());
-
-				if (hashCode == 0) {
-					hashCode = 1;
-				}
-			}
-
-			return hashCode;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj instanceof Key k) {
-				return item == k.item && hashCode() == k.hashCode() && Objects.equals(tag, k.tag);
-			}
-
-			return false;
-		}
-
-	}
-
-	private final HashMap<Key, ItemStack> map = new HashMap<>();
+	private final HashMap<ItemStackKey, ItemStack> map = new HashMap<>();
 
 	public void add(ItemStack stack) {
-		if (!stack.isEmpty()) {
-			map.putIfAbsent(new Key(stack), stack);
+		var key = ItemStackKey.of(stack);
+
+		if (key != ItemStackKey.EMPTY) {
+			map.putIfAbsent(key, stack);
 		}
 	}
 
 	public void addItem(Item item) {
 		if (item != Items.AIR) {
-			ItemStack stack = item.getDefaultInstance();
-			map.putIfAbsent(new Key(stack), stack);
+			map.putIfAbsent(item.kjs$getTypeItemStackKey(), new ItemStack(item));
 		}
 	}
 
 	public void remove(ItemStack stack) {
-		if (!stack.isEmpty()) {
-			map.remove(new Key(stack));
+		var key = ItemStackKey.of(stack);
+
+		if (key != ItemStackKey.EMPTY) {
+			map.remove(key);
 		}
 	}
 
 	public boolean contains(ItemStack stack) {
-		return !stack.isEmpty() && map.containsKey(new Key(stack));
+		var key = ItemStackKey.of(stack);
+		return key != ItemStackKey.EMPTY && map.containsKey(key);
 	}
 
 	public List<ItemStack> toList() {
 		return map.isEmpty() ? List.of() : new ArrayList<>(map.values());
+	}
+
+	public ItemStack[] toArray() {
+		return map.isEmpty() ? ItemStackJS.EMPTY_ARRAY : map.values().toArray(ItemStackJS.EMPTY_ARRAY);
 	}
 
 	public boolean isEmpty() {

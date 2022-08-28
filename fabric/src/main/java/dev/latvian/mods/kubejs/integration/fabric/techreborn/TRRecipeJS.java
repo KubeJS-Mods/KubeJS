@@ -2,42 +2,28 @@ package dev.latvian.mods.kubejs.integration.fabric.techreborn;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientStackJS;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
+import dev.latvian.mods.kubejs.recipe.IngredientMatch;
+import dev.latvian.mods.kubejs.recipe.ItemInputTransformer;
+import dev.latvian.mods.kubejs.recipe.ItemOutputTransformer;
 import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import dev.latvian.mods.kubejs.recipe.component.input.ItemInput;
-import dev.latvian.mods.kubejs.recipe.component.input.RecipeItemInputContainer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+
+import java.util.List;
 
 /**
  * @author LatvianModder
  */
 public class TRRecipeJS extends RecipeJS {
-	private static class DummyRebornIngredient implements ItemInput {
-		public static final ResourceLocation STACK_RECIPE_TYPE = new ResourceLocation("reborncore", "stack");
-		public static final ResourceLocation FLUID_RECIPE_TYPE = new ResourceLocation("reborncore", "fluid");
-		public static final ResourceLocation TAG_RECIPE_TYPE = new ResourceLocation("reborncore", "tag");
-		public static final ResourceLocation WRAPPED_RECIPE_TYPE = new ResourceLocation("reborncore", "wrapped");
-
-		public final ResourceLocation type;
-		public final JsonObject json;
-
-		public DummyRebornIngredient(ResourceLocation t, JsonObject o) {
-			type = t;
-			json = o;
-		}
-
-		@Override
-		public JsonElement toJson(RecipeItemInputContainer container) {
-			return json;
-		}
-	}
+	public List<ItemStack> results;
+	public List<Ingredient> ingredients;
 
 	@Override
 	public void create(RecipeArguments args) {
-		outputItems.addAll(parseItemOutputList(args.get(0)));
-		inputItems.addAll(parseItemInputList(args.get(1)));
+		results = parseItemOutputList(args.get(0));
+		ingredients = parseItemInputList(args.get(1));
 		json.addProperty("power", 2);
 		json.addProperty("time", 200);
 
@@ -48,8 +34,8 @@ public class TRRecipeJS extends RecipeJS {
 
 	@Override
 	public void deserialize() {
-		outputItems.addAll(parseItemOutputList(json.get("results")));
-		inputItems.addAll(parseItemInputList(json.get("ingredients")));
+		results = parseItemOutputList(json.get("results"));
+		ingredients = parseItemInputList(json.get("ingredients"));
 	}
 
 	public TRRecipeJS power(int i) {
@@ -75,8 +61,8 @@ public class TRRecipeJS extends RecipeJS {
 		if (serializeOutputs) {
 			var array = new JsonArray();
 
-			for (var out : outputItems) {
-				array.add(out.toJson());
+			for (var out : results) {
+				array.add(itemToJson(out));
 			}
 
 			json.add("results", array);
@@ -85,7 +71,7 @@ public class TRRecipeJS extends RecipeJS {
 		if (serializeInputs) {
 			var array = new JsonArray();
 
-			for (var in : inputItems) {
+			for (var in : ingredients) {
 				array.add(in.toJson());
 			}
 
@@ -94,38 +80,63 @@ public class TRRecipeJS extends RecipeJS {
 	}
 
 	@Override
-	public RecipeItemInputContainer parseItemInput(Object o, String key) {
-		if (o instanceof JsonObject jsonObj) {
-
-			var type = DummyRebornIngredient.STACK_RECIPE_TYPE;
-
-			if (jsonObj.has("fluid")) {
-				type = DummyRebornIngredient.FLUID_RECIPE_TYPE;
-			} else if (jsonObj.has("tag")) {
-				type = DummyRebornIngredient.TAG_RECIPE_TYPE;
-			} else if (jsonObj.has("wrapped")) {
-				type = DummyRebornIngredient.WRAPPED_RECIPE_TYPE;
-			}
-
-			if (jsonObj.has("type")) {
-				type = new ResourceLocation(jsonObj.get("type").getAsString());
-			}
-
-			if (!type.equals(DummyRebornIngredient.STACK_RECIPE_TYPE) && !type.equals(DummyRebornIngredient.TAG_RECIPE_TYPE)) {
-				RecipeItemInputContainer container = new RecipeItemInputContainer();
-				container.recipe = this;
-				container.input = new DummyRebornIngredient(type, jsonObj);
-				return container;
+	public boolean hasInput(IngredientMatch match) {
+		for (var in : ingredients) {
+			if (match.contains(in)) {
+				return true;
 			}
 		}
 
-		return super.parseItemInput(o, key);
+		return false;
 	}
 
 	@Override
-	public JsonElement serializeIngredientStack(IngredientStackJS in) {
+	public boolean replaceInput(IngredientMatch match, Ingredient with, ItemInputTransformer transformer) {
+		boolean changed = false;
+
+		for (int i = 0; i < ingredients.size(); i++) {
+			var in = ingredients.get(i);
+
+			if (match.contains(in)) {
+				ingredients.set(i, transformer.transform(this, match, in, with));
+				changed = true;
+			}
+		}
+
+		return changed;
+	}
+
+	@Override
+	public boolean hasOutput(IngredientMatch match) {
+		for (var out : results) {
+			if (match.contains(out)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean replaceOutput(IngredientMatch match, ItemStack with, ItemOutputTransformer transformer) {
+		boolean changed = false;
+
+		for (int i = 0; i < results.size(); i++) {
+			var out = results.get(i);
+
+			if (match.contains(out)) {
+				results.set(i, transformer.transform(this, match, out, with));
+				changed = true;
+			}
+		}
+
+		return changed;
+	}
+
+	@Override
+	public JsonElement serializeIngredientStack(IngredientStack in) {
 		var o = in.ingredient.toJson().getAsJsonObject();
-		o.addProperty("count", in.getCount());
+		o.addProperty("count", in.count);
 		return o;
 	}
 }

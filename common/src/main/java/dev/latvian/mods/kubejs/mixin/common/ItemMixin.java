@@ -4,6 +4,7 @@ import dev.architectury.registry.fuel.FuelRegistry;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
+import dev.latvian.mods.kubejs.item.ItemStackKey;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -43,6 +44,7 @@ public abstract class ItemMixin implements ItemKJS {
 	private ItemBuilder kjs$itemBuilder;
 	private CompoundTag kjs$typeData;
 	private Ingredient kjs$typeIngredient;
+	private ItemStackKey kjs$typeItemStackKey;
 	private ResourceLocation kjs$id;
 	private String kjs$idString;
 
@@ -209,5 +211,14 @@ public abstract class ItemMixin implements ItemKJS {
 		}
 
 		return kjs$typeIngredient;
+	}
+
+	@Override
+	public ItemStackKey kjs$getTypeItemStackKey() {
+		if (kjs$typeItemStackKey == null) {
+			kjs$typeItemStackKey = new ItemStackKey(kjs$self(), null);
+		}
+
+		return kjs$typeItemStackKey;
 	}
 }

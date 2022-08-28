@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.item.FoodBuilder;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
+import dev.latvian.mods.kubejs.item.ItemStackKey;
 import dev.latvian.mods.kubejs.item.MutableToolTier;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -206,6 +207,10 @@ public interface ItemKJS {
 	}
 
 	default Ingredient kjs$getTypeIngredient() {
+		throw new NoMixinException();
+	}
+
+	default ItemStackKey kjs$getTypeItemStackKey() {
 		throw new NoMixinException();
 	}
 }

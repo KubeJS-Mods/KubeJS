@@ -9,12 +9,12 @@ import net.minecraft.resources.ResourceLocation;
  * @author LatvianModder
  */
 public class TypeFilter implements RecipeFilter {
-	private final String type;
+	private final ResourceLocation type;
 
-	public TypeFilter(String t) {
+	public TypeFilter(ResourceLocation t) {
 		type = t;
 
-		if (RecipeJS.itemErrors && !KubeJSRegistries.recipeSerializers().contains(new ResourceLocation(type))) {
+		if (RecipeJS.itemErrors && !KubeJSRegistries.recipeSerializers().contains(type)) {
 			throw new RecipeExceptionJS("Type '" + type + "' doesn't exist!").error();
 		}
 	}
@@ -26,8 +26,6 @@ public class TypeFilter implements RecipeFilter {
 
 	@Override
 	public String toString() {
-		return "TypeFilter{" +
-				"type='" + type + '\'' +
-				'}';
+		return "TypeFilter{" + type + '}';
 	}
 }

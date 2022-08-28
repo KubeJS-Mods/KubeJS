@@ -1,13 +1,14 @@
 package dev.latvian.mods.kubejs.integration.forge.jei;
 
+import dev.latvian.mods.kubejs.core.IngredientKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.function.Function;
 
@@ -51,15 +52,15 @@ public class JEISubtypesEventJS extends EventJS {
 		});
 	}
 
-	public void useNBT(IngredientJS items) {
-		registration.useNbtForSubtypes(items.getItemTypes().toArray(new Item[0]));
+	public void useNBT(Ingredient items) {
+		registration.useNbtForSubtypes(((IngredientKJS) items).kjs$getItemTypes().toArray(new Item[0]));
 	}
 
-	public void useNBTKey(IngredientJS items, String key) {
+	public void useNBTKey(Ingredient items, String key) {
 		var in = new NBTKeyInterpreter(key);
 
-		for (var item : items.getItemTypes()) {
-			registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, new NBTKeyInterpreter(key));
+		for (var item : ((IngredientKJS) items).kjs$getItemTypes()) {
+			registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, in);
 		}
 	}
 }

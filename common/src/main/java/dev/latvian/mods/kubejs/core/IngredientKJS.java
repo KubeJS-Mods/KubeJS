@@ -13,6 +13,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @RemapPrefixForJS("kjs$")
@@ -91,5 +92,9 @@ public interface IngredientKJS {
 
 	default boolean kjs$isInvalidRecipeIngredient() {
 		return false;
+	}
+
+	default List<Ingredient> kjs$unwrapStackIngredient() {
+		return List.of(kjs$self());
 	}
 }

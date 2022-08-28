@@ -4,22 +4,30 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.recipe.IngredientMatch;
+import dev.latvian.mods.kubejs.recipe.ItemInputTransformer;
+import dev.latvian.mods.kubejs.recipe.ItemOutputTransformer;
 import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author LatvianModder
  */
 public class ShapedRecipeJS extends RecipeJS {
-	private final List<String> pattern = new ArrayList<>();
-	private final List<String> key = new ArrayList<>();
+	public ItemStack result;
+	public final List<String> pattern = new ArrayList<>();
+	public final Map<Character, Ingredient> key = new LinkedHashMap<>();
 
 	@Override
 	public void create(RecipeArguments args) {
@@ -28,7 +36,7 @@ public class ShapedRecipeJS extends RecipeJS {
 				throw new RecipeExceptionJS("Requires 3 arguments - result, pattern and keys!");
 			}
 
-			outputItems.add(parseItemOutput(args.get(0)));
+			result = parseItemOutput(args.get(0));
 			var vertical = ListJS.orSelf(args.get(1));
 
 			if (vertical.isEmpty()) {
@@ -45,10 +53,9 @@ public class ShapedRecipeJS extends RecipeJS {
 					var ingredient = IngredientJS.of(item);
 
 					if (!ingredient.isEmpty()) {
-						var currentId = String.valueOf((char) ('A' + (id++)));
-						horizontalPattern.append(currentId);
-						inputItems.add(ingredient);
-						key.add(currentId);
+						char currentChar = (char) ('A' + (id++));
+						horizontalPattern.append(currentChar);
+						key.put(currentChar, ingredient);
 					} else {
 						horizontalPattern.append(" ");
 					}
@@ -67,7 +74,7 @@ public class ShapedRecipeJS extends RecipeJS {
 			return;
 		}
 
-		outputItems.add(parseItemOutput(args.get(0)));
+		result = parseItemOutput(args.get(0));
 
 		var pattern1 = ListJS.orSelf(args.get(1));
 
@@ -90,8 +97,7 @@ public class ShapedRecipeJS extends RecipeJS {
 			if (o == ItemStackJS.EMPTY || o.equals("minecraft:air")) {
 				airs.add(k);
 			} else {
-				inputItems.add(parseItemInput(o, k));
-				key.add(k);
+				key.put(k.charAt(0), parseItemInput(o, k));
 			}
 		}
 
@@ -108,22 +114,21 @@ public class ShapedRecipeJS extends RecipeJS {
 
 	@Override
 	public void deserialize() {
-		outputItems.add(parseItemOutput(json.get("result")));
+		result = parseItemOutput(json.get("result"));
 
 		for (var e : json.get("pattern").getAsJsonArray()) {
 			pattern.add(e.getAsString());
 		}
 
 		for (var entry : json.get("key").getAsJsonObject().entrySet()) {
-			inputItems.add(parseItemInput(entry.getValue(), entry.getKey()));
-			key.add(entry.getKey());
+			key.put(entry.getKey().charAt(0), parseItemInput(entry.getValue(), entry.getKey()));
 		}
 	}
 
 	@Override
 	public void serialize() {
 		if (serializeOutputs) {
-			json.add("result", outputItems.get(0).toResultJson());
+			json.add("result", itemToJson(result));
 		}
 
 		if (serializeInputs) {
@@ -137,12 +142,52 @@ public class ShapedRecipeJS extends RecipeJS {
 
 			var keyJson = new JsonObject();
 
-			for (var i = 0; i < key.size(); i++) {
-				keyJson.add(key.get(i), inputItems.get(i).toJson());
+			for (var entry : key.entrySet()) {
+				keyJson.add(entry.getKey().toString(), entry.getValue().toJson());
 			}
 
 			json.add("key", keyJson);
 		}
+	}
+
+	@Override
+	public boolean hasInput(IngredientMatch match) {
+		for (var entry : key.entrySet()) {
+			if (match.contains(entry.getValue())) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean replaceInput(IngredientMatch match, Ingredient with, ItemInputTransformer transformer) {
+		boolean changed = false;
+
+		for (var entry : key.entrySet()) {
+			if (match.contains(entry.getValue())) {
+				entry.setValue(transformer.transform(this, match, entry.getValue(), with));
+				changed = true;
+			}
+		}
+
+		return changed;
+	}
+
+	@Override
+	public boolean hasOutput(IngredientMatch match) {
+		return match.contains(result);
+	}
+
+	@Override
+	public boolean replaceOutput(IngredientMatch match, ItemStack with, ItemOutputTransformer transformer) {
+		if (match.contains(result)) {
+			result = transformer.transform(this, match, result, with);
+			return true;
+		}
+
+		return false;
 	}
 
 	public ShapedRecipeJS noMirror() {

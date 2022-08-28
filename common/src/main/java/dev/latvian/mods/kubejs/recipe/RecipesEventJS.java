@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import com.google.common.base.Stopwatch;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import dev.architectury.platform.Platform;
@@ -228,30 +227,7 @@ public class RecipesEventJS extends EventJS {
 				}
 
 				if (ServerSettings.dataExport != null) {
-					var exp = new JsonObject();
-					exp.add("recipe", json);
-
-					if (!recipe.inputItems.isEmpty()) {
-						var array = new JsonArray();
-
-						for (var in : recipe.inputItems) {
-							array.add(in.toJson());
-						}
-
-						exp.add("inputs", array);
-					}
-
-					if (!recipe.outputItems.isEmpty()) {
-						var array = new JsonArray();
-
-						for (var out : recipe.outputItems) {
-							array.add(out.toJson());
-						}
-
-						exp.add("outputs", array);
-					}
-
-					allRecipeMap.add(recipe.getId(), exp);
+					allRecipeMap.add(recipe.getId(), json);
 				}
 			} catch (Throwable ex) {
 				if (!(ex instanceof RecipeExceptionJS rex) || rex.fallback) {
@@ -458,7 +434,7 @@ public class RecipesEventJS extends EventJS {
 
 	public int remove(RecipeFilter filter) {
 		var count = new MutableInt();
-		forEachRecipe(filter, r ->
+		forEachRecipeAsync(filter, r ->
 		{
 			if (removedRecipes.add(r)) {
 				if (ServerSettings.instance.logRemovedRecipes) {
@@ -473,13 +449,15 @@ public class RecipesEventJS extends EventJS {
 		return count.getValue();
 	}
 
-	public int replaceInput(RecipeFilter filter, Ingredient ingredient, Ingredient with, boolean exact) {
+	public int replaceInput(RecipeFilter filter, IngredientMatch match, Ingredient with, ItemInputTransformer transformer) {
 		var count = new AtomicInteger();
-		var is = ingredient.toString();
+		var is = match.toString();
 		var ws = with.toString();
 
 		forEachRecipeAsync(filter, r -> {
-			if (r.replaceInput(ingredient, with, exact)) {
+			if (r.replaceInput(match, with, transformer)) {
+				r.serializeInputs = true;
+				r.save();
 				count.incrementAndGet();
 				modifiedRecipes.add(r);
 
@@ -495,22 +473,20 @@ public class RecipesEventJS extends EventJS {
 		return count.get();
 	}
 
-	public int replaceInput(RecipeFilter filter, Ingredient ingredient, Ingredient with) {
-		return replaceInput(filter, ingredient, with, false);
+	public int replaceInput(RecipeFilter filter, IngredientMatch match, Ingredient with) {
+		return replaceInput(filter, match, with, ItemInputTransformer.DEFAULT);
 	}
 
-	public int replaceInput(Ingredient ingredient, Ingredient with) {
-		return replaceInput(RecipeFilter.ALWAYS_TRUE, ingredient, with);
-	}
-
-	public int replaceOutput(RecipeFilter filter, Ingredient ingredient, ItemStack with, boolean exact) {
+	public int replaceOutput(RecipeFilter filter, IngredientMatch match, ItemStack with, ItemOutputTransformer transformer) {
 		var count = new AtomicInteger();
-		var is = ingredient.toString();
+		var is = match.ingredient.toString();
 		var ws = with.kjs$toItemString();
 
 		forEachRecipeAsync(filter, r ->
 		{
-			if (r.replaceOutput(ingredient, with, exact)) {
+			if (r.replaceOutput(match, with, transformer)) {
+				r.serializeOutputs = true;
+				r.save();
 				count.incrementAndGet();
 				modifiedRecipes.add(r);
 
@@ -526,12 +502,8 @@ public class RecipesEventJS extends EventJS {
 		return count.get();
 	}
 
-	public int replaceOutput(RecipeFilter filter, Ingredient ingredient, ItemStack with) {
-		return replaceOutput(filter, ingredient, with, false);
-	}
-
-	public int replaceOutput(Ingredient ingredient, ItemStack with) {
-		return replaceOutput(RecipeFilter.ALWAYS_TRUE, ingredient, with);
+	public int replaceOutput(RecipeFilter filter, IngredientMatch match, ItemStack with) {
+		return replaceOutput(filter, match, with, ItemOutputTransformer.DEFAULT);
 	}
 
 	public RecipeFunction getRecipeFunction(@Nullable String id) {

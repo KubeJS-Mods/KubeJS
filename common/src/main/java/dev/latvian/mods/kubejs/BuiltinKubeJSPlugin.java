@@ -80,6 +80,7 @@ import dev.latvian.mods.kubejs.misc.PotionBuilder;
 import dev.latvian.mods.kubejs.misc.SoundEventBuilder;
 import dev.latvian.mods.kubejs.misc.VillagerProfessionBuilder;
 import dev.latvian.mods.kubejs.misc.VillagerTypeBuilder;
+import dev.latvian.mods.kubejs.recipe.IngredientMatch;
 import dev.latvian.mods.kubejs.recipe.RegisterRecipeTypesEvent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
@@ -447,6 +448,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(PlayerSelector.class, PlayerSelector::of);
 		typeWrappers.register(DamageSource.class, DamageSourceWrapper::of);
 		typeWrappers.register(EntitySelector.class, UtilsJS::entitySelector);
+		typeWrappers.register(IngredientMatch.class, IngredientMatch::of);
 
 		// components //
 		typeWrappers.register(Component.class, ComponentWrapper::of);

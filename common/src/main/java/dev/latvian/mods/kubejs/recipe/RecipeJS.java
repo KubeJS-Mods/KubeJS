@@ -11,10 +11,6 @@ import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
-import dev.latvian.mods.kubejs.recipe.component.input.ItemInputTransformer;
-import dev.latvian.mods.kubejs.recipe.component.input.RecipeItemInputContainer;
-import dev.latvian.mods.kubejs.recipe.component.output.ItemOutputTransformer;
-import dev.latvian.mods.kubejs.recipe.component.output.RecipeItemOutputContainer;
 import dev.latvian.mods.kubejs.recipe.filter.FilteredRecipe;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.DamageAction;
@@ -25,7 +21,6 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.ListJS;
-import dev.latvian.mods.kubejs.util.MapJS;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -55,8 +50,6 @@ public abstract class RecipeJS implements FilteredRecipe {
 	public JsonObject originalJson = null;
 	public JsonObject json = null;
 	public Recipe<?> originalRecipe = null;
-	public final List<RecipeItemOutputContainer> outputItems = new ArrayList<>(1);
-	public final List<RecipeItemInputContainer> inputItems = new ArrayList<>(1);
 	public boolean serializeOutputs;
 	public boolean serializeInputs;
 	private String recipeStage = "";
@@ -89,9 +82,7 @@ public abstract class RecipeJS implements FilteredRecipe {
 		originalRecipe = null;
 	}
 
-	public RecipeJS merge(Object data) {
-		var j = MapJS.json(data);
-
+	public RecipeJS merge(JsonObject j) {
 		if (j != null) {
 			for (var entry : j.entrySet()) {
 				json.add(entry.getKey(), entry.getValue());
@@ -114,6 +105,18 @@ public abstract class RecipeJS implements FilteredRecipe {
 		save();
 		return this;
 	}
+
+	@Override
+	public abstract boolean hasInput(IngredientMatch match);
+
+	public abstract boolean replaceInput(IngredientMatch match, Ingredient with, ItemInputTransformer transformer);
+
+	@Override
+	public abstract boolean hasOutput(IngredientMatch match);
+
+	public abstract boolean replaceOutput(IngredientMatch match, ItemStack with, ItemOutputTransformer transformer);
+
+	/*
 
 	@Override
 	public final boolean hasInput(Ingredient match, boolean exact) {
@@ -191,6 +194,8 @@ public abstract class RecipeJS implements FilteredRecipe {
 		return changed;
 	}
 
+	*/
+
 	@Override
 	public String getGroup() {
 		var e = json.get("group");
@@ -226,8 +231,8 @@ public abstract class RecipeJS implements FilteredRecipe {
 	}
 
 	@Override
-	public String getType() {
-		return type.toString();
+	public ResourceLocation getType() {
+		return type.getId();
 	}
 
 	@Override
@@ -237,14 +242,6 @@ public abstract class RecipeJS implements FilteredRecipe {
 		}
 
 		return id;
-	}
-
-	public Ingredient transformReplacedInput(int index, Ingredient oldInput, Ingredient newInput) {
-		return newInput;
-	}
-
-	public ItemStack transformReplacedOutput(int index, ItemStack oldOutput, ItemStack newOutput) {
-		return newOutput;
 	}
 
 	@Nullable
@@ -262,7 +259,7 @@ public abstract class RecipeJS implements FilteredRecipe {
 		return null;
 	}
 
-	public RecipeItemInputContainer parseItemInput(@Nullable Object o, String key) {
+	public Ingredient parseItemInput(@Nullable Object o, String key) {
 		var ingredient = IngredientJS.of(o);
 
 		if (ingredient.kjs$isInvalidRecipeIngredient()) {
@@ -273,31 +270,25 @@ public abstract class RecipeJS implements FilteredRecipe {
 			}
 		}
 
-		RecipeItemInputContainer container = new RecipeItemInputContainer();
-		container.recipe = this;
-		container.input = ingredient;
-		return container;
+		return ingredient;
 	}
 
-	public RecipeItemInputContainer parseItemInput(@Nullable Object o) {
+	public Ingredient parseItemInput(@Nullable Object o) {
 		return parseItemInput(o, "");
 	}
 
-	public RecipeItemOutputContainer parseItemOutput(@Nullable Object o) {
+	public ItemStack parseItemOutput(@Nullable Object o) {
 		var result = ItemStackJS.of(o);
 
 		if (result == null || result.isEmpty()) {
 			throw new RecipeExceptionJS(o + " is not a valid result!");
 		}
 
-		RecipeItemOutputContainer container = new RecipeItemOutputContainer();
-		container.recipe = this;
-		container.output = result;
-		return container;
+		return result;
 	}
 
-	public List<RecipeItemInputContainer> parseItemInputList(@Nullable Object o) {
-		List<RecipeItemInputContainer> list = new ArrayList<>();
+	public List<Ingredient> parseItemInputList(@Nullable Object o) {
+		List<Ingredient> list = new ArrayList<>();
 
 		if (o instanceof JsonElement elem) {
 			var array = elem instanceof JsonArray arr ? arr : Util.make(new JsonArray(), (arr) -> arr.add(elem));
@@ -313,8 +304,8 @@ public abstract class RecipeJS implements FilteredRecipe {
 		return list;
 	}
 
-	public List<RecipeItemOutputContainer> parseItemOutputList(@Nullable Object o) {
-		List<RecipeItemOutputContainer> list = new ArrayList<>();
+	public List<ItemStack> parseItemOutputList(@Nullable Object o) {
+		List<ItemStack> list = new ArrayList<>();
 
 		if (o instanceof JsonElement elem) {
 			var array = elem instanceof JsonArray arr ? arr : Util.make(new JsonArray(), (arr) -> arr.add(elem));
@@ -331,7 +322,7 @@ public abstract class RecipeJS implements FilteredRecipe {
 	}
 
 	public String getFromToString() {
-		return inputItems + " -> " + outputItems;
+		return "unknown -> unknown";
 	}
 
 	public String getUniqueId() {
@@ -443,11 +434,7 @@ public abstract class RecipeJS implements FilteredRecipe {
 		return this;
 	}
 
-	public JsonElement getIngredientJson(RecipeItemInputContainer container) {
-		return container.input.toJson();
-	}
-
-	public JsonElement getResultJson(RecipeItemOutputContainer container) {
-		return container.output.kjs$toJson();
+	public JsonElement itemToJson(ItemStack stack) {
+		return stack.kjs$toJson();
 	}
 }

@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -28,7 +27,7 @@ public class AfterRecipesLoadedEventJS extends EventJS {
 		public final Recipe<?> recipe;
 		private final Map<ResourceLocation, Recipe<?>> mapRef;
 		private JsonObject json;
-		private String typeString;
+		private ResourceLocation type;
 
 		private Container(ResourceLocation id, RecipeType<?> recipeType, Recipe<?> recipe, Map<ResourceLocation, Recipe<?>> mapRef) {
 			this.id = id;
@@ -71,21 +70,19 @@ public class AfterRecipesLoadedEventJS extends EventJS {
 		}
 
 		@Override
-		public String getType() {
-			if (typeString == null) {
-				typeString = String.valueOf(KubeJSRegistries.recipeSerializers().getId(recipe.getSerializer()));
+		public ResourceLocation getType() {
+			if (type == null) {
+				type = KubeJSRegistries.recipeSerializers().getId(recipe.getSerializer());
 			}
 
-			return typeString;
+			return type;
 		}
 
 		@Override
-		public boolean hasInput(Ingredient in, boolean exact) {
+		public boolean hasInput(IngredientMatch match) {
 			for (Ingredient ingredient : recipe.getIngredients()) {
-				for (ItemStack stack : ingredient.getItems()) {
-					if (in.test(stack)) {
-						return true;
-					}
+				if (match.contains(ingredient)) {
+					return true;
 				}
 			}
 
@@ -93,8 +90,8 @@ public class AfterRecipesLoadedEventJS extends EventJS {
 		}
 
 		@Override
-		public boolean hasOutput(Ingredient out, boolean exact) {
-			return out.test(recipe.getResultItem());
+		public boolean hasOutput(IngredientMatch match) {
+			return match.contains(recipe.getResultItem());
 		}
 	}
 

@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.recipe.IngredientMatch;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
@@ -65,32 +65,41 @@ public interface RecipeFilter extends Predicate<FilteredRecipe> {
 		}
 
 		try {
-			if (map.get("id") != null) {
-				var s = map.get("id").toString();
-				var pattern = UtilsJS.parseRegex(s);
-				predicate.list.add(pattern == null ? new IDFilter(UtilsJS.getMCID(s)) : new RegexIDFilter(pattern));
+			var id = map.get("id");
+
+			if (id != null) {
+				var pattern = UtilsJS.parseRegex(id);
+				predicate.list.add(pattern == null ? new IDFilter(UtilsJS.getMCID(id)) : new RegexIDFilter(pattern));
 			}
 
-			if (map.get("type") != null) {
-				predicate.list.add(new TypeFilter(UtilsJS.getID(map.get("type").toString())));
+			var type = map.get("type");
+
+			if (type != null) {
+				predicate.list.add(new TypeFilter(UtilsJS.getMCID(type)));
 			}
 
-			if (map.get("group") != null) {
-				predicate.list.add(new GroupFilter(map.get("group").toString()));
+			var group = map.get("group");
+
+			if (group != null) {
+				predicate.list.add(new GroupFilter(group.toString()));
 			}
 
-			if (map.get("mod") != null) {
-				predicate.list.add(new ModFilter(map.get("mod").toString()));
+			var mod = map.get("mod");
+
+			if (mod != null) {
+				predicate.list.add(new ModFilter(mod.toString()));
 			}
 
-			if (map.get("input") != null) {
-				var exact = Boolean.TRUE.equals(map.get("exact_input")) || Boolean.TRUE.equals(map.get("exact"));
-				predicate.list.add(new InputFilter(IngredientJS.of(map.get("input")), exact));
+			var input = map.get("input");
+
+			if (input != null) {
+				predicate.list.add(new InputFilter(IngredientMatch.of(input)));
 			}
 
-			if (map.get("output") != null) {
-				var exact = Boolean.TRUE.equals(map.get("exact_output")) || Boolean.TRUE.equals(map.get("exact"));
-				predicate.list.add(new OutputFilter(IngredientJS.of(map.get("output")), exact));
+			var output = map.get("output");
+
+			if (output != null) {
+				predicate.list.add(new OutputFilter(IngredientMatch.of(output)));
 			}
 
 			return predicate.list.isEmpty() ? ALWAYS_TRUE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
