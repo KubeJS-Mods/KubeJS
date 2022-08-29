@@ -26,6 +26,7 @@ public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("regex"), RegExIngredient.SERIALIZER);
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("creative_tab"), CreativeTabIngredient.SERIALIZER);
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("not"), NotIngredient.SERIALIZER);
+		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("or"), OrIngredient.SERIALIZER);
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("and"), AndIngredient.SERIALIZER);
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("ignore_nbt"), IgnoreNBTIngredient.SERIALIZER);
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("strong_nbt"), StrongNBTIngredient.SERIALIZER);
@@ -34,71 +35,71 @@ public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 
 	@Override
 	public IngredientStack stack(Ingredient ingredient, int count) {
-		return null;
+		return new IngredientStackImpl(ingredient, count);
 	}
 
 	@Override
 	public Ingredient wildcard() {
-		return null;
+		return WildcardIngredient.INSTANCE;
 	}
 
 	@Override
 	public Ingredient custom(Ingredient parent, Predicate<ItemStack> predicate) {
-		return null;
+		return new CustomIngredient(predicate);
 	}
 
 	@Override
 	public Ingredient custom(Ingredient parent, @Nullable UUID uuid) {
-		return null;
+		return new CustomPredicateIngredient(parent, uuid);
 	}
 
 	@Override
 	public Ingredient tag(String tag) {
-		return null;
+		return TagIngredient.ofTag(tag);
 	}
 
 	@Override
 	public Ingredient mod(String mod) {
-		return null;
+		return ModIngredient.ofMod(mod);
 	}
 
 	@Override
 	public Ingredient regex(Pattern pattern) {
-		return null;
+		return new RegExIngredient(pattern);
 	}
 
 	@Override
 	public Ingredient creativeTab(CreativeModeTab tab) {
-		return null;
+		return new CreativeTabIngredient(tab);
 	}
 
 	@Override
 	public Ingredient not(Ingredient ingredient) {
-		return null;
+		return new NotIngredient(ingredient);
 	}
 
 	@Override
 	public Ingredient or(Ingredient[] ingredients) {
-		return null;
+		return ingredients.length == 0 ? Ingredient.EMPTY : new OrIngredient(ingredients);
 	}
 
 	@Override
 	public Ingredient and(Ingredient[] ingredients) {
-		return null;
+		return ingredients.length == 0 ? Ingredient.EMPTY : ingredients.length == 1 ? ingredients[0] : new AndIngredient(ingredients);
 	}
 
 	@Override
 	public Ingredient ignoreNBT(Item item) {
-		return null;
+		return new IgnoreNBTIngredient(item);
 	}
 
 	@Override
 	public Ingredient strongNBT(ItemStack item) {
-		return null;
+		return new StrongNBTIngredient(item);
 	}
 
 	@Override
 	public Ingredient weakNBT(ItemStack item) {
-		return null;
+		return new WeakNBTIngredient(item);
 	}
 }
