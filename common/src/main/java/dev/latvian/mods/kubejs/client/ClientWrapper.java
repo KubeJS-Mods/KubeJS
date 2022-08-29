@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.level.ClientLevelJS;
 import dev.latvian.mods.kubejs.player.ClientPlayerJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.locale.Language;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -13,6 +14,10 @@ import org.jetbrains.annotations.Nullable;
 public class ClientWrapper {
 	public Minecraft getMinecraft() {
 		return Minecraft.getInstance();
+	}
+
+	public Language getLanguage() {
+		return Language.getInstance();
 	}
 
 	@Nullable

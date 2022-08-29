@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.server;
 
-import com.mojang.serialization.Dynamic;
-import net.minecraft.nbt.NbtOps;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.level.GameRules;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,15 +11,15 @@ import java.util.Map;
  * @author LatvianModder
  */
 public class GameRulesJS {
-	private GameRules rules;
-	private Map<String, GameRules.Key> cache;
+	private final GameRules rules;
+	private Map<String, GameRules.Key<?>> cache;
 
 	public GameRulesJS(GameRules r) {
 		rules = r;
 	}
 
 	@Nullable
-	private GameRules.Key getKey(String rule) {
+	public GameRules.Key<?> getKey(String rule) {
 		if (cache == null) {
 			cache = new HashMap<>();
 
@@ -36,29 +35,28 @@ public class GameRulesJS {
 	}
 
 	@Nullable
-	private Object get(String rule) {
+	public GameRules.Value<?> get(String rule) {
 		var key = getKey(rule);
 		return key == null ? null : rules.getRule(key);
 	}
 
 	public String getString(String rule) {
 		var o = get(rule);
-		return o == null ? "" : String.valueOf(o);
+		return o == null ? "" : o.serialize();
 	}
 
 	public boolean getBoolean(String rule) {
-		var o = get(rule);
-		return o instanceof Boolean && (Boolean) o;
+		return Boolean.parseBoolean(getString(rule));
 	}
 
 	public int getInt(String rule) {
-		var o = get(rule);
-		return o instanceof Number ? ((Number) o).intValue() : 0;
+		return UtilsJS.parseInt(getString(rule), 0);
 	}
 
 	public void set(String rule, Object value) {
-		var nbt = rules.createTag();
-		nbt.putString(rule, String.valueOf(value));
-		rules = new GameRules(new Dynamic<>(NbtOps.INSTANCE, nbt)); //TODO: Check if works
+		var gameRule = get(rule);
+		if (gameRule != null) {
+			gameRule.deserialize(String.valueOf(value));
+		}
 	}
 }
