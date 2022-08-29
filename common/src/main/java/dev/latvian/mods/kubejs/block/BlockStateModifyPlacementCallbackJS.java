@@ -10,8 +10,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -102,5 +105,14 @@ public class BlockStateModifyPlacementCallbackJS extends BlockStateModifyCallbac
 
 	public boolean isClickedPosIn(Fluid fluid) {
 		return getFluidStateAtClickedPos().is(fluid);
+	}
+
+	public BlockStateModifyPlacementCallbackJS waterlogged() {
+		setValue(BlockStateProperties.WATERLOGGED, isWaterLogged());
+		return this;
+	}
+
+	public boolean isWaterLogged() {
+		return getFluidStateAtClickedPos().getType() == Fluids.WATER;
 	}
 }
