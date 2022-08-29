@@ -106,12 +106,17 @@ public class BlockStateModifyPlacementCallbackJS extends BlockStateModifyCallbac
 		return getFluidStateAtClickedPos().is(fluid);
 	}
 
-	public BlockStateModifyPlacementCallbackJS waterlogged() {
-		setValue(BlockStateProperties.WATERLOGGED, isWaterLogged());
+	public BlockStateModifyPlacementCallbackJS waterlogged(boolean waterlogged) {
+		setValue(BlockStateProperties.WATERLOGGED, waterlogged);
 		return this;
 	}
 
-	public boolean isWaterLogged() {
+	public BlockStateModifyPlacementCallbackJS waterlogged() {
+		waterlogged(isInWater());
+		return this;
+	}
+
+	public boolean isInWater() {
 		return getFluidStateAtClickedPos().getType() == Fluids.WATER;
 	}
 }
