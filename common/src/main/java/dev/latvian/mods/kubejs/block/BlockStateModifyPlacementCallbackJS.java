@@ -112,8 +112,7 @@ public class BlockStateModifyPlacementCallbackJS extends BlockStateModifyCallbac
 	}
 
 	public BlockStateModifyPlacementCallbackJS waterlogged() {
-		waterlogged(isInWater());
-		return this;
+		return waterlogged(isInWater());
 	}
 
 	public boolean isInWater() {

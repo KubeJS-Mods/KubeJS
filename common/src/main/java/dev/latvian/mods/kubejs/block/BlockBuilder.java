@@ -58,8 +58,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient List<AABB> customShape;
 	public transient boolean noCollision;
 	public transient boolean notSolid;
-	@Deprecated
-	public transient boolean waterlogged;
 	public transient float slipperiness = 0.6F;
 	public transient float speedFactor = 1.0F;
 	public transient float jumpFactor = 1.0F;
@@ -96,7 +94,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		customShape = new ArrayList<>();
 		noCollision = false;
 		notSolid = false;
-		waterlogged = false;
 		randomTickCallback = null;
 
 		lootTable = loot -> loot.addPool(pool -> {
@@ -439,11 +436,27 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	@Deprecated
-	public BlockBuilder waterlogged() {
-		property(BlockStateProperties.WATERLOGGED);
-		KubeJS.startupScriptManager.type.console.warn("Use of deprecated method \"BlockBuilder.waterlogged\". Please use \"BlockBuilder.property(BlockProperties.WATERLOGGED)\" moving forward.");
+	@Deprecated(forRemoval = true)
+	public BlockBuilder setWaterlogged(boolean waterlogged) {
+		KubeJS.startupScriptManager.type.console.warn("\"BlockBuilder.waterlogged\" is a deprecated property! Please use \"BlockBuilder.property(BlockProperties.WATERLOGGED)\" instead.");
+		if (waterlogged) {
+			property(BlockStateProperties.WATERLOGGED);
+		}
 		return this;
+	}
+
+	@Deprecated(forRemoval = true)
+	public boolean getWaterlogged() {
+		KubeJS.startupScriptManager.type.console.warn("\"BlockBuilder.waterlogged\" is a deprecated property! Please use \"BlockBuilder.property(BlockProperties.WATERLOGGED)\" instead.");
+		return canBeWaterlogged();
+	}
+
+	public BlockBuilder waterlogged() {
+		return property(BlockStateProperties.WATERLOGGED);
+	}
+
+	public boolean canBeWaterlogged() {
+		return blockStateProperties.contains(BlockStateProperties.WATERLOGGED);
 	}
 
 	public BlockBuilder noDrops() {
@@ -541,11 +554,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	public BlockBuilder property(Property<?> property) {
-		if(property.getPossibleValues().size() <= 1) {
+		if (property.getPossibleValues().size() <= 1) {
 			throw new IllegalArgumentException(String.format("Block \"%s\" has an illegal Blockstate Property \"%s\" which has <= 1 possible values. (%d possible values)", id, property.getName(), property.getPossibleValues().size()));
-		}
-		if(property == BlockStateProperties.WATERLOGGED){
-			waterlogged = true;
 		}
 		blockStateProperties.add(property);
 		return this;
