@@ -52,6 +52,13 @@ accessible field net/minecraft/world/item/crafting/ShapelessRecipe group Ljava/l
 accessible field net/minecraft/world/item/crafting/ShapelessRecipe result Lnet/minecraft/world/item/ItemStack;
 extendable class net/minecraft/world/item/crafting/Ingredient
 accessible method net/minecraft/world/item/crafting/Ingredient <init> (Ljava/util/stream/Stream;)V
+accessible field net/minecraft/world/item/crafting/Ingredient values [Lnet/minecraft/world/item/crafting/Ingredient$Value;
+mutable field net/minecraft/world/item/crafting/Ingredient values [Lnet/minecraft/world/item/crafting/Ingredient$Value;
+accessible field net/minecraft/world/item/crafting/Ingredient itemStacks [Lnet/minecraft/world/item/ItemStack;
+accessible field net/minecraft/world/item/crafting/Ingredient stackingIds Lit/unimi/dsi/fastutil/ints/IntList;
+extendable class net/minecraft/world/item/crafting/Ingredient$Value
+accessible method net/minecraft/world/item/crafting/Ingredient dissolve ()V
+extendable method net/minecraft/world/item/crafting/Ingredient dissolve ()V
 
 accessible field net/minecraft/world/item/crafting/ShapedRecipe width I
 accessible field net/minecraft/world/item/crafting/ShapedRecipe height I

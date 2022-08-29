@@ -2,12 +2,14 @@ package dev.latvian.mods.kubejs.integration.forge.jei;
 
 import dev.latvian.mods.kubejs.core.IngredientKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.stream.Collectors;
 
@@ -22,12 +24,12 @@ public class InformationJEIEventJS extends EventJS {
 		registration = reg;
 	}
 
-	public void add(Object o, Component[] s) {
-		registration.addIngredientInfo(
-				((IngredientKJS) IngredientJS.of(o)).kjs$getStacks().toList(),
-				VanillaTypes.ITEM_STACK,
-				s
-		);
+	public void addItem(Ingredient item, Component[] s) {
+		registration.addIngredientInfo(((IngredientKJS) item).kjs$getStacks().toList(), VanillaTypes.ITEM_STACK, s);
+	}
+
+	public void addFluid(Object fluid, Component[] s) {
+		registration.addIngredientInfo(JEIPlugin.fromArchitectury(FluidStackJS.of(fluid).getFluidStack()), ForgeTypes.FLUID_STACK, s);
 	}
 
 	public <T> void addForType(IIngredientType<T> type, Object o, Component[] s) {

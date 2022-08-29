@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.item;
 
-import dev.latvian.mods.kubejs.item.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -72,7 +71,7 @@ public class InventoryJS {
 	}
 
 	public void clear(Ingredient ingredient) {
-		if (ingredient == WildcardIngredient.INSTANCE) {
+		if (ingredient.kjs$isWildcard()) {
 			clear();
 		}
 
@@ -102,7 +101,7 @@ public class InventoryJS {
 	}
 
 	public int find(Ingredient ingredient) {
-		if (ingredient == WildcardIngredient.INSTANCE) {
+		if (ingredient.kjs$isWildcard()) {
 			return find();
 		}
 
@@ -128,7 +127,7 @@ public class InventoryJS {
 	}
 
 	public int count(Ingredient ingredient) {
-		if (ingredient == WildcardIngredient.INSTANCE) {
+		if (ingredient.kjs$isWildcard()) {
 			return count();
 		}
 
@@ -158,7 +157,7 @@ public class InventoryJS {
 	}
 
 	public int countNonEmpty(Ingredient ingredient) {
-		if (ingredient == WildcardIngredient.INSTANCE) {
+		if (ingredient.kjs$isWildcard()) {
 			return countNonEmpty();
 		}
 

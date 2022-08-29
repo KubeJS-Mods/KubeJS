@@ -67,6 +67,7 @@ import dev.latvian.mods.kubejs.item.custom.RecordItemJS;
 import dev.latvian.mods.kubejs.item.custom.ShovelItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.SwordItemBuilder;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.filter.mob.MobFilter;
@@ -205,7 +206,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		ItemEvents.ARMOR_TIER_REGISTRY.post(new ItemArmorTierRegistryEventJS());
 
 		for (var types : RegistryObjectBuilderTypes.MAP.values()) {
-			types.postEvent();
+			// types.postEvent();
 		}
 	}
 
@@ -329,6 +330,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("Block", BlockWrapper.class);
 		event.add("Item", ItemWrapper.class);
 		event.add("Ingredient", IngredientWrapper.class);
+		event.add("IngredientHelper", IngredientPlatformHelper.get());
 		event.add("NBT", NBTUtils.class);
 		event.add("NBTIO", NBTIOWrapper.class);
 		event.add("Direction", DirectionWrapper.class);

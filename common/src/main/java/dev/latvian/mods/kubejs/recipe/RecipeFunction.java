@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.ingredient.TagIngredient;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -96,7 +96,7 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 			return ingr.toJson();
 		} else if (o instanceof String s) {
 			if (s.length() >= 4 && s.startsWith("#") && s.indexOf(':') != -1) {
-				return TagIngredient.ofTag(s.substring(1)).toJson();
+				return IngredientPlatformHelper.get().tag(s.substring(1)).toJson();
 			}
 			return o;
 		} else if (o instanceof Map<?, ?> m) {

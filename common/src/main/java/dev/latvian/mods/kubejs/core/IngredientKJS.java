@@ -2,10 +2,8 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ItemStackSet;
-import dev.latvian.mods.kubejs.item.ingredient.AndIngredient;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
-import dev.latvian.mods.kubejs.item.ingredient.NotIngredient;
-import dev.latvian.mods.kubejs.item.ingredient.OrIngredient;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -71,30 +69,34 @@ public interface IngredientKJS {
 	}
 
 	default Ingredient kjs$and(Ingredient ingredient) {
-		return ingredient == Ingredient.EMPTY ? kjs$self() : this == Ingredient.EMPTY ? ingredient : new AndIngredient(new Ingredient[]{kjs$self(), ingredient});
+		return ingredient == Ingredient.EMPTY ? kjs$self() : this == Ingredient.EMPTY ? ingredient : IngredientPlatformHelper.get().and(new Ingredient[]{kjs$self(), ingredient});
 	}
 
 	default Ingredient kjs$or(Ingredient ingredient) {
-		return ingredient == Ingredient.EMPTY ? kjs$self() : this == Ingredient.EMPTY ? ingredient : new OrIngredient(new Ingredient[]{kjs$self(), ingredient});
+		return ingredient == Ingredient.EMPTY ? kjs$self() : this == Ingredient.EMPTY ? ingredient : IngredientPlatformHelper.get().or(new Ingredient[]{kjs$self(), ingredient});
 	}
 
 	default Ingredient kjs$not() {
-		return new NotIngredient(kjs$self());
+		return IngredientPlatformHelper.get().not(kjs$self());
 	}
 
 	default IngredientStack kjs$asStack() {
-		return new IngredientStack(kjs$self(), 1);
+		return IngredientPlatformHelper.get().stack(kjs$self(), 1);
 	}
 
-	default Ingredient kjs$withCount(int count) {
-		return new IngredientStack(kjs$self(), count);
+	default IngredientStack kjs$withCount(int count) {
+		return IngredientPlatformHelper.get().stack(kjs$self(), count);
 	}
 
 	default boolean kjs$isInvalidRecipeIngredient() {
-		return false;
+		return kjs$self().isEmpty();
 	}
 
 	default List<Ingredient> kjs$unwrapStackIngredient() {
 		return List.of(kjs$self());
+	}
+
+	default boolean kjs$isWildcard() {
+		return false;
 	}
 }

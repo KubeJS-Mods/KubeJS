@@ -135,8 +135,8 @@ public class TRRecipeJS extends RecipeJS {
 
 	@Override
 	public JsonElement serializeIngredientStack(IngredientStack in) {
-		var o = in.ingredient.toJson().getAsJsonObject();
-		o.addProperty("count", in.count);
+		var o = in.getIngredient().toJson().getAsJsonObject();
+		o.addProperty("count", in.getCount());
 		return o;
 	}
 }

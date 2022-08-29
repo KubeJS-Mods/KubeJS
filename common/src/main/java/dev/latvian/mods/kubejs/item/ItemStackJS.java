@@ -4,10 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
-import dev.latvian.mods.kubejs.item.ingredient.CreativeTabIngredient;
-import dev.latvian.mods.kubejs.item.ingredient.ModIngredient;
-import dev.latvian.mods.kubejs.item.ingredient.RegExIngredient;
-import dev.latvian.mods.kubejs.item.ingredient.TagIngredient;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -75,7 +72,7 @@ public class ItemStackJS {
 			var reg = UtilsJS.parseRegex(o);
 
 			if (reg != null) {
-				return new RegExIngredient(reg).kjs$getFirst();
+				return IngredientPlatformHelper.get().regex(reg).kjs$getFirst();
 			}
 
 			return EMPTY;
@@ -94,9 +91,9 @@ public class ItemStackJS {
 			}
 
 			if (s.startsWith("#")) {
-				return TagIngredient.ofTag(s.substring(1)).kjs$getFirst().kjs$withCount(count);
+				return IngredientPlatformHelper.get().tag(s.substring(1)).kjs$getFirst().kjs$withCount(count);
 			} else if (s.startsWith("@")) {
-				return ModIngredient.ofMod(s.substring(1)).kjs$getFirst().kjs$withCount(count);
+				return IngredientPlatformHelper.get().mod(s.substring(1)).kjs$getFirst().kjs$withCount(count);
 			} else if (s.startsWith("%")) {
 				var group = findCreativeTab(s.substring(1));
 
@@ -108,13 +105,13 @@ public class ItemStackJS {
 					return EMPTY;
 				}
 
-				return new CreativeTabIngredient(group).kjs$getFirst().kjs$withCount(count);
+				return IngredientPlatformHelper.get().creativeTab(group).kjs$getFirst().kjs$withCount(count);
 			}
 
 			var reg = UtilsJS.parseRegex(s);
 
 			if (reg != null) {
-				return new RegExIngredient(reg).kjs$getFirst().kjs$withCount(count);
+				return IngredientPlatformHelper.get().regex(reg).kjs$getFirst().kjs$withCount(count);
 			}
 
 			var item = KubeJSRegistries.items().get(new ResourceLocation(s));
@@ -157,7 +154,7 @@ public class ItemStackJS {
 
 				return stack;
 			} else if (map.get("tag") instanceof CharSequence s) {
-				var stack = TagIngredient.ofTag(s.toString()).kjs$getFirst();
+				var stack = IngredientPlatformHelper.get().tag(s.toString()).kjs$getFirst();
 
 				if (map.containsKey("count")) {
 					stack.setCount(UtilsJS.parseInt(map.get("count"), 1));
@@ -206,7 +203,7 @@ public class ItemStackJS {
 			if (jsonObj.has("item")) {
 				stack = of(jsonObj.get("item").getAsString());
 			} else if (jsonObj.has("tag")) {
-				stack = TagIngredient.ofTag(jsonObj.get("tag").getAsString()).kjs$getFirst();
+				stack = IngredientPlatformHelper.get().tag(jsonObj.get("tag").getAsString()).kjs$getFirst();
 			}
 
 			if (stack != null) {

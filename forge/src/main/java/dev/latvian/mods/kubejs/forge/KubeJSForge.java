@@ -7,13 +7,10 @@ import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.entity.forge.LivingEntityDropsEventJS;
 import dev.latvian.mods.kubejs.item.forge.ItemDestroyedEventJS;
-import dev.latvian.mods.kubejs.item.ingredient.forge.CustomPredicateIngredient;
-import dev.latvian.mods.kubejs.item.ingredient.forge.IgnoreNBTIngredient;
-import net.minecraft.resources.ResourceLocation;
+import dev.latvian.mods.kubejs.platform.ingredient.IngredientPlatformHelperImpl;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.fml.IExtensionPoint;
@@ -39,8 +36,7 @@ public class KubeJSForge {
 
 		if (!CommonProperties.get().serverOnly) {
 			ForgeMod.enableMilkFluid();
-			CraftingHelper.register(new ResourceLocation("kubejs:custom_predicate"), CustomPredicateIngredient.SERIALIZER);
-			CraftingHelper.register(new ResourceLocation("kubejs:ignore_nbt"), IgnoreNBTIngredient.SERIALIZER);
+			IngredientPlatformHelperImpl.register();
 		}
 
 	}

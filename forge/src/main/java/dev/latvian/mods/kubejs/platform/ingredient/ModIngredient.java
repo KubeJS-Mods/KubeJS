@@ -1,17 +1,20 @@
-package dev.latvian.mods.kubejs.item.ingredient;
+package dev.latvian.mods.kubejs.platform.ingredient;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.core.ItemStackKJS;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.common.crafting.IIngredientSerializer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
-public class ModIngredient extends Ingredient {
+public class ModIngredient extends KubeJSIngredient {
+	public static final KubeJSIngredientSerializer<ModIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(ModIngredient::ofModFromJson, ModIngredient::ofModFromNetwork);
+
 	private static final Map<String, ModIngredient> CACHE = new HashMap<>();
 
 	public static ModIngredient ofMod(String mod) {
@@ -29,13 +32,17 @@ public class ModIngredient extends Ingredient {
 	public final String mod;
 
 	private ModIngredient(String mod) {
-		super(Stream.empty());
 		this.mod = mod;
 	}
 
 	@Override
 	public boolean test(@Nullable ItemStack stack) {
-		return stack != null && stack.kjs$getMod().equals(mod);
+		return stack != null && ((ItemStackKJS) (Object) stack).kjs$getMod().equals(mod);
+	}
+
+	@Override
+	public IIngredientSerializer<? extends Ingredient> getSerializer() {
+		return SERIALIZER;
 	}
 
 	@Override
@@ -44,5 +51,10 @@ public class ModIngredient extends Ingredient {
 		json.addProperty("type", "kubejs:mod");
 		json.addProperty("mod", mod);
 		return json;
+	}
+
+	@Override
+	public void write(FriendlyByteBuf buf) {
+		buf.writeUtf(mod);
 	}
 }

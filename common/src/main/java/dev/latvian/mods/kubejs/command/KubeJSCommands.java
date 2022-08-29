@@ -12,9 +12,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.item.ingredient.CreativeTabIngredient;
-import dev.latvian.mods.kubejs.item.ingredient.ModIngredient;
-import dev.latvian.mods.kubejs.item.ingredient.TagIngredient;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
@@ -238,15 +236,15 @@ public class KubeJSCommands {
 		tags.sort(null);
 
 		for (var id : tags) {
-			player.sendSystemMessage(copy("'#" + id + "'", ChatFormatting.YELLOW, "Item Tag [" + TagIngredient.ofTag(id.toString()).kjs$getStacks().size() + " items]"));
+			player.sendSystemMessage(copy("'#" + id + "'", ChatFormatting.YELLOW, "Item Tag [" + IngredientPlatformHelper.get().tag(id.toString()).kjs$getStacks().size() + " items]"));
 		}
 
-		player.sendSystemMessage(copy("'@" + stack.kjs$getMod() + "'", ChatFormatting.AQUA, "Mod [" + ModIngredient.ofMod(stack.kjs$getMod()).kjs$getStacks().size() + " items]"));
+		player.sendSystemMessage(copy("'@" + stack.kjs$getMod() + "'", ChatFormatting.AQUA, "Mod [" + IngredientPlatformHelper.get().mod(stack.kjs$getMod()).kjs$getStacks().size() + " items]"));
 
 		var cat = stack.getItem().getItemCategory();
 
 		if (cat != null) {
-			player.sendSystemMessage(copy("'%" + cat.getRecipeFolderName() + "'", ChatFormatting.LIGHT_PURPLE, "Item Group [" + new CreativeTabIngredient(cat).kjs$getStacks().size() + " items]"));
+			player.sendSystemMessage(copy("'%" + cat.getRecipeFolderName() + "'", ChatFormatting.LIGHT_PURPLE, "Item Group [" + IngredientPlatformHelper.get().creativeTab(cat).kjs$getStacks().size() + " items]"));
 		}
 
 		return 1;

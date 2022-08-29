@@ -2,8 +2,6 @@ package dev.latvian.mods.kubejs.integration.rei;
 
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.entry.type.EntryType;
@@ -21,14 +19,6 @@ import java.util.Objects;
  * @author shedaniel
  */
 public class InformationREIEventJS extends EventJS {
-
-	@Deprecated(forRemoval = true)
-	public void add(Object stacks, Component title, Component[] description) {
-		ConsoleJS.CLIENT.warn("add(stack, title, desc) is deprecated and will be removed in the future.");
-		ConsoleJS.CLIENT.warn("To add a description to items or fluids, use addItem(…) or addFluid(…) respectively, or add(type, stacks, title, desc) for other entry types.");
-		addItem(IngredientJS.of(stacks), title, description);
-	}
-
 	public void addItem(Ingredient stacks, Component title, Component[] description) {
 		add(VanillaEntryTypes.ITEM, stacks, title, description);
 	}

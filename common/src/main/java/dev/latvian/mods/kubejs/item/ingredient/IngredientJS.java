@@ -42,7 +42,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			var reg = UtilsJS.parseRegex(o);
 
 			if (reg != null) {
-				return new RegExIngredient(reg);
+				return IngredientPlatformHelper.get().regex(reg);
 			}
 
 			return Ingredient.EMPTY;
@@ -63,13 +63,13 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			}
 
 			if (s.equals("*")) {
-				return WildcardIngredient.INSTANCE;
+				return IngredientPlatformHelper.get().wildcard();
 			} else if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
 				return Ingredient.EMPTY;
 			} else if (s.startsWith("#")) {
-				return TagIngredient.ofTag(s.substring(1));
+				return IngredientPlatformHelper.get().tag(s.substring(1));
 			} else if (s.startsWith("@")) {
-				return ModIngredient.ofMod(s.substring(1));
+				return IngredientPlatformHelper.get().mod(s.substring(1));
 			} else if (s.startsWith("%")) {
 				var group = ItemStackJS.findCreativeTab(s.substring(1));
 
@@ -81,13 +81,13 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 					return Ingredient.EMPTY;
 				}
 
-				return new CreativeTabIngredient(group);
+				return IngredientPlatformHelper.get().creativeTab(group);
 			}
 
 			var reg = UtilsJS.parseRegex(s);
 
 			if (reg != null) {
-				return new RegExIngredient(reg);
+				return IngredientPlatformHelper.get().regex(reg);
 			}
 
 			var item = KubeJSRegistries.items().get(new ResourceLocation(s));
@@ -112,7 +112,13 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 				}
 			}
 
-			return OrIngredient.ofList(inList);
+			if (inList.isEmpty()) {
+				return Ingredient.EMPTY;
+			} else if (inList.size() == 1) {
+				return inList.get(0);
+			} else {
+				return IngredientPlatformHelper.get().or(inList.toArray(IngredientPlatformHelper.EMPTY_ARRAY));
+			}
 		}
 
 		var map = MapJS.of(o);
@@ -140,7 +146,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			} else if (val || map.containsKey("ingredient")) {
 				in = of(val ? map.get("value") : map.get("ingredient"));
 			} else if (map.containsKey("tag")) {
-				in = TagIngredient.ofTag(map.get("tag").toString());
+				in = IngredientPlatformHelper.get().tag(map.get("tag").toString());
 			} else if (map.containsKey("item")) {
 				in = ItemStackJS.of(map).getItem().kjs$getTypeIngredient();
 			}
@@ -163,8 +169,13 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 				}
 			}
 
-			return OrIngredient.ofList(inList);
-
+			if (inList.isEmpty()) {
+				return Ingredient.EMPTY;
+			} else if (inList.size() == 1) {
+				return inList.get(0);
+			} else {
+				return IngredientPlatformHelper.get().or(inList.toArray(IngredientPlatformHelper.EMPTY_ARRAY));
+			}
 		} else if (json.isJsonPrimitive()) {
 			return of(json.getAsString());
 		} else if (json.isJsonObject()) {
@@ -181,7 +192,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 			} else if (val || o.has("ingredient")) {
 				in = ingredientFromRecipeJson(val ? o.get("value") : o.get("ingredient"));
 			} else if (o.has("tag")) {
-				in = TagIngredient.ofTag(o.get("tag").getAsString());
+				in = IngredientPlatformHelper.get().tag(o.get("tag").getAsString());
 			} else if (o.has("item")) {
 				in = ItemStackJS.of(o.get("item").getAsString()).getItem().kjs$getTypeIngredient();
 			}

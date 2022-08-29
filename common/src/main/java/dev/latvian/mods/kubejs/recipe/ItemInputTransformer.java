@@ -7,7 +7,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 public interface ItemInputTransformer {
 	ItemInputTransformer DEFAULT = (recipe, match, original, with) -> {
 		if (original instanceof IngredientStack stack) {
-			return with.kjs$withCount(stack.count);
+			return (Ingredient) with.kjs$withCount(stack.getCount());
 		}
 
 		return with;

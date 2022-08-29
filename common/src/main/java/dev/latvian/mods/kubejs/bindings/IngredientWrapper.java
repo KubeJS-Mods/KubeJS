@@ -1,9 +1,8 @@
 package dev.latvian.mods.kubejs.bindings;
 
-import dev.latvian.mods.kubejs.item.ingredient.CustomIngredient;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
-import dev.latvian.mods.kubejs.item.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientActionCallback;
@@ -20,32 +19,32 @@ import java.util.function.Predicate;
  */
 public interface IngredientWrapper {
 	Ingredient none = Ingredient.EMPTY;
-	Ingredient all = WildcardIngredient.INSTANCE;
+	Ingredient all = IngredientPlatformHelper.get().wildcard();
 
-	static Ingredient of(Object object) {
-		return IngredientJS.of(object);
+	static Ingredient of(Ingredient ingredient) {
+		return ingredient;
 	}
 
-	static Ingredient custom(Ingredient in, Predicate<ItemStack> predicate) {
+	static IngredientStack of(Ingredient ingredient, int count) {
+		return ingredient.kjs$withCount(Math.max(1, count));
+	}
+
+	static Ingredient custom(Ingredient parent, Predicate<ItemStack> predicate) {
 		if (RecipesEventJS.customIngredientMap != null) {
-			var ingredient = new IngredientWithCustomPredicate(UUID.randomUUID(), in, predicate);
+			var ingredient = new IngredientWithCustomPredicate(parent, UUID.randomUUID(), predicate);
 			RecipesEventJS.customIngredientMap.put(ingredient.uuid, ingredient);
-			return ingredient;
+			return IngredientPlatformHelper.get().custom(parent, ingredient.uuid);
 		}
 
-		return new IngredientWithCustomPredicate(null, in, predicate);
+		return IngredientPlatformHelper.get().custom(parent, predicate);
+	}
+
+	static Ingredient custom(Predicate<ItemStack> predicate) {
+		return custom(all, predicate);
 	}
 
 	static Ingredient customNBT(Ingredient in, Predicate<CompoundTag> predicate) {
 		return custom(in, is -> is.hasTag() && predicate.test(is.getTag()));
-	}
-
-	static Ingredient of(Object object, int count) {
-		return of(object).kjs$withCount(Math.max(1, count));
-	}
-
-	static Ingredient custom(Predicate<ItemStack> predicate) {
-		return new CustomIngredient(predicate);
 	}
 
 	static void registerCustomIngredientAction(String id, CustomIngredientActionCallback callback) {
@@ -53,6 +52,6 @@ public interface IngredientWrapper {
 	}
 
 	static boolean isIngredient(@Nullable Object o) {
-		return o instanceof IngredientJS;
+		return o instanceof Ingredient;
 	}
 }

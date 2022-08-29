@@ -3,6 +3,7 @@
 	"package": "dev.latvian.mods.kubejs.mixin.forge",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
+		"CompoundIngredientMixin",
 		"RecipeManagerAccessor"
 	],
 	"client": [

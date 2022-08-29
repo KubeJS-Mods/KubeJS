@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackKey;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -207,7 +208,7 @@ public abstract class ItemMixin implements ItemKJS {
 	@Override
 	public Ingredient kjs$getTypeIngredient() {
 		if (kjs$typeIngredient == null) {
-			kjs$typeIngredient = Ingredient.of(kjs$self().getDefaultInstance());
+			kjs$typeIngredient = IngredientPlatformHelper.get().ignoreNBT(kjs$self());
 		}
 
 		return kjs$typeIngredient;

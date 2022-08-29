@@ -9,7 +9,7 @@ import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
-import dev.latvian.mods.kubejs.item.ingredient.TagIngredient;
+import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
@@ -125,15 +125,15 @@ public class RecipesEventJS extends EventJS {
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap) {
 		RecipeJS.itemErrors = false;
 
-		TagIngredient.context = KubeJSReloadListener.resources.tagManager.getResult()
+		TagContext.INSTANCE.setValue(KubeJSReloadListener.resources.tagManager.getResult()
 				.stream()
 				.filter(result -> result.key() == Registry.ITEM_REGISTRY)
 				.findFirst()
-				.map(result -> TagIngredient.Context.usingResult(UtilsJS.cast(result)))
+				.map(result -> TagContext.usingResult(UtilsJS.cast(result)))
 				.orElseGet(() -> {
 					ConsoleJS.SERVER.warn("Failed to load item tags during recipe event! Using replaceInput etc. will not work!");
-					return TagIngredient.Context.EMPTY;
-				});
+					return TagContext.EMPTY;
+				}));
 
 		ConsoleJS.SERVER.pushLineNumber();
 		var timer = Stopwatch.createStarted();

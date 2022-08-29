@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.item.ingredient;
+package dev.latvian.mods.kubejs.platform.ingredient;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -7,15 +7,15 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.common.crafting.IIngredientSerializer;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.stream.Stream;
+public class CreativeTabIngredient extends KubeJSIngredient {
+	public static final KubeJSIngredientSerializer<CreativeTabIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(CreativeTabIngredient::new, CreativeTabIngredient::new);
 
-public class CreativeTabIngredient extends Ingredient {
 	public final CreativeModeTab tab;
 
 	public CreativeTabIngredient(CreativeModeTab tab) {
-		super(Stream.empty());
 		this.tab = tab;
 	}
 
@@ -29,14 +29,24 @@ public class CreativeTabIngredient extends Ingredient {
 
 	@Override
 	public boolean test(@Nullable ItemStack stack) {
-		return stack != null && stack.kjs$getCreativeTab().equals(tab.getRecipeFolderName());
+		return stack != null && stack.getItem().getItemCategory() == tab;
+	}
+
+	@Override
+	public IIngredientSerializer<? extends Ingredient> getSerializer() {
+		return SERIALIZER;
 	}
 
 	@Override
 	public JsonElement toJson() {
 		JsonObject json = new JsonObject();
-		json.addProperty("type", "kubejs:tab");
+		json.addProperty("type", "kubejs:creative_tab");
 		json.addProperty("tab", tab.getRecipeFolderName());
 		return json;
+	}
+
+	@Override
+	public void write(FriendlyByteBuf buf) {
+		buf.writeUtf(tab.getRecipeFolderName());
 	}
 }

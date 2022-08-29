@@ -2,13 +2,13 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.bindings.ComponentWrapper;
 import dev.latvian.mods.kubejs.event.EventJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,8 +75,8 @@ public class ItemTooltipEventJS extends EventJS {
 		map = m;
 	}
 
-	public void add(Object item, Object text) {
-		if ("*".equals(item)) {
+	public void add(Ingredient item, Object text) {
+		if (item.kjs$isWildcard()) {
 			addToAll(text);
 			return;
 		}
@@ -84,7 +84,7 @@ public class ItemTooltipEventJS extends EventJS {
 		var l = new StaticTooltipHandlerFromLines(text);
 
 		if (!l.lines.isEmpty()) {
-			for (var i : IngredientJS.of(item).kjs$getItemTypes()) {
+			for (var i : item.kjs$getItemTypes()) {
 				if (i != Items.AIR) {
 					map.computeIfAbsent(i, k -> new ArrayList<>()).add(l);
 				}
@@ -100,15 +100,15 @@ public class ItemTooltipEventJS extends EventJS {
 		}
 	}
 
-	public void addAdvanced(Object item, StaticTooltipHandlerFromJS handler) {
-		if ("*".equals(item)) {
+	public void addAdvanced(Ingredient item, StaticTooltipHandlerFromJS handler) {
+		if (item.kjs$isWildcard()) {
 			addAdvancedToAll(handler);
 			return;
 		}
 
 		var l = new StaticTooltipHandlerFromJSWrapper(handler);
 
-		for (var i : IngredientJS.of(item).kjs$getItemTypes()) {
+		for (var i : item.kjs$getItemTypes()) {
 			if (i != Items.AIR) {
 				map.computeIfAbsent(i, k -> new ArrayList<>()).add(l);
 			}

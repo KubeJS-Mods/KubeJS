@@ -100,9 +100,6 @@ public class UtilsJS {
 		void run() throws IOException;
 	}
 
-	public static void init() {
-	}
-
 	public static void tryIO(TryIO tryIO) {
 		try {
 			tryIO.run();

@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.core;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.item.ingredient.WeakNBTIngredient;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -185,7 +185,11 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable {
 	}
 
 	default Ingredient kjs$weakNBT() {
-		return new WeakNBTIngredient(kjs$self());
+		return IngredientPlatformHelper.get().weakNBT(kjs$self());
+	}
+
+	default Ingredient kjs$strongNBT() {
+		return IngredientPlatformHelper.get().strongNBT(kjs$self());
 	}
 
 	default boolean kjs$areItemsEqual(ItemStack other) {

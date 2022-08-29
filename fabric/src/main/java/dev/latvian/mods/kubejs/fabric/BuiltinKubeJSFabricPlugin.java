@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.fabric;
 
 import dev.latvian.mods.kubejs.BuiltinKubeJSPlugin;
+import dev.latvian.mods.kubejs.platform.ingredient.IngredientPlatformHelperImpl;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 
@@ -16,5 +17,10 @@ public class BuiltinKubeJSFabricPlugin extends BuiltinKubeJSPlugin {
 		filter.deny("net.fabricmc.tinyremapper");
 
 		filter.deny("com.chocohead.mm"); // Manningham Mills
+	}
+
+	@Override
+	public void afterInit() {
+		IngredientPlatformHelperImpl.register();
 	}
 }

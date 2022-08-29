@@ -153,7 +153,7 @@ public class ScriptManager {
 				SharedContextData contextData = SharedContextData.get(pack.scope);
 				contextData.setExtraProperty("Type", type);
 				contextData.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || isClassAllowed(fullClassName));
-				contextData.setRemapper(RemappingHelper.createModRemapper());
+				contextData.setRemapper(RemappingHelper.getMinecraftRemapper());
 				var typeWrappers = contextData.getTypeWrappers();
 				// typeWrappers.removeAll();
 				KubeJSPlugins.forEachPlugin(plugin -> plugin.registerTypeWrappers(type, typeWrappers));
