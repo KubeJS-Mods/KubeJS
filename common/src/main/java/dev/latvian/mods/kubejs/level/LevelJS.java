@@ -17,6 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,6 +26,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -190,6 +192,22 @@ public abstract class LevelJS implements WithAttachedData {
 
 	public EntityArrayList getEntitiesWithin(AABB aabb) {
 		return new EntityArrayList(this, minecraftLevel.getEntities(null, aabb));
+	}
+
+	public WorldBorder getWorldBorder() {
+		return minecraftLevel.getWorldBorder();
+	}
+
+	public Difficulty getDifficulty() {
+		return minecraftLevel.getDifficulty();
+	}
+
+	public float getMoonBrightness() {
+		return minecraftLevel.getMoonBrightness();
+	}
+
+	public int getMoonPhase() {
+		return minecraftLevel.getMoonPhase();
 	}
 
 	@ApiStatus.OverrideOnly

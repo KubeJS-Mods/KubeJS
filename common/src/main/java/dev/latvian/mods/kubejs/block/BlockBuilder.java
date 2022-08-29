@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.latvian.mods.kubejs.BuilderBase;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
@@ -22,6 +23,8 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -29,8 +32,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -53,6 +58,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient List<AABB> customShape;
 	public transient boolean noCollision;
 	public transient boolean notSolid;
+	@Deprecated
 	public transient boolean waterlogged;
 	public transient float slipperiness = 0.6F;
 	public transient float speedFactor = 1.0F;
@@ -66,6 +72,9 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient boolean viewBlocking;
 	public transient boolean redstoneConductor;
 	public transient boolean transparent;
+	public transient Set<Property<?>> blockStateProperties;
+	public transient Consumer<BlockStateModifyCallbackJS> defaultStateModification;
+	public transient Consumer<BlockStateModifyPlacementCallbackJS> placementStateModification;
 
 	public BlockBuilder(ResourceLocation i) {
 		super(i);
@@ -102,6 +111,9 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		viewBlocking = true;
 		redstoneConductor = true;
 		transparent = false;
+		blockStateProperties = new HashSet<>();
+		defaultStateModification = null;
+		placementStateModification = null;
 	}
 
 	@Override
@@ -427,8 +439,10 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
+	@Deprecated
 	public BlockBuilder waterlogged() {
-		waterlogged = true;
+		property(BlockStateProperties.WATERLOGGED);
+		KubeJS.startupScriptManager.type.console.warn("Use of deprecated method \"BlockBuilder.waterlogged\". Please use \"BlockBuilder.property(BlockProperties.WATERLOGGED)\" moving forward.");
 		return this;
 	}
 
@@ -513,6 +527,27 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	public BlockBuilder tagItem(ResourceLocation tag) {
 		itemBuilder.defaultTags.add(tag);
+		return this;
+	}
+
+	public BlockBuilder defaultState(Consumer<BlockStateModifyCallbackJS> callbackJS) {
+		defaultStateModification = callbackJS;
+		return this;
+	}
+
+	public BlockBuilder placementState(Consumer<BlockStateModifyPlacementCallbackJS> callbackJS) {
+		placementStateModification = callbackJS;
+		return this;
+	}
+
+	public BlockBuilder property(Property<?> property) {
+		if(property.getPossibleValues().size() <= 1) {
+			throw new IllegalArgumentException(String.format("Block \"%s\" has an illegal Blockstate Property \"%s\" which has <= 1 possible values. (%d possible values)", id, property.getName(), property.getPossibleValues().size()));
+		}
+		if(property == BlockStateProperties.WATERLOGGED){
+			waterlogged = true;
+		}
+		blockStateProperties.add(property);
 		return this;
 	}
 
