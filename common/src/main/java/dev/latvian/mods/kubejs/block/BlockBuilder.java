@@ -442,7 +442,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	@Deprecated
 	public BlockBuilder waterlogged() {
 		property(BlockStateProperties.WATERLOGGED);
-		KubeJS.startupScriptManager.type.console.warn("Use of deprecated method \"BlockBuilder.waterlogged\". Please use \"BlockBuilder.property(Property.WATERLOGGED)\" moving forward.");
+		KubeJS.startupScriptManager.type.console.warn("Use of deprecated method \"BlockBuilder.waterlogged\". Please use \"BlockBuilder.property(BlockProperties.WATERLOGGED)\" moving forward.");
 		return this;
 	}
 
