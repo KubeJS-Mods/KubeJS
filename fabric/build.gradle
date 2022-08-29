@@ -26,6 +26,15 @@ sourceSets {
 	}
 }
 
+repositories {
+	maven {
+		url "https://www.cursemaven.com"
+		content {
+			includeGroup "curse.maven"
+		}
+	}
+}
+
 dependencies {
 	modApi("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
 	modApi("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
@@ -33,6 +42,7 @@ dependencies {
 	modApi("dev.architectury:architectury-fabric:${rootProject.architectury_version}")
 
 	modApi("dev.latvian.mods:rhino-fabric:${rootProject.rhino_version}")
+	modApi("curse.maven:ingredient-extension-api-557735:${rootProject.ingredient_extension_file}")
 
 	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${rootProject.rei_version}")
 	modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${rootProject.rei_version}")
@@ -90,6 +100,10 @@ unifiedPublishing {
 			}
 			depends {
 				curseforge = modrinth = "fabric-api"
+			}
+			depends {
+				curseforge = "ingredient-extension-api"
+				// no modrinth version for this dependency
 			}
 		}
 

@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.platform.ingredient;
 
+import com.faux.ingredientextension.api.ingredient.serializer.IIngredientSerializer;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;

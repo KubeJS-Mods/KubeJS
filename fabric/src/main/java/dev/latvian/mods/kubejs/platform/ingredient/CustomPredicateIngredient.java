@@ -1,13 +1,12 @@
 package dev.latvian.mods.kubejs.platform.ingredient;
 
+import com.faux.ingredientextension.api.ingredient.serializer.IIngredientSerializer;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +26,7 @@ public class CustomPredicateIngredient extends KubeJSIngredient {
 	}
 
 	private CustomPredicateIngredient(JsonObject json) {
-		parent = CraftingHelper.getIngredient(json.get("parent"));
+		parent = Ingredient.fromJson(json.get("parent"));
 		uuid = UUID.fromString(json.get("uuid").getAsString());
 		isServer = false;
 	}

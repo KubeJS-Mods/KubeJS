@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.platform.ingredient;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.core.ItemStackKJS;
 import dev.latvian.mods.kubejs.item.ItemStackSet;
@@ -67,11 +66,8 @@ public class StrongNBTIngredient extends KubeJSIngredient {
 	}
 
 	@Override
-	public JsonElement toJson() {
-		JsonObject json = new JsonObject();
-		json.addProperty("type", "kubejs:weak_nbt");
+	public void toJson(JsonObject json) {
 		json.add("item", ((ItemStackKJS) (Object) item).kjs$toJson());
-		return json;
 	}
 
 	@Override

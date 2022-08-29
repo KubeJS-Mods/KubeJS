@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.platform.ingredient;
 
+import com.faux.ingredientextension.api.ingredient.serializer.IIngredientSerializer;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.core.ItemStackKJS;
 import dev.latvian.mods.kubejs.item.ItemStackSet;
@@ -8,26 +9,25 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Set;
 
-public class WeakNBTIngredient extends KubeJSIngredient {
-	public static final KubeJSIngredientSerializer<WeakNBTIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(WeakNBTIngredient::new, WeakNBTIngredient::new);
+public class StrongNBTIngredient extends KubeJSIngredient {
+	public static final KubeJSIngredientSerializer<StrongNBTIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(StrongNBTIngredient::new, StrongNBTIngredient::new);
 
 	private final ItemStack item;
 
-	public WeakNBTIngredient(ItemStack item) {
+	public StrongNBTIngredient(ItemStack item) {
 		this.item = item;
 	}
 
-	public WeakNBTIngredient(FriendlyByteBuf buf) {
+	public StrongNBTIngredient(FriendlyByteBuf buf) {
 		this(buf.readItem());
 	}
 
-	public WeakNBTIngredient(JsonObject json) {
+	public StrongNBTIngredient(JsonObject json) {
 		this(ShapedRecipe.itemStackFromJson(json.get("item").getAsJsonObject()));
 	}
 
