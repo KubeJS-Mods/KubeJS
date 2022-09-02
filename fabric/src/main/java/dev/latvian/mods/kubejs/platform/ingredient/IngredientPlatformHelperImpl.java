@@ -45,7 +45,7 @@ public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 
 	@Override
 	public Ingredient custom(Ingredient parent, Predicate<ItemStack> predicate) {
-		return new CustomIngredient(predicate);
+		return new CustomIngredient(parent, predicate);
 	}
 
 	@Override

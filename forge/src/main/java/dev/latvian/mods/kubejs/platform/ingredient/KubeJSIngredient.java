@@ -38,6 +38,11 @@ public abstract class KubeJSIngredient extends AbstractIngredient implements Ing
 	}
 
 	@Override
+	public boolean isEmpty() {
+		return false;
+	}
+
+	@Override
 	public final JsonObject toJson() {
 		JsonObject json = new JsonObject();
 		json.addProperty("type", CraftingHelper.getID(getSerializer()).toString());

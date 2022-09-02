@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.platform.ingredient;
 
 import com.faux.ingredientextension.api.ingredient.serializer.IIngredientSerializer;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.FriendlyByteBuf;
@@ -26,7 +27,7 @@ public class CustomPredicateIngredient extends KubeJSIngredient {
 	}
 
 	private CustomPredicateIngredient(JsonObject json) {
-		parent = Ingredient.fromJson(json.get("parent"));
+		parent = IngredientJS.ofJson(json.get("parent"));
 		uuid = UUID.fromString(json.get("uuid").getAsString());
 		isServer = false;
 	}
@@ -56,11 +57,6 @@ public class CustomPredicateIngredient extends KubeJSIngredient {
 		}
 
 		return false;
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return parent.isEmpty();
 	}
 
 	@Override

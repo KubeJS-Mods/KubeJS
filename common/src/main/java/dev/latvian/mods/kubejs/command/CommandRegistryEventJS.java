@@ -16,11 +16,13 @@ import net.minecraft.core.RegistryAccess;
  */
 public class CommandRegistryEventJS extends EventJS {
 	public final CommandDispatcher<CommandSourceStack> dispatcher;
+	public final CommandBuildContext registry;
 	public final Commands.CommandSelection selection;
 	public final CommandBuildContext context;
 
-	public CommandRegistryEventJS(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection selection) {
+	public CommandRegistryEventJS(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registry, Commands.CommandSelection selection) {
 		this.dispatcher = dispatcher;
+		this.registry = registry;
 		this.selection = selection;
 		// TODO: swap this with context from the event when forge fixes their stuff
 		this.context = new CommandBuildContext(RegistryAccess.BUILTIN.get());

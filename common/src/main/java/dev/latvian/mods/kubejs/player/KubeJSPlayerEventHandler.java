@@ -16,7 +16,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.InventoryMenu;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author LatvianModder
@@ -28,7 +27,8 @@ public class KubeJSPlayerEventHandler {
 		PlayerEvent.PLAYER_RESPAWN.register(KubeJSPlayerEventHandler::respawn);
 		PlayerEvent.PLAYER_CLONE.register(KubeJSPlayerEventHandler::cloned);
 		TickEvent.PLAYER_POST.register(KubeJSPlayerEventHandler::tick);
-		ChatEvent.SERVER.register(KubeJSPlayerEventHandler::chat);
+		ChatEvent.DECORATE.register(KubeJSPlayerEventHandler::chatDecorate);
+		ChatEvent.RECEIVED.register(KubeJSPlayerEventHandler::chatReceived);
 		PlayerEvent.PLAYER_ADVANCEMENT.register(KubeJSPlayerEventHandler::advancement);
 		PlayerEvent.OPEN_MENU.register(KubeJSPlayerEventHandler::inventoryOpened);
 		PlayerEvent.CLOSE_MENU.register(KubeJSPlayerEventHandler::inventoryClosed);
@@ -71,14 +71,13 @@ public class KubeJSPlayerEventHandler {
 		}
 	}
 
-	@NotNull
-	public static EventResult chat(ServerPlayer player, ChatEvent.ChatComponent component) {
-		var event = new PlayerChatEventJS(player, component.getRaw());
-		if (PlayerEvents.CHAT.post(event)) {
-			return EventResult.interruptFalse();
-		}
-		component.setRaw(event.component);
-		return EventResult.pass();
+	public static void chatDecorate(ServerPlayer player, ChatEvent.ChatComponent component) {
+		PlayerEvents.DECORATE_CHAT.post(new PlayerChatDecorateEventJS(player, component));
+	}
+
+	public static EventResult chatReceived(ServerPlayer player, Component component) {
+		var event = new PlayerChatReceivedEventJS(player, component);
+		return PlayerEvents.CHAT.post(event) ? EventResult.interruptFalse() : EventResult.pass();
 	}
 
 	public static void advancement(ServerPlayer player, Advancement advancement) {

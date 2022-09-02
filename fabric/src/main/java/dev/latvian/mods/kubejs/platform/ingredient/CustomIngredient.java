@@ -2,8 +2,10 @@ package dev.latvian.mods.kubejs.platform.ingredient;
 
 import com.faux.ingredientextension.api.ingredient.serializer.IIngredientSerializer;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.function.Predicate;
 
@@ -13,17 +15,21 @@ import java.util.function.Predicate;
 public class CustomIngredient extends KubeJSIngredient {
 	public static final KubeJSIngredientSerializer<CustomIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(CustomIngredient::new, CustomIngredient::new);
 
-	private final Predicate<ItemStack> predicate;
+	public final Ingredient parent;
+	public final Predicate<ItemStack> predicate;
 
-	public CustomIngredient(Predicate<ItemStack> predicate) {
+	public CustomIngredient(Ingredient parent, Predicate<ItemStack> predicate) {
+		this.parent = parent;
 		this.predicate = predicate;
 	}
 
 	private CustomIngredient(JsonObject json) {
+		parent = IngredientJS.ofJson(json.get("parent"));
 		predicate = stack -> true;
 	}
 
 	private CustomIngredient(FriendlyByteBuf buf) {
+		parent = Ingredient.fromNetwork(buf);
 		predicate = stack -> true;
 	}
 

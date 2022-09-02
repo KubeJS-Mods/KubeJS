@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.platform.ingredient;
 
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -21,7 +22,7 @@ public class NotIngredient extends KubeJSIngredient {
 	}
 
 	public NotIngredient(JsonObject json) {
-		this(Ingredient.fromJson(json.get("ingredient")));
+		this(IngredientJS.ofJson(json.get("ingredient")));
 	}
 
 	@Override

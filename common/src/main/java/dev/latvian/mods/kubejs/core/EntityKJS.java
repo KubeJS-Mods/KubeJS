@@ -69,7 +69,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS {
 	@Override
 	default int kjs$runCommand(String command) {
 		if (kjs$self().getLevel() instanceof ServerLevel level) {
-			return level.getServer().getCommands().performCommand(kjs$self().createCommandSourceStack(), command);
+			return level.getServer().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack(), command);
 		}
 
 		return 0;
@@ -78,7 +78,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS {
 	@Override
 	default int kjs$runCommandSilent(String command) {
 		if (kjs$self().getLevel() instanceof ServerLevel level) {
-			return level.getServer().getCommands().performCommand(kjs$self().createCommandSourceStack().withSuppressedOutput(), command);
+			return level.getServer().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack().withSuppressedOutput(), command);
 		}
 
 		return 0;

@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.player.ChestEventJS;
 import dev.latvian.mods.kubejs.player.InventoryChangedEventJS;
 import dev.latvian.mods.kubejs.player.InventoryEventJS;
 import dev.latvian.mods.kubejs.player.PlayerAdvancementEventJS;
-import dev.latvian.mods.kubejs.player.PlayerChatEventJS;
+import dev.latvian.mods.kubejs.player.PlayerChatDecorateEventJS;
 import dev.latvian.mods.kubejs.player.PlayerClonedEventJS;
 import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
 
@@ -16,7 +16,8 @@ public interface PlayerEvents {
 	EventHandler LOGGED_OUT = GROUP.server("loggedOut", () -> SimplePlayerEventJS.class).legacy("player.logged_out");
 	EventHandler CLONED = GROUP.server("cloned", () -> PlayerClonedEventJS.class);
 	EventHandler TICK = GROUP.server("tick", () -> SimplePlayerEventJS.class).legacy("player.tick");
-	EventHandler CHAT = GROUP.server("chat", () -> PlayerChatEventJS.class).cancelable().legacy("player.chat");
+	EventHandler CHAT = GROUP.server("chat", () -> PlayerChatDecorateEventJS.class).cancelable().legacy("player.chat");
+	EventHandler DECORATE_CHAT = GROUP.server("decorateChat", () -> PlayerChatDecorateEventJS.class);
 	EventHandler ADVANCEMENT = GROUP.server("advancement", () -> PlayerAdvancementEventJS.class).supportsNamespacedExtraId().cancelable().legacy("player.advancement");
 	EventHandler INVENTORY_OPENED = GROUP.server("inventoryOpened", () -> InventoryEventJS.class).legacy("player.inventory.opened");
 	EventHandler INVENTORY_CLOSED = GROUP.server("inventoryClosed", () -> InventoryEventJS.class).legacy("player.inventory.closed");

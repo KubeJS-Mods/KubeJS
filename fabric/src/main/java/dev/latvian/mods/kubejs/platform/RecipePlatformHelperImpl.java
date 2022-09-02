@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.platform;
 
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipePlatformHelper;
 import net.fabricmc.loader.api.FabricLoader;
@@ -15,22 +16,27 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class RecipePlatformHelperImpl implements RecipePlatformHelper {
+	@Override
 	public Recipe<?> fromJson(RecipeJS self) throws Throwable {
 		return self.type.serializer.fromJson(self.getOrCreateId(), self.json);
 	}
 
+	@Override
 	public Ingredient getCustomIngredient(JsonObject object) {
-		throw new UnsupportedOperationException("Custom ingredients are not present on Fabric!");
+		return IngredientJS.ofJson(object);
 	}
 
+	@Override
 	public boolean processConditions(RecipeManager recipeManager, JsonObject json, String key) {
 		return true;
 	}
 
+	@Override
 	public void pingNewRecipes(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map) {
 		FabricLoader.getInstance().getEntrypoints("kubejs-set-recipes", Consumer.class).forEach(consumer -> consumer.accept(map));
 	}
 
+	@Override
 	public Object createRecipeContext(ReloadableServerResources resources) {
 		return null;
 	}

@@ -14,6 +14,7 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.RhinoException;
 import net.minecraft.Util;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.nbt.NbtIo;
@@ -60,9 +61,9 @@ public class KubeJSServerEventHandler {
 		}
 	}
 
-	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, Commands.CommandSelection selection) {
+	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registry, Commands.CommandSelection selection) {
 		KubeJSCommands.register(dispatcher);
-		ServerEvents.COMMAND_REGISTRY.post(new CommandRegistryEventJS(dispatcher, selection));
+		ServerEvents.COMMAND_REGISTRY.post(new CommandRegistryEventJS(dispatcher, registry, selection));
 	}
 
 	private static void serverBeforeStarting(MinecraftServer server) {

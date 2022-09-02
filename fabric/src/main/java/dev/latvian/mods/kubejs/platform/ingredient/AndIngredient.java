@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.platform.ingredient;
 import com.faux.ingredientextension.api.ingredient.serializer.IIngredientSerializer;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -30,7 +31,7 @@ public class AndIngredient extends KubeJSIngredient {
 		this.ingredients = new Ingredient[array.size()];
 
 		for (int i = 0; i < ingredients.length; i++) {
-			ingredients[i] = Ingredient.fromJson(array.get(i));
+			ingredients[i] = IngredientJS.ofJson(array.get(i));
 		}
 	}
 

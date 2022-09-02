@@ -14,16 +14,25 @@ import net.minecraft.world.item.RecordItem;
  */
 public class RecordItemJS extends RecordItem {
 	public static class Builder extends ItemBuilder {
-		public transient int analogOutput;
 		public transient ResourceLocation song;
 		public transient SoundEvent songSoundEvent;
+		public transient int length;
+		public transient int analogOutput;
 
 		public Builder(ResourceLocation i) {
 			super(i);
-			analogOutput = 1;
 			song = new ResourceLocation("minecraft:music_disc.11");
+			length = 71;
+			analogOutput = 1;
 			maxStackSize(1);
 			rarity(Rarity.RARE);
+		}
+
+		public Builder song(ResourceLocation s, int seconds) {
+			song = s;
+			length = seconds;
+			songSoundEvent = null;
+			return this;
 		}
 
 		public Builder analogOutput(int o) {
@@ -31,34 +40,38 @@ public class RecordItemJS extends RecordItem {
 			return this;
 		}
 
-		public Builder song(ResourceLocation s) {
-			song = s;
-			return this;
-		}
-
 		@Override
 		public Item createObject() {
 			return new RecordItemJS(this, analogOutput, SoundEvents.ITEM_PICKUP, createItemProperties());
+		}
+
+		public SoundEvent getSoundEvent() {
+			if (songSoundEvent == null) {
+				songSoundEvent = KubeJSRegistries.soundEvents().get(song);
+
+				if (songSoundEvent == null || songSoundEvent == SoundEvents.ITEM_PICKUP) {
+					songSoundEvent = SoundEvents.MUSIC_DISC_11;
+				}
+			}
+
+			return songSoundEvent;
 		}
 	}
 
 	private final Builder builder;
 
 	public RecordItemJS(Builder b, int analogOutput, SoundEvent song, Item.Properties properties) {
-		super(analogOutput, song, properties);
+		super(analogOutput, song, properties, b.length);
 		builder = b;
 	}
 
 	@Override
 	public SoundEvent getSound() {
-		if (builder.songSoundEvent == null) {
-			builder.songSoundEvent = KubeJSRegistries.soundEvents().get(builder.song);
+		return builder.getSoundEvent();
+	}
 
-			if (builder.songSoundEvent == null || builder.songSoundEvent == SoundEvents.ITEM_PICKUP) {
-				builder.songSoundEvent = SoundEvents.MUSIC_DISC_11;
-			}
-		}
-
-		return builder.songSoundEvent;
+	@Override
+	public int getLengthInTicks() {
+		return builder.length * 20;
 	}
 }

@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.platform.ingredient;
 
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
@@ -23,7 +24,7 @@ public class IngredientStackImpl extends KubeJSIngredient implements IngredientS
 	}
 
 	private IngredientStackImpl(JsonObject json) {
-		this.ingredient = Ingredient.fromJson(json.get("ingredient"));
+		this.ingredient = IngredientJS.ofJson(json.get("ingredient"));
 		this.count = json.has("count") ? json.get("count").getAsInt() : 1;
 	}
 

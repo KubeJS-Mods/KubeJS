@@ -25,8 +25,10 @@ public interface IngredientKJS {
 	}
 
 	default void kjs$gatherStacks(ItemStackSet set) {
-		for (ItemStack stack : kjs$self().getItems()) {
-			set.add(stack);
+		if (getClass() == Ingredient.class) {
+			for (ItemStack stack : kjs$self().getItems()) {
+				set.add(stack);
+			}
 		}
 	}
 
@@ -89,7 +91,7 @@ public interface IngredientKJS {
 	}
 
 	default boolean kjs$isInvalidRecipeIngredient() {
-		return kjs$self().isEmpty();
+		return this == Ingredient.EMPTY;
 	}
 
 	default List<Ingredient> kjs$unwrapStackIngredient() {

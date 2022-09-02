@@ -9,12 +9,10 @@ import dev.latvian.mods.kubejs.recipe.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.Wrapper;
-import dev.latvian.mods.rhino.mod.util.Copyable;
-import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -28,7 +26,7 @@ import java.util.regex.Pattern;
 /**
  * @author LatvianModder
  */
-public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
+public interface IngredientJS {
 	static Ingredient of(@Nullable Object o) {
 		while (o instanceof Wrapper w) {
 			o = w.unwrap();
@@ -47,7 +45,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 
 			return Ingredient.EMPTY;
 		} else if (o instanceof JsonElement json) {
-			return ingredientFromRecipeJson(json);
+			return ofJson(json);
 		} else if (o instanceof CharSequence) {
 			var s = o.toString();
 			var count = 1;
@@ -157,12 +155,12 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 		return ItemStackJS.of(o).kjs$asIngredient();
 	}
 
-	static Ingredient ingredientFromRecipeJson(JsonElement json) {
+	static Ingredient ofJson(JsonElement json) {
 		if (json.isJsonArray()) {
 			var inList = new ArrayList<Ingredient>();
 
 			for (var e : json.getAsJsonArray()) {
-				var i = ingredientFromRecipeJson(e);
+				var i = ofJson(e);
 
 				if (i != Ingredient.EMPTY) {
 					inList.add(i);
@@ -190,7 +188,7 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 					throw new RecipeExceptionJS("Failed to parse custom ingredient (" + o.get("type") + ") from " + o + ": " + ex);
 				}
 			} else if (val || o.has("ingredient")) {
-				in = ingredientFromRecipeJson(val ? o.get("value") : o.get("ingredient"));
+				in = ofJson(val ? o.get("value") : o.get("ingredient"));
 			} else if (o.has("tag")) {
 				in = IngredientPlatformHelper.get().tag(o.get("tag").getAsString());
 			} else if (o.has("item")) {
@@ -201,5 +199,9 @@ public interface IngredientJS extends JsonSerializable, WrappedJS, Copyable {
 		}
 
 		return Ingredient.EMPTY;
+	}
+
+	static Ingredient ofNetwork(FriendlyByteBuf buf) {
+		return Ingredient.fromNetwork(buf);
 	}
 }

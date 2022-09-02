@@ -7,11 +7,11 @@ import net.minecraft.server.level.ServerPlayer;
 /**
  * @author LatvianModder
  */
-public class PlayerChatEventJS extends PlayerEventJS {
+public class PlayerChatReceivedEventJS extends PlayerEventJS {
 	private final ServerPlayer player;
-	public Component component;
+	public final Component component;
 
-	public PlayerChatEventJS(ServerPlayer player, Component component) {
+	public PlayerChatReceivedEventJS(ServerPlayer player, Component component) {
 		this.player = player;
 		this.component = component;
 	}
@@ -31,9 +31,5 @@ public class PlayerChatEventJS extends PlayerEventJS {
 
 	public MutableComponent getComponent() {
 		return component.copy();
-	}
-
-	public void setMessage(Component text) {
-		component = text;
 	}
 }
