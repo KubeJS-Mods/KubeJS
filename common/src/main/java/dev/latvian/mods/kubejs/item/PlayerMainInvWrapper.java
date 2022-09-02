@@ -28,17 +28,17 @@ public class PlayerMainInvWrapper extends RangedWrapper {
 	private final Inventory inventoryPlayer;
 
 	public PlayerMainInvWrapper(Inventory inv) {
-		super(new ContainerInventory(inv), 0, inv.items.size());
+		super(inv, 0, inv.items.size());
 		inventoryPlayer = inv;
 	}
 
 	@Override
 	@NotNull
-	public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-		var rest = super.insertItem(slot, stack, simulate);
+	public ItemStack kjs$insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+		var rest = super.kjs$insertItem(slot, stack, simulate);
 		if (rest.getCount() != stack.getCount()) {
 			// the stack in the slot changed, animate it
-			var inSlot = getStackInSlot(slot);
+			var inSlot = kjs$getStackInSlot(slot);
 			if (!inSlot.isEmpty()) {
 				if (getInventoryPlayer().player.level.isClientSide) {
 					inSlot.setPopTime(5);

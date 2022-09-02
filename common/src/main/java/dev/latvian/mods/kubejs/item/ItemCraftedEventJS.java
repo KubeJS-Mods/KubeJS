@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.item;
 
+import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -28,7 +29,7 @@ public class ItemCraftedEventJS extends PlayerEventJS {
 		return crafted;
 	}
 
-	public InventoryJS getInventory() {
-		return new InventoryJS(container);
+	public InventoryKJS getInventory() {
+		return container;
 	}
 }

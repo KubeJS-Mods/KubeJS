@@ -1,15 +1,13 @@
 package dev.latvian.mods.kubejs.level;
 
 import com.google.common.base.Suppliers;
-import dev.latvian.mods.kubejs.item.InventoryJS;
-import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
+import dev.latvian.mods.kubejs.core.InventoryKJS;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.function.Supplier;
 
@@ -24,7 +22,8 @@ public interface LevelPlatformHelper {
 		return INSTANCE.get();
 	}
 
-	InventoryJS getInventoryFromBlockEntity(BlockEntity tileEntity, Direction facing);
+	@Nullable
+	InventoryKJS getInventoryFromBlockEntity(BlockEntity tileEntity, Direction facing);
 
 	boolean areCapsCompatible(ItemStack a, ItemStack b);
 

@@ -19,6 +19,7 @@
 
 package dev.latvian.mods.kubejs.item;
 
+import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.level.LevelPlatformHelper;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -35,14 +36,14 @@ public class ItemHandlerUtils {
 			return;
 		}
 
-		ItemHandler inventory = new PlayerMainInvWrapper(player.getInventory());
+		InventoryKJS inventory = new PlayerMainInvWrapper(player.getInventory());
 		var level = player.level;
 
 		// try adding it into the inventory
 		var remainder = stack;
 		// insert into preferred slot first
-		if (preferredSlot >= 0 && preferredSlot < inventory.getSlots()) {
-			remainder = inventory.insertItem(preferredSlot, stack, false);
+		if (preferredSlot >= 0 && preferredSlot < inventory.kjs$getSlots()) {
+			remainder = inventory.kjs$insertItem(preferredSlot, stack, false);
 		}
 		// then into the inventory in general
 		if (!remainder.isEmpty()) {
@@ -66,7 +67,7 @@ public class ItemHandlerUtils {
 	}
 
 	@NotNull
-	public static ItemStack insertItemStacked(ItemHandler inventory, @NotNull ItemStack stack, boolean simulate) {
+	public static ItemStack insertItemStacked(InventoryKJS inventory, @NotNull ItemStack stack, boolean simulate) {
 		if (inventory == null || stack.isEmpty()) {
 			return stack;
 		}
@@ -76,13 +77,13 @@ public class ItemHandlerUtils {
 			return insertItem(inventory, stack, simulate);
 		}
 
-		var sizeInventory = inventory.getSlots();
+		var sizeInventory = inventory.kjs$getSlots();
 
 		// go through the inventory and try to fill up already existing items
 		for (var i = 0; i < sizeInventory; i++) {
-			var slot = inventory.getStackInSlot(i);
+			var slot = inventory.kjs$getStackInSlot(i);
 			if (canItemStacksStackRelaxed(slot, stack)) {
-				stack = inventory.insertItem(i, stack, simulate);
+				stack = inventory.kjs$insertItem(i, stack, simulate);
 
 				if (stack.isEmpty()) {
 					break;
@@ -94,8 +95,8 @@ public class ItemHandlerUtils {
 		if (!stack.isEmpty()) {
 			// find empty slot
 			for (var i = 0; i < sizeInventory; i++) {
-				if (inventory.getStackInSlot(i).isEmpty()) {
-					stack = inventory.insertItem(i, stack, simulate);
+				if (inventory.kjs$getStackInSlot(i).isEmpty()) {
+					stack = inventory.kjs$insertItem(i, stack, simulate);
 					if (stack.isEmpty()) {
 						break;
 					}
@@ -107,13 +108,13 @@ public class ItemHandlerUtils {
 	}
 
 	@NotNull
-	public static ItemStack insertItem(ItemHandler dest, @NotNull ItemStack stack, boolean simulate) {
+	public static ItemStack insertItem(InventoryKJS dest, @NotNull ItemStack stack, boolean simulate) {
 		if (dest == null || stack.isEmpty()) {
 			return stack;
 		}
 
-		for (var i = 0; i < dest.getSlots(); i++) {
-			stack = dest.insertItem(i, stack, simulate);
+		for (var i = 0; i < dest.kjs$getSlots(); i++) {
+			stack = dest.kjs$insertItem(i, stack, simulate);
 			if (stack.isEmpty()) {
 				return ItemStack.EMPTY;
 			}

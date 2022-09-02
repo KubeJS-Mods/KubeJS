@@ -5,7 +5,7 @@ import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.block.MaterialJS;
 import dev.latvian.mods.kubejs.block.MaterialListJS;
-import dev.latvian.mods.kubejs.item.InventoryJS;
+import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -55,6 +55,12 @@ public class BlockContainerJS implements SpecialEquality {
 	public BlockContainerJS(Level w, BlockPos p) {
 		minecraftLevel = w;
 		pos = p;
+	}
+
+	public BlockContainerJS(BlockEntity blockEntity) {
+		minecraftLevel = blockEntity.getLevel();
+		pos = blockEntity.getBlockPos();
+		cachedEntity = blockEntity;
 	}
 
 	public void clearCache() {
@@ -326,16 +332,22 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	@Nullable
-	public InventoryJS getInventory() {
+	public InventoryKJS getInventory() {
 		return getInventory(Direction.UP);
 	}
 
 	@Nullable
-	public InventoryJS getInventory(Direction facing) {
-		var tileEntity = getEntity();
+	public InventoryKJS getInventory(Direction facing) {
+		var entity = getEntity();
 
-		if (tileEntity != null) {
-			return LevelPlatformHelper.get().getInventoryFromBlockEntity(tileEntity, facing);
+		if (entity != null) {
+			var c = LevelPlatformHelper.get().getInventoryFromBlockEntity(entity, facing);
+
+			if (c != null) {
+				return c;
+			} else if (entity instanceof InventoryKJS inv) {
+				return inv;
+			}
 		}
 
 		return null;

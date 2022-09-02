@@ -44,7 +44,7 @@ public interface LevelKJS extends WithAttachedData<Level> {
 	}
 
 	default BlockContainerJS kjs$getBlock(BlockEntity blockEntity) {
-		return kjs$getBlock(blockEntity.getBlockPos());
+		return new BlockContainerJS(blockEntity);
 	}
 
 	default EntityArrayList kjs$createEntityList(Collection<? extends Entity> entities) {

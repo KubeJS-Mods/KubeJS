@@ -53,6 +53,9 @@
 		],
 		"net/minecraft/class_1533": [
 			"dev/latvian/mods/kubejs/core/ItemFrameEntityKJS"
+		],
+		"net/minecraft/class_1263": [
+			"dev/latvian/mods/kubejs/core/InventoryKJS"
 		]
 	}
 }

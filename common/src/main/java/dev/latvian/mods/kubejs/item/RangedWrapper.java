@@ -20,16 +20,17 @@
 package dev.latvian.mods.kubejs.item;
 
 import com.google.common.base.Preconditions;
+import dev.latvian.mods.kubejs.core.InventoryKJS;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class RangedWrapper implements ItemHandler.Mutable {
+public class RangedWrapper implements InventoryKJS {
 
-	private final ItemHandler.Mutable compose;
+	private final InventoryKJS compose;
 	private final int minSlot;
 	private final int maxSlot;
 
-	public RangedWrapper(ItemHandler.Mutable compose, int minSlot, int maxSlotExclusive) {
+	public RangedWrapper(InventoryKJS compose, int minSlot, int maxSlotExclusive) {
 		Preconditions.checkArgument(maxSlotExclusive > minSlot, "Max slot must be greater than min slot");
 		this.compose = compose;
 		this.minSlot = minSlot;
@@ -37,15 +38,20 @@ public class RangedWrapper implements ItemHandler.Mutable {
 	}
 
 	@Override
-	public int getSlots() {
+	public boolean kjs$isMutable() {
+		return compose.kjs$isMutable();
+	}
+
+	@Override
+	public int kjs$getSlots() {
 		return maxSlot - minSlot;
 	}
 
 	@Override
 	@NotNull
-	public ItemStack getStackInSlot(int slot) {
+	public ItemStack kjs$getStackInSlot(int slot) {
 		if (checkSlot(slot)) {
-			return compose.getStackInSlot(slot + minSlot);
+			return compose.kjs$getStackInSlot(slot + minSlot);
 		}
 
 		return ItemStack.EMPTY;
@@ -53,9 +59,9 @@ public class RangedWrapper implements ItemHandler.Mutable {
 
 	@Override
 	@NotNull
-	public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+	public ItemStack kjs$insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
 		if (checkSlot(slot)) {
-			return compose.insertItem(slot + minSlot, stack, simulate);
+			return compose.kjs$insertItem(slot + minSlot, stack, simulate);
 		}
 
 		return stack;
@@ -63,34 +69,34 @@ public class RangedWrapper implements ItemHandler.Mutable {
 
 	@Override
 	@NotNull
-	public ItemStack extractItem(int slot, int amount, boolean simulate) {
+	public ItemStack kjs$extractItem(int slot, int amount, boolean simulate) {
 		if (checkSlot(slot)) {
-			return compose.extractItem(slot + minSlot, amount, simulate);
+			return compose.kjs$extractItem(slot + minSlot, amount, simulate);
 		}
 
 		return ItemStack.EMPTY;
 	}
 
 	@Override
-	public void setStackInSlot(int slot, @NotNull ItemStack stack) {
+	public void kjs$setStackInSlot(int slot, @NotNull ItemStack stack) {
 		if (checkSlot(slot)) {
-			compose.setStackInSlot(slot + minSlot, stack);
+			compose.kjs$setStackInSlot(slot + minSlot, stack);
 		}
 	}
 
 	@Override
-	public int getSlotLimit(int slot) {
+	public int kjs$getSlotLimit(int slot) {
 		if (checkSlot(slot)) {
-			return compose.getSlotLimit(slot + minSlot);
+			return compose.kjs$getSlotLimit(slot + minSlot);
 		}
 
 		return 0;
 	}
 
 	@Override
-	public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+	public boolean kjs$isItemValid(int slot, @NotNull ItemStack stack) {
 		if (checkSlot(slot)) {
-			return compose.isItemValid(slot + minSlot, stack);
+			return compose.kjs$isItemValid(slot + minSlot, stack);
 		}
 
 		return false;
@@ -99,5 +105,4 @@ public class RangedWrapper implements ItemHandler.Mutable {
 	private boolean checkSlot(int localSlot) {
 		return localSlot + minSlot < maxSlot;
 	}
-
 }

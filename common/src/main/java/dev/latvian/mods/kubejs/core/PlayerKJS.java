@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.core;
 
 import com.mojang.authlib.GameProfile;
 import dev.architectury.hooks.level.entity.PlayerHooks;
-import dev.latvian.mods.kubejs.item.InventoryJS;
 import dev.latvian.mods.kubejs.item.ItemHandlerUtils;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.stages.Stages;
@@ -55,7 +54,7 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 		return kjs$self().getGameProfile();
 	}
 
-	default InventoryJS kjs$getInventory() {
+	default InventoryKJS kjs$getInventory() {
 		throw new NoMixinException();
 	}
 
