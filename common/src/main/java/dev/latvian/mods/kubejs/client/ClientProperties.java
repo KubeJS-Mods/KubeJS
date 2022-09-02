@@ -73,7 +73,7 @@ public class ClientProperties {
 			}
 
 			title = get("title", "");
-			showTagNames = get("showTagNames", true);
+			showTagNames = get("showTagNames", false);
 			disableRecipeBook = get("disableRecipeBook", false);
 			exportAtlases = get("exportAtlases", false);
 			overrideColors = get("overrideColors", false);

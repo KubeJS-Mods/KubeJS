@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.entry.type.EntryType;
-import me.shedaniel.rei.api.common.entry.type.EntryTypeRegistry;
 import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
 import me.shedaniel.rei.plugin.client.BuiltinClientPlugin;
 import net.minecraft.network.chat.Component;
@@ -13,7 +12,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * @author shedaniel
@@ -28,7 +26,7 @@ public class InformationREIEventJS extends EventJS {
 	}
 
 	public void add(ResourceLocation typeId, Object stacks, Component title, Component[] description) {
-		add(Objects.requireNonNull(EntryTypeRegistry.getInstance().get(typeId), "Entry type '%s' not found!".formatted(typeId)).getType(), stacks, title, description);
+		add(KubeJSREIPlugin.getTypeOrThrow(typeId), stacks, title, description);
 	}
 
 	@HideFromJS

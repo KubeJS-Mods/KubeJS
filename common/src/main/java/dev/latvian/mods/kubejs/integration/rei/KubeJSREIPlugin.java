@@ -9,9 +9,11 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
 import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
+import me.shedaniel.rei.api.client.registry.entry.CollapsibleEntryRegistry;
 import me.shedaniel.rei.api.client.registry.entry.EntryRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.entry.type.EntryType;
+import me.shedaniel.rei.api.common.entry.type.EntryTypeRegistry;
 import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
 import me.shedaniel.rei.api.common.plugins.PluginManager;
 import me.shedaniel.rei.api.common.registry.ReloadStage;
@@ -23,6 +25,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -74,6 +77,16 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 			categoriesRemoved.clear();
 			REIKubeJSEvents.REMOVE_CATEGORIES.post(new RemoveREICategoryEventJS(categoriesRemoved));
 		}
+	}
+
+	@SuppressWarnings("UnstableApiUsage")
+	@Override
+	public void registerCollapsibleEntries(CollapsibleEntryRegistry registry) {
+		REIKubeJSEvents.GROUP_ENTRIES.post(new GroupREIEntriesEventJS(registry));
+	}
+
+	public static EntryType<?> getTypeOrThrow(ResourceLocation typeId) {
+		return Objects.requireNonNull(EntryTypeRegistry.getInstance().get(typeId), "Entry type '%s' not found!".formatted(typeId)).getType();
 	}
 
 	public static EntryWrapper getWrapperOrFallback(EntryType<?> type) {

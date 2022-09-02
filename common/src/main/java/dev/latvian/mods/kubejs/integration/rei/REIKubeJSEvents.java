@@ -13,6 +13,7 @@ public interface REIKubeJSEvents {
 	EventHandler ADD = GROUP.client("add", () -> AddREIEventJS.class).requiresNamespacedExtraId().legacy("rei.add");
 	EventHandler INFORMATION = GROUP.client("information", () -> InformationREIEventJS.class).legacy("rei.information");
 	EventHandler REMOVE_CATEGORIES = GROUP.client("removeCategories", () -> RemoveREICategoryEventJS.class).legacy("rei.remove.categories");
+	EventHandler GROUP_ENTRIES = GROUP.client("groupEntries", () -> GroupREIEntriesEventJS.class).legacy("rei.group");
 
 	static void register() {
 		GROUP.register();

@@ -1,49 +1,48 @@
 name: Java CI (1.19)
 
 on:
-  push:
-    branches:
-      # main and dev versions for each mc ver here
-      - "1.19/main"
-      - "1.19/dev"
-  workflow_dispatch:
-    inputs:
-      norelease:
-        description: 'Do not publish'
-        required: true
-        default: 'false'
+    push:
+        branches:
+            # main and dev versions for each mc ver here
+            - "1.19/main"
+            - "1.19/dev"
+    workflow_dispatch:
+        inputs:
+            norelease:
+                description: 'Do not publish'
+                required: true
+                default: 'false'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    if: |
-      !contains(github.event.head_commit.message, '[ci skip]')
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 30 # Gets the last 30 commits so the changelog might work
-      - name: Set up JDK 17
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v1
-      - name: Build and Publish with Gradle
-        uses: gradle/gradle-build-action@v2
-        env:
-          FTB_MAVEN_TOKEN: ${{ secrets.FTB_MAVEN_TOKEN }}
-          SAPS_TOKEN: ${{ secrets.SAPS_TOKEN }}
-        with:
-          arguments: build publish --stacktrace --no-daemon
-      - name: Release to CurseForge
-        uses: gradle/gradle-build-action@v2
+    build:
+        runs-on: ubuntu-latest
         if: |
-          contains(github.ref, 'main') && !contains(github.event.head_commit.message, '[norelease]') && github.event.inputs.norelease != 'true'
-        env:
-          GIT_COMMIT: ${{ github.event.after }}
-          GIT_PREVIOUS_COMMIT: ${{ github.event.before }}
-          CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
-          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-        with:
-          arguments: build curseforge modrinth --stacktrace --no-daemon
+            !contains(github.event.head_commit.message, '[ci skip]')
+        steps:
+            -   uses: actions/checkout@v2
+                with:
+                    fetch-depth: 30 # Gets the last 30 commits so the changelog might work
+            -   name: Set up JDK 17
+                uses: actions/setup-java@v2
+                with:
+                    distribution: 'temurin'
+                    java-version: '17'
+            -   name: Validate Gradle Wrapper
+                uses: gradle/wrapper-validation-action@v1
+            -   name: Build and Publish with Gradle
+                uses: gradle/gradle-build-action@v2
+                env:
+                    SAPS_TOKEN: ${{ secrets.SAPS_TOKEN }}
+                with:
+                    arguments: build publish --stacktrace --no-daemon
+            -   name: Release to CurseForge
+                uses: gradle/gradle-build-action@v2
+                if: |
+                    contains(github.ref, 'main') && !contains(github.event.head_commit.message, '[norelease]') && github.event.inputs.norelease != 'true'
+                env:
+                    GIT_COMMIT: ${{ github.event.after }}
+                    GIT_PREVIOUS_COMMIT: ${{ github.event.before }}
+                    CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
+                    MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+                with:
+                    arguments: build curseforge modrinth --stacktrace --no-daemon

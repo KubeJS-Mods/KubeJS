@@ -179,6 +179,13 @@ public abstract class ItemMixin implements ItemKJS {
 		}
 	}
 
+	@Inject(method = "getName", at = @At("HEAD"), cancellable = true)
+	private void getName(ItemStack itemStack, CallbackInfoReturnable<Component> ci) {
+		if (kjs$itemBuilder != null && kjs$itemBuilder.nameGetter != null) {
+			ci.setReturnValue(kjs$itemBuilder.nameGetter.apply(itemStack));
+		}
+	}
+
 	@Inject(method = "use", at = @At("HEAD"), cancellable = true)
 	private void use(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> ci) {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.use != null) {

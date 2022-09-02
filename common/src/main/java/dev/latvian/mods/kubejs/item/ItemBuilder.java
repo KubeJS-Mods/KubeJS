@@ -92,6 +92,9 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient FoodBuilder foodBuilder;
 	public transient Function<ItemStack, Color> barColor;
 	public transient ToIntFunction<ItemStack> barWidth;
+
+	public transient NameCallback nameGetter;
+
 	public transient Multimap<ResourceLocation, AttributeModifier> attributes;
 	public transient UseAnim anim;
 	public transient ToIntFunction<ItemStack> useDuration;
@@ -284,6 +287,11 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
+	public ItemBuilder name(NameCallback name) {
+		this.nameGetter = name;
+		return this;
+	}
+
 	public ItemBuilder food(Consumer<FoodBuilder> b) {
 		foodBuilder = new FoodBuilder();
 		b.accept(foodBuilder);
@@ -383,5 +391,10 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	@FunctionalInterface
 	public interface ReleaseUsingCallback {
 		void releaseUsing(ItemStack itemStack, Level level, LivingEntity user, int tick);
+	}
+
+	@FunctionalInterface
+	public interface NameCallback {
+		Component apply(ItemStack itemStack);
 	}
 }

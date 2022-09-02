@@ -25,16 +25,6 @@ publishing {
 	}
 
 	repositories {
-		if (ENV.FTB_MAVEN_TOKEN) {
-			maven {
-				url "https://maven.ftb.dev/release"
-				credentials {
-					username = "latvian"
-					password = "${ENV.FTB_MAVEN_TOKEN}"
-				}
-			}
-		}
-
 		if (ENV.SAPS_TOKEN) {
 			maven {
 				url "https://maven.saps.dev/minecraft"

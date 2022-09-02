@@ -1,9 +1,13 @@
 package dev.latvian.mods.kubejs.integration.forge.gamestages;
 
+import dev.latvian.mods.kubejs.player.PlayerEventJS;
+import net.darkhax.gamestages.event.GameStageEvent;
+import net.minecraft.world.entity.player.Player;
+
 /**
  * @author LatvianModder
  */
-public class GameStageEventJS {/* FIXME: Gamestages extends PlayerEventJS {
+public class GameStageEventJS extends PlayerEventJS {
 	private final GameStageEvent event;
 
 	public GameStageEventJS(GameStageEvent e) {
@@ -11,12 +15,11 @@ public class GameStageEventJS {/* FIXME: Gamestages extends PlayerEventJS {
 	}
 
 	@Override
-	public EntityJS getEntity() {
-		return entityOf(event.getEntity());
+	public Player getEntity() {
+		return event.getEntity();
 	}
 
 	public String getStage() {
 		return event.getStageName();
 	}
-	 */
 }

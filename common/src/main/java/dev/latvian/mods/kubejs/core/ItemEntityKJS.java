@@ -41,6 +41,14 @@ public interface ItemEntityKJS extends EntityKJS {
 	}
 
 	default void kjs$setNoDespawn() {
-		kjs$self().setExtendedLifetime();
+		kjs$self().setUnlimitedLifetime();
+	}
+
+	default int kjs$getTicksUntilDespawn() {
+		return ItemEntity.LIFETIME - kjs$self().age;
+	}
+
+	default void kjs$setTicksUntilDespawn(int ticks) {
+		kjs$self().age = ItemEntity.LIFETIME - ticks;
 	}
 }

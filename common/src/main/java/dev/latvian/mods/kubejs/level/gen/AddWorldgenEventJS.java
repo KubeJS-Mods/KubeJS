@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.properties.AddLakeProperties;
 import dev.latvian.mods.kubejs.level.gen.properties.AddOreProperties;
 import dev.latvian.mods.kubejs.level.gen.properties.AddSpawnProperties;
+import dev.latvian.mods.kubejs.util.ClassWrapper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import net.minecraft.Util;
@@ -26,6 +27,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.LakeFeature;
@@ -191,6 +193,10 @@ public class AddWorldgenEventJS extends StartupEventJS {
 
 	public void addSpawn(MobCategory category, String spawn) {
 		addSpawn(BiomeFilter.ALWAYS_TRUE, category, spawn);
+	}
+
+	public static ClassWrapper<VerticalAnchor> getAnchors() {
+		return new ClassWrapper<>(VerticalAnchor.class);
 	}
 
 	public static <T> String getUniqueId(T feature, Codec<T> codec) {

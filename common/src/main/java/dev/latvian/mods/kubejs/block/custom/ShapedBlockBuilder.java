@@ -2,12 +2,13 @@ package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 public abstract class ShapedBlockBuilder extends BlockBuilder {
 	public ShapedBlockBuilder(ResourceLocation i, String... suffixes) {
 		super(i);
 		notSolid();
-		waterlogged();
+		property(BlockStateProperties.WATERLOGGED);
 		texture("texture", "kubejs:block/detector");
 
 		for (String s : suffixes) {

@@ -35,12 +35,15 @@ accessible method net/minecraft/world/level/block/state/BlockBehaviour$Propertie
 # accessible method net/minecraft/world/entity/npc/VillagerProfession <init> (Ljava/lang/String;Lnet/minecraft/world/entity/ai/village/poi/PoiType;Lcom/google/common/collect/ImmutableSet;Lcom/google/common/collect/ImmutableSet;Lnet/minecraft/sounds/SoundEvent;)V
 
 accessible field net/minecraft/server/packs/resources/MultiPackResourceManager namespacedManagers Ljava/util/Map;
+accessible field net/minecraft/server/packs/resources/MultiPackResourceManager packs Ljava/util/List;
 
 accessible field net/minecraft/commands/Commands$CommandSelection includeIntegrated Z
 accessible field net/minecraft/commands/Commands$CommandSelection includeDedicated Z
 accessible field net/minecraft/commands/synchronization/ArgumentTypeInfos BY_CLASS Ljava/util/Map;
 accessible method net/minecraft/world/level/GameRules$Value deserialize (Ljava/lang/String;)V
 accessible method net/minecraft/world/level/GameRules$Value onChanged (Lnet/minecraft/server/MinecraftServer;)V
+
+accessible method net/minecraft/world/level/GameRules$Value deserialize (Ljava/lang/String;)V
 
 accessible field net/minecraft/world/inventory/CraftingContainer menu Lnet/minecraft/world/inventory/AbstractContainerMenu;
 accessible field net/minecraft/world/inventory/CraftingMenu player Lnet/minecraft/world/entity/player/Player;
@@ -73,3 +76,5 @@ accessible method net/minecraft/server/commands/TeleportCommand performTeleport 
 accessible field net/minecraft/commands/arguments/selector/EntitySelector predicate Ljava/util/function/Predicate;
 
 accessible method net/minecraft/world/entity/npc/VillagerType <init> (Ljava/lang/String;)V
+accessible field net/minecraft/world/entity/item/ItemEntity LIFETIME I
+accessible field net/minecraft/world/entity/item/ItemEntity age I

@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -22,6 +23,8 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -30,8 +33,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -54,7 +59,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient List<AABB> customShape;
 	public transient boolean noCollision;
 	public transient boolean notSolid;
-	public transient boolean waterlogged;
 	public transient float slipperiness = 0.6F;
 	public transient float speedFactor = 1.0F;
 	public transient float jumpFactor = 1.0F;
@@ -67,6 +71,9 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient boolean viewBlocking;
 	public transient boolean redstoneConductor;
 	public transient boolean transparent;
+	public transient Set<Property<?>> blockStateProperties;
+	public transient Consumer<BlockStateModifyCallbackJS> defaultStateModification;
+	public transient Consumer<BlockStateModifyPlacementCallbackJS> placementStateModification;
 
 	public BlockBuilder(ResourceLocation i) {
 		super(i);
@@ -83,12 +90,11 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		textures = new JsonObject();
 		textureAll(id.getNamespace() + ":block/" + id.getPath());
 		model = "";
-		itemBuilder = newItemBuilder();
+		itemBuilder = getOrCreateItemBuilder();
 		itemBuilder.blockBuilder = this;
 		customShape = new ArrayList<>();
 		noCollision = false;
 		notSolid = false;
-		waterlogged = false;
 		randomTickCallback = null;
 
 		lootTable = loot -> loot.addPool(pool -> {
@@ -103,6 +109,9 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		viewBlocking = true;
 		redstoneConductor = true;
 		transparent = false;
+		blockStateProperties = new HashSet<>();
+		defaultStateModification = null;
+		placementStateModification = null;
 	}
 
 	@Override
@@ -370,15 +379,15 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 			itemBuilder = null;
 			lootTable = null;
 		} else {
-			i.accept(newItemBuilder());
+			i.accept(getOrCreateItemBuilder());
 		}
 
 		return this;
 	}
 
 	@HideFromJS
-	protected BlockItemBuilder newItemBuilder() {
-		return new BlockItemBuilder(id);
+	protected BlockItemBuilder getOrCreateItemBuilder() {
+		return itemBuilder == null ? (itemBuilder = new BlockItemBuilder(id)) : itemBuilder;
 	}
 
 	public BlockBuilder noItem() {
@@ -423,9 +432,27 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	public BlockBuilder waterlogged() {
-		waterlogged = true;
+	@Deprecated(forRemoval = true)
+	public BlockBuilder setWaterlogged(boolean waterlogged) {
+		ScriptType.STARTUP.console.warn("\"BlockBuilder.waterlogged\" is a deprecated property! Please use \"BlockBuilder.property(BlockProperties.WATERLOGGED)\" instead.");
+		if (waterlogged) {
+			property(BlockStateProperties.WATERLOGGED);
+		}
 		return this;
+	}
+
+	@Deprecated(forRemoval = true)
+	public boolean getWaterlogged() {
+		ScriptType.STARTUP.console.warn("\"BlockBuilder.waterlogged\" is a deprecated property! Please use \"BlockBuilder.property(BlockProperties.WATERLOGGED)\" instead.");
+		return canBeWaterlogged();
+	}
+
+	public BlockBuilder waterlogged() {
+		return property(BlockStateProperties.WATERLOGGED);
+	}
+
+	public boolean canBeWaterlogged() {
+		return blockStateProperties.contains(BlockStateProperties.WATERLOGGED);
 	}
 
 	public BlockBuilder noDrops() {
@@ -514,6 +541,24 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	private MaterialColor getStateColor(BlockState state) {
 		return material.getMinecraftMaterial().getColor();
+	}
+
+	public BlockBuilder defaultState(Consumer<BlockStateModifyCallbackJS> callbackJS) {
+		defaultStateModification = callbackJS;
+		return this;
+	}
+
+	public BlockBuilder placementState(Consumer<BlockStateModifyPlacementCallbackJS> callbackJS) {
+		placementStateModification = callbackJS;
+		return this;
+	}
+
+	public BlockBuilder property(Property<?> property) {
+		if (property.getPossibleValues().size() <= 1) {
+			throw new IllegalArgumentException(String.format("Block \"%s\" has an illegal Blockstate Property \"%s\" which has <= 1 possible values. (%d possible values)", id, property.getName(), property.getPossibleValues().size()));
+		}
+		blockStateProperties.add(property);
+		return this;
 	}
 
 	public Block.Properties createProperties() {
