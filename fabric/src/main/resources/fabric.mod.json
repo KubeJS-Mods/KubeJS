@@ -34,7 +34,7 @@
 	"accessWidener": "kubejs.accesswidener",
 	"depends": {
 		"minecraft": ">=1.18.2",
-		"rhino": ">=${rhino_version}",
+		"rhino": "~${rhino_version}",
 		"architectury": ">=${architectury_version}"
 	},
 	"breaks": {
