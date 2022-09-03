@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
-import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.SharedContextData;
 import dev.latvian.mods.rhino.util.CustomJavaToJsWrapperProvider;
 
 import java.util.function.Consumer;
@@ -15,12 +15,12 @@ public class CustomJavaToJsWrappersEvent {
 	public static final Event<Consumer<CustomJavaToJsWrappersEvent>> EVENT = EventFactory.createConsumerLoop(CustomJavaToJsWrappersEvent.class);
 	public final ScriptManager manager;
 	public final ScriptType scriptType;
-	public final Context context;
+	public final SharedContextData data;
 
-	public CustomJavaToJsWrappersEvent(ScriptManager m, Context cx) {
+	public CustomJavaToJsWrappersEvent(ScriptManager m, SharedContextData d) {
 		manager = m;
 		scriptType = manager.type;
-		context = cx;
+		data = d;
 	}
 
 	public ScriptType getScriptType() {
@@ -28,10 +28,10 @@ public class CustomJavaToJsWrappersEvent {
 	}
 
 	public <T> void add(Class<T> type, CustomJavaToJsWrapperProvider<T> provider) {
-		context.addCustomJavaToJsWrapper(type, provider);
+		data.addCustomJavaToJsWrapper(type, provider);
 	}
 
 	public <T> void add(Predicate<T> predicate, CustomJavaToJsWrapperProvider<T> provider) {
-		context.addCustomJavaToJsWrapper(predicate, provider);
+		data.addCustomJavaToJsWrapper(predicate, provider);
 	}
 }

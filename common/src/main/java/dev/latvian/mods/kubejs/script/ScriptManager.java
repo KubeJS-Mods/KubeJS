@@ -12,7 +12,7 @@ import dev.latvian.mods.rhino.ClassShutter;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaClass;
 import dev.latvian.mods.rhino.RhinoException;
-import dev.latvian.mods.rhino.Scriptable;
+import dev.latvian.mods.rhino.SharedContextData;
 import dev.latvian.mods.rhino.mod.util.RemappingHelper;
 import org.apache.commons.io.IOUtils;
 
@@ -97,19 +97,6 @@ public class ScriptManager {
 
 	public void load() {
 		var context = Context.enterWithNewFactory();
-		context.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || isClassAllowed(fullClassName));
-		context.setRemapper(RemappingHelper.createModRemapper());
-		var typeWrappers = context.getTypeWrappers();
-		// typeWrappers.removeAll();
-		KubeJSPlugins.forEachPlugin(plugin -> plugin.addTypeWrappers(type, typeWrappers));
-
-		for (var registryTypeWrapperFactory : RegistryTypeWrapperFactory.getAll()) {
-			try {
-				typeWrappers.register(registryTypeWrapperFactory.type, UtilsJS.cast(registryTypeWrapperFactory));
-			} catch (IllegalArgumentException ignored) {
-			}
-		}
-
 		var startAll = System.currentTimeMillis();
 
 		var i = 0;
@@ -120,11 +107,25 @@ public class ScriptManager {
 				pack.context = context;
 				pack.scope = context.initStandardObjects();
 
-				var bindingsEvent = new BindingsEvent(this, pack.context, pack.scope);
+				var contextData = SharedContextData.get(pack.scope);
+				contextData.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || isClassAllowed(fullClassName));
+				contextData.setRemapper(RemappingHelper.getMinecraftRemapper());
+				var typeWrappers = contextData.getTypeWrappers();
+				// typeWrappers.removeAll();
+				KubeJSPlugins.forEachPlugin(plugin -> plugin.addTypeWrappers(type, typeWrappers));
+
+				for (var registryTypeWrapperFactory : RegistryTypeWrapperFactory.getAll()) {
+					try {
+						typeWrappers.register(registryTypeWrapperFactory.type, UtilsJS.cast(registryTypeWrapperFactory));
+					} catch (IllegalArgumentException ignored) {
+					}
+				}
+
+				var bindingsEvent = new BindingsEvent(this, contextData);
 				KubeJSPlugins.forEachPlugin(plugin -> plugin.addBindings(bindingsEvent));
 				BindingsEvent.EVENT.invoker().accept(bindingsEvent);
 
-				var customJavaToJsWrappersEvent = new CustomJavaToJsWrappersEvent(this, pack.context);
+				var customJavaToJsWrappersEvent = new CustomJavaToJsWrappersEvent(this, contextData);
 				KubeJSPlugins.forEachPlugin(plugin -> plugin.addCustomJavaToJsWrappers(customJavaToJsWrappersEvent));
 				CustomJavaToJsWrappersEvent.EVENT.invoker().accept(customJavaToJsWrappersEvent);
 
@@ -161,8 +162,8 @@ public class ScriptManager {
 		firstLoad = false;
 	}
 
-	public NativeJavaClass loadJavaClass(Scriptable scope, Object[] args) {
-		String name = RemappingHelper.getMinecraftRemapper().getUnmappedClass(args[0].toString());
+	public NativeJavaClass loadJavaClass(BindingsEvent event, Object[] args) {
+		String name = RemappingHelper.getMinecraftRemapper().getUnmappedClass(String.valueOf(Context.jsToJava(event.contextData, args[0], String.class)));
 
 		if (name.isEmpty()) {
 			throw Context.reportRuntimeError("Class name can't be empty!");
@@ -183,7 +184,7 @@ public class ScriptManager {
 				}
 
 				var c = Class.forName(name);
-				var njc = new NativeJavaClass(scope, c);
+				var njc = new NativeJavaClass(event.contextData.topLevelScope, c);
 				javaClassCache.put(name, Optional.of(njc));
 				return njc;
 			} catch (ClassNotFoundException cnf) {

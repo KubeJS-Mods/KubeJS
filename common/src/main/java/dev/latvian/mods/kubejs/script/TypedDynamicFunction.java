@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
+import dev.latvian.mods.rhino.SharedContextData;
 import dev.latvian.mods.rhino.util.DynamicFunction;
 
 /**
@@ -22,9 +23,10 @@ public class TypedDynamicFunction extends DynamicFunction {
 		}
 
 		var newArgs = new Object[types.length];
+		var contextData = SharedContextData.get(cx, scope);
 
 		for (var i = 0; i < types.length; i++) {
-			newArgs[i] = (types[i] == null || types[i] == Object.class) ? args[i] : Context.jsToJava(args[i], types[i]);
+			newArgs[i] = (types[i] == null || types[i] == Object.class) ? args[i] : Context.jsToJava(contextData, args[i], types[i]);
 		}
 
 		return super.call(cx, scope, thisObj, newArgs);
