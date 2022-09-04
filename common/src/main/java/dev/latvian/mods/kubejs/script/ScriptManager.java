@@ -28,7 +28,7 @@ import java.util.Optional;
 /**
  * @author LatvianModder
  */
-public class ScriptManager {
+public class ScriptManager implements ClassShutter {
 	public final ScriptType type;
 	public final Path directory;
 	public final String exampleScript;
@@ -152,7 +152,7 @@ public class ScriptManager {
 				pack.scope = context.initStandardObjects();
 				SharedContextData contextData = SharedContextData.get(pack.scope);
 				contextData.setExtraProperty("Type", type);
-				contextData.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || isClassAllowed(fullClassName));
+				contextData.setClassShutter(this);
 				contextData.setRemapper(RemappingHelper.getMinecraftRemapper());
 				var typeWrappers = contextData.getTypeWrappers();
 				// typeWrappers.removeAll();
@@ -167,11 +167,9 @@ public class ScriptManager {
 
 				var bindingsEvent = new BindingsEvent(this, contextData);
 				KubeJSPlugins.forEachPlugin(plugin -> plugin.registerBindings(bindingsEvent));
-				BindingsEvent.EVENT.invoker().accept(bindingsEvent);
 
 				var customJavaToJsWrappersEvent = new CustomJavaToJsWrappersEvent(this, contextData);
 				KubeJSPlugins.forEachPlugin(plugin -> plugin.registerCustomJavaToJsWrappers(customJavaToJsWrappersEvent));
-				CustomJavaToJsWrappersEvent.EVENT.invoker().accept(customJavaToJsWrappersEvent);
 
 				for (var file : pack.scripts) {
 					t++;
@@ -239,5 +237,10 @@ public class ScriptManager {
 		}
 
 		throw Context.reportRuntimeError("Failed to dynamically load class '%s'!".formatted(name));
+	}
+
+	@Override
+	public boolean visibleToScripts(String fullClassName, int type) {
+		return type != ClassShutter.TYPE_CLASS_IN_PACKAGE || isClassAllowed(fullClassName);
 	}
 }

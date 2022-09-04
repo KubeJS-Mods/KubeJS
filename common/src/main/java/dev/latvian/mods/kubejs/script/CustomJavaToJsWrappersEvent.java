@@ -1,18 +1,14 @@
 package dev.latvian.mods.kubejs.script;
 
-import dev.architectury.event.Event;
-import dev.architectury.event.EventFactory;
 import dev.latvian.mods.rhino.SharedContextData;
 import dev.latvian.mods.rhino.util.CustomJavaToJsWrapperProvider;
 
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
  * @author LatvianModder
  */
 public class CustomJavaToJsWrappersEvent {
-	public static final Event<Consumer<CustomJavaToJsWrappersEvent>> EVENT = EventFactory.createConsumerLoop(CustomJavaToJsWrappersEvent.class);
 	public final ScriptManager manager;
 	public final ScriptType scriptType;
 	public final SharedContextData data;
