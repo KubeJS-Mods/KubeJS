@@ -89,7 +89,7 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 		public BlockState getStateForPlacement(@NotNull BlockPlaceContext context) {
 			var state = defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
 
-			if (blockBuilder.waterlogged) {
+			if (blockBuilder.canBeWaterlogged()) {
 				state = state.setValue(BlockStateProperties.WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER);
 			}
 
