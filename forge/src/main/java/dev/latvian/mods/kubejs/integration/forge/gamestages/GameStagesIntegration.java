@@ -20,10 +20,14 @@ public class GameStagesIntegration extends KubeJSPlugin {
 
 	@Override
 	public void init() {
-		GROUP.register();
 		Stages.overrideCreation(GameStagesIntegration::override);
 		MinecraftForge.EVENT_BUS.addListener(GameStagesIntegration::stageAdded);
 		MinecraftForge.EVENT_BUS.addListener(GameStagesIntegration::stageRemoved);
+	}
+
+	@Override
+	public void registerEvents() {
+		GROUP.register();
 	}
 
 	private static void override(StageCreationEvent event) {

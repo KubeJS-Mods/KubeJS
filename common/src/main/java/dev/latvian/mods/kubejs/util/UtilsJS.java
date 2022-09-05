@@ -78,8 +78,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import static com.google.gson.internal.$Gson$Preconditions.checkArgument;
-
 /**
  * @author LatvianModder
  */
@@ -505,8 +503,10 @@ public class UtilsJS {
 			return clz;
 		} else if (type instanceof ParameterizedType paramType) {
 			var rawType = paramType.getRawType();
-			checkArgument(rawType instanceof Class);
-			return (Class<?>) rawType;
+
+			if (rawType instanceof Class<?> clz) {
+				return clz;
+			}
 		} else if (type instanceof GenericArrayType arrType) {
 			var componentType = arrType.getGenericComponentType();
 			return Array.newInstance(getRawType(componentType), 0).getClass();
@@ -517,7 +517,7 @@ public class UtilsJS {
 		}
 
 		var className = type == null ? "null" : type.getClass().getName();
-		throw new IllegalArgumentException("Expected a Class, ParameterizedType, or GenericArrayType, but <" + type + "> is of type " + className);
+		throw new IllegalArgumentException("Expected a Class, ParameterizedType, GenericArrayType, TypeVariable or WildcardType, but <" + type + "> is of type " + className);
 	}
 
 	public static String convertSnakeCaseToCamelCase(String string) {
