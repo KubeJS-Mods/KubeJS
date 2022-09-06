@@ -28,9 +28,9 @@ sourceSets {
 
 repositories {
 	maven {
-		url "https://www.cursemaven.com"
+		url "https://maven.blamejared.com"
 		content {
-			includeGroup "curse.maven"
+			includeGroup "com.faux.ingredientextension"
 		}
 	}
 }
@@ -42,7 +42,7 @@ dependencies {
 	modApi("dev.architectury:architectury-fabric:${rootProject.architectury_version}")
 
 	modApi("dev.latvian.mods:rhino-fabric:${rootProject.rhino_version}")
-	modApi("curse.maven:ingredient-extension-api-557735:${rootProject.ingredient_extension_file}")
+	modApi("com.faux.ingredientextension:IngredientExtensionAPI-fabric-1.19:${rootProject.ingredient_extension_version}")
 
 	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${rootProject.rei_version}")
 	modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${rootProject.rei_version}")
