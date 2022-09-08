@@ -56,7 +56,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	public BasicBlockJS(BlockBuilder p) {
 		super(p.createProperties());
 		blockBuilder = p;
-		shape = p.createShape();
+		shape = BlockBuilder.createShape(p.customShape);
 
 		var blockState = stateDefinition.any();
 		if (blockBuilder.defaultStateModification != null) {

@@ -427,15 +427,15 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return box(x0, y0, z0, x1, y1, z1, true);
 	}
 
-	public VoxelShape createShape() {
-		if (customShape.isEmpty()) {
+	public static VoxelShape createShape(List<AABB> boxes) {
+		if (boxes.isEmpty()) {
 			return Shapes.block();
 		}
 
-		var shape = Shapes.create(customShape.get(0));
+		var shape = Shapes.create(boxes.get(0));
 
-		for (var i = 1; i < customShape.size(); i++) {
-			shape = Shapes.or(shape, Shapes.create(customShape.get(i)));
+		for (var i = 1; i < boxes.size(); i++) {
+			shape = Shapes.or(shape, Shapes.create(boxes.get(i)));
 		}
 
 		return shape;

@@ -4,15 +4,27 @@ import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 
@@ -66,17 +78,34 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 		return textures.has(name) ? textures.get(name).getAsString() : defaultTexture;
 	}
 
-	@Override
+	@Override 	
 	public Block createObject() {
 		return new HorizontalDirectionalBlockJS(this);
 	}
 
 	public static class HorizontalDirectionalBlockJS extends BasicBlockJS {
 
-		public static DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+		public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+		public final Map<Direction, VoxelShape> shapes = new HashMap<>();
 
 		public HorizontalDirectionalBlockJS(BlockBuilder p) {
 			super(p);
+			if (hasCustomShape()) {
+				Direction.Plane.HORIZONTAL.forEach(direction -> shapes.put(direction, rotateShape(shape, direction)));
+			}
+		}
+
+		private static VoxelShape rotateShape(VoxelShape shape, Direction direction) {
+			List<AABB> newShapes = new ArrayList<>();
+
+			switch (direction) {
+				case NORTH -> {return shape;}
+				case SOUTH -> shape.forAllBoxes((x1, y1, z1, x2, y2, z2) -> newShapes.add(new AABB(1D - x2, y1, 1D - z2, 1D - x1, y2, 1D - z1)));
+				case WEST -> shape.forAllBoxes((x1, y1, z1, x2, y2, z2) -> newShapes.add(new AABB(z1, y1, 1D - x2, z2, y2, 1D - x1)));
+				case EAST -> shape.forAllBoxes((x1, y1, z1, x2, y2, z2) -> newShapes.add(new AABB(1D - z2, y1, x1, 1D - z1, y2, x2)));
+				default -> throw new IllegalArgumentException("Cannot rotate around direction " + direction.getName());
+			}
+			return createShape(newShapes);
 		}
 
 		@Override
@@ -94,7 +123,16 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 			}
 
 			return state;
+		}
 
+		private boolean hasCustomShape() {
+			return shape != Shapes.block();
+		}
+
+		@Override
+		@Deprecated
+		public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+			return hasCustomShape() ? shapes.get(state.getValue(FACING)) : shape;
 		}
 
 	}
