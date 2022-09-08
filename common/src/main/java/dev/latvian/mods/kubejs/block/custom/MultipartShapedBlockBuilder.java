@@ -14,7 +14,7 @@ public abstract class MultipartShapedBlockBuilder extends ShapedBlockBuilder{
 		if (blockstateJson != null) {
 			generator.json(newID("blockstates/", ""), blockstateJson);
 		} else {
-			generator.multipartState(id, this::generateMultipartBlockstateJson);
+			generator.multipartState(id, this::generateMultipartBlockStateJson);
 		}
 
 		if (modelJson != null) {
@@ -34,5 +34,5 @@ public abstract class MultipartShapedBlockBuilder extends ShapedBlockBuilder{
 
 	}
 
-	protected abstract void generateMultipartBlockstateJson(MultipartBlockStateGenerator bs);
+	protected abstract void generateMultipartBlockStateJson(MultipartBlockStateGenerator bs);
 }

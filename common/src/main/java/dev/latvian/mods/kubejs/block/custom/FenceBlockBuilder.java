@@ -26,7 +26,7 @@ public class FenceBlockBuilder extends MultipartShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateMultipartBlockstateJson(MultipartBlockStateGenerator bs) {
+	protected void generateMultipartBlockStateJson(MultipartBlockStateGenerator bs) {
 		var modPost = newID("block/", "_post").toString();
 		var modSide = newID("block/", "_side").toString();
 
