@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.util;
 
 import com.google.gson.JsonObject;
+import dev.latvian.mods.rhino.mod.util.JsonUtils;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -22,6 +23,14 @@ public interface MapJS {
 
 			for (var key : tag.getAllKeys()) {
 				map.put(key, tag.get(key));
+			}
+
+			return map;
+		} else if(o instanceof JsonObject json) {
+			var map = new LinkedHashMap<String, Object>();
+
+			for (var entry : json.entrySet()) {
+				map.put(entry.getKey(), JsonUtils.toObject(entry.getValue()));
 			}
 
 			return map;
