@@ -77,7 +77,7 @@ public class CookingRecipeJS extends RecipeJS {
 
 	@Override
 	public boolean replaceInput(IngredientMatch match, Ingredient with, ItemInputTransformer transformer) {
-		if (match.contains(with)) {
+		if (match.contains(ingredient)) {
 			ingredient = transformer.transform(this, match, ingredient, with);
 			return true;
 		}
