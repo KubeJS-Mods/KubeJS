@@ -63,9 +63,10 @@ processResources {
 	dependsOn copyAccessWidener
 
 	def toReplace = [
-			"version"             : project.version,
-			"rhino_version"       : rootProject.rhino_version,
-			"architectury_version": rootProject.architectury_version
+			"version"                     : project.version,
+			"rhino_version"               : rootProject.rhino_version,
+			"architectury_version"        : rootProject.architectury_version,
+			"ingredient_extension_version": rootProject.ingredient_extension_version,
 	]
 
 	inputs.properties toReplace

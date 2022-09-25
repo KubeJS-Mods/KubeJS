@@ -35,7 +35,8 @@
 	"depends": {
 		"minecraft": ">=1.18.2",
 		"rhino": ">=${rhino_version}",
-		"architectury": ">=${architectury_version}"
+		"architectury": ">=${architectury_version}",
+		"ingredient-extension-api": ">=${ingredient_extension_version}"
 	},
 	"breaks": {
 		"techreborn": "<5.1.0-beta.6",
