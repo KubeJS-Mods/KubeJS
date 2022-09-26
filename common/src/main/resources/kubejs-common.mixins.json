@@ -23,6 +23,7 @@
 		"PlayerListMixin",
 		"PlayerMixin",
 		"RecipeManagerMixin",
+		"RecipeMixin",
 		"ReloadableServerResourcesMixin",
 		"ServerLevelMixin",
 		"ServerPlayerMixin",

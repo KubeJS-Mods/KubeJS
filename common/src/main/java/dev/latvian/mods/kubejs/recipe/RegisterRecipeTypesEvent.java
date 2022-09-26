@@ -30,10 +30,6 @@ public record RegisterRecipeTypesEvent(Map<ResourceLocation, RecipeTypeJS> map) 
 		}
 	}
 
-	public void register(String id, Supplier<RecipeJS> f) {
-		register(new ResourceLocation(id), f);
-	}
-
 	public void ignore(ResourceLocation id) {
 		try {
 			register(new IgnoredRecipeTypeJS(Objects.requireNonNull(KubeJSRegistries.recipeSerializers().get(id))));
@@ -42,10 +38,6 @@ public record RegisterRecipeTypesEvent(Map<ResourceLocation, RecipeTypeJS> map) 
 				ConsoleJS.SERVER.warn("Failed to ignore recipe type " + id + " as it doesn't exist!");
 			}
 		}
-	}
-
-	public void ignore(String id) {
-		ignore(new ResourceLocation(id));
 	}
 
 	public void registerShaped(ResourceLocation id) {

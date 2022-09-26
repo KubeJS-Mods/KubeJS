@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
+import dev.latvian.mods.kubejs.core.RecipeKJS;
 import net.minecraft.resources.ResourceLocation;
 
 /**
@@ -13,8 +14,8 @@ public class IDFilter implements RecipeFilter {
 	}
 
 	@Override
-	public boolean test(FilteredRecipe r) {
-		return r.getOrCreateId().equals(id);
+	public boolean test(RecipeKJS r) {
+		return r.kjs$getOrCreateId().equals(id);
 	}
 
 	@Override

@@ -231,7 +231,7 @@ public class ItemStackJS {
 	}
 
 	public static String toItemString(Object object) {
-		return ItemStackJS.of(object).toString();
+		return ItemStackJS.of(object).kjs$toItemString();
 	}
 
 	public static List<ItemStack> getList() {

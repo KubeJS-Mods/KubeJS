@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +27,6 @@ public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("not"), NotIngredient.SERIALIZER);
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("or"), OrIngredient.SERIALIZER);
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("and"), AndIngredient.SERIALIZER);
-		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("ignore_nbt"), IgnoreNBTIngredient.SERIALIZER);
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("strong_nbt"), StrongNBTIngredient.SERIALIZER);
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("weak_nbt"), WeakNBTIngredient.SERIALIZER);
 	}
@@ -86,11 +84,6 @@ public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 	@Override
 	public Ingredient and(Ingredient[] ingredients) {
 		return ingredients.length == 0 ? Ingredient.EMPTY : ingredients.length == 1 ? ingredients[0] : new AndIngredient(ingredients);
-	}
-
-	@Override
-	public Ingredient ignoreNBT(Item item) {
-		return new IgnoreNBTIngredient(item);
 	}
 
 	@Override

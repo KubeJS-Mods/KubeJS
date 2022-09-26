@@ -8,4 +8,14 @@ public class IgnoredRecipeJS extends JsonRecipeJS {
 	public void create(RecipeArguments args) {
 		throw new RecipeExceptionJS("Can't create an ignored recipe!");
 	}
+
+	@Override
+	public boolean hasInput(IngredientMatch match) {
+		return false;
+	}
+
+	@Override
+	public boolean hasOutput(IngredientMatch match) {
+		return false;
+	}
 }

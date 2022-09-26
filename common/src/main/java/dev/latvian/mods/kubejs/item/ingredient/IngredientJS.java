@@ -127,7 +127,7 @@ public interface IngredientJS {
 
 			if (map.containsKey("type")) {
 				if ("forge:nbt".equals(map.get("type"))) {
-					in = ItemStackJS.of(map.get("item")).kjs$withNBT(NBTUtils.toTagCompound(map.get("nbt"))).kjs$asIngredient();
+					in = ItemStackJS.of(map.get("item")).kjs$withNBT(NBTUtils.toTagCompound(map.get("nbt"))).kjs$strongNBT();
 				} else {
 					var json = MapJS.json(o);
 

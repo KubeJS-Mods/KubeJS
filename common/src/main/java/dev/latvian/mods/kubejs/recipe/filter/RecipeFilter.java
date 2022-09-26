@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
+import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.recipe.IngredientMatch;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -14,18 +15,24 @@ import java.util.function.Predicate;
  * @author LatvianModder
  */
 @FunctionalInterface
-public interface RecipeFilter extends Predicate<FilteredRecipe> {
+public interface RecipeFilter extends Predicate<RecipeKJS> {
 	RecipeFilter ALWAYS_TRUE = r -> true;
 	RecipeFilter ALWAYS_FALSE = r -> false;
 
 	@Override
-	boolean test(FilteredRecipe r);
+	boolean test(RecipeKJS r);
 
 	static RecipeFilter of(@Nullable Object o) {
 		if (o == null || o == ALWAYS_TRUE) {
 			return ALWAYS_TRUE;
 		} else if (o == ALWAYS_FALSE) {
 			return ALWAYS_FALSE;
+		} else if (o instanceof CharSequence) {
+			String s = o.toString();
+
+			if (s.equals("*")) {
+				return ALWAYS_TRUE;
+			}
 		}
 
 		var list = ListJS.orSelf(o);

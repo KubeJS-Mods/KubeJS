@@ -8,10 +8,10 @@ import com.mojang.util.UUIDTypeAdapter;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
-import dev.latvian.mods.kubejs.recipe.filter.FilteredRecipe;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.DamageAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
@@ -21,6 +21,7 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.ListJS;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -40,7 +41,7 @@ import java.util.UUID;
 /**
  * @author LatvianModder
  */
-public abstract class RecipeJS implements FilteredRecipe {
+public abstract class RecipeJS implements RecipeKJS {
 	public static RecipeJS currentRecipe = null;
 	public static boolean itemErrors = false;
 	private static MessageDigest messageDigest;
@@ -106,14 +107,68 @@ public abstract class RecipeJS implements FilteredRecipe {
 		return this;
 	}
 
+	// RecipeKJS methods //
+
 	@Override
+	@Deprecated
+	public final String kjs$getGroup() {
+		return getGroup();
+	}
+
+	@Override
+	@Deprecated
+	public final void kjs$setGroup(String group) {
+		setGroup(group);
+	}
+
+	@Override
+	@Deprecated
+	public final ResourceLocation kjs$getOrCreateId() {
+		return getOrCreateId();
+	}
+
+	@Override
+	@Deprecated
+	public final ResourceLocation kjs$getType() {
+		return getType();
+	}
+
+	@Override
+	@Deprecated
+	public final boolean kjs$hasInput(IngredientMatch match) {
+		return hasInput(match);
+	}
+
+	@Override
+	@Deprecated
+	public final boolean kjs$replaceInput(IngredientMatch match, Ingredient with, ItemInputTransformer transformer) {
+		return replaceInput(match, with, transformer);
+	}
+
+	@Override
+	@Deprecated
+	public final boolean kjs$hasOutput(IngredientMatch match) {
+		return hasOutput(match);
+	}
+
+	@Override
+	@Deprecated
+	public final boolean kjs$replaceOutput(IngredientMatch match, ItemStack with, ItemOutputTransformer transformer) {
+		return replaceOutput(match, with, transformer);
+	}
+
+	// RecipeKJS methods //
+
+	@HideFromJS
 	public abstract boolean hasInput(IngredientMatch match);
 
+	@HideFromJS
 	public abstract boolean replaceInput(IngredientMatch match, Ingredient with, ItemInputTransformer transformer);
 
-	@Override
+	@HideFromJS
 	public abstract boolean hasOutput(IngredientMatch match);
 
+	@HideFromJS
 	public abstract boolean replaceOutput(IngredientMatch match, ItemStack with, ItemOutputTransformer transformer);
 
 	/*
@@ -196,12 +251,13 @@ public abstract class RecipeJS implements FilteredRecipe {
 
 	*/
 
-	@Override
+	@HideFromJS
 	public String getGroup() {
 		var e = json.get("group");
 		return e instanceof JsonPrimitive ? e.getAsString() : "";
 	}
 
+	@HideFromJS
 	public void setGroup(String g) {
 		if (g.isEmpty()) {
 			json.remove("group");
@@ -221,21 +277,16 @@ public abstract class RecipeJS implements FilteredRecipe {
 		return getOrCreateId().toString();
 	}
 
-	@Override
-	public String getMod() {
-		return getOrCreateId().getNamespace();
-	}
-
 	public String getPath() {
 		return getOrCreateId().getPath();
 	}
 
-	@Override
+	@HideFromJS
 	public ResourceLocation getType() {
 		return type.getId();
 	}
 
-	@Override
+	@HideFromJS
 	public ResourceLocation getOrCreateId() {
 		if (id == null) {
 			id = new ResourceLocation(type.getId().getNamespace() + ":kjs_" + getUniqueId());

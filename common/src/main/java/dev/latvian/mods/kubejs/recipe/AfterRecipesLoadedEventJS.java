@@ -1,14 +1,11 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
-import dev.latvian.mods.kubejs.recipe.filter.FilteredRecipe;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
 
@@ -21,97 +18,23 @@ import java.util.function.Consumer;
  * @author LatvianModder
  */
 public class AfterRecipesLoadedEventJS extends EventJS {
-	public static final class Container implements FilteredRecipe {
-		public final ResourceLocation id;
-		public final RecipeType<?> recipeType;
-		public final Recipe<?> recipe;
-		private final Map<ResourceLocation, Recipe<?>> mapRef;
-		private JsonObject json;
-		private ResourceLocation type;
-
-		private Container(ResourceLocation id, RecipeType<?> recipeType, Recipe<?> recipe, Map<ResourceLocation, Recipe<?>> mapRef) {
-			this.id = id;
-			this.recipeType = recipeType;
-			this.recipe = recipe;
-			this.mapRef = mapRef;
-		}
-
-		public JsonObject getJson() {
-			if (json == null) {
-				json = new JsonObject();
-			}
-
-			return json;
-		}
-
-		@Override
-		public int hashCode() {
-			return id.hashCode();
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			return obj == this || obj instanceof Container c && id.equals(c.id);
-		}
-
-		@Override
-		public String getGroup() {
-			return recipe.getGroup();
-		}
-
-		@Override
-		public ResourceLocation getOrCreateId() {
-			return id;
-		}
-
-		@Override
-		public String getMod() {
-			return id.getNamespace();
-		}
-
-		@Override
-		public ResourceLocation getType() {
-			if (type == null) {
-				type = KubeJSRegistries.recipeSerializers().getId(recipe.getSerializer());
-			}
-
-			return type;
-		}
-
-		@Override
-		public boolean hasInput(IngredientMatch match) {
-			for (Ingredient ingredient : recipe.getIngredients()) {
-				if (match.contains(ingredient)) {
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		@Override
-		public boolean hasOutput(IngredientMatch match) {
-			return match.contains(recipe.getResultItem());
-		}
-	}
-
 	private final Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipeMap;
 	private final Map<ResourceLocation, Recipe<?>> recipeIdMap;
 
-	private List<Container> originalRecipes;
+	private List<RecipeKJS> originalRecipes;
 
 	public AfterRecipesLoadedEventJS(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> r, Map<ResourceLocation, Recipe<?>> n) {
 		recipeMap = r;
 		recipeIdMap = n;
 	}
 
-	private List<Container> getOriginalRecipes() {
+	private List<RecipeKJS> getOriginalRecipes() {
 		if (originalRecipes == null) {
 			originalRecipes = new ArrayList<>();
 
 			for (var map : recipeMap.values()) {
 				for (var entry : map.entrySet()) {
-					originalRecipes.add(new Container(entry.getKey(), entry.getValue().getType(), entry.getValue(), map));
+					originalRecipes.add((RecipeKJS) entry.getValue());
 				}
 			}
 		}
@@ -119,7 +42,7 @@ public class AfterRecipesLoadedEventJS extends EventJS {
 		return originalRecipes;
 	}
 
-	public void forEachRecipe(RecipeFilter filter, Consumer<Container> consumer) {
+	public void forEachRecipe(RecipeFilter filter, Consumer<RecipeKJS> consumer) {
 		if (filter == RecipeFilter.ALWAYS_TRUE) {
 			getOriginalRecipes().forEach(consumer);
 		} else if (filter != RecipeFilter.ALWAYS_FALSE) {
@@ -142,11 +65,16 @@ public class AfterRecipesLoadedEventJS extends EventJS {
 		var itr = getOriginalRecipes().iterator();
 
 		while (itr.hasNext()) {
-			Container r = itr.next();
+			var r = itr.next();
 
 			if (filter.test(r)) {
-				recipeIdMap.remove(r.id);
-				r.mapRef.remove(r.id);
+				var map = recipeMap.get(((Recipe<?>) r).getType());
+
+				if (map != null) {
+					map.remove(r.kjs$getOrCreateId());
+				}
+
+				recipeIdMap.remove(r.kjs$getOrCreateId());
 				itr.remove();
 				count++;
 

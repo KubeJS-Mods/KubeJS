@@ -4,7 +4,6 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.CompoundIngredient;
@@ -27,7 +26,6 @@ public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 		CraftingHelper.register(KubeJS.id("creative_tab"), CreativeTabIngredient.SERIALIZER);
 		CraftingHelper.register(KubeJS.id("not"), NotIngredient.SERIALIZER);
 		CraftingHelper.register(KubeJS.id("and"), AndIngredient.SERIALIZER);
-		CraftingHelper.register(KubeJS.id("ignore_nbt"), IgnoreNBTIngredient.SERIALIZER);
 		CraftingHelper.register(KubeJS.id("strong_nbt"), StrongNBTIngredient.SERIALIZER);
 		CraftingHelper.register(KubeJS.id("weak_nbt"), WeakNBTIngredient.SERIALIZER);
 	}
@@ -85,11 +83,6 @@ public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 	@Override
 	public Ingredient and(Ingredient[] ingredients) {
 		return ingredients.length == 0 ? Ingredient.EMPTY : ingredients.length == 1 ? ingredients[0] : new AndIngredient(ingredients);
-	}
-
-	@Override
-	public Ingredient ignoreNBT(Item item) {
-		return new IgnoreNBTIngredient(item);
 	}
 
 	@Override

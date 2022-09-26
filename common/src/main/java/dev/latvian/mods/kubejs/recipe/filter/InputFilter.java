@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
+import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.recipe.IngredientMatch;
 
 /**
@@ -13,8 +14,8 @@ public class InputFilter implements RecipeFilter {
 	}
 
 	@Override
-	public boolean test(FilteredRecipe r) {
-		return r.hasInput(match);
+	public boolean test(RecipeKJS r) {
+		return r.kjs$hasInput(match);
 	}
 
 	@Override

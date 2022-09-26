@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackKey;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -20,6 +19,7 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
@@ -215,7 +215,7 @@ public abstract class ItemMixin implements ItemKJS {
 	@Override
 	public Ingredient kjs$getTypeIngredient() {
 		if (kjs$typeIngredient == null) {
-			kjs$typeIngredient = IngredientPlatformHelper.get().ignoreNBT(kjs$self());
+			kjs$typeIngredient = kjs$self() == Items.AIR ? Ingredient.EMPTY : Ingredient.of(kjs$self());
 		}
 
 		return kjs$typeIngredient;

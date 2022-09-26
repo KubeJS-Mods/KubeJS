@@ -1,5 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
+import dev.latvian.mods.kubejs.core.RecipeKJS;
+
 import java.util.regex.Pattern;
 
 /**
@@ -13,8 +15,8 @@ public class RegexIDFilter implements RecipeFilter {
 	}
 
 	@Override
-	public boolean test(FilteredRecipe r) {
-		return pattern.matcher(r.getOrCreateId().toString()).find();
+	public boolean test(RecipeKJS r) {
+		return pattern.matcher(r.kjs$getOrCreateId().toString()).find();
 	}
 
 	@Override

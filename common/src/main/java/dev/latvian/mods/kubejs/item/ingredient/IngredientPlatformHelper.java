@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.item.ingredient;
 
 import com.google.common.base.Suppliers;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
@@ -47,8 +46,6 @@ public interface IngredientPlatformHelper {
 	Ingredient or(Ingredient[] ingredients);
 
 	Ingredient and(Ingredient[] ingredients);
-
-	Ingredient ignoreNBT(Item item);
 
 	Ingredient strongNBT(ItemStack item);
 

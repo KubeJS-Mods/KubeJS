@@ -1,5 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
+import dev.latvian.mods.kubejs.core.RecipeKJS;
+
 /**
  * @author MaxNeedsSnacks
  */
@@ -11,7 +13,7 @@ public class NotFilter implements RecipeFilter {
 	}
 
 	@Override
-	public boolean test(FilteredRecipe r) {
+	public boolean test(RecipeKJS r) {
 		return !original.test(r);
 	}
 

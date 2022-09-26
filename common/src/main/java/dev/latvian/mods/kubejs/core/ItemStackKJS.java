@@ -180,10 +180,6 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable {
 		return kjs$self().getItem().kjs$getMod();
 	}
 
-	default Ingredient kjs$ignoreNBT() {
-		return kjs$self().getItem().kjs$getTypeIngredient();
-	}
-
 	default Ingredient kjs$weakNBT() {
 		return IngredientPlatformHelper.get().weakNBT(kjs$self());
 	}
@@ -302,7 +298,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable {
 	}
 
 	default Ingredient kjs$asIngredient() {
-		return Ingredient.of(kjs$self());
+		return kjs$self().getItem().kjs$getTypeIngredient();
 	}
 
 	default JsonObject kjs$toJson() {
