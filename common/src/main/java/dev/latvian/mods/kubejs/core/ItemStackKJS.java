@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.NBTSerializable;
@@ -178,6 +179,14 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable {
 
 	default String kjs$getMod() {
 		return kjs$self().getItem().kjs$getMod();
+	}
+
+	@Deprecated
+	default Ingredient kjs$ignoreNBT() {
+		ConsoleJS.SERVER.pushLineNumber();
+		ConsoleJS.SERVER.warn("You don't need to call .ignoreNBT() anymore, all item ingredients ignore NBT by default!");
+		ConsoleJS.SERVER.popLineNumber();
+		return kjs$self().getItem().kjs$getTypeIngredient();
 	}
 
 	default Ingredient kjs$weakNBT() {
