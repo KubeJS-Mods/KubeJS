@@ -92,6 +92,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient FoodBuilder foodBuilder;
 	public transient Function<ItemStack, Color> barColor;
 	public transient ToIntFunction<ItemStack> barWidth;
+	public transient boolean fireResistant;
 
 	public transient NameCallback nameGetter;
 
@@ -128,6 +129,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		use = null;
 		finishUsing = null;
 		releaseUsing = null;
+		fireResistant = false;
 	}
 
 	@Override
@@ -298,6 +300,15 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
+	public ItemBuilder fireResistant(boolean b) {
+		this.fireResistant = b;
+		return this;
+	}
+
+	public ItemBuilder fireResistant() {
+		return fireResistant(true);
+	}
+
 	public Item.Properties createItemProperties() {
 		var properties = new KubeJSItemProperties(this);
 
@@ -321,6 +332,10 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 		if (foodBuilder != null) {
 			properties.food(foodBuilder.build());
+		}
+
+		if (fireResistant) {
+			properties.fireResistant();
 		}
 
 		return properties;
