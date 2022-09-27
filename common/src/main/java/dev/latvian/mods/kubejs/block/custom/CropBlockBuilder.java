@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.MaterialListJS;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.block.SeedItemBuilder;
+import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
@@ -202,30 +203,22 @@ public class CropBlockBuilder extends BlockBuilder {
 	}
 
 	@Override
-	public void generateAssetJsons(AssetJsonGenerator generator) {
-		if (blockstateJson != null) {
-			generator.json(newID("blockstates/", ""), blockstateJson);
-		} else {
-			generator.blockState(id, bs -> {
-				for (int i = 0; i <= age; i++) {
-					bs.variant("age=%s".formatted(i), model.isEmpty() ? (id.getNamespace() + ":block/" + id.getPath() + i) : model);
-				}
+	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
+		for (int i = 0; i <= age; i++) {
+			bs.variant("age=%s".formatted(i), model.isEmpty() ? (id.getNamespace() + ":block/" + id.getPath() + i) : model);
+		}
+	}
+
+	@Override
+	protected void generateBlockModelJsons(AssetJsonGenerator generator) {
+		for (int i = 0; i <= age; i++) {
+			final int fi = i;
+			generator.blockModel(newID("", String.valueOf(i)), m -> {
+				m.parent("minecraft:block/crop");
+				m.texture("crop", textures.get(String.valueOf(fi)).getAsString());
 			});
 		}
-		if (modelJson != null) {
-			generator.json(newID("models/block/", ""), modelJson);
-		} else {
-			for (int i = 0; i <= age; i++) {
-				final int fi = i;
-				generator.blockModel(newID("", String.valueOf(i)), m -> {
-					m.parent("minecraft:block/crop");
-					m.texture("crop", textures.get(String.valueOf(fi)).getAsString());
-				});
-			}
-		}
-		if (itemBuilder != null) {
-			itemBuilder.generateAssetJsons(generator);
-		}
+
 	}
 
 	@Override

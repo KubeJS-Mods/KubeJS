@@ -29,6 +29,7 @@ import dev.latvian.mods.kubejs.block.custom.CropBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.FallingBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.FenceBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.FenceGateBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.HorizontalDirectionalBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.SlabBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.StairBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.StoneButtonBlockBuilder;
@@ -174,6 +175,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		RegistryObjectBuilderTypes.BLOCK.addType("stone_button", StoneButtonBlockBuilder.class, StoneButtonBlockBuilder::new);
 		RegistryObjectBuilderTypes.BLOCK.addType("falling", FallingBlockBuilder.class, FallingBlockBuilder::new);
 		RegistryObjectBuilderTypes.BLOCK.addType("crop", CropBlockBuilder.class, CropBlockBuilder::new);
+		RegistryObjectBuilderTypes.BLOCK.addType("cardinal", HorizontalDirectionalBlockBuilder.class, HorizontalDirectionalBlockBuilder::new);
 
 		RegistryObjectBuilderTypes.ITEM.addType("basic", BasicItemJS.Builder.class, BasicItemJS.Builder::new);
 		RegistryObjectBuilderTypes.ITEM.addType("sword", SwordItemBuilder.class, SwordItemBuilder::new);

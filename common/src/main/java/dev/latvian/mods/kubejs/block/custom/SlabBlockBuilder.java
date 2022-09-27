@@ -1,5 +1,7 @@
 package dev.latvian.mods.kubejs.block.custom;
 
+import dev.latvian.mods.kubejs.client.ModelGenerator;
+import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -18,13 +20,14 @@ public class SlabBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	public void generateAssetJsons(AssetJsonGenerator generator) {
-		generator.blockState(id, bs -> {
-			bs.variant("type=double", v -> v.model(newID("block/", "_double").toString()));
-			bs.variant("type=bottom", v -> v.model(newID("block/", "_bottom").toString()));
-			bs.variant("type=top", v -> v.model(newID("block/", "_top").toString()));
-		});
+	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
+		bs.variant("type=double", v -> v.model(newID("block/", "_double").toString()));
+		bs.variant("type=bottom", v -> v.model(newID("block/", "_bottom").toString()));
+		bs.variant("type=top", v -> v.model(newID("block/", "_top").toString()));
+	}
 
+	@Override
+	protected void generateBlockModelJsons(AssetJsonGenerator generator) {
 		final var texture = textures.get("texture").getAsString();
 
 		generator.blockModel(newID("", "_double"), m -> {
@@ -45,7 +48,10 @@ public class SlabBlockBuilder extends ShapedBlockBuilder {
 			m.texture("top", texture);
 			m.texture("side", texture);
 		});
+	}
 
-		generator.itemModel(itemBuilder.id, m -> m.parent(newID("block/", "_bottom").toString()));
+	@Override
+	protected void generateItemModelJson(ModelGenerator m) {
+		m.parent(newID("block/", "_bottom").toString());
 	}
 }
