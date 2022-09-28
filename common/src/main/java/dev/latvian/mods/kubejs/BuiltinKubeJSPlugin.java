@@ -206,6 +206,10 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		RegistryObjectBuilderTypes.POINT_OF_INTEREST_TYPE.addType("basic", PoiTypeBuilder.class, PoiTypeBuilder::new);
 		RegistryObjectBuilderTypes.VILLAGER_TYPE.addType("basic", VillagerTypeBuilder.class, VillagerTypeBuilder::new);
 		RegistryObjectBuilderTypes.VILLAGER_PROFESSION.addType("basic", VillagerProfessionBuilder.class, VillagerProfessionBuilder::new);
+
+		BlockAbility.register("minecraft:energy", EnergyBlockAbility::new);
+		BlockAbility.register("minecraft:fluid", FluidBlockAbility::new);
+		BlockAbility.register("minecraft:item", ItemBlockAbility::new);
 	}
 
 	@Override

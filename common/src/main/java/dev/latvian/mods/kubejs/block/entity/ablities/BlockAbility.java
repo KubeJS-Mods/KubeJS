@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.NativeObject;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,14 +17,15 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-@SuppressWarnings("StaticInitializerReferencesSubClass")
 public abstract class BlockAbility<T> {
-	public static final HashMap<String, Function<AbilityJS, BlockAbility<?>>> registry = new HashMap<>();
+	private static final HashMap<ResourceLocation, Function<AbilityJS, BlockAbility<?>>> registry = new HashMap<>();
 
-	static {
-		BlockAbility.registry.put("energy", EnergyBlockAbility::new);
-		BlockAbility.registry.put("fluid", FluidBlockAbility::new);
-		BlockAbility.registry.put("item", ItemBlockAbility::new);
+	public static void register(Object id, Function<AbilityJS, BlockAbility<?>> factory) {
+		BlockAbility.registry.put(UtilsJS.getMCID(id), factory);
+	}
+
+	public static Function<AbilityJS, BlockAbility<?>> getRegistered(Object id) {
+		return BlockAbility.registry.get(UtilsJS.getMCID(id));
 	}
 
 	public record SlotDefinition(String id, Number limit, boolean input, boolean output) {
@@ -44,7 +46,7 @@ public abstract class BlockAbility<T> {
 	public record AbilityJS(String type, List<SlotDefinition> slots) {
 		public static AbilityJS of(Object o) {
 			if (o instanceof NativeObject obj) {
-				return new AbilityJS(obj.get("type").toString(), UtilsJS.cast(ListJS.orSelf(obj.get("slots"))));
+				return new AbilityJS(obj.get("type").toString(), ListJS.orSelf(obj.get("slots")).stream().map(SlotDefinition::of).toList());
 			}
 			return null;
 		}

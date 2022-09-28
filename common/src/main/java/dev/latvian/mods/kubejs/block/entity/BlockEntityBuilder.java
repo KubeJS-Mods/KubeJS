@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.block.entity.ablities.BlockAbility;
 import dev.latvian.mods.kubejs.block.entity.screen.event.DOMLoadedEvent;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.rhino.NativeObject;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -46,7 +45,11 @@ public class BlockEntityBuilder extends BuilderBase<BlockEntityType<?>> {
 
 	public BlockEntityBuilder ability(String id, BlockAbility.AbilityJS ability) {
 		if (ability.type() != null) {
-			this.blockAbilities.put(id, new Tuple<>(ability, BlockAbility.registry.get(ability.type())));
+			var blockAbilityDefinition = BlockAbility.getRegistered(ability.type());
+			if (blockAbilityDefinition == null) {
+				throw new IllegalArgumentException("Invalid ability: " + ability.type());
+			}
+			this.blockAbilities.put(id, new Tuple<>(ability, blockAbilityDefinition));
 		} else {
 			throw new IllegalArgumentException("Abilities must provide a type!");
 		}
