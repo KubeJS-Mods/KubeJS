@@ -108,6 +108,8 @@ public class ScriptManager {
 				pack.scope = context.initStandardObjects();
 
 				var contextData = SharedContextData.get(pack.scope);
+				contextData.setExtraProperty("Type", type);
+				contextData.setExtraProperty("Console", type.console);
 				contextData.setClassShutter((fullClassName, type) -> type != ClassShutter.TYPE_CLASS_IN_PACKAGE || isClassAllowed(fullClassName));
 				contextData.setRemapper(RemappingHelper.getMinecraftRemapper());
 				var typeWrappers = contextData.getTypeWrappers();
