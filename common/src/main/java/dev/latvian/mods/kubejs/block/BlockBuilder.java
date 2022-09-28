@@ -137,6 +137,10 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		if (itemBuilder != null) {
 			RegistryObjectBuilderTypes.ITEM.addBuilder(itemBuilder);
 		}
+
+		if (blockEntityBuilder != null) {
+			RegistryObjectBuilderTypes.BLOCK_ENTITY_TYPE.addBuilder(blockEntityBuilder);
+		}
 	}
 
 	@Override
