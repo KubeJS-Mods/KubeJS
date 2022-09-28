@@ -44,8 +44,7 @@ public class BlockEntityBuilder extends BuilderBase<BlockEntityType<?>> {
 		return this;
 	}
 
-	public BlockEntityBuilder ability(String id, NativeObject abilityjs) {
-		BlockAbility.AbilityJS ability = BlockAbility.AbilityJS.of(abilityjs);
+	public BlockEntityBuilder ability(String id, BlockAbility.AbilityJS ability) {
 		if (ability.type() != null) {
 			this.blockAbilities.put(id, new Tuple<>(ability, BlockAbility.registry.get(ability.type())));
 		} else {

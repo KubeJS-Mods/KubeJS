@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.block.entity.ablities;
 
 import dev.latvian.mods.kubejs.block.entity.ablities.wrappers.AbilityTypeWrapper;
+import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.NativeArray;
 import dev.latvian.mods.rhino.NativeObject;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -27,12 +27,6 @@ public abstract class BlockAbility<T> {
 	}
 
 	public record SlotDefinition(String id, Number limit, boolean input, boolean output) {
-		public static List<SlotDefinition> ofList(Object o) {
-			if (o instanceof NativeArray arr) {
-				return arr.stream().map(SlotDefinition::of).toList();
-			}
-			return null;
-		}
 
 		public static SlotDefinition of(Object o) {
 			if (o instanceof NativeObject obj) {
@@ -50,7 +44,7 @@ public abstract class BlockAbility<T> {
 	public record AbilityJS(String type, List<SlotDefinition> slots) {
 		public static AbilityJS of(Object o) {
 			if (o instanceof NativeObject obj) {
-				return new AbilityJS(obj.get("type").toString(), SlotDefinition.ofList(obj.get("slots")));
+				return new AbilityJS(obj.get("type").toString(), UtilsJS.cast(ListJS.orSelf(obj.get("slots"))));
 			}
 			return null;
 		}

@@ -38,6 +38,7 @@ import dev.latvian.mods.kubejs.block.custom.WallBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.WoodenButtonBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.WoodenPressurePlateBlockBuilder;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityBuilder;
+import dev.latvian.mods.kubejs.block.entity.ablities.BlockAbility;
 import dev.latvian.mods.kubejs.block.entity.ablities.EnergyBlockAbility;
 import dev.latvian.mods.kubejs.block.entity.ablities.FluidBlockAbility;
 import dev.latvian.mods.kubejs.block.entity.ablities.ItemBlockAbility;
@@ -460,6 +461,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(DamageSource.class, DamageSourceWrapper::of);
 		typeWrappers.register(EntitySelector.class, UtilsJS::entitySelector);
 		typeWrappers.register(IngredientMatch.class, IngredientMatch::of);
+		typeWrappers.register(BlockAbility.AbilityJS.class, BlockAbility.AbilityJS::of);
+		typeWrappers.register(BlockAbility.SlotDefinition.class, BlockAbility.SlotDefinition::of);
 
 		// components //
 		typeWrappers.register(Component.class, ComponentWrapper::of);
