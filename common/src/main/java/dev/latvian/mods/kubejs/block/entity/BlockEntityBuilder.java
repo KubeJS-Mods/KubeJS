@@ -7,8 +7,7 @@ import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.entity.ablities.BlockAbility;
 import dev.latvian.mods.kubejs.block.entity.screen.event.DOMLoadedEvent;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.NativeArray;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.NativeObject;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.BlockPos;
@@ -22,7 +21,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -57,12 +55,17 @@ public class BlockEntityBuilder extends BuilderBase<BlockEntityType<?>> {
 	}
 
 	public BlockEntityBuilder createScreen(String screen) {
-
+		ConsoleJS.STARTUP.pushLineNumber();
+		ConsoleJS.STARTUP.warn("Screens have not been implemented yet");
+		ConsoleJS.STARTUP.popLineNumber();
 		return this;
 	}
 
 	public BlockEntityBuilder onContentLoaded(Consumer<DOMLoadedEvent> cb) {
 		this.onDomLoaded = cb;
+		ConsoleJS.STARTUP.pushLineNumber();
+		ConsoleJS.STARTUP.warn("Screens have not been implemented yet (domContentLoaded)");
+		ConsoleJS.STARTUP.popLineNumber();
 		return this;
 	}
 

@@ -2,12 +2,7 @@ package dev.latvian.mods.kubejs.block.entity.ablities;
 
 import dev.latvian.mods.kubejs.block.entity.ablities.wrappers.AbilityTypeWrapper;
 import dev.latvian.mods.kubejs.block.entity.ablities.wrappers.FluidAbilityWrapper;
-import dev.latvian.mods.kubejs.block.entity.ablities.wrappers.IntegerAbilityWrapper;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
-import dev.latvian.mods.kubejs.util.ListJS;
-import dev.latvian.mods.kubejs.util.MapJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
-import net.minecraft.nbt.CompoundTag;
 
 import java.util.HashMap;
 import java.util.Map;

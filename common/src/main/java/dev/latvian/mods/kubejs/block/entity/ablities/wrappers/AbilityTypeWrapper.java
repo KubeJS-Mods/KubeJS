@@ -30,16 +30,23 @@ public interface AbilityTypeWrapper<T> {
 		var max = getMax();
 		var initCount = getCount();
 		if (num > max) {
-			if (!simulate) setCount(max);
+			if (!simulate) {
+				setCount(max);
+			}
 			return max - num;
 		}
 		if (num < 0) {
-			if (!simulate) setCount(0);
+			if (!simulate) {
+				setCount(0);
+			}
 			return Math.abs(num);
 		}
-		if (!simulate) setCount(num);
+		if (!simulate) {
+			setCount(num);
+		}
 		return initCount - num;
 	}
+
 	default long safeSetCount(long num) {
 		return safeSetCount(num, false);
 	}
@@ -48,6 +55,7 @@ public interface AbilityTypeWrapper<T> {
 	default long shrink(long num, boolean simulate) {
 		return safeSetCount(getCount() - num, simulate);
 	}
+
 	default long shrink(long num) {
 		return shrink(num, false);
 	}
@@ -56,6 +64,7 @@ public interface AbilityTypeWrapper<T> {
 	default long grow(long num, boolean simulate) {
 		return safeSetCount(getCount() + num, simulate);
 	}
+
 	default long grow(long num) {
 		return grow(num, false);
 	}

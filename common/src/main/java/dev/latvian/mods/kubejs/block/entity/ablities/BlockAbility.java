@@ -1,14 +1,12 @@
 package dev.latvian.mods.kubejs.block.entity.ablities;
 
 import dev.latvian.mods.kubejs.block.entity.ablities.wrappers.AbilityTypeWrapper;
-import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.NativeArray;
 import dev.latvian.mods.rhino.NativeObject;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 
-import java.lang.annotation.Native;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +46,7 @@ public abstract class BlockAbility<T> {
 			return null;
 		}
 	}
+
 	public record AbilityJS(String type, List<SlotDefinition> slots) {
 		public static AbilityJS of(Object o) {
 			if (o instanceof NativeObject obj) {
@@ -65,20 +64,23 @@ public abstract class BlockAbility<T> {
 
 	public Set<String> getSlots() {
 		return getSlotMap().keySet();
-	};
+	}
+
 	public int getSlotsLength() {
 		return getSlotMap().size();
 	}
+
 	public AbilityTypeWrapper<T> get(String slot) {
 		return getSlotMap().get(slot);
 	}
+
 	public void set(String slot, T object) {
 		getSlotMap().get(slot).setRaw(object);
 	}
 
 	public long getMax(String slot) {
 		return getSlotMap().get(slot).getMax();
-	};
+	}
 
 	public T grow(String slot, int num, boolean simulate) {
 		return insert(slot, get(slot).withCount(num).getRaw(), simulate);
@@ -113,7 +115,8 @@ public abstract class BlockAbility<T> {
 		var slotWrapper = get(slot);
 		var remainder = slotWrapper.shrink(amount, simulate);
 		return slotWrapper.withCount(remainder).getRaw();
-	};
+	}
+
 
 	public abstract void markDirty(String slot);
 

@@ -1,15 +1,13 @@
 package dev.latvian.mods.kubejs.block.entity;
 
-import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.block.entity.ablities.BlockAbility;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +43,7 @@ public class BasicBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void saveAdditional(CompoundTag compoundTag) {
+	protected void saveAdditional(@NotNull CompoundTag compoundTag) {
 		super.saveAdditional(compoundTag);
 		CompoundTag blockAbilitiesNbt = new CompoundTag();
 		for (var pair : blockAbilities.entrySet()) {
@@ -55,9 +53,8 @@ public class BasicBlockEntity extends BlockEntity {
 	}
 
 
-
 	@Override
-	public void load(CompoundTag compoundTag) {
+	public void load(@NotNull CompoundTag compoundTag) {
 		super.load(compoundTag);
 		CompoundTag blockAbilitiesNbt = compoundTag.getCompound("abilities");
 		for (var key : blockAbilitiesNbt.getAllKeys()) {
