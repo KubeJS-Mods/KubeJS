@@ -1,5 +1,5 @@
-package dev.latvian.mods.kubejs;
 
+package dev.latvian.mods.kubejs;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -37,6 +37,10 @@ import dev.latvian.mods.kubejs.block.custom.StonePressurePlateBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.WallBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.WoodenButtonBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.WoodenPressurePlateBlockBuilder;
+import dev.latvian.mods.kubejs.block.entity.BlockEntityBuilder;
+import dev.latvian.mods.kubejs.block.entity.ablities.EnergyBlockAbility;
+import dev.latvian.mods.kubejs.block.entity.ablities.FluidBlockAbility;
+import dev.latvian.mods.kubejs.block.entity.ablities.ItemBlockAbility;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.screen.AtlasTextureObject;
@@ -193,7 +197,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		RegistryObjectBuilderTypes.ENCHANTMENT.addType("basic", EnchantmentBuilder.class, EnchantmentBuilder::new);
 		RegistryObjectBuilderTypes.MOB_EFFECT.addType("basic", BasicMobEffect.Builder.class, BasicMobEffect.Builder::new);
 		// ENTITY_TYPE
-		// BLOCK_ENTITY_TYPE
+		RegistryObjectBuilderTypes.BLOCK_ENTITY_TYPE.addType("basic", BlockEntityBuilder.class, BlockEntityBuilder::new);
 		RegistryObjectBuilderTypes.POTION.addType("basic", PotionBuilder.class, PotionBuilder::new);
 		RegistryObjectBuilderTypes.PARTICLE_TYPE.addType("basic", ParticleTypeBuilder.class, ParticleTypeBuilder::new);
 		RegistryObjectBuilderTypes.PAINTING_VARIANT.addType("basic", PaintingVariantBuilder.class, PaintingVariantBuilder::new);

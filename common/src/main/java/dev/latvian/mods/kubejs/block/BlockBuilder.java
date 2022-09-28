@@ -6,6 +6,7 @@ import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.block.entity.BlockEntityBuilder;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
@@ -77,6 +78,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient Consumer<BlockStateModifyCallbackJS> defaultStateModification;
 	public transient Consumer<BlockStateModifyPlacementCallbackJS> placementStateModification;
 
+	public transient BlockEntityBuilder blockEntityBuilder;
+
 	public BlockBuilder(ResourceLocation i) {
 		super(i);
 		material = MaterialListJS.INSTANCE.map.get("wood");
@@ -98,6 +101,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		noCollision = false;
 		notSolid = false;
 		randomTickCallback = null;
+		blockEntityBuilder = null;
 
 		lootTable = loot -> loot.addPool(pool -> {
 			pool.survivesExplosion();
@@ -411,6 +415,19 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	public BlockBuilder noItem() {
 		return item(null);
+	}
+
+	public BlockBuilder blockEntity(@Nullable Consumer<BlockEntityBuilder> i) {
+		if (i == null) {
+			blockEntityBuilder = null;
+		} else  {
+			BlockEntityBuilder te = new BlockEntityBuilder(id);
+			te.blockBuilder = this;
+			this.blockEntityBuilder = te;
+			i.accept(te);
+		}
+
+		return this;
 	}
 
 	public BlockBuilder box(double x0, double y0, double z0, double x1, double y1, double z1, boolean scale16) {
