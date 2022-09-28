@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
-import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +18,7 @@ public interface MobFilter extends BiPredicate<MobCategory, MobSpawnSettings.Spa
 	MobFilter ALWAYS_TRUE = (cat, data) -> true;
 	MobFilter ALWAYS_FALSE = (cat, data) -> false;
 
+	@Override
 	boolean test(MobCategory cat, MobSpawnSettings.SpawnerData data);
 
 	static MobFilter of(@Nullable Object o) {
@@ -83,7 +83,7 @@ public interface MobFilter extends BiPredicate<MobCategory, MobSpawnSettings.Spa
 
 			// TODO: Add other mob filters
 		} catch (Exception ex) {
-			ConsoleJS.STARTUP.error("Error trying to create MobFilter: " + ex.getMessage());
+			ConsoleJS.getCurrent(ConsoleJS.STARTUP).error("Error trying to create MobFilter: " + ex.getMessage());
 			return ALWAYS_FALSE;
 		}
 

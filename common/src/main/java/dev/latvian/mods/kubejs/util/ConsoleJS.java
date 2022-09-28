@@ -30,6 +30,16 @@ public class ConsoleJS {
 	public static ConsoleJS SERVER;
 	public static ConsoleJS CLIENT;
 
+	public static ConsoleJS getCurrent(ConsoleJS def) {
+		Context cx = Context.getCurrentContext();
+
+		if (cx != null && cx.sharedContextData.getExtraProperty("Console") instanceof ConsoleJS c) {
+			return c;
+		}
+
+		return def;
+	}
+
 	private static class StackTracePrintStream extends PrintStream {
 		private final ConsoleJS console;
 		private boolean first;

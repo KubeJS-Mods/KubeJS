@@ -82,7 +82,7 @@ public interface BiomeFilter extends Predicate<BiomeModifications.BiomeContext> 
 
 			// TODO: Add other biome property filters
 		} catch (Exception ex) {
-			ConsoleJS.STARTUP.error("Error trying to create BiomeFilter: " + ex.getMessage());
+			ConsoleJS.getCurrent(ConsoleJS.STARTUP).error("Error trying to create BiomeFilter: " + ex.getMessage());
 			return ALWAYS_FALSE;
 		}
 

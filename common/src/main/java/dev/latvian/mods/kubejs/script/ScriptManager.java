@@ -152,6 +152,7 @@ public class ScriptManager implements ClassShutter {
 				pack.scope = context.initStandardObjects();
 				SharedContextData contextData = SharedContextData.get(pack.scope);
 				contextData.setExtraProperty("Type", type);
+				contextData.setExtraProperty("Console", type.console);
 				contextData.setClassShutter(this);
 				contextData.setRemapper(RemappingHelper.getMinecraftRemapper());
 				var typeWrappers = contextData.getTypeWrappers();

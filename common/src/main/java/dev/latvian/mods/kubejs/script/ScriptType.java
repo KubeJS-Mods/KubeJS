@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.world.level.LevelReader;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,16 @@ public enum ScriptType {
 
 	public static ScriptType of(LevelReader level) {
 		return level.isClientSide() ? CLIENT : SERVER;
+	}
+
+	public static ScriptType getCurrent(ScriptType def) {
+		Context cx = Context.getCurrentContext();
+
+		if (cx != null && cx.sharedContextData.getExtraProperty("Type") instanceof ScriptType t) {
+			return t;
+		}
+
+		return def;
 	}
 
 	public final String name;

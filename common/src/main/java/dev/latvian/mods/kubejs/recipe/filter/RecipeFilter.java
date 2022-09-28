@@ -112,9 +112,9 @@ public interface RecipeFilter extends Predicate<RecipeKJS> {
 			return predicate.list.isEmpty() ? ALWAYS_TRUE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
 		} catch (RecipeExceptionJS ex) {
 			if (ex.error) {
-				ConsoleJS.SERVER.error(ex.getMessage());
+				ConsoleJS.getCurrent(ConsoleJS.SERVER).error(ex.getMessage());
 			} else {
-				ConsoleJS.SERVER.warn(ex.getMessage());
+				ConsoleJS.getCurrent(ConsoleJS.SERVER).warn(ex.getMessage());
 			}
 
 			return ALWAYS_FALSE;
