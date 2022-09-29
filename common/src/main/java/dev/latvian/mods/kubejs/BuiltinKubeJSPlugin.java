@@ -42,6 +42,21 @@ import dev.latvian.mods.kubejs.block.entity.ablities.BlockAbility;
 import dev.latvian.mods.kubejs.block.entity.ablities.EnergyBlockAbility;
 import dev.latvian.mods.kubejs.block.entity.ablities.FluidBlockAbility;
 import dev.latvian.mods.kubejs.block.entity.ablities.ItemBlockAbility;
+import dev.latvian.mods.kubejs.block.entity.screen.widgets.ButtonWidgetKJS;
+import dev.latvian.mods.kubejs.block.entity.screen.widgets.CanvasWidgetKJS;
+import dev.latvian.mods.kubejs.block.entity.screen.widgets.ContainerWidgetKJS;
+import dev.latvian.mods.kubejs.block.entity.screen.widgets.FillableBarWidgetKJS;
+import dev.latvian.mods.kubejs.block.entity.screen.widgets.GridLayoutWidgetKJS;
+import dev.latvian.mods.kubejs.block.entity.screen.widgets.GuiWidgetKJS;
+import dev.latvian.mods.kubejs.block.entity.screen.widgets.HorizontalLayoutWidgetKJS;
+import dev.latvian.mods.kubejs.block.entity.screen.widgets.ImageWidgetKJS;
+import dev.latvian.mods.kubejs.block.entity.screen.widgets.InputWidgetKJS;
+import dev.latvian.mods.kubejs.block.entity.screen.widgets.InventoryGuiWidgetKJS;
+import dev.latvian.mods.kubejs.block.entity.screen.widgets.SlotWidgetKJS;
+import dev.latvian.mods.kubejs.block.entity.screen.widgets.SpacerWidgetKJS;
+import dev.latvian.mods.kubejs.block.entity.screen.widgets.TextWidgetKJS;
+import dev.latvian.mods.kubejs.block.entity.screen.widgets.VerticalLayoutWidgetKJS;
+import dev.latvian.mods.kubejs.block.entity.screen.widgets.WidgetKJS;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.screen.AtlasTextureObject;
@@ -231,6 +246,23 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		Painter.INSTANCE.registerObject("atlas_texture", AtlasTextureObject::new);
 		Painter.INSTANCE.registerObject("gradient", GradientObject::new);
 		Painter.INSTANCE.registerObject("item", ItemObject::new);
+
+		WidgetKJS.register("button", ButtonWidgetKJS::new);
+		WidgetKJS.register("canvas", CanvasWidgetKJS::new);
+		WidgetKJS.register("container", ContainerWidgetKJS::new);
+		WidgetKJS.register("div", ContainerWidgetKJS::new);
+		WidgetKJS.register("fillable-bar", FillableBarWidgetKJS::new);
+		WidgetKJS.register("grid-layout", GridLayoutWidgetKJS::new);
+		WidgetKJS.register("gui", GuiWidgetKJS::new);
+		WidgetKJS.register("h-layout", HorizontalLayoutWidgetKJS::new);
+		WidgetKJS.register("image", ImageWidgetKJS::new);
+		WidgetKJS.register("img", ImageWidgetKJS::new);
+		WidgetKJS.register("input", InputWidgetKJS::new);
+		WidgetKJS.register("inventory-gui", InventoryGuiWidgetKJS::new);
+		WidgetKJS.register("slot", SlotWidgetKJS::new);
+		WidgetKJS.register("spacer", SpacerWidgetKJS::new);
+		WidgetKJS.register("text", TextWidgetKJS::new);
+		WidgetKJS.register("v-layout", VerticalLayoutWidgetKJS::new);
 	}
 
 	@Override
@@ -329,9 +361,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		}
 
 		event.addFunction("onEvent", args -> onLegacyEvent(event, args[0], (IEventHandler) args[1]), null, IEventHandler.class);
-		event.addFunction("java", args -> event.manager.loadJavaClass(event, args), new Class[]{null});
-		event.addFunction("onEvent", args -> onEvent(event, args), null, IEventHandler.class);
-		event.addFunction("postEvent", args -> postEvent(event, args), String.class, Object.class, Boolean.class);
 		event.addFunction("java", args -> event.manager.loadJavaClass(event, args), new Class[]{null});
 
 		event.add("JavaMath", Math.class);
@@ -470,6 +499,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(IngredientMatch.class, IngredientMatch::of);
 		typeWrappers.register(BlockAbility.AbilityJS.class, BlockAbility.AbilityJS::of);
 		typeWrappers.register(BlockAbility.SlotDefinition.class, BlockAbility.SlotDefinition::of);
+		typeWrappers.register(WidgetKJS.class, WidgetKJS::of);
 
 		// components //
 		typeWrappers.register(Component.class, ComponentWrapper::of);

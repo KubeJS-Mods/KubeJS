@@ -5,7 +5,8 @@ import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.entity.ablities.BlockAbility;
-import dev.latvian.mods.kubejs.block.entity.screen.event.DOMLoadedEvent;
+import dev.latvian.mods.kubejs.block.entity.screen.event.OnLoadEvent;
+import dev.latvian.mods.kubejs.block.entity.screen.widgets.WidgetKJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -31,7 +32,7 @@ public class BlockEntityBuilder extends BuilderBase<BlockEntityType<?>> {
 	public transient float ticksEvery;
 
 	public transient Map<String, Tuple<BlockAbility.AbilityJS, Function<BlockAbility.AbilityJS, BlockAbility<?>>>> blockAbilities = new HashMap<>();
-	public transient Consumer<DOMLoadedEvent> onDomLoaded;
+	public transient Consumer<OnLoadEvent> onDomLoaded;
 
 	public BlockEntityBuilder(ResourceLocation i) {
 		super(i);
@@ -56,17 +57,17 @@ public class BlockEntityBuilder extends BuilderBase<BlockEntityType<?>> {
 		return this;
 	}
 
-	public BlockEntityBuilder createScreen(String screen) {
+	public BlockEntityBuilder createScreen(WidgetKJS screen) {
 		ConsoleJS.STARTUP.pushLineNumber();
 		ConsoleJS.STARTUP.warn("Screens have not been implemented yet");
 		ConsoleJS.STARTUP.popLineNumber();
 		return this;
 	}
 
-	public BlockEntityBuilder onContentLoaded(Consumer<DOMLoadedEvent> cb) {
+	public BlockEntityBuilder onContentLoaded(Consumer<OnLoadEvent> cb) {
 		this.onDomLoaded = cb;
 		ConsoleJS.STARTUP.pushLineNumber();
-		ConsoleJS.STARTUP.warn("Screens have not been implemented yet (domContentLoaded)");
+		ConsoleJS.STARTUP.warn("Screens have not been implemented yet (onContentLoaded)");
 		ConsoleJS.STARTUP.popLineNumber();
 		return this;
 	}
