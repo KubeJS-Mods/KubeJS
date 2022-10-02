@@ -83,11 +83,11 @@ public interface IngredientKJS {
 	}
 
 	default IngredientStack kjs$asStack() {
-		return IngredientPlatformHelper.get().stack(kjs$self(), 1);
+		return (IngredientStack) IngredientPlatformHelper.get().stack(kjs$self(), 1);
 	}
 
-	default IngredientStack kjs$withCount(int count) {
-		return IngredientPlatformHelper.get().stack(kjs$self(), count);
+	default Ingredient kjs$withCount(int count) {
+		return count < 1 ? Ingredient.EMPTY : count == 1 ? kjs$self() : IngredientPlatformHelper.get().stack(kjs$self(), count);
 	}
 
 	default boolean kjs$isInvalidRecipeIngredient() {

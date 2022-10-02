@@ -25,7 +25,7 @@ public interface IngredientPlatformHelper {
 		return INSTANCE.get();
 	}
 
-	IngredientStack stack(Ingredient ingredient, int count);
+	Ingredient stack(Ingredient ingredient, int count);
 
 	Ingredient wildcard();
 

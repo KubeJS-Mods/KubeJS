@@ -206,7 +206,7 @@ public interface ItemKJS {
 		return ImmutableList.copyOf(attributes.get(attribute));
 	}
 
-	default Ingredient kjs$getTypeIngredient() {
+	default Ingredient kjs$getIgnoreNBTIngredient() {
 		throw new NoMixinException();
 	}
 

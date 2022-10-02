@@ -19,7 +19,6 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
@@ -35,6 +34,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * @author LatvianModder
@@ -44,7 +44,7 @@ import java.util.List;
 public abstract class ItemMixin implements ItemKJS {
 	private ItemBuilder kjs$itemBuilder;
 	private CompoundTag kjs$typeData;
-	private Ingredient kjs$typeIngredient;
+	private Ingredient kjs$ignoreNBTIngredient;
 	private ItemStackKey kjs$typeItemStackKey;
 	private ResourceLocation kjs$id;
 	private String kjs$idString;
@@ -213,12 +213,13 @@ public abstract class ItemMixin implements ItemKJS {
 	}
 
 	@Override
-	public Ingredient kjs$getTypeIngredient() {
-		if (kjs$typeIngredient == null) {
-			kjs$typeIngredient = kjs$self() == Items.AIR ? Ingredient.EMPTY : Ingredient.of(kjs$self());
+	public Ingredient kjs$getIgnoreNBTIngredient() {
+		if (kjs$ignoreNBTIngredient == null) {
+			var is = new ItemStack(kjs$self());
+			kjs$ignoreNBTIngredient = is.isEmpty() ? Ingredient.EMPTY : Ingredient.of(Stream.of(is));
 		}
 
-		return kjs$typeIngredient;
+		return kjs$ignoreNBTIngredient;
 	}
 
 	@Override

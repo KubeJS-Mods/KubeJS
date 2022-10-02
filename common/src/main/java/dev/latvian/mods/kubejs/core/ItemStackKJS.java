@@ -187,7 +187,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable {
 		console.pushLineNumber();
 		console.warn("You don't need to call .ignoreNBT() anymore, all item ingredients ignore NBT by default!");
 		console.popLineNumber();
-		return kjs$self().getItem().kjs$getTypeIngredient();
+		return kjs$self().getItem().kjs$getIgnoreNBTIngredient();
 	}
 
 	default Ingredient kjs$weakNBT() {
@@ -308,7 +308,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable {
 	}
 
 	default Ingredient kjs$asIngredient() {
-		return kjs$self().getItem().kjs$getTypeIngredient();
+		return kjs$self().getItem().kjs$getIgnoreNBTIngredient();
 	}
 
 	default JsonObject kjs$toJson() {

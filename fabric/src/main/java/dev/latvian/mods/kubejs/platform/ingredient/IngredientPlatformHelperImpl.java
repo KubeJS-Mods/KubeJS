@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.platform.ingredient;
 import com.faux.ingredientextension.api.ingredient.IngredientHelper;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -32,7 +31,7 @@ public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 	}
 
 	@Override
-	public IngredientStack stack(Ingredient ingredient, int count) {
+	public Ingredient stack(Ingredient ingredient, int count) {
 		return new IngredientStackImpl(ingredient, count);
 	}
 

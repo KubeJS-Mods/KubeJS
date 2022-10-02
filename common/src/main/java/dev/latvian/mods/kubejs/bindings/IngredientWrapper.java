@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.bindings;
 
 import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
@@ -25,8 +24,8 @@ public interface IngredientWrapper {
 		return ingredient;
 	}
 
-	static IngredientStack of(Ingredient ingredient, int count) {
-		return ingredient.kjs$withCount(Math.max(1, count));
+	static Ingredient of(Ingredient ingredient, int count) {
+		return ingredient.kjs$withCount(count);
 	}
 
 	static Ingredient custom(Ingredient parent, Predicate<ItemStack> predicate) {

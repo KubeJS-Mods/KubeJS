@@ -61,13 +61,13 @@ public interface IngredientJS {
 			}
 
 			if (s.equals("*")) {
-				return IngredientPlatformHelper.get().wildcard();
+				return IngredientPlatformHelper.get().wildcard().kjs$withCount(count);
 			} else if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
 				return Ingredient.EMPTY;
 			} else if (s.startsWith("#")) {
-				return IngredientPlatformHelper.get().tag(s.substring(1));
+				return IngredientPlatformHelper.get().tag(s.substring(1)).kjs$withCount(count);
 			} else if (s.startsWith("@")) {
-				return IngredientPlatformHelper.get().mod(s.substring(1));
+				return IngredientPlatformHelper.get().mod(s.substring(1)).kjs$withCount(count);
 			} else if (s.startsWith("%")) {
 				var group = ItemStackJS.findCreativeTab(s.substring(1));
 
@@ -79,13 +79,13 @@ public interface IngredientJS {
 					return Ingredient.EMPTY;
 				}
 
-				return IngredientPlatformHelper.get().creativeTab(group);
+				return IngredientPlatformHelper.get().creativeTab(group).kjs$withCount(count);
 			}
 
 			var reg = UtilsJS.parseRegex(s);
 
 			if (reg != null) {
-				return IngredientPlatformHelper.get().regex(reg);
+				return IngredientPlatformHelper.get().regex(reg).kjs$withCount(count);
 			}
 
 			var item = KubeJSRegistries.items().get(new ResourceLocation(s));
@@ -94,7 +94,7 @@ public interface IngredientJS {
 				return Ingredient.EMPTY;
 			}
 
-			return item.kjs$getTypeIngredient();
+			return item.kjs$getIgnoreNBTIngredient().kjs$withCount(count);
 		}
 
 		List<?> list = ListJS.of(o);
@@ -146,7 +146,7 @@ public interface IngredientJS {
 			} else if (map.containsKey("tag")) {
 				in = IngredientPlatformHelper.get().tag(map.get("tag").toString());
 			} else if (map.containsKey("item")) {
-				in = ItemStackJS.of(map).getItem().kjs$getTypeIngredient();
+				in = ItemStackJS.of(map).getItem().kjs$getIgnoreNBTIngredient();
 			}
 
 			return in;
@@ -178,24 +178,24 @@ public interface IngredientJS {
 			return of(json.getAsString());
 		} else if (json.isJsonObject()) {
 			var o = json.getAsJsonObject();
-			Ingredient in = Ingredient.EMPTY;
 			var val = o.has("value");
+			var count = o.has("count") ? o.get("count").getAsInt() : 1;
 
 			if (o.has("type")) {
 				try {
-					in = RecipePlatformHelper.get().getCustomIngredient(o);
+					return RecipePlatformHelper.get().getCustomIngredient(o).kjs$withCount(count);
 				} catch (Exception ex) {
 					throw new RecipeExceptionJS("Failed to parse custom ingredient (" + o.get("type") + ") from " + o + ": " + ex);
 				}
 			} else if (val || o.has("ingredient")) {
-				in = ofJson(val ? o.get("value") : o.get("ingredient"));
+				return ofJson(val ? o.get("value") : o.get("ingredient")).kjs$withCount(count);
 			} else if (o.has("tag")) {
-				in = IngredientPlatformHelper.get().tag(o.get("tag").getAsString());
+				return IngredientPlatformHelper.get().tag(o.get("tag").getAsString()).kjs$withCount(count);
 			} else if (o.has("item")) {
-				in = ItemStackJS.of(o.get("item").getAsString()).getItem().kjs$getTypeIngredient();
+				return ItemStackJS.of(o.get("item").getAsString()).getItem().kjs$getIgnoreNBTIngredient().kjs$withCount(count);
 			}
 
-			return in;
+			return Ingredient.EMPTY;
 		}
 
 		return Ingredient.EMPTY;

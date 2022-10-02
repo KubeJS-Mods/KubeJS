@@ -61,8 +61,8 @@ public class IngredientStackImpl extends KubeJSIngredient implements IngredientS
 	}
 
 	@Override
-	public IngredientStackImpl kjs$withCount(int count) {
-		return new IngredientStackImpl(ingredient, count);
+	public Ingredient kjs$withCount(int count) {
+		return count < 1 ? Ingredient.EMPTY : count == 1 ? ingredient : new IngredientStackImpl(ingredient, count);
 	}
 
 	@Override
