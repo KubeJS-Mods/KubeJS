@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.misc;
 
 import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,17 +20,23 @@ public class BasicMobEffect extends MobEffect {
 	private final Map<ResourceLocation, AttributeModifier> modifierMap;
 	private final Map<Attribute, AttributeModifier> attributeMap;
 	private boolean modified = false;
+	private final ResourceLocation id;
 
 	public BasicMobEffect(Builder builder) {
 		super(builder.category, builder.color);
 		this.effectTickCallback = builder.effectTick;
 		modifierMap = builder.attributeModifiers;
 		attributeMap = new HashMap<>();
+		this.id = builder.id;
 	}
 
 	@Override
 	public void applyEffectTick(@NotNull LivingEntity livingEntity, int i) {
-		effectTickCallback.applyEffectTick(livingEntity, i);
+		try {
+			effectTickCallback.applyEffectTick(livingEntity, i);
+		} catch (Throwable e) {
+			ScriptType.STARTUP.console.error("Error while ticking mob effect " + id + " for entity " + livingEntity.getName().getString(), e);
+		}
 	}
 
 	private void applyAttributeModifications() {
