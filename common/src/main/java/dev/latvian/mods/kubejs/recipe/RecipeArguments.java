@@ -31,6 +31,10 @@ public record RecipeArguments(RecipeJS recipe, List<?> list) {
 		return get(index) instanceof Number n ? n.intValue() : def;
 	}
 
+	public long getLong(int index, long def) {
+		return get(index) instanceof Number n ? n.longValue() : def;
+	}
+
 	public float getFloat(int index, float def) {
 		return get(index) instanceof Number n ? n.floatValue() : def;
 	}
