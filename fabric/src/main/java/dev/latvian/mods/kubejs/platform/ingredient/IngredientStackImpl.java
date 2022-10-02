@@ -29,7 +29,7 @@ public class IngredientStackImpl extends KubeJSIngredient implements IngredientS
 	}
 
 	private IngredientStackImpl(FriendlyByteBuf buf) {
-		this.ingredient = Ingredient.fromNetwork(buf);
+		this.ingredient = IngredientJS.ofNetwork(buf);
 		this.count = buf.readVarInt();
 	}
 

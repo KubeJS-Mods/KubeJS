@@ -18,7 +18,7 @@ public class NotIngredient extends KubeJSIngredient {
 	}
 
 	public NotIngredient(FriendlyByteBuf buf) {
-		this(Ingredient.fromNetwork(buf));
+		this(IngredientJS.ofNetwork(buf));
 	}
 
 	public NotIngredient(JsonObject json) {

@@ -29,7 +29,7 @@ public class CustomIngredient extends KubeJSIngredient {
 	}
 
 	private CustomIngredient(FriendlyByteBuf buf) {
-		parent = Ingredient.fromNetwork(buf);
+		parent = IngredientJS.ofNetwork(buf);
 		predicate = stack -> true;
 	}
 

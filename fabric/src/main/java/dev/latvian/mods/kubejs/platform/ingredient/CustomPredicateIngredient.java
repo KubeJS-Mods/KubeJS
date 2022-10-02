@@ -33,7 +33,7 @@ public class CustomPredicateIngredient extends KubeJSIngredient {
 	}
 
 	private CustomPredicateIngredient(FriendlyByteBuf buf) {
-		parent = Ingredient.fromNetwork(buf);
+		parent = IngredientJS.ofNetwork(buf);
 		uuid = buf.readUUID();
 		isServer = false;
 	}

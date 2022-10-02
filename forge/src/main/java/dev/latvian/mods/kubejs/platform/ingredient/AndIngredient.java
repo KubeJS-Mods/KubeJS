@@ -22,7 +22,7 @@ public class AndIngredient extends KubeJSIngredient {
 		this.ingredients = new Ingredient[buf.readVarInt()];
 
 		for (int i = 0; i < ingredients.length; i++) {
-			ingredients[i] = Ingredient.fromNetwork(buf);
+			ingredients[i] = IngredientJS.ofNetwork(buf);
 		}
 	}
 
