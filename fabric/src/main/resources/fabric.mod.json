@@ -41,5 +41,66 @@
 	"breaks": {
 		"techreborn": "<5.1.0-beta.6",
 		"roughlyenoughitems": "<8.3.501"
+	},
+	"custom": {
+		"loom:injected_interfaces": {
+			"net/minecraft/server/MinecraftServer": [
+				"dev/latvian/mods/kubejs/core/MinecraftServerKJS"
+			],
+			"net/minecraft/class_310": [
+				"dev/latvian/mods/kubejs/core/MinecraftClientKJS"
+			],
+			"net/minecraft/class_4970": [
+				"dev/latvian/mods/kubejs/core/BlockKJS"
+			],
+			"net/minecraft/class_2680": [
+				"dev/latvian/mods/kubejs/core/BlockStateKJS"
+			],
+			"net/minecraft/class_1792": [
+				"dev/latvian/mods/kubejs/core/ItemKJS"
+			],
+			"net/minecraft/class_1799": [
+				"dev/latvian/mods/kubejs/core/ItemStackKJS"
+			],
+			"net/minecraft/class_5250": [
+				"dev/latvian/mods/kubejs/core/ComponentKJS"
+			],
+			"net/minecraft/class_1937": [
+				"dev/latvian/mods/kubejs/core/LevelKJS"
+			],
+			"net/minecraft/class_638": [
+				"dev/latvian/mods/kubejs/core/ClientLevelKJS"
+			],
+			"net/minecraft/class_3218": [
+				"dev/latvian/mods/kubejs/core/ServerLevelKJS"
+			],
+			"net/minecraft/class_1657": [
+				"dev/latvian/mods/kubejs/core/PlayerKJS"
+			],
+			"net/minecraft/class_742": [
+				"dev/latvian/mods/kubejs/core/ClientPlayerKJS"
+			],
+			"net/minecraft/class_3222": [
+				"dev/latvian/mods/kubejs/core/ServerPlayerKJS"
+			],
+			"net/minecraft/class_1297": [
+				"dev/latvian/mods/kubejs/core/EntityKJS"
+			],
+			"net/minecraft/class_1309": [
+				"dev/latvian/mods/kubejs/core/LivingEntityKJS"
+			],
+			"net/minecraft/class_1856": [
+				"dev/latvian/mods/kubejs/core/IngredientKJS"
+			],
+			"net/minecraft/class_1542": [
+				"dev/latvian/mods/kubejs/core/ItemEntityKJS"
+			],
+			"net/minecraft/class_1533": [
+				"dev/latvian/mods/kubejs/core/ItemFrameEntityKJS"
+			],
+			"net/minecraft/class_1263": [
+				"dev/latvian/mods/kubejs/core/InventoryKJS"
+			]
+		}
 	}
 }
