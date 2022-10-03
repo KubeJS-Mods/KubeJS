@@ -116,6 +116,12 @@ subprojects {
 			archiveBaseName.set "${rootProject.archives_base_name}-${project.name}"
 			archiveClassifier.set null
 		}
+
+		sourcesJar {
+			from(project(':common').sourceSets.main.allSource) {
+				exclude("kubejs.accesswidener") // duplicate on fabric, unneeded on forge
+			}
+		}
 	}
 }
 
