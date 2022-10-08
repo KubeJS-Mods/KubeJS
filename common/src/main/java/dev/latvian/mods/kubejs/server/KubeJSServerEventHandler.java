@@ -41,7 +41,7 @@ public class KubeJSServerEventHandler {
 		LifecycleEvent.SERVER_BEFORE_START.register(KubeJSServerEventHandler::serverAboutToStart);
 		CommandRegistrationEvent.EVENT.register(KubeJSServerEventHandler::registerCommands);
 		LifecycleEvent.SERVER_STARTED.register(KubeJSServerEventHandler::serverStarted);
-		LifecycleEvent.SERVER_STOPPING.register(KubeJSServerEventHandler::serverStopping);
+		LifecycleEvent.SERVER_STOPPED.register(KubeJSServerEventHandler::serverStopped);
 		LifecycleEvent.SERVER_LEVEL_SAVE.register(KubeJSServerEventHandler::serverWorldSave);
 		TickEvent.SERVER_POST.register(KubeJSServerEventHandler::serverTick);
 		CommandPerformEvent.EVENT.register(KubeJSServerEventHandler::command);
@@ -97,7 +97,7 @@ public class KubeJSServerEventHandler {
 		}
 	}
 
-	public static void serverStopping(MinecraftServer server) {
+	public static void serverStopped(MinecraftServer server) {
 		destroyServer();
 	}
 
