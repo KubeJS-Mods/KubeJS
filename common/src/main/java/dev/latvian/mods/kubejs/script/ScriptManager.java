@@ -163,10 +163,15 @@ public class ScriptManager {
 	}
 
 	public NativeJavaClass loadJavaClass(BindingsEvent event, Object[] args) {
-		String name = RemappingHelper.getMinecraftRemapper().getUnmappedClass(String.valueOf(Context.jsToJava(event.contextData, args[0], String.class)));
 
+		var name = String.valueOf(Context.jsToJava(event.contextData, args[0], String.class));
 		if (name.isEmpty()) {
 			throw Context.reportRuntimeError("Class name can't be empty!");
+		}
+
+		var unmappedName = RemappingHelper.getMinecraftRemapper().getUnmappedClass(name);
+		if (!unmappedName.isEmpty()) {
+			name = unmappedName;
 		}
 
 		if (javaClassCache == null) {
