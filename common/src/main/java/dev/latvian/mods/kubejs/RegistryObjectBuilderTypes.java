@@ -89,10 +89,10 @@ public final class RegistryObjectBuilderTypes<T> {
 			}
 			var rl = new ResourceLocation(KubeJS.appendModId(id));
 
-			return (BuilderBase.CustomBuilderObject<T>) custom(new BuilderBase.CustomBuilderObject<>(rl, object, registry));
+			return (BuilderBase.CustomBuilderObject<T>) fromBuilder(new BuilderBase.CustomBuilderObject<>(rl, object, registry));
 		}
 
-		public BuilderBase<T> custom(BuilderBase<T> b) {
+		public BuilderBase<T> fromBuilder(BuilderBase<T> b) {
 			if (b == null) {
 				throw new IllegalArgumentException("Tried to register a null builder with event.custom");
 			}
