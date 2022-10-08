@@ -82,6 +82,24 @@ public final class RegistryObjectBuilderTypes<T> {
 
 			return b;
 		}
+
+		public BuilderBase.CustomBuilderObject<T> custom(String id, T object) {
+			if (object == null) {
+				throw new IllegalArgumentException("Tried to register a null object with id: " + id);
+			}
+			var rl = new ResourceLocation(KubeJS.appendModId(id));
+
+			return (BuilderBase.CustomBuilderObject<T>) custom(new BuilderBase.CustomBuilderObject<>(rl, object, registry));
+		}
+
+		public BuilderBase<T> custom(BuilderBase<T> b) {
+			if (b == null) {
+				throw new IllegalArgumentException("Tried to register a null builder with event.custom");
+			}
+
+			registry.addBuilder(b);
+			return b;
+		}
 	}
 
 	public static final Map<ResourceKey<? extends Registry<?>>, RegistryObjectBuilderTypes<?>> MAP = new LinkedHashMap<>();
