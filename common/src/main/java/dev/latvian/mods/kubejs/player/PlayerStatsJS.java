@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.player;
 
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
 import net.minecraft.stats.StatsCounter;
 import net.minecraft.world.entity.EntityType;
@@ -20,8 +22,24 @@ public class PlayerStatsJS {
 		statFile = s;
 	}
 
-	public int get(ResourceLocation id) {
-		return statFile.getValue(Stats.CUSTOM.get(id));
+	public static Stat<?> statOf(Object o) {
+		if (o instanceof Stat s) {
+			return s;
+		} else if (o instanceof ResourceLocation rl) {
+			return Stats.CUSTOM.get(rl);
+		} else if (o instanceof CharSequence cs) {
+			return Stats.CUSTOM.get(new ResourceLocation(cs.toString()));
+		}
+		return null;
+	}
+
+	public int get(Stat<?> stat) {
+		return statFile.getValue(stat);
+	}
+
+	@HideFromJS // To prevent ambiguity. The type wrapper should automatically wrap RL's to Stats using #statOf if you wish to grab a stat by RL from a script
+	public int get(ResourceLocation rl) {
+		return get(Stats.CUSTOM.get(rl));
 	}
 
 	public int getPlayTime() {
@@ -108,12 +126,12 @@ public class PlayerStatsJS {
 		return get(Stats.FISH_CAUGHT);
 	}
 
-	public void set(ResourceLocation id, int value) {
-		statFile.setValue(player, Stats.CUSTOM.get(id), value);
+	public void set(Stat<?> stat, int value) {
+		statFile.setValue(player, stat, value);
 	}
 
-	public void add(ResourceLocation id, int value) {
-		statFile.increment(player, Stats.CUSTOM.get(id), value);
+	public void add(Stat<?> stat, int value) {
+		statFile.increment(player, stat, value);
 	}
 
 	public int getBlocksMined(Block block) {
