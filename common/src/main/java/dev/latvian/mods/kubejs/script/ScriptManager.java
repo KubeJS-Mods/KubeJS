@@ -204,10 +204,16 @@ public class ScriptManager implements ClassShutter {
 	}
 
 	public NativeJavaClass loadJavaClass(BindingsEvent event, Object[] args) {
-		String name = RemappingHelper.getMinecraftRemapper().getUnmappedClass(String.valueOf(Context.jsToJava(event.contextData, args[0], String.class)));
+		var name0 = String.valueOf(Context.jsToJava(event.contextData, args[0], String.class));
+
+		if (name0.isEmpty()) {
+			throw Context.reportRuntimeError("Class name can't be empty!");
+		}
+
+		String name = RemappingHelper.getMinecraftRemapper().getUnmappedClass(name0);
 
 		if (name.isEmpty()) {
-			throw Context.reportRuntimeError("Class name can't be empty!");
+			name = name0;
 		}
 
 		if (javaClassCache == null) {

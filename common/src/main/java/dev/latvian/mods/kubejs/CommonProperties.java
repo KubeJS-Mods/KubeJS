@@ -28,7 +28,6 @@ public class CommonProperties {
 	public boolean disableClassFilter;
 	public String packMode;
 	public boolean debugInfo;
-	public boolean printRemappedClasses;
 
 	private CommonProperties() {
 		properties = new Properties();
@@ -51,7 +50,6 @@ public class CommonProperties {
 			disableClassFilter = get("disableClassFilter", false);
 			packMode = get("packmode", "default");
 			debugInfo = get("debugInfo", false);
-			printRemappedClasses = get("printRemappedClasses", false);
 
 			if (writeProperties) {
 				try (Writer writer = Files.newBufferedWriter(propertiesFile)) {
