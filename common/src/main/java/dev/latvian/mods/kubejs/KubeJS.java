@@ -130,48 +130,6 @@ public class KubeJS {
 		if (CommonProperties.get().disableClassFilter) {
 			ConsoleJS.STARTUP.warn("Class filter is disabled!");
 		}
-
-		if (CommonProperties.get().printRemappedClasses) {
-			ConsoleJS.STARTUP.info("Remapped classes:");
-			var remapper = RemappingHelper.getMinecraftRemapper();
-
-			for (var entry : remapper.classMap.entrySet()) {
-				ConsoleJS.STARTUP.info("");
-				ConsoleJS.STARTUP.info("- " + entry.getKey() + " => " + entry.getValue());
-
-				if (entry.getValue().children != null) {
-					for (var child : entry.getValue().children.entrySet()) {
-						ConsoleJS.STARTUP.info("  " + child.getKey() + " -> " + child.getValue());
-					}
-				}
-			}
-
-			ConsoleJS.STARTUP.info("");
-			ConsoleJS.STARTUP.info(remapper.classMap.size() + " classes");
-
-			Class<?> testClass = CactusBlock.class;
-			ConsoleJS.STARTUP.info("Test: " + testClass.getName() + " => " + remapper.getMappedClass(testClass));
-
-			for (var field : CactusBlock.class.getDeclaredFields()) {
-				ConsoleJS.STARTUP.info("  " + field.getName() + " -> " + remapper.getMappedField(testClass, field));
-			}
-
-			for (var method : CactusBlock.class.getDeclaredMethods()) {
-				StringBuilder sb = new StringBuilder("  ");
-				sb.append(method.getName());
-				sb.append('(');
-				if (method.getParameterCount() > 0) {
-					for (Class<?> param : method.getParameterTypes()) {
-						sb.append(Remapper.getTypeName(param.getTypeName()));
-					}
-				}
-
-				sb.append(") -> ");
-				sb.append(remapper.getMappedMethod(testClass, method));
-
-				ConsoleJS.STARTUP.info(sb);
-			}
-		}
 	}
 
 	public static void loadScripts(ScriptPack pack, Path dir, String path) {
