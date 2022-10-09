@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.loot;
 
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.core.EntityTargetKJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.level.storage.loot.LootContext;
 
@@ -36,7 +35,7 @@ public interface ConditionContainer {
 	default ConditionContainer entityProperties(LootContext.EntityTarget entity, JsonObject properties) {
 		var json = new JsonObject();
 		json.addProperty("condition", "minecraft:entity_properties");
-		json.addProperty("entity", EntityTargetKJS.kjs$getName(entity));
+		json.addProperty("entity", entity.name);
 		json.add("predicate", properties);
 		return addCondition(json);
 	}
@@ -52,7 +51,7 @@ public interface ConditionContainer {
 	default ConditionContainer entityScores(LootContext.EntityTarget entity, Map<String, Object> scores) {
 		var json = new JsonObject();
 		json.addProperty("condition", "minecraft:entity_scores");
-		json.addProperty("entity", EntityTargetKJS.kjs$getName(entity));
+		json.addProperty("entity", entity.name);
 
 		var s = new JsonObject();
 

@@ -6,8 +6,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
 
-import java.util.Random;
-
 public class AlwaysFalseRuleTest extends RuleTest {
 	public static final AlwaysFalseRuleTest INSTANCE = new AlwaysFalseRuleTest();
 

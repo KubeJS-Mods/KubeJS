@@ -36,7 +36,7 @@ public class ModIngredient extends KubeJSIngredient {
 
 	@Override
 	public boolean test(@Nullable ItemStack stack) {
-		return stack != null && ((ItemStackKJS) (Object) stack).kjs$getMod().equals(mod);
+		return stack != null && stack.kjs$getMod().equals(mod);
 	}
 
 	@Override

@@ -19,6 +19,8 @@ import java.util.Objects;
 
 /**
  * @author LatvianModder
+ *
+ * TODO: make a common JEI plugin if the need arises
  */
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
@@ -35,7 +37,7 @@ public class JEIPlugin implements IModPlugin {
 		runtime = r;
 		BuiltinKubeJSPlugin.GLOBAL.put("jeiRuntime", runtime);
 
-		JEIKubeJSEvents.HIDE_ITEMS.post(new HideJEIEventJS<>(runtime, VanillaTypes.ITEM_STACK, object -> IngredientJS.of(object)::test, stack -> !stack.isEmpty()));
+		JEIKubeJSEvents.HIDE_ITEMS.post(new HideJEIEventJS<>(runtime, VanillaTypes.ITEM_STACK, IngredientJS::of, stack -> !stack.isEmpty()));
 
 		JEIKubeJSEvents.HIDE_FLUIDS.post(new HideJEIEventJS<>(runtime, ForgeTypes.FLUID_STACK, object -> {
 			var fs = FluidStackJS.of(object);

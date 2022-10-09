@@ -30,7 +30,7 @@ public class RegExIngredient extends KubeJSIngredient {
 
 	@Override
 	public boolean test(@Nullable ItemStack stack) {
-		return stack != null && pattern.matcher(((ItemStackKJS) (Object) stack).kjs$getId()).find();
+		return stack != null && pattern.matcher(stack.kjs$getId()).find();
 	}
 
 	@Override

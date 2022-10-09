@@ -22,21 +22,21 @@ public abstract class CompoundIngredientMixin extends AbstractIngredient impleme
 	@Override
 	public void kjs$gatherStacks(ItemStackSet set) {
 		for (var in : children) {
-			((IngredientKJS) in).kjs$gatherStacks(set);
+			in.kjs$gatherStacks(set);
 		}
 	}
 
 	@Override
 	public void kjs$gatherItemTypes(Set<Item> set) {
 		for (var in : children) {
-			((IngredientKJS) in).kjs$gatherItemTypes(set);
+			in.kjs$gatherItemTypes(set);
 		}
 	}
 
 	@Override
 	public ItemStack kjs$getFirst() {
 		for (var in : children) {
-			var stack = ((IngredientKJS) in).kjs$getFirst();
+			var stack = in.kjs$getFirst();
 
 			if (!stack.isEmpty()) {
 				return stack;

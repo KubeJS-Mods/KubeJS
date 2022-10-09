@@ -21,6 +21,10 @@ loom {
 				"kubejs-common.mixins.json"
 		]
 	}
+
+	interfaceInjection {
+		interfaceInjectionSourceSets.add project(':common').sourceSets.main
+	}
 }
 
 repositories {
