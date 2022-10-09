@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.bindings;
 
+import com.google.common.base.Suppliers;
 import dev.architectury.registry.registries.Registrar;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.entity.EntityJS;
@@ -29,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 /**
@@ -179,5 +182,13 @@ public interface UtilsWrapper {
 
 	static Collection<ResourceLocation> getRegistryIds(ResourceLocation id) {
 		return getRegistry(id).getIds();
+	}
+
+	static <T> Supplier<T> lazy(Supplier<T> supplier) {
+		return Suppliers.memoize(supplier::get);
+	}
+
+	static <T> Supplier<T> expiringLazy(Supplier<T> supplier, long time) {
+		return Suppliers.memoizeWithExpiration(supplier::get, time, TimeUnit.MILLISECONDS);
 	}
 }
