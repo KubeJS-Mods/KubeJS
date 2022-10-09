@@ -412,12 +412,16 @@ public class UtilsJS {
 		}
 
 		var s = o.toString();
-
-		if (s.isBlank()) {
-			throw new ResourceLocationException("Cannot get ID from an empty string!");
+		try {
+			return new ResourceLocation(s);
+		} catch (ResourceLocationException ex) {
+			var console = ConsoleJS.getCurrent(ConsoleJS.STARTUP);
+			console.setLineNumber(true);
+			console.error("Could not create ID from '%s'!".formatted(s), ex);
+			console.setLineNumber(false);
 		}
 
-		return new ResourceLocation(s);
+		return null;
 	}
 
 	public static String getNamespace(@Nullable String s) {

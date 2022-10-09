@@ -84,7 +84,7 @@ public interface UtilsWrapper {
 	}
 
 	static ConsoleJS createConsole(String name) {
-		return new ConsoleJS(ScriptType.STARTUP, LoggerFactory.getLogger(name));
+		return new ConsoleJS(ScriptType.getCurrent(ScriptType.STARTUP), LoggerFactory.getLogger(name));
 	}
 
 	static Pattern regex(Object s) {
