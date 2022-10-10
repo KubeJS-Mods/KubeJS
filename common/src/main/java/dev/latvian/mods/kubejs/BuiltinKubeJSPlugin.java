@@ -82,6 +82,7 @@ import dev.latvian.mods.kubejs.misc.PotionBuilder;
 import dev.latvian.mods.kubejs.misc.SoundEventBuilder;
 import dev.latvian.mods.kubejs.misc.VillagerProfessionBuilder;
 import dev.latvian.mods.kubejs.misc.VillagerTypeBuilder;
+import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.recipe.IngredientMatch;
 import dev.latvian.mods.kubejs.recipe.RegisterRecipeTypesEvent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
@@ -125,6 +126,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.stats.Stat;
+import net.minecraft.stats.Stats;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.MobCategory;
@@ -339,6 +342,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("Direction", DirectionWrapper.class);
 		event.add("Facing", DirectionWrapper.class);
 		event.add("AABB", AABBWrapper.class);
+		event.add("Stats", Stats.class);
 
 		event.add("Fluid", FluidWrapper.class);
 
@@ -456,6 +460,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(DamageSource.class, DamageSourceWrapper::of);
 		typeWrappers.register(EntitySelector.class, UtilsJS::entitySelector);
 		typeWrappers.register(IngredientMatch.class, IngredientMatch::of);
+		typeWrappers.register(Stat.class, PlayerStatsJS::statOf);
 
 		// components //
 		typeWrappers.register(Component.class, ComponentWrapper::of);
