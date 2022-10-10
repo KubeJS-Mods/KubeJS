@@ -4,7 +4,6 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.RhinoException;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.SharedContextData;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -250,13 +249,7 @@ public final class EventHandler extends BaseFunction {
 		var handler = containers[type.ordinal()];
 
 		if (handler != null) {
-			try {
-				return handler.handle(event, isCancelable());
-			} catch (RhinoException ex) {
-				scriptType.console.error("Error occurred while handling event '" + name + "': " + ex.getMessage());
-			} catch (Throwable ex) {
-				ex.printStackTrace();
-			}
+			return handler.handle(type, this, event, isCancelable());
 		}
 
 		return false;
