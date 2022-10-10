@@ -42,8 +42,8 @@ dependencies {
 	modApi("dev.architectury:architectury-fabric:${rootProject.architectury_version}")
 
 	modApi("dev.latvian.mods:rhino-fabric:${rootProject.rhino_version}")
-	modApi("com.faux.ingredientextension:IngredientExtensionAPI-fabric-1.19:${rootProject.ingredient_extension_version}")
-	include("com.faux.ingredientextension:IngredientExtensionAPI-fabric-1.19:${rootProject.ingredient_extension_version}")
+	modApi("com.faux.ingredientextension:IngredientExtensionAPI-fabric-1.19.2:${rootProject.ingredient_extension_version}")
+	include("com.faux.ingredientextension:IngredientExtensionAPI-fabric-1.19.2:${rootProject.ingredient_extension_version}")
 
 	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${rootProject.rei_version}")
 	modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${rootProject.rei_version}")
