@@ -8,7 +8,6 @@
 		"ContainerMixin",
 		"DamageSourceMixin",
 		"EntityMixin",
-		"EntityTargetMixin",
 		"FireworkRocketEntityMixin",
 		"GameRulesMixin",
 		"IngredientMixin",

@@ -67,7 +67,7 @@ public class StrongNBTIngredient extends KubeJSIngredient {
 
 	@Override
 	public void toJson(JsonObject json) {
-		json.add("item", ((ItemStackKJS) (Object) item).kjs$toJson());
+		json.add("item", item.kjs$toJson());
 	}
 
 	@Override

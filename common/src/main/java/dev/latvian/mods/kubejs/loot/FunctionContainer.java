@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.loot;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.core.EntityTargetKJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -94,7 +93,7 @@ public interface FunctionContainer {
 		o.add("name", Component.Serializer.toJsonTree(name));
 
 		if (entity != null) {
-			o.addProperty("entity", EntityTargetKJS.kjs$getName(entity));
+			o.addProperty("entity", entity.name);
 		}
 
 		return addFunction(o);

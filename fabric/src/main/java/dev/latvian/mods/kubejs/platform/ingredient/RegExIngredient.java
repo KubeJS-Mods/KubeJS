@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.platform.ingredient;
 
 import com.faux.ingredientextension.api.ingredient.serializer.IIngredientSerializer;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.core.ItemStackKJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
@@ -30,7 +29,7 @@ public class RegExIngredient extends KubeJSIngredient {
 
 	@Override
 	public boolean test(@Nullable ItemStack stack) {
-		return stack != null && pattern.matcher(((ItemStackKJS) (Object) stack).kjs$getId()).find();
+		return stack != null && pattern.matcher(stack.kjs$getId()).find();
 	}
 
 	@Override

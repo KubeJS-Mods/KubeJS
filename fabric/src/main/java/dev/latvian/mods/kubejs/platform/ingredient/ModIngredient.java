@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.platform.ingredient;
 
 import com.faux.ingredientextension.api.ingredient.serializer.IIngredientSerializer;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.core.ItemStackKJS;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -36,7 +35,7 @@ public class ModIngredient extends KubeJSIngredient {
 
 	@Override
 	public boolean test(@Nullable ItemStack stack) {
-		return stack != null && ((ItemStackKJS) (Object) stack).kjs$getMod().equals(mod);
+		return stack != null && stack.kjs$getMod().equals(mod);
 	}
 
 	@Override

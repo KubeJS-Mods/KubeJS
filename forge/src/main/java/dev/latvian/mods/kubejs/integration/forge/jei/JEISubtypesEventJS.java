@@ -53,13 +53,13 @@ public class JEISubtypesEventJS extends EventJS {
 	}
 
 	public void useNBT(Ingredient items) {
-		registration.useNbtForSubtypes(((IngredientKJS) items).kjs$getItemTypes().toArray(new Item[0]));
+		registration.useNbtForSubtypes(items.kjs$getItemTypes().toArray(new Item[0]));
 	}
 
 	public void useNBTKey(Ingredient items, String key) {
 		var in = new NBTKeyInterpreter(key);
 
-		for (var item : ((IngredientKJS) items).kjs$getItemTypes()) {
+		for (var item : items.kjs$getItemTypes()) {
 			registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, in);
 		}
 	}

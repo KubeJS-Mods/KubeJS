@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.misc;
 
-import com.google.common.collect.ImmutableSet;
 import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import net.minecraft.resources.ResourceLocation;

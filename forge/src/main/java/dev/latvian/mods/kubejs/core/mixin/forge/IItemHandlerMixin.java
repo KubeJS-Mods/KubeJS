@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin.forge;
 
 import dev.latvian.mods.kubejs.core.InventoryKJS;
-import dev.latvian.mods.kubejs.core.LevelKJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -64,7 +63,7 @@ public interface IItemHandlerMixin extends InventoryKJS {
 	@Override
 	default @Nullable BlockContainerJS kjs$getBlock(Level level) {
 		if (kjs$self() instanceof BlockEntity entity) {
-			return ((LevelKJS) level).kjs$getBlock(entity);
+			return level.kjs$getBlock(entity);
 		}
 
 		return null;

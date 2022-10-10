@@ -5,13 +5,7 @@ import dev.latvian.mods.kubejs.core.RecipeKJS;
 /**
  * @author MaxNeedsSnacks
  */
-public class NotFilter implements RecipeFilter {
-	public final RecipeFilter original;
-
-	public NotFilter(RecipeFilter original) {
-		this.original = original;
-	}
-
+public record NotFilter(RecipeFilter original) implements RecipeFilter {
 	@Override
 	public boolean test(RecipeKJS r) {
 		return !original.test(r);

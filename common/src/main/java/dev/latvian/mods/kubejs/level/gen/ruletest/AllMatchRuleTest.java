@@ -8,7 +8,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * @author LatvianModder

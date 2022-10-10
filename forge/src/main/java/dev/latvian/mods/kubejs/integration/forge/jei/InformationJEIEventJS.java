@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.integration.forge.jei;
 
-import dev.latvian.mods.kubejs.core.IngredientKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.util.ListJS;
@@ -25,7 +24,7 @@ public class InformationJEIEventJS extends EventJS {
 	}
 
 	public void addItem(Ingredient item, Component[] s) {
-		registration.addIngredientInfo(((IngredientKJS) item).kjs$getStacks().toList(), VanillaTypes.ITEM_STACK, s);
+		registration.addIngredientInfo(item.kjs$getStacks().toList(), VanillaTypes.ITEM_STACK, s);
 	}
 
 	public void addFluid(Object fluid, Component[] s) {
