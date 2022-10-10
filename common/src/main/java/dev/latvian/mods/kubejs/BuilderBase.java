@@ -135,4 +135,39 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	protected final RegistrySupplier<T> asRegistrySupplier() {
 		return Objects.requireNonNull(object, () -> "Object '%s' of registry '%s' hasn't been registered yet!".formatted(id, getRegistryType().registryKey.location()));
 	}
+
+	// Class that acts as a holder for a custom registry object, usually based off a class from another mod.
+	static class CustomBuilderObject<T> extends BuilderBase<T> {
+
+		private final T object;
+		private final RegistryObjectBuilderTypes<T> registry;
+
+		public CustomBuilderObject(ResourceLocation i, T object, RegistryObjectBuilderTypes<T> registry) {
+			super(i);
+			this.object = object;
+			this.registry = registry;
+			// This, along with overriding getTranslationKeyGroup, is to avoid a crash occurring from getRegistryType returning null
+			// when called from the super constructor, because the value it returns is not set until after the super constructor is run
+			this.translationKey = getTranslationKeyGroup();
+		}
+
+		@Override
+		public String getTranslationKeyGroup() {
+			if (getRegistryType() == null) {
+				return "If you see this something broke. Please file a bug report.";
+			} else {
+				return super.getTranslationKeyGroup();
+			}
+		}
+
+		@Override
+		public RegistryObjectBuilderTypes<? super T> getRegistryType() {
+			return registry;
+		}
+
+		@Override
+		public T createObject() {
+			return object;
+		}
+	}
 }
