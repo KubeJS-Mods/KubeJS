@@ -22,7 +22,6 @@ import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TieredItem;
-import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -35,7 +34,7 @@ import java.util.function.Consumer;
  * @author LatvianModder
  */
 @RemapPrefixForJS("kjs$")
-public interface ItemKJS {
+public interface ItemKJS extends IngredientSupplierKJS {
 	@Nullable
 	default ItemBuilder kjs$getItemBuilder() {
 		throw new NoMixinException();
@@ -204,10 +203,6 @@ public interface ItemKJS {
 
 		Multimap<Attribute, AttributeModifier> attributes = modifiableItem.kjs$getAttributeMap();
 		return ImmutableList.copyOf(attributes.get(attribute));
-	}
-
-	default Ingredient kjs$getIgnoreNBTIngredient() {
-		throw new NoMixinException();
 	}
 
 	default ItemStackKey kjs$getTypeItemStackKey() {

@@ -44,7 +44,7 @@ import java.util.stream.Stream;
 public abstract class ItemMixin implements ItemKJS {
 	private ItemBuilder kjs$itemBuilder;
 	private CompoundTag kjs$typeData;
-	private Ingredient kjs$ignoreNBTIngredient;
+	private Ingredient kjs$asIngredient;
 	private ItemStackKey kjs$typeItemStackKey;
 	private ResourceLocation kjs$id;
 	private String kjs$idString;
@@ -213,13 +213,13 @@ public abstract class ItemMixin implements ItemKJS {
 	}
 
 	@Override
-	public Ingredient kjs$getIgnoreNBTIngredient() {
-		if (kjs$ignoreNBTIngredient == null) {
+	public Ingredient kjs$asIngredient() {
+		if (kjs$asIngredient == null) {
 			var is = new ItemStack(kjs$self());
-			kjs$ignoreNBTIngredient = is.isEmpty() ? Ingredient.EMPTY : Ingredient.of(Stream.of(is));
+			kjs$asIngredient = is.isEmpty() ? Ingredient.EMPTY : Ingredient.of(Stream.of(is));
 		}
 
-		return kjs$ignoreNBTIngredient;
+		return kjs$asIngredient;
 	}
 
 	@Override

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 @RemapPrefixForJS("kjs$")
-public interface IngredientKJS {
+public interface IngredientKJS extends IngredientSupplierKJS {
 	default Ingredient kjs$self() {
 		throw new NoMixinException();
 	}
@@ -100,5 +100,10 @@ public interface IngredientKJS {
 
 	default boolean kjs$isWildcard() {
 		return false;
+	}
+
+	@Override
+	default Ingredient kjs$asIngredient() {
+		return kjs$self();
 	}
 }

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.item.ingredient;
 
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
@@ -32,10 +33,10 @@ public interface IngredientJS {
 			o = w.unwrap();
 		}
 
-		if (o == null || o == ItemStack.EMPTY || o == Items.AIR) {
+		if (o == null || o == ItemStack.EMPTY || o == Items.AIR || o == Ingredient.EMPTY) {
 			return Ingredient.EMPTY;
-		} else if (o instanceof Ingredient ingr) {
-			return ingr;
+		} else if (o instanceof IngredientSupplierKJS ingr) {
+			return ingr.kjs$asIngredient();
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
 			var reg = UtilsJS.parseRegex(o);
 
@@ -94,7 +95,7 @@ public interface IngredientJS {
 				return Ingredient.EMPTY;
 			}
 
-			return item.kjs$getIgnoreNBTIngredient().kjs$withCount(count);
+			return item.kjs$asIngredient().kjs$withCount(count);
 		}
 
 		List<?> list = ListJS.of(o);
@@ -146,7 +147,7 @@ public interface IngredientJS {
 			} else if (map.containsKey("tag")) {
 				in = IngredientPlatformHelper.get().tag(map.get("tag").toString());
 			} else if (map.containsKey("item")) {
-				in = ItemStackJS.of(map).getItem().kjs$getIgnoreNBTIngredient();
+				in = ItemStackJS.of(map).getItem().kjs$asIngredient();
 			}
 
 			return in;
@@ -192,7 +193,7 @@ public interface IngredientJS {
 			} else if (o.has("tag")) {
 				return IngredientPlatformHelper.get().tag(o.get("tag").getAsString()).kjs$withCount(count);
 			} else if (o.has("item")) {
-				return ItemStackJS.of(o.get("item").getAsString()).getItem().kjs$getIgnoreNBTIngredient().kjs$withCount(count);
+				return ItemStackJS.of(o.get("item").getAsString()).getItem().kjs$asIngredient().kjs$withCount(count);
 			}
 
 			return Ingredient.EMPTY;

@@ -52,7 +52,7 @@ public class GroupREIEntriesEventJS extends EventJS {
 	}
 
 	public void groupSameItem(ResourceLocation group, Component description, ItemStack item) {
-		groupItemsIf(group, description, item.getItem().kjs$getIgnoreNBTIngredient());
+		groupItemsIf(group, description, item.getItem().kjs$asIngredient());
 	}
 
 	public void groupSameFluid(ResourceLocation group, Component description, FluidStackJS fluid) {

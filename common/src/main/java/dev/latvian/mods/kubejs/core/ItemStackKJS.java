@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 @RemapPrefixForJS("kjs$")
-public interface ItemStackKJS extends SpecialEquality, NBTSerializable {
+public interface ItemStackKJS extends SpecialEquality, NBTSerializable, IngredientSupplierKJS {
 	default ItemStack kjs$self() {
 		return (ItemStack) this;
 	}
@@ -187,7 +187,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable {
 		console.pushLineNumber();
 		console.warn("You don't need to call .ignoreNBT() anymore, all item ingredients ignore NBT by default!");
 		console.popLineNumber();
-		return kjs$self().getItem().kjs$getIgnoreNBTIngredient();
+		return kjs$self().getItem().kjs$asIngredient();
 	}
 
 	default Ingredient kjs$weakNBT() {
@@ -307,8 +307,9 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable {
 		return builder.toString();
 	}
 
+	@Override
 	default Ingredient kjs$asIngredient() {
-		return kjs$self().getItem().kjs$getIgnoreNBTIngredient();
+		return kjs$self().getItem().kjs$asIngredient();
 	}
 
 	default JsonObject kjs$toJson() {
@@ -321,5 +322,17 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable {
 		}
 
 		return json;
+	}
+
+	default double kjs$getChance() {
+		throw new NoMixinException();
+	}
+
+	default void kjs$setChance(double chance) {
+		throw new NoMixinException();
+	}
+
+	default ItemStack kjs$withChance(double chance) {
+		throw new NoMixinException();
 	}
 }
