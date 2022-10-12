@@ -1,14 +1,13 @@
 package dev.latvian.mods.kubejs.event;
 
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.rhino.BaseFunction;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public final class EventGroup extends HashMap<String, BaseFunction> {
+public final class EventGroup {
 	private static final Map<String, EventGroup> MAP = new HashMap<>();
 
 	public static Map<String, EventGroup> getGroups() {
