@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.client.painter.screen;
 
+import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.unit.FixedColorUnit;
 import dev.latvian.mods.unit.FixedNumberUnit;
@@ -13,6 +14,9 @@ public class RectangleObject extends ScreenPainterObject {
 	private Unit v0 = FixedNumberUnit.ZERO;
 	private Unit u1 = FixedNumberUnit.ONE;
 	private Unit v1 = FixedNumberUnit.ONE;
+
+	public RectangleObject(Painter painter) {
+	}
 
 	@Override
 	protected void load(PainterObjectProperties properties) {

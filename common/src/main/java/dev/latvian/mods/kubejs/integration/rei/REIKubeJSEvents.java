@@ -9,11 +9,11 @@ import dev.latvian.mods.kubejs.event.EventHandler;
 public interface REIKubeJSEvents {
 	EventGroup GROUP = EventGroup.of("REIEvents");
 
-	EventHandler HIDE = GROUP.client("hide", () -> HideREIEventJS.class).requiresNamespacedExtraId().legacy("rei.hide");
-	EventHandler ADD = GROUP.client("add", () -> AddREIEventJS.class).requiresNamespacedExtraId().legacy("rei.add");
-	EventHandler INFORMATION = GROUP.client("information", () -> InformationREIEventJS.class).legacy("rei.information");
-	EventHandler REMOVE_CATEGORIES = GROUP.client("removeCategories", () -> RemoveREICategoryEventJS.class).legacy("rei.remove.categories");
-	EventHandler GROUP_ENTRIES = GROUP.client("groupEntries", () -> GroupREIEntriesEventJS.class).legacy("rei.group");
+	EventHandler HIDE = GROUP.client("hide", () -> HideREIEventJS.class).requiresNamespacedExtraId();
+	EventHandler ADD = GROUP.client("add", () -> AddREIEventJS.class).requiresNamespacedExtraId();
+	EventHandler INFORMATION = GROUP.client("information", () -> InformationREIEventJS.class);
+	EventHandler REMOVE_CATEGORIES = GROUP.client("removeCategories", () -> RemoveREICategoryEventJS.class);
+	EventHandler GROUP_ENTRIES = GROUP.client("groupEntries", () -> GroupREIEntriesEventJS.class);
 
 	static void register() {
 		GROUP.register();

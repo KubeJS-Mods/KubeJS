@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.client.painter.screen;
 
 import dev.latvian.mods.kubejs.bindings.ComponentWrapper;
+import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.unit.FixedBooleanUnit;
 import dev.latvian.mods.unit.FixedColorUnit;
@@ -18,6 +19,9 @@ public class TextObject extends ScreenPainterObject {
 	private Unit lineSpacing = FixedNumberUnit.TEN;
 
 	private float[] textWidth = new float[0];
+
+	public TextObject(Painter painter) {
+	}
 
 	@Override
 	protected void load(PainterObjectProperties properties) {

@@ -1,34 +1,18 @@
 package dev.latvian.mods.kubejs.event;
 
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.rhino.BaseFunction;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public final class EventGroup {
+public final class EventGroup extends HashMap<String, BaseFunction> {
 	private static final Map<String, EventGroup> MAP = new HashMap<>();
-	private static Map<String, EventHandler> LEGACY_MAP = null;
 
 	public static Map<String, EventGroup> getGroups() {
 		return Collections.unmodifiableMap(MAP);
-	}
-
-	public static Map<String, EventHandler> getLegacyMap() {
-		if (LEGACY_MAP == null) {
-			LEGACY_MAP = new HashMap<>();
-
-			for (var group : MAP.values()) {
-				for (var handler : group.getHandlers().values()) {
-					for (var id : handler.getLegacyEventIds()) {
-						LEGACY_MAP.put(id, handler);
-					}
-				}
-			}
-		}
-
-		return Collections.unmodifiableMap(LEGACY_MAP);
 	}
 
 	public static EventGroup of(String name) {

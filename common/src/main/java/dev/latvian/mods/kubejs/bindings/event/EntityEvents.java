@@ -9,8 +9,8 @@ import dev.latvian.mods.kubejs.event.EventHandler;
 
 public interface EntityEvents {
 	EventGroup GROUP = EventGroup.of("EntityEvents");
-	EventHandler DEATH = GROUP.server("death", () -> LivingEntityDeathEventJS.class).supportsNamespacedExtraId().cancelable().legacy("entity.death");
-	EventHandler HURT = GROUP.server("hurt", () -> LivingEntityHurtEventJS.class).supportsNamespacedExtraId().cancelable().legacy("entity.hurt");
-	EventHandler CHECK_SPAWN = GROUP.server("checkSpawn", () -> CheckLivingEntitySpawnEventJS.class).supportsNamespacedExtraId().cancelable().legacy("entity.check_spawn");
-	EventHandler SPAWNED = GROUP.server("spawned", () -> EntitySpawnedEventJS.class).supportsNamespacedExtraId().cancelable().legacy("entity.spawned");
+	EventHandler DEATH = GROUP.server("death", () -> LivingEntityDeathEventJS.class).supportsNamespacedExtraId().cancelable();
+	EventHandler HURT = GROUP.server("hurt", () -> LivingEntityHurtEventJS.class).supportsNamespacedExtraId().cancelable();
+	EventHandler CHECK_SPAWN = GROUP.server("checkSpawn", () -> CheckLivingEntitySpawnEventJS.class).supportsNamespacedExtraId().cancelable();
+	EventHandler SPAWNED = GROUP.server("spawned", () -> EntitySpawnedEventJS.class).supportsNamespacedExtraId().cancelable();
 }

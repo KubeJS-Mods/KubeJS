@@ -7,9 +7,9 @@ import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.item.forge.ItemDestroyedEventJS;
 
 public interface ForgeKubeJSEvents {
-	EventHandler ITEM_DESTROYED = ItemEvents.GROUP.server("destroyed", () -> ItemDestroyedEventJS.class).supportsNamespacedExtraId().legacy("item.destroyed");
+	EventHandler ITEM_DESTROYED = ItemEvents.GROUP.server("destroyed", () -> ItemDestroyedEventJS.class).supportsNamespacedExtraId();
 
-	EventHandler ENTITY_DROPS = EntityEvents.GROUP.server("drops", () -> LivingEntityDropsEventJS.class).supportsNamespacedExtraId().cancelable().legacy("entity.drops");
+	EventHandler ENTITY_DROPS = EntityEvents.GROUP.server("drops", () -> LivingEntityDropsEventJS.class).supportsNamespacedExtraId().cancelable();
 
 	static void register() {
 	}

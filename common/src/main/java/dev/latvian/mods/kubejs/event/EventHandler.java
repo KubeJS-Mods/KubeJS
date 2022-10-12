@@ -11,9 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -30,7 +28,6 @@ public final class EventHandler extends BaseFunction {
 	private boolean cancelable;
 	private EventHandlerContainer[] eventContainers;
 	private Map<String, EventHandlerContainer[]> extraEventContainers;
-	private Set<String> legacyEventIds;
 	private int extraIdType;
 	private Function<String, String> extraTransformer;
 
@@ -42,7 +39,6 @@ public final class EventHandler extends BaseFunction {
 		cancelable = false;
 		eventContainers = null;
 		extraEventContainers = null;
-		legacyEventIds = null;
 		extraIdType = 0;
 		extraTransformer = Function.identity();
 	}
@@ -57,19 +53,6 @@ public final class EventHandler extends BaseFunction {
 
 	public boolean isCancelable() {
 		return cancelable;
-	}
-
-	public EventHandler legacy(String eventId) {
-		if (legacyEventIds == null) {
-			legacyEventIds = new HashSet<>(1);
-		}
-
-		legacyEventIds.add(eventId);
-		return this;
-	}
-
-	public Set<String> getLegacyEventIds() {
-		return legacyEventIds == null ? Set.of() : legacyEventIds;
 	}
 
 	public EventHandler requiresExtraId() {

@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.event.StartupEventJS;
 
 public interface StartupEvents {
 	EventGroup GROUP = EventGroup.of("StartupEvents");
-	EventHandler INIT = GROUP.startup("init", () -> StartupEventJS.class).legacy("init");
-	EventHandler POST_INIT = GROUP.startup("postInit", () -> StartupEventJS.class).legacy("postinit");
+	EventHandler INIT = GROUP.startup("init", () -> StartupEventJS.class);
+	EventHandler POST_INIT = GROUP.startup("postInit", () -> StartupEventJS.class);
 	EventHandler REGISTRY = GROUP.startup("registry", () -> RegistryObjectBuilderTypes.RegistryEventJS.class).requiresNamespacedExtraId();
 }

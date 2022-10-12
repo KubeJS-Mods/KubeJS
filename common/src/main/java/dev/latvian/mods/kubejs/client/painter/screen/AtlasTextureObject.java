@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.client.painter.screen;
 
+import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.unit.FixedColorUnit;
 import dev.latvian.mods.unit.Unit;
@@ -12,6 +13,9 @@ public class AtlasTextureObject extends ScreenPainterObject {
 	private ResourceLocation atlas = InventoryMenu.BLOCK_ATLAS;
 	private ResourceLocation texture = null;
 	private TextureAtlas textureAtlas;
+
+	public AtlasTextureObject(Painter painter) {
+	}
 
 	@Override
 	protected void load(PainterObjectProperties properties) {

@@ -158,7 +158,7 @@ public class ConsoleJS {
 
 		var builder = new StringBuilder();
 
-		if (lineNumber > 0) {
+		if (true) {
 			var lineP = new int[]{0};
 			var lineS = Context.getSourcePositionFromStack(lineP);
 

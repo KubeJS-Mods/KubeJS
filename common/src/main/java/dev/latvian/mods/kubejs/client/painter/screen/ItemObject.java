@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.unit.FixedBooleanUnit;
@@ -28,7 +29,7 @@ public class ItemObject extends ScreenPainterObject {
 	private String customText = "";
 	private Unit rotation = FixedNumberUnit.ZERO;
 
-	public ItemObject() {
+	public ItemObject(Painter painter) {
 		z = FixedNumberUnit.of(100);
 	}
 

@@ -7,6 +7,6 @@ import dev.latvian.mods.kubejs.level.gen.RemoveWorldgenEventJS;
 
 public interface WorldgenEvents {
 	EventGroup GROUP = EventGroup.of("WorldgenEvents");
-	EventHandler ADD = GROUP.startup("add", () -> AddWorldgenEventJS.class).legacy("worldgen.add");
-	EventHandler REMOVE = GROUP.startup("remove", () -> RemoveWorldgenEventJS.class).legacy("worldgen.remove");
+	EventHandler ADD = GROUP.startup("add", () -> AddWorldgenEventJS.class);
+	EventHandler REMOVE = GROUP.startup("remove", () -> RemoveWorldgenEventJS.class);
 }

@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.client.painter;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenPainterObject;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.unit.FixedNumberUnit;
-import dev.latvian.mods.unit.UnitContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +15,12 @@ import java.util.Map;
 public class PainterObjectStorage {
 	private static final ScreenPainterObject[] NO_SCREEN_OBJECTS = new ScreenPainterObject[0];
 
+	public final Painter painter;
 	private final Map<String, PainterObject> objects = new LinkedHashMap<>();
+
+	public PainterObjectStorage(Painter p) {
+		painter = p;
+	}
 
 	@Nullable
 	public PainterObject getObject(String key) {
@@ -42,9 +46,9 @@ public class PainterObjectStorage {
 			} else if (key.equals("$")) {
 				for (var k : tag.getAllKeys()) {
 					if (tag.contains(k, Tag.TAG_ANY_NUMERIC)) {
-						Painter.INSTANCE.setVariable(k, FixedNumberUnit.of(tag.getFloat(k)));
+						painter.setVariable(k, FixedNumberUnit.of(tag.getFloat(k)));
 					} else {
-						Painter.INSTANCE.setVariable(k, UnitContext.DEFAULT.parse(tag.getString(k)));
+						painter.setVariable(k, painter.unitOf(tag.get(k)));
 					}
 				}
 			} else {
@@ -56,7 +60,7 @@ public class PainterObjectStorage {
 					ConsoleJS.CLIENT.error("Painter id can't contain spaces!");
 				} else {
 					var type = tag.getString("type");
-					var o1 = Painter.INSTANCE.make(type);
+					var o1 = painter.make(type);
 
 					if (o1 != null) {
 						o1.id = key;

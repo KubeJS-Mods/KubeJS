@@ -13,7 +13,6 @@ import dev.latvian.mods.rhino.SharedContextData;
 import dev.latvian.mods.rhino.mod.util.RemappingHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
@@ -104,7 +103,7 @@ public class ScriptManager implements ClassShutter {
 
 			try (var in = Files.newInputStream(KubeJS.thisMod.findResource("data", "kubejs", exampleScript).get());
 				 var out = Files.newOutputStream(directory.resolve("script.js"))) {
-				out.write(IOUtils.toByteArray(in));
+				in.transferTo(out);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

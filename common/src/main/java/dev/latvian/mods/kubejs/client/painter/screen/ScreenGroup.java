@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.client.painter.screen;
 
+import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectStorage;
 import dev.latvian.mods.unit.FixedNumberUnit;
@@ -10,11 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScreenGroup extends ScreenPainterObject {
-	private final PainterObjectStorage storage = new PainterObjectStorage();
+	private final PainterObjectStorage storage;
 	private Unit scaleX = FixedNumberUnit.ONE;
 	private Unit scaleY = FixedNumberUnit.ONE;
 	private Unit paddingW = FixedNumberUnit.ZERO;
 	private Unit paddingH = FixedNumberUnit.ZERO;
+
+	public ScreenGroup(Painter painter) {
+		storage = new PainterObjectStorage(painter);
+	}
 
 	@Override
 	protected void load(PainterObjectProperties properties) {

@@ -4,8 +4,15 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.client.ClientEventJS;
+import dev.latvian.mods.kubejs.client.painter.screen.AtlasTextureObject;
+import dev.latvian.mods.kubejs.client.painter.screen.GradientObject;
+import dev.latvian.mods.kubejs.client.painter.screen.ItemObject;
 import dev.latvian.mods.kubejs.client.painter.screen.PaintScreenEventJS;
+import dev.latvian.mods.kubejs.client.painter.screen.RectangleObject;
+import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenPainterObject;
+import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.unit.FixedNumberUnit;
 import dev.latvian.mods.unit.MutableNumberUnit;
@@ -16,11 +23,11 @@ import dev.latvian.mods.unit.VariableSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.StringTag;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public class Painter implements UnitVariables {
 	public static final Painter INSTANCE = new Painter();
@@ -36,7 +43,7 @@ public class Painter implements UnitVariables {
 	public static final int BOTTOM = 1;
 
 	private final Object lock;
-	private final Map<String, Supplier<PainterObject>> objectRegistry;
+	private final Map<String, PainterFactory> objectRegistry;
 	private final PainterObjectStorage storage;
 	private ScreenPainterObject[] screenObjects;
 	public final UnitContext unitContext;
@@ -47,10 +54,10 @@ public class Painter implements UnitVariables {
 	public final MutableNumberUnit mouseXUnit;
 	public final MutableNumberUnit mouseYUnit;
 
-	private Painter() {
+	public Painter() {
 		lock = new Object();
 		objectRegistry = new HashMap<>();
-		storage = new PainterObjectStorage();
+		storage = new PainterObjectStorage(this);
 		screenObjects = null;
 		unitContext = UnitContext.DEFAULT.sub();
 		variables = new VariableSet();
@@ -75,22 +82,39 @@ public class Painter implements UnitVariables {
 			return unit;
 		} else if (o instanceof Number number) {
 			return FixedNumberUnit.of(number.floatValue());
-		} else if (o instanceof String) {
-			return unitContext.parse(o.toString());
+		}
+
+		try {
+			if (o instanceof String) {
+				return unitContext.parse(o.toString());
+			} else if (o instanceof StringTag tag) {
+				return unitContext.parse(tag.getAsString());
+			}
+		} catch (Exception ex) {
+			ConsoleJS.getCurrent(ConsoleJS.CLIENT).error("Failed to parse Unit: " + ex);
 		}
 
 		return FixedNumberUnit.ZERO;
 	}
 
 	@HideFromJS
-	public void registerObject(String name, Supplier<PainterObject> supplier) {
+	public void registerObject(String name, PainterFactory supplier) {
 		objectRegistry.put(name, supplier);
+	}
+
+	public void registerBuiltinObjects() {
+		registerObject("screen_group", ScreenGroup::new);
+		registerObject("rectangle", RectangleObject::new);
+		registerObject("text", TextObject::new);
+		registerObject("atlas_texture", AtlasTextureObject::new);
+		registerObject("gradient", GradientObject::new);
+		registerObject("item", ItemObject::new);
 	}
 
 	@Nullable
 	public PainterObject make(String type) {
 		var supplier = objectRegistry.get(type);
-		return supplier == null ? null : supplier.get();
+		return supplier == null ? null : supplier.create(this);
 	}
 
 	@Nullable

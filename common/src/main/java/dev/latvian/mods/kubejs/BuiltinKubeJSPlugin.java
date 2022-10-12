@@ -40,12 +40,6 @@ import dev.latvian.mods.kubejs.block.custom.WoodenButtonBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.WoodenPressurePlateBlockBuilder;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.client.painter.Painter;
-import dev.latvian.mods.kubejs.client.painter.screen.AtlasTextureObject;
-import dev.latvian.mods.kubejs.client.painter.screen.GradientObject;
-import dev.latvian.mods.kubejs.client.painter.screen.ItemObject;
-import dev.latvian.mods.kubejs.client.painter.screen.RectangleObject;
-import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
-import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
 import dev.latvian.mods.kubejs.core.PlayerSelector;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventGroupWrapper;
@@ -218,12 +212,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	@Override
 	@Environment(EnvType.CLIENT)
 	public void clientInit() {
-		Painter.INSTANCE.registerObject("screen_group", ScreenGroup::new);
-		Painter.INSTANCE.registerObject("rectangle", RectangleObject::new);
-		Painter.INSTANCE.registerObject("text", TextObject::new);
-		Painter.INSTANCE.registerObject("atlas_texture", AtlasTextureObject::new);
-		Painter.INSTANCE.registerObject("gradient", GradientObject::new);
-		Painter.INSTANCE.registerObject("item", ItemObject::new);
+		Painter.INSTANCE.registerBuiltinObjects();
 	}
 
 	@Override
