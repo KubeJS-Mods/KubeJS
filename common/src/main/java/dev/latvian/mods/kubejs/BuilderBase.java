@@ -44,10 +44,6 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 
 	public abstract T createObject();
 
-	public final BuilderBase<T> type(String type) {
-		throw new RuntimeException("type(String type) is no longer supported! Use event.create(String id, String type) now!");
-	}
-
 	public T transformObject(T obj) {
 		return obj;
 	}

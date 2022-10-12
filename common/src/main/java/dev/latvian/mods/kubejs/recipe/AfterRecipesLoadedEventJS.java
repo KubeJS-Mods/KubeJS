@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.recipe;
 
+import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
-import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
@@ -78,7 +78,7 @@ public class AfterRecipesLoadedEventJS extends EventJS {
 				itr.remove();
 				count++;
 
-				if (ServerSettings.instance.logRemovedRecipes) {
+				if (DevProperties.get().logRemovedRecipes) {
 					ConsoleJS.SERVER.info("- " + r);
 				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
 					ConsoleJS.SERVER.debug("- " + r);

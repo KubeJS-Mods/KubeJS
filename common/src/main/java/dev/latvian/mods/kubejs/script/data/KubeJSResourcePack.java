@@ -46,7 +46,7 @@ public abstract class KubeJSResourcePack implements PackResources {
 	@Override
 	public InputStream getRootResource(String fileName) throws IOException {
 		if (fileName.equals("pack.png")) {
-			return KubeJSResourcePack.class.getResourceAsStream("/kubejs_logo.png");
+			return Files.newInputStream(KubeJS.thisMod.findResource("kubejs_logo.png").get());
 		}
 
 		throw new ResourcePackFileNotFoundException(KubeJSPaths.DIRECTORY.toFile(), fileName);

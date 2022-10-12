@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.util;
 
-import dev.latvian.mods.kubejs.CommonProperties;
 import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
 
 import java.util.ArrayList;
@@ -75,13 +74,15 @@ public class ClassFilter {
 			}
 		}
 
+		/*
 		for (var s1 : allowWeak) {
 			if (s.startsWith(s1)) {
 				return V_ALLOW;
 			}
 		}
+		 */
 
-		return CommonProperties.get().disableClassFilter ? V_ALLOW : V_DENY;
+		return V_ALLOW;
 	}
 
 	public boolean isAllowed(String s) {

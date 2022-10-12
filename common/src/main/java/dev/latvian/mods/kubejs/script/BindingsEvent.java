@@ -1,8 +1,6 @@
 package dev.latvian.mods.kubejs.script;
 
-import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.SharedContextData;
-import dev.latvian.mods.rhino.util.DynamicFunction;
 
 /**
  * @author LatvianModder
@@ -26,17 +24,5 @@ public class BindingsEvent {
 		if (value != null) {
 			contextData.addToTopLevelScope(name, value);
 		}
-	}
-
-	public void addFunction(String name, DynamicFunction.Callback callback) {
-		add(name, new DynamicFunction(callback));
-	}
-
-	public void addFunction(String name, DynamicFunction.Callback callback, Class<?>... types) {
-		add(name, new TypedDynamicFunction(callback, types));
-	}
-
-	public void addFunction(String name, BaseFunction function) {
-		add(name, function);
 	}
 }

@@ -17,8 +17,8 @@ import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
+import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
-import dev.latvian.mods.kubejs.server.ServerSettings;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -342,12 +342,12 @@ public class KubeJSCommands {
 	}
 
 	private static int export(CommandSourceStack source) {
-		if (ServerSettings.dataExport != null) {
+		if (DataExport.dataExport != null) {
 			return 0;
 		}
 
-		ServerSettings.source = source;
-		ServerSettings.dataExport = new JsonObject();
+		DataExport.source = source;
+		DataExport.dataExport = new JsonObject();
 		source.sendSuccess(Component.literal("Reloading server and exporting data..."), false);
 
 		var minecraftServer = source.getServer();

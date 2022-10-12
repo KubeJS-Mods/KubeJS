@@ -1,5 +1,7 @@
 package dev.latvian.mods.kubejs;
 
+import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
@@ -25,9 +27,9 @@ public class CommonProperties {
 	public boolean hideServerScriptErrors;
 	public boolean serverOnly;
 	public boolean announceReload;
-	public boolean disableClassFilter;
 	public String packMode;
 	public boolean debugInfo;
+	public boolean saveDevPropertiesInConfig;
 
 	private CommonProperties() {
 		properties = new Properties();
@@ -47,9 +49,11 @@ public class CommonProperties {
 			hideServerScriptErrors = get("hideServerScriptErrors", false);
 			serverOnly = get("serverOnly", false);
 			announceReload = get("announceReload", true);
-			disableClassFilter = get("disableClassFilter", false);
 			packMode = get("packmode", "default");
 			debugInfo = get("debugInfo", false);
+			saveDevPropertiesInConfig = get("saveDevPropertiesInConfig", false);
+
+			KubeJSPlugins.forEachPlugin(p -> p.loadCommonProperties(this));
 
 			if (writeProperties) {
 				try (Writer writer = Files.newBufferedWriter(propertiesFile)) {
@@ -63,7 +67,7 @@ public class CommonProperties {
 		KubeJS.LOGGER.info("Loaded common.properties");
 	}
 
-	private void remove(String key) {
+	public void remove(String key) {
 		var s = properties.getProperty(key);
 
 		if (s != null) {
@@ -72,7 +76,7 @@ public class CommonProperties {
 		}
 	}
 
-	private String get(String key, String def) {
+	public String get(String key, String def) {
 		var s = properties.getProperty(key);
 
 		if (s == null) {
@@ -84,7 +88,7 @@ public class CommonProperties {
 		return s;
 	}
 
-	private boolean get(String key, boolean def) {
+	public boolean get(String key, boolean def) {
 		return get(key, def ? "true" : "false").equals("true");
 	}
 }

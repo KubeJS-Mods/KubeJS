@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.script.data;
 
-import dev.latvian.mods.kubejs.server.ServerSettings;
+import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.AbstractPackResources;
@@ -45,7 +45,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 		pathToData.put("data/" + id.getNamespace() + "/" + id.getPath(), data);
 		namespaces.add(id.getNamespace());
 
-		if (ServerSettings.instance.dataPackOutput) {
+		if (DevProperties.get().dataPackOutput) {
 			ConsoleJS.SERVER.info("Registered virtual file [" + (high ? "high" : "low") + " priority] '" + id + "': " + data);
 		}
 	}
@@ -55,7 +55,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 		var s = pathToData.get(path);
 
 		if (s != null) {
-			if (ServerSettings.instance.dataPackOutput) {
+			if (DevProperties.get().dataPackOutput) {
 				ConsoleJS.SERVER.info("Served virtual file [" + (high ? "high" : "low") + " priority] '" + path + "': " + s);
 			}
 
@@ -70,7 +70,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 		var s = locationToData.get(location);
 
 		if (s != null) {
-			if (ServerSettings.instance.dataPackOutput) {
+			if (DevProperties.get().dataPackOutput) {
 				ConsoleJS.SERVER.info("Served virtual file [" + (high ? "high" : "low") + " priority] '" + location + "': " + s);
 			}
 

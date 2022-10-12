@@ -2,7 +2,9 @@ package dev.latvian.mods.kubejs.client;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 
@@ -53,14 +55,15 @@ public class ClientProperties {
 		try {
 			var propertiesFile = KubeJSPaths.CONFIG.resolve("client.properties");
 
-			UtilsJS.tryIO(() ->
-			{
+			try {
 				var p0 = KubeJSPaths.DIRECTORY.resolve("client.properties");
 
 				if (Files.exists(p0)) {
 					Files.move(p0, propertiesFile);
 				}
-			});
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 
 			writeProperties = false;
 
@@ -90,18 +93,21 @@ public class ClientProperties {
 
 			var iconFile = KubeJSPaths.CONFIG.resolve("packicon.png");
 
-			UtilsJS.tryIO(() ->
-			{
+			try {
 				var p0 = KubeJSPaths.DIRECTORY.resolve("packicon.png");
 
 				if (Files.exists(p0)) {
 					Files.move(p0, iconFile);
 				}
-			});
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 
 			if (Files.exists(iconFile)) {
 				icon = iconFile;
 			}
+
+			KubeJSPlugins.forEachPlugin(p -> p.loadClientProperties(this));
 
 			if (writeProperties) {
 				try (Writer writer = Files.newBufferedWriter(propertiesFile)) {
@@ -115,7 +121,7 @@ public class ClientProperties {
 		KubeJS.LOGGER.info("Loaded client.properties");
 	}
 
-	private String get(String key, String def) {
+	public String get(String key, String def) {
 		var s = properties.getProperty(key);
 
 		if (s == null) {
@@ -127,19 +133,19 @@ public class ClientProperties {
 		return s;
 	}
 
-	private boolean get(String key, boolean def) {
+	public boolean get(String key, boolean def) {
 		return get(key, def ? "true" : "false").equals("true");
 	}
 
-	private int get(String key, int def) {
+	public int get(String key, int def) {
 		return Integer.parseInt(get(key, Integer.toString(def)));
 	}
 
-	private double get(String key, double def) {
+	public double get(String key, double def) {
 		return Double.parseDouble(get(key, Double.toString(def)));
 	}
 
-	private int getColor(String key, int def) {
+	public int getColor(String key, int def) {
 		var s = get(key, String.format("%06X", def & 0xFFFFFF));
 
 		if (s.isEmpty() || s.equals("default")) {
@@ -154,7 +160,7 @@ public class ClientProperties {
 		}
 	}
 
-	private float[] getColor3f(int color) {
+	public float[] getColor3f(int color) {
 		var c = new float[3];
 		c[0] = ((color >> 16) & 0xFF) / 255F;
 		c[1] = ((color >> 8) & 0xFF) / 255F;
@@ -162,6 +168,7 @@ public class ClientProperties {
 		return c;
 	}
 
+	@Environment(EnvType.CLIENT)
 	public boolean cancelIconUpdate() {
 		if (tempIconCancel) {
 			if (icon != null) {

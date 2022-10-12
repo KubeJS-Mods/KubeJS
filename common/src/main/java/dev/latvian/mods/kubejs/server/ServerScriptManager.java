@@ -37,7 +37,7 @@ public class ServerScriptManager {
 		return instance.scriptManager;
 	}
 
-	private final ScriptManager scriptManager = new ScriptManager(ScriptType.SERVER, KubeJSPaths.SERVER_SCRIPTS, "/data/kubejs/example_server_script.js");
+	private final ScriptManager scriptManager = new ScriptManager(ScriptType.SERVER, KubeJSPaths.SERVER_SCRIPTS, "example_server_script.js");
 
 	public ServerScriptManager() {
 		try {

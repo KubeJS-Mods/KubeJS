@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.generator;
 
 import com.google.gson.JsonElement;
-import dev.latvian.mods.kubejs.server.ServerSettings;
+import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
 
@@ -20,7 +20,7 @@ public class JsonGenerator {
 	public void json(ResourceLocation id, JsonElement json) {
 		map.put(id, json);
 
-		if (console.getDebugEnabled() || console == ConsoleJS.SERVER && ServerSettings.instance.dataPackOutput) {
+		if (console.getDebugEnabled() || console == ConsoleJS.SERVER && DevProperties.get().dataPackOutput) {
 			console.info("Generated " + id + ": " + json);
 		}
 	}

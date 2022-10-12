@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
+import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.event.EventJS;
@@ -12,8 +13,8 @@ import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
+import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
-import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -157,7 +158,7 @@ public class RecipesEventJS extends EventJS {
 				recipeIdAndType = recipeId + "[" + type + "]";
 
 				if (!RecipePlatformHelper.get().processConditions(recipeManager, json, "conditions")) {
-					if (ServerSettings.instance.logSkippedRecipes) {
+					if (DevProperties.get().logSkippedRecipes) {
 						ConsoleJS.SERVER.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");
 					}
 
@@ -187,7 +188,7 @@ public class RecipesEventJS extends EventJS {
 					}
 
 					if (skip) {
-						if (ServerSettings.instance.logSkippedRecipes) {
+						if (DevProperties.get().logSkippedRecipes) {
 							ConsoleJS.SERVER.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");
 						}
 
@@ -208,7 +209,7 @@ public class RecipesEventJS extends EventJS {
 				recipe.originalRecipe = RecipePlatformHelper.get().fromJson(recipe);
 
 				if (recipe.originalRecipe == null) {
-					if (ServerSettings.instance.logSkippedRecipes) {
+					if (DevProperties.get().logSkippedRecipes) {
 						ConsoleJS.SERVER.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");
 					}
 
@@ -226,26 +227,26 @@ public class RecipesEventJS extends EventJS {
 					}
 				}
 
-				if (ServerSettings.dataExport != null) {
+				if (DataExport.dataExport != null) {
 					allRecipeMap.add(recipe.getId(), json);
 				}
 			} catch (Throwable ex) {
 				if (!(ex instanceof RecipeExceptionJS rex) || rex.fallback) {
-					if (ServerSettings.instance.logErroringRecipes) {
+					if (DevProperties.get().logErroringRecipes) {
 						ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'! Falling back to vanilla", ex, SKIP_ERROR);
 					}
 
 					try {
 						fallbackedRecipes.add(Objects.requireNonNull(RecipeManager.fromJson(recipeId, entry.getValue())));
 					} catch (NullPointerException | IllegalArgumentException | JsonParseException ex2) {
-						if (ServerSettings.instance.logErroringRecipes) {
+						if (DevProperties.get().logErroringRecipes) {
 							ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType, ex2, SKIP_ERROR);
 						}
 					} catch (Exception ex3) {
 						ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType + ":");
 						ConsoleJS.SERVER.printStackTrace(ex3, SKIP_ERROR);
 					}
-				} else if (ServerSettings.instance.logErroringRecipes) {
+				} else if (DevProperties.get().logErroringRecipes) {
 					ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'", ex, SKIP_ERROR);
 				}
 			}
@@ -291,7 +292,7 @@ public class RecipesEventJS extends EventJS {
 					var oldEntry = recipesByName.put(id, recipe);
 					if (oldEntry != null) {
 						var oldSer = KubeJSRegistries.recipeSerializers().getId(oldEntry.getSerializer());
-						if (ServerSettings.instance.logOverrides) {
+						if (DevProperties.get().logOverrides) {
 							ConsoleJS.SERVER.info("Overriding existing recipe with ID " + recipe.getId() + "[" + oldSer + " => " + ser + "] during phase PARSE!");
 						}
 					}
@@ -304,7 +305,7 @@ public class RecipesEventJS extends EventJS {
 					var oldEntry = recipesByName.put(id, recipe);
 					if (oldEntry != null) {
 						var oldSer = KubeJSRegistries.recipeSerializers().getId(oldEntry.getSerializer());
-						if (ServerSettings.instance.logOverrides) {
+						if (DevProperties.get().logOverrides) {
 							ConsoleJS.SERVER.info("Overriding existing recipe with ID " + recipe.getId() + "[" + oldSer + " => " + ser + "] during phase FALLBACK!");
 						}
 					}
@@ -330,21 +331,21 @@ public class RecipesEventJS extends EventJS {
 					var oldEntry = recipesByName.put(id, recipe);
 					if (oldEntry != null) {
 						var oldSer = KubeJSRegistries.recipeSerializers().getId(oldEntry.getSerializer());
-						if (ServerSettings.instance.logOverrides) {
+						if (DevProperties.get().logOverrides) {
 							ConsoleJS.SERVER.info("Overriding existing recipe with ID " + recipe.getId() + "[" + oldSer + " => " + ser + "] during phase ADD!");
 						}
 						removed.increment();
 					}
 				});
 
-		if (ServerSettings.dataExport != null) {
+		if (DataExport.dataExport != null) {
 			for (var r : removedRecipes) {
 				if (allRecipeMap.get(r.getId()) instanceof JsonObject json) {
 					json.addProperty("removed", true);
 				}
 			}
 
-			ServerSettings.dataExport.add("recipes", allRecipeMap);
+			DataExport.dataExport.add("recipes", allRecipeMap);
 		}
 
 		ConsoleJS.SERVER.info("Added recipes in " + timer.stop());
@@ -393,7 +394,7 @@ public class RecipesEventJS extends EventJS {
 	public RecipeJS addRecipe(RecipeJS r, RecipeTypeJS type, RecipeArguments args) {
 		addedRecipes.add(r);
 
-		if (ServerSettings.instance.logAddedRecipes) {
+		if (DevProperties.get().logAddedRecipes) {
 			ConsoleJS.SERVER.info("+ " + r.getType() + ": " + r.getFromToString());
 		} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
 			ConsoleJS.SERVER.debug("+ " + r.getType() + ": " + r.getFromToString());
@@ -447,7 +448,7 @@ public class RecipesEventJS extends EventJS {
 		forEachRecipeAsync(filter, r ->
 		{
 			if (removedRecipes.add(r)) {
-				if (ServerSettings.instance.logRemovedRecipes) {
+				if (DevProperties.get().logRemovedRecipes) {
 					ConsoleJS.SERVER.info("- " + r + ": " + r.getFromToString());
 				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
 					ConsoleJS.SERVER.debug("- " + r + ": " + r.getFromToString());
@@ -471,7 +472,7 @@ public class RecipesEventJS extends EventJS {
 				count.incrementAndGet();
 				modifiedRecipes.add(r);
 
-				if (ServerSettings.instance.logAddedRecipes || ServerSettings.instance.logRemovedRecipes) {
+				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + ": IN " + is + " -> " + ws);
 				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
 					ConsoleJS.SERVER.debug("~ " + r + ": IN " + is + " -> " + ws);
@@ -500,7 +501,7 @@ public class RecipesEventJS extends EventJS {
 				count.incrementAndGet();
 				modifiedRecipes.add(r);
 
-				if (ServerSettings.instance.logAddedRecipes || ServerSettings.instance.logRemovedRecipes) {
+				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + ": OUT " + is + " -> " + ws);
 				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
 					ConsoleJS.SERVER.debug("~ " + r + ": OUT " + is + " -> " + ws);

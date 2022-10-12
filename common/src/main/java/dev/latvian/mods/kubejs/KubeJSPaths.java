@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs;
 
 import dev.architectury.platform.Platform;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.server.packs.PackType;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,32 +10,41 @@ import java.nio.file.Path;
 /**
  * @author LatvianModder
  */
-public class KubeJSPaths {
-	public static final Path DIRECTORY = Platform.getGameFolder().resolve("kubejs").normalize();
-	public static final Path DATA = DIRECTORY.resolve("data");
-	public static final Path ASSETS = DIRECTORY.resolve("assets");
-	public static final Path STARTUP_SCRIPTS = DIRECTORY.resolve("startup_scripts");
-	public static final Path SERVER_SCRIPTS = DIRECTORY.resolve("server_scripts");
-	public static final Path CLIENT_SCRIPTS = DIRECTORY.resolve("client_scripts");
-	public static final Path CONFIG = DIRECTORY.resolve("config");
-	public static final Path EXPORTED = DIRECTORY.resolve("exported");
-	public static final Path README = DIRECTORY.resolve("README.txt");
+public interface KubeJSPaths {
+	MutableBoolean FIRST_RUN = new MutableBoolean(false);
 
-	static {
-		if (Files.notExists(DIRECTORY)) {
-			UtilsJS.tryIO(() -> Files.createDirectories(DIRECTORY));
+	static Path dir(Path dir, boolean markFirstRun) {
+		if (Files.notExists(dir)) {
+			try {
+				Files.createDirectories(dir);
+
+				if (markFirstRun) {
+					FIRST_RUN.setTrue();
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 
-		if (Files.notExists(CONFIG)) {
-			UtilsJS.tryIO(() -> Files.createDirectories(CONFIG));
-		}
-
-		if (Files.notExists(EXPORTED)) {
-			UtilsJS.tryIO(() -> Files.createDirectories(EXPORTED));
-		}
+		return dir;
 	}
 
-	public static Path get(PackType type) {
+	static Path dir(Path dir) {
+		return dir(dir, false);
+	}
+
+	Path DIRECTORY = dir(Platform.getGameFolder().resolve("kubejs"), true);
+	Path DATA = dir(DIRECTORY.resolve("data"));
+	Path ASSETS = dir(DIRECTORY.resolve("assets"));
+	Path STARTUP_SCRIPTS = DIRECTORY.resolve("startup_scripts");
+	Path SERVER_SCRIPTS = DIRECTORY.resolve("server_scripts");
+	Path CLIENT_SCRIPTS = DIRECTORY.resolve("client_scripts");
+	Path CONFIG = dir(DIRECTORY.resolve("config"));
+	Path EXPORTED = dir(DIRECTORY.resolve("exported"));
+	Path README = DIRECTORY.resolve("README.txt");
+	Path LOCAL = dir(Platform.getGameFolder().resolve("local"));
+
+	static Path get(PackType type) {
 		return type == PackType.CLIENT_RESOURCES ? ASSETS : DATA;
 	}
 }

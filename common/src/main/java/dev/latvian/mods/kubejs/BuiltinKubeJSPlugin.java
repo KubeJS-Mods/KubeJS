@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.bindings.ComponentWrapper;
 import dev.latvian.mods.kubejs.bindings.DamageSourceWrapper;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
+import dev.latvian.mods.kubejs.bindings.JavaWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
@@ -48,7 +49,6 @@ import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
 import dev.latvian.mods.kubejs.core.PlayerSelector;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventGroupWrapper;
-import dev.latvian.mods.kubejs.event.IEventHandler;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
@@ -94,7 +94,6 @@ import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
@@ -309,12 +308,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	@Override
 	public void registerBindings(BindingsEvent event) {
 		event.add("global", GLOBAL);
-
-		if (event.type == ScriptType.SERVER) {
-			ServerSettings.instance = new ServerSettings();
-			event.add("settings", ServerSettings.instance);
-		}
-
 		event.add("Platform", PlatformWrapper.class);
 		event.add("console", event.type.console);
 
@@ -322,19 +315,19 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 			event.add(group.name, new EventGroupWrapper(event.type, group));
 		}
 
-		event.addFunction("onEvent", args -> onLegacyEvent(event, args[0], (IEventHandler) args[1]), null, IEventHandler.class);
-		event.addFunction("java", args -> event.manager.loadJavaClass(event, args), new Class[]{null});
-
 		event.add("JavaMath", Math.class);
 		event.add("ResourceLocation", ResourceLocation.class);
 
 		event.add("Utils", UtilsWrapper.class);
+		event.add("Java", new JavaWrapper(event));
 		event.add("Component", ComponentWrapper.class);
 		event.add("Text", ComponentWrapper.class);
 		event.add("UUID", UUIDWrapper.class);
 		event.add("JsonIO", JsonIO.class);
 		event.add("Block", BlockWrapper.class);
+		event.add("Blocks", Blocks.class);
 		event.add("Item", ItemWrapper.class);
+		event.add("Items", Items.class);
 		event.add("Ingredient", IngredientWrapper.class);
 		event.add("IngredientHelper", IngredientPlatformHelper.get());
 		event.add("NBT", NBTUtils.class);
@@ -353,9 +346,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("Color", ColorWrapper.class);
 		event.add("BlockStatePredicate", BlockStatePredicate.class);
 
-		event.add("AIR_ITEM", Items.AIR);
-		event.add("AIR_BLOCK", Blocks.AIR);
-
 		event.add("DecorationGenerationStep", GenerationStep.Decoration.class);
 		event.add("CarvingGenerationStep", GenerationStep.Carving.class);
 		event.add("Vec3", Vec3.class);
@@ -367,41 +357,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("BlockProperties", BlockStateProperties.class);
 
 		KubeJS.PROXY.clientBindings(event);
-	}
-
-	private static Object onLegacyEvent(BindingsEvent event, Object ids, IEventHandler handler) {
-		for (var o : ListJS.orSelf(ids)) {
-			String str = String.valueOf(o);
-
-			event.type.console.pushLineNumber();
-
-			var h = EventGroup.getLegacyMap().get(str);
-
-			if (h != null) {
-				event.type.console.warn("Legacy '" + str + "' event handler found! Change it to `" + h + "(event => { })`");
-				h.listen(event.type, null, handler);
-			} else {
-				int index = str.lastIndexOf('.');
-
-				if (index == -1) {
-					event.type.console.warn("Unknown legacy event handler '" + str + "'!");
-				} else {
-					var h1 = EventGroup.getLegacyMap().get(str.substring(0, index));
-
-					if (h1 != null) {
-						String extra = str.substring(index + 1);
-						event.type.console.warn("Legacy '" + str + "' event handler found! Change it to `" + h1 + "('" + extra + "', event => { })`");
-						h1.listen(event.type, extra, handler);
-					} else {
-						event.type.console.warn("Unknown legacy event handler '" + str + "'!");
-					}
-				}
-			}
-
-			event.type.console.popLineNumber();
-		}
-
-		return null;
 	}
 
 	@Override

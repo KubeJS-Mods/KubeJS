@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.server;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
+import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
@@ -56,7 +57,7 @@ public class TagEventJS<T> extends EventJS {
 					}
 				}).ifRight(matches -> {
 					if (matches.isEmpty()) {
-						if (ServerSettings.instance.logSkippedRecipes) {
+						if (DevProperties.get().logSkippedTags) {
 							ConsoleJS.SERVER.warn("+ %s // %s [No matches found!]".formatted(this, stringId));
 						}
 						return;
@@ -93,7 +94,7 @@ public class TagEventJS<T> extends EventJS {
 
 					var removedCount = originalSize - entries.size();
 					if (removedCount == 0) {
-						if (ServerSettings.instance.logSkippedRecipes) {
+						if (DevProperties.get().logSkippedTags) {
 							ConsoleJS.SERVER.warn("- %s // #%s [No matches found!]".formatted(this, entryId));
 						}
 					} else {
@@ -126,7 +127,7 @@ public class TagEventJS<T> extends EventJS {
 
 					var removedCount = originalSize - entries.size();
 					if (removedCount == 0) {
-						if (ServerSettings.instance.logSkippedRecipes) {
+						if (DevProperties.get().logSkippedTags) {
 							ConsoleJS.SERVER.warn("- %s // %s [No matches found!]".formatted(this, stringId));
 						}
 					} else {
@@ -146,7 +147,7 @@ public class TagEventJS<T> extends EventJS {
 			if (!entries.isEmpty()) {
 				totalRemoved += entries.size();
 				entries.clear();
-			} else if (ServerSettings.instance.logSkippedRecipes) {
+			} else if (DevProperties.get().logSkippedTags) {
 				ConsoleJS.SERVER.warn("Tag " + this + " didn't contain any elements, skipped");
 			}
 
@@ -247,12 +248,12 @@ public class TagEventJS<T> extends EventJS {
 		ServerEvents.TAGS.post(registry.key().location(), this);
 		ConsoleJS.SERVER.popLineNumber();
 
-		if (ServerSettings.dataExport != null) {
-			var tj = ServerSettings.dataExport.getAsJsonObject("tags");
+		if (DataExport.dataExport != null) {
+			var tj = DataExport.dataExport.getAsJsonObject("tags");
 
 			if (tj == null) {
 				tj = new JsonObject();
-				ServerSettings.dataExport.add("tags", tj);
+				DataExport.dataExport.add("tags", tj);
 			}
 
 			var tj1 = tj.getAsJsonObject(getType().toString());

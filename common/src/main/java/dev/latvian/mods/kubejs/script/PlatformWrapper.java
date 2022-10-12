@@ -33,6 +33,10 @@ public class PlatformWrapper {
 			return name;
 		}
 
+		public void setName(String n) {
+			name = n;
+		}
+
 		public String getVersion() {
 			return version;
 		}
@@ -84,7 +88,7 @@ public class PlatformWrapper {
 	}
 
 	public static ModInfo getInfo(String modID) {
-		return MOD_MAP.get(modID);
+		return MOD_MAP.computeIfAbsent(modID, ModInfo::new);
 	}
 
 	public static Map<String, ModInfo> getMods() {

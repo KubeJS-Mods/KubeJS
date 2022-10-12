@@ -31,7 +31,7 @@ import java.util.Optional;
 public class ScriptManager implements ClassShutter {
 	public final ScriptType type;
 	public final Path directory;
-	public final String exampleScript;
+	private final String exampleScript;
 	public final Map<String, ScriptPack> packs;
 	private final ClassFilter classFilter;
 	public boolean firstLoad;
@@ -102,7 +102,7 @@ public class ScriptManager implements ClassShutter {
 		if (Files.notExists(directory)) {
 			UtilsJS.tryIO(() -> Files.createDirectories(directory));
 
-			try (var in = KubeJS.class.getResourceAsStream(exampleScript);
+			try (var in = Files.newInputStream(KubeJS.thisMod.findResource("data", "kubejs", exampleScript).get());
 				 var out = Files.newOutputStream(directory.resolve("script.js"))) {
 				out.write(IOUtils.toByteArray(in));
 			} catch (Exception ex) {
@@ -203,10 +203,8 @@ public class ScriptManager implements ClassShutter {
 		}
 	}
 
-	public NativeJavaClass loadJavaClass(BindingsEvent event, Object[] args) {
-		var name0 = String.valueOf(Context.jsToJava(event.contextData, args[0], String.class));
-
-		if (name0.isEmpty()) {
+	public NativeJavaClass loadJavaClass(BindingsEvent event, String name0, boolean warn) {
+		if (name0 == null || name0.equals("null") || name0.isEmpty()) {
 			throw Context.reportRuntimeError("Class name can't be empty!");
 		}
 
@@ -227,15 +225,18 @@ public class ScriptManager implements ClassShutter {
 
 			try {
 				if (!isClassAllowed(name)) {
-					throw Context.reportRuntimeError("Failed to dynamically load class '%s': Class is not allowed by class filter!".formatted(name));
+					throw Context.reportRuntimeError("Failed to load Java class '%s': Class is not allowed by class filter!".formatted(name));
 				}
 
 				var c = Class.forName(name);
 				var njc = new NativeJavaClass(event.contextData.topLevelScope, c);
 				javaClassCache.put(name, Optional.of(njc));
+				event.manager.type.console.pushLineNumber();
+				event.manager.type.console.info("Loaded Java class '%s'".formatted(name0));
+				event.manager.type.console.popLineNumber();
 				return njc;
 			} catch (ClassNotFoundException cnf) {
-				throw Context.reportRuntimeError("Failed to dynamically load class '%s': Class could not be found!\n%s".formatted(name, cnf.getMessage()));
+				throw Context.reportRuntimeError("Failed to load Java class '%s': Class could not be found!\n%s".formatted(name, cnf.getMessage()));
 			}
 		}
 
@@ -243,7 +244,7 @@ public class ScriptManager implements ClassShutter {
 			return ch.get();
 		}
 
-		throw Context.reportRuntimeError("Failed to dynamically load class '%s'!".formatted(name));
+		throw Context.reportRuntimeError("Failed to load Java class '%s'!".formatted(name));
 	}
 
 	@Override

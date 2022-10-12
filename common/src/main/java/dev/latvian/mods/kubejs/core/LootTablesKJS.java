@@ -10,7 +10,7 @@ import dev.latvian.mods.kubejs.loot.FishingLootEventJS;
 import dev.latvian.mods.kubejs.loot.GenericLootEventJS;
 import dev.latvian.mods.kubejs.loot.GiftLootEventJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.server.ServerSettings;
+import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.ChatFormatting;
@@ -43,7 +43,7 @@ public interface LootTablesKJS {
 			}
 		}
 
-		ServerSettings.exportData();
+		DataExport.exportData();
 
 		if (UtilsJS.staticServer != null && CommonProperties.get().announceReload && !CommonProperties.get().hideServerScriptErrors) {
 			if (ScriptType.SERVER.errors.isEmpty()) {

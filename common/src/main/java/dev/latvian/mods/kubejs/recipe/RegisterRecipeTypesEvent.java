@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import dev.architectury.registry.registries.Registries;
+import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.recipe.minecraft.ShapedRecipeJS;
 import dev.latvian.mods.kubejs.recipe.minecraft.ShapelessRecipeJS;
-import dev.latvian.mods.kubejs.server.ServerSettings;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -24,7 +24,7 @@ public record RegisterRecipeTypesEvent(Map<ResourceLocation, RecipeTypeJS> map) 
 		try {
 			register(new RecipeTypeJS(Objects.requireNonNull(KubeJSRegistries.recipeSerializers().get(id)), f));
 		} catch (NullPointerException e) {
-			if (ServerSettings.instance.logErroringRecipes) {
+			if (DevProperties.get().logErroringRecipes) {
 				ConsoleJS.SERVER.warn("Failed to register handler for recipe type " + id + " as it doesn't exist!");
 			}
 		}
@@ -34,7 +34,7 @@ public record RegisterRecipeTypesEvent(Map<ResourceLocation, RecipeTypeJS> map) 
 		try {
 			register(new IgnoredRecipeTypeJS(Objects.requireNonNull(KubeJSRegistries.recipeSerializers().get(id))));
 		} catch (NullPointerException e) {
-			if (ServerSettings.instance.logErroringRecipes) {
+			if (DevProperties.get().logErroringRecipes) {
 				ConsoleJS.SERVER.warn("Failed to ignore recipe type " + id + " as it doesn't exist!");
 			}
 		}
@@ -49,9 +49,9 @@ public record RegisterRecipeTypesEvent(Map<ResourceLocation, RecipeTypeJS> map) 
 	}
 
 	private void handleMissingSerializer(ResourceLocation id) {
-		if (ServerSettings.instance.logInvalidRecipeHandlers) {
+		if (DevProperties.get().logInvalidRecipeHandlers) {
 			throw new NullPointerException("Cannot find recipe serializer: " + id);
-		} else if (ServerSettings.instance.logErroringRecipes) {
+		} else if (DevProperties.get().logErroringRecipes) {
 			KubeJS.LOGGER.warn("Skipping recipe handler for serializer " + id + " as it does not exist!");
 		}
 	}
