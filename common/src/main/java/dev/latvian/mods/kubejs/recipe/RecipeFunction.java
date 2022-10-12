@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
+import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;

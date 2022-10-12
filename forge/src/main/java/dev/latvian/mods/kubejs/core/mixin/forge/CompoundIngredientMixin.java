@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.core.mixin.forge;
 
 import dev.latvian.mods.kubejs.core.IngredientKJS;
 import dev.latvian.mods.kubejs.item.ItemStackSet;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -50,7 +49,7 @@ public abstract class CompoundIngredientMixin extends AbstractIngredient impleme
 	public Ingredient kjs$or(Ingredient ingredient) {
 		if (ingredient != Ingredient.EMPTY) {
 			Ingredient[] in = new Ingredient[children.size() + 1];
-			System.arraycopy(children.toArray(IngredientPlatformHelper.EMPTY_ARRAY), 0, in, 0, children.size());
+			System.arraycopy(children.toArray(new Ingredient[0]), 0, in, 0, children.size());
 			in[children.size()] = ingredient;
 			return CompoundIngredient.of(in);
 		}

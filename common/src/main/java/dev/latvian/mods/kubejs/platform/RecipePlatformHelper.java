@@ -1,7 +1,8 @@
-package dev.latvian.mods.kubejs.recipe;
+package dev.latvian.mods.kubejs.platform;
 
 import com.google.common.base.Suppliers;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.world.item.crafting.Ingredient;

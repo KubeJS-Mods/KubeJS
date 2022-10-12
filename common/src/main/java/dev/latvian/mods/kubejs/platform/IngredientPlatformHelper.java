@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.item.ingredient;
+package dev.latvian.mods.kubejs.platform;
 
 import com.google.common.base.Suppliers;
 import net.minecraft.world.item.CreativeModeTab;
@@ -13,9 +13,6 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 public interface IngredientPlatformHelper {
-	Ingredient[] EMPTY_ARRAY = new Ingredient[0];
-	Ingredient.Value[] EMPTY_VALUES = new Ingredient.Value[0];
-
 	Supplier<IngredientPlatformHelper> INSTANCE = Suppliers.memoize(() -> {
 		var serviceLoader = ServiceLoader.load(IngredientPlatformHelper.class);
 		return serviceLoader.findFirst().orElseThrow(() -> new RuntimeException("Could not find a IngredientHelper for your platform!"));

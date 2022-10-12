@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.server;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
-import dev.latvian.mods.kubejs.recipe.RecipePlatformHelper;
+import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeRegistryEventJS;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;

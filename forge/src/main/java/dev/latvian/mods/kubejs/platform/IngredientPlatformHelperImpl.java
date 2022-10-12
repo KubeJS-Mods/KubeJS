@@ -1,7 +1,18 @@
-package dev.latvian.mods.kubejs.platform.ingredient;
+package dev.latvian.mods.kubejs.platform;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
+import dev.latvian.mods.kubejs.platform.ingredient.AndIngredient;
+import dev.latvian.mods.kubejs.platform.ingredient.CreativeTabIngredient;
+import dev.latvian.mods.kubejs.platform.ingredient.CustomIngredient;
+import dev.latvian.mods.kubejs.platform.ingredient.CustomPredicateIngredient;
+import dev.latvian.mods.kubejs.platform.ingredient.IngredientStackImpl;
+import dev.latvian.mods.kubejs.platform.ingredient.ModIngredient;
+import dev.latvian.mods.kubejs.platform.ingredient.NotIngredient;
+import dev.latvian.mods.kubejs.platform.ingredient.RegExIngredient;
+import dev.latvian.mods.kubejs.platform.ingredient.StrongNBTIngredient;
+import dev.latvian.mods.kubejs.platform.ingredient.TagIngredient;
+import dev.latvian.mods.kubejs.platform.ingredient.WeakNBTIngredient;
+import dev.latvian.mods.kubejs.platform.ingredient.WildcardIngredient;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;

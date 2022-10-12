@@ -20,7 +20,7 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.core.InventoryKJS;
-import dev.latvian.mods.kubejs.level.LevelPlatformHelper;
+import dev.latvian.mods.kubejs.platform.LevelPlatformHelper;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;

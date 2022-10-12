@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.level;
+package dev.latvian.mods.kubejs.platform;
 
 import com.google.common.base.Suppliers;
 import dev.latvian.mods.kubejs.core.InventoryKJS;

@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.platform;
 
 import dev.latvian.mods.kubejs.core.InventoryKJS;
-import dev.latvian.mods.kubejs.level.LevelPlatformHelper;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;

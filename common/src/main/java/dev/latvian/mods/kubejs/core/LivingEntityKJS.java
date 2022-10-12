@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.entity.EntityPotionEffectsJS;
 import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.item.FoodEatenEventJS;
-import dev.latvian.mods.kubejs.level.LevelPlatformHelper;
+import dev.latvian.mods.kubejs.platform.LevelPlatformHelper;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;

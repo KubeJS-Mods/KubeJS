@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
+import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;

@@ -2,18 +2,20 @@ package dev.latvian.mods.kubejs.platform.ingredient;
 
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.core.IngredientKJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientPlatformHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.AbstractIngredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
 
 import java.util.stream.Stream;
 
 public abstract class KubeJSIngredient extends AbstractIngredient implements IngredientKJS {
+	private static final Ingredient.Value[] EMPTY_VALUES = new Ingredient.Value[0];
+
 	public KubeJSIngredient() {
 		super(Stream.empty());
-		values = IngredientPlatformHelper.EMPTY_VALUES;
+		values = EMPTY_VALUES;
 	}
 
 	@Override

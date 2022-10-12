@@ -4,9 +4,10 @@ import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
+import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import dev.latvian.mods.kubejs.recipe.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -116,7 +117,7 @@ public interface IngredientJS {
 			} else if (inList.size() == 1) {
 				return inList.get(0);
 			} else {
-				return IngredientPlatformHelper.get().or(inList.toArray(IngredientPlatformHelper.EMPTY_ARRAY));
+				return IngredientPlatformHelper.get().or(inList.toArray(new Ingredient[0]));
 			}
 		}
 
@@ -173,7 +174,7 @@ public interface IngredientJS {
 			} else if (inList.size() == 1) {
 				return inList.get(0);
 			} else {
-				return IngredientPlatformHelper.get().or(inList.toArray(IngredientPlatformHelper.EMPTY_ARRAY));
+				return IngredientPlatformHelper.get().or(inList.toArray(new Ingredient[0]));
 			}
 		} else if (json.isJsonPrimitive()) {
 			return of(json.getAsString());

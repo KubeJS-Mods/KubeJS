@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.platform;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.core.mixin.forge.RecipeManagerAccessor;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import dev.latvian.mods.kubejs.recipe.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;

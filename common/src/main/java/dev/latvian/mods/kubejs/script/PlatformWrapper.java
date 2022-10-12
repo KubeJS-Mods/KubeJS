@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.script;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import net.minecraft.SharedConstants;
 
 import java.util.LinkedHashMap;
@@ -35,6 +36,7 @@ public class PlatformWrapper {
 
 		public void setName(String n) {
 			name = n;
+			MiscPlatformHelper.get();
 		}
 
 		public String getVersion() {
