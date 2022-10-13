@@ -5,6 +5,7 @@
 	"mixins": [
 		"CompoundIngredientMixin",
 		"CropBlockMixin",
+		"EntityMixin",
 		"IItemHandlerMixin",
 		"RecipeManagerAccessor"
 	],
