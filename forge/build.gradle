@@ -32,9 +32,14 @@ repositories {
 		name "ModMaven (JEI)"
 		url "https://modmaven.dev/"
 		content {
-			includeGroup "mezz.jei"
 			includeGroup "net.darkhax.bookshelf"
 			includeGroup "net.darkhax.gamestages"
+		}
+	}
+	maven {
+		url "https://dvs1.progwml6.com/files/maven/"
+		content {
+			includeGroup "mezz.jei"
 		}
 	}
 }
@@ -51,7 +56,10 @@ dependencies {
 
 	// no reason to compile against the JEI API since REI already provides it,
 	// but if you want to use it at runtime, you can use this next line and remove the modLocalRuntime from REI.
-	// modLocalRuntime("mezz.jei:jei-1.18:${rootProject.forge_jei_version}")
+	//modLocalRuntime("mezz.jei:jei-1.19.2-forge:${rootProject.forge_jei_version}") {
+	//	transitive(false)
+	//}
+
 	modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}")
 	modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-plugin-compatibilities-forge:${rootProject.rei_version}")
 
