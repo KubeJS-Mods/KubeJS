@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.entity.forge.LivingEntityDropsEventJS;
 import dev.latvian.mods.kubejs.item.forge.ItemDestroyedEventJS;
-import dev.latvian.mods.kubejs.platform.IngredientPlatformHelperImpl;
+import dev.latvian.mods.kubejs.platform.forge.IngredientPlatformHelperImpl;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
