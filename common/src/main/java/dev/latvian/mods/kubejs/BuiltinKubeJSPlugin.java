@@ -91,6 +91,7 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import dev.latvian.mods.kubejs.util.LegacyCodeHandler;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTIOWrapper;
@@ -235,7 +236,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void registerClasses(ScriptType type, ClassFilter filter) {
-		filter.allow("java.lang.Number"); // java.lang
+		filter.deny("java.lang"); // java.lang
+		filter.allow("java.lang.Number");
 		filter.allow("java.lang.String");
 		filter.allow("java.lang.Character");
 		filter.allow("java.lang.Byte");
@@ -249,6 +251,16 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		filter.allow("java.lang.Iterable");
 		filter.allow("java.lang.Comparable");
 		filter.allow("java.lang.CharSequence");
+		filter.allow("java.lang.Void");
+		filter.allow("java.lang.Class");
+		filter.allow("java.lang.Package");
+		filter.allow("java.lang.Appendable");
+		filter.allow("java.lang.AutoCloseable");
+		filter.allow("java.lang.Comparable");
+		filter.allow("java.lang.Iterable");
+		filter.allow("java.lang.Object");
+		filter.allow("java.lang.Runnable");
+		filter.allow("java.lang.StringBuilder");
 
 		filter.allow("java.math.BigInteger"); // java.math
 		filter.allow("java.math.BigDecimal");
@@ -306,6 +318,12 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		event.add("JavaMath", Math.class);
 		event.add("ResourceLocation", ResourceLocation.class);
+
+		if (event.type == ScriptType.SERVER) {
+			event.add("settings", new LegacyCodeHandler("settings"));
+		}
+
+		event.add("onEvent", new LegacyCodeHandler("onEvent"));
 
 		event.add("Utils", UtilsWrapper.class);
 		event.add("Java", new JavaWrapper(event));

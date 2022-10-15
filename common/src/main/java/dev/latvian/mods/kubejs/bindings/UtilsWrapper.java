@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.mod.util.CountingMap;
+import net.minecraft.Util;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
@@ -171,5 +173,13 @@ public interface UtilsWrapper {
 	@Nullable
 	static CreativeModeTab findCreativeTab(String id) {
 		return UtilsJS.findCreativeTab(id);
+	}
+
+	static CompletableFuture<Void> runAsync(Runnable task) {
+		return CompletableFuture.runAsync(task, Util.backgroundExecutor());
+	}
+
+	static CompletableFuture<Object> supplyAsync(Supplier<Object> task) {
+		return CompletableFuture.supplyAsync(task, Util.backgroundExecutor());
 	}
 }

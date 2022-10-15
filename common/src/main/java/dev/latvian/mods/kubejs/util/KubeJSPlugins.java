@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.util;
 
 import dev.architectury.platform.Mod;
 import dev.architectury.platform.Platform;
+import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -39,7 +40,10 @@ public class KubeJSPlugins {
 
 					for (int i = 1; i < line.length; i++) {
 						if (!Platform.isModLoaded(line[i])) {
-							KubeJS.LOGGER.warn("Plugin " + line[0] + " does not have required mod " + line[i] + " loaded, skipping");
+							if (DevProperties.get().logSkippedPlugins) {
+								KubeJS.LOGGER.warn("Plugin " + line[0] + " does not have required mod " + line[i] + " loaded, skipping");
+							}
+
 							return Stream.empty();
 						}
 					}

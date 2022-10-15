@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.integration.forge.jei.JEIKubeJSEvents;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassFilter;
+import dev.latvian.mods.kubejs.util.LegacyCodeHandler;
 import net.minecraftforge.fml.ModList;
 
 public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
@@ -37,6 +38,7 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 
 		if (event.type == ScriptType.STARTUP) {
 			event.add("ForgeEvents", ForgeEventWrapper.class);
+			event.add("onForgeEvent", new LegacyCodeHandler("onForgeEvent"));
 		}
 	}
 }
