@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -53,6 +54,8 @@ public class ScriptManager implements ClassShutter {
 	}
 
 	public void reload(@Nullable ResourceManager resourceManager) {
+		KubeJSPlugins.forEachPlugin(KubeJSPlugin::clearCaches);
+
 		unload();
 		loadFromDirectory();
 

@@ -81,4 +81,7 @@ public class KubeJSPlugin {
 
 	public void loadDevProperties(DevProperties properties) {
 	}
+
+	public void clearCaches() {
+	}
 }

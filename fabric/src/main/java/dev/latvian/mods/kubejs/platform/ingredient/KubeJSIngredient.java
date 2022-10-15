@@ -4,7 +4,7 @@ import com.faux.ingredientextension.api.ingredient.IngredientExtendable;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.core.IngredientKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import it.unimi.dsi.fastutil.ints.IntList;
+import dev.latvian.mods.kubejs.item.ItemStackSet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -17,28 +17,30 @@ public abstract class KubeJSIngredient extends IngredientExtendable implements I
 	public KubeJSIngredient() {
 		super(Stream.empty());
 		values = EMPTY_VALUES;
-		itemStacks = ItemStackJS.EMPTY_ARRAY;
 	}
 
 	@Override
 	public ItemStack[] getItems() {
-		if (itemStacks == null) {
+		if (this.itemStacks == null) {
 			dissolve();
 		}
 
-		return itemStacks;
-	}
-
-	@Override
-	public IntList getStackingIds() {
-		if (stackingIds == null) {
-		}
-
-		return stackingIds;
+		return this.itemStacks;
 	}
 
 	@Override
 	public void dissolve() {
+		if (this.itemStacks == null) {
+			ItemStackSet stacks = new ItemStackSet();
+
+			for (var stack : ItemStackJS.getList()) {
+				if (test(stack)) {
+					stacks.add(stack);
+				}
+			}
+
+			this.itemStacks = stacks.toArray();
+		}
 	}
 
 	@Override

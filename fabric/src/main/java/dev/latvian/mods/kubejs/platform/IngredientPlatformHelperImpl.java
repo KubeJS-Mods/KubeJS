@@ -8,11 +8,10 @@ import dev.latvian.mods.kubejs.platform.ingredient.CustomIngredient;
 import dev.latvian.mods.kubejs.platform.ingredient.CustomPredicateIngredient;
 import dev.latvian.mods.kubejs.platform.ingredient.IngredientStackImpl;
 import dev.latvian.mods.kubejs.platform.ingredient.ModIngredient;
-import dev.latvian.mods.kubejs.platform.ingredient.NotIngredient;
 import dev.latvian.mods.kubejs.platform.ingredient.OrIngredient;
 import dev.latvian.mods.kubejs.platform.ingredient.RegExIngredient;
 import dev.latvian.mods.kubejs.platform.ingredient.StrongNBTIngredient;
-import dev.latvian.mods.kubejs.platform.ingredient.TagIngredient;
+import dev.latvian.mods.kubejs.platform.ingredient.SubIngredient;
 import dev.latvian.mods.kubejs.platform.ingredient.WeakNBTIngredient;
 import dev.latvian.mods.kubejs.platform.ingredient.WildcardIngredient;
 import net.minecraft.core.Registry;
@@ -31,11 +30,10 @@ public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("wildcard"), WildcardIngredient.SERIALIZER);
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("custom"), CustomIngredient.SERIALIZER);
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("custom_predicate"), CustomPredicateIngredient.SERIALIZER);
-		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("tag"), TagIngredient.SERIALIZER);
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("mod"), ModIngredient.SERIALIZER);
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("regex"), RegExIngredient.SERIALIZER);
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("creative_tab"), CreativeTabIngredient.SERIALIZER);
-		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("not"), NotIngredient.SERIALIZER);
+		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("sub"), SubIngredient.SERIALIZER);
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("or"), OrIngredient.SERIALIZER);
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("and"), AndIngredient.SERIALIZER);
 		Registry.register(IngredientHelper.INGREDIENT_SERIALIZER_REGISTRY, KubeJS.id("strong_nbt"), StrongNBTIngredient.SERIALIZER);
@@ -63,13 +61,8 @@ public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 	}
 
 	@Override
-	public Ingredient tag(String tag) {
-		return TagIngredient.ofTag(tag);
-	}
-
-	@Override
 	public Ingredient mod(String mod) {
-		return ModIngredient.ofMod(mod);
+		return new ModIngredient(mod);
 	}
 
 	@Override
@@ -83,8 +76,8 @@ public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 	}
 
 	@Override
-	public Ingredient not(Ingredient ingredient) {
-		return new NotIngredient(ingredient);
+	public Ingredient subtract(Ingredient base, Ingredient subtracted) {
+		return new SubIngredient(base, subtracted);
 	}
 
 	@Override
@@ -99,11 +92,11 @@ public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 
 	@Override
 	public Ingredient strongNBT(ItemStack item) {
-		return new StrongNBTIngredient(item);
+		return new StrongNBTIngredient(item.getItem(), item.getTag());
 	}
 
 	@Override
 	public Ingredient weakNBT(ItemStack item) {
-		return new WeakNBTIngredient(item);
+		return item.getTag() == null ? item.kjs$asIngredient() : new WeakNBTIngredient(item.getItem(), item.getTag());
 	}
 }

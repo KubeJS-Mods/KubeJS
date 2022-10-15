@@ -34,13 +34,13 @@ public class IngredientStackImpl extends KubeJSIngredient implements IngredientS
 	}
 
 	@Override
-	public boolean test(@Nullable ItemStack stack) {
-		return stack != null && ingredient.test(stack);
+	public IIngredientSerializer<? extends Ingredient> getSerializer() {
+		return SERIALIZER;
 	}
 
 	@Override
-	public IIngredientSerializer<? extends Ingredient> getSerializer() {
-		return SERIALIZER;
+	public boolean test(@Nullable ItemStack stack) {
+		return stack != null && ingredient.test(stack);
 	}
 
 	@Override

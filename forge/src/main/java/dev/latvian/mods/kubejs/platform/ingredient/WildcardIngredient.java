@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.platform.ingredient;
 
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -15,6 +16,11 @@ public class WildcardIngredient extends KubeJSIngredient {
 	}
 
 	@Override
+	public IIngredientSerializer<? extends Ingredient> getSerializer() {
+		return SERIALIZER;
+	}
+
+	@Override
 	public boolean test(@Nullable ItemStack stack) {
 		return stack != null;
 	}
@@ -25,8 +31,10 @@ public class WildcardIngredient extends KubeJSIngredient {
 	}
 
 	@Override
-	public IIngredientSerializer<? extends Ingredient> getSerializer() {
-		return SERIALIZER;
+	public void dissolve() {
+		if (this.itemStacks == null) {
+			this.itemStacks = ItemStackJS.getList().toArray(new ItemStack[0]);
+		}
 	}
 
 	@Override

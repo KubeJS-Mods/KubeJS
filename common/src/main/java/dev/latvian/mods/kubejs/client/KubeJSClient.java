@@ -15,6 +15,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -143,5 +144,10 @@ public class KubeJSClient extends KubeJSCommon {
 	@Override
 	public boolean isClientButNotSelf(Player player) {
 		return player instanceof AbstractClientPlayer && !(player instanceof LocalPlayer);
+	}
+
+	@Override
+	public void generateTypings(CommandSourceStack source) {
+		source.sendSuccess(Component.literal("WIP!"), false);
 	}
 }

@@ -11,7 +11,23 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class ItemStackSet implements Iterable<ItemStack> {
-	private final HashMap<ItemStackKey, ItemStack> map = new HashMap<>();
+	private final HashMap<ItemStackKey, ItemStack> map;
+
+	public ItemStackSet(int initialSize) {
+		map = new HashMap<>(initialSize);
+	}
+
+	public ItemStackSet() {
+		this(2);
+	}
+
+	public ItemStackSet(ItemStack... items) {
+		this(items.length);
+
+		for (var stack : items) {
+			add(stack);
+		}
+	}
 
 	public void add(ItemStack stack) {
 		var key = ItemStackKey.of(stack);

@@ -39,6 +39,7 @@ import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobType;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -737,5 +738,16 @@ public class UtilsJS {
 
 		ENTITY_SELECTOR_CACHE.put(s, sel);
 		return sel;
+	}
+
+	@Nullable
+	public static CreativeModeTab findCreativeTab(String id) {
+		for (var group : CreativeModeTab.TABS) {
+			if (id.equals(group.getRecipeFolderName())) {
+				return group;
+			}
+		}
+
+		return null;
 	}
 }

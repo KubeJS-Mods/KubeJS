@@ -2,6 +2,8 @@ package dev.latvian.mods.kubejs.platform.ingredient;
 
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.core.IngredientKJS;
+import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.ItemStackSet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -20,27 +22,35 @@ public abstract class KubeJSIngredient extends AbstractIngredient implements Ing
 
 	@Override
 	public ItemStack[] getItems() {
-		if (itemStacks == null) {
+		if (this.itemStacks == null) {
 			dissolve();
 		}
 
-		return itemStacks;
+		return this.itemStacks;
 	}
 
 	@Override
 	public void dissolve() {
-		if (itemStacks == null) {
-			itemStacks = kjs$getStacks().toArray();
+		if (this.itemStacks == null) {
+			ItemStackSet stacks = new ItemStackSet();
+
+			for (var stack : ItemStackJS.getList()) {
+				if (test(stack)) {
+					stacks.add(stack);
+				}
+			}
+
+			this.itemStacks = stacks.toArray();
 		}
 	}
 
 	@Override
-	public final boolean isSimple() {
+	public boolean isEmpty() {
 		return false;
 	}
 
 	@Override
-	public boolean isEmpty() {
+	public boolean isSimple() {
 		return false;
 	}
 

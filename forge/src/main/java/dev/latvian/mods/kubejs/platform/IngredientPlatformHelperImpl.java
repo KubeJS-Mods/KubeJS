@@ -1,23 +1,22 @@
 package dev.latvian.mods.kubejs.platform;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.platform.ingredient.AndIngredient;
 import dev.latvian.mods.kubejs.platform.ingredient.CreativeTabIngredient;
 import dev.latvian.mods.kubejs.platform.ingredient.CustomIngredient;
 import dev.latvian.mods.kubejs.platform.ingredient.CustomPredicateIngredient;
 import dev.latvian.mods.kubejs.platform.ingredient.IngredientStackImpl;
 import dev.latvian.mods.kubejs.platform.ingredient.ModIngredient;
-import dev.latvian.mods.kubejs.platform.ingredient.NotIngredient;
 import dev.latvian.mods.kubejs.platform.ingredient.RegExIngredient;
-import dev.latvian.mods.kubejs.platform.ingredient.StrongNBTIngredient;
-import dev.latvian.mods.kubejs.platform.ingredient.TagIngredient;
-import dev.latvian.mods.kubejs.platform.ingredient.WeakNBTIngredient;
 import dev.latvian.mods.kubejs.platform.ingredient.WildcardIngredient;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.CompoundIngredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.crafting.DifferenceIngredient;
+import net.minecraftforge.common.crafting.IntersectionIngredient;
+import net.minecraftforge.common.crafting.PartialNBTIngredient;
+import net.minecraftforge.common.crafting.StrictNBTIngredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -30,14 +29,9 @@ public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 		CraftingHelper.register(KubeJS.id("wildcard"), WildcardIngredient.SERIALIZER);
 		CraftingHelper.register(KubeJS.id("custom"), CustomIngredient.SERIALIZER);
 		CraftingHelper.register(KubeJS.id("custom_predicate"), CustomPredicateIngredient.SERIALIZER);
-		CraftingHelper.register(KubeJS.id("tag"), TagIngredient.SERIALIZER);
 		CraftingHelper.register(KubeJS.id("mod"), ModIngredient.SERIALIZER);
 		CraftingHelper.register(KubeJS.id("regex"), RegExIngredient.SERIALIZER);
 		CraftingHelper.register(KubeJS.id("creative_tab"), CreativeTabIngredient.SERIALIZER);
-		CraftingHelper.register(KubeJS.id("not"), NotIngredient.SERIALIZER);
-		CraftingHelper.register(KubeJS.id("and"), AndIngredient.SERIALIZER);
-		CraftingHelper.register(KubeJS.id("strong_nbt"), StrongNBTIngredient.SERIALIZER);
-		CraftingHelper.register(KubeJS.id("weak_nbt"), WeakNBTIngredient.SERIALIZER);
 	}
 
 	@Override
@@ -61,13 +55,8 @@ public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 	}
 
 	@Override
-	public Ingredient tag(String tag) {
-		return TagIngredient.ofTag(tag);
-	}
-
-	@Override
 	public Ingredient mod(String mod) {
-		return ModIngredient.ofMod(mod);
+		return new ModIngredient(mod);
 	}
 
 	@Override
@@ -81,8 +70,8 @@ public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 	}
 
 	@Override
-	public Ingredient not(Ingredient ingredient) {
-		return new NotIngredient(ingredient);
+	public Ingredient subtract(Ingredient base, Ingredient subtracted) {
+		return DifferenceIngredient.of(base, subtracted);
 	}
 
 	@Override
@@ -92,16 +81,16 @@ public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 
 	@Override
 	public Ingredient and(Ingredient[] ingredients) {
-		return ingredients.length == 0 ? Ingredient.EMPTY : ingredients.length == 1 ? ingredients[0] : new AndIngredient(ingredients);
+		return ingredients.length == 0 ? Ingredient.EMPTY : ingredients.length == 1 ? ingredients[0] : IntersectionIngredient.of(ingredients);
 	}
 
 	@Override
 	public Ingredient strongNBT(ItemStack item) {
-		return new StrongNBTIngredient(item);
+		return StrictNBTIngredient.of(item.copy());
 	}
 
 	@Override
 	public Ingredient weakNBT(ItemStack item) {
-		return new WeakNBTIngredient(item);
+		return item.getTag() == null ? item.kjs$asIngredient() : PartialNBTIngredient.of(item.getItem(), item.getTag().copy());
 	}
 }

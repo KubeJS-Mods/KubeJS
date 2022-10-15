@@ -39,6 +39,11 @@ public class CustomPredicateIngredient extends KubeJSIngredient {
 	}
 
 	@Override
+	public IIngredientSerializer<CustomPredicateIngredient> getSerializer() {
+		return SERIALIZER;
+	}
+
+	@Override
 	public ItemStack[] getItems() {
 		return parent.getItems();
 	}
@@ -57,11 +62,6 @@ public class CustomPredicateIngredient extends KubeJSIngredient {
 		}
 
 		return false;
-	}
-
-	@Override
-	public IIngredientSerializer<CustomPredicateIngredient> getSerializer() {
-		return SERIALIZER;
 	}
 
 	@Override

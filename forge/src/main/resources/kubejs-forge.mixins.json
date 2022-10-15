@@ -3,7 +3,6 @@
 	"package": "dev.latvian.mods.kubejs.core.mixin.forge",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"CompoundIngredientMixin",
 		"CropBlockMixin",
 		"EntityMixin",
 		"IItemHandlerMixin",

@@ -22,13 +22,17 @@ import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
  */
 public interface IngredientJS {
+	Map<String, Ingredient> PARSE_CACHE = new HashMap<>();
+
 	static Ingredient of(@Nullable Object o) {
 		while (o instanceof Wrapper w) {
 			o = w.unwrap();
@@ -49,7 +53,15 @@ public interface IngredientJS {
 		} else if (o instanceof JsonElement json) {
 			return ofJson(json);
 		} else if (o instanceof CharSequence) {
-			var s = o.toString();
+			var os = o.toString();
+			var s = os;
+
+			var cached = PARSE_CACHE.get(os);
+
+			if (cached != null) {
+				return cached;
+			}
+
 			var count = 1;
 			var spaceIndex = s.indexOf(' ');
 
@@ -62,41 +74,10 @@ public interface IngredientJS {
 				throw new RecipeExceptionJS("Invalid count!").error();
 			}
 
-			if (s.equals("*")) {
-				return IngredientPlatformHelper.get().wildcard().kjs$withCount(count);
-			} else if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
-				return Ingredient.EMPTY;
-			} else if (s.startsWith("#")) {
-				return IngredientPlatformHelper.get().tag(s.substring(1)).kjs$withCount(count);
-			} else if (s.startsWith("@")) {
-				return IngredientPlatformHelper.get().mod(s.substring(1)).kjs$withCount(count);
-			} else if (s.startsWith("%")) {
-				var group = ItemStackJS.findCreativeTab(s.substring(1));
-
-				if (group == null) {
-					if (RecipeJS.itemErrors) {
-						throw new RecipeExceptionJS("Item group '" + s.substring(1) + "' not found!").error();
-					}
-
-					return Ingredient.EMPTY;
-				}
-
-				return IngredientPlatformHelper.get().creativeTab(group).kjs$withCount(count);
-			}
-
-			var reg = UtilsJS.parseRegex(s);
-
-			if (reg != null) {
-				return IngredientPlatformHelper.get().regex(reg).kjs$withCount(count);
-			}
-
-			var item = KubeJSRegistries.items().get(new ResourceLocation(s));
-
-			if (item == null || item == Items.AIR) {
-				return Ingredient.EMPTY;
-			}
-
-			return item.kjs$asIngredient().kjs$withCount(count);
+			cached = parse(s);
+			cached = cached.kjs$withCount(count);
+			PARSE_CACHE.put(os, cached);
+			return cached;
 		}
 
 		List<?> list = ListJS.of(o);
@@ -155,6 +136,44 @@ public interface IngredientJS {
 		}
 
 		return ItemStackJS.of(o).kjs$asIngredient();
+	}
+
+	static Ingredient parse(String s) {
+		if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
+			return Ingredient.EMPTY;
+		} else if (s.equals("*")) {
+			return IngredientPlatformHelper.get().wildcard();
+		} else if (s.startsWith("#")) {
+			return IngredientPlatformHelper.get().tag(s.substring(1));
+		} else if (s.startsWith("@")) {
+			return IngredientPlatformHelper.get().mod(s.substring(1));
+		} else if (s.startsWith("%")) {
+			var group = UtilsJS.findCreativeTab(s.substring(1));
+
+			if (group == null) {
+				if (RecipeJS.itemErrors) {
+					throw new RecipeExceptionJS("Item group '" + s.substring(1) + "' not found!").error();
+				}
+
+				return Ingredient.EMPTY;
+			}
+
+			return IngredientPlatformHelper.get().creativeTab(group);
+		}
+
+		var reg = UtilsJS.parseRegex(s);
+
+		if (reg != null) {
+			return IngredientPlatformHelper.get().regex(reg);
+		}
+
+		var item = KubeJSRegistries.items().get(new ResourceLocation(s));
+
+		if (item == null || item == Items.AIR) {
+			return Ingredient.EMPTY;
+		}
+
+		return item.kjs$asIngredient();
 	}
 
 	static Ingredient ofJson(JsonElement json) {

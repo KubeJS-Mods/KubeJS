@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.recipe.minecraft;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.IngredientMatch;
 import dev.latvian.mods.kubejs.recipe.ItemInputTransformer;
@@ -94,7 +93,7 @@ public class ShapedRecipeJS extends RecipeJS {
 			var k = String.valueOf(kr);
 			var o = key1.get(kr);
 
-			if (o == ItemStackJS.EMPTY || o.equals("minecraft:air")) {
+			if (o == ItemStack.EMPTY || o.equals("minecraft:air")) {
 				airs.add(k);
 			} else {
 				key.put(k.charAt(0), parseItemInput(o, k));

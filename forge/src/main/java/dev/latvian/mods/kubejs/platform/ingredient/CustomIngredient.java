@@ -28,13 +28,13 @@ public class CustomIngredient extends KubeJSIngredient {
 	}
 
 	@Override
-	public boolean test(ItemStack stack) {
-		return predicate.test(stack);
+	public IIngredientSerializer<CustomIngredient> getSerializer() {
+		return SERIALIZER;
 	}
 
 	@Override
-	public IIngredientSerializer<CustomIngredient> getSerializer() {
-		return SERIALIZER;
+	public boolean test(ItemStack stack) {
+		return predicate.test(stack);
 	}
 
 	@Override

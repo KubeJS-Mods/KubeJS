@@ -2,8 +2,12 @@ package dev.latvian.mods.kubejs.platform.ingredient;
 
 import com.faux.ingredientextension.api.ingredient.serializer.IIngredientSerializer;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.core.ItemStackKJS;
-import dev.latvian.mods.kubejs.item.ItemStackSet;
+import com.google.gson.JsonSyntaxException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.latvian.mods.kubejs.KubeJSRegistries;
+import net.minecraft.advancements.critereon.NbtPredicate;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -11,53 +15,38 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-import java.util.Set;
-
 public class WeakNBTIngredient extends KubeJSIngredient {
 	public static final KubeJSIngredientSerializer<WeakNBTIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(WeakNBTIngredient::new, WeakNBTIngredient::new);
 
-	private final ItemStack item;
+	private final Item item;
+	private final CompoundTag nbt;
+	private final NbtPredicate predicate;
 
-	public WeakNBTIngredient(ItemStack item) {
+	public WeakNBTIngredient(Item item, CompoundTag nbt) {
 		this.item = item;
+		this.nbt = nbt;
+		this.predicate = new NbtPredicate(this.nbt);
 	}
 
 	public WeakNBTIngredient(FriendlyByteBuf buf) {
-		this(buf.readItem());
+		this(KubeJSRegistries.items().byRawId(buf.readVarInt()), buf.readAnySizeNbt());
 	}
 
 	public WeakNBTIngredient(JsonObject json) {
-		this(ShapedRecipe.itemStackFromJson(json.get("item").getAsJsonObject()));
+		this.item = ShapedRecipe.itemFromJson(json);
+
+		try {
+			this.nbt = TagParser.parseTag(json.get("nbt").getAsString());
+		} catch (CommandSyntaxException var3) {
+			throw new JsonSyntaxException("Invalid nbt tag: " + var3.getMessage());
+		}
+
+		this.predicate = new NbtPredicate(this.nbt);
 	}
 
 	@Override
 	public boolean test(@Nullable ItemStack stack) {
-		if (stack != null && item.getItem() == stack.getItem() && item.hasTag() == stack.hasTag()) {
-			if (item.hasTag()) {
-				var t = item.getTag();
-
-				for (var key : t.getAllKeys()) {
-					if (!Objects.equals(t.get(key), stack.getTag().get(key))) {
-						return false;
-					}
-				}
-			}
-
-			return true;
-		}
-
-		return false;
-	}
-
-	@Override
-	public void kjs$gatherItemTypes(Set<Item> set) {
-		set.add(item.getItem());
-	}
-
-	@Override
-	public void kjs$gatherStacks(ItemStackSet set) {
-		set.add(item);
+		return stack != null && stack.getItem() == item && predicate.matches(stack.getTag());
 	}
 
 	@Override
@@ -67,11 +56,13 @@ public class WeakNBTIngredient extends KubeJSIngredient {
 
 	@Override
 	public void toJson(JsonObject json) {
-		json.add("item", item.kjs$toJson());
+		json.addProperty("item", item.kjs$getId());
+		json.addProperty("nbt", nbt.toString());
 	}
 
 	@Override
 	public void write(FriendlyByteBuf buf) {
-		buf.writeItem(item);
+		buf.writeVarInt(KubeJSRegistries.items().getRawId(item));
+		buf.writeNbt(nbt);
 	}
 }

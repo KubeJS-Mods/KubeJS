@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.platform;
 
-import com.google.common.base.Suppliers;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -11,15 +11,10 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 
 import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.function.Supplier;
 
 public interface RecipePlatformHelper {
 
-	Supplier<RecipePlatformHelper> INSTANCE = Suppliers.memoize(() -> {
-		var serviceLoader = ServiceLoader.load(RecipePlatformHelper.class);
-		return serviceLoader.findFirst().orElseThrow(() -> new RuntimeException("Could not find platform implementation for RecipePlatformHelper!"));
-	});
+	Lazy<RecipePlatformHelper> INSTANCE = Lazy.serviceLoader(RecipePlatformHelper.class);
 
 	static RecipePlatformHelper get() {
 		return INSTANCE.get();

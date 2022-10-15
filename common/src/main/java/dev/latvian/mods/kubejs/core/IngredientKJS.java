@@ -1,13 +1,11 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ItemStackSet;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.LinkedHashSet;
@@ -24,42 +22,40 @@ public interface IngredientKJS extends IngredientSupplierKJS {
 		return kjs$self().test(item.getDefaultInstance());
 	}
 
-	default void kjs$gatherStacks(ItemStackSet set) {
-		if (getClass() == Ingredient.class) {
-			for (ItemStack stack : kjs$self().getItems()) {
-				set.add(stack);
-			}
-		}
-	}
-
 	default ItemStackSet kjs$getStacks() {
-		ItemStackSet set = new ItemStackSet();
-		kjs$gatherStacks(set);
-		return set;
-	}
-
-	default void kjs$gatherItemTypes(Set<Item> set) {
-		for (var item : KubeJSRegistries.items()) {
-			if (item != Items.AIR && kjs$testItem(item)) {
-				set.add(item);
-			}
-		}
+		return new ItemStackSet(kjs$self().getItems());
 	}
 
 	default Set<Item> kjs$getItemTypes() {
-		Set<Item> set = new LinkedHashSet<>();
-		kjs$gatherItemTypes(set);
+		var items = kjs$self().getItems();
+
+		if (items.length == 1 && !items[0].isEmpty()) {
+			return Set.of(items[0].getItem());
+		}
+
+		var set = new LinkedHashSet<Item>(items.length);
+
+		for (var stack : items) {
+			if (!stack.isEmpty()) {
+				set.add(stack.getItem());
+			}
+		}
+
 		return set;
 	}
 
 	default Set<String> kjs$getItemIds() {
-		Set<String> ids = new LinkedHashSet<>();
+		var items = kjs$self().getItems();
 
-		for (var item : kjs$getItemTypes()) {
-			var id = KubeJSRegistries.items().getId(item);
+		if (items.length == 1 && !items[0].isEmpty()) {
+			return Set.of(items[0].kjs$getId());
+		}
 
-			if (id != null) {
-				ids.add(id.toString());
+		var ids = new LinkedHashSet<String>(items.length);
+
+		for (var item : items) {
+			if (!item.isEmpty()) {
+				ids.add(item.kjs$getId());
 			}
 		}
 
@@ -67,7 +63,13 @@ public interface IngredientKJS extends IngredientSupplierKJS {
 	}
 
 	default ItemStack kjs$getFirst() {
-		return kjs$getStacks().getFirst();
+		for (var stack : kjs$self().getItems()) {
+			if (!stack.isEmpty()) {
+				return stack;
+			}
+		}
+
+		return ItemStack.EMPTY;
 	}
 
 	default Ingredient kjs$and(Ingredient ingredient) {
@@ -78,8 +80,8 @@ public interface IngredientKJS extends IngredientSupplierKJS {
 		return ingredient == Ingredient.EMPTY ? kjs$self() : this == Ingredient.EMPTY ? ingredient : IngredientPlatformHelper.get().or(new Ingredient[]{kjs$self(), ingredient});
 	}
 
-	default Ingredient kjs$not() {
-		return IngredientPlatformHelper.get().not(kjs$self());
+	default Ingredient kjs$subtract(Ingredient subtracted) {
+		return IngredientPlatformHelper.get().subtract(kjs$self(), subtracted);
 	}
 
 	default IngredientStack kjs$asStack() {

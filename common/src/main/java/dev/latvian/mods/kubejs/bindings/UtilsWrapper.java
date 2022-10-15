@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.bindings;
 
-import com.google.common.base.Suppliers;
 import dev.architectury.registry.registries.Registrar;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassWrapper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.mod.util.CountingMap;
@@ -16,6 +16,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
@@ -160,11 +160,16 @@ public interface UtilsWrapper {
 		return getRegistry(id).getIds();
 	}
 
-	static <T> Supplier<T> lazy(Supplier<T> supplier) {
-		return Suppliers.memoize(supplier::get);
+	static <T> Lazy<T> lazy(Supplier<T> supplier) {
+		return Lazy.of(supplier);
 	}
 
-	static <T> Supplier<T> expiringLazy(Supplier<T> supplier, long time) {
-		return Suppliers.memoizeWithExpiration(supplier::get, time, TimeUnit.MILLISECONDS);
+	static <T> Lazy<T> expiringLazy(Supplier<T> supplier, long time) {
+		return Lazy.of(supplier, time);
+	}
+
+	@Nullable
+	static CreativeModeTab findCreativeTab(String id) {
+		return UtilsJS.findCreativeTab(id);
 	}
 }

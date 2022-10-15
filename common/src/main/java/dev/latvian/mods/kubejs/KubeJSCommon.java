@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -51,5 +52,8 @@ public class KubeJSCommon {
 
 	public boolean isClientButNotSelf(Player player) {
 		return false;
+	}
+
+	public void generateTypings(CommandSourceStack source) {
 	}
 }

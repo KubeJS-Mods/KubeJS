@@ -1,22 +1,22 @@
 package dev.latvian.mods.kubejs.platform;
 
-import com.google.common.base.Suppliers;
+import dev.latvian.mods.kubejs.item.ingredient.TagContext;
+import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.util.Lazy;
+import dev.latvian.mods.kubejs.util.Tags;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ServiceLoader;
 import java.util.UUID;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 public interface IngredientPlatformHelper {
-	Supplier<IngredientPlatformHelper> INSTANCE = Suppliers.memoize(() -> {
-		var serviceLoader = ServiceLoader.load(IngredientPlatformHelper.class);
-		return serviceLoader.findFirst().orElseThrow(() -> new RuntimeException("Could not find a IngredientHelper for your platform!"));
-	});
+	Lazy<IngredientPlatformHelper> INSTANCE = Lazy.serviceLoader(IngredientPlatformHelper.class);
 
 	static IngredientPlatformHelper get() {
 		return INSTANCE.get();
@@ -30,7 +30,15 @@ public interface IngredientPlatformHelper {
 
 	Ingredient custom(Ingredient parent, @Nullable UUID uuid);
 
-	Ingredient tag(String tag);
+	default Ingredient tag(String tag) {
+		var t = Tags.item(UtilsJS.getMCID(tag));
+
+		if (RecipeJS.itemErrors && TagContext.INSTANCE.getValue().isEmpty(t)) {
+			throw new RecipeExceptionJS("Tag %s doesn't contain any items!".formatted(this)).error();
+		}
+
+		return Ingredient.of(t);
+	}
 
 	Ingredient mod(String mod);
 
@@ -38,7 +46,7 @@ public interface IngredientPlatformHelper {
 
 	Ingredient creativeTab(CreativeModeTab tab);
 
-	Ingredient not(Ingredient ingredient);
+	Ingredient subtract(Ingredient base, Ingredient subtracted);
 
 	Ingredient or(Ingredient[] ingredients);
 

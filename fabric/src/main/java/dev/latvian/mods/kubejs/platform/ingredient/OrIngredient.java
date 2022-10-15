@@ -9,6 +9,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+
 public class OrIngredient extends KubeJSIngredient {
 	public static final KubeJSIngredientSerializer<OrIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(OrIngredient::new, OrIngredient::new);
 
@@ -36,6 +38,11 @@ public class OrIngredient extends KubeJSIngredient {
 	}
 
 	@Override
+	public IIngredientSerializer<? extends Ingredient> getSerializer() {
+		return SERIALIZER;
+	}
+
+	@Override
 	public boolean test(@Nullable ItemStack stack) {
 		if (stack != null) {
 			for (var in : ingredients) {
@@ -49,8 +56,10 @@ public class OrIngredient extends KubeJSIngredient {
 	}
 
 	@Override
-	public IIngredientSerializer<? extends Ingredient> getSerializer() {
-		return SERIALIZER;
+	public void dissolve() {
+		if (this.itemStacks == null) {
+			this.itemStacks = Arrays.stream(this.ingredients).flatMap(in -> Arrays.stream(in.getItems())).distinct().toArray(ItemStack[]::new);
+		}
 	}
 
 	@Override

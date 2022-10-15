@@ -4,9 +4,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Wrapper;
@@ -25,27 +27,56 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
  */
-public class ItemStackJS {
-	public static final ItemStack EMPTY = ItemStack.EMPTY;
-	public static final ItemStack[] EMPTY_ARRAY = new ItemStack[0];
+public interface ItemStackJS {
+	Map<String, ItemStack> PARSE_CACHE = new HashMap<>();
+	ItemStack[] EMPTY_ARRAY = new ItemStack[0];
 
-	private static List<ItemStack> cachedItemList;
-	private static List<String> cachedItemTypeList;
+	Lazy<List<ItemStack>> CACHED_ITEM_LIST = Lazy.of(() -> {
+		var set = new LinkedHashSet<ItemStack>();
+		NonNullList<ItemStack> stackList = NonNullList.create();
 
-	public static ItemStack of(@Nullable Object o) {
+		for (var item : KubeJSRegistries.items()) {
+			try {
+				item.fillItemCategory(CreativeModeTab.TAB_SEARCH, stackList);
+			} catch (Throwable ignored) {
+			}
+		}
+
+		for (var stack : stackList) {
+			if (!stack.isEmpty()) {
+				set.add(stack.kjs$withCount(1));
+			}
+		}
+
+		return Arrays.asList(set.toArray(new ItemStack[0]));
+	});
+
+	Lazy<List<String>> CACHED_ITEM_TYPE_LIST = Lazy.of(() -> {
+		var cachedItemTypeList = new ArrayList<String>();
+
+		for (var id : KubeJSRegistries.items().getIds()) {
+			cachedItemTypeList.add(id.toString());
+		}
+
+		return cachedItemTypeList;
+	});
+
+	static ItemStack of(@Nullable Object o) {
 		if (o instanceof Wrapper w) {
 			o = w.unwrap();
 		}
 
 		if (o == null || o == ItemStack.EMPTY || o == Items.AIR) {
-			return EMPTY;
+			return ItemStack.EMPTY;
 		} else if (o instanceof ItemStack stack) {
 			return stack.isEmpty() ? ItemStack.EMPTY : stack;
 		} else if (o instanceof Ingredient ingr) {
@@ -58,7 +89,7 @@ public class ItemStackJS {
 					throw new RecipeExceptionJS("Item '" + id + "' not found!").error();
 				}
 
-				return EMPTY;
+				return ItemStack.EMPTY;
 			}
 
 			return item.getDefaultInstance();
@@ -75,9 +106,17 @@ public class ItemStackJS {
 				return IngredientPlatformHelper.get().regex(reg).kjs$getFirst();
 			}
 
-			return EMPTY;
+			return ItemStack.EMPTY;
 		} else if (o instanceof CharSequence) {
-			var s = o.toString().trim();
+			var os = o.toString().trim();
+			var s = os;
+
+			var cached = PARSE_CACHE.get(os);
+
+			if (cached != null) {
+				return cached.isEmpty() ? ItemStack.EMPTY : cached.copy();
+			}
+
 			var count = 1;
 			var spaceIndex = s.indexOf(' ');
 
@@ -86,45 +125,10 @@ public class ItemStackJS {
 				s = s.substring(spaceIndex + 1);
 			}
 
-			if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
-				return EMPTY;
-			}
-
-			if (s.startsWith("#")) {
-				return IngredientPlatformHelper.get().tag(s.substring(1)).kjs$getFirst().kjs$withCount(count);
-			} else if (s.startsWith("@")) {
-				return IngredientPlatformHelper.get().mod(s.substring(1)).kjs$getFirst().kjs$withCount(count);
-			} else if (s.startsWith("%")) {
-				var group = findCreativeTab(s.substring(1));
-
-				if (group == null) {
-					if (RecipeJS.itemErrors) {
-						throw new RecipeExceptionJS("Item group '" + s.substring(1) + "' not found!").error();
-					}
-
-					return EMPTY;
-				}
-
-				return IngredientPlatformHelper.get().creativeTab(group).kjs$getFirst().kjs$withCount(count);
-			}
-
-			var reg = UtilsJS.parseRegex(s);
-
-			if (reg != null) {
-				return IngredientPlatformHelper.get().regex(reg).kjs$getFirst().kjs$withCount(count);
-			}
-
-			var item = KubeJSRegistries.items().get(new ResourceLocation(s));
-
-			if (item == Items.AIR) {
-				if (RecipeJS.itemErrors) {
-					throw new RecipeExceptionJS("Item '" + s + "' not found!").error();
-				}
-
-				return EMPTY;
-			}
-
-			return new ItemStack(item, count);
+			cached = parse(s);
+			cached.setCount(count);
+			PARSE_CACHE.put(os, cached);
+			return cached.copy();
 		}
 
 		var map = MapJS.of(o);
@@ -139,7 +143,7 @@ public class ItemStackJS {
 						throw new RecipeExceptionJS("Item '" + id + "' not found!").error();
 					}
 
-					return EMPTY;
+					return ItemStack.EMPTY;
 				}
 
 				var stack = new ItemStack(item);
@@ -167,7 +171,47 @@ public class ItemStackJS {
 		return ItemStack.EMPTY;
 	}
 
-	public static Item getRawItem(@Nullable Object o) {
+	static ItemStack parse(String s) {
+		if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
+			return ItemStack.EMPTY;
+		} else if (s.startsWith("#")) {
+			return IngredientPlatformHelper.get().tag(s.substring(1)).kjs$getFirst();
+		} else if (s.startsWith("@")) {
+			return IngredientPlatformHelper.get().mod(s.substring(1)).kjs$getFirst();
+		} else if (s.startsWith("%")) {
+			var group = UtilsJS.findCreativeTab(s.substring(1));
+
+			if (group == null) {
+				if (RecipeJS.itemErrors) {
+					throw new RecipeExceptionJS("Item group '" + s.substring(1) + "' not found!").error();
+				}
+
+				return ItemStack.EMPTY;
+			}
+
+			return IngredientPlatformHelper.get().creativeTab(group).kjs$getFirst();
+		}
+
+		var reg = UtilsJS.parseRegex(s);
+
+		if (reg != null) {
+			return IngredientPlatformHelper.get().regex(reg).kjs$getFirst();
+		}
+
+		var item = KubeJSRegistries.items().get(new ResourceLocation(s));
+
+		if (item == Items.AIR) {
+			if (RecipeJS.itemErrors) {
+				throw new RecipeExceptionJS("Item '" + s + "' not found!").error();
+			}
+
+			return ItemStack.EMPTY;
+		}
+
+		return new ItemStack(item);
+	}
+
+	static Item getRawItem(@Nullable Object o) {
 		if (o == null) {
 			return Items.AIR;
 		} else if (o instanceof Item item) {
@@ -185,9 +229,9 @@ public class ItemStackJS {
 	}
 
 	// Use ItemStackJS.of(object)
-	public static ItemStack resultFromRecipeJson(@Nullable JsonElement json) {
+	static ItemStack resultFromRecipeJson(@Nullable JsonElement json) {
 		if (json == null || json.isJsonNull()) {
-			return EMPTY;
+			return ItemStack.EMPTY;
 		} else if (json.isJsonPrimitive()) {
 			return of(json.getAsString());
 		} else if (json instanceof JsonObject jsonObj) {
@@ -227,67 +271,29 @@ public class ItemStackJS {
 			}
 		}
 
-		return EMPTY;
+		return ItemStack.EMPTY;
 	}
 
-	public static String toItemString(Object object) {
+	static String toItemString(Object object) {
 		return ItemStackJS.of(object).kjs$toItemString();
 	}
 
-	public static List<ItemStack> getList() {
-		if (cachedItemList != null) {
-			return cachedItemList;
-		}
-
-		var set = new LinkedHashSet<ItemStack>();
-		NonNullList<ItemStack> stackList = NonNullList.create();
-
-		for (var item : KubeJSRegistries.items()) {
-			try {
-				item.fillItemCategory(CreativeModeTab.TAB_SEARCH, stackList);
-			} catch (Throwable ignored) {
-			}
-		}
-
-		for (var stack : stackList) {
-			if (!stack.isEmpty()) {
-				set.add(stack.kjs$withCount(1));
-			}
-		}
-
-		cachedItemList = Arrays.asList(set.toArray(new ItemStack[0]));
-		return cachedItemList;
+	static List<ItemStack> getList() {
+		return CACHED_ITEM_LIST.get();
 	}
 
-	public static void clearListCache() {
-		cachedItemList = null;
+	static List<String> getTypeList() {
+		return CACHED_ITEM_TYPE_LIST.get();
 	}
 
-	public static List<String> getTypeList() {
-		if (cachedItemTypeList == null) {
-			cachedItemTypeList = new ArrayList<>();
-
-			for (var id : KubeJSRegistries.items().getIds()) {
-				cachedItemTypeList.add(id.toString());
-			}
-		}
-
-		return cachedItemTypeList;
-	}
-
-	@Nullable
-	public static CreativeModeTab findCreativeTab(String id) {
-		for (var group : CreativeModeTab.TABS) {
-			if (id.equals(group.getRecipeFolderName())) {
-				return group;
-			}
-		}
-
-		return null;
+	static void clearAllCaches() {
+		CACHED_ITEM_LIST.forget();
+		CACHED_ITEM_TYPE_LIST.forget();
+		PARSE_CACHE.clear();
+		IngredientJS.PARSE_CACHE.clear();
 	}
 
 	/*
-
 	@Override
 	public JsonElement toJson() {
 		var c = getCount();

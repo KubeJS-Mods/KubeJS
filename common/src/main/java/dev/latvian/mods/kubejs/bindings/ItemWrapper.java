@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.FireworksJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -57,10 +56,6 @@ public interface ItemWrapper {
 		return ItemStack.EMPTY;
 	}
 
-	static void clearListCache() {
-		ItemStackJS.clearListCache();
-	}
-
 	static FireworksJS fireworks(Map<String, Object> properties) {
 		return FireworksJS.of(properties);
 	}
@@ -72,11 +67,6 @@ public interface ItemWrapper {
 	@Nullable
 	static ResourceLocation getId(Item item) {
 		return KubeJSRegistries.items().getId(item);
-	}
-
-	@Nullable
-	static CreativeModeTab findCreativeTab(String id) {
-		return ItemStackJS.findCreativeTab(id);
 	}
 
 	static boolean exists(ResourceLocation id) {
