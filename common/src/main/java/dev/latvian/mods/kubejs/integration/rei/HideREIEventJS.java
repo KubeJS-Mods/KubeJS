@@ -37,7 +37,9 @@ public class HideREIEventJS<T> extends EventJS {
 
 	public void hide(Object o) {
 		if (!hideAll) {
-			for (var stack : entryWrapper.wrap(o)) {
+			var stacks = entryWrapper.wrap(o);
+
+			for (var stack : stacks) {
 				hidden.add(EntryStacks.hashExact(stack));
 			}
 		}
@@ -50,13 +52,15 @@ public class HideREIEventJS<T> extends EventJS {
 	@Override
 	protected void afterPosted(boolean result) {
 		if (!hidden.isEmpty()) {
-			registry.removeEntryIf(stack -> {
-				if (filterType(stack)) {
-					return hideAll || hidden.contains(EntryStacks.hashExact(stack));
-				}
-
-				return false;
-			});
+			registry.removeEntryIf(this::removeEntry);
 		}
+	}
+
+	private boolean removeEntry(EntryStack<?> entryStack) {
+		if (filterType(entryStack)) {
+			return hideAll || hidden.contains(EntryStacks.hashExact(entryStack));
+		}
+
+		return false;
 	}
 }

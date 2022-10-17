@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.event.EventHandler;
 /**
  * @author LatvianModder
  */
-public interface JEIKubeJSEvents {
+public interface JEIEvents {
 	EventGroup GROUP = EventGroup.of("JEIEvents");
 
 	EventHandler SUBTYPES = GROUP.client("subtypes", () -> JEISubtypesEventJS.class);

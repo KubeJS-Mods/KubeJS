@@ -48,7 +48,7 @@ import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
-import dev.latvian.mods.kubejs.integration.rei.REIKubeJSEvents;
+import dev.latvian.mods.kubejs.integration.rei.REIEvents;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
@@ -230,7 +230,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		PlayerEvents.GROUP.register();
 
 		if (Platform.isModLoaded("roughlyenoughitems")) {
-			REIKubeJSEvents.register();
+			REIEvents.register();
 		}
 	}
 
@@ -323,7 +323,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 			event.add("settings", new LegacyCodeHandler("settings"));
 		}
 
-		event.add("onEvent", new LegacyCodeHandler("onEvent"));
+		event.add("onEvent", new LegacyCodeHandler("onEvent()"));
+		event.add("java", new LegacyCodeHandler("java()"));
 
 		event.add("Utils", UtilsWrapper.class);
 		event.add("Java", new JavaWrapper(event));

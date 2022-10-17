@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.forge;
 
 import dev.latvian.mods.kubejs.BuiltinKubeJSPlugin;
-import dev.latvian.mods.kubejs.integration.forge.jei.JEIKubeJSEvents;
+import dev.latvian.mods.kubejs.integration.forge.jei.JEIEvents;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassFilter;
@@ -15,7 +15,7 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 		ForgeKubeJSEvents.register();
 
 		if (ModList.get().isLoaded("jei")) {
-			JEIKubeJSEvents.register();
+			JEIEvents.register();
 		}
 	}
 
@@ -38,7 +38,7 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 
 		if (event.type == ScriptType.STARTUP) {
 			event.add("ForgeEvents", ForgeEventWrapper.class);
-			event.add("onForgeEvent", new LegacyCodeHandler("onForgeEvent"));
+			event.add("onForgeEvent", new LegacyCodeHandler("onForgeEvent()"));
 		}
 	}
 }

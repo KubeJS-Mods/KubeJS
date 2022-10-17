@@ -37,20 +37,20 @@ public class JEIPlugin implements IModPlugin {
 		runtime = r;
 		BuiltinKubeJSPlugin.GLOBAL.put("jeiRuntime", runtime);
 
-		JEIKubeJSEvents.HIDE_ITEMS.post(new HideJEIEventJS<>(runtime, VanillaTypes.ITEM_STACK, IngredientJS::of, stack -> !stack.isEmpty()));
+		JEIEvents.HIDE_ITEMS.post(new HideJEIEventJS<>(runtime, VanillaTypes.ITEM_STACK, IngredientJS::of, stack -> !stack.isEmpty()));
 
-		JEIKubeJSEvents.HIDE_FLUIDS.post(new HideJEIEventJS<>(runtime, ForgeTypes.FLUID_STACK, object -> {
+		JEIEvents.HIDE_FLUIDS.post(new HideJEIEventJS<>(runtime, ForgeTypes.FLUID_STACK, object -> {
 			var fs = FluidStackJS.of(object);
 			return fluidStack -> fluidStack.getFluid().isSame(fs.getFluid()) && Objects.equals(fluidStack.getTag(), fs.getNbt());
 		}, stack -> !stack.isEmpty()));
 
-		JEIKubeJSEvents.HIDE_CUSTOM.post(new HideCustomJEIEventJS(runtime));
+		JEIEvents.HIDE_CUSTOM.post(new HideCustomJEIEventJS(runtime));
 
-		JEIKubeJSEvents.REMOVE_CATEGORIES.post(new RemoveJEICategoriesEvent(runtime));
-		JEIKubeJSEvents.REMOVE_RECIPES.post(new RemoveJEIRecipesEvent(runtime));
+		JEIEvents.REMOVE_CATEGORIES.post(new RemoveJEICategoriesEvent(runtime));
+		JEIEvents.REMOVE_RECIPES.post(new RemoveJEIRecipesEvent(runtime));
 
-		JEIKubeJSEvents.ADD_ITEMS.post(new AddJEIEventJS<>(runtime, VanillaTypes.ITEM_STACK, ItemStackJS::of, stack -> !stack.isEmpty()));
-		JEIKubeJSEvents.ADD_FLUIDS.post(new AddJEIEventJS<>(runtime, ForgeTypes.FLUID_STACK, object -> fromArchitectury(FluidStackJS.of(object).getFluidStack()), stack -> !stack.isEmpty()));
+		JEIEvents.ADD_ITEMS.post(new AddJEIEventJS<>(runtime, VanillaTypes.ITEM_STACK, ItemStackJS::of, stack -> !stack.isEmpty()));
+		JEIEvents.ADD_FLUIDS.post(new AddJEIEventJS<>(runtime, ForgeTypes.FLUID_STACK, object -> fromArchitectury(FluidStackJS.of(object).getFluidStack()), stack -> !stack.isEmpty()));
 	}
 
 	public static FluidStack fromArchitectury(dev.architectury.fluid.FluidStack stack) {
@@ -59,11 +59,11 @@ public class JEIPlugin implements IModPlugin {
 
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistration registration) {
-		JEIKubeJSEvents.SUBTYPES.post(new JEISubtypesEventJS(registration));
+		JEIEvents.SUBTYPES.post(new JEISubtypesEventJS(registration));
 	}
 
 	@Override
 	public void registerRecipes(IRecipeRegistration registration) {
-		JEIKubeJSEvents.INFORMATION.post(new InformationJEIEventJS(registration));
+		JEIEvents.INFORMATION.post(new InformationJEIEventJS(registration));
 	}
 }

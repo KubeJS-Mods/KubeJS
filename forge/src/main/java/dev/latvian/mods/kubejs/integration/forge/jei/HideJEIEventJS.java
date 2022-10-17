@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
@@ -51,7 +50,7 @@ public class HideJEIEventJS<T> extends EventJS {
 	@Override
 	protected void afterPosted(boolean result) {
 		if (!hidden.isEmpty()) {
-			runtime.getIngredientManager().removeIngredientsAtRuntime(type, hidden.stream().filter(isValid).collect(Collectors.toList()));
+			runtime.getIngredientManager().removeIngredientsAtRuntime(type, hidden.stream().filter(isValid).toList());
 		}
 	}
 }

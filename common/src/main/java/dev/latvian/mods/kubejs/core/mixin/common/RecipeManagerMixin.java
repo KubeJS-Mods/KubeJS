@@ -25,7 +25,7 @@ public abstract class RecipeManagerMixin {
 	private void customRecipesHead(Map<ResourceLocation, JsonObject> map, ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfo ci) {
 		if (RecipesEventJS.instance != null) {
 			RecipesEventJS.instance.post(UtilsJS.cast(this), map);
-			ServerEvents.COMPOSTABLE.post(new CompostableRecipesEventJS());
+			ServerEvents.COMPOSTABLE_RECIPES.post(new CompostableRecipesEventJS());
 			RecipesEventJS.instance = null;
 		}
 		ci.cancel();

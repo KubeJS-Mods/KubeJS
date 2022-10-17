@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.core;
 
+import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemStackSet;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
@@ -24,6 +25,18 @@ public interface IngredientKJS extends IngredientSupplierKJS {
 
 	default ItemStackSet kjs$getStacks() {
 		return new ItemStackSet(kjs$self().getItems());
+	}
+
+	default ItemStackSet kjs$getDisplayStacks() {
+		var set = new ItemStackSet();
+
+		for (var stack : ItemStackJS.getList()) {
+			if (kjs$self().test(stack)) {
+				set.add(stack);
+			}
+		}
+
+		return set;
 	}
 
 	default Set<Item> kjs$getItemTypes() {

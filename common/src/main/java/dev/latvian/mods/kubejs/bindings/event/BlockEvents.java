@@ -11,7 +11,7 @@ import dev.latvian.mods.kubejs.event.EventHandler;
 
 public interface BlockEvents {
 	EventGroup GROUP = EventGroup.of("BlockEvents");
-	EventHandler MODIFICATION = GROUP.startup("modification", () -> BlockModificationEventJS.class).supportsNamespacedExtraId();
+	EventHandler MODIFICATION = GROUP.startup("modification", () -> BlockModificationEventJS.class);
 	EventHandler RIGHT_CLICKED = GROUP.server("rightClicked", () -> BlockRightClickedEventJS.class).supportsNamespacedExtraId().cancelable();
 	EventHandler LEFT_CLICKED = GROUP.server("leftClicked", () -> BlockLeftClickedEventJS.class).supportsNamespacedExtraId().cancelable();
 	EventHandler PLACED = GROUP.server("placed", () -> BlockPlacedEventJS.class).supportsNamespacedExtraId().cancelable();

@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.script;
 
-import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.util.ClassFilter;
@@ -84,7 +83,7 @@ public class ScriptManager implements ClassShutter {
 				var scriptSource = (ScriptSource.FromResource) info -> resourceManager.getResourceOrThrow(info.id);
 				var error = fileInfo.preload(scriptSource);
 
-				if (fileInfo.isIgnored()) {
+				if (fileInfo.skipLoading()) {
 					continue;
 				}
 
@@ -120,8 +119,7 @@ public class ScriptManager implements ClassShutter {
 
 			var error = fileInfo.preload(scriptSource);
 
-			var packMode = fileInfo.getPackMode();
-			if (fileInfo.isIgnored() || (!packMode.equals("default") && !packMode.equals(CommonProperties.get().packMode))) {
+			if (fileInfo.skipLoading()) {
 				continue;
 			}
 

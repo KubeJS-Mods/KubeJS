@@ -34,7 +34,7 @@ public interface ServerEvents {
 	EventHandler RECIPES = GROUP.server("recipes", () -> RecipesEventJS.class);
 	EventHandler RECIPES_AFTER_LOADED = GROUP.server("afterRecipes", () -> AfterRecipesLoadedEventJS.class);
 	EventHandler SPECIAL_RECIPES = GROUP.server("specialRecipeSerializers", () -> SpecialRecipeSerializerManager.class);
-	EventHandler COMPOSTABLE = GROUP.server("compostables", () -> CompostableRecipesEventJS.class);
+	EventHandler COMPOSTABLE_RECIPES = GROUP.server("compostableRecipes", () -> CompostableRecipesEventJS.class);
 	EventHandler RECIPE_TYPE_REGISTRY = GROUP.server("recipeTypeRegistry", () -> RecipeTypeRegistryEventJS.class);
 	EventHandler GENERIC_LOOT_TABLES = GROUP.server("genericLootTables", () -> GenericLootEventJS.class);
 	EventHandler BLOCK_LOOT_TABLES = GROUP.server("blockLootTables", () -> BlockLootEventJS.class);

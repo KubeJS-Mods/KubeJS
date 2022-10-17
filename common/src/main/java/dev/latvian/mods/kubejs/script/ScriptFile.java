@@ -1,9 +1,7 @@
 package dev.latvian.mods.kubejs.script;
 
-import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedInputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -31,7 +29,7 @@ public class ScriptFile implements Comparable<ScriptFile> {
 		error = null;
 
 		try (var stream = source.createStream(info)) {
-			var script = new String(IOUtils.toByteArray(new BufferedInputStream(stream)), StandardCharsets.UTF_8);
+			var script = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
 			pack.context.evaluateString(pack.scope, script, info.location, 1, null);
 			return true;
 		} catch (Throwable ex) {

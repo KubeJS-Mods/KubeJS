@@ -1,5 +1,7 @@
 package dev.latvian.mods.kubejs.script;
 
+import dev.architectury.platform.Platform;
+import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
@@ -7,8 +9,12 @@ import org.jetbrains.annotations.Nullable;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -16,15 +22,17 @@ import java.util.regex.Pattern;
  */
 public class ScriptFileInfo {
 	private static final Pattern FILE_FIXER = Pattern.compile("[^\\w.\\/]");
+	private static final Pattern PROPERTY_PATTERN = Pattern.compile("^//\\s*(\\w+)\\s*:?\\s*(\\w+)$");
 
 	public final ScriptPackInfo pack;
 	public final String file;
 	public final ResourceLocation id;
 	public final String location;
-	private final Map<String, String> properties;
+	private final Map<String, List<String>> properties;
 	private int priority;
 	private boolean ignored;
 	private String packMode;
+	private final Set<String> requiredMods;
 
 	public ScriptFileInfo(ScriptPackInfo p, String f) {
 		pack = p;
@@ -34,7 +42,8 @@ public class ScriptFileInfo {
 		properties = new HashMap<>();
 		priority = 0;
 		ignored = false;
-		packMode = "default";
+		packMode = "";
+		requiredMods = new HashSet<>(0);
 	}
 
 	@Nullable
@@ -49,12 +58,14 @@ public class ScriptFileInfo {
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
 
-				if (line.startsWith("//")) {
-					var s = line.substring(2).split(":", 2);
+				if (line.isEmpty()) {
+					continue;
+				}
 
-					if (s.length == 2) {
-						properties.put(s[0].trim().toLowerCase(), s[1].trim());
-					}
+				var matcher = PROPERTY_PATTERN.matcher(line);
+
+				if (matcher.find()) {
+					properties.computeIfAbsent(matcher.group(1).trim(), k -> new ArrayList<>()).add(matcher.group(2).trim());
 				} else {
 					break;
 				}
@@ -63,25 +74,43 @@ public class ScriptFileInfo {
 			priority = Integer.parseInt(getProperty("priority", "0"));
 			ignored = getProperty("ignored", "false").equals("true") || getProperty("ignore", "false").equals("true");
 			packMode = getProperty("packmode", "default");
+			requiredMods.addAll(getProperties("requires"));
 			return null;
 		} catch (Throwable ex) {
 			return ex;
 		}
 	}
 
+	public List<String> getProperties(String s) {
+		return properties.getOrDefault(s, List.of());
+	}
+
 	public String getProperty(String s, String def) {
-		return properties.getOrDefault(s, def);
+		var l = getProperties(s);
+		return l.isEmpty() ? def : l.get(l.size() - 1);
 	}
 
 	public int getPriority() {
 		return priority;
 	}
 
-	public boolean isIgnored() {
-		return ignored;
-	}
+	public boolean skipLoading() {
+		if (ignored) {
+			return true;
+		}
 
-	public String getPackMode() {
-		return packMode;
+		if (!packMode.isEmpty() && !packMode.equals(CommonProperties.get().packMode)) {
+			return true;
+		}
+
+		if (!requiredMods.isEmpty()) {
+			for (String mod : requiredMods) {
+				if (!Platform.isModLoaded(mod)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 }

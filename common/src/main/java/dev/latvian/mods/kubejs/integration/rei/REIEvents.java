@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.event.EventHandler;
 /**
  * @author shedaniel
  */
-public interface REIKubeJSEvents {
+public interface REIEvents {
 	EventGroup GROUP = EventGroup.of("REIEvents");
 
 	EventHandler HIDE = GROUP.client("hide", () -> HideREIEventJS.class).requiresNamespacedExtraId();

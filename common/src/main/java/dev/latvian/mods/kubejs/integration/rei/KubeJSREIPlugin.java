@@ -20,10 +20,12 @@ import me.shedaniel.rei.api.common.registry.ReloadStage;
 import me.shedaniel.rei.api.common.util.CollectionUtils;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -38,7 +40,7 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 
 	public KubeJSREIPlugin() {
 		entryWrappers.clear();
-		entryWrappers.put(VanillaEntryTypes.ITEM, o -> EntryIngredients.ofItemStacks(IngredientJS.of(o).kjs$getStacks().toList()));
+		entryWrappers.put(VanillaEntryTypes.ITEM, o -> EntryIngredients.ofItemStacks(o instanceof ItemStack is ? List.of(is) : IngredientJS.of(o).kjs$getDisplayStacks().toList()));
 		entryWrappers.put(VanillaEntryTypes.FLUID, o -> EntryIngredients.of(FluidStackJS.of(o).getFluidStack()));
 		KubeJSAddREIWrapperEvent.EVENT.invoker().accept(entryWrappers::put);
 	}
@@ -55,14 +57,14 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 	@Override
 	public void registerEntries(EntryRegistry registry) {
 		entryWrappers.forEach((type, wrapper) -> {
-			REIKubeJSEvents.HIDE.post(type.getId(), new HideREIEventJS<>(registry, UtilsJS.cast(type), wrapper));
-			REIKubeJSEvents.ADD.post(type.getId(), new AddREIEventJS(registry, wrapper));
+			REIEvents.HIDE.post(type.getId(), new HideREIEventJS<>(registry, UtilsJS.cast(type), wrapper));
+			REIEvents.ADD.post(type.getId(), new AddREIEventJS(registry, wrapper));
 		});
 	}
 
 	@Override
 	public void registerDisplays(DisplayRegistry registry) {
-		REIKubeJSEvents.INFORMATION.post(new InformationREIEventJS());
+		REIEvents.INFORMATION.post(new InformationREIEventJS());
 	}
 
 	@Override
@@ -75,14 +77,14 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 	public void postStage(PluginManager<REIClientPlugin> manager, ReloadStage stage) {
 		if (stage == ReloadStage.END) {
 			categoriesRemoved.clear();
-			REIKubeJSEvents.REMOVE_CATEGORIES.post(new RemoveREICategoryEventJS(categoriesRemoved));
+			REIEvents.REMOVE_CATEGORIES.post(new RemoveREICategoryEventJS(categoriesRemoved));
 		}
 	}
 
 	@SuppressWarnings("UnstableApiUsage")
 	@Override
 	public void registerCollapsibleEntries(CollapsibleEntryRegistry registry) {
-		REIKubeJSEvents.GROUP_ENTRIES.post(new GroupREIEntriesEventJS(registry));
+		REIEvents.GROUP_ENTRIES.post(new GroupREIEntriesEventJS(registry));
 	}
 
 	public static EntryType<?> getTypeOrThrow(ResourceLocation typeId) {
