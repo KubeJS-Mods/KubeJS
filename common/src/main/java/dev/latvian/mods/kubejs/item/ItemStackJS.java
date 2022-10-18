@@ -135,8 +135,8 @@ public interface ItemStackJS {
 
 		if (map != null) {
 			if (map.containsKey("item")) {
-				var id = KubeJS.appendModId(map.get("item").toString());
-				var item = KubeJSRegistries.items().get(new ResourceLocation(id));
+				var id = UtilsJS.getMCID(map.get("item").toString());
+				var item = KubeJSRegistries.items().get(id);
 
 				if (item == Items.AIR) {
 					if (RecipeJS.itemErrors) {
