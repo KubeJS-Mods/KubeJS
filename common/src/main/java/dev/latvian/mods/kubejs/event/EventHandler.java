@@ -10,6 +10,7 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -128,7 +129,12 @@ public final class EventHandler extends BaseFunction {
 
 	public void listen(ScriptType type, @Nullable String extraId, IEventHandler handler) {
 		if (!type.manager.get().canListenEvents) {
-			throw new IllegalArgumentException("Event handler '" + this + "' can only be registered during script loading!");
+			throw new IllegalStateException("Event handler '" + this + "' can only be registered during script loading!");
+		}
+
+		if(type != scriptType && type != ScriptType.STARTUP) {
+			var types = EnumSet.of(scriptType, ScriptType.STARTUP);
+			throw new UnsupportedOperationException("Tried to register event handler '" + this + "' for invalid script type " + type + "! Valid script types: " + types);
 		}
 
 		String extra = extraId == null ? "" : extraId;

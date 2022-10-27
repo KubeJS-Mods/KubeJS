@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import dev.architectury.registry.registries.Registrar;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
 import net.minecraft.core.Registry;
@@ -76,7 +77,16 @@ public class RegistryTypeWrapperFactory<T> implements TypeWrapperFactory<T> {
 			return (T) o;
 		}
 
-		return registry.get(UtilsJS.getMCID(o));
+		var id = UtilsJS.getMCID(o);
+		var value = registry.get(id);
+
+		if (value == null) {
+			var npe = new NullPointerException("No such element with id %s in registry %s!".formatted(id, name));
+			ConsoleJS.getCurrent(ConsoleJS.STARTUP).error("Error while wrapping registry element type!", npe);
+			throw npe;
+		}
+
+		return value;
 	}
 
 	@Override
