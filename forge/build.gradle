@@ -25,12 +25,18 @@ loom {
 
 repositories {
 	maven {
-		name "ModMaven (JEI)"
+		name "ModMaven"
 		url "https://modmaven.dev/"
 		content {
-			includeGroup "mezz.jei"
 			includeGroup "net.darkhax.bookshelf"
 			includeGroup "net.darkhax.gamestages"
+		}
+	}
+	maven {
+		name "JEI"
+		url "https://dvs1.progwml6.com/files/maven/"
+		content {
+			includeGroup "mezz.jei"
 		}
 	}
 }
@@ -45,9 +51,7 @@ dependencies {
 	modLocalRuntime modCompileOnly("net.darkhax.bookshelf:Bookshelf-Forge-1.18.2:13.2.48")
 	modLocalRuntime modCompileOnly("net.darkhax.gamestages:GameStages-Forge-1.18.2:8.0.2")
 
-	// no reason to compile against the JEI API since REI already provides it,
-	// but if you want to use it at runtime, you can use this next line and remove the modLocalRuntime from REI.
-	// modLocalRuntime("mezz.jei:jei-1.18:${rootProject.forge_jei_version}")
+	modCompileOnly("mezz.jei:jei-1.18.2:${rootProject.forge_jei_version}:api")
 	modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}")
 
 	common(project(path: ":common", configuration: "namedElements")) { transitive false }
