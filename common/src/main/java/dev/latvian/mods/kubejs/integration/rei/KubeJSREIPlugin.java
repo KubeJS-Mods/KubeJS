@@ -7,6 +7,8 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import me.shedaniel.rei.api.client.entry.filtering.FilteringRuleTypeRegistry;
+import me.shedaniel.rei.api.client.entry.filtering.base.BasicFilteringRule;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
 import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
@@ -22,12 +24,7 @@ import me.shedaniel.rei.api.common.util.CollectionUtils;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author shedaniel
@@ -57,24 +54,42 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 	public void registerEntries(EntryRegistry registry) {
 		entryWrappers.forEach((type, wrapper) -> {
 			var typeId = UtilsJS.stripIdForEvent(type.getId());
+			var filteringRule = FilteringRuleTypeRegistry.getInstance().basic();
 
-			new HideREIEventJS<>(registry, UtilsJS.cast(type), wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted(typeId));
 			new AddREIEventJS(registry, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_ADD_EVENTS.formatted(typeId));
 
 			if (type.getId().getNamespace().equals("minecraft")) {
 				var shortId = UtilsJS.stripEventName(type.getId().getPath());
-
-				new HideREIEventJS<>(registry, UtilsJS.cast(type), wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted(shortId));
 				new AddREIEventJS(registry, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_ADD_EVENTS.formatted(shortId));
 			}
 
 			// legacy event ids with "plural s"
 			if (type == VanillaEntryTypes.ITEM) {
-				new HideREIEventJS<>(registry, VanillaEntryTypes.ITEM, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted("items"));
 				new AddREIEventJS(registry, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_ADD_EVENTS.formatted("items"));
 			} else if (type == VanillaEntryTypes.FLUID) {
-				new HideREIEventJS<>(registry, VanillaEntryTypes.FLUID, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted("fluids"));
 				new AddREIEventJS(registry, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_ADD_EVENTS.formatted("fluids"));
+			}
+		});
+	}
+
+	@Override
+	public void registerBasicEntryFiltering(BasicFilteringRule<?> rule) {
+		entryWrappers.forEach((type, wrapper) -> {
+			var typeId = UtilsJS.stripIdForEvent(type.getId());
+			var registry = EntryRegistry.getInstance();
+
+			new HideREIEventJS<>(registry, rule, UtilsJS.cast(type), wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted(typeId));
+
+			if (type.getId().getNamespace().equals("minecraft")) {
+				var shortId = UtilsJS.stripEventName(type.getId().getPath());
+				new HideREIEventJS<>(registry, rule, UtilsJS.cast(type), wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted(shortId));
+			}
+
+			// legacy event ids with "plural s"
+			if (type == VanillaEntryTypes.ITEM) {
+				new HideREIEventJS<>(registry, rule, VanillaEntryTypes.ITEM, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted("items"));
+			} else if (type == VanillaEntryTypes.FLUID) {
+				new HideREIEventJS<>(registry, rule, VanillaEntryTypes.FLUID, wrapper).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_EVENTS.formatted("fluids"));
 			}
 		});
 	}
