@@ -47,7 +47,7 @@ public class BotanyPotsCropRecipeJS extends RecipeJS {
 	public void deserialize() {
 		inputItems.add(parseIngredientItem(json.get("seed")));
 
-		for (var e : json.get("results").getAsJsonArray()) {
+		for (var e : json.get("drops").getAsJsonArray()) {
 			var o = e.getAsJsonObject();
 			var is = parseResultItem(o.get("output"));
 
