@@ -46,4 +46,9 @@ public record RecipeArguments(RecipeJS recipe, List<?> list) {
 	public String getString(int index, String def) {
 		return get(index) instanceof CharSequence n ? n.toString() : def;
 	}
+
+	@Override
+	public String toString() {
+		return list.toString();
+	}
 }

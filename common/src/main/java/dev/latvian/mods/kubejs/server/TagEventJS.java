@@ -244,9 +244,7 @@ public class TagEventJS<T> extends EventJS {
 			}
 		}
 
-		ConsoleJS.SERVER.pushLineNumber();
 		ServerEvents.TAGS.post(registry.key().location(), this);
-		ConsoleJS.SERVER.popLineNumber();
 
 		if (DataExport.dataExport != null) {
 			var tj = DataExport.dataExport.getAsJsonObject("tags");
