@@ -21,9 +21,7 @@ public class EventGroupWrapper extends HashMap<String, BaseFunction> {
 		var handler = group.getHandlers().get(keyString);
 
 		if (handler == null) {
-			scriptType.console.pushLineNumber();
 			scriptType.console.error("Unknown event '%s.%s'!".formatted(group.name, keyString));
-			scriptType.console.popLineNumber();
 			return new BaseFunction();
 		}
 

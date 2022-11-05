@@ -73,12 +73,9 @@ public class ServerScriptManager {
 
 		reloadScriptManager(wrappedResourceManager);
 
-		ConsoleJS.SERVER.pushLineNumber();
-
 		ServerEvents.LOW_DATA.post(new DataPackEventJS(virtualDataPackLow, wrappedResourceManager));
 		ServerEvents.HIGH_DATA.post(new DataPackEventJS(virtualDataPackHigh, wrappedResourceManager));
 
-		ConsoleJS.SERVER.popLineNumber();
 		ConsoleJS.SERVER.info("Scripts loaded");
 
 		Map<ResourceLocation, RecipeTypeJS> typeMap = new HashMap<>();

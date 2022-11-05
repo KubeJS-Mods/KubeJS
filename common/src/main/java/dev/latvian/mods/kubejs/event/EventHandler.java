@@ -6,14 +6,14 @@ import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.SharedContextData;
+import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -27,10 +27,9 @@ public final class EventHandler extends BaseFunction {
 	public final ScriptType scriptType;
 	public final Supplier<Class<? extends EventJS>> eventType;
 	private boolean cancelable;
+	private Extra extra;
 	private EventHandlerContainer[] eventContainers;
-	private Map<String, EventHandlerContainer[]> extraEventContainers;
-	private int extraIdType;
-	private Function<String, String> extraTransformer;
+	private Map<Object, EventHandlerContainer[]> extraEventContainers;
 
 	EventHandler(EventGroup g, String n, ScriptType st, Supplier<Class<? extends EventJS>> e) {
 		group = g;
@@ -38,10 +37,9 @@ public final class EventHandler extends BaseFunction {
 		scriptType = st;
 		eventType = e;
 		cancelable = false;
+		extra = null;
 		eventContainers = null;
 		extraEventContainers = null;
-		extraIdType = 0;
-		extraTransformer = Function.identity();
 	}
 
 	/**
@@ -56,47 +54,9 @@ public final class EventHandler extends BaseFunction {
 		return cancelable;
 	}
 
-	public EventHandler requiresExtraId() {
-		extraIdType = 1;
+	public EventHandler extra(Extra extra) {
+		this.extra = extra;
 		return this;
-	}
-
-	public EventHandler requiresNamespacedExtraId() {
-		return namespacedExtraTransformer().requiresExtraId();
-	}
-
-	public boolean getRequiresExtraId() {
-		return extraIdType == 1;
-	}
-
-	public EventHandler supportsExtraId() {
-		extraIdType = 2;
-		return this;
-	}
-
-	public EventHandler supportsNamespacedExtraId() {
-		return namespacedExtraTransformer().supportsExtraId();
-	}
-
-	public boolean getSupportsExtraId() {
-		return extraIdType != 0;
-	}
-
-	public EventHandler extraTransformer(Function<String, String> transformer) {
-		extraTransformer = transformer;
-		return this;
-	}
-
-	public EventHandler namespacedExtraTransformer() {
-		return extraTransformer(EventHandler::transformNamespaced);
-	}
-
-	private static String transformNamespaced(String string) {
-		return new ResourceLocation(string).toString();
-	}
-
-	public Function<String, String> getExtraTransformer() {
-		return extraTransformer;
 	}
 
 	@HideFromJS
@@ -127,33 +87,32 @@ public final class EventHandler extends BaseFunction {
 		}
 	}
 
-	public void listen(ScriptType type, @Nullable String extraId, IEventHandler handler) {
+	public void listen(ScriptType type, @Nullable Object extraId, IEventHandler handler) {
 		if (!type.manager.get().canListenEvents) {
 			throw new IllegalStateException("Event handler '" + this + "' can only be registered during script loading!");
 		}
 
-		if(type != scriptType && type != ScriptType.STARTUP) {
+		if (type != scriptType && type != ScriptType.STARTUP) {
 			var types = EnumSet.of(scriptType, ScriptType.STARTUP);
 			throw new UnsupportedOperationException("Tried to register event handler '" + this + "' for invalid script type " + type + "! Valid script types: " + types);
 		}
 
-		String extra = extraId == null ? "" : extraId;
-
-		if (!extra.isEmpty()) {
-			extra = getExtraTransformer().apply(extra);
+		if (extraId != null && extra != null) {
+			extraId = Wrapper.unwrapped(extraId);
+			extraId = extra.transformer.transform(extraId);
 		}
 
-		if (getRequiresExtraId() && extra.isEmpty()) {
+		if (extra != null && extra.required && extraId == null) {
 			throw new IllegalArgumentException("Event handler '" + this + "' requires extra id!");
 		}
 
-		if (!getSupportsExtraId() && !extra.isEmpty()) {
+		if (extra == null && extraId != null) {
 			throw new IllegalArgumentException("Event handler '" + this + "' doesn't support extra id!");
 		}
 
 		EventHandlerContainer[] map;
 
-		if (extra.isEmpty()) {
+		if (extraId == null) {
 			if (eventContainers == null) {
 				eventContainers = new EventHandlerContainer[ScriptType.VALUES.length];
 			}
@@ -161,15 +120,15 @@ public final class EventHandler extends BaseFunction {
 			map = eventContainers;
 		} else {
 			if (extraEventContainers == null) {
-				extraEventContainers = new HashMap<>();
+				extraEventContainers = extra.identity ? new IdentityHashMap<>() : new HashMap<>();
 			}
 
-			map = extraEventContainers.get(extra);
+			map = extraEventContainers.get(extraId);
 
 			//noinspection Java8MapApi
 			if (map == null) {
 				map = new EventHandlerContainer[ScriptType.VALUES.length];
-				extraEventContainers.put(extra, map);
+				extraEventContainers.put(extraId, map);
 			}
 		}
 
@@ -202,17 +161,20 @@ public final class EventHandler extends BaseFunction {
 	public boolean post(@Nullable Object extraId, EventJS event, boolean onlyPostToExtra) {
 		boolean b = false;
 
-		var extra = extraId == null ? "" : String.valueOf(extraId);
+		if (extraId != null && extra != null) {
+			extraId = Wrapper.unwrapped(extraId);
+			extraId = extra.transformer.transform(extraId);
+		}
 
-		if (getRequiresExtraId() && extra.isEmpty()) {
+		if (extra != null && extra.required && extraId == null) {
 			throw new IllegalArgumentException("Event handler '" + this + "' requires extra id!");
 		}
 
-		if (!getSupportsExtraId() && !extra.isEmpty()) {
+		if (extra == null && extraId != null) {
 			throw new IllegalArgumentException("Event handler '" + this + "' doesn't support extra id!");
 		}
 
-		var extraContainers = extraEventContainers == null ? null : extraEventContainers.get(extra);
+		var extraContainers = extraEventContainers == null ? null : extraEventContainers.get(extraId);
 
 		if (extraContainers != null) {
 			b = postToHandlers(scriptType, extraContainers, event);
@@ -263,8 +225,8 @@ public final class EventHandler extends BaseFunction {
 		} else if (args.length == 2) {
 			var handler = (IEventHandler) Context.jsToJava(contextData, args[1], IEventHandler.class);
 
-			for (Object o : ListJS.orSelf(args[0])) {
-				listen(type, String.valueOf(Context.jsToJava(contextData, o, String.class)), handler);
+			for (Object o : ListJS.orEmpty(args[0])) {
+				listen(type, o, handler);
 			}
 		}
 

@@ -4,7 +4,6 @@ import dev.architectury.platform.forge.EventBuses;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
-import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.entity.forge.LivingEntityDropsEventJS;
 import dev.latvian.mods.kubejs.item.forge.ItemDestroyedEventJS;
 import dev.latvian.mods.kubejs.platform.forge.IngredientPlatformHelperImpl;
@@ -51,7 +50,7 @@ public class KubeJSForge {
 
 	private static void itemDestroyed(PlayerDestroyItemEvent event) {
 		if (event.getEntity() instanceof ServerPlayer) {
-			ForgeKubeJSEvents.ITEM_DESTROYED.post(ItemWrapper.getId(event.getOriginal().getItem()), new ItemDestroyedEventJS(event));
+			ForgeKubeJSEvents.ITEM_DESTROYED.post(event.getOriginal().getItem(), new ItemDestroyedEventJS(event));
 		}
 	}
 

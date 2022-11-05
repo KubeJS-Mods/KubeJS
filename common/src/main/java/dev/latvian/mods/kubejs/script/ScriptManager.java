@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.ClassShutter;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaClass;
-import dev.latvian.mods.rhino.RhinoException;
 import dev.latvian.mods.rhino.SharedContextData;
 import dev.latvian.mods.rhino.mod.util.RemappingHelper;
 import net.minecraft.resources.ResourceLocation;
@@ -28,7 +27,7 @@ import java.util.Optional;
  * @author LatvianModder
  */
 public class ScriptManager implements ClassShutter {
-	public final ScriptType type;
+	public final ScriptType scriptType;
 	public final Path directory;
 	private final String exampleScript;
 	public final Map<String, ScriptPack> packs;
@@ -38,17 +37,17 @@ public class ScriptManager implements ClassShutter {
 	public boolean canListenEvents;
 
 	public ScriptManager(ScriptType t, Path p, String e) {
-		type = t;
+		scriptType = t;
 		directory = p;
 		exampleScript = e;
 		packs = new LinkedHashMap<>();
 		firstLoad = true;
-		classFilter = KubeJSPlugins.createClassFilter(type);
+		classFilter = KubeJSPlugins.createClassFilter(scriptType);
 	}
 
 	public void unload() {
 		packs.clear();
-		type.unload();
+		scriptType.unload();
 		javaClassCache = null;
 	}
 
@@ -90,7 +89,7 @@ public class ScriptManager implements ClassShutter {
 				if (error == null) {
 					pack.scripts.add(new ScriptFile(pack, fileInfo, scriptSource));
 				} else {
-					type.console.error("Failed to pre-load script file " + fileInfo.location + ": " + error);
+					scriptType.console.error("Failed to pre-load script file " + fileInfo.location + ": " + error);
 				}
 			}
 
@@ -151,13 +150,13 @@ public class ScriptManager implements ClassShutter {
 				pack.context = context;
 				pack.scope = context.initStandardObjects();
 				SharedContextData contextData = SharedContextData.get(pack.scope);
-				contextData.setExtraProperty("Type", type);
-				contextData.setExtraProperty("Console", type.console);
+				contextData.setExtraProperty("Type", scriptType);
+				contextData.setExtraProperty("Console", scriptType.console);
 				contextData.setClassShutter(this);
 				contextData.setRemapper(RemappingHelper.getMinecraftRemapper());
 				var typeWrappers = contextData.getTypeWrappers();
 				// typeWrappers.removeAll();
-				KubeJSPlugins.forEachPlugin(plugin -> plugin.registerTypeWrappers(type, typeWrappers));
+				KubeJSPlugins.forEachPlugin(plugin -> plugin.registerTypeWrappers(scriptType, typeWrappers));
 
 				for (var registryTypeWrapperFactory : RegistryTypeWrapperFactory.getAll()) {
 					try {
@@ -176,29 +175,25 @@ public class ScriptManager implements ClassShutter {
 					t++;
 					var start = System.currentTimeMillis();
 
-					if (file.load()) {
+					try {
+						file.load();
 						i++;
-						type.console.info("Loaded script " + file.info.location + " in " + (System.currentTimeMillis() - start) / 1000D + " s");
-					} else if (file.getError() != null) {
-						if (file.getError() instanceof RhinoException) {
-							type.console.error("Error loading KubeJS script: " + file.getError().getMessage());
-						} else {
-							type.console.error("Error loading KubeJS script: " + file.info.location + ": " + file.getError());
-							file.getError().printStackTrace();
-						}
+						scriptType.console.info("Loaded script " + file.info.location + " in " + (System.currentTimeMillis() - start) / 1000D + " s");
+					} catch (Throwable ex) {
+						scriptType.console.handleError(ex, null, "Error loading KubeJS script: " + file.info.location + "'");
 					}
 				}
 			} catch (Throwable ex) {
-				type.console.error("Failed to read script pack " + pack.info.namespace + ": ", ex);
+				scriptType.console.error("Failed to read script pack " + pack.info.namespace + ": ", ex);
 			}
 		}
 
-		type.console.info("Loaded " + i + "/" + t + " KubeJS " + type.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s");
+		scriptType.console.info("Loaded " + i + "/" + t + " KubeJS " + scriptType.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s");
 		Context.exit();
 		firstLoad = false;
 		canListenEvents = false;
 
-		if (i != t && type == ScriptType.STARTUP) {
+		if (i != t && scriptType == ScriptType.STARTUP) {
 			throw new RuntimeException("There were startup script syntax errors! See logs/kubejs/startup.txt for more info");
 		}
 	}
@@ -231,9 +226,7 @@ public class ScriptManager implements ClassShutter {
 				var c = Class.forName(name);
 				var njc = new NativeJavaClass(event.contextData.topLevelScope, c);
 				javaClassCache.put(name, Optional.of(njc));
-				event.manager.type.console.pushLineNumber();
-				event.manager.type.console.info("Loaded Java class '%s'".formatted(name0));
-				event.manager.type.console.popLineNumber();
+				event.manager.scriptType.console.info("Loaded Java class '%s'".formatted(name0));
 				return njc;
 			} catch (ClassNotFoundException cnf) {
 				throw Context.reportRuntimeError("Failed to load Java class '%s': Class could not be found!\n%s".formatted(name, cnf.getMessage()));

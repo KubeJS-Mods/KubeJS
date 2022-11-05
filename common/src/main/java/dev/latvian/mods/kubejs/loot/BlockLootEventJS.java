@@ -19,9 +19,7 @@ public class BlockLootEventJS extends LootEventJS {
 
 	public void build(BlockStatePredicate blocks, Consumer<LootBuilder> b) {
 		addBlock(blocks, b);
-		ConsoleJS.SERVER.pushLineNumber();
 		ConsoleJS.SERVER.warn("This method is no longer supported! Use event.addBlock(blockPredicate, loot => {...})");
-		ConsoleJS.SERVER.popLineNumber();
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.event;
 
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.rhino.RhinoException;
 import org.jetbrains.annotations.Nullable;
 
 class EventHandlerContainer {
@@ -29,18 +28,11 @@ class EventHandlerContainer {
 	public boolean handle(ScriptType scriptType, EventHandler eventHandler, EventJS event, boolean cancelable) {
 		var itr = this;
 
-		while (itr != null) {
+		do {
 			try {
 				itr.handler.onEvent(event);
-			} catch (RhinoException ex) {
-				scriptType.console.pushLineNumber();
-				scriptType.console.error("Error occurred while handling event '" + eventHandler + "': " + ex.getMessage());
-				scriptType.console.popLineNumber();
 			} catch (Throwable ex) {
-				scriptType.console.pushLineNumber();
-				scriptType.console.error("Error occurred while handling event '" + eventHandler + "': " + ex);
-				scriptType.console.popLineNumber();
-				ex.printStackTrace();
+				scriptType.console.handleError(ex, null, "Error occurred while handling event '" + eventHandler + "'");
 			}
 
 			if (cancelable && event.isCanceled()) {
@@ -49,6 +41,7 @@ class EventHandlerContainer {
 
 			itr = itr.child;
 		}
+		while (itr != null);
 
 		return false;
 	}

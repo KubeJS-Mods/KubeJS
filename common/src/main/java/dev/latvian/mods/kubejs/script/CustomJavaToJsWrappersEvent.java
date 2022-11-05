@@ -15,7 +15,7 @@ public class CustomJavaToJsWrappersEvent {
 
 	public CustomJavaToJsWrappersEvent(ScriptManager m, SharedContextData d) {
 		manager = m;
-		scriptType = manager.type;
+		scriptType = manager.scriptType;
 		data = d;
 	}
 

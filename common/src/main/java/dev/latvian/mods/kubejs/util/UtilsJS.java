@@ -405,9 +405,7 @@ public class UtilsJS {
 			return new ResourceLocation(s);
 		} catch (ResourceLocationException ex) {
 			var console = ConsoleJS.getCurrent(ConsoleJS.STARTUP);
-			console.pushLineNumber();
 			console.error("Could not create ID from '%s'!".formatted(s), ex);
-			console.popLineNumber();
 		}
 
 		return null;

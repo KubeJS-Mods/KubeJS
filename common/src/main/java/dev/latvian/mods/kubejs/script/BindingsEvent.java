@@ -12,7 +12,7 @@ public class BindingsEvent {
 
 	public BindingsEvent(ScriptManager m, SharedContextData d) {
 		manager = m;
-		type = manager.type;
+		type = manager.scriptType;
 		contextData = d;
 	}
 

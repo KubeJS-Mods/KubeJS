@@ -184,9 +184,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, Ingredie
 	@Deprecated
 	default Ingredient kjs$ignoreNBT() {
 		var console = ConsoleJS.getCurrent(ConsoleJS.SERVER);
-		console.pushLineNumber();
 		console.warn("You don't need to call .ignoreNBT() anymore, all item ingredients ignore NBT by default!");
-		console.popLineNumber();
 		return kjs$self().getItem().kjs$asIngredient();
 	}
 

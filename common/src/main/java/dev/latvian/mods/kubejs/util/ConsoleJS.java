@@ -3,6 +3,8 @@ package dev.latvian.mods.kubejs.util;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.RhinoException;
+import dev.latvian.mods.rhino.WrappedException;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -80,7 +82,7 @@ public class ConsoleJS {
 	private final Logger logger;
 	private final Path logFile;
 	private String group;
-	private int lineNumber;
+	private RhinoException currentError;
 	private boolean muted;
 	private boolean debugEnabled;
 	private boolean writeToFile;
@@ -91,7 +93,6 @@ public class ConsoleJS {
 		logger = log;
 		logFile = m.getLogFile();
 		group = "";
-		lineNumber = 0;
 		muted = false;
 		debugEnabled = false;
 		writeToFile = true;
@@ -140,37 +141,42 @@ public class ConsoleJS {
 		});
 	}
 
-	public void pushLineNumber() {
-		lineNumber++;
+	public void pushError(RhinoException e) {
+		currentError = e;
 	}
 
-	public void popLineNumber() {
-		lineNumber--;
+	public void popError() {
+		currentError = null;
 	}
 
 	private String string(Object object) {
 		var o = UtilsJS.wrap(object, JSObjectType.ANY);
 		var s = o == null || o.getClass().isPrimitive() || o instanceof Boolean || o instanceof String || o instanceof Number || o instanceof WrappedJS ? String.valueOf(o) : (o + " [" + o.getClass().getName() + "]");
 
-		if (lineNumber <= 0 && group.isEmpty()) {
-			return s;
-		}
-
 		var builder = new StringBuilder();
 
-		if (true) {
-			var lineP = new int[]{0};
-			var lineS = Context.getSourcePositionFromStack(lineP);
+		int[] lineP = {0};
+		String lineS = null;
 
-			if (lineP[0] > 0) {
-				if (lineS != null) {
-					builder.append(lineS);
-				}
+		if (currentError != null) {
+			lineP[0] = currentError.lineNumber();
+			lineS = currentError.lineSource();
+		}
 
+		if (lineP[0] == 0 || lineS == null) {
+			lineS = Context.getSourcePositionFromStack(lineP);
+		}
+
+		if (lineP[0] > 0) {
+			if (lineS != null) {
+				builder.append(lineS);
 				builder.append(':');
-				builder.append(lineP[0]);
-				builder.append(": ");
+			} else {
+				builder.append('#');
 			}
+
+			builder.append(lineP[0]);
+			builder.append(": ");
 		}
 
 		builder.append(group);
@@ -369,8 +375,6 @@ public class ConsoleJS {
 	}
 
 	public void printClass(String className, boolean tree) {
-		pushLineNumber();
-
 		try {
 			var c = Class.forName(className);
 			var sc = c.getSuperclass();
@@ -441,8 +445,6 @@ public class ConsoleJS {
 			error("= Error loading class =");
 			error(ex.toString());
 		}
-
-		popLineNumber();
 	}
 
 	public void printClass(String className) {
@@ -467,8 +469,6 @@ public class ConsoleJS {
 	}
 
 	public void printObject(@Nullable Object o, boolean tree) {
-		pushLineNumber();
-
 		if (o == null) {
 			info("=== null ===");
 		} else {
@@ -480,8 +480,6 @@ public class ConsoleJS {
 			info("");
 			printClass(o.getClass().getName(), tree);
 		}
-
-		popLineNumber();
 	}
 
 	public void printObject(@Nullable Object o) {
@@ -490,6 +488,27 @@ public class ConsoleJS {
 
 	public void printStackTrace(Throwable throwable, @Nullable Pattern skip) {
 		throwable.printStackTrace(new StackTracePrintStream(this, skip));
+	}
+
+	public void handleError(Throwable throwable, @Nullable Pattern skip, String message) {
+		try {
+			if (throwable instanceof WrappedException ex) {
+				pushError(ex);
+				error(message + ": " + ex.getWrappedException());
+				popError();
+				printStackTrace(ex.getWrappedException(), skip);
+			} else if (throwable instanceof RhinoException ex) {
+				pushError(ex);
+				error(message + ": " + ex.getMessage());
+				popError();
+			} else {
+				error(message + ": " + throwable);
+				printStackTrace(throwable, skip);
+			}
+		} catch (Throwable ex) {
+			error("Errored while handling error... wtf... " + ex);
+			ex.printStackTrace();
+		}
 	}
 
 	private static final class VarFunc implements Comparable<VarFunc> {

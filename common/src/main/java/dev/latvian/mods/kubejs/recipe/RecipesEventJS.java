@@ -137,7 +137,6 @@ public class RecipesEventJS extends EventJS {
 					return TagContext.EMPTY;
 				}));
 
-		ConsoleJS.SERVER.pushLineNumber();
 		var timer = Stopwatch.createStarted();
 
 		var allRecipeMap = new JsonObject();
@@ -260,9 +259,7 @@ public class RecipesEventJS extends EventJS {
 
 		timer.reset().start();
 
-		ConsoleJS.SERVER.pushLineNumber();
 		ServerEvents.RECIPES.post(this);
-		ConsoleJS.SERVER.popLineNumber();
 
 		ConsoleJS.SERVER.info("Posted recipe events in " + timer.stop());
 
@@ -384,8 +381,6 @@ public class RecipesEventJS extends EventJS {
 				ConsoleJS.SERVER.info(r.id + ": " + r.json);
 			}
 		}
-
-		ConsoleJS.SERVER.popLineNumber();
 	}
 
 	public Map<String, Object> getRecipes() {
@@ -417,11 +412,15 @@ public class RecipesEventJS extends EventJS {
 	}
 
 	public void forEachRecipeAsync(RecipeFilter filter, Consumer<RecipeJS> consumer) {
+		forEachRecipe(filter, consumer);
+		/* Async currently breaks iterating stacks for some reason. It's easier to disable it than to fix it
+
 		if (filter == RecipeFilter.ALWAYS_TRUE) {
 			originalRecipes.parallelStream().forEach(consumer);
 		} else if (filter != RecipeFilter.ALWAYS_FALSE) {
 			originalRecipes.parallelStream().filter(filter).forEach(consumer);
 		}
+		*/
 	}
 
 	public int countRecipes(RecipeFilter filter) {
@@ -438,7 +437,7 @@ public class RecipesEventJS extends EventJS {
 		if (filter == RecipeFilter.ALWAYS_TRUE) {
 			return true;
 		} else if (filter != RecipeFilter.ALWAYS_FALSE) {
-			return originalRecipes.parallelStream().anyMatch(filter);
+			return originalRecipes.stream().anyMatch(filter);
 		}
 
 		return false;

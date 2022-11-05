@@ -1,7 +1,5 @@
 package dev.latvian.mods.kubejs.script;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -12,29 +10,16 @@ public class ScriptFile implements Comparable<ScriptFile> {
 	public final ScriptFileInfo info;
 	public final ScriptSource source;
 
-	private Throwable error;
-
 	public ScriptFile(ScriptPack p, ScriptFileInfo i, ScriptSource s) {
 		pack = p;
 		info = i;
 		source = s;
 	}
 
-	@Nullable
-	public Throwable getError() {
-		return error;
-	}
-
-	public boolean load() {
-		error = null;
-
+	public void load() throws Throwable {
 		try (var stream = source.createStream(info)) {
 			var script = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
 			pack.context.evaluateString(pack.scope, script, info.location, 1, null);
-			return true;
-		} catch (Throwable ex) {
-			error = ex;
-			return false;
 		}
 	}
 
