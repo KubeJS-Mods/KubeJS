@@ -144,7 +144,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 			this.registry = registry;
 			// This, along with overriding getTranslationKeyGroup, is to avoid a crash occurring from getRegistryType returning null
 			// when called from the super constructor, because the value it returns is not set until after the super constructor is run
-			this.translationKey = getTranslationKeyGroup();
+			this.translationKey = getTranslationKeyGroup() + "." + id.getNamespace() + "." + id.getPath();
 		}
 
 		@Override
