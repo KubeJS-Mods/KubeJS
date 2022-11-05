@@ -8,11 +8,9 @@ import dev.latvian.mods.kubejs.item.FoodEatenEventJS;
 import dev.latvian.mods.kubejs.item.ItemCraftedEventJS;
 import dev.latvian.mods.kubejs.item.ItemDroppedEventJS;
 import dev.latvian.mods.kubejs.item.ItemEntityInteractedEventJS;
-import dev.latvian.mods.kubejs.item.ItemLeftClickedEventJS;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
 import dev.latvian.mods.kubejs.item.ItemModificationEventJS;
 import dev.latvian.mods.kubejs.item.ItemPickedUpEventJS;
-import dev.latvian.mods.kubejs.item.ItemRightClickedEmptyEventJS;
 import dev.latvian.mods.kubejs.item.ItemRightClickedEventJS;
 import dev.latvian.mods.kubejs.item.ItemSmeltedEventJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
@@ -50,8 +48,6 @@ public interface ItemEvents {
 	EventHandler CRAFTED = GROUP.server("crafted", () -> ItemCraftedEventJS.class).extra(SUPPORTS_ITEM);
 	EventHandler SMELTED = GROUP.server("smelted", () -> ItemSmeltedEventJS.class).extra(SUPPORTS_ITEM);
 	EventHandler FOOD_EATEN = GROUP.server("foodEaten", () -> FoodEatenEventJS.class).extra(SUPPORTS_ITEM).cancelable();
-	EventHandler RIGHT_CLICKED_EMPTY = GROUP.client("rightClickedEmpty", () -> ItemRightClickedEmptyEventJS.class).extra(SUPPORTS_ITEM);
-	EventHandler LEFT_CLICKED = GROUP.client("leftClicked", () -> ItemLeftClickedEventJS.class).extra(SUPPORTS_ITEM);
 	EventHandler TOOLTIP = GROUP.client("tooltip", () -> ItemTooltipEventJS.class);
 	EventHandler MODEL_PROPERTIES = GROUP.startup("modelProperties", () -> ItemModelPropertiesEventJS.class);
 }

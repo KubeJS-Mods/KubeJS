@@ -1,18 +1,16 @@
-package dev.latvian.mods.kubejs.item;
+package dev.latvian.mods.kubejs.player;
 
-import dev.latvian.mods.kubejs.player.PlayerEventJS;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 
 /**
  * @author LatvianModder
  */
-public class ItemRightClickedEmptyEventJS extends PlayerEventJS {
+public class RightClickeHandEventJS extends PlayerEventJS {
 	private final Player player;
 	private final InteractionHand hand;
 
-	public ItemRightClickedEmptyEventJS(Player player, InteractionHand hand) {
+	public RightClickeHandEventJS(Player player, InteractionHand hand) {
 		this.player = player;
 		this.hand = hand;
 	}
@@ -24,9 +22,5 @@ public class ItemRightClickedEmptyEventJS extends PlayerEventJS {
 
 	public InteractionHand getHand() {
 		return hand;
-	}
-
-	public ItemStack getItem() {
-		return ItemStack.EMPTY;
 	}
 }

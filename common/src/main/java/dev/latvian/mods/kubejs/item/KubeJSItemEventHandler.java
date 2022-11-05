@@ -21,8 +21,6 @@ import net.minecraft.world.item.ItemStack;
 public class KubeJSItemEventHandler {
 	public static void init() {
 		InteractionEvent.RIGHT_CLICK_ITEM.register(KubeJSItemEventHandler::rightClick);
-		InteractionEvent.CLIENT_RIGHT_CLICK_AIR.register(KubeJSItemEventHandler::rightClickEmpty);
-		InteractionEvent.CLIENT_LEFT_CLICK_AIR.register(KubeJSItemEventHandler::leftClickEmpty);
 		PlayerEvent.PICKUP_ITEM_PRE.register(KubeJSItemEventHandler::canPickUp);
 		PlayerEvent.PICKUP_ITEM_POST.register(KubeJSItemEventHandler::pickup);
 		PlayerEvent.DROP_ITEM.register(KubeJSItemEventHandler::drop);
@@ -37,18 +35,6 @@ public class KubeJSItemEventHandler {
 		}
 
 		return CompoundEventResult.pass();
-	}
-
-	private static void rightClickEmpty(Player player, InteractionHand hand) {
-		if (player != null && player.level != null && player.level.isClientSide()) {
-			ItemEvents.RIGHT_CLICKED_EMPTY.post(player.getItemInHand(hand).getItem(), new ItemRightClickedEmptyEventJS(player, hand));
-		}
-	}
-
-	private static void leftClickEmpty(Player player, InteractionHand hand) {
-		if (player != null && player.level != null && player.level.isClientSide()) {
-			ItemEvents.LEFT_CLICKED.post(player.getItemInHand(hand).getItem(), new ItemLeftClickedEventJS(player, hand));
-		}
 	}
 
 	private static EventResult canPickUp(Player player, ItemEntity entity, ItemStack stack) {
