@@ -1,7 +1,10 @@
 package dev.latvian.mods.kubejs.event;
 
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Predicate;
 
 public class Extra {
 	@FunctionalInterface
@@ -40,11 +43,15 @@ public class Extra {
 	public Transformer transformer;
 	public boolean identity;
 	public boolean required;
+	public Predicate<Object> validator;
+	public Transformer toString;
 
 	public Extra() {
 		this.transformer = Transformer.IDENTITY;
 		this.identity = false;
 		this.required = false;
+		this.validator = UtilsJS.ALWAYS_TRUE;
+		this.toString = Transformer.IDENTITY;
 	}
 
 	public Extra copy() {
@@ -52,6 +59,8 @@ public class Extra {
 		t.transformer = transformer;
 		t.identity = identity;
 		t.required = required;
+		t.validator = validator;
+		t.toString = toString;
 		return t;
 	}
 
@@ -67,6 +76,16 @@ public class Extra {
 
 	public Extra required() {
 		this.required = true;
+		return this;
+	}
+
+	public Extra validator(Predicate<Object> validator) {
+		this.validator = validator;
+		return this;
+	}
+
+	public Extra toString(Transformer factory) {
+		this.toString = factory;
 		return this;
 	}
 }

@@ -1,24 +1,26 @@
 package dev.latvian.mods.kubejs.item;
 
+import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 /**
  * @author LatvianModder
  */
-public class ItemRightClickedEventJS extends PlayerEventJS {
-	private final ServerPlayer player;
+public class ItemClickedEventJS extends PlayerEventJS {
+	private final Player player;
 	private final InteractionHand hand;
+	private RayTraceResultJS target;
 
-	public ItemRightClickedEventJS(ServerPlayer player, InteractionHand hand) {
+	public ItemClickedEventJS(Player player, InteractionHand hand) {
 		this.player = player;
 		this.hand = hand;
 	}
 
 	@Override
-	public ServerPlayer getEntity() {
+	public Player getEntity() {
 		return player;
 	}
 
@@ -28,5 +30,13 @@ public class ItemRightClickedEventJS extends PlayerEventJS {
 
 	public ItemStack getItem() {
 		return player.getItemInHand(hand);
+	}
+
+	public RayTraceResultJS getTarget() {
+		if (target == null) {
+			target = player.kjs$rayTrace();
+		}
+
+		return target;
 	}
 }

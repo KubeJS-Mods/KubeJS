@@ -110,6 +110,10 @@ public final class EventHandler extends BaseFunction {
 			throw new IllegalArgumentException("Event handler '" + this + "' doesn't support extra id!");
 		}
 
+		if (extra != null && extraId != null && !extra.validator.test(extraId)) {
+			throw new IllegalArgumentException("Event handler '" + this + "' doesn't accept id '" + extra.toString.transform(extraId) + "'!");
+		}
+
 		EventHandlerContainer[] map;
 
 		if (extraId == null) {
@@ -171,7 +175,7 @@ public final class EventHandler extends BaseFunction {
 		}
 
 		if (extra == null && extraId != null) {
-			throw new IllegalArgumentException("Event handler '" + this + "' doesn't support extra id!");
+			throw new IllegalArgumentException("Event handler '" + this + "' doesn't support extra id " + extraId + "!");
 		}
 
 		var extraContainers = extraEventContainers == null ? null : extraEventContainers.get(extraId);

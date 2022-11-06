@@ -6,11 +6,9 @@ import dev.latvian.mods.kubejs.event.Extra;
 import dev.latvian.mods.kubejs.player.ChestEventJS;
 import dev.latvian.mods.kubejs.player.InventoryChangedEventJS;
 import dev.latvian.mods.kubejs.player.InventoryEventJS;
-import dev.latvian.mods.kubejs.player.LeftClickedHandEventJS;
 import dev.latvian.mods.kubejs.player.PlayerAdvancementEventJS;
 import dev.latvian.mods.kubejs.player.PlayerChatDecorateEventJS;
 import dev.latvian.mods.kubejs.player.PlayerClonedEventJS;
-import dev.latvian.mods.kubejs.player.RightClickeHandEventJS;
 import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
 
 public interface PlayerEvents {
@@ -27,6 +25,4 @@ public interface PlayerEvents {
 	EventHandler INVENTORY_CHANGED = GROUP.server("inventoryChanged", () -> InventoryChangedEventJS.class).extra(ItemEvents.SUPPORTS_ITEM);
 	EventHandler CHEST_OPENED = GROUP.server("chestOpened", () -> ChestEventJS.class);
 	EventHandler CHEST_CLOSED = GROUP.server("chestClosed", () -> ChestEventJS.class);
-	EventHandler RIGHT_CLICKED_HAND = GROUP.client("rightClickedHand", () -> RightClickeHandEventJS.class);
-	EventHandler LEFT_CLICKED_HAND = GROUP.client("leftClickedHand", () -> LeftClickedHandEventJS.class);
 }

@@ -451,6 +451,11 @@ public abstract class RecipeJS implements RecipeKJS {
 	}
 
 	public RecipeJS ingredientAction(IngredientActionFilter filter, IngredientAction action) {
+		if (json == null) {
+			ConsoleJS.SERVER.error("Can't add ingredient action to uninitialized recipe!");
+			return this;
+		}
+
 		var array = json.get("kubejs_actions") instanceof JsonArray arr ? arr : Util.make(new JsonArray(), (arr) -> json.add("kubejs_actions", arr));
 		action.copyFrom(filter);
 		array.add(action.toJson());

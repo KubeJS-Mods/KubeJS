@@ -72,7 +72,7 @@ public class DevProperties {
 			ex.printStackTrace();
 		}
 
-		KubeJS.LOGGER.info("Loaded common.properties");
+		KubeJS.LOGGER.info("Loaded dev.properties");
 	}
 
 	public void remove(String key) {

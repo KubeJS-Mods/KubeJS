@@ -82,7 +82,7 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 			return event.addRecipe(recipe, type, args);
 		} catch (RecipeExceptionJS ex) {
 			ex.error();
-			ConsoleJS.SERVER.error("Failed to create recipe for type '" + typeID + "' with args " + Arrays.toString(args0), ex, SKIP_ERROR);
+			ConsoleJS.SERVER.error("Failed to create recipe for type '" + typeID + "'", ex, SKIP_ERROR);
 		} catch (Throwable ex) {
 			ConsoleJS.SERVER.handleError(ex, SKIP_ERROR, "Failed to create recipe for type '" + typeID + "' with args " + Arrays.toString(args0));
 		}

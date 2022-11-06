@@ -6,15 +6,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class RayTraceResultJS {
 	public final Entity fromEntity;
-	public final String type;
+	public final HitResult.Type type;
 	public final double distance;
-	public double hitX = Double.NaN;
-	public double hitY = Double.NaN;
-	public double hitZ = Double.NaN;
+	public Vec3 hit = null;
 
 	public BlockContainerJS block = null;
 	public Direction facing = null;
@@ -24,24 +23,27 @@ public class RayTraceResultJS {
 	public RayTraceResultJS(Entity from, @Nullable HitResult result, double d) {
 		fromEntity = from;
 		distance = d;
+		type = result == null ? HitResult.Type.MISS : result.getType();
 
 		if (result instanceof BlockHitResult b && result.getType() == HitResult.Type.BLOCK) {
-			type = "block";
-			hitX = result.getLocation().x;
-			hitY = result.getLocation().y;
-			hitZ = result.getLocation().z;
-
+			hit = result.getLocation();
 			block = new BlockContainerJS(from.level, b.getBlockPos());
 			facing = b.getDirection();
 		} else if (result instanceof EntityHitResult e && result.getType() == HitResult.Type.ENTITY) {
-			type = "entity";
-			hitX = result.getLocation().x;
-			hitY = result.getLocation().y;
-			hitZ = result.getLocation().z;
-
+			hit = result.getLocation();
 			entity = e.getEntity();
-		} else {
-			type = "miss";
 		}
+	}
+
+	public double getHitX() {
+		return hit == null ? Double.NaN : hit.x;
+	}
+
+	public double getHitY() {
+		return hit == null ? Double.NaN : hit.y;
+	}
+
+	public double getHitZ() {
+		return hit == null ? Double.NaN : hit.z;
 	}
 }
