@@ -22,8 +22,6 @@ public class KubeJSPlayerEventHandler {
 	public static void init() {
 		PlayerEvent.PLAYER_JOIN.register(KubeJSPlayerEventHandler::loggedIn);
 		PlayerEvent.PLAYER_QUIT.register(KubeJSPlayerEventHandler::loggedOut);
-		PlayerEvent.PLAYER_RESPAWN.register(KubeJSPlayerEventHandler::respawn);
-		PlayerEvent.PLAYER_CLONE.register(KubeJSPlayerEventHandler::cloned);
 		TickEvent.PLAYER_POST.register(KubeJSPlayerEventHandler::tick);
 		ChatEvent.DECORATE.register(KubeJSPlayerEventHandler::chatDecorate);
 		ChatEvent.RECEIVED.register(KubeJSPlayerEventHandler::chatReceived);
@@ -34,7 +32,7 @@ public class KubeJSPlayerEventHandler {
 
 	public static void loggedIn(ServerPlayer player) {
 		PlayerEvents.LOGGED_IN.post(new SimplePlayerEventJS(player));
-		player.inventoryMenu.addSlotListener(new InventoryListener(player));
+		player.inventoryMenu.addSlotListener(player.kjs$getInventoryChangeListener());
 
 		if (!ScriptType.SERVER.errors.isEmpty() && !CommonProperties.get().hideServerScriptErrors) {
 			player.displayClientMessage(ScriptType.SERVER.errorsComponent("/kubejs errors"), false);
@@ -43,18 +41,15 @@ public class KubeJSPlayerEventHandler {
 		player.kjs$getStages().sync();
 	}
 
-	private static void respawn(ServerPlayer player, boolean b) {
-		player.kjs$getStages().sync();
+	public static void respawn(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean keepData) {
+		newPlayer.kjs$setRawPersistentData(oldPlayer.kjs$getRawPersistentData());
+		newPlayer.inventoryMenu.addSlotListener(newPlayer.kjs$getInventoryChangeListener());
+		PlayerEvents.RESPAWNED.post(new PlayerRespawnedEventJS(newPlayer, oldPlayer, keepData));
+		newPlayer.kjs$getStages().sync();
 	}
 
 	public static void loggedOut(ServerPlayer player) {
 		PlayerEvents.LOGGED_OUT.post(new SimplePlayerEventJS(player));
-	}
-
-	public static void cloned(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean wonGame) {
-		newPlayer.kjs$getPersistentData().merge(oldPlayer.kjs$getPersistentData());
-		newPlayer.inventoryMenu.addSlotListener(new InventoryListener(newPlayer));
-		PlayerEvents.CLONED.post(new PlayerClonedEventJS(newPlayer, oldPlayer, wonGame));
 	}
 
 	public static void tick(Player player) {
@@ -79,7 +74,7 @@ public class KubeJSPlayerEventHandler {
 	public static void inventoryOpened(Player player, AbstractContainerMenu menu) {
 		if (player instanceof ServerPlayer serverPlayer) {
 			if (!(menu instanceof InventoryMenu)) {
-				menu.addSlotListener(new InventoryListener(serverPlayer));
+				menu.addSlotListener(serverPlayer.kjs$getInventoryChangeListener());
 			}
 
 			PlayerEvents.INVENTORY_OPENED.post(new InventoryEventJS(serverPlayer, menu));

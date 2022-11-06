@@ -8,6 +8,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,6 +22,9 @@ import java.util.UUID;
 @Mixin(Entity.class)
 @RemapPrefixForJS("kjs$")
 public abstract class EntityMixin implements EntityKJS {
+	@Shadow
+	public abstract boolean removeTag(String string);
+
 	private CompoundTag kjs$persistentData;
 
 	@Override
@@ -34,14 +38,31 @@ public abstract class EntityMixin implements EntityKJS {
 
 	@Inject(method = "saveWithoutId", at = @At("RETURN"))
 	private void saveKJS(CompoundTag tag, CallbackInfoReturnable<CompoundTag> ci) {
-		if (kjs$persistentData != null) {
+		if (kjs$persistentData != null && !kjs$persistentData.isEmpty()) {
 			tag.put("KubeJSPersistentData", kjs$persistentData);
 		}
 	}
 
 	@Inject(method = "load", at = @At("RETURN"))
 	private void loadKJS(CompoundTag tag, CallbackInfo ci) {
-		kjs$persistentData = (CompoundTag) tag.get("KubeJSPersistentData");
+		if (tag.contains("KubeJSPersistentData")) {
+			kjs$persistentData = tag.getCompound("KubeJSPersistentData");
+		} else {
+			kjs$persistentData = null;
+		}
+	}
+
+	@Override
+	@Nullable
+	@HideFromJS
+	public CompoundTag kjs$getRawPersistentData() {
+		return kjs$persistentData;
+	}
+
+	@Override
+	@HideFromJS
+	public void kjs$setRawPersistentData(@Nullable CompoundTag tag) {
+		kjs$persistentData = tag;
 	}
 
 	@Shadow
