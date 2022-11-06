@@ -87,6 +87,7 @@ public class ConsoleJS {
 	private boolean debugEnabled;
 	private boolean writeToFile;
 	private final List<String> writeQueue;
+	private final String nameStrip;
 
 	public ConsoleJS(ScriptType m, Logger log) {
 		scriptType = m;
@@ -97,6 +98,7 @@ public class ConsoleJS {
 		debugEnabled = false;
 		writeToFile = true;
 		writeQueue = new ArrayList<>();
+		nameStrip = scriptType.name + ':';
 	}
 
 	public Logger getLogger() {
@@ -167,8 +169,12 @@ public class ConsoleJS {
 			lineS = Context.getSourcePositionFromStack(lineP);
 		}
 
+		if (lineS != null && lineS.startsWith(nameStrip)) {
+			lineS = lineS.substring(nameStrip.length());
+		}
+
 		if (lineP[0] > 0) {
-			if (lineS != null) {
+			if (lineS != null && !lineS.isEmpty()) {
 				builder.append(lineS);
 				builder.append(':');
 			} else {
@@ -296,17 +302,21 @@ public class ConsoleJS {
 	}
 
 	public void warnf(String message, Object... args) {
-		logf(s -> {
-			logger.warn(s);
-			scriptType.warnings.add(s);
-		}, "WARN ", message, args);
+		logf(this::warn0, "WARN ", message, args);
+	}
+
+	private void warn0(String s) {
+		logger.warn(s);
+		scriptType.warnings.add(s);
 	}
 
 	public void error(Object message) {
-		log(s -> {
-			logger.error(s);
-			scriptType.errors.add(s);
-		}, "ERR  ", message);
+		log(this::error0, "ERR  ", message);
+	}
+
+	private void error0(String s) {
+		logger.error(s);
+		scriptType.errors.add(s);
 	}
 
 	public void error(String message, Throwable throwable, @Nullable Pattern skip) {

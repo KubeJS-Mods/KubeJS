@@ -50,8 +50,8 @@ public class BlockContainerJS implements SpecialEquality {
 	public final Level minecraftLevel;
 	private final BlockPos pos;
 
-	private BlockState cachedState;
-	private BlockEntity cachedEntity;
+	public transient BlockState cachedState;
+	public transient BlockEntity cachedEntity;
 
 	public BlockContainerJS(Level w, BlockPos p) {
 		minecraftLevel = w;
@@ -140,6 +140,7 @@ public class BlockContainerJS implements SpecialEquality {
 	public void setBlockState(BlockState state, int flags) {
 		minecraftLevel.setBlock(getPos(), state, flags);
 		clearCache();
+		cachedState = state;
 	}
 
 	public String getId() {

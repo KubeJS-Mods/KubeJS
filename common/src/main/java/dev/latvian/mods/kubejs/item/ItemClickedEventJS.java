@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.item;
 
+import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -8,11 +9,12 @@ import net.minecraft.world.item.ItemStack;
 /**
  * @author LatvianModder
  */
-public class ItemRightClickedEmptyEventJS extends PlayerEventJS {
+public class ItemClickedEventJS extends PlayerEventJS {
 	private final Player player;
 	private final InteractionHand hand;
+	private RayTraceResultJS target;
 
-	public ItemRightClickedEmptyEventJS(Player player, InteractionHand hand) {
+	public ItemClickedEventJS(Player player, InteractionHand hand) {
 		this.player = player;
 		this.hand = hand;
 	}
@@ -27,6 +29,14 @@ public class ItemRightClickedEmptyEventJS extends PlayerEventJS {
 	}
 
 	public ItemStack getItem() {
-		return ItemStack.EMPTY;
+		return player.getItemInHand(hand);
+	}
+
+	public RayTraceResultJS getTarget() {
+		if (target == null) {
+			target = player.kjs$rayTrace();
+		}
+
+		return target;
 	}
 }

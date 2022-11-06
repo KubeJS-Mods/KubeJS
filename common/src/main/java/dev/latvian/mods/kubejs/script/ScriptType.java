@@ -7,6 +7,11 @@ import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.level.LevelReader;
 import org.slf4j.LoggerFactory;
 
@@ -102,5 +107,19 @@ public enum ScriptType {
 				handler.clear(this);
 			}
 		}
+	}
+
+	public Component errorsComponent(String command) {
+		return Component.literal("KubeJS errors found [" + errors.size() + "]! Run '" + command + "' for more info")
+				.kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
+				.kjs$hover(Component.literal("Click to show"))
+				.withStyle(ChatFormatting.DARK_RED);
+	}
+
+	public Component warningsComponent(String command) {
+		return Component.literal("KubeJS warnings found [" + warnings.size() + "]! Run '" + command + "' for more info")
+				.kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
+				.kjs$hover(Component.literal("Click to show"))
+				.withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500)));
 	}
 }

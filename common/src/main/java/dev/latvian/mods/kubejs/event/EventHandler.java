@@ -110,6 +110,10 @@ public final class EventHandler extends BaseFunction {
 			throw new IllegalArgumentException("Event handler '" + this + "' doesn't support extra id!");
 		}
 
+		if (extra != null && extraId != null && !extra.validator.test(extraId)) {
+			throw new IllegalArgumentException("Event handler '" + this + "' doesn't accept id '" + extra.toString.transform(extraId) + "'!");
+		}
+
 		EventHandlerContainer[] map;
 
 		if (extraId == null) {
@@ -171,7 +175,7 @@ public final class EventHandler extends BaseFunction {
 		}
 
 		if (extra == null && extraId != null) {
-			throw new IllegalArgumentException("Event handler '" + this + "' doesn't support extra id!");
+			throw new IllegalArgumentException("Event handler '" + this + "' doesn't support extra id " + extraId + "!");
 		}
 
 		var extraContainers = extraEventContainers == null ? null : extraEventContainers.get(extraId);
@@ -217,17 +221,21 @@ public final class EventHandler extends BaseFunction {
 		ScriptType type = (ScriptType) contextData.getExtraProperty("Type");
 
 		if (type == null) {
-			return null;
+			throw new IllegalStateException("Unknown script type!");
 		}
 
-		if (args.length == 1) {
-			listen(type, null, (IEventHandler) Context.jsToJava(contextData, args[0], IEventHandler.class));
-		} else if (args.length == 2) {
-			var handler = (IEventHandler) Context.jsToJava(contextData, args[1], IEventHandler.class);
+		try {
+			if (args.length == 1) {
+				listen(type, null, (IEventHandler) Context.jsToJava(contextData, args[0], IEventHandler.class));
+			} else if (args.length == 2) {
+				var handler = (IEventHandler) Context.jsToJava(contextData, args[1], IEventHandler.class);
 
-			for (Object o : ListJS.orEmpty(args[0])) {
-				listen(type, o, handler);
+				for (Object o : ListJS.orSelf(args[0])) {
+					listen(type, o, handler);
+				}
 			}
+		} catch (Exception ex) {
+			type.console.error(ex.getLocalizedMessage());
 		}
 
 		return null;

@@ -14,7 +14,6 @@ import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -26,7 +25,7 @@ import java.util.function.BiConsumer;
  * @author LatvianModder
  */
 public interface LootTablesKJS {
-	default void applyKJS0(Map<ResourceLocation, JsonElement> map, BiConsumer<ResourceLocation, JsonElement> action) {
+	default void kjs$apply0(Map<ResourceLocation, JsonElement> map, BiConsumer<ResourceLocation, JsonElement> action) {
 		Map<ResourceLocation, JsonElement> map1 = new HashMap<>(map);
 		ServerEvents.GENERIC_LOOT_TABLES.post(new GenericLootEventJS(map1));
 		ServerEvents.BLOCK_LOOT_TABLES.post(new BlockLootEventJS(map1));
@@ -49,13 +48,7 @@ public interface LootTablesKJS {
 			if (ScriptType.SERVER.errors.isEmpty()) {
 				UtilsJS.staticServer.kjs$tell(Component.literal("Reloaded with no KubeJS errors!").withStyle(ChatFormatting.GREEN));
 			} else {
-				UtilsJS.staticServer.kjs$tell(Component.literal("KubeJS errors found [" + ScriptType.SERVER.errors.size() + "]! Run ")
-						.append(Component.literal("'/kubejs errors'")
-								.kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs errors")))
-						.kjs$hover(Component.literal("Click to run"))
-						.append(Component.literal(" for more info"))
-						.withStyle(ChatFormatting.DARK_RED)
-				);
+				UtilsJS.staticServer.kjs$tell(ScriptType.SERVER.errorsComponent("/kubejs errors"));
 			}
 		}
 	}

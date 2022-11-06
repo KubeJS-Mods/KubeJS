@@ -7,21 +7,25 @@ import dev.latvian.mods.kubejs.block.BlockModificationEventJS;
 import dev.latvian.mods.kubejs.block.BlockPlacedEventJS;
 import dev.latvian.mods.kubejs.block.BlockRightClickedEventJS;
 import dev.latvian.mods.kubejs.block.DetectorBlockEventJS;
+import dev.latvian.mods.kubejs.block.FarmlandTrampledEventJS;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.Extra;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
 public interface BlockEvents {
 	EventGroup GROUP = EventGroup.of("BlockEvents");
 
-	Extra SUPPORTS_BLOCK = new Extra().transformer(BlockEvents::transformBlock).identity();
+	Extra SUPPORTS_BLOCK = new Extra().transformer(BlockEvents::transformBlock).toString(o -> ((Block) o).kjs$getId()).identity();
 
 	private static Object transformBlock(Object o) {
 		if (o == null || o instanceof Block) {
 			return o;
+		} else if (o instanceof BlockItem item) {
+			return item.getBlock();
 		}
 
 		var id = ResourceLocation.tryParse(o.toString());
@@ -37,4 +41,5 @@ public interface BlockEvents {
 	EventHandler DETECTOR_CHANGED = GROUP.server("detectorChanged", () -> DetectorBlockEventJS.class).extra(SUPPORTS_BLOCK);
 	EventHandler DETECTOR_POWERED = GROUP.server("detectorPowered", () -> DetectorBlockEventJS.class).extra(SUPPORTS_BLOCK);
 	EventHandler DETECTOR_UNPOWERED = GROUP.server("detectorUnpowered", () -> DetectorBlockEventJS.class).extra(SUPPORTS_BLOCK);
+	EventHandler FARMLAND_TRAMPLED = GROUP.server("farmlandTrampled", () -> FarmlandTrampledEventJS.class).extra(SUPPORTS_BLOCK).cancelable();
 }

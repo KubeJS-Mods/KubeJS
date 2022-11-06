@@ -35,10 +35,6 @@ public class KubeJSRegistries {
 		return REGISTRIES.get(key);
 	}
 
-	public static Registrar<Registry<?>> registries() {
-		return genericRegistry(ResourceKey.createRegistryKey(new ResourceLocation("root")));
-	}
-
 	public static Registrar<Block> blocks() {
 		return genericRegistry(BLOCK_REGISTRY);
 	}

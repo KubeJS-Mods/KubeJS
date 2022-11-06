@@ -7,9 +7,7 @@ import dev.architectury.event.events.common.TickEvent;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -39,13 +37,7 @@ public class KubeJSPlayerEventHandler {
 		player.inventoryMenu.addSlotListener(new InventoryListener(player));
 
 		if (!ScriptType.SERVER.errors.isEmpty() && !CommonProperties.get().hideServerScriptErrors) {
-			player.displayClientMessage(Component.literal("KubeJS errors found [" + ScriptType.SERVER.errors.size() + "]! Run ")
-							.append(Component.literal("'/kubejs errors'")
-									.kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs errors"))
-									.kjs$hover(Component.literal("Click to run")))
-							.append(Component.literal(" for more info"))
-							.withStyle(ChatFormatting.DARK_RED),
-					false);
+			player.displayClientMessage(ScriptType.SERVER.errorsComponent("/kubejs errors"), false);
 		}
 
 		player.kjs$getStages().sync();
