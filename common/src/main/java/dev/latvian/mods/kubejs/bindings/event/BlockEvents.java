@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.Blocks;
 public interface BlockEvents {
 	EventGroup GROUP = EventGroup.of("BlockEvents");
 
-	Extra SUPPORTS_BLOCK = new Extra().transformer(BlockEvents::transformBlock).identity();
+	Extra SUPPORTS_BLOCK = new Extra().transformer(BlockEvents::transformBlock).toString(o -> ((Block) o).kjs$getId()).identity();
 
 	private static Object transformBlock(Object o) {
 		if (o == null || o instanceof Block) {

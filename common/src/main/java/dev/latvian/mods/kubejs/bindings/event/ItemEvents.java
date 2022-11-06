@@ -17,13 +17,14 @@ import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
 import dev.latvian.mods.kubejs.item.custom.ItemArmorTierRegistryEventJS;
 import dev.latvian.mods.kubejs.item.custom.ItemToolTierRegistryEventJS;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 
 public interface ItemEvents {
 	EventGroup GROUP = EventGroup.of("ItemEvents");
 
-	Extra SUPPORTS_ITEM = new Extra().transformer(ItemEvents::transformItem).identity();
+	Extra SUPPORTS_ITEM = new Extra().transformer(ItemEvents::transformItem).toString(o -> ((Item) o).kjs$getId()).identity();
 
 	private static Object transformItem(Object o) {
 		if (o == null) {

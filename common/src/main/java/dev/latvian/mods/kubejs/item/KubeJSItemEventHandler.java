@@ -27,7 +27,6 @@ public class KubeJSItemEventHandler {
 		InteractionEvent.INTERACT_ENTITY.register(KubeJSItemEventHandler::entityInteract);
 		PlayerEvent.CRAFT_ITEM.register(KubeJSItemEventHandler::crafted);
 		PlayerEvent.SMELT_ITEM.register(KubeJSItemEventHandler::smelted);
-		InteractionEvent.CLIENT_RIGHT_CLICK_AIR.register(KubeJSItemEventHandler::clientRightClick);
 	}
 
 	private static CompoundEventResult<ItemStack> rightClick(Player player, InteractionHand hand) {
@@ -79,13 +78,6 @@ public class KubeJSItemEventHandler {
 		if (player instanceof ServerPlayer serverPlayer && !stack.isEmpty()) {
 			ItemEvents.SMELTED.post(stack.getItem(), new ItemSmeltedEventJS(serverPlayer, stack));
 			PlayerEvents.INVENTORY_CHANGED.post(stack.getItem(), new InventoryChangedEventJS(serverPlayer, stack, -1));
-		}
-	}
-
-	private static void clientRightClick(Player player, InteractionHand hand) {
-		if (player != null && player.level != null && player.level.isClientSide()) {
-			// ItemEvents.CLIENT_RIGHT_CLICKED.post(player.getItemInHand(hand).getItem(), new ItemClickedEventJS(player, hand));
-			// KubeJS.LOGGER.info("Right click " + player.getItemInHand(hand));
 		}
 	}
 }
