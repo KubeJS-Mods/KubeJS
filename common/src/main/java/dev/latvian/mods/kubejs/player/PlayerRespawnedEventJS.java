@@ -5,15 +5,15 @@ import net.minecraft.server.level.ServerPlayer;
 /**
  * @author LatvianModder
  */
-public class PlayerClonedEventJS extends PlayerEventJS {
+public class PlayerRespawnedEventJS extends PlayerEventJS {
 	private final ServerPlayer player;
 	private final ServerPlayer oldPlayer;
-	private final boolean wonGame;
+	private final boolean keepData;
 
-	public PlayerClonedEventJS(ServerPlayer player, ServerPlayer oldPlayer, boolean wonGame) {
+	public PlayerRespawnedEventJS(ServerPlayer player, ServerPlayer oldPlayer, boolean keepData) {
 		this.player = player;
 		this.oldPlayer = oldPlayer;
-		this.wonGame = wonGame;
+		this.keepData = keepData;
 	}
 
 	@Override
@@ -25,7 +25,7 @@ public class PlayerClonedEventJS extends PlayerEventJS {
 		return oldPlayer;
 	}
 
-	public boolean getWonGame() {
-		return wonGame;
+	public boolean getKeepData() {
+		return keepData;
 	}
 }

@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.core;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
+import dev.latvian.mods.kubejs.player.KubeJSInventoryListener;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
@@ -134,5 +135,9 @@ public interface ServerPlayerKJS extends PlayerKJS {
 
 	default void kjs$setSpawnLocation(BlockContainerJS c) {
 		kjs$self().setRespawnPosition(c.minecraftLevel.dimension(), c.getPos(), 0F, true, false);
+	}
+
+	default KubeJSInventoryListener kjs$getInventoryChangeListener() {
+		throw new NoMixinException();
 	}
 }

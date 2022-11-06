@@ -6,6 +6,7 @@ import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -312,5 +313,16 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS {
 		var toPos = fromPos.add(x * distance, y * distance, z * distance);
 		HitResult hitResult = kjs$self().level.clip(new ClipContext(fromPos, toPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, kjs$self()));
 		return new RayTraceResultJS(kjs$self(), hitResult, distance);
+	}
+
+	@Nullable
+	@HideFromJS
+	default CompoundTag kjs$getRawPersistentData() {
+		throw new NoMixinException();
+	}
+
+	@HideFromJS
+	default void kjs$setRawPersistentData(@Nullable CompoundTag tag) {
+		throw new NoMixinException();
 	}
 }
