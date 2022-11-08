@@ -18,7 +18,7 @@ public interface EntityEvents {
 
 	private static Object transformEntityType(Object o) {
 		if (o == null || o instanceof EntityType) {
-			return null;
+			return o;
 		}
 
 		var id = ResourceLocation.tryParse(o.toString());
