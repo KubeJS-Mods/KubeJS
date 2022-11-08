@@ -17,9 +17,8 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * Example
- * <p>
- * <code>public static final EventHandler EVENT = EventHandler.of(ScriptType.SERVER, ItemRightClickEventJS.class).cancellable();</code>
+ * <h3>Example</h3>
+ * <p><code>public static final EventHandler CLIENT_RIGHT_CLICKED = ItemEvents.GROUP.client("clientRightClicked", () -> ItemClickedEventJS.class).extra(ItemEvents.SUPPORTS_ITEM);</code></p>
  */
 public final class EventHandler extends BaseFunction {
 	public final EventGroup group;
@@ -27,7 +26,7 @@ public final class EventHandler extends BaseFunction {
 	public final ScriptType scriptType;
 	public final Supplier<Class<? extends EventJS>> eventType;
 	private boolean cancelable;
-	private Extra extra;
+	public transient Extra extra;
 	private EventHandlerContainer[] eventContainers;
 	private Map<Object, EventHandlerContainer[]> extraEventContainers;
 
@@ -54,6 +53,7 @@ public final class EventHandler extends BaseFunction {
 		return cancelable;
 	}
 
+	@HideFromJS
 	public EventHandler extra(Extra extra) {
 		this.extra = extra;
 		return this;

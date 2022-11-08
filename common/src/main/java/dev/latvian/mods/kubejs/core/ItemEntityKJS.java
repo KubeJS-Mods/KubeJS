@@ -45,10 +45,10 @@ public interface ItemEntityKJS extends EntityKJS {
 	}
 
 	default int kjs$getTicksUntilDespawn() {
-		return ItemEntity.LIFETIME - kjs$self().age;
+		return kjs$getLifespan() - kjs$self().age;
 	}
 
 	default void kjs$setTicksUntilDespawn(int ticks) {
-		kjs$self().age = ItemEntity.LIFETIME - ticks;
+		kjs$self().age = kjs$getLifespan() - ticks;
 	}
 }
