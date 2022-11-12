@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.script;
 
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
 
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ public class ScriptPack {
 	public final ScriptPackInfo info;
 	public final List<ScriptFile> scripts;
 
-	public Context context;
 	public Scriptable scope;
 
 	public ScriptPack(ScriptManager m, ScriptPackInfo i) {

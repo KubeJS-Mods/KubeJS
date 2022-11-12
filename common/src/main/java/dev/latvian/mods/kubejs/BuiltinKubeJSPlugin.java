@@ -310,16 +310,16 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	public void registerBindings(BindingsEvent event) {
 		event.add("global", GLOBAL);
 		event.add("Platform", PlatformWrapper.class);
-		event.add("console", event.type.console);
+		event.add("console", event.getType().console);
 
 		for (var group : EventGroup.getGroups().values()) {
-			event.add(group.name, new EventGroupWrapper(event.type, group));
+			event.add(group.name, new EventGroupWrapper(event.getType(), group));
 		}
 
 		event.add("JavaMath", Math.class);
 		event.add("ResourceLocation", ResourceLocation.class);
 
-		if (event.type == ScriptType.SERVER) {
+		if (event.getType().isServer()) {
 			event.add("settings", new LegacyCodeHandler("settings"));
 		}
 
@@ -327,7 +327,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("java", new LegacyCodeHandler("java()"));
 
 		event.add("Utils", UtilsWrapper.class);
-		event.add("Java", new JavaWrapper(event));
+		event.add("Java", new JavaWrapper(event.manager));
 		event.add("Component", ComponentWrapper.class);
 		event.add("Text", ComponentWrapper.class);
 		event.add("UUID", UUIDWrapper.class);

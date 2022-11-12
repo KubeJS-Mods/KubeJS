@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.mod.util.color.Color;
+import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
@@ -33,7 +34,8 @@ public interface ComponentKJS extends Component, Iterable<Component>, JsonSerial
 	}
 
 	@Override
-	default JsonElement toJson() {
+	@RemapForJS("toJson")
+	default JsonElement toJsonJS() {
 		return Component.Serializer.toJsonTree(kjs$self());
 	}
 

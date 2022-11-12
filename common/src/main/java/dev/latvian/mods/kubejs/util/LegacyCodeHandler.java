@@ -23,49 +23,49 @@ public class LegacyCodeHandler extends BaseFunction {
 		this.code = code;
 	}
 
-	public LegacyError makeError() {
+	public LegacyError makeError(Context cx) {
 		int[] linep = {0};
-		Context.getSourcePositionFromStack(linep);
+		Context.getSourcePositionFromStack(cx, linep);
 		return new LegacyError("Line " + linep[0] + ": '" + code + "' is no longer supported! Read more on wiki: https://kubejs.com/kjs6");
 	}
 
 	@Override
 	public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-		throw makeError();
+		throw makeError(cx);
 	}
 
 	@Override
 	public Scriptable construct(Context cx, Scriptable scope, Object[] args) {
-		throw makeError();
+		throw makeError(cx);
 	}
 
 	@Override
-	public void put(String name, Scriptable start, Object value) {
-		throw makeError();
+	public void put(Context cx, String name, Scriptable start, Object value) {
+		throw makeError(cx);
 	}
 
 	@Override
-	public void put(int index, Scriptable start, Object value) {
-		throw makeError();
+	public void put(Context cx, int index, Scriptable start, Object value) {
+		throw makeError(cx);
 	}
 
 	@Override
-	public void put(Symbol key, Scriptable start, Object value) {
-		throw makeError();
+	public void put(Context cx, Symbol key, Scriptable start, Object value) {
+		throw makeError(cx);
 	}
 
 	@Override
-	public Object get(String name, Scriptable start) {
-		throw makeError();
+	public Object get(Context cx, String name, Scriptable start) {
+		throw makeError(cx);
 	}
 
 	@Override
-	public Object get(int index, Scriptable start) {
-		throw makeError();
+	public Object get(Context cx, int index, Scriptable start) {
+		throw makeError(cx);
 	}
 
 	@Override
-	public Object get(Symbol key, Scriptable start) {
-		throw makeError();
+	public Object get(Context cx, Symbol key, Scriptable start) {
+		throw makeError(cx);
 	}
 }

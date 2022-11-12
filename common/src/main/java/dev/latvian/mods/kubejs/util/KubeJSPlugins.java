@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -67,7 +68,10 @@ public class KubeJSPlugins {
 
 	public static ClassFilter createClassFilter(ScriptType type) {
 		var filter = new ClassFilter();
-		forEachPlugin(plugin -> plugin.registerClasses(type, filter));
+
+		for (var plugin : LIST) {
+			plugin.registerClasses(type, filter);
+		}
 
 		for (var s : GLOBAL_CLASS_FILTER) {
 			if (s.length() >= 2) {
@@ -84,5 +88,9 @@ public class KubeJSPlugins {
 
 	public static void forEachPlugin(Consumer<KubeJSPlugin> callback) {
 		LIST.forEach(callback);
+	}
+
+	public static List<KubeJSPlugin> getAll() {
+		return Collections.unmodifiableList(LIST);
 	}
 }

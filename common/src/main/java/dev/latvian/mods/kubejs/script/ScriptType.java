@@ -44,7 +44,7 @@ public enum ScriptType {
 	}
 
 	public static ScriptType getCurrent(ScriptType def) {
-		Context cx = Context.getCurrentContext();
+		Context cx = ScriptManager.getCurrentContext();
 
 		if (cx != null && cx.sharedContextData.getExtraProperty("Type") instanceof ScriptType t) {
 			return t;
@@ -96,6 +96,10 @@ public enum ScriptType {
 		return this == SERVER;
 	}
 
+	public boolean isStartup() {
+		return this == STARTUP;
+	}
+
 	@HideFromJS
 	public void unload() {
 		errors.clear();
@@ -111,15 +115,15 @@ public enum ScriptType {
 
 	public Component errorsComponent(String command) {
 		return Component.literal("KubeJS errors found [" + errors.size() + "]! Run '" + command + "' for more info")
-				.kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
-				.kjs$hover(Component.literal("Click to show"))
-				.withStyle(ChatFormatting.DARK_RED);
+					   .kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
+					   .kjs$hover(Component.literal("Click to show"))
+					   .withStyle(ChatFormatting.DARK_RED);
 	}
 
 	public Component warningsComponent(String command) {
 		return Component.literal("KubeJS warnings found [" + warnings.size() + "]! Run '" + command + "' for more info")
-				.kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
-				.kjs$hover(Component.literal("Click to show"))
-				.withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500)));
+					   .kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
+					   .kjs$hover(Component.literal("Click to show"))
+					   .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500)));
 	}
 }

@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
-import dev.latvian.mods.rhino.SharedContextData;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
@@ -92,7 +91,7 @@ public final class EventHandler extends BaseFunction {
 			throw new IllegalStateException("Event handler '" + this + "' can only be registered during script loading!");
 		}
 
-		if (type != scriptType && type != ScriptType.STARTUP) {
+		if (type != scriptType && !type.isStartup()) {
 			var types = EnumSet.of(scriptType, ScriptType.STARTUP);
 			throw new UnsupportedOperationException("Tried to register event handler '" + this + "' for invalid script type " + type + "! Valid script types: " + types);
 		}
@@ -183,7 +182,7 @@ public final class EventHandler extends BaseFunction {
 		if (extraContainers != null) {
 			b = postToHandlers(scriptType, extraContainers, event);
 
-			if (!b && scriptType != ScriptType.STARTUP) {
+			if (!b && !scriptType.isStartup()) {
 				b = postToHandlers(ScriptType.STARTUP, extraContainers, event);
 			}
 		}
@@ -191,7 +190,7 @@ public final class EventHandler extends BaseFunction {
 		if (!b && eventContainers != null && !onlyPostToExtra) {
 			b = postToHandlers(scriptType, eventContainers, event);
 
-			if (!b && scriptType != ScriptType.STARTUP) {
+			if (!b && !scriptType.isStartup()) {
 				b = postToHandlers(ScriptType.STARTUP, eventContainers, event);
 			}
 		}
@@ -217,8 +216,7 @@ public final class EventHandler extends BaseFunction {
 
 	@Override
 	public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-		SharedContextData contextData = SharedContextData.get(cx, scope);
-		ScriptType type = (ScriptType) contextData.getExtraProperty("Type");
+		ScriptType type = (ScriptType) cx.sharedContextData.getExtraProperty("Type");
 
 		if (type == null) {
 			throw new IllegalStateException("Unknown script type!");
@@ -226,9 +224,9 @@ public final class EventHandler extends BaseFunction {
 
 		try {
 			if (args.length == 1) {
-				listen(type, null, (IEventHandler) Context.jsToJava(contextData, args[0], IEventHandler.class));
+				listen(type, null, (IEventHandler) Context.jsToJava(cx, args[0], IEventHandler.class));
 			} else if (args.length == 2) {
-				var handler = (IEventHandler) Context.jsToJava(contextData, args[1], IEventHandler.class);
+				var handler = (IEventHandler) Context.jsToJava(cx, args[1], IEventHandler.class);
 
 				for (Object o : ListJS.orSelf(args[0])) {
 					listen(type, o, handler);

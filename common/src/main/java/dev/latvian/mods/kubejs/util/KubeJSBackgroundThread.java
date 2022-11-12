@@ -23,12 +23,12 @@ public class KubeJSBackgroundThread extends Thread {
 			}
 
 			for (ScriptType type : types) {
-				type.console.flush();
+				type.console.flush(false);
 			}
 		}
 
 		for (ScriptType type : types) {
-			type.console.flush();
+			type.console.flush(false);
 			type.executor.shutdown();
 
 			boolean b;

@@ -7,6 +7,6 @@ import dev.latvian.mods.kubejs.net.NetworkEventJS;
 
 public interface NetworkEvents {
 	EventGroup GROUP = EventGroup.of("NetworkEvents");
-	EventHandler FROM_SERVER = GROUP.server("fromServer", () -> NetworkEventJS.class).extra(Extra.REQUIRES_STRING).cancelable();
-	EventHandler FROM_CLIENT = GROUP.client("fromClient", () -> NetworkEventJS.class).extra(Extra.REQUIRES_STRING).cancelable();
+	EventHandler FROM_SERVER = GROUP.client("fromServer", () -> NetworkEventJS.class).extra(Extra.REQUIRES_STRING).cancelable();
+	EventHandler FROM_CLIENT = GROUP.server("fromClient", () -> NetworkEventJS.class).extra(Extra.REQUIRES_STRING).cancelable();
 }

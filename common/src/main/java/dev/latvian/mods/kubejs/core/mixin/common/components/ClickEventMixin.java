@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.core.mixin.common.components;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
+import dev.latvian.mods.rhino.util.RemapForJS;
 import net.minecraft.Util;
 import net.minecraft.network.chat.ClickEvent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,7 +18,8 @@ public abstract class ClickEventMixin implements JsonSerializable {
 	public abstract String getValue();
 
 	@Override
-	public JsonElement toJson() {
+	@RemapForJS("toJson")
+	public JsonElement toJsonJS() {
 		return Util.make(new JsonObject(), json -> {
 			json.addProperty("action", getAction().getName());
 			json.addProperty("value", getValue());
