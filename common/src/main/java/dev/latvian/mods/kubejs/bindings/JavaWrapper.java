@@ -1,15 +1,15 @@
 package dev.latvian.mods.kubejs.bindings;
 
-import dev.latvian.mods.kubejs.script.BindingsEvent;
+import dev.latvian.mods.kubejs.script.ScriptManager;
 
 public class JavaWrapper {
-	private final BindingsEvent event;
+	private final ScriptManager manager;
 
-	public JavaWrapper(BindingsEvent event) {
-		this.event = event;
+	public JavaWrapper(ScriptManager manager) {
+		this.manager = manager;
 	}
 
 	public Object loadClass(String className) {
-		return event.manager.loadJavaClass(event, className, true);
+		return manager.loadJavaClass(className, true);
 	}
 }

@@ -21,6 +21,7 @@ import dev.latvian.mods.kubejs.script.ScriptPack;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.mods.kubejs.server.KubeJSServerEventHandler;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
@@ -34,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Locale;
 
 /**
@@ -192,5 +194,19 @@ public class KubeJS {
 		ScriptsLoadedEvent.EVENT.invoker().run();
 		StartupEvents.POST_INIT.post(new StartupEventJS());
 		UtilsJS.postModificationEvents();
+
+		if (!ScriptType.STARTUP.errors.isEmpty()) {
+			var list = new ArrayList<String>();
+			list.add("Startup script errors:");
+
+			for (int i = 0; i < ScriptType.STARTUP.errors.size(); i++) {
+				list.add((i + 1) + ") " + ScriptType.STARTUP.errors.get(i));
+			}
+
+			LOGGER.error(String.join("\n", list));
+
+			ConsoleJS.STARTUP.flush(true);
+			throw new RuntimeException("There were KubeJS startup script syntax errors! See logs/kubejs/startup.txt for more info");
+		}
 	}
 }

@@ -219,7 +219,8 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, Ingredie
 	}
 
 	@Override
-	default CompoundTag toNBT() {
+	@RemapForJS("toNBT")
+	default CompoundTag toNBTJS() {
 		return kjs$self().save(new CompoundTag());
 	}
 

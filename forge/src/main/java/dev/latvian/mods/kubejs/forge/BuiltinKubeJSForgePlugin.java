@@ -36,7 +36,7 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 	public void registerBindings(BindingsEvent event) {
 		super.registerBindings(event);
 
-		if (event.type == ScriptType.STARTUP) {
+		if (event.getType().isStartup()) {
 			event.add("ForgeEvents", ForgeEventWrapper.class);
 			event.add("onForgeEvent", new LegacyCodeHandler("onForgeEvent()"));
 		}

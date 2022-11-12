@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.util;
 
 import dev.latvian.mods.kubejs.CommonProperties;
+import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.RhinoException;
@@ -33,7 +34,7 @@ public class ConsoleJS {
 	public static ConsoleJS CLIENT;
 
 	public static ConsoleJS getCurrent(ConsoleJS def) {
-		Context cx = Context.getCurrentContext();
+		Context cx = ScriptManager.getCurrentContext();
 
 		if (cx != null && cx.sharedContextData.getExtraProperty("Console") instanceof ConsoleJS c) {
 			return c;
@@ -166,7 +167,7 @@ public class ConsoleJS {
 		}
 
 		if (lineP[0] == 0 || lineS == null) {
-			lineS = Context.getSourcePositionFromStack(lineP);
+			lineS = Context.getSourcePositionFromStack(scriptType.manager.get().context, lineP);
 		}
 
 		if (lineS != null && lineS.startsWith(nameStrip)) {
@@ -217,6 +218,12 @@ public class ConsoleJS {
 
 		var calendar = Calendar.getInstance();
 		var sb = new StringBuilder();
+
+		if (type.equals("ERR")) {
+			sb.append('!');
+			sb.append(' ');
+		}
+
 		sb.append('[');
 
 		if (calendar.get(Calendar.HOUR_OF_DAY) < 10) {
@@ -248,7 +255,7 @@ public class ConsoleJS {
 		writeQueue.add(sb.toString());
 	}
 
-	public synchronized void flush() {
+	public synchronized void flush(boolean sync) {
 		if (writeQueue.isEmpty()) {
 			return;
 		}
@@ -256,13 +263,21 @@ public class ConsoleJS {
 		List<String> lines = new ArrayList<>(writeQueue);
 		writeQueue.clear();
 
-		scriptType.executor.execute(() -> {
+		if (sync) {
 			try {
 				Files.write(logFile, lines, StandardOpenOption.APPEND);
 			} catch (Exception ex) {
 				logger.error("Failed to write to the log file: " + ex);
 			}
-		});
+		} else {
+			scriptType.executor.execute(() -> {
+				try {
+					Files.write(logFile, lines, StandardOpenOption.APPEND);
+				} catch (Exception ex) {
+					logger.error("Failed to write to the log file: " + ex);
+				}
+			});
+		}
 	}
 
 	public void info(Object message) {
@@ -311,11 +326,11 @@ public class ConsoleJS {
 	}
 
 	public void error(Object message) {
-		log(this::error0, "ERR  ", message);
+		log(this::error0, "ERR", message);
 	}
 
 	private void error0(String s) {
-		logger.error(s);
+		logger.error("! " + s);
 		scriptType.errors.add(s);
 	}
 
@@ -380,7 +395,7 @@ public class ConsoleJS {
 
 	public int getScriptLine() {
 		var linep = new int[]{0};
-		Context.getSourcePositionFromStack(linep);
+		Context.getSourcePositionFromStack(scriptType.manager.get().context, linep);
 		return linep[0];
 	}
 
@@ -546,9 +561,9 @@ public class ConsoleJS {
 
 			var varFunc = (VarFunc) o;
 			return Objects.equals(name, varFunc.name) &&
-					Objects.equals(type, varFunc.type) &&
-					Objects.equals(flags, varFunc.flags) &&
-					Objects.equals(params, varFunc.params);
+						   Objects.equals(type, varFunc.type) &&
+						   Objects.equals(flags, varFunc.flags) &&
+						   Objects.equals(params, varFunc.params);
 		}
 
 		@Override

@@ -19,7 +19,7 @@ public class ScriptFile implements Comparable<ScriptFile> {
 	public void load() throws Throwable {
 		try (var stream = source.createStream(info)) {
 			var script = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-			pack.context.evaluateString(pack.scope, script, info.location, 1, null);
+			pack.manager.context.evaluateString(pack.scope, script, info.location, 1, null);
 		}
 	}
 

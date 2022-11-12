@@ -8,7 +8,8 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.ClassShutter;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaClass;
-import dev.latvian.mods.rhino.SharedContextData;
+import dev.latvian.mods.rhino.NativeObject;
+import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.mod.util.RemappingHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -27,12 +28,21 @@ import java.util.Optional;
  * @author LatvianModder
  */
 public class ScriptManager implements ClassShutter {
+	private static final ThreadLocal<Context> CURRENT_CONTEXT = new ThreadLocal<>();
+
+	@Nullable
+	public static Context getCurrentContext() {
+		return CURRENT_CONTEXT.get();
+	}
+
 	public final ScriptType scriptType;
 	public final Path directory;
 	private final String exampleScript;
 	public final Map<String, ScriptPack> packs;
 	private final ClassFilter classFilter;
 	public boolean firstLoad;
+	public Context context;
+	public Scriptable topLevelScope;
 	private Map<String, Optional<NativeJavaClass>> javaClassCache;
 	public boolean canListenEvents;
 
@@ -138,38 +148,44 @@ public class ScriptManager implements ClassShutter {
 	}
 
 	public void load() {
-		var context = Context.enterWithNewFactory();
+		var remapper = RemappingHelper.getMinecraftRemapper();
+
 		var startAll = System.currentTimeMillis();
+		context = Context.enter();
+		topLevelScope = context.initStandardObjects();
+
+		CURRENT_CONTEXT.set(context);
 
 		canListenEvents = true;
 		var i = 0;
 		var t = 0;
 
+		context.sharedContextData.setExtraProperty("Type", scriptType);
+		context.sharedContextData.setExtraProperty("Console", scriptType.console);
+		context.sharedContextData.setClassShutter(this);
+		context.sharedContextData.setRemapper(remapper);
+		var typeWrappers = context.sharedContextData.getTypeWrappers();
+		// typeWrappers.removeAll();
+		var bindingsEvent = new BindingsEvent(this, topLevelScope);
+		var customJavaToJsWrappersEvent = new CustomJavaToJsWrappersEvent(this, context.sharedContextData);
+
+		for (var plugin : KubeJSPlugins.getAll()) {
+			plugin.registerTypeWrappers(scriptType, typeWrappers);
+			plugin.registerBindings(bindingsEvent);
+			plugin.registerCustomJavaToJsWrappers(customJavaToJsWrappersEvent);
+		}
+
+		for (var registryTypeWrapperFactory : RegistryTypeWrapperFactory.getAll()) {
+			try {
+				typeWrappers.register(registryTypeWrapperFactory.type, UtilsJS.cast(registryTypeWrapperFactory));
+			} catch (IllegalArgumentException ignored) {
+			}
+		}
+
 		for (var pack : packs.values()) {
 			try {
-				pack.context = context;
-				pack.scope = context.initStandardObjects();
-				SharedContextData contextData = SharedContextData.get(pack.scope);
-				contextData.setExtraProperty("Type", scriptType);
-				contextData.setExtraProperty("Console", scriptType.console);
-				contextData.setClassShutter(this);
-				contextData.setRemapper(RemappingHelper.getMinecraftRemapper());
-				var typeWrappers = contextData.getTypeWrappers();
-				// typeWrappers.removeAll();
-				KubeJSPlugins.forEachPlugin(plugin -> plugin.registerTypeWrappers(scriptType, typeWrappers));
-
-				for (var registryTypeWrapperFactory : RegistryTypeWrapperFactory.getAll()) {
-					try {
-						typeWrappers.register(registryTypeWrapperFactory.type, UtilsJS.cast(registryTypeWrapperFactory));
-					} catch (IllegalArgumentException ignored) {
-					}
-				}
-
-				var bindingsEvent = new BindingsEvent(this, contextData);
-				KubeJSPlugins.forEachPlugin(plugin -> plugin.registerBindings(bindingsEvent));
-
-				var customJavaToJsWrappersEvent = new CustomJavaToJsWrappersEvent(this, contextData);
-				KubeJSPlugins.forEachPlugin(plugin -> plugin.registerCustomJavaToJsWrappers(customJavaToJsWrappersEvent));
+				pack.scope = new NativeObject(context);
+				pack.scope.setParentScope(topLevelScope);
 
 				for (var file : pack.scripts) {
 					t++;
@@ -189,18 +205,13 @@ public class ScriptManager implements ClassShutter {
 		}
 
 		scriptType.console.info("Loaded " + i + "/" + t + " KubeJS " + scriptType.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s");
-		Context.exit();
 		firstLoad = false;
 		canListenEvents = false;
-
-		if (i != t && scriptType == ScriptType.STARTUP) {
-			throw new RuntimeException("There were startup script syntax errors! See logs/kubejs/startup.txt for more info");
-		}
 	}
 
-	public NativeJavaClass loadJavaClass(BindingsEvent event, String name0, boolean warn) {
+	public NativeJavaClass loadJavaClass(String name0, boolean warn) {
 		if (name0 == null || name0.equals("null") || name0.isEmpty()) {
-			throw Context.reportRuntimeError("Class name can't be empty!");
+			throw Context.reportRuntimeError("Class name can't be empty!", context);
 		}
 
 		String name = RemappingHelper.getMinecraftRemapper().getUnmappedClass(name0);
@@ -220,16 +231,16 @@ public class ScriptManager implements ClassShutter {
 
 			try {
 				if (!isClassAllowed(name)) {
-					throw Context.reportRuntimeError("Failed to load Java class '%s': Class is not allowed by class filter!".formatted(name));
+					throw Context.reportRuntimeError("Failed to load Java class '%s': Class is not allowed by class filter!".formatted(name), context);
 				}
 
 				var c = Class.forName(name);
-				var njc = new NativeJavaClass(event.contextData.topLevelScope, c);
+				var njc = new NativeJavaClass(context, topLevelScope, c);
 				javaClassCache.put(name, Optional.of(njc));
-				event.manager.scriptType.console.info("Loaded Java class '%s'".formatted(name0));
+				scriptType.console.info("Loaded Java class '%s'".formatted(name0));
 				return njc;
 			} catch (ClassNotFoundException cnf) {
-				throw Context.reportRuntimeError("Failed to load Java class '%s': Class could not be found!\n%s".formatted(name, cnf.getMessage()));
+				throw Context.reportRuntimeError("Failed to load Java class '%s': Class could not be found!\n%s".formatted(name, cnf.getMessage()), context);
 			}
 		}
 
@@ -237,7 +248,7 @@ public class ScriptManager implements ClassShutter {
 			return ch.get();
 		}
 
-		throw Context.reportRuntimeError("Failed to load Java class '%s'!".formatted(name));
+		throw Context.reportRuntimeError("Failed to load Java class '%s'!".formatted(name), context);
 	}
 
 	@Override
