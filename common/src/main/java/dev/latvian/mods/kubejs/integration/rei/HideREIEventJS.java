@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.integration.rei;
 
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import me.shedaniel.rei.api.client.entry.filtering.base.BasicFilteringRule;
 import me.shedaniel.rei.api.client.registry.entry.EntryRegistry;
@@ -22,6 +24,7 @@ public class HideREIEventJS<T> extends EventJS {
 	private final EntryType<T> type;
 	private final EntryWrapper entryWrapper;
 	private final Collection<EntryStack<T>> hidden = new HashSet<>();
+	private final Collection<EntryStack<T>> hiddenNoFilter = new HashSet<>();
 	private boolean hideAll = false;
 
 	public HideREIEventJS(EntryRegistry registry, BasicFilteringRule<?> rule, EntryType<T> type, EntryWrapper entryWrapper) {
@@ -51,6 +54,14 @@ public class HideREIEventJS<T> extends EventJS {
 		}
 	}
 
+	public void hideNoFilter(Object o) {
+		if (!hideAll) {
+			for (var stack : entryWrapper.wrap(o)) {
+				hiddenNoFilter.add(stack.cast());
+			}
+		}
+	}
+
 	public void hideAll() {
 		hideAll = true;
 	}
@@ -63,5 +74,7 @@ public class HideREIEventJS<T> extends EventJS {
 		if (!hidden.isEmpty()) {
 			rule.hide(hidden);
 		}
+
+		hiddenNoFilter.forEach(registry::removeEntry);
 	}
 }
