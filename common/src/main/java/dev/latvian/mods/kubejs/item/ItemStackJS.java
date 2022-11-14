@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
@@ -11,6 +10,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
@@ -135,7 +135,7 @@ public interface ItemStackJS {
 
 		if (map != null) {
 			if (map.containsKey("item")) {
-				var id = UtilsJS.getMCID(map.get("item").toString());
+				var id = UtilsJS.getMCID(null, map.get("item").toString());
 				var item = KubeJSRegistries.items().get(id);
 
 				if (item == Items.AIR) {
@@ -211,7 +211,7 @@ public interface ItemStackJS {
 		return new ItemStack(item);
 	}
 
-	static Item getRawItem(@Nullable Object o) {
+	static Item getRawItem(Context cx, @Nullable Object o) {
 		if (o == null) {
 			return Items.AIR;
 		} else if (o instanceof Item item) {
@@ -221,7 +221,7 @@ public interface ItemStackJS {
 			if (s.isEmpty()) {
 				return Items.AIR;
 			} else if (s.charAt(0) != '#') {
-				return KubeJSRegistries.items().get(UtilsJS.getMCID(s));
+				return KubeJSRegistries.items().get(UtilsJS.getMCID(cx, s));
 			}
 		}
 

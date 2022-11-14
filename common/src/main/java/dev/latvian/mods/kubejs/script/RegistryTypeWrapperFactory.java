@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -70,19 +71,19 @@ public class RegistryTypeWrapperFactory<T> implements TypeWrapperFactory<T> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public T wrap(Object o) {
+	public T wrap(Context cx, Object o) {
 		if (o == null) {
 			return null;
 		} else if (type.isAssignableFrom(o.getClass())) {
 			return (T) o;
 		}
 
-		var id = UtilsJS.getMCID(o);
+		var id = UtilsJS.getMCID(cx, o);
 		var value = registry.get(id);
 
 		if (value == null) {
 			var npe = new NullPointerException("No such element with id %s in registry %s!".formatted(id, name));
-			ConsoleJS.getCurrent(ConsoleJS.STARTUP).error("Error while wrapping registry element type!", npe);
+			ConsoleJS.getCurrent(cx).error("Error while wrapping registry element type!", npe);
 			throw npe;
 		}
 

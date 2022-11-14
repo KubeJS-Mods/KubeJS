@@ -370,67 +370,67 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	@Override
 	public void registerTypeWrappers(ScriptType type, TypeWrappers typeWrappers) {
 		// Java / Minecraft //
-		typeWrappers.register(String.class, String::valueOf);
-		typeWrappers.register(CharSequence.class, String::valueOf);
-		typeWrappers.register(UUID.class, UUIDWrapper::fromString);
-		typeWrappers.register(Pattern.class, UtilsJS::parseRegex);
-		typeWrappers.register(JsonObject.class, MapJS::json);
-		typeWrappers.register(JsonArray.class, ListJS::json);
-		typeWrappers.register(JsonElement.class, JsonIO::of);
-		typeWrappers.register(JsonPrimitive.class, JsonIO::primitiveOf);
-		typeWrappers.register(Path.class, UtilsJS::getPath);
-		typeWrappers.register(File.class, UtilsJS::getFileFromPath);
+		typeWrappers.registerSimple(String.class, String::valueOf);
+		typeWrappers.registerSimple(CharSequence.class, String::valueOf);
+		typeWrappers.registerSimple(UUID.class, UUIDWrapper::fromString);
+		typeWrappers.registerSimple(Pattern.class, UtilsJS::parseRegex);
+		typeWrappers.registerSimple(JsonObject.class, MapJS::json);
+		typeWrappers.registerSimple(JsonArray.class, ListJS::json);
+		typeWrappers.registerSimple(JsonElement.class, JsonIO::of);
+		typeWrappers.registerSimple(JsonPrimitive.class, JsonIO::primitiveOf);
+		typeWrappers.registerSimple(Path.class, UtilsJS::getPath);
+		typeWrappers.registerSimple(File.class, UtilsJS::getFileFromPath);
 		typeWrappers.register(Unit.class, Painter.INSTANCE::unitOf);
 
 		typeWrappers.register(ResourceLocation.class, UtilsJS::getMCID);
-		typeWrappers.register(CompoundTag.class, NBTUtils::isTagCompound, NBTUtils::toTagCompound);
-		typeWrappers.register(CollectionTag.class, NBTUtils::isTagCollection, NBTUtils::toTagCollection);
-		typeWrappers.register(ListTag.class, NBTUtils::isTagCollection, NBTUtils::toTagList);
-		typeWrappers.register(Tag.class, NBTUtils::toTag);
+		typeWrappers.registerSimple(CompoundTag.class, NBTUtils::isTagCompound, NBTUtils::toTagCompound);
+		typeWrappers.registerSimple(CollectionTag.class, NBTUtils::isTagCollection, NBTUtils::toTagCollection);
+		typeWrappers.registerSimple(ListTag.class, NBTUtils::isTagCollection, NBTUtils::toTagList);
+		typeWrappers.registerSimple(Tag.class, NBTUtils::toTag);
 
-		typeWrappers.register(BlockPos.class, UtilsJS::blockPosOf);
-		typeWrappers.register(Vec3.class, UtilsJS::vec3Of);
+		typeWrappers.registerSimple(BlockPos.class, UtilsJS::blockPosOf);
+		typeWrappers.registerSimple(Vec3.class, UtilsJS::vec3Of);
 
 		typeWrappers.register(Item.class, ItemStackJS::getRawItem);
-		typeWrappers.register(MobCategory.class, o -> o == null ? null : UtilsJS.mobCategoryByName(o.toString()));
+		typeWrappers.registerSimple(MobCategory.class, o -> o == null ? null : UtilsJS.mobCategoryByName(o.toString()));
 
-		typeWrappers.register(AABB.class, AABBWrapper::wrap);
-		typeWrappers.register(IntProvider.class, UtilsJS::intProviderOf);
-		typeWrappers.register(NumberProvider.class, UtilsJS::numberProviderOf);
-		typeWrappers.register(LootContext.EntityTarget.class, o -> o == null ? null : LootContext.EntityTarget.getByName(o.toString().toLowerCase()));
-		typeWrappers.register(CopyNameFunction.NameSource.class, o -> o == null ? null : CopyNameFunction.NameSource.getByName(o.toString().toLowerCase()));
+		typeWrappers.registerSimple(AABB.class, AABBWrapper::wrap);
+		typeWrappers.registerSimple(IntProvider.class, UtilsJS::intProviderOf);
+		typeWrappers.registerSimple(NumberProvider.class, UtilsJS::numberProviderOf);
+		typeWrappers.registerSimple(LootContext.EntityTarget.class, o -> o == null ? null : LootContext.EntityTarget.getByName(o.toString().toLowerCase()));
+		typeWrappers.registerSimple(CopyNameFunction.NameSource.class, o -> o == null ? null : CopyNameFunction.NameSource.getByName(o.toString().toLowerCase()));
 
 		// KubeJS //
-		typeWrappers.register(Map.class, MapJS::of);
-		typeWrappers.register(List.class, ListJS::of);
-		typeWrappers.register(Iterable.class, ListJS::of);
-		typeWrappers.register(Collection.class, ListJS::of);
-		typeWrappers.register(Set.class, ListJS::ofSet);
-		typeWrappers.register(ItemStack.class, ItemStackJS::of);
-		typeWrappers.register(Ingredient.class, IngredientJS::of);
-		typeWrappers.register(IngredientStack.class, o -> IngredientJS.of(o).kjs$asStack());
-		typeWrappers.register(BlockStatePredicate.class, BlockStatePredicate::of);
-		typeWrappers.register(RuleTest.class, BlockStatePredicate::ruleTestOf);
+		typeWrappers.registerSimple(Map.class, MapJS::of);
+		typeWrappers.registerSimple(List.class, ListJS::of);
+		typeWrappers.registerSimple(Iterable.class, ListJS::of);
+		typeWrappers.registerSimple(Collection.class, ListJS::of);
+		typeWrappers.registerSimple(Set.class, ListJS::ofSet);
+		typeWrappers.registerSimple(ItemStack.class, ItemStackJS::of);
+		typeWrappers.registerSimple(Ingredient.class, IngredientJS::of);
+		typeWrappers.registerSimple(IngredientStack.class, o -> IngredientJS.of(o).kjs$asStack());
+		typeWrappers.registerSimple(BlockStatePredicate.class, BlockStatePredicate::of);
+		typeWrappers.registerSimple(RuleTest.class, BlockStatePredicate::ruleTestOf);
 		typeWrappers.register(BiomeFilter.class, BiomeFilter::of);
 		typeWrappers.register(MobFilter.class, MobFilter::of);
-		typeWrappers.register(FluidStackJS.class, FluidStackJS::of);
+		typeWrappers.registerSimple(FluidStackJS.class, FluidStackJS::of);
 		typeWrappers.register(RecipeFilter.class, RecipeFilter::of);
-		typeWrappers.register(MaterialJS.class, MaterialListJS.INSTANCE::of);
-		typeWrappers.register(IngredientActionFilter.class, IngredientActionFilter::filterOf);
-		typeWrappers.register(Tier.class, o -> ItemBuilder.TOOL_TIERS.getOrDefault(String.valueOf(o), Tiers.IRON));
-		typeWrappers.register(ArmorMaterial.class, ItemBuilder::ofArmorMaterial);
-		typeWrappers.register(PlayerSelector.class, PlayerSelector::of);
-		typeWrappers.register(DamageSource.class, DamageSourceWrapper::of);
-		typeWrappers.register(EntitySelector.class, UtilsJS::entitySelector);
-		typeWrappers.register(IngredientMatch.class, IngredientMatch::of);
-		typeWrappers.register(Stat.class, PlayerStatsJS::statOf);
+		typeWrappers.registerSimple(MaterialJS.class, MaterialListJS.INSTANCE::of);
+		typeWrappers.registerSimple(IngredientActionFilter.class, IngredientActionFilter::filterOf);
+		typeWrappers.registerSimple(Tier.class, o -> ItemBuilder.TOOL_TIERS.getOrDefault(String.valueOf(o), Tiers.IRON));
+		typeWrappers.registerSimple(ArmorMaterial.class, ItemBuilder::ofArmorMaterial);
+		typeWrappers.registerSimple(PlayerSelector.class, PlayerSelector::of);
+		typeWrappers.registerSimple(DamageSource.class, DamageSourceWrapper::of);
+		typeWrappers.registerSimple(EntitySelector.class, UtilsJS::entitySelector);
+		typeWrappers.registerSimple(IngredientMatch.class, IngredientMatch::of);
+		typeWrappers.registerSimple(Stat.class, PlayerStatsJS::statOf);
 
 		// components //
-		typeWrappers.register(Component.class, ComponentWrapper::of);
-		typeWrappers.register(MutableComponent.class, ComponentWrapper::ofMutable);
-		typeWrappers.register(Color.class, ColorWrapper::of);
-		typeWrappers.register(TextColor.class, o -> ColorWrapper.of(o).createTextColorJS());
-		typeWrappers.register(ClickEvent.class, ComponentWrapper::clickEventOf);
+		typeWrappers.registerSimple(Component.class, ComponentWrapper::of);
+		typeWrappers.registerSimple(MutableComponent.class, ComponentWrapper::ofMutable);
+		typeWrappers.registerSimple(Color.class, ColorWrapper::of);
+		typeWrappers.registerSimple(TextColor.class, o -> ColorWrapper.of(o).createTextColorJS());
+		typeWrappers.registerSimple(ClickEvent.class, ComponentWrapper::clickEventOf);
 
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
 	}

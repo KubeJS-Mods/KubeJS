@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.Registry;
@@ -54,7 +55,7 @@ public final class RegistryObjectBuilderTypes<T> {
 				throw new IllegalArgumentException("Unknown type '" + type + "' for object '" + id + "'!");
 			}
 
-			var b = t.factory.createBuilder(UtilsJS.getMCID(KubeJS.appendModId(id)));
+			var b = t.factory.createBuilder(UtilsJS.getMCID(ScriptType.STARTUP.manager.get().context, KubeJS.appendModId(id)));
 
 			if (b == null) {
 				throw new IllegalArgumentException("Unknown type '" + type + "' for object '" + id + "'!");
@@ -72,7 +73,7 @@ public final class RegistryObjectBuilderTypes<T> {
 				throw new IllegalArgumentException("Registry for type '" + registry.registryKey.location() + "' doesn't have any builders registered!");
 			}
 
-			var b = t.factory.createBuilder(UtilsJS.getMCID(KubeJS.appendModId(id)));
+			var b = t.factory.createBuilder(UtilsJS.getMCID(ScriptType.STARTUP.manager.get().context, KubeJS.appendModId(id)));
 
 			if (b == null) {
 				throw new IllegalArgumentException("Unknown type '" + t.type + "' for object '" + id + "'!");
@@ -87,7 +88,7 @@ public final class RegistryObjectBuilderTypes<T> {
 			if (object == null) {
 				throw new IllegalArgumentException("Tried to register a null object with id: " + id);
 			}
-			var rl = new ResourceLocation(KubeJS.appendModId(id));
+			var rl = UtilsJS.getMCID(ScriptType.STARTUP.manager.get().context, KubeJS.appendModId(id));
 
 			return (BuilderBase.CustomBuilderObject<T>) fromBuilder(new BuilderBase.CustomBuilderObject<>(rl, object, registry));
 		}

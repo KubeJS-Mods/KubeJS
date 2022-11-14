@@ -43,14 +43,8 @@ public enum ScriptType {
 		return level.isClientSide() ? CLIENT : SERVER;
 	}
 
-	public static ScriptType getCurrent(ScriptType def) {
-		Context cx = ScriptManager.getCurrentContext();
-
-		if (cx != null && cx.sharedContextData.getExtraProperty("Type") instanceof ScriptType t) {
-			return t;
-		}
-
-		return def;
+	public static ScriptType getCurrent(Context cx) {
+		return (ScriptType) cx.getProperty("Type");
 	}
 
 	public final String name;
@@ -115,15 +109,15 @@ public enum ScriptType {
 
 	public Component errorsComponent(String command) {
 		return Component.literal("KubeJS errors found [" + errors.size() + "]! Run '" + command + "' for more info")
-					   .kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
-					   .kjs$hover(Component.literal("Click to show"))
-					   .withStyle(ChatFormatting.DARK_RED);
+				.kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
+				.kjs$hover(Component.literal("Click to show"))
+				.withStyle(ChatFormatting.DARK_RED);
 	}
 
 	public Component warningsComponent(String command) {
 		return Component.literal("KubeJS warnings found [" + warnings.size() + "]! Run '" + command + "' for more info")
-					   .kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
-					   .kjs$hover(Component.literal("Click to show"))
-					   .withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500)));
+				.kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
+				.kjs$hover(Component.literal("Click to show"))
+				.withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500)));
 	}
 }

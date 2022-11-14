@@ -48,7 +48,7 @@ public class PainterObjectStorage {
 					if (tag.contains(k, Tag.TAG_ANY_NUMERIC)) {
 						painter.setVariable(k, FixedNumberUnit.of(tag.getFloat(k)));
 					} else {
-						painter.setVariable(k, painter.unitOf(tag.get(k)));
+						painter.setVariable(k, painter.unitOf(ConsoleJS.CLIENT, tag.get(k)));
 					}
 				}
 			} else {

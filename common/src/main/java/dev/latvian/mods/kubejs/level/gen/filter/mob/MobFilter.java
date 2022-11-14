@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
@@ -21,7 +22,7 @@ public interface MobFilter extends BiPredicate<MobCategory, MobSpawnSettings.Spa
 	@Override
 	boolean test(MobCategory cat, MobSpawnSettings.SpawnerData data);
 
-	static MobFilter of(@Nullable Object o) {
+	static MobFilter of(Context cx, @Nullable Object o) {
 		if (o == null || o == ALWAYS_TRUE) {
 			return ALWAYS_TRUE;
 		} else if (o == ALWAYS_FALSE) {
@@ -29,9 +30,9 @@ public interface MobFilter extends BiPredicate<MobCategory, MobSpawnSettings.Spa
 		}
 
 		if (o instanceof String s) {
-			return idFilter(s);
+			return idFilter(cx, s);
 		} else if (o instanceof NativeRegExp || o instanceof Pattern) {
-			return idFilter(o.toString());
+			return idFilter(cx, o.toString());
 		}
 
 		var list = ListJS.orSelf(o);
@@ -41,7 +42,7 @@ public interface MobFilter extends BiPredicate<MobCategory, MobSpawnSettings.Spa
 			var filters = new ArrayList<MobFilter>();
 
 			for (var o1 : list) {
-				var filter = of(o1);
+				var filter = of(cx, o1);
 
 				if (filter == ALWAYS_TRUE) {
 					return ALWAYS_TRUE;
@@ -61,20 +62,20 @@ public interface MobFilter extends BiPredicate<MobCategory, MobSpawnSettings.Spa
 		var filters = new ArrayList<MobFilter>();
 
 		if (map.get("or") != null) {
-			filters.add(of(map.get("or")));
+			filters.add(of(cx, map.get("or")));
 		}
 
 		if (map.get("not") != null) {
-			filters.add(new NotFilter(of(map.get("not"))));
+			filters.add(new NotFilter(of(cx, map.get("not"))));
 		}
 
 		try {
 			if (map.get("id") != null) {
-				filters.add(idFilter(map.get("id").toString()));
+				filters.add(idFilter(cx, map.get("id").toString()));
 			}
 
 			if (map.get("type") != null) {
-				filters.add(idFilter(map.get("type").toString()));
+				filters.add(idFilter(cx, map.get("type").toString()));
 			}
 
 			if (map.get("category") != null) {
@@ -83,20 +84,20 @@ public interface MobFilter extends BiPredicate<MobCategory, MobSpawnSettings.Spa
 
 			// TODO: Add other mob filters
 		} catch (Exception ex) {
-			ConsoleJS.getCurrent(ConsoleJS.STARTUP).error("Error trying to create MobFilter: " + ex.getMessage());
+			ConsoleJS.getCurrent(cx).error("Error trying to create MobFilter: " + ex.getMessage());
 			return ALWAYS_FALSE;
 		}
 
 		return filters.isEmpty() ? ALWAYS_TRUE : filters.size() == 1 ? filters.get(0) : new AndFilter(filters);
 	}
 
-	static MobFilter idFilter(String s) {
+	static MobFilter idFilter(Context cx, String s) {
 		var pattern = UtilsJS.parseRegex(s);
 		if (pattern != null) {
 			return new RegexIDFilter(pattern);
 		}
 
-		return s.charAt(0) == '#' ? new CategoryFilter(UtilsJS.mobCategoryByName(s.substring(1))) : new IDFilter(UtilsJS.getMCID(s));
+		return s.charAt(0) == '#' ? new CategoryFilter(UtilsJS.mobCategoryByName(s.substring(1))) : new IDFilter(UtilsJS.getMCID(cx, s));
 	}
 
 }
