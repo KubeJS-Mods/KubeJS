@@ -154,7 +154,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, Ingredie
 		var is = kjs$self();
 
 		for (var entry : enchantments.entrySet()) {
-			var enchantment = KubeJSRegistries.enchantments().get(UtilsJS.getMCID(entry.getKey()));
+			var enchantment = KubeJSRegistries.enchantments().get(UtilsJS.getMCID(null, entry.getKey()));
 
 			if (enchantment != null && entry.getValue() instanceof Number number) {
 				is = is.kjs$enchantCopy(enchantment, number.intValue());

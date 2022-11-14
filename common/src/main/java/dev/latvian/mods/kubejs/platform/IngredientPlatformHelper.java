@@ -31,7 +31,7 @@ public interface IngredientPlatformHelper {
 	Ingredient custom(Ingredient parent, @Nullable UUID uuid);
 
 	default Ingredient tag(String tag) {
-		var t = Tags.item(UtilsJS.getMCID(tag));
+		var t = Tags.item(UtilsJS.getMCID(null, tag));
 
 		if (RecipeJS.itemErrors && TagContext.INSTANCE.getValue().isEmpty(t)) {
 			throw new RecipeExceptionJS("Tag %s doesn't contain any items!".formatted(this)).error();

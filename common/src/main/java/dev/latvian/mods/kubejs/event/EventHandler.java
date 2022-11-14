@@ -216,7 +216,7 @@ public final class EventHandler extends BaseFunction {
 
 	@Override
 	public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-		ScriptType type = (ScriptType) cx.sharedContextData.getExtraProperty("Type");
+		ScriptType type = cx.getProperty("Type", null);
 
 		if (type == null) {
 			throw new IllegalStateException("Unknown script type!");

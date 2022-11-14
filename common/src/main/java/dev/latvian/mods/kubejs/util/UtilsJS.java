@@ -12,6 +12,7 @@ import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.block.BlockModificationEventJS;
 import dev.latvian.mods.kubejs.item.ItemModificationEventJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
@@ -394,7 +395,7 @@ public class UtilsJS {
 		return s;
 	}
 
-	public static ResourceLocation getMCID(@Nullable Object o) {
+	public static ResourceLocation getMCID(Context cx, @Nullable Object o) {
 		if (o == null) {
 			return null;
 		} else if (o instanceof ResourceLocation id) {
@@ -405,8 +406,7 @@ public class UtilsJS {
 		try {
 			return new ResourceLocation(s);
 		} catch (ResourceLocationException ex) {
-			var console = ConsoleJS.getCurrent(ConsoleJS.STARTUP);
-			console.error("Could not create ID from '%s'!".formatted(s), ex);
+			ConsoleJS.getCurrent(cx).error("Could not create ID from '%s'!".formatted(s), ex);
 		}
 
 		return null;

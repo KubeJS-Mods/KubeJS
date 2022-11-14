@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.script;
 
-import dev.latvian.mods.rhino.SharedContextData;
 import dev.latvian.mods.rhino.util.CustomJavaToJsWrapperProvider;
 
 import java.util.function.Predicate;
@@ -10,24 +9,20 @@ import java.util.function.Predicate;
  */
 public class CustomJavaToJsWrappersEvent {
 	public final ScriptManager manager;
-	public final ScriptType scriptType;
-	public final SharedContextData data;
 
-	public CustomJavaToJsWrappersEvent(ScriptManager m, SharedContextData d) {
+	public CustomJavaToJsWrappersEvent(ScriptManager m) {
 		manager = m;
-		scriptType = manager.scriptType;
-		data = d;
 	}
 
 	public ScriptType getScriptType() {
-		return scriptType;
+		return manager.scriptType;
 	}
 
 	public <T> void add(Class<T> type, CustomJavaToJsWrapperProvider<T> provider) {
-		data.addCustomJavaToJsWrapper(type, provider);
+		manager.context.addCustomJavaToJsWrapper(type, provider);
 	}
 
 	public <T> void add(Predicate<T> predicate, CustomJavaToJsWrapperProvider<T> provider) {
-		data.addCustomJavaToJsWrapper(predicate, provider);
+		manager.context.addCustomJavaToJsWrapper(predicate, provider);
 	}
 }

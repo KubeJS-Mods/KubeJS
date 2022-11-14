@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenPainterObject;
 import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.unit.FixedNumberUnit;
 import dev.latvian.mods.unit.MutableNumberUnit;
@@ -77,7 +78,11 @@ public class Painter implements UnitVariables {
 		variables.set("$mouseY", mouseYUnit);
 	}
 
-	public Unit unitOf(Object o) {
+	public Unit unitOf(Context cx, Object o) {
+		return unitOf(ConsoleJS.getCurrent(cx), o);
+	}
+
+	public Unit unitOf(ConsoleJS console, Object o) {
 		if (o instanceof Unit unit) {
 			return unit;
 		} else if (o instanceof Number number) {
@@ -91,7 +96,7 @@ public class Painter implements UnitVariables {
 				return unitContext.parse(tag.getAsString());
 			}
 		} catch (Exception ex) {
-			ConsoleJS.getCurrent(ConsoleJS.CLIENT).error("Failed to parse Unit: " + ex);
+			console.error("Failed to parse Unit: " + ex);
 		}
 
 		return FixedNumberUnit.ZERO;

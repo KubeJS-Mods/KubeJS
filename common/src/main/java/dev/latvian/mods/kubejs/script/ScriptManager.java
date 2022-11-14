@@ -160,14 +160,14 @@ public class ScriptManager implements ClassShutter {
 		var i = 0;
 		var t = 0;
 
-		context.sharedContextData.setExtraProperty("Type", scriptType);
-		context.sharedContextData.setExtraProperty("Console", scriptType.console);
-		context.sharedContextData.setClassShutter(this);
-		context.sharedContextData.setRemapper(remapper);
-		var typeWrappers = context.sharedContextData.getTypeWrappers();
+		context.setProperty("Type", scriptType);
+		context.setProperty("Console", scriptType.console);
+		context.setClassShutter(this);
+		context.setRemapper(remapper);
+		var typeWrappers = context.getTypeWrappers();
 		// typeWrappers.removeAll();
 		var bindingsEvent = new BindingsEvent(this, topLevelScope);
-		var customJavaToJsWrappersEvent = new CustomJavaToJsWrappersEvent(this, context.sharedContextData);
+		var customJavaToJsWrappersEvent = new CustomJavaToJsWrappersEvent(this);
 
 		for (var plugin : KubeJSPlugins.getAll()) {
 			plugin.registerTypeWrappers(scriptType, typeWrappers);

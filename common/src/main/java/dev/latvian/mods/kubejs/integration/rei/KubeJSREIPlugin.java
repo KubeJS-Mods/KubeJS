@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.integration.rei;
 import dev.architectury.event.EventResult;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -99,7 +100,7 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 
 		ConsoleJS.CLIENT.warn("No wrapper found for entry type '%s', trying to fall back to id-based wrapper!".formatted(type.getId()));
 		return o -> {
-			Collection<ResourceLocation> ids = CollectionUtils.mapToSet(ListJS.orSelf(o), UtilsJS::getMCID);
+			Collection<ResourceLocation> ids = CollectionUtils.mapToSet(ListJS.orSelf(o), o1 -> UtilsJS.getMCID(ScriptType.CLIENT.manager.get().context, o1));
 			return EntryRegistry.getInstance().getEntryStacks()
 					.filter(stack -> stack.getType().equals(type))
 					.filter(stack -> ids.contains(stack.getIdentifier()))

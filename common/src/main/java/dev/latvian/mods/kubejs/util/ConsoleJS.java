@@ -35,12 +35,19 @@ public class ConsoleJS {
 
 	public static ConsoleJS getCurrent(ConsoleJS def) {
 		Context cx = ScriptManager.getCurrentContext();
+		return cx == null ? def : getCurrent(cx);
+	}
 
-		if (cx != null && cx.sharedContextData.getExtraProperty("Console") instanceof ConsoleJS c) {
-			return c;
+	public static ConsoleJS getCurrent(@Nullable Context cx) {
+		if (cx == null) {
+			cx = ScriptManager.getCurrentContext();
+
+			if (cx == null) {
+				return STARTUP;
+			}
 		}
 
-		return def;
+		return cx.getProperty("Console", null);
 	}
 
 	private static class StackTracePrintStream extends PrintStream {
@@ -560,10 +567,7 @@ public class ConsoleJS {
 			}
 
 			var varFunc = (VarFunc) o;
-			return Objects.equals(name, varFunc.name) &&
-						   Objects.equals(type, varFunc.type) &&
-						   Objects.equals(flags, varFunc.flags) &&
-						   Objects.equals(params, varFunc.params);
+			return Objects.equals(name, varFunc.name) && Objects.equals(type, varFunc.type) && Objects.equals(flags, varFunc.flags) && Objects.equals(params, varFunc.params);
 		}
 
 		@Override

@@ -2,9 +2,7 @@ package dev.latvian.mods.kubejs.bindings;
 
 import dev.architectury.registry.registries.Registrar;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassWrapper;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
@@ -20,7 +18,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,10 +78,6 @@ public interface UtilsWrapper {
 	static ResourceLocation id(ResourceLocation id) {
 		// TypeWrapper will convert any object into RL
 		return id;
-	}
-
-	static ConsoleJS createConsole(String name) {
-		return new ConsoleJS(ScriptType.getCurrent(ScriptType.STARTUP), LoggerFactory.getLogger(name));
 	}
 
 	static Pattern regex(Object s) {

@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.Context;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
@@ -22,7 +23,7 @@ public interface RecipeFilter extends Predicate<RecipeKJS> {
 	@Override
 	boolean test(RecipeKJS r);
 
-	static RecipeFilter of(@Nullable Object o) {
+	static RecipeFilter of(Context cx, @Nullable Object o) {
 		if (o == null || o == ALWAYS_TRUE) {
 			return ALWAYS_TRUE;
 		} else if (o == ALWAYS_FALSE) {
@@ -43,7 +44,7 @@ public interface RecipeFilter extends Predicate<RecipeKJS> {
 			var predicate = new OrFilter();
 
 			for (var o1 : list) {
-				var p = of(o1);
+				var p = of(cx, o1);
 
 				if (p == ALWAYS_TRUE) {
 					return ALWAYS_TRUE;
@@ -64,11 +65,11 @@ public interface RecipeFilter extends Predicate<RecipeKJS> {
 		var predicate = new AndFilter();
 
 		if (map.get("or") != null) {
-			predicate.list.add(of(map.get("or")));
+			predicate.list.add(of(cx, map.get("or")));
 		}
 
 		if (map.get("not") != null) {
-			predicate.list.add(new NotFilter(of(map.get("not"))));
+			predicate.list.add(new NotFilter(of(cx, map.get("not"))));
 		}
 
 		try {
@@ -76,13 +77,13 @@ public interface RecipeFilter extends Predicate<RecipeKJS> {
 
 			if (id != null) {
 				var pattern = UtilsJS.parseRegex(id);
-				predicate.list.add(pattern == null ? new IDFilter(UtilsJS.getMCID(id)) : new RegexIDFilter(pattern));
+				predicate.list.add(pattern == null ? new IDFilter(UtilsJS.getMCID(cx, id)) : new RegexIDFilter(pattern));
 			}
 
 			var type = map.get("type");
 
 			if (type != null) {
-				predicate.list.add(new TypeFilter(UtilsJS.getMCID(type)));
+				predicate.list.add(new TypeFilter(UtilsJS.getMCID(cx, type)));
 			}
 
 			var group = map.get("group");
@@ -112,9 +113,9 @@ public interface RecipeFilter extends Predicate<RecipeKJS> {
 			return predicate.list.isEmpty() ? ALWAYS_TRUE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
 		} catch (RecipeExceptionJS ex) {
 			if (ex.error) {
-				ConsoleJS.getCurrent(ConsoleJS.SERVER).error(ex.getMessage());
+				ConsoleJS.getCurrent(cx).error(ex.getMessage());
 			} else {
-				ConsoleJS.getCurrent(ConsoleJS.SERVER).warn(ex.getMessage());
+				ConsoleJS.getCurrent(cx).warn(ex.getMessage());
 			}
 
 			return ALWAYS_FALSE;
