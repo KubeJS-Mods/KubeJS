@@ -7,6 +7,8 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import me.shedaniel.rei.api.client.entry.filtering.FilteringRuleTypeRegistry;
+import me.shedaniel.rei.api.client.entry.filtering.base.BasicFilteringRule;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
 import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
@@ -57,9 +59,16 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 
 	@Override
 	public void registerEntries(EntryRegistry registry) {
+		entryWrappers.forEach((type, wrapper) -> REIEvents.ADD.post(type.getId(), new AddREIEventJS(registry, wrapper)));
+	}
+
+	@Override
+	public void registerBasicEntryFiltering(BasicFilteringRule<?> rule) {
 		entryWrappers.forEach((type, wrapper) -> {
-			REIEvents.HIDE.post(type.getId(), new HideREIEventJS<>(registry, UtilsJS.cast(type), wrapper));
-			REIEvents.ADD.post(type.getId(), new AddREIEventJS(registry, wrapper));
+			var filter = FilteringRuleTypeRegistry.getInstance().basic();
+			var registry = EntryRegistry.getInstance();
+
+			REIEvents.HIDE.post(type.getId(), new HideREIEventJS<>(registry, filter, UtilsJS.cast(type), wrapper));
 		});
 	}
 
