@@ -40,7 +40,7 @@
 	},
 	"breaks": {
 		"techreborn": "<5.1.0-beta.6",
-		"roughlyenoughitems": "<8.3.501"
+		"roughlyenoughitems": "<9.1.572"
 	},
 	"custom": {
 		"loom:injected_interfaces": {

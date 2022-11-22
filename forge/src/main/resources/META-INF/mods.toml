@@ -45,6 +45,6 @@ side = "BOTH"
 [[dependencies.kubejs]]
 modId = "roughlyenoughitems"
 mandatory = false
-versionRange = "[8.3.501,)"
+versionRange = "[9.1.572,)"
 ordering = "AFTER"
 side = "BOTH"
