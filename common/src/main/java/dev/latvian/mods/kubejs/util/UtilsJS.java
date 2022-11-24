@@ -12,7 +12,10 @@ import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.block.BlockModificationEventJS;
 import dev.latvian.mods.kubejs.item.ItemModificationEventJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
@@ -748,5 +751,9 @@ public class UtilsJS {
 		}
 
 		return null;
+	}
+
+	public static <T> T makeFunctionProxy(ScriptType type, Class<T> targetClass, BaseFunction function) {
+		return cast(NativeJavaObject.createInterfaceAdapter(type.manager.get().context, targetClass, function));
 	}
 }
