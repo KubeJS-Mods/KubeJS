@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.integration.forge.jei;
 
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.BaseFunction;
-import dev.latvian.mods.rhino.NativeJavaObject;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IJeiRuntime;
@@ -42,8 +42,8 @@ public class HideCustomJEIEventJS extends EventJS {
 						predicates.add(it -> regex.asPredicate().test(idFn.apply(it)));
 					} else if (o1 instanceof Predicate p) {
 						predicates.add(p);
-					} else if(o instanceof BaseFunction f) {
-						predicates.add(UtilsJS.cast(NativeJavaObject.createInterfaceAdapter(Predicate.class, f)));
+					} else if (o instanceof BaseFunction f) {
+						predicates.add(UtilsJS.makeFunctionProxy(ScriptType.CLIENT, Predicate.class, f));
 					} else if (o1 instanceof CharSequence || o1 instanceof ResourceLocation) {
 						predicates.add(it -> Objects.equals(idFn.apply(it), o1.toString()));
 					} else {
