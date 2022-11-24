@@ -83,6 +83,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient String containerItem;
 	public transient Function<ItemStackJS, Collection<ItemStackJS>> subtypes;
 	public transient Rarity rarity;
+	public transient boolean fireResistant;
 	public transient boolean glow;
 	public transient final List<Component> tooltip;
 	@Nullable
@@ -209,6 +210,11 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
+	public ItemBuilder fireResistant(boolean isFireResistant) {
+		fireResistant = isFireResistant;
+		return this;
+	}
+
 	public ItemBuilder glow(boolean v) {
 		glow = v;
 		return this;
@@ -312,6 +318,9 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		}
 
 		properties.rarity(rarity);
+		if (fireResistant) {
+			properties.fireResistant();
+		}
 
 		var item = KubeJSRegistries.items().get(new ResourceLocation(containerItem));
 
