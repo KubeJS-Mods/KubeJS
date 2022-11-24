@@ -52,7 +52,14 @@ dependencies {
 	modLocalRuntime modCompileOnly("net.darkhax.gamestages:GameStages-Forge-1.18.2:8.0.2")
 
 	modCompileOnly("mezz.jei:jei-1.18.2:${rootProject.forge_jei_version}:api")
-	modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}")
+	modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}")
+
+	def jeiAtRuntime = true
+	if (jeiAtRuntime) {
+		modLocalRuntime("mezz.jei:jei-1.18.2:${rootProject.forge_jei_version}")
+	} else {
+		modLocalRuntime("me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}")
+	}
 
 	common(project(path: ":common", configuration: "namedElements")) { transitive false }
 	bundle(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
