@@ -188,7 +188,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	protected void generateBlockModelJsons(AssetJsonGenerator generator) {
-		generator.blockModel(newID("block/", ""), mg -> {
+		generator.blockModel(id, mg -> {
 			var particle = textures.get("particle").getAsString();
 
 			if (areAllTexturesEqual(textures, particle)) {
