@@ -87,16 +87,30 @@ public class WorldgenAddEventJS extends StartupEventJS {
 		BiomeModifications.postProcessProperties(filter, (ctx, props) -> props.getSpawnProperties().addSpawn(category, spawnerData));
 	}
 
+	@Deprecated(forRemoval = true)
 	public void addFeatureJson(BiomeFilter filter, JsonObject json) {
 		var id = json.has("id") ? new ResourceLocation(json.get("id").getAsString()) : null;
 		addFeatureJson(filter, id, json);
 	}
 
+	@Deprecated(forRemoval = true)
 	public void addFeatureJson(BiomeFilter filter, @Nullable ResourceLocation id, JsonObject json) {
+		ConsoleJS.STARTUP.warn("addFeatureJson is deprecated for removal in 1.19.2! Please use virtual datapacks or addOre (for ores) instead.");
+
 		var featureJson = json.has("feature") ? json : Util.make(new JsonObject(), o -> o.add("feature", json));
 
 		if (!featureJson.has("placement")) {
 			featureJson.add("placement", new JsonArray());
+		}
+
+		if (id == null) {
+			id = new ResourceLocation("kubejs:features/" + UtilsJS.getUniqueId(featureJson));
+		}
+
+		if (!featureJson.get("feature").isJsonObject()) {
+			ConsoleJS.STARTUP.error("Adding feature JSONs with indirect references is not supported during worldgen events due to how dynamic registries work.");
+			ConsoleJS.STARTUP.error("If you want to add a feature that references another feature by ID, please use virtual datapacks instead.");
+			return;
 		}
 
 		var feature = PlacedFeature.DIRECT_CODEC.parse(JsonOps.INSTANCE, featureJson).get().orThrow();
