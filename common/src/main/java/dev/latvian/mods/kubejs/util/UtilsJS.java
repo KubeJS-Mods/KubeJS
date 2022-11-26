@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSEvents;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
@@ -57,17 +59,22 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.math.BigInteger;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -82,6 +89,8 @@ public class UtilsJS {
 	public static final ResourceLocation AIR_LOCATION = new ResourceLocation("minecraft:air");
 	public static final Pattern SNAKE_CASE_SPLIT = Pattern.compile("[_/]");
 	public static final Set<String> ALWAYS_LOWER_CASE = new HashSet<>(Arrays.asList("a", "an", "the", "of", "on", "in"));
+
+	private static MessageDigest messageDigest;
 
 	private static Collection<BlockState> ALL_STATE_CACHE = null;
 
@@ -709,6 +718,36 @@ public class UtilsJS {
 
 	public static String stripIdForEvent(ResourceLocation id) {
 		return stripEventName(id.toString());
+	}
+
+	public static String getUniqueId(JsonElement json) {
+		return getUniqueId(json, Function.identity());
+	}
+
+	public static <T> String getUniqueId(T input, Codec<T> codec) {
+		return getUniqueId(input, o -> codec.encodeStart(JsonOps.COMPRESSED, o)
+				.getOrThrow(false, str -> {
+					throw new RuntimeException("Could not encode element to JSON: " + str);
+				}));
+	}
+
+	private static <T> String getUniqueId(T input, Function<T, JsonElement> toJson) {
+		if (messageDigest == null) {
+			try {
+				messageDigest = MessageDigest.getInstance("MD5");
+			} catch (NoSuchAlgorithmException nsae) {
+				throw new InternalError("MD5 not supported", nsae);
+			}
+		}
+
+		var json = toJson.apply(input);
+
+		if (messageDigest == null) {
+			return new BigInteger(HexFormat.of().formatHex(JsonIO.getJsonHashBytes(json)), 16).toString(36);
+		} else {
+			messageDigest.reset();
+			return new BigInteger(HexFormat.of().formatHex(messageDigest.digest(JsonIO.getJsonHashBytes(json))), 16).toString(36);
+		}
 	}
 
 	public static String stripEventName(String s) {

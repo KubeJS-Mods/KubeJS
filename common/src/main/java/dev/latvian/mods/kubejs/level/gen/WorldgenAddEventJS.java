@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.level.gen;
 import com.google.common.collect.Iterables;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
 import dev.architectury.registry.level.biome.BiomeModifications;
@@ -15,7 +14,7 @@ import dev.latvian.mods.kubejs.level.gen.properties.AddOreProperties;
 import dev.latvian.mods.kubejs.level.gen.properties.AddSpawnProperties;
 import dev.latvian.mods.kubejs.util.ClassWrapper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.JsonIO;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -34,19 +33,14 @@ import net.minecraft.world.level.levelgen.feature.LakeFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.placement.CountPlacement;
-import net.minecraft.world.level.levelgen.placement.HeightRangePlacement;
 import net.minecraft.world.level.levelgen.placement.InSquarePlacement;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
 import net.minecraft.world.level.levelgen.placement.RarityFilter;
 import org.jetbrains.annotations.Nullable;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.OptionalInt;
@@ -54,15 +48,11 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 /**
- * FIXME: Move to {@link dev.architectury.registry.level.biome.BiomeModifications} once it's ready.
- *
  * @author LatvianModder
  */
 public class WorldgenAddEventJS extends StartupEventJS {
 
 	private static final Pattern SPAWN_PATTERN = Pattern.compile("(\\w+:\\w+)\\*\\((\\d+)-(\\d+)\\):(\\d+)");
-
-	private static MessageDigest messageDigest;
 
 	// TODO: we should probably not be registering to BuiltinRegistries directly,
 	//  but rather to the synced registry directly by using the RegistryAccess.
@@ -74,7 +64,7 @@ public class WorldgenAddEventJS extends StartupEventJS {
 	private void addFeature(ResourceLocation id, BiomeFilter filter, GenerationStep.Decoration step,
 							ConfiguredFeature<?, ?> feature, List<PlacementModifier> modifiers) {
 		if (id == null) {
-			id = new ResourceLocation("kubejs:features/" + getUniqueId(feature, ConfiguredFeature.DIRECT_CODEC));
+			id = new ResourceLocation("kubejs:features/" + UtilsJS.getUniqueId(feature, ConfiguredFeature.DIRECT_CODEC));
 		}
 
 		var holder = registerFeature(BuiltinRegistries.CONFIGURED_FEATURE, id, feature);
@@ -85,7 +75,7 @@ public class WorldgenAddEventJS extends StartupEventJS {
 
 	private void addFeature(ResourceLocation id, BiomeFilter filter, GenerationStep.Decoration step, PlacedFeature feature) {
 		if (id == null) {
-			id = new ResourceLocation("kubejs:features/" + getUniqueId(feature, PlacedFeature.DIRECT_CODEC));
+			id = new ResourceLocation("kubejs:features/" + UtilsJS.getUniqueId(feature, PlacedFeature.DIRECT_CODEC));
 		}
 
 		var holder = registerFeature(BuiltinRegistries.PLACED_FEATURE, id, feature);
@@ -97,16 +87,30 @@ public class WorldgenAddEventJS extends StartupEventJS {
 		BiomeModifications.postProcessProperties(filter, (ctx, props) -> props.getSpawnProperties().addSpawn(category, spawnerData));
 	}
 
+	@Deprecated(forRemoval = true)
 	public void addFeatureJson(BiomeFilter filter, JsonObject json) {
 		var id = json.has("id") ? new ResourceLocation(json.get("id").getAsString()) : null;
 		addFeatureJson(filter, id, json);
 	}
 
+	@Deprecated(forRemoval = true)
 	public void addFeatureJson(BiomeFilter filter, @Nullable ResourceLocation id, JsonObject json) {
+		ConsoleJS.STARTUP.warn("addFeatureJson is deprecated for removal in 1.19.2! Please use virtual datapacks or addOre (for ores) instead.");
+
 		var featureJson = json.has("feature") ? json : Util.make(new JsonObject(), o -> o.add("feature", json));
 
 		if (!featureJson.has("placement")) {
 			featureJson.add("placement", new JsonArray());
+		}
+
+		if (id == null) {
+			id = new ResourceLocation("kubejs:features/" + UtilsJS.getUniqueId(featureJson));
+		}
+
+		if (!featureJson.get("feature").isJsonObject()) {
+			ConsoleJS.STARTUP.error("Adding feature JSONs with indirect references is not supported during worldgen events due to how dynamic registries work.");
+			ConsoleJS.STARTUP.error("If you want to add a feature that references another feature by ID, please use virtual datapacks instead.");
+			return;
 		}
 
 		var feature = PlacedFeature.DIRECT_CODEC.parse(JsonOps.INSTANCE, featureJson).get().orThrow();
@@ -199,27 +203,5 @@ public class WorldgenAddEventJS extends StartupEventJS {
 
 	public static ClassWrapper<VerticalAnchor> getAnchors() {
 		return new ClassWrapper<>(VerticalAnchor.class);
-	}
-
-	public static <T> String getUniqueId(T feature, Codec<T> codec) {
-		if (messageDigest == null) {
-			try {
-				messageDigest = MessageDigest.getInstance("MD5");
-			} catch (NoSuchAlgorithmException nsae) {
-				throw new InternalError("MD5 not supported", nsae);
-			}
-		}
-
-		var json = codec.encodeStart(JsonOps.COMPRESSED, feature)
-				.getOrThrow(false, str -> {
-					throw new RuntimeException("Could not encode feature to JSON: " + str);
-				});
-
-		if (messageDigest == null) {
-			return new BigInteger(HexFormat.of().formatHex(JsonIO.getJsonHashBytes(json)), 16).toString(36);
-		} else {
-			messageDigest.reset();
-			return new BigInteger(HexFormat.of().formatHex(messageDigest.digest(JsonIO.getJsonHashBytes(json))), 16).toString(36);
-		}
 	}
 }

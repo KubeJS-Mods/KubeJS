@@ -23,16 +23,13 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import org.jetbrains.annotations.Nullable;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -45,7 +42,6 @@ import java.util.stream.Collectors;
 public abstract class RecipeJS {
 	public static RecipeJS currentRecipe = null;
 	public static boolean itemErrors = false;
-	private static MessageDigest messageDigest;
 
 	public ResourceLocation id;
 	public RecipeTypeJS type;
@@ -354,20 +350,7 @@ public abstract class RecipeJS {
 	}
 
 	public String getUniqueId() {
-		if (messageDigest == null) {
-			try {
-				messageDigest = MessageDigest.getInstance("MD5");
-			} catch (NoSuchAlgorithmException nsae) {
-				throw new InternalError("MD5 not supported", nsae);
-			}
-		}
-
-		if (messageDigest == null) {
-			return new BigInteger(HexFormat.of().formatHex(JsonIO.getJsonHashBytes(json)), 16).toString(36);
-		} else {
-			messageDigest.reset();
-			return new BigInteger(HexFormat.of().formatHex(messageDigest.digest(JsonIO.getJsonHashBytes(json))), 16).toString(36);
-		}
+		return UtilsJS.getUniqueId(json);
 	}
 
 	public RecipeJS stage(String s) {
