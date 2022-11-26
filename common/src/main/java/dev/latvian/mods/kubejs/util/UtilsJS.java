@@ -5,6 +5,8 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.brigadier.StringReader;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
@@ -66,13 +68,17 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.math.BigInteger;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -95,6 +101,8 @@ public class UtilsJS {
 	public static MinecraftServer staticServer = null;
 	public static final ResourceLocation UNKNOWN_ID = new ResourceLocation("unknown", "unknown");
 	public static final Predicate<Object> ALWAYS_TRUE = o -> true;
+
+	private static MessageDigest messageDigest;
 
 	private static Collection<BlockState> ALL_STATE_CACHE = null;
 	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();
@@ -707,6 +715,36 @@ public class UtilsJS {
 
 	public static String stripIdForEvent(ResourceLocation id) {
 		return stripEventName(id.toString());
+	}
+
+	public static String getUniqueId(JsonElement json) {
+		return getUniqueId(json, Function.identity());
+	}
+
+	public static <T> String getUniqueId(T input, Codec<T> codec) {
+		return getUniqueId(input, o -> codec.encodeStart(JsonOps.COMPRESSED, o)
+				.getOrThrow(false, str -> {
+					throw new RuntimeException("Could not encode element to JSON: " + str);
+				}));
+	}
+
+	private static <T> String getUniqueId(T input, Function<T, JsonElement> toJson) {
+		if (messageDigest == null) {
+			try {
+				messageDigest = MessageDigest.getInstance("MD5");
+			} catch (NoSuchAlgorithmException nsae) {
+				throw new InternalError("MD5 not supported", nsae);
+			}
+		}
+
+		var json = toJson.apply(input);
+
+		if (messageDigest == null) {
+			return new BigInteger(HexFormat.of().formatHex(JsonIO.getJsonHashBytes(json)), 16).toString(36);
+		} else {
+			messageDigest.reset();
+			return new BigInteger(HexFormat.of().formatHex(messageDigest.digest(JsonIO.getJsonHashBytes(json))), 16).toString(36);
+		}
 	}
 
 	public static String stripEventName(String s) {
