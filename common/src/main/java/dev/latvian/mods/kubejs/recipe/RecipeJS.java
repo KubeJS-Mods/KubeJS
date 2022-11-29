@@ -475,6 +475,6 @@ public abstract class RecipeJS implements RecipeKJS {
 	}
 
 	public JsonElement itemToJson(ItemStack stack) {
-		return stack.kjs$toJson();
+		return stack.toJsonJS();
 	}
 }

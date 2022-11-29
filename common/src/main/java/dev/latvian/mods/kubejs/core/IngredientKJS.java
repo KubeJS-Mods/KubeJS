@@ -1,9 +1,11 @@
 package dev.latvian.mods.kubejs.core;
 
+import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemStackSet;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
+import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -14,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 @RemapPrefixForJS("kjs$")
-public interface IngredientKJS extends IngredientSupplierKJS {
+public interface IngredientKJS extends IngredientSupplierKJS, JsonSerializable {
 	default Ingredient kjs$self() {
 		throw new NoMixinException();
 	}
@@ -120,5 +122,10 @@ public interface IngredientKJS extends IngredientSupplierKJS {
 	@Override
 	default Ingredient kjs$asIngredient() {
 		return kjs$self();
+	}
+
+	@Override
+	default JsonElement toJsonJS() {
+		return kjs$self().toJson();
 	}
 }
