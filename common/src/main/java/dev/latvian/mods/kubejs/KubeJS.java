@@ -33,6 +33,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystemLoopException;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -155,7 +157,7 @@ public class KubeJS {
 		final var pathPrefix = path;
 
 		try {
-			for (var file : Files.walk(dir, 10).filter(Files::isRegularFile).toList()) {
+			for (var file : Files.walk(dir, 10, FileVisitOption.FOLLOW_LINKS).filter(Files::isRegularFile).toList()) {
 				var fileName = dir.relativize(file).toString().replace(File.separatorChar, '/');
 
 				if (fileName.endsWith(".js")) {
