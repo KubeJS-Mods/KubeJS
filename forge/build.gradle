@@ -54,9 +54,7 @@ dependencies {
 	modLocalRuntime modCompileOnly("net.darkhax.bookshelf:Bookshelf-Forge-1.19.2:16.1.4")
 	modLocalRuntime modCompileOnly("net.darkhax.gamestages:GameStages-Forge-1.19.2:11.0.2")
 
-	// no reason to compile against the JEI API since REI already provides it,
-	// but if you want to use it at runtime, you can use this next line and remove the modLocalRuntime from REI.
-	modLocalRuntime modCompileOnly("mezz.jei:jei-1.19.2-forge:${rootProject.jei_version}") {
+	modCompileOnly("mezz.jei:jei-1.19.2-forge:${rootProject.jei_version}") {
 		transitive(false)
 	}
 

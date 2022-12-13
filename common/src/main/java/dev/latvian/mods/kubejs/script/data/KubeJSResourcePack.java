@@ -18,7 +18,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -128,19 +130,16 @@ public abstract class KubeJSResourcePack implements PackResources {
 
 		UtilsJS.tryIO(() ->
 		{
-			var root = KubeJSPaths.get(packType).toAbsolutePath();
-
-			if (Files.exists(root) && Files.isDirectory(root)) {
-				var inputPath = root.getFileSystem().getPath(path);
-
-				Files.walk(root)
-						.map(root::relativize)
-						.filter(p -> p.getNameCount() > 1)
-						.filter(p -> !p.toString().endsWith(".mcmeta"))
-						.filter(p -> p.subpath(1, p.getNameCount()).startsWith(inputPath))
-						.map(p -> new ResourceLocation(p.getName(0).toString(), Joiner.on('/').join(p.subpath(1, p.getNameCount()))))
-						.filter(filter)
-						.forEach(list::add);
+			var root = KubeJSPaths.get(packType).toAbsolutePath().resolve(namespace);
+			var walkRoot = root.resolve(path);
+			if (Files.exists(walkRoot) && Files.isDirectory(walkRoot)) {
+				try(var children = Files.walk(walkRoot)) {
+					children
+							.filter(p -> !p.toString().endsWith(".mcmeta") && !Files.isDirectory(p))
+							.map(p -> new ResourceLocation(namespace, Joiner.on('/').join(root.relativize(p))))
+							.filter(filter)
+							.forEach(list::add);
+				}
 			}
 		});
 
@@ -166,12 +165,13 @@ public abstract class KubeJSResourcePack implements PackResources {
 			var root = KubeJSPaths.get(packType).toAbsolutePath();
 
 			if (Files.exists(root) && Files.isDirectory(root)) {
-				Files.walk(root, 1)
-						.map(path -> root.relativize(path.toAbsolutePath()))
-						.filter(path -> path.getNameCount() > 0)
-						.map(p -> p.toString().replaceAll("/$", ""))
-						.filter(s -> !s.isEmpty())
-						.forEach(namespaces::add);
+				try (var children = Files.newDirectoryStream(root)) {
+					children.forEach(p -> {
+						if (Files.isDirectory(p)) {
+							namespaces.add(p.getFileName().toString());
+						}
+					});
+				}
 			}
 		});
 

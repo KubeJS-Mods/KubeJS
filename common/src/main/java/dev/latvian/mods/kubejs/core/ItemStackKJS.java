@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.mod.util.NBTSerializable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.mod.util.NbtType;
@@ -40,7 +41,7 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 @RemapPrefixForJS("kjs$")
-public interface ItemStackKJS extends SpecialEquality, NBTSerializable, IngredientSupplierKJS {
+public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSerializable, IngredientSupplierKJS {
 	default ItemStack kjs$self() {
 		return (ItemStack) this;
 	}
@@ -311,13 +312,17 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, Ingredie
 		return kjs$self().getItem().kjs$asIngredient();
 	}
 
-	default JsonObject kjs$toJson() {
+	default JsonObject toJsonJS() {
 		JsonObject json = new JsonObject();
 		json.addProperty("item", kjs$getId());
 		json.addProperty("count", kjs$self().getCount());
 
 		if (kjs$self().hasTag()) {
 			json.addProperty("nbt", kjs$self().getTag().toString());
+		}
+
+		if(!Double.isNaN(kjs$self().kjs$getChance())) {
+			json.addProperty("chance", kjs$self().kjs$getChance());
 		}
 
 		return json;

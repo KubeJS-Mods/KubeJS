@@ -23,6 +23,6 @@ public class ReplaceAction extends IngredientAction {
 
 	@Override
 	public void toJson(JsonObject json) {
-		json.add("item", item.kjs$toJson());
+		json.add("item", item.toJsonJS());
 	}
 }

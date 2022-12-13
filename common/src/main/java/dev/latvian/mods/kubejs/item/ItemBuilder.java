@@ -83,6 +83,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	private ResourceLocation containerItem;
 	public transient Function<ItemStack, Collection<ItemStack>> subtypes;
 	public transient Rarity rarity;
+	public transient boolean fireResistant;
 	public transient boolean glow;
 	public transient final List<Component> tooltip;
 	@Nullable
@@ -92,8 +93,6 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient FoodBuilder foodBuilder;
 	public transient Function<ItemStack, Color> barColor;
 	public transient ToIntFunction<ItemStack> barWidth;
-	public transient boolean fireResistant;
-
 	public transient NameCallback nameGetter;
 
 	public transient Multimap<ResourceLocation, AttributeModifier> attributes;
@@ -300,10 +299,11 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	public ItemBuilder fireResistant(boolean b) {
-		this.fireResistant = b;
+	public ItemBuilder fireResistant(boolean isFireResistant) {
+		fireResistant = isFireResistant;
 		return this;
 	}
+
 
 	public ItemBuilder fireResistant() {
 		return fireResistant(true);

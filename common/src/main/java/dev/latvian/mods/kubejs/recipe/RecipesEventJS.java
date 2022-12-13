@@ -244,7 +244,7 @@ public class RecipesEventJS extends EventJS {
 						}
 					} catch (Exception ex3) {
 						ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType + ":");
-						ConsoleJS.SERVER.printStackTrace(ex3, SKIP_ERROR);
+						ConsoleJS.SERVER.printStackTrace(false, ex3, SKIP_ERROR);
 					}
 				} else if (DevProperties.get().logErroringRecipes) {
 					ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'", ex, SKIP_ERROR);
