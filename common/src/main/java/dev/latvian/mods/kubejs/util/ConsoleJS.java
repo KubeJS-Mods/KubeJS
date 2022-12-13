@@ -52,15 +52,17 @@ public class ConsoleJS {
 
 	private static class StackTracePrintStream extends PrintStream {
 		private final ConsoleJS console;
-		private boolean first;
+		private final boolean error;
 		private final Pattern skipString;
+		private boolean first;
 		private boolean skip;
 
-		private StackTracePrintStream(ConsoleJS c, @Nullable Pattern ca) {
+		private StackTracePrintStream(ConsoleJS c, boolean e, @Nullable Pattern ca) {
 			super(System.err);
 			console = c;
-			first = true;
+			error = e;
 			skipString = ca;
+			first = true;
 			skip = false;
 		}
 
@@ -74,14 +76,21 @@ public class ConsoleJS {
 			if (skip) {
 				return;
 			} else if (first && x != null) {
-				console.scriptType.errors.add(x);
+				if (error) {
+					console.scriptType.errors.add(x);
+				} else {
+					console.scriptType.warnings.add(x);
+				}
+
 				first = false;
 			}
 
 			if (x != null && skipString != null && skipString.matcher(x).find()) {
 				skip = true;
-			} else {
+			} else if (error) {
 				console.log(console.logger::error, "ERR  ", x);
+			} else {
+				console.log(console.logger::error, "WARN ", x);
 			}
 		}
 	}
@@ -312,7 +321,7 @@ public class ConsoleJS {
 
 			if (CommonProperties.get().debugInfo || s.equals("java.lang.NullPointerException")) {
 				warn(message + ":");
-				printStackTrace(throwable, skip);
+				printStackTrace(false, throwable, skip);
 			} else {
 				warn(message + ": " + s);
 			}
@@ -347,7 +356,7 @@ public class ConsoleJS {
 
 			if (CommonProperties.get().debugInfo || s.equals("java.lang.NullPointerException")) {
 				error(message + ":");
-				printStackTrace(throwable, skip);
+				printStackTrace(true, throwable, skip);
 			} else {
 				error(message + ": " + s);
 			}
@@ -518,8 +527,8 @@ public class ConsoleJS {
 		printObject(o, false);
 	}
 
-	public void printStackTrace(Throwable throwable, @Nullable Pattern skip) {
-		throwable.printStackTrace(new StackTracePrintStream(this, skip));
+	public void printStackTrace(boolean error, Throwable throwable, @Nullable Pattern skip) {
+		throwable.printStackTrace(new StackTracePrintStream(this, error, skip));
 	}
 
 	public void handleError(Throwable throwable, @Nullable Pattern skip, String message) {
@@ -528,14 +537,14 @@ public class ConsoleJS {
 				pushError(ex);
 				error(message + ": " + ex.getWrappedException());
 				popError();
-				printStackTrace(ex.getWrappedException(), skip);
+				printStackTrace(true, ex.getWrappedException(), skip);
 			} else if (throwable instanceof RhinoException ex) {
 				pushError(ex);
 				error(message + ": " + ex.getMessage());
 				popError();
 			} else {
 				error(message + ": " + throwable);
-				printStackTrace(throwable, skip);
+				printStackTrace(true, throwable, skip);
 			}
 		} catch (Throwable ex) {
 			error("Errored while handling error... wtf... " + ex);

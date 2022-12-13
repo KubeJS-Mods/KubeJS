@@ -26,8 +26,7 @@ public interface ItemWrapper {
 	}
 
 	static ItemStack of(ItemStack in, int count) {
-		in.setCount(count);
-		return in;
+		return in.kjs$withCount(count);
 	}
 
 	static ItemStack of(ItemStack in, CompoundTag tag) {
