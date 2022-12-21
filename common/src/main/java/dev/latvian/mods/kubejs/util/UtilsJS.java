@@ -14,6 +14,7 @@ import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.block.BlockModificationEventJS;
 import dev.latvian.mods.kubejs.item.ItemModificationEventJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
@@ -36,7 +37,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.StringRepresentable;
 import net.minecraft.util.valueproviders.ClampedInt;
 import net.minecraft.util.valueproviders.ClampedNormalInt;
 import net.minecraft.util.valueproviders.ConstantInt;
@@ -709,8 +709,7 @@ public class UtilsJS {
 	}
 
 	public static MobCategory mobCategoryByName(String s) {
-		// safe cast, mojang just specified too general of a type
-		return ((StringRepresentable.EnumCodec<MobCategory>) MobCategory.CODEC).byName(s);
+		return MiscPlatformHelper.get().getMobCategory(s);
 	}
 
 	public static String stripIdForEvent(ResourceLocation id) {
