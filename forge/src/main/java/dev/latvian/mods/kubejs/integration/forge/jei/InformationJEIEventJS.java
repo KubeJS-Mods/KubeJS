@@ -25,7 +25,7 @@ public class InformationJEIEventJS extends EventJS {
 	public void add(Object o, Component[] s) {
 		registration.addIngredientInfo(
 				IngredientJS.of(o).getStacks().stream().map(ItemStackJS::getItemStack).toList(),
-				VanillaTypes.ITEM,
+				VanillaTypes.ITEM_STACK,
 				s
 		);
 	}
