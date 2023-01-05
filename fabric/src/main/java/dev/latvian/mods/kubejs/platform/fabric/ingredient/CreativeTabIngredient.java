@@ -1,16 +1,18 @@
 package dev.latvian.mods.kubejs.platform.fabric.ingredient;
 
-import com.faux.ingredientextension.api.ingredient.serializer.IIngredientSerializer;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class CreativeTabIngredient extends KubeJSIngredient {
-	public static final KubeJSIngredientSerializer<CreativeTabIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(CreativeTabIngredient::new, CreativeTabIngredient::new);
+	public static final KubeJSIngredientSerializer<CreativeTabIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(KubeJS.id("creative_tab"), CreativeTabIngredient::new, CreativeTabIngredient::new);
 
 	public final CreativeModeTab tab;
 
@@ -32,7 +34,14 @@ public class CreativeTabIngredient extends KubeJSIngredient {
 	}
 
 	@Override
-	public IIngredientSerializer<? extends Ingredient> getSerializer() {
+	public List<ItemStack> getMatchingStacks() {
+		NonNullList<ItemStack> list = NonNullList.create();
+		tab.fillItemList(list);
+		return list;
+	}
+
+	@Override
+	public KubeJSIngredientSerializer<?> getSerializer() {
 		return SERIALIZER;
 	}
 

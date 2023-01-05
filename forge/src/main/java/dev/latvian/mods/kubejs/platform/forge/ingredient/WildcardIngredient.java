@@ -26,11 +26,6 @@ public class WildcardIngredient extends KubeJSIngredient {
 	}
 
 	@Override
-	public boolean kjs$isWildcard() {
-		return true;
-	}
-
-	@Override
 	public void dissolve() {
 		if (this.itemStacks == null) {
 			this.itemStacks = ItemStackJS.getList().toArray(new ItemStack[0]);

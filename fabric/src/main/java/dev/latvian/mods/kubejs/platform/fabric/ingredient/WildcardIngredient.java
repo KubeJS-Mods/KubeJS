@@ -1,22 +1,25 @@
 package dev.latvian.mods.kubejs.platform.fabric.ingredient;
 
-import com.faux.ingredientextension.api.ingredient.serializer.IIngredientSerializer;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class WildcardIngredient extends KubeJSIngredient {
-	public static WildcardIngredient INSTANCE = new WildcardIngredient();
-	public static final KubeJSIngredientSerializer<WildcardIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(json -> INSTANCE, buf -> INSTANCE);
+	public static final WildcardIngredient INSTANCE = new WildcardIngredient();
+	public static final KubeJSIngredientSerializer<WildcardIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(KubeJS.id("wildcard"), json -> INSTANCE, buf -> INSTANCE);
+	public static final Ingredient VANILLA_INSTANCE = INSTANCE.toVanilla();
 
 	private WildcardIngredient() {
 	}
 
 	@Override
-	public IIngredientSerializer<? extends Ingredient> getSerializer() {
+	public KubeJSIngredientSerializer<?> getSerializer() {
 		return SERIALIZER;
 	}
 
@@ -26,15 +29,8 @@ public class WildcardIngredient extends KubeJSIngredient {
 	}
 
 	@Override
-	public boolean kjs$isWildcard() {
-		return true;
-	}
-
-	@Override
-	public void dissolve() {
-		if (this.itemStacks == null) {
-			this.itemStacks = ItemStackJS.getList().toArray(new ItemStack[0]);
-		}
+	public List<ItemStack> getMatchingStacks() {
+		return ItemStackJS.getList();
 	}
 
 	@Override

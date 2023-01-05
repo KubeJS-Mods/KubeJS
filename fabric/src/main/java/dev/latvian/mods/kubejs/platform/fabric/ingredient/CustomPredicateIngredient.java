@@ -1,20 +1,20 @@
 package dev.latvian.mods.kubejs.platform.fabric.ingredient;
 
-import com.faux.ingredientextension.api.ingredient.serializer.IIngredientSerializer;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
-import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public class CustomPredicateIngredient extends KubeJSIngredient {
-	public static final KubeJSIngredientSerializer<CustomPredicateIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(CustomPredicateIngredient::new, CustomPredicateIngredient::new);
+	public static final KubeJSIngredientSerializer<CustomPredicateIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(KubeJS.id("custom_predicate"), CustomPredicateIngredient::new, CustomPredicateIngredient::new);
 
 	private final Ingredient parent;
 	private final UUID uuid;
@@ -39,14 +39,8 @@ public class CustomPredicateIngredient extends KubeJSIngredient {
 	}
 
 	@Override
-	public ItemStack[] getItems() {
-		return parent.getItems();
-	}
-
-	@Override
-	@NotNull
-	public IntList getStackingIds() {
-		return parent.getStackingIds();
+	public List<ItemStack> getMatchingStacks() {
+		return Arrays.asList(parent.getItems());
 	}
 
 	@Override
@@ -60,7 +54,7 @@ public class CustomPredicateIngredient extends KubeJSIngredient {
 	}
 
 	@Override
-	public IIngredientSerializer<CustomPredicateIngredient> getSerializer() {
+	public KubeJSIngredientSerializer<?> getSerializer() {
 		return SERIALIZER;
 	}
 

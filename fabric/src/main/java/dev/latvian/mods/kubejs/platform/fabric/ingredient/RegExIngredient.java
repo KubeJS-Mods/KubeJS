@@ -1,17 +1,19 @@
 package dev.latvian.mods.kubejs.platform.fabric.ingredient;
 
-import com.faux.ingredientextension.api.ingredient.serializer.IIngredientSerializer;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class RegExIngredient extends KubeJSIngredient {
-	public static final KubeJSIngredientSerializer<RegExIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(RegExIngredient::new, RegExIngredient::new);
+	public static final KubeJSIngredientSerializer<RegExIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(KubeJS.id("regex"), RegExIngredient::new, RegExIngredient::new);
 
 	public final Pattern pattern;
 
@@ -33,7 +35,20 @@ public class RegExIngredient extends KubeJSIngredient {
 	}
 
 	@Override
-	public IIngredientSerializer<? extends Ingredient> getSerializer() {
+	public List<ItemStack> getMatchingStacks() {
+		var list = new ArrayList<ItemStack>();
+
+		for (var item : KubeJSRegistries.items()) {
+			if (pattern.matcher(item.kjs$getId()).find()) {
+				list.add(item.getDefaultInstance());
+			}
+		}
+
+		return list;
+	}
+
+	@Override
+	public KubeJSIngredientSerializer<?> getSerializer() {
 		return SERIALIZER;
 	}
 
