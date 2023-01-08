@@ -116,7 +116,7 @@ public interface IngredientKJS extends IngredientSupplierKJS, JsonSerializable {
 	}
 
 	default boolean kjs$isWildcard() {
-		return false;
+		return this == IngredientPlatformHelper.get().wildcard();
 	}
 
 	@Override

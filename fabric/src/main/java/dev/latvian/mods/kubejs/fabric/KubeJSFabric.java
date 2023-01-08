@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.fabric;
 
-import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
@@ -20,9 +19,7 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 			throw new RuntimeException(throwable);
 		}
 
-		if (!CommonProperties.get().serverOnly) {
-			IngredientPlatformHelperImpl.register();
-		}
+		IngredientPlatformHelperImpl.register();
 	}
 
 	@Override

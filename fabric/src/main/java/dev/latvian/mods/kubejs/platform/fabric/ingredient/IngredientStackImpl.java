@@ -1,19 +1,22 @@
 package dev.latvian.mods.kubejs.platform.fabric.ingredient;
 
-import com.faux.ingredientextension.api.ingredient.serializer.IIngredientSerializer;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.core.IngredientKJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
+import net.fabricmc.fabric.impl.recipe.ingredient.CustomIngredientImpl;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class IngredientStackImpl extends KubeJSIngredient implements IngredientStack {
-	public static final KubeJSIngredientSerializer<IngredientStackImpl> SERIALIZER = new KubeJSIngredientSerializer<>(IngredientStackImpl::new, IngredientStackImpl::new);
+	public static final KubeJSIngredientSerializer<IngredientStackImpl> SERIALIZER = new KubeJSIngredientSerializer<>(KubeJS.id("stack"), IngredientStackImpl::new, IngredientStackImpl::new);
 
 	private final Ingredient ingredient;
 	private final int count;
@@ -39,7 +42,20 @@ public class IngredientStackImpl extends KubeJSIngredient implements IngredientS
 	}
 
 	@Override
-	public IIngredientSerializer<? extends Ingredient> getSerializer() {
+	public List<ItemStack> getMatchingStacks() {
+		var list = new ArrayList<ItemStack>();
+
+		for (var stack : ingredient.getItems()) {
+			stack = stack.copy();
+			stack.setCount(count);
+			list.add(stack);
+		}
+
+		return list;
+	}
+
+	@Override
+	public KubeJSIngredientSerializer<?> getSerializer() {
 		return SERIALIZER;
 	}
 
@@ -56,23 +72,6 @@ public class IngredientStackImpl extends KubeJSIngredient implements IngredientS
 	}
 
 	@Override
-	public IngredientStackImpl kjs$asStack() {
-		return this;
-	}
-
-	@Override
-	public Ingredient kjs$withCount(int count) {
-		return count < 1 ? Ingredient.EMPTY : count == 1 ? ingredient : new IngredientStackImpl(ingredient, count);
-	}
-
-	@Override
-	public List<Ingredient> kjs$unwrapStackIngredient() {
-		Ingredient[] array = new Ingredient[count];
-		Arrays.fill(array, ingredient);
-		return Arrays.asList(array);
-	}
-
-	@Override
 	public Ingredient getIngredient() {
 		return ingredient;
 	}
@@ -80,5 +79,38 @@ public class IngredientStackImpl extends KubeJSIngredient implements IngredientS
 	@Override
 	public int getCount() {
 		return count;
+	}
+
+	@Override
+	@SuppressWarnings("NonExtendableApiUsage")
+	public Ingredient toVanilla() {
+		return new IngredientImpl(this);
+	}
+
+	@SuppressWarnings("UnstableApiUsage")
+	private static class IngredientImpl extends CustomIngredientImpl implements IngredientKJS {
+		private final IngredientStackImpl ingredientStack;
+
+		public IngredientImpl(IngredientStackImpl in) {
+			super(in);
+			ingredientStack = in;
+		}
+
+		@Override
+		public IngredientStackImpl kjs$asStack() {
+			return ingredientStack;
+		}
+
+		@Override
+		public Ingredient kjs$withCount(int count) {
+			return count < 1 ? Ingredient.EMPTY : count == 1 ? ingredientStack.ingredient : new IngredientStackImpl(ingredientStack.ingredient, count).toVanilla();
+		}
+
+		@Override
+		public List<Ingredient> kjs$unwrapStackIngredient() {
+			Ingredient[] array = new Ingredient[ingredientStack.count];
+			Arrays.fill(array, ingredientStack.ingredient);
+			return Arrays.asList(array);
+		}
 	}
 }

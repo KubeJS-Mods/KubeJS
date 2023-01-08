@@ -6,6 +6,6 @@ import net.minecraft.resources.ResourceLocation;
 public record IDFilter(ResourceLocation id) implements BiomeFilter {
 	@Override
 	public boolean test(BiomeModifications.BiomeContext ctx) {
-		return ctx.getKey().equals(id);
+		return ctx.getKey().map(id::equals).orElse(false);
 	}
 }

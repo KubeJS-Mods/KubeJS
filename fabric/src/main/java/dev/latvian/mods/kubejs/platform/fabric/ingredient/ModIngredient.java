@@ -1,14 +1,17 @@
 package dev.latvian.mods.kubejs.platform.fabric.ingredient;
 
-import com.faux.ingredientextension.api.ingredient.serializer.IIngredientSerializer;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.KubeJSRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ModIngredient extends KubeJSIngredient {
-	public static final KubeJSIngredientSerializer<ModIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(ModIngredient::ofModFromJson, ModIngredient::ofModFromNetwork);
+	public static final KubeJSIngredientSerializer<ModIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(KubeJS.id("mod"), ModIngredient::ofModFromJson, ModIngredient::ofModFromNetwork);
 
 	public static ModIngredient ofModFromNetwork(FriendlyByteBuf buf) {
 		return new ModIngredient(buf.readUtf());
@@ -30,7 +33,20 @@ public class ModIngredient extends KubeJSIngredient {
 	}
 
 	@Override
-	public IIngredientSerializer<? extends Ingredient> getSerializer() {
+	public List<ItemStack> getMatchingStacks() {
+		var list = new ArrayList<ItemStack>();
+
+		for (var item : KubeJSRegistries.items()) {
+			if (item.kjs$getMod().equals(mod)) {
+				list.add(item.getDefaultInstance());
+			}
+		}
+
+		return list;
+	}
+
+	@Override
+	public KubeJSIngredientSerializer<?> getSerializer() {
 		return SERIALIZER;
 	}
 
