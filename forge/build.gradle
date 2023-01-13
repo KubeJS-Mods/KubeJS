@@ -51,12 +51,13 @@ dependencies {
 	modLocalRuntime modCompileOnly("net.darkhax.bookshelf:Bookshelf-Forge-1.18.2:13.2.48")
 	modLocalRuntime modCompileOnly("net.darkhax.gamestages:GameStages-Forge-1.18.2:8.0.2")
 
-	modCompileOnly("mezz.jei:jei-1.18.2:${rootProject.forge_jei_version}:api")
+	modCompileOnly("mezz.jei:jei-1.18.2-common-api:${rootProject.forge_jei_version}")
+	modCompileOnly("mezz.jei:jei-1.18.2-forge-api:${rootProject.forge_jei_version}")
 	modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}")
 
 	def jeiAtRuntime = true
 	if (jeiAtRuntime) {
-		modLocalRuntime("mezz.jei:jei-1.18.2:${rootProject.forge_jei_version}")
+		modLocalRuntime("mezz.jei:jei-1.18.2-forge:${rootProject.forge_jei_version}") {transitive false}
 	} else {
 		modLocalRuntime("me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}")
 	}
