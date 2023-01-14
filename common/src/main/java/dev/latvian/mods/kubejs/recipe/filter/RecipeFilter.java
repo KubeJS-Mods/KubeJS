@@ -77,7 +77,7 @@ public interface RecipeFilter extends Predicate<RecipeKJS> {
 
 			if (id != null) {
 				var pattern = UtilsJS.parseRegex(id);
-				predicate.list.add(pattern == null ? new IDFilter(UtilsJS.getMCID(cx, id)) : new RegexIDFilter(pattern));
+				predicate.list.add(pattern == null ? new IDFilter(UtilsJS.getMCID(cx, id)) : RegexIDFilter.of(pattern));
 			}
 
 			var type = map.get("type");
