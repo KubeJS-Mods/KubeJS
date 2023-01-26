@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.bindings;
 
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.player.Player;
 
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -10,6 +11,14 @@ public class DamageSourceWrapper {
 	private static Map<String, DamageSource> damageSourceMap;
 
 	public static DamageSource of(Object name) {
+		if (name instanceof DamageSource damageSource) {
+			return damageSource;
+		}
+
+		if (name instanceof Player player) {
+			return DamageSource.playerAttack(player);
+		}
+
 		if (damageSourceMap == null) {
 			damageSourceMap = new HashMap<>();
 
