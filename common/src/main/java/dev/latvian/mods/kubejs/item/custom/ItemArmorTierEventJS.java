@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  */
 public class ItemArmorTierEventJS extends StartupEventJS {
 	public void add(String id, String parent, Consumer<MutableArmorTier> tier) {
-		var material = ItemBuilder.ofArmorMaterial(parent);
+		var material = ItemBuilder.toArmorMaterial(parent);
 		var fullId = KubeJS.appendModId(id);
 		var t = new MutableArmorTier(fullId, material);
 		tier.accept(t);
