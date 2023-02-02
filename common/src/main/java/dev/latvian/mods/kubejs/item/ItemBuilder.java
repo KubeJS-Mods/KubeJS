@@ -65,7 +65,11 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		}
 	}
 
-	public static ArmorMaterial ofArmorMaterial(Object o) {
+	public static ArmorMaterial toArmorMaterial(Object o) {
+		if (o instanceof ArmorMaterial armorMaterial) {
+			return armorMaterial;
+		}
+
 		String asString = String.valueOf(o);
 
 		ArmorMaterial armorMaterial = ItemBuilder.ARMOR_TIERS.get(asString);
@@ -75,6 +79,22 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 		String withKube = KubeJS.appendModId(asString);
 		return ItemBuilder.ARMOR_TIERS.getOrDefault(withKube, ArmorMaterials.IRON);
+	}
+
+	public static Tier toToolTier(Object o) {
+		if (o instanceof Tier tier) {
+			return tier;
+		}
+
+		String asString = String.valueOf(o);
+
+		Tier toolTier = ItemBuilder.TOOL_TIERS.get(asString);
+		if (toolTier != null) {
+			return toolTier;
+		}
+
+		String withKube = KubeJS.appendModId(asString);
+		return ItemBuilder.TOOL_TIERS.getOrDefault(withKube, Tiers.IRON);
 	}
 
 	public transient int maxStackSize;

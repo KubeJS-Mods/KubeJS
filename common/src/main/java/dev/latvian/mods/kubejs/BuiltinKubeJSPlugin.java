@@ -130,7 +130,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -417,8 +416,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(RecipeFilter.class, RecipeFilter::of);
 		typeWrappers.registerSimple(MaterialJS.class, MaterialListJS.INSTANCE::of);
 		typeWrappers.registerSimple(IngredientActionFilter.class, IngredientActionFilter::filterOf);
-		typeWrappers.registerSimple(Tier.class, o -> ItemBuilder.TOOL_TIERS.getOrDefault(String.valueOf(o), Tiers.IRON));
-		typeWrappers.registerSimple(ArmorMaterial.class, ItemBuilder::ofArmorMaterial);
+		typeWrappers.registerSimple(Tier.class, ItemBuilder::toToolTier);
+		typeWrappers.registerSimple(ArmorMaterial.class, ItemBuilder::toArmorMaterial);
 		typeWrappers.registerSimple(PlayerSelector.class, PlayerSelector::of);
 		typeWrappers.registerSimple(DamageSource.class, DamageSourceWrapper::of);
 		typeWrappers.registerSimple(EntitySelector.class, UtilsJS::entitySelector);
