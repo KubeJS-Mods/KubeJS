@@ -128,7 +128,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.levelgen.GenerationStep;
@@ -420,8 +419,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(RecipeFilter.class, RecipeFilter::of);
 		typeWrappers.register(MaterialJS.class, MaterialListJS.INSTANCE::of);
 		typeWrappers.register(IngredientActionFilter.class, IngredientActionFilter::filterOf);
-		typeWrappers.register(Tier.class, o -> ItemBuilder.TOOL_TIERS.getOrDefault(String.valueOf(o), Tiers.IRON));
-		typeWrappers.register(ArmorMaterial.class, ItemBuilder::ofArmorMaterial);
+		typeWrappers.register(Tier.class, ItemBuilder::toToolTier);
+		typeWrappers.register(ArmorMaterial.class, ItemBuilder::toArmorMaterial);
 		typeWrappers.register(PlayerSelector.class, PlayerSelector::of);
 
 		// components //

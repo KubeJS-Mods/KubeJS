@@ -25,24 +25,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.ArmorMaterials;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.Tiers;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -65,7 +52,11 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		}
 	}
 
-	public static ArmorMaterial ofArmorMaterial(Object o) {
+	public static ArmorMaterial toArmorMaterial(Object o) {
+		if (o instanceof ArmorMaterial armorMaterial) {
+			return armorMaterial;
+		}
+
 		String asString = String.valueOf(o);
 
 		ArmorMaterial armorMaterial = ItemBuilder.ARMOR_TIERS.get(asString);
@@ -75,6 +66,22 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 		String withKube = KubeJS.appendModId(asString);
 		return ItemBuilder.ARMOR_TIERS.getOrDefault(withKube, ArmorMaterials.IRON);
+	}
+
+	public static Tier toToolTier(Object o) {
+		if (o instanceof Tier tier) {
+			return tier;
+		}
+
+		String asString = String.valueOf(o);
+
+		Tier toolTier = ItemBuilder.TOOL_TIERS.get(asString);
+		if (toolTier != null) {
+			return toolTier;
+		}
+
+		String withKube = KubeJS.appendModId(asString);
+		return ItemBuilder.TOOL_TIERS.getOrDefault(withKube, Tiers.IRON);
 	}
 
 	public transient int maxStackSize;
