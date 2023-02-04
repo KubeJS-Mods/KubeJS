@@ -379,6 +379,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("BlockProperties", BlockStateProperties.class);
 
 		KubeJS.PROXY.clientBindings(event);
+		KubeJSPlugins.addSidedBindings(event);
 	}
 
 	@Override

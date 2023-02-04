@@ -5,6 +5,7 @@ import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
+import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.util.stream.Stream;
 public class KubeJSPlugins {
 	private static final List<KubeJSPlugin> LIST = new ArrayList<>();
 	private static final List<String> GLOBAL_CLASS_FILTER = new ArrayList<>();
+	private static final ModResourceBindings BINDINGS = new ModResourceBindings();
 
 	public static void load(List<Mod> mods) {
 		try {
@@ -41,6 +43,8 @@ public class KubeJSPlugins {
 		if (pc.isPresent()) {
 			GLOBAL_CLASS_FILTER.addAll(Files.readAllLines(pc.get()));
 		}
+
+		BINDINGS.readBindings(mod);
 	}
 
 	private static void loadFromFile(Stream<String> contents, String source) {
@@ -104,5 +108,9 @@ public class KubeJSPlugins {
 
 	public static List<KubeJSPlugin> getAll() {
 		return Collections.unmodifiableList(LIST);
+	}
+
+	public static void addSidedBindings(BindingsEvent event) {
+		BINDINGS.addBindings(event);
 	}
 }
