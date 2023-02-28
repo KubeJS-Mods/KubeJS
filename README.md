@@ -56,7 +56,7 @@ modImplementation("dev.latvian.mods:kubejs-<loader>:${kubejs_version}")
 implementation fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
 
 // these two are unfortunately needed since fg.deobf doesn't respect transitive dependencies yet
-implementation fg.deobf("dev.latvian.mods:rhino:${rhino_version}")
+implementation fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
 implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
 ```
 
