@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.platform.forge.ingredient.CreativeTabIngredient;
 import dev.latvian.mods.kubejs.platform.forge.ingredient.CustomIngredient;
 import dev.latvian.mods.kubejs.platform.forge.ingredient.CustomPredicateIngredient;
-import dev.latvian.mods.kubejs.platform.forge.ingredient.IngredientStackImpl;
 import dev.latvian.mods.kubejs.platform.forge.ingredient.ModIngredient;
 import dev.latvian.mods.kubejs.platform.forge.ingredient.RegExIngredient;
 import dev.latvian.mods.kubejs.platform.forge.ingredient.WildcardIngredient;
@@ -26,18 +25,12 @@ import java.util.regex.Pattern;
 
 public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 	public static void register() {
-		CraftingHelper.register(KubeJS.id("stack"), IngredientStackImpl.SERIALIZER);
 		CraftingHelper.register(KubeJS.id("wildcard"), WildcardIngredient.SERIALIZER);
 		CraftingHelper.register(KubeJS.id("custom"), CustomIngredient.SERIALIZER);
 		CraftingHelper.register(KubeJS.id("custom_predicate"), CustomPredicateIngredient.SERIALIZER);
 		CraftingHelper.register(KubeJS.id("mod"), ModIngredient.SERIALIZER);
 		CraftingHelper.register(KubeJS.id("regex"), RegExIngredient.SERIALIZER);
 		CraftingHelper.register(KubeJS.id("creative_tab"), CreativeTabIngredient.SERIALIZER);
-	}
-
-	@Override
-	public Ingredient stack(Ingredient ingredient, int count) {
-		return new IngredientStackImpl(ingredient, count);
 	}
 
 	@Override
@@ -93,5 +86,10 @@ public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
 	@Override
 	public Ingredient weakNBT(ItemStack item) {
 		return item.getTag() == null ? item.kjs$asIngredient() : PartialNBTIngredient.of(item.getItem(), item.getTag().copy());
+	}
+
+	@Override
+	public boolean isWildcard(Ingredient ingredient) {
+		return ingredient == WildcardIngredient.INSTANCE;
 	}
 }

@@ -9,9 +9,8 @@ import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
+import dev.latvian.mods.kubejs.item.InputItem;
+import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.DamageAction;
@@ -43,6 +42,7 @@ public abstract class RecipeJS implements RecipeKJS {
 	public static RecipeJS currentRecipe = null;
 	public static boolean itemErrors = false;
 
+	public RecipesEventJS event;
 	public ResourceLocation id;
 	public RecipeTypeJS type;
 	public JsonObject originalJson = null;
@@ -138,7 +138,7 @@ public abstract class RecipeJS implements RecipeKJS {
 
 	@Override
 	@Deprecated
-	public final boolean kjs$replaceInput(IngredientMatch match, Ingredient with, ItemInputTransformer transformer) {
+	public final boolean kjs$replaceInput(IngredientMatch match, InputItem with, InputItemTransformer transformer) {
 		return replaceInput(match, with, transformer);
 	}
 
@@ -150,7 +150,7 @@ public abstract class RecipeJS implements RecipeKJS {
 
 	@Override
 	@Deprecated
-	public final boolean kjs$replaceOutput(IngredientMatch match, ItemStack with, ItemOutputTransformer transformer) {
+	public final boolean kjs$replaceOutput(IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
 		return replaceOutput(match, with, transformer);
 	}
 
@@ -160,13 +160,13 @@ public abstract class RecipeJS implements RecipeKJS {
 	public abstract boolean hasInput(IngredientMatch match);
 
 	@HideFromJS
-	public abstract boolean replaceInput(IngredientMatch match, Ingredient with, ItemInputTransformer transformer);
+	public abstract boolean replaceInput(IngredientMatch match, InputItem with, InputItemTransformer transformer);
 
 	@HideFromJS
 	public abstract boolean hasOutput(IngredientMatch match);
 
 	@HideFromJS
-	public abstract boolean replaceOutput(IngredientMatch match, ItemStack with, ItemOutputTransformer transformer);
+	public abstract boolean replaceOutput(IngredientMatch match, OutputItem with, OutputItemTransformer transformer);
 
 	/*
 
@@ -297,20 +297,12 @@ public abstract class RecipeJS implements RecipeKJS {
 		return null;
 	}
 
-	@Nullable
-	public JsonElement serializeIngredientStack(IngredientStack in) {
-		return null;
-	}
+	public InputItem parseInputItem(@Nullable Object o, String key) {
+		var ingredient = InputItem.of(o);
 
-	@Nullable
-	public JsonElement serializeItemStack(ItemStack stack) {
-		return null;
-	}
-
-	public Ingredient parseItemInput(@Nullable Object o, String key) {
-		var ingredient = IngredientJS.of(o);
-
-		if (ingredient.kjs$isInvalidRecipeIngredient()) {
+		if (ingredient.isEmpty() && !key.isEmpty()) {
+			return ingredient;
+		} else if (ingredient.ingredient == Ingredient.EMPTY) {
 			if (key.isEmpty()) {
 				throw new RecipeExceptionJS(o + " is not a valid ingredient!");
 			} else {
@@ -321,52 +313,62 @@ public abstract class RecipeJS implements RecipeKJS {
 		return ingredient;
 	}
 
-	public Ingredient parseItemInput(@Nullable Object o) {
-		return parseItemInput(o, "");
+	public InputItem parseInputItem(@Nullable Object o) {
+		return parseInputItem(o, "");
 	}
 
-	public ItemStack parseItemOutput(@Nullable Object o) {
-		var result = ItemStackJS.of(o);
+	public OutputItem parseOutputItem(@Nullable Object o) {
+		var result = OutputItem.of(o);
 
-		if (result == null || result.isEmpty()) {
+		if (result.isEmpty()) {
 			throw new RecipeExceptionJS(o + " is not a valid result!");
 		}
 
 		return result;
 	}
 
-	public List<Ingredient> parseItemInputList(@Nullable Object o) {
-		List<Ingredient> list = new ArrayList<>();
-
+	public List<InputItem> parseInputItemList(@Nullable Object o) {
 		if (o instanceof JsonElement elem) {
-			var array = elem instanceof JsonArray arr ? arr : Util.make(new JsonArray(), (arr) -> arr.add(elem));
-			for (var e : array) {
-				list.add(parseItemInput(e));
-			}
-		} else {
-			for (var o1 : ListJS.orSelf(o)) {
-				list.add(parseItemInput(o1));
-			}
-		}
+			var array = JsonIO.toArray(elem);
+			var list = new ArrayList<InputItem>(array.size());
 
-		return list;
+			for (var e : array) {
+				list.add(parseInputItem(e));
+			}
+
+			return list;
+		} else {
+			var list0 = ListJS.orSelf(o);
+			var list = new ArrayList<InputItem>(list0.size());
+
+			for (var o1 : list0) {
+				list.add(parseInputItem(o1));
+			}
+
+			return list;
+		}
 	}
 
-	public List<ItemStack> parseItemOutputList(@Nullable Object o) {
-		List<ItemStack> list = new ArrayList<>();
-
+	public List<OutputItem> parseOutputItemList(@Nullable Object o) {
 		if (o instanceof JsonElement elem) {
-			var array = elem instanceof JsonArray arr ? arr : Util.make(new JsonArray(), (arr) -> arr.add(elem));
-			for (var e : array) {
-				list.add(parseItemOutput(e));
-			}
-		} else {
-			for (var o1 : ListJS.orSelf(o)) {
-				list.add(parseItemOutput(o1));
-			}
-		}
+			var array = JsonIO.toArray(elem);
+			var list = new ArrayList<OutputItem>(array.size());
 
-		return list;
+			for (var e : array) {
+				list.add(parseOutputItem(e));
+			}
+
+			return list;
+		} else {
+			var list0 = ListJS.orSelf(o);
+			var list = new ArrayList<OutputItem>(list0.size());
+
+			for (var o1 : list0) {
+				list.add(parseOutputItem(o1));
+			}
+
+			return list;
+		}
 	}
 
 	public String getFromToString() {
@@ -474,7 +476,23 @@ public abstract class RecipeJS implements RecipeKJS {
 		return this;
 	}
 
-	public JsonElement itemToJson(ItemStack stack) {
-		return stack.toJsonJS();
+	public JsonElement inputToJson(InputItem in) {
+		return in.ingredient.toJson();
+	}
+
+	public JsonElement outputToJson(OutputItem out) {
+		var json = new JsonObject();
+		json.addProperty("item", out.item.kjs$getId());
+		json.addProperty("count", out.item.getCount());
+
+		if (out.item.getTag() != null) {
+			json.addProperty("nbt", out.item.getTag().toString());
+		}
+
+		if (out.hasChance()) {
+			json.addProperty("chance", out.getChance());
+		}
+
+		return json;
 	}
 }

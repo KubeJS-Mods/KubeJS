@@ -22,17 +22,13 @@ import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
  * @author LatvianModder
  */
 public interface IngredientJS {
-	Map<String, Ingredient> PARSE_CACHE = new HashMap<>();
-
 	static Ingredient of(@Nullable Object o) {
 		while (o instanceof Wrapper w) {
 			o = w.unwrap();
@@ -53,31 +49,7 @@ public interface IngredientJS {
 		} else if (o instanceof JsonElement json) {
 			return ofJson(json);
 		} else if (o instanceof CharSequence) {
-			var os = o.toString();
-			var s = os;
-
-			var cached = PARSE_CACHE.get(os);
-
-			if (cached != null) {
-				return cached;
-			}
-
-			var count = 1;
-			var spaceIndex = s.indexOf(' ');
-
-			if (spaceIndex >= 2 && s.indexOf('x') == spaceIndex - 1) {
-				count = Integer.parseInt(s.substring(0, spaceIndex - 1));
-				s = s.substring(spaceIndex + 1);
-			}
-
-			if (RecipeJS.itemErrors && count <= 0) {
-				throw new RecipeExceptionJS("Invalid count!").error();
-			}
-
-			cached = parse(s);
-			cached = cached.kjs$withCount(count);
-			PARSE_CACHE.put(os, cached);
-			return cached;
+			return parse(o.toString());
 		}
 
 		List<?> list = ListJS.of(o);
@@ -177,49 +149,13 @@ public interface IngredientJS {
 	}
 
 	static Ingredient ofJson(JsonElement json) {
-		if (json.isJsonArray()) {
-			var inList = new ArrayList<Ingredient>();
-
-			for (var e : json.getAsJsonArray()) {
-				var i = ofJson(e);
-
-				if (i != Ingredient.EMPTY) {
-					inList.add(i);
-				}
-			}
-
-			if (inList.isEmpty()) {
-				return Ingredient.EMPTY;
-			} else if (inList.size() == 1) {
-				return inList.get(0);
-			} else {
-				return IngredientPlatformHelper.get().or(inList.toArray(new Ingredient[0]));
-			}
+		if (json == null || json.isJsonNull() || json.isJsonArray() && json.getAsJsonArray().isEmpty()) {
+			return Ingredient.EMPTY;
 		} else if (json.isJsonPrimitive()) {
 			return of(json.getAsString());
-		} else if (json.isJsonObject()) {
-			var o = json.getAsJsonObject();
-			var val = o.has("value");
-			var count = o.has("count") ? o.get("count").getAsInt() : 1;
-
-			if (o.has("type")) {
-				try {
-					return RecipePlatformHelper.get().getCustomIngredient(o).kjs$withCount(count);
-				} catch (Exception ex) {
-					throw new RecipeExceptionJS("Failed to parse custom ingredient (" + o.get("type") + ") from " + o + ": " + ex);
-				}
-			} else if (val || o.has("ingredient")) {
-				return ofJson(val ? o.get("value") : o.get("ingredient")).kjs$withCount(count);
-			} else if (o.has("tag")) {
-				return IngredientPlatformHelper.get().tag(o.get("tag").getAsString()).kjs$withCount(count);
-			} else if (o.has("item")) {
-				return ItemStackJS.of(o.get("item").getAsString()).getItem().kjs$asIngredient().kjs$withCount(count);
-			}
-
-			return Ingredient.EMPTY;
+		} else {
+			return Ingredient.fromJson(json);
 		}
-
-		return Ingredient.EMPTY;
 	}
 
 	static Ingredient ofNetwork(FriendlyByteBuf buf) {

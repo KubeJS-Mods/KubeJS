@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.item;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
@@ -79,6 +78,8 @@ public interface ItemStackJS {
 			return ItemStack.EMPTY;
 		} else if (o instanceof ItemStack stack) {
 			return stack.isEmpty() ? ItemStack.EMPTY : stack;
+		} else if (o instanceof OutputItem out) {
+			return out.item;
 		} else if (o instanceof Ingredient ingr) {
 			return ingr.kjs$getFirst();
 		} else if (o instanceof ResourceLocation id) {
@@ -290,7 +291,7 @@ public interface ItemStackJS {
 		CACHED_ITEM_LIST.forget();
 		CACHED_ITEM_TYPE_LIST.forget();
 		PARSE_CACHE.clear();
-		IngredientJS.PARSE_CACHE.clear();
+		InputItem.PARSE_CACHE.clear();
 	}
 
 	/*

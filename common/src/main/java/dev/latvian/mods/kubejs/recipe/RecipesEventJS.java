@@ -9,6 +9,8 @@ import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.item.InputItem;
+import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
@@ -24,8 +26,6 @@ import net.minecraft.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -40,8 +40,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -58,11 +58,11 @@ public class RecipesEventJS extends EventJS {
 
 	public static RecipesEventJS instance;
 
-	private final List<Recipe<?>> fallbackedRecipes = new ArrayList<>();
+	private final List<Recipe<?>> fallbackedRecipes;
 	private final List<RecipeJS> originalRecipes;
 	final List<RecipeJS> addedRecipes;
-	private final Set<RecipeJS> removedRecipes;
-	private final Set<RecipeJS> modifiedRecipes;
+	private final Map<ResourceLocation, RecipeJS> removedRecipes;
+	private final Map<ResourceLocation, RecipeJS> modifiedRecipes;
 	private final Map<String, Object> recipeFunctions;
 	private AtomicInteger modifiedRecipesCount;
 
@@ -76,13 +76,14 @@ public class RecipesEventJS extends EventJS {
 	public final RecipeFunction smithing;
 
 	public RecipesEventJS(Map<ResourceLocation, RecipeTypeJS> t) {
+		fallbackedRecipes = new ArrayList<>();
 		originalRecipes = new ArrayList<>();
 
 		ConsoleJS.SERVER.info("Scanning recipes...");
 
 		addedRecipes = new ArrayList<>();
-		removedRecipes = new HashSet<>();
-		modifiedRecipes = new HashSet<>();
+		removedRecipes = new ConcurrentHashMap<>();
+		modifiedRecipes = new ConcurrentHashMap<>();
 
 		recipeFunctions = new HashMap<>();
 
@@ -203,6 +204,7 @@ public class RecipesEventJS extends EventJS {
 				}
 
 				var recipe = function.type.factory.get();
+				recipe.event = this;
 				recipe.id = recipeId;
 				recipe.type = function.type;
 				recipe.json = json;
@@ -268,7 +270,7 @@ public class RecipesEventJS extends EventJS {
 		timer.reset().start();
 		originalRecipes.stream()
 				.filter(recipe -> {
-					if (removedRecipes.contains(recipe)) {
+					if (removedRecipes.containsKey(recipe.getOrCreateId())) {
 						removed.increment();
 						return false;
 					}
@@ -337,7 +339,7 @@ public class RecipesEventJS extends EventJS {
 				});
 
 		if (DataExport.dataExport != null) {
-			for (var r : removedRecipes) {
+			for (var r : removedRecipes.values()) {
 				if (allRecipeMap.get(r.getId()) instanceof JsonObject json) {
 					json.addProperty("removed", true);
 				}
@@ -366,19 +368,19 @@ public class RecipesEventJS extends EventJS {
 			ConsoleJS.SERVER.info("======== Debug output of all added recipes ========");
 
 			for (var r : addedRecipes) {
-				ConsoleJS.SERVER.info(r.id + ": " + r.json);
+				ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json);
 			}
 
 			ConsoleJS.SERVER.info("======== Debug output of all modified recipes ========");
 
-			for (var r : modifiedRecipes) {
-				ConsoleJS.SERVER.info(r.id + ": " + r.json + " FROM " + r.originalJson);
+			for (var r : modifiedRecipes.values()) {
+				ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json + " FROM " + r.originalJson);
 			}
 
 			ConsoleJS.SERVER.info("======== Debug output of all removed recipes ========");
 
-			for (var r : removedRecipes) {
-				ConsoleJS.SERVER.info(r.id + ": " + r.json);
+			for (var r : removedRecipes.values()) {
+				ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json);
 			}
 		}
 	}
@@ -447,7 +449,7 @@ public class RecipesEventJS extends EventJS {
 		var count = new MutableInt();
 		forEachRecipeAsync(filter, r ->
 		{
-			if (removedRecipes.add(r)) {
+			if (removedRecipes.put(r.getOrCreateId(), r) != r) {
 				if (DevProperties.get().logRemovedRecipes) {
 					ConsoleJS.SERVER.info("- " + r + ": " + r.getFromToString());
 				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
@@ -460,9 +462,9 @@ public class RecipesEventJS extends EventJS {
 		return count.getValue();
 	}
 
-	public int replaceInput(RecipeFilter filter, IngredientMatch match, Ingredient with, ItemInputTransformer transformer) {
+	public int replaceInput(RecipeFilter filter, IngredientMatch match, InputItem with, InputItemTransformer transformer) {
 		var count = new AtomicInteger();
-		var is = match.toString();
+		var is = match.ingredient.toString();
 		var ws = with.toString();
 
 		forEachRecipeAsync(filter, r -> {
@@ -470,7 +472,7 @@ public class RecipesEventJS extends EventJS {
 				r.serializeInputs = true;
 				r.save();
 				count.incrementAndGet();
-				modifiedRecipes.add(r);
+				modifiedRecipes.put(r.getOrCreateId(), r);
 
 				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + ": IN " + is + " -> " + ws);
@@ -484,14 +486,14 @@ public class RecipesEventJS extends EventJS {
 		return count.get();
 	}
 
-	public int replaceInput(RecipeFilter filter, IngredientMatch match, Ingredient with) {
-		return replaceInput(filter, match, with, ItemInputTransformer.DEFAULT);
+	public int replaceInput(RecipeFilter filter, IngredientMatch match, InputItem with) {
+		return replaceInput(filter, match, with, InputItemTransformer.DEFAULT);
 	}
 
-	public int replaceOutput(RecipeFilter filter, IngredientMatch match, ItemStack with, ItemOutputTransformer transformer) {
+	public int replaceOutput(RecipeFilter filter, IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
 		var count = new AtomicInteger();
 		var is = match.ingredient.toString();
-		var ws = with.kjs$toItemString();
+		var ws = with.toString();
 
 		forEachRecipeAsync(filter, r ->
 		{
@@ -499,7 +501,7 @@ public class RecipesEventJS extends EventJS {
 				r.serializeOutputs = true;
 				r.save();
 				count.incrementAndGet();
-				modifiedRecipes.add(r);
+				modifiedRecipes.put(r.getOrCreateId(), r);
 
 				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + ": OUT " + is + " -> " + ws);
@@ -513,8 +515,8 @@ public class RecipesEventJS extends EventJS {
 		return count.get();
 	}
 
-	public int replaceOutput(RecipeFilter filter, IngredientMatch match, ItemStack with) {
-		return replaceOutput(filter, match, with, ItemOutputTransformer.DEFAULT);
+	public int replaceOutput(RecipeFilter filter, IngredientMatch match, OutputItem with) {
+		return replaceOutput(filter, match, with, OutputItemTransformer.DEFAULT);
 	}
 
 	public RecipeFunction getRecipeFunction(@Nullable String id) {

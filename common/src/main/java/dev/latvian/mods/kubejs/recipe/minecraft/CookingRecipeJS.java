@@ -3,25 +3,25 @@ package dev.latvian.mods.kubejs.recipe.minecraft;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import dev.architectury.platform.Platform;
+import dev.latvian.mods.kubejs.item.InputItem;
+import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.IngredientMatch;
-import dev.latvian.mods.kubejs.recipe.ItemInputTransformer;
-import dev.latvian.mods.kubejs.recipe.ItemOutputTransformer;
+import dev.latvian.mods.kubejs.recipe.InputItemTransformer;
+import dev.latvian.mods.kubejs.recipe.OutputItemTransformer;
 import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 
 /**
  * @author LatvianModder
  */
 public class CookingRecipeJS extends RecipeJS {
-	public ItemStack result;
-	public Ingredient ingredient;
+	public OutputItem result;
+	public InputItem ingredient;
 
 	@Override
 	public void create(RecipeArguments args) {
-		result = parseItemOutput(args.get(0));
-		ingredient = parseItemInput(args.get(1));
+		result = parseOutputItem(args.get(0));
+		ingredient = parseInputItem(args.get(1));
 
 		if (args.size() >= 3) {
 			xp(args.getFloat(2, 0F));
@@ -46,27 +46,27 @@ public class CookingRecipeJS extends RecipeJS {
 
 	@Override
 	public void deserialize() {
-		result = parseItemOutput(json.get("result"));
-		ingredient = parseItemInput(json.get("ingredient"));
+		result = parseOutputItem(json.get("result"));
+		ingredient = parseInputItem(json.get("ingredient"));
 	}
 
 	@Override
 	public void serialize() {
 		if (serializeOutputs) {
-			json.add("result", itemToJson(result));
+			json.add("result", outputToJson(result));
 		}
 
 		if (serializeInputs) {
-			json.add("ingredient", ingredient.toJson());
+			json.add("ingredient", inputToJson(ingredient));
 		}
 	}
 
 	@Override
-	public JsonElement itemToJson(ItemStack stack) {
+	public JsonElement outputToJson(OutputItem item) {
 		if (Platform.isForge()) {
-			return super.itemToJson(result);
+			return super.outputToJson(result);
 		} else {
-			return new JsonPrimitive(result.kjs$getId());
+			return new JsonPrimitive(result.item.kjs$getId());
 		}
 	}
 
@@ -76,7 +76,7 @@ public class CookingRecipeJS extends RecipeJS {
 	}
 
 	@Override
-	public boolean replaceInput(IngredientMatch match, Ingredient with, ItemInputTransformer transformer) {
+	public boolean replaceInput(IngredientMatch match, InputItem with, InputItemTransformer transformer) {
 		if (match.contains(ingredient)) {
 			ingredient = transformer.transform(this, match, ingredient, with);
 			return true;
@@ -91,7 +91,7 @@ public class CookingRecipeJS extends RecipeJS {
 	}
 
 	@Override
-	public boolean replaceOutput(IngredientMatch match, ItemStack with, ItemOutputTransformer transformer) {
+	public boolean replaceOutput(IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
 		if (match.contains(result)) {
 			result = transformer.transform(this, match, result, with);
 			return true;

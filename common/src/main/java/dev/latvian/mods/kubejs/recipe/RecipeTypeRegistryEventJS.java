@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe;
 
+import dev.architectury.platform.Platform;
 import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
@@ -29,10 +30,18 @@ public class RecipeTypeRegistryEventJS extends EventJS {
 	}
 
 	public void register(ResourceLocation id, Supplier<RecipeJS> f) {
+		if (!Platform.isModLoaded(id.getNamespace())) {
+			return;
+		}
+
 		register(new RecipeTypeJS(Objects.requireNonNull(KubeJSRegistries.recipeSerializers().get(id), "Cannot find recipe serializer: " + id), f));
 	}
 
 	public void ignore(ResourceLocation id) {
+		if (!Platform.isModLoaded(id.getNamespace())) {
+			return;
+		}
+
 		register(new IgnoredRecipeTypeJS(Objects.requireNonNull(KubeJSRegistries.recipeSerializers().get(id), "Cannot find recipe serializer: " + id)));
 	}
 

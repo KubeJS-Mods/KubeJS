@@ -25,7 +25,7 @@ public abstract class IngredientAction extends IngredientActionFilter {
 	static {
 		FACTORY_MAP.put("custom", json -> new CustomIngredientAction(json.get("id").getAsString()));
 		FACTORY_MAP.put("damage", json -> new DamageAction(json.get("damage").getAsInt()));
-		FACTORY_MAP.put("replace", json -> new ReplaceAction(ItemStackJS.of(json.get("item"))));
+		FACTORY_MAP.put("replace", json -> new ReplaceAction(ItemStackJS.resultFromRecipeJson(json.get("item"))));
 		FACTORY_MAP.put("keep", json -> new KeepAction());
 	}
 

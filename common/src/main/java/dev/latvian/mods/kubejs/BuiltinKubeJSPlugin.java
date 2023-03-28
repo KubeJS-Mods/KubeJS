@@ -49,8 +49,10 @@ import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.integration.rei.REIEvents;
+import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.AxeItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.BasicItemJS;
@@ -62,7 +64,6 @@ import dev.latvian.mods.kubejs.item.custom.RecordItemJS;
 import dev.latvian.mods.kubejs.item.custom.ShovelItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.SwordItemBuilder;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.filter.mob.MobFilter;
 import dev.latvian.mods.kubejs.misc.BasicMobEffect;
@@ -407,7 +408,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.registerSimple(Set.class, ListJS::ofSet);
 		typeWrappers.registerSimple(ItemStack.class, ItemStackJS::of);
 		typeWrappers.registerSimple(Ingredient.class, IngredientJS::of);
-		typeWrappers.registerSimple(IngredientStack.class, o -> IngredientJS.of(o).kjs$asStack());
+		typeWrappers.registerSimple(InputItem.class, InputItem::of);
+		typeWrappers.registerSimple(OutputItem.class, OutputItem::of);
 		typeWrappers.registerSimple(BlockStatePredicate.class, BlockStatePredicate::of);
 		typeWrappers.registerSimple(RuleTest.class, BlockStatePredicate::ruleTestOf);
 		typeWrappers.register(BiomeFilter.class, BiomeFilter::of);
@@ -455,18 +457,10 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		// Mod recipe types that use vanilla syntax
 
-		if (Platform.isModLoaded("cucumber")) {
-			event.registerShaped(new ResourceLocation("cucumber:shaped_no_mirror"));
-		}
-
-		if (Platform.isModLoaded("extendedcrafting")) {
-			event.registerShaped(new ResourceLocation("extendedcrafting:shaped_table"));
-			event.registerShapeless(new ResourceLocation("extendedcrafting:shapeless_table"));
-		}
-
-		if (Platform.isModLoaded("dankstorage")) {
-			event.registerShaped(new ResourceLocation("dankstorage:upgrade"));
-		}
+		event.registerShaped(new ResourceLocation("cucumber:shaped_no_mirror"));
+		event.registerShaped(new ResourceLocation("extendedcrafting:shaped_table"));
+		event.registerShapeless(new ResourceLocation("extendedcrafting:shapeless_table"));
+		event.registerShaped(new ResourceLocation("dankstorage:upgrade"));
 	}
 
 	@Override

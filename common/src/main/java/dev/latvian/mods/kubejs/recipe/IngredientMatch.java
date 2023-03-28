@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.recipe;
 
+import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.ItemStackSet;
+import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -54,5 +56,13 @@ public class IngredientMatch {
 		}
 
 		return false;
+	}
+
+	public boolean contains(InputItem in) {
+		return contains(in.ingredient);
+	}
+
+	public boolean contains(OutputItem out) {
+		return contains(out.item);
 	}
 }

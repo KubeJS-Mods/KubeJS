@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.platform;
 
+import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
@@ -22,7 +23,9 @@ public interface IngredientPlatformHelper {
 		return INSTANCE.get();
 	}
 
-	Ingredient stack(Ingredient ingredient, int count);
+	default InputItem stack(Ingredient ingredient, int count) {
+		return InputItem.of(ingredient, count);
+	}
 
 	Ingredient wildcard();
 
@@ -55,4 +58,6 @@ public interface IngredientPlatformHelper {
 	Ingredient strongNBT(ItemStack item);
 
 	Ingredient weakNBT(ItemStack item);
+
+	boolean isWildcard(Ingredient ingredient);
 }

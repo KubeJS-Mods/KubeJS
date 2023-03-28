@@ -1,13 +1,13 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.item.InputItem;
+import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.IngredientMatch;
-import dev.latvian.mods.kubejs.recipe.ItemInputTransformer;
-import dev.latvian.mods.kubejs.recipe.ItemOutputTransformer;
+import dev.latvian.mods.kubejs.recipe.InputItemTransformer;
+import dev.latvian.mods.kubejs.recipe.OutputItemTransformer;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 
 @RemapPrefixForJS("kjs$")
@@ -41,7 +41,7 @@ public interface RecipeKJS {
 		return false;
 	}
 
-	default boolean kjs$replaceInput(IngredientMatch match, Ingredient with, ItemInputTransformer transformer) {
+	default boolean kjs$replaceInput(IngredientMatch match, InputItem with, InputItemTransformer transformer) {
 		return false;
 	}
 
@@ -49,7 +49,7 @@ public interface RecipeKJS {
 		return match.contains(((Recipe<?>) this).getResultItem());
 	}
 
-	default boolean kjs$replaceOutput(IngredientMatch match, ItemStack with, ItemOutputTransformer transformer) {
+	default boolean kjs$replaceOutput(IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
 		return false;
 	}
 }

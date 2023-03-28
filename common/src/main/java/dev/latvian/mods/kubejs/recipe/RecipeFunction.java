@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
@@ -58,7 +59,8 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 
 				if (map != null) {
 					var recipe = type.factory.get();
-					RecipeArguments args = new RecipeArguments(recipe, args1);
+					recipe.event = event;
+					var args = new RecipeArguments(recipe, args1);
 					recipe.type = type;
 					recipe.json = MapJS.json(normalize(recipe, map));
 
@@ -73,7 +75,8 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 			}
 
 			var recipe = type.factory.get();
-			RecipeArguments args = new RecipeArguments(recipe, args1);
+			recipe.event = event;
+			var args = new RecipeArguments(recipe, args1);
 			recipe.type = type;
 			recipe.json = new JsonObject();
 			recipe.serializeInputs = true;
@@ -92,7 +95,7 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 
 	private Object normalize(RecipeJS recipe, Object o) {
 		if (o instanceof ItemStack stack) {
-			return recipe.itemToJson(stack);
+			return recipe.outputToJson(OutputItem.of(stack));
 		} else if (o instanceof Ingredient ingr) {
 			return ingr.toJson();
 		} else if (o instanceof String s) {

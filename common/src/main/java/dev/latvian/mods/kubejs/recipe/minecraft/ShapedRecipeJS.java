@@ -2,17 +2,17 @@ package dev.latvian.mods.kubejs.recipe.minecraft;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.item.InputItem;
+import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.IngredientMatch;
-import dev.latvian.mods.kubejs.recipe.ItemInputTransformer;
-import dev.latvian.mods.kubejs.recipe.ItemOutputTransformer;
+import dev.latvian.mods.kubejs.recipe.InputItemTransformer;
+import dev.latvian.mods.kubejs.recipe.OutputItemTransformer;
 import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -24,9 +24,9 @@ import java.util.Map;
  * @author LatvianModder
  */
 public class ShapedRecipeJS extends RecipeJS {
-	public ItemStack result;
+	public OutputItem result;
 	public final List<String> pattern = new ArrayList<>();
-	public final Map<Character, Ingredient> key = new LinkedHashMap<>();
+	public final Map<Character, InputItem> key = new LinkedHashMap<>();
 
 	@Override
 	public void create(RecipeArguments args) {
@@ -35,7 +35,7 @@ public class ShapedRecipeJS extends RecipeJS {
 				throw new RecipeExceptionJS("Requires 3 arguments - result, pattern and keys!");
 			}
 
-			result = parseItemOutput(args.get(0));
+			result = parseOutputItem(args.get(0));
 			var vertical = ListJS.orSelf(args.get(1));
 
 			if (vertical.isEmpty()) {
@@ -49,7 +49,7 @@ public class ShapedRecipeJS extends RecipeJS {
 				var horizontal = ListJS.orSelf(o);
 
 				for (var item : horizontal) {
-					var ingredient = IngredientJS.of(item);
+					var ingredient = parseInputItem(item);
 
 					if (!ingredient.isEmpty()) {
 						char currentChar = (char) ('A' + (id++));
@@ -73,7 +73,7 @@ public class ShapedRecipeJS extends RecipeJS {
 			return;
 		}
 
-		result = parseItemOutput(args.get(0));
+		result = parseOutputItem(args.get(0));
 
 		var pattern1 = ListJS.orSelf(args.get(1));
 
@@ -96,7 +96,7 @@ public class ShapedRecipeJS extends RecipeJS {
 			if (o == ItemStack.EMPTY || o.equals("minecraft:air")) {
 				airs.add(k);
 			} else {
-				key.put(k.charAt(0), parseItemInput(o, k));
+				key.put(k.charAt(0), parseInputItem(o, k));
 			}
 		}
 
@@ -113,21 +113,21 @@ public class ShapedRecipeJS extends RecipeJS {
 
 	@Override
 	public void deserialize() {
-		result = parseItemOutput(json.get("result"));
+		result = parseOutputItem(json.get("result"));
 
 		for (var e : json.get("pattern").getAsJsonArray()) {
 			pattern.add(e.getAsString());
 		}
 
 		for (var entry : json.get("key").getAsJsonObject().entrySet()) {
-			key.put(entry.getKey().charAt(0), parseItemInput(entry.getValue(), entry.getKey()));
+			key.put(entry.getKey().charAt(0), parseInputItem(entry.getValue(), entry.getKey()));
 		}
 	}
 
 	@Override
 	public void serialize() {
 		if (serializeOutputs) {
-			json.add("result", itemToJson(result));
+			json.add("result", outputToJson(result));
 		}
 
 		if (serializeInputs) {
@@ -142,7 +142,7 @@ public class ShapedRecipeJS extends RecipeJS {
 			var keyJson = new JsonObject();
 
 			for (var entry : key.entrySet()) {
-				keyJson.add(entry.getKey().toString(), entry.getValue().toJson());
+				keyJson.add(entry.getKey().toString(), inputToJson(entry.getValue()));
 			}
 
 			json.add("key", keyJson);
@@ -161,7 +161,7 @@ public class ShapedRecipeJS extends RecipeJS {
 	}
 
 	@Override
-	public boolean replaceInput(IngredientMatch match, Ingredient with, ItemInputTransformer transformer) {
+	public boolean replaceInput(IngredientMatch match, InputItem with, InputItemTransformer transformer) {
 		boolean changed = false;
 
 		for (var entry : key.entrySet()) {
@@ -180,7 +180,7 @@ public class ShapedRecipeJS extends RecipeJS {
 	}
 
 	@Override
-	public boolean replaceOutput(IngredientMatch match, ItemStack with, ItemOutputTransformer transformer) {
+	public boolean replaceOutput(IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
 		if (match.contains(result)) {
 			result = transformer.transform(this, match, result, with);
 			return true;

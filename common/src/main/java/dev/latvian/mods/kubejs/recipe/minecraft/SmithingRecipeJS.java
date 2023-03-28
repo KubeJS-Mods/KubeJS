@@ -1,44 +1,44 @@
 package dev.latvian.mods.kubejs.recipe.minecraft;
 
+import dev.latvian.mods.kubejs.item.InputItem;
+import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.IngredientMatch;
-import dev.latvian.mods.kubejs.recipe.ItemInputTransformer;
-import dev.latvian.mods.kubejs.recipe.ItemOutputTransformer;
+import dev.latvian.mods.kubejs.recipe.InputItemTransformer;
+import dev.latvian.mods.kubejs.recipe.OutputItemTransformer;
 import dev.latvian.mods.kubejs.recipe.RecipeArguments;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 
 /**
  * @author LatvianModder
  */
 public class SmithingRecipeJS extends RecipeJS {
-	public ItemStack result;
-	public Ingredient base;
-	public Ingredient addition;
+	public OutputItem result;
+	public InputItem base;
+	public InputItem addition;
 
 	@Override
 	public void create(RecipeArguments args) {
-		result = parseItemOutput(args.get(0));
-		base = parseItemInput(args.get(1));
-		addition = parseItemInput(args.get(2));
+		result = parseOutputItem(args.get(0));
+		base = parseInputItem(args.get(1));
+		addition = parseInputItem(args.get(2));
 	}
 
 	@Override
 	public void deserialize() {
-		result = parseItemOutput(json.get("result"));
-		base = parseItemInput(json.get("base"));
-		addition = parseItemInput(json.get("addition"));
+		result = parseOutputItem(json.get("result"));
+		base = parseInputItem(json.get("base"));
+		addition = parseInputItem(json.get("addition"));
 	}
 
 	@Override
 	public void serialize() {
 		if (serializeOutputs) {
-			json.add("result", itemToJson(result));
+			json.add("result", outputToJson(result));
 		}
 
 		if (serializeInputs) {
-			json.add("base", base.toJson());
-			json.add("addition", addition.toJson());
+			json.add("base", inputToJson(base));
+			json.add("addition", inputToJson(addition));
 		}
 	}
 
@@ -48,7 +48,7 @@ public class SmithingRecipeJS extends RecipeJS {
 	}
 
 	@Override
-	public boolean replaceInput(IngredientMatch match, Ingredient with, ItemInputTransformer transformer) {
+	public boolean replaceInput(IngredientMatch match, InputItem with, InputItemTransformer transformer) {
 		boolean changed = false;
 
 		if (match.contains(base)) {
@@ -70,7 +70,7 @@ public class SmithingRecipeJS extends RecipeJS {
 	}
 
 	@Override
-	public boolean replaceOutput(IngredientMatch match, ItemStack with, ItemOutputTransformer transformer) {
+	public boolean replaceOutput(IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
 		if (match.contains(result)) {
 			result = transformer.transform(this, match, result, with);
 			return true;

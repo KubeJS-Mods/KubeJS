@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.core;
 
 import com.google.gson.JsonElement;
+import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemStackSet;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientStack;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -12,7 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @RemapPrefixForJS("kjs$")
@@ -99,24 +98,16 @@ public interface IngredientKJS extends IngredientSupplierKJS, JsonSerializable {
 		return IngredientPlatformHelper.get().subtract(kjs$self(), subtracted);
 	}
 
-	default IngredientStack kjs$asStack() {
-		return (IngredientStack) IngredientPlatformHelper.get().stack(kjs$self(), 1);
+	default InputItem kjs$asStack() {
+		return InputItem.of(kjs$self(), 1);
 	}
 
-	default Ingredient kjs$withCount(int count) {
-		return count < 1 ? Ingredient.EMPTY : count == 1 ? kjs$self() : IngredientPlatformHelper.get().stack(kjs$self(), count);
-	}
-
-	default boolean kjs$isInvalidRecipeIngredient() {
-		return this == Ingredient.EMPTY;
-	}
-
-	default List<Ingredient> kjs$unwrapStackIngredient() {
-		return List.of(kjs$self());
+	default InputItem kjs$withCount(int count) {
+		return InputItem.of(kjs$self(), count);
 	}
 
 	default boolean kjs$isWildcard() {
-		return this == IngredientPlatformHelper.get().wildcard();
+		return IngredientPlatformHelper.get().isWildcard(kjs$self());
 	}
 
 	@Override

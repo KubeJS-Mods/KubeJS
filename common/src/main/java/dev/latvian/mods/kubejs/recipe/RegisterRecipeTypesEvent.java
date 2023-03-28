@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe;
 
+import dev.architectury.platform.Platform;
 import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
@@ -21,6 +22,10 @@ public record RegisterRecipeTypesEvent(Map<ResourceLocation, RecipeTypeJS> map) 
 	}
 
 	public void register(ResourceLocation id, Supplier<RecipeJS> f) {
+		if (!Platform.isModLoaded(id.getNamespace())) {
+			return;
+		}
+
 		try {
 			register(new RecipeTypeJS(Objects.requireNonNull(KubeJSRegistries.recipeSerializers().get(id)), f));
 		} catch (NullPointerException e) {
@@ -31,6 +36,10 @@ public record RegisterRecipeTypesEvent(Map<ResourceLocation, RecipeTypeJS> map) 
 	}
 
 	public void ignore(ResourceLocation id) {
+		if (!Platform.isModLoaded(id.getNamespace())) {
+			return;
+		}
+
 		try {
 			register(new IgnoredRecipeTypeJS(Objects.requireNonNull(KubeJSRegistries.recipeSerializers().get(id))));
 		} catch (NullPointerException e) {
@@ -46,13 +55,5 @@ public record RegisterRecipeTypesEvent(Map<ResourceLocation, RecipeTypeJS> map) 
 
 	public void registerShapeless(ResourceLocation id) {
 		register(id, ShapelessRecipeJS::new);
-	}
-
-	private void handleMissingSerializer(ResourceLocation id) {
-		if (DevProperties.get().logInvalidRecipeHandlers) {
-			throw new NullPointerException("Cannot find recipe serializer: " + id);
-		} else if (DevProperties.get().logErroringRecipes) {
-			KubeJS.LOGGER.warn("Skipping recipe handler for serializer " + id + " as it does not exist!");
-		}
 	}
 }

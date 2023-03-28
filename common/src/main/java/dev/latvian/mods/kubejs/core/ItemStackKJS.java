@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.core;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -90,7 +91,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 	}
 
 	default ItemStack kjs$withCount(int c) {
-		if (c <= 0) {
+		if (c <= 0 || kjs$self().isEmpty()) {
 			return ItemStack.EMPTY;
 		}
 
@@ -312,31 +313,21 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 		return kjs$self().getItem().kjs$asIngredient();
 	}
 
+	@Override
 	default JsonObject toJsonJS() {
-		JsonObject json = new JsonObject();
+		var json = new JsonObject();
 		json.addProperty("item", kjs$getId());
 		json.addProperty("count", kjs$self().getCount());
+		var tag = kjs$self().getTag();
 
-		if (kjs$self().hasTag()) {
-			json.addProperty("nbt", kjs$self().getTag().toString());
-		}
-
-		if(!Double.isNaN(kjs$self().kjs$getChance())) {
-			json.addProperty("chance", kjs$self().kjs$getChance());
+		if (tag != null) {
+			json.addProperty("nbt", tag.toString());
 		}
 
 		return json;
 	}
 
-	default double kjs$getChance() {
-		throw new NoMixinException();
-	}
-
-	default void kjs$setChance(double chance) {
-		throw new NoMixinException();
-	}
-
-	default ItemStack kjs$withChance(double chance) {
-		throw new NoMixinException();
+	default OutputItem kjs$withChance(double chance) {
+		return OutputItem.of(kjs$self(), chance);
 	}
 }

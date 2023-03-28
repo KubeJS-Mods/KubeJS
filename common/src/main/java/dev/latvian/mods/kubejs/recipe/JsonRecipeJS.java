@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import net.minecraft.world.item.ItemStack;
+import dev.latvian.mods.kubejs.item.InputItem;
+import dev.latvian.mods.kubejs.item.OutputItem;
 import net.minecraft.world.item.crafting.Ingredient;
 
 /**
@@ -37,7 +38,7 @@ public class JsonRecipeJS extends RecipeJS {
 	}
 
 	@Override
-	public boolean replaceInput(IngredientMatch match, Ingredient with, ItemInputTransformer transformer) {
+	public boolean replaceInput(IngredientMatch match, InputItem with, InputItemTransformer transformer) {
 		return false;
 	}
 
@@ -51,7 +52,7 @@ public class JsonRecipeJS extends RecipeJS {
 	}
 
 	@Override
-	public boolean replaceOutput(IngredientMatch match, ItemStack with, ItemOutputTransformer transformer) {
+	public boolean replaceOutput(IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
 		return false;
 	}
 }
