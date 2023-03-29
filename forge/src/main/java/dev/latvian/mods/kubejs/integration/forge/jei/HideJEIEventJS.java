@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.integration.forge.jei;
 
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.event.EventResult;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IJeiRuntime;
 
@@ -48,7 +49,7 @@ public class HideJEIEventJS<T> extends EventJS {
 	}
 
 	@Override
-	protected void afterPosted(boolean result) {
+	protected void afterPosted(EventResult result) {
 		if (!hidden.isEmpty()) {
 			runtime.getIngredientManager().removeIngredientsAtRuntime(type, hidden.stream().filter(isValid).toList());
 		}

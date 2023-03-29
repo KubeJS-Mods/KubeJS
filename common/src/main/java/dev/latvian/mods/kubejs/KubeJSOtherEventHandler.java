@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.bindings.event.WorldgenEvents;
 import dev.latvian.mods.kubejs.level.gen.AddWorldgenEventJS;
 import dev.latvian.mods.kubejs.level.gen.RemoveWorldgenEventJS;
 import dev.latvian.mods.kubejs.level.gen.ruletest.KubeJSRuleTests;
+import dev.latvian.mods.kubejs.script.ScriptType;
 
 /**
  * @author LatvianModder
@@ -17,7 +18,7 @@ public class KubeJSOtherEventHandler {
 
 	// perform anything that needs to be done post-registry here
 	private static void setup() {
-		WorldgenEvents.REMOVE.post(new RemoveWorldgenEventJS());
-		WorldgenEvents.ADD.post(new AddWorldgenEventJS());
+		WorldgenEvents.REMOVE.post(ScriptType.STARTUP, new RemoveWorldgenEventJS());
+		WorldgenEvents.ADD.post(ScriptType.STARTUP, new AddWorldgenEventJS());
 	}
 }

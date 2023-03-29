@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.integration.forge.gamestages;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.stages.StageCreationEvent;
 import dev.latvian.mods.kubejs.stages.Stages;
 import net.darkhax.gamestages.event.GameStageEvent;
@@ -35,12 +36,12 @@ public class GameStagesIntegration extends KubeJSPlugin {
 	}
 
 	private static void stageAdded(GameStageEvent.Added event) {
-		STAGE_ADDED.post(event.getStageName(), new GameStageEventJS(event));
+		STAGE_ADDED.post(ScriptType.of(event.getEntity()), event.getStageName(), new GameStageEventJS(event));
 		Stages.invokeAdded(Stages.get(event.getEntity()), event.getStageName());
 	}
 
 	private static void stageRemoved(GameStageEvent.Removed event) {
-		STAGE_REMOVED.post(event.getStageName(), new GameStageEventJS(event));
+		STAGE_REMOVED.post(ScriptType.of(event.getEntity()), event.getStageName(), new GameStageEventJS(event));
 		Stages.invokeRemoved(Stages.get(event.getEntity()), event.getStageName());
 	}
 }

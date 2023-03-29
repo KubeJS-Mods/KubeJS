@@ -212,7 +212,7 @@ public final class RegistryObjectBuilderTypes<T> {
 	}
 
 	void postEvent() {
-		StartupEvents.REGISTRY.post(registryKey.location(), new RegistryEventJS<>(this));
+		StartupEvents.REGISTRY.post(ScriptType.STARTUP, registryKey.location(), new RegistryEventJS<>(this));
 	}
 
 	static void registerFor(ResourceKey<? extends Registry<?>> registry, boolean all) {

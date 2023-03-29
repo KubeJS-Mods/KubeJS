@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.event;
 
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
@@ -9,7 +10,6 @@ import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -22,19 +22,19 @@ import java.util.function.Supplier;
 public final class EventHandler extends BaseFunction {
 	public final EventGroup group;
 	public final String name;
-	public final ScriptType scriptType;
+	public final ScriptTypePredicate scriptTypePredicate;
 	public final Supplier<Class<? extends EventJS>> eventType;
-	private boolean cancelable;
+	private boolean hasResult;
 	public transient Extra extra;
 	private EventHandlerContainer[] eventContainers;
 	private Map<Object, EventHandlerContainer[]> extraEventContainers;
 
-	EventHandler(EventGroup g, String n, ScriptType st, Supplier<Class<? extends EventJS>> e) {
+	EventHandler(EventGroup g, String n, ScriptTypePredicate st, Supplier<Class<? extends EventJS>> e) {
 		group = g;
 		name = n;
-		scriptType = st;
+		scriptTypePredicate = st;
 		eventType = e;
-		cancelable = false;
+		hasResult = false;
 		extra = null;
 		eventContainers = null;
 		extraEventContainers = null;
@@ -43,13 +43,13 @@ public final class EventHandler extends BaseFunction {
 	/**
 	 * Allow event.cancel() to be called
 	 */
-	public EventHandler cancelable() {
-		cancelable = true;
+	public EventHandler hasResult() {
+		hasResult = true;
 		return this;
 	}
 
-	public boolean isCancelable() {
-		return cancelable;
+	public boolean getHasResult() {
+		return hasResult;
 	}
 
 	@HideFromJS
@@ -91,9 +91,8 @@ public final class EventHandler extends BaseFunction {
 			throw new IllegalStateException("Event handler '" + this + "' can only be registered during script loading!");
 		}
 
-		if (type != scriptType && !type.isStartup()) {
-			var types = EnumSet.of(scriptType, ScriptType.STARTUP);
-			throw new UnsupportedOperationException("Tried to register event handler '" + this + "' for invalid script type " + type + "! Valid script types: " + types);
+		if (!scriptTypePredicate.test(type)) {
+			throw new UnsupportedOperationException("Tried to register event handler '" + this + "' for invalid script type " + type + "! Valid script types: " + scriptTypePredicate.getValidTypes());
 		}
 
 		if (extraId != null && extra != null) {
@@ -147,23 +146,21 @@ public final class EventHandler extends BaseFunction {
 	/**
 	 * @return true if event was canceled
 	 */
-	public boolean post(EventJS event) {
-		return post(null, event);
+	public EventResult post(ScriptType scriptType, EventJS event) {
+		return post(scriptType, null, event);
 	}
 
 	/**
 	 * @return true if event was canceled
 	 */
-	public boolean post(@Nullable Object extraId, EventJS event) {
-		return post(extraId, event, false);
+	public EventResult post(ScriptType scriptType, @Nullable Object extraId, EventJS event) {
+		return post(scriptType, extraId, event, false);
 	}
 
 	/**
 	 * @return true if event was canceled
 	 */
-	public boolean post(@Nullable Object extraId, EventJS event, boolean onlyPostToExtra) {
-		boolean b = false;
-
+	public EventResult post(ScriptType scriptType, @Nullable Object extraId, EventJS event, boolean onlyPostToExtra) {
 		if (extraId != null && extra != null) {
 			extraId = Wrapper.unwrapped(extraId);
 			extraId = extra.transformer.transform(extraId);
@@ -177,36 +174,43 @@ public final class EventHandler extends BaseFunction {
 			throw new IllegalArgumentException("Event handler '" + this + "' doesn't support extra id " + extraId + "!");
 		}
 
-		var extraContainers = extraEventContainers == null ? null : extraEventContainers.get(extraId);
+		try {
+			var extraContainers = extraEventContainers == null ? null : extraEventContainers.get(extraId);
 
-		if (extraContainers != null) {
-			b = postToHandlers(scriptType, extraContainers, event);
+			if (extraContainers != null) {
+				postToHandlers(scriptType, extraContainers, event);
 
-			if (!b && !scriptType.isStartup()) {
-				b = postToHandlers(ScriptType.STARTUP, extraContainers, event);
+				if (!scriptType.isStartup()) {
+					postToHandlers(ScriptType.STARTUP, extraContainers, event);
+				}
 			}
-		}
 
-		if (!b && eventContainers != null && !onlyPostToExtra) {
-			b = postToHandlers(scriptType, eventContainers, event);
+			if (eventContainers != null && !onlyPostToExtra) {
+				postToHandlers(scriptType, eventContainers, event);
 
-			if (!b && !scriptType.isStartup()) {
-				b = postToHandlers(ScriptType.STARTUP, eventContainers, event);
+				if (!scriptType.isStartup()) {
+					postToHandlers(ScriptType.STARTUP, eventContainers, event);
+				}
 			}
-		}
 
-		event.afterPosted(b);
-		return b;
+			event.afterPosted(EventResult.PASS);
+			return EventResult.PASS;
+		} catch (EventExit exit) {
+			if (!getHasResult()) {
+				scriptType.console.handleError(new IllegalStateException("Event returned result when it's not cancellable"), null, "Error occurred while handling event '" + this + "'");
+			}
+
+			event.afterPosted(exit.result);
+			return exit.result;
+		}
 	}
 
-	private boolean postToHandlers(ScriptType type, EventHandlerContainer[] containers, EventJS event) {
+	private void postToHandlers(ScriptType type, EventHandlerContainer[] containers, EventJS event) {
 		var handler = containers[type.ordinal()];
 
 		if (handler != null) {
-			return handler.handle(type, this, event, isCancelable());
+			handler.handle(type, this, event);
 		}
-
-		return false;
 	}
 
 	@Override
@@ -228,7 +232,7 @@ public final class EventHandler extends BaseFunction {
 			} else if (args.length == 2) {
 				var handler = (IEventHandler) Context.jsToJava(cx, args[1], IEventHandler.class);
 
-				for (Object o : ListJS.orSelf(args[0])) {
+				for (var o : ListJS.orSelf(args[0])) {
 					listen(type, o, handler);
 				}
 			}

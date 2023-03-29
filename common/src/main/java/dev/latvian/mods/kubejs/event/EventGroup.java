@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.event;
 
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,7 +46,7 @@ public final class EventGroup {
 		return obj == this || obj instanceof EventGroup g && name.equals(g.name);
 	}
 
-	public EventHandler add(String name, ScriptType scriptType, Supplier<Class<? extends EventJS>> eventType) {
+	public EventHandler add(String name, ScriptTypePredicate scriptType, Supplier<Class<? extends EventJS>> eventType) {
 		EventHandler handler = new EventHandler(this, name, scriptType, eventType);
 		handlers.put(name, handler);
 		return handler;
@@ -61,6 +62,10 @@ public final class EventGroup {
 
 	public EventHandler client(String name, Supplier<Class<? extends EventJS>> eventType) {
 		return add(name, ScriptType.CLIENT, eventType);
+	}
+
+	public EventHandler common(String name, Supplier<Class<? extends EventJS>> eventType) {
+		return add(name, ScriptTypePredicate.COMMON, eventType);
 	}
 
 	public Map<String, EventHandler> getHandlers() {

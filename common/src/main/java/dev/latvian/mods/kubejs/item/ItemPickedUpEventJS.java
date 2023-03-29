@@ -1,26 +1,26 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 /**
  * @author LatvianModder
  */
 public class ItemPickedUpEventJS extends PlayerEventJS {
-	private final ServerPlayer player;
+	private final Player player;
 	private final ItemEntity entity;
 	private final ItemStack stack;
 
-	public ItemPickedUpEventJS(ServerPlayer player, ItemEntity entity, ItemStack stack) {
+	public ItemPickedUpEventJS(Player player, ItemEntity entity, ItemStack stack) {
 		this.player = player;
 		this.entity = entity;
 		this.stack = stack;
 	}
 
 	@Override
-	public ServerPlayer getEntity() {
+	public Player getEntity() {
 		return player;
 	}
 

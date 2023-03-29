@@ -73,15 +73,15 @@ public class ServerScriptManager {
 
 		reloadScriptManager(wrappedResourceManager);
 
-		ServerEvents.LOW_DATA.post(new DataPackEventJS(virtualDataPackLow, wrappedResourceManager));
-		ServerEvents.HIGH_DATA.post(new DataPackEventJS(virtualDataPackHigh, wrappedResourceManager));
+		ServerEvents.LOW_DATA.post(ScriptType.SERVER, new DataPackEventJS(virtualDataPackLow, wrappedResourceManager));
+		ServerEvents.HIGH_DATA.post(ScriptType.SERVER, new DataPackEventJS(virtualDataPackHigh, wrappedResourceManager));
 
 		ConsoleJS.SERVER.info("Scripts loaded");
 
 		Map<ResourceLocation, RecipeTypeJS> typeMap = new HashMap<>();
 		var modEvent = new RegisterRecipeTypesEvent(typeMap);
 		KubeJSPlugins.forEachPlugin(plugin -> plugin.registerRecipeTypes(modEvent));
-		ServerEvents.RECIPE_TYPE_REGISTRY.post(new RecipeTypeRegistryEventJS(typeMap));
+		ServerEvents.RECIPE_TYPE_REGISTRY.post(ScriptType.SERVER, new RecipeTypeRegistryEventJS(typeMap));
 
 		// Currently custom ingredients are only supported on Forge
 		if (Platform.isForge()) {

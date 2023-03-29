@@ -5,6 +5,7 @@ import dev.architectury.event.events.common.ExplosionEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.TickEvent;
 import dev.latvian.mods.kubejs.bindings.event.LevelEvents;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;
@@ -25,26 +26,22 @@ public class KubeJSWorldEventHandler {
 	}
 
 	private static void levelLoad(ServerLevel level) {
-		LevelEvents.LOADED.post(level.dimension().location(), new SimpleLevelEventJS(level));
+		LevelEvents.LOADED.post(ScriptType.SERVER, level.dimension().location(), new SimpleLevelEventJS(level));
 	}
 
 	private static void levelUnload(ServerLevel level) {
-		LevelEvents.UNLOADED.post(level.dimension().location(), new SimpleLevelEventJS(level));
+		LevelEvents.UNLOADED.post(ScriptType.SERVER, level.dimension().location(), new SimpleLevelEventJS(level));
 	}
 
 	private static void levelPostTick(ServerLevel level) {
-		LevelEvents.TICK.post(level.dimension().location(), new SimpleLevelEventJS(level));
+		LevelEvents.TICK.post(ScriptType.SERVER, level.dimension().location(), new SimpleLevelEventJS(level));
 	}
 
 	private static EventResult preExplosion(Level level, Explosion explosion) {
-		if (LevelEvents.BEFORE_EXPLOSION.post(new ExplosionEventJS.Before(level, explosion))) {
-			return EventResult.interruptFalse();
-		}
-
-		return EventResult.pass();
+		return LevelEvents.BEFORE_EXPLOSION.post(ScriptType.of(level), new ExplosionEventJS.Before(level, explosion)).arch();
 	}
 
 	private static void detonateExplosion(Level level, Explosion explosion, List<Entity> affectedEntities) {
-		LevelEvents.AFTER_EXPLOSION.post(new ExplosionEventJS.After(level, explosion, affectedEntities));
+		LevelEvents.AFTER_EXPLOSION.post(ScriptType.of(level), new ExplosionEventJS.After(level, explosion, affectedEntities));
 	}
 }

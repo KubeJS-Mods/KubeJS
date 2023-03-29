@@ -10,7 +10,7 @@ public interface LevelEvents {
 	EventGroup GROUP = EventGroup.of("LevelEvents");
 	EventHandler LOADED = GROUP.server("loaded", () -> SimpleLevelEventJS.class).extra(Extra.ID);
 	EventHandler UNLOADED = GROUP.server("unloaded", () -> SimpleLevelEventJS.class).extra(Extra.ID);
-	EventHandler TICK = GROUP.server("tick", () -> SimpleLevelEventJS.class).extra(Extra.ID);
-	EventHandler BEFORE_EXPLOSION = GROUP.server("beforeExplosion", () -> ExplosionEventJS.Before.class).cancelable();
-	EventHandler AFTER_EXPLOSION = GROUP.server("afterExplosion", () -> ExplosionEventJS.After.class);
+	EventHandler TICK = GROUP.common("tick", () -> SimpleLevelEventJS.class).extra(Extra.ID);
+	EventHandler BEFORE_EXPLOSION = GROUP.common("beforeExplosion", () -> ExplosionEventJS.Before.class).hasResult();
+	EventHandler AFTER_EXPLOSION = GROUP.common("afterExplosion", () -> ExplosionEventJS.After.class);
 }

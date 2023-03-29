@@ -509,8 +509,8 @@ public class UtilsJS {
 	// TODO: We could probably make these generic for RegistryObjectBuilderTypes,
 	//  so maybe look into that to allow people to modify builtin fluids, etc. as well.
 	public static void postModificationEvents() {
-		BlockEvents.MODIFICATION.post(new BlockModificationEventJS());
-		ItemEvents.MODIFICATION.post(new ItemModificationEventJS());
+		BlockEvents.MODIFICATION.post(ScriptType.STARTUP, new BlockModificationEventJS());
+		ItemEvents.MODIFICATION.post(ScriptType.STARTUP, new ItemModificationEventJS());
 	}
 
 	public static Class<?> getRawType(Type type) {

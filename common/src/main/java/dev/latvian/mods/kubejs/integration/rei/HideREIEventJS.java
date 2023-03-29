@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.integration.rei;
 
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import me.shedaniel.rei.api.client.entry.filtering.base.BasicFilteringRule;
 import me.shedaniel.rei.api.client.registry.entry.EntryRegistry;
@@ -66,7 +67,7 @@ public class HideREIEventJS<T> extends EventJS {
 	}
 
 	@Override
-	protected void afterPosted(boolean result) {
+	protected void afterPosted(EventResult result) {
 		if (hideAll) {
 			rule.hide(allEntries().toList());
 		}

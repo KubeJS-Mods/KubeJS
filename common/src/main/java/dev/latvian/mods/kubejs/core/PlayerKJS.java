@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.core;
 import com.mojang.authlib.GameProfile;
 import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.latvian.mods.kubejs.item.ItemHandlerUtils;
+import dev.latvian.mods.kubejs.player.KubeJSInventoryListener;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.stages.Stages;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -166,5 +167,9 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 
 	default void kjs$addItemCooldown(Item item, int ticks) {
 		kjs$self().getCooldowns().addCooldown(item, ticks);
+	}
+
+	default KubeJSInventoryListener kjs$getInventoryChangeListener() {
+		throw new NoMixinException();
 	}
 }

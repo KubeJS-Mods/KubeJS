@@ -12,6 +12,7 @@ import dev.latvian.mods.kubejs.client.painter.screen.RectangleObject;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenPainterObject;
 import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -133,7 +134,7 @@ public class Painter implements UnitVariables {
 		synchronized (lock) {
 			storage.handle(root);
 			screenObjects = null;
-			ClientEvents.PAINTER_UPDATED.post(new ClientEventJS());
+			ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientEventJS());
 		}
 	}
 
@@ -141,7 +142,7 @@ public class Painter implements UnitVariables {
 		synchronized (lock) {
 			storage.clear();
 			screenObjects = null;
-			ClientEvents.PAINTER_UPDATED.post(new ClientEventJS());
+			ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientEventJS());
 		}
 	}
 
@@ -182,7 +183,7 @@ public class Painter implements UnitVariables {
 		screenHeightUnit.set(event.height);
 		mouseXUnit.set(event.width / 2D);
 		mouseYUnit.set(event.height / 2D);
-		ClientEvents.PAINT_SCREEN.post(event);
+		ClientEvents.PAINT_SCREEN.post(ScriptType.CLIENT, event);
 
 		for (var object : getScreenObjects()) {
 			if (object.visible.getBoolean(event) && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
@@ -216,7 +217,7 @@ public class Painter implements UnitVariables {
 		mouseYUnit.set(mouseY);
 
 		event.resetShaderColor();
-		ClientEvents.PAINT_SCREEN.post(event);
+		ClientEvents.PAINT_SCREEN.post(ScriptType.CLIENT, event);
 
 		for (var object : getScreenObjects()) {
 			if (object.visible.getBoolean(event) && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {

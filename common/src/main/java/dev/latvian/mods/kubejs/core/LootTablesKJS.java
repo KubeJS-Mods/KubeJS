@@ -27,12 +27,12 @@ import java.util.function.BiConsumer;
 public interface LootTablesKJS {
 	default void kjs$apply0(Map<ResourceLocation, JsonElement> map, BiConsumer<ResourceLocation, JsonElement> action) {
 		Map<ResourceLocation, JsonElement> map1 = new HashMap<>(map);
-		ServerEvents.GENERIC_LOOT_TABLES.post(new GenericLootEventJS(map1));
-		ServerEvents.BLOCK_LOOT_TABLES.post(new BlockLootEventJS(map1));
-		ServerEvents.ENTITY_LOOT_TABLES.post(new EntityLootEventJS(map1));
-		ServerEvents.GIFT_LOOT_TABLES.post(new GiftLootEventJS(map1));
-		ServerEvents.FISHING_LOOT_TABLES.post(new FishingLootEventJS(map1));
-		ServerEvents.CHEST_LOOT_TABLES.post(new ChestLootEventJS(map1));
+		ServerEvents.GENERIC_LOOT_TABLES.post(ScriptType.SERVER, new GenericLootEventJS(map1));
+		ServerEvents.BLOCK_LOOT_TABLES.post(ScriptType.SERVER, new BlockLootEventJS(map1));
+		ServerEvents.ENTITY_LOOT_TABLES.post(ScriptType.SERVER, new EntityLootEventJS(map1));
+		ServerEvents.GIFT_LOOT_TABLES.post(ScriptType.SERVER, new GiftLootEventJS(map1));
+		ServerEvents.FISHING_LOOT_TABLES.post(ScriptType.SERVER, new FishingLootEventJS(map1));
+		ServerEvents.CHEST_LOOT_TABLES.post(ScriptType.SERVER, new ChestLootEventJS(map1));
 
 		for (var entry : map1.entrySet()) {
 			try {

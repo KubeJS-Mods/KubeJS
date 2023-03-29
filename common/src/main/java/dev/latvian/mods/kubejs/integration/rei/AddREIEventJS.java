@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.integration.rei;
 
 import com.google.common.collect.Lists;
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.util.ListJS;
 import me.shedaniel.rei.api.client.registry.entry.EntryRegistry;
 import me.shedaniel.rei.api.common.entry.EntryStack;
@@ -36,7 +37,7 @@ public class AddREIEventJS extends EventJS {
 	}
 
 	@Override
-	protected void afterPosted(boolean result) {
+	protected void afterPosted(EventResult result) {
 		if (!added.isEmpty()) {
 			registry.addEntries(added);
 		}

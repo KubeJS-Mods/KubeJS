@@ -59,7 +59,7 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 
 	@Override
 	public void registerEntries(EntryRegistry registry) {
-		entryWrappers.forEach((type, wrapper) -> REIEvents.ADD.post(type.getId(), new AddREIEventJS(registry, wrapper)));
+		entryWrappers.forEach((type, wrapper) -> REIEvents.ADD.post(ScriptType.CLIENT, type.getId(), new AddREIEventJS(registry, wrapper)));
 	}
 
 	@Override
@@ -68,13 +68,13 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 			var filter = FilteringRuleTypeRegistry.getInstance().basic();
 			var registry = EntryRegistry.getInstance();
 
-			REIEvents.HIDE.post(type.getId(), new HideREIEventJS<>(registry, filter, UtilsJS.cast(type), wrapper));
+			REIEvents.HIDE.post(ScriptType.CLIENT, type.getId(), new HideREIEventJS<>(registry, filter, UtilsJS.cast(type), wrapper));
 		});
 	}
 
 	@Override
 	public void registerDisplays(DisplayRegistry registry) {
-		REIEvents.INFORMATION.post(new InformationREIEventJS());
+		REIEvents.INFORMATION.post(ScriptType.CLIENT, new InformationREIEventJS());
 	}
 
 	@Override
@@ -87,14 +87,14 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 	public void postStage(PluginManager<REIClientPlugin> manager, ReloadStage stage) {
 		if (stage == ReloadStage.END) {
 			categoriesRemoved.clear();
-			REIEvents.REMOVE_CATEGORIES.post(new RemoveREICategoryEventJS(categoriesRemoved));
+			REIEvents.REMOVE_CATEGORIES.post(ScriptType.CLIENT, new RemoveREICategoryEventJS(categoriesRemoved));
 		}
 	}
 
 	@SuppressWarnings("UnstableApiUsage")
 	@Override
 	public void registerCollapsibleEntries(CollapsibleEntryRegistry registry) {
-		REIEvents.GROUP_ENTRIES.post(new GroupREIEntriesEventJS(registry));
+		REIEvents.GROUP_ENTRIES.post(ScriptType.CLIENT, new GroupREIEntriesEventJS(registry));
 	}
 
 	public static EntryType<?> getTypeOrThrow(ResourceLocation typeId) {

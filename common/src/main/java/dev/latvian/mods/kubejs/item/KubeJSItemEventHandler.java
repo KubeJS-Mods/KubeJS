@@ -7,7 +7,7 @@ import dev.architectury.event.events.common.PlayerEvent;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
 import dev.latvian.mods.kubejs.player.InventoryChangedEventJS;
-import net.minecraft.server.level.ServerPlayer;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -30,54 +30,46 @@ public class KubeJSItemEventHandler {
 	}
 
 	private static CompoundEventResult<ItemStack> rightClick(Player player, InteractionHand hand) {
-		if (player instanceof ServerPlayer p && !player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem()) && ItemEvents.RIGHT_CLICKED.post(p.getItemInHand(hand).getItem(), new ItemClickedEventJS(p, hand))) {
-			return CompoundEventResult.interruptFalse(player.getItemInHand(hand));
+		var stack = player.getItemInHand(hand);
+
+		if (!player.getCooldowns().isOnCooldown(stack.getItem())) {
+			var result = ItemEvents.RIGHT_CLICKED.post(ScriptType.of(player), stack.getItem(), new ItemClickedEventJS(player, hand, stack));
+
+			if (result.override()) {
+				return result.archCompound();
+			}
 		}
 
 		return CompoundEventResult.pass();
 	}
 
 	private static EventResult canPickUp(Player player, ItemEntity entity, ItemStack stack) {
-		if (player instanceof ServerPlayer p && entity != null && ItemEvents.CAN_PICK_UP.post(stack.getItem(), new ItemPickedUpEventJS(p, entity, stack))) {
-			return EventResult.interruptFalse();
-		}
-
-		return EventResult.pass();
+		return ItemEvents.CAN_PICK_UP.post(ScriptType.of(player), stack.getItem(), new ItemPickedUpEventJS(player, entity, stack)).arch();
 	}
 
 	private static void pickup(Player player, ItemEntity entity, ItemStack stack) {
-		if (player instanceof ServerPlayer p && entity != null) {
-			ItemEvents.PICKED_UP.post(stack.getItem(), new ItemPickedUpEventJS(p, entity, stack));
-		}
+		ItemEvents.PICKED_UP.post(ScriptType.of(player), stack.getItem(), new ItemPickedUpEventJS(player, entity, stack));
 	}
 
 	private static EventResult drop(Player player, ItemEntity entity) {
-		if (player instanceof ServerPlayer p && entity != null && ItemEvents.DROPPED.post(entity.getItem().getItem(), new ItemDroppedEventJS(p, entity))) {
-			return EventResult.interruptFalse();
-		}
-
-		return EventResult.pass();
+		return ItemEvents.DROPPED.post(ScriptType.of(player), entity.getItem().getItem(), new ItemDroppedEventJS(player, entity)).arch();
 	}
 
 	private static EventResult entityInteract(Player player, Entity entity, InteractionHand hand) {
-		if (player instanceof ServerPlayer p && entity != null && ItemEvents.ENTITY_INTERACTED.post(p.getItemInHand(hand).getItem(), new ItemEntityInteractedEventJS(p, entity, hand))) {
-			return EventResult.interruptFalse();
-		}
-
-		return EventResult.pass();
+		return ItemEvents.ENTITY_INTERACTED.post(ScriptType.of(player), player.getItemInHand(hand).getItem(), new ItemEntityInteractedEventJS(player, entity, hand)).arch();
 	}
 
 	private static void crafted(Player player, ItemStack stack, Container grid) {
-		if (player instanceof ServerPlayer serverPlayer && !stack.isEmpty()) {
-			ItemEvents.CRAFTED.post(stack.getItem(), new ItemCraftedEventJS(serverPlayer, stack, grid));
-			PlayerEvents.INVENTORY_CHANGED.post(stack.getItem(), new InventoryChangedEventJS(serverPlayer, stack, -1));
+		if (!stack.isEmpty()) {
+			ItemEvents.CRAFTED.post(ScriptType.of(player), stack.getItem(), new ItemCraftedEventJS(player, stack, grid));
+			PlayerEvents.INVENTORY_CHANGED.post(ScriptType.of(player), stack.getItem(), new InventoryChangedEventJS(player, stack, -1));
 		}
 	}
 
 	private static void smelted(Player player, ItemStack stack) {
-		if (player instanceof ServerPlayer serverPlayer && !stack.isEmpty()) {
-			ItemEvents.SMELTED.post(stack.getItem(), new ItemSmeltedEventJS(serverPlayer, stack));
-			PlayerEvents.INVENTORY_CHANGED.post(stack.getItem(), new InventoryChangedEventJS(serverPlayer, stack, -1));
+		if (!stack.isEmpty()) {
+			ItemEvents.SMELTED.post(ScriptType.of(player), stack.getItem(), new ItemSmeltedEventJS(player, stack));
+			PlayerEvents.INVENTORY_CHANGED.post(ScriptType.of(player), stack.getItem(), new InventoryChangedEventJS(player, stack, -1));
 		}
 	}
 }

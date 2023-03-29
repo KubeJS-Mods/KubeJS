@@ -4,6 +4,7 @@ import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.event.EventResult;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 
@@ -22,8 +23,7 @@ public class SpecialRecipeSerializerManager extends EventJS {
 	}
 
 	@Override
-	protected void afterPosted(boolean result) {
-		super.afterPosted(result);
+	protected void afterPosted(EventResult result) {
 		EVENT.invoker().run();
 	}
 

@@ -12,7 +12,10 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.LevelReader;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
@@ -26,7 +29,7 @@ import java.util.function.Supplier;
 /**
  * @author LatvianModder
  */
-public enum ScriptType {
+public enum ScriptType implements ScriptTypePredicate {
 	STARTUP("startup", "KubeJS Startup", KubeJS::getStartupScriptManager),
 	SERVER("server", "KubeJS Server", ServerScriptManager::getScriptManager),
 	CLIENT("client", "KubeJS Client", KubeJS::getClientScriptManager);
@@ -40,7 +43,11 @@ public enum ScriptType {
 	public static final ScriptType[] VALUES = values();
 
 	public static ScriptType of(LevelReader level) {
-		return level.isClientSide() ? CLIENT : SERVER;
+		return level == null || level.isClientSide() ? CLIENT : SERVER;
+	}
+
+	public static ScriptType of(Entity entity) {
+		return entity instanceof ServerPlayer ? SERVER : entity == null || entity.level.isClientSide() ? CLIENT : SERVER;
 	}
 
 	public static ScriptType getCurrent(Context cx) {
@@ -119,5 +126,25 @@ public enum ScriptType {
 				.kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
 				.kjs$hover(Component.literal("Click to show"))
 				.withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500)));
+	}
+
+	@Override
+	public boolean test(ScriptType type) {
+		return type == this;
+	}
+
+	@Override
+	public List<ScriptType> getValidTypes() {
+		return List.of(this);
+	}
+
+	@NotNull
+	@Override
+	public ScriptTypePredicate negate() {
+		return switch (this) {
+			case STARTUP -> ScriptTypePredicate.COMMON;
+			case SERVER -> ScriptTypePredicate.STARTUP_OR_CLIENT;
+			case CLIENT -> ScriptTypePredicate.STARTUP_OR_SERVER;
+		};
 	}
 }

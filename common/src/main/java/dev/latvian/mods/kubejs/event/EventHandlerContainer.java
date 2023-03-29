@@ -25,25 +25,23 @@ class EventHandlerContainer {
 		this.handler = handler;
 	}
 
-	public boolean handle(ScriptType scriptType, EventHandler eventHandler, EventJS event, boolean cancelable) {
+	public EventResult handle(ScriptType scriptType, EventHandler eventHandler, EventJS event) {
 		var itr = this;
 
 		do {
 			try {
 				itr.handler.onEvent(event);
+			} catch (EventExit exit) {
+				throw exit;
 			} catch (Throwable ex) {
 				scriptType.console.handleError(ex, null, "Error occurred while handling event '" + eventHandler + "'");
-			}
-
-			if (cancelable && event.isCanceled()) {
-				return true;
 			}
 
 			itr = itr.child;
 		}
 		while (itr != null);
 
-		return false;
+		return EventResult.PASS;
 	}
 
 	public void add(IEventHandler handler) {

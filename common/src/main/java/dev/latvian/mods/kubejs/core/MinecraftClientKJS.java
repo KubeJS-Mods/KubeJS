@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.client.ClientProperties;
 import dev.latvian.mods.kubejs.item.ItemClickedEventJS;
 import dev.latvian.mods.kubejs.net.FirstClickMessage;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.Minecraft;
@@ -57,7 +58,8 @@ public interface MinecraftClientKJS {
 	@HideFromJS
 	default void kjs$startAttack0() {
 		var player = kjs$self().player;
-		ItemEvents.CLIENT_LEFT_CLICKED.post(player.getItemInHand(InteractionHand.MAIN_HAND).getItem(), new ItemClickedEventJS(player, InteractionHand.MAIN_HAND));
+		var stack = player.getItemInHand(InteractionHand.MAIN_HAND);
+		ItemEvents.FIRST_LEFT_CLICKED.post(ScriptType.CLIENT, stack.getItem(), new ItemClickedEventJS(player, InteractionHand.MAIN_HAND, stack));
 		new FirstClickMessage(0).sendToServer();
 	}
 
@@ -66,7 +68,8 @@ public interface MinecraftClientKJS {
 		var player = kjs$self().player;
 
 		for (var hand : InteractionHand.values()) {
-			ItemEvents.CLIENT_RIGHT_CLICKED.post(player.getItemInHand(hand).getItem(), new ItemClickedEventJS(player, hand));
+			var stack = player.getItemInHand(hand);
+			ItemEvents.FIRST_RIGHT_CLICKED.post(ScriptType.CLIENT, stack.getItem(), new ItemClickedEventJS(player, hand, stack));
 		}
 
 		new FirstClickMessage(1).sendToServer();

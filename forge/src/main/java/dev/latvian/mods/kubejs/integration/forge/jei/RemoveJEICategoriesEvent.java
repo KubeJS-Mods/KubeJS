@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.integration.forge.jei;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.event.EventResult;
 import mezz.jei.api.recipe.IRecipeCategoriesLookup;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -59,7 +60,7 @@ public class RemoveJEICategoriesEvent extends EventJS {
 	}
 
 	@Override
-	protected void afterPosted(boolean result) {
+	protected void afterPosted(EventResult result) {
 		for (var category : categoriesRemoved) {
 			try {
 				runtime.getRecipeManager().hideRecipeCategory(category);

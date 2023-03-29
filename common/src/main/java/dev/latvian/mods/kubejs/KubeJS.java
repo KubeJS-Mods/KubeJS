@@ -185,14 +185,14 @@ public class KubeJS {
 
 	public void setup() {
 		KubeJSNet.init();
-		StartupEvents.INIT.post(new StartupEventJS());
+		StartupEvents.INIT.post(ScriptType.STARTUP, new StartupEventJS());
 		// KubeJSRegistries.chunkGenerators().register(new ResourceLocation(KubeJS.MOD_ID, "flat"), () -> KJSFlatLevelSource.CODEC);
 	}
 
 	public void loadComplete() {
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::afterInit);
 		ScriptsLoadedEvent.EVENT.invoker().run();
-		StartupEvents.POST_INIT.post(new StartupEventJS());
+		StartupEvents.POST_INIT.post(ScriptType.STARTUP, new StartupEventJS());
 		UtilsJS.postModificationEvents();
 
 		if (!ScriptType.STARTUP.errors.isEmpty()) {

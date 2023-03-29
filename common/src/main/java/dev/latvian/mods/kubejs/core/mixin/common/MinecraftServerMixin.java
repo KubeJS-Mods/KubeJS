@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.core.mixin.common;
 
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.MinecraftServerKJS;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.IScheduledEventCallback;
 import dev.latvian.mods.kubejs.server.KubeJSServerEventHandler;
 import dev.latvian.mods.kubejs.server.ScheduledEvent;
@@ -68,7 +69,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	private void kjs$postTickServer(BooleanSupplier booleanSupplier, CallbackInfo ci) {
 		KubeJSServerEventHandler.tickScheduledEvents(System.currentTimeMillis(), kjs$scheduledEvents);
 		KubeJSServerEventHandler.tickScheduledEvents(kjs$getOverworld().getGameTime(), kjs$scheduledTickEvents);
-		ServerEvents.TICK.post(new ServerEventJS(kjs$self()));
+		ServerEvents.TICK.post(ScriptType.SERVER, new ServerEventJS(kjs$self()));
 	}
 
 	@Override

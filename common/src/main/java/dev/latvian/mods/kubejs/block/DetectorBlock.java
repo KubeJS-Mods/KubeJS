@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.block;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
@@ -64,19 +65,18 @@ public class DetectorBlock extends Block {
 	@Override
 	@Deprecated
 	public void neighborChanged(BlockState blockState, Level level, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
-		if (!level.isClientSide) {
-			var p = !blockState.getValue(BlockStateProperties.POWERED);
+		var p = !blockState.getValue(BlockStateProperties.POWERED);
 
-			if (p == level.hasNeighborSignal(blockPos)) {
-				level.setBlock(blockPos, blockState.setValue(BlockStateProperties.POWERED, p), 2);
-				var e = new DetectorBlockEventJS(builder.detectorId, level, blockPos, p);
-				BlockEvents.DETECTOR_CHANGED.post(builder.detectorId, e);
+		if (p == level.hasNeighborSignal(blockPos)) {
+			level.setBlock(blockPos, blockState.setValue(BlockStateProperties.POWERED, p), 2);
+			var e = new DetectorBlockEventJS(builder.detectorId, level, blockPos, p);
+			var side = ScriptType.of(level);
+			BlockEvents.DETECTOR_CHANGED.post(side, builder.detectorId, e);
 
-				if (p) {
-					BlockEvents.DETECTOR_POWERED.post(builder.detectorId, e);
-				} else {
-					BlockEvents.DETECTOR_UNPOWERED.post(builder.detectorId, e);
-				}
+			if (p) {
+				BlockEvents.DETECTOR_POWERED.post(side, builder.detectorId, e);
+			} else {
+				BlockEvents.DETECTOR_UNPOWERED.post(side, builder.detectorId, e);
 			}
 		}
 	}

@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.Holder;
@@ -244,7 +245,7 @@ public class TagEventJS<T> extends EventJS {
 			}
 		}
 
-		ServerEvents.TAGS.post(registry.key().location(), this);
+		ServerEvents.TAGS.post(ScriptType.SERVER, registry.key().location(), this);
 
 		if (DataExport.dataExport != null) {
 			var tj = DataExport.dataExport.getAsJsonObject("tags");

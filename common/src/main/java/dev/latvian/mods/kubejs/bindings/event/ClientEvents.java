@@ -11,7 +11,7 @@ public interface ClientEvents {
 	EventGroup GROUP = EventGroup.of("ClientEvents");
 	// add low assets
 	EventHandler HIGH_ASSETS = GROUP.client("highPriorityAssets", () -> GenerateClientAssetsEventJS.class);
-	EventHandler INIT = GROUP.client("init", () -> ClientEventJS.class);
+	EventHandler INIT = GROUP.startup("init", () -> ClientEventJS.class);
 	EventHandler LOGGED_IN = GROUP.client("loggedIn", () -> ClientEventJS.class);
 	EventHandler LOGGED_OUT = GROUP.client("loggedOut", () -> ClientEventJS.class);
 	EventHandler TICK = GROUP.client("tick", () -> ClientEventJS.class);

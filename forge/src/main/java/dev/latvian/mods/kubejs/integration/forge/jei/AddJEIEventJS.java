@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.integration.forge.jei;
 
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.util.ListJS;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IJeiRuntime;
@@ -40,7 +41,7 @@ public class AddJEIEventJS<T> extends EventJS {
 	}
 
 	@Override
-	protected void afterPosted(boolean result) {
+	protected void afterPosted(EventResult result) {
 		if (!added.isEmpty()) {
 			var items = added.stream().filter(isValid).collect(Collectors.toList());
 			runtime.getIngredientManager().addIngredientsAtRuntime(type, items);

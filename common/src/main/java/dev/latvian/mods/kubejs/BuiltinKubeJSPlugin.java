@@ -202,8 +202,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void initStartup() {
-		ItemEvents.TOOL_TIER_REGISTRY.post(new ItemToolTierRegistryEventJS());
-		ItemEvents.ARMOR_TIER_REGISTRY.post(new ItemArmorTierRegistryEventJS());
+		ItemEvents.TOOL_TIER_REGISTRY.post(ScriptType.STARTUP, new ItemToolTierRegistryEventJS());
+		ItemEvents.ARMOR_TIER_REGISTRY.post(ScriptType.STARTUP, new ItemArmorTierRegistryEventJS());
 
 		for (var types : RegistryObjectBuilderTypes.MAP.values()) {
 			// types.postEvent();

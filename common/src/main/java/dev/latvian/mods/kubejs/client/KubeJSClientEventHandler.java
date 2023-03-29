@@ -16,6 +16,7 @@ import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.core.ImageButtonKJS;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.Tags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -77,18 +78,18 @@ public class KubeJSClientEventHandler {
 			builder.clientRegistry(() -> minecraft);
 		}
 
-		ItemEvents.MODEL_PROPERTIES.post(new ItemModelPropertiesEventJS());
+		ItemEvents.MODEL_PROPERTIES.post(ScriptType.STARTUP, new ItemModelPropertiesEventJS());
 	}
 
 	private void debugInfoLeft(List<String> lines) {
 		if (Minecraft.getInstance().player != null) {
-			ClientEvents.DEBUG_LEFT.post(new DebugInfoEventJS(lines));
+			ClientEvents.DEBUG_LEFT.post(ScriptType.CLIENT, new DebugInfoEventJS(lines));
 		}
 	}
 
 	private void debugInfoRight(List<String> lines) {
 		if (Minecraft.getInstance().player != null) {
-			ClientEvents.DEBUG_RIGHT.post(new DebugInfoEventJS(lines));
+			ClientEvents.DEBUG_RIGHT.post(ScriptType.CLIENT, new DebugInfoEventJS(lines));
 		}
 	}
 
@@ -125,7 +126,7 @@ public class KubeJSClientEventHandler {
 
 		if (staticItemTooltips == null) {
 			staticItemTooltips = new HashMap<>();
-			ItemEvents.TOOLTIP.post(new ItemTooltipEventJS(staticItemTooltips));
+			ItemEvents.TOOLTIP.post(ScriptType.CLIENT, new ItemTooltipEventJS(staticItemTooltips));
 		}
 
 		for (var handler : staticItemTooltips.getOrDefault(Items.AIR, Collections.emptyList())) {
@@ -139,16 +140,16 @@ public class KubeJSClientEventHandler {
 
 	private void clientTick(Minecraft minecraft) {
 		if (Minecraft.getInstance().player != null) {
-			ClientEvents.TICK.post(new ClientEventJS());
+			ClientEvents.TICK.post(ScriptType.CLIENT, new ClientEventJS());
 		}
 	}
 
 	private void loggedIn(LocalPlayer player) {
-		ClientEvents.LOGGED_IN.post(new ClientEventJS());
+		ClientEvents.LOGGED_IN.post(ScriptType.CLIENT, new ClientEventJS());
 	}
 
 	private void loggedOut(LocalPlayer player) {
-		ClientEvents.LOGGED_OUT.post(new ClientEventJS());
+		ClientEvents.LOGGED_OUT.post(ScriptType.CLIENT, new ClientEventJS());
 		Painter.INSTANCE.clear();
 	}
 

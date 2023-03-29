@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.integration.forge.jei;
 
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -62,7 +63,7 @@ public class HideCustomJEIEventJS extends EventJS {
 	}
 
 	@Override
-	protected void afterPosted(boolean result) {
+	protected void afterPosted(EventResult result) {
 		for (var eventJS : events.values()) {
 			eventJS.afterPosted(result);
 		}

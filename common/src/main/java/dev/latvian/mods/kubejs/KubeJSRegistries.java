@@ -11,6 +11,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -57,6 +58,10 @@ public class KubeJSRegistries {
 
 	public static Registrar<EntityType<?>> entityTypes() {
 		return genericRegistry(ENTITY_TYPE_REGISTRY);
+	}
+
+	public static Registrar<MenuType<?>> menuTypes() {
+		return genericRegistry(MENU_REGISTRY);
 	}
 
 	public static Registrar<SoundEvent> soundEvents() {

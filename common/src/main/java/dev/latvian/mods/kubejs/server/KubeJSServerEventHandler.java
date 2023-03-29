@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.mods.kubejs.command.KubeJSCommands;
 import dev.latvian.mods.kubejs.level.SimpleLevelEventJS;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.RhinoException;
@@ -63,7 +64,7 @@ public class KubeJSServerEventHandler {
 
 	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registry, Commands.CommandSelection selection) {
 		KubeJSCommands.register(dispatcher);
-		ServerEvents.COMMAND_REGISTRY.post(new CommandRegistryEventJS(dispatcher, registry, selection));
+		ServerEvents.COMMAND_REGISTRY.post(ScriptType.SERVER, new CommandRegistryEventJS(dispatcher, registry, selection));
 	}
 
 	private static void serverBeforeStarting(MinecraftServer server) {
@@ -71,11 +72,11 @@ public class KubeJSServerEventHandler {
 	}
 
 	private static void serverStarting(MinecraftServer server) {
-		ServerEvents.LOADED.post(new ServerEventJS(server));
+		ServerEvents.LOADED.post(ScriptType.SERVER, new ServerEventJS(server));
 	}
 
 	private static void serverStopping(MinecraftServer server) {
-		ServerEvents.UNLOADED.post(new ServerEventJS(server));
+		ServerEvents.UNLOADED.post(ScriptType.SERVER, new ServerEventJS(server));
 	}
 
 	private static void serverStopped(MinecraftServer server) {
@@ -83,7 +84,7 @@ public class KubeJSServerEventHandler {
 	}
 
 	private static void serverLevelLoaded(ServerLevel level) {
-		LevelEvents.LOADED.post(level.dimension().location(), new SimpleLevelEventJS(level));
+		LevelEvents.LOADED.post(ScriptType.SERVER, level.dimension().location(), new SimpleLevelEventJS(level));
 	}
 
 	private static void serverLevelSaved(ServerLevel level) {
@@ -128,11 +129,6 @@ public class KubeJSServerEventHandler {
 
 	public static EventResult command(CommandPerformEvent event) {
 		var e = new CommandEventJS(event);
-
-		if (ServerEvents.COMMAND.post(e.getCommandName(), e)) {
-			return EventResult.interruptFalse();
-		}
-
-		return EventResult.pass();
+		return ServerEvents.COMMAND.post(ScriptType.SERVER, e.getCommandName(), e).arch();
 	}
 }

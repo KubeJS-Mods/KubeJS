@@ -56,6 +56,7 @@ public class BasicItemJS extends Item {
 			kjs$getItemBuilder().attributes.forEach((r, m) -> attributes.put(KubeJSRegistries.attributes().get(r), m));
 			modified = true;
 		}
+
 		return slot == EquipmentSlot.MAINHAND ? attributes : super.getDefaultAttributeModifiers(slot);
 	}
 }

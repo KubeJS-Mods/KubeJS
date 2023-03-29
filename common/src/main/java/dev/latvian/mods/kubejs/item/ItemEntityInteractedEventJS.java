@@ -1,20 +1,20 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 /**
  * @author LatvianModder
  */
 public class ItemEntityInteractedEventJS extends PlayerEventJS {
-	private final ServerPlayer player;
+	private final Player player;
 	private final Entity entity;
 	private final InteractionHand hand;
 
-	public ItemEntityInteractedEventJS(ServerPlayer player, Entity entity, InteractionHand hand) {
+	public ItemEntityInteractedEventJS(Player player, Entity entity, InteractionHand hand) {
 
 		this.player = player;
 		this.entity = entity;
@@ -22,7 +22,7 @@ public class ItemEntityInteractedEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	public ServerPlayer getEntity() {
+	public Player getEntity() {
 		return player;
 	}
 

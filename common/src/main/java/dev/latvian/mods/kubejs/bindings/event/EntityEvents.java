@@ -25,8 +25,8 @@ public interface EntityEvents {
 		return id == null ? null : KubeJSRegistries.entityTypes().get(id);
 	}
 
-	EventHandler DEATH = GROUP.server("death", () -> LivingEntityDeathEventJS.class).extra(SUPPORTS_ENTITY_TYPE).cancelable();
-	EventHandler HURT = GROUP.server("hurt", () -> LivingEntityHurtEventJS.class).extra(SUPPORTS_ENTITY_TYPE).cancelable();
-	EventHandler CHECK_SPAWN = GROUP.server("checkSpawn", () -> CheckLivingEntitySpawnEventJS.class).extra(SUPPORTS_ENTITY_TYPE).cancelable();
-	EventHandler SPAWNED = GROUP.server("spawned", () -> EntitySpawnedEventJS.class).extra(SUPPORTS_ENTITY_TYPE).cancelable();
+	EventHandler DEATH = GROUP.common("death", () -> LivingEntityDeathEventJS.class).extra(SUPPORTS_ENTITY_TYPE).hasResult();
+	EventHandler HURT = GROUP.common("hurt", () -> LivingEntityHurtEventJS.class).extra(SUPPORTS_ENTITY_TYPE).hasResult();
+	EventHandler CHECK_SPAWN = GROUP.common("checkSpawn", () -> CheckLivingEntitySpawnEventJS.class).extra(SUPPORTS_ENTITY_TYPE).hasResult();
+	EventHandler SPAWNED = GROUP.common("spawned", () -> EntitySpawnedEventJS.class).extra(SUPPORTS_ENTITY_TYPE).hasResult();
 }

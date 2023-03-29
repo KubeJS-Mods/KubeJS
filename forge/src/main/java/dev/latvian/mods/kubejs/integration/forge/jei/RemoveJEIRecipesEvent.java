@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.integration.forge.jei;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.event.EventResult;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
@@ -54,7 +55,7 @@ public class RemoveJEIRecipesEvent extends EventJS {
 	}
 
 	@Override
-	protected void afterPosted(boolean result) {
+	protected void afterPosted(EventResult result) {
 		var rm = runtime.getRecipeManager();
 		for (var cat : recipesRemoved.keySet()) {
 			var type = cat.getRecipeType();

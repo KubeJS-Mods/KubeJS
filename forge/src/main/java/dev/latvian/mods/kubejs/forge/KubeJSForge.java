@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.entity.forge.LivingEntityDropsEventJS;
 import dev.latvian.mods.kubejs.item.forge.ItemDestroyedEventJS;
 import dev.latvian.mods.kubejs.platform.forge.IngredientPlatformHelperImpl;
-import net.minecraft.server.level.ServerPlayer;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -49,19 +49,13 @@ public class KubeJSForge {
 	}
 
 	private static void itemDestroyed(PlayerDestroyItemEvent event) {
-		if (event.getEntity() instanceof ServerPlayer) {
-			ForgeKubeJSEvents.ITEM_DESTROYED.post(event.getOriginal().getItem(), new ItemDestroyedEventJS(event));
-		}
+		ForgeKubeJSEvents.ITEM_DESTROYED.post(ScriptType.of(event.getEntity()), event.getOriginal().getItem(), new ItemDestroyedEventJS(event));
 	}
 
 	private static void livingDrops(LivingDropsEvent event) {
-		if (event.getEntity().level.isClientSide()) {
-			return;
-		}
-
 		var e = new LivingEntityDropsEventJS(event);
 
-		if (ForgeKubeJSEvents.ENTITY_DROPS.post(e.getEntity().getType(), e)) {
+		if (ForgeKubeJSEvents.ENTITY_DROPS.post(ScriptType.of(event.getEntity()), e.getEntity().getType(), e).override()) {
 			event.setCanceled(true);
 		} else if (e.eventDrops != null) {
 			event.getDrops().clear();

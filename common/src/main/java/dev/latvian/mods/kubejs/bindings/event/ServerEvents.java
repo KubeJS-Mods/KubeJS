@@ -30,8 +30,8 @@ public interface ServerEvents {
 	EventHandler TICK = GROUP.server("tick", () -> ServerEventJS.class);
 	EventHandler TAGS = GROUP.server("tags", () -> TagEventJS.class).extra(StartupEvents.REGISTRY_EXTRA);
 	EventHandler COMMAND_REGISTRY = GROUP.server("commandRegistry", () -> CommandRegistryEventJS.class);
-	EventHandler COMMAND = GROUP.server("command", () -> CommandEventJS.class).extra(Extra.STRING).cancelable();
-	EventHandler CUSTOM_COMMAND = GROUP.server("customCommand", () -> CustomCommandEventJS.class).extra(Extra.STRING).cancelable();
+	EventHandler COMMAND = GROUP.server("command", () -> CommandEventJS.class).extra(Extra.STRING).hasResult();
+	EventHandler CUSTOM_COMMAND = GROUP.server("customCommand", () -> CustomCommandEventJS.class).extra(Extra.STRING).hasResult();
 	EventHandler RECIPES = GROUP.server("recipes", () -> RecipesEventJS.class);
 	EventHandler RECIPES_AFTER_LOADED = GROUP.server("afterRecipes", () -> AfterRecipesLoadedEventJS.class);
 	EventHandler SPECIAL_RECIPES = GROUP.server("specialRecipeSerializers", () -> SpecialRecipeSerializerManager.class);

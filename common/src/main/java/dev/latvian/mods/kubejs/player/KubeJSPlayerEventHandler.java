@@ -31,7 +31,7 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	public static void loggedIn(ServerPlayer player) {
-		PlayerEvents.LOGGED_IN.post(new SimplePlayerEventJS(player));
+		PlayerEvents.LOGGED_IN.post(ScriptType.SERVER, new SimplePlayerEventJS(player));
 		player.inventoryMenu.addSlotListener(player.kjs$getInventoryChangeListener());
 
 		if (!ScriptType.SERVER.errors.isEmpty() && !CommonProperties.get().hideServerScriptErrors) {
@@ -44,54 +44,47 @@ public class KubeJSPlayerEventHandler {
 	public static void respawn(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean keepData) {
 		newPlayer.kjs$setRawPersistentData(oldPlayer.kjs$getRawPersistentData());
 		newPlayer.inventoryMenu.addSlotListener(newPlayer.kjs$getInventoryChangeListener());
-		PlayerEvents.RESPAWNED.post(new PlayerRespawnedEventJS(newPlayer, oldPlayer, keepData));
+		PlayerEvents.RESPAWNED.post(ScriptType.SERVER, new PlayerRespawnedEventJS(newPlayer, oldPlayer, keepData));
 		newPlayer.kjs$getStages().sync();
 	}
 
 	public static void loggedOut(ServerPlayer player) {
-		PlayerEvents.LOGGED_OUT.post(new SimplePlayerEventJS(player));
+		PlayerEvents.LOGGED_OUT.post(ScriptType.SERVER, new SimplePlayerEventJS(player));
 	}
 
 	public static void tick(Player player) {
-		if (player instanceof ServerPlayer) {
-			PlayerEvents.TICK.post(new SimplePlayerEventJS(player));
-		}
+		PlayerEvents.TICK.post(ScriptType.of(player), new SimplePlayerEventJS(player));
 	}
 
 	public static void chatDecorate(ServerPlayer player, ChatEvent.ChatComponent component) {
-		PlayerEvents.DECORATE_CHAT.post(new PlayerChatDecorateEventJS(player, component));
+		PlayerEvents.DECORATE_CHAT.post(ScriptType.SERVER, new PlayerChatDecorateEventJS(player, component));
 	}
 
 	public static EventResult chatReceived(ServerPlayer player, Component component) {
-		var event = new PlayerChatReceivedEventJS(player, component);
-		return PlayerEvents.CHAT.post(event) ? EventResult.interruptFalse() : EventResult.pass();
+		return PlayerEvents.CHAT.post(ScriptType.SERVER, new PlayerChatReceivedEventJS(player, component)).arch();
 	}
 
 	public static void advancement(ServerPlayer player, Advancement advancement) {
-		PlayerEvents.ADVANCEMENT.post(String.valueOf(advancement.getId()), new PlayerAdvancementEventJS(player, advancement));
+		PlayerEvents.ADVANCEMENT.post(ScriptType.SERVER, String.valueOf(advancement.getId()), new PlayerAdvancementEventJS(player, advancement));
 	}
 
 	public static void inventoryOpened(Player player, AbstractContainerMenu menu) {
-		if (player instanceof ServerPlayer serverPlayer) {
-			if (!(menu instanceof InventoryMenu)) {
-				menu.addSlotListener(serverPlayer.kjs$getInventoryChangeListener());
-			}
+		if (!(menu instanceof InventoryMenu)) {
+			menu.addSlotListener(player.kjs$getInventoryChangeListener());
+		}
 
-			PlayerEvents.INVENTORY_OPENED.post(new InventoryEventJS(serverPlayer, menu));
+		PlayerEvents.INVENTORY_OPENED.post(ScriptType.of(player), menu.getType(), new InventoryEventJS(player, menu));
 
-			if (menu instanceof ChestMenu) {
-				PlayerEvents.CHEST_OPENED.post(new ChestEventJS(serverPlayer, menu));
-			}
+		if (menu instanceof ChestMenu) {
+			PlayerEvents.CHEST_OPENED.post(ScriptType.of(player), menu.getType(), new ChestEventJS(player, menu));
 		}
 	}
 
 	public static void inventoryClosed(Player player, AbstractContainerMenu menu) {
-		if (player instanceof ServerPlayer serverPlayer) {
-			PlayerEvents.INVENTORY_CLOSED.post(new InventoryEventJS(serverPlayer, menu));
+		PlayerEvents.INVENTORY_CLOSED.post(ScriptType.of(player), menu.getType(), new InventoryEventJS(player, menu));
 
-			if (menu instanceof ChestMenu) {
-				PlayerEvents.CHEST_CLOSED.post(new ChestEventJS(serverPlayer, menu));
-			}
+		if (menu instanceof ChestMenu) {
+			PlayerEvents.CHEST_CLOSED.post(ScriptType.of(player), menu.getType(), new ChestEventJS(player, menu));
 		}
 	}
 }

@@ -15,17 +15,22 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 public interface BlockEvents {
 	EventGroup GROUP = EventGroup.of("BlockEvents");
 
 	Extra SUPPORTS_BLOCK = new Extra().transformer(BlockEvents::transformBlock).toString(o -> ((Block) o).kjs$getId()).identity();
 
-	private static Object transformBlock(Object o) {
-		if (o == null || o instanceof Block) {
-			return o;
+	private static Block transformBlock(Object o) {
+		if (o == null) {
+			return null;
+		} else if (o instanceof Block block) {
+			return block;
 		} else if (o instanceof BlockItem item) {
 			return item.getBlock();
+		} else if (o instanceof BlockState state) {
+			return state.getBlock();
 		}
 
 		var id = ResourceLocation.tryParse(o.toString());
@@ -34,12 +39,12 @@ public interface BlockEvents {
 	}
 
 	EventHandler MODIFICATION = GROUP.startup("modification", () -> BlockModificationEventJS.class);
-	EventHandler RIGHT_CLICKED = GROUP.server("rightClicked", () -> BlockRightClickedEventJS.class).extra(SUPPORTS_BLOCK).cancelable();
-	EventHandler LEFT_CLICKED = GROUP.server("leftClicked", () -> BlockLeftClickedEventJS.class).extra(SUPPORTS_BLOCK).cancelable();
-	EventHandler PLACED = GROUP.server("placed", () -> BlockPlacedEventJS.class).extra(SUPPORTS_BLOCK).cancelable();
-	EventHandler BROKEN = GROUP.server("broken", () -> BlockBrokenEventJS.class).extra(SUPPORTS_BLOCK).cancelable();
-	EventHandler DETECTOR_CHANGED = GROUP.server("detectorChanged", () -> DetectorBlockEventJS.class).extra(SUPPORTS_BLOCK);
-	EventHandler DETECTOR_POWERED = GROUP.server("detectorPowered", () -> DetectorBlockEventJS.class).extra(SUPPORTS_BLOCK);
-	EventHandler DETECTOR_UNPOWERED = GROUP.server("detectorUnpowered", () -> DetectorBlockEventJS.class).extra(SUPPORTS_BLOCK);
-	EventHandler FARMLAND_TRAMPLED = GROUP.server("farmlandTrampled", () -> FarmlandTrampledEventJS.class).extra(SUPPORTS_BLOCK).cancelable();
+	EventHandler RIGHT_CLICKED = GROUP.common("rightClicked", () -> BlockRightClickedEventJS.class).extra(SUPPORTS_BLOCK).hasResult();
+	EventHandler LEFT_CLICKED = GROUP.common("leftClicked", () -> BlockLeftClickedEventJS.class).extra(SUPPORTS_BLOCK).hasResult();
+	EventHandler PLACED = GROUP.common("placed", () -> BlockPlacedEventJS.class).extra(SUPPORTS_BLOCK).hasResult();
+	EventHandler BROKEN = GROUP.common("broken", () -> BlockBrokenEventJS.class).extra(SUPPORTS_BLOCK).hasResult();
+	EventHandler DETECTOR_CHANGED = GROUP.common("detectorChanged", () -> DetectorBlockEventJS.class).extra(SUPPORTS_BLOCK);
+	EventHandler DETECTOR_POWERED = GROUP.common("detectorPowered", () -> DetectorBlockEventJS.class).extra(SUPPORTS_BLOCK);
+	EventHandler DETECTOR_UNPOWERED = GROUP.common("detectorUnpowered", () -> DetectorBlockEventJS.class).extra(SUPPORTS_BLOCK);
+	EventHandler FARMLAND_TRAMPLED = GROUP.common("farmlandTrampled", () -> FarmlandTrampledEventJS.class).extra(SUPPORTS_BLOCK).hasResult();
 }

@@ -4,8 +4,8 @@ import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,12 +13,12 @@ import org.jetbrains.annotations.Nullable;
  * @author LatvianModder
  */
 public class BlockLeftClickedEventJS extends PlayerEventJS {
-	private final ServerPlayer player;
+	private final Player player;
 	private final InteractionHand hand;
 	private final BlockPos pos;
 	private final Direction direction;
 
-	public BlockLeftClickedEventJS(ServerPlayer player, InteractionHand hand, BlockPos pos, Direction direction) {
+	public BlockLeftClickedEventJS(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
 		this.player = player;
 		this.hand = hand;
 		this.pos = pos;
@@ -26,7 +26,7 @@ public class BlockLeftClickedEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	public ServerPlayer getEntity() {
+	public Player getEntity() {
 		return player;
 	}
 

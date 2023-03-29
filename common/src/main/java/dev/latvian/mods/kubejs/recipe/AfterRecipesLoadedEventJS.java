@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.recipe;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
@@ -90,7 +91,7 @@ public class AfterRecipesLoadedEventJS extends EventJS {
 	}
 
 	@Override
-	protected void afterPosted(boolean isCanceled) {
+	protected void afterPosted(EventResult isCanceled) {
 		recipeMap.values().removeIf(Map::isEmpty);
 	}
 }

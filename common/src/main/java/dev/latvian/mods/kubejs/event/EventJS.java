@@ -1,19 +1,35 @@
 package dev.latvian.mods.kubejs.event;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * @author LatvianModder
  */
 public class EventJS {
-	private boolean canceled = false;
-
-	public final void cancel() {
-		canceled = true;
+	public void cancel() {
+		throw EventResult.Type.INTERRUPT_FALSE.defaultExit;
 	}
 
-	public final boolean isCanceled() {
-		return canceled;
+	public void success() {
+		throw EventResult.Type.INTERRUPT_TRUE.defaultExit;
 	}
 
-	protected void afterPosted(boolean isCanceled) {
+	public void exit() {
+		throw EventResult.Type.INTERRUPT_DEFAULT.defaultExit;
+	}
+
+	public void cancel(@Nullable Object value) {
+		throw EventResult.Type.INTERRUPT_FALSE.exit(value);
+	}
+
+	public void success(@Nullable Object value) {
+		throw EventResult.Type.INTERRUPT_TRUE.exit(value);
+	}
+
+	public void exit(@Nullable Object value) {
+		throw EventResult.Type.INTERRUPT_DEFAULT.exit(value);
+	}
+
+	protected void afterPosted(EventResult result) {
 	}
 }
