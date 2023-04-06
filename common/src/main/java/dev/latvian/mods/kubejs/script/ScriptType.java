@@ -72,7 +72,7 @@ public enum ScriptType implements ScriptTypePredicate {
 
 	public Path getLogFile() {
 		var dir = Platform.getGameFolder().resolve("logs/kubejs");
-		var file = dir.resolve(name + ".txt");
+		var file = dir.resolve(name + ".log");
 
 		try {
 			if (!Files.exists(dir)) {
@@ -80,7 +80,13 @@ public enum ScriptType implements ScriptTypePredicate {
 			}
 
 			if (!Files.exists(file)) {
-				Files.createFile(file);
+				var oldFile = dir.resolve(name + ".txt");
+
+				if (Files.exists(oldFile)) {
+					Files.move(oldFile, file);
+				} else {
+					Files.createFile(file);
+				}
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
