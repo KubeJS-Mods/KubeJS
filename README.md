@@ -64,10 +64,10 @@ Just set the versions with most up-to-date version of the required mod(s), which
 
 <p align="center">
     <a href="https://vers.saps.dev">
-        <img src="https://flat.badgen.net/maven/v/metadata-url/https/mvn.saps.dev/minecraft/dev/latvian/mods/kubejs/maven-metadata.xml?color=C186E6&label=KubeJS" alt="KubeJS Latest Version">
+        <img src="https://flat.badgen.net/maven/v/metadata-url/https/maven.saps.dev/releases/dev/latvian/mods/kubejs/maven-metadata.xml?color=C186E6&label=KubeJS" alt="KubeJS Latest Version">
     </a>
 	<a href="https://vers.saps.dev">
-        <img src="https://flat.badgen.net/maven/v/metadata-url/https/mvn.saps.dev/minecraft/dev/latvian/mods/rhino/maven-metadata.xml?color=3498DB&label=Rhino" alt="Rhino Latest Version">
+        <img src="https://flat.badgen.net/maven/v/metadata-url/https/maven.saps.dev/releases/dev/latvian/mods/rhino/maven-metadata.xml?color=3498DB&label=Rhino" alt="Rhino Latest Version">
     </a>
 		<a href="https://maven.architectury.dev/dev/architectury/architectury">
         <img src="https://flat.badgen.net/badge/Architectury/use%20v4%20for%201.18.2/F95F1E" alt="Architectury Latest Version">
