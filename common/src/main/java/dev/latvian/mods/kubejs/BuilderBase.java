@@ -108,14 +108,14 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	public void addResourcePackLocations(String path, List<ResourceLocation> list, PackType packType) {
 	}
 
-	private T createTransformedObject() {
+	protected T createTransformedObject() {
 		getRegistryType().current = this;
 		T o = transformObject(createObject());
 		getRegistryType().current = null;
 		return o;
 	}
 
-	final boolean registerObject(boolean all) {
+	protected boolean registerObject(boolean all) {
 		if (!dummyBuilder && (all || getRegistryType().bypassServerOnly)) {
 			if (CommonProperties.get().debugInfo) {
 				ConsoleJS.STARTUP.info("+ " + getRegistryType().registryKey.location() + " | " + id);
