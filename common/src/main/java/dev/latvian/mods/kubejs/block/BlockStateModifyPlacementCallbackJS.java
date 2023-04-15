@@ -23,7 +23,7 @@ public class BlockStateModifyPlacementCallbackJS extends BlockStateModifyCallbac
 	public BlockContainerJS block;
 
 	public BlockStateModifyPlacementCallbackJS(BlockPlaceContext context, Block block) {
-		super(block.defaultBlockState());
+		super(context.getLevel().getBlockState(context.getClickedPos()));
 		this.context = context;
 		this.minecraftBlock = block;
 		this.block = new BlockContainerJS(context.getLevel(), context.getClickedPos());
