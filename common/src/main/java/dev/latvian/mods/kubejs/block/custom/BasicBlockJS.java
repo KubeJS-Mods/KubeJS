@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.block.custom;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.BlockStateModifyCallbackJS;
 import dev.latvian.mods.kubejs.block.BlockStateModifyPlacementCallbackJS;
+import dev.latvian.mods.kubejs.block.CanBeReplacedCallbackJS;
 import dev.latvian.mods.kubejs.block.EntityBlockKJS;
 import dev.latvian.mods.kubejs.block.KubeJSBlockProperties;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
@@ -111,6 +112,15 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		}
 
 		return defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER);
+	}
+
+	@Override
+	public boolean canBeReplaced(BlockState blockState, BlockPlaceContext context) {
+		if (blockBuilder.canBeReplacedFunction != null) {
+			var callbackJS = new CanBeReplacedCallbackJS(context, blockState);
+			return blockBuilder.canBeReplacedFunction.apply(callbackJS);
+		}
+		return super.canBeReplaced(blockState, context);
 	}
 
 	@Override
