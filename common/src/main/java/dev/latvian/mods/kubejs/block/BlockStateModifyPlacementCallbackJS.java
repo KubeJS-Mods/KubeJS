@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -23,10 +24,18 @@ public class BlockStateModifyPlacementCallbackJS extends BlockStateModifyCallbac
 	public BlockContainerJS block;
 
 	public BlockStateModifyPlacementCallbackJS(BlockPlaceContext context, Block block) {
-		super(context.getLevel().getBlockState(context.getClickedPos()));
+		super(getBlockStateToModify(context, block));
 		this.context = context;
 		this.minecraftBlock = block;
 		this.block = new BlockContainerJS(context.getLevel(), context.getClickedPos());
+	}
+
+	private static BlockState getBlockStateToModify(BlockPlaceContext context, Block block) {
+		BlockState previous = context.getLevel().getBlockState(context.getClickedPos());
+		if (previous.getBlock() == block) {
+			return previous;
+		}
+		return block.defaultBlockState();
 	}
 
 	public BlockPos getClickedPos() {
@@ -117,5 +126,9 @@ public class BlockStateModifyPlacementCallbackJS extends BlockStateModifyCallbac
 
 	public boolean isInWater() {
 		return getFluidStateAtClickedPos().getType() == Fluids.WATER;
+	}
+
+	public boolean isReplacingSelf() {
+		return getLevel().getBlockState(getClickedPos()).getBlock() == minecraftBlock;
 	}
 }
