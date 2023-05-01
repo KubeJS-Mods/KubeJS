@@ -25,7 +25,6 @@ public class InventoryIterator implements Iterator<ItemStack> {
 			throw new NoSuchElementException();
 		}
 
-		cursor++;
-		return inventory.kjs$getStackInSlot(cursor);
+		return inventory.kjs$getStackInSlot(cursor++);
 	}
 }
