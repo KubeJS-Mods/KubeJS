@@ -25,8 +25,9 @@ public class DataExport {
 	@HideFromJS
 	public static JsonObject dataExport;
 
-	public static void exportData() {
+	public static void exportData(JsonObject lootTables) {
 		if (dataExport != null) {
+			DataExport.dataExport.add("loot_tables", lootTables);
 			Util.ioPool().execute(DataExport::exportDataBlocking);
 		}
 	}
