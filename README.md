@@ -28,21 +28,21 @@ To add a Gradle dependency on KubeJS, you will need to add the following reposit
 
 ```groovy
 repositories {
-    maven {
-        // Shedaniel's maven (Architectury API)
-        url = "https://maven.architectury.dev"
-        content {
-            includeGroup "dev.architectury"
-        }
-    }
+	maven {
+		// Shedaniel's maven (Architectury API)
+		url = "https://maven.architectury.dev"
+		content {
+			includeGroup "dev.architectury"
+		}
+	}
 
-    maven {
-        // saps.dev Maven (KubeJS and Rhino)
-        url = "https://maven.saps.dev/minecraft"
-        content {
-            includeGroup "dev.latvian.mods"
-        }
-    }
+	maven {
+		// saps.dev Maven (KubeJS and Rhino)
+		url = "https://maven.saps.dev/minecraft"
+		content {
+			includeGroup "dev.latvian.mods"
+		}
+	}
 }
 ```
 
@@ -56,21 +56,21 @@ modImplementation("dev.latvian.mods:kubejs-<loader>:${kubejs_version}")
 implementation fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
 
 // these two are unfortunately needed since fg.deobf doesn't respect transitive dependencies yet
-implementation fg.deobf("dev.latvian.mods:rhino:${rhino_version}")
+implementation fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
 implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
 ```
 
 Just set the versions with most up-to-date version of the required mod(s), which you also find using these badges:
 
 <p align="center">
-    <a href="https://maven.saps.dev/">
+    <a href="https://maven.saps.dev/#/releases/dev/latvian/mods/kubejs">
         <img src="https://flat.badgen.net/maven/v/metadata-url/https/maven.saps.dev/releases/dev/latvian/mods/kubejs/maven-metadata.xml?color=C186E6&label=KubeJS" alt="KubeJS Latest Version">
     </a>
-	<a href="https://maven.saps.dev/">
+	<a href="https://maven.saps.dev/#/releases/dev/latvian/mods/rhino">
         <img src="https://flat.badgen.net/maven/v/metadata-url/https/maven.saps.dev/releases/dev/latvian/mods/rhino/maven-metadata.xml?color=3498DB&label=Rhino" alt="Rhino Latest Version">
     </a>
-		<a href="https://maven.architectury.dev/dev/architectury/architectury">
-        <img src="https://flat.badgen.net/badge/Architectury/use%20v4%20for%201.18.2/F95F1E" alt="Architectury Latest Version">
+		<a href="https://linkie.shedaniel.dev/dependencies">
+        <img src="https://flat.badgen.net/badge/Architectury/See%20this%20page%20for%20more%20information/F95F1E" alt="Architectury Latest Version">
     </a>
 </p>
 
@@ -84,80 +84,141 @@ KubeJS uses the official mappings for Minecraft ("mojmap"). Since the refmap rem
 
 ```groovy
 minecraft {
-    runs {
-        client {
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-        }
-        // should be analogue for any other runs you have
-    }
+	runs {
+		client {
+			property 'mixin.env.remapRefMap', 'true'
+			property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+		}
+		// should be analogue for any other runs you have
+	}
 }
 ```
 
 ### Creating a plugin
 
-KubeJS [plugins](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/KubeJSPlugin.java) are a new feature introduced in KubeJS `1605.3.7` designed to ease the process of adding KubeJS integration to mods. They contain convenient hooks for addon developers to:
+KubeJS [plugins](https://github.com/KubeJS-Mods/KubeJS/blob/1.19/main/common/src/main/java/dev/latvian/mods/kubejs/KubeJSPlugin.java) are the main way to add KubeJS integration to your mods through code. They contain various convenient hooks for addon developers, to allow things such as:
 
-- perform certain actions during or after plugin initialisation (`init` / `afterInit` - [Example](https://github.com/FTBTeam/FTB-Chunks/blob/1.18/main/common/src/main/java/dev/ftb/mods/ftbchunks/integration/kubejs/FTBChunksKubeJSPlugin.java#L15-L24))
-- add custom recipe handlers for modded recipe types (`addRecipes` - [Example](https://github.com/KubeJS-Mods/KubeJS-Create/blob/1.18/main/src/main/java/dev/latvian/mods/kubejs/create/KubeJSCreatePlugin.java#L19-L29)) *(this replaces `RegisterRecipeHandlersEvent` listeners)*
-- add classes to the class filter (with the option to add to the filter for a certain script type only, as well as to add `Class` objects directly rather than using strings) (`addClasses` - [Example](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/BuiltinKubeJSPlugin.java#L68-L120))
-- add global bindings (`addBindings` - [Example](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/forge/src/main/java/dev/latvian/mods/kubejs/forge/BuiltinKubeJSForgePlugin.java#L27-L31)) *(this replaces `BindingsEvent` listeners)*
-- add type wrappers for automatic native type conversion, for example to allow `String`s to be automatically converted to `ResourceLocation`s. (`addTypeWrappers` - [Example](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/BuiltinKubeJSPlugin.java#L211-L252))
-- attach data to [players](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/player/AttachPlayerDataEvent.java), [worlds](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/world/AttachWorldDataEvent.java) or the [server](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/server/AttachServerDataEvent.java) that may then be used by script makers (`attach(Player|World|Server)Data` - [Example](https://github.com/FTBTeam/FTB-Quests/blob/1.18/main/common/src/main/java/dev/ftb/mods/ftbquests/integration/kubejs/KubeJSIntegration.java#L40-L42), please note this example currently uses the deprecated way of listening to `AttachPlayerDataEvent` itself)
+- performing certain actions during or after plugin or KubeJS initialisation (`init`, `afterInit`, etc.)
+- adding classes to the class filter (`registerClasses`) as well as custom bindings (`registerBindings`) and type wrappers (`registerWrappers`) for easier interaction with native code in user scripts (See below for an explanation and example use cases)
+- registering custom recipe handlers for modded recipe types (`registerRecipeTypes` - See below for an example)
+- registering custom event handler groups for the KubeJS event system (`registerEvents`, this is **necessary** in order to have the event group be accessible from scripts)
+- attaching extra data to players, worlds or the server, such that it can be accessed by script developers later (`attach(Player|World|Server)Data` - [Example](https://github.com/FTBTeam/FTB-Quests/blob/11311be070273008483d4c734ff9b96cc6a85b02/common/src/main/java/dev/ftb/mods/ftbquests/integration/kubejs/KubeJSIntegration.java#L40-L43))
 
 ### Adding recipe handlers
 
-To add custom recipe handlers for your own modded recipe types, use KubeJS plugins as noted above. A concrete example of this can be found [here](https://github.com/KubeJS-Mods/KubeJS-Thermal/blob/1.18/main/src/main/java/dev/latvian/mods/kubejs/thermal/KubeJSThermalPlugin.java) for integration with the Thermal series, but we'll give you a simple outline of the process here as well:
+To add custom recipe handlers for your own modded recipe types, use KubeJS plugins as noted above. A concrete example of this can be found [here](https://github.com/KubeJS-Mods/KubeJS-Thermal/blob/1.19/main/src/main/java/dev/latvian/mods/kubejs/thermal/KubeJSThermalPlugin.java) for integration with the Thermal series, but we'll give you a simple outline of the process here as well:
 
 ```java
 public class MyExamplePlugin extends KubeJSPlugin {
-    // for custom recipe types based on shaped recipes, like non-mirrored or copying NBT
-    event.registerShaped("mymod:shapedbutbetter");        // analogue: registerShapeless
+	@Override
+	public void registerRecipeTypes(RegisterRecipeTypesEvent event) {
+		// for custom recipe types based on shaped recipes, like non-mirrored or copying NBT
+		event.registerShaped("mymod:shapedbutbetter");        // analogue: registerShapeless
 
-    // this is what you usually want to use for custom machine recipe types and the like
-    event.register("mymod:customtype", MyRecipeJS::new);
+		// this is what you usually want to use for custom machine recipe types and the like
+		event.register("mymod:customtype", MyRecipeJS::new);
+	}
 }
 
 public class MyRecipeJS extends RecipeJS {
-    // Input is an IngredientStackJS, return value should be the
-    // serialised JSON variant used in your recipe 
-    @Override
-    public JsonElement serializeIngredientStack(IngredientStackJS stack);
 
-    // say your recipe had processing time, you would use builder
-    // methods like these to add these properties to the JSON
-    public MyRecipeJS time(int ticks) {
-        json.addProperty("time", ticks);
-        save();
-        return this;
-    }
+	public OutputItem result; // represents a single output item stack, which may have a chance attached to it 
+	public InputItem ingredient; // represents an input item ingredient or ingredient stack
 
-    // Similar to inputs, if you use custom parsing to determine your
-    // result item, use this method to override the parsing of said item.
-    @Override
-    public ItemStackJS parseResultItem(@Nullable Object o) {
-        if(o instanceof JsonObject) {
-            // parse the item yourself if it's a JsonObject
-        }
-        return super.parseResultItem(o); // fallback to default parsing otherwise
-    }
+	// create is invoked when a recipe is created through script code,
+	// with args being the list of parameters passed to the recipe constructor
+	// if an args.get(i) call is out of bounds, it will return null instead, so
+	// you don't need to worry about checking for out of bounds
+	@Override
+	public void create(RecipeArguments args) {
+		result = parseOutputItem(args.get(0));
+		ingredient = parseInputItem(args.get(1));
+	}
+
+	// example of a custom property that can be set through scripts
+	// in this case, the experience property is saved to the recipe's JSON immediately,
+	// rather than storing it in a field and serializing it all at once later;
+	// this is recommended for "optional" properties that likely won't be supplied during `create`
+	public CookingRecipeJS xp(float xp) {
+		json.addProperty("experience", Math.max(0F, xp));
+		save();
+		return this;
+	}
+
+	// this is invoked when a recipe is loaded from JSON
+	// (mostly used for modifying existing recipes, since new recipes
+	// added by scripts are done through `create` instead)
+	@Override
+	public void deserialize() {
+		result = parseOutputItem(json.get("result"));
+		ingredient = parseInputItem(json.get("ingredient"));
+	}
+
+	// this is used both by modified and newly created recipes
+	// to serialize them to JSON; currently, it is *required*
+	// by default that your recipes are JSON-serializable,
+	// and while you may be able to get away with code-only recipes
+	// e.g. through overriding `createRecipe`, this is unsupported
+	// since the assumed use case is that all recipes have some JSON representation
+	@Override
+	public void serialize() {
+		if (serializeOutputs) {
+			json.add("result", outputToJson(result));
+		}
+
+		if (serializeInputs) {
+			json.add("ingredient", inputToJson(ingredient));
+		}
+	}
+
+	// the next two methods are used during bulk recipe modification
+	// (through RecipeFilter) to find recipes that contain a certain in- or output
+	@Override
+	public boolean hasInput(IngredientMatch match) {
+		return match.contains(ingredient);
+	}
+
+	@Override
+	public boolean hasOutput(IngredientMatch match) {
+		return match.contains(result);
+	}
+
+	// these two methods are used to replace a given in- or output item with another using the given transformer
+	@Override
+	public boolean replaceInput(IngredientMatch match, InputItem with, InputItemTransformer transformer) {
+		if (match.contains(ingredient)) {
+			ingredient = transformer.transform(this, match, ingredient, with);
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean replaceOutput(IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
+		if (match.contains(result)) {
+			result = transformer.transform(this, match, result, with);
+			return true;
+		}
+
+		return false;
+	}
 }
 ```
 
 ### Adding bindings
 
-Similarly to adding custom recipe types, you may also add **custom bindings** to KubeJS (see [AntimatterAPI](https://github.com/GregTech-Intergalactical/AntimatterAPI/blob/dev-1.18/common/src/main/java/muramasa/antimatter/integration/kubejs/AntimatterKubeJS.java#L18-L21) for a simple example). Bindings can be anything from [single value constants](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/BuiltinKubeJSPlugin.java#L188) to Java [class](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/BuiltinKubeJSPlugin.java#L170) and [method wrappers](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/BuiltinKubeJSPlugin.java#L167), and can be constrained to individual scopes, contexts and script types, as well!
+Similarly to adding custom recipe types, you may also add **custom bindings** to KubeJS (see [AntimatterAPI](https://github.com/GregTech-Intergalactical/AntimatterAPI/blob/dev-1.18/common/src/main/java/muramasa/antimatter/integration/kubejs/AntimatterKubeJS.java) for a simple example). Bindings can be anything from single value constants (like the global `HOUR = 3600000 (ms)`) to Java class and method wrappers (such as the builtin `Item` binding, which is wrapping the `ItemWrapper` class), and can be constrained to individual scopes, contexts and script types, as well!
 
 ### Setting class filters
 
-KubeJS offers native Java type access in script files, meaning that basic Java types can be referenced directly by using for example `java("package.class")`. This access is by default limited to only specifically allowed classes, with the default setting being to deny **anything else** unless [explicitly specified](https://github.com/KubeJS-Mods/KubeJS/blob/1.18/main/common/src/main/java/dev/latvian/mods/kubejs/CommonProperties.java#L51) by the user, however you may still want to explicitly allow (or explicitly deny, to prevent users from using it even with the above setting toggled on) access to certain classes in your mod. To do this, you may either provide a class filter using a KubeJS plugin (more on that later!) *or* you can avoid adding KubeJS as a dependency entirely by providing a simple `kubejs.classfilter.txt` file in your mod's `resources` with the following format (Note that comments aren't allowed in the actual file):
+KubeJS offers native Java type access in script files, meaning that basic Java types can be referenced directly by using for example `Java.loadClass("package.class")`. While builtin filters exist to prevent users from accessing any internal or potentially harmful packages added by Minecraft or its libraries directly, you may still want to explicitly deny access to certain classes or packages in your mod (or explicitly allow certain classes *within* a generally blacklisted package). To do this, you may either provide a class filter using a KubeJS plugin *or* you can avoid adding KubeJS as a dependency entirely by providing a simple `kubejs.classfilter.txt` file in your mod's `resources` with the following format (Note that comments aren't allowed in the actual file):
 
 ```diff
-+mymod.api.MyModAPI // This will *explicitly allow* your class to be used in KubeJS
++mymod.api // This will *explicitly allow* anything from the mymod.api package to be used in KubeJS
+-mymod.api.MyModAPIImpl // This will deny access to the MyModAPIImpl class, while keeping the rest of the package accessible
 -mymod.internal.HttpUtil // This will *explicitly deny* your class from being used in KubeJS
 ```
-
-For any unset classes, the default setting is once again determined by the user.
 
 ## Contributing to KubeJS
 
@@ -169,7 +230,7 @@ If you want to contribute to KubeJS, you will first need to set up a development
 git clone https://github.com/KubeJS-Mods/KubeJS.git
 ```
 
-and import the gradle project using an IDE of your choice! (Note: Eclipse *may* have some problems with Architectury's runs, but IDEA and VS Code should work fine.)
+and import the gradle project using an IDE of your choice! (Note: Eclipse is likely to have problems with Architectury's runs, but IDEA and VS Code should work fine.)
 
 ### Building
 
