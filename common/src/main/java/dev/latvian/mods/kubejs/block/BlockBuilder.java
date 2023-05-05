@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -76,6 +77,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient Set<Property<?>> blockStateProperties;
 	public transient Consumer<BlockStateModifyCallbackJS> defaultStateModification;
 	public transient Consumer<BlockStateModifyPlacementCallbackJS> placementStateModification;
+	public transient Function<CanBeReplacedCallbackJS, Boolean> canBeReplacedFunction;
 
 	public BlockBuilder(ResourceLocation i) {
 		super(i);
@@ -114,6 +116,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		blockStateProperties = new HashSet<>();
 		defaultStateModification = null;
 		placementStateModification = null;
+		canBeReplacedFunction = null;
 	}
 
 	@Override
@@ -569,6 +572,11 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	public BlockBuilder placementState(Consumer<BlockStateModifyPlacementCallbackJS> callbackJS) {
 		placementStateModification = callbackJS;
+		return this;
+	}
+
+	public BlockBuilder canBeReplaced(Function<CanBeReplacedCallbackJS, Boolean> callbackJS) {
+		canBeReplacedFunction = callbackJS;
 		return this;
 	}
 
