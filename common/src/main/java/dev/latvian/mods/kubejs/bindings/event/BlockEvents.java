@@ -43,8 +43,8 @@ public interface BlockEvents {
 	EventHandler LEFT_CLICKED = GROUP.common("leftClicked", () -> BlockLeftClickedEventJS.class).extra(SUPPORTS_BLOCK).hasResult();
 	EventHandler PLACED = GROUP.common("placed", () -> BlockPlacedEventJS.class).extra(SUPPORTS_BLOCK).hasResult();
 	EventHandler BROKEN = GROUP.common("broken", () -> BlockBrokenEventJS.class).extra(SUPPORTS_BLOCK).hasResult();
-	EventHandler DETECTOR_CHANGED = GROUP.common("detectorChanged", () -> DetectorBlockEventJS.class).extra(SUPPORTS_BLOCK);
-	EventHandler DETECTOR_POWERED = GROUP.common("detectorPowered", () -> DetectorBlockEventJS.class).extra(SUPPORTS_BLOCK);
-	EventHandler DETECTOR_UNPOWERED = GROUP.common("detectorUnpowered", () -> DetectorBlockEventJS.class).extra(SUPPORTS_BLOCK);
+	EventHandler DETECTOR_CHANGED = GROUP.common("detectorChanged", () -> DetectorBlockEventJS.class).extra(Extra.STRING);
+	EventHandler DETECTOR_POWERED = GROUP.common("detectorPowered", () -> DetectorBlockEventJS.class).extra(Extra.STRING);
+	EventHandler DETECTOR_UNPOWERED = GROUP.common("detectorUnpowered", () -> DetectorBlockEventJS.class).extra(Extra.STRING);
 	EventHandler FARMLAND_TRAMPLED = GROUP.common("farmlandTrampled", () -> FarmlandTrampledEventJS.class).extra(SUPPORTS_BLOCK).hasResult();
 }
