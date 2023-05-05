@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
@@ -20,8 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
@@ -55,16 +54,16 @@ public enum ScriptType implements ScriptTypePredicate {
 	}
 
 	public final String name;
-	public final transient List<String> errors;
-	public final transient List<String> warnings;
+	public final transient ConcurrentLinkedDeque<String> errors;
+	public final transient ConcurrentLinkedDeque<String> warnings;
 	public final ConsoleJS console;
 	public final transient Supplier<ScriptManager> manager;
 	public final transient ExecutorService executor;
 
 	ScriptType(String n, String cname, Supplier<ScriptManager> m) {
 		name = n;
-		errors = new ArrayList<>();
-		warnings = new ArrayList<>();
+		errors = new ConcurrentLinkedDeque<>();
+		warnings = new ConcurrentLinkedDeque<>();
 		console = new ConsoleJS(this, LoggerFactory.getLogger(cname));
 		manager = m;
 		executor = Executors.newSingleThreadExecutor();
@@ -122,14 +121,14 @@ public enum ScriptType implements ScriptTypePredicate {
 
 	public Component errorsComponent(String command) {
 		return Component.literal("KubeJS errors found [" + errors.size() + "]! Run '" + command + "' for more info")
-				.kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
+				.kjs$clickRunCommand(command)
 				.kjs$hover(Component.literal("Click to show"))
 				.withStyle(ChatFormatting.DARK_RED);
 	}
 
 	public Component warningsComponent(String command) {
 		return Component.literal("KubeJS warnings found [" + warnings.size() + "]! Run '" + command + "' for more info")
-				.kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
+				.kjs$clickRunCommand(command)
 				.kjs$hover(Component.literal("Click to show"))
 				.withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500)));
 	}

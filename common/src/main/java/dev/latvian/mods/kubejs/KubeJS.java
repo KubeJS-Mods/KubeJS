@@ -200,8 +200,10 @@ public class KubeJS {
 			var list = new ArrayList<String>();
 			list.add("Startup script errors:");
 
-			for (int i = 0; i < ScriptType.STARTUP.errors.size(); i++) {
-				list.add((i + 1) + ") " + ScriptType.STARTUP.errors.get(i));
+			var lines = ScriptType.STARTUP.errors.toArray(new String[0]);
+
+			for (int i = 0; i < lines.length; i++) {
+				list.add((i + 1) + ") " + lines[i]);
 			}
 
 			LOGGER.error(String.join("\n", list));

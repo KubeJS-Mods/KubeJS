@@ -17,6 +17,7 @@ import dev.latvian.mods.kubejs.core.ImageButtonKJS;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -94,6 +95,10 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void itemTooltip(ItemStack stack, List<Component> lines, TooltipFlag flag) {
+		if (stack.isEmpty()) {
+			return;
+		}
+
 		var advanced = flag.isAdvanced();
 
 		if (advanced && ClientProperties.get().getShowTagNames() && Screen.hasShiftDown()) {
@@ -129,12 +134,20 @@ public class KubeJSClientEventHandler {
 			ItemEvents.TOOLTIP.post(ScriptType.CLIENT, new ItemTooltipEventJS(staticItemTooltips));
 		}
 
-		for (var handler : staticItemTooltips.getOrDefault(Items.AIR, Collections.emptyList())) {
-			handler.tooltip(stack, advanced, lines);
+		try {
+			for (var handler : staticItemTooltips.getOrDefault(Items.AIR, Collections.emptyList())) {
+				handler.tooltip(stack, advanced, lines);
+			}
+		} catch (Exception ex) {
+			ConsoleJS.CLIENT.error("Error while gathering tooltip for " + stack, ex);
 		}
 
-		for (var handler : staticItemTooltips.getOrDefault(stack.getItem(), Collections.emptyList())) {
-			handler.tooltip(stack, advanced, lines);
+		try {
+			for (var handler : staticItemTooltips.getOrDefault(stack.getItem(), Collections.emptyList())) {
+				handler.tooltip(stack, advanced, lines);
+			}
+		} catch (Exception ex) {
+			ConsoleJS.CLIENT.error("Error while gathering tooltip for " + stack, ex);
 		}
 	}
 

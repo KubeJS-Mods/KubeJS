@@ -270,7 +270,9 @@ public class KubeJSCommands {
 	}
 
 	private static int errors(CommandSourceStack source) {
-		if (ScriptType.SERVER.errors.isEmpty()) {
+		var lines = ScriptType.SERVER.errors.toArray(new String[0]);
+
+		if (lines.length == 0) {
 			source.sendSuccess(Component.literal("No errors found!").withStyle(ChatFormatting.GREEN), false);
 
 			if (!ScriptType.SERVER.warnings.isEmpty()) {
@@ -279,13 +281,13 @@ public class KubeJSCommands {
 			return 1;
 		}
 
-		for (var i = 0; i < ScriptType.SERVER.errors.size(); i++) {
-			source.sendSuccess(Component.literal((i + 1) + ") ").append(Component.literal(ScriptType.SERVER.errors.get(i)).withStyle(ChatFormatting.RED)).withStyle(ChatFormatting.DARK_RED), false);
+		for (var i = 0; i < lines.length; i++) {
+			source.sendSuccess(Component.literal((i + 1) + ") ").append(Component.literal(lines[i]).withStyle(ChatFormatting.RED)).withStyle(ChatFormatting.DARK_RED), false);
 		}
 
 		source.sendSuccess(Component.literal("More info in ")
 						.append(Component.literal("'logs/kubejs/server.txt'")
-								.kjs$click(new ClickEvent(ClickEvent.Action.OPEN_FILE, ScriptType.SERVER.getLogFile().toString()))
+								.kjs$clickOpenFile(ScriptType.SERVER.getLogFile().toString())
 								.kjs$hover(Component.literal("Click to open"))).withStyle(ChatFormatting.DARK_RED),
 				false);
 
@@ -297,13 +299,15 @@ public class KubeJSCommands {
 	}
 
 	private static int warnings(CommandSourceStack source) {
-		if (ScriptType.SERVER.warnings.isEmpty()) {
+		var lines = ScriptType.SERVER.warnings.toArray(new String[0]);
+
+		if (lines.length == 0) {
 			source.sendSuccess(Component.literal("No warnings found!").withStyle(ChatFormatting.GREEN), false);
 			return 1;
 		}
 
-		for (var i = 0; i < ScriptType.SERVER.warnings.size(); i++) {
-			source.sendSuccess(Component.literal((i + 1) + ") ").append(Component.literal(ScriptType.SERVER.warnings.get(i)).withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))).withStyle(ChatFormatting.RED)), false);
+		for (var i = 0; i < lines.length; i++) {
+			source.sendSuccess(Component.literal((i + 1) + ") ").append(Component.literal(lines[i]).withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))).withStyle(ChatFormatting.RED)), false);
 		}
 
 		return 1;
@@ -319,7 +323,7 @@ public class KubeJSCommands {
 		ServerScriptManager.instance.reloadScriptManager(source.getServer().kjs$getReloadableResources().resourceManager());
 		source.sendSuccess(Component.literal("Done! To reload recipes, tags, loot tables and other datapack things, run ")
 						.append(Component.literal("'/reload'")
-								.kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/reload"))
+								.kjs$clickRunCommand("/reload")
 								.kjs$hover(Component.literal("Click to run"))),
 				false);
 		return 1;

@@ -16,9 +16,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -50,7 +52,7 @@ public class ConsoleJS {
 		return cx.getProperty("Console", null);
 	}
 
-	private static class StackTracePrintStream extends PrintStream {
+	private static class StackTracePrintStream extends PrintStream implements Consumer<String> {
 		private final ConsoleJS console;
 		private final boolean error;
 		private final Pattern skipString;
@@ -88,10 +90,15 @@ public class ConsoleJS {
 			if (x != null && skipString != null && skipString.matcher(x).find()) {
 				skip = true;
 			} else if (error) {
-				console.log(console.logger::error, "ERR  ", x);
+				console.log(this, "ERR  ", x);
 			} else {
-				console.log(console.logger::error, "WARN ", x);
+				console.log(this, "WARN ", x);
 			}
+		}
+
+		@Override
+		public void accept(String s) {
+			console.logger.error(s);
 		}
 	}
 
@@ -106,6 +113,11 @@ public class ConsoleJS {
 	private final List<String> writeQueue;
 	private final String nameStrip;
 
+	public final Consumer<String> debugLogFunction;
+	public final Consumer<String> infoLogFunction;
+	public final Consumer<String> warnLogFunction;
+	public final Consumer<String> errorLogFunction;
+
 	public ConsoleJS(ScriptType m, Logger log) {
 		scriptType = m;
 		logger = log;
@@ -114,8 +126,21 @@ public class ConsoleJS {
 		muted = false;
 		debugEnabled = false;
 		writeToFile = true;
-		writeQueue = new ArrayList<>();
+		writeQueue = new LinkedList<>();
 		nameStrip = scriptType.name + ':';
+
+		debugLogFunction = logger::debug;
+		infoLogFunction = logger::info;
+
+		warnLogFunction = s -> {
+			logger.warn(s);
+			scriptType.warnings.add(s);
+		};
+
+		errorLogFunction = s -> {
+			logger.error("! " + s);
+			scriptType.errors.add(s);
+		};
 	}
 
 	public Logger getLogger() {
@@ -142,11 +167,11 @@ public class ConsoleJS {
 		return debugEnabled;
 	}
 
-	public void setWriteToFile(boolean m) {
+	public synchronized void setWriteToFile(boolean m) {
 		writeToFile = m;
 	}
 
-	public boolean getWriteToFile() {
+	public synchronized boolean getWriteToFile() {
 		return writeToFile;
 	}
 
@@ -202,7 +227,10 @@ public class ConsoleJS {
 			builder.append(": ");
 		}
 
-		builder.append(group);
+		if (!group.isEmpty()) {
+			builder.append(group);
+		}
+
 		builder.append(s);
 		return builder.toString();
 	}
@@ -227,7 +255,7 @@ public class ConsoleJS {
 		}
 	}
 
-	private void writeToFile(String type, String line) {
+	private synchronized void writeToFile(String type, String line) {
 		if (!writeToFile) {
 			return;
 		}
@@ -276,7 +304,7 @@ public class ConsoleJS {
 			return;
 		}
 
-		List<String> lines = new ArrayList<>(writeQueue);
+		var lines = Arrays.asList(writeQueue.toArray(UtilsJS.EMPTY_STRING_ARRAY));
 		writeQueue.clear();
 
 		if (sync) {
@@ -296,23 +324,22 @@ public class ConsoleJS {
 		}
 	}
 
+	public void log(Object... message) {
+		for (var s : message) {
+			info(s);
+		}
+	}
+
 	public void info(Object message) {
-		log(logger::info, "INFO ", message);
+		log(infoLogFunction, "INFO ", message);
 	}
 
 	public void infof(Object message, Object... args) {
-		logf(logger::info, "INFO ", message, args);
-	}
-
-	public void log(Object message) {
-		info(message);
+		logf(infoLogFunction, "INFO ", message, args);
 	}
 
 	public void warn(Object message) {
-		log(s -> {
-			logger.warn(s);
-			scriptType.warnings.add(s);
-		}, "WARN ", message);
+		log(warnLogFunction, "WARN ", message);
 	}
 
 	public void warn(String message, Throwable throwable, @Nullable Pattern skip) {
@@ -333,21 +360,11 @@ public class ConsoleJS {
 	}
 
 	public void warnf(String message, Object... args) {
-		logf(this::warn0, "WARN ", message, args);
-	}
-
-	private void warn0(String s) {
-		logger.warn(s);
-		scriptType.warnings.add(s);
+		logf(warnLogFunction, "WARN ", message, args);
 	}
 
 	public void error(Object message) {
-		log(this::error0, "ERR", message);
-	}
-
-	private void error0(String s) {
-		logger.error("! " + s);
-		scriptType.errors.add(s);
+		log(errorLogFunction, "ERR", message);
 	}
 
 	public void error(String message, Throwable throwable, @Nullable Pattern skip) {
@@ -368,10 +385,7 @@ public class ConsoleJS {
 	}
 
 	public void errorf(String message, Object... args) {
-		logf(s -> {
-			logger.error(s);
-			scriptType.errors.add(s);
-		}, "ERR ", message, args);
+		logf(errorLogFunction, "ERR ", message, args);
 	}
 
 	public boolean shouldPrintDebug() {
@@ -380,13 +394,13 @@ public class ConsoleJS {
 
 	public void debug(Object message) {
 		if (shouldPrintDebug()) {
-			log(logger::debug, "DEBUG", message);
+			log(debugLogFunction, "DEBUG", message);
 		}
 	}
 
 	public void debugf(String message, Object... args) {
 		if (shouldPrintDebug()) {
-			logf(logger::debug, "DEBUG", message, args);
+			logf(debugLogFunction, "DEBUG", message, args);
 		}
 	}
 

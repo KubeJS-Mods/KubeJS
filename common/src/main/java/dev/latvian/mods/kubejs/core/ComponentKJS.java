@@ -175,6 +175,30 @@ public interface ComponentKJS extends Component, Iterable<Component>, JsonSerial
 		return kjs$self().setStyle(getStyle().withClickEvent(s));
 	}
 
+	default MutableComponent kjs$clickRunCommand(String command) {
+		return kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+	}
+
+	default MutableComponent kjs$clickSuggestCommand(String command) {
+		return kjs$click(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
+	}
+
+	default MutableComponent kjs$clickCopy(String text) {
+		return kjs$click(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, text));
+	}
+
+	default MutableComponent kjs$clickChangePage(String page) {
+		return kjs$click(new ClickEvent(ClickEvent.Action.CHANGE_PAGE, page));
+	}
+
+	default MutableComponent kjs$clickOpenUrl(String url) {
+		return kjs$click(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+	}
+
+	default MutableComponent kjs$clickOpenFile(String path) {
+		return kjs$click(new ClickEvent(ClickEvent.Action.OPEN_FILE, path));
+	}
+
 	default MutableComponent kjs$hover(@Nullable Component s) {
 		return kjs$self().setStyle(getStyle().withHoverEvent(s == null ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, s)));
 	}

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.bindings.ComponentWrapper;
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -45,7 +46,9 @@ public class ItemTooltipEventJS extends EventJS {
 
 		@Override
 		public void tooltip(ItemStack stack, boolean advanced, List<Component> components) {
-			components.addAll(lines);
+			if (!stack.isEmpty()) {
+				components.addAll(lines);
+			}
 		}
 	}
 
@@ -58,8 +61,17 @@ public class ItemTooltipEventJS extends EventJS {
 
 		@Override
 		public void tooltip(ItemStack stack, boolean advanced, List<Component> components) {
+			if (stack.isEmpty()) {
+				return;
+			}
+
 			List<Object> text = new ArrayList<>(components);
-			handler.accept(stack, advanced, text);
+
+			try {
+				handler.accept(stack, advanced, text);
+			} catch (Exception ex) {
+				ConsoleJS.CLIENT.error("Error while gathering tooltip for " + stack, ex);
+			}
 
 			components.clear();
 
@@ -130,5 +142,4 @@ public class ItemTooltipEventJS extends EventJS {
 	public boolean isAlt() {
 		return Screen.hasAltDown();
 	}
-
 }
