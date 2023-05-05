@@ -190,13 +190,13 @@ public class ShapedRecipeJS extends RecipeJS {
 	}
 
 	public ShapedRecipeJS noMirror() {
-		json.addProperty("mirror", false);
+		json.addProperty("kubejs:mirror", false);
 		save();
 		return this;
 	}
 
 	public ShapedRecipeJS noShrink() {
-		json.addProperty("shrink", false);
+		json.addProperty("kubejs:shrink", false);
 		save();
 		return this;
 	}

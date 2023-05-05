@@ -50,7 +50,6 @@ public abstract class RecipeJS implements RecipeKJS {
 	public Recipe<?> originalRecipe = null;
 	public boolean serializeOutputs;
 	public boolean serializeInputs;
-	private String recipeStage = "";
 
 	public abstract void create(RecipeArguments args);
 
@@ -380,27 +379,20 @@ public abstract class RecipeJS implements RecipeKJS {
 	}
 
 	public RecipeJS stage(String s) {
-		recipeStage = s;
+		json.addProperty("kubejs:stage", s);
 		save();
-
-		if (!Platform.isModLoaded("recipestages")) {
-			ConsoleJS.SERVER.warn("Recipe requires stage '" + recipeStage + "' but Recipe Stages mod isn't installed!");
-		}
-
 		return this;
 	}
 
 	public Recipe<?> createRecipe() throws Throwable {
 		serializeJson();
 
-		if (!recipeStage.isEmpty()) {
-			if (Platform.isModLoaded("recipestages")) {
-				var stageSerializer = KubeJSRegistries.recipeSerializers().get(new ResourceLocation("recipestages:stage"));
-				var o = new JsonObject();
-				o.addProperty("stage", recipeStage);
-				o.add("recipe", json);
-				return stageSerializer.fromJson(getOrCreateId(), o);
-			}
+		if (json.has("kubejs:stage") && Platform.isModLoaded("recipestages")) {
+			var stageSerializer = KubeJSRegistries.recipeSerializers().get(new ResourceLocation("recipestages:stage"));
+			var o = new JsonObject();
+			o.addProperty("stage", json.get("kubejs:stage").getAsString());
+			o.add("recipe", json);
+			return stageSerializer.fromJson(getOrCreateId(), o);
 		}
 
 		return Objects.requireNonNull(RecipePlatformHelper.get().fromJson(this));
@@ -441,7 +433,7 @@ public abstract class RecipeJS implements RecipeKJS {
 			return this;
 		}
 
-		var array = json.get("kubejs_actions") instanceof JsonArray arr ? arr : Util.make(new JsonArray(), (arr) -> json.add("kubejs_actions", arr));
+		var array = json.get("kubejs:actions") instanceof JsonArray arr ? arr : Util.make(new JsonArray(), (arr) -> json.add("kubejs:actions", arr));
 		action.copyFrom(filter);
 		array.add(action.toJson());
 		save();
@@ -471,7 +463,7 @@ public abstract class RecipeJS implements RecipeKJS {
 	public final RecipeJS modifyResult(ModifyRecipeResultCallback callback) {
 		UUID id = UUID.randomUUID();
 		RecipesEventJS.modifyResultCallbackMap.put(id, callback);
-		json.addProperty("kubejs_modify_result", UUIDTypeAdapter.fromUUID(id));
+		json.addProperty("kubejs:modify_result", UUIDTypeAdapter.fromUUID(id));
 		save();
 		return this;
 	}

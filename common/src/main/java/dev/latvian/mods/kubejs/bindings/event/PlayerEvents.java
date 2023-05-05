@@ -12,6 +12,7 @@ import dev.latvian.mods.kubejs.player.PlayerChatDecorateEventJS;
 import dev.latvian.mods.kubejs.player.PlayerRespawnedEventJS;
 import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 
 public interface PlayerEvents {
@@ -20,8 +21,14 @@ public interface PlayerEvents {
 	static MenuType<?> transformMenuType(Object o) {
 		if (o == null) {
 			return null;
-		} else if (o instanceof MenuType<?> menu) {
-			return menu;
+		} else if (o instanceof MenuType<?> menuType) {
+			return menuType;
+		} else if (o instanceof AbstractContainerMenu menu) {
+			try {
+				return menu.getType();
+			} catch (Exception ex) {
+				return null;
+			}
 		}
 
 		var id = ResourceLocation.tryParse(o.toString());

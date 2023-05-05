@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.mojang.util.UUIDTypeAdapter;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
-import dev.latvian.mods.kubejs.recipe.ModifyRecipeCraftingGrid;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
@@ -19,27 +18,56 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
-public class ShapedKubeJSRecipe extends ShapedRecipe {
+public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRecipe {
 
 	private final boolean mirror;
 	private final List<IngredientAction> ingredientActions;
 	private final ModifyRecipeResultCallback modifyResult;
+	private final String stage;
 
 	public ShapedKubeJSRecipe(ResourceLocation id, String group, int width, int height, NonNullList<Ingredient> ingredients, ItemStack result,
-							  boolean mirror, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult) {
+							  boolean mirror, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
 		super(id, group, width, height, ingredients, result);
 		this.mirror = mirror;
 		this.ingredientActions = ingredientActions;
 		this.modifyResult = modifyResult;
+		this.stage = stage;
 	}
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
 		return KubeJSRecipeEventHandler.SHAPED.get();
+	}
+
+	@Override
+	public List<IngredientAction> kjs$getIngredientActions() {
+		return ingredientActions;
+	}
+
+	@Override
+	@Nullable
+	public ModifyRecipeResultCallback kjs$getModifyResult() {
+		return modifyResult;
+	}
+
+	@Override
+	public String kjs$getStage() {
+		return stage;
+	}
+
+	@Override
+	public NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
+		return KubeJSCraftingRecipe.super.getRemainingItems(container);
+	}
+
+	@Override
+	public ItemStack assemble(CraftingContainer container) {
+		return KubeJSCraftingRecipe.super.assemble(container);
 	}
 
 	@Override
@@ -59,26 +87,6 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 		return false;
 	}
 
-	@Override
-	public ItemStack assemble(CraftingContainer container) {
-		if (modifyResult != null) {
-			return modifyResult.modify(new ModifyRecipeCraftingGrid(container), getResultItem().copy());
-		}
-
-		return getResultItem().copy();
-	}
-
-	@Override
-	public NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
-		var list = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
-
-		for (var i = 0; i < list.size(); i++) {
-			list.set(i, IngredientAction.getRemaining(container, i, ingredientActions));
-		}
-
-		return list;
-	}
-
 	public static class SerializerKJS implements RecipeSerializer<ShapedKubeJSRecipe> {
 
 		// registry replacement... you never know
@@ -88,8 +96,8 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 		public ShapedKubeJSRecipe fromJson(ResourceLocation id, JsonObject json) {
 			var shapedRecipe = SHAPED.fromJson(id, json);
 
-			var mirror = GsonHelper.getAsBoolean(json, "mirror", true);
-			var shrink = GsonHelper.getAsBoolean(json, "shrink", true);
+			var mirror = GsonHelper.getAsBoolean(json, "kubejs:mirror", true);
+			var shrink = GsonHelper.getAsBoolean(json, "kubejs:shrink", true);
 
 			// it sucks that we can't reuse the ShapedRecipe directly here,
 			// but the pattern is shrunk automatically, so we need to recreate it
@@ -104,21 +112,22 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 			int w = pattern[0].length(), h = pattern.length;
 			var ingredients = ShapedRecipe.dissolvePattern(pattern, key, w, h);
 
-			var ingredientActions = IngredientAction.parseList(json.get("kubejs_actions"));
+			var ingredientActions = IngredientAction.parseList(json.get("kubejs:actions"));
 
 			ModifyRecipeResultCallback modifyResult = null;
-			if (json.has("kubejs_modify_result")) {
-				modifyResult = RecipesEventJS.modifyResultCallbackMap.get(UUIDTypeAdapter.fromString(json.get("kubejs_modify_result").getAsString()));
+			if (json.has("kubejs:modify_result")) {
+				modifyResult = RecipesEventJS.modifyResultCallbackMap.get(UUIDTypeAdapter.fromString(json.get("kubejs:modify_result").getAsString()));
 			}
 
-			return new ShapedKubeJSRecipe(id, shapedRecipe.getGroup(), w, h, ingredients, shapedRecipe.getResultItem(), mirror, ingredientActions, modifyResult);
+			var stage = GsonHelper.getAsString(json, "kubejs:stage", "");
+
+			return new ShapedKubeJSRecipe(id, shapedRecipe.getGroup(), w, h, ingredients, shapedRecipe.getResultItem(), mirror, ingredientActions, modifyResult, stage);
 		}
 
 		@Override
 		public ShapedKubeJSRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
 			var shapedRecipe = SHAPED.fromNetwork(id, buf);
-			var mirror = buf.readBoolean();
-			var ingredientActions = IngredientAction.readList(buf);
+			var flags = (int) buf.readByte();
 
 			// original values
 			var group = shapedRecipe.getGroup();
@@ -127,16 +136,42 @@ public class ShapedKubeJSRecipe extends ShapedRecipe {
 			var ingredients = shapedRecipe.getIngredients();
 			var result = shapedRecipe.getResultItem();
 
+			List<IngredientAction> ingredientActions = (flags & RecipeFlags.INGREDIENT_ACTIONS) != 0 ? IngredientAction.readList(buf) : Collections.emptyList();
+			var stage = (flags & RecipeFlags.STAGE) != 0 ? buf.readUtf() : "";
+			var mirror = (flags & RecipeFlags.MIRROR) != 0;
+
 			// the pattern can be used as-is because the shrinking logic is done serverside
 			// additionally, result modification callbacks do not need to be synced to clients
-			return new ShapedKubeJSRecipe(id, group, width, height, ingredients, result, mirror, ingredientActions, null);
+			return new ShapedKubeJSRecipe(id, group, width, height, ingredients, result, mirror, ingredientActions, null, stage);
 		}
 
 		@Override
 		public void toNetwork(FriendlyByteBuf buf, ShapedKubeJSRecipe r) {
 			SHAPED.toNetwork(buf, r);
-			buf.writeBoolean(r.mirror);
-			IngredientAction.writeList(buf, r.ingredientActions);
+
+			int flags = 0;
+
+			if (r.ingredientActions != null && !r.ingredientActions.isEmpty()) {
+				flags |= RecipeFlags.INGREDIENT_ACTIONS;
+			}
+
+			if (r.mirror) {
+				flags |= RecipeFlags.MIRROR;
+			}
+
+			if (!r.stage.isEmpty()) {
+				flags |= RecipeFlags.STAGE;
+			}
+
+			buf.writeByte(flags);
+
+			if (r.ingredientActions != null && !r.ingredientActions.isEmpty()) {
+				IngredientAction.writeList(buf, r.ingredientActions);
+			}
+
+			if (!r.stage.isEmpty()) {
+				buf.writeUtf(r.stage);
+			}
 		}
 	}
 }

@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,7 +77,7 @@ public abstract class IngredientAction extends IngredientActionFilter {
 		return list.isEmpty() ? Collections.emptyList() : list;
 	}
 
-	public static void writeList(FriendlyByteBuf buf, List<IngredientAction> list) {
+	public static void writeList(FriendlyByteBuf buf, @Nullable List<IngredientAction> list) {
 		if (list == null || list.isEmpty()) {
 			buf.writeVarInt(0);
 			return;

@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.mojang.util.UUIDTypeAdapter;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
-import dev.latvian.mods.kubejs.recipe.ModifyRecipeCraftingGrid;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
@@ -12,22 +11,26 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
-public class ShapelessKubeJSRecipe extends ShapelessRecipe {
+public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraftingRecipe {
 	private final List<IngredientAction> ingredientActions;
 	private final ModifyRecipeResultCallback modifyResult;
+	private final String stage;
 
-	public ShapelessKubeJSRecipe(ShapelessRecipe original, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult) {
+	public ShapelessKubeJSRecipe(ShapelessRecipe original, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
 		super(original.getId(), original.getGroup(), original.getResultItem(), original.getIngredients());
 		this.ingredientActions = ingredientActions;
 		this.modifyResult = modifyResult;
+		this.stage = stage;
 	}
 
 	@Override
@@ -36,23 +39,29 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe {
 	}
 
 	@Override
-	public ItemStack assemble(CraftingContainer container) {
-		if (modifyResult != null) {
-			return modifyResult.modify(new ModifyRecipeCraftingGrid(container), getResultItem().copy());
-		}
+	public List<IngredientAction> kjs$getIngredientActions() {
+		return ingredientActions;
+	}
 
-		return getResultItem().copy();
+	@Override
+	@Nullable
+	public ModifyRecipeResultCallback kjs$getModifyResult() {
+		return modifyResult;
+	}
+
+	@Override
+	public String kjs$getStage() {
+		return stage;
 	}
 
 	@Override
 	public NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
-		var list = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
+		return KubeJSCraftingRecipe.super.getRemainingItems(container);
+	}
 
-		for (var i = 0; i < list.size(); i++) {
-			list.set(i, IngredientAction.getRemaining(container, i, ingredientActions));
-		}
-
-		return list;
+	@Override
+	public ItemStack assemble(CraftingContainer container) {
+		return KubeJSCraftingRecipe.super.assemble(container);
 	}
 
 	public static class SerializerKJS implements RecipeSerializer<ShapelessKubeJSRecipe> {
@@ -64,28 +73,52 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe {
 		public ShapelessKubeJSRecipe fromJson(ResourceLocation id, JsonObject json) {
 			var shapelessRecipe = SHAPELESS.fromJson(id, json);
 
-			var ingredientActions = IngredientAction.parseList(json.get("kubejs_actions"));
+			var ingredientActions = IngredientAction.parseList(json.get("kubejs:actions"));
 			ModifyRecipeResultCallback modifyResult = null;
-			if (json.has("kubejs_modify_result")) {
-				modifyResult = RecipesEventJS.modifyResultCallbackMap.get(UUIDTypeAdapter.fromString(json.get("kubejs_modify_result").getAsString()));
+			if (json.has("kubejs:modify_result")) {
+				modifyResult = RecipesEventJS.modifyResultCallbackMap.get(UUIDTypeAdapter.fromString(json.get("kubejs:modify_result").getAsString()));
 			}
 
-			return new ShapelessKubeJSRecipe(shapelessRecipe, ingredientActions, modifyResult);
+			var stage = GsonHelper.getAsString(json, "kubejs:stage", "");
+
+			return new ShapelessKubeJSRecipe(shapelessRecipe, ingredientActions, modifyResult, stage);
 		}
 
 		@Override
 		public ShapelessKubeJSRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
 			var shapelessRecipe = SHAPELESS.fromNetwork(id, buf);
-			var ingredientActions = IngredientAction.readList(buf);
+			var flags = (int) buf.readByte();
+
+			List<IngredientAction> ingredientActions = (flags & RecipeFlags.INGREDIENT_ACTIONS) != 0 ? IngredientAction.readList(buf) : Collections.emptyList();
+			var stage = (flags & RecipeFlags.STAGE) != 0 ? buf.readUtf() : "";
 
 			// result modification callbacks do not need to be synced to clients
-			return new ShapelessKubeJSRecipe(shapelessRecipe, ingredientActions, null);
+			return new ShapelessKubeJSRecipe(shapelessRecipe, ingredientActions, null, stage);
 		}
 
 		@Override
 		public void toNetwork(FriendlyByteBuf buf, ShapelessKubeJSRecipe r) {
 			SHAPELESS.toNetwork(buf, r);
-			IngredientAction.writeList(buf, r.ingredientActions);
+
+			int flags = 0;
+
+			if (r.ingredientActions != null && !r.ingredientActions.isEmpty()) {
+				flags |= RecipeFlags.INGREDIENT_ACTIONS;
+			}
+
+			if (!r.stage.isEmpty()) {
+				flags |= RecipeFlags.STAGE;
+			}
+
+			buf.writeByte(flags);
+
+			if (r.ingredientActions != null && !r.ingredientActions.isEmpty()) {
+				IngredientAction.writeList(buf, r.ingredientActions);
+			}
+
+			if (!r.stage.isEmpty()) {
+				buf.writeUtf(r.stage);
+			}
 		}
 	}
 }

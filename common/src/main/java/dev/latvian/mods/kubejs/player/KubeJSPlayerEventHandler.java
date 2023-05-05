@@ -73,18 +73,18 @@ public class KubeJSPlayerEventHandler {
 			menu.addSlotListener(player.kjs$getInventoryChangeListener());
 		}
 
-		PlayerEvents.INVENTORY_OPENED.post(ScriptType.of(player), menu.getType(), new InventoryEventJS(player, menu));
+		PlayerEvents.INVENTORY_OPENED.post(ScriptType.of(player), menu, new InventoryEventJS(player, menu));
 
 		if (menu instanceof ChestMenu) {
-			PlayerEvents.CHEST_OPENED.post(ScriptType.of(player), menu.getType(), new ChestEventJS(player, menu));
+			PlayerEvents.CHEST_OPENED.post(ScriptType.of(player), menu, new ChestEventJS(player, menu));
 		}
 	}
 
 	public static void inventoryClosed(Player player, AbstractContainerMenu menu) {
-		PlayerEvents.INVENTORY_CLOSED.post(ScriptType.of(player), menu.getType(), new InventoryEventJS(player, menu));
+		PlayerEvents.INVENTORY_CLOSED.post(ScriptType.of(player), menu, new InventoryEventJS(player, menu));
 
 		if (menu instanceof ChestMenu) {
-			PlayerEvents.CHEST_CLOSED.post(ScriptType.of(player), menu.getType(), new ChestEventJS(player, menu));
+			PlayerEvents.CHEST_CLOSED.post(ScriptType.of(player), menu, new ChestEventJS(player, menu));
 		}
 	}
 }
