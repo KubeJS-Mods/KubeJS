@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.loot.BlockLootEventJS;
@@ -34,12 +35,22 @@ public interface LootTablesKJS {
 		ServerEvents.FISHING_LOOT_TABLES.post(ScriptType.SERVER, new FishingLootEventJS(map1));
 		ServerEvents.CHEST_LOOT_TABLES.post(ScriptType.SERVER, new ChestLootEventJS(map1));
 
+		var export = new JsonObject();
+
 		for (var entry : map1.entrySet()) {
 			try {
 				action.accept(entry.getKey(), entry.getValue());
+
+				if (DataExport.dataExport != null) {
+					export.add(entry.getKey().toString(), entry.getValue());
+				}
 			} catch (Exception ex) {
 				ConsoleJS.SERVER.error("Failed to load loot table " + entry.getKey() + ": " + ex + "\nJson: " + entry.getValue());
 			}
+		}
+
+		if (DataExport.dataExport != null) {
+			DataExport.dataExport.add("loot_tables", export);
 		}
 
 		DataExport.exportData();
