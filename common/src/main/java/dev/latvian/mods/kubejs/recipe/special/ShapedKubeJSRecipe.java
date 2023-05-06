@@ -62,12 +62,12 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 
 	@Override
 	public NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
-		return KubeJSCraftingRecipe.super.getRemainingItems(container);
+		return kjs$getRemainingItems(container);
 	}
 
 	@Override
 	public ItemStack assemble(CraftingContainer container) {
-		return KubeJSCraftingRecipe.super.assemble(container);
+		return kjs$assemble(container);
 	}
 
 	@Override

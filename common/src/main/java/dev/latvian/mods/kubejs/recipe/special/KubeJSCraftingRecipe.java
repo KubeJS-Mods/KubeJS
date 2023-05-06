@@ -20,8 +20,7 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 
 	String kjs$getStage();
 
-	@Override
-	default NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
+	default NonNullList<ItemStack> kjs$getRemainingItems(CraftingContainer container) {
 		var list = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
 
 		for (var i = 0; i < list.size(); i++) {
@@ -31,8 +30,7 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 		return list;
 	}
 
-	@Override
-	default ItemStack assemble(CraftingContainer container) {
+	default ItemStack kjs$assemble(CraftingContainer container) {
 		if (!kjs$getStage().isEmpty()) {
 			var player = RecipePlatformHelper.get().getCraftingPlayer();
 
