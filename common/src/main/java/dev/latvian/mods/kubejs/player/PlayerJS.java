@@ -4,9 +4,11 @@ import com.mojang.authlib.GameProfile;
 import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.latvian.mods.kubejs.core.PlayerKJS;
 import dev.latvian.mods.kubejs.entity.LivingEntityJS;
+import dev.latvian.mods.kubejs.item.ContainerInventory;
 import dev.latvian.mods.kubejs.item.InventoryJS;
 import dev.latvian.mods.kubejs.item.ItemHandlerUtils;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.RangedWrapper;
 import dev.latvian.mods.kubejs.stages.Stages;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.WithAttachedData;
@@ -28,6 +30,7 @@ public abstract class PlayerJS<P extends Player> extends LivingEntityJS implemen
 
 	private final PlayerDataJS playerData;
 	private InventoryJS inventory;
+	private InventoryJS craftingGrid;
 
 	public PlayerJS(PlayerDataJS data, P player) {
 		super(player);
@@ -76,8 +79,27 @@ public abstract class PlayerJS<P extends Player> extends LivingEntityJS implemen
 		return inventory;
 	}
 
+	public InventoryJS getCraftingGrid() {
+		if (craftingGrid == null) {
+			// Wrap the crafting grid in a ranged wrapper and container inventory to prevent the clear
+			// method from causing an index out of bounds exception.
+			// This is a workaround for a bug in the vanilla crafting grid implementation.
+			// For any mods that increase the size of the crafting grid, this won't work.
+			craftingGrid = new InventoryJS(new RangedWrapper(new ContainerInventory(minecraftPlayer.inventoryMenu.getCraftSlots()), 0, 4)) {
+
+				@Override
+				public void markDirty() {
+					sendInventoryUpdate();
+				}
+			};
+		}
+
+		return craftingGrid;
+	}
+
 	public void sendInventoryUpdate() {
 		minecraftPlayer.getInventory().setChanged();
+		minecraftPlayer.inventoryMenu.getCraftSlots().setChanged();
 		minecraftPlayer.inventoryMenu.broadcastChanges();
 	}
 
