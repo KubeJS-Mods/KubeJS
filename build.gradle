@@ -21,7 +21,7 @@ allprojects {
 		}
 
 		maven {
-			url "https://maven.saps.dev/minecraft"
+			url "https://maven.saps.dev/releases"
 			content {
 				includeGroup "dev.latvian.mods"
 				includeGroup "dev.ftb.mods"
@@ -42,7 +42,7 @@ subprojects {
 	apply plugin: 'architectury-plugin'
 	apply plugin: "io.github.juuxel.loom-quiltflower"
 	apply plugin: "maven-publish"
-	apply from: "https://files.latmod.com/public/markdown-git-changelog.gradle"
+	apply from: "https://files.latvian.dev/public/markdown-git-changelog.gradle"
 
 	version = rootProject.version
 	group = rootProject.group

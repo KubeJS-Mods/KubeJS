@@ -27,7 +27,7 @@ publishing {
 	repositories {
 		if (ENV.SAPS_TOKEN) {
 			maven {
-				url "https://maven.saps.dev/minecraft"
+				url "https://maven.saps.dev/releases"
 				credentials {
 					username = "latvian"
 					password = "${ENV.SAPS_TOKEN}"
