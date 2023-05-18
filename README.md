@@ -121,7 +121,6 @@ public class MyExamplePlugin extends KubeJSPlugin {
 }
 
 public class MyRecipeJS extends RecipeJS {
-
 	public OutputItem result; // represents a single output item stack, which may have a chance attached to it 
 	public InputItem ingredient; // represents an input item ingredient or ingredient stack
 

@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.platform;
 
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
@@ -9,6 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,13 +21,17 @@ public interface RecipePlatformHelper {
 		return INSTANCE.get();
 	}
 
-	Recipe<?> fromJson(RecipeJS self) throws Throwable;
+	@Nullable
+	Recipe<?> fromJson(@Nullable RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json);
+
+	@Nullable
+	JsonObject checkConditions(JsonObject json);
 
 	Ingredient getCustomIngredient(JsonObject object);
 
 	void pingNewRecipes(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map);
 
-	boolean processConditions(RecipeManager recipeManager, JsonObject json, String key);
+	boolean processConditions(RecipeManager recipeManager, JsonObject json);
 
 	Object createRecipeContext(ReloadableServerResources resources);
 

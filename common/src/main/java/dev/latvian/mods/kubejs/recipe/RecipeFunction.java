@@ -1,8 +1,10 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
+import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -13,7 +15,6 @@ import dev.latvian.mods.rhino.Scriptable;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,20 +22,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-/**
- * @author LatvianModder
- */
 public class RecipeFunction extends BaseFunction implements WrappedJS {
 	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.mods.kubejs.recipe.RecipeFunction.call");
 
-	private final RecipesEventJS event;
-	public final ResourceLocation typeID;
-	public final RecipeTypeJS type;
+	public final RecipesEventJS event;
+	public final ResourceLocation id;
+	public final String idString;
+	public final RecipeSchemaType schemaType;
 
-	public RecipeFunction(RecipesEventJS e, ResourceLocation id, @Nullable RecipeTypeJS t) {
-		event = e;
-		typeID = id;
-		type = t;
+	public RecipeFunction(RecipesEventJS event, RecipeSchemaType schemaType) {
+		this.event = event;
+		this.id = schemaType.id;
+		this.idString = id.toString();
+		this.schemaType = schemaType;
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 
 	public RecipeJS createRecipe(Object[] args0) {
 		try {
-			if (type == null) {
+			if (schemaType.getSerializer() == null) {
 				throw new RecipeExceptionJS("Unknown recipe type!");
 			}
 
@@ -52,50 +52,47 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 
 			if (args1 == null || args1.isEmpty()) {
 				throw new RecipeExceptionJS("Recipe requires at least one argument!");
-			} else if (type.isCustom() && args1.size() != 1) {
+			} else if (schemaType.schema.keys.length == 0 && args1.size() != 1) {
 				throw new RecipeExceptionJS("Custom recipe has to use a single json object argument!");
 			} else if (args1.size() == 1) {
 				var map = MapJS.json(args1.get(0));
 
 				if (map != null) {
-					var recipe = type.factory.get();
-					recipe.event = event;
-					var args = new RecipeArguments(recipe, args1);
-					recipe.type = type;
-					recipe.json = MapJS.json(normalize(recipe, map));
-
-					if (!(recipe instanceof JsonRecipeJS)) {
-						recipe.serializeInputs = true;
-						recipe.serializeOutputs = true;
-						recipe.deserializeJson();
-					}
-
-					return event.addRecipe(recipe, type, args);
+					var recipe = schemaType.schema.deserialize(this, null, MapJS.json(normalize(map)));
+					recipe.afterLoaded(true);
+					return event.addRecipe(recipe, true);
 				}
 			}
 
-			var recipe = type.factory.get();
-			recipe.event = event;
-			var args = new RecipeArguments(recipe, args1);
-			recipe.type = type;
-			recipe.json = new JsonObject();
-			recipe.serializeInputs = true;
-			recipe.serializeOutputs = true;
-			recipe.create(args);
-			return event.addRecipe(recipe, type, args);
+			var constructor = schemaType.schema.constructors().get(args1.size());
+
+			if (constructor == null) {
+				throw new RecipeExceptionJS("Constructor for " + id + " with " + args1.size() + " arguments not found!");
+			}
+
+			var argMap = new ComponentValueMap(args1.size());
+			int index = 0;
+
+			for (var key : constructor.keys()) {
+				argMap.put(key, args1.get(index++));
+			}
+
+			var recipe = constructor.factory().create(this, schemaType, argMap);
+			recipe.afterLoaded(true);
+			return event.addRecipe(recipe, false);
 		} catch (RecipeExceptionJS ex) {
 			ex.error();
-			ConsoleJS.SERVER.error("Failed to create recipe for type '" + typeID + "'", ex, SKIP_ERROR);
+			ConsoleJS.SERVER.error("Failed to create recipe for type '" + id + "'", ex, SKIP_ERROR);
 		} catch (Throwable ex) {
-			ConsoleJS.SERVER.handleError(ex, SKIP_ERROR, "Failed to create recipe for type '" + typeID + "' with args " + Arrays.toString(args0));
+			ConsoleJS.SERVER.handleError(ex, SKIP_ERROR, "Failed to create recipe for type '" + id + "' with args " + Arrays.toString(args0));
 		}
 
 		return new JsonRecipeJS();
 	}
 
-	private Object normalize(RecipeJS recipe, Object o) {
+	private Object normalize(Object o) {
 		if (o instanceof ItemStack stack) {
-			return recipe.outputToJson(OutputItem.of(stack));
+			return RecipeSchema.OUTPUT_ITEM.write(OutputItem.of(stack));
 		} else if (o instanceof Ingredient ingr) {
 			return ingr.toJson();
 		} else if (o instanceof String s) {
@@ -107,7 +104,7 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 			var map = new HashMap<>();
 
 			for (var entry : m.entrySet()) {
-				map.put(entry.getKey(), normalize(recipe, entry.getValue()));
+				map.put(entry.getKey(), normalize(entry.getValue()));
 			}
 
 			return map;
@@ -115,7 +112,7 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 			var list = new ArrayList<>();
 
 			for (var o1 : itr) {
-				list.add(normalize(recipe, o1));
+				list.add(normalize(o1));
 			}
 
 			return list;
@@ -126,6 +123,20 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 
 	@Override
 	public String toString() {
-		return typeID.toString();
+		return idString;
+	}
+
+	public String getMod() {
+		return id.getNamespace();
+	}
+
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return id.toString().equals(obj.toString());
 	}
 }

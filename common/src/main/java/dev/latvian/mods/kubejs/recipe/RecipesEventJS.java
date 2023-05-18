@@ -15,6 +15,7 @@ import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.DataExport;
@@ -48,11 +49,7 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- * @author LatvianModder
- */
 public class RecipesEventJS extends EventJS {
-	public static final String FORGE_CONDITIONAL = "forge:conditional";
 	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.mods.kubejs.recipe.RecipeEventJS.post");
 	public static Map<UUID, IngredientWithCustomPredicate> customIngredientMap = null;
 	public static Map<UUID, ModifyRecipeResultCallback> modifyResultCallbackMap = null;
@@ -64,7 +61,7 @@ public class RecipesEventJS extends EventJS {
 	final List<RecipeJS> addedRecipes;
 	private final Map<ResourceLocation, RecipeJS> removedRecipes;
 	private final Map<ResourceLocation, RecipeJS> modifiedRecipes;
-	private final Map<String, Object> recipeFunctions;
+	final Map<String, Object> recipeFunctions;
 	private AtomicInteger modifiedRecipesCount;
 
 	public final RecipeFunction shaped;
@@ -76,7 +73,9 @@ public class RecipesEventJS extends EventJS {
 	public final RecipeFunction stonecutting;
 	public final RecipeFunction smithing;
 
-	public RecipesEventJS(Map<ResourceLocation, RecipeTypeJS> t) {
+	RecipeSerializer<?> stageSerializer;
+
+	public RecipesEventJS() {
 		fallbackedRecipes = new ArrayList<>();
 		originalRecipes = new ArrayList<>();
 
@@ -88,41 +87,50 @@ public class RecipesEventJS extends EventJS {
 
 		recipeFunctions = new HashMap<>();
 
-		Map<String, Map<String, RecipeSerializer<?>>> serializers = new HashMap<>();
+		var allNamespaces = RecipeNamespace.getAll();
 
-		for (var entry : KubeJSRegistries.recipeSerializers().entrySet()) {
-			serializers.computeIfAbsent(entry.getKey().location().getNamespace(), n -> new HashMap<>()).put(entry.getKey().location().getPath(), entry.getValue());
-		}
+		for (var namespace : allNamespaces.values()) {
+			var nsMap = new HashMap<String, RecipeFunction>();
+			recipeFunctions.put(namespace.name, new NamespaceFunction(namespace, nsMap));
 
-		for (var entry : serializers.entrySet()) {
-			Map<String, RecipeFunction> funcs = new HashMap<>();
-
-			for (var entry1 : entry.getValue().entrySet()) {
-				var location = new ResourceLocation(entry.getKey(), entry1.getKey());
-				var typeJS = t.get(location);
-				var func = new RecipeFunction(this, location, typeJS != null ? typeJS : new JsonRecipeTypeJS(entry1.getValue()));
-				funcs.put(UtilsJS.convertSnakeCaseToCamelCase(entry1.getKey()), func);
-				funcs.put(entry1.getKey(), func);
-
-				recipeFunctions.put(UtilsJS.convertSnakeCaseToCamelCase(entry.getKey() + "_" + entry1.getKey()), func);
-				recipeFunctions.put(entry.getKey() + "_" + entry1.getKey(), func);
+			for (var entry : namespace.entrySet()) {
+				nsMap.put(entry.getValue().id.toString(), new RecipeFunction(this, entry.getValue()));
 			}
 
-			recipeFunctions.put(UtilsJS.convertSnakeCaseToCamelCase(entry.getKey()), funcs);
-			recipeFunctions.put(entry.getKey(), funcs);
+			recipeFunctions.putAll(nsMap);
 		}
 
 		SpecialRecipeSerializerManager.INSTANCE.reset();
 		ServerEvents.SPECIAL_RECIPES.post(ScriptType.SERVER, SpecialRecipeSerializerManager.INSTANCE);
 
-		shaped = getRecipeFunction(CommonProperties.get().serverOnly ? "minecraft:crafting_shaped" : "kubejs:shaped");
-		shapeless = getRecipeFunction(CommonProperties.get().serverOnly ? "minecraft:crafting_shapeless" : "kubejs:shapeless");
-		smelting = getRecipeFunction("minecraft:smelting");
-		blasting = getRecipeFunction("minecraft:blasting");
-		smoking = getRecipeFunction("minecraft:smoking");
-		campfireCooking = getRecipeFunction("minecraft:campfire_cooking");
-		stonecutting = getRecipeFunction("minecraft:stonecutting");
-		smithing = getRecipeFunction("minecraft:smithing");
+		shaped = (RecipeFunction) recipeFunctions.get(CommonProperties.get().serverOnly ? "minecraft:crafting_shaped" : "kubejs:shaped");
+		shapeless = (RecipeFunction) recipeFunctions.get(CommonProperties.get().serverOnly ? "minecraft:crafting_shapeless" : "kubejs:shapeless");
+		smelting = (RecipeFunction) recipeFunctions.get("minecraft:smelting");
+		blasting = (RecipeFunction) recipeFunctions.get("minecraft:blasting");
+		smoking = (RecipeFunction) recipeFunctions.get("minecraft:smoking");
+		campfireCooking = (RecipeFunction) recipeFunctions.get("minecraft:campfire_cooking");
+		stonecutting = (RecipeFunction) recipeFunctions.get("minecraft:stonecutting");
+		smithing = (RecipeFunction) recipeFunctions.get("minecraft:smithing");
+
+		for (var entry : new ArrayList<>(recipeFunctions.entrySet())) {
+			if (entry.getValue() instanceof RecipeFunction && entry.getKey().indexOf(':') != -1) {
+				var s = UtilsJS.convertSnakeCaseToCamelCase(entry.getKey());
+
+				if (!s.equals(entry.getKey())) {
+					recipeFunctions.put(s, entry.getValue());
+				}
+			}
+		}
+
+		for (var entry : RecipeNamespace.getMappedRecipes().entrySet()) {
+			var type = recipeFunctions.get(entry.getValue().toString());
+
+			if (type instanceof RecipeFunction) {
+				recipeFunctions.put(entry.getKey(), type);
+			}
+		}
+
+		stageSerializer = KubeJSRegistries.recipeSerializers().get(new ResourceLocation("recipestages:stage"));
 	}
 
 	@HideFromJS
@@ -153,77 +161,26 @@ public class RecipesEventJS extends EventJS {
 			var recipeIdAndType = recipeId + "[unknown:type]";
 
 			try {
-				var json = entry.getValue();
+				var json = RecipePlatformHelper.get().checkConditions(entry.getValue());
+
+				if (json == null) {
+					if (DevProperties.get().logSkippedRecipes) {
+						ConsoleJS.SERVER.info("Skipping loading recipe " + recipeId + " as it's conditions were not met");
+					}
+
+					continue;
+				}
 
 				var type = GsonHelper.getAsString(json, "type");
-
 				recipeIdAndType = recipeId + "[" + type + "]";
-
-				if (!RecipePlatformHelper.get().processConditions(recipeManager, json, "conditions")) {
-					if (DevProperties.get().logSkippedRecipes) {
-						ConsoleJS.SERVER.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");
-					}
-
-					continue;
-				}
-
-				if (type.equals(FORGE_CONDITIONAL)) {
-					var items = GsonHelper.getAsJsonArray(json, "recipes");
-					var skip = true;
-
-					for (var idx = 0; idx < items.size(); idx++) {
-						var e = items.get(idx);
-
-						if (!e.isJsonObject()) {
-							throw new RecipeExceptionJS("Invalid recipes entry at index " + idx + " Must be JsonObject");
-						}
-
-						var o = e.getAsJsonObject();
-
-						if (RecipePlatformHelper.get().processConditions(recipeManager, o, "conditions")) {
-							json = o.get("recipe").getAsJsonObject();
-							type = GsonHelper.getAsString(json, "type");
-							recipeIdAndType = recipeId + "[" + type + "]";
-							skip = false;
-							break;
-						}
-					}
-
-					if (skip) {
-						if (DevProperties.get().logSkippedRecipes) {
-							ConsoleJS.SERVER.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");
-						}
-
-						continue;
-					}
-				}
-
 				var function = getRecipeFunction(type);
 
-				if (function.type == null) {
-					throw new MissingRecipeFunctionException("Unknown recipe type!").fallback();
-				}
-
-				var recipe = function.type.factory.get();
-				recipe.event = this;
-				recipe.id = recipeId;
-				recipe.type = function.type;
-				recipe.json = json;
-				recipe.originalRecipe = RecipePlatformHelper.get().fromJson(recipe);
-
-				if (recipe.originalRecipe == null) {
-					if (DevProperties.get().logSkippedRecipes) {
-						ConsoleJS.SERVER.info("Skipping loading recipe " + recipeIdAndType + " as it's conditions were not met");
-					}
-
-					continue;
-				}
-
-				recipe.deserializeJson();
+				var recipe = function.schemaType.schema.deserialize(function, recipeId, json);
+				recipe.afterLoaded(false);
 				originalRecipes.add(recipe);
 
 				if (ConsoleJS.SERVER.shouldPrintDebug()) {
-					if (SpecialRecipeSerializerManager.INSTANCE.isSpecial(recipe.originalRecipe)) {
+					if (SpecialRecipeSerializerManager.INSTANCE.isSpecial(recipe.getOriginalRecipe())) {
 						ConsoleJS.SERVER.debug("Loaded recipe " + recipeIdAndType + ": <dynamic>");
 					} else {
 						ConsoleJS.SERVER.debug("Loaded recipe " + recipeIdAndType + ": " + recipe.getFromToString());
@@ -279,12 +236,12 @@ public class RecipesEventJS extends EventJS {
 				})
 				.map(recipe -> {
 					try {
-						recipe.originalRecipe = recipe.createRecipe();
+						return recipe.createRecipe();
 					} catch (Throwable ex) {
 						ConsoleJS.SERVER.warn("Error parsing recipe " + recipe + ": " + recipe.json, ex);
 						failed.increment();
+						return null;
 					}
-					return recipe.originalRecipe;
 				})
 				.filter(Objects::nonNull)
 				.forEach(recipe -> {
@@ -317,12 +274,12 @@ public class RecipesEventJS extends EventJS {
 		addedRecipes.stream()
 				.map(recipe -> {
 					try {
-						recipe.originalRecipe = recipe.createRecipe();
+						return recipe.getOriginalRecipe();
 					} catch (Throwable ex) {
 						ConsoleJS.SERVER.warn("Error creating recipe " + recipe + ": " + recipe.json, ex, SKIP_ERROR);
 						failed.increment();
+						return null;
 					}
-					return recipe.originalRecipe;
 				})
 				.filter(Objects::nonNull)
 				.forEach(recipe -> {
@@ -390,13 +347,15 @@ public class RecipesEventJS extends EventJS {
 		return recipeFunctions;
 	}
 
-	public RecipeJS addRecipe(RecipeJS r, RecipeTypeJS type, RecipeArguments args) {
-		addedRecipes.add(r);
+	public RecipeJS addRecipe(RecipeJS r, boolean json) {
+		if (r.shouldAdd()) {
+			addedRecipes.add(r);
+		}
 
 		if (DevProperties.get().logAddedRecipes) {
-			ConsoleJS.SERVER.info("+ " + r.getType() + ": " + r.getFromToString());
+			ConsoleJS.SERVER.info("+ " + r.getType() + ": " + r.getFromToString() + (json ? " [json]" : ""));
 		} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
-			ConsoleJS.SERVER.debug("+ " + r.getType() + ": " + r.getFromToString());
+			ConsoleJS.SERVER.debug("+ " + r.getType() + ": " + r.getFromToString() + (json ? " [json]" : ""));
 		}
 
 		return r;
@@ -470,8 +429,6 @@ public class RecipesEventJS extends EventJS {
 
 		forEachRecipeAsync(filter, r -> {
 			if (r.replaceInput(match, with, transformer)) {
-				r.serializeInputs = true;
-				r.save();
 				count.incrementAndGet();
 				modifiedRecipes.put(r.getOrCreateId(), r);
 
@@ -499,8 +456,6 @@ public class RecipesEventJS extends EventJS {
 		forEachRecipeAsync(filter, r ->
 		{
 			if (r.replaceOutput(match, with, transformer)) {
-				r.serializeOutputs = true;
-				r.save();
 				count.incrementAndGet();
 				modifiedRecipes.put(r.getOrCreateId(), r);
 
@@ -523,26 +478,11 @@ public class RecipesEventJS extends EventJS {
 	public RecipeFunction getRecipeFunction(@Nullable String id) {
 		if (id == null || id.isEmpty()) {
 			throw new NullPointerException("Recipe type is null!");
-		}
-
-		var namespace = UtilsJS.getNamespace(id);
-		var path = UtilsJS.getPath(id);
-
-		var func0 = recipeFunctions.get(namespace);
-
-		if (func0 instanceof RecipeFunction fn) {
+		} else if (recipeFunctions.get(UtilsJS.getID(id)) instanceof RecipeFunction fn) {
 			return fn;
-		} else if (!(func0 instanceof Map)) {
+		} else {
 			throw new NullPointerException("Unknown recipe type: " + id);
 		}
-
-		var func = ((Map<String, RecipeFunction>) func0).get(path);
-
-		if (func == null) {
-			throw new NullPointerException("Unknown recipe type: " + id);
-		}
-
-		return func;
 	}
 
 	public RecipeJS custom(JsonObject json) {

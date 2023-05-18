@@ -4,18 +4,13 @@ import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
-import dev.latvian.mods.kubejs.recipe.RecipeTypeJS;
-import dev.latvian.mods.kubejs.recipe.RecipeTypeRegistryEventJS;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
-import dev.latvian.mods.kubejs.recipe.RegisterRecipeTypesEvent;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.DataPackEventJS;
 import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.KubeJSPlugins;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
@@ -25,7 +20,6 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -78,11 +72,6 @@ public class ServerScriptManager {
 
 		ConsoleJS.SERVER.info("Scripts loaded");
 
-		Map<ResourceLocation, RecipeTypeJS> typeMap = new HashMap<>();
-		var modEvent = new RegisterRecipeTypesEvent(typeMap);
-		KubeJSPlugins.forEachPlugin(plugin -> plugin.registerRecipeTypes(modEvent));
-		ServerEvents.RECIPE_TYPE_REGISTRY.post(ScriptType.SERVER, new RecipeTypeRegistryEventJS(typeMap));
-
 		// Currently custom ingredients are only supported on Forge
 		if (Platform.isForge()) {
 			RecipesEventJS.customIngredientMap = new HashMap<>();
@@ -92,7 +81,7 @@ public class ServerScriptManager {
 
 		CustomIngredientAction.MAP.clear();
 
-		RecipesEventJS.instance = new RecipesEventJS(typeMap);
+		RecipesEventJS.instance = new RecipesEventJS();
 
 		return wrappedResourceManager;
 	}

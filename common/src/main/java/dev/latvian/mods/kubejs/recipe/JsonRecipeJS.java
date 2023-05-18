@@ -1,33 +1,35 @@
 package dev.latvian.mods.kubejs.recipe;
 
+import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
-import net.minecraft.world.item.crafting.Ingredient;
 
-/**
- * @author LatvianModder
- */
 public class JsonRecipeJS extends RecipeJS {
-	public JsonRecipeJS() {
+	@Override
+	public void deserialize(JsonObject json) {
+		changed = true;
 	}
 
 	@Override
-	public void create(RecipeArguments args) {
-		throw new RecipeExceptionJS("Can't create custom recipe for type " + getOrCreateId() + "!");
+	public void serialize(JsonObject json) {
 	}
 
-	@Override
-	public void deserialize() {
-	}
+	public RecipeJS merge(JsonObject j) {
+		if (j != null) {
+			for (var entry : j.entrySet()) {
+				json.add(entry.getKey(), entry.getValue());
+			}
 
-	@Override
-	public void serialize() {
+			save();
+		}
+
+		return this;
 	}
 
 	@Override
 	public boolean hasInput(IngredientMatch match) {
-		if (originalRecipe != null) {
-			for (Ingredient ingredient : originalRecipe.getIngredients()) {
+		if (getOriginalRecipe() != null) {
+			for (var ingredient : getOriginalRecipe().getIngredients()) {
 				if (match.contains(ingredient)) {
 					return true;
 				}
@@ -44,8 +46,8 @@ public class JsonRecipeJS extends RecipeJS {
 
 	@Override
 	public boolean hasOutput(IngredientMatch match) {
-		if (originalRecipe != null) {
-			return match.contains(originalRecipe.getResultItem());
+		if (getOriginalRecipe() != null) {
+			return match.contains(getOriginalRecipe().getResultItem());
 		}
 
 		return false;

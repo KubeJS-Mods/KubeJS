@@ -1,26 +1,23 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.util.UUIDTypeAdapter;
-import dev.architectury.platform.Platform;
-import dev.latvian.mods.kubejs.CommonProperties;
-import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
+import dev.latvian.mods.kubejs.recipe.component.OptionalRecipeComponent;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.DamageAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.KeepAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.JsonIO;
-import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.Util;
@@ -28,67 +25,88 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * @author LatvianModder
- */
-public abstract class RecipeJS implements RecipeKJS {
-	public static RecipeJS currentRecipe = null;
+public class RecipeJS implements RecipeKJS {
 	public static boolean itemErrors = false;
 
-	public RecipesEventJS event;
 	public ResourceLocation id;
-	public RecipeTypeJS type;
+	public RecipeFunction type;
+	protected RecipeComponentValue<?>[] values = RecipeComponentValue.EMPTY_ARRAY;
+
 	public JsonObject originalJson = null;
+	private Recipe<?> originalRecipe = null;
 	public JsonObject json = null;
-	public Recipe<?> originalRecipe = null;
-	public boolean serializeOutputs;
-	public boolean serializeInputs;
+	public boolean changed = false;
 
-	public abstract void create(RecipeArguments args);
+	public void deserialize(JsonObject json) {
+		for (var k : type.schemaType.schema.keys) {
+			var j = json.get(k.name());
 
-	public abstract void deserialize();
+			if (j == null && k.component() instanceof OptionalRecipeComponent) {
+				continue;
+			}
 
-	public abstract void serialize();
-
-	public final void deserializeJson() {
-		currentRecipe = this;
-		deserialize();
-
-		if (CommonProperties.get().debugInfo) {
-			originalJson = (JsonObject) JsonIO.copy(json);
+			setValue(k, k.component().read(j));
 		}
-
-		currentRecipe = null;
 	}
 
-	public final void serializeJson() {
-		currentRecipe = this;
-		json.addProperty("type", type.getId().toString());
-		serialize();
-		currentRecipe = null;
+	public void serialize(JsonObject json) {
+		for (var k : type.schemaType.schema.keys) {
+			var v = getValue(k);
+
+			if (v != null) {
+				json.add(k.name(), k.component().write(UtilsJS.cast(v)));
+			}
+		}
+	}
+
+	public boolean hasChanged(RecipeKey<?> key) {
+		return changed && values[key.index()].changed;
+	}
+
+	public <T> T getValue(RecipeKey<T> key) {
+		var v = values[key.index()].value;
+
+		if (v == null && key.component() instanceof OptionalRecipeComponent<T> optional) {
+			return optional.defaultValue();
+		}
+
+		return UtilsJS.cast(v);
+	}
+
+	public RecipeJS setValue(RecipeKey<?> key, Object value) {
+		if (key.index() < 0 || key.index() >= values.length) {
+			throw new RecipeExceptionJS("Tried to set key '" + key.name() + "' with index " + key.index() + " for type '" + type + "' but only " + values.length + " values available!");
+		}
+
+		values[key.index()].value = UtilsJS.cast(value);
+		values[key.index()].changed = true;
+		changed = true;
+		return this;
+	}
+
+	public void initValues(RecipeSchema schema, boolean changed) {
+		this.changed = changed;
+
+		if (schema.keys.length > 0) {
+			values = new RecipeComponentValue[schema.keys.length];
+
+			for (int i = 0; i < schema.keys.length; i++) {
+				values[i] = new RecipeComponentValue<>(schema.keys[i]);
+				values[i].changed = changed;
+			}
+		}
+	}
+
+	public void afterLoaded(boolean created) {
 	}
 
 	public final void save() {
-		originalRecipe = null;
-	}
-
-	public RecipeJS merge(JsonObject j) {
-		if (j != null) {
-			for (var entry : j.entrySet()) {
-				json.add(entry.getKey(), entry.getValue());
-			}
-
-			save();
-		}
-
-		return this;
+		changed = true;
 	}
 
 	public RecipeJS id(ResourceLocation _id) {
@@ -156,96 +174,51 @@ public abstract class RecipeJS implements RecipeKJS {
 	// RecipeKJS methods //
 
 	@HideFromJS
-	public abstract boolean hasInput(IngredientMatch match);
+	public boolean hasInput(IngredientMatch match) {
+		for (var value : values) {
+			if (value.value instanceof InputItem item) {
+				if (match.contains(item)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
 
 	@HideFromJS
-	public abstract boolean replaceInput(IngredientMatch match, InputItem with, InputItemTransformer transformer);
+	public boolean replaceInput(IngredientMatch match, InputItem with, InputItemTransformer transformer) {
+		/*if (match.contains(ingredient)) {
+			ingredient = transformer.transform(this, match, ingredient, with);
+			return true;
+		}*/
+
+		return false;
+	}
+
 
 	@HideFromJS
-	public abstract boolean hasOutput(IngredientMatch match);
+	public boolean hasOutput(IngredientMatch match) {
+		for (var value : values) {
+			if (value.value instanceof OutputItem item) {
+				if (match.contains(item)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
 
 	@HideFromJS
-	public abstract boolean replaceOutput(IngredientMatch match, OutputItem with, OutputItemTransformer transformer);
+	public boolean replaceOutput(IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
+		/*if (match.contains(result)) {
+			result = transformer.transform(this, match, result, with);
+			return true;
+		}*/
 
-	/*
-
-	@Override
-	public final boolean hasInput(Ingredient match, boolean exact) {
-		return getInputIndex(match, exact) != -1;
+		return false;
 	}
-
-	public final int getInputIndex(Ingredient match, boolean exact) {
-		for (var i = 0; i < inputItems.size(); i++) {
-			var in = inputItems.get(i);
-
-			if (exact ? in.input.equals(match) : in.input.contains(match)) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
-
-	public final boolean replaceInput(Ingredient match, Ingredient with, boolean exact) {
-		return replaceInput(match, with, exact, ItemInputTransformer.DEFAULT);
-	}
-
-	public final boolean replaceInput(Ingredient match, Ingredient with, boolean exact, ItemInputTransformer transformer) {
-		var changed = false;
-
-		for (var j = 0; j < inputItems.size(); j++) {
-			var in = inputItems.get(j);
-
-			if (exact ? in.input.equals(match) : in.input.contains(match)) {
-				in.input = transformReplacedInput(j, in.input, transformer.transform(this, with, in.input));
-				changed = true;
-				serializeInputs = true;
-				save();
-			}
-		}
-
-		return changed;
-	}
-
-	@Override
-	public final boolean hasOutput(Ingredient match, boolean exact) {
-		return getOutputIndex(match, exact) != -1;
-	}
-
-	public final int getOutputIndex(Ingredient match, boolean exact) {
-		for (var i = 0; i < outputItems.size(); i++) {
-			var out = outputItems.get(i);
-
-			if (exact ? match.equalsOutput(out.output) : match.containsOutput(out.output)) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
-
-	public final boolean replaceOutput(Ingredient match, ItemStack with, boolean exact) {
-		return replaceOutput(match, with, exact, ItemOutputTransformer.DEFAULT);
-	}
-
-	public final boolean replaceOutput(Ingredient match, ItemStack with, boolean exact, ItemOutputTransformer transformer) {
-		var changed = false;
-
-		for (var j = 0; j < outputItems.size(); j++) {
-			var out = outputItems.get(j);
-
-			if (exact ? match.equalsOutput(out.output) : match.containsOutput(out.output)) {
-				out.output = transformReplacedOutput(j, out.output, transformer.transform(this, with, out.output));
-				changed = true;
-				serializeOutputs = true;
-				save();
-			}
-		}
-
-		return changed;
-	}
-
-	*/
 
 	@HideFromJS
 	public String getGroup() {
@@ -255,17 +228,23 @@ public abstract class RecipeJS implements RecipeKJS {
 
 	@HideFromJS
 	public void setGroup(String g) {
-		if (g.isEmpty()) {
-			json.remove("group");
-		} else {
-			json.addProperty("group", g);
-		}
+		if (!getGroup().equals(g)) {
+			if (g.isEmpty()) {
+				json.remove("group");
+			} else {
+				json.addProperty("group", g);
+			}
 
-		save();
+			save();
+		}
 	}
 
 	@Override
 	public String toString() {
+		if (id == null && json == null) {
+			return "<no id> [" + type + "]";
+		}
+
 		return getOrCreateId() + "[" + type + "]";
 	}
 
@@ -279,95 +258,16 @@ public abstract class RecipeJS implements RecipeKJS {
 
 	@HideFromJS
 	public ResourceLocation getType() {
-		return type.getId();
+		return type.id;
 	}
 
 	@HideFromJS
 	public ResourceLocation getOrCreateId() {
 		if (id == null) {
-			id = new ResourceLocation(type.getId().getNamespace() + ":kjs_" + getUniqueId());
+			id = new ResourceLocation(type.id.getNamespace() + ":kjs_" + getUniqueId());
 		}
 
 		return id;
-	}
-
-	@Nullable
-	public ItemStack resultFromRecipeJson(JsonObject json) {
-		return null;
-	}
-
-	public InputItem parseInputItem(@Nullable Object o, String key) {
-		var ingredient = InputItem.of(o);
-
-		if (ingredient.isEmpty() && !key.isEmpty()) {
-			return ingredient;
-		} else if (ingredient.ingredient == Ingredient.EMPTY) {
-			if (key.isEmpty()) {
-				throw new RecipeExceptionJS(o + " is not a valid ingredient!");
-			} else {
-				throw new RecipeExceptionJS(o + " with key '" + key + "' is not a valid ingredient!");
-			}
-		}
-
-		return ingredient;
-	}
-
-	public InputItem parseInputItem(@Nullable Object o) {
-		return parseInputItem(o, "");
-	}
-
-	public OutputItem parseOutputItem(@Nullable Object o) {
-		var result = OutputItem.of(o);
-
-		if (result.isEmpty()) {
-			throw new RecipeExceptionJS(o + " is not a valid result!");
-		}
-
-		return result;
-	}
-
-	public List<InputItem> parseInputItemList(@Nullable Object o) {
-		if (o instanceof JsonElement elem) {
-			var array = JsonIO.toArray(elem);
-			var list = new ArrayList<InputItem>(array.size());
-
-			for (var e : array) {
-				list.add(parseInputItem(e));
-			}
-
-			return list;
-		} else {
-			var list0 = ListJS.orSelf(o);
-			var list = new ArrayList<InputItem>(list0.size());
-
-			for (var o1 : list0) {
-				list.add(parseInputItem(o1));
-			}
-
-			return list;
-		}
-	}
-
-	public List<OutputItem> parseOutputItemList(@Nullable Object o) {
-		if (o instanceof JsonElement elem) {
-			var array = JsonIO.toArray(elem);
-			var list = new ArrayList<OutputItem>(array.size());
-
-			for (var e : array) {
-				list.add(parseOutputItem(e));
-			}
-
-			return list;
-		} else {
-			var list0 = ListJS.orSelf(o);
-			var list = new ArrayList<OutputItem>(list0.size());
-
-			for (var o1 : list0) {
-				list.add(parseOutputItem(o1));
-			}
-
-			return list;
-		}
 	}
 
 	public String getFromToString() {
@@ -384,43 +284,57 @@ public abstract class RecipeJS implements RecipeKJS {
 		return this;
 	}
 
-	public Recipe<?> createRecipe() throws Throwable {
-		serializeJson();
+	public Recipe<?> createRecipe() {
+		if (changed) {
+			json.addProperty("type", type.idString);
+			serialize(json);
 
-		if (json.has("kubejs:stage") && Platform.isModLoaded("recipestages")) {
-			var stageSerializer = KubeJSRegistries.recipeSerializers().get(new ResourceLocation("recipestages:stage"));
-			var o = new JsonObject();
-			o.addProperty("stage", json.get("kubejs:stage").getAsString());
-			o.add("recipe", json);
-			return stageSerializer.fromJson(getOrCreateId(), o);
+			if (type.event.stageSerializer != null && json.has("kubejs:stage") && !type.idString.equals("recipestages:stage")) {
+				var o = new JsonObject();
+				o.addProperty("stage", json.get("kubejs:stage").getAsString());
+				o.add("recipe", json);
+				return type.event.stageSerializer.fromJson(getOrCreateId(), o);
+			}
 		}
 
-		return Objects.requireNonNull(RecipePlatformHelper.get().fromJson(this));
+		return Objects.requireNonNull(RecipePlatformHelper.get().fromJson(type.schemaType.getSerializer(), getOrCreateId(), json));
+	}
+
+	public Recipe<?> getOriginalRecipe() {
+		if (originalRecipe == null) {
+			originalRecipe = RecipePlatformHelper.get().fromJson(type.schemaType.getSerializer(), id, json);
+
+			if (originalRecipe == null) {
+				throw new RecipeExceptionJS("Could not create recipe from json for " + this);
+			}
+		}
+
+		return originalRecipe;
 	}
 
 	public ItemStack getOriginalRecipeResult() {
-		if (originalRecipe == null) {
+		if (getOriginalRecipe() == null) {
 			ConsoleJS.SERVER.warn("Original recipe is null - could not get result");
 			return ItemStack.EMPTY;
 		}
 
-		return originalRecipe.getResultItem();
+		return getOriginalRecipe().getResultItem();
 	}
 
 	public List<Ingredient> getOriginalRecipeIngredients() {
-		if (originalRecipe == null) {
+		if (getOriginalRecipe() == null) {
 			ConsoleJS.SERVER.warn("Original recipe is null - could not get ingredients");
 			return List.of();
 		}
 
-		return List.copyOf(originalRecipe.getIngredients());
+		return List.copyOf(getOriginalRecipe().getIngredients());
 	}
 
 	/**
 	 * Only used when a recipe has sub-recipes, e.g. create:sequenced_assembly
 	 */
-	public void dontAdd() {
-		RecipesEventJS.instance.addedRecipes.remove(this);
+	public boolean shouldAdd() {
+		return true;
 	}
 
 	public boolean serializeNBTAsJson() {
@@ -466,25 +380,5 @@ public abstract class RecipeJS implements RecipeKJS {
 		json.addProperty("kubejs:modify_result", UUIDTypeAdapter.fromUUID(id));
 		save();
 		return this;
-	}
-
-	public JsonElement inputToJson(InputItem in) {
-		return in.ingredient.toJson();
-	}
-
-	public JsonElement outputToJson(OutputItem out) {
-		var json = new JsonObject();
-		json.addProperty("item", out.item.kjs$getId());
-		json.addProperty("count", out.item.getCount());
-
-		if (out.item.getTag() != null) {
-			json.addProperty("nbt", out.item.getTag().toString());
-		}
-
-		if (out.hasChance()) {
-			json.addProperty("chance", out.getChance());
-		}
-
-		return json;
 	}
 }

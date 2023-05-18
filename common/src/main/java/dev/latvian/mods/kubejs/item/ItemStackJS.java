@@ -236,14 +236,6 @@ public interface ItemStackJS {
 		} else if (json.isJsonPrimitive()) {
 			return of(json.getAsString());
 		} else if (json instanceof JsonObject jsonObj) {
-			if (RecipeJS.currentRecipe != null) {
-				var is = RecipeJS.currentRecipe.resultFromRecipeJson(jsonObj);
-
-				if (is != null) {
-					return is;
-				}
-			}
-
 			ItemStack stack = null;
 			if (jsonObj.has("item")) {
 				stack = of(jsonObj.get("item").getAsString());

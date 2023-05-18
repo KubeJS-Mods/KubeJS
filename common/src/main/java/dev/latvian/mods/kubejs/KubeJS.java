@@ -15,6 +15,7 @@ import dev.latvian.mods.kubejs.level.KubeJSWorldEventHandler;
 import dev.latvian.mods.kubejs.net.KubeJSNet;
 import dev.latvian.mods.kubejs.player.KubeJSPlayerEventHandler;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
 import dev.latvian.mods.kubejs.script.ScriptFileInfo;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptPack;
@@ -195,6 +196,15 @@ public class KubeJS {
 		ScriptsLoadedEvent.EVENT.invoker().run();
 		StartupEvents.POST_INIT.post(ScriptType.STARTUP, new StartupEventJS());
 		UtilsJS.postModificationEvents();
+		RecipeNamespace.getAll();
+
+		if (Platform.isDevelopmentEnvironment()) {
+			for (var ns : RecipeNamespace.getAll().values()) {
+				for (var t : ns.values()) {
+					t.schema.constructors();
+				}
+			}
+		}
 
 		if (!ScriptType.STARTUP.errors.isEmpty()) {
 			var list = new ArrayList<String>();

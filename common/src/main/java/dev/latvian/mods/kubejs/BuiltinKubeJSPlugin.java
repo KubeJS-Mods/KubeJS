@@ -79,12 +79,12 @@ import dev.latvian.mods.kubejs.misc.VillagerTypeBuilder;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.recipe.IngredientMatch;
-import dev.latvian.mods.kubejs.recipe.RegisterRecipeTypesEvent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
-import dev.latvian.mods.kubejs.recipe.minecraft.CookingRecipeJS;
-import dev.latvian.mods.kubejs.recipe.minecraft.SmithingRecipeJS;
-import dev.latvian.mods.kubejs.recipe.minecraft.StonecuttingRecipeJS;
+import dev.latvian.mods.kubejs.recipe.schema.RegisterRecipeSchemasEvent;
+import dev.latvian.mods.kubejs.recipe.schema.minecraft.CookingRecipeSchema;
+import dev.latvian.mods.kubejs.recipe.schema.minecraft.SmithingRecipeSchema;
+import dev.latvian.mods.kubejs.recipe.schema.minecraft.StonecuttingRecipeSchema;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
@@ -443,24 +443,40 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	}
 
 	@Override
-	public void registerRecipeTypes(RegisterRecipeTypesEvent event) {
-		event.registerShaped(new ResourceLocation("kubejs:shaped"));
-		event.registerShapeless(new ResourceLocation("kubejs:shapeless"));
-		event.registerShaped(new ResourceLocation("minecraft:crafting_shaped"));
-		event.registerShapeless(new ResourceLocation("minecraft:crafting_shapeless"));
-		event.register(new ResourceLocation("minecraft:stonecutting"), StonecuttingRecipeJS::new);
-		event.register(new ResourceLocation("minecraft:smelting"), CookingRecipeJS::new);
-		event.register(new ResourceLocation("minecraft:blasting"), CookingRecipeJS::new);
-		event.register(new ResourceLocation("minecraft:smoking"), CookingRecipeJS::new);
-		event.register(new ResourceLocation("minecraft:campfire_cooking"), CookingRecipeJS::new);
-		event.register(new ResourceLocation("minecraft:smithing"), SmithingRecipeJS::new);
+	public void registerRecipeSchemas(RegisterRecipeSchemasEvent event) {
+		event.namespace("kubejs")
+				.shaped("shaped")
+				.shapeless("shapeless")
+		;
 
-		// Mod recipe types that use vanilla syntax
+		event.namespace("minecraft")
+				.shaped("crafting_shaped")
+				.shapeless("crafting_shapeless")
+				.register("stonecutting", StonecuttingRecipeSchema.SCHEMA)
+				.register("smelting", CookingRecipeSchema.SCHEMA)
+				.register("blasting", CookingRecipeSchema.SCHEMA)
+				.register("smoking", CookingRecipeSchema.SCHEMA)
+				.register("campfire_cooking", CookingRecipeSchema.SCHEMA)
+				.register("smithing", SmithingRecipeSchema.SCHEMA)
+		;
 
-		event.registerShaped(new ResourceLocation("cucumber:shaped_no_mirror"));
-		event.registerShaped(new ResourceLocation("extendedcrafting:shaped_table"));
-		event.registerShapeless(new ResourceLocation("extendedcrafting:shapeless_table"));
-		event.registerShaped(new ResourceLocation("dankstorage:upgrade"));
+		event.namespace("cucumber")
+				.shaped("shaped_no_mirror")
+		;
+
+		event.namespace("extendedcrafting")
+				.shaped("shaped_table")
+				.shapeless("shapeless_table")
+		;
+
+		event.mapRecipe("extendedCraftingShaped", "extendedcrafting:shaped_table");
+		event.mapRecipe("extendedCraftingShapeless", "extendedcrafting:shapeless_table");
+
+		event.namespace("dankstorage")
+				.shaped("upgrade")
+		;
+
+		event.mapRecipe("dankStorageUpgrade", "dankstorage:upgrade");
 	}
 
 	@Override

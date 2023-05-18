@@ -96,7 +96,7 @@ public class UtilsJS {
 	public static final Random RANDOM = new Random();
 	public static final Pattern REGEX_PATTERN = Pattern.compile("/(.*)/([a-z]*)");
 	public static final ResourceLocation AIR_LOCATION = new ResourceLocation("minecraft:air");
-	public static final Pattern SNAKE_CASE_SPLIT = Pattern.compile("[_/]");
+	public static final Pattern SNAKE_CASE_SPLIT = Pattern.compile("[:_/]");
 	public static final Set<String> ALWAYS_LOWER_CASE = new HashSet<>(Arrays.asList("a", "an", "the", "of", "on", "in"));
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
 	public static MinecraftServer staticServer = null;
