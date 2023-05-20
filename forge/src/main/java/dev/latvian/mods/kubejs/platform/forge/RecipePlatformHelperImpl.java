@@ -25,8 +25,8 @@ public class RecipePlatformHelperImpl implements RecipePlatformHelper {
 
 	@Override
 	@Nullable
-	public Recipe<?> fromJson(@Nullable RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json) {
-		return serializer == null ? null : serializer.fromJson(id, json, (ICondition.IContext) KubeJSReloadListener.recipeContext);
+	public Recipe<?> fromJson(RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json) {
+		return serializer.fromJson(id, json, (ICondition.IContext) KubeJSReloadListener.recipeContext);
 	}
 
 	@Override

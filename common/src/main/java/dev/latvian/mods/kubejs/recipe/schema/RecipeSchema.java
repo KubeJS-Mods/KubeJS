@@ -198,13 +198,13 @@ public class RecipeSchema {
 		r.type = type;
 		r.id = id;
 		r.json = json;
-		r.initValues(this, false);
+		r.initValues(this, id == null);
 
 		if (id != null && CommonProperties.get().debugInfo) {
 			r.originalJson = (JsonObject) JsonIO.copy(json);
 		}
 
-		r.deserialize(json);
+		r.deserialize();
 		return r;
 	}
 }

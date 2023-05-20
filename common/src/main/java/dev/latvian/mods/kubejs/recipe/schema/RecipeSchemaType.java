@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
 import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -20,13 +20,18 @@ public class RecipeSchemaType {
 		this.schema = schema;
 	}
 
-	@Nullable
 	public RecipeSerializer<?> getSerializer() {
 		if (serializer == null) {
 			serializer = Optional.ofNullable(KubeJSRegistries.recipeSerializers().get(id));
 		}
 
-		return serializer.orElse(null);
+		var s = serializer.orElse(null);
+
+		if (s == null) {
+			throw new RecipeExceptionJS("Serializer for type " + id + " is not found!");
+		}
+
+		return s;
 	}
 
 	@Override

@@ -13,16 +13,22 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 		return new LongRange(min, max);
 	}
 
+	static FloatRange floatRange(float min, float max) {
+		return new FloatRange(min, max);
+	}
+
 	static DoubleRange doubleRange(double min, double max) {
 		return new DoubleRange(min, max);
 	}
 
 	RecipeComponent<Integer> INT = intRange(0, Integer.MAX_VALUE);
 	RecipeComponent<Long> LONG = longRange(0L, Long.MAX_VALUE);
+	RecipeComponent<Float> FLOAT = floatRange(0F, Float.POSITIVE_INFINITY);
 	RecipeComponent<Double> DOUBLE = doubleRange(0D, Double.POSITIVE_INFINITY);
 
 	RecipeComponent<Integer> ANY_INT = intRange(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	RecipeComponent<Long> ANY_LONG = longRange(Long.MIN_VALUE, Long.MAX_VALUE);
+	RecipeComponent<Float> ANY_FLOAT = floatRange(Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
 	RecipeComponent<Double> ANY_DOUBLE = doubleRange(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
 	private static Number numberOf(Object from) {
@@ -97,6 +103,36 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 
 		public LongRange max(long max) {
 			return new LongRange(min, max);
+		}
+	}
+
+	record FloatRange(float min, float max) implements NumberComponent<Float> {
+		@Override
+		public JsonObject description() {
+			var obj = new JsonObject();
+			obj.addProperty("type", componentType());
+			obj.addProperty("number_type", "float");
+			obj.addProperty("min", min);
+			obj.addProperty("max", max);
+			return obj;
+		}
+
+		@Override
+		public JsonPrimitive write(Float value) {
+			return new JsonPrimitive(value);
+		}
+
+		@Override
+		public Float read(Object from) {
+			return Mth.clamp(NumberComponent.numberOf(from).floatValue(), min, max);
+		}
+
+		public FloatRange min(float min) {
+			return new FloatRange(min, max);
+		}
+
+		public FloatRange max(float max) {
+			return new FloatRange(min, max);
 		}
 	}
 

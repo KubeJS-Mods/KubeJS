@@ -15,8 +15,8 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 
 public interface CookingRecipeSchema {
 	class CookingRecipeJS extends RecipeJS {
-		public RecipeJS xp(double xp) {
-			return setValue(CookingRecipeSchema.XP, Math.max(0D, xp));
+		public RecipeJS xp(float xp) {
+			return setValue(CookingRecipeSchema.XP, Math.max(0F, xp));
 		}
 
 		public RecipeJS cookingTime(int time) {
@@ -60,7 +60,7 @@ public interface CookingRecipeSchema {
 
 	RecipeKey<OutputItem> RESULT = PLATFORM_OUTPUT_ITEM.key(0, "result");
 	RecipeKey<InputItem> INGREDIENT = RecipeSchema.INPUT_ITEM.key(1, "ingredient");
-	RecipeKey<Double> XP = NumberComponent.DOUBLE.optional(0D).key(2, "experience");
+	RecipeKey<Float> XP = NumberComponent.FLOAT.optional(0F).key(2, "experience");
 	RecipeKey<Integer> COOKING_TIME = NumberComponent.INT.optional(200).key(3, "cookingtime");
 
 	RecipeSchema SCHEMA = new RecipeSchema(CookingRecipeJS::new, RESULT, INGREDIENT, XP, COOKING_TIME);

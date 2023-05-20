@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.recipe.schema.minecraft;
 
-import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
@@ -15,7 +14,7 @@ public interface StonecuttingRecipeSchema {
 		// Override required to support custom count
 
 		@Override
-		public void deserialize(JsonObject json) {
+		public void deserialize() {
 			setValue(INGREDIENT, INGREDIENT.component().read(json.get("ingredient")));
 			var result = RESULT.component().read(json.get("result"));
 			setValue(RESULT, result);
@@ -26,8 +25,10 @@ public interface StonecuttingRecipeSchema {
 		}
 
 		@Override
-		public void serialize(JsonObject json) {
-			json.add("ingredient", INGREDIENT.component().write(getValue(INGREDIENT)));
+		public void serialize() {
+			if (hasChanged(INGREDIENT)) {
+				json.add("ingredient", INGREDIENT.component().write(getValue(INGREDIENT)));
+			}
 
 			if (hasChanged(RESULT)) {
 				var result = getValue(RESULT);

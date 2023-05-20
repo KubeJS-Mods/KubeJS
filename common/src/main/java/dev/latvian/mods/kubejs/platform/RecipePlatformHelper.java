@@ -22,7 +22,7 @@ public interface RecipePlatformHelper {
 	}
 
 	@Nullable
-	Recipe<?> fromJson(@Nullable RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json);
+	Recipe<?> fromJson(RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json);
 
 	@Nullable
 	JsonObject checkConditions(JsonObject json);

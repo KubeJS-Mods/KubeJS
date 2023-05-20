@@ -44,9 +44,7 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 
 	public RecipeJS createRecipe(Object[] args0) {
 		try {
-			if (schemaType.getSerializer() == null) {
-				throw new RecipeExceptionJS("Unknown recipe type!");
-			}
+			schemaType.getSerializer();
 
 			var args1 = ListJS.of(args0);
 

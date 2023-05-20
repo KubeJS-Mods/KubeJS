@@ -20,8 +20,8 @@ import java.util.function.Consumer;
 public class RecipePlatformHelperImpl implements RecipePlatformHelper {
 	@Override
 	@Nullable
-	public Recipe<?> fromJson(@Nullable RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json) {
-		return serializer == null ? null : serializer.fromJson(id, json);
+	public Recipe<?> fromJson(RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json) {
+		return serializer.fromJson(id, json);
 	}
 
 	@Override

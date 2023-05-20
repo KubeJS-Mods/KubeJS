@@ -23,6 +23,7 @@ import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.mod.util.JsonUtils;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.Util;
 import net.minecraft.core.Registry;
@@ -171,6 +172,10 @@ public class RecipesEventJS extends EventJS {
 					continue;
 				}
 
+				if (DataExport.dataExport != null) {
+					allRecipeMap.add(recipeId.toString(), JsonUtils.copy(json));
+				}
+
 				var type = GsonHelper.getAsString(json, "type");
 				recipeIdAndType = recipeId + "[" + type + "]";
 				var function = getRecipeFunction(type);
@@ -185,10 +190,6 @@ public class RecipesEventJS extends EventJS {
 					} else {
 						ConsoleJS.SERVER.debug("Loaded recipe " + recipeIdAndType + ": " + recipe.getFromToString());
 					}
-				}
-
-				if (DataExport.dataExport != null) {
-					allRecipeMap.add(recipe.getId(), json);
 				}
 			} catch (Throwable ex) {
 				if (!(ex instanceof RecipeExceptionJS rex) || rex.fallback) {

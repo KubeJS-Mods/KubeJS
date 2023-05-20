@@ -42,7 +42,7 @@ public class RecipeJS implements RecipeKJS {
 	public JsonObject json = null;
 	public boolean changed = false;
 
-	public void deserialize(JsonObject json) {
+	public void deserialize() {
 		for (var k : type.schemaType.schema.keys) {
 			var j = json.get(k.name());
 
@@ -54,12 +54,10 @@ public class RecipeJS implements RecipeKJS {
 		}
 	}
 
-	public void serialize(JsonObject json) {
+	public void serialize() {
 		for (var k : type.schemaType.schema.keys) {
-			var v = getValue(k);
-
-			if (v != null) {
-				json.add(k.name(), k.component().write(UtilsJS.cast(v)));
+			if (hasChanged(k)) {
+				json.add(k.name(), k.component().write(UtilsJS.cast(getValue(k))));
 			}
 		}
 	}
@@ -119,6 +117,10 @@ public class RecipeJS implements RecipeKJS {
 		setGroup(g);
 		save();
 		return this;
+	}
+
+	public RecipeJS merge(JsonObject j) {
+		throw new RecipeExceptionJS("This recipe type has integration, so merge() isn't supported!");
 	}
 
 	// RecipeKJS methods //
@@ -285,9 +287,11 @@ public class RecipeJS implements RecipeKJS {
 	}
 
 	public Recipe<?> createRecipe() {
+		type.schemaType.getSerializer();
+
 		if (changed) {
 			json.addProperty("type", type.idString);
-			serialize(json);
+			serialize();
 
 			if (type.event.stageSerializer != null && json.has("kubejs:stage") && !type.idString.equals("recipestages:stage")) {
 				var o = new JsonObject();
@@ -335,10 +339,6 @@ public class RecipeJS implements RecipeKJS {
 	 */
 	public boolean shouldAdd() {
 		return true;
-	}
-
-	public boolean serializeNBTAsJson() {
-		return type != null && type.getMod().equals("techreborn");
 	}
 
 	public RecipeJS ingredientAction(IngredientActionFilter filter, IngredientAction action) {

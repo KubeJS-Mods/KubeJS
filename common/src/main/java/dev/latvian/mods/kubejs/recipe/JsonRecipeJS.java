@@ -6,14 +6,15 @@ import dev.latvian.mods.kubejs.item.OutputItem;
 
 public class JsonRecipeJS extends RecipeJS {
 	@Override
-	public void deserialize(JsonObject json) {
+	public void deserialize() {
 		changed = true;
 	}
 
 	@Override
-	public void serialize(JsonObject json) {
+	public void serialize() {
 	}
 
+	@Override
 	public RecipeJS merge(JsonObject j) {
 		if (j != null) {
 			for (var entry : j.entrySet()) {
