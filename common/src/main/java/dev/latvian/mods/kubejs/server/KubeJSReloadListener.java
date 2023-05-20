@@ -15,7 +15,7 @@ public class KubeJSReloadListener implements ResourceManagerReloadListener {
 	public void onResourceManagerReload(ResourceManager resourceManager) {
 		var recipeManager = resources == null ? null : resources.getRecipeManager();
 
-		if (recipeManager != null) {
+		if (recipeManager != null && ServerEvents.RECIPES_AFTER_LOADED.hasListeners()) {
 			ServerEvents.RECIPES_AFTER_LOADED.post(ScriptType.SERVER, new AfterRecipesLoadedEventJS(recipeManager.recipes, recipeManager.byName));
 		}
 	}

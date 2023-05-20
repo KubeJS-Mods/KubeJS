@@ -49,17 +49,21 @@ public class KubeJSForge {
 	}
 
 	private static void itemDestroyed(PlayerDestroyItemEvent event) {
-		ForgeKubeJSEvents.ITEM_DESTROYED.post(ScriptType.of(event.getEntity()), event.getOriginal().getItem(), new ItemDestroyedEventJS(event));
+		if (ForgeKubeJSEvents.ITEM_DESTROYED.hasListeners()) {
+			ForgeKubeJSEvents.ITEM_DESTROYED.post(ScriptType.of(event.getEntity()), event.getOriginal().getItem(), new ItemDestroyedEventJS(event));
+		}
 	}
 
 	private static void livingDrops(LivingDropsEvent event) {
-		var e = new LivingEntityDropsEventJS(event);
+		if (ForgeKubeJSEvents.ENTITY_DROPS.hasListeners()) {
+			var e = new LivingEntityDropsEventJS(event);
 
-		if (ForgeKubeJSEvents.ENTITY_DROPS.post(ScriptType.of(event.getEntity()), e.getEntity().getType(), e).override()) {
-			event.setCanceled(true);
-		} else if (e.eventDrops != null) {
-			event.getDrops().clear();
-			event.getDrops().addAll(e.eventDrops);
+			if (ForgeKubeJSEvents.ENTITY_DROPS.post(ScriptType.of(event.getEntity()), e.getEntity().getType(), e).override()) {
+				event.setCanceled(true);
+			} else if (e.eventDrops != null) {
+				event.getDrops().clear();
+				event.getDrops().addAll(e.eventDrops);
+			}
 		}
 	}
 }

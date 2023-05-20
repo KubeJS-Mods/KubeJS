@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
+import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.DataPackEventJS;
@@ -81,7 +82,12 @@ public class ServerScriptManager {
 
 		CustomIngredientAction.MAP.clear();
 
-		RecipesEventJS.instance = new RecipesEventJS();
+		SpecialRecipeSerializerManager.INSTANCE.reset();
+		ServerEvents.SPECIAL_RECIPES.post(ScriptType.SERVER, SpecialRecipeSerializerManager.INSTANCE);
+
+		if (ServerEvents.RECIPES.hasListeners()) {
+			RecipesEventJS.instance = new RecipesEventJS();
+		}
 
 		return wrappedResourceManager;
 	}

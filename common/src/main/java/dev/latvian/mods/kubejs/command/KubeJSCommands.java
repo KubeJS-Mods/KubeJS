@@ -223,10 +223,12 @@ public class KubeJSCommands {
 	}
 
 	private static int customCommand(CommandSourceStack source, String id) {
-		try {
-			ServerEvents.CUSTOM_COMMAND.post(ScriptType.SERVER, id, new CustomCommandEventJS(source.getLevel(), source.getEntity(), new BlockPos(source.getPosition()), id));
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		if (ServerEvents.CUSTOM_COMMAND.hasListeners()) {
+			try {
+				ServerEvents.CUSTOM_COMMAND.post(ScriptType.SERVER, id, new CustomCommandEventJS(source.getLevel(), source.getEntity(), new BlockPos(source.getPosition()), id));
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 
 		return 1;

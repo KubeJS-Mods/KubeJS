@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.core;
 
+import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.kubejs.server.TagEventJS;
 import net.minecraft.core.Registry;
@@ -16,11 +17,13 @@ import java.util.Map;
 public interface TagLoaderKJS<T> {
 	default void kjs$customTags(Map<ResourceLocation, List<TagLoader.EntryWithSource>> map) {
 		TagContext.INSTANCE.setValue(TagContext.EMPTY);
-		var dir = kjs$getDirectory();
-		var reg = kjs$getRegistry();
+		if (ServerEvents.TAGS.hasListeners()) {
+			var dir = kjs$getDirectory();
+			var reg = kjs$getRegistry();
 
-		if (reg != null) {
-			new TagEventJS<>(dir, map, reg).post();
+			if (reg != null) {
+				new TagEventJS<>(dir, map, reg).post();
+			}
 		}
 	}
 

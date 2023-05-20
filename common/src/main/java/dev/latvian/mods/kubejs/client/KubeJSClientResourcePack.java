@@ -37,7 +37,7 @@ public class KubeJSClientResourcePack extends KubeJSResourcePack {
 		var generator = new AssetJsonGenerator(map);
 		KubeJSPlugins.forEachPlugin(p -> p.generateAssetJsons(generator));
 
-		Map<String, String> langMap = new HashMap<>();
+		var langMap = new HashMap<String, String>();
 		KubeJSPlugins.forEachPlugin(p -> p.generateLang(langMap));
 
 		ClientEvents.HIGH_ASSETS.post(ScriptType.CLIENT, new GenerateClientAssetsEventJS(generator, langMap));

@@ -86,6 +86,10 @@ public final class EventHandler extends BaseFunction {
 		}
 	}
 
+	public boolean hasListeners() {
+		return eventContainers != null || extraEventContainers != null;
+	}
+
 	public void listen(ScriptType type, @Nullable Object extraId, IEventHandler handler) {
 		if (!type.manager.get().canListenEvents) {
 			throw new IllegalStateException("Event handler '" + this + "' can only be registered during script loading!");
@@ -161,6 +165,10 @@ public final class EventHandler extends BaseFunction {
 	 * @return true if event was canceled
 	 */
 	public EventResult post(ScriptType scriptType, @Nullable Object extraId, EventJS event, boolean onlyPostToExtra) {
+		if (!hasListeners()) {
+			return EventResult.PASS;
+		}
+
 		if (extraId != null && extra != null) {
 			extraId = Wrapper.unwrapped(extraId);
 			extraId = extra.transformer.transform(extraId);

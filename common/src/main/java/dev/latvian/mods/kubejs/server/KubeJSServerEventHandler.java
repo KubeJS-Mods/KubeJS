@@ -64,7 +64,10 @@ public class KubeJSServerEventHandler {
 
 	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registry, Commands.CommandSelection selection) {
 		KubeJSCommands.register(dispatcher);
-		ServerEvents.COMMAND_REGISTRY.post(ScriptType.SERVER, new CommandRegistryEventJS(dispatcher, registry, selection));
+
+		if (ServerEvents.COMMAND_REGISTRY.hasListeners()) {
+			ServerEvents.COMMAND_REGISTRY.post(ScriptType.SERVER, new CommandRegistryEventJS(dispatcher, registry, selection));
+		}
 	}
 
 	private static void serverBeforeStarting(MinecraftServer server) {
@@ -84,7 +87,9 @@ public class KubeJSServerEventHandler {
 	}
 
 	private static void serverLevelLoaded(ServerLevel level) {
-		LevelEvents.LOADED.post(ScriptType.SERVER, level.dimension().location(), new SimpleLevelEventJS(level));
+		if (LevelEvents.LOADED.hasListeners()) {
+			LevelEvents.LOADED.post(ScriptType.SERVER, level.dimension().location(), new SimpleLevelEventJS(level));
+		}
 	}
 
 	private static void serverLevelSaved(ServerLevel level) {
@@ -128,7 +133,11 @@ public class KubeJSServerEventHandler {
 	}
 
 	public static EventResult command(CommandPerformEvent event) {
-		var e = new CommandEventJS(event);
-		return ServerEvents.COMMAND.post(ScriptType.SERVER, e.getCommandName(), e).arch();
+		if (ServerEvents.COMMAND.hasListeners()) {
+			var e = new CommandEventJS(event);
+			return ServerEvents.COMMAND.post(ScriptType.SERVER, e.getCommandName(), e).arch();
+		}
+
+		return EventResult.pass();
 	}
 }

@@ -40,7 +40,7 @@ public class SendDataFromClientMessage extends BaseC2SMessage {
 
 	@Override
 	public void handle(PacketContext context) {
-		if (!channel.isEmpty() && context.getPlayer() instanceof ServerPlayer serverPlayer) {
+		if (!channel.isEmpty() && context.getPlayer() instanceof ServerPlayer serverPlayer && NetworkEvents.DATA_RECEIVED.hasListeners()) {
 			NetworkEvents.DATA_RECEIVED.post(ScriptType.SERVER, channel, new NetworkEventJS(serverPlayer, channel, data));
 		}
 	}

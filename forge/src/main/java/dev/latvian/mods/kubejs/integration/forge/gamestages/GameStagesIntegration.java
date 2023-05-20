@@ -36,12 +36,18 @@ public class GameStagesIntegration extends KubeJSPlugin {
 	}
 
 	private static void stageAdded(GameStageEvent.Added event) {
-		STAGE_ADDED.post(ScriptType.of(event.getEntity()), event.getStageName(), new GameStageEventJS(event));
+		if (STAGE_ADDED.hasListeners()) {
+			STAGE_ADDED.post(ScriptType.of(event.getEntity()), event.getStageName(), new GameStageEventJS(event));
+		}
+
 		Stages.invokeAdded(Stages.get(event.getEntity()), event.getStageName());
 	}
 
 	private static void stageRemoved(GameStageEvent.Removed event) {
-		STAGE_REMOVED.post(ScriptType.of(event.getEntity()), event.getStageName(), new GameStageEventJS(event));
+		if (STAGE_REMOVED.hasListeners()) {
+			STAGE_REMOVED.post(ScriptType.of(event.getEntity()), event.getStageName(), new GameStageEventJS(event));
+		}
+
 		Stages.invokeRemoved(Stages.get(event.getEntity()), event.getStageName());
 	}
 }

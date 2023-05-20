@@ -57,19 +57,24 @@ public interface MinecraftClientKJS {
 
 	@HideFromJS
 	default void kjs$startAttack0() {
-		var player = kjs$self().player;
-		var stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-		ItemEvents.FIRST_LEFT_CLICKED.post(ScriptType.CLIENT, stack.getItem(), new ItemClickedEventJS(player, InteractionHand.MAIN_HAND, stack));
+		if (ItemEvents.FIRST_LEFT_CLICKED.hasListeners()) {
+			var player = kjs$self().player;
+			var stack = player.getItemInHand(InteractionHand.MAIN_HAND);
+			ItemEvents.FIRST_LEFT_CLICKED.post(ScriptType.CLIENT, stack.getItem(), new ItemClickedEventJS(player, InteractionHand.MAIN_HAND, stack));
+		}
+
 		new FirstClickMessage(0).sendToServer();
 	}
 
 	@HideFromJS
 	default void kjs$startUseItem0() {
-		var player = kjs$self().player;
+		if (ItemEvents.FIRST_RIGHT_CLICKED.hasListeners()) {
+			var player = kjs$self().player;
 
-		for (var hand : InteractionHand.values()) {
-			var stack = player.getItemInHand(hand);
-			ItemEvents.FIRST_RIGHT_CLICKED.post(ScriptType.CLIENT, stack.getItem(), new ItemClickedEventJS(player, hand, stack));
+			for (var hand : InteractionHand.values()) {
+				var stack = player.getItemInHand(hand);
+				ItemEvents.FIRST_RIGHT_CLICKED.post(ScriptType.CLIENT, stack.getItem(), new ItemClickedEventJS(player, hand, stack));
+			}
 		}
 
 		new FirstClickMessage(1).sendToServer();

@@ -37,10 +37,10 @@ public class FirstClickMessage extends BaseC2SMessage {
 	@Override
 	public void handle(PacketContext context) {
 		if (context.getPlayer() instanceof ServerPlayer serverPlayer) {
-			if (type == 0) {
+			if (type == 0 && ItemEvents.FIRST_LEFT_CLICKED.hasListeners()) {
 				var stack = serverPlayer.getItemInHand(InteractionHand.MAIN_HAND);
 				ItemEvents.FIRST_LEFT_CLICKED.post(ScriptType.SERVER, stack.getItem(), new ItemClickedEventJS(serverPlayer, InteractionHand.MAIN_HAND, stack));
-			} else if (type == 1) {
+			} else if (type == 1 && ItemEvents.FIRST_RIGHT_CLICKED.hasListeners()) {
 				for (var hand : InteractionHand.values()) {
 					var stack = serverPlayer.getItemInHand(hand);
 					ItemEvents.FIRST_RIGHT_CLICKED.post(ScriptType.SERVER, stack.getItem(), new ItemClickedEventJS(serverPlayer, hand, stack));

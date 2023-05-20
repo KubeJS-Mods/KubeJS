@@ -17,7 +17,7 @@ public class GenerateClientAssetsEventJS extends EventJS {
 	private final Map<String, String> langMap;
 
 	public GenerateClientAssetsEventJS(AssetJsonGenerator gen, Map<String, String> langMap) {
-		generator = gen;
+		this.generator = gen;
 		this.langMap = langMap;
 	}
 

@@ -59,42 +59,52 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 
 	@Override
 	public void registerEntries(EntryRegistry registry) {
-		entryWrappers.forEach((type, wrapper) -> REIEvents.ADD.post(ScriptType.CLIENT, type.getId(), new AddREIEventJS(registry, wrapper)));
+		if (REIEvents.ADD.hasListeners()) {
+			entryWrappers.forEach((type, wrapper) -> REIEvents.ADD.post(ScriptType.CLIENT, type.getId(), new AddREIEventJS(registry, wrapper)));
+		}
 	}
 
 	@Override
 	public void registerBasicEntryFiltering(BasicFilteringRule<?> rule) {
-		entryWrappers.forEach((type, wrapper) -> {
-			var filter = FilteringRuleTypeRegistry.getInstance().basic();
-			var registry = EntryRegistry.getInstance();
+		if (REIEvents.HIDE.hasListeners()) {
+			entryWrappers.forEach((type, wrapper) -> {
+				var filter = FilteringRuleTypeRegistry.getInstance().basic();
+				var registry = EntryRegistry.getInstance();
 
-			REIEvents.HIDE.post(ScriptType.CLIENT, type.getId(), new HideREIEventJS<>(registry, filter, UtilsJS.cast(type), wrapper));
-		});
+				REIEvents.HIDE.post(ScriptType.CLIENT, type.getId(), new HideREIEventJS<>(registry, filter, UtilsJS.cast(type), wrapper));
+			});
+		}
 	}
 
 	@Override
 	public void registerDisplays(DisplayRegistry registry) {
-		REIEvents.INFORMATION.post(ScriptType.CLIENT, new InformationREIEventJS());
+		if (REIEvents.INFORMATION.hasListeners()) {
+			REIEvents.INFORMATION.post(ScriptType.CLIENT, new InformationREIEventJS());
+		}
 	}
 
 	@Override
 	public void registerCategories(CategoryRegistry registry) {
-		registry.registerVisibilityPredicate(category -> categoriesRemoved.contains(category.getCategoryIdentifier())
-				? EventResult.interruptFalse() : EventResult.pass());
+		registry.registerVisibilityPredicate(category -> categoriesRemoved.contains(category.getCategoryIdentifier()) ? EventResult.interruptFalse() : EventResult.pass());
 	}
 
 	@Override
 	public void postStage(PluginManager<REIClientPlugin> manager, ReloadStage stage) {
 		if (stage == ReloadStage.END) {
 			categoriesRemoved.clear();
-			REIEvents.REMOVE_CATEGORIES.post(ScriptType.CLIENT, new RemoveREICategoryEventJS(categoriesRemoved));
+
+			if (REIEvents.REMOVE_CATEGORIES.hasListeners()) {
+				REIEvents.REMOVE_CATEGORIES.post(ScriptType.CLIENT, new RemoveREICategoryEventJS(categoriesRemoved));
+			}
 		}
 	}
 
 	@SuppressWarnings("UnstableApiUsage")
 	@Override
 	public void registerCollapsibleEntries(CollapsibleEntryRegistry registry) {
-		REIEvents.GROUP_ENTRIES.post(ScriptType.CLIENT, new GroupREIEntriesEventJS(registry));
+		if (REIEvents.GROUP_ENTRIES.hasListeners()) {
+			REIEvents.GROUP_ENTRIES.post(ScriptType.CLIENT, new GroupREIEntriesEventJS(registry));
+		}
 	}
 
 	public static EntryType<?> getTypeOrThrow(ResourceLocation typeId) {

@@ -144,6 +144,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -205,9 +206,11 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		ItemEvents.TOOL_TIER_REGISTRY.post(ScriptType.STARTUP, new ItemToolTierRegistryEventJS());
 		ItemEvents.ARMOR_TIER_REGISTRY.post(ScriptType.STARTUP, new ItemArmorTierRegistryEventJS());
 
+		/*
 		for (var types : RegistryObjectBuilderTypes.MAP.values()) {
 			// types.postEvent();
 		}
+		 */
 	}
 
 	@Override
@@ -318,6 +321,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		event.add("JavaMath", Math.class);
 		event.add("ResourceLocation", ResourceLocation.class);
+		event.add("Duration", Duration.class);
 
 		if (event.getType().isServer()) {
 			event.add("settings", new LegacyCodeHandler("settings"));
@@ -381,6 +385,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.registerSimple(Path.class, UtilsJS::getPath);
 		typeWrappers.registerSimple(File.class, UtilsJS::getFileFromPath);
 		typeWrappers.register(Unit.class, Painter.INSTANCE::unitOf);
+		typeWrappers.registerSimple(Duration.class, UtilsJS::getDuration);
 
 		typeWrappers.register(ResourceLocation.class, UtilsJS::getMCID);
 		typeWrappers.registerSimple(CompoundTag.class, NBTUtils::isTagCompound, NBTUtils::toTagCompound);

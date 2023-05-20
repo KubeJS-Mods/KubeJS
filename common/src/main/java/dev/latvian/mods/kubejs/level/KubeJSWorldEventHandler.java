@@ -26,22 +26,30 @@ public class KubeJSWorldEventHandler {
 	}
 
 	private static void levelLoad(ServerLevel level) {
-		LevelEvents.LOADED.post(ScriptType.SERVER, level.dimension().location(), new SimpleLevelEventJS(level));
+		if (LevelEvents.LOADED.hasListeners()) {
+			LevelEvents.LOADED.post(ScriptType.SERVER, level.dimension().location(), new SimpleLevelEventJS(level));
+		}
 	}
 
 	private static void levelUnload(ServerLevel level) {
-		LevelEvents.UNLOADED.post(ScriptType.SERVER, level.dimension().location(), new SimpleLevelEventJS(level));
+		if (LevelEvents.UNLOADED.hasListeners()) {
+			LevelEvents.UNLOADED.post(ScriptType.SERVER, level.dimension().location(), new SimpleLevelEventJS(level));
+		}
 	}
 
 	private static void levelPostTick(ServerLevel level) {
-		LevelEvents.TICK.post(ScriptType.SERVER, level.dimension().location(), new SimpleLevelEventJS(level));
+		if (LevelEvents.TICK.hasListeners()) {
+			LevelEvents.TICK.post(ScriptType.SERVER, level.dimension().location(), new SimpleLevelEventJS(level));
+		}
 	}
 
 	private static EventResult preExplosion(Level level, Explosion explosion) {
-		return LevelEvents.BEFORE_EXPLOSION.post(ScriptType.of(level), new ExplosionEventJS.Before(level, explosion)).arch();
+		return LevelEvents.BEFORE_EXPLOSION.hasListeners() ? LevelEvents.BEFORE_EXPLOSION.post(ScriptType.of(level), new ExplosionEventJS.Before(level, explosion)).arch() : EventResult.pass();
 	}
 
 	private static void detonateExplosion(Level level, Explosion explosion, List<Entity> affectedEntities) {
-		LevelEvents.AFTER_EXPLOSION.post(ScriptType.of(level), new ExplosionEventJS.After(level, explosion, affectedEntities));
+		if (LevelEvents.AFTER_EXPLOSION.hasListeners()) {
+			LevelEvents.AFTER_EXPLOSION.post(ScriptType.of(level), new ExplosionEventJS.After(level, explosion, affectedEntities));
+		}
 	}
 }

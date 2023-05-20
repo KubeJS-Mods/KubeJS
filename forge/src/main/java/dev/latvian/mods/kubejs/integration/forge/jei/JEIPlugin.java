@@ -38,20 +38,36 @@ public class JEIPlugin implements IModPlugin {
 		runtime = r;
 		BuiltinKubeJSPlugin.GLOBAL.put("jeiRuntime", runtime);
 
-		JEIEvents.HIDE_ITEMS.post(ScriptType.CLIENT, new HideJEIEventJS<>(runtime, VanillaTypes.ITEM_STACK, IngredientJS::of, stack -> !stack.isEmpty()));
+		if (JEIEvents.HIDE_ITEMS.hasListeners()) {
+			JEIEvents.HIDE_ITEMS.post(ScriptType.CLIENT, new HideJEIEventJS<>(runtime, VanillaTypes.ITEM_STACK, IngredientJS::of, stack -> !stack.isEmpty()));
+		}
 
-		JEIEvents.HIDE_FLUIDS.post(ScriptType.CLIENT, new HideJEIEventJS<>(runtime, ForgeTypes.FLUID_STACK, object -> {
-			var fs = FluidStackJS.of(object);
-			return fluidStack -> fluidStack.getFluid().isSame(fs.getFluid()) && Objects.equals(fluidStack.getTag(), fs.getNbt());
-		}, stack -> !stack.isEmpty()));
+		if (JEIEvents.HIDE_FLUIDS.hasListeners()) {
+			JEIEvents.HIDE_FLUIDS.post(ScriptType.CLIENT, new HideJEIEventJS<>(runtime, ForgeTypes.FLUID_STACK, object -> {
+				var fs = FluidStackJS.of(object);
+				return fluidStack -> fluidStack.getFluid().isSame(fs.getFluid()) && Objects.equals(fluidStack.getTag(), fs.getNbt());
+			}, stack -> !stack.isEmpty()));
+		}
 
-		JEIEvents.HIDE_CUSTOM.post(ScriptType.CLIENT, new HideCustomJEIEventJS(runtime));
+		if (JEIEvents.HIDE_CUSTOM.hasListeners()) {
+			JEIEvents.HIDE_CUSTOM.post(ScriptType.CLIENT, new HideCustomJEIEventJS(runtime));
+		}
 
-		JEIEvents.REMOVE_CATEGORIES.post(ScriptType.CLIENT, new RemoveJEICategoriesEvent(runtime));
-		JEIEvents.REMOVE_RECIPES.post(ScriptType.CLIENT, new RemoveJEIRecipesEvent(runtime));
+		if (JEIEvents.REMOVE_CATEGORIES.hasListeners()) {
+			JEIEvents.REMOVE_CATEGORIES.post(ScriptType.CLIENT, new RemoveJEICategoriesEvent(runtime));
+		}
 
-		JEIEvents.ADD_ITEMS.post(ScriptType.CLIENT, new AddJEIEventJS<>(runtime, VanillaTypes.ITEM_STACK, ItemStackJS::of, stack -> !stack.isEmpty()));
-		JEIEvents.ADD_FLUIDS.post(ScriptType.CLIENT, new AddJEIEventJS<>(runtime, ForgeTypes.FLUID_STACK, object -> fromArchitectury(FluidStackJS.of(object).getFluidStack()), stack -> !stack.isEmpty()));
+		if (JEIEvents.REMOVE_RECIPES.hasListeners()) {
+			JEIEvents.REMOVE_RECIPES.post(ScriptType.CLIENT, new RemoveJEIRecipesEvent(runtime));
+		}
+
+		if (JEIEvents.ADD_ITEMS.hasListeners()) {
+			JEIEvents.ADD_ITEMS.post(ScriptType.CLIENT, new AddJEIEventJS<>(runtime, VanillaTypes.ITEM_STACK, ItemStackJS::of, stack -> !stack.isEmpty()));
+		}
+
+		if (JEIEvents.ADD_FLUIDS.hasListeners()) {
+			JEIEvents.ADD_FLUIDS.post(ScriptType.CLIENT, new AddJEIEventJS<>(runtime, ForgeTypes.FLUID_STACK, object -> fromArchitectury(FluidStackJS.of(object).getFluidStack()), stack -> !stack.isEmpty()));
+		}
 	}
 
 	public static FluidStack fromArchitectury(dev.architectury.fluid.FluidStack stack) {
@@ -60,11 +76,15 @@ public class JEIPlugin implements IModPlugin {
 
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistration registration) {
-		JEIEvents.SUBTYPES.post(ScriptType.CLIENT, new JEISubtypesEventJS(registration));
+		if (JEIEvents.SUBTYPES.hasListeners()) {
+			JEIEvents.SUBTYPES.post(ScriptType.CLIENT, new JEISubtypesEventJS(registration));
+		}
 	}
 
 	@Override
 	public void registerRecipes(IRecipeRegistration registration) {
-		JEIEvents.INFORMATION.post(ScriptType.CLIENT, new InformationJEIEventJS(registration));
+		if (JEIEvents.INFORMATION.hasListeners()) {
+			JEIEvents.INFORMATION.post(ScriptType.CLIENT, new InformationJEIEventJS(registration));
+		}
 	}
 }

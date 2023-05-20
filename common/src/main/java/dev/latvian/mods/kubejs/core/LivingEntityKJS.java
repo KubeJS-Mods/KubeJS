@@ -45,7 +45,9 @@ public interface LivingEntityKJS extends EntityKJS {
 				b.foodBuilder.eaten.accept(event);
 			}
 
-			ItemEvents.FOOD_EATEN.post(ScriptType.of(entity), ItemWrapper.getId(i), event);
+			if (ItemEvents.FOOD_EATEN.hasListeners()) {
+				ItemEvents.FOOD_EATEN.post(ScriptType.of(entity), ItemWrapper.getId(i), event);
+			}
 		}
 	}
 

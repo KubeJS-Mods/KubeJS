@@ -69,7 +69,10 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	private void kjs$postTickServer(BooleanSupplier booleanSupplier, CallbackInfo ci) {
 		KubeJSServerEventHandler.tickScheduledEvents(System.currentTimeMillis(), kjs$scheduledEvents);
 		KubeJSServerEventHandler.tickScheduledEvents(kjs$getOverworld().getGameTime(), kjs$scheduledTickEvents);
-		ServerEvents.TICK.post(ScriptType.SERVER, new ServerEventJS(kjs$self()));
+
+		if (ServerEvents.TICK.hasListeners()) {
+			ServerEvents.TICK.post(ScriptType.SERVER, new ServerEventJS(kjs$self()));
+		}
 	}
 
 	@Override

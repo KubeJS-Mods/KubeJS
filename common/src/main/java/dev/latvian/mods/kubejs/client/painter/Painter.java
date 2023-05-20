@@ -134,7 +134,10 @@ public class Painter implements UnitVariables {
 		synchronized (lock) {
 			storage.handle(root);
 			screenObjects = null;
-			ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientEventJS());
+
+			if (ClientEvents.PAINTER_UPDATED.hasListeners()) {
+				ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientEventJS());
+			}
 		}
 	}
 
@@ -142,7 +145,10 @@ public class Painter implements UnitVariables {
 		synchronized (lock) {
 			storage.clear();
 			screenObjects = null;
-			ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientEventJS());
+
+			if (ClientEvents.PAINTER_UPDATED.hasListeners()) {
+				ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientEventJS());
+			}
 		}
 	}
 
@@ -170,6 +176,10 @@ public class Painter implements UnitVariables {
 		var mc = Minecraft.getInstance();
 
 		if (mc.player == null || mc.options.renderDebug || mc.screen != null) {
+			return;
+		}
+
+		if (!ClientEvents.PAINT_SCREEN.hasListeners() && getScreenObjects().length == 0) {
 			return;
 		}
 
@@ -202,6 +212,10 @@ public class Painter implements UnitVariables {
 		var mc = Minecraft.getInstance();
 
 		if (mc.player == null) {
+			return;
+		}
+
+		if (!ClientEvents.PAINT_SCREEN.hasListeners() && getScreenObjects().length == 0) {
 			return;
 		}
 

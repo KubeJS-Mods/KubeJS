@@ -6,6 +6,8 @@ import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.IngredientMatch;
 import dev.latvian.mods.kubejs.recipe.InputItemTransformer;
 import dev.latvian.mods.kubejs.recipe.OutputItemTransformer;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
@@ -21,6 +23,11 @@ public interface RecipeKJS {
 
 	default ResourceLocation kjs$getOrCreateId() {
 		return ((Recipe<?>) this).getId();
+	}
+
+	default RecipeSchema kjs$getSchema() {
+		var s = KubeJSRegistries.recipeSerializers().getId(((Recipe<?>) this).getSerializer());
+		return RecipeNamespace.getAll().get(s.getNamespace()).get(s.getPath()).schema;
 	}
 
 	default String kjs$getMod() {

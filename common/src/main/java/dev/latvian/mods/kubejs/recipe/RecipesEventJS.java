@@ -101,9 +101,6 @@ public class RecipesEventJS extends EventJS {
 			recipeFunctions.putAll(nsMap);
 		}
 
-		SpecialRecipeSerializerManager.INSTANCE.reset();
-		ServerEvents.SPECIAL_RECIPES.post(ScriptType.SERVER, SpecialRecipeSerializerManager.INSTANCE);
-
 		shaped = (RecipeFunction) recipeFunctions.get(CommonProperties.get().serverOnly ? "minecraft:crafting_shaped" : "kubejs:shaped");
 		shapeless = (RecipeFunction) recipeFunctions.get(CommonProperties.get().serverOnly ? "minecraft:crafting_shapeless" : "kubejs:shapeless");
 		smelting = (RecipeFunction) recipeFunctions.get("minecraft:smelting");

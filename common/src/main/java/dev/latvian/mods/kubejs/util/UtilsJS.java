@@ -72,6 +72,7 @@ import java.math.BigInteger;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -793,5 +794,17 @@ public class UtilsJS {
 
 	public static <T> T makeFunctionProxy(ScriptType type, Class<T> targetClass, BaseFunction function) {
 		return cast(NativeJavaObject.createInterfaceAdapter(type.manager.get().context, targetClass, function));
+	}
+
+	public static Duration getDuration(Object o) {
+		if (o instanceof Duration d) {
+			return d;
+		} else if (o instanceof Number n) {
+			return Duration.ofMillis(n.longValue());
+		} else if (o instanceof String) {
+			throw new IllegalArgumentException("Currently not supported, use number as milliseconds");
+		} else {
+			throw new IllegalArgumentException("Invalid duration: " + o);
+		}
 	}
 }

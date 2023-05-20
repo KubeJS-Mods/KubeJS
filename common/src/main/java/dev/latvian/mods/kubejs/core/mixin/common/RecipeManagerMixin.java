@@ -24,11 +24,17 @@ import java.util.Map;
 public abstract class RecipeManagerMixin {
 	@Inject(method = "apply*", at = @At("HEAD"), cancellable = true)
 	private void customRecipesHead(Map<ResourceLocation, JsonObject> map, ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfo ci) {
-		if (RecipesEventJS.instance != null) {
-			RecipesEventJS.instance.post(UtilsJS.cast(this), map);
+		if (ServerEvents.COMPOSTABLE_RECIPES.hasListeners()) {
 			ServerEvents.COMPOSTABLE_RECIPES.post(ScriptType.SERVER, new CompostableRecipesEventJS());
-			RecipesEventJS.instance = null;
 		}
-		ci.cancel();
+
+		if (ServerEvents.RECIPES.hasListeners()) {
+			if (RecipesEventJS.instance != null) {
+				RecipesEventJS.instance.post(UtilsJS.cast(this), map);
+				RecipesEventJS.instance = null;
+			}
+
+			ci.cancel();
+		}
 	}
 }

@@ -83,13 +83,13 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void debugInfoLeft(List<String> lines) {
-		if (Minecraft.getInstance().player != null) {
+		if (Minecraft.getInstance().player != null && ClientEvents.DEBUG_LEFT.hasListeners()) {
 			ClientEvents.DEBUG_LEFT.post(ScriptType.CLIENT, new DebugInfoEventJS(lines));
 		}
 	}
 
 	private void debugInfoRight(List<String> lines) {
-		if (Minecraft.getInstance().player != null) {
+		if (Minecraft.getInstance().player != null && ClientEvents.DEBUG_RIGHT.hasListeners()) {
 			ClientEvents.DEBUG_RIGHT.post(ScriptType.CLIENT, new DebugInfoEventJS(lines));
 		}
 	}
@@ -152,7 +152,7 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void clientTick(Minecraft minecraft) {
-		if (Minecraft.getInstance().player != null) {
+		if (Minecraft.getInstance().player != null && ClientEvents.TICK.hasListeners()) {
 			ClientEvents.TICK.post(ScriptType.CLIENT, new ClientEventJS());
 		}
 	}

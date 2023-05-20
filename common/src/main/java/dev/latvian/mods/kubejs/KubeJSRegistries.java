@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs;
 import com.mojang.serialization.Codec;
 import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.Registries;
+import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -97,6 +98,8 @@ public class KubeJSRegistries {
 	}
 
 	public static void init(ResourceKey<? extends Registry<?>> registryKey) {
-		RegistryObjectBuilderTypes.registerFor(registryKey, !CommonProperties.get().serverOnly);
+		if (StartupEvents.REGISTRY.hasListeners()) {
+			RegistryObjectBuilderTypes.registerFor(registryKey, !CommonProperties.get().serverOnly);
+		}
 	}
 }
