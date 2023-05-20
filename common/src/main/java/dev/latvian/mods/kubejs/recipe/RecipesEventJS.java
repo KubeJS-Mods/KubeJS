@@ -250,7 +250,7 @@ public class RecipesEventJS extends EventJS {
 		ConsoleJS.SERVER.info("Posted recipe events in " + timer.stop());
 
 		timer.reset().start();
-		Map<ResourceLocation, Recipe<?>> recipesByName = Stream.concat(originalRecipes.stream(), addedRecipes.stream())
+		Map<ResourceLocation, Recipe<?>> recipesByName = Stream.concat(originalRecipes.parallelStream(), addedRecipes.parallelStream())
 				.filter(recipe -> {
 					if (!recipe.newRecipe && removedRecipes.containsKey(recipe.getOrCreateId())) {
 						removed.incrementAndGet();
