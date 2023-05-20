@@ -2,6 +2,11 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.item.InputItem;
+import dev.latvian.mods.kubejs.item.OutputItem;
+import dev.latvian.mods.kubejs.recipe.IngredientMatch;
+import dev.latvian.mods.kubejs.recipe.InputItemTransformer;
+import dev.latvian.mods.kubejs.recipe.OutputItemTransformer;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import org.jetbrains.annotations.Nullable;
@@ -43,6 +48,22 @@ public interface RecipeComponent<T> {
 	JsonElement write(T value);
 
 	T read(Object from);
+
+	default boolean hasInput(T value, IngredientMatch match) {
+		return false;
+	}
+
+	default T replaceInput(T value, IngredientMatch match, InputItem with, InputItemTransformer transformer) {
+		return value;
+	}
+
+	default boolean hasOutput(T value, IngredientMatch match) {
+		return false;
+	}
+
+	default T replaceOutput(T value, IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
+		return value;
+	}
 
 	default RecipeComponent<List<T>> asArray() {
 		return new ArrayRecipeComponent<>(this, false);

@@ -33,7 +33,6 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -44,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -59,10 +57,8 @@ public class RecipesEventJS extends EventJS {
 
 	public static RecipesEventJS instance;
 
-	private final List<RecipeJS> originalRecipes;
-	final List<RecipeJS> addedRecipes;
-	private final Map<ResourceLocation, RecipeJS> removedRecipes;
-	private final Map<ResourceLocation, RecipeJS> modifiedRecipes;
+	public final List<RecipeJS> originalRecipes;
+	public final List<RecipeJS> addedRecipes;
 	final Map<String, Object> recipeFunctions;
 	private AtomicInteger modifiedRecipesCount;
 
@@ -83,8 +79,6 @@ public class RecipesEventJS extends EventJS {
 		ConsoleJS.SERVER.info("Scanning recipes...");
 
 		addedRecipes = new ArrayList<>();
-		removedRecipes = new ConcurrentHashMap<>();
-		modifiedRecipes = new ConcurrentHashMap<>();
 
 		recipeFunctions = new HashMap<>();
 
@@ -252,7 +246,7 @@ public class RecipesEventJS extends EventJS {
 		timer.reset().start();
 		Map<ResourceLocation, Recipe<?>> recipesByName = Stream.concat(originalRecipes.parallelStream(), addedRecipes.parallelStream())
 				.filter(recipe -> {
-					if (!recipe.newRecipe && removedRecipes.containsKey(recipe.getOrCreateId())) {
+					if (recipe.removed) {
 						removed.incrementAndGet();
 						return false;
 					}
@@ -261,7 +255,13 @@ public class RecipesEventJS extends EventJS {
 				})
 				.map(recipe -> {
 					try {
-						return recipe.createRecipe();
+						var r = recipe.createRecipe();
+
+						if (r != null) {
+							added.incrementAndGet();
+						}
+
+						return r;
 					} catch (Throwable ex) {
 						ConsoleJS.SERVER.warn("Error parsing recipe " + recipe + ": " + recipe.json, ex, SKIP_ERROR);
 						failed.incrementAndGet();
@@ -274,8 +274,8 @@ public class RecipesEventJS extends EventJS {
 		ConsoleJS.SERVER.info("Added, modified & removed recipes in " + timer.stop());
 
 		if (DataExport.dataExport != null) {
-			for (var r : removedRecipes.values()) {
-				if (allRecipeMap.get(r.getId()) instanceof JsonObject json) {
+			for (var r : originalRecipes) {
+				if (r.removed && allRecipeMap.get(r.getId()) instanceof JsonObject json) {
 					json.addProperty("removed", true);
 				}
 			}
@@ -306,14 +306,18 @@ public class RecipesEventJS extends EventJS {
 
 			ConsoleJS.SERVER.info("======== Debug output of all modified recipes ========");
 
-			for (var r : modifiedRecipes.values()) {
-				ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json + " FROM " + r.originalJson);
+			for (var r : originalRecipes) {
+				if (r.modified) {
+					ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json + " FROM " + r.originalJson);
+				}
 			}
 
 			ConsoleJS.SERVER.info("======== Debug output of all removed recipes ========");
 
-			for (var r : removedRecipes.values()) {
-				ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json);
+			for (var r : originalRecipes) {
+				if (r.removed) {
+					ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json);
+				}
 			}
 		}
 	}
@@ -380,37 +384,33 @@ public class RecipesEventJS extends EventJS {
 		return false;
 	}
 
-	public int remove(RecipeFilter filter) {
-		var count = new MutableInt();
-		forEachRecipeAsync(filter, r ->
-		{
-			if (removedRecipes.put(r.getOrCreateId(), r) != r) {
+	public void remove(RecipeFilter filter) {
+		forEachRecipeAsync(filter, r -> {
+			if (!r.removed) {
+				r.removed = true;
+
 				if (DevProperties.get().logRemovedRecipes) {
 					ConsoleJS.SERVER.info("- " + r + ": " + r.getFromToString());
 				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
 					ConsoleJS.SERVER.debug("- " + r + ": " + r.getFromToString());
 				}
-
-				count.increment();
 			}
 		});
-		return count.getValue();
 	}
 
 	public int replaceInput(RecipeFilter filter, IngredientMatch match, InputItem with, InputItemTransformer transformer) {
 		var count = new AtomicInteger();
-		var is = match.ingredient.toString();
-		var ws = with.toString();
+		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": IN " + match.ingredient + " -> " + with) : "";
 
 		forEachRecipeAsync(filter, r -> {
 			if (r.replaceInput(match, with, transformer)) {
 				count.incrementAndGet();
-				modifiedRecipes.put(r.getOrCreateId(), r);
+				r.modified = true;
 
 				if (DevProperties.get().logModifiedRecipes) {
-					ConsoleJS.SERVER.info("~ " + r + ": IN " + is + " -> " + ws);
+					ConsoleJS.SERVER.info("~ " + r + dstring);
 				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
-					ConsoleJS.SERVER.debug("~ " + r + ": IN " + is + " -> " + ws);
+					ConsoleJS.SERVER.debug("~ " + r + dstring);
 				}
 			}
 		});
@@ -425,19 +425,17 @@ public class RecipesEventJS extends EventJS {
 
 	public int replaceOutput(RecipeFilter filter, IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
 		var count = new AtomicInteger();
-		var is = match.ingredient.toString();
-		var ws = with.toString();
+		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": OUT " + match.ingredient + " -> " + with) : "";
 
-		forEachRecipeAsync(filter, r ->
-		{
+		forEachRecipeAsync(filter, r -> {
 			if (r.replaceOutput(match, with, transformer)) {
 				count.incrementAndGet();
-				modifiedRecipes.put(r.getOrCreateId(), r);
+				r.modified = true;
 
 				if (DevProperties.get().logModifiedRecipes) {
-					ConsoleJS.SERVER.info("~ " + r + ": OUT " + is + " -> " + ws);
+					ConsoleJS.SERVER.info("~ " + r + dstring);
 				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
-					ConsoleJS.SERVER.debug("~ " + r + ": OUT " + is + " -> " + ws);
+					ConsoleJS.SERVER.debug("~ " + r + dstring);
 				}
 			}
 		});

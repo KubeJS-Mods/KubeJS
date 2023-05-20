@@ -14,6 +14,7 @@ import dev.latvian.mods.kubejs.recipe.component.OptionalRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentType;
 import dev.latvian.mods.kubejs.util.JsonIO;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -117,6 +118,8 @@ public class RecipeSchema {
 	public final Class<? extends RecipeJS> recipeType;
 	public final Supplier<? extends RecipeJS> factory;
 	public final RecipeKey<?>[] keys;
+	public final int[] inputKeys;
+	public final int[] outputKeys;
 	private int minRequiredArguments;
 	private Map<Integer, RecipeConstructor> constructors;
 
@@ -129,6 +132,9 @@ public class RecipeSchema {
 		this.factory = factory;
 		this.keys = keys;
 		this.minRequiredArguments = 0;
+
+		var inKeys = new IntArrayList(keys.length / 2);
+		var outKeys = new IntArrayList(keys.length / 2);
 
 		var set = new HashSet<String>();
 
@@ -144,7 +150,16 @@ public class RecipeSchema {
 			if (!set.add(keys[i].name())) {
 				throw new IllegalStateException("Duplicate key '" + keys[i].name() + "'");
 			}
+
+			if (keys[i].component().getType() == RecipeComponentType.INPUT) {
+				inKeys.add(i);
+			} else if (keys[i].component().getType() == RecipeComponentType.OUTPUT) {
+				outKeys.add(i);
+			}
 		}
+
+		inputKeys = inKeys.toIntArray();
+		outputKeys = outKeys.toIntArray();
 	}
 
 	public RecipeSchema constructor(RecipeConstructor.Factory factory, RecipeKey<?>... keys) {

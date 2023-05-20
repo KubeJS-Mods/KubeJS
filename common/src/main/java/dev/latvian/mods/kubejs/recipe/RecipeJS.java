@@ -25,9 +25,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public class RecipeJS implements RecipeKJS {
@@ -36,6 +36,8 @@ public class RecipeJS implements RecipeKJS {
 	public ResourceLocation id;
 	public RecipeFunction type;
 	public boolean newRecipe;
+	public boolean removed;
+	public boolean modified;
 	protected RecipeComponentValue<?>[] values = RecipeComponentValue.EMPTY_ARRAY;
 
 	public JsonObject originalJson = null;
@@ -184,11 +186,9 @@ public class RecipeJS implements RecipeKJS {
 
 	@HideFromJS
 	public boolean hasInput(IngredientMatch match) {
-		for (var value : values) {
-			if (value.value instanceof InputItem item) {
-				if (match.contains(item)) {
-					return true;
-				}
+		for (var key : type.schemaType.schema.inputKeys) {
+			if (values[key].hasInput(match)) {
+				return true;
 			}
 		}
 
@@ -197,22 +197,21 @@ public class RecipeJS implements RecipeKJS {
 
 	@HideFromJS
 	public boolean replaceInput(IngredientMatch match, InputItem with, InputItemTransformer transformer) {
-		/*if (match.contains(ingredient)) {
-			ingredient = transformer.transform(this, match, ingredient, with);
-			return true;
-		}*/
+		boolean replaced = false;
 
-		return false;
+		for (var key : type.schemaType.schema.inputKeys) {
+			replaced = values[key].replaceInput(match, with, transformer) || replaced;
+		}
+
+		return replaced;
 	}
 
 
 	@HideFromJS
 	public boolean hasOutput(IngredientMatch match) {
-		for (var value : values) {
-			if (value.value instanceof OutputItem item) {
-				if (match.contains(item)) {
-					return true;
-				}
+		for (var key : type.schemaType.schema.outputKeys) {
+			if (values[key].hasOutput(match)) {
+				return true;
 			}
 		}
 
@@ -221,12 +220,13 @@ public class RecipeJS implements RecipeKJS {
 
 	@HideFromJS
 	public boolean replaceOutput(IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
-		/*if (match.contains(result)) {
-			result = transformer.transform(this, match, result, with);
-			return true;
-		}*/
+		boolean replaced = false;
 
-		return false;
+		for (var key : type.schemaType.schema.outputKeys) {
+			replaced = values[key].replaceOutput(match, with, transformer) || replaced;
+		}
+
+		return replaced;
 	}
 
 	@HideFromJS
@@ -293,7 +293,12 @@ public class RecipeJS implements RecipeKJS {
 		return this;
 	}
 
+	@Nullable
 	public Recipe<?> createRecipe() {
+		if (removed) {
+			return null;
+		}
+
 		type.schemaType.getSerializer();
 
 		if (changed) {
@@ -312,7 +317,7 @@ public class RecipeJS implements RecipeKJS {
 			return originalRecipe;
 		}
 
-		return Objects.requireNonNull(RecipePlatformHelper.get().fromJson(type.schemaType.getSerializer(), getOrCreateId(), json));
+		return RecipePlatformHelper.get().fromJson(type.schemaType.getSerializer(), getOrCreateId(), json);
 	}
 
 	public Recipe<?> getOriginalRecipe() {
