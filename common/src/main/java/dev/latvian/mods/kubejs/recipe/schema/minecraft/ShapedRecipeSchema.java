@@ -119,7 +119,7 @@ public interface ShapedRecipeSchema {
 	// Used for shaped recipes with 2D ingredient array
 	RecipeKey<List<List<InputItem>>> INGREDIENTS = RecipeSchema.INPUT_ITEM_ARRAY.asArray().key(-1, "ingredients");
 
-	RecipeSchema SCHEMA = new RecipeSchema(ShapedRecipeJS::new, RESULT, PATTERN, KEY)
+	RecipeSchema SCHEMA = new RecipeSchema(ShapedRecipeJS.class, ShapedRecipeJS::new, RESULT, PATTERN, KEY)
 			.constructor(RESULT, PATTERN, KEY)
 			.constructor((recipe, schemaType, from) -> ((ShapedRecipeJS) recipe).set2DValues(from), RESULT, INGREDIENTS);
 }

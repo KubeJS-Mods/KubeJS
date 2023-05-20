@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
 import java.util.function.Predicate;
@@ -9,6 +10,23 @@ public record StringComponent(String error, Predicate<String> predicate) impleme
 	public static final RecipeComponent<String> DEFAULT_ANY = ANY.optional("");
 	public static final RecipeComponent<String> NON_EMPTY = new StringComponent("can't be empty", s -> !s.isEmpty());
 	public static final RecipeComponent<String> NON_BLANK = new StringComponent("can't be blank", s -> !s.isBlank());
+
+	public static final RecipeComponent<Character> CHARACTER = new RecipeComponent<>() {
+		@Override
+		public String componentType() {
+			return "char";
+		}
+
+		@Override
+		public JsonElement write(Character value) {
+			return new JsonPrimitive(value);
+		}
+
+		@Override
+		public Character read(Object from) {
+			return from instanceof Character c ? c : String.valueOf(from).charAt(0);
+		}
+	};
 
 	@Override
 	public String componentType() {

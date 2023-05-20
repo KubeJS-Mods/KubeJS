@@ -145,6 +145,12 @@ public class RecipeJS implements RecipeKJS {
 
 	@Override
 	@Deprecated
+	public final RecipeSchema kjs$getSchema() {
+		return type.schemaType.schema;
+	}
+
+	@Override
+	@Deprecated
 	public final ResourceLocation kjs$getType() {
 		return getType();
 	}

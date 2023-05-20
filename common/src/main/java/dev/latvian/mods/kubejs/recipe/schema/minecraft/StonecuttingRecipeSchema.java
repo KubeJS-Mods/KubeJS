@@ -38,5 +38,5 @@ public interface StonecuttingRecipeSchema {
 		}
 	}
 
-	RecipeSchema SCHEMA = new RecipeSchema(StonecuttingRecipeJS::new, RESULT, INGREDIENT);
+	RecipeSchema SCHEMA = new RecipeSchema(StonecuttingRecipeJS.class, StonecuttingRecipeJS::new, RESULT, INGREDIENT);
 }

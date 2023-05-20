@@ -52,8 +52,12 @@ public interface RecipeComponent<T> {
 		return new ArrayRecipeComponent<>(this, true);
 	}
 
+	default <K> RecipeComponent<Map<K, T>> asMap(RecipeComponent<K> key) {
+		return new MapRecipeComponent<>(key, this);
+	}
+
 	default RecipeComponent<Map<Character, T>> asPatternKey() {
-		return new PatternKeyRecipeComponent<>(this);
+		return asMap(StringComponent.CHARACTER);
 	}
 
 	default RecipeComponent<T> optional(T defaultValue) {

@@ -118,12 +118,18 @@ public class RecipeSchema {
 	public static final RecipeComponent<OutputItem> DEFAULT_OUTPUT_ITEM = OUTPUT_ITEM.optional(OutputItem.EMPTY);
 	public static final RecipeComponent<List<OutputItem>> OUTPUT_ITEM_ARRAY = OUTPUT_ITEM.asArray();
 
-	public final Supplier<RecipeJS> factory;
+	public final Class<? extends RecipeJS> recipeType;
+	public final Supplier<? extends RecipeJS> factory;
 	public final RecipeKey<?>[] keys;
 	private int minRequiredArguments;
 	private Map<Integer, RecipeConstructor> constructors;
 
-	public RecipeSchema(Supplier<RecipeJS> factory, RecipeKey<?>... keys) {
+	public RecipeSchema(RecipeKey<?>... keys) {
+		this(RecipeJS.class, RecipeJS::new, keys);
+	}
+
+	public RecipeSchema(Class<? extends RecipeJS> recipeType, Supplier<? extends RecipeJS> factory, RecipeKey<?>... keys) {
+		this.recipeType = recipeType;
 		this.factory = factory;
 		this.keys = keys;
 		this.minRequiredArguments = 0;
@@ -143,10 +149,6 @@ public class RecipeSchema {
 				throw new IllegalStateException("Duplicate key '" + keys[i].name() + "'");
 			}
 		}
-	}
-
-	public RecipeSchema(RecipeKey<?>... keys) {
-		this(RecipeJS::new, keys);
 	}
 
 	public RecipeSchema constructor(RecipeConstructor.Factory factory, RecipeKey<?>... keys) {

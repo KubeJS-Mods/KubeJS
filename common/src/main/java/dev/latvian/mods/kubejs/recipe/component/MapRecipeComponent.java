@@ -5,16 +5,17 @@ import com.google.gson.JsonObject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public record PatternKeyRecipeComponent<T>(RecipeComponent<T> component) implements RecipeComponent<Map<Character, T>> {
+public record MapRecipeComponent<K, T>(RecipeComponent<K> key, RecipeComponent<T> component) implements RecipeComponent<Map<K, T>> {
 	@Override
 	public String componentType() {
-		return "pattern_key";
+		return "map";
 	}
 
 	@Override
 	public JsonObject description() {
 		var obj = new JsonObject();
 		obj.addProperty("type", componentType());
+		obj.add("key", key.description());
 		obj.add("component", component.description());
 		return obj;
 	}
@@ -25,7 +26,7 @@ public record PatternKeyRecipeComponent<T>(RecipeComponent<T> component) impleme
 	}
 
 	@Override
-	public JsonObject write(Map<Character, T> value) {
+	public JsonObject write(Map<K, T> value) {
 		var json = new JsonObject();
 
 		for (var entry : value.entrySet()) {
@@ -36,20 +37,24 @@ public record PatternKeyRecipeComponent<T>(RecipeComponent<T> component) impleme
 	}
 
 	@Override
-	public Map<Character, T> read(Object from) {
+	public Map<K, T> read(Object from) {
 		if (from instanceof JsonObject o) {
-			var map = new LinkedHashMap<Character, T>(o.size());
+			var map = new LinkedHashMap<K, T>(o.size());
 
 			for (var entry : o.entrySet()) {
-				map.put(entry.getKey().charAt(0), component.read(entry.getValue()));
+				var k = key.read(entry.getKey());
+				var v = component.read(entry.getValue());
+				map.put(k, v);
 			}
 
 			return map;
 		} else if (from instanceof Map<?, ?> m) {
-			var map = new LinkedHashMap<Character, T>(m.size());
+			var map = new LinkedHashMap<K, T>(m.size());
 
 			for (var entry : m.entrySet()) {
-				map.put(entry.getKey() instanceof Character c ? c : entry.getKey().toString().charAt(0), component.read(entry.getValue()));
+				var k = key.read(entry.getKey());
+				var v = component.read(entry.getValue());
+				map.put(k, v);
 			}
 
 			return map;

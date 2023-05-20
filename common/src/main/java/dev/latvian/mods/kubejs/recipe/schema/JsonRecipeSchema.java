@@ -6,6 +6,6 @@ public class JsonRecipeSchema extends RecipeSchema {
 	public static final JsonRecipeSchema SCHEMA = new JsonRecipeSchema();
 
 	public JsonRecipeSchema() {
-		super(JsonRecipeJS::new);
+		super(JsonRecipeJS.class, JsonRecipeJS::new);
 	}
 }
