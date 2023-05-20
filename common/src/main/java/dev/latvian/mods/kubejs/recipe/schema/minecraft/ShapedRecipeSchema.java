@@ -1,17 +1,22 @@
 package dev.latvian.mods.kubejs.recipe.schema.minecraft;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.item.EmptyItemError;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.StringComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,50 +76,107 @@ public interface ShapedRecipeSchema {
 
 		@Override
 		public void afterLoaded(boolean created) {
-			// FIXME: Cleanup empty keys
+			var pattern = getValue(PATTERN);
+			var key = getValue(KEY);
 
-			/*
-			var pattern1 = ListJS.orSelf(args.get(1));
-
-			if (pattern1.isEmpty()) {
+			if (pattern.isEmpty()) {
 				throw new RecipeExceptionJS("Pattern is empty!");
 			}
 
-			List<String> airs = new ArrayList<>(1);
-
-			var key1 = MapJS.of(args.get(2));
-
-			if (key1 == null || key1.isEmpty()) {
+			if (key.isEmpty()) {
 				throw new RecipeExceptionJS("Key map is empty!");
 			}
 
-			for (var kr : key1.keySet()) {
-				var k = String.valueOf(kr);
-				var o = key1.get(kr);
+			List<Character> airs = null;
+			var itr = key.entrySet().iterator();
 
-				if (o == ItemStack.EMPTY || o.equals("minecraft:air")) {
-					airs.add(k);
-				} else {
-					key.put(k.charAt(0), parseInputItem(o, k));
+			while (itr.hasNext()) {
+				var entry = itr.next();
+				if (entry.getValue().isEmpty()) {
+					if (airs == null) {
+						airs = new ArrayList<>(1);
+					}
+
+					airs.add(entry.getKey());
+					itr.remove();
 				}
 			}
 
-			for (var p : pattern1) {
-				var s = String.valueOf(p);
+			if (airs != null) {
+				for (int i = 0; i < pattern.size(); i++) {
+					var s = pattern.get(i);
 
-				for (var s1 : airs) {
-					s = s.replace(s1, " ");
+					for (var a : airs) {
+						s = s.replace(a, ' ');
+					}
+
+					pattern.set(i, s);
 				}
 
-				pattern.add(s);
+				setValue(PATTERN, pattern);
+				setValue(KEY, key);
 			}
-		 */
 		}
 	}
 
+	RecipeComponent<Map<Character, InputItem>> KEY_COMPONENT = new RecipeComponent<>() {
+		@Override
+		public String componentType() {
+			return "key";
+		}
+
+		@Override
+		public JsonElement write(Map<Character, InputItem> value) {
+			var json = new JsonObject();
+
+			for (var entry : value.entrySet()) {
+				json.add(entry.getKey().toString(), RecipeSchema.INPUT_ITEM.write(entry.getValue()));
+			}
+
+			return json;
+		}
+
+		@Override
+		public Map<Character, InputItem> read(Object from) {
+			if (from instanceof JsonObject o) {
+				var map = new LinkedHashMap<Character, InputItem>(o.size());
+
+				for (var entry : o.entrySet()) {
+					var k = StringComponent.CHARACTER.read(entry.getKey());
+
+					try {
+						var v = RecipeSchema.INPUT_ITEM.read(entry.getValue());
+						map.put(k, v);
+					} catch (EmptyItemError ignored) {
+						map.put(k, InputItem.EMPTY);
+					}
+				}
+
+				return map;
+			} else if (from instanceof Map<?, ?> m) {
+				var map = new LinkedHashMap<Character, InputItem>(m.size());
+
+				for (var entry : m.entrySet()) {
+					var k = StringComponent.CHARACTER.read(entry.getKey());
+
+					try {
+						var v = RecipeSchema.INPUT_ITEM.read(entry.getValue());
+						map.put(k, v);
+					} catch (EmptyItemError ignored) {
+						map.put(k, InputItem.EMPTY);
+					}
+				}
+
+				return map;
+			} else {
+				throw new IllegalArgumentException("Expected JSON object!");
+			}
+		}
+	};
+
 	RecipeKey<OutputItem> RESULT = RecipeSchema.OUTPUT_ITEM.key(0, "result");
 	RecipeKey<List<String>> PATTERN = StringComponent.NON_EMPTY.asArray().key(1, "pattern");
-	RecipeKey<Map<Character, InputItem>> KEY = RecipeSchema.INPUT_ITEM.asPatternKey().key(2, "key");
+	RecipeKey<Map<Character, InputItem>> KEY = KEY_COMPONENT.key(2, "key");
 
 	// Used for shaped recipes with 2D ingredient array
 	RecipeKey<List<List<InputItem>>> INGREDIENTS = RecipeSchema.INPUT_ITEM_ARRAY.asArray().key(-1, "ingredients");

@@ -4,9 +4,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.item.EmptyItemError;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
-import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeFunction;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
@@ -45,7 +45,7 @@ public class RecipeSchema {
 			var i = InputItem.of(from);
 
 			if (i.isEmpty()) {
-				throw new RecipeExceptionJS(from + " is not a valid ingredient!");
+				throw new EmptyItemError(from + " is not a valid ingredient!", from);
 			}
 
 			return i;
@@ -84,10 +84,6 @@ public class RecipeSchema {
 
 		@Override
 		public JsonElement write(OutputItem value) {
-			if (value == OutputItem.EMPTY) {
-				return null;
-			}
-
 			var json = new JsonObject();
 			json.addProperty("item", value.item.kjs$getId());
 			json.addProperty("count", value.item.getCount());
@@ -108,7 +104,7 @@ public class RecipeSchema {
 			var i = OutputItem.of(from);
 
 			if (i.isEmpty()) {
-				throw new RecipeExceptionJS(from + " is not a valid result!");
+				throw new EmptyItemError(from + " is not a valid result!", from);
 			}
 
 			return i;
@@ -200,6 +196,7 @@ public class RecipeSchema {
 		r.type = type;
 		r.id = id;
 		r.json = json;
+		r.newRecipe = id == null;
 		r.initValues(this, id == null);
 
 		if (id != null && CommonProperties.get().debugInfo) {

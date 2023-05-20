@@ -15,6 +15,7 @@ import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
+import dev.latvian.mods.kubejs.recipe.schema.JsonRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -25,7 +26,6 @@ import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.JsonUtils;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -47,8 +47,10 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RecipesEventJS extends EventJS {
 	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.mods.kubejs.recipe.RecipeEventJS.post");
@@ -57,7 +59,6 @@ public class RecipesEventJS extends EventJS {
 
 	public static RecipesEventJS instance;
 
-	private final List<Recipe<?>> fallbackedRecipes;
 	private final List<RecipeJS> originalRecipes;
 	final List<RecipeJS> addedRecipes;
 	private final Map<ResourceLocation, RecipeJS> removedRecipes;
@@ -77,7 +78,6 @@ public class RecipesEventJS extends EventJS {
 	RecipeSerializer<?> stageSerializer;
 
 	public RecipesEventJS() {
-		fallbackedRecipes = new ArrayList<>();
 		originalRecipes = new ArrayList<>();
 
 		ConsoleJS.SERVER.info("Scanning recipes...");
@@ -132,7 +132,7 @@ public class RecipesEventJS extends EventJS {
 	}
 
 	@HideFromJS
-	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> jsonMap) {
+	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> datapackRecipeMap) {
 		RecipeJS.itemErrors = false;
 
 		TagContext.INSTANCE.setValue(KubeJSReloadListener.resources.tagManager.getResult()
@@ -149,35 +149,62 @@ public class RecipesEventJS extends EventJS {
 
 		var allRecipeMap = new JsonObject();
 
-		for (var entry : jsonMap.entrySet()) {
+		for (var entry : datapackRecipeMap.entrySet()) {
 			var recipeId = entry.getKey();
+
+			if (recipeId == null || entry.getValue() == null || entry.getValue().size() == 0) {
+				continue;
+			}
 
 			if (Platform.isForge() && recipeId.getPath().startsWith("_")) {
 				continue; //Forge: filter anything beginning with "_" as it's used for metadata.
 			}
 
 			var recipeIdAndType = recipeId + "[unknown:type]";
+			JsonObject json;
 
 			try {
-				var json = RecipePlatformHelper.get().checkConditions(entry.getValue());
-
-				if (json == null) {
-					if (DevProperties.get().logSkippedRecipes) {
-						ConsoleJS.SERVER.info("Skipping loading recipe " + recipeId + " as it's conditions were not met");
-					}
-
-					continue;
+				json = RecipePlatformHelper.get().checkConditions(entry.getValue());
+			} catch (Exception ex) {
+				if (DevProperties.get().logSkippedRecipes) {
+					ConsoleJS.SERVER.info("Skipping recipe " + recipeId + ", failed to check conditions: " + ex);
 				}
 
-				if (DataExport.dataExport != null) {
-					allRecipeMap.add(recipeId.toString(), JsonUtils.copy(json));
+				continue;
+			}
+
+			if (json == null) {
+				if (DevProperties.get().logSkippedRecipes) {
+					ConsoleJS.SERVER.info("Skipping recipe " + recipeId + ", conditions not met");
 				}
 
-				var type = GsonHelper.getAsString(json, "type");
-				recipeIdAndType = recipeId + "[" + type + "]";
-				var function = getRecipeFunction(type);
+				continue;
+			} else if (!json.has("type")) {
+				if (DevProperties.get().logSkippedRecipes) {
+					ConsoleJS.SERVER.info("Skipping recipe " + recipeId + ", missing type");
+				}
 
-				var recipe = function.schemaType.schema.deserialize(function, recipeId, json);
+				continue;
+			}
+
+			if (DataExport.dataExport != null) {
+				allRecipeMap.add(recipeId.toString(), JsonUtils.copy(json));
+			}
+
+			var typeStr = GsonHelper.getAsString(json, "type");
+			recipeIdAndType = recipeId + "[" + typeStr + "]";
+			var type = getRecipeFunction(typeStr);
+
+			if (type == null) {
+				if (DevProperties.get().logSkippedRecipes) {
+					ConsoleJS.SERVER.info("Skipping recipe " + recipeId + ", unknown type: " + typeStr);
+				}
+
+				continue;
+			}
+
+			try {
+				var recipe = type.schemaType.schema.deserialize(type, recipeId, json);
 				recipe.afterLoaded(false);
 				originalRecipes.add(recipe);
 
@@ -195,7 +222,7 @@ public class RecipesEventJS extends EventJS {
 					}
 
 					try {
-						fallbackedRecipes.add(Objects.requireNonNull(RecipeManager.fromJson(recipeId, entry.getValue())));
+						originalRecipes.add(JsonRecipeSchema.SCHEMA.deserialize(type, recipeId, json));
 					} catch (NullPointerException | IllegalArgumentException | JsonParseException ex2) {
 						if (DevProperties.get().logErroringRecipes) {
 							ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType, ex2, SKIP_ERROR);
@@ -210,89 +237,41 @@ public class RecipesEventJS extends EventJS {
 			}
 		}
 
-		MutableInt removed = new MutableInt(0), added = new MutableInt(0), failed = new MutableInt(0), fallbacked = new MutableInt(0);
+		var removed = new AtomicInteger(0);
+		var added = new AtomicInteger(0);
+		var failed = new AtomicInteger(0);
+
 		modifiedRecipesCount = new AtomicInteger(0);
 
-		ConsoleJS.SERVER.info("Found " + originalRecipes.size() + " recipes and " + fallbackedRecipes.size() + " failed recipes in " + timer.stop());
+		ConsoleJS.SERVER.info("Found " + originalRecipes.size() + " recipes in " + timer.stop());
 
 		timer.reset().start();
-
 		ServerEvents.RECIPES.post(ScriptType.SERVER, this);
-
 		ConsoleJS.SERVER.info("Posted recipe events in " + timer.stop());
 
-		var recipesByName = new HashMap<ResourceLocation, Recipe<?>>();
-
 		timer.reset().start();
-		originalRecipes.stream()
+		Map<ResourceLocation, Recipe<?>> recipesByName = Stream.concat(originalRecipes.stream(), addedRecipes.stream())
 				.filter(recipe -> {
-					if (removedRecipes.containsKey(recipe.getOrCreateId())) {
-						removed.increment();
+					if (!recipe.newRecipe && removedRecipes.containsKey(recipe.getOrCreateId())) {
+						removed.incrementAndGet();
 						return false;
 					}
+
 					return true;
 				})
 				.map(recipe -> {
 					try {
 						return recipe.createRecipe();
 					} catch (Throwable ex) {
-						ConsoleJS.SERVER.warn("Error parsing recipe " + recipe + ": " + recipe.json, ex);
-						failed.increment();
+						ConsoleJS.SERVER.warn("Error parsing recipe " + recipe + ": " + recipe.json, ex, SKIP_ERROR);
+						failed.incrementAndGet();
 						return null;
 					}
 				})
 				.filter(Objects::nonNull)
-				.forEach(recipe -> {
-					var id = recipe.getId();
-					var ser = KubeJSRegistries.recipeSerializers().getId(recipe.getSerializer());
-					var oldEntry = recipesByName.put(id, recipe);
-					if (oldEntry != null) {
-						var oldSer = KubeJSRegistries.recipeSerializers().getId(oldEntry.getSerializer());
-						if (DevProperties.get().logOverrides) {
-							ConsoleJS.SERVER.info("Overriding existing recipe with ID " + recipe.getId() + "[" + oldSer + " => " + ser + "] during phase PARSE!");
-						}
-					}
-				});
-		fallbackedRecipes.stream()
-				.filter(Objects::nonNull)
-				.forEach(recipe -> {
-					var id = recipe.getId();
-					var ser = KubeJSRegistries.recipeSerializers().getId(recipe.getSerializer());
-					var oldEntry = recipesByName.put(id, recipe);
-					if (oldEntry != null) {
-						var oldSer = KubeJSRegistries.recipeSerializers().getId(oldEntry.getSerializer());
-						if (DevProperties.get().logOverrides) {
-							ConsoleJS.SERVER.info("Overriding existing recipe with ID " + recipe.getId() + "[" + oldSer + " => " + ser + "] during phase FALLBACK!");
-						}
-					}
-				});
-		ConsoleJS.SERVER.info("Modified & removed recipes in " + timer.stop());
+				.collect(Collectors.toMap(Recipe::getId, Function.identity()));
 
-		timer.reset().start();
-		addedRecipes.stream()
-				.map(recipe -> {
-					try {
-						return recipe.getOriginalRecipe();
-					} catch (Throwable ex) {
-						ConsoleJS.SERVER.warn("Error creating recipe " + recipe + ": " + recipe.json, ex, SKIP_ERROR);
-						failed.increment();
-						return null;
-					}
-				})
-				.filter(Objects::nonNull)
-				.forEach(recipe -> {
-					added.increment();
-					var id = recipe.getId();
-					var ser = KubeJSRegistries.recipeSerializers().getId(recipe.getSerializer());
-					var oldEntry = recipesByName.put(id, recipe);
-					if (oldEntry != null) {
-						var oldSer = KubeJSRegistries.recipeSerializers().getId(oldEntry.getSerializer());
-						if (DevProperties.get().logOverrides) {
-							ConsoleJS.SERVER.info("Overriding existing recipe with ID " + recipe.getId() + "[" + oldSer + " => " + ser + "] during phase ADD!");
-						}
-						removed.increment();
-					}
-				});
+		ConsoleJS.SERVER.info("Added, modified & removed recipes in " + timer.stop());
 
 		if (DataExport.dataExport != null) {
 			for (var r : removedRecipes.values()) {
@@ -304,20 +283,18 @@ public class RecipesEventJS extends EventJS {
 			DataExport.dataExport.add("recipes", allRecipeMap);
 		}
 
-		ConsoleJS.SERVER.info("Added recipes in " + timer.stop());
+		var newRecipeMap = new HashMap<RecipeType<?>, Map<ResourceLocation, Recipe<?>>>();
 
-		HashMap<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> newRecipeMap = Util.make(new HashMap<>(), map -> {
-			recipesByName.forEach((id, recipe) -> {
-				var type = recipe.getType();
-				var recipes = map.computeIfAbsent(type, t -> new HashMap<>());
-				recipes.put(id, recipe);
-			});
-		});
+		for (var entry : recipesByName.entrySet()) {
+			var type = entry.getValue().getType();
+			var recipes = newRecipeMap.computeIfAbsent(type, k -> new HashMap<>());
+			recipes.put(entry.getKey(), entry.getValue());
+		}
 
 		RecipePlatformHelper.get().pingNewRecipes(newRecipeMap);
 		recipeManager.byName = recipesByName;
 		recipeManager.recipes = newRecipeMap;
-		ConsoleJS.SERVER.info("Added " + added.getValue() + " recipes, removed " + removed.getValue() + " recipes, modified " + modifiedRecipesCount.get() + " recipes, with " + failed.getValue() + " failed recipes and " + fallbacked.getValue() + " fall-backed recipes");
+		ConsoleJS.SERVER.info("Added " + added.get() + " recipes, removed " + removed.get() + " recipes, modified " + modifiedRecipesCount.get() + " recipes, with " + failed.get() + " failed recipes");
 		RecipeJS.itemErrors = false;
 
 		if (CommonProperties.get().debugInfo) {
@@ -475,20 +452,26 @@ public class RecipesEventJS extends EventJS {
 
 	public RecipeFunction getRecipeFunction(@Nullable String id) {
 		if (id == null || id.isEmpty()) {
-			throw new NullPointerException("Recipe type is null!");
+			return null;
 		} else if (recipeFunctions.get(UtilsJS.getID(id)) instanceof RecipeFunction fn) {
 			return fn;
 		} else {
-			throw new NullPointerException("Unknown recipe type: " + id);
+			return null;
 		}
 	}
 
 	public RecipeJS custom(JsonObject json) {
 		if (json == null || !json.has("type")) {
-			throw new RecipeExceptionJS("JSON does not contain 'type' key!");
+			throw new RecipeExceptionJS("JSON must contain 'type'!");
 		}
 
-		return getRecipeFunction(json.get("type").getAsString()).createRecipe(new Object[]{json});
+		var type = getRecipeFunction(json.get("type").getAsString());
+
+		if (type == null) {
+			throw new RecipeExceptionJS("Unknown recipe type: " + json.get("type").getAsString());
+		}
+
+		return type.createRecipe(new Object[]{json});
 	}
 
 	public void printTypes() {

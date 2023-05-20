@@ -40,10 +40,6 @@ public class RemoveJEICategoriesEvent extends EventJS {
 				.forEach(categoriesRemoved::add);
 	}
 
-	public void yeet(ResourceLocation... categoriesToRemove) {
-		remove(categoriesToRemove);
-	}
-
 	public Collection<ResourceLocation> getCategoryIds() {
 		return categoryLookup.get().map(IRecipeCategory::getRecipeType).map(RecipeType::getUid).toList();
 	}
@@ -53,10 +49,6 @@ public class RemoveJEICategoriesEvent extends EventJS {
 				.filter(filter)
 				.map(IRecipeCategory::getRecipeType)
 				.forEach(categoriesRemoved::add);
-	}
-
-	public void yeetIf(Predicate<IRecipeCategory<?>> filter) {
-		removeIf(filter);
 	}
 
 	@Override

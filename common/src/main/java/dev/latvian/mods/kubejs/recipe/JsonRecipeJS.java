@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.item.OutputItem;
 public class JsonRecipeJS extends RecipeJS {
 	@Override
 	public void deserialize() {
-		changed = true;
 	}
 
 	@Override

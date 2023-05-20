@@ -50,10 +50,6 @@ public class RemoveJEIRecipesEvent extends EventJS {
 		}
 	}
 
-	public void yeet(ResourceLocation category, ResourceLocation[] recipesToYeet) {
-		remove(category, recipesToYeet);
-	}
-
 	@Override
 	protected void afterPosted(EventResult result) {
 		var rm = runtime.getRecipeManager();

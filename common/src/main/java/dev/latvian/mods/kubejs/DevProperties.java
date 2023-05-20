@@ -28,7 +28,6 @@ public class DevProperties {
 	public boolean logAddedRecipes = false;
 	public boolean logRemovedRecipes = false;
 	public boolean logModifiedRecipes = false;
-	public boolean logOverrides = false;
 	public boolean logSkippedRecipes = false;
 	public boolean logSkippedTags = false;
 	public boolean logErroringRecipes = true;
@@ -54,7 +53,6 @@ public class DevProperties {
 			logAddedRecipes = get("logAddedRecipes", false);
 			logRemovedRecipes = get("logRemovedRecipes", false);
 			logModifiedRecipes = get("logModifiedRecipes", false);
-			logOverrides = get("logOverrides", false);
 			logSkippedRecipes = get("logSkippedRecipes", false);
 			logSkippedTags = get("logSkippedTags", false);
 			logErroringRecipes = get("logErroringRecipes", true);

@@ -31,7 +31,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public final class RegistryObjectBuilderTypes<T> {
 	public interface BuilderFactory<T> {
@@ -222,7 +221,9 @@ public final class RegistryObjectBuilderTypes<T> {
 
 			// this needs to be separate to avoid a CME, for example if a (source) fluid adds a flowing fluid builder;
 			// as a side effect of this, objects of the same type that are added by createAdditionalObjects cannot create yet more objects
-			Set.copyOf(type.objects.values()).forEach(BuilderBase::createAdditionalObjects);
+			for (var builder : type.objects.values().toArray(new BuilderBase[0])) {
+				builder.createAdditionalObjects();
+			}
 
 			for (var builder : type.objects.values()) {
 				if (builder.registerObject(all)) {

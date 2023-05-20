@@ -35,6 +35,7 @@ public class RecipeJS implements RecipeKJS {
 
 	public ResourceLocation id;
 	public RecipeFunction type;
+	public boolean newRecipe;
 	protected RecipeComponentValue<?>[] values = RecipeComponentValue.EMPTY_ARRAY;
 
 	public JsonObject originalJson = null;
@@ -307,12 +308,16 @@ public class RecipeJS implements RecipeKJS {
 			}
 		}
 
+		if (!newRecipe && originalRecipe != null) {
+			return originalRecipe;
+		}
+
 		return Objects.requireNonNull(RecipePlatformHelper.get().fromJson(type.schemaType.getSerializer(), getOrCreateId(), json));
 	}
 
 	public Recipe<?> getOriginalRecipe() {
 		if (originalRecipe == null) {
-			originalRecipe = RecipePlatformHelper.get().fromJson(type.schemaType.getSerializer(), id, json);
+			originalRecipe = id == null ? null : RecipePlatformHelper.get().fromJson(type.schemaType.getSerializer(), id, json);
 
 			if (originalRecipe == null) {
 				throw new RecipeExceptionJS("Could not create recipe from json for " + this);

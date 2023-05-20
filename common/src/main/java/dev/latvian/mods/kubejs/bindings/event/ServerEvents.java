@@ -27,7 +27,7 @@ public interface ServerEvents {
 	EventHandler LOADED = GROUP.server("loaded", () -> ServerEventJS.class);
 	EventHandler UNLOADED = GROUP.server("unloaded", () -> ServerEventJS.class);
 	EventHandler TICK = GROUP.server("tick", () -> ServerEventJS.class);
-	EventHandler TAGS = GROUP.server("tags", () -> TagEventJS.class).extra(StartupEvents.REGISTRY_EXTRA);
+	EventHandler TAGS = GROUP.server("tags", () -> TagEventJS.class).extra(Extra.REQUIRES_ID);
 	EventHandler COMMAND_REGISTRY = GROUP.server("commandRegistry", () -> CommandRegistryEventJS.class);
 	EventHandler COMMAND = GROUP.server("command", () -> CommandEventJS.class).extra(Extra.STRING).hasResult();
 	EventHandler CUSTOM_COMMAND = GROUP.server("customCommand", () -> CustomCommandEventJS.class).extra(Extra.STRING).hasResult();
