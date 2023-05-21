@@ -13,6 +13,12 @@ public class RecipeExceptionJS extends IllegalArgumentException {
 		error = false;
 	}
 
+	public RecipeExceptionJS(String m, Throwable cause) {
+		super(m, cause);
+		fallback = false;
+		error = false;
+	}
+
 	@Override
 	public String toString() {
 		return getLocalizedMessage();

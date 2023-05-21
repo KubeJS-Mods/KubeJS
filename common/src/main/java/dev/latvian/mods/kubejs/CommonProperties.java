@@ -30,6 +30,7 @@ public class CommonProperties {
 	public String packMode;
 	public boolean debugInfo;
 	public boolean saveDevPropertiesInConfig;
+	public boolean allowAsyncStreams;
 
 	private CommonProperties() {
 		properties = new Properties();
@@ -52,6 +53,7 @@ public class CommonProperties {
 			packMode = get("packmode", "default");
 			debugInfo = get("debugInfo", false);
 			saveDevPropertiesInConfig = get("saveDevPropertiesInConfig", false);
+			allowAsyncStreams = get("allowAsyncStreams", true);
 
 			KubeJSPlugins.forEachPlugin(p -> p.loadCommonProperties(this));
 

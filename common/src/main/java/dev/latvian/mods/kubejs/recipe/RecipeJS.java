@@ -37,8 +37,7 @@ public class RecipeJS implements RecipeKJS {
 	public RecipeFunction type;
 	public boolean newRecipe;
 	public boolean removed;
-	public boolean modified;
-	protected RecipeComponentValue<?>[] values = RecipeComponentValue.EMPTY_ARRAY;
+	private RecipeComponentValue<?>[] values = RecipeComponentValue.EMPTY_ARRAY;
 
 	public JsonObject originalJson = null;
 	private Recipe<?> originalRecipe = null;
@@ -90,16 +89,21 @@ public class RecipeJS implements RecipeKJS {
 		return this;
 	}
 
-	public void initValues(RecipeSchema schema, boolean changed) {
-		this.changed = changed;
-
+	public void initValues(RecipeSchema schema) {
 		if (schema.keys.length > 0) {
 			values = new RecipeComponentValue[schema.keys.length];
 
 			for (int i = 0; i < schema.keys.length; i++) {
 				values[i] = new RecipeComponentValue<>(schema.keys[i]);
-				values[i].changed = changed;
 			}
+		}
+	}
+
+	public void setAllChanged(boolean changed) {
+		this.changed = changed;
+
+		for (var v : values) {
+			v.changed = changed;
 		}
 	}
 
@@ -282,7 +286,28 @@ public class RecipeJS implements RecipeKJS {
 	}
 
 	public String getFromToString() {
-		return "unknown -> unknown";
+		var sb = new StringBuilder();
+		sb.append('[');
+
+		for (var key : type.schemaType.schema.inputKeys) {
+			if (sb.length() > 1) {
+				sb.append(",");
+			}
+
+			sb.append(values[key]);
+		}
+
+		sb.append("] -> [");
+
+		for (var key : type.schemaType.schema.outputKeys) {
+			if (sb.length() > 1) {
+				sb.append(",");
+			}
+
+			sb.append(values[key]);
+		}
+
+		return sb.append(']').toString();
 	}
 
 	public String getUniqueId() {
@@ -303,7 +328,7 @@ public class RecipeJS implements RecipeKJS {
 
 		type.schemaType.getSerializer();
 
-		if (changed) {
+		if (changed || newRecipe) {
 			json.addProperty("type", type.idString);
 			serialize();
 
@@ -313,9 +338,7 @@ public class RecipeJS implements RecipeKJS {
 				o.add("recipe", json);
 				return type.event.stageSerializer.fromJson(getOrCreateId(), o);
 			}
-		}
-
-		if (!newRecipe && originalRecipe != null) {
+		} else if (originalRecipe != null) {
 			return originalRecipe;
 		}
 

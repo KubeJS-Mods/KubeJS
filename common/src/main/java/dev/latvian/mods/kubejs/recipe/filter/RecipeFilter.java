@@ -33,6 +33,9 @@ public interface RecipeFilter extends Predicate<RecipeKJS> {
 
 			if (s.equals("*")) {
 				return ALWAYS_TRUE;
+			} else {
+				var r = UtilsJS.parseRegex(s);
+				return r == null ? new IDFilter(UtilsJS.getMCID(cx, s)) : RegexIDFilter.of(r);
 			}
 		}
 

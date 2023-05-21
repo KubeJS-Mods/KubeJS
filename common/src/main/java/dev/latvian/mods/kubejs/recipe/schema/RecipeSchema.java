@@ -230,13 +230,14 @@ public class RecipeSchema {
 		r.id = id;
 		r.json = json;
 		r.newRecipe = id == null;
-		r.initValues(this, id == null);
+		r.initValues(this);
 
 		if (id != null && CommonProperties.get().debugInfo) {
 			r.originalJson = (JsonObject) JsonIO.copy(json);
 		}
 
 		r.deserialize();
+		r.setAllChanged(id == null);
 		return r;
 	}
 }

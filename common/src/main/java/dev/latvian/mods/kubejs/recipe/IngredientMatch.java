@@ -34,7 +34,10 @@ public class IngredientMatch {
 
 	public ItemStack[] getAllItemArray() {
 		if (allItemsArray == null) {
-			getAllItems();
+			// It's apparently very important that this does not reference getAllItems() directly because of probably JVM bug:
+			// Cannot read the array length because "<local2>" is null
+			allItems = ingredient.kjs$getStacks();
+			allItemsArray = allItems.toArray();
 		}
 
 		return allItemsArray;
@@ -49,10 +52,14 @@ public class IngredientMatch {
 			return false;
 		}
 
-		for (var stack : getAllItemArray()) {
-			if (in.test(stack)) {
-				return true;
+		try {
+			for (var stack : getAllItemArray()) {
+				if (in.test(stack)) {
+					return true;
+				}
 			}
+		} catch (Exception ex) {
+			throw new RecipeExceptionJS("Failed to test ingredient " + in, ex);
 		}
 
 		return false;

@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
  * @author LatvianModder
  */
 public class IDFilter implements RecipeFilter {
-	private final ResourceLocation id;
+	public final ResourceLocation id;
 
 	public IDFilter(ResourceLocation i) {
 		id = i;

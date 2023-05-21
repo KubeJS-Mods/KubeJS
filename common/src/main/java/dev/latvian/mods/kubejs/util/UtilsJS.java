@@ -71,7 +71,6 @@ import java.lang.reflect.WildcardType;
 import java.math.BigInteger;
 import java.nio.file.Path;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,6 +81,7 @@ import java.util.HashSet;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -103,8 +103,6 @@ public class UtilsJS {
 	public static MinecraftServer staticServer = null;
 	public static final ResourceLocation UNKNOWN_ID = new ResourceLocation("unknown", "unknown");
 	public static final Predicate<Object> ALWAYS_TRUE = o -> true;
-
-	private static MessageDigest messageDigest;
 
 	private static Collection<BlockState> ALL_STATE_CACHE = null;
 	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();
@@ -730,21 +728,12 @@ public class UtilsJS {
 	}
 
 	private static <T> String getUniqueId(T input, Function<T, JsonElement> toJson) {
-		if (messageDigest == null) {
-			try {
-				messageDigest = MessageDigest.getInstance("MD5");
-			} catch (NoSuchAlgorithmException nsae) {
-				throw new InternalError("MD5 not supported", nsae);
-			}
-		}
-
-		var json = toJson.apply(input);
-
-		if (messageDigest == null) {
-			return new BigInteger(HexFormat.of().formatHex(JsonIO.getJsonHashBytes(json)), 16).toString(36);
-		} else {
-			messageDigest.reset();
+		try {
+			var messageDigest = Objects.requireNonNull(MessageDigest.getInstance("MD5"));
+			var json = toJson.apply(input);
 			return new BigInteger(HexFormat.of().formatHex(messageDigest.digest(JsonIO.getJsonHashBytes(json))), 16).toString(36);
+		} catch (Exception ex) {
+			throw new RuntimeException("MD5 not supported", ex);
 		}
 	}
 

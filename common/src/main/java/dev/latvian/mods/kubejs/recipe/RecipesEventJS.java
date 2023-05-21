@@ -14,6 +14,7 @@ import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
+import dev.latvian.mods.kubejs.recipe.filter.IDFilter;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.schema.JsonRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
@@ -36,13 +37,14 @@ import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -57,10 +59,11 @@ public class RecipesEventJS extends EventJS {
 
 	public static RecipesEventJS instance;
 
-	public final List<RecipeJS> originalRecipes;
-	public final List<RecipeJS> addedRecipes;
+	public final Map<ResourceLocation, RecipeJS> originalRecipes;
+	public final Collection<RecipeJS> addedRecipes;
+	public final Collection<RecipeJS> removedRecipes;
 	final Map<String, Object> recipeFunctions;
-	private AtomicInteger modifiedRecipesCount;
+	public final AtomicInteger failedCount;
 
 	public final RecipeFunction shaped;
 	public final RecipeFunction shapeless;
@@ -74,13 +77,13 @@ public class RecipesEventJS extends EventJS {
 	RecipeSerializer<?> stageSerializer;
 
 	public RecipesEventJS() {
-		originalRecipes = new ArrayList<>();
-
 		ConsoleJS.SERVER.info("Scanning recipes...");
-
-		addedRecipes = new ArrayList<>();
-
+		originalRecipes = new HashMap<>();
+		addedRecipes = new ConcurrentLinkedQueue<>();
+		removedRecipes = new ConcurrentLinkedQueue<>();
 		recipeFunctions = new HashMap<>();
+
+		failedCount = new AtomicInteger(0);
 
 		var allNamespaces = RecipeNamespace.getAll();
 
@@ -121,6 +124,15 @@ public class RecipesEventJS extends EventJS {
 				recipeFunctions.put(entry.getKey(), type);
 			}
 		}
+
+		recipeFunctions.put("shaped", shaped);
+		recipeFunctions.put("shapeless", shapeless);
+		recipeFunctions.put("smelting", smelting);
+		recipeFunctions.put("blasting", blasting);
+		recipeFunctions.put("smoking", smoking);
+		recipeFunctions.put("campfireCooking", campfireCooking);
+		recipeFunctions.put("stonecutting", stonecutting);
+		recipeFunctions.put("smithing", smithing);
 
 		stageSerializer = KubeJSRegistries.recipeSerializers().get(new ResourceLocation("recipestages:stage"));
 	}
@@ -200,7 +212,7 @@ public class RecipesEventJS extends EventJS {
 			try {
 				var recipe = type.schemaType.schema.deserialize(type, recipeId, json);
 				recipe.afterLoaded(false);
-				originalRecipes.add(recipe);
+				originalRecipes.put(recipeId, recipe);
 
 				if (ConsoleJS.SERVER.shouldPrintDebug()) {
 					if (SpecialRecipeSerializerManager.INSTANCE.isSpecial(recipe.getOriginalRecipe())) {
@@ -216,7 +228,7 @@ public class RecipesEventJS extends EventJS {
 					}
 
 					try {
-						originalRecipes.add(JsonRecipeSchema.SCHEMA.deserialize(type, recipeId, json));
+						originalRecipes.put(recipeId, JsonRecipeSchema.SCHEMA.deserialize(type, recipeId, json));
 					} catch (NullPointerException | IllegalArgumentException | JsonParseException ex2) {
 						if (DevProperties.get().logErroringRecipes) {
 							ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType, ex2, SKIP_ERROR);
@@ -231,51 +243,61 @@ public class RecipesEventJS extends EventJS {
 			}
 		}
 
-		var removed = new AtomicInteger(0);
-		var added = new AtomicInteger(0);
-		var failed = new AtomicInteger(0);
-
-		modifiedRecipesCount = new AtomicInteger(0);
-
 		ConsoleJS.SERVER.info("Found " + originalRecipes.size() + " recipes in " + timer.stop());
 
 		timer.reset().start();
 		ServerEvents.RECIPES.post(ScriptType.SERVER, this);
+
+		int modifiedCount = 0;
+
+		for (var r : originalRecipes.values()) {
+			if (r.changed) {
+				modifiedCount++;
+			}
+		}
+
 		ConsoleJS.SERVER.info("Posted recipe events in " + timer.stop());
 
 		timer.reset().start();
-		Map<ResourceLocation, Recipe<?>> recipesByName = Stream.concat(originalRecipes.parallelStream(), addedRecipes.parallelStream())
-				.filter(recipe -> {
-					if (recipe.removed) {
-						removed.incrementAndGet();
-						return false;
-					}
+		var recipesByName = new HashMap<ResourceLocation, Recipe<?>>(originalRecipes.size() + addedRecipes.size());
 
-					return true;
-				})
-				.map(recipe -> {
-					try {
-						var r = recipe.createRecipe();
-
-						if (r != null) {
-							added.incrementAndGet();
+		try {
+			recipesByName.putAll(originalRecipes.values().parallelStream()
+					.map(recipe -> {
+						try {
+							return recipe.createRecipe();
+						} catch (Throwable ex) {
+							ConsoleJS.SERVER.warn("Error parsing recipe " + recipe + ": " + recipe.json, ex, SKIP_ERROR);
+							failedCount.incrementAndGet();
+							return null;
 						}
+					})
+					.filter(Objects::nonNull)
+					.collect(Collectors.toMap(Recipe::getId, Function.identity())));
+		} catch (Throwable ex) {
+			ConsoleJS.SERVER.error("Error creating datapack recipes", ex, SKIP_ERROR);
+		}
 
-						return r;
-					} catch (Throwable ex) {
-						ConsoleJS.SERVER.warn("Error parsing recipe " + recipe + ": " + recipe.json, ex, SKIP_ERROR);
-						failed.incrementAndGet();
-						return null;
-					}
-				})
-				.filter(Objects::nonNull)
-				.collect(Collectors.toMap(Recipe::getId, Function.identity()));
-
-		ConsoleJS.SERVER.info("Added, modified & removed recipes in " + timer.stop());
+		try {
+			recipesByName.putAll(addedRecipes.parallelStream()
+					.map(recipe -> {
+						try {
+							return recipe.createRecipe();
+						} catch (Throwable ex) {
+							ConsoleJS.SERVER.warn("Error parsing recipe " + recipe + ": " + recipe.json, ex, SKIP_ERROR);
+							failedCount.incrementAndGet();
+							return null;
+						}
+					})
+					.filter(Objects::nonNull)
+					.collect(Collectors.toMap(Recipe::getId, Function.identity())));
+		} catch (Throwable ex) {
+			ConsoleJS.SERVER.error("Error creating script recipes", ex, SKIP_ERROR);
+		}
 
 		if (DataExport.dataExport != null) {
-			for (var r : originalRecipes) {
-				if (r.removed && allRecipeMap.get(r.getId()) instanceof JsonObject json) {
+			for (var r : removedRecipes) {
+				if (allRecipeMap.get(r.getId()) instanceof JsonObject json) {
 					json.addProperty("removed", true);
 				}
 			}
@@ -294,7 +316,7 @@ public class RecipesEventJS extends EventJS {
 		RecipePlatformHelper.get().pingNewRecipes(newRecipeMap);
 		recipeManager.byName = recipesByName;
 		recipeManager.recipes = newRecipeMap;
-		ConsoleJS.SERVER.info("Added " + added.get() + " recipes, removed " + removed.get() + " recipes, modified " + modifiedRecipesCount.get() + " recipes, with " + failed.get() + " failed recipes");
+		ConsoleJS.SERVER.info("Added " + addedRecipes.size() + " recipes, removed " + removedRecipes.size() + " recipes, modified " + modifiedCount + " recipes, with " + failedCount.get() + " failed recipes in " + timer.stop());
 		RecipeJS.itemErrors = false;
 
 		if (CommonProperties.get().debugInfo) {
@@ -306,18 +328,16 @@ public class RecipesEventJS extends EventJS {
 
 			ConsoleJS.SERVER.info("======== Debug output of all modified recipes ========");
 
-			for (var r : originalRecipes) {
-				if (r.modified) {
+			for (var r : originalRecipes.values()) {
+				if (r.changed) {
 					ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json + " FROM " + r.originalJson);
 				}
 			}
 
 			ConsoleJS.SERVER.info("======== Debug output of all removed recipes ========");
 
-			for (var r : originalRecipes) {
-				if (r.removed) {
-					ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json);
-				}
+			for (var r : removedRecipes) {
+				ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json);
 			}
 		}
 	}
@@ -344,50 +364,45 @@ public class RecipesEventJS extends EventJS {
 		return filter;
 	}
 
-	public void forEachRecipe(RecipeFilter filter, Consumer<RecipeJS> consumer) {
-		if (filter == RecipeFilter.ALWAYS_TRUE) {
-			originalRecipes.forEach(consumer);
-		} else if (filter != RecipeFilter.ALWAYS_FALSE) {
-			originalRecipes.stream().filter(filter).forEach(consumer);
+	public Stream<RecipeJS> recipeStream(RecipeFilter filter, boolean async) {
+		if (filter == RecipeFilter.ALWAYS_FALSE) {
+			return Stream.empty();
 		}
+
+		Stream<RecipeJS> stream;
+
+		if (async && CommonProperties.get().allowAsyncStreams) {
+			stream = originalRecipes.values().parallelStream();
+		} else {
+			stream = originalRecipes.values().stream();
+		}
+
+		if (filter != RecipeFilter.ALWAYS_TRUE) {
+			stream = stream.filter(filter);
+		}
+
+		return stream;
 	}
 
-	public void forEachRecipeAsync(RecipeFilter filter, Consumer<RecipeJS> consumer) {
-		forEachRecipe(filter, consumer);
-		/* Async currently breaks iterating stacks for some reason. It's easier to disable it than to fix it
-
-		if (filter == RecipeFilter.ALWAYS_TRUE) {
-			originalRecipes.parallelStream().forEach(consumer);
-		} else if (filter != RecipeFilter.ALWAYS_FALSE) {
-			originalRecipes.parallelStream().filter(filter).forEach(consumer);
-		}
-		*/
+	public void forEachRecipe(RecipeFilter filter, Consumer<RecipeJS> consumer) {
+		recipeStream(filter, false).forEach(consumer);
 	}
 
 	public int countRecipes(RecipeFilter filter) {
-		if (filter == RecipeFilter.ALWAYS_TRUE) {
-			return originalRecipes.size();
-		} else if (filter != RecipeFilter.ALWAYS_FALSE) {
-			return (int) originalRecipes.stream().filter(filter).count();
-		}
-
-		return 0;
+		return (int) recipeStream(filter, true).count();
 	}
 
 	public boolean containsRecipe(RecipeFilter filter) {
-		if (filter == RecipeFilter.ALWAYS_TRUE) {
-			return true;
-		} else if (filter != RecipeFilter.ALWAYS_FALSE) {
-			return originalRecipes.stream().anyMatch(filter);
-		}
-
-		return false;
+		return recipeStream(filter, true).anyMatch(filter);
 	}
 
 	public void remove(RecipeFilter filter) {
-		forEachRecipeAsync(filter, r -> {
-			if (!r.removed) {
+		if (filter instanceof IDFilter id) {
+			var r = originalRecipes.remove(id.id);
+
+			if (r != null && !r.removed) {
 				r.removed = true;
+				removedRecipes.add(r);
 
 				if (DevProperties.get().logRemovedRecipes) {
 					ConsoleJS.SERVER.info("- " + r + ": " + r.getFromToString());
@@ -395,18 +410,30 @@ public class RecipesEventJS extends EventJS {
 					ConsoleJS.SERVER.debug("- " + r + ": " + r.getFromToString());
 				}
 			}
-		});
+
+			return;
+		}
+
+		for (var r : recipeStream(filter, true).toList()) {
+			if (!r.removed) {
+				r.removed = true;
+				removedRecipes.add(r);
+				originalRecipes.remove(r.id);
+
+				if (DevProperties.get().logRemovedRecipes) {
+					ConsoleJS.SERVER.info("- " + r + ": " + r.getFromToString());
+				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
+					ConsoleJS.SERVER.debug("- " + r + ": " + r.getFromToString());
+				}
+			}
+		}
 	}
 
-	public int replaceInput(RecipeFilter filter, IngredientMatch match, InputItem with, InputItemTransformer transformer) {
-		var count = new AtomicInteger();
+	public void replaceInput(RecipeFilter filter, IngredientMatch match, InputItem with, InputItemTransformer transformer) {
 		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": IN " + match.ingredient + " -> " + with) : "";
 
-		forEachRecipeAsync(filter, r -> {
+		recipeStream(filter, transformer == InputItemTransformer.DEFAULT).forEach(r -> {
 			if (r.replaceInput(match, with, transformer)) {
-				count.incrementAndGet();
-				r.modified = true;
-
 				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + dstring);
 				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
@@ -414,24 +441,17 @@ public class RecipesEventJS extends EventJS {
 				}
 			}
 		});
-
-		modifiedRecipesCount.addAndGet(count.get());
-		return count.get();
 	}
 
-	public int replaceInput(RecipeFilter filter, IngredientMatch match, InputItem with) {
-		return replaceInput(filter, match, with, InputItemTransformer.DEFAULT);
+	public void replaceInput(RecipeFilter filter, IngredientMatch match, InputItem with) {
+		replaceInput(filter, match, with, InputItemTransformer.DEFAULT);
 	}
 
-	public int replaceOutput(RecipeFilter filter, IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
-		var count = new AtomicInteger();
+	public void replaceOutput(RecipeFilter filter, IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
 		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": OUT " + match.ingredient + " -> " + with) : "";
 
-		forEachRecipeAsync(filter, r -> {
+		recipeStream(filter, transformer == OutputItemTransformer.DEFAULT).forEach(r -> {
 			if (r.replaceOutput(match, with, transformer)) {
-				count.incrementAndGet();
-				r.modified = true;
-
 				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + dstring);
 				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
@@ -439,13 +459,10 @@ public class RecipesEventJS extends EventJS {
 				}
 			}
 		});
-
-		modifiedRecipesCount.addAndGet(count.get());
-		return count.get();
 	}
 
-	public int replaceOutput(RecipeFilter filter, IngredientMatch match, OutputItem with) {
-		return replaceOutput(filter, match, with, OutputItemTransformer.DEFAULT);
+	public void replaceOutput(RecipeFilter filter, IngredientMatch match, OutputItem with) {
+		replaceOutput(filter, match, with, OutputItemTransformer.DEFAULT);
 	}
 
 	public RecipeFunction getRecipeFunction(@Nullable String id) {
@@ -475,7 +492,7 @@ public class RecipesEventJS extends EventJS {
 	public void printTypes() {
 		ConsoleJS.SERVER.info("== All recipe types [used] ==");
 		var list = new HashSet<String>();
-		originalRecipes.forEach(r -> list.add(r.type.toString()));
+		originalRecipes.values().forEach(r -> list.add(r.type.toString()));
 		list.stream().sorted().forEach(ConsoleJS.SERVER::info);
 		ConsoleJS.SERVER.info(list.size() + " types");
 	}
@@ -488,7 +505,7 @@ public class RecipesEventJS extends EventJS {
 	}
 
 	public void printExamples(String type) {
-		var list = originalRecipes.stream().filter(recipeJS -> recipeJS.type.toString().equals(type)).collect(Collectors.toList());
+		var list = originalRecipes.values().stream().filter(recipeJS -> recipeJS.type.toString().equals(type)).collect(Collectors.toList());
 		Collections.shuffle(list);
 
 		ConsoleJS.SERVER.info("== Random examples of '" + type + "' ==");
@@ -504,6 +521,6 @@ public class RecipesEventJS extends EventJS {
 	}
 
 	public void stage(RecipeFilter filter, String stage) {
-		forEachRecipe(filter, r -> r.stage(stage));
+		recipeStream(filter, true).forEach(r -> r.stage(stage));
 	}
 }

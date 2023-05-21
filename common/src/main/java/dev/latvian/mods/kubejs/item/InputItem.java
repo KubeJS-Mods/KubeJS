@@ -142,4 +142,13 @@ public class InputItem implements IngredientSupplierKJS {
 
 		return List.of(this);
 	}
+
+	@Override
+	public String toString() {
+		if (count > 1) {
+			return count + "x " + ingredient;
+		}
+
+		return ingredient.toString();
+	}
 }
