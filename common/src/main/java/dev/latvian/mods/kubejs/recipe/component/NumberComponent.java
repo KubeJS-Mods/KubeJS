@@ -36,6 +36,8 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 			return n;
 		} else if (from instanceof JsonPrimitive json) {
 			return json.getAsNumber();
+		} else if (from instanceof CharSequence) {
+			return Double.parseDouble(from.toString());
 		}
 
 		throw new IllegalStateException("Expected a number!");
