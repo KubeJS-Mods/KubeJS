@@ -1,7 +1,7 @@
 plugins {
 	id 'base'
 	id 'architectury-plugin' version '3.4-SNAPSHOT'
-	id "dev.architectury.loom" version "0.12.0-SNAPSHOT" apply false
+	id "dev.architectury.loom" version "1.2-SNAPSHOT" apply false
 	id "io.github.juuxel.loom-quiltflower" version "1.7.2" apply false
 	id "com.github.johnrengelman.shadow" version "7.0.0" apply false
 	id "me.shedaniel.unified-publishing" version "0.1.+" apply false
