@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.recipe.IngredientMatch;
 import dev.latvian.mods.kubejs.recipe.InputItemTransformer;
 import dev.latvian.mods.kubejs.recipe.OutputItemTransformer;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.util.MutableBoolean;
 
 public class RecipeComponentValue<T> {
 	public static final RecipeComponentValue<?>[] EMPTY_ARRAY = new RecipeComponentValue[0];
@@ -25,9 +26,10 @@ public class RecipeComponentValue<T> {
 	}
 
 	public boolean replaceInput(IngredientMatch match, InputItem with, InputItemTransformer transformer) {
-		var v0 = value;
-		value = key.component().replaceInput(value, match, with, transformer);
-		return value != v0;
+		var changed = new MutableBoolean(false);
+		value = key.component().replaceInput(value, match, with, transformer, changed);
+		this.changed |= changed.value;
+		return changed.value;
 	}
 
 	public boolean hasOutput(IngredientMatch match) {
@@ -35,8 +37,9 @@ public class RecipeComponentValue<T> {
 	}
 
 	public boolean replaceOutput(IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
-		var v0 = value;
-		value = key.component().replaceOutput(value, match, with, transformer);
-		return value != v0;
+		var changed = new MutableBoolean(false);
+		value = key.component().replaceOutput(value, match, with, transformer, changed);
+		this.changed |= changed.value;
+		return changed.value;
 	}
 }

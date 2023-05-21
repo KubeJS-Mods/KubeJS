@@ -203,6 +203,7 @@ public class RecipeJS implements RecipeKJS {
 			replaced = values[key].replaceInput(match, with, transformer) || replaced;
 		}
 
+		changed |= replaced;
 		return replaced;
 	}
 
@@ -226,6 +227,7 @@ public class RecipeJS implements RecipeKJS {
 			replaced = values[key].replaceOutput(match, with, transformer) || replaced;
 		}
 
+		changed |= replaced;
 		return replaced;
 	}
 

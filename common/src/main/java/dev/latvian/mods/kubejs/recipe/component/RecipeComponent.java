@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.recipe.InputItemTransformer;
 import dev.latvian.mods.kubejs.recipe.OutputItemTransformer;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.util.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -53,7 +54,7 @@ public interface RecipeComponent<T> {
 		return false;
 	}
 
-	default T replaceInput(T value, IngredientMatch match, InputItem with, InputItemTransformer transformer) {
+	default T replaceInput(T value, IngredientMatch match, InputItem with, InputItemTransformer transformer, MutableBoolean changed) {
 		return value;
 	}
 
@@ -61,7 +62,7 @@ public interface RecipeComponent<T> {
 		return false;
 	}
 
-	default T replaceOutput(T value, IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
+	default T replaceOutput(T value, IngredientMatch match, OutputItem with, OutputItemTransformer transformer, MutableBoolean changed) {
 		return value;
 	}
 

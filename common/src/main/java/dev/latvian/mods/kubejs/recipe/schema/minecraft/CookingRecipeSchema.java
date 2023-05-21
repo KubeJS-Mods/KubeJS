@@ -10,7 +10,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
-import dev.latvian.mods.kubejs.recipe.component.RecipeComponentType;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponentWithParent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 
 public interface CookingRecipeSchema {
@@ -24,23 +24,17 @@ public interface CookingRecipeSchema {
 		}
 	}
 
-	RecipeComponent<OutputItem> PLATFORM_OUTPUT_ITEM = new RecipeComponent<>() {
+	RecipeComponent<OutputItem> PLATFORM_OUTPUT_ITEM = new RecipeComponentWithParent<>() {
 		@Override
-		public String componentType() {
-			return "output_item";
+		public RecipeComponent<OutputItem> parentComponent() {
+			return RecipeSchema.OUTPUT_ITEM;
 		}
 
 		@Override
 		public JsonObject description() {
-			var obj = new JsonObject();
-			obj.addProperty("type", componentType());
+			var obj = RecipeComponentWithParent.super.description();
 			obj.addProperty("custom", "string_on_fabric");
 			return obj;
-		}
-
-		@Override
-		public RecipeComponentType getType() {
-			return RecipeComponentType.OUTPUT;
 		}
 
 		@Override
@@ -50,11 +44,6 @@ public interface CookingRecipeSchema {
 			} else {
 				return new JsonPrimitive(value.item.kjs$getId());
 			}
-		}
-
-		@Override
-		public OutputItem read(Object from) {
-			return RecipeSchema.OUTPUT_ITEM.read(from);
 		}
 	};
 

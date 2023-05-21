@@ -7,6 +7,9 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.item.EmptyItemError;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
+import dev.latvian.mods.kubejs.recipe.IngredientMatch;
+import dev.latvian.mods.kubejs.recipe.InputItemTransformer;
+import dev.latvian.mods.kubejs.recipe.OutputItemTransformer;
 import dev.latvian.mods.kubejs.recipe.RecipeFunction;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
@@ -14,6 +17,7 @@ import dev.latvian.mods.kubejs.recipe.component.OptionalRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentType;
 import dev.latvian.mods.kubejs.util.JsonIO;
+import dev.latvian.mods.kubejs.util.MutableBoolean;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
@@ -50,22 +54,21 @@ public class RecipeSchema {
 			}
 
 			return i;
+		}
 
-			/*
-			var ingredient = InputItem.of(o);
+		@Override
+		public boolean hasInput(InputItem value, IngredientMatch match) {
+			return match.contains(value);
+		}
 
-			if (ingredient.isEmpty() && !key.isEmpty()) {
-				return ingredient;
-			} else if (ingredient.ingredient == Ingredient.EMPTY) {
-				if (key.isEmpty()) {
-					throw new RecipeExceptionJS(o + " is not a valid ingredient!");
-				} else {
-					throw new RecipeExceptionJS(o + " with key '" + key + "' is not a valid ingredient!");
-				}
+		@Override
+		public InputItem replaceInput(InputItem value, IngredientMatch match, InputItem with, InputItemTransformer transformer, MutableBoolean changed) {
+			if (match.contains(value)) {
+				changed.value = true;
+				return with;
 			}
 
-			return ingredient;
-			 */
+			return value;
 		}
 	};
 
@@ -109,6 +112,21 @@ public class RecipeSchema {
 			}
 
 			return i;
+		}
+
+		@Override
+		public boolean hasOutput(OutputItem value, IngredientMatch match) {
+			return match.contains(value);
+		}
+
+		@Override
+		public OutputItem replaceOutput(OutputItem value, IngredientMatch match, OutputItem with, OutputItemTransformer transformer, MutableBoolean changed) {
+			if (match.contains(value)) {
+				changed.value = true;
+				return with;
+			}
+
+			return value;
 		}
 	};
 
