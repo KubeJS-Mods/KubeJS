@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentWithParent;
@@ -27,7 +28,7 @@ public interface CookingRecipeSchema {
 	RecipeComponent<OutputItem> PLATFORM_OUTPUT_ITEM = new RecipeComponentWithParent<>() {
 		@Override
 		public RecipeComponent<OutputItem> parentComponent() {
-			return RecipeSchema.OUTPUT_ITEM;
+			return ItemComponents.OUTPUT;
 		}
 
 		@Override
@@ -40,7 +41,7 @@ public interface CookingRecipeSchema {
 		@Override
 		public JsonElement write(OutputItem value) {
 			if (Platform.isForge()) {
-				return RecipeSchema.OUTPUT_ITEM.write(value);
+				return ItemComponents.OUTPUT.write(value);
 			} else {
 				return new JsonPrimitive(value.item.kjs$getId());
 			}
@@ -48,7 +49,7 @@ public interface CookingRecipeSchema {
 	};
 
 	RecipeKey<OutputItem> RESULT = PLATFORM_OUTPUT_ITEM.key(0, "result");
-	RecipeKey<InputItem> INGREDIENT = RecipeSchema.INPUT_ITEM.key(1, "ingredient");
+	RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key(1, "ingredient");
 	RecipeKey<Float> XP = NumberComponent.FLOAT.optional(0F).key(2, "experience");
 	RecipeKey<Integer> COOKING_TIME = NumberComponent.INT.optional(200).key(3, "cookingtime");
 

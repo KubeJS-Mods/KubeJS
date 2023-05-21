@@ -89,6 +89,16 @@ public class RecipeJS implements RecipeKJS {
 		return this;
 	}
 
+	public RecipeJS set(String key, Object value) {
+		for (var k : type.schemaType.schema.keys) {
+			if (k.name().equals(key)) {
+				return setValue(k, value);
+			}
+		}
+
+		throw new RecipeExceptionJS("Key '" + key + "' of type '" + type + "' not found!");
+	}
+
 	public void initValues(RecipeSchema schema) {
 		if (schema.keys.length > 0) {
 			values = new RecipeComponentValue[schema.keys.length];
@@ -107,7 +117,7 @@ public class RecipeJS implements RecipeKJS {
 		}
 	}
 
-	public void afterLoaded(boolean created) {
+	public void afterLoaded() {
 	}
 
 	public final void save() {

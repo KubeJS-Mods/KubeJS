@@ -4,11 +4,12 @@ import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 
 public interface StonecuttingRecipeSchema {
-	RecipeKey<OutputItem> RESULT = RecipeSchema.OUTPUT_ITEM.key(0, "result");
-	RecipeKey<InputItem> INGREDIENT = RecipeSchema.INPUT_ITEM.key(1, "ingredient");
+	RecipeKey<OutputItem> RESULT = ItemComponents.OUTPUT.key(0, "result");
+	RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key(1, "ingredient");
 
 	class StonecuttingRecipeJS extends RecipeJS {
 		// Override required to support custom count

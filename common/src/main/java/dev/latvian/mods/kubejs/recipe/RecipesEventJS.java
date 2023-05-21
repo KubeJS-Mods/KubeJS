@@ -211,7 +211,7 @@ public class RecipesEventJS extends EventJS {
 
 			try {
 				var recipe = type.schemaType.schema.deserialize(type, recipeId, json);
-				recipe.afterLoaded(false);
+				recipe.afterLoaded();
 				originalRecipes.put(recipeId, recipe);
 
 				if (ConsoleJS.SERVER.shouldPrintDebug()) {
@@ -486,7 +486,9 @@ public class RecipesEventJS extends EventJS {
 			throw new RecipeExceptionJS("Unknown recipe type: " + json.get("type").getAsString());
 		}
 
-		return type.createRecipe(new Object[]{json});
+		var recipe = type.schemaType.schema.deserialize(type, null, json);
+		recipe.afterLoaded();
+		return addRecipe(recipe, true);
 	}
 
 	public void printTypes() {

@@ -1,24 +1,17 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import dev.latvian.mods.kubejs.item.OutputItem;
-import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
+import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
-import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -52,19 +45,15 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 				throw new RecipeExceptionJS("Recipe requires at least one argument!");
 			} else if (schemaType.schema.keys.length == 0 && args1.size() != 1) {
 				throw new RecipeExceptionJS("Custom recipe has to use a single json object argument!");
-			} else if (args1.size() == 1) {
-				var map = MapJS.json(args1.get(0));
-
-				if (map != null) {
-					var recipe = schemaType.schema.deserialize(this, null, MapJS.json(normalize(map)));
-					recipe.afterLoaded(true);
-					return event.addRecipe(recipe, true);
-				}
 			}
 
 			var constructor = schemaType.schema.constructors().get(args1.size());
 
 			if (constructor == null) {
+				if (args0[0] instanceof Map<?, ?> || args0[0] instanceof JsonObject) {
+					throw new RecipeExceptionJS("Use event.custom(json) for json recipes!");
+				}
+
 				throw new RecipeExceptionJS("Constructor for " + id + " with " + args1.size() + " arguments not found!");
 			}
 
@@ -76,7 +65,7 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 			}
 
 			var recipe = constructor.factory().create(this, schemaType, argMap);
-			recipe.afterLoaded(true);
+			recipe.afterLoaded();
 			return event.addRecipe(recipe, false);
 		} catch (RecipeExceptionJS ex) {
 			ex.error();
@@ -86,37 +75,6 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 		}
 
 		return new JsonRecipeJS();
-	}
-
-	private Object normalize(Object o) {
-		if (o instanceof ItemStack stack) {
-			return RecipeSchema.OUTPUT_ITEM.write(OutputItem.of(stack));
-		} else if (o instanceof Ingredient ingr) {
-			return ingr.toJson();
-		} else if (o instanceof String s) {
-			if (s.length() >= 4 && s.startsWith("#") && s.indexOf(':') != -1) {
-				return IngredientPlatformHelper.get().tag(s.substring(1)).toJson();
-			}
-			return o;
-		} else if (o instanceof Map<?, ?> m) {
-			var map = new HashMap<>();
-
-			for (var entry : m.entrySet()) {
-				map.put(entry.getKey(), normalize(entry.getValue()));
-			}
-
-			return map;
-		} else if (o instanceof Iterable<?> itr) {
-			var list = new ArrayList<>();
-
-			for (var o1 : itr) {
-				list.add(normalize(o1));
-			}
-
-			return list;
-		}
-
-		return o;
 	}
 
 	@Override
