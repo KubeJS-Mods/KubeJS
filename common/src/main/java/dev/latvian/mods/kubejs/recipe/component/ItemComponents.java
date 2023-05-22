@@ -3,12 +3,14 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.item.EmptyItemError;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.IngredientMatch;
-import dev.latvian.mods.kubejs.recipe.InputItemTransformer;
-import dev.latvian.mods.kubejs.recipe.OutputItemTransformer;
+import dev.latvian.mods.kubejs.recipe.InputReplacement;
+import dev.latvian.mods.kubejs.recipe.OutputReplacement;
+import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.MutableBoolean;
 
 import java.util.List;
@@ -47,15 +49,15 @@ public interface ItemComponents {
 		}
 
 		@Override
-		public boolean hasInput(InputItem value, IngredientMatch match) {
-			return match.contains(value);
+		public boolean hasInput(RecipeKJS recipe, InputItem value, ReplacementMatch match) {
+			return match instanceof IngredientMatch m && m.contains(value);
 		}
 
 		@Override
-		public InputItem replaceInput(InputItem value, IngredientMatch match, InputItem with, InputItemTransformer transformer, MutableBoolean changed) {
-			if (match.contains(value)) {
+		public InputItem replaceInput(RecipeKJS recipe, InputItem value, ReplacementMatch match, InputReplacement with, MutableBoolean changed) {
+			if (match instanceof IngredientMatch m && m.contains(value)) {
 				changed.value = true;
-				return with;
+				return with.replaceInput(recipe, match, value);
 			}
 
 			return value;
@@ -140,15 +142,15 @@ public interface ItemComponents {
 		}
 
 		@Override
-		public boolean hasOutput(OutputItem value, IngredientMatch match) {
-			return match.contains(value);
+		public boolean hasOutput(RecipeKJS recipe, OutputItem value, ReplacementMatch match) {
+			return match instanceof IngredientMatch m && m.contains(value);
 		}
 
 		@Override
-		public OutputItem replaceOutput(OutputItem value, IngredientMatch match, OutputItem with, OutputItemTransformer transformer, MutableBoolean changed) {
-			if (match.contains(value)) {
+		public OutputItem replaceOutput(RecipeKJS recipe, OutputItem value, ReplacementMatch match, OutputReplacement with, MutableBoolean changed) {
+			if (match instanceof IngredientMatch m && m.contains(value)) {
 				changed.value = true;
-				return with;
+				return with.replaceOutput(recipe, match, value);
 			}
 
 			return value;

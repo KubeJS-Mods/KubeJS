@@ -1,15 +1,21 @@
 package dev.latvian.mods.kubejs.recipe;
 
+import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.item.InputItem;
 
 @FunctionalInterface
 public interface InputItemTransformer {
-	InputItemTransformer DEFAULT = (recipe, match, original, with) -> with.copyWithProperties(original);
+	Object transform(RecipeKJS recipe, ReplacementMatch match, InputItem original, InputItem with);
 
-	// Won't be needed with Ichor
-	Object transformJS(RecipeJS recipe, IngredientMatch match, InputItem original, InputItem with);
+	record Replacement(InputItem with, InputItemTransformer transformer) implements InputReplacement {
+		@Override
+		public <T> T replaceInput(RecipeKJS recipe, ReplacementMatch match, T previousValue) {
+			return (T) InputItem.of(transformer.transform(recipe, match, (InputItem) previousValue, with));
+		}
 
-	default InputItem transform(RecipeJS recipe, IngredientMatch match, InputItem original, InputItem with) {
-		return InputItem.of(transformJS(recipe, match, original, with));
+		@Override
+		public String toString() {
+			return with + " [transformed]";
+		}
 	}
 }

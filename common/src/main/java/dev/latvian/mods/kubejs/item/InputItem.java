@@ -2,10 +2,14 @@ package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
+import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
+import dev.latvian.mods.kubejs.recipe.InputItemTransformer;
+import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
@@ -13,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class InputItem implements IngredientSupplierKJS {
+public class InputItem implements IngredientSupplierKJS, InputReplacement {
 	public static final InputItem EMPTY = new InputItem(Ingredient.EMPTY, 0);
 	public static final Map<String, InputItem> PARSE_CACHE = new HashMap<>();
 
@@ -150,5 +154,14 @@ public class InputItem implements IngredientSupplierKJS {
 		}
 
 		return ingredient.toString();
+	}
+
+	@Override
+	public <T> T replaceInput(RecipeKJS recipe, ReplacementMatch match, T previousValue) {
+		return (T) copyWithProperties((InputItem) previousValue);
+	}
+
+	public InputItemTransformer.Replacement transform(InputItemTransformer transformer) {
+		return new InputItemTransformer.Replacement(this, transformer);
 	}
 }

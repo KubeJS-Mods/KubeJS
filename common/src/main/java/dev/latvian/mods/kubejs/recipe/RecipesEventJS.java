@@ -9,8 +9,6 @@ import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.event.EventJS;
-import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
@@ -18,6 +16,8 @@ import dev.latvian.mods.kubejs.recipe.filter.IDFilter;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.schema.JsonRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.DataExport;
@@ -41,13 +41,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -429,11 +432,11 @@ public class RecipesEventJS extends EventJS {
 		}
 	}
 
-	public void replaceInput(RecipeFilter filter, IngredientMatch match, InputItem with, InputItemTransformer transformer) {
-		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": IN " + match.ingredient + " -> " + with) : "";
+	public void replaceInput(RecipeFilter filter, ReplacementMatch match, InputReplacement with) {
+		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": IN " + match + " -> " + with) : "";
 
-		recipeStream(filter, transformer == InputItemTransformer.DEFAULT).forEach(r -> {
-			if (r.replaceInput(match, with, transformer)) {
+		recipeStream(filter, true).forEach(r -> {
+			if (r.replaceInput(match, with)) {
 				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + dstring);
 				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
@@ -443,15 +446,11 @@ public class RecipesEventJS extends EventJS {
 		});
 	}
 
-	public void replaceInput(RecipeFilter filter, IngredientMatch match, InputItem with) {
-		replaceInput(filter, match, with, InputItemTransformer.DEFAULT);
-	}
+	public void replaceOutput(RecipeFilter filter, ReplacementMatch match, OutputReplacement with) {
+		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": OUT " + match + " -> " + with) : "";
 
-	public void replaceOutput(RecipeFilter filter, IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
-		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": OUT " + match.ingredient + " -> " + with) : "";
-
-		recipeStream(filter, transformer == OutputItemTransformer.DEFAULT).forEach(r -> {
-			if (r.replaceOutput(match, with, transformer)) {
+		recipeStream(filter, true).forEach(r -> {
+			if (r.replaceOutput(match, with)) {
 				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + dstring);
 				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
@@ -459,10 +458,6 @@ public class RecipesEventJS extends EventJS {
 				}
 			}
 		});
-	}
-
-	public void replaceOutput(RecipeFilter filter, IngredientMatch match, OutputItem with) {
-		replaceOutput(filter, match, with, OutputItemTransformer.DEFAULT);
 	}
 
 	public RecipeFunction getRecipeFunction(@Nullable String id) {
@@ -491,19 +486,39 @@ public class RecipesEventJS extends EventJS {
 		return addRecipe(recipe, true);
 	}
 
+	private void printTypes(Predicate<RecipeSchemaType> predicate) {
+		int t = 0;
+		var map = new IdentityHashMap<RecipeSchema, Set<ResourceLocation>>();
+
+		for (var ns : RecipeNamespace.getAll().values()) {
+			for (var type : ns.values()) {
+				if (predicate.test(type)) {
+					t++;
+					map.computeIfAbsent(type.schema, s -> new HashSet<>()).add(type.id);
+				}
+			}
+		}
+
+		for (var entry : map.entrySet()) {
+			ConsoleJS.SERVER.info("- " + entry.getValue().stream().map(ResourceLocation::toString).collect(Collectors.joining(", ")));
+
+			for (var c : entry.getKey().constructors().values()) {
+				ConsoleJS.SERVER.info("  - " + c);
+			}
+		}
+
+		ConsoleJS.SERVER.info(t + " types");
+	}
+
 	public void printTypes() {
 		ConsoleJS.SERVER.info("== All recipe types [used] ==");
-		var list = new HashSet<String>();
-		originalRecipes.values().forEach(r -> list.add(r.type.toString()));
-		list.stream().sorted().forEach(ConsoleJS.SERVER::info);
-		ConsoleJS.SERVER.info(list.size() + " types");
+		var set = recipeStream(RecipeFilter.ALWAYS_TRUE, true).map(r -> r.type.id).collect(Collectors.toSet());
+		printTypes(t -> set.contains(t.id));
 	}
 
 	public void printAllTypes() {
 		ConsoleJS.SERVER.info("== All recipe types [available] ==");
-		var list = KubeJSRegistries.recipeSerializers().entrySet().stream().map(e -> e.getKey().location().toString()).sorted().toList();
-		list.forEach(ConsoleJS.SERVER::info);
-		ConsoleJS.SERVER.info(list.size() + " types");
+		printTypes(t -> KubeJSRegistries.recipeSerializers().get(t.id) != null);
 	}
 
 	public void printExamples(String type) {

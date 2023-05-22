@@ -10,16 +10,14 @@ import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.OptionalRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentType;
 import dev.latvian.mods.kubejs.util.JsonIO;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class RecipeSchema {
 	public final Class<? extends RecipeJS> recipeType;
@@ -28,7 +26,7 @@ public class RecipeSchema {
 	public final int[] inputKeys;
 	public final int[] outputKeys;
 	private int minRequiredArguments;
-	private Map<Integer, RecipeConstructor> constructors;
+	private Int2ObjectMap<RecipeConstructor> constructors;
 
 	public RecipeSchema(RecipeKey<?>... keys) {
 		this(RecipeJS.class, RecipeJS::new, keys);
@@ -77,7 +75,7 @@ public class RecipeSchema {
 		var c = new RecipeConstructor(this, keys, factory);
 
 		if (constructors == null) {
-			constructors = new HashMap<>(keys.length - minRequiredArguments + 1);
+			constructors = new Int2ObjectArrayMap<>(keys.length - minRequiredArguments + 1);
 		}
 
 		if (constructors.put(c.keys().length, c) != null) {
@@ -91,18 +89,13 @@ public class RecipeSchema {
 		return constructor(RecipeConstructor.Factory.DEFAULT, keys);
 	}
 
-	public Map<Integer, RecipeConstructor> constructors() {
-		if (keys.length == 0) {
-			return Map.of();
-		}
-
+	public Int2ObjectMap<RecipeConstructor> constructors() {
 		if (constructors == null) {
-			constructors = new HashMap<>(keys.length - minRequiredArguments + 1);
-
+			constructors = keys.length == 0 ? new Int2ObjectArrayMap<>() : new Int2ObjectArrayMap<>(keys.length - minRequiredArguments + 1);
 			boolean dev = Platform.isDevelopmentEnvironment();
 
 			if (dev) {
-				KubeJS.LOGGER.info("Generating constructors for [" + Arrays.stream(keys).map(recipeKey -> recipeKey.name() + ":" + recipeKey.component()).collect(Collectors.joining(", ")) + "]");
+				KubeJS.LOGGER.info("Generating constructors for " + new RecipeConstructor(this, keys, RecipeConstructor.Factory.DEFAULT));
 			}
 
 			for (int a = minRequiredArguments; a <= keys.length; a++) {
@@ -112,7 +105,7 @@ public class RecipeSchema {
 				constructors.put(a, c);
 
 				if (dev) {
-					KubeJS.LOGGER.info("> " + a + ": [" + Arrays.stream(k).map(recipeKey -> recipeKey.name() + ":" + recipeKey.component()).collect(Collectors.joining(", ")) + "]");
+					KubeJS.LOGGER.info("> " + a + ": " + c);
 				}
 			}
 		}

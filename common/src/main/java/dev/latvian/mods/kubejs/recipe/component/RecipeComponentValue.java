@@ -1,11 +1,10 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
-import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.OutputItem;
-import dev.latvian.mods.kubejs.recipe.IngredientMatch;
-import dev.latvian.mods.kubejs.recipe.InputItemTransformer;
-import dev.latvian.mods.kubejs.recipe.OutputItemTransformer;
+import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.recipe.InputReplacement;
+import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.MutableBoolean;
 
 public class RecipeComponentValue<T> {
@@ -21,24 +20,24 @@ public class RecipeComponentValue<T> {
 		this.changed = false;
 	}
 
-	public boolean hasInput(IngredientMatch match) {
-		return key.component().hasInput(value, match);
+	public boolean hasInput(RecipeKJS recipe, ReplacementMatch match) {
+		return key.component().hasInput(recipe, value, match);
 	}
 
-	public boolean replaceInput(IngredientMatch match, InputItem with, InputItemTransformer transformer) {
+	public boolean replaceInput(RecipeKJS recipe, ReplacementMatch match, InputReplacement with) {
 		var changed = new MutableBoolean(false);
-		value = key.component().replaceInput(value, match, with, transformer, changed);
+		value = key.component().replaceInput(recipe, value, match, with, changed);
 		this.changed |= changed.value;
 		return changed.value;
 	}
 
-	public boolean hasOutput(IngredientMatch match) {
-		return key.component().hasOutput(value, match);
+	public boolean hasOutput(RecipeKJS recipe, ReplacementMatch match) {
+		return key.component().hasOutput(recipe, value, match);
 	}
 
-	public boolean replaceOutput(IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
+	public boolean replaceOutput(RecipeKJS recipe, ReplacementMatch match, OutputReplacement with) {
 		var changed = new MutableBoolean(false);
-		value = key.component().replaceOutput(value, match, with, transformer, changed);
+		value = key.component().replaceOutput(recipe, value, match, with, changed);
 		this.changed |= changed.value;
 		return changed.value;
 	}

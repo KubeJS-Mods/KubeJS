@@ -34,6 +34,6 @@ public record OptionalRecipeComponent<T>(RecipeComponent<T> component, T default
 
 	@Override
 	public String toString() {
-		return "optional{" + component + "}";
+		return component + "?";
 	}
 }

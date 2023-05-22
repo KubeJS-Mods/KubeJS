@@ -6,6 +6,9 @@ import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public record RecipeConstructor(RecipeSchema schema, RecipeKey<?>[] keys, Factory factory) {
 	@FunctionalInterface
 	public interface Factory {
@@ -27,5 +30,10 @@ public record RecipeConstructor(RecipeSchema schema, RecipeKey<?>[] keys, Factor
 		}
 
 		void setValues(RecipeJS recipe, RecipeSchemaType schemaType, ComponentValueMap from);
+	}
+
+	@Override
+	public String toString() {
+		return "[" + Arrays.stream(keys).map(recipeKey -> recipeKey.name() + ":" + recipeKey.component()).collect(Collectors.joining(", ")) + "]";
 	}
 }

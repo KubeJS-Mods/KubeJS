@@ -78,7 +78,9 @@ import dev.latvian.mods.kubejs.misc.VillagerProfessionBuilder;
 import dev.latvian.mods.kubejs.misc.VillagerTypeBuilder;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
-import dev.latvian.mods.kubejs.recipe.IngredientMatch;
+import dev.latvian.mods.kubejs.recipe.InputReplacement;
+import dev.latvian.mods.kubejs.recipe.OutputReplacement;
+import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
 import dev.latvian.mods.kubejs.recipe.schema.RegisterRecipeSchemasEvent;
@@ -413,6 +415,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.registerSimple(Set.class, ListJS::ofSet);
 		typeWrappers.registerSimple(ItemStack.class, ItemStackJS::of);
 		typeWrappers.registerSimple(Ingredient.class, IngredientJS::of);
+		typeWrappers.registerSimple(InputReplacement.class, InputItem::of);
+		typeWrappers.registerSimple(OutputReplacement.class, OutputItem::of);
 		typeWrappers.registerSimple(InputItem.class, InputItem::of);
 		typeWrappers.registerSimple(OutputItem.class, OutputItem::of);
 		typeWrappers.registerSimple(BlockStatePredicate.class, BlockStatePredicate::of);
@@ -428,7 +432,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.registerSimple(PlayerSelector.class, PlayerSelector::of);
 		typeWrappers.registerSimple(DamageSource.class, DamageSourceWrapper::of);
 		typeWrappers.registerSimple(EntitySelector.class, UtilsJS::entitySelector);
-		typeWrappers.registerSimple(IngredientMatch.class, IngredientMatch::of);
+		typeWrappers.registerSimple(ReplacementMatch.class, ReplacementMatch::of);
 		typeWrappers.registerSimple(Stat.class, PlayerStatsJS::statOf);
 
 		// components //
@@ -463,6 +467,19 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 				.register("smoking", CookingRecipeSchema.SCHEMA)
 				.register("campfire_cooking", CookingRecipeSchema.SCHEMA)
 				.register("smithing", SmithingRecipeSchema.SCHEMA)
+				.special("crafting_special_armordye")
+				.special("crafting_special_shulkerboxcoloring")
+				.special("crafting_special_bannerduplicate")
+				.special("crafting_special_suspiciousstew")
+				.special("crafting_special_bookcloning")
+				.special("crafting_special_mapextending")
+				.special("crafting_special_tippedarrow")
+				.special("crafting_special_firework_star")
+				.special("crafting_special_shielddecoration")
+				.special("crafting_special_firework_star_fade")
+				.special("crafting_special_firework_rocket")
+				.special("crafting_special_mapcloning")
+				.special("crafting_special_repairitem")
 		;
 
 		event.namespace("cucumber")

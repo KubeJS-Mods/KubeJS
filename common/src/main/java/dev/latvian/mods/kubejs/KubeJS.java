@@ -198,14 +198,6 @@ public class KubeJS {
 		UtilsJS.postModificationEvents();
 		RecipeNamespace.getAll();
 
-		if (Platform.isDevelopmentEnvironment()) {
-			for (var ns : RecipeNamespace.getAll().values()) {
-				for (var t : ns.values()) {
-					t.schema.constructors();
-				}
-			}
-		}
-
 		if (!ScriptType.STARTUP.errors.isEmpty()) {
 			var list = new ArrayList<String>();
 			list.add("Startup script errors:");

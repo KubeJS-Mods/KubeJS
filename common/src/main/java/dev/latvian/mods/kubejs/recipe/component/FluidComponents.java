@@ -1,9 +1,12 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
+import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.fluid.EmptyFluidStackJS;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.item.EmptyItemError;
+import dev.latvian.mods.kubejs.item.InputItem;
+import dev.latvian.mods.kubejs.item.OutputItem;
 
 import java.util.List;
 
@@ -48,6 +51,7 @@ public interface FluidComponents {
 
 	RecipeComponent<FluidStackJS> DEFAULT_INPUT = INPUT.optional(EmptyFluidStackJS.INSTANCE);
 	RecipeComponent<List<FluidStackJS>> INPUT_ARRAY = INPUT.asArray();
+	RecipeComponent<Either<FluidStackJS, InputItem>> INPUT_OR_ITEM = new EitherRecipeComponent<>(INPUT, ItemComponents.INPUT);
 
 	RecipeComponent<FluidStackJS> OUTPUT = new RecipeComponentWithParent<>() {
 		@Override
@@ -73,4 +77,5 @@ public interface FluidComponents {
 
 	RecipeComponent<FluidStackJS> DEFAULT_OUTPUT = OUTPUT.optional(EmptyFluidStackJS.INSTANCE);
 	RecipeComponent<List<FluidStackJS>> OUTPUT_ARRAY = OUTPUT.asArray();
+	RecipeComponent<Either<FluidStackJS, OutputItem>> OUTPUT_OR_ITEM = new EitherRecipeComponent<>(OUTPUT, ItemComponents.OUTPUT);
 }

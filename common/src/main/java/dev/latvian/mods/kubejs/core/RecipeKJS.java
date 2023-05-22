@@ -1,11 +1,10 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.KubeJSRegistries;
-import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.IngredientMatch;
-import dev.latvian.mods.kubejs.recipe.InputItemTransformer;
-import dev.latvian.mods.kubejs.recipe.OutputItemTransformer;
+import dev.latvian.mods.kubejs.recipe.InputReplacement;
+import dev.latvian.mods.kubejs.recipe.OutputReplacement;
+import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -38,25 +37,27 @@ public interface RecipeKJS {
 		return KubeJSRegistries.recipeSerializers().getId(((Recipe<?>) this).getSerializer());
 	}
 
-	default boolean kjs$hasInput(IngredientMatch match) {
-		for (var in : ((Recipe<?>) this).getIngredients()) {
-			if (match.contains(in)) {
-				return true;
+	default boolean hasInput(ReplacementMatch match) {
+		if (match instanceof IngredientMatch m) {
+			for (var in : ((Recipe<?>) this).getIngredients()) {
+				if (m.contains(in)) {
+					return true;
+				}
 			}
 		}
 
 		return false;
 	}
 
-	default boolean kjs$replaceInput(IngredientMatch match, InputItem with, InputItemTransformer transformer) {
+	default boolean replaceInput(ReplacementMatch match, InputReplacement with) {
 		return false;
 	}
 
-	default boolean kjs$hasOutput(IngredientMatch match) {
-		return match.contains(((Recipe<?>) this).getResultItem());
+	default boolean hasOutput(ReplacementMatch match) {
+		return match instanceof IngredientMatch m && m.contains(((Recipe<?>) this).getResultItem());
 	}
 
-	default boolean kjs$replaceOutput(IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
+	default boolean replaceOutput(ReplacementMatch match, OutputReplacement with) {
 		return false;
 	}
 }

@@ -5,8 +5,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.util.UUIDTypeAdapter;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
-import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.component.OptionalRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
@@ -131,7 +129,7 @@ public class RecipeJS implements RecipeKJS {
 	}
 
 	public RecipeJS group(String g) {
-		setGroup(g);
+		kjs$setGroup(g);
 		save();
 		return this;
 	}
@@ -145,13 +143,22 @@ public class RecipeJS implements RecipeKJS {
 	@Override
 	@Deprecated
 	public final String kjs$getGroup() {
-		return getGroup();
+		var e = json.get("group");
+		return e instanceof JsonPrimitive ? e.getAsString() : "";
 	}
 
 	@Override
 	@Deprecated
 	public final void kjs$setGroup(String group) {
-		setGroup(group);
+		if (!kjs$getGroup().equals(group)) {
+			if (group.isEmpty()) {
+				json.remove("group");
+			} else {
+				json.addProperty("group", group);
+			}
+
+			save();
+		}
 	}
 
 	@Override
@@ -173,35 +180,9 @@ public class RecipeJS implements RecipeKJS {
 	}
 
 	@Override
-	@Deprecated
-	public final boolean kjs$hasInput(IngredientMatch match) {
-		return hasInput(match);
-	}
-
-	@Override
-	@Deprecated
-	public final boolean kjs$replaceInput(IngredientMatch match, InputItem with, InputItemTransformer transformer) {
-		return replaceInput(match, with, transformer);
-	}
-
-	@Override
-	@Deprecated
-	public final boolean kjs$hasOutput(IngredientMatch match) {
-		return hasOutput(match);
-	}
-
-	@Override
-	@Deprecated
-	public final boolean kjs$replaceOutput(IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
-		return replaceOutput(match, with, transformer);
-	}
-
-	// RecipeKJS methods //
-
-	@HideFromJS
-	public boolean hasInput(IngredientMatch match) {
+	public boolean hasInput(ReplacementMatch match) {
 		for (var key : type.schemaType.schema.inputKeys) {
-			if (values[key].hasInput(match)) {
+			if (values[key].hasInput(this, match)) {
 				return true;
 			}
 		}
@@ -209,12 +190,12 @@ public class RecipeJS implements RecipeKJS {
 		return false;
 	}
 
-	@HideFromJS
-	public boolean replaceInput(IngredientMatch match, InputItem with, InputItemTransformer transformer) {
+	@Override
+	public boolean replaceInput(ReplacementMatch match, InputReplacement with) {
 		boolean replaced = false;
 
 		for (var key : type.schemaType.schema.inputKeys) {
-			replaced = values[key].replaceInput(match, with, transformer) || replaced;
+			replaced = values[key].replaceInput(this, match, with) || replaced;
 		}
 
 		changed |= replaced;
@@ -222,10 +203,10 @@ public class RecipeJS implements RecipeKJS {
 	}
 
 
-	@HideFromJS
-	public boolean hasOutput(IngredientMatch match) {
+	@Override
+	public boolean hasOutput(ReplacementMatch match) {
 		for (var key : type.schemaType.schema.outputKeys) {
-			if (values[key].hasOutput(match)) {
+			if (values[key].hasOutput(this, match)) {
 				return true;
 			}
 		}
@@ -233,35 +214,16 @@ public class RecipeJS implements RecipeKJS {
 		return false;
 	}
 
-	@HideFromJS
-	public boolean replaceOutput(IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
+	@Override
+	public boolean replaceOutput(ReplacementMatch match, OutputReplacement with) {
 		boolean replaced = false;
 
 		for (var key : type.schemaType.schema.outputKeys) {
-			replaced = values[key].replaceOutput(match, with, transformer) || replaced;
+			replaced = values[key].replaceOutput(this, match, with) || replaced;
 		}
 
 		changed |= replaced;
 		return replaced;
-	}
-
-	@HideFromJS
-	public String getGroup() {
-		var e = json.get("group");
-		return e instanceof JsonPrimitive ? e.getAsString() : "";
-	}
-
-	@HideFromJS
-	public void setGroup(String g) {
-		if (!getGroup().equals(g)) {
-			if (g.isEmpty()) {
-				json.remove("group");
-			} else {
-				json.addProperty("group", g);
-			}
-
-			save();
-		}
 	}
 
 	@Override

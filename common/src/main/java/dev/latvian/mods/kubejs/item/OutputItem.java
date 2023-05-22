@@ -1,9 +1,13 @@
 package dev.latvian.mods.kubejs.item;
 
+import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.recipe.OutputItemTransformer;
+import dev.latvian.mods.kubejs.recipe.OutputReplacement;
+import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
-public class OutputItem {
+public class OutputItem implements OutputReplacement {
 	public static final OutputItem EMPTY = new OutputItem(ItemStack.EMPTY, Double.NaN);
 
 	public static OutputItem of(ItemStack item, double chance) {
@@ -63,5 +67,14 @@ public class OutputItem {
 
 	public OutputItem copyWithProperties(OutputItem original) {
 		return isEmpty() ? this : new OutputItem(item.kjs$withCount(original.item.getCount()), original.chance);
+	}
+
+	@Override
+	public <T> T replaceOutput(RecipeKJS recipe, ReplacementMatch match, T original) {
+		return (T) copyWithProperties((OutputItem) original);
+	}
+
+	public OutputItemTransformer.Replacement transform(OutputItemTransformer transformer) {
+		return new OutputItemTransformer.Replacement(this, transformer);
 	}
 }

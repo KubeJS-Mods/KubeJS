@@ -2,15 +2,25 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.recipe.IngredientMatch;
+import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 
-public class BlockComponent implements RecipeComponent<Block> {
-	public static final RecipeComponent<Block> BLOCK = new BlockComponent();
+public record BlockComponent(RecipeComponentType type) implements RecipeComponent<Block> {
+	public static final RecipeComponent<Block> INPUT = new BlockComponent(RecipeComponentType.INPUT);
+	public static final RecipeComponent<Block> OUTPUT = new BlockComponent(RecipeComponentType.OUTPUT);
+	public static final RecipeComponent<Block> BLOCK = new BlockComponent(RecipeComponentType.OTHER);
 
 	@Override
 	public String componentType() {
 		return "block";
+	}
+
+	@Override
+	public RecipeComponentType getType() {
+		return type;
 	}
 
 	@Override
@@ -32,5 +42,15 @@ public class BlockComponent implements RecipeComponent<Block> {
 	@Override
 	public String toString() {
 		return componentType();
+	}
+
+	@Override
+	public boolean hasInput(RecipeKJS recipe, Block value, ReplacementMatch match) {
+		return type == RecipeComponentType.INPUT && match instanceof IngredientMatch m && m.contains(value);
+	}
+
+	@Override
+	public boolean hasOutput(RecipeKJS recipe, Block value, ReplacementMatch match) {
+		return type == RecipeComponentType.OUTPUT && match instanceof IngredientMatch m && m.contains(value);
 	}
 }

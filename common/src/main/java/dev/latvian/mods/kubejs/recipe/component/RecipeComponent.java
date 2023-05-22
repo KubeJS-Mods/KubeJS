@@ -2,13 +2,12 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.OutputItem;
-import dev.latvian.mods.kubejs.recipe.IngredientMatch;
-import dev.latvian.mods.kubejs.recipe.InputItemTransformer;
-import dev.latvian.mods.kubejs.recipe.OutputItemTransformer;
+import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.recipe.InputReplacement;
+import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,19 +53,19 @@ public interface RecipeComponent<T> {
 		return true;
 	}
 
-	default boolean hasInput(T value, IngredientMatch match) {
+	default boolean hasInput(RecipeKJS recipe, T value, ReplacementMatch match) {
 		return false;
 	}
 
-	default T replaceInput(T value, IngredientMatch match, InputItem with, InputItemTransformer transformer, MutableBoolean changed) {
+	default T replaceInput(RecipeKJS recipe, T value, ReplacementMatch match, InputReplacement with, MutableBoolean changed) {
 		return value;
 	}
 
-	default boolean hasOutput(T value, IngredientMatch match) {
+	default boolean hasOutput(RecipeKJS recipe, T value, ReplacementMatch match) {
 		return false;
 	}
 
-	default T replaceOutput(T value, IngredientMatch match, OutputItem with, OutputItemTransformer transformer, MutableBoolean changed) {
+	default T replaceOutput(RecipeKJS recipe, T value, ReplacementMatch match, OutputReplacement with, MutableBoolean changed) {
 		return value;
 	}
 

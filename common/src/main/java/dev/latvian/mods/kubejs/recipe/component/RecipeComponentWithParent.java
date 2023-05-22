@@ -2,11 +2,10 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.OutputItem;
-import dev.latvian.mods.kubejs.recipe.IngredientMatch;
-import dev.latvian.mods.kubejs.recipe.InputItemTransformer;
-import dev.latvian.mods.kubejs.recipe.OutputItemTransformer;
+import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.recipe.InputReplacement;
+import dev.latvian.mods.kubejs.recipe.OutputReplacement;
+import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,22 +44,22 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default boolean hasInput(T value, IngredientMatch match) {
-		return parentComponent().hasInput(value, match);
+	default boolean hasInput(RecipeKJS recipe, T value, ReplacementMatch match) {
+		return parentComponent().hasInput(recipe, value, match);
 	}
 
 	@Override
-	default T replaceInput(T value, IngredientMatch match, InputItem with, InputItemTransformer transformer, MutableBoolean changed) {
-		return parentComponent().replaceInput(value, match, with, transformer, changed);
+	default T replaceInput(RecipeKJS recipe, T value, ReplacementMatch match, InputReplacement with, MutableBoolean changed) {
+		return parentComponent().replaceInput(recipe, value, match, with, changed);
 	}
 
 	@Override
-	default boolean hasOutput(T value, IngredientMatch match) {
-		return parentComponent().hasOutput(value, match);
+	default boolean hasOutput(RecipeKJS recipe, T value, ReplacementMatch match) {
+		return parentComponent().hasOutput(recipe, value, match);
 	}
 
 	@Override
-	default T replaceOutput(T value, IngredientMatch match, OutputItem with, OutputItemTransformer transformer, MutableBoolean changed) {
-		return parentComponent().replaceOutput(value, match, with, transformer, changed);
+	default T replaceOutput(RecipeKJS recipe, T value, ReplacementMatch match, OutputReplacement with, MutableBoolean changed) {
+		return parentComponent().replaceOutput(recipe, value, match, with, changed);
 	}
 }

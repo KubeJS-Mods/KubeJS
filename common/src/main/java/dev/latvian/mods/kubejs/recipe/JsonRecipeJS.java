@@ -1,8 +1,6 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.OutputItem;
 
 public class JsonRecipeJS extends RecipeJS {
 	@Override
@@ -27,10 +25,10 @@ public class JsonRecipeJS extends RecipeJS {
 	}
 
 	@Override
-	public boolean hasInput(IngredientMatch match) {
-		if (getOriginalRecipe() != null) {
+	public boolean hasInput(ReplacementMatch match) {
+		if (match instanceof IngredientMatch m && getOriginalRecipe() != null) {
 			for (var ingredient : getOriginalRecipe().getIngredients()) {
-				if (match.contains(ingredient)) {
+				if (m.contains(ingredient)) {
 					return true;
 				}
 			}
@@ -40,21 +38,21 @@ public class JsonRecipeJS extends RecipeJS {
 	}
 
 	@Override
-	public boolean replaceInput(IngredientMatch match, InputItem with, InputItemTransformer transformer) {
+	public boolean replaceInput(ReplacementMatch match, InputReplacement with) {
 		return false;
 	}
 
 	@Override
-	public boolean hasOutput(IngredientMatch match) {
-		if (getOriginalRecipe() != null) {
-			return match.contains(getOriginalRecipe().getResultItem());
+	public boolean hasOutput(ReplacementMatch match) {
+		if (match instanceof IngredientMatch m && getOriginalRecipe() != null) {
+			return m.contains(getOriginalRecipe().getResultItem());
 		}
 
 		return false;
 	}
 
 	@Override
-	public boolean replaceOutput(IngredientMatch match, OutputItem with, OutputItemTransformer transformer) {
+	public boolean replaceOutput(ReplacementMatch match, OutputReplacement with) {
 		return false;
 	}
 }

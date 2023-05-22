@@ -3,6 +3,11 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
+import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.recipe.InputReplacement;
+import dev.latvian.mods.kubejs.recipe.OutputReplacement;
+import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.util.MutableBoolean;
 
 public record EitherRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L> low) implements RecipeComponent<Either<H, L>> {
 	public static <H, L> EitherRecipeComponent<H, L> of(RecipeComponent<H> highPriority, RecipeComponent<L> lowPriority) {
@@ -48,6 +53,30 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> high, RecipeCompone
 		} else {
 			return Either.right(low.read(from));
 		}
+	}
+
+	@Override
+	public boolean hasInput(RecipeKJS recipe, Either<H, L> value, ReplacementMatch match) {
+		var l = value.left();
+		return l.isPresent() ? high.hasInput(recipe, l.get(), match) : low.hasInput(recipe, value.right().get(), match);
+	}
+
+	@Override
+	public Either<H, L> replaceInput(RecipeKJS recipe, Either<H, L> value, ReplacementMatch match, InputReplacement with, MutableBoolean changed) {
+		var l = value.left();
+		return l.isPresent() ? Either.left(high.replaceInput(recipe, l.get(), match, with, changed)) : Either.right(low.replaceInput(recipe, value.right().get(), match, with, changed));
+	}
+
+	@Override
+	public boolean hasOutput(RecipeKJS recipe, Either<H, L> value, ReplacementMatch match) {
+		var l = value.left();
+		return l.isPresent() ? high.hasOutput(recipe, l.get(), match) : low.hasOutput(recipe, value.right().get(), match);
+	}
+
+	@Override
+	public Either<H, L> replaceOutput(RecipeKJS recipe, Either<H, L> value, ReplacementMatch match, OutputReplacement with, MutableBoolean changed) {
+		var l = value.left();
+		return l.isPresent() ? Either.left(high.replaceOutput(recipe, l.get(), match, with, changed)) : Either.right(low.replaceOutput(recipe, value.right().get(), match, with, changed));
 	}
 
 	@Override

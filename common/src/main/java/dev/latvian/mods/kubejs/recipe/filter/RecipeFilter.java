@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
 import dev.latvian.mods.kubejs.core.RecipeKJS;
-import dev.latvian.mods.kubejs.recipe.IngredientMatch;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -104,13 +104,13 @@ public interface RecipeFilter extends Predicate<RecipeKJS> {
 			var input = map.get("input");
 
 			if (input != null) {
-				predicate.list.add(new InputFilter(IngredientMatch.of(input)));
+				predicate.list.add(new InputFilter(ReplacementMatch.of(input)));
 			}
 
 			var output = map.get("output");
 
 			if (output != null) {
-				predicate.list.add(new OutputFilter(IngredientMatch.of(output)));
+				predicate.list.add(new OutputFilter(ReplacementMatch.of(output)));
 			}
 
 			return predicate.list.isEmpty() ? ALWAYS_TRUE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
