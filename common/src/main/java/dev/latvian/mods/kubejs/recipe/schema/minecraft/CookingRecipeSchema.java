@@ -46,6 +46,11 @@ public interface CookingRecipeSchema {
 				return new JsonPrimitive(value.item.kjs$getId());
 			}
 		}
+
+		@Override
+		public String toString() {
+			return parentComponent().toString();
+		}
 	};
 
 	RecipeKey<OutputItem> RESULT = PLATFORM_OUTPUT_ITEM.key(0, "result");

@@ -40,6 +40,11 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
+	default boolean shouldRead(Object from) {
+		return parentComponent().shouldRead(from);
+	}
+
+	@Override
 	default boolean hasInput(T value, IngredientMatch match) {
 		return parentComponent().hasInput(value, match);
 	}

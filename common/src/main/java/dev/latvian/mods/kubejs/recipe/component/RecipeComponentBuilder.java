@@ -87,4 +87,9 @@ public class RecipeComponentBuilder implements RecipeComponent<Map<String, Objec
 	public <T> T get(String name, RecipeComponent<T> ignored) {
 		return UtilsJS.cast(map.get(name));
 	}
+
+	@Override
+	public String toString() {
+		return "builder";
+	}
 }

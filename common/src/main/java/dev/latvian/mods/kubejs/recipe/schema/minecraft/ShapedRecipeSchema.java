@@ -173,6 +173,11 @@ public interface ShapedRecipeSchema {
 				throw new IllegalArgumentException("Expected JSON object!");
 			}
 		}
+
+		@Override
+		public String toString() {
+			return componentType();
+		}
 	};
 
 	RecipeKey<OutputItem> RESULT = ItemComponents.OUTPUT.key(0, "result");

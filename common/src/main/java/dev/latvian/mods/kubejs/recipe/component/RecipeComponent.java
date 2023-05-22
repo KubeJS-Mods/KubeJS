@@ -50,6 +50,10 @@ public interface RecipeComponent<T> {
 
 	T read(Object from);
 
+	default boolean shouldRead(Object from) {
+		return true;
+	}
+
 	default boolean hasInput(T value, IngredientMatch match) {
 		return false;
 	}

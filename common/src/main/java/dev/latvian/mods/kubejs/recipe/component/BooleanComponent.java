@@ -30,4 +30,9 @@ public class BooleanComponent implements RecipeComponent<Boolean> {
 
 		throw new IllegalStateException("Expected a boolean!");
 	}
+
+	@Override
+	public String toString() {
+		return componentType();
+	}
 }

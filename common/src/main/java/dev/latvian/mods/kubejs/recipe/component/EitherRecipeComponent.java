@@ -43,15 +43,15 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> high, RecipeCompone
 
 	@Override
 	public Either<H, L> read(Object from) {
-		try {
-			var a = high.read(from);
-
-			if (a != null) {
-				return Either.left(a);
-			}
-		} catch (Exception ignored) {
+		if (high.shouldRead(from)) {
+			return Either.left(high.read(from));
+		} else {
+			return Either.right(low.read(from));
 		}
+	}
 
-		return Either.right(low.read(from));
+	@Override
+	public String toString() {
+		return "either{" + high + "|" + low + "}";
 	}
 }

@@ -31,4 +31,9 @@ public record OptionalRecipeComponent<T>(RecipeComponent<T> component, T default
 		obj.add("component", component.description());
 		return obj;
 	}
+
+	@Override
+	public String toString() {
+		return "optional{" + component + "}";
+	}
 }

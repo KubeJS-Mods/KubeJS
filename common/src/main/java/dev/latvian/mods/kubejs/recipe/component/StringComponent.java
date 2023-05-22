@@ -26,6 +26,11 @@ public record StringComponent(String error, Predicate<String> predicate) impleme
 		public Character read(Object from) {
 			return from instanceof Character c ? c : String.valueOf(from).charAt(0);
 		}
+
+		@Override
+		public String toString() {
+			return componentType();
+		}
 	};
 
 	@Override
@@ -51,5 +56,10 @@ public record StringComponent(String error, Predicate<String> predicate) impleme
 		}
 
 		return str;
+	}
+
+	@Override
+	public String toString() {
+		return componentType();
 	}
 }

@@ -51,4 +51,9 @@ public record PairRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B>
 
 		throw new IllegalArgumentException("Expected JSON array!");
 	}
+
+	@Override
+	public String toString() {
+		return "pair{" + a + "&" + b + "}";
+	}
 }

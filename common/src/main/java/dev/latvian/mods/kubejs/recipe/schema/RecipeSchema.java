@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
 import com.google.gson.JsonObject;
+import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeFunction;
@@ -13,10 +14,12 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class RecipeSchema {
 	public final Class<? extends RecipeJS> recipeType;
@@ -43,16 +46,16 @@ public class RecipeSchema {
 		var set = new HashSet<String>();
 
 		for (int i = 0; i < keys.length; i++) {
-			if (!(keys[i].component() instanceof OptionalRecipeComponent)) {
-				if (minRequiredArguments > 0) {
-					throw new IllegalStateException("Required key '" + keys[i].name() + "' must be ahead of other default keys!");
+			if (keys[i].component() instanceof OptionalRecipeComponent) {
+				if (minRequiredArguments == 0) {
+					minRequiredArguments = i;
 				}
-			} else {
-				minRequiredArguments++;
+			} else if (minRequiredArguments > 0) {
+				throw new IllegalStateException("Required key '" + keys[i].name() + "' must be ahead of optional keys!");
 			}
 
 			if (!set.add(keys[i].name())) {
-				throw new IllegalStateException("Duplicate key '" + keys[i].name() + "'");
+				throw new IllegalStateException("Duplicate key '" + keys[i].name() + "' found!");
 			}
 
 			if (keys[i].component().getType() == RecipeComponentType.INPUT) {
@@ -60,6 +63,10 @@ public class RecipeSchema {
 			} else if (keys[i].component().getType() == RecipeComponentType.OUTPUT) {
 				outKeys.add(i);
 			}
+		}
+
+		if (minRequiredArguments == 0) {
+			minRequiredArguments = keys.length;
 		}
 
 		inputKeys = inKeys.toIntArray();
@@ -92,13 +99,22 @@ public class RecipeSchema {
 		if (constructors == null) {
 			constructors = new HashMap<>(keys.length - minRequiredArguments + 1);
 
-			KubeJS.LOGGER.info("Generating constructors for " + factory.get().getClass().getName());
+			boolean dev = Platform.isDevelopmentEnvironment();
 
-			for (int a = minRequiredArguments; a <= keys.length; a++) {
-				KubeJS.LOGGER.info("> " + a);
+			if (dev) {
+				KubeJS.LOGGER.info("Generating constructors for [" + Arrays.stream(keys).map(recipeKey -> recipeKey.name() + ":" + recipeKey.component()).collect(Collectors.joining(", ")) + "]");
 			}
 
-			constructors.put(keys.length, new RecipeConstructor(this, keys, RecipeConstructor.Factory.DEFAULT));
+			for (int a = minRequiredArguments; a <= keys.length; a++) {
+				var k = new RecipeKey<?>[a];
+				System.arraycopy(keys, 0, k, 0, a);
+				var c = new RecipeConstructor(this, k, RecipeConstructor.Factory.DEFAULT);
+				constructors.put(a, c);
+
+				if (dev) {
+					KubeJS.LOGGER.info("> " + a + ": [" + Arrays.stream(k).map(recipeKey -> recipeKey.name() + ":" + recipeKey.component()).collect(Collectors.joining(", ")) + "]");
+				}
+			}
 		}
 
 		return constructors;

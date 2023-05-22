@@ -76,6 +76,11 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 		public IntRange max(int max) {
 			return new IntRange(min, max);
 		}
+
+		@Override
+		public String toString() {
+			return "int";
+		}
 	}
 
 	record LongRange(long min, long max) implements NumberComponent<Long> {
@@ -105,6 +110,11 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 
 		public LongRange max(long max) {
 			return new LongRange(min, max);
+		}
+
+		@Override
+		public String toString() {
+			return "long";
 		}
 	}
 
@@ -136,6 +146,11 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 		public FloatRange max(float max) {
 			return new FloatRange(min, max);
 		}
+
+		@Override
+		public String toString() {
+			return "float";
+		}
 	}
 
 	record DoubleRange(double min, double max) implements NumberComponent<Double> {
@@ -165,6 +180,11 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 
 		public DoubleRange max(double max) {
 			return new DoubleRange(min, max);
+		}
+
+		@Override
+		public String toString() {
+			return "double";
 		}
 	}
 }

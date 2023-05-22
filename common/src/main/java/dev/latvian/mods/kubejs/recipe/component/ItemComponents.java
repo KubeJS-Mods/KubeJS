@@ -42,6 +42,11 @@ public interface ItemComponents {
 		}
 
 		@Override
+		public boolean shouldRead(Object from) {
+			return !InputItem.of(from).isEmpty();
+		}
+
+		@Override
 		public boolean hasInput(InputItem value, IngredientMatch match) {
 			return match.contains(value);
 		}
@@ -54,6 +59,11 @@ public interface ItemComponents {
 			}
 
 			return value;
+		}
+
+		@Override
+		public String toString() {
+			return componentType();
 		}
 	};
 
@@ -77,6 +87,11 @@ public interface ItemComponents {
 			}
 
 			return json;
+		}
+
+		@Override
+		public String toString() {
+			return parentComponent().toString();
 		}
 	};
 
@@ -120,6 +135,11 @@ public interface ItemComponents {
 		}
 
 		@Override
+		public boolean shouldRead(Object from) {
+			return !OutputItem.of(from).isEmpty();
+		}
+
+		@Override
 		public boolean hasOutput(OutputItem value, IngredientMatch match) {
 			return match.contains(value);
 		}
@@ -132,6 +152,11 @@ public interface ItemComponents {
 			}
 
 			return value;
+		}
+
+		@Override
+		public String toString() {
+			return componentType();
 		}
 	};
 

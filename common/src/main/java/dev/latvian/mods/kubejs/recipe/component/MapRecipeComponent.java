@@ -62,4 +62,9 @@ public record MapRecipeComponent<K, T>(RecipeComponent<K> key, RecipeComponent<T
 			throw new IllegalArgumentException("Expected JSON object!");
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "map{" + key + ":" + component + "}";
+	}
 }

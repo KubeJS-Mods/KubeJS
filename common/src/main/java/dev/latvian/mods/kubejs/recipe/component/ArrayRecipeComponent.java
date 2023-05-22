@@ -112,4 +112,9 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 
 		return value;
 	}
+
+	@Override
+	public String toString() {
+		return component.toString() + "[]";
+	}
 }
