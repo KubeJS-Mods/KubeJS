@@ -3,7 +3,8 @@ package dev.latvian.mods.kubejs.script;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.CustomModNames;
 import net.minecraft.SharedConstants;
 
 import java.util.LinkedHashMap;
@@ -34,9 +35,8 @@ public class PlatformWrapper {
 			return name;
 		}
 
-		public void setName(String n) {
-			name = n;
-			MiscPlatformHelper.get();
+		public void setName(String ignored) {
+			ConsoleJS.STARTUP.error("Setting mod name has moved to Platform.setModName('mod_id', 'Mod Name')!");
 		}
 
 		public String getVersion() {
@@ -103,5 +103,9 @@ public class PlatformWrapper {
 
 	public static boolean isClientEnvironment() {
 		return Platform.getEnvironment() == Env.CLIENT;
+	}
+
+	public static void setModName(String modId, String name) {
+		CustomModNames.set(modId, name);
 	}
 }

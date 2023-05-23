@@ -1056,6 +1056,7 @@ ij_json_space_before_comma = false
 ij_json_spaces_within_braces = false
 ij_json_spaces_within_brackets = false
 ij_json_wrap_long_lines = false
+ij_json_array_wrapping = split_into_lines
 
 [{*.htm, *.html, *.ng, *.sht, *.shtm, *.shtml}]
 ij_html_add_new_line_before_tags = body, div, p, form, h1, h2, h3

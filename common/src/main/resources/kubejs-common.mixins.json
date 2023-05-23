@@ -48,7 +48,9 @@
 		"MinecraftMixin",
 		"OptionsMixin",
 		"ScreenMixin",
-		"WindowMixin"
+		"WindowMixin",
+		"mod.ModNameTooltipMixin",
+		"mod.REITooltipMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1,
