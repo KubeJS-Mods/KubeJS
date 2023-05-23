@@ -90,7 +90,7 @@ public class ConsoleJS {
 			if (x != null && skipString != null && skipString.matcher(x).find()) {
 				skip = true;
 			} else if (error) {
-				console.log(this, "ERR  ", x);
+				console.log(this, "ERROR", x);
 			} else {
 				console.log(this, "WARN ", x);
 			}
@@ -138,7 +138,7 @@ public class ConsoleJS {
 		};
 
 		errorLogFunction = s -> {
-			logger.error("! " + s);
+			logger.error(s);
 			scriptType.errors.add(s);
 		};
 	}
@@ -263,11 +263,6 @@ public class ConsoleJS {
 		var calendar = Calendar.getInstance();
 		var sb = new StringBuilder();
 
-		if (type.equals("ERR")) {
-			sb.append('!');
-			sb.append(' ');
-		}
-
 		sb.append('[');
 
 		if (calendar.get(Calendar.HOUR_OF_DAY) < 10) {
@@ -295,6 +290,12 @@ public class ConsoleJS {
 		sb.append(type);
 		sb.append(']');
 		sb.append(' ');
+
+		if (type.equals("ERROR")) {
+			sb.append('!');
+			sb.append(' ');
+		}
+
 		sb.append(line);
 		writeQueue.add(sb.toString());
 	}
@@ -364,7 +365,7 @@ public class ConsoleJS {
 	}
 
 	public void error(Object message) {
-		log(errorLogFunction, "ERR", message);
+		log(errorLogFunction, "ERROR", message);
 	}
 
 	public void error(String message, Throwable throwable, @Nullable Pattern skip) {
@@ -385,7 +386,7 @@ public class ConsoleJS {
 	}
 
 	public void errorf(String message, Object... args) {
-		logf(errorLogFunction, "ERR ", message, args);
+		logf(errorLogFunction, "ERROR", message, args);
 	}
 
 	public boolean shouldPrintDebug() {
