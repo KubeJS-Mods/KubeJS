@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs;
 
 import com.mojang.serialization.Codec;
+import dev.architectury.platform.Platform;
 import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
@@ -99,6 +100,10 @@ public class KubeJSRegistries {
 
 	public static void init(ResourceKey<? extends Registry<?>> registryKey) {
 		if (StartupEvents.REGISTRY.hasListeners()) {
+			if (Platform.isDevelopmentEnvironment()) {
+				KubeJS.LOGGER.info("REGISTRY " + registryKey.location());
+			}
+
 			RegistryObjectBuilderTypes.registerFor(registryKey, !CommonProperties.get().serverOnly);
 		}
 	}

@@ -8,6 +8,8 @@ import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import dev.architectury.hooks.client.screen.ScreenAccess;
 import dev.architectury.hooks.fluid.FluidBucketHooks;
+import dev.architectury.platform.Platform;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
@@ -75,6 +77,10 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void clientSetup(Minecraft minecraft) {
+		if (Platform.isDevelopmentEnvironment()) {
+			KubeJS.LOGGER.info("CLIENT SETUP");
+		}
+
 		for (var builder : RegistryObjectBuilderTypes.ALL_BUILDERS) {
 			builder.clientRegistry(() -> minecraft);
 		}

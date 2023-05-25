@@ -18,14 +18,6 @@ loom {
 	accessWidenerPath = accessWidenerFile
 }
 
-sourceSets {
-	main {
-		resources {
-			srcDir generatedResources
-		}
-	}
-}
-
 repositories {
 	maven {
 		url "https://maven.blamejared.com"
@@ -58,12 +50,21 @@ task copyAccessWidener(type: Copy) {
 	into generatedResources
 }
 
+sourceSets {
+	main {
+		compiledBy copyAccessWidener
+		resources {
+			srcDir generatedResources
+		}
+	}
+}
+
 processResources {
 	dependsOn copyAccessWidener
 
 	def toReplace = [
-			"version"                     : project.version,
-			"rhino_version"               : rootProject.rhino_version,
+			"version"             : project.version,
+			"rhino_version"       : rootProject.rhino_version,
 			"architectury_version": rootProject.architectury_version
 	]
 
