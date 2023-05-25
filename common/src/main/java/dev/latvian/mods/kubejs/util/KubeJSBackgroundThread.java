@@ -2,6 +2,8 @@ package dev.latvian.mods.kubejs.util;
 
 import dev.latvian.mods.kubejs.script.ScriptType;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class KubeJSBackgroundThread extends Thread {
@@ -13,7 +15,11 @@ public class KubeJSBackgroundThread extends Thread {
 
 	@Override
 	public void run() {
-		ScriptType[] types = ScriptType.values();
+		var types = ScriptType.values();
+
+		for (var type : types) {
+			type.executor = Executors.newSingleThreadExecutor();
+		}
 
 		while (running) {
 			try {
@@ -22,24 +28,24 @@ public class KubeJSBackgroundThread extends Thread {
 				e.printStackTrace();
 			}
 
-			for (ScriptType type : types) {
+			for (var type : types) {
 				type.console.flush(false);
 			}
 		}
 
-		for (ScriptType type : types) {
+		for (var type : types) {
 			type.console.flush(false);
-			type.executor.shutdown();
+			((ExecutorService) type.executor).shutdown();
 
 			boolean b;
 			try {
-				b = type.executor.awaitTermination(3L, TimeUnit.SECONDS);
+				b = ((ExecutorService) type.executor).awaitTermination(3L, TimeUnit.SECONDS);
 			} catch (InterruptedException var3) {
 				b = false;
 			}
 
 			if (!b) {
-				type.executor.shutdownNow();
+				((ExecutorService) type.executor).shutdownNow();
 			}
 		}
 

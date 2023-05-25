@@ -21,8 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
 /**
@@ -58,7 +57,7 @@ public enum ScriptType implements ScriptTypePredicate {
 	public final transient ConcurrentLinkedDeque<String> warnings;
 	public final ConsoleJS console;
 	public final transient Supplier<ScriptManager> manager;
-	public final transient ExecutorService executor;
+	public transient Executor executor;
 
 	ScriptType(String n, String cname, Supplier<ScriptManager> m) {
 		name = n;
@@ -66,7 +65,7 @@ public enum ScriptType implements ScriptTypePredicate {
 		warnings = new ConcurrentLinkedDeque<>();
 		console = new ConsoleJS(this, LoggerFactory.getLogger(cname));
 		manager = m;
-		executor = Executors.newSingleThreadExecutor();
+		executor = Runnable::run;
 	}
 
 	public Path getLogFile() {

@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.util;
 
 import dev.latvian.mods.kubejs.CommonProperties;
+import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
@@ -256,7 +257,7 @@ public class ConsoleJS {
 	}
 
 	private synchronized void writeToFile(String type, String line) {
-		if (!writeToFile) {
+		if (!writeToFile || MiscPlatformHelper.get().isDataGen()) {
 			return;
 		}
 

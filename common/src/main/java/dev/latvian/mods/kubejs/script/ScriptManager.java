@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
+import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -156,14 +157,19 @@ public class ScriptManager implements ClassShutter {
 
 		CURRENT_CONTEXT.set(context);
 
-		canListenEvents = true;
-		var i = 0;
-		var t = 0;
-
 		context.setProperty("Type", scriptType);
 		context.setProperty("Console", scriptType.console);
 		context.setClassShutter(this);
 		context.setRemapper(remapper);
+
+		if (MiscPlatformHelper.get().isDataGen()) {
+			firstLoad = false;
+			scriptType.console.info("Skipping KubeJS script loading (DataGen)");
+			return;
+		}
+
+		canListenEvents = true;
+
 		var typeWrappers = context.getTypeWrappers();
 		// typeWrappers.removeAll();
 		var bindingsEvent = new BindingsEvent(this, topLevelScope);
@@ -181,6 +187,9 @@ public class ScriptManager implements ClassShutter {
 			} catch (IllegalArgumentException ignored) {
 			}
 		}
+
+		var i = 0;
+		var t = 0;
 
 		for (var pack : packs.values()) {
 			try {
