@@ -92,6 +92,7 @@ import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassFilter;
+import dev.latvian.mods.kubejs.util.FluidAmounts;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.LegacyCodeHandler;
@@ -351,6 +352,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("Facing", DirectionWrapper.class);
 		event.add("AABB", AABBWrapper.class);
 		event.add("Stats", Stats.class);
+		event.add("FluidAmounts", FluidAmounts.class);
 
 		event.add("Fluid", FluidWrapper.class);
 

@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.platform.fabric;
 
 import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.MobCategory;
 
@@ -22,5 +23,15 @@ public class MiscPlatformHelperImpl implements MiscPlatformHelper {
 		}
 
 		return dataGen;
+	}
+
+	@Override
+	public long ingotFluidAmount() {
+		return FluidConstants.INGOT;
+	}
+
+	@Override
+	public long bottleFluidAmount() {
+		return FluidConstants.BOTTLE;
 	}
 }

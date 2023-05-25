@@ -14,4 +14,14 @@ public class MiscPlatformHelperImpl implements MiscPlatformHelper {
 	public boolean isDataGen() {
 		return ModLoader.isDataGenRunning();
 	}
+
+	@Override
+	public long ingotFluidAmount() {
+		return 90;
+	}
+
+	@Override
+	public long bottleFluidAmount() {
+		return 250;
+	}
 }

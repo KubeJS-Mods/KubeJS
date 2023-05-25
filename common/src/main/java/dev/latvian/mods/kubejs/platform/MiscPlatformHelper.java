@@ -13,4 +13,8 @@ public interface MiscPlatformHelper {
 	MobCategory getMobCategory(String name);
 
 	boolean isDataGen();
+
+	long ingotFluidAmount();
+
+	long bottleFluidAmount();
 }
