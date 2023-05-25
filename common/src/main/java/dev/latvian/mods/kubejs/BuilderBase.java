@@ -56,7 +56,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 			if (dummyBuilder) {
 				throw new RuntimeException("Object '" + id + "' of registry '" + getRegistryType().registryKey.location() + "' is from a dummy builder and doesn't have a value!");
 			} else {
-				throw new RuntimeException("Object '" + id + "' of registry '" + getRegistryType().registryKey.location() + "' hasn't been registered yet!");
+				throw new RuntimeException("Object '" + id + "' of registry '" + getRegistryType().registryKey.location() + "' hasn't been registered yet!", ex);
 			}
 		}
 	}
