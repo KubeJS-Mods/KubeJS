@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeFunction;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.component.OptionalRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentType;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
@@ -44,7 +43,7 @@ public class RecipeSchema {
 		var set = new HashSet<String>();
 
 		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].component() instanceof OptionalRecipeComponent) {
+			if (keys[i].component().optionalValue() != null) {
 				if (minRequiredArguments == 0) {
 					minRequiredArguments = i;
 				}

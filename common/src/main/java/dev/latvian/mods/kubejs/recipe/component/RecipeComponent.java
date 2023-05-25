@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.MutableBoolean;
@@ -49,6 +48,19 @@ public interface RecipeComponent<T> {
 
 	T read(Object from);
 
+	default void writeJson(RecipeComponentValue<T> value, JsonObject json) {
+		json.add(value.key.name(), write(value.value));
+	}
+
+	default void readJson(RecipeComponentValue<T> value, JsonObject json) {
+		value.value = read(json.get(value.key.name()));
+	}
+
+	@Nullable
+	default T optionalValue() {
+		return null;
+	}
+
 	default boolean shouldRead(Object from) {
 		return true;
 	}
@@ -86,14 +98,10 @@ public interface RecipeComponent<T> {
 	}
 
 	default RecipeComponent<T> optional(T defaultValue) {
-		return new OptionalRecipeComponent<>(this, defaultValue, false);
+		return new OptionalRecipeComponent<>(this, defaultValue);
 	}
 
-	default RecipeComponent<T> optionalAlwaysWrite(T defaultValue) {
-		return new OptionalRecipeComponent<>(this, defaultValue, true);
-	}
-
-	default <R extends RecipeJS> RecipeKey<T> key(int index, String name) {
-		return new RecipeKey<>(this, index, name);
+	default RecipeKey<T> key(int index, String name) {
+		return RecipeKey.of(this, index, name);
 	}
 }

@@ -6,7 +6,6 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.util.UUIDTypeAdapter;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
-import dev.latvian.mods.kubejs.recipe.component.OptionalRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.DamageAction;
@@ -43,21 +42,15 @@ public class RecipeJS implements RecipeKJS {
 	public boolean changed = false;
 
 	public void deserialize() {
-		for (var k : type.schemaType.schema.keys) {
-			var j = json.get(k.name());
-
-			if (j == null && k.component() instanceof OptionalRecipeComponent) {
-				continue;
-			}
-
-			setValue(k, k.component().read(j));
+		for (var v : values) {
+			v.key.component().readJson(UtilsJS.cast(v), json);
 		}
 	}
 
 	public void serialize() {
-		for (var k : type.schemaType.schema.keys) {
-			if (hasChanged(k)) {
-				json.add(k.name(), k.component().write(UtilsJS.cast(getValue(k))));
+		for (var v : values) {
+			if (v.changed) {
+				v.key.component().writeJson(UtilsJS.cast(v), json);
 			}
 		}
 	}
@@ -69,8 +62,8 @@ public class RecipeJS implements RecipeKJS {
 	public <T> T getValue(RecipeKey<T> key) {
 		var v = values[key.index()].value;
 
-		if (v == null && key.component() instanceof OptionalRecipeComponent<T> optional) {
-			return optional.defaultValue();
+		if (v == null) {
+			return key.component().optionalValue();
 		}
 
 		return UtilsJS.cast(v);

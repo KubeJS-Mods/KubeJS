@@ -1,43 +1,40 @@
 package dev.latvian.mods.kubejs.recipe.schema.minecraft;
 
+import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponentWithParent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 
 public interface StonecuttingRecipeSchema {
-	RecipeKey<OutputItem> RESULT = ItemComponents.OUTPUT.key(0, "result");
-	RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key(1, "ingredient");
-
-	class StonecuttingRecipeJS extends RecipeJS {
-		// Override required to support custom count
+	RecipeComponent<OutputItem> RESULT_WITH_COUNT_COMPONENT = new RecipeComponentWithParent<>() {
+		@Override
+		public RecipeComponent<OutputItem> parentComponent() {
+			return ItemComponents.OUTPUT;
+		}
 
 		@Override
-		public void deserialize() {
-			setValue(INGREDIENT, INGREDIENT.component().read(json.get("ingredient")));
-			var result = RESULT.component().read(json.get("result"));
-			setValue(RESULT, result);
+		public void writeJson(RecipeComponentValue<OutputItem> value, JsonObject json) {
+			json.addProperty(value.key.name(), value.value.item.kjs$getId());
+			json.addProperty("count", value.value.item.getCount());
+		}
+
+		@Override
+		public void readJson(RecipeComponentValue<OutputItem> value, JsonObject json) {
+			value.value = ItemComponents.OUTPUT.read(json.get(value.key.name()));
 
 			if (json.has("count")) {
-				result.item.setCount(json.get("count").getAsInt());
+				value.value.item.setCount(json.get("count").getAsInt());
 			}
 		}
+	};
 
-		@Override
-		public void serialize() {
-			if (hasChanged(INGREDIENT)) {
-				json.add("ingredient", INGREDIENT.component().write(getValue(INGREDIENT)));
-			}
+	RecipeKey<OutputItem> RESULT = RESULT_WITH_COUNT_COMPONENT.key(0, "result");
+	RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key(1, "ingredient");
 
-			if (hasChanged(RESULT)) {
-				var result = getValue(RESULT);
-				json.addProperty("item", result.item.kjs$getId());
-				json.addProperty("count", result.item.getCount());
-			}
-		}
-	}
-
-	RecipeSchema SCHEMA = new RecipeSchema(StonecuttingRecipeJS.class, StonecuttingRecipeJS::new, RESULT, INGREDIENT);
+	RecipeSchema SCHEMA = new RecipeSchema(RESULT, INGREDIENT);
 }
