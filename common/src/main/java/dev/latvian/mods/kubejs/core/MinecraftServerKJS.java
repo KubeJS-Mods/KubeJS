@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.player.AdvancementJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.server.IScheduledEventCallback;
 import dev.latvian.mods.kubejs.server.ScheduledEvent;
+import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -16,6 +17,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.temporal.TemporalAmount;
+
 @RemapPrefixForJS("kjs$")
 public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, MessageSenderKJS, WithPersistentData, DataSenderKJS {
 	default MinecraftServer kjs$self() {
@@ -26,9 +29,11 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, M
 
 	ServerLevel kjs$getOverworld();
 
-	ScheduledEvent kjs$schedule(long timer, IScheduledEventCallback event);
+	ScheduledEvent kjs$schedule(TemporalAmount timer, IScheduledEventCallback event);
 
-	ScheduledEvent kjs$scheduleInTicks(long ticks, IScheduledEventCallback event);
+	default ScheduledEvent kjs$scheduleInTicks(long ticks, IScheduledEventCallback event) {
+		return kjs$schedule(new TickDuration(ticks), event);
+	}
 
 	@Override
 	default Component kjs$getName() {

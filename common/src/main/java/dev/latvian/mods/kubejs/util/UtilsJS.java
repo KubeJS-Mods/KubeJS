@@ -72,6 +72,8 @@ import java.math.BigInteger;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -103,6 +105,7 @@ public class UtilsJS {
 	public static MinecraftServer staticServer = null;
 	public static final ResourceLocation UNKNOWN_ID = new ResourceLocation("unknown", "unknown");
 	public static final Predicate<Object> ALWAYS_TRUE = o -> true;
+	public static final Pattern TEMPORAL_AMOUNT_PATTERN = Pattern.compile("(\\d+)\\s*(y|M|d|w|h|m|s|ms|ns|t)\\b");
 
 	private static Collection<BlockState> ALL_STATE_CACHE = null;
 	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();
@@ -785,15 +788,66 @@ public class UtilsJS {
 		return cast(NativeJavaObject.createInterfaceAdapter(type.manager.get().context, targetClass, function));
 	}
 
-	public static Duration getDuration(Object o) {
-		if (o instanceof Duration d) {
+	public static TemporalAmount getTemporalAmount(Object o) {
+		if (o instanceof TemporalAmount d) {
 			return d;
 		} else if (o instanceof Number n) {
 			return Duration.ofMillis(n.longValue());
-		} else if (o instanceof String) {
-			throw new IllegalArgumentException("Currently not supported, use number as milliseconds");
+		} else if (o instanceof CharSequence) {
+			var matcher = TEMPORAL_AMOUNT_PATTERN.matcher(o.toString());
+
+			var d = Duration.ZERO;
+			var ticks = -1L;
+
+			while (matcher.find()) {
+				var amount = Long.parseUnsignedLong(matcher.group(1));
+
+				switch (matcher.group(2)) {
+					case "t" -> {
+						if (ticks == -1L) {
+							ticks = 0L;
+						}
+
+						ticks += amount;
+					}
+					case "y" -> d = d.plus(amount, ChronoUnit.YEARS);
+					case "M" -> d = d.plus(amount, ChronoUnit.MONTHS);
+					case "d" -> d = d.plusDays(amount);
+					case "w" -> d = d.plus(amount, ChronoUnit.WEEKS);
+					case "h" -> d = d.plusHours(amount);
+					case "m" -> d = d.plusMinutes(amount);
+					case "s" -> d = d.plusSeconds(amount);
+					case "ms" -> d = d.plusMillis(amount);
+					case "ns" -> d = d.plusNanos(amount);
+					default -> throw new IllegalArgumentException("Invalid temporal unit: " + matcher.group(2));
+				}
+			}
+
+			if (ticks != -1L) {
+				return new TickDuration(ticks + d.toMillis() / 50L);
+			}
+
+			return d;
 		} else {
-			throw new IllegalArgumentException("Invalid duration: " + o);
+			throw new IllegalArgumentException("Invalid temporal amount: " + o);
+		}
+	}
+
+	public static Duration getDuration(Object o) {
+		var t = getTemporalAmount(o);
+
+		if (t instanceof Duration d) {
+			return d;
+		} else if (t instanceof TickDuration d) {
+			return Duration.ofMillis(d.ticks() * 50L);
+		} else {
+			var d = Duration.ZERO;
+
+			for (var unit : t.getUnits()) {
+				d = d.plus(t.get(unit), unit);
+			}
+
+			return d;
 		}
 	}
 }

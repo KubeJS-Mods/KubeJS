@@ -147,6 +147,7 @@ import net.minecraft.world.phys.Vec3;
 import java.io.File;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.time.temporal.TemporalAmount;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -387,6 +388,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.registerSimple(Path.class, UtilsJS::getPath);
 		typeWrappers.registerSimple(File.class, UtilsJS::getFileFromPath);
 		typeWrappers.register(Unit.class, Painter.INSTANCE::unitOf);
+		typeWrappers.registerSimple(TemporalAmount.class, UtilsJS::getTemporalAmount);
 		typeWrappers.registerSimple(Duration.class, UtilsJS::getDuration);
 
 		typeWrappers.register(ResourceLocation.class, UtilsJS::getMCID);

@@ -1,58 +1,76 @@
 package dev.latvian.mods.kubejs.server;
 
+import dev.latvian.mods.kubejs.util.TickDuration;
 import net.minecraft.server.MinecraftServer;
+
+import java.time.Duration;
+import java.time.temporal.TemporalAmount;
 
 /**
  * @author LatvianModder
  */
-public class ScheduledEvent {
-	private final MinecraftServer server;
-	private final boolean usingTicks;
-	private final long timer;
-	private final long endTime;
-	private final IScheduledEventCallback callback;
+public abstract class ScheduledEvent {
+	public static class InMs extends ScheduledEvent {
+		public InMs(MinecraftServer s, Duration timer, long e, IScheduledEventCallback c) {
+			super(s, timer, e, c);
+		}
 
-	public ScheduledEvent(MinecraftServer s, boolean ut, long t, long e, IScheduledEventCallback c) {
-		usingTicks = ut;
+		@Override
+		public boolean isUsingTicks() {
+			return false;
+		}
+
+		@Override
+		public boolean check(long nowMs, long nowTicks) {
+			return nowMs >= endTime;
+		}
+
+		public ScheduledEvent reschedule(long timer) {
+			return server.kjs$schedule(Duration.ofMillis(timer), callback);
+		}
+	}
+
+	public static class InTicks extends ScheduledEvent {
+		public InTicks(MinecraftServer s, TickDuration t, long e, IScheduledEventCallback c) {
+			super(s, t, e, c);
+		}
+
+		@Override
+		public boolean isUsingTicks() {
+			return true;
+		}
+
+		@Override
+		public boolean check(long nowMs, long nowTicks) {
+			return nowTicks >= endTime;
+		}
+
+		public ScheduledEvent reschedule(long timer) {
+			return server.kjs$schedule(new TickDuration(timer), callback);
+		}
+	}
+
+	public final MinecraftServer server;
+	public final TemporalAmount duration;
+	public final long endTime;
+	public final transient IScheduledEventCallback callback;
+
+	private ScheduledEvent(MinecraftServer s, TemporalAmount d, long e, IScheduledEventCallback c) {
 		server = s;
-		timer = t;
+		duration = d;
 		endTime = e;
 		callback = c;
 	}
 
-	public boolean isUsingTicks() {
-		return usingTicks;
-	}
-
-	public MinecraftServer getServer() {
-		return server;
-	}
-
-	public long getTimer() {
-		return timer;
-	}
-
-	public long getEndTime() {
-		return endTime;
-	}
-
 	public void reschedule() {
-		reschedule(timer);
+		reschedule(duration);
 	}
 
-	public long getTimerDuration() {
-		return endTime - timer;
+	public ScheduledEvent reschedule(TemporalAmount timer) {
+		return server.kjs$schedule(timer, callback);
 	}
 
-	public ScheduledEvent reschedule(long timer) {
-		if (isUsingTicks()) {
-			return server.kjs$scheduleInTicks(timer, callback);
-		} else {
-			return server.kjs$schedule(timer, callback);
-		}
-	}
+	public abstract boolean isUsingTicks();
 
-	void call() {
-		callback.onCallback(this);
-	}
+	public abstract boolean check(long nowMs, long nowTicks);
 }
