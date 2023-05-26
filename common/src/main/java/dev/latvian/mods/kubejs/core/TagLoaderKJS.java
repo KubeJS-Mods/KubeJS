@@ -11,9 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author LatvianModder
- */
 public interface TagLoaderKJS<T> {
 	default void kjs$customTags(Map<ResourceLocation, List<TagLoader.EntryWithSource>> map) {
 		TagContext.INSTANCE.setValue(TagContext.EMPTY);

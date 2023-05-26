@@ -2,9 +2,6 @@ package dev.latvian.mods.kubejs.event;
 
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author LatvianModder
- */
 public class EventJS {
 	public void cancel() {
 		throw EventResult.Type.INTERRUPT_FALSE.defaultExit;

@@ -11,9 +11,6 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
-/**
- * @author LatvianModder
- */
 @Mixin(value = AbstractClientPlayer.class)
 @RemapPrefixForJS("kjs$")
 public abstract class AbstractClientPlayerMixin extends Player implements ClientPlayerKJS {

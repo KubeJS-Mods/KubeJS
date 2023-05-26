@@ -16,9 +16,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-/**
- * @author LatvianModder
- */
 @Mixin(BlockBehaviour.class)
 @RemapPrefixForJS("kjs$")
 public abstract class BlockBehaviourMixin implements BlockKJS {

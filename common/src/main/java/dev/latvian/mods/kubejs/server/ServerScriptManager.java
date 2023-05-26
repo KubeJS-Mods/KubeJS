@@ -22,9 +22,6 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-/**
- * @author LatvianModder
- */
 public class ServerScriptManager {
 	public static ServerScriptManager instance;
 

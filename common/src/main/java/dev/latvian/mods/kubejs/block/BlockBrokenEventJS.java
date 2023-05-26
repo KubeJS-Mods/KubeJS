@@ -9,9 +9,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author LatvianModder
- */
 public class BlockBrokenEventJS extends PlayerEventJS {
 	private final ServerPlayer entity;
 	private final Level level;

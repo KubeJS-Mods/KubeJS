@@ -7,9 +7,6 @@ import dev.latvian.mods.kubejs.level.gen.RemoveWorldgenEventJS;
 import dev.latvian.mods.kubejs.level.gen.ruletest.KubeJSRuleTests;
 import dev.latvian.mods.kubejs.script.ScriptType;
 
-/**
- * @author LatvianModder
- */
 public class KubeJSOtherEventHandler {
 	public static void init() {
 		KubeJSRuleTests.init();

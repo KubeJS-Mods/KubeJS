@@ -7,9 +7,6 @@ import net.minecraft.world.item.Tiers;
 
 import java.util.function.Consumer;
 
-/**
- * @author LatvianModder
- */
 public class ItemToolTierRegistryEventJS extends StartupEventJS {
 	public void add(String id, Consumer<MutableToolTier> tier) {
 		var t = new MutableToolTier(Tiers.IRON);

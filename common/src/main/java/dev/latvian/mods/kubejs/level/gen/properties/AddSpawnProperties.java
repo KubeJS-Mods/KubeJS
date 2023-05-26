@@ -5,9 +5,6 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 
-/**
- * @author LatvianModder
- */
 public class AddSpawnProperties {
 	public MobCategory _category = MobCategory.CREATURE;
 	public BiomeFilter biomes = BiomeFilter.ALWAYS_TRUE;

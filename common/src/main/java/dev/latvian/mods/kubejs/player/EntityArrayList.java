@@ -16,9 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Predicate;
 
-/**
- * @author LatvianModder
- */
 @RemapPrefixForJS("kjs$")
 public class EntityArrayList extends ArrayList<Entity> implements MessageSenderKJS, DataSenderKJS {
 	public final Level level;

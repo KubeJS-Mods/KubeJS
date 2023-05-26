@@ -6,9 +6,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
 
-/**
- * @author LatvianModder
- */
 public class InvertRuleTest extends RuleTest {
 
 	public static final Codec<InvertRuleTest> CODEC = RuleTest.CODEC

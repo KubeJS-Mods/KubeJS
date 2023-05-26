@@ -3,9 +3,6 @@ package dev.latvian.mods.kubejs.player;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
-/**
- * @author LatvianModder
- */
 public class InventoryEventJS extends PlayerEventJS {
 	private final Player player;
 	private final AbstractContainerMenu menu;

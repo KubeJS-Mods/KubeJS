@@ -14,9 +14,6 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-/**
- * @author LatvianModder
- */
 public class BasicItemJS extends Item {
 	public static class Builder extends ItemBuilder {
 		public Builder(ResourceLocation i) {

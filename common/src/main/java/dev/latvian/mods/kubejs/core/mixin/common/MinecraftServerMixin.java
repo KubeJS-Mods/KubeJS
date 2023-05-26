@@ -29,9 +29,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
-/**
- * @author LatvianModder
- */
 @Mixin(MinecraftServer.class)
 @RemapPrefixForJS("kjs$")
 public abstract class MinecraftServerMixin implements MinecraftServerKJS {

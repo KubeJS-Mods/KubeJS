@@ -8,9 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-/**
- * @author LatvianModder
- */
 public class AdvancementJS {
 	public final Advancement advancement;
 

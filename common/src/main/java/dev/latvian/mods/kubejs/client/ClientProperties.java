@@ -15,9 +15,6 @@ import java.nio.file.Path;
 import java.util.OptionalInt;
 import java.util.Properties;
 
-/**
- * @author LatvianModder
- */
 public class ClientProperties {
 	private static ClientProperties instance;
 

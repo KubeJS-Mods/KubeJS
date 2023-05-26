@@ -16,9 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
-/**
- * @author LatvianModder
- */
 @Mixin(Minecraft.class)
 @RemapPrefixForJS("kjs$")
 public abstract class MinecraftMixin implements MinecraftClientKJS {

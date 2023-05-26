@@ -4,9 +4,6 @@ import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.Extra;
 
-/**
- * @author shedaniel
- */
 public interface REIEvents {
 	EventGroup GROUP = EventGroup.of("REIEvents");
 

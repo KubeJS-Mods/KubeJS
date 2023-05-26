@@ -17,9 +17,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Map;
 
-/**
- * @author LatvianModder
- */
 @Mixin(value = RecipeManager.class, priority = 1100)
 public abstract class RecipeManagerMixin {
 	@Inject(method = "apply*", at = @At("HEAD"), cancellable = true)

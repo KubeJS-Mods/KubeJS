@@ -15,9 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * @author LatvianModder
- */
 public class BlockIDPredicate implements BlockPredicate {
 	public record PropertyObject(Property<?> property, Object value) {
 	}

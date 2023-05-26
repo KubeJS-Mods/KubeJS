@@ -6,9 +6,6 @@ import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import net.minecraft.resources.ResourceLocation;
 
-/**
- * @author LatvianModder
- */
 public class TypeFilter implements RecipeFilter {
 	private final ResourceLocation type;
 

@@ -25,9 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * @author LatvianModder
- */
 public class ScriptManager implements ClassShutter {
 	private static final ThreadLocal<Context> CURRENT_CONTEXT = new ThreadLocal<>();
 

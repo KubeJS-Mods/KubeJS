@@ -16,9 +16,6 @@ import net.minecraft.network.chat.Component;
 
 import java.nio.file.Files;
 
-/**
- * @author LatvianModder
- */
 public class DataExport {
 	@HideFromJS
 	public static CommandSourceStack source;

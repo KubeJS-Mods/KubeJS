@@ -36,9 +36,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 import java.util.stream.Stream;
 
-/**
- * @author LatvianModder
- */
 @Mixin(value = Item.class, priority = 1001)
 @RemapPrefixForJS("kjs$")
 public abstract class ItemMixin implements ItemKJS {

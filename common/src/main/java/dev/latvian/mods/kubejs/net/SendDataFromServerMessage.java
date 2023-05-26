@@ -8,9 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author LatvianModder
- */
 public class SendDataFromServerMessage extends BaseS2CMessage {
 	private final String channel;
 	private final CompoundTag data;

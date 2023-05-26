@@ -11,9 +11,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.RegistryAccess;
 
-/**
- * @author LatvianModder
- */
 public class CommandRegistryEventJS extends EventJS {
 	public final CommandDispatcher<CommandSourceStack> dispatcher;
 	public final CommandBuildContext registry;

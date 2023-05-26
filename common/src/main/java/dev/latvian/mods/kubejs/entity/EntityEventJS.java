@@ -6,9 +6,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author LatvianModder
- */
 public abstract class EntityEventJS extends LevelEventJS {
 
 	public abstract Entity getEntity();

@@ -4,11 +4,7 @@ import net.minecraft.client.Minecraft;
 
 import java.util.List;
 
-/**
- * @author LatvianModder
- */
 public class DebugInfoEventJS extends ClientEventJS {
-
 	private final List<String> lines;
 
 	public DebugInfoEventJS(List<String> l) {

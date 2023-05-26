@@ -12,9 +12,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @author LatvianModder
- */
 public class PlatformWrapper {
 	public static class ModInfo {
 		private final String id;

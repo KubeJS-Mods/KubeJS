@@ -5,9 +5,6 @@ import net.minecraft.network.chat.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author LatvianModder
- */
 public class ScriptPackInfo {
 	public final String namespace;
 	public final Component displayName;

@@ -5,9 +5,6 @@ import dev.latvian.mods.rhino.Scriptable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author LatvianModder
- */
 public class ScriptPack {
 	public final ScriptManager manager;
 	public final ScriptPackInfo info;

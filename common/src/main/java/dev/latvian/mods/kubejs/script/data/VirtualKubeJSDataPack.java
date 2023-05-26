@@ -23,9 +23,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-/**
- * @author LatvianModder
- */
 public class VirtualKubeJSDataPack extends AbstractPackResources {
 	public final boolean high;
 	private final Map<ResourceLocation, String> locationToData;

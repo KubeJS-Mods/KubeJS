@@ -7,9 +7,6 @@ import net.minecraftforge.common.crafting.IIngredientSerializer;
 
 import java.util.function.Predicate;
 
-/**
- * @author LatvianModder
- */
 public class CustomIngredient extends KubeJSIngredient {
 	public static final KubeJSIngredientSerializer<CustomIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(CustomIngredient::new, CustomIngredient::new);
 

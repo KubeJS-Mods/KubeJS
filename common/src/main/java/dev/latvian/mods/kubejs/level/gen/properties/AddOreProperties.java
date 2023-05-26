@@ -18,9 +18,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author LatvianModder
- */
 public class AddOreProperties {
 
 	public ResourceLocation id = null;

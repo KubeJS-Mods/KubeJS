@@ -5,11 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemNameBlockItem;
 
-/**
- * @author Prunoideae
- */
 public class SeedItemBuilder extends BlockItemBuilder {
-
 	public SeedItemBuilder(ResourceLocation i) {
 		super(i);
 	}

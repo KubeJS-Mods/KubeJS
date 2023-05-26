@@ -15,9 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-/**
- * @author LatvianModder
- */
 public class AfterRecipesLoadedEventJS extends EventJS {
 	private final Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipeMap;
 	private final Map<ResourceLocation, Recipe<?>> recipeIdMap;

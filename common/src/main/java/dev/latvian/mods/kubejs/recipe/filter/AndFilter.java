@@ -5,9 +5,6 @@ import dev.latvian.mods.kubejs.core.RecipeKJS;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author LatvianModder
- */
 public class AndFilter implements RecipeFilter {
 	public final List<RecipeFilter> list = new ArrayList<>(2);
 

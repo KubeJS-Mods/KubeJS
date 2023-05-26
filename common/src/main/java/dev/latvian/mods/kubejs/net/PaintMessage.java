@@ -8,9 +8,6 @@ import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 
-/**
- * @author LatvianModder
- */
 public class PaintMessage extends BaseS2CMessage {
 	private final CompoundTag tag;
 

@@ -43,9 +43,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-/**
- * @author LatvianModder
- */
 public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient MaterialJS material;
 	public transient float hardness;

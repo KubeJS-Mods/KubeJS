@@ -9,9 +9,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.RecordItem;
 
-/**
- * @author LatvianModder
- */
 public class RecordItemJS extends RecordItem {
 	public static class Builder extends ItemBuilder {
 		public transient ResourceLocation song;

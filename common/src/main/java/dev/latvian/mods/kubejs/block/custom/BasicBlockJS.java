@@ -36,9 +36,6 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-/**
- * @author LatvianModder
- */
 public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterloggedBlock {
 	public static class Builder extends BlockBuilder {
 		public Builder(ResourceLocation i) {

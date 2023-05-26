@@ -10,9 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * @author LatvianModder
- */
 public interface MapJS {
 	@Nullable
 	static Map<?, ?> of(@Nullable Object o) {
@@ -26,7 +23,7 @@ public interface MapJS {
 			}
 
 			return map;
-		} else if(o instanceof JsonObject json) {
+		} else if (o instanceof JsonObject json) {
 			var map = new LinkedHashMap<String, Object>();
 
 			for (var entry : json.entrySet()) {

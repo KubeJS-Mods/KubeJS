@@ -2,9 +2,6 @@ package dev.latvian.mods.kubejs.script;
 
 import java.nio.charset.StandardCharsets;
 
-/**
- * @author LatvianModder
- */
 public class ScriptFile implements Comparable<ScriptFile> {
 	public final ScriptPack pack;
 	public final ScriptFileInfo info;

@@ -3,9 +3,6 @@ package dev.latvian.mods.kubejs.entity;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 
-/**
- * @author LatvianModder
- */
 public class LivingEntityDeathEventJS extends LivingEntityEventJS {
 	private final LivingEntity entity;
 	private final DamageSource source;

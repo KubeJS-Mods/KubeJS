@@ -11,9 +11,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-/**
- * @author LatvianModder
- */
 @Mixin(LootTables.class)
 public abstract class LootTablesMixin implements LootTablesKJS {
 

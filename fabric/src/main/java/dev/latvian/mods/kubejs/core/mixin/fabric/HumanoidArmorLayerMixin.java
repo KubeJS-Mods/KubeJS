@@ -28,7 +28,7 @@ public class HumanoidArmorLayerMixin {
 			String namespace = materialName.substring(0, separatorIndex);
 			String path = materialName.substring(separatorIndex + 1);
 			ResourceLocation texture = new ResourceLocation(namespace, "textures/models/armor/" + path + "_layer_" + (useSecondLayer ? 2 : 1) + (suffix == null ? "" : "_" + suffix) + ".png");
-			if(!ARMOR_LOCATION_CACHE.containsKey(texture.toString())) {
+			if (!ARMOR_LOCATION_CACHE.containsKey(texture.toString())) {
 				ARMOR_LOCATION_CACHE.put(texture.toString(), texture);
 			}
 			cir.setReturnValue(texture);

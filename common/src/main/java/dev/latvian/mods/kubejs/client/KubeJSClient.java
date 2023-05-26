@@ -30,9 +30,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.concurrent.CompletableFuture;
 
-/**
- * @author LatvianModder
- */
 public class KubeJSClient extends KubeJSCommon {
 	@Override
 	public void init() {

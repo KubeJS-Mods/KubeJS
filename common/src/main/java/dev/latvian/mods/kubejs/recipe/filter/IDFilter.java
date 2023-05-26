@@ -3,9 +3,6 @@ package dev.latvian.mods.kubejs.recipe.filter;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
 import net.minecraft.resources.ResourceLocation;
 
-/**
- * @author LatvianModder
- */
 public class IDFilter implements RecipeFilter {
 	public final ResourceLocation id;
 

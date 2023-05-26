@@ -28,9 +28,6 @@ import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * @author LatvianModder
- */
 public class KubeJSServerEventHandler {
 	private static final LevelResource PERSISTENT_DATA = new LevelResource("kubejs_persistent_data.nbt");
 

@@ -5,9 +5,6 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 
-/**
- * @author LatvianModder
- */
 public class ExplosionJS {
 	private final LevelAccessor level;
 	public final double x, y, z;

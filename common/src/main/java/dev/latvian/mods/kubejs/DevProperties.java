@@ -7,9 +7,6 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.util.Properties;
 
-/**
- * @author LatvianModder
- */
 public class DevProperties {
 	private static DevProperties instance;
 

@@ -4,9 +4,6 @@ import dev.latvian.mods.kubejs.entity.LivingEntityEventJS;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author LatvianModder
- */
 public abstract class PlayerEventJS extends LivingEntityEventJS {
 	@Override
 	public abstract Player getEntity();

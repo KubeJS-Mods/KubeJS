@@ -28,9 +28,6 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- * @author LatvianModder
- */
 public class ConsoleJS {
 	public static ConsoleJS STARTUP;
 	public static ConsoleJS SERVER;

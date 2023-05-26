@@ -7,9 +7,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author LatvianModder
- */
 public class BoundFluidStackJS extends FluidStackJS {
 	private final FluidStack fluidStack;
 

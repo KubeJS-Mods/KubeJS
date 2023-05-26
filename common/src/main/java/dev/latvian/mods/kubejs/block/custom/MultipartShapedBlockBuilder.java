@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.client.MultipartBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import net.minecraft.resources.ResourceLocation;
 
-public abstract class MultipartShapedBlockBuilder extends ShapedBlockBuilder{
+public abstract class MultipartShapedBlockBuilder extends ShapedBlockBuilder {
 	public MultipartShapedBlockBuilder(ResourceLocation i, String... suffixes) {
 		super(i, suffixes);
 	}

@@ -51,11 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-/**
- * @author LatvianModder
- */
 public class KubeJSCommands {
-
 	public static final DynamicCommandExceptionType NO_REGISTRY = new DynamicCommandExceptionType((id) ->
 			Component.literal("No builtin or static registry found for " + id)
 	);

@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 
-/**
- * @author LatvianModder
- */
 public class SyncStagesMessage extends BaseS2CMessage {
 	private final UUID player;
 	private final Collection<String> stages;

@@ -4,9 +4,6 @@ import dev.latvian.mods.rhino.util.CustomJavaToJsWrapperProvider;
 
 import java.util.function.Predicate;
 
-/**
- * @author LatvianModder
- */
 public class CustomJavaToJsWrappersEvent {
 	public final ScriptManager manager;
 

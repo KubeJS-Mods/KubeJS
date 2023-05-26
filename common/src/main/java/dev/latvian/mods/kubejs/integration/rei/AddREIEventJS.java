@@ -9,9 +9,6 @@ import me.shedaniel.rei.api.common.entry.EntryStack;
 
 import java.util.List;
 
-/**
- * @author shedaniel
- */
 public class AddREIEventJS extends EventJS {
 	private final EntryRegistry registry;
 	private final EntryWrapper entryWrapper;

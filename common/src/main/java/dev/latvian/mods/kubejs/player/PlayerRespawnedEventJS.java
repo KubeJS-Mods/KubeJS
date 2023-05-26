@@ -2,9 +2,6 @@ package dev.latvian.mods.kubejs.player;
 
 import net.minecraft.server.level.ServerPlayer;
 
-/**
- * @author LatvianModder
- */
 public class PlayerRespawnedEventJS extends PlayerEventJS {
 	private final ServerPlayer player;
 	private final ServerPlayer oldPlayer;

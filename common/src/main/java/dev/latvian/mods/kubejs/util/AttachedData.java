@@ -2,9 +2,6 @@ package dev.latvian.mods.kubejs.util;
 
 import java.util.HashMap;
 
-/**
- * @author LatvianModder
- */
 public class AttachedData<T> extends HashMap<String, Object> {
 	private final T parent;
 

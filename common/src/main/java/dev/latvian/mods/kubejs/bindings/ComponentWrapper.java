@@ -20,11 +20,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * @author LatvianModder
- */
 public class ComponentWrapper {
-
 	public static MutableComponent of(@Nullable Object o) {
 		o = UtilsJS.wrap(o, JSObjectType.ANY);
 		if (o == null) {

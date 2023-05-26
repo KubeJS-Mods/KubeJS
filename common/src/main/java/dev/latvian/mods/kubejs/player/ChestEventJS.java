@@ -8,9 +8,6 @@ import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author LatvianModder
- */
 public class ChestEventJS extends InventoryEventJS {
 	public ChestEventJS(Player player, AbstractContainerMenu menu) {
 		super(player, menu);

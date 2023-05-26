@@ -15,9 +15,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-/**
- * @author LatvianModder
- */
 @RemapPrefixForJS("kjs$")
 public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedData<Player> {
 	@Override

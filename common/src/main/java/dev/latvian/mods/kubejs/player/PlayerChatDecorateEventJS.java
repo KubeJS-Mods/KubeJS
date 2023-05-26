@@ -4,9 +4,6 @@ import dev.architectury.event.events.common.ChatEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
-/**
- * @author LatvianModder
- */
 public class PlayerChatDecorateEventJS extends PlayerEventJS {
 	private final ServerPlayer player;
 	public ChatEvent.ChatComponent chatComponent;

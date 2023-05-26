@@ -35,11 +35,7 @@ import java.util.function.Consumer;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 
-/**
- * @author Prunoideae
- */
 public class CropBlockBuilder extends BlockBuilder {
-
 	@FunctionalInterface
 	public interface SurviveCallback {
 		boolean survive(BlockState state, LevelReader reader, BlockPos pos);

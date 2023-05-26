@@ -19,8 +19,6 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.Objects;
 
 /**
- * @author LatvianModder
- *
  * TODO: make a common JEI plugin if the need arises
  */
 @JeiPlugin

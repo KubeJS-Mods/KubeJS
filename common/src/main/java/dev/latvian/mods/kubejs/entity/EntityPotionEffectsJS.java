@@ -8,9 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Map;
 
-/**
- * @author LatvianModder
- */
 public class EntityPotionEffectsJS {
 	private final LivingEntity entity;
 

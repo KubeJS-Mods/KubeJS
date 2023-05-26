@@ -14,9 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-/**
- * @author LatvianModder
- */
 public interface IngredientWrapper {
 	Ingredient none = Ingredient.EMPTY;
 	Ingredient all = IngredientPlatformHelper.get().wildcard();

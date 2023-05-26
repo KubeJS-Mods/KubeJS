@@ -5,9 +5,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-/**
- * @author LatvianModder
- */
 public class ItemPickedUpEventJS extends PlayerEventJS {
 	private final Player player;
 	private final ItemEntity entity;

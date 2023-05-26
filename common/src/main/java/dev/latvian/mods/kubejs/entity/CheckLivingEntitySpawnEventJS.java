@@ -6,9 +6,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Level;
 
-/**
- * @author LatvianModder
- */
 public class CheckLivingEntitySpawnEventJS extends LivingEntityEventJS {
 	private final LivingEntity entity;
 	private final Level level;

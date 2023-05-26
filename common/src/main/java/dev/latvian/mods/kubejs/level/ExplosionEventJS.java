@@ -13,9 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author LatvianModder
- */
 public abstract class ExplosionEventJS extends LevelEventJS {
 	protected final Level level;
 	protected final Explosion explosion;

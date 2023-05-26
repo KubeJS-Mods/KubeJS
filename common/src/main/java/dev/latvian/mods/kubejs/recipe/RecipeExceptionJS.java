@@ -1,8 +1,5 @@
 package dev.latvian.mods.kubejs.recipe;
 
-/**
- * @author LatvianModder
- */
 public class RecipeExceptionJS extends IllegalArgumentException {
 	public boolean fallback;
 	public boolean error;

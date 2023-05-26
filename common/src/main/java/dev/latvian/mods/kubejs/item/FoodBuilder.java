@@ -14,9 +14,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-/**
- * @author LatvianModder
- */
 public class FoodBuilder {
 	private int hunger;
 	private float saturation;

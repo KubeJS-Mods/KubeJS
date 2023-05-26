@@ -21,9 +21,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author LatvianModder
- */
 public class BlockWrapper {
 	public static Map<String, MaterialJS> getMaterial() {
 		return MaterialListJS.INSTANCE.map;

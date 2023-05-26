@@ -13,9 +13,6 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 
-/**
- * @author LatvianModder
- */
 public class KubeJSWorldEventHandler {
 	public static void init() {
 		LifecycleEvent.SERVER_LEVEL_LOAD.register(KubeJSWorldEventHandler::levelLoad);

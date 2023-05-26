@@ -22,9 +22,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-/**
- * @author LatvianModder
- */
 @RemapPrefixForJS("kjs$")
 public interface LivingEntityKJS extends EntityKJS {
 	UUID KJS_PLAYER_CUSTOM_SPEED = UUID.fromString("6715D9C6-1DA0-4B78-971A-5C32F5709F66");

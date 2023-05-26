@@ -7,9 +7,6 @@ import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.UUID;
 
-/**
- * @author LatvianModder
- */
 public class RemoveStageMessage extends BaseS2CMessage {
 	private final UUID player;
 	private final String stage;

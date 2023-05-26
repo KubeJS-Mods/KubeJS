@@ -14,9 +14,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-/**
- * @author LatvianModder
- */
 public class RemoveJEICategoriesEvent extends EventJS {
 	private final IJeiRuntime runtime;
 	private final Collection<RecipeType<?>> categoriesRemoved;

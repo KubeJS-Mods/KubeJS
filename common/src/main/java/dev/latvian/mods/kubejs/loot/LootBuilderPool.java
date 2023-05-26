@@ -12,9 +12,6 @@ import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author LatvianModder
- */
 public class LootBuilderPool implements FunctionContainer, ConditionContainer {
 	public NumberProvider rolls = ConstantValue.exactly(1);
 	public NumberProvider bonusRolls = null;

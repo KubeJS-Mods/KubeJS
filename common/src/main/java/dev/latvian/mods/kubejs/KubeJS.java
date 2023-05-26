@@ -42,9 +42,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Locale;
 
-/**
- * @author LatvianModder
- */
 public class KubeJS {
 	public static final String MOD_ID = "kubejs";
 	public static final String MOD_NAME = "KubeJS";

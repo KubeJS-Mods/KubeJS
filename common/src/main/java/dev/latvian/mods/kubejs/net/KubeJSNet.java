@@ -4,9 +4,6 @@ import dev.architectury.networking.simple.MessageType;
 import dev.architectury.networking.simple.SimpleNetworkManager;
 import dev.latvian.mods.kubejs.KubeJS;
 
-/**
- * @author LatvianModder
- */
 public interface KubeJSNet {
 	SimpleNetworkManager NET = SimpleNetworkManager.create(KubeJS.MOD_ID);
 

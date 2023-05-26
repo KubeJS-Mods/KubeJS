@@ -7,9 +7,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.material.Fluids;
 
-/**
- * @author LatvianModder
- */
 public class AddLakeProperties {
 	public ResourceLocation id = null;
 

@@ -14,9 +14,6 @@ import net.minecraft.world.level.material.Material;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @author LatvianModder
- */
 @RemapPrefixForJS("kjs$")
 public interface BlockKJS extends BlockBuilderProvider {
 	default void kjs$setBlockBuilder(BlockBuilder b) {

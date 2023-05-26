@@ -139,7 +139,7 @@ public enum ArgumentTypeWrapper {
 	private static Map<ResourceLocation, ClassWrapper<?>> getOrCacheByName() {
 		if (byNameCache == null) {
 			return byNameCache = Util.make(new HashMap<>(), map -> {
-				for(var entry : ArgumentTypeInfos.BY_CLASS.entrySet()) {
+				for (var entry : ArgumentTypeInfos.BY_CLASS.entrySet()) {
 					var id = Registry.COMMAND_ARGUMENT_TYPE.getKey(entry.getValue());
 					byNameCache.put(id, new ClassWrapper<>(entry.getKey()));
 				}

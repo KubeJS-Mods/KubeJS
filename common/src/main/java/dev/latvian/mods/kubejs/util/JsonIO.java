@@ -26,9 +26,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
 
-/**
- * @author LatvianModder
- */
 public class JsonIO {
 	@HideFromJS
 	public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setLenient().create();

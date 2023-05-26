@@ -30,9 +30,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-/**
- * @author LatvianModder
- */
 @RemapPrefixForJS("kjs$")
 public interface ItemKJS extends IngredientSupplierKJS {
 	@Nullable

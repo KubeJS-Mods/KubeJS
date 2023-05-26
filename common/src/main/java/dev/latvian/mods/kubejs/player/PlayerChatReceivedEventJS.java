@@ -4,9 +4,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 
-/**
- * @author LatvianModder
- */
 public class PlayerChatReceivedEventJS extends PlayerEventJS {
 	private final ServerPlayer player;
 	public final Component component;

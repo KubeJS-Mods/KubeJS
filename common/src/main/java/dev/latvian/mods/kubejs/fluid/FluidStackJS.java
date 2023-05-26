@@ -24,9 +24,6 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-/**
- * @author LatvianModder
- */
 public abstract class FluidStackJS implements WrappedJS, Copyable {
 	public static FluidStackJS of(@Nullable Object o) {
 		if (o == null) {

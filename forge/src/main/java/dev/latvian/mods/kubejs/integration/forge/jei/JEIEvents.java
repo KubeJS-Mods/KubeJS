@@ -3,9 +3,6 @@ package dev.latvian.mods.kubejs.integration.forge.jei;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 
-/**
- * @author LatvianModder
- */
 public interface JEIEvents {
 	EventGroup GROUP = EventGroup.of("JEIEvents");
 

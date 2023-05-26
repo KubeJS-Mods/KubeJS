@@ -20,9 +20,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-/**
- * @author LatvianModder
- */
 public abstract class BuilderBase<T> implements Supplier<T> {
 	public final ResourceLocation id;
 	private RegistrySupplier<T> object;

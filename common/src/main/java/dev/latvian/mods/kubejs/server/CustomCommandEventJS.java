@@ -7,9 +7,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author LatvianModder
- */
 public class CustomCommandEventJS extends EntityEventJS {
 	private final Level level;
 	private final Entity entity;

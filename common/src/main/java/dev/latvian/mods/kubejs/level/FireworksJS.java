@@ -15,9 +15,6 @@ import net.minecraft.world.level.Level;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author LatvianModder
- */
 public class FireworksJS {
 	public static FireworksJS of(Object o) {
 		var properties = MapJS.of(o);

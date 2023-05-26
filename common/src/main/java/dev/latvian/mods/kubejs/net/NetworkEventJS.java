@@ -5,9 +5,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author LatvianModder
- */
 public class NetworkEventJS extends PlayerEventJS {
 	private final Player player;
 	private final String channel;

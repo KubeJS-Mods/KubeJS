@@ -9,9 +9,6 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.Map;
 import java.util.function.Consumer;
 
-/**
- * @author LatvianModder
- */
 public class GenerateClientAssetsEventJS extends EventJS {
 	public final AssetJsonGenerator generator;
 	private final Map<String, String> langMap;

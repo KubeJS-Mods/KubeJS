@@ -6,9 +6,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.crafting.Ingredient;
 
-/**
- * @author LatvianModder
- */
 public class MutableArmorTier implements ArmorMaterial {
 	private static final int[] HEALTH_PER_SLOT = new int[]{13, 15, 16, 11};
 

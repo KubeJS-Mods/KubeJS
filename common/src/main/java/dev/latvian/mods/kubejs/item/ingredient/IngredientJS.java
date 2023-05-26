@@ -25,9 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-/**
- * @author LatvianModder
- */
 public interface IngredientJS {
 	static Ingredient of(@Nullable Object o) {
 		while (o instanceof Wrapper w) {

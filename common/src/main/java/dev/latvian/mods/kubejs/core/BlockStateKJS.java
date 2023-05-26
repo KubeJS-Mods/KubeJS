@@ -3,9 +3,6 @@ package dev.latvian.mods.kubejs.core;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.level.material.Material;
 
-/**
- * @author LatvianModder
- */
 @RemapPrefixForJS("kjs$")
 public interface BlockStateKJS {
 	default void kjs$setMaterial(Material v) {

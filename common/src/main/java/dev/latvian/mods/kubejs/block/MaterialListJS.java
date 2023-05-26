@@ -6,9 +6,6 @@ import net.minecraft.world.level.material.Material;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author LatvianModder
- */
 public class MaterialListJS {
 	public static final MaterialListJS INSTANCE = new MaterialListJS();
 

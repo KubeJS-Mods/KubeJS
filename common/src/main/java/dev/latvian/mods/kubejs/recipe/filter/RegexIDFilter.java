@@ -9,9 +9,6 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
-/**
- * @author LatvianModder
- */
 public class RegexIDFilter implements RecipeFilter {
 	private final Pattern pattern;
 	private final ConcurrentHashMap<ResourceLocation, Boolean> matchCache = new ConcurrentHashMap<>();

@@ -7,9 +7,6 @@ import dev.latvian.mods.kubejs.item.MutableArmorTier;
 
 import java.util.function.Consumer;
 
-/**
- * @author LatvianModder
- */
 public class ItemArmorTierRegistryEventJS extends StartupEventJS {
 	public void add(String id, String parent, Consumer<MutableArmorTier> tier) {
 		var material = ItemBuilder.toArmorMaterial(parent);

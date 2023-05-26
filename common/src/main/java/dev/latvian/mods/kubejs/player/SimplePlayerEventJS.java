@@ -2,9 +2,6 @@ package dev.latvian.mods.kubejs.player;
 
 import net.minecraft.world.entity.player.Player;
 
-/**
- * @author LatvianModder
- */
 public class SimplePlayerEventJS extends PlayerEventJS {
 	private final Player player;
 

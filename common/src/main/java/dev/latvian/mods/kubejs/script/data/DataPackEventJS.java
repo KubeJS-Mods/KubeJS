@@ -9,9 +9,6 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.FallbackResourceManager;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
 
-/**
- * @author LatvianModder
- */
 public class DataPackEventJS extends EventJS {
 	private final VirtualKubeJSDataPack virtualDataPack;
 	private final MultiPackResourceManager wrappedManager;

@@ -4,9 +4,6 @@ import com.mojang.brigadier.ParseResults;
 import dev.architectury.event.events.common.CommandPerformEvent;
 import net.minecraft.commands.CommandSourceStack;
 
-/**
- * @author LatvianModder
- */
 public class CommandEventJS extends ServerEventJS {
 	private final CommandPerformEvent event;
 	private final String commandName;

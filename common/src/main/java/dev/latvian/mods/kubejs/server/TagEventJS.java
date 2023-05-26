@@ -29,9 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-/**
- * @author LatvianModder
- */
 public class TagEventJS<T> extends EventJS {
 	public class TagWrapper {
 		private final ResourceLocation id;

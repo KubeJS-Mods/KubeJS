@@ -2,9 +2,6 @@ package dev.latvian.mods.kubejs.level;
 
 import net.minecraft.world.level.Level;
 
-/**
- * @author LatvianModder
- */
 public class SimpleLevelEventJS extends LevelEventJS {
 	private final Level level;
 

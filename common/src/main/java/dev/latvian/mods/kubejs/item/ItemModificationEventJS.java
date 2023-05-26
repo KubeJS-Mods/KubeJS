@@ -6,9 +6,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.function.Consumer;
 
-/**
- * @author LatvianModder
- */
 public class ItemModificationEventJS extends EventJS {
 	public void modify(Ingredient in, Consumer<Item> c) {
 		for (var item : in.kjs$getItemTypes()) {

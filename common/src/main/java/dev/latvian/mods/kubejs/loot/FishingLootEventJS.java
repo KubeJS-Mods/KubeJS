@@ -6,9 +6,6 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.Map;
 import java.util.function.Consumer;
 
-/**
- * @author LatvianModder
- */
 public class FishingLootEventJS extends LootEventJS {
 	public FishingLootEventJS(Map<ResourceLocation, JsonElement> c) {
 		super(c);

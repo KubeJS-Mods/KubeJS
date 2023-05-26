@@ -3,9 +3,6 @@ package dev.latvian.mods.kubejs.core;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.network.chat.Component;
 
-/**
- * @author LatvianModder
- */
 @RemapPrefixForJS("kjs$")
 public interface MessageSenderKJS {
 	default Component kjs$getName() {

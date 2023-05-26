@@ -2,9 +2,6 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.rhino.Scriptable;
 
-/**
- * @author LatvianModder
- */
 public class BindingsEvent {
 	public final ScriptManager manager;
 	public final Scriptable scope;

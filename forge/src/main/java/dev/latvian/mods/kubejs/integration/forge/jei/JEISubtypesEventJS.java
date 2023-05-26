@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.integration.forge.jei;
 
-import dev.latvian.mods.kubejs.core.IngredientKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
@@ -12,9 +11,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.function.Function;
 
-/**
- * @author LatvianModder
- */
 public class JEISubtypesEventJS extends EventJS {
 	@FunctionalInterface
 	public interface Interpreter extends Function<ItemStack, Object> {

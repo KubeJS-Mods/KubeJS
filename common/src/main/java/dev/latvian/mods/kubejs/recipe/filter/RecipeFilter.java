@@ -12,9 +12,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-/**
- * @author LatvianModder
- */
 @FunctionalInterface
 public interface RecipeFilter extends Predicate<RecipeKJS> {
 	RecipeFilter ALWAYS_TRUE = r -> true;

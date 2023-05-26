@@ -8,9 +8,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author LatvianModder
- */
 public class BlockPlacedEventJS extends EntityEventJS {
 	private final Entity entity;
 	private final Level level;

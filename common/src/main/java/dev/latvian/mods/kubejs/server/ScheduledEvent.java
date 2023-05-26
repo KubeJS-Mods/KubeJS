@@ -6,9 +6,6 @@ import net.minecraft.server.MinecraftServer;
 import java.time.Duration;
 import java.time.temporal.TemporalAmount;
 
-/**
- * @author LatvianModder
- */
 public abstract class ScheduledEvent {
 	public static class InMs extends ScheduledEvent {
 		public InMs(MinecraftServer s, Duration timer, long e, IScheduledEventCallback c) {

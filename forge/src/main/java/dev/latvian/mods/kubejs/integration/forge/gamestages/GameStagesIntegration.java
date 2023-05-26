@@ -9,9 +9,6 @@ import dev.latvian.mods.kubejs.stages.Stages;
 import net.darkhax.gamestages.event.GameStageEvent;
 import net.minecraftforge.common.MinecraftForge;
 
-/**
- * @author LatvianModder
- */
 public class GameStagesIntegration extends KubeJSPlugin {
 
 	public static final EventGroup GROUP = EventGroup.of("GameStageEvents");

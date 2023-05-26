@@ -13,9 +13,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * @author LatvianModder
- */
 public interface ListJS {
 	@Nullable
 	static List<?> of(@Nullable Object o) {

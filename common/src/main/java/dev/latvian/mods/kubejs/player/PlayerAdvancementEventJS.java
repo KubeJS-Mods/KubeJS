@@ -3,9 +3,6 @@ package dev.latvian.mods.kubejs.player;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.server.level.ServerPlayer;
 
-/**
- * @author LatvianModder
- */
 public class PlayerAdvancementEventJS extends PlayerEventJS {
 	private final ServerPlayer player;
 	private final Advancement advancement;

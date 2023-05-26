@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-/**
- * @author LatvianModder
- */
 public class CustomIngredientWithParent extends KubeJSIngredient {
 	public static final KubeJSIngredientSerializer<CustomIngredientWithParent> SERIALIZER = new KubeJSIngredientSerializer<>(KubeJS.id("custom"), CustomIngredientWithParent::new, CustomIngredientWithParent::new);
 

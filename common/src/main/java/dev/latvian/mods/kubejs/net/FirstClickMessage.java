@@ -10,9 +10,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 
-/**
- * @author LatvianModder
- */
 public class FirstClickMessage extends BaseC2SMessage {
 	private final int type;
 

@@ -6,9 +6,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 
-/**
- * @author LatvianModder
- */
 public class BlockItemBuilder extends ItemBuilder {
 	public BlockBuilder blockBuilder;
 

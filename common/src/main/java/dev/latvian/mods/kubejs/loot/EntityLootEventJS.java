@@ -8,9 +8,6 @@ import net.minecraft.world.entity.EntityType;
 import java.util.Map;
 import java.util.function.Consumer;
 
-/**
- * @author LatvianModder
- */
 public class EntityLootEventJS extends LootEventJS {
 	public EntityLootEventJS(Map<ResourceLocation, JsonElement> c) {
 		super(c);

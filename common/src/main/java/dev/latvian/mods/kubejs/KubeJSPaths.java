@@ -7,9 +7,6 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/**
- * @author LatvianModder
- */
 public interface KubeJSPaths {
 	MutableBoolean FIRST_RUN = new MutableBoolean(false);
 

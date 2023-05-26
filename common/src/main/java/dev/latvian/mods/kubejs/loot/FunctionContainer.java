@@ -29,10 +29,10 @@ public interface FunctionContainer {
 	}
 
 	default FunctionContainer count(NumberProvider count) {
-			var o = new JsonObject();
-			o.addProperty("function", "minecraft:set_count");
-			o.add("count", UtilsJS.numberProviderJson(count));
-			return addFunction(o);
+		var o = new JsonObject();
+		o.addProperty("function", "minecraft:set_count");
+		o.add("count", UtilsJS.numberProviderJson(count));
+		return addFunction(o);
 	}
 
 	default FunctionContainer enchantWithLevels(NumberProvider levels, boolean treasure) {

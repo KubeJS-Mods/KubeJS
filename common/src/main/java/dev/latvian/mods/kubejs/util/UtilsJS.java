@@ -92,9 +92,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-/**
- * @author LatvianModder
- */
 public class UtilsJS {
 	public static final Random RANDOM = new Random();
 	public static final Pattern REGEX_PATTERN = Pattern.compile("/(.*)/([a-z]*)");

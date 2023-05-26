@@ -10,9 +10,6 @@ import java.util.HashSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-/**
- * @author LatvianModder
- */
 public class HideJEIEventJS<T> extends EventJS {
 	private final IJeiRuntime runtime;
 	private final IIngredientType<T> type;

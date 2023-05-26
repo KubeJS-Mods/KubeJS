@@ -3,9 +3,6 @@ package dev.latvian.mods.kubejs.player;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-/**
- * @author LatvianModder
- */
 public class InventoryChangedEventJS extends PlayerEventJS {
 	private final Player player;
 	private final ItemStack item;

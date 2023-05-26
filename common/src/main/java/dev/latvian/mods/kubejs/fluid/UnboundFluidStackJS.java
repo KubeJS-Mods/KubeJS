@@ -6,9 +6,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author LatvianModder
- */
 public class UnboundFluidStackJS extends FluidStackJS {
 	private final ResourceLocation fluidRL;
 	private final String fluid;

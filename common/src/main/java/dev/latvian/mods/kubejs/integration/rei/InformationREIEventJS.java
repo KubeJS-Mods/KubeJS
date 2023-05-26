@@ -13,9 +13,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.Arrays;
 
-/**
- * @author shedaniel
- */
 public class InformationREIEventJS extends EventJS {
 	public void addItem(Ingredient stacks, Component title, Component[] description) {
 		add(VanillaEntryTypes.ITEM, stacks, title, description);

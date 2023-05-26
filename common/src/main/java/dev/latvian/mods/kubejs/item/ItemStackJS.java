@@ -32,9 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-/**
- * @author LatvianModder
- */
 public interface ItemStackJS {
 	Map<String, ItemStack> PARSE_CACHE = new HashMap<>();
 	ItemStack[] EMPTY_ARRAY = new ItemStack[0];

@@ -13,9 +13,6 @@ import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 
-/**
- * @author LatvianModder
- */
 public class KubeJSEntityEventHandler {
 	public static void init() {
 		EntityEvent.LIVING_CHECK_SPAWN.register(KubeJSEntityEventHandler::checkSpawn);

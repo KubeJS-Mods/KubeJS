@@ -10,9 +10,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
-/**
- * @author LatvianModder
- */
 public class PlayerStatsJS {
 	public final Player player;
 	private final StatsCounter statFile;

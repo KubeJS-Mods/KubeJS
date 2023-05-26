@@ -18,9 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,9 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-/**
- * @author LatvianModder
- */
 public abstract class KubeJSResourcePack implements PackResources {
 	private final PackType packType;
 	private Map<ResourceLocation, JsonElement> cachedResources;
@@ -133,7 +128,7 @@ public abstract class KubeJSResourcePack implements PackResources {
 			var root = KubeJSPaths.get(packType).toAbsolutePath().resolve(namespace);
 			var walkRoot = root.resolve(path);
 			if (Files.exists(walkRoot) && Files.isDirectory(walkRoot)) {
-				try(var children = Files.walk(walkRoot)) {
+				try (var children = Files.walk(walkRoot)) {
 					children
 							.filter(p -> !p.toString().endsWith(".mcmeta") && !Files.isDirectory(p))
 							.map(p -> new ResourceLocation(namespace, Joiner.on('/').join(root.relativize(p))))

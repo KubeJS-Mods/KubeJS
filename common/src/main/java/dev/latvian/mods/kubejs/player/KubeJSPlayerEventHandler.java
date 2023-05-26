@@ -15,9 +15,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 
-/**
- * @author LatvianModder
- */
 public class KubeJSPlayerEventHandler {
 	public static void init() {
 		PlayerEvent.PLAYER_JOIN.register(KubeJSPlayerEventHandler::loggedIn);

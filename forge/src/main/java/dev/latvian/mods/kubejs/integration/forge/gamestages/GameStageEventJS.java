@@ -4,9 +4,6 @@ import dev.latvian.mods.kubejs.player.PlayerEventJS;
 import net.darkhax.gamestages.event.GameStageEvent;
 import net.minecraft.world.entity.player.Player;
 
-/**
- * @author LatvianModder
- */
 public class GameStageEventJS extends PlayerEventJS {
 	private final GameStageEvent event;
 

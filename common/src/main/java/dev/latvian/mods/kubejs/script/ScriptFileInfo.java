@@ -17,9 +17,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-/**
- * @author LatvianModder
- */
 public class ScriptFileInfo {
 	private static final Pattern FILE_FIXER = Pattern.compile("[^\\w.\\/]");
 	private static final Pattern PROPERTY_PATTERN = Pattern.compile("^//\\s*(\\w+)\\s*:?\\s*(\\w+)$");

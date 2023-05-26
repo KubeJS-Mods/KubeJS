@@ -13,8 +13,6 @@ import java.util.HashSet;
 import java.util.stream.Stream;
 
 /**
- * @author shedaniel
- * <p>
  * TODO: Rework in 1.19, this is basically just a straight port to the new API
  *   (sorry future max, i don't have time, you're gonna have to rework this even later, maybe 1.19.3)
  */

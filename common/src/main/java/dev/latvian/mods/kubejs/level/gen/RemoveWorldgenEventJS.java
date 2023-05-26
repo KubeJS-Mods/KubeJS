@@ -31,9 +31,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-/**
- * @author LatvianModder
- */
 public class RemoveWorldgenEventJS extends StartupEventJS {
 	protected static boolean checkTree(ConfiguredFeature<?, ?> configuredFeature, Predicate<FeatureConfiguration> predicate) {
 		return predicate.test(configuredFeature.config()) || configuredFeature.config().getFeatures().anyMatch(cf -> checkTree(cf, predicate));

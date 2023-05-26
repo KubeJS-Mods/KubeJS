@@ -24,9 +24,6 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
-/**
- * @author LatvianModder
- */
 public enum ScriptType implements ScriptTypePredicate {
 	STARTUP("startup", "KubeJS Startup", KubeJS::getStartupScriptManager),
 	SERVER("server", "KubeJS Server", ServerScriptManager::getScriptManager),

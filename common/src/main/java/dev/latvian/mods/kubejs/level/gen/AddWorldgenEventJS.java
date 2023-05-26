@@ -47,9 +47,6 @@ import java.util.OptionalInt;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
-/**
- * @author LatvianModder
- */
 public class AddWorldgenEventJS extends StartupEventJS {
 	private static final Pattern SPAWN_PATTERN = Pattern.compile("(\\w+:\\w+)\\*\\((\\d+)-(\\d+)\\):(\\d+)");
 

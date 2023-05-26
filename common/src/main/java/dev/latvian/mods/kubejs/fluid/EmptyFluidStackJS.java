@@ -6,9 +6,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author LatvianModder
- */
 public class EmptyFluidStackJS extends FluidStackJS {
 	public static final EmptyFluidStackJS INSTANCE = new EmptyFluidStackJS();
 

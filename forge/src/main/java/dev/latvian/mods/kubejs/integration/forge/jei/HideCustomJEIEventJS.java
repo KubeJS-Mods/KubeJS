@@ -18,9 +18,6 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-/**
- * @author LatvianModder
- */
 public class HideCustomJEIEventJS extends EventJS {
 	private final IJeiRuntime runtime;
 	private final HashMap<IIngredientType<?>, HideJEIEventJS<?>> events;
@@ -54,7 +51,9 @@ public class HideCustomJEIEventJS extends EventJS {
 
 				return (Predicate) (it) -> {
 					for (Predicate p : predicates) {
-						if (p.test(it)) return true;
+						if (p.test(it)) {
+							return true;
+						}
 					}
 					return false;
 				};

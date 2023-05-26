@@ -5,9 +5,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
-/**
- * @author LatvianModder
- */
 public class FoodEatenEventJS extends EntityEventJS {
 	private final Entity entity;
 	private final ItemStack item;

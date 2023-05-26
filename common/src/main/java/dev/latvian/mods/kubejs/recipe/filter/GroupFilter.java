@@ -2,9 +2,6 @@ package dev.latvian.mods.kubejs.recipe.filter;
 
 import dev.latvian.mods.kubejs.core.RecipeKJS;
 
-/**
- * @author LatvianModder
- */
 public class GroupFilter implements RecipeFilter {
 	private final String group;
 

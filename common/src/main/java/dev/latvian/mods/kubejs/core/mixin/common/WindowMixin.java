@@ -9,9 +9,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.InputStream;
 
-/**
- * @author LatvianModder
- */
 @Mixin(Window.class)
 public class WindowMixin {
 	@Inject(method = "setIcon", at = @At("HEAD"), cancellable = true)

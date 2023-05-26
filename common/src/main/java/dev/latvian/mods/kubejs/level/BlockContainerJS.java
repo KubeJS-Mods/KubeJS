@@ -41,9 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * @author LatvianModder
- */
 public class BlockContainerJS implements SpecialEquality {
 	private static final ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
 

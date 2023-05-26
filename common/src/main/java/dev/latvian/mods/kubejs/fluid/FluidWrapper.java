@@ -8,9 +8,6 @@ import net.minecraft.world.level.material.Fluid;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author LatvianModder
- */
 public class FluidWrapper {
 	public static final ResourceLocation WATER_ID = new ResourceLocation("minecraft:water");
 	public static final ResourceLocation LAVA_ID = new ResourceLocation("minecraft:lava");

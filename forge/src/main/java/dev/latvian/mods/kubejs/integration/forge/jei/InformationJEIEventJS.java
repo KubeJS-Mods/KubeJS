@@ -12,9 +12,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.stream.Collectors;
 
-/**
- * @author LatvianModder
- */
 
 public class InformationJEIEventJS extends EventJS {
 	private final IRecipeRegistration registration;

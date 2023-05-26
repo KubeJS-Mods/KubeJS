@@ -31,9 +31,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-/**
- * @author LatvianModder
- */
 public interface UtilsWrapper {
 	static MinecraftServer getServer() {
 		return UtilsJS.staticServer;

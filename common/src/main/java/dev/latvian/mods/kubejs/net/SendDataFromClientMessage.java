@@ -10,9 +10,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author LatvianModder
- */
 public class SendDataFromClientMessage extends BaseC2SMessage {
 	private final String channel;
 	private final CompoundTag data;

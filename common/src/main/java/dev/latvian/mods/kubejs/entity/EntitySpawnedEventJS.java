@@ -3,9 +3,6 @@ package dev.latvian.mods.kubejs.entity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
-/**
- * @author LatvianModder
- */
 public class EntitySpawnedEventJS extends EntityEventJS {
 	private final Entity entity;
 	private final Level level;

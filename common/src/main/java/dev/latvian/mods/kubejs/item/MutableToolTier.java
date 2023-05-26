@@ -4,9 +4,6 @@ import dev.latvian.mods.rhino.util.RemapForJS;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
 
-/**
- * @author LatvianModder
- */
 public class MutableToolTier implements Tier {
 	public final Tier parent;
 	private int uses;

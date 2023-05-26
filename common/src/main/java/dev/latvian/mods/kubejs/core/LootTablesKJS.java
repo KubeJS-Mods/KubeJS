@@ -22,9 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-/**
- * @author LatvianModder
- */
 public interface LootTablesKJS {
 	default void kjs$apply0(Map<ResourceLocation, JsonElement> map, BiConsumer<ResourceLocation, JsonElement> action) {
 		Map<ResourceLocation, JsonElement> map1 = new HashMap<>(map);

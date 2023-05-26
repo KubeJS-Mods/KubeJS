@@ -9,9 +9,6 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Map;
 import java.util.function.Consumer;
 
-/**
- * @author LatvianModder
- */
 public class BlockLootEventJS extends LootEventJS {
 	public BlockLootEventJS(Map<ResourceLocation, JsonElement> c) {
 		super(c);

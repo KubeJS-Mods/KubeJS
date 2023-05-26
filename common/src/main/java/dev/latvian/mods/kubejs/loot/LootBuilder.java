@@ -8,9 +8,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-/**
- * @author LatvianModder
- */
 public class LootBuilder implements FunctionContainer, ConditionContainer {
 	public String type = "minecraft:generic";
 	public ResourceLocation customId = null;
@@ -60,11 +57,13 @@ public class LootBuilder implements FunctionContainer, ConditionContainer {
 		pools.add(pool.toJson());
 	}
 
+	@Override
 	public LootBuilder addFunction(JsonObject o) {
 		functions.add(o);
 		return this;
 	}
 
+	@Override
 	public LootBuilder addCondition(JsonObject o) {
 		conditions.add(o);
 		return this;

@@ -6,9 +6,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-/**
- * @author LatvianModder
- */
 public class ItemEntityInteractedEventJS extends PlayerEventJS {
 	private final Player player;
 	private final Entity entity;

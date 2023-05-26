@@ -11,9 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author LatvianModder
- */
 public class LivingEntityDropsEventJS extends LivingEntityEventJS {
 	private final LivingDropsEvent event;
 	public List<ItemEntity> eventDrops;

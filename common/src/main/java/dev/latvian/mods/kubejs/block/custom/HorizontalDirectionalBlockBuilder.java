@@ -78,7 +78,7 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 		return textures.has(name) ? textures.get(name).getAsString() : defaultTexture;
 	}
 
-	@Override 	
+	@Override
 	public Block createObject() {
 		return new HorizontalDirectionalBlockJS(this);
 	}
@@ -99,7 +99,9 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 			List<AABB> newShapes = new ArrayList<>();
 
 			switch (direction) {
-				case NORTH -> {return shape;}
+				case NORTH -> {
+					return shape;
+				}
 				case SOUTH -> shape.forAllBoxes((x1, y1, z1, x2, y2, z2) -> newShapes.add(new AABB(1D - x2, y1, 1D - z2, 1D - x1, y2, 1D - z1)));
 				case WEST -> shape.forAllBoxes((x1, y1, z1, x2, y2, z2) -> newShapes.add(new AABB(z1, y1, 1D - x2, z2, y2, 1D - x1)));
 				case EAST -> shape.forAllBoxes((x1, y1, z1, x2, y2, z2) -> newShapes.add(new AABB(1D - z2, y1, x1, 1D - z1, y2, x2)));

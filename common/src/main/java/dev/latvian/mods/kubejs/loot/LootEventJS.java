@@ -9,9 +9,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.function.Consumer;
 
-/**
- * @author LatvianModder
- */
 public abstract class LootEventJS extends EventJS {
 	// static final Gson GSON_CONDITIONS = Deserializers.createConditionSerializer().create();
 	// static final Gson GSON_FUNCTIONS = Deserializers.createFunctionSerializer().create();

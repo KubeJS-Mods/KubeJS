@@ -16,9 +16,6 @@ import net.minecraft.world.level.material.Fluid;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-/**
- * @author LatvianModder
- */
 public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	public transient ResourceLocation stillTexture;
 	public transient ResourceLocation flowingTexture;

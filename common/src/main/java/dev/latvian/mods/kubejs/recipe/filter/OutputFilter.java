@@ -3,9 +3,6 @@ package dev.latvian.mods.kubejs.recipe.filter;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 
-/**
- * @author LatvianModder
- */
 public class OutputFilter implements RecipeFilter {
 	private final ReplacementMatch match;
 

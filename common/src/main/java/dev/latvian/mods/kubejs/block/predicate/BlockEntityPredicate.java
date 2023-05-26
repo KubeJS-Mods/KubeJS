@@ -5,9 +5,6 @@ import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 
-/**
- * @author LatvianModder
- */
 public class BlockEntityPredicate implements BlockPredicate {
 	private final ResourceLocation id;
 	private BlockEntityPredicateDataCheck checkData;

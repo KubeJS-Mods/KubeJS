@@ -7,9 +7,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author LatvianModder
- */
 public class ItemClickedEventJS extends PlayerEventJS {
 	private final Player player;
 	private final InteractionHand hand;

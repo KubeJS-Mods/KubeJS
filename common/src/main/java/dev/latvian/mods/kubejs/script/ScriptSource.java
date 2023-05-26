@@ -7,9 +7,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/**
- * @author LatvianModder
- */
 @FunctionalInterface
 public interface ScriptSource {
 	InputStream createStream(ScriptFileInfo info) throws IOException;

@@ -8,9 +8,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.ComposterBlock;
 
-/**
- * @author LatvianModder
- */
 public class CompostableRecipesEventJS extends EventJS {
 	public static Object2FloatMap<ItemLike> originalMap = null;
 

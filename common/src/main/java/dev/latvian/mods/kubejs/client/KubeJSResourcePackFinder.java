@@ -8,9 +8,6 @@ import net.minecraft.server.packs.repository.RepositorySource;
 import java.nio.file.Files;
 import java.util.function.Consumer;
 
-/**
- * @author LatvianModder
- */
 public class KubeJSResourcePackFinder implements RepositorySource {
 	@Override
 	public void loadPacks(Consumer<Pack> nameToPackMap, Pack.PackConstructor packInfoFactory) {

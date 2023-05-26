@@ -9,9 +9,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author LatvianModder
- */
 public class AllMatchRuleTest extends RuleTest {
 
 	public static final Codec<AllMatchRuleTest> CODEC = RuleTest.CODEC
