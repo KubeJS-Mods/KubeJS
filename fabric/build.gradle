@@ -18,6 +18,15 @@ loom {
 	accessWidenerPath = accessWidenerFile
 }
 
+sourceSets {
+	main {
+		// compiledBy copyAccessWidener // I think this broke things even more
+		resources {
+			srcDir generatedResources
+		}
+	}
+}
+
 repositories {
 	maven {
 		url "https://maven.blamejared.com"
@@ -28,8 +37,8 @@ repositories {
 }
 
 dependencies {
-	modApi("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
-	modApi("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
+	modApi("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}") { exclude group: 'net.fabricmc', module: 'fabric-loader' }
+	modApi("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}") { exclude group: 'net.fabricmc', module: 'fabric-loader' }
 
 	modApi("dev.architectury:architectury-fabric:${rootProject.architectury_version}")
 
@@ -48,15 +57,6 @@ dependencies {
 task copyAccessWidener(type: Copy) {
 	from accessWidenerFile
 	into generatedResources
-}
-
-sourceSets {
-	main {
-		compiledBy copyAccessWidener
-		resources {
-			srcDir generatedResources
-		}
-	}
 }
 
 processResources {
