@@ -1,40 +1,49 @@
 package dev.latvian.mods.kubejs.fabric;
 
-import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
-import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
+import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.renderer.RenderType;
 
 public class KubeJSFabricClient {
 	public static void registry() {
 		for (var builder : RegistryInfo.BLOCK) {
 			if (builder instanceof BlockBuilder b) {
-				var block = b.get();
-
 				switch (b.renderType) {
-					case "cutout" -> RenderTypeRegistry.register(RenderType.cutout(), block);
-					case "cutout_mipped" -> RenderTypeRegistry.register(RenderType.cutoutMipped(), block);
-					case "translucent" -> RenderTypeRegistry.register(RenderType.translucent(), block);
+					case "cutout" -> BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutout(), b.get());
+					case "cutout_mipped" -> BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutoutMipped(), b.get());
+					case "translucent" -> BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(), b.get());
+				}
+			}
+		}
+
+		for (var builder : RegistryInfo.FLUID) {
+			if (builder instanceof FluidBuilder b) {
+				switch (b.renderType) {
+					case "cutout" -> BlockRenderLayerMap.INSTANCE.putFluids(RenderType.cutout(), b.get());
+					case "cutout_mipped" -> BlockRenderLayerMap.INSTANCE.putFluids(RenderType.cutoutMipped(), b.get());
+					case "translucent" -> BlockRenderLayerMap.INSTANCE.putFluids(RenderType.translucent(), b.get());
 				}
 			}
 		}
 
 		for (var builder : RegistryInfo.BLOCK) {
 			if (builder instanceof BlockBuilder b && !b.color.isEmpty()) {
-				ColorHandlerRegistry.registerBlockColors((state, level, pos, index) -> b.color.get(index), b);
+				ColorProviderRegistry.BLOCK.register((state, level, pos, index) -> b.color.get(index), b.get());
 			}
 		}
 
 		for (var builder : RegistryInfo.ITEM) {
 			if (builder instanceof ItemBuilder b && b.colorCallback != null) {
-				ColorHandlerRegistry.registerItemColors((stack, tintIndex) -> b.colorCallback.getColor(stack, tintIndex).getArgbJS(), b);
+				ColorProviderRegistry.ITEM.register((stack, tintIndex) -> b.colorCallback.getColor(stack, tintIndex).getArgbJS(), b.get());
 			}
 
 			if (builder instanceof FluidBucketItemBuilder b && b.fluidBuilder.bucketColor != 0xFFFFFFFF) {
-				ColorHandlerRegistry.registerItemColors((stack, index) -> index == 1 ? b.fluidBuilder.bucketColor : 0xFFFFFFFF, b);
+				ColorProviderRegistry.ITEM.register((stack, index) -> index == 1 ? b.fluidBuilder.bucketColor : 0xFFFFFFFF, b.get());
 			}
 		}
 	}

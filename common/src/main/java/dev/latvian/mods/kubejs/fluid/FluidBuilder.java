@@ -26,6 +26,7 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	public transient int viscosity = 1000;
 	public transient boolean isGaseous;
 	public transient Rarity rarity = Rarity.COMMON;
+	public transient String renderType = "solid";
 	public ArchitecturyFluidAttributes attributes;
 
 	public FlowingFluidBuilder flowingFluid;
@@ -111,7 +112,7 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	}
 
 	public FluidBuilder builtinTextures() {
-		stillTexture(KubeJS.id("fluid/fluid_thin"));
+		stillTexture(KubeJS.id("fluid/fluid_thin_still"));
 		flowingTexture(KubeJS.id("fluid/fluid_thin_flow"));
 		return this;
 	}
@@ -124,6 +125,15 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	public FluidBuilder flowingTexture(ResourceLocation id) {
 		flowingTexture = id;
 		return this;
+	}
+
+	public FluidBuilder renderType(String l) {
+		renderType = l;
+		return this;
+	}
+
+	public FluidBuilder translucent() {
+		return renderType("translucent");
 	}
 
 	public FluidBuilder thickTexture(Color color) {

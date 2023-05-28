@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.forge;
 
-import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
+import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -26,12 +26,20 @@ public class KubeJSForgeClient {
 
 		for (var builder : RegistryInfo.BLOCK) {
 			if (builder instanceof BlockBuilder b) {
-				var block = b.get();
-
 				switch (b.renderType) {
-					case "cutout" -> ItemBlockRenderTypes.setRenderLayer(block, RenderType.cutout());
-					case "cutout_mipped" -> ItemBlockRenderTypes.setRenderLayer(block, RenderType.cutoutMipped());
-					case "translucent" -> ItemBlockRenderTypes.setRenderLayer(block, RenderType.translucent());
+					case "cutout" -> ItemBlockRenderTypes.setRenderLayer(b.get(), RenderType.cutout());
+					case "cutout_mipped" -> ItemBlockRenderTypes.setRenderLayer(b.get(), RenderType.cutoutMipped());
+					case "translucent" -> ItemBlockRenderTypes.setRenderLayer(b.get(), RenderType.translucent());
+				}
+			}
+		}
+
+		for (var builder : RegistryInfo.FLUID) {
+			if (builder instanceof FluidBuilder b) {
+				switch (b.renderType) {
+					case "cutout" -> ItemBlockRenderTypes.setRenderLayer(b.get(), RenderType.cutout());
+					case "cutout_mipped" -> ItemBlockRenderTypes.setRenderLayer(b.get(), RenderType.cutoutMipped());
+					case "translucent" -> ItemBlockRenderTypes.setRenderLayer(b.get(), RenderType.translucent());
 				}
 			}
 		}
@@ -40,7 +48,7 @@ public class KubeJSForgeClient {
 	private void blockColors(RegisterColorHandlersEvent.Block event) {
 		for (var builder : RegistryInfo.BLOCK) {
 			if (builder instanceof BlockBuilder b && !b.color.isEmpty()) {
-				ColorHandlerRegistry.registerBlockColors((state, level, pos, index) -> b.color.get(index), b);
+				event.register((state, level, pos, index) -> b.color.get(index), b.get());
 			}
 		}
 	}
@@ -48,11 +56,11 @@ public class KubeJSForgeClient {
 	private void itemColors(RegisterColorHandlersEvent.Item event) {
 		for (var builder : RegistryInfo.ITEM) {
 			if (builder instanceof ItemBuilder b && b.colorCallback != null) {
-				ColorHandlerRegistry.registerItemColors((stack, tintIndex) -> b.colorCallback.getColor(stack, tintIndex).getArgbJS(), b);
+				event.register((stack, tintIndex) -> b.colorCallback.getColor(stack, tintIndex).getArgbJS(), b.get());
 			}
 
 			if (builder instanceof FluidBucketItemBuilder b && b.fluidBuilder.bucketColor != 0xFFFFFFFF) {
-				ColorHandlerRegistry.registerItemColors((stack, index) -> index == 1 ? b.fluidBuilder.bucketColor : 0xFFFFFFFF, b);
+				event.register((stack, index) -> index == 1 ? b.fluidBuilder.bucketColor : 0xFFFFFFFF, b.get());
 			}
 		}
 	}
