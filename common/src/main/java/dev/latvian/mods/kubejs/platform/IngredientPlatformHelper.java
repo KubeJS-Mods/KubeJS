@@ -1,9 +1,6 @@
 package dev.latvian.mods.kubejs.platform;
 
 import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.ingredient.TagContext;
-import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -34,13 +31,7 @@ public interface IngredientPlatformHelper {
 	Ingredient custom(Ingredient parent, @Nullable UUID uuid);
 
 	default Ingredient tag(String tag) {
-		var t = Tags.item(UtilsJS.getMCID(null, tag));
-
-		if (RecipeJS.itemErrors && TagContext.INSTANCE.getValue().isEmpty(t)) {
-			throw new RecipeExceptionJS("Tag %s doesn't contain any items!".formatted(this)).error();
-		}
-
-		return Ingredient.of(t);
+		return Ingredient.of(Tags.item(UtilsJS.getMCID(null, tag)));
 	}
 
 	Ingredient mod(String mod);
