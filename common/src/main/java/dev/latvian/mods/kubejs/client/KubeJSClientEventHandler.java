@@ -1,22 +1,17 @@
 package dev.latvian.mods.kubejs.client;
 
 import dev.architectury.event.events.client.ClientGuiEvent;
-import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTextureStitchEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import dev.architectury.hooks.client.screen.ScreenAccess;
 import dev.architectury.hooks.fluid.FluidBucketHooks;
-import dev.architectury.platform.Platform;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.core.ImageButtonKJS;
-import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -59,7 +54,6 @@ public class KubeJSClientEventHandler {
 	private final Map<ResourceLocation, TagInstance> tempTagNames = new LinkedHashMap<>();
 
 	public void init() {
-		ClientLifecycleEvent.CLIENT_SETUP.register(this::clientSetup);
 		ClientGuiEvent.DEBUG_TEXT_LEFT.register(this::debugInfoLeft);
 		ClientGuiEvent.DEBUG_TEXT_RIGHT.register(this::debugInfoRight);
 		ClientTooltipEvent.ITEM.register(this::itemTooltip);
@@ -71,18 +65,6 @@ public class KubeJSClientEventHandler {
 		ClientGuiEvent.RENDER_POST.register(Painter.INSTANCE::guiScreenDraw);
 		ClientGuiEvent.INIT_POST.register(this::guiPostInit);
 		ClientTextureStitchEvent.POST.register(this::postAtlasStitch);
-	}
-
-	private void clientSetup(Minecraft minecraft) {
-		if (Platform.isDevelopmentEnvironment()) {
-			KubeJS.LOGGER.info("CLIENT SETUP");
-		}
-
-		for (var builder : RegistryObjectBuilderTypes.ALL_BUILDERS) {
-			builder.clientRegistry(() -> minecraft);
-		}
-
-		ItemEvents.MODEL_PROPERTIES.post(ScriptType.STARTUP, new ItemModelPropertiesEventJS());
 	}
 
 	private void debugInfoLeft(List<String> lines) {

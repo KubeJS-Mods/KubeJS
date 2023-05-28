@@ -4,7 +4,6 @@ import dev.architectury.core.block.ArchitecturyLiquidBlock;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.BlockItemBuilder;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Material;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +23,7 @@ public class FluidBlockBuilder extends BlockBuilder {
 
 	@Override
 	public Block createObject() {
-		return new ArchitecturyLiquidBlock(UtilsJS.cast(fluidBuilder.flowingFluid), Block.Properties.of(Material.WATER).noCollission().strength(100.0F).noLootTable());
+		return new ArchitecturyLiquidBlock(fluidBuilder.flowingFluid, Block.Properties.of(Material.WATER).noCollission().strength(100.0F).noLootTable());
 	}
 
 	@Override

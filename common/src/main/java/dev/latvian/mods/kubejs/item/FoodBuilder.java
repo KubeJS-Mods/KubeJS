@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.item;
 
 import com.google.common.collect.Lists;
 import dev.architectury.hooks.item.food.FoodPropertiesHooks;
-import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;

@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.event;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import org.jetbrains.annotations.Nullable;
 
-class EventHandlerContainer {
+public class EventHandlerContainer {
 	public static boolean isEmpty(@Nullable EventHandlerContainer[] array) {
 		if (array == null) {
 			return true;
@@ -18,11 +18,17 @@ class EventHandlerContainer {
 		return true;
 	}
 
-	private final IEventHandler handler;
-	private EventHandlerContainer child;
+	public final Object extraId;
+	public final IEventHandler handler;
+	public final String source;
+	public final int line;
+	EventHandlerContainer child;
 
-	public EventHandlerContainer(IEventHandler handler) {
+	public EventHandlerContainer(Object extraId, IEventHandler handler, String source, int line) {
+		this.extraId = extraId;
 		this.handler = handler;
+		this.source = source;
+		this.line = line;
 	}
 
 	public EventResult handle(ScriptType scriptType, EventHandler eventHandler, EventJS event) {
@@ -44,13 +50,13 @@ class EventHandlerContainer {
 		return EventResult.PASS;
 	}
 
-	public void add(IEventHandler handler) {
+	public void add(Object extraId, IEventHandler handler, String source, int line) {
 		var itr = this;
 
 		while (itr.child != null) {
 			itr = itr.child;
 		}
 
-		itr.child = new EventHandlerContainer(handler);
+		itr.child = new EventHandlerContainer(extraId, handler, source, line);
 	}
 }

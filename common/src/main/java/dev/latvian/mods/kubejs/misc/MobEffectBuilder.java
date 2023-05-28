@@ -1,10 +1,9 @@
 package dev.latvian.mods.kubejs.misc;
 
-import dev.latvian.mods.kubejs.BuilderBase;
-import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -13,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
+public abstract class MobEffectBuilder extends BuilderBase {
 
 	@FunctionalInterface
 	public interface EffectTickCallback {
@@ -34,8 +33,8 @@ public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 	}
 
 	@Override
-	public final RegistryObjectBuilderTypes<MobEffect> getRegistryType() {
-		return RegistryObjectBuilderTypes.MOB_EFFECT;
+	public final RegistryInfo getRegistryType() {
+		return RegistryInfo.MOB_EFFECT;
 	}
 
 	public MobEffectBuilder modifyAttribute(ResourceLocation attribute, String identifier, double d, AttributeModifier.Operation operation) {

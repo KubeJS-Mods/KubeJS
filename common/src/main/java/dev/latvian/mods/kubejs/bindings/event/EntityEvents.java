@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.bindings.event;
 
-import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.entity.CheckLivingEntitySpawnEventJS;
 import dev.latvian.mods.kubejs.entity.EntitySpawnedEventJS;
 import dev.latvian.mods.kubejs.entity.LivingEntityDeathEventJS;
@@ -8,6 +7,7 @@ import dev.latvian.mods.kubejs.entity.LivingEntityHurtEventJS;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.Extra;
+import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 

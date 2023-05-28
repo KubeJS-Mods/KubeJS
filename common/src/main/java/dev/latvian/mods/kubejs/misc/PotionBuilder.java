@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.misc;
 
-import dev.latvian.mods.kubejs.BuilderBase;
-import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PotionBuilder extends BuilderBase<Potion> {
+public class PotionBuilder extends BuilderBase {
 	public transient List<MobEffectInstance> mobEffects;
 
 	public PotionBuilder(ResourceLocation i) {
@@ -20,8 +20,8 @@ public class PotionBuilder extends BuilderBase<Potion> {
 	}
 
 	@Override
-	public RegistryObjectBuilderTypes<Potion> getRegistryType() {
-		return RegistryObjectBuilderTypes.POTION;
+	public RegistryInfo getRegistryType() {
+		return RegistryInfo.POTION;
 	}
 
 	@Override

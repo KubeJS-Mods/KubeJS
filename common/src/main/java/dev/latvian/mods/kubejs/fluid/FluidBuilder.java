@@ -3,20 +3,19 @@ package dev.latvian.mods.kubejs.fluid;
 import dev.architectury.core.fluid.ArchitecturyFlowingFluid;
 import dev.architectury.core.fluid.ArchitecturyFluidAttributes;
 import dev.architectury.core.fluid.SimpleArchitecturyFluidAttributes;
-import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.material.FlowingFluid;
-import net.minecraft.world.level.material.Fluid;
 
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class FluidBuilder extends BuilderBase<FlowingFluid> {
+public class FluidBuilder extends BuilderBase implements Supplier<FlowingFluid> {
 	public transient ResourceLocation stillTexture;
 	public transient ResourceLocation flowingTexture;
 	public transient int color = 0xFFFFFFFF;
@@ -44,19 +43,21 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	}
 
 	@Override
-	public BuilderBase<FlowingFluid> displayName(String name) {
+	public BuilderBase displayName(String name) {
 		if (block != null) {
 			block.displayName(name);
 		}
+
 		if (bucketItem != null) {
 			bucketItem.displayName(name + " Bucket");
 		}
+
 		return super.displayName(name);
 	}
 
 	@Override
-	public final RegistryObjectBuilderTypes<Fluid> getRegistryType() {
-		return RegistryObjectBuilderTypes.FLUID;
+	public final RegistryInfo getRegistryType() {
+		return RegistryInfo.FLUID;
 	}
 
 	@Override
@@ -64,12 +65,17 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 		return new ArchitecturyFlowingFluid.Source(createAttributes());
 	}
 
+	@Override
+	public FlowingFluid get() {
+		return getObject();
+	}
+
 	public ArchitecturyFluidAttributes createAttributes() {
 		if (this.attributes != null) {
 			return this.attributes;
 		}
 
-		var attributes = SimpleArchitecturyFluidAttributes.of(this.flowingFluid, this)
+		var attributes = SimpleArchitecturyFluidAttributes.of(() -> this.flowingFluid.getObject(), this::getObject)
 				.flowingTexture(flowingTexture)
 				.sourceTexture(stillTexture)
 				.color(color)
@@ -88,12 +94,14 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 
 	@Override
 	public void createAdditionalObjects() {
-		RegistryObjectBuilderTypes.FLUID.addBuilder(flowingFluid);
+		RegistryInfo.FLUID.addBuilder(flowingFluid);
+
 		if (block != null) {
-			RegistryObjectBuilderTypes.BLOCK.addBuilder(block);
+			RegistryInfo.BLOCK.addBuilder(block);
 		}
+
 		if (bucketItem != null) {
-			RegistryObjectBuilderTypes.ITEM.addBuilder(bucketItem);
+			RegistryInfo.ITEM.addBuilder(bucketItem);
 		}
 	}
 

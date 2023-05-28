@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.misc;
 
-import dev.latvian.mods.kubejs.BuilderBase;
-import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.objects.Object2BooleanFunction;
 import net.minecraft.resources.ResourceLocation;
@@ -13,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 
-public class EnchantmentBuilder extends BuilderBase<Enchantment> {
+public class EnchantmentBuilder extends BuilderBase {
 	@FunctionalInterface
 	public interface DamageProtectionFunction {
 		int getDamageProtection(int level, DamageSource source);
@@ -69,8 +69,8 @@ public class EnchantmentBuilder extends BuilderBase<Enchantment> {
 	}
 
 	@Override
-	public final RegistryObjectBuilderTypes<Enchantment> getRegistryType() {
-		return RegistryObjectBuilderTypes.ENCHANTMENT;
+	public final RegistryInfo getRegistryType() {
+		return RegistryInfo.ENCHANTMENT;
 	}
 
 	@Override

@@ -3,16 +3,19 @@ package dev.latvian.mods.kubejs.forge;
 import dev.architectury.platform.forge.EventBuses;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.entity.forge.LivingEntityDropsEventJS;
 import dev.latvian.mods.kubejs.item.forge.ItemDestroyedEventJS;
 import dev.latvian.mods.kubejs.platform.forge.IngredientForgeHelper;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -38,10 +41,13 @@ public class KubeJSForge {
 			ForgeMod.enableMilkFluid();
 			IngredientForgeHelper.register();
 		}
+
+		DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> KubeJSForgeClient::new);
 	}
 
 	private static void initRegistries(RegisterEvent event) {
-		KubeJSRegistries.init(event.getRegistryKey());
+		var info = RegistryInfo.of(event.getRegistryKey());
+		info.registerObjects((id, supplier) -> event.register(UtilsJS.cast(info.key), id, supplier));
 	}
 
 	private static void loadComplete(FMLLoadCompleteEvent event) {

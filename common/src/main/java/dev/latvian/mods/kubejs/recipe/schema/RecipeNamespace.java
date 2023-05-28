@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
-import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.recipe.RecipeSchemaRegistryEventJS;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapedRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapelessRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.SpecialRecipeSchema;
+import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.minecraft.resources.ResourceLocation;

@@ -17,6 +17,9 @@ import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import dev.latvian.mods.kubejs.player.KubeJSPlayerEventHandler;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
+import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.registry.RegistryEventJS;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptFileInfo;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptPack;
@@ -27,6 +30,7 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -149,6 +153,15 @@ public class KubeJS {
 		KubeJSRecipeEventHandler.init();
 
 		PROXY.init();
+
+		for (var extraId : StartupEvents.REGISTRY.findUniqueExtraIds(ScriptType.STARTUP)) {
+			if (extraId instanceof ResourceKey<?> key) {
+				var info = RegistryInfo.of(UtilsJS.cast(key));
+				var event = new RegistryEventJS(info);
+				StartupEvents.REGISTRY.post(ScriptType.STARTUP, key, event);
+				event.created.forEach(BuilderBase::createAdditionalObjects);
+			}
+		}
 	}
 
 	public static void loadScripts(ScriptPack pack, Path dir, String path) {

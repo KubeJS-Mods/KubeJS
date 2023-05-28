@@ -3,21 +3,17 @@ package dev.latvian.mods.kubejs.item;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.JsonObject;
-import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
-import dev.latvian.mods.kubejs.BuilderBase;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
+import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -48,7 +44,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
-public abstract class ItemBuilder extends BuilderBase<Item> {
+public abstract class ItemBuilder extends BuilderBase implements Supplier<Item> {
 	public static final Map<String, Tier> TOOL_TIERS = new HashMap<>();
 	public static final Map<String, ArmorMaterial> ARMOR_TIERS = new HashMap<>();
 
@@ -149,15 +145,19 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	@Override
-	public final RegistryObjectBuilderTypes<Item> getRegistryType() {
-		return RegistryObjectBuilderTypes.ITEM;
+	public final RegistryInfo getRegistryType() {
+		return RegistryInfo.ITEM;
 	}
 
 	@Override
-	public Item transformObject(Item obj) {
-		obj.kjs$setItemBuilder(this);
-
+	public Object transformObject(Object obj) {
+		((Item) obj).kjs$setItemBuilder(this);
 		return obj;
+	}
+
+	@Override
+	public Item get() {
+		return getObject();
 	}
 
 	@Override
@@ -183,14 +183,6 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 			}
 			m.textures(textureJson);
 		});
-	}
-
-	@Override
-	@Environment(EnvType.CLIENT)
-	public void clientRegistry(Supplier<Minecraft> minecraft) {
-		if (colorCallback != null) {
-			ColorHandlerRegistry.registerItemColors((stack, tintIndex) -> colorCallback.getColor(stack, tintIndex).getArgbJS(), this);
-		}
 	}
 
 	public ItemBuilder maxStackSize(int v) {

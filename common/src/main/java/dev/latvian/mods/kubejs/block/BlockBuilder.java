@@ -2,23 +2,17 @@ package dev.latvian.mods.kubejs.block;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
-import dev.architectury.registry.client.rendering.RenderTypeRegistry;
-import dev.latvian.mods.kubejs.BuilderBase;
-import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.loot.LootBuilder;
+import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -43,7 +37,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public abstract class BlockBuilder extends BuilderBase<Block> {
+public abstract class BlockBuilder extends BuilderBase implements Supplier<Block> {
 	public transient MaterialJS material;
 	public transient float hardness;
 	public transient float resistance;
@@ -117,30 +111,34 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Override
-	public final RegistryObjectBuilderTypes<Block> getRegistryType() {
-		return RegistryObjectBuilderTypes.BLOCK;
+	public final RegistryInfo getRegistryType() {
+		return RegistryInfo.BLOCK;
 	}
 
 	@Override
-	public Block transformObject(Block obj) {
-		obj.kjs$setBlockBuilder(this);
-
+	public Object transformObject(Object obj) {
+		((Block) obj).kjs$setBlockBuilder(this);
 		return obj;
 	}
 
 	@Override
 	public void createAdditionalObjects() {
 		if (itemBuilder != null) {
-			RegistryObjectBuilderTypes.ITEM.addBuilder(itemBuilder);
+			RegistryInfo.ITEM.addBuilder(itemBuilder);
 		}
 	}
 
 	@Override
-	public BuilderBase<Block> displayName(String name) {
+	public BuilderBase displayName(String name) {
 		if (itemBuilder != null) {
 			itemBuilder.displayName(name);
 		}
 		return super.displayName(name);
+	}
+
+	@Override
+	public Block get() {
+		return getObject();
 	}
 
 	@Override
@@ -293,20 +291,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		}
 
 		return true;
-	}
-
-	@Override
-	@Environment(EnvType.CLIENT)
-	public void clientRegistry(Supplier<Minecraft> minecraft) {
-		switch (renderType) {
-			case "cutout" -> RenderTypeRegistry.register(RenderType.cutout(), get());
-			case "cutout_mipped" -> RenderTypeRegistry.register(RenderType.cutoutMipped(), get());
-			case "translucent" -> RenderTypeRegistry.register(RenderType.translucent(), get());
-		}
-
-		if (!color.isEmpty()) {
-			ColorHandlerRegistry.registerBlockColors((state, level, pos, index) -> color.get(index), this);
-		}
 	}
 
 	@Override

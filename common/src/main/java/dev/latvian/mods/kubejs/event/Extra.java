@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.event;
 
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,6 +21,8 @@ public class Extra {
 	public static final Extra REQUIRES_STRING = STRING.copy().required();
 	public static final Extra ID = new Extra().transformer(Extra::toResourceLocation);
 	public static final Extra REQUIRES_ID = ID.copy().required();
+	public static final Extra REGISTRY = new Extra().transformer(Extra::toRegistryKey).identity();
+	public static final Extra REQUIRES_REGISTRY = REGISTRY.copy().required();
 
 	private static String toString(Object object) {
 		if (object == null) {
@@ -38,6 +42,19 @@ public class Extra {
 
 		var s = object.toString();
 		return s.isBlank() ? null : ResourceLocation.tryParse(s);
+	}
+
+	private static ResourceKey<? extends Registry<?>> toRegistryKey(Object object) {
+		if (object == null) {
+			return null;
+		} else if (object instanceof ResourceKey rl) {
+			return rl;
+		} else if (object instanceof ResourceLocation rl) {
+			return ResourceKey.createRegistryKey(rl);
+		}
+
+		var s = object.toString();
+		return s.isBlank() ? null : ResourceKey.createRegistryKey(new ResourceLocation(s));
 	}
 
 	public Transformer transformer;

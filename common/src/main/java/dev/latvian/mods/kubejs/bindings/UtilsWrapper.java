@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.bindings;
 
 import dev.architectury.registry.registries.Registrar;
-import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.util.ClassWrapper;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.UtilsJS;

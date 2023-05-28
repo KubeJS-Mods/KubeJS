@@ -1,18 +1,18 @@
 package dev.latvian.mods.kubejs.misc;
 
-import dev.latvian.mods.kubejs.BuilderBase;
-import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.npc.VillagerType;
 
-public class VillagerTypeBuilder extends BuilderBase<VillagerType> {
+public class VillagerTypeBuilder extends BuilderBase {
 	public VillagerTypeBuilder(ResourceLocation i) {
 		super(i);
 	}
 
 	@Override
-	public final RegistryObjectBuilderTypes<VillagerType> getRegistryType() {
-		return RegistryObjectBuilderTypes.VILLAGER_TYPE;
+	public final RegistryInfo getRegistryType() {
+		return RegistryInfo.VILLAGER_TYPE;
 	}
 
 	@Override

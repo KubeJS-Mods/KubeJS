@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.misc;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Either;
-import dev.latvian.mods.kubejs.BuilderBase;
-import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-public class VillagerProfessionBuilder extends BuilderBase<VillagerProfession> {
+public class VillagerProfessionBuilder extends BuilderBase {
 	public transient Either<ResourceKey<PoiType>, TagKey<PoiType>> poiType;
 
 	public transient ImmutableSet<Item> requestedItems;
@@ -35,8 +35,8 @@ public class VillagerProfessionBuilder extends BuilderBase<VillagerProfession> {
 	}
 
 	@Override
-	public final RegistryObjectBuilderTypes<VillagerProfession> getRegistryType() {
-		return RegistryObjectBuilderTypes.VILLAGER_PROFESSION;
+	public final RegistryInfo getRegistryType() {
+		return RegistryInfo.VILLAGER_PROFESSION;
 	}
 
 	@Override

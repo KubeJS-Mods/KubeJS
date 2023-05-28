@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.block.state;
 
 import com.mojang.serialization.DataResult;
-import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.level.gen.ruletest.AllMatchRuleTest;
 import dev.latvian.mods.kubejs.level.gen.ruletest.AlwaysFalseRuleTest;
 import dev.latvian.mods.kubejs.level.gen.ruletest.AnyMatchRuleTest;
 import dev.latvian.mods.kubejs.level.gen.ruletest.InvertRuleTest;
+import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.Tags;

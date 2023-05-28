@@ -11,8 +11,11 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -90,6 +93,13 @@ public final class EventHandler extends BaseFunction {
 		return eventContainers != null || extraEventContainers != null;
 	}
 
+	/**
+	 * Important! extraId won't be transformed for performance reasons. Only use this over {@link EventHandler#hasListeners()} if you think this will be more performant. Recommended only with identity extra IDs.
+	 */
+	public boolean hasListeners(Object extraId) {
+		return eventContainers != null || extraEventContainers != null && extraEventContainers.containsKey(extraId);
+	}
+
 	public void listen(ScriptType type, @Nullable Object extraId, IEventHandler handler) {
 		if (!type.manager.get().canListenEvents) {
 			throw new IllegalStateException("Event handler '" + this + "' can only be registered during script loading!");
@@ -116,6 +126,9 @@ public final class EventHandler extends BaseFunction {
 			throw new IllegalArgumentException("Event handler '" + this + "' doesn't accept id '" + extra.toString.transform(extraId) + "'!");
 		}
 
+		var line = new int[1];
+		var source = Context.getSourcePositionFromStack(type.manager.get().context, line);
+
 		EventHandlerContainer[] map;
 
 		if (extraId == null) {
@@ -141,9 +154,9 @@ public final class EventHandler extends BaseFunction {
 		var index = type.ordinal();
 
 		if (map[index] == null) {
-			map[index] = new EventHandlerContainer(handler);
+			map[index] = new EventHandlerContainer(extraId, handler, source, line[0]);
 		} else {
-			map[index].add(handler);
+			map[index].add(extraId, handler, source, line[0]);
 		}
 	}
 
@@ -249,5 +262,39 @@ public final class EventHandler extends BaseFunction {
 		}
 
 		return null;
+	}
+
+	public void forEachListener(ScriptType type, Consumer<EventHandlerContainer> callback) {
+		if (eventContainers != null) {
+			var c = eventContainers[type.ordinal()];
+
+			while (c != null) {
+				callback.accept(c);
+				c = c.child;
+			}
+		}
+
+		if (extraEventContainers != null) {
+			for (var entry : extraEventContainers.entrySet()) {
+				var c = entry.getValue()[type.ordinal()];
+
+				while (c != null) {
+					callback.accept(c);
+					c = c.child;
+				}
+			}
+		}
+	}
+
+	public Set<Object> findUniqueExtraIds(ScriptType type) {
+		var set = new HashSet<>();
+
+		forEachListener(type, c -> {
+			if (c.extraId != null) {
+				set.add(c.extraId);
+			}
+		});
+
+		return set;
 	}
 }

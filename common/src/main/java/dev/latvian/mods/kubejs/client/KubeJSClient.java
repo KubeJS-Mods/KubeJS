@@ -1,13 +1,16 @@
 package dev.latvian.mods.kubejs.client;
 
 import dev.architectury.hooks.PackRepositoryHooks;
+import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCommon;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
+import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.bindings.event.NetworkEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
+import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
 import dev.latvian.mods.kubejs.net.NetworkEventJS;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -43,7 +46,6 @@ public class KubeJSClient extends KubeJSCommon {
 		new KubeJSClientEventHandler().init();
 		var list = Minecraft.getInstance().getResourcePackRepository();
 		PackRepositoryHooks.addSource(list, new KubeJSResourcePackFinder());
-		setup();
 
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::clientInit);
 	}
@@ -79,13 +81,19 @@ public class KubeJSClient extends KubeJSCommon {
 		event.add("Painter", Painter.INSTANCE);
 	}
 
-	private void setup() {
+	@Override
+	public void clientSetup() {
+		if (Platform.isDevelopmentEnvironment()) {
+			KubeJS.LOGGER.info("CLIENT SETUP");
+		}
+
 		ClientEvents.INIT.post(ScriptType.STARTUP, new ClientEventJS());
+		ItemEvents.MODEL_PROPERTIES.post(ScriptType.STARTUP, new ItemModelPropertiesEventJS());
 	}
 
 	@Override
 	public void handleDataFromServerPacket(String channel, @Nullable CompoundTag data) {
-		if (NetworkEvents.DATA_RECEIVED.hasListeners()) {
+		if (NetworkEvents.DATA_RECEIVED.hasListeners(channel)) {
 			NetworkEvents.DATA_RECEIVED.post(ScriptType.CLIENT, channel, new NetworkEventJS(Minecraft.getInstance().player, channel, data));
 		}
 	}

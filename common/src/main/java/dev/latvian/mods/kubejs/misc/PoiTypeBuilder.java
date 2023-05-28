@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.misc;
 
-import dev.latvian.mods.kubejs.BuilderBase;
-import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.level.block.Block;
@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Set;
 
-public class PoiTypeBuilder extends BuilderBase<PoiType> {
+public class PoiTypeBuilder extends BuilderBase {
 	public transient Set<BlockState> blockStates;
 	public transient int maxTickets;
 	public transient int validRange;
@@ -22,8 +22,8 @@ public class PoiTypeBuilder extends BuilderBase<PoiType> {
 	}
 
 	@Override
-	public final RegistryObjectBuilderTypes<PoiType> getRegistryType() {
-		return RegistryObjectBuilderTypes.POINT_OF_INTEREST_TYPE;
+	public final RegistryInfo getRegistryType() {
+		return RegistryInfo.POINT_OF_INTEREST_TYPE;
 	}
 
 	@Override

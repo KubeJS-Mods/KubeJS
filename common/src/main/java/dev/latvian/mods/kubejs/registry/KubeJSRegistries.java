@@ -1,10 +1,9 @@
-package dev.latvian.mods.kubejs;
+package dev.latvian.mods.kubejs.registry;
 
 import com.mojang.serialization.Codec;
-import dev.architectury.platform.Platform;
 import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.Registries;
-import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -96,15 +95,5 @@ public class KubeJSRegistries {
 
 	public static Registrar<MobEffect> mobEffects() {
 		return genericRegistry(MOB_EFFECT_REGISTRY);
-	}
-
-	public static void init(ResourceKey<? extends Registry<?>> registryKey) {
-		if (StartupEvents.REGISTRY.hasListeners()) {
-			if (Platform.isDevelopmentEnvironment()) {
-				KubeJS.LOGGER.info("REGISTRY " + registryKey.location());
-			}
-
-			RegistryObjectBuilderTypes.registerFor(registryKey, !CommonProperties.get().serverOnly);
-		}
 	}
 }

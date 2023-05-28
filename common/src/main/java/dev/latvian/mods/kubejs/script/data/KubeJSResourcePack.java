@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
@@ -119,7 +119,7 @@ public abstract class KubeJSResourcePack implements PackResources {
 			}
 		}
 
-		for (var builder : RegistryObjectBuilderTypes.ALL_BUILDERS) {
+		for (var builder : RegistryInfo.ALL_BUILDERS) {
 			builder.addResourcePackLocations(path, list, packType);
 		}
 
@@ -151,7 +151,7 @@ public abstract class KubeJSResourcePack implements PackResources {
 		namespaces.add("kubejs_generated");
 		namespaces.add(KubeJS.MOD_ID);
 
-		for (var builder : RegistryObjectBuilderTypes.ALL_BUILDERS) {
+		for (var builder : RegistryInfo.ALL_BUILDERS) {
 			namespaces.add(builder.id.getNamespace());
 		}
 

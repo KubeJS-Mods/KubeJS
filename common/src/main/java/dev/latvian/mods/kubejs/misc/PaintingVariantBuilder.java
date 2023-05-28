@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.misc;
 
-import dev.latvian.mods.kubejs.BuilderBase;
-import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 
-public class PaintingVariantBuilder extends BuilderBase<PaintingVariant> {
+public class PaintingVariantBuilder extends BuilderBase {
 	public transient int width;
 	public transient int height;
 
@@ -14,8 +14,8 @@ public class PaintingVariantBuilder extends BuilderBase<PaintingVariant> {
 	}
 
 	@Override
-	public final RegistryObjectBuilderTypes<PaintingVariant> getRegistryType() {
-		return RegistryObjectBuilderTypes.PAINTING_VARIANT;
+	public final RegistryInfo getRegistryType() {
+		return RegistryInfo.PAINTING_VARIANT;
 	}
 
 	@Override

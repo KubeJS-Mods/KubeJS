@@ -1,17 +1,17 @@
 package dev.latvian.mods.kubejs.misc;
 
-import dev.latvian.mods.kubejs.BuilderBase;
-import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 
-public class CustomStatBuilder extends BuilderBase<ResourceLocation> {
+public class CustomStatBuilder extends BuilderBase {
 	public CustomStatBuilder(ResourceLocation i) {
 		super(i);
 	}
 
 	@Override
-	public final RegistryObjectBuilderTypes<ResourceLocation> getRegistryType() {
-		return RegistryObjectBuilderTypes.CUSTOM_STAT;
+	public final RegistryInfo getRegistryType() {
+		return RegistryInfo.CUSTOM_STAT;
 	}
 
 	@Override

@@ -2,9 +2,9 @@ package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.recipe.special.ShapedKubeJSRecipe;
 import dev.latvian.mods.kubejs.recipe.special.ShapelessKubeJSRecipe;
+import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 

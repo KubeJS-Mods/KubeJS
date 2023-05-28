@@ -14,13 +14,11 @@ import java.util.Map;
 public interface TagLoaderKJS<T> {
 	default void kjs$customTags(Map<ResourceLocation, List<TagLoader.EntryWithSource>> map) {
 		TagContext.INSTANCE.setValue(TagContext.EMPTY);
-		if (ServerEvents.TAGS.hasListeners()) {
-			var dir = kjs$getDirectory();
-			var reg = kjs$getRegistry();
+		var reg = kjs$getRegistry();
 
-			if (reg != null) {
-				new TagEventJS<>(dir, map, reg).post();
-			}
+		if (reg != null && ServerEvents.TAGS.hasListeners(reg.key())) {
+			var dir = kjs$getDirectory();
+			new TagEventJS<>(dir, map, reg).post();
 		}
 	}
 

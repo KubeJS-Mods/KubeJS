@@ -1,12 +1,12 @@
 package dev.latvian.mods.kubejs.misc;
 
-import dev.latvian.mods.kubejs.BuilderBase;
-import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
+import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.resources.ResourceLocation;
 
-public class ParticleTypeBuilder extends BuilderBase<ParticleType<?>> {
+public class ParticleTypeBuilder extends BuilderBase {
 	public transient boolean overrideLimiter;
 	public transient ParticleOptions.Deserializer deserializer;
 
@@ -16,8 +16,8 @@ public class ParticleTypeBuilder extends BuilderBase<ParticleType<?>> {
 	}
 
 	@Override
-	public final RegistryObjectBuilderTypes<ParticleType<?>> getRegistryType() {
-		return RegistryObjectBuilderTypes.PARTICLE_TYPE;
+	public final RegistryInfo getRegistryType() {
+		return RegistryInfo.PARTICLE_TYPE;
 	}
 
 	@Override

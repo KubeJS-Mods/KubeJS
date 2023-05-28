@@ -39,14 +39,14 @@ public class KubeJSBlockEventHandler {
 	}
 
 	private static EventResult blockBreak(Level level, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp) {
-		return BlockEvents.BROKEN.hasListeners() ? BlockEvents.BROKEN.post(ScriptType.of(level), state, new BlockBrokenEventJS(player, level, pos, state, xp)).arch() : EventResult.pass();
+		return BlockEvents.BROKEN.hasListeners(state.getBlock()) ? BlockEvents.BROKEN.post(ScriptType.of(level), state.getBlock(), new BlockBrokenEventJS(player, level, pos, state, xp)).arch() : EventResult.pass();
 	}
 
 	private static EventResult blockPlace(Level level, BlockPos pos, BlockState state, @Nullable Entity placer) {
-		return BlockEvents.PLACED.hasListeners() ? BlockEvents.PLACED.post(ScriptType.of(level), state, new BlockPlacedEventJS(placer, level, pos, state)).arch() : EventResult.pass();
+		return BlockEvents.PLACED.hasListeners(state.getBlock()) ? BlockEvents.PLACED.post(ScriptType.of(level), state.getBlock(), new BlockPlacedEventJS(placer, level, pos, state)).arch() : EventResult.pass();
 	}
 
 	private static EventResult farmlandTrample(Level level, BlockPos pos, BlockState state, float distance, @Nullable Entity entity) {
-		return BlockEvents.FARMLAND_TRAMPLED.hasListeners() ? BlockEvents.FARMLAND_TRAMPLED.post(ScriptType.of(level), state, new FarmlandTrampledEventJS(level, pos, state, distance, entity)).arch() : EventResult.pass();
+		return BlockEvents.FARMLAND_TRAMPLED.hasListeners(state.getBlock()) ? BlockEvents.FARMLAND_TRAMPLED.post(ScriptType.of(level), state.getBlock(), new FarmlandTrampledEventJS(level, pos, state, distance, entity)).arch() : EventResult.pass();
 	}
 }

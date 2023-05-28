@@ -5,9 +5,9 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -232,7 +232,7 @@ public class TagEventJS<T> extends EventJS {
 			ConsoleJS.SERVER.debug("%s/#%s; %d".formatted(getType(), entry.getKey(), w.entries.size()));
 		}
 
-		var types = RegistryObjectBuilderTypes.MAP.get(registry.key());
+		var types = RegistryInfo.MAP.get(registry.key());
 
 		if (types != null) {
 			for (var builder : types.objects.values()) {
@@ -242,7 +242,7 @@ public class TagEventJS<T> extends EventJS {
 			}
 		}
 
-		ServerEvents.TAGS.post(ScriptType.SERVER, registry.key().location(), this);
+		ServerEvents.TAGS.post(ScriptType.SERVER, registry.key(), this);
 
 		if (DataExport.dataExport != null) {
 			var tj = DataExport.dataExport.getAsJsonObject("tags");

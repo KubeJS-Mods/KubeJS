@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.script;
 import com.mojang.serialization.Codec;
 import dev.architectury.registry.registries.Registrar;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;

@@ -12,6 +12,9 @@ public class KubeJSCommon {
 	public void init() {
 	}
 
+	public void clientSetup() {
+	}
+
 	public void reloadClientInternal() {
 	}
 
