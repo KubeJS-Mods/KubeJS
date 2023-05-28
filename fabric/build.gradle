@@ -23,15 +23,6 @@ loom {
 	accessWidenerPath = accessWidenerFile
 }
 
-sourceSets {
-	main {
-		// compiledBy copyAccessWidener // I think this broke things even more
-		resources {
-			srcDir generatedResources
-		}
-	}
-}
-
 repositories {
 	maven {
 		url "https://maven.blamejared.com"
@@ -62,6 +53,16 @@ dependencies {
 task copyAccessWidener(type: Copy) {
 	from accessWidenerFile
 	into generatedResources
+}
+
+sourceSets {
+	main {
+		// compiledBy copyAccessWidener // I think this broke things even more
+		resources {
+			// srcDir generatedResources
+			srcDir copyAccessWidener
+		}
+	}
 }
 
 processResources {
