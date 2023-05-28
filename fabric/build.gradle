@@ -12,6 +12,11 @@ architectury {
 
 configurations {
 	developmentFabric.extendsFrom common
+	configureEach {
+		resolutionStrategy {
+			force "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+		}
+	}
 }
 
 loom {
@@ -37,8 +42,8 @@ repositories {
 }
 
 dependencies {
-	modApi("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}") { exclude group: 'net.fabricmc', module: 'fabric-loader' }
-	modApi("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}") { exclude group: 'net.fabricmc', module: 'fabric-loader' }
+	modApi("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
+	modApi("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
 
 	modApi("dev.architectury:architectury-fabric:${rootProject.architectury_version}")
 
