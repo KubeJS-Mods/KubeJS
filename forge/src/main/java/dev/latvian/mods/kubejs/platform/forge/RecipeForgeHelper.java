@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-public class RecipePlatformHelperImpl implements RecipePlatformHelper {
+public class RecipeForgeHelper implements RecipePlatformHelper {
 	public static final String FORGE_CONDITIONAL = "forge:conditional";
 
 	@Override

@@ -7,8 +7,10 @@ import net.minecraft.core.Registry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.tags.TagManager;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.mutable.MutableObject;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -70,12 +72,21 @@ public interface TagContext {
 		};
 	}
 
-	record Result(TagContext context, Collection<Holder<Item>> holders) {
-	}
-
 	boolean isEmpty(TagKey<Item> tag);
 
 	boolean areTagsBound();
 
 	Iterable<Holder<Item>> getTag(TagKey<Item> tag);
+
+	default Collection<ItemStack> patchTags(TagKey<Item> tag) {
+		var c = getTag(tag);
+
+		var stacks = new ArrayList<ItemStack>(c instanceof Collection<?> cl ? cl.size() : 3);
+
+		for (var holder : c) {
+			stacks.add(new ItemStack(holder.value()));
+		}
+
+		return stacks.isEmpty() ? List.of() : stacks;
+	}
 }

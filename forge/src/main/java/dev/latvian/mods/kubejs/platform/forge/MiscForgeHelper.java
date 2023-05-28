@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.fml.ModLoader;
 
-public class MiscPlatformHelperImpl implements MiscPlatformHelper {
+public class MiscForgeHelper implements MiscPlatformHelper {
 	@Override
 	public MobCategory getMobCategory(String name) {
 		return MobCategory.byName(name);

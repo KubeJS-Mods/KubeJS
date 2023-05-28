@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class RecipePlatformHelperImpl implements RecipePlatformHelper {
+public class RecipeFabricHelper implements RecipePlatformHelper {
 	@Override
 	@Nullable
 	public Recipe<?> fromJson(RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json) {

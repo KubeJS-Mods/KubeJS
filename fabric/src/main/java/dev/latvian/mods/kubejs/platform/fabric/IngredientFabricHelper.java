@@ -18,7 +18,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
+public class IngredientFabricHelper implements IngredientPlatformHelper {
 	public static void register() {
 		CustomIngredientSerializer.register(WildcardIngredient.SERIALIZER);
 		CustomIngredientSerializer.register(CustomIngredientWithParent.SERIALIZER);

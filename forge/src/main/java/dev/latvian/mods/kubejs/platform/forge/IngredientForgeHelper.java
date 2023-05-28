@@ -23,7 +23,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-public class IngredientPlatformHelperImpl implements IngredientPlatformHelper {
+public class IngredientForgeHelper implements IngredientPlatformHelper {
 	public static void register() {
 		CraftingHelper.register(KubeJS.id("wildcard"), WildcardIngredient.SERIALIZER);
 		CraftingHelper.register(KubeJS.id("custom"), CustomIngredient.SERIALIZER);

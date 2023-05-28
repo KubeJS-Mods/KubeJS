@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.fabric;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.RegistryObjectBuilderTypes;
-import dev.latvian.mods.kubejs.platform.fabric.IngredientPlatformHelperImpl;
+import dev.latvian.mods.kubejs.platform.fabric.IngredientFabricHelper;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.api.ModInitializer;
@@ -19,7 +19,7 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 			throw new RuntimeException(throwable);
 		}
 
-		IngredientPlatformHelperImpl.register();
+		IngredientFabricHelper.register();
 	}
 
 	@Override

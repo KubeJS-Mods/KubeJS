@@ -11,6 +11,7 @@
 		"FireworkRocketEntityMixin",
 		"GameRulesMixin",
 		"IngredientMixin",
+		"IngredientTagValueMixin",
 		"ItemEntityMixin",
 		"ItemFrameEntityMixin",
 		"ItemMixin",

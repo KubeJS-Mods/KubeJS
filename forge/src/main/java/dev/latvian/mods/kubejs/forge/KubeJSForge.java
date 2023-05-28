@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSRegistries;
 import dev.latvian.mods.kubejs.entity.forge.LivingEntityDropsEventJS;
 import dev.latvian.mods.kubejs.item.forge.ItemDestroyedEventJS;
-import dev.latvian.mods.kubejs.platform.forge.IngredientPlatformHelperImpl;
+import dev.latvian.mods.kubejs.platform.forge.IngredientForgeHelper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
@@ -36,7 +36,7 @@ public class KubeJSForge {
 
 		if (!CommonProperties.get().serverOnly) {
 			ForgeMod.enableMilkFluid();
-			IngredientPlatformHelperImpl.register();
+			IngredientForgeHelper.register();
 		}
 	}
 
