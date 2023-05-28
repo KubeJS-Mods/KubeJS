@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -27,7 +26,7 @@ public class KubeJSForgeClient {
 
 		for (var builder : RegistryInfo.BLOCK) {
 			if (builder instanceof BlockBuilder b) {
-				Block block = b.getObject();
+				var block = b.get();
 
 				switch (b.renderType) {
 					case "cutout" -> ItemBlockRenderTypes.setRenderLayer(block, RenderType.cutout());
@@ -41,7 +40,7 @@ public class KubeJSForgeClient {
 	private void blockColors(RegisterColorHandlersEvent.Block event) {
 		for (var builder : RegistryInfo.BLOCK) {
 			if (builder instanceof BlockBuilder b && !b.color.isEmpty()) {
-				ColorHandlerRegistry.registerBlockColors((state, level, pos, index) -> state.getBlock().kjs$getBlockBuilder().color.get(index), b);
+				ColorHandlerRegistry.registerBlockColors((state, level, pos, index) -> b.color.get(index), b);
 			}
 		}
 	}

@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Material;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class FluidBlockBuilder extends BlockBuilder {
@@ -23,7 +24,7 @@ public class FluidBlockBuilder extends BlockBuilder {
 
 	@Override
 	public Block createObject() {
-		return new ArchitecturyLiquidBlock(fluidBuilder.flowingFluid, Block.Properties.of(Material.WATER).noCollission().strength(100.0F).noLootTable());
+		return new ArchitecturyLiquidBlock(() -> Objects.requireNonNull(fluidBuilder.flowingFluid.get(), "Flowing Fluid is null!"), Block.Properties.of(Material.WATER).noCollission().strength(100.0F).noLootTable());
 	}
 
 	@Override

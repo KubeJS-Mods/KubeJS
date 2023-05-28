@@ -85,7 +85,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -94,9 +93,9 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-public final class RegistryInfo implements Iterable<BuilderBase> {
-	public static final Map<ResourceKey<? extends Registry<?>>, RegistryInfo> MAP = Collections.synchronizedMap(new IdentityHashMap<>());
-	public static final List<BuilderBase> ALL_BUILDERS = new LinkedList<>();
+public final class RegistryInfo implements Iterable<BuilderBase<?>> {
+	public static final Map<ResourceKey<? extends Registry<?>>, RegistryInfo> MAP = Collections.synchronizedMap(new LinkedHashMap<>());
+	public static final List<BuilderBase<?>> ALL_BUILDERS = new LinkedList<>();
 
 	public static RegistryInfo of(ResourceKey<? extends Registry<?>> key) {
 		return MAP.computeIfAbsent(key, RegistryInfo::new);
@@ -183,10 +182,16 @@ public final class RegistryInfo implements Iterable<BuilderBase> {
 	public static final RegistryInfo BANNER_PATTERN = of(Registry.BANNER_PATTERN_REGISTRY).type(BannerPattern.class);
 	public static final RegistryInfo INSTRUMENT = of(Registry.INSTRUMENT_REGISTRY).type(Instrument.class);
 
+	/**
+	 * Add your registry to these to make sure it comes after vanilla registries, if it depends on them.
+	 * Only works on Fabric, since Forge already has ordered registries.
+	 */
+	public static final LinkedList<RegistryInfo> AFTER_VANILLA = new LinkedList<>();
+
 	public final ResourceKey<? extends Registry<?>> key;
 	public Class<?> objectBaseClass;
 	public final Map<String, BuilderType> types;
-	public final Map<ResourceLocation, BuilderBase> objects;
+	public final Map<ResourceLocation, BuilderBase<?>> objects;
 	private BuilderType defaultType;
 	public boolean bypassServerOnly;
 
@@ -221,11 +226,11 @@ public final class RegistryInfo implements Iterable<BuilderBase> {
 		}
 	}
 
-	public void addType(String type, Class<? extends BuilderBase> builderType, BuilderFactory factory) {
+	public void addType(String type, Class<? extends BuilderBase<?>> builderType, BuilderFactory factory) {
 		addType(type, builderType, factory, type.equals("basic"));
 	}
 
-	public void addBuilder(BuilderBase builder) {
+	public void addBuilder(BuilderBase<?> builder) {
 		if (builder == null) {
 			throw new IllegalArgumentException("Can't add null builder in registry '" + key.location() + "'!");
 		}
@@ -294,7 +299,7 @@ public final class RegistryInfo implements Iterable<BuilderBase> {
 
 	@NotNull
 	@Override
-	public Iterator<BuilderBase> iterator() {
+	public Iterator<BuilderBase<?>> iterator() {
 		return objects.values().iterator();
 	}
 }

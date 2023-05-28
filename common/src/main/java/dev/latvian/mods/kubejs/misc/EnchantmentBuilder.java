@@ -13,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 
-public class EnchantmentBuilder extends BuilderBase {
+public class EnchantmentBuilder extends BuilderBase<Enchantment> {
 	@FunctionalInterface
 	public interface DamageProtectionFunction {
 		int getDamageProtection(int level, DamageSource source);

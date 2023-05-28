@@ -38,6 +38,8 @@ public class LootBuilderPool implements FunctionContainer, ConditionContainer {
 
 		if (entries.size() > 0) {
 			json.add("entries", entries);
+		} else {
+			json.add("entries", new JsonArray());
 		}
 
 		return json;

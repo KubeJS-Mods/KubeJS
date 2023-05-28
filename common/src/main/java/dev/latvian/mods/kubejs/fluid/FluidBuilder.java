@@ -15,7 +15,7 @@ import net.minecraft.world.level.material.FlowingFluid;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class FluidBuilder extends BuilderBase implements Supplier<FlowingFluid> {
+public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	public transient ResourceLocation stillTexture;
 	public transient ResourceLocation flowingTexture;
 	public transient int color = 0xFFFFFFFF;
@@ -65,17 +65,12 @@ public class FluidBuilder extends BuilderBase implements Supplier<FlowingFluid> 
 		return new ArchitecturyFlowingFluid.Source(createAttributes());
 	}
 
-	@Override
-	public FlowingFluid get() {
-		return getObject();
-	}
-
 	public ArchitecturyFluidAttributes createAttributes() {
 		if (this.attributes != null) {
 			return this.attributes;
 		}
 
-		var attributes = SimpleArchitecturyFluidAttributes.of(() -> this.flowingFluid.getObject(), this::getObject)
+		var attributes = SimpleArchitecturyFluidAttributes.of(flowingFluid, this)
 				.flowingTexture(flowingTexture)
 				.sourceTexture(stillTexture)
 				.color(color)

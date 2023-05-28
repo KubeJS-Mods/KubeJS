@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 
-public class PaintingVariantBuilder extends BuilderBase {
+public class PaintingVariantBuilder extends BuilderBase<PaintingVariant> {
 	public transient int width;
 	public transient int height;
 

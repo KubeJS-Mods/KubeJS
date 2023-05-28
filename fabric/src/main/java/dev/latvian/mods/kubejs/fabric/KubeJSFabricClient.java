@@ -7,14 +7,12 @@ import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.level.block.Block;
 
 public class KubeJSFabricClient {
-	@SuppressWarnings("DataFlowIssue")
 	public static void registry() {
 		for (var builder : RegistryInfo.BLOCK) {
 			if (builder instanceof BlockBuilder b) {
-				Block block = b.getObject();
+				var block = b.get();
 
 				switch (b.renderType) {
 					case "cutout" -> RenderTypeRegistry.register(RenderType.cutout(), block);
@@ -26,7 +24,7 @@ public class KubeJSFabricClient {
 
 		for (var builder : RegistryInfo.BLOCK) {
 			if (builder instanceof BlockBuilder b && !b.color.isEmpty()) {
-				ColorHandlerRegistry.registerBlockColors((state, level, pos, index) -> state.getBlock().kjs$getBlockBuilder().color.get(index), b);
+				ColorHandlerRegistry.registerBlockColors((state, level, pos, index) -> b.color.get(index), b);
 			}
 		}
 

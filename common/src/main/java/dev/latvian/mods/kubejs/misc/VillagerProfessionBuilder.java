@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-public class VillagerProfessionBuilder extends BuilderBase {
+public class VillagerProfessionBuilder extends BuilderBase<VillagerProfession> {
 	public transient Either<ResourceKey<PoiType>, TagKey<PoiType>> poiType;
 
 	public transient ImmutableSet<Item> requestedItems;

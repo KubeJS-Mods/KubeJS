@@ -41,10 +41,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
-public abstract class ItemBuilder extends BuilderBase implements Supplier<Item> {
+public abstract class ItemBuilder extends BuilderBase<Item> {
 	public static final Map<String, Tier> TOOL_TIERS = new HashMap<>();
 	public static final Map<String, ArmorMaterial> ARMOR_TIERS = new HashMap<>();
 
@@ -150,14 +149,9 @@ public abstract class ItemBuilder extends BuilderBase implements Supplier<Item> 
 	}
 
 	@Override
-	public Object transformObject(Object obj) {
-		((Item) obj).kjs$setItemBuilder(this);
+	public Item transformObject(Item obj) {
+		obj.kjs$setItemBuilder(this);
 		return obj;
-	}
-
-	@Override
-	public Item get() {
-		return getObject();
 	}
 
 	@Override

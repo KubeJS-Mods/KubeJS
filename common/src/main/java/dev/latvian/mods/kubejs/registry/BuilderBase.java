@@ -11,11 +11,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public abstract class BuilderBase {
+public abstract class BuilderBase<T> implements Supplier<T> {
 	public final ResourceLocation id;
-	protected Object object;
+	protected T object;
 	public String translationKey;
 	public String displayName;
 	public transient boolean dummyBuilder;
@@ -32,16 +33,16 @@ public abstract class BuilderBase {
 
 	public abstract RegistryInfo getRegistryType();
 
-	public abstract Object createObject();
+	public abstract T createObject();
 
-	public Object transformObject(Object obj) {
+	public T transformObject(T obj) {
 		return obj;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T getObject() {
+	@Override
+	public final T get() {
 		try {
-			return (T) object;
+			return object;
 		} catch (Exception ex) {
 			if (dummyBuilder) {
 				throw new RuntimeException("Object '" + id + "' of registry '" + getRegistryType().key.location() + "' is from a dummy builder and doesn't have a value!");
@@ -58,17 +59,17 @@ public abstract class BuilderBase {
 		return getRegistryType().key.location().getPath();
 	}
 
-	public BuilderBase translationKey(String key) {
+	public BuilderBase<T> translationKey(String key) {
 		translationKey = key;
 		return this;
 	}
 
-	public BuilderBase displayName(String name) {
+	public BuilderBase<T> displayName(String name) {
 		displayName = name;
 		return this;
 	}
 
-	public BuilderBase tag(ResourceLocation tag) {
+	public BuilderBase<T> tag(ResourceLocation tag) {
 		defaultTags.add(tag);
 		return this;
 	}
@@ -94,7 +95,7 @@ public abstract class BuilderBase {
 	public void addResourcePackLocations(String path, List<ResourceLocation> list, PackType packType) {
 	}
 
-	protected Object createTransformedObject() {
+	protected T createTransformedObject() {
 		object = transformObject(createObject());
 		return object;
 	}

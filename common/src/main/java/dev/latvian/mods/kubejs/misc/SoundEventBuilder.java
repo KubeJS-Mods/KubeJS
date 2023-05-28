@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 
-public class SoundEventBuilder extends BuilderBase {
+public class SoundEventBuilder extends BuilderBase<SoundEvent> {
 	public SoundEventBuilder(ResourceLocation i) {
 		super(i);
 	}

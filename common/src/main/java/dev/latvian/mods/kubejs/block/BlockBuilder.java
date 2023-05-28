@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.loot.LootBuilder;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -17,7 +18,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -35,9 +38,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-public abstract class BlockBuilder extends BuilderBase implements Supplier<Block> {
+public abstract class BlockBuilder extends BuilderBase<Block> {
+	private static final Consumer<LootBuilder> EMPTY = loot -> {
+	};
+
+	private static final BlockBehaviour.StatePredicate ALWAYS_FALSE_STATE_PREDICATE = (blockState, blockGetter, blockPos) -> false;
+	private static final BlockBehaviour.StateArgumentPredicate<?> ALWAYS_FALSE_STATE_ARG_PREDICATE = (blockState, blockGetter, blockPos, type) -> false;
+
 	public transient MaterialJS material;
 	public transient float hardness;
 	public transient float resistance;
@@ -53,9 +61,9 @@ public abstract class BlockBuilder extends BuilderBase implements Supplier<Block
 	public transient List<AABB> customShape;
 	public transient boolean noCollision;
 	public transient boolean notSolid;
-	public transient float slipperiness = 0.6F;
-	public transient float speedFactor = 1.0F;
-	public transient float jumpFactor = 1.0F;
+	public transient float slipperiness = Float.NaN;
+	public transient float speedFactor = Float.NaN;
+	public transient float jumpFactor = Float.NaN;
 	public Consumer<RandomTickCallbackJS> randomTickCallback;
 	public Consumer<LootBuilder> lootTable;
 	public JsonObject blockstateJson;
@@ -91,12 +99,7 @@ public abstract class BlockBuilder extends BuilderBase implements Supplier<Block
 		noCollision = false;
 		notSolid = false;
 		randomTickCallback = null;
-
-		lootTable = loot -> loot.addPool(pool -> {
-			pool.survivesExplosion();
-			pool.addItem(new ItemStack(get()));
-		});
-
+		lootTable = null;
 		blockstateJson = null;
 		modelJson = null;
 		noValidSpawns = false;
@@ -116,8 +119,8 @@ public abstract class BlockBuilder extends BuilderBase implements Supplier<Block
 	}
 
 	@Override
-	public Object transformObject(Object obj) {
-		((Block) obj).kjs$setBlockBuilder(this);
+	public Block transformObject(Block obj) {
+		obj.kjs$setBlockBuilder(this);
 		return obj;
 	}
 
@@ -129,31 +132,38 @@ public abstract class BlockBuilder extends BuilderBase implements Supplier<Block
 	}
 
 	@Override
-	public BuilderBase displayName(String name) {
+	public BuilderBase<Block> displayName(String name) {
 		if (itemBuilder != null) {
 			itemBuilder.displayName(name);
 		}
+
 		return super.displayName(name);
 	}
 
 	@Override
-	public Block get() {
-		return getObject();
-	}
-
-	@Override
 	public void generateDataJsons(DataJsonGenerator generator) {
-		if (lootTable != null) {
-			var lootBuilder = new LootBuilder(null);
-			lootBuilder.type = "minecraft:block";
-			lootTable.accept(lootBuilder);
-			generator.json(newID("loot_tables/blocks/", ""), lootBuilder.toJson());
+		if (this.lootTable == EMPTY) {
+			return;
 		}
+
+		var lootBuilder = new LootBuilder(null);
+		lootBuilder.type = "minecraft:block";
+
+		if (lootTable != null) {
+			lootTable.accept(lootBuilder);
+		} else if (get().asItem() != Items.AIR) {
+			lootBuilder.addPool(pool -> {
+				pool.survivesExplosion();
+				pool.addItem(new ItemStack(get()));
+			});
+		}
+
+		var json = lootBuilder.toJson();
+		generator.json(newID("loot_tables/blocks/", ""), json);
 	}
 
 	@Override
 	public void generateAssetJsons(AssetJsonGenerator generator) {
-
 		if (blockstateJson != null) {
 			generator.json(newID("blockstates/", ""), blockstateJson);
 		} else {
@@ -295,7 +305,7 @@ public abstract class BlockBuilder extends BuilderBase implements Supplier<Block
 
 	@Override
 	public void addResourcePackLocations(String path, List<ResourceLocation> list, PackType packType) {
-		if (lootTable != null && path.equals("loot_tables")) {
+		if (lootTable != EMPTY && path.equals("loot_tables")) {
 			list.add(new ResourceLocation(id.getNamespace(), "loot_tables/blocks/" + id.getPath() + ".json"));
 		}
 	}
@@ -380,7 +390,7 @@ public abstract class BlockBuilder extends BuilderBase implements Supplier<Block
 	public BlockBuilder item(@Nullable Consumer<BlockItemBuilder> i) {
 		if (i == null) {
 			itemBuilder = null;
-			lootTable = null;
+			lootTable = EMPTY;
 		} else {
 			i.accept(getOrCreateItemBuilder());
 		}
@@ -459,7 +469,7 @@ public abstract class BlockBuilder extends BuilderBase implements Supplier<Block
 	}
 
 	public BlockBuilder noDrops() {
-		lootTable = null;
+		lootTable = EMPTY;
 		return this;
 	}
 
@@ -593,28 +603,36 @@ public abstract class BlockBuilder extends BuilderBase implements Supplier<Block
 			properties.requiresCorrectToolForDrops();
 		}
 
-		if (lootTable == null) {
+		if (lootTable == EMPTY) {
 			properties.noLootTable();
 		}
 
-		properties.friction(slipperiness);
-		properties.speedFactor(speedFactor);
-		properties.jumpFactor(jumpFactor);
+		if (!Float.isNaN(slipperiness)) {
+			properties.friction(slipperiness);
+		}
+
+		if (!Float.isNaN(speedFactor)) {
+			properties.speedFactor(speedFactor);
+		}
+
+		if (!Float.isNaN(jumpFactor)) {
+			properties.jumpFactor(jumpFactor);
+		}
 
 		if (noValidSpawns) {
-			properties.isValidSpawn((blockState, blockGetter, blockPos, object) -> false);
+			properties.isValidSpawn(UtilsJS.cast(ALWAYS_FALSE_STATE_ARG_PREDICATE));
 		}
 
 		if (!suffocating) {
-			properties.isSuffocating((blockState, blockGetter, blockPos) -> false);
+			properties.isSuffocating(ALWAYS_FALSE_STATE_PREDICATE);
 		}
 
 		if (!viewBlocking) {
-			properties.isViewBlocking((blockState, blockGetter, blockPos) -> false);
+			properties.isViewBlocking(ALWAYS_FALSE_STATE_PREDICATE);
 		}
 
 		if (!redstoneConductor) {
-			properties.isRedstoneConductor((blockState, blockGetter, blockPos) -> false);
+			properties.isRedstoneConductor(ALWAYS_FALSE_STATE_PREDICATE);
 		}
 
 		if (randomTickCallback != null) {

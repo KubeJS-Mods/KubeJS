@@ -9,6 +9,8 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.api.ModInitializer;
 
+import java.util.HashSet;
+
 public class KubeJSFabric implements ModInitializer, ClientModInitializer, DedicatedServerModInitializer {
 	@Override
 	public void onInitialize() {
@@ -23,7 +25,20 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 	}
 
 	public void registerObjects() {
+		var ignored = new HashSet<>(RegistryInfo.AFTER_VANILLA);
+
 		for (var info : RegistryInfo.MAP.values()) {
+			if (!ignored.contains(info)) {
+				var deferredRegister = DeferredRegister.create(KubeJS.MOD_ID, UtilsJS.cast(info.key));
+				int added = info.registerObjects(deferredRegister::register);
+
+				if (added > 0) {
+					deferredRegister.register();
+				}
+			}
+		}
+
+		for (var info : RegistryInfo.AFTER_VANILLA) {
 			var deferredRegister = DeferredRegister.create(KubeJS.MOD_ID, UtilsJS.cast(info.key));
 			int added = info.registerObjects(deferredRegister::register);
 

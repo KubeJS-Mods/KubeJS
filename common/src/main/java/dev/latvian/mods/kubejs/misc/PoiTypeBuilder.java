@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Set;
 
-public class PoiTypeBuilder extends BuilderBase {
+public class PoiTypeBuilder extends BuilderBase<PoiType> {
 	public transient Set<BlockState> blockStates;
 	public transient int maxTickets;
 	public transient int validRange;

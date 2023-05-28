@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PotionBuilder extends BuilderBase {
+public class PotionBuilder extends BuilderBase<Potion> {
 	public transient List<MobEffectInstance> mobEffects;
 
 	public PotionBuilder(ResourceLocation i) {

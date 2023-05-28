@@ -6,7 +6,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.resources.ResourceLocation;
 
-public class ParticleTypeBuilder extends BuilderBase {
+public class ParticleTypeBuilder extends BuilderBase<ParticleType<?>> {
 	public transient boolean overrideLimiter;
 	public transient ParticleOptions.Deserializer deserializer;
 
