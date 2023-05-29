@@ -7,8 +7,7 @@ import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.item.EmptyItemError;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
-
-import java.util.List;
+import dev.latvian.mods.kubejs.recipe.RecipeJS;
 
 public interface FluidComponents {
 	RecipeComponent<FluidStackJS> INPUT = new RecipeComponent<>() {
@@ -18,17 +17,22 @@ public interface FluidComponents {
 		}
 
 		@Override
-		public RecipeComponentType getType() {
-			return RecipeComponentType.INPUT;
+		public ComponentRole role() {
+			return ComponentRole.INPUT;
 		}
 
 		@Override
-		public JsonElement write(FluidStackJS value) {
+		public Class<?> componentClass() {
+			return FluidStackJS.class;
+		}
+
+		@Override
+		public JsonElement write(RecipeJS recipe, FluidStackJS value) {
 			return value == EmptyFluidStackJS.INSTANCE ? null : value.toJson();
 		}
 
 		@Override
-		public FluidStackJS read(Object from) {
+		public FluidStackJS read(RecipeJS recipe, Object from) {
 			var i = FluidStackJS.of(from);
 
 			if (i.isEmpty()) {
@@ -39,7 +43,7 @@ public interface FluidComponents {
 		}
 
 		@Override
-		public boolean shouldRead(Object from) {
+		public boolean shouldRead(RecipeJS recipe, Object from) {
 			return !FluidStackJS.of(from).isEmpty();
 		}
 
@@ -50,8 +54,9 @@ public interface FluidComponents {
 	};
 
 	RecipeComponent<FluidStackJS> DEFAULT_INPUT = INPUT.optional(EmptyFluidStackJS.INSTANCE);
-	RecipeComponent<List<FluidStackJS>> INPUT_ARRAY = INPUT.asArray();
+	RecipeComponent<FluidStackJS[]> INPUT_ARRAY = INPUT.asArray();
 	RecipeComponent<Either<FluidStackJS, InputItem>> INPUT_OR_ITEM = new EitherRecipeComponent<>(INPUT, ItemComponents.INPUT);
+	RecipeComponent<Either<FluidStackJS, InputItem>[]> INPUT_OR_ITEM_ARRAY = INPUT_OR_ITEM.asArray();
 
 	RecipeComponent<FluidStackJS> OUTPUT = new RecipeComponentWithParent<>() {
 		@Override
@@ -65,8 +70,8 @@ public interface FluidComponents {
 		}
 
 		@Override
-		public RecipeComponentType getType() {
-			return RecipeComponentType.OUTPUT;
+		public ComponentRole role() {
+			return ComponentRole.OUTPUT;
 		}
 
 		@Override
@@ -76,6 +81,7 @@ public interface FluidComponents {
 	};
 
 	RecipeComponent<FluidStackJS> DEFAULT_OUTPUT = OUTPUT.optional(EmptyFluidStackJS.INSTANCE);
-	RecipeComponent<List<FluidStackJS>> OUTPUT_ARRAY = OUTPUT.asArray();
+	RecipeComponent<FluidStackJS[]> OUTPUT_ARRAY = OUTPUT.asArray();
 	RecipeComponent<Either<FluidStackJS, OutputItem>> OUTPUT_OR_ITEM = new EitherRecipeComponent<>(OUTPUT, ItemComponents.OUTPUT);
+	RecipeComponent<Either<FluidStackJS, OutputItem>[]> OUTPUT_OR_ITEM_ARRAY = OUTPUT_OR_ITEM.asArray();
 }

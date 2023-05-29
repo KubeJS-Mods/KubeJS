@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import dev.latvian.mods.kubejs.recipe.RecipeJS;
 
 import java.util.function.Predicate;
 
@@ -18,12 +19,17 @@ public record StringComponent(String error, Predicate<String> predicate) impleme
 		}
 
 		@Override
-		public JsonElement write(Character value) {
+		public Class<?> componentClass() {
+			return Character.class;
+		}
+
+		@Override
+		public JsonElement write(RecipeJS recipe, Character value) {
 			return new JsonPrimitive(value);
 		}
 
 		@Override
-		public Character read(Object from) {
+		public Character read(RecipeJS recipe, Object from) {
 			return from instanceof Character c ? c : String.valueOf(from).charAt(0);
 		}
 
@@ -39,12 +45,17 @@ public record StringComponent(String error, Predicate<String> predicate) impleme
 	}
 
 	@Override
-	public JsonPrimitive write(String value) {
+	public Class<?> componentClass() {
+		return String.class;
+	}
+
+	@Override
+	public JsonPrimitive write(RecipeJS recipe, String value) {
 		return new JsonPrimitive(value);
 	}
 
 	@Override
-	public String read(Object from) {
+	public String read(RecipeJS recipe, Object from) {
 		var str = from instanceof JsonPrimitive json ? json.getAsString() : String.valueOf(from);
 
 		if (!predicate.test(str)) {

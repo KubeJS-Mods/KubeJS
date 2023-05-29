@@ -3,11 +3,10 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
-import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
+import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import dev.latvian.mods.kubejs.util.MutableBoolean;
 
 public record EitherRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L> low) implements RecipeComponent<Either<H, L>> {
 	public static <H, L> EitherRecipeComponent<H, L> of(RecipeComponent<H> highPriority, RecipeComponent<L> lowPriority) {
@@ -20,63 +19,82 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> high, RecipeCompone
 	}
 
 	@Override
-	public JsonObject description() {
+	public JsonObject description(RecipeJS recipe) {
 		var obj = new JsonObject();
 		obj.addProperty("type", componentType());
-		obj.add("high_priority", high.description());
-		obj.add("low_priority", low.description());
+		obj.add("high_priority", high.description(recipe));
+		obj.add("low_priority", low.description(recipe));
 		return obj;
 	}
 
 	@Override
-	public RecipeComponentType getType() {
-		if (high.getType() == RecipeComponentType.OTHER) {
-			return low.getType();
+	public ComponentRole role() {
+		if (high.role().isOther()) {
+			return low.role();
 		}
 
-		return high.getType();
+		return high.role();
 	}
 
 	@Override
-	public JsonElement write(Either<H, L> value) {
+	public Class<?> componentClass() {
+		return Either.class;
+	}
+
+	@Override
+	public JsonElement write(RecipeJS recipe, Either<H, L> value) {
 		if (value.left().isPresent()) {
-			return high.write(value.left().get());
+			return high.write(recipe, value.left().get());
 		} else {
-			return low.write(value.right().get());
+			return low.write(recipe, value.right().get());
 		}
 	}
 
 	@Override
-	public Either<H, L> read(Object from) {
-		if (high.shouldRead(from)) {
-			return Either.left(high.read(from));
+	public Either<H, L> read(RecipeJS recipe, Object from) {
+		if (high.shouldRead(recipe, from)) {
+			return Either.left(high.read(recipe, from));
 		} else {
-			return Either.right(low.read(from));
+			return Either.right(low.read(recipe, from));
 		}
 	}
 
 	@Override
-	public boolean hasInput(RecipeKJS recipe, Either<H, L> value, ReplacementMatch match) {
+	public boolean isInput(RecipeJS recipe, Either<H, L> value, ReplacementMatch match) {
 		var l = value.left();
-		return l.isPresent() ? high.hasInput(recipe, l.get(), match) : low.hasInput(recipe, value.right().get(), match);
+		return l.isPresent() ? high.isInput(recipe, l.get(), match) : low.isInput(recipe, value.right().get(), match);
 	}
 
 	@Override
-	public Either<H, L> replaceInput(RecipeKJS recipe, Either<H, L> value, ReplacementMatch match, InputReplacement with, MutableBoolean changed) {
+	public Either<H, L> replaceInput(RecipeJS recipe, Either<H, L> value, ReplacementMatch match, InputReplacement with) {
 		var l = value.left();
-		return l.isPresent() ? Either.left(high.replaceInput(recipe, l.get(), match, with, changed)) : Either.right(low.replaceInput(recipe, value.right().get(), match, with, changed));
+
+		if (l.isPresent()) {
+			var r = high.replaceInput(recipe, l.get(), match, with);
+			return r == l.get() ? value : Either.left(r);
+		} else {
+			var r = low.replaceInput(recipe, value.right().get(), match, with);
+			return r == value.right().get() ? value : Either.right(r);
+		}
 	}
 
 	@Override
-	public boolean hasOutput(RecipeKJS recipe, Either<H, L> value, ReplacementMatch match) {
+	public boolean isOutput(RecipeJS recipe, Either<H, L> value, ReplacementMatch match) {
 		var l = value.left();
-		return l.isPresent() ? high.hasOutput(recipe, l.get(), match) : low.hasOutput(recipe, value.right().get(), match);
+		return l.isPresent() ? high.isOutput(recipe, l.get(), match) : low.isOutput(recipe, value.right().get(), match);
 	}
 
 	@Override
-	public Either<H, L> replaceOutput(RecipeKJS recipe, Either<H, L> value, ReplacementMatch match, OutputReplacement with, MutableBoolean changed) {
+	public Either<H, L> replaceOutput(RecipeJS recipe, Either<H, L> value, ReplacementMatch match, OutputReplacement with) {
 		var l = value.left();
-		return l.isPresent() ? Either.left(high.replaceOutput(recipe, l.get(), match, with, changed)) : Either.right(low.replaceOutput(recipe, value.right().get(), match, with, changed));
+
+		if (l.isPresent()) {
+			var r = high.replaceOutput(recipe, l.get(), match, with);
+			return r == l.get() ? value : Either.left(r);
+		} else {
+			var r = low.replaceOutput(recipe, value.right().get(), match, with);
+			return r == value.right().get() ? value : Either.right(r);
+		}
 	}
 
 	@Override

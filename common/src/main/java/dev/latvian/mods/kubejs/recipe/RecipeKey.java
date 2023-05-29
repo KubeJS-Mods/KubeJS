@@ -2,8 +2,10 @@ package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class RecipeKey<T> {
@@ -24,12 +26,14 @@ public final class RecipeKey<T> {
 	private final RecipeComponent<T> component;
 	private final int index;
 	private final String name;
+	private final List<String> altNames;
 
 	@SuppressWarnings("unchecked")
 	private RecipeKey(KK kk) {
 		this.component = (RecipeComponent<T>) kk.component;
 		this.index = kk.index;
 		this.name = kk.name;
+		this.altNames = new ArrayList<>(0);
 	}
 
 	@Override
@@ -52,5 +56,19 @@ public final class RecipeKey<T> {
 
 	public String name() {
 		return name;
+	}
+
+	public RecipeKey<T> alt(String name) {
+		altNames.add(name);
+		return this;
+	}
+
+	public RecipeKey<T> alt(String... names) {
+		altNames.addAll(List.of(names));
+		return this;
+	}
+
+	public List<String> altNames() {
+		return altNames;
 	}
 }

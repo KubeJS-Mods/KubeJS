@@ -3,20 +3,25 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
+import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import dev.latvian.mods.kubejs.util.MutableBoolean;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
-public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canWriteSelf) implements RecipeComponent<List<T>> {
+public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canWriteSelf, Class<?> arrayClass, T[] emptyArray) implements RecipeComponent<T[]> {
+	@SuppressWarnings("unchecked")
+	public static <T> ArrayRecipeComponent<T> of(RecipeComponent<T> component, boolean canWriteSelf) {
+		var arr = (T[]) Array.newInstance(component.componentClass(), 0);
+		return new ArrayRecipeComponent<>(component, canWriteSelf, arr.getClass(), arr);
+	}
+
 	@Override
-	public RecipeComponentType getType() {
-		return component.getType();
+	public ComponentRole role() {
+		return component.role();
 	}
 
 	@Override
@@ -25,7 +30,7 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	}
 
 	@Override
-	public JsonObject description() {
+	public JsonObject description(RecipeJS recipe) {
 		var obj = new JsonObject();
 		obj.addProperty("type", componentType());
 
@@ -33,21 +38,31 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 			obj.addProperty("can_write_self", true);
 		}
 
-		obj.add("component", component.description());
+		obj.add("component", component.description(recipe));
 		return obj;
 	}
 
 	@Override
-	public JsonElement write(List<T> value) {
-		if (canWriteSelf && value.size() == 1) {
-			var v1 = component.write(value.get(0));
+	public Class<?> componentClass() {
+		return arrayClass;
+	}
+
+	@SuppressWarnings("unchecked")
+	private T[] newArray(int length) {
+		return (T[]) Array.newInstance(component.componentClass(), length);
+	}
+
+	@Override
+	public JsonElement write(RecipeJS recipe, T[] value) {
+		if (canWriteSelf && value.length == 1) {
+			var v1 = component.write(recipe, value[0]);
 			return v1 == null ? new JsonArray() : v1;
 		}
 
-		var arr = new JsonArray(value.size());
+		var arr = new JsonArray(value.length);
 
 		for (var v : value) {
-			var v1 = component.write(v);
+			var v1 = component.write(recipe, v);
 
 			if (v1 != null) {
 				arr.add(v1);
@@ -58,24 +73,62 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	}
 
 	@Override
-	public List<T> read(Object from) {
-		if (from instanceof Iterable<?> arr) {
-			var list = new ArrayList<T>(arr instanceof Collection<?> c ? c.size() : arr instanceof JsonArray a ? a.size() : 4);
+	@SuppressWarnings("unchecked")
+	public T[] read(RecipeJS recipe, Object from) {
+		if (from.getClass() == arrayClass) {
+			return (T[]) from;
+		} else if (from instanceof Iterable<?> iterable) {
+			int size;
 
-			for (var e : arr) {
-				list.add(component.read(e));
+			if (iterable instanceof Collection<?> c) {
+				size = c.size();
+			} else if (iterable instanceof JsonArray a) {
+				size = a.size();
+			} else {
+				size = -1;
 			}
 
-			return list;
+			if (size == 0) {
+				return emptyArray;
+			} else if (size > 0) {
+				var arr = newArray(size);
+
+				int i = 0;
+
+				for (var e : iterable) {
+					arr[i] = component.read(recipe, e);
+					i++;
+				}
+
+				return arr;
+			} else {
+				var list = new ArrayList<T>();
+
+				for (var e : iterable) {
+					list.add(component.read(recipe, e));
+				}
+
+				return list.toArray(newArray(list.size()));
+			}
+		} else if (from.getClass().isArray()) {
+			var arr = newArray(Array.getLength(from));
+
+			for (int i = 0; i < arr.length; i++) {
+				arr[i] = component.read(recipe, Array.get(from, i));
+			}
+
+			return arr;
 		}
 
-		return List.of(component.read(from));
+		var arr = newArray(1);
+		arr[0] = component.read(recipe, from);
+		return arr;
 	}
 
 	@Override
-	public boolean hasInput(RecipeKJS recipe, List<T> value, ReplacementMatch match) {
+	public boolean isInput(RecipeJS recipe, T[] value, ReplacementMatch match) {
 		for (var v : value) {
-			if (component.hasInput(recipe, v, match)) {
+			if (component.isInput(recipe, v, match)) {
 				return true;
 			}
 		}
@@ -84,18 +137,29 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	}
 
 	@Override
-	public List<T> replaceInput(RecipeKJS recipe, List<T> value, ReplacementMatch match, InputReplacement input, MutableBoolean changed) {
-		for (int i = 0; i < value.size(); i++) {
-			value.set(i, component.replaceInput(recipe, value.get(i), match, input, changed));
+	public T[] replaceInput(RecipeJS recipe, T[] value, ReplacementMatch match, InputReplacement with) {
+		var arr = value;
+
+		for (int i = 0; i < value.length; i++) {
+			var r = component.replaceInput(recipe, value[i], match, with);
+
+			if (arr[i] != r) {
+				if (arr == value) {
+					arr = newArray(value.length);
+					System.arraycopy(value, 0, arr, 0, i);
+				}
+
+				arr[i] = r;
+			}
 		}
 
-		return value;
+		return arr;
 	}
 
 	@Override
-	public boolean hasOutput(RecipeKJS recipe, List<T> value, ReplacementMatch match) {
+	public boolean isOutput(RecipeJS recipe, T[] value, ReplacementMatch match) {
 		for (var v : value) {
-			if (component.hasOutput(recipe, v, match)) {
+			if (component.isOutput(recipe, v, match)) {
 				return true;
 			}
 		}
@@ -104,12 +168,23 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	}
 
 	@Override
-	public List<T> replaceOutput(RecipeKJS recipe, List<T> value, ReplacementMatch match, OutputReplacement with, MutableBoolean changed) {
-		for (int i = 0; i < value.size(); i++) {
-			value.set(i, component.replaceOutput(recipe, value.get(i), match, with, changed));
+	public T[] replaceOutput(RecipeJS recipe, T[] value, ReplacementMatch match, OutputReplacement with) {
+		var arr = value;
+
+		for (int i = 0; i < value.length; i++) {
+			var r = component.replaceOutput(recipe, value[i], match, with);
+
+			if (arr[i] != r) {
+				if (arr == value) {
+					arr = newArray(value.length);
+					System.arraycopy(value, 0, arr, 0, i);
+				}
+
+				arr[i] = r;
+			}
 		}
 
-		return value;
+		return arr;
 	}
 
 	@Override

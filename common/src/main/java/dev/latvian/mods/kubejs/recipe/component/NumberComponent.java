@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import net.minecraft.util.Mth;
 
 public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
@@ -48,9 +49,14 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 		return "number";
 	}
 
+	@Override
+	default Class<?> componentClass() {
+		return Number.class;
+	}
+
 	record IntRange(int min, int max) implements NumberComponent<Integer> {
 		@Override
-		public JsonObject description() {
+		public JsonObject description(RecipeJS recipe) {
 			var obj = new JsonObject();
 			obj.addProperty("type", componentType());
 			obj.addProperty("number_type", "int");
@@ -60,12 +66,17 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 		}
 
 		@Override
-		public JsonPrimitive write(Integer value) {
+		public Class<?> componentClass() {
+			return Integer.class;
+		}
+
+		@Override
+		public JsonPrimitive write(RecipeJS recipe, Integer value) {
 			return new JsonPrimitive(value);
 		}
 
 		@Override
-		public Integer read(Object from) {
+		public Integer read(RecipeJS recipe, Object from) {
 			return Mth.clamp(NumberComponent.numberOf(from).intValue(), min, max);
 		}
 
@@ -85,7 +96,7 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 
 	record LongRange(long min, long max) implements NumberComponent<Long> {
 		@Override
-		public JsonObject description() {
+		public JsonObject description(RecipeJS recipe) {
 			var obj = new JsonObject();
 			obj.addProperty("type", componentType());
 			obj.addProperty("number_type", "long");
@@ -95,12 +106,17 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 		}
 
 		@Override
-		public JsonPrimitive write(Long value) {
+		public Class<?> componentClass() {
+			return Long.class;
+		}
+
+		@Override
+		public JsonPrimitive write(RecipeJS recipe, Long value) {
 			return new JsonPrimitive(value);
 		}
 
 		@Override
-		public Long read(Object from) {
+		public Long read(RecipeJS recipe, Object from) {
 			return Mth.clamp(NumberComponent.numberOf(from).longValue(), min, max);
 		}
 
@@ -120,7 +136,7 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 
 	record FloatRange(float min, float max) implements NumberComponent<Float> {
 		@Override
-		public JsonObject description() {
+		public JsonObject description(RecipeJS recipe) {
 			var obj = new JsonObject();
 			obj.addProperty("type", componentType());
 			obj.addProperty("number_type", "float");
@@ -130,12 +146,17 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 		}
 
 		@Override
-		public JsonPrimitive write(Float value) {
+		public Class<?> componentClass() {
+			return Float.class;
+		}
+
+		@Override
+		public JsonPrimitive write(RecipeJS recipe, Float value) {
 			return new JsonPrimitive(value);
 		}
 
 		@Override
-		public Float read(Object from) {
+		public Float read(RecipeJS recipe, Object from) {
 			return Mth.clamp(NumberComponent.numberOf(from).floatValue(), min, max);
 		}
 
@@ -155,7 +176,7 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 
 	record DoubleRange(double min, double max) implements NumberComponent<Double> {
 		@Override
-		public JsonObject description() {
+		public JsonObject description(RecipeJS recipe) {
 			var obj = new JsonObject();
 			obj.addProperty("type", componentType());
 			obj.addProperty("number_type", "double");
@@ -165,12 +186,17 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 		}
 
 		@Override
-		public JsonPrimitive write(Double value) {
+		public Class<?> componentClass() {
+			return Double.class;
+		}
+
+		@Override
+		public JsonPrimitive write(RecipeJS recipe, Double value) {
 			return new JsonPrimitive(value);
 		}
 
 		@Override
-		public Double read(Object from) {
+		public Double read(RecipeJS recipe, Object from) {
 			return Mth.clamp(NumberComponent.numberOf(from).doubleValue(), min, max);
 		}
 

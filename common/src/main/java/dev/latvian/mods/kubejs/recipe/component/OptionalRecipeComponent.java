@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.recipe.RecipeJS;
 
 public record OptionalRecipeComponent<T>(RecipeComponent<T> component, T defaultValue) implements RecipeComponentWithParent<T> {
 	@Override
@@ -19,17 +20,17 @@ public record OptionalRecipeComponent<T>(RecipeComponent<T> component, T default
 	}
 
 	@Override
-	public JsonObject description() {
+	public JsonObject description(RecipeJS recipe) {
 		var obj = new JsonObject();
 		obj.addProperty("type", componentType());
 
-		var d = component.write(defaultValue);
+		var d = component.write(recipe, defaultValue);
 
 		if (d != null) {
 			obj.add("default_value", d);
 		}
 
-		obj.add("component", component.description());
+		obj.add("component", component.description(recipe));
 		return obj;
 	}
 
@@ -45,10 +46,9 @@ public record OptionalRecipeComponent<T>(RecipeComponent<T> component, T default
 
 	@Override
 	public void readJson(RecipeComponentValue<T> value, JsonObject json) {
-		if (json.has(value.key.name())) {
-			component.readJson(value, json);
-		} else {
-			value.value = defaultValue;
+		try {
+			RecipeComponentWithParent.super.readJson(value, json);
+		} catch (MissingComponentException ignored) {
 		}
 	}
 }

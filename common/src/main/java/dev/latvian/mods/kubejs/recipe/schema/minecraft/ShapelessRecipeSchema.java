@@ -6,11 +6,9 @@ import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 
-import java.util.List;
-
 public interface ShapelessRecipeSchema {
 	RecipeKey<OutputItem> RESULT = ItemComponents.OUTPUT.key(0, "result");
-	RecipeKey<List<InputItem>> INGREDIENTS = ItemComponents.UNWRAPPED_INPUT_ARRAY.key(1, "ingredients");
+	RecipeKey<InputItem[]> INGREDIENTS = ItemComponents.UNWRAPPED_INPUT_ARRAY.key(1, "ingredients");
 
 	RecipeSchema SCHEMA = new RecipeSchema(RESULT, INGREDIENTS);
 }

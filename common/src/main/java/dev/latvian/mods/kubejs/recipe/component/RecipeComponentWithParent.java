@@ -2,19 +2,18 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
+import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import dev.latvian.mods.kubejs.util.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 
 public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	RecipeComponent<T> parentComponent();
 
 	@Override
-	default RecipeComponentType getType() {
-		return parentComponent().getType();
+	default ComponentRole role() {
+		return parentComponent().role();
 	}
 
 	@Override
@@ -23,43 +22,58 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default JsonObject description() {
-		return parentComponent().description();
+	default Class<?> componentClass() {
+		return parentComponent().componentClass();
+	}
+
+	@Override
+	default JsonElement description(RecipeJS recipe) {
+		return parentComponent().description(recipe);
 	}
 
 	@Override
 	@Nullable
-	default JsonElement write(T value) {
-		return parentComponent().write(value);
+	default JsonElement write(RecipeJS recipe, T value) {
+		return parentComponent().write(recipe, value);
 	}
 
 	@Override
-	default T read(Object from) {
-		return parentComponent().read(from);
+	default T read(RecipeJS recipe, Object from) {
+		return parentComponent().read(recipe, from);
 	}
 
 	@Override
-	default boolean shouldRead(Object from) {
-		return parentComponent().shouldRead(from);
+	default void writeJson(RecipeComponentValue<T> value, JsonObject json) {
+		parentComponent().writeJson(value, json);
 	}
 
 	@Override
-	default boolean hasInput(RecipeKJS recipe, T value, ReplacementMatch match) {
-		return parentComponent().hasInput(recipe, value, match);
+	default void readJson(RecipeComponentValue<T> value, JsonObject json) {
+		parentComponent().readJson(value, json);
 	}
 
 	@Override
-	default T replaceInput(RecipeKJS recipe, T value, ReplacementMatch match, InputReplacement with, MutableBoolean changed) {
-		return parentComponent().replaceInput(recipe, value, match, with, changed);
+	default boolean shouldRead(RecipeJS recipe, Object from) {
+		return parentComponent().shouldRead(recipe, from);
 	}
 
 	@Override
-	default boolean hasOutput(RecipeKJS recipe, T value, ReplacementMatch match) {
-		return parentComponent().hasOutput(recipe, value, match);
+	default boolean isInput(RecipeJS recipe, T value, ReplacementMatch match) {
+		return parentComponent().isInput(recipe, value, match);
 	}
 
 	@Override
-	default T replaceOutput(RecipeKJS recipe, T value, ReplacementMatch match, OutputReplacement with, MutableBoolean changed) {
-		return parentComponent().replaceOutput(recipe, value, match, with, changed);
+	default T replaceInput(RecipeJS recipe, T value, ReplacementMatch match, InputReplacement with) {
+		return parentComponent().replaceInput(recipe, value, match, with);
+	}
+
+	@Override
+	default boolean isOutput(RecipeJS recipe, T value, ReplacementMatch match) {
+		return parentComponent().isOutput(recipe, value, match);
+	}
+
+	@Override
+	default T replaceOutput(RecipeJS recipe, T value, ReplacementMatch match, OutputReplacement with) {
+		return parentComponent().replaceOutput(recipe, value, match, with);
 	}
 }

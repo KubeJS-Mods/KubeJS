@@ -10,12 +10,13 @@ import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
 import dev.latvian.mods.kubejs.recipe.component.MapRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.StringComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
+import dev.latvian.mods.kubejs.util.TinyMap;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public interface ShapedRecipeSchema {
 	class ShapedRecipeJS extends RecipeJS {
@@ -32,11 +33,11 @@ public interface ShapedRecipeSchema {
 		}
 
 		private void set2DValues(ComponentValueMap from) {
-			setValue(RESULT, from.getValue(RESULT));
+			setValue(RESULT, from.getValue(this, RESULT));
 
-			var vertical = from.getValue(INGREDIENTS);
+			var vertical = from.getValue(this, INGREDIENTS);
 
-			if (vertical.isEmpty()) {
+			if (vertical.length == 0) {
 				throw new RecipeExceptionJS("Pattern is empty!");
 			}
 
@@ -76,7 +77,7 @@ public interface ShapedRecipeSchema {
 			var pattern = getValue(PATTERN);
 			var key = getValue(KEY);
 
-			if (pattern.isEmpty()) {
+			if (pattern.length == 0) {
 				throw new RecipeExceptionJS("Pattern is empty!");
 			}
 
@@ -85,43 +86,41 @@ public interface ShapedRecipeSchema {
 			}
 
 			List<Character> airs = null;
-			var itr = key.entrySet().iterator();
+
+			var entries = new ArrayList<>(Arrays.asList(key.entries()));
+			var itr = entries.iterator();
 
 			while (itr.hasNext()) {
 				var entry = itr.next();
-				if (entry.getValue().isEmpty()) {
+				if (entry.value().isEmpty()) {
 					if (airs == null) {
 						airs = new ArrayList<>(1);
 					}
 
-					airs.add(entry.getKey());
+					airs.add(entry.key());
 					itr.remove();
 				}
 			}
 
 			if (airs != null) {
-				for (int i = 0; i < pattern.size(); i++) {
-					var s = pattern.get(i);
-
+				for (int i = 0; i < pattern.length; i++) {
 					for (var a : airs) {
-						s = s.replace(a, ' ');
+						pattern[i] = pattern[i].replace(a, ' ');
 					}
-
-					pattern.set(i, s);
 				}
 
 				setValue(PATTERN, pattern);
-				setValue(KEY, key);
+				setValue(KEY, new TinyMap<>(entries));
 			}
 		}
 	}
 
 	RecipeKey<OutputItem> RESULT = ItemComponents.OUTPUT.key(0, "result");
-	RecipeKey<List<String>> PATTERN = StringComponent.NON_EMPTY.asArray().key(1, "pattern");
-	RecipeKey<Map<Character, InputItem>> KEY = MapRecipeComponent.PATTERN_KEY.key(2, "key");
+	RecipeKey<String[]> PATTERN = StringComponent.NON_EMPTY.asArray().key(1, "pattern");
+	RecipeKey<TinyMap<Character, InputItem>> KEY = MapRecipeComponent.ITEM_PATTERN_KEY.key(2, "key");
 
 	// Used for shaped recipes with 2D ingredient array
-	RecipeKey<List<List<InputItem>>> INGREDIENTS = ItemComponents.INPUT_ARRAY.asArray().key(-1, "ingredients");
+	RecipeKey<InputItem[][]> INGREDIENTS = ItemComponents.INPUT_ARRAY.asArray().key(-1, "ingredients");
 
 	RecipeSchema SCHEMA = new RecipeSchema(ShapedRecipeJS.class, ShapedRecipeJS::new, RESULT, PATTERN, KEY)
 			.constructor(RESULT, PATTERN, KEY)

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import org.apache.commons.lang3.tuple.Pair;
 
 public record PairRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B> b) implements RecipeComponent<Pair<A, B>> {
@@ -15,38 +16,43 @@ public record PairRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B>
 	}
 
 	@Override
-	public JsonObject description() {
+	public JsonObject description(RecipeJS recipe) {
 		var obj = new JsonObject();
 		obj.addProperty("type", componentType());
 		var arr = new JsonArray();
-		arr.add(a.description());
-		arr.add(b.description());
+		arr.add(a.description(recipe));
+		arr.add(b.description(recipe));
 		obj.add("members", arr);
 		return obj;
 	}
 
 	@Override
-	public RecipeComponentType getType() {
-		if (a.getType() == RecipeComponentType.OTHER) {
-			return b.getType();
+	public ComponentRole role() {
+		if (a.role().isOther()) {
+			return b.role();
 		}
 
-		return a.getType();
+		return a.role();
 	}
 
 	@Override
-	public JsonArray write(Pair<A, B> value) {
+	public Class<?> componentClass() {
+		return Pair.class;
+	}
+
+	@Override
+	public JsonArray write(RecipeJS recipe, Pair<A, B> value) {
 		var json = new JsonArray();
-		json.add(a.write(value.getLeft()));
-		json.add(b.write(value.getRight()));
+		json.add(a.write(recipe, value.getLeft()));
+		json.add(b.write(recipe, value.getRight()));
 		return json;
 	}
 
 	@Override
-	public Pair<A, B> read(Object from) {
+	public Pair<A, B> read(RecipeJS recipe, Object from) {
 		if (from instanceof Iterable<?> iterable) {
 			var itr = iterable.iterator();
-			return Pair.of(a.read(itr.next()), b.read(itr.next()));
+			return Pair.of(a.read(recipe, itr.next()), b.read(recipe, itr.next()));
 		}
 
 		throw new IllegalArgumentException("Expected JSON array!");

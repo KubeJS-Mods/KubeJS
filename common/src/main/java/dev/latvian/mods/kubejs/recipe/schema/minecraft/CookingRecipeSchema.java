@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.schema.minecraft;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.item.InputItem;
@@ -32,16 +31,9 @@ public interface CookingRecipeSchema {
 		}
 
 		@Override
-		public JsonObject description() {
-			var obj = RecipeComponentWithParent.super.description();
-			obj.addProperty("custom", "string_on_fabric");
-			return obj;
-		}
-
-		@Override
-		public JsonElement write(OutputItem value) {
+		public JsonElement write(RecipeJS recipe, OutputItem value) {
 			if (Platform.isForge()) {
-				return ItemComponents.OUTPUT.write(value);
+				return ItemComponents.OUTPUT.write(recipe, value);
 			} else {
 				return new JsonPrimitive(value.item.kjs$getId());
 			}
@@ -55,8 +47,8 @@ public interface CookingRecipeSchema {
 
 	RecipeKey<OutputItem> RESULT = PLATFORM_OUTPUT_ITEM.key(0, "result");
 	RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key(1, "ingredient");
-	RecipeKey<Float> XP = NumberComponent.FLOAT.optional(0F).key(2, "experience");
-	RecipeKey<Integer> COOKING_TIME = NumberComponent.INT.optional(200).key(3, "cookingtime");
+	RecipeKey<Float> XP = NumberComponent.FLOAT.optional(0F).key(2, "experience").alt("xp");
+	RecipeKey<Integer> COOKING_TIME = NumberComponent.INT.optional(200).key(3, "cookingtime").alt("cookingTime");
 
 	RecipeSchema SCHEMA = new RecipeSchema(CookingRecipeJS.class, CookingRecipeJS::new, RESULT, INGREDIENT, XP, COOKING_TIME);
 }

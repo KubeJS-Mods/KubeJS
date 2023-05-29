@@ -14,7 +14,7 @@ public record RecipeConstructor(RecipeSchema schema, RecipeKey<?>[] keys, Factor
 	public interface Factory {
 		Factory DEFAULT = (recipe, schemaType, map) -> {
 			for (int i = 0; i < schemaType.schema.keys.length; i++) {
-				recipe.setValue(schemaType.schema.keys[i], map.getValue(schemaType.schema.keys[i]));
+				recipe.setValue(schemaType.schema.keys[i], map.getValue(recipe, schemaType.schema.keys[i]));
 			}
 		};
 

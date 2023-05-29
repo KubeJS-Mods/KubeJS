@@ -25,7 +25,7 @@ public interface StonecuttingRecipeSchema {
 
 		@Override
 		public void readJson(RecipeComponentValue<OutputItem> value, JsonObject json) {
-			value.value = ItemComponents.OUTPUT.read(json.get(value.key.name()));
+			RecipeComponentWithParent.super.readJson(value, json);
 
 			if (json.has("count")) {
 				value.value.item.setCount(json.get("count").getAsInt());

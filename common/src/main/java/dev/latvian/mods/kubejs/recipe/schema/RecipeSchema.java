@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeFunction;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.component.RecipeComponentType;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -55,9 +54,9 @@ public class RecipeSchema {
 				throw new IllegalStateException("Duplicate key '" + keys[i].name() + "' found!");
 			}
 
-			if (keys[i].component().getType() == RecipeComponentType.INPUT) {
+			if (keys[i].component().role().isInput()) {
 				inKeys.add(i);
-			} else if (keys[i].component().getType() == RecipeComponentType.OUTPUT) {
+			} else if (keys[i].component().role().isOutput()) {
 				outKeys.add(i);
 			}
 		}

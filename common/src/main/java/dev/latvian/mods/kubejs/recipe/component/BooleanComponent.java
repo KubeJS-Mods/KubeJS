@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import dev.latvian.mods.kubejs.recipe.RecipeJS;
 
 public class BooleanComponent implements RecipeComponent<Boolean> {
 	public static final RecipeComponent<Boolean> BOOLEAN = new BooleanComponent();
@@ -14,12 +15,17 @@ public class BooleanComponent implements RecipeComponent<Boolean> {
 	}
 
 	@Override
-	public JsonElement write(Boolean value) {
+	public Class<?> componentClass() {
+		return Boolean.class;
+	}
+
+	@Override
+	public JsonElement write(RecipeJS recipe, Boolean value) {
 		return new JsonPrimitive(value);
 	}
 
 	@Override
-	public Boolean read(Object from) {
+	public Boolean read(RecipeJS recipe, Object from) {
 		if (from instanceof Boolean n) {
 			return n;
 		} else if (from instanceof JsonPrimitive json) {

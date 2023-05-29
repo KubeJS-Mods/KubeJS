@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 
@@ -29,14 +30,19 @@ public class RecipeComponentBuilder implements RecipeComponent<Map<String, Objec
 	}
 
 	@Override
-	public JsonElement write(Map<String, Object> value) {
+	public Class<?> componentClass() {
+		return Map.class;
+	}
+
+	@Override
+	public JsonElement write(RecipeJS recipe, Map<String, Object> value) {
 		var json = new JsonObject();
 
 		for (var entry : value.entrySet()) {
 			var k = map.get(entry.getKey());
 
 			if (k != null) {
-				var v = k.component().write(UtilsJS.cast(entry.getValue()));
+				var v = k.component().write(recipe, UtilsJS.cast(entry.getValue()));
 
 				if (v != null) {
 					json.add(entry.getKey(), v);
@@ -50,7 +56,7 @@ public class RecipeComponentBuilder implements RecipeComponent<Map<String, Objec
 	}
 
 	@Override
-	public Map<String, Object> read(Object from) {
+	public Map<String, Object> read(RecipeJS recipe, Object from) {
 		if (from instanceof JsonObject o) {
 			var m = new LinkedHashMap<String, Object>(o.size());
 
@@ -58,7 +64,7 @@ public class RecipeComponentBuilder implements RecipeComponent<Map<String, Objec
 				var k = map.get(entry.getKey());
 
 				if (k != null) {
-					m.put(entry.getKey(), k.component().read(entry.getValue()));
+					m.put(entry.getKey(), k.component().read(recipe, entry.getValue()));
 				} else {
 					throw new IllegalStateException("Component with name '" + entry.getKey() + "' does not exist!");
 				}
@@ -72,7 +78,7 @@ public class RecipeComponentBuilder implements RecipeComponent<Map<String, Objec
 				var k = this.map.get(String.valueOf(entry.getKey()));
 
 				if (k != null) {
-					map.put(entry.getKey().toString(), k.component().read(entry.getValue()));
+					map.put(entry.getKey().toString(), k.component().read(recipe, entry.getValue()));
 				} else {
 					throw new IllegalStateException("Component with name '" + entry.getKey() + "' does not exist!");
 				}

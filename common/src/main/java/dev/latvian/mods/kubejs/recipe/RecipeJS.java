@@ -1,10 +1,14 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.util.UUIDTypeAdapter;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.item.EmptyItemError;
+import dev.latvian.mods.kubejs.item.InputItem;
+import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
@@ -95,7 +99,7 @@ public class RecipeJS implements RecipeKJS {
 			values = new RecipeComponentValue[schema.keys.length];
 
 			for (int i = 0; i < schema.keys.length; i++) {
-				values[i] = new RecipeComponentValue<>(schema.keys[i]);
+				values[i] = new RecipeComponentValue<>(this, schema.keys[i]);
 			}
 		}
 	}
@@ -175,7 +179,7 @@ public class RecipeJS implements RecipeKJS {
 	@Override
 	public boolean hasInput(ReplacementMatch match) {
 		for (var key : type.schemaType.schema.inputKeys) {
-			if (values[key].hasInput(this, match)) {
+			if (values[key].isInput(match)) {
 				return true;
 			}
 		}
@@ -188,7 +192,7 @@ public class RecipeJS implements RecipeKJS {
 		boolean replaced = false;
 
 		for (var key : type.schemaType.schema.inputKeys) {
-			replaced = values[key].replaceInput(this, match, with) || replaced;
+			replaced = values[key].replaceInput(match, with) || replaced;
 		}
 
 		changed |= replaced;
@@ -199,7 +203,7 @@ public class RecipeJS implements RecipeKJS {
 	@Override
 	public boolean hasOutput(ReplacementMatch match) {
 		for (var key : type.schemaType.schema.outputKeys) {
-			if (values[key].hasOutput(this, match)) {
+			if (values[key].isOutput(match)) {
 				return true;
 			}
 		}
@@ -212,7 +216,7 @@ public class RecipeJS implements RecipeKJS {
 		boolean replaced = false;
 
 		for (var key : type.schemaType.schema.outputKeys) {
-			replaced = values[key].replaceOutput(this, match, with) || replaced;
+			replaced = values[key].replaceOutput(match, with) || replaced;
 		}
 
 		changed |= replaced;
@@ -386,5 +390,55 @@ public class RecipeJS implements RecipeKJS {
 		json.addProperty("kubejs:modify_result", UUIDTypeAdapter.fromUUID(id));
 		save();
 		return this;
+	}
+
+	// Default component serialization methods for ItemComponents and FluidComponents //
+
+	public boolean shouldReadInputItem(Object from) {
+		return !InputItem.of(from).isEmpty();
+	}
+
+	public InputItem readInputItem(Object from) {
+		var i = InputItem.of(from);
+
+		if (i.isEmpty()) {
+			throw new EmptyItemError(from + " is not a valid ingredient!", from);
+		}
+
+		return i;
+	}
+
+	public JsonElement writeInputItem(InputItem value) {
+		return value == InputItem.EMPTY ? null : value.ingredient.toJson();
+	}
+
+	public boolean shouldReadOutputItem(Object from) {
+		return !OutputItem.of(from).isEmpty();
+	}
+
+	public OutputItem readOutputItem(Object from) {
+		var i = OutputItem.of(from);
+
+		if (i.isEmpty()) {
+			throw new EmptyItemError(from + " is not a valid result!", from);
+		}
+
+		return i;
+	}
+
+	public JsonElement writeOutputItem(OutputItem value) {
+		var json = new JsonObject();
+		json.addProperty("item", value.item.kjs$getId());
+		json.addProperty("count", value.item.getCount());
+
+		if (value.item.getTag() != null) {
+			json.addProperty("nbt", value.item.getTag().toString());
+		}
+
+		if (value.hasChance()) {
+			json.addProperty("chance", value.getChance());
+		}
+
+		return json;
 	}
 }

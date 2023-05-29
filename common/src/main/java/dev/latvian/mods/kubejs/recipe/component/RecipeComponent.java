@@ -2,16 +2,14 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.core.RecipeKJS;
+import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
+import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import dev.latvian.mods.kubejs.util.MutableBoolean;
+import dev.latvian.mods.kubejs.util.TinyMap;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.Map;
 
 @Nullable
 public interface RecipeComponent<T> {
@@ -29,31 +27,52 @@ public interface RecipeComponent<T> {
 		return b;
 	}
 
-	default RecipeComponentType getType() {
-		return RecipeComponentType.OTHER;
+	default ComponentRole role() {
+		return ComponentRole.OTHER;
 	}
 
 	default String componentType() {
 		return "unknown";
 	}
 
-	default JsonObject description() {
-		var obj = new JsonObject();
-		obj.addProperty("type", componentType());
-		return obj;
+	Class<?> componentClass();
+
+	default JsonElement description(RecipeJS recipe) {
+		return new JsonPrimitive(componentType());
 	}
 
-	@Nullable
-	JsonElement write(T value);
+	JsonElement write(RecipeJS recipe, T value);
 
-	T read(Object from);
+	T read(RecipeJS recipe, Object from);
 
 	default void writeJson(RecipeComponentValue<T> value, JsonObject json) {
-		json.add(value.key.name(), write(value.value));
+		if (!value.key.altNames().isEmpty()) {
+			for (var k : value.key.altNames()) {
+				json.remove(k);
+			}
+		}
+
+		json.add(value.key.name(), write(value.recipe, value.value));
 	}
 
 	default void readJson(RecipeComponentValue<T> value, JsonObject json) {
-		value.value = read(json.get(value.key.name()));
+		var v = json.get(value.key.name());
+
+		if (v != null) {
+			value.value = read(value.recipe, v);
+			return;
+		} else if (!value.key.altNames().isEmpty()) {
+			for (var alt : value.key.altNames()) {
+				v = json.get(alt);
+
+				if (v != null) {
+					value.value = read(value.recipe, v);
+					return;
+				}
+			}
+		}
+
+		throw new MissingComponentException(value.key);
 	}
 
 	@Nullable
@@ -61,39 +80,39 @@ public interface RecipeComponent<T> {
 		return null;
 	}
 
-	default boolean shouldRead(Object from) {
+	default boolean shouldRead(RecipeJS recipe, Object from) {
 		return true;
 	}
 
-	default boolean hasInput(RecipeKJS recipe, T value, ReplacementMatch match) {
+	default boolean isInput(RecipeJS recipe, T value, ReplacementMatch match) {
 		return false;
 	}
 
-	default T replaceInput(RecipeKJS recipe, T value, ReplacementMatch match, InputReplacement with, MutableBoolean changed) {
+	default T replaceInput(RecipeJS recipe, T value, ReplacementMatch match, InputReplacement with) {
 		return value;
 	}
 
-	default boolean hasOutput(RecipeKJS recipe, T value, ReplacementMatch match) {
+	default boolean isOutput(RecipeJS recipe, T value, ReplacementMatch match) {
 		return false;
 	}
 
-	default T replaceOutput(RecipeKJS recipe, T value, ReplacementMatch match, OutputReplacement with, MutableBoolean changed) {
+	default T replaceOutput(RecipeJS recipe, T value, ReplacementMatch match, OutputReplacement with) {
 		return value;
 	}
 
-	default RecipeComponent<List<T>> asArray() {
-		return new ArrayRecipeComponent<>(this, false);
+	default RecipeComponent<T[]> asArray() {
+		return ArrayRecipeComponent.of(this, false);
 	}
 
-	default RecipeComponent<List<T>> asArrayOrSelf() {
-		return new ArrayRecipeComponent<>(this, true);
+	default RecipeComponent<T[]> asArrayOrSelf() {
+		return ArrayRecipeComponent.of(this, true);
 	}
 
-	default <K> RecipeComponent<Map<K, T>> asMap(RecipeComponent<K> key) {
+	default <K> RecipeComponent<TinyMap<K, T>> asMap(RecipeComponent<K> key) {
 		return new MapRecipeComponent<>(key, this);
 	}
 
-	default RecipeComponent<Map<Character, T>> asPatternKey() {
+	default RecipeComponent<TinyMap<Character, T>> asPatternKey() {
 		return asMap(StringComponent.CHARACTER);
 	}
 
