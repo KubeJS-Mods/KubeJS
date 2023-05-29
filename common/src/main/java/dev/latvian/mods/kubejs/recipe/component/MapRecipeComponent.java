@@ -106,7 +106,7 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 		var map = value;
 
 		for (int i = 0; i < value.entries().length; i++) {
-			var r = with.replaceInput(recipe, match, value.entries()[i].value());
+			var r = component.replaceInput(recipe, value.entries()[i].value(), match, with);
 
 			if (r != value.entries()[i].value()) {
 				if (map == value) {
@@ -136,7 +136,7 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 		var map = value;
 
 		for (int i = 0; i < value.entries().length; i++) {
-			var r = with.replaceOutput(recipe, match, value.entries()[i].value());
+			var r = component.replaceOutput(recipe, value.entries()[i].value(), match, with);
 
 			if (r != value.entries()[i].value()) {
 				if (map == value) {
