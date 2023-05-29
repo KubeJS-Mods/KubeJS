@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
+import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.MutableBoolean;
 
@@ -103,6 +104,35 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 				}
 
 				map.put(entry.getKey(), with.replaceInput(recipe, match, entry.getValue()));
+			}
+		}
+
+		return map;
+	}
+
+	@Override
+	public boolean hasOutput(RecipeKJS recipe, Map<K, V> value, ReplacementMatch match) {
+		for (var entry : value.entrySet()) {
+			if (component.hasOutput(recipe, entry.getValue(), match)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public Map<K, V> replaceOutput(RecipeKJS recipe, Map<K, V> value, ReplacementMatch match, OutputReplacement with, MutableBoolean changed) {
+		var map = value;
+
+		for (var entry : value.entrySet()) {
+			if (component.hasInput(recipe, entry.getValue(), match)) {
+				if (map == value) {
+					changed.value = true;
+					map = new LinkedHashMap<>(value);
+				}
+
+				map.put(entry.getKey(), with.replaceOutput(recipe, match, entry.getValue()));
 			}
 		}
 
