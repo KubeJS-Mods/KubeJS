@@ -7,7 +7,9 @@ import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
+import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 
 public class KubeJSFabricClient {
 	public static void registry() {
@@ -17,6 +19,10 @@ public class KubeJSFabricClient {
 					case "cutout" -> BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutout(), b.get());
 					case "cutout_mipped" -> BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutoutMipped(), b.get());
 					case "translucent" -> BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(), b.get());
+				}
+
+				if (!b.color.isEmpty()) {
+					ColorProviderRegistry.BLOCK.register((state, level, pos, index) -> b.color.get(index), b.get());
 				}
 			}
 		}
@@ -31,11 +37,14 @@ public class KubeJSFabricClient {
 			}
 		}
 
-		for (var builder : RegistryInfo.BLOCK) {
-			if (builder instanceof BlockBuilder b && !b.color.isEmpty()) {
-				ColorProviderRegistry.BLOCK.register((state, level, pos, index) -> b.color.get(index), b.get());
+		ClientSpriteRegistryCallback.event(TextureAtlas.LOCATION_BLOCKS).register((atlasTexture, registry) -> {
+			for (var builder : RegistryInfo.FLUID) {
+				if (builder instanceof FluidBuilder b) {
+					registry.register(b.stillTexture);
+					registry.register(b.flowingTexture);
+				}
 			}
-		}
+		});
 
 		for (var builder : RegistryInfo.ITEM) {
 			if (builder instanceof ItemBuilder b && b.colorCallback != null) {

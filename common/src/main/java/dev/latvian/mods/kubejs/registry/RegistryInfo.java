@@ -278,7 +278,7 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 
 		int added = 0;
 
-		for (var builder : objects.values()) {
+		for (var builder : this) {
 			if (!builder.dummyBuilder && (builder.getRegistryType().bypassServerOnly || !CommonProperties.get().serverOnly)) {
 				function.accept(builder.id, builder::createTransformedObject);
 
