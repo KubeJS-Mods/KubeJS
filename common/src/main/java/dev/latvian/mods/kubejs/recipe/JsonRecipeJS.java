@@ -26,7 +26,7 @@ public class JsonRecipeJS extends RecipeJS {
 
 	@Override
 	public boolean hasInput(ReplacementMatch match) {
-		if (match instanceof IngredientMatch m && getOriginalRecipe() != null) {
+		if (match instanceof ItemMatch m && getOriginalRecipe() != null) {
 			for (var ingredient : getOriginalRecipe().getIngredients()) {
 				if (m.contains(ingredient)) {
 					return true;
@@ -44,7 +44,7 @@ public class JsonRecipeJS extends RecipeJS {
 
 	@Override
 	public boolean hasOutput(ReplacementMatch match) {
-		if (match instanceof IngredientMatch m && getOriginalRecipe() != null) {
+		if (match instanceof ItemMatch m && getOriginalRecipe() != null) {
 			return m.contains(getOriginalRecipe().getResultItem());
 		}
 

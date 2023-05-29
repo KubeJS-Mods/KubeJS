@@ -1,8 +1,5 @@
 package dev.latvian.mods.kubejs.recipe.schema.minecraft;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.EmptyItemError;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
@@ -10,14 +7,13 @@ import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
-import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
+import dev.latvian.mods.kubejs.recipe.component.MapRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.StringComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -120,69 +116,9 @@ public interface ShapedRecipeSchema {
 		}
 	}
 
-	RecipeComponent<Map<Character, InputItem>> KEY_COMPONENT = new RecipeComponent<>() {
-		@Override
-		public String componentType() {
-			return "key";
-		}
-
-		@Override
-		public JsonElement write(Map<Character, InputItem> value) {
-			var json = new JsonObject();
-
-			for (var entry : value.entrySet()) {
-				json.add(entry.getKey().toString(), ItemComponents.INPUT.write(entry.getValue()));
-			}
-
-			return json;
-		}
-
-		@Override
-		public Map<Character, InputItem> read(Object from) {
-			if (from instanceof JsonObject o) {
-				var map = new LinkedHashMap<Character, InputItem>(o.size());
-
-				for (var entry : o.entrySet()) {
-					var k = StringComponent.CHARACTER.read(entry.getKey());
-
-					try {
-						var v = ItemComponents.INPUT.read(entry.getValue());
-						map.put(k, v);
-					} catch (EmptyItemError ignored) {
-						map.put(k, InputItem.EMPTY);
-					}
-				}
-
-				return map;
-			} else if (from instanceof Map<?, ?> m) {
-				var map = new LinkedHashMap<Character, InputItem>(m.size());
-
-				for (var entry : m.entrySet()) {
-					var k = StringComponent.CHARACTER.read(entry.getKey());
-
-					try {
-						var v = ItemComponents.INPUT.read(entry.getValue());
-						map.put(k, v);
-					} catch (EmptyItemError ignored) {
-						map.put(k, InputItem.EMPTY);
-					}
-				}
-
-				return map;
-			} else {
-				throw new IllegalArgumentException("Expected JSON object!");
-			}
-		}
-
-		@Override
-		public String toString() {
-			return componentType();
-		}
-	};
-
 	RecipeKey<OutputItem> RESULT = ItemComponents.OUTPUT.key(0, "result");
 	RecipeKey<List<String>> PATTERN = StringComponent.NON_EMPTY.asArray().key(1, "pattern");
-	RecipeKey<Map<Character, InputItem>> KEY = KEY_COMPONENT.key(2, "key");
+	RecipeKey<Map<Character, InputItem>> KEY = MapRecipeComponent.PATTERN_KEY.key(2, "key");
 
 	// Used for shaped recipes with 2D ingredient array
 	RecipeKey<List<List<InputItem>>> INGREDIENTS = ItemComponents.INPUT_ARRAY.asArray().key(-1, "ingredients");

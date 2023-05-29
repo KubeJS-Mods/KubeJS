@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
-import dev.latvian.mods.kubejs.recipe.IngredientMatch;
+import dev.latvian.mods.kubejs.recipe.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -46,11 +46,11 @@ public record BlockComponent(RecipeComponentType type) implements RecipeComponen
 
 	@Override
 	public boolean hasInput(RecipeKJS recipe, Block value, ReplacementMatch match) {
-		return type == RecipeComponentType.INPUT && match instanceof IngredientMatch m && m.contains(value);
+		return type == RecipeComponentType.INPUT && match instanceof ItemMatch m && m.contains(value);
 	}
 
 	@Override
 	public boolean hasOutput(RecipeKJS recipe, Block value, ReplacementMatch match) {
-		return type == RecipeComponentType.OUTPUT && match instanceof IngredientMatch m && m.contains(value);
+		return type == RecipeComponentType.OUTPUT && match instanceof ItemMatch m && m.contains(value);
 	}
 }

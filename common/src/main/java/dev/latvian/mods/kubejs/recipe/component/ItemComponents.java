@@ -7,8 +7,8 @@ import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.item.EmptyItemError;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
-import dev.latvian.mods.kubejs.recipe.IngredientMatch;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
+import dev.latvian.mods.kubejs.recipe.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.MutableBoolean;
@@ -50,12 +50,12 @@ public interface ItemComponents {
 
 		@Override
 		public boolean hasInput(RecipeKJS recipe, InputItem value, ReplacementMatch match) {
-			return match instanceof IngredientMatch m && m.contains(value);
+			return match instanceof ItemMatch m && m.contains(value);
 		}
 
 		@Override
 		public InputItem replaceInput(RecipeKJS recipe, InputItem value, ReplacementMatch match, InputReplacement with, MutableBoolean changed) {
-			if (match instanceof IngredientMatch m && m.contains(value)) {
+			if (match instanceof ItemMatch m && m.contains(value)) {
 				changed.value = true;
 				return with.replaceInput(recipe, match, value);
 			}
@@ -143,12 +143,12 @@ public interface ItemComponents {
 
 		@Override
 		public boolean hasOutput(RecipeKJS recipe, OutputItem value, ReplacementMatch match) {
-			return match instanceof IngredientMatch m && m.contains(value);
+			return match instanceof ItemMatch m && m.contains(value);
 		}
 
 		@Override
 		public OutputItem replaceOutput(RecipeKJS recipe, OutputItem value, ReplacementMatch match, OutputReplacement with, MutableBoolean changed) {
-			if (match instanceof IngredientMatch m && m.contains(value)) {
+			if (match instanceof ItemMatch m && m.contains(value)) {
 				changed.value = true;
 				return with.replaceOutput(recipe, match, value);
 			}

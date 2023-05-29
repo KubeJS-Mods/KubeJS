@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.latvian.mods.kubejs.recipe.IngredientMatch;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
+import dev.latvian.mods.kubejs.recipe.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
@@ -38,7 +38,7 @@ public interface RecipeKJS {
 	}
 
 	default boolean hasInput(ReplacementMatch match) {
-		if (match instanceof IngredientMatch m) {
+		if (match instanceof ItemMatch m) {
 			for (var in : ((Recipe<?>) this).getIngredients()) {
 				if (m.contains(in)) {
 					return true;
@@ -54,7 +54,7 @@ public interface RecipeKJS {
 	}
 
 	default boolean hasOutput(ReplacementMatch match) {
-		return match instanceof IngredientMatch m && m.contains(((Recipe<?>) this).getResultItem());
+		return match instanceof ItemMatch m && m.contains(((Recipe<?>) this).getResultItem());
 	}
 
 	default boolean replaceOutput(ReplacementMatch match, OutputReplacement with) {

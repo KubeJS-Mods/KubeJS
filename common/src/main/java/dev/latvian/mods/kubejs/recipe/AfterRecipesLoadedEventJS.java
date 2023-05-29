@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.event.EventResult;
+import dev.latvian.mods.kubejs.recipe.filter.ConstantFilter;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
@@ -41,17 +42,17 @@ public class AfterRecipesLoadedEventJS extends EventJS {
 	}
 
 	public void forEachRecipe(RecipeFilter filter, Consumer<RecipeKJS> consumer) {
-		if (filter == RecipeFilter.ALWAYS_TRUE) {
+		if (filter == ConstantFilter.TRUE) {
 			getOriginalRecipes().forEach(consumer);
-		} else if (filter != RecipeFilter.ALWAYS_FALSE) {
+		} else if (filter != ConstantFilter.FALSE) {
 			getOriginalRecipes().stream().filter(filter).forEach(consumer);
 		}
 	}
 
 	public int countRecipes(RecipeFilter filter) {
-		if (filter == RecipeFilter.ALWAYS_TRUE) {
+		if (filter == ConstantFilter.TRUE) {
 			return getOriginalRecipes().size();
-		} else if (filter != RecipeFilter.ALWAYS_FALSE) {
+		} else if (filter != ConstantFilter.FALSE) {
 			return (int) getOriginalRecipes().stream().filter(filter).count();
 		}
 

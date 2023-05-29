@@ -11,6 +11,7 @@ import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
+import dev.latvian.mods.kubejs.recipe.filter.ConstantFilter;
 import dev.latvian.mods.kubejs.recipe.filter.IDFilter;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.schema.JsonRecipeSchema;
@@ -368,7 +369,7 @@ public class RecipesEventJS extends EventJS {
 	}
 
 	public Stream<RecipeJS> recipeStream(RecipeFilter filter, boolean async) {
-		if (filter == RecipeFilter.ALWAYS_FALSE) {
+		if (filter == ConstantFilter.FALSE) {
 			return Stream.empty();
 		}
 
@@ -380,7 +381,7 @@ public class RecipesEventJS extends EventJS {
 			stream = originalRecipes.values().stream();
 		}
 
-		if (filter != RecipeFilter.ALWAYS_TRUE) {
+		if (filter != ConstantFilter.TRUE) {
 			stream = stream.filter(filter);
 		}
 
@@ -512,7 +513,7 @@ public class RecipesEventJS extends EventJS {
 
 	public void printTypes() {
 		ConsoleJS.SERVER.info("== All recipe types [used] ==");
-		var set = recipeStream(RecipeFilter.ALWAYS_TRUE, true).map(r -> r.type.id).collect(Collectors.toSet());
+		var set = recipeStream(ConstantFilter.TRUE, true).map(r -> r.type.id).collect(Collectors.toSet());
 		printTypes(t -> set.contains(t.id));
 	}
 

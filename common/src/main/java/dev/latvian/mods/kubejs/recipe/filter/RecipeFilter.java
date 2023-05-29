@@ -14,22 +14,21 @@ import java.util.function.Predicate;
 
 @FunctionalInterface
 public interface RecipeFilter extends Predicate<RecipeKJS> {
-	RecipeFilter ALWAYS_TRUE = r -> true;
-	RecipeFilter ALWAYS_FALSE = r -> false;
-
 	@Override
 	boolean test(RecipeKJS r);
 
 	static RecipeFilter of(Context cx, @Nullable Object o) {
-		if (o == null || o == ALWAYS_TRUE) {
-			return ALWAYS_TRUE;
-		} else if (o == ALWAYS_FALSE) {
-			return ALWAYS_FALSE;
+		if (o == null || o == ConstantFilter.TRUE) {
+			return ConstantFilter.TRUE;
+		} else if (o == ConstantFilter.FALSE) {
+			return ConstantFilter.FALSE;
 		} else if (o instanceof CharSequence) {
 			String s = o.toString();
 
 			if (s.equals("*")) {
-				return ALWAYS_TRUE;
+				return ConstantFilter.TRUE;
+			} else if (s.equals("-")) {
+				return ConstantFilter.FALSE;
 			} else {
 				var r = UtilsJS.parseRegex(s);
 				return r == null ? new IDFilter(UtilsJS.getMCID(cx, s)) : RegexIDFilter.of(r);
@@ -39,27 +38,27 @@ public interface RecipeFilter extends Predicate<RecipeKJS> {
 		var list = ListJS.orSelf(o);
 
 		if (list.isEmpty()) {
-			return ALWAYS_TRUE;
+			return ConstantFilter.TRUE;
 		} else if (list.size() > 1) {
 			var predicate = new OrFilter();
 
 			for (var o1 : list) {
 				var p = of(cx, o1);
 
-				if (p == ALWAYS_TRUE) {
-					return ALWAYS_TRUE;
-				} else if (p != ALWAYS_FALSE) {
+				if (p == ConstantFilter.TRUE) {
+					return ConstantFilter.TRUE;
+				} else if (p != ConstantFilter.FALSE) {
 					predicate.list.add(p);
 				}
 			}
 
-			return predicate.list.isEmpty() ? ALWAYS_FALSE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
+			return predicate.list.isEmpty() ? ConstantFilter.FALSE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
 		}
 
 		var map = MapJS.of(list.get(0));
 
 		if (map == null || map.isEmpty()) {
-			return ALWAYS_TRUE;
+			return ConstantFilter.TRUE;
 		}
 
 		var predicate = new AndFilter();
@@ -110,7 +109,7 @@ public interface RecipeFilter extends Predicate<RecipeKJS> {
 				predicate.list.add(new OutputFilter(ReplacementMatch.of(output)));
 			}
 
-			return predicate.list.isEmpty() ? ALWAYS_TRUE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
+			return predicate.list.isEmpty() ? ConstantFilter.TRUE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
 		} catch (RecipeExceptionJS ex) {
 			if (ex.error) {
 				ConsoleJS.getCurrent(cx).error(ex.getMessage());
@@ -118,7 +117,7 @@ public interface RecipeFilter extends Predicate<RecipeKJS> {
 				ConsoleJS.getCurrent(cx).warn(ex.getMessage());
 			}
 
-			return ALWAYS_FALSE;
+			return ConstantFilter.FALSE;
 		}
 	}
 }
