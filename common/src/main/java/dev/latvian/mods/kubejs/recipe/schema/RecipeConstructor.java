@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.recipe.RecipeFunction;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 
 import java.util.Arrays;
@@ -18,7 +18,7 @@ public record RecipeConstructor(RecipeSchema schema, RecipeKey<?>[] keys, Factor
 			}
 		};
 
-		default RecipeJS create(RecipeFunction type, RecipeSchemaType schemaType, ComponentValueMap from) {
+		default RecipeJS create(RecipeTypeFunction type, RecipeSchemaType schemaType, ComponentValueMap from) {
 			var r = schemaType.schema.factory.get();
 			r.type = type;
 			r.json = new JsonObject();

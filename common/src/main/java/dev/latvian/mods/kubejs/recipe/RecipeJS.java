@@ -35,7 +35,7 @@ public class RecipeJS implements RecipeKJS {
 	public static boolean itemErrors = false;
 
 	public ResourceLocation id;
-	public RecipeFunction type;
+	public RecipeTypeFunction type;
 	public boolean newRecipe;
 	public boolean removed;
 	private RecipeComponentValue<?>[] values = RecipeComponentValue.EMPTY_ARRAY;

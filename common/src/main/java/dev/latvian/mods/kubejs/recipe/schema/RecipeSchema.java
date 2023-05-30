@@ -4,9 +4,9 @@ import com.google.gson.JsonObject;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.recipe.RecipeFunction;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -115,7 +115,7 @@ public class RecipeSchema {
 		return minRequiredArguments;
 	}
 
-	public RecipeJS deserialize(RecipeFunction type, @Nullable ResourceLocation id, JsonObject json) {
+	public RecipeJS deserialize(RecipeTypeFunction type, @Nullable ResourceLocation id, JsonObject json) {
 		var r = factory.get();
 		r.type = type;
 		r.id = id;

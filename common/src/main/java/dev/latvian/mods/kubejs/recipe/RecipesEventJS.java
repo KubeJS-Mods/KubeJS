@@ -69,14 +69,14 @@ public class RecipesEventJS extends EventJS {
 	final Map<String, Object> recipeFunctions;
 	public final AtomicInteger failedCount;
 
-	public final RecipeFunction shaped;
-	public final RecipeFunction shapeless;
-	public final RecipeFunction smelting;
-	public final RecipeFunction blasting;
-	public final RecipeFunction smoking;
-	public final RecipeFunction campfireCooking;
-	public final RecipeFunction stonecutting;
-	public final RecipeFunction smithing;
+	public final RecipeTypeFunction shaped;
+	public final RecipeTypeFunction shapeless;
+	public final RecipeTypeFunction smelting;
+	public final RecipeTypeFunction blasting;
+	public final RecipeTypeFunction smoking;
+	public final RecipeTypeFunction campfireCooking;
+	public final RecipeTypeFunction stonecutting;
+	public final RecipeTypeFunction smithing;
 
 	RecipeSerializer<?> stageSerializer;
 
@@ -92,27 +92,27 @@ public class RecipesEventJS extends EventJS {
 		var allNamespaces = RecipeNamespace.getAll();
 
 		for (var namespace : allNamespaces.values()) {
-			var nsMap = new HashMap<String, RecipeFunction>();
+			var nsMap = new HashMap<String, RecipeTypeFunction>();
 			recipeFunctions.put(namespace.name, new NamespaceFunction(namespace, nsMap));
 
 			for (var entry : namespace.entrySet()) {
-				nsMap.put(entry.getValue().id.toString(), new RecipeFunction(this, entry.getValue()));
+				nsMap.put(entry.getValue().id.toString(), new RecipeTypeFunction(this, entry.getValue()));
 			}
 
 			recipeFunctions.putAll(nsMap);
 		}
 
-		shaped = (RecipeFunction) recipeFunctions.get(CommonProperties.get().serverOnly ? "minecraft:crafting_shaped" : "kubejs:shaped");
-		shapeless = (RecipeFunction) recipeFunctions.get(CommonProperties.get().serverOnly ? "minecraft:crafting_shapeless" : "kubejs:shapeless");
-		smelting = (RecipeFunction) recipeFunctions.get("minecraft:smelting");
-		blasting = (RecipeFunction) recipeFunctions.get("minecraft:blasting");
-		smoking = (RecipeFunction) recipeFunctions.get("minecraft:smoking");
-		campfireCooking = (RecipeFunction) recipeFunctions.get("minecraft:campfire_cooking");
-		stonecutting = (RecipeFunction) recipeFunctions.get("minecraft:stonecutting");
-		smithing = (RecipeFunction) recipeFunctions.get("minecraft:smithing");
+		shaped = (RecipeTypeFunction) recipeFunctions.get(CommonProperties.get().serverOnly ? "minecraft:crafting_shaped" : "kubejs:shaped");
+		shapeless = (RecipeTypeFunction) recipeFunctions.get(CommonProperties.get().serverOnly ? "minecraft:crafting_shapeless" : "kubejs:shapeless");
+		smelting = (RecipeTypeFunction) recipeFunctions.get("minecraft:smelting");
+		blasting = (RecipeTypeFunction) recipeFunctions.get("minecraft:blasting");
+		smoking = (RecipeTypeFunction) recipeFunctions.get("minecraft:smoking");
+		campfireCooking = (RecipeTypeFunction) recipeFunctions.get("minecraft:campfire_cooking");
+		stonecutting = (RecipeTypeFunction) recipeFunctions.get("minecraft:stonecutting");
+		smithing = (RecipeTypeFunction) recipeFunctions.get("minecraft:smithing");
 
 		for (var entry : new ArrayList<>(recipeFunctions.entrySet())) {
-			if (entry.getValue() instanceof RecipeFunction && entry.getKey().indexOf(':') != -1) {
+			if (entry.getValue() instanceof RecipeTypeFunction && entry.getKey().indexOf(':') != -1) {
 				var s = UtilsJS.convertSnakeCaseToCamelCase(entry.getKey());
 
 				if (!s.equals(entry.getKey())) {
@@ -124,7 +124,7 @@ public class RecipesEventJS extends EventJS {
 		for (var entry : RecipeNamespace.getMappedRecipes().entrySet()) {
 			var type = recipeFunctions.get(entry.getValue().toString());
 
-			if (type instanceof RecipeFunction) {
+			if (type instanceof RecipeTypeFunction) {
 				recipeFunctions.put(entry.getKey(), type);
 			}
 		}
@@ -461,10 +461,10 @@ public class RecipesEventJS extends EventJS {
 		});
 	}
 
-	public RecipeFunction getRecipeFunction(@Nullable String id) {
+	public RecipeTypeFunction getRecipeFunction(@Nullable String id) {
 		if (id == null || id.isEmpty()) {
 			return null;
-		} else if (recipeFunctions.get(UtilsJS.getID(id)) instanceof RecipeFunction fn) {
+		} else if (recipeFunctions.get(UtilsJS.getID(id)) instanceof RecipeTypeFunction fn) {
 			return fn;
 		} else {
 			return null;

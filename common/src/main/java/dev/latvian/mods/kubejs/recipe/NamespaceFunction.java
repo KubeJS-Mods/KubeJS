@@ -10,9 +10,9 @@ import java.util.Map;
 
 public class NamespaceFunction extends BaseFunction implements WrappedJS {
 	private final RecipeNamespace namespace;
-	private final Map<String, RecipeFunction> map;
+	private final Map<String, RecipeTypeFunction> map;
 
-	public NamespaceFunction(RecipeNamespace namespace, Map<String, RecipeFunction> map) {
+	public NamespaceFunction(RecipeNamespace namespace, Map<String, RecipeTypeFunction> map) {
 		this.namespace = namespace;
 		this.map = map;
 	}

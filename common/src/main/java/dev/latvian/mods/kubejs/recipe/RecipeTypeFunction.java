@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public class RecipeFunction extends BaseFunction implements WrappedJS {
+public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.mods.kubejs.recipe.RecipeFunction.call");
 
 	public final RecipesEventJS event;
@@ -23,7 +23,7 @@ public class RecipeFunction extends BaseFunction implements WrappedJS {
 	public final String idString;
 	public final RecipeSchemaType schemaType;
 
-	public RecipeFunction(RecipesEventJS event, RecipeSchemaType schemaType) {
+	public RecipeTypeFunction(RecipesEventJS event, RecipeSchemaType schemaType) {
 		this.event = event;
 		this.id = schemaType.id;
 		this.idString = id.toString();
