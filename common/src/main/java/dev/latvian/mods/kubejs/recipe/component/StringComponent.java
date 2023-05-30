@@ -69,6 +69,11 @@ public record StringComponent(String error, Predicate<String> predicate) impleme
 	}
 
 	@Override
+	public boolean hasPriority(RecipeJS recipe, Object from) {
+		return from instanceof CharSequence || from instanceof JsonPrimitive json && json.isString();
+	}
+
+	@Override
 	public String toString() {
 		return componentType();
 	}

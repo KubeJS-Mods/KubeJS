@@ -14,6 +14,7 @@ public final class RecipeKey<T> {
 	private String preferred;
 	private T optional;
 	private boolean excluded;
+	private boolean allowEmpty;
 
 	public RecipeKey(RecipeComponent<T> component, String name) {
 		this.component = component;
@@ -24,6 +25,7 @@ public final class RecipeKey<T> {
 		this.preferred = name;
 		this.optional = null;
 		this.excluded = false;
+		this.allowEmpty = false;
 	}
 
 	@Override
@@ -106,12 +108,21 @@ public final class RecipeKey<T> {
 	/**
 	 * Excludes this key from auto-generated constructors
 	 */
-	public RecipeKey<T> excluded() {
+	public RecipeKey<T> setExcluded() {
 		excluded = true;
 		return this;
 	}
 
-	public boolean isExcluded() {
+	public boolean excluded() {
 		return excluded;
+	}
+
+	public RecipeKey<T> setAllowEmpty() {
+		allowEmpty = true;
+		return this;
+	}
+
+	public boolean allowEmpty() {
+		return allowEmpty;
 	}
 }

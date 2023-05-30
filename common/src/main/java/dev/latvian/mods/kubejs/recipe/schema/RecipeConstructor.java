@@ -34,6 +34,6 @@ public record RecipeConstructor(RecipeSchema schema, RecipeKey<?>[] keys, Factor
 
 	@Override
 	public String toString() {
-		return Arrays.stream(keys).map(RecipeKey::toString).collect(Collectors.joining(", ", "[", "]"));
+		return Arrays.stream(keys).map(RecipeKey::toString).collect(Collectors.joining(", ", "(", ")"));
 	}
 }

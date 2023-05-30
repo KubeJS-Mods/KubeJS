@@ -54,6 +54,11 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 		return Number.class;
 	}
 
+	@Override
+	default boolean hasPriority(RecipeJS recipe, Object from) {
+		return from instanceof Number || from instanceof JsonPrimitive json && json.isNumber();
+	}
+
 	record IntRange(int min, int max) implements NumberComponent<Integer> {
 		@Override
 		public JsonObject description(RecipeJS recipe) {

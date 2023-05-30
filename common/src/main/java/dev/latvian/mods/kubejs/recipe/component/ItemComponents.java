@@ -8,7 +8,9 @@ import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.util.TinyMap;
 
 public interface ItemComponents {
 	RecipeComponent<InputItem> INPUT = new RecipeComponent<>() {
@@ -54,6 +56,20 @@ public interface ItemComponents {
 			}
 
 			return value;
+		}
+
+		@Override
+		public String checkEmpty(RecipeKey<InputItem> key, InputItem value) {
+			if (value.isEmpty()) {
+				return "Ingredient '" + key.name() + "' can't be empty!";
+			}
+
+			return "";
+		}
+
+		@Override
+		public RecipeComponent<TinyMap<Character, InputItem>> asPatternKey() {
+			return MapRecipeComponent.ITEM_PATTERN_KEY;
 		}
 
 		@Override
@@ -132,6 +148,15 @@ public interface ItemComponents {
 			}
 
 			return value;
+		}
+
+		@Override
+		public String checkEmpty(RecipeKey<OutputItem> key, OutputItem value) {
+			if (value.isEmpty()) {
+				return "ItemStack '" + key.name() + "' can't be empty!";
+			}
+
+			return "";
 		}
 
 		@Override

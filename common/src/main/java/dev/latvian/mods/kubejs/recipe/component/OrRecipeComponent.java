@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
@@ -8,22 +9,20 @@ import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 
-public record EitherRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L> low) implements RecipeComponent<Either<H, L>> {
-	public static <H, L> EitherRecipeComponent<H, L> of(RecipeComponent<H> highPriority, RecipeComponent<L> lowPriority) {
-		return new EitherRecipeComponent<>(highPriority, lowPriority);
-	}
-
+public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L> low) implements RecipeComponent<Either<H, L>> {
 	@Override
 	public String componentType() {
-		return "either";
+		return "or";
 	}
 
 	@Override
 	public JsonObject description(RecipeJS recipe) {
 		var obj = new JsonObject();
 		obj.addProperty("type", componentType());
-		obj.add("high_priority", high.description(recipe));
-		obj.add("low_priority", low.description(recipe));
+		var arr = new JsonArray();
+		arr.add(high.description(recipe));
+		arr.add(low.description(recipe));
+		obj.add("members", arr);
 		return obj;
 	}
 
@@ -99,6 +98,6 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> high, RecipeCompone
 
 	@Override
 	public String toString() {
-		return "either{" + high + "|" + low + "}";
+		return "{" + high + "|" + low + "}";
 	}
 }

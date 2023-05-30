@@ -6,11 +6,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.util.UUIDTypeAdapter;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
-import dev.latvian.mods.kubejs.fluid.EmptyFluidStackJS;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.InputFluid;
 import dev.latvian.mods.kubejs.fluid.OutputFluid;
-import dev.latvian.mods.kubejs.item.EmptyItemError;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
@@ -142,6 +140,13 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	}
 
 	public void afterLoaded() {
+		for (var v : values) {
+			var e = v.checkEmpty();
+
+			if (!e.isEmpty()) {
+				throw new RecipeExceptionJS(e);
+			}
+		}
 	}
 
 	public final void save() {
@@ -430,17 +435,11 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	}
 
 	public InputItem readInputItem(Object from) {
-		var i = InputItem.of(from);
-
-		if (i.isEmpty()) {
-			throw new EmptyItemError(from + " is not a valid ingredient!", from);
-		}
-
-		return i;
+		return InputItem.of(from);
 	}
 
 	public JsonElement writeInputItem(InputItem value) {
-		return value == InputItem.EMPTY ? null : value.ingredient.toJson();
+		return value.ingredient.toJson();
 	}
 
 	public boolean outputItemHasPriority(Object from) {
@@ -448,13 +447,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	}
 
 	public OutputItem readOutputItem(Object from) {
-		var i = OutputItem.of(from);
-
-		if (i.isEmpty()) {
-			throw new EmptyItemError(from + " is not a valid result!", from);
-		}
-
-		return i;
+		return OutputItem.of(from);
 	}
 
 	public JsonElement writeOutputItem(OutputItem value) {
@@ -480,17 +473,11 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	}
 
 	public InputFluid readInputFluid(Object from) {
-		var i = FluidStackJS.of(from);
-
-		if (i.isEmpty()) {
-			throw new EmptyItemError(from + " is not a valid fluid ingredient!", from);
-		}
-
-		return i;
+		return FluidStackJS.of(from);
 	}
 
 	public JsonElement writeInputFluid(InputFluid value) {
-		return value == EmptyFluidStackJS.INSTANCE ? null : ((FluidStackJS) value).toJson();
+		return ((FluidStackJS) value).toJson();
 	}
 
 	public boolean outputFluidHasPriority(Object from) {
@@ -498,17 +485,11 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	}
 
 	public OutputFluid readOutputFluid(Object from) {
-		var i = FluidStackJS.of(from);
-
-		if (i.isEmpty()) {
-			throw new EmptyItemError(from + " is not a valid fluid result!", from);
-		}
-
-		return i;
+		return FluidStackJS.of(from);
 	}
 
 	public JsonElement writeOutputFluid(OutputFluid value) {
-		return value == EmptyFluidStackJS.INSTANCE ? null : ((FluidStackJS) value).toJson();
+		return ((FluidStackJS) value).toJson();
 	}
 
 	// -- End -- //

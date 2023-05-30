@@ -27,6 +27,10 @@ public interface RecipeComponent<T> {
 		return b;
 	}
 
+	default RecipeKey<T> key(String name) {
+		return new RecipeKey<>(this, name);
+	}
+
 	default ComponentRole role() {
 		return ComponentRole.OTHER;
 	}
@@ -41,7 +45,6 @@ public interface RecipeComponent<T> {
 		return new JsonPrimitive(componentType());
 	}
 
-	@Nullable
 	JsonElement write(RecipeJS recipe, T value);
 
 	T read(RecipeJS recipe, Object from);
@@ -96,6 +99,10 @@ public interface RecipeComponent<T> {
 		return value;
 	}
 
+	default String checkEmpty(RecipeKey<T> key, T value) {
+		return "";
+	}
+
 	default RecipeComponent<T[]> asArray() {
 		return ArrayRecipeComponent.of(this, false);
 	}
@@ -112,7 +119,11 @@ public interface RecipeComponent<T> {
 		return new MapRecipeComponent<>(StringComponent.CHARACTER, this, true);
 	}
 
-	default RecipeKey<T> key(String name) {
-		return new RecipeKey<>(this, name);
+	default <O> OrRecipeComponent<T, O> or(RecipeComponent<O> other) {
+		return new OrRecipeComponent<>(this, other);
+	}
+
+	default <O> AndRecipeComponent<T, O> and(RecipeComponent<O> other) {
+		return new AndRecipeComponent<>(this, other);
 	}
 }

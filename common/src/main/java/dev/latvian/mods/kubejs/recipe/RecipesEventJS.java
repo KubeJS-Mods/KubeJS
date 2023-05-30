@@ -226,23 +226,19 @@ public class RecipesEventJS extends EventJS {
 					}
 				}
 			} catch (Throwable ex) {
-				if (!(ex instanceof RecipeExceptionJS rex) || rex.fallback) {
-					if (DevProperties.get().logErroringRecipes) {
-						ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'! Falling back to vanilla", ex, SKIP_ERROR);
-					}
+				if (DevProperties.get().logErroringRecipes) {
+					ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'! Falling back to vanilla", ex, SKIP_ERROR);
+				}
 
-					try {
-						originalRecipes.put(recipeId, JsonRecipeSchema.SCHEMA.deserialize(type, recipeId, json));
-					} catch (NullPointerException | IllegalArgumentException | JsonParseException ex2) {
-						if (DevProperties.get().logErroringRecipes) {
-							ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType, ex2, SKIP_ERROR);
-						}
-					} catch (Exception ex3) {
-						ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType + ":");
-						ConsoleJS.SERVER.printStackTrace(false, ex3, SKIP_ERROR);
+				try {
+					originalRecipes.put(recipeId, JsonRecipeSchema.SCHEMA.deserialize(type, recipeId, json));
+				} catch (NullPointerException | IllegalArgumentException | JsonParseException ex2) {
+					if (DevProperties.get().logErroringRecipes) {
+						ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType, ex2, SKIP_ERROR);
 					}
-				} else if (DevProperties.get().logErroringRecipes) {
-					ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'", ex, SKIP_ERROR);
+				} catch (Exception ex3) {
+					ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType + ":");
+					ConsoleJS.SERVER.printStackTrace(false, ex3, SKIP_ERROR);
 				}
 			}
 		}

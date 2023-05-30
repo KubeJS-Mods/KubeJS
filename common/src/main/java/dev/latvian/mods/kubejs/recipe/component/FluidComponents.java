@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.fluid.OutputFluid;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import org.jetbrains.annotations.Nullable;
 
 public interface FluidComponents {
@@ -42,13 +43,22 @@ public interface FluidComponents {
 		}
 
 		@Override
+		public String checkEmpty(RecipeKey<InputFluid> key, InputFluid value) {
+			if (value.isInputEmpty()) {
+				return "Input fluid '" + key.name() + "' can't be empty!";
+			}
+
+			return "";
+		}
+
+		@Override
 		public String toString() {
 			return componentType();
 		}
 	};
 
 	RecipeComponent<InputFluid[]> INPUT_ARRAY = INPUT.asArray();
-	RecipeComponent<Either<InputFluid, InputItem>> INPUT_OR_ITEM = new EitherRecipeComponent<>(INPUT, ItemComponents.INPUT);
+	RecipeComponent<Either<InputFluid, InputItem>> INPUT_OR_ITEM = INPUT.or(ItemComponents.INPUT);
 	RecipeComponent<Either<InputFluid, InputItem>[]> INPUT_OR_ITEM_ARRAY = INPUT_OR_ITEM.asArray();
 
 	RecipeComponent<OutputFluid> OUTPUT = new RecipeComponent<>() {
@@ -84,12 +94,21 @@ public interface FluidComponents {
 		}
 
 		@Override
+		public String checkEmpty(RecipeKey<OutputFluid> key, OutputFluid value) {
+			if (value.isOutputEmpty()) {
+				return "Output fluid '" + key.name() + "' can't be empty!";
+			}
+
+			return "";
+		}
+
+		@Override
 		public String toString() {
 			return componentType();
 		}
 	};
 
 	RecipeComponent<OutputFluid[]> OUTPUT_ARRAY = OUTPUT.asArray();
-	RecipeComponent<Either<OutputFluid, OutputItem>> OUTPUT_OR_ITEM = new EitherRecipeComponent<>(OUTPUT, ItemComponents.OUTPUT);
+	RecipeComponent<Either<OutputFluid, OutputItem>> OUTPUT_OR_ITEM = OUTPUT.or(ItemComponents.OUTPUT);
 	RecipeComponent<Either<OutputFluid, OutputItem>[]> OUTPUT_OR_ITEM_ARRAY = OUTPUT_OR_ITEM.asArray();
 }

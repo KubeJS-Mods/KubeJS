@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,5 +65,10 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	@Override
 	default T replaceOutput(RecipeJS recipe, T value, ReplacementMatch match, OutputReplacement with) {
 		return parentComponent().replaceOutput(recipe, value, match, with);
+	}
+
+	@Override
+	default String checkEmpty(RecipeKey<T> key, T value) {
+		return parentComponent().checkEmpty(key, value);
 	}
 }

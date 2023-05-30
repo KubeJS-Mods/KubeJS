@@ -66,4 +66,8 @@ public class RecipeComponentValue<T> extends BaseFunction implements WrappedJS {
 	public String toString() {
 		return key.name();
 	}
+
+	public String checkEmpty() {
+		return key.allowEmpty() ? "" : key.component().checkEmpty(key, value);
+	}
 }

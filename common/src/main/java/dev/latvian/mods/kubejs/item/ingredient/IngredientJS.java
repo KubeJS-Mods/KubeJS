@@ -84,13 +84,13 @@ public interface IngredientJS {
 					var json = MapJS.json(o);
 
 					if (json == null) {
-						throw new RecipeExceptionJS("Failed to parse custom ingredient (" + o + " is not a json object").fallback();
+						throw new RecipeExceptionJS("Failed to parse custom ingredient (" + o + " is not a json object");
 					}
 
 					try {
 						in = RecipePlatformHelper.get().getCustomIngredient(json);
 					} catch (Exception ex) {
-						throw new RecipeExceptionJS("Failed to parse custom ingredient (" + json.get("type") + ") from " + json + ": " + ex).fallback();
+						throw new RecipeExceptionJS("Failed to parse custom ingredient (" + json.get("type") + ") from " + json + ": " + ex);
 					}
 				}
 			} else if (val || map.containsKey("ingredient")) {

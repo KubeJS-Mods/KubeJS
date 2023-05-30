@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.level.gen.ruletest.AllMatchRuleTest;
 import dev.latvian.mods.kubejs.level.gen.ruletest.AlwaysFalseRuleTest;
 import dev.latvian.mods.kubejs.level.gen.ruletest.AnyMatchRuleTest;
 import dev.latvian.mods.kubejs.level.gen.ruletest.InvertRuleTest;
+import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -35,12 +36,18 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-public sealed interface BlockStatePredicate {
+public sealed interface BlockStatePredicate extends Predicate<BlockState>, ReplacementMatch {
 	ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
 
+	@Override
 	boolean test(BlockState state);
+
+	default boolean testBlock(Block block) {
+		return test(block.defaultBlockState());
+	}
 
 	@Nullable
 	default RuleTest asRuleTest() {
@@ -194,6 +201,11 @@ public sealed interface BlockStatePredicate {
 		}
 
 		@Override
+		public boolean testBlock(Block block) {
+			return match;
+		}
+
+		@Override
 		public RuleTest asRuleTest() {
 			return match ? AlwaysTrueTest.INSTANCE : AlwaysFalseRuleTest.INSTANCE;
 		}
@@ -208,6 +220,11 @@ public sealed interface BlockStatePredicate {
 		@Override
 		public boolean test(BlockState state) {
 			return state.is(block);
+		}
+
+		@Override
+		public boolean testBlock(Block block) {
+			return this.block == block;
 		}
 
 		@Override
@@ -239,6 +256,11 @@ public sealed interface BlockStatePredicate {
 		}
 
 		@Override
+		public boolean testBlock(Block block) {
+			return state.getBlock() == block;
+		}
+
+		@Override
 		public Collection<Block> getBlocks() {
 			return Collections.singleton(state.getBlock());
 		}
@@ -264,6 +286,11 @@ public sealed interface BlockStatePredicate {
 		@Override
 		public boolean test(BlockState state) {
 			return state.is(tag);
+		}
+
+		@Override
+		public boolean testBlock(Block block) {
+			return block.builtInRegistryHolder().is(tag);
 		}
 
 		@Override
@@ -302,6 +329,11 @@ public sealed interface BlockStatePredicate {
 		}
 
 		@Override
+		public boolean testBlock(Block block) {
+			return matchedBlocks.contains(block);
+		}
+
+		@Override
 		public Collection<Block> getBlocks() {
 			return matchedBlocks;
 		}
@@ -321,6 +353,17 @@ public sealed interface BlockStatePredicate {
 		public boolean test(BlockState state) {
 			for (var predicate : list) {
 				if (predicate.test(state)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		@Override
+		public boolean testBlock(Block block) {
+			for (var predicate : list) {
+				if (predicate.testBlock(block)) {
 					return true;
 				}
 			}
@@ -395,6 +438,11 @@ public sealed interface BlockStatePredicate {
 		}
 
 		@Override
+		public boolean testBlock(Block block) {
+			return !predicate.testBlock(block);
+		}
+
+		@Override
 		public Collection<Block> getBlocks() {
 			Set<Block> set = new HashSet<>();
 			for (var blockState : getBlockStates()) {
@@ -451,6 +499,16 @@ public sealed interface BlockStatePredicate {
 		public boolean test(BlockState state) {
 			for (var predicate : list) {
 				if (!predicate.test(state)) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		@Override
+		public boolean testBlock(Block block) {
+			for (var predicate : list) {
+				if (!predicate.testBlock(block)) {
 					return false;
 				}
 			}

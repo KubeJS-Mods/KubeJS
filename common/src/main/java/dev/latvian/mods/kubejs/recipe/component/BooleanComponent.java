@@ -36,6 +36,11 @@ public class BooleanComponent implements RecipeComponent<Boolean> {
 	}
 
 	@Override
+	public boolean hasPriority(RecipeJS recipe, Object from) {
+		return from instanceof Boolean || from instanceof JsonPrimitive json && json.isBoolean();
+	}
+
+	@Override
 	public String toString() {
 		return componentType();
 	}

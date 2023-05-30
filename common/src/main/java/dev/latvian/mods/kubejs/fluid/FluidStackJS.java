@@ -264,4 +264,14 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, InputFluid, O
 		getFluidStack().write(tag);
 		return tag;
 	}
+
+	@Override
+	public boolean isInputEmpty() {
+		return isEmpty();
+	}
+
+	@Override
+	public boolean isOutputEmpty() {
+		return isEmpty();
+	}
 }

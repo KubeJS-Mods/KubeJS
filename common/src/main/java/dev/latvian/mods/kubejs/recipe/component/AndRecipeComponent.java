@@ -5,14 +5,10 @@ import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import org.apache.commons.lang3.tuple.Pair;
 
-public record PairRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B> b) implements RecipeComponent<Pair<A, B>> {
-	public static <A, B> PairRecipeComponent<A, B> of(RecipeComponent<A> a, RecipeComponent<B> b) {
-		return new PairRecipeComponent<>(a, b);
-	}
-
+public record AndRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B> b) implements RecipeComponent<Pair<A, B>> {
 	@Override
 	public String componentType() {
-		return "pair";
+		return "and";
 	}
 
 	@Override
@@ -60,6 +56,6 @@ public record PairRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B>
 
 	@Override
 	public String toString() {
-		return "pair{" + a + "&" + b + "}";
+		return "{" + a + "&" + b + "}";
 	}
 }

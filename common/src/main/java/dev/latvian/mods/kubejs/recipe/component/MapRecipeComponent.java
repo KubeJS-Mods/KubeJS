@@ -2,11 +2,11 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.EmptyItemError;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.TinyMap;
 
@@ -52,9 +52,7 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 		var json = new JsonObject();
 
 		for (var entry : value.entries()) {
-			if (entry.value() != null) {
-				json.add(key.write(recipe, entry.key()).getAsString(), component.write(recipe, entry.value()));
-			}
+			json.add(key.write(recipe, entry.key()).getAsString(), component.write(recipe, entry.value()));
 		}
 
 		return json;
@@ -71,17 +69,8 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 
 			for (var entry : o.entrySet()) {
 				var k = key.read(recipe, entry.getKey());
-
-				try {
-					var v = component.read(recipe, entry.getValue());
-					map.entries()[i++] = new TinyMap.Entry<>(k, v);
-				} catch (EmptyItemError ex) {
-					if (patternKey) {
-						map.entries()[i++] = new TinyMap.Entry<>(k, null);
-					} else {
-						throw ex;
-					}
-				}
+				var v = component.read(recipe, entry.getValue());
+				map.entries()[i++] = new TinyMap.Entry<>(k, v);
 			}
 
 			return map;
@@ -91,23 +80,23 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 
 			for (var entry : m.entrySet()) {
 				var k = key.read(recipe, entry.getKey());
-
-				try {
-					var v = component.read(recipe, entry.getValue());
-					map.entries()[i++] = new TinyMap.Entry<>(k, v);
-				} catch (EmptyItemError ex) {
-					if (patternKey) {
-						map.entries()[i++] = new TinyMap.Entry<>(k, null);
-					} else {
-						throw ex;
-					}
-				}
+				var v = component.read(recipe, entry.getValue());
+				map.entries()[i++] = new TinyMap.Entry<>(k, v);
 			}
 
 			return map;
 		} else {
 			throw new IllegalArgumentException("Expected JSON object!");
 		}
+	}
+
+	@Override
+	public String checkEmpty(RecipeKey<TinyMap<K, V>> key, TinyMap<K, V> value) {
+		if (value.isEmpty()) {
+			return "Map '" + key.name() + "' can't be empty!";
+		}
+
+		return "";
 	}
 
 	@Override
