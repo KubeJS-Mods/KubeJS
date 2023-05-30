@@ -7,9 +7,9 @@ import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 
 public interface SmithingRecipeSchema {
-	RecipeKey<OutputItem> RESULT = ItemComponents.OUTPUT.key(0, "result");
-	RecipeKey<InputItem> BASE = ItemComponents.INPUT.key(1, "base");
-	RecipeKey<InputItem> ADDITION = ItemComponents.INPUT.key(2, "addition");
+	RecipeKey<OutputItem> RESULT = ItemComponents.OUTPUT.key("result");
+	RecipeKey<InputItem> BASE = ItemComponents.INPUT.key("base");
+	RecipeKey<InputItem> ADDITION = ItemComponents.INPUT.key("addition");
 
 	RecipeSchema SCHEMA = new RecipeSchema(RESULT, BASE, ADDITION);
 }

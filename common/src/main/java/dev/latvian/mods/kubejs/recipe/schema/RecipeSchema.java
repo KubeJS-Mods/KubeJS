@@ -45,6 +45,8 @@ public class RecipeSchema {
 		var set = new HashSet<String>();
 
 		for (int i = 0; i < keys.length; i++) {
+			keys[i].index(i);
+
 			if (keys[i].component().optionalValue() != null) {
 				if (minRequiredArguments == 0) {
 					minRequiredArguments = i;

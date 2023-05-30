@@ -35,10 +35,10 @@ public interface CookingRecipeSchema {
 		}
 	};
 
-	RecipeKey<OutputItem> RESULT = PLATFORM_OUTPUT_ITEM.key(0, "result");
-	RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key(1, "ingredient");
-	RecipeKey<Float> XP = NumberComponent.FLOAT.optional(0F).key(2, "experience").alt("xp").preferred("xp");
-	RecipeKey<Integer> COOKING_TIME = NumberComponent.INT.optional(200).key(3, "cookingtime").alt("cookingTime").preferred("cookingTime");
+	RecipeKey<OutputItem> RESULT = PLATFORM_OUTPUT_ITEM.key("result");
+	RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key("ingredient");
+	RecipeKey<Float> XP = NumberComponent.FLOAT.optional(0F).key("experience").alt("xp").preferred("xp");
+	RecipeKey<Integer> COOKING_TIME = NumberComponent.INT.optional(200).key("cookingtime").alt("cookingTime").preferred("cookingTime");
 
 	RecipeSchema SCHEMA = new RecipeSchema(RESULT, INGREDIENT, XP, COOKING_TIME);
 }

@@ -120,7 +120,7 @@ public interface RecipeComponent<T> {
 		return new OptionalRecipeComponent<>(this, defaultValue);
 	}
 
-	default RecipeKey<T> key(int index, String name) {
-		return RecipeKey.of(this, index, name);
+	default RecipeKey<T> key(String name) {
+		return new RecipeKey<>(this, name);
 	}
 }

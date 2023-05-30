@@ -115,12 +115,12 @@ public interface ShapedRecipeSchema {
 		}
 	}
 
-	RecipeKey<OutputItem> RESULT = ItemComponents.OUTPUT.key(0, "result");
-	RecipeKey<String[]> PATTERN = StringComponent.NON_EMPTY.asArray().key(1, "pattern");
-	RecipeKey<TinyMap<Character, InputItem>> KEY = MapRecipeComponent.ITEM_PATTERN_KEY.key(2, "key");
+	RecipeKey<OutputItem> RESULT = ItemComponents.OUTPUT.key("result");
+	RecipeKey<String[]> PATTERN = StringComponent.NON_EMPTY.asArray().key("pattern");
+	RecipeKey<TinyMap<Character, InputItem>> KEY = MapRecipeComponent.ITEM_PATTERN_KEY.key("key");
 
 	// Used for shaped recipes with 2D ingredient array
-	RecipeKey<InputItem[][]> INGREDIENTS = ItemComponents.INPUT_ARRAY.asArray().key(-1, "ingredients");
+	RecipeKey<InputItem[][]> INGREDIENTS = ItemComponents.INPUT_ARRAY.asArray().key("ingredients");
 
 	RecipeSchema SCHEMA = new RecipeSchema(ShapedRecipeJS.class, ShapedRecipeJS::new, RESULT, PATTERN, KEY)
 			.constructor(RESULT, PATTERN, KEY)

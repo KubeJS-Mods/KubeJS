@@ -3,37 +3,19 @@ package dev.latvian.mods.kubejs.recipe;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public final class RecipeKey<T> {
-	public record KK(RecipeComponent<?> component, int index, String name) {
-		@Override
-		public boolean equals(Object obj) {
-			return obj instanceof KK kk && component == kk.component && index == kk.index && name.equals(kk.name);
-		}
-	}
-
-	public static final Map<KK, RecipeKey<?>> ALL_KEYS = Collections.synchronizedMap(new HashMap<>());
-
-	@SuppressWarnings("unchecked")
-	public static <T> RecipeKey<T> of(RecipeComponent<T> component, int index, String name) {
-		return (RecipeKey<T>) ALL_KEYS.computeIfAbsent(new KK(component, index, name), RecipeKey::new);
-	}
-
 	private final RecipeComponent<T> component;
-	private final int index;
+	private int index;
 	private final String name;
 	private final List<String> altNames;
 	private String preferred;
 
-	@SuppressWarnings("unchecked")
-	private RecipeKey(KK kk) {
-		this.component = (RecipeComponent<T>) kk.component;
-		this.index = kk.index;
-		this.name = kk.name;
+	public RecipeKey(RecipeComponent<T> component, String name) {
+		this.component = component;
+		this.index = -1;
+		this.name = name;
 		this.altNames = new ArrayList<>(0);
 		this.preferred = name;
 	}
@@ -54,6 +36,14 @@ public final class RecipeKey<T> {
 
 	public int index() {
 		return index;
+	}
+
+	public void index(int index) {
+		if (this.index == -1) {
+			this.index = index;
+		} else {
+			throw new IllegalStateException("You can't reuse the same RecipeKey in more than once!");
+		}
 	}
 
 	public String name() {
@@ -80,5 +70,9 @@ public final class RecipeKey<T> {
 	public RecipeKey<T> preferred(String name) {
 		preferred = name;
 		return this;
+	}
+
+	public String preferred() {
+		return preferred;
 	}
 }

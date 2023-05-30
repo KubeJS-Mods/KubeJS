@@ -33,8 +33,8 @@ public interface StonecuttingRecipeSchema {
 		}
 	};
 
-	RecipeKey<OutputItem> RESULT = RESULT_WITH_COUNT_COMPONENT.key(0, "result");
-	RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key(1, "ingredient");
+	RecipeKey<OutputItem> RESULT = RESULT_WITH_COUNT_COMPONENT.key("result");
+	RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key("ingredient");
 
 	RecipeSchema SCHEMA = new RecipeSchema(RESULT, INGREDIENT);
 }
