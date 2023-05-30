@@ -54,7 +54,6 @@ public class ConsoleJS {
 		private final ConsoleJS console;
 		private final boolean error;
 		private final Pattern skipString;
-		private boolean first;
 		private boolean skip;
 
 		private StackTracePrintStream(ConsoleJS c, boolean e, @Nullable Pattern ca) {
@@ -62,7 +61,6 @@ public class ConsoleJS {
 			console = c;
 			error = e;
 			skipString = ca;
-			first = true;
 			skip = false;
 		}
 
@@ -75,14 +73,6 @@ public class ConsoleJS {
 		public void println(@Nullable String x) {
 			if (skip) {
 				return;
-			} else if (first && x != null) {
-				if (error) {
-					console.scriptType.errors.add(x);
-				} else {
-					console.scriptType.warnings.add(x);
-				}
-
-				first = false;
 			}
 
 			if (x != null && skipString != null && skipString.matcher(x).find()) {

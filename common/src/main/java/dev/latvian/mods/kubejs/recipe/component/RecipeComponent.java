@@ -109,11 +109,11 @@ public interface RecipeComponent<T> {
 	}
 
 	default <K> RecipeComponent<TinyMap<K, T>> asMap(RecipeComponent<K> key) {
-		return new MapRecipeComponent<>(key, this);
+		return new MapRecipeComponent<>(key, this, false);
 	}
 
 	default RecipeComponent<TinyMap<Character, T>> asPatternKey() {
-		return asMap(StringComponent.CHARACTER);
+		return new MapRecipeComponent<>(StringComponent.CHARACTER, this, true);
 	}
 
 	default RecipeComponent<T> optional(T defaultValue) {

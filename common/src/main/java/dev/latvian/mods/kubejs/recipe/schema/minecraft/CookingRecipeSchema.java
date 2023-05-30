@@ -14,16 +14,6 @@ import dev.latvian.mods.kubejs.recipe.component.RecipeComponentWithParent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 
 public interface CookingRecipeSchema {
-	class CookingRecipeJS extends RecipeJS {
-		public RecipeJS xp(float xp) {
-			return setValue(CookingRecipeSchema.XP, Math.max(0F, xp));
-		}
-
-		public RecipeJS cookingTime(int time) {
-			return setValue(CookingRecipeSchema.COOKING_TIME, Math.max(0, time));
-		}
-	}
-
 	RecipeComponent<OutputItem> PLATFORM_OUTPUT_ITEM = new RecipeComponentWithParent<>() {
 		@Override
 		public RecipeComponent<OutputItem> parentComponent() {
@@ -47,8 +37,8 @@ public interface CookingRecipeSchema {
 
 	RecipeKey<OutputItem> RESULT = PLATFORM_OUTPUT_ITEM.key(0, "result");
 	RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key(1, "ingredient");
-	RecipeKey<Float> XP = NumberComponent.FLOAT.optional(0F).key(2, "experience").alt("xp");
-	RecipeKey<Integer> COOKING_TIME = NumberComponent.INT.optional(200).key(3, "cookingtime").alt("cookingTime");
+	RecipeKey<Float> XP = NumberComponent.FLOAT.optional(0F).key(2, "experience").alt("xp").preferred("xp");
+	RecipeKey<Integer> COOKING_TIME = NumberComponent.INT.optional(200).key(3, "cookingtime").alt("cookingTime").preferred("cookingTime");
 
-	RecipeSchema SCHEMA = new RecipeSchema(CookingRecipeJS.class, CookingRecipeJS::new, RESULT, INGREDIENT, XP, COOKING_TIME);
+	RecipeSchema SCHEMA = new RecipeSchema(RESULT, INGREDIENT, XP, COOKING_TIME);
 }

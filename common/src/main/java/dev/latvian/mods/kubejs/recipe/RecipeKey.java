@@ -27,6 +27,7 @@ public final class RecipeKey<T> {
 	private final int index;
 	private final String name;
 	private final List<String> altNames;
+	private String preferred;
 
 	@SuppressWarnings("unchecked")
 	private RecipeKey(KK kk) {
@@ -34,6 +35,7 @@ public final class RecipeKey<T> {
 		this.index = kk.index;
 		this.name = kk.name;
 		this.altNames = new ArrayList<>(0);
+		this.preferred = name;
 	}
 
 	@Override
@@ -70,5 +72,13 @@ public final class RecipeKey<T> {
 
 	public List<String> altNames() {
 		return altNames;
+	}
+
+	/**
+	 * No real function, only used for generating typings / docs
+	 */
+	public RecipeKey<T> preferred(String name) {
+		preferred = name;
+		return this;
 	}
 }

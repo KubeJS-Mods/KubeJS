@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.recipe.InputItemTransformer;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
@@ -28,6 +29,10 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement {
 	public static InputItem of(Object o) {
 		if (o instanceof InputItem in) {
 			return in;
+		} else if (o instanceof ItemStack stack) {
+			return of(Ingredient.of(stack), stack.getCount());
+		} else if (o instanceof OutputItem out) {
+			return of(Ingredient.of(out.item), out.getCount());
 		} else if (o instanceof CharSequence) {
 			var str = o.toString();
 

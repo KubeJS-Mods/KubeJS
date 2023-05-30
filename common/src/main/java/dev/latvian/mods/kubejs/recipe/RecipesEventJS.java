@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RecipesEventJS extends EventJS {
-	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.mods.kubejs.recipe.RecipeEventJS.post");
+	private static final Pattern SKIP_ERROR = Pattern.compile("at\\s+dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipesEventJS\\.post");
 	public static Map<UUID, IngredientWithCustomPredicate> customIngredientMap = null;
 	public static Map<UUID, ModifyRecipeResultCallback> modifyResultCallbackMap = null;
 

@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
@@ -40,16 +39,6 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	@Override
 	default T read(RecipeJS recipe, Object from) {
 		return parentComponent().read(recipe, from);
-	}
-
-	@Override
-	default void writeJson(RecipeComponentValue<T> value, JsonObject json) {
-		parentComponent().writeJson(value, json);
-	}
-
-	@Override
-	default void readJson(RecipeComponentValue<T> value, JsonObject json) {
-		parentComponent().readJson(value, json);
 	}
 
 	@Override

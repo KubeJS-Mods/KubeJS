@@ -1,36 +1,38 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.item.EmptyItemError;
 import dev.latvian.mods.kubejs.item.InputItem;
+import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.TinyMap;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 
 import java.util.Map;
 
-public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V> component) implements RecipeComponent<TinyMap<K, V>> {
-	public static final RecipeComponent<TinyMap<Character, InputItem>> ITEM_PATTERN_KEY = new MapRecipeComponent<>(StringComponent.CHARACTER, ItemComponents.INPUT);
+public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V> component, boolean patternKey) implements RecipeComponent<TinyMap<K, V>> {
+	public static final RecipeComponent<TinyMap<Character, InputItem>> ITEM_PATTERN_KEY = new MapRecipeComponent<>(StringComponent.CHARACTER, ItemComponents.INPUT, true);
 
 	@Override
 	public String componentType() {
-		if (this == ITEM_PATTERN_KEY) {
-			return "item_pattern_key";
+		if (patternKey) {
+			return component.componentType() + "_pattern_key";
 		}
 
 		return "map";
 	}
 
 	@Override
-	public JsonObject description(RecipeJS recipe) {
-		var obj = new JsonObject();
-
-		if (this == ITEM_PATTERN_KEY) {
-			obj.addProperty("type", componentType());
-			return obj;
+	public JsonElement description(RecipeJS recipe) {
+		if (patternKey) {
+			return RecipeComponent.super.description(recipe);
 		}
 
+		var obj = new JsonObject();
 		obj.addProperty("type", componentType());
 		obj.add("key", key.description(recipe));
 		obj.add("component", component.description(recipe));
@@ -69,8 +71,17 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 
 			for (var entry : o.entrySet()) {
 				var k = key.read(recipe, entry.getKey());
-				var v = component.read(recipe, entry.getValue());
-				map.entries()[i++] = new TinyMap.Entry<>(k, v);
+
+				try {
+					var v = component.read(recipe, entry.getValue());
+					map.entries()[i++] = new TinyMap.Entry<>(k, v);
+				} catch (EmptyItemError ex) {
+					if (patternKey) {
+						map.entries()[i++] = new TinyMap.Entry<>(k, UtilsJS.cast(OutputItem.EMPTY));
+					} else {
+						throw ex;
+					}
+				}
 			}
 
 			return map;
@@ -80,8 +91,17 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 
 			for (var entry : m.entrySet()) {
 				var k = key.read(recipe, entry.getKey());
-				var v = component.read(recipe, entry.getValue());
-				map.entries()[i++] = new TinyMap.Entry<>(k, v);
+
+				try {
+					var v = component.read(recipe, entry.getValue());
+					map.entries()[i++] = new TinyMap.Entry<>(k, v);
+				} catch (EmptyItemError ex) {
+					if (patternKey) {
+						map.entries()[i++] = new TinyMap.Entry<>(k, UtilsJS.cast(OutputItem.EMPTY));
+					} else {
+						throw ex;
+					}
+				}
 			}
 
 			return map;
@@ -152,7 +172,7 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 
 	@Override
 	public String toString() {
-		if (this == ITEM_PATTERN_KEY) {
+		if (patternKey) {
 			return componentType();
 		}
 

@@ -20,6 +20,9 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.Scriptable;
+import dev.latvian.mods.rhino.util.CustomJavaToJsWrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
@@ -28,10 +31,12 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-public class RecipeJS implements RecipeKJS {
+public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	public static boolean itemErrors = false;
 
 	public ResourceLocation id;
@@ -39,11 +44,17 @@ public class RecipeJS implements RecipeKJS {
 	public boolean newRecipe;
 	public boolean removed;
 	private RecipeComponentValue<?>[] values = RecipeComponentValue.EMPTY_ARRAY;
+	private Map<String, RecipeComponentValue<?>> allValueMap;
 
 	public JsonObject originalJson = null;
 	private Recipe<?> originalRecipe = null;
 	public JsonObject json = null;
 	public boolean changed = false;
+
+	@Override
+	public final Scriptable convertJavaToJs(Context cx, Scriptable scope, Class<?> staticType) {
+		return new RecipeFunction(cx, scope, staticType, this);
+	}
 
 	public void deserialize() {
 		for (var v : values) {
@@ -110,6 +121,24 @@ public class RecipeJS implements RecipeKJS {
 		for (var v : values) {
 			v.changed = changed;
 		}
+	}
+
+	public Map<String, RecipeComponentValue<?>> getAllValueMap() {
+		if (allValueMap == null) {
+			allValueMap = new HashMap<>();
+
+			for (var v : values) {
+				for (var n : v.key.altNames()) {
+					allValueMap.put(n, v);
+				}
+			}
+
+			for (var v : values) {
+				allValueMap.put(v.key.name(), v);
+			}
+		}
+
+		return allValueMap;
 	}
 
 	public void afterLoaded() {

@@ -5,8 +5,12 @@ import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.util.WrappedJS;
+import dev.latvian.mods.rhino.BaseFunction;
+import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.Scriptable;
 
-public class RecipeComponentValue<T> {
+public class RecipeComponentValue<T> extends BaseFunction implements WrappedJS {
 	public static final RecipeComponentValue<?>[] EMPTY_ARRAY = new RecipeComponentValue[0];
 
 	public final RecipeJS recipe;
@@ -51,5 +55,15 @@ public class RecipeComponentValue<T> {
 		}
 
 		return false;
+	}
+
+	@Override
+	public RecipeJS call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
+		return recipe.setValue(key, key.component().read(recipe, args[0]));
+	}
+
+	@Override
+	public String toString() {
+		return key.name();
 	}
 }

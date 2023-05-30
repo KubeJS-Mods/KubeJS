@@ -9,14 +9,16 @@ import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
+import dev.latvian.mods.rhino.Wrapper;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
-	private static final Pattern SKIP_ERROR = Pattern.compile("at dev.latvian.mods.kubejs.recipe.RecipeFunction.call");
+	private static final Pattern SKIP_ERROR = Pattern.compile("at\\s+dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipeTypeFunction\\.call");
 
 	public final RecipesEventJS event;
 	public final ResourceLocation id;
@@ -71,7 +73,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 			ex.error();
 			ConsoleJS.SERVER.error("Failed to create recipe for type '" + id + "'", ex, SKIP_ERROR);
 		} catch (Throwable ex) {
-			ConsoleJS.SERVER.handleError(ex, SKIP_ERROR, "Failed to create recipe for type '" + id + "' with args " + Arrays.toString(args0));
+			ConsoleJS.SERVER.handleError(ex, SKIP_ERROR, "Failed to create recipe for type '" + id + "' with args " + Arrays.stream(args0).map(Wrapper::unwrapped).map(o -> o == null ? "null" : (o + ": " + o.getClass().getSimpleName())).collect(Collectors.joining(", ", "[", "]")));
 		}
 
 		return new JsonRecipeJS();

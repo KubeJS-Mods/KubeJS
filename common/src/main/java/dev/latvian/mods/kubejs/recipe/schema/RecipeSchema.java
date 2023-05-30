@@ -15,9 +15,11 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public class RecipeSchema {
+	private final UUID uuid;
 	public final Class<? extends RecipeJS> recipeType;
 	public final Supplier<? extends RecipeJS> factory;
 	public final RecipeKey<?>[] keys;
@@ -31,6 +33,7 @@ public class RecipeSchema {
 	}
 
 	public RecipeSchema(Class<? extends RecipeJS> recipeType, Supplier<? extends RecipeJS> factory, RecipeKey<?>... keys) {
+		this.uuid = UUID.randomUUID();
 		this.recipeType = recipeType;
 		this.factory = factory;
 		this.keys = keys;
@@ -67,6 +70,10 @@ public class RecipeSchema {
 
 		inputKeys = inKeys.toIntArray();
 		outputKeys = outKeys.toIntArray();
+	}
+
+	public UUID uuid() {
+		return uuid;
 	}
 
 	public RecipeSchema constructor(RecipeConstructor.Factory factory, RecipeKey<?>... keys) {
