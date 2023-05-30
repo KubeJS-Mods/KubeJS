@@ -42,8 +42,8 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default boolean shouldRead(RecipeJS recipe, Object from) {
-		return parentComponent().shouldRead(recipe, from);
+	default boolean hasPriority(RecipeJS recipe, Object from) {
+		return parentComponent().hasPriority(recipe, from);
 	}
 
 	@Override

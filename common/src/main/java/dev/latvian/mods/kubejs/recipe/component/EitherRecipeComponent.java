@@ -52,7 +52,7 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> high, RecipeCompone
 
 	@Override
 	public Either<H, L> read(RecipeJS recipe, Object from) {
-		if (high.shouldRead(recipe, from)) {
+		if (high.hasPriority(recipe, from)) {
 			return Either.left(high.read(recipe, from));
 		} else {
 			return Either.right(low.read(recipe, from));

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.registry;
 
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.CommonProperties;
+import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
@@ -235,7 +236,7 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 			throw new IllegalArgumentException("Can't add null builder in registry '" + key.location() + "'!");
 		}
 
-		if (CommonProperties.get().debugInfo) {
+		if (DevProperties.get().debugInfo) {
 			ConsoleJS.STARTUP.info("~ " + key.location() + " | " + builder.id);
 		}
 
@@ -264,7 +265,7 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 	}
 
 	public int registerObjects(BiConsumer<ResourceLocation, Supplier<Object>> function) {
-		if (CommonProperties.get().debugInfo) {
+		if (DevProperties.get().debugInfo) {
 			if (objects.isEmpty()) {
 				KubeJS.LOGGER.info("Skipping " + this + " registry");
 			} else {
@@ -282,7 +283,7 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 			if (!builder.dummyBuilder && (builder.getRegistryType().bypassServerOnly || !CommonProperties.get().serverOnly)) {
 				function.accept(builder.id, builder::createTransformedObject);
 
-				if (CommonProperties.get().debugInfo) {
+				if (DevProperties.get().debugInfo) {
 					ConsoleJS.STARTUP.info("+ " + this + " | " + builder.id);
 				}
 
@@ -290,7 +291,7 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 			}
 		}
 
-		if (!objects.isEmpty() && CommonProperties.get().debugInfo) {
+		if (!objects.isEmpty() && DevProperties.get().debugInfo) {
 			KubeJS.LOGGER.info("Registered " + added + "/" + objects.size() + " objects of " + this);
 		}
 

@@ -31,6 +31,11 @@ public interface StonecuttingRecipeSchema {
 				value.value.item.setCount(json.get("count").getAsInt());
 			}
 		}
+
+		@Override
+		public String toString() {
+			return parentComponent().toString();
+		}
 	};
 
 	RecipeKey<OutputItem> RESULT = RESULT_WITH_COUNT_COMPONENT.key("result");

@@ -25,7 +25,6 @@ public class CommonProperties {
 	public boolean serverOnly;
 	public boolean announceReload;
 	public String packMode;
-	public boolean debugInfo;
 	public boolean saveDevPropertiesInConfig;
 	public boolean allowAsyncStreams;
 
@@ -48,7 +47,6 @@ public class CommonProperties {
 			serverOnly = get("serverOnly", false);
 			announceReload = get("announceReload", true);
 			packMode = get("packmode", "default");
-			debugInfo = get("debugInfo", false);
 			saveDevPropertiesInConfig = get("saveDevPropertiesInConfig", false);
 			allowAsyncStreams = get("allowAsyncStreams", true);
 

@@ -6,6 +6,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.util.UUIDTypeAdapter;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.fluid.EmptyFluidStackJS;
+import dev.latvian.mods.kubejs.fluid.FluidStackJS;
+import dev.latvian.mods.kubejs.fluid.InputFluid;
+import dev.latvian.mods.kubejs.fluid.OutputFluid;
 import dev.latvian.mods.kubejs.item.EmptyItemError;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
@@ -78,7 +82,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		var v = values[key.index()].value;
 
 		if (v == null) {
-			return key.component().optionalValue();
+			return key.optional();
 		}
 
 		return UtilsJS.cast(v);
@@ -128,13 +132,9 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 			allValueMap = new HashMap<>();
 
 			for (var v : values) {
-				for (var n : v.key.altNames()) {
+				for (var n : v.key.names()) {
 					allValueMap.put(n, v);
 				}
-			}
-
-			for (var v : values) {
-				allValueMap.put(v.key.name(), v);
 			}
 		}
 
@@ -423,8 +423,10 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 
 	// Default component serialization methods for ItemComponents and FluidComponents //
 
-	public boolean shouldReadInputItem(Object from) {
-		return !InputItem.of(from).isEmpty();
+	// -- Items -- //
+
+	public boolean inputItemHasPriority(Object from) {
+		return from instanceof InputItem || from instanceof ItemStack || from instanceof Ingredient || !InputItem.of(from).isEmpty();
 	}
 
 	public InputItem readInputItem(Object from) {
@@ -441,8 +443,8 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		return value == InputItem.EMPTY ? null : value.ingredient.toJson();
 	}
 
-	public boolean shouldReadOutputItem(Object from) {
-		return !OutputItem.of(from).isEmpty();
+	public boolean outputItemHasPriority(Object from) {
+		return from instanceof OutputItem || from instanceof ItemStack || !OutputItem.of(from).isEmpty();
 	}
 
 	public OutputItem readOutputItem(Object from) {
@@ -470,4 +472,44 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 
 		return json;
 	}
+
+	// -- Fluids -- //
+
+	public boolean inputFluidHasPriority(Object from) {
+		return from instanceof InputFluid || from instanceof JsonObject j && j.has("fluid");
+	}
+
+	public InputFluid readInputFluid(Object from) {
+		var i = FluidStackJS.of(from);
+
+		if (i.isEmpty()) {
+			throw new EmptyItemError(from + " is not a valid fluid ingredient!", from);
+		}
+
+		return i;
+	}
+
+	public JsonElement writeInputFluid(InputFluid value) {
+		return value == EmptyFluidStackJS.INSTANCE ? null : ((FluidStackJS) value).toJson();
+	}
+
+	public boolean outputFluidHasPriority(Object from) {
+		return from instanceof OutputFluid || from instanceof JsonObject j && j.has("fluid");
+	}
+
+	public OutputFluid readOutputFluid(Object from) {
+		var i = FluidStackJS.of(from);
+
+		if (i.isEmpty()) {
+			throw new EmptyItemError(from + " is not a valid fluid result!", from);
+		}
+
+		return i;
+	}
+
+	public JsonElement writeOutputFluid(OutputFluid value) {
+		return value == EmptyFluidStackJS.INSTANCE ? null : ((FluidStackJS) value).toJson();
+	}
+
+	// -- End -- //
 }

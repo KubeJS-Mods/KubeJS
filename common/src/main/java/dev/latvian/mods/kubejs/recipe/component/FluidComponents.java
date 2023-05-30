@@ -2,15 +2,15 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
-import dev.latvian.mods.kubejs.fluid.EmptyFluidStackJS;
-import dev.latvian.mods.kubejs.fluid.FluidStackJS;
-import dev.latvian.mods.kubejs.item.EmptyItemError;
+import dev.latvian.mods.kubejs.fluid.InputFluid;
+import dev.latvian.mods.kubejs.fluid.OutputFluid;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import org.jetbrains.annotations.Nullable;
 
 public interface FluidComponents {
-	RecipeComponent<FluidStackJS> INPUT = new RecipeComponent<>() {
+	RecipeComponent<InputFluid> INPUT = new RecipeComponent<>() {
 		@Override
 		public String componentType() {
 			return "input_fluid";
@@ -23,28 +23,22 @@ public interface FluidComponents {
 
 		@Override
 		public Class<?> componentClass() {
-			return FluidStackJS.class;
+			return InputFluid.class;
 		}
 
 		@Override
-		public JsonElement write(RecipeJS recipe, FluidStackJS value) {
-			return value == EmptyFluidStackJS.INSTANCE ? null : value.toJson();
+		public JsonElement write(RecipeJS recipe, InputFluid value) {
+			return recipe.writeInputFluid(value);
 		}
 
 		@Override
-		public FluidStackJS read(RecipeJS recipe, Object from) {
-			var i = FluidStackJS.of(from);
-
-			if (i.isEmpty()) {
-				throw new EmptyItemError(from + " is not a valid fluid!", from);
-			}
-
-			return i;
+		public InputFluid read(RecipeJS recipe, Object from) {
+			return recipe.readInputFluid(from);
 		}
 
 		@Override
-		public boolean shouldRead(RecipeJS recipe, Object from) {
-			return !FluidStackJS.of(from).isEmpty();
+		public boolean hasPriority(RecipeJS recipe, Object from) {
+			return recipe.inputFluidHasPriority(from);
 		}
 
 		@Override
@@ -53,17 +47,11 @@ public interface FluidComponents {
 		}
 	};
 
-	RecipeComponent<FluidStackJS> DEFAULT_INPUT = INPUT.optional(EmptyFluidStackJS.INSTANCE);
-	RecipeComponent<FluidStackJS[]> INPUT_ARRAY = INPUT.asArray();
-	RecipeComponent<Either<FluidStackJS, InputItem>> INPUT_OR_ITEM = new EitherRecipeComponent<>(INPUT, ItemComponents.INPUT);
-	RecipeComponent<Either<FluidStackJS, InputItem>[]> INPUT_OR_ITEM_ARRAY = INPUT_OR_ITEM.asArray();
+	RecipeComponent<InputFluid[]> INPUT_ARRAY = INPUT.asArray();
+	RecipeComponent<Either<InputFluid, InputItem>> INPUT_OR_ITEM = new EitherRecipeComponent<>(INPUT, ItemComponents.INPUT);
+	RecipeComponent<Either<InputFluid, InputItem>[]> INPUT_OR_ITEM_ARRAY = INPUT_OR_ITEM.asArray();
 
-	RecipeComponent<FluidStackJS> OUTPUT = new RecipeComponentWithParent<>() {
-		@Override
-		public RecipeComponent<FluidStackJS> parentComponent() {
-			return INPUT;
-		}
-
+	RecipeComponent<OutputFluid> OUTPUT = new RecipeComponent<>() {
 		@Override
 		public String componentType() {
 			return "output_fluid";
@@ -75,13 +63,33 @@ public interface FluidComponents {
 		}
 
 		@Override
+		public Class<?> componentClass() {
+			return OutputFluid.class;
+		}
+
+		@Override
+		@Nullable
+		public JsonElement write(RecipeJS recipe, OutputFluid value) {
+			return recipe.writeOutputFluid(value);
+		}
+
+		@Override
+		public OutputFluid read(RecipeJS recipe, Object from) {
+			return recipe.readOutputFluid(from);
+		}
+
+		@Override
+		public boolean hasPriority(RecipeJS recipe, Object from) {
+			return recipe.outputFluidHasPriority(from);
+		}
+
+		@Override
 		public String toString() {
 			return componentType();
 		}
 	};
 
-	RecipeComponent<FluidStackJS> DEFAULT_OUTPUT = OUTPUT.optional(EmptyFluidStackJS.INSTANCE);
-	RecipeComponent<FluidStackJS[]> OUTPUT_ARRAY = OUTPUT.asArray();
-	RecipeComponent<Either<FluidStackJS, OutputItem>> OUTPUT_OR_ITEM = new EitherRecipeComponent<>(OUTPUT, ItemComponents.OUTPUT);
-	RecipeComponent<Either<FluidStackJS, OutputItem>[]> OUTPUT_OR_ITEM_ARRAY = OUTPUT_OR_ITEM.asArray();
+	RecipeComponent<OutputFluid[]> OUTPUT_ARRAY = OUTPUT.asArray();
+	RecipeComponent<Either<OutputFluid, OutputItem>> OUTPUT_OR_ITEM = new EitherRecipeComponent<>(OUTPUT, ItemComponents.OUTPUT);
+	RecipeComponent<Either<OutputFluid, OutputItem>[]> OUTPUT_OR_ITEM_ARRAY = OUTPUT_OR_ITEM.asArray();
 }

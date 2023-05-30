@@ -6,8 +6,6 @@ import dev.latvian.mods.kubejs.recipe.RecipeJS;
 
 public class BooleanComponent implements RecipeComponent<Boolean> {
 	public static final RecipeComponent<Boolean> BOOLEAN = new BooleanComponent();
-	public static final RecipeComponent<Boolean> OR_FALSE = BOOLEAN.optional(false);
-	public static final RecipeComponent<Boolean> OR_TRUE = BOOLEAN.optional(true);
 
 	@Override
 	public String componentType() {

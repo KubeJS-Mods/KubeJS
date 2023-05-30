@@ -8,7 +8,6 @@ import java.util.function.Predicate;
 
 public record StringComponent(String error, Predicate<String> predicate) implements RecipeComponent<String> {
 	public static final RecipeComponent<String> ANY = new StringComponent("", s -> true);
-	public static final RecipeComponent<String> DEFAULT_ANY = ANY.optional("");
 	public static final RecipeComponent<String> NON_EMPTY = new StringComponent("can't be empty", s -> !s.isEmpty());
 	public static final RecipeComponent<String> NON_BLANK = new StringComponent("can't be blank", s -> !s.isBlank());
 

@@ -2,22 +2,28 @@ package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public final class RecipeKey<T> {
 	private final RecipeComponent<T> component;
 	private int index;
 	private final String name;
-	private final List<String> altNames;
+	private final Set<String> names;
 	private String preferred;
+	private T optional;
+	private boolean excluded;
 
 	public RecipeKey(RecipeComponent<T> component, String name) {
 		this.component = component;
 		this.index = -1;
 		this.name = name;
-		this.altNames = new ArrayList<>(0);
+		this.names = new LinkedHashSet<>(1);
+		this.names.add(name);
 		this.preferred = name;
+		this.optional = null;
+		this.excluded = false;
 	}
 
 	@Override
@@ -27,7 +33,15 @@ public final class RecipeKey<T> {
 
 	@Override
 	public String toString() {
-		return name + ":" + component;
+		var sb = new StringBuilder(name);
+
+		if (optional != null) {
+			sb.append('?');
+		}
+
+		sb.append(':');
+		sb.append(component);
+		return sb.toString();
 	}
 
 	public RecipeComponent<T> component() {
@@ -50,29 +64,54 @@ public final class RecipeKey<T> {
 		return name;
 	}
 
+	public RecipeKey<T> optional(T value) {
+		optional = value;
+		return this;
+	}
+
+	public T optional() {
+		return optional;
+	}
+
 	public RecipeKey<T> alt(String name) {
-		altNames.add(name);
+		names.add(name);
 		return this;
 	}
 
 	public RecipeKey<T> alt(String... names) {
-		altNames.addAll(List.of(names));
+		this.names.addAll(List.of(names));
 		return this;
 	}
 
-	public List<String> altNames() {
-		return altNames;
+	public Set<String> names() {
+		return names;
 	}
 
 	/**
 	 * No real function, only used for generating typings / docs
 	 */
 	public RecipeKey<T> preferred(String name) {
+		if (!names.contains(name)) {
+			throw new IllegalArgumentException("Name not found!");
+		}
+
 		preferred = name;
 		return this;
 	}
 
 	public String preferred() {
 		return preferred;
+	}
+
+	/**
+	 * Excludes this key from auto-generated constructors
+	 */
+	public RecipeKey<T> excluded() {
+		excluded = true;
+		return this;
+	}
+
+	public boolean isExcluded() {
+		return excluded;
 	}
 }

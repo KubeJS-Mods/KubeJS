@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.recipe.schema;
 
 import com.google.gson.JsonObject;
 import dev.architectury.platform.Platform;
-import dev.latvian.mods.kubejs.CommonProperties;
+import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
@@ -47,7 +47,7 @@ public class RecipeSchema {
 		for (int i = 0; i < keys.length; i++) {
 			keys[i].index(i);
 
-			if (keys[i].component().optionalValue() != null) {
+			if (keys[i].optional() != null) {
 				if (minRequiredArguments == 0) {
 					minRequiredArguments = i;
 				}
@@ -132,7 +132,7 @@ public class RecipeSchema {
 		r.newRecipe = id == null;
 		r.initValues(this);
 
-		if (id != null && CommonProperties.get().debugInfo) {
+		if (id != null && DevProperties.get().debugInfo) {
 			r.originalJson = (JsonObject) JsonIO.copy(json);
 		}
 

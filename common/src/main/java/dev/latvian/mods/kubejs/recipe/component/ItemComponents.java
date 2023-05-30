@@ -28,8 +28,8 @@ public interface ItemComponents {
 		}
 
 		@Override
-		public boolean shouldRead(RecipeJS recipe, Object from) {
-			return recipe.shouldReadInputItem(from);
+		public boolean hasPriority(RecipeJS recipe, Object from) {
+			return recipe.inputItemHasPriority(from);
 		}
 
 		@Override
@@ -62,7 +62,6 @@ public interface ItemComponents {
 		}
 	};
 
-	RecipeComponent<InputItem> DEFAULT_INPUT = INPUT.optional(InputItem.EMPTY);
 	RecipeComponent<InputItem[]> INPUT_ARRAY = INPUT.asArray();
 
 	RecipeComponent<InputItem[]> UNWRAPPED_INPUT_ARRAY = new RecipeComponentWithParent<>() {
@@ -107,8 +106,8 @@ public interface ItemComponents {
 		}
 
 		@Override
-		public boolean shouldRead(RecipeJS recipe, Object from) {
-			return recipe.shouldReadOutputItem(from);
+		public boolean hasPriority(RecipeJS recipe, Object from) {
+			return recipe.outputItemHasPriority(from);
 		}
 
 		@Override
@@ -141,6 +140,5 @@ public interface ItemComponents {
 		}
 	};
 
-	RecipeComponent<OutputItem> DEFAULT_OUTPUT = OUTPUT.optional(OutputItem.EMPTY);
 	RecipeComponent<OutputItem[]> OUTPUT_ARRAY = OUTPUT.asArray();
 }

@@ -21,6 +21,7 @@ public class DevProperties {
 	private final Properties properties;
 	private boolean writeProperties;
 
+	public boolean debugInfo;
 	public boolean dataPackOutput = false;
 	public boolean logAddedRecipes = false;
 	public boolean logRemovedRecipes = false;
@@ -46,6 +47,7 @@ public class DevProperties {
 				writeProperties = true;
 			}
 
+			debugInfo = get("debugInfo", false);
 			dataPackOutput = get("dataPackOutput", false);
 			logAddedRecipes = get("logAddedRecipes", false);
 			logRemovedRecipes = get("logRemovedRecipes", false);

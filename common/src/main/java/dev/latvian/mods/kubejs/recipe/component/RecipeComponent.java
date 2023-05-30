@@ -41,13 +41,14 @@ public interface RecipeComponent<T> {
 		return new JsonPrimitive(componentType());
 	}
 
+	@Nullable
 	JsonElement write(RecipeJS recipe, T value);
 
 	T read(RecipeJS recipe, Object from);
 
 	default void writeJson(RecipeComponentValue<T> value, JsonObject json) {
-		if (!value.key.altNames().isEmpty()) {
-			for (var k : value.key.altNames()) {
+		if (value.key.names().size() >= 2) {
+			for (var k : value.key.names()) {
 				json.remove(k);
 			}
 		}
@@ -61,8 +62,8 @@ public interface RecipeComponent<T> {
 		if (v != null) {
 			value.value = read(value.recipe, v);
 			return;
-		} else if (!value.key.altNames().isEmpty()) {
-			for (var alt : value.key.altNames()) {
+		} else if (value.key.names().size() >= 2) {
+			for (var alt : value.key.names()) {
 				v = json.get(alt);
 
 				if (v != null) {
@@ -75,12 +76,7 @@ public interface RecipeComponent<T> {
 		throw new MissingComponentException(value.key);
 	}
 
-	@Nullable
-	default T optionalValue() {
-		return null;
-	}
-
-	default boolean shouldRead(RecipeJS recipe, Object from) {
+	default boolean hasPriority(RecipeJS recipe, Object from) {
 		return true;
 	}
 
@@ -114,10 +110,6 @@ public interface RecipeComponent<T> {
 
 	default RecipeComponent<TinyMap<Character, T>> asPatternKey() {
 		return new MapRecipeComponent<>(StringComponent.CHARACTER, this, true);
-	}
-
-	default RecipeComponent<T> optional(T defaultValue) {
-		return new OptionalRecipeComponent<>(this, defaultValue);
 	}
 
 	default RecipeKey<T> key(String name) {

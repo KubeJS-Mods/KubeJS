@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.util;
 
-import dev.latvian.mods.kubejs.CommonProperties;
+import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -335,7 +335,7 @@ public class ConsoleJS {
 		if (shouldPrint()) {
 			var s = throwable.toString();
 
-			if (CommonProperties.get().debugInfo || s.equals("java.lang.NullPointerException")) {
+			if (DevProperties.get().debugInfo || s.equals("java.lang.NullPointerException")) {
 				warn(message + ":");
 				printStackTrace(false, throwable, skip);
 			} else {
@@ -360,7 +360,7 @@ public class ConsoleJS {
 		if (shouldPrint()) {
 			var s = throwable.toString();
 
-			if (CommonProperties.get().debugInfo || s.equals("java.lang.NullPointerException")) {
+			if (DevProperties.get().debugInfo || s.equals("java.lang.NullPointerException")) {
 				error(message + ":");
 				printStackTrace(true, throwable, skip);
 			} else {
