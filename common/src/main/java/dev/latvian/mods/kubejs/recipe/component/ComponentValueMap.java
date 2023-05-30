@@ -15,7 +15,7 @@ public class ComponentValueMap extends IdentityHashMap<RecipeKey<?>, Object> {
 		var o = get(key);
 
 		if (o == null) {
-			var v = key.optional();
+			var v = key.optionalValue();
 
 			if (v != null) {
 				return v;

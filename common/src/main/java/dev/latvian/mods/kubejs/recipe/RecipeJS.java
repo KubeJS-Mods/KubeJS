@@ -80,7 +80,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		var v = values[key.index()].value;
 
 		if (v == null) {
-			return key.optional();
+			return key.optionalValue();
 		}
 
 		return UtilsJS.cast(v);
