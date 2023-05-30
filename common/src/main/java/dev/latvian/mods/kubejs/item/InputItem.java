@@ -30,9 +30,9 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement {
 		if (o instanceof InputItem in) {
 			return in;
 		} else if (o instanceof ItemStack stack) {
-			return of(Ingredient.of(stack), stack.getCount());
+			return stack.isEmpty() ? EMPTY : of(Ingredient.of(stack), stack.getCount());
 		} else if (o instanceof OutputItem out) {
-			return of(Ingredient.of(out.item), out.getCount());
+			return out.isEmpty() ? EMPTY : of(Ingredient.of(out.item), out.getCount());
 		} else if (o instanceof CharSequence) {
 			var str = o.toString();
 

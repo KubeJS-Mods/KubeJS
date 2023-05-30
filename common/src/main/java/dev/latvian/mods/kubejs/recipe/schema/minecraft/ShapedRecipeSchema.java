@@ -92,7 +92,7 @@ public interface ShapedRecipeSchema {
 
 			while (itr.hasNext()) {
 				var entry = itr.next();
-				if (entry.value().isEmpty()) {
+				if (entry.value() == null || entry.value().isEmpty()) {
 					if (airs == null) {
 						airs = new ArrayList<>(1);
 					}

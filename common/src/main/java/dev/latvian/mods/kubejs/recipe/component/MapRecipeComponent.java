@@ -4,13 +4,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.EmptyItemError;
 import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.TinyMap;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 
 import java.util.Map;
 
@@ -54,7 +52,9 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 		var json = new JsonObject();
 
 		for (var entry : value.entries()) {
-			json.add(key.write(recipe, entry.key()).getAsString(), component.write(recipe, entry.value()));
+			if (entry.value() != null) {
+				json.add(key.write(recipe, entry.key()).getAsString(), component.write(recipe, entry.value()));
+			}
 		}
 
 		return json;
@@ -77,7 +77,7 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 					map.entries()[i++] = new TinyMap.Entry<>(k, v);
 				} catch (EmptyItemError ex) {
 					if (patternKey) {
-						map.entries()[i++] = new TinyMap.Entry<>(k, UtilsJS.cast(OutputItem.EMPTY));
+						map.entries()[i++] = new TinyMap.Entry<>(k, null);
 					} else {
 						throw ex;
 					}
@@ -97,7 +97,7 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 					map.entries()[i++] = new TinyMap.Entry<>(k, v);
 				} catch (EmptyItemError ex) {
 					if (patternKey) {
-						map.entries()[i++] = new TinyMap.Entry<>(k, UtilsJS.cast(OutputItem.EMPTY));
+						map.entries()[i++] = new TinyMap.Entry<>(k, null);
 					} else {
 						throw ex;
 					}
