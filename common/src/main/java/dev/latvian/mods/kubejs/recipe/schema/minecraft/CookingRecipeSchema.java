@@ -38,8 +38,8 @@ public interface CookingRecipeSchema {
 
 	RecipeKey<OutputItem> RESULT = PLATFORM_OUTPUT_ITEM.key("result");
 	RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key("ingredient");
-	RecipeKey<Float> XP = NumberComponent.FLOAT.key("experience").optional(0F).alt("xp").preferred("xp");
-	RecipeKey<Long> COOKING_TIME = TimeComponent.TICKS.key("cookingtime").optional(200L).alt("cookingTime").preferred("cookingTime");
+	RecipeKey<Float> XP = NumberComponent.FLOAT.key("experience").optional(0F).preferred("xp");
+	RecipeKey<Long> COOKING_TIME = TimeComponent.TICKS.key("cookingtime").optional(200L).preferred("cookingTime");
 
 	RecipeSchema SCHEMA = new RecipeSchema(RESULT, INGREDIENT, XP, COOKING_TIME);
 }

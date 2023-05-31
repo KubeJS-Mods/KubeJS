@@ -49,10 +49,16 @@ public final class RecipeKey<T> {
 		return sb.toString();
 	}
 
+	/**
+	 * Sets this key to not be required in json and constructor
+	 */
 	public RecipeKey<T> optional(T value) {
 		return optional(new Constant<>(value));
 	}
 
+	/**
+	 * Sets this key to not be required in json and constructor
+	 */
 	public RecipeKey<T> optional(Supplier<T> value) {
 		optional = value;
 		return this;
@@ -78,18 +84,9 @@ public final class RecipeKey<T> {
 	}
 
 	/**
-	 * No real function, only used for generating typings / docs
+	 * Used by doc and typing generators to select best builder method name
 	 */
 	public RecipeKey<T> preferred(String name) {
-		if (!names.contains(name)) {
-			throw new IllegalArgumentException("Name not found!");
-		}
-
-		preferred = name;
-		return this;
-	}
-
-	public RecipeKey<T> preferredAlt(String name) {
 		names.add(name);
 		preferred = name;
 		return this;
@@ -107,11 +104,17 @@ public final class RecipeKey<T> {
 		return optional == null || !excluded;
 	}
 
+	/**
+	 * Allow empty values (such as minecraft:air) in results/ingredients
+	 */
 	public RecipeKey<T> allowEmpty() {
 		allowEmpty = true;
 		return this;
 	}
 
+	/**
+	 * Always write optional key, even if it hasn't changed
+	 */
 	public RecipeKey<T> alwaysWrite() {
 		alwaysWrite = true;
 		return this;
