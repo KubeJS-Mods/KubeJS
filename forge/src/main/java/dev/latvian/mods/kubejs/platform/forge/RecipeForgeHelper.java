@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.platform.forge;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.core.mixin.forge.RecipeManagerAccessor;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
@@ -32,11 +33,11 @@ public class RecipeForgeHelper implements RecipePlatformHelper {
 	@Override
 	@Nullable
 	public JsonObject checkConditions(JsonObject json) {
+		var context = (ICondition.IContext) KubeJSReloadListener.recipeContext;
+
 		if (!json.has("type")) {
 			return null;
 		} else if (json.get("type").getAsString().equals(FORGE_CONDITIONAL)) {
-			var context = (ICondition.IContext) KubeJSReloadListener.recipeContext;
-
 			for (var ele : GsonHelper.getAsJsonArray(json, "recipes")) {
 				if (!ele.isJsonObject()) {
 					return null;
@@ -45,6 +46,8 @@ public class RecipeForgeHelper implements RecipePlatformHelper {
 				}
 			}
 
+			return null;
+		} else if (json.get("conditions") instanceof JsonArray arr && !CraftingHelper.processConditions(arr, context)) {
 			return null;
 		}
 

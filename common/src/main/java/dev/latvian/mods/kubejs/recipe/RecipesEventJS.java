@@ -96,10 +96,10 @@ public class RecipesEventJS extends EventJS {
 			recipeFunctions.put(namespace.name, new NamespaceFunction(namespace, nsMap));
 
 			for (var entry : namespace.entrySet()) {
-				nsMap.put(entry.getValue().id.toString(), new RecipeTypeFunction(this, entry.getValue()));
+				var func = new RecipeTypeFunction(this, entry.getValue());
+				nsMap.put(entry.getValue().id.getPath(), func);
+				recipeFunctions.put(entry.getValue().id.toString(), func);
 			}
-
-			recipeFunctions.putAll(nsMap);
 		}
 
 		shaped = (RecipeTypeFunction) recipeFunctions.get(CommonProperties.get().serverOnly ? "minecraft:crafting_shaped" : "kubejs:shaped");
