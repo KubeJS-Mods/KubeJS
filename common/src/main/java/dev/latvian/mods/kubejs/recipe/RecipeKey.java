@@ -1,20 +1,18 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
-import dev.latvian.mods.kubejs.util.Constant;
-import org.jetbrains.annotations.Nullable;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeOptional;
 
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 public final class RecipeKey<T> {
 	public final RecipeComponent<T> component;
 	public final String name;
 	public final Set<String> names;
 	public String preferred;
-	public Supplier<T> optional;
+	public RecipeOptional<T> optional;
 	public boolean excluded;
 	public boolean allowEmpty;
 	public boolean alwaysWrite;
@@ -53,24 +51,19 @@ public final class RecipeKey<T> {
 	 * Sets this key to not be required in json and constructor
 	 */
 	public RecipeKey<T> optional(T value) {
-		return optional(new Constant<>(value));
+		return optional(new RecipeOptional.Constant<>(value));
 	}
 
 	/**
 	 * Sets this key to not be required in json and constructor
 	 */
-	public RecipeKey<T> optional(Supplier<T> value) {
+	public RecipeKey<T> optional(RecipeOptional<T> value) {
 		optional = value;
 		return this;
 	}
 
 	public boolean optional() {
 		return optional != null;
-	}
-
-	@Nullable
-	public T optionalValue() {
-		return optional == null ? null : optional.get();
 	}
 
 	public RecipeKey<T> alt(String name) {

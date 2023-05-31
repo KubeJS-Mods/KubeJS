@@ -22,15 +22,15 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 		return new DoubleRange(min, max);
 	}
 
-	RecipeComponent<Integer> INT = intRange(0, Integer.MAX_VALUE);
-	RecipeComponent<Long> LONG = longRange(0L, Long.MAX_VALUE);
-	RecipeComponent<Float> FLOAT = floatRange(0F, Float.POSITIVE_INFINITY);
-	RecipeComponent<Double> DOUBLE = doubleRange(0D, Double.POSITIVE_INFINITY);
+	IntRange INT = intRange(0, Integer.MAX_VALUE);
+	LongRange LONG = longRange(0L, Long.MAX_VALUE);
+	FloatRange FLOAT = floatRange(0F, Float.POSITIVE_INFINITY);
+	DoubleRange DOUBLE = doubleRange(0D, Double.POSITIVE_INFINITY);
 
-	RecipeComponent<Integer> ANY_INT = intRange(Integer.MIN_VALUE, Integer.MAX_VALUE);
-	RecipeComponent<Long> ANY_LONG = longRange(Long.MIN_VALUE, Long.MAX_VALUE);
-	RecipeComponent<Float> ANY_FLOAT = floatRange(Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
-	RecipeComponent<Double> ANY_DOUBLE = doubleRange(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+	IntRange ANY_INT = intRange(Integer.MIN_VALUE, Integer.MAX_VALUE);
+	LongRange ANY_LONG = longRange(Long.MIN_VALUE, Long.MAX_VALUE);
+	FloatRange ANY_FLOAT = floatRange(Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
+	DoubleRange ANY_DOUBLE = doubleRange(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
 	private static Number numberOf(Object from) {
 		if (from instanceof Number n) {
