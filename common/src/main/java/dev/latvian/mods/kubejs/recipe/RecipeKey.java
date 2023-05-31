@@ -89,6 +89,12 @@ public final class RecipeKey<T> {
 		return this;
 	}
 
+	public RecipeKey<T> preferredAlt(String name) {
+		names.add(name);
+		preferred = name;
+		return this;
+	}
+
 	/**
 	 * Excludes this key from auto-generated constructors. Requires optional() value to also be set.
 	 */
