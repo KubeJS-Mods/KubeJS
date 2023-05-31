@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeOptional;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -59,6 +60,14 @@ public final class RecipeKey<T> {
 	 */
 	public RecipeKey<T> optional(RecipeOptional<T> value) {
 		optional = value;
+		return this;
+	}
+
+	/**
+	 * Use this in place of regular optional(x) only if the value is dynamic/too complicated to compute from type
+	 */
+	public RecipeKey<T> defaultOptional() {
+		optional = UtilsJS.cast(RecipeOptional.DEFAULT);
 		return this;
 	}
 

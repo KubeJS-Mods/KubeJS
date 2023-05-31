@@ -90,7 +90,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	public <T> T getValue(RecipeKey<T> key) {
 		var v = valueMap.get(key);
 
-		if (v == null || v.value == null) {
+		if (v == null) {
 			throw new MissingComponentException(key.name, key, valueMap.keySet());
 		}
 

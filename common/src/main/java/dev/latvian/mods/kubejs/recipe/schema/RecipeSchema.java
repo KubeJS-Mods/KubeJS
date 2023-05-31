@@ -48,17 +48,21 @@ public class RecipeSchema {
 					minRequiredArguments = i;
 				}
 			} else if (minRequiredArguments > 0) {
-				throw new IllegalStateException("Required key '" + keys[i].name + "' must be ahead of optional keys!");
+				throw new IllegalArgumentException("Required key '" + keys[i].name + "' must be ahead of optional keys!");
 			}
 
 			if (!set.add(keys[i].name)) {
-				throw new IllegalStateException("Duplicate key '" + keys[i].name + "' found!");
+				throw new IllegalArgumentException("Duplicate key '" + keys[i].name + "' found!");
 			}
 
 			if (keys[i].component.role().isInput()) {
 				inputCount++;
 			} else if (keys[i].component.role().isOutput()) {
 				outputCount++;
+			}
+
+			if (keys[i].alwaysWrite && keys[i].optional() && keys[i].optional.isDefault()) {
+				throw new IllegalArgumentException("Key '" + keys[i] + "' can't have alwaysWrite() enabled with defaultOptional()!");
 			}
 		}
 

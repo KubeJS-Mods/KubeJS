@@ -2,6 +2,8 @@ package dev.latvian.mods.kubejs.recipe.schema;
 
 @FunctionalInterface
 public interface RecipeOptional<T> {
+	RecipeOptional<?> DEFAULT = type -> null;
+
 	T getDefaultValue(RecipeSchemaType type);
 
 	record Constant<T>(T value) implements RecipeOptional<T> {
@@ -9,5 +11,9 @@ public interface RecipeOptional<T> {
 		public T getDefaultValue(RecipeSchemaType type) {
 			return value;
 		}
+	}
+
+	default boolean isDefault() {
+		return this == DEFAULT;
 	}
 }
