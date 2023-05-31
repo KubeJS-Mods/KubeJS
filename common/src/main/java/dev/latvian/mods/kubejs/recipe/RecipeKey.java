@@ -10,18 +10,17 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public final class RecipeKey<T> {
-	private final RecipeComponent<T> component;
-	private int index;
-	private final String name;
-	private final Set<String> names;
-	private String preferred;
-	private Supplier<T> optional;
-	private boolean excluded;
-	private boolean allowEmpty;
+	public final RecipeComponent<T> component;
+	public final String name;
+	public final Set<String> names;
+	public String preferred;
+	public Supplier<T> optional;
+	public boolean excluded;
+	public boolean allowEmpty;
+	public boolean alwaysWrite;
 
 	public RecipeKey(RecipeComponent<T> component, String name) {
 		this.component = component;
-		this.index = -1;
 		this.name = name;
 		this.names = new LinkedHashSet<>(1);
 		this.names.add(name);
@@ -29,6 +28,7 @@ public final class RecipeKey<T> {
 		this.optional = null;
 		this.excluded = false;
 		this.allowEmpty = false;
+		this.alwaysWrite = false;
 	}
 
 	@Override
@@ -47,26 +47,6 @@ public final class RecipeKey<T> {
 		sb.append(':');
 		sb.append(component);
 		return sb.toString();
-	}
-
-	public RecipeComponent<T> component() {
-		return component;
-	}
-
-	public int index() {
-		return index;
-	}
-
-	public void index(int index) {
-		if (this.index == -1) {
-			this.index = index;
-		} else {
-			throw new IllegalStateException("You can't reuse the same RecipeKey in more than once!");
-		}
-	}
-
-	public String name() {
-		return name;
 	}
 
 	public RecipeKey<T> optional(T value) {
@@ -97,10 +77,6 @@ public final class RecipeKey<T> {
 		return this;
 	}
 
-	public Set<String> names() {
-		return names;
-	}
-
 	/**
 	 * No real function, only used for generating typings / docs
 	 */
@@ -113,28 +89,25 @@ public final class RecipeKey<T> {
 		return this;
 	}
 
-	public String preferred() {
-		return preferred;
-	}
-
 	/**
-	 * Excludes this key from auto-generated constructors
+	 * Excludes this key from auto-generated constructors. Requires optional() value to also be set.
 	 */
-	public RecipeKey<T> setExcluded() {
+	public RecipeKey<T> exclude() {
 		excluded = true;
 		return this;
 	}
 
-	public boolean excluded() {
-		return excluded;
+	public boolean includeInAutoConstructors() {
+		return optional == null || !excluded;
 	}
 
-	public RecipeKey<T> setAllowEmpty() {
+	public RecipeKey<T> allowEmpty() {
 		allowEmpty = true;
 		return this;
 	}
 
-	public boolean allowEmpty() {
-		return allowEmpty;
+	public RecipeKey<T> alwaysWrite() {
+		alwaysWrite = true;
+		return this;
 	}
 }

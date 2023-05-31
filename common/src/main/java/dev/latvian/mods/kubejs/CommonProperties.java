@@ -27,6 +27,7 @@ public class CommonProperties {
 	public String packMode;
 	public boolean saveDevPropertiesInConfig;
 	public boolean allowAsyncStreams;
+	public boolean matchJsonRecipes;
 
 	private CommonProperties() {
 		properties = new Properties();
@@ -49,6 +50,7 @@ public class CommonProperties {
 			packMode = get("packmode", "default");
 			saveDevPropertiesInConfig = get("saveDevPropertiesInConfig", false);
 			allowAsyncStreams = get("allowAsyncStreams", true);
+			matchJsonRecipes = get("matchJsonRecipes", true);
 
 			KubeJSPlugins.forEachPlugin(p -> p.loadCommonProperties(this));
 

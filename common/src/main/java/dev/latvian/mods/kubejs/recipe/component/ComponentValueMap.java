@@ -25,9 +25,9 @@ public class ComponentValueMap extends IdentityHashMap<RecipeKey<?>, Object> {
 		}
 
 		try {
-			return key.component().read(recipe, o);
+			return key.component.read(recipe, o);
 		} catch (Throwable ex) {
-			throw new RecipeExceptionJS("Unable to cast '" + key + "' value '" + o + "' to '" + key.component().componentType() + "'!", ex);
+			throw new RecipeExceptionJS("Unable to cast '" + key + "' value '" + o + "' to '" + key.component.componentType() + "'!", ex);
 		}
 	}
 }

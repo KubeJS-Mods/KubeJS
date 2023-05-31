@@ -16,25 +16,25 @@ public class RecipeComponentValue<T> extends BaseFunction implements WrappedJS {
 	public final RecipeJS recipe;
 	public final RecipeKey<T> key;
 	public T value;
-	public boolean changed;
+	public boolean write;
 
 	public RecipeComponentValue(RecipeJS recipe, RecipeKey<T> key) {
 		this.recipe = recipe;
 		this.key = key;
 		this.value = null;
-		this.changed = false;
+		this.write = false;
 	}
 
 	public boolean isInput(ReplacementMatch match) {
-		return key.component().isInput(recipe, value, match);
+		return key.component.isInput(recipe, value, match);
 	}
 
 	public boolean replaceInput(ReplacementMatch match, InputReplacement with) {
-		var newValue = key.component().replaceInput(recipe, value, match, with);
+		var newValue = key.component.replaceInput(recipe, value, match, with);
 
 		if (value != newValue) {
 			value = newValue;
-			changed = true;
+			write = true;
 			return true;
 		}
 
@@ -42,15 +42,15 @@ public class RecipeComponentValue<T> extends BaseFunction implements WrappedJS {
 	}
 
 	public boolean isOutput(ReplacementMatch match) {
-		return key.component().isOutput(recipe, value, match);
+		return key.component.isOutput(recipe, value, match);
 	}
 
 	public boolean replaceOutput(ReplacementMatch match, OutputReplacement with) {
-		var newValue = key.component().replaceOutput(recipe, value, match, with);
+		var newValue = key.component.replaceOutput(recipe, value, match, with);
 
 		if (value != newValue) {
 			value = newValue;
-			changed = true;
+			write = true;
 			return true;
 		}
 
@@ -59,15 +59,15 @@ public class RecipeComponentValue<T> extends BaseFunction implements WrappedJS {
 
 	@Override
 	public RecipeJS call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-		return recipe.setValue(key, key.component().read(recipe, args[0]));
+		return recipe.setValue(key, key.component.read(recipe, args[0]));
 	}
 
 	@Override
 	public String toString() {
-		return key.name();
+		return key.name;
 	}
 
 	public String checkEmpty() {
-		return key.allowEmpty() ? "" : key.component().checkEmpty(key, value);
+		return key.allowEmpty ? "" : key.component.checkEmpty(key, value);
 	}
 }

@@ -66,7 +66,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 				argMap.put(key, args1.get(index++));
 			}
 
-			var recipe = constructor.factory().create(this, schemaType, argMap);
+			var recipe = constructor.factory().create(this, schemaType, constructor.keys(), argMap);
 			recipe.afterLoaded();
 			return event.addRecipe(recipe, false);
 		} catch (RecipeExceptionJS ex) {

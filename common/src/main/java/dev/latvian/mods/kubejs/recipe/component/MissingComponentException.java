@@ -1,12 +1,17 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
+import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 
-public class MissingComponentException extends RuntimeException {
-	public final RecipeKey<?> key;
+import java.util.Collection;
 
-	public MissingComponentException(RecipeKey<?> key) {
-		super("Required recipe component key '" + key.name() + "' is missing!'");
+public class MissingComponentException extends RecipeExceptionJS {
+	public final RecipeKey<?> key;
+	public final Collection<RecipeKey<?>> valid;
+
+	public MissingComponentException(String keyName, RecipeKey<?> key, Collection<RecipeKey<?>> valid) {
+		super("Recipe component key '" + keyName + "' not found! Valid keys: " + valid);
 		this.key = key;
+		this.valid = valid;
 	}
 }

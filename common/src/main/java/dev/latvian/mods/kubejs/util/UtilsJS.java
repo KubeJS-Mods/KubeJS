@@ -72,7 +72,6 @@ import java.math.BigInteger;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -793,11 +792,12 @@ public class UtilsJS {
 		} else if (o instanceof CharSequence) {
 			var matcher = TEMPORAL_AMOUNT_PATTERN.matcher(o.toString());
 
-			var d = Duration.ZERO;
+			var millis = 0L;
+			var nanos = 0L;
 			var ticks = -1L;
 
 			while (matcher.find()) {
-				var amount = Long.parseUnsignedLong(matcher.group(1));
+				var amount = Double.parseDouble(matcher.group(1));
 
 				switch (matcher.group(2)) {
 					case "t" -> {
@@ -807,26 +807,45 @@ public class UtilsJS {
 
 						ticks += amount;
 					}
-					case "y" -> d = d.plus(amount, ChronoUnit.YEARS);
-					case "M" -> d = d.plus(amount, ChronoUnit.MONTHS);
-					case "d" -> d = d.plusDays(amount);
-					case "w" -> d = d.plus(amount, ChronoUnit.WEEKS);
-					case "h" -> d = d.plusHours(amount);
-					case "m" -> d = d.plusMinutes(amount);
-					case "s" -> d = d.plusSeconds(amount);
-					case "ms" -> d = d.plusMillis(amount);
-					case "ns" -> d = d.plusNanos(amount);
+
+					case "ns" -> nanos += (long) amount;
+					case "ms" -> millis += (long) amount;
+					case "s" -> millis = (long) (amount * 1000D);
+					case "m" -> millis = (long) (amount * 60000D);
+					case "h" -> millis = (long) (amount * 60000D) * 60L;
+					case "d" -> millis = (long) (amount * 24D * 86400L) * 1000L;
+					case "w" -> millis = (long) (amount * 24D * 86400L) * 7000L;
+					case "M" -> millis = (long) (amount * 31556952D / 12D) * 1000L;
+					case "y" -> millis = (long) (amount * 31556952D) * 1000L;
 					default -> throw new IllegalArgumentException("Invalid temporal unit: " + matcher.group(2));
 				}
 			}
 
 			if (ticks != -1L) {
-				return new TickDuration(ticks + d.toMillis() / 50L);
+				return new TickDuration(ticks + millis / 50L);
 			}
 
-			return d;
+			return Duration.ofMillis(millis).plusNanos(nanos);
 		} else {
 			throw new IllegalArgumentException("Invalid temporal amount: " + o);
+		}
+	}
+
+	public static long getTickDuration(Object o) {
+		if (o instanceof Number n) {
+			return n.longValue();
+		} else if (o instanceof JsonPrimitive json) {
+			return json.getAsLong();
+		}
+
+		var t = getTemporalAmount(o);
+
+		if (t instanceof TickDuration d) {
+			return d.ticks();
+		} else if (t instanceof Duration d) {
+			return d.toMillis() / 50L;
+		} else {
+			return 0L;
 		}
 	}
 

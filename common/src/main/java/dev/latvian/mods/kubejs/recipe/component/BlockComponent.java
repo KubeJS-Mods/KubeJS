@@ -62,7 +62,7 @@ public record BlockComponent(ComponentRole crole) implements RecipeComponent<Blo
 	@Override
 	public String checkEmpty(RecipeKey<Block> key, Block value) {
 		if (value == Blocks.AIR) {
-			return "Block '" + key.name() + "' can't be empty!";
+			return "Block '" + key.name + "' can't be empty!";
 		}
 
 		return "";

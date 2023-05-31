@@ -12,24 +12,23 @@ import java.util.stream.Collectors;
 public record RecipeConstructor(RecipeSchema schema, RecipeKey<?>[] keys, Factory factory) {
 	@FunctionalInterface
 	public interface Factory {
-		Factory DEFAULT = (recipe, schemaType, map) -> {
-			for (int i = 0; i < schemaType.schema.keys.length; i++) {
-				recipe.setValue(schemaType.schema.keys[i], map.getValue(recipe, schemaType.schema.keys[i]));
+		Factory DEFAULT = (recipe, schemaType, keys, from) -> {
+			for (var key : keys) {
+				recipe.setValue(key, from.getValue(recipe, key));
 			}
 		};
 
-		default RecipeJS create(RecipeTypeFunction type, RecipeSchemaType schemaType, ComponentValueMap from) {
+		default RecipeJS create(RecipeTypeFunction type, RecipeSchemaType schemaType, RecipeKey<?>[] keys, ComponentValueMap from) {
 			var r = schemaType.schema.factory.get();
 			r.type = type;
 			r.json = new JsonObject();
 			r.newRecipe = true;
-			r.initValues(schemaType.schema);
-			setValues(r, schemaType, from);
-			r.setAllChanged(true);
+			r.initValues(true);
+			setValues(r, schemaType, keys, from);
 			return r;
 		}
 
-		void setValues(RecipeJS recipe, RecipeSchemaType schemaType, ComponentValueMap from);
+		void setValues(RecipeJS recipe, RecipeSchemaType schemaType, RecipeKey<?>[] keys, ComponentValueMap from);
 	}
 
 	@Override

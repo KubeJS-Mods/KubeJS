@@ -12,6 +12,7 @@ import dev.latvian.mods.kubejs.fluid.OutputFluid;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
+import dev.latvian.mods.kubejs.recipe.component.MissingComponentException;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.DamageAction;
@@ -33,7 +34,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -45,7 +48,9 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	public RecipeTypeFunction type;
 	public boolean newRecipe;
 	public boolean removed;
-	private RecipeComponentValue<?>[] values = RecipeComponentValue.EMPTY_ARRAY;
+	protected Map<RecipeKey<?>, RecipeComponentValue<?>> valueMap = Map.of();
+	private RecipeComponentValue<?>[] inputValues;
+	private RecipeComponentValue<?>[] outputValues;
 	private Map<String, RecipeComponentValue<?>> allValueMap;
 
 	public JsonObject originalJson = null;
@@ -58,70 +63,81 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		return new RecipeFunction(cx, scope, staticType, this);
 	}
 
-	public void deserialize() {
-		for (var v : values) {
-			v.key.component().readJson(UtilsJS.cast(v), json);
-		}
-	}
+	public void deserialize(boolean merge) {
+		for (var v : valueMap.values()) {
+			var value = v.key.component.readFromJson(this, UtilsJS.cast(v.key), json);
 
-	public void serialize() {
-		for (var v : values) {
-			if (v.changed) {
-				v.key.component().writeJson(UtilsJS.cast(v), json);
+			if (value != null) {
+				v.value = UtilsJS.cast(value);
+
+				if (merge) {
+					v.write = true;
+				}
+			} else if (!v.key.optional()) {
+				throw new MissingComponentException(v.key.name, v.key, valueMap.keySet());
 			}
 		}
 	}
 
-	public boolean hasChanged(RecipeKey<?> key) {
-		return changed && values[key.index()].changed;
+	public void serialize() {
+		for (var v : valueMap.values()) {
+			if (v.write) {
+				v.key.component.writeToJson(UtilsJS.cast(v), json);
+			}
+		}
 	}
 
 	public <T> T getValue(RecipeKey<T> key) {
-		var v = values[key.index()].value;
+		var v = valueMap.get(key);
 
-		if (v == null) {
-			return key.optionalValue();
+		if (v == null || v.value == null) {
+			throw new MissingComponentException(key.name, key, valueMap.keySet());
 		}
 
-		return UtilsJS.cast(v);
+		return UtilsJS.cast(v.value);
 	}
 
 	public RecipeJS setValue(RecipeKey<?> key, Object value) {
-		if (key.index() < 0 || key.index() >= values.length) {
-			throw new RecipeExceptionJS("Tried to set key '" + key.name() + "' with index " + key.index() + " for type '" + type + "' but only " + values.length + " values available!");
+		var v = valueMap.get(key);
+
+		if (v == null) {
+			throw new MissingComponentException(key.name, key, valueMap.keySet());
 		}
 
-		values[key.index()].value = UtilsJS.cast(value);
-		values[key.index()].changed = true;
+		v.value = UtilsJS.cast(value);
+		v.write = true;
 		changed = true;
 		return this;
 	}
 
 	public RecipeJS set(String key, Object value) {
 		for (var k : type.schemaType.schema.keys) {
-			if (k.name().equals(key)) {
+			if (k.name.equals(key)) {
 				return setValue(k, value);
 			}
 		}
 
-		throw new RecipeExceptionJS("Key '" + key + "' of type '" + type + "' not found!");
+		throw new MissingComponentException(key, null, valueMap.keySet());
 	}
 
-	public void initValues(RecipeSchema schema) {
-		if (schema.keys.length > 0) {
-			values = new RecipeComponentValue[schema.keys.length];
+	public void initValues(boolean created) {
+		changed = created;
 
-			for (int i = 0; i < schema.keys.length; i++) {
-				values[i] = new RecipeComponentValue<>(this, schema.keys[i]);
+		if (type.schemaType.schema.keys.length > 0) {
+			valueMap = new IdentityHashMap<>(type.schemaType.schema.keys.length);
+
+			for (var key : type.schemaType.schema.keys) {
+				var v = new RecipeComponentValue<>(this, key);
+				valueMap.put(key, v);
+
+				if (key.optional()) {
+					v.value = UtilsJS.cast(key.optionalValue());
+				}
+
+				if (key.alwaysWrite || !key.optional()) {
+					v.write = true;
+				}
 			}
-		}
-	}
-
-	public void setAllChanged(boolean changed) {
-		this.changed = changed;
-
-		for (var v : values) {
-			v.changed = changed;
 		}
 	}
 
@@ -129,8 +145,8 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		if (allValueMap == null) {
 			allValueMap = new HashMap<>();
 
-			for (var v : values) {
-				for (var n : v.key.names()) {
+			for (var v : valueMap.values()) {
+				for (var n : v.key.names) {
 					allValueMap.put(n, v);
 				}
 			}
@@ -140,7 +156,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	}
 
 	public void afterLoaded() {
-		for (var v : values) {
+		for (var v : valueMap.values()) {
 			var e = v.checkEmpty();
 
 			if (!e.isEmpty()) {
@@ -166,7 +182,16 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	}
 
 	public RecipeJS merge(JsonObject j) {
-		throw new RecipeExceptionJS("This recipe type has integration, so merge() isn't supported!");
+		if (j != null && j.size() > 0) {
+			for (var entry : j.entrySet()) {
+				json.add(entry.getKey(), entry.getValue());
+			}
+
+			save();
+			deserialize(true);
+		}
+
+		return this;
 	}
 
 	// RecipeKJS methods //
@@ -210,10 +235,52 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		return getType();
 	}
 
+	@SuppressWarnings({"SuspiciousToArrayCall", "ToArrayCallWithZeroLengthArrayArgument"})
+	public final RecipeComponentValue<?>[] inputValues() {
+		if (inputValues == null) {
+			if (type.schemaType.schema.inputCount() == 0) {
+				inputValues = UtilsJS.cast(RecipeComponentValue.EMPTY_ARRAY);
+			} else {
+				var list = new ArrayList<>(type.schemaType.schema.inputCount());
+
+				for (var v : valueMap.values()) {
+					if (v.key.component.role().isInput()) {
+						list.add(v);
+					}
+				}
+
+				inputValues = list.toArray(new RecipeComponentValue[list.size()]);
+			}
+		}
+
+		return inputValues;
+	}
+
+	@SuppressWarnings({"SuspiciousToArrayCall", "ToArrayCallWithZeroLengthArrayArgument"})
+	public final RecipeComponentValue<?>[] outputValues() {
+		if (outputValues == null) {
+			if (type.schemaType.schema.outputCount() == 0) {
+				outputValues = UtilsJS.cast(RecipeComponentValue.EMPTY_ARRAY);
+			} else {
+				var list = new ArrayList<>(type.schemaType.schema.outputCount());
+
+				for (var v : valueMap.values()) {
+					if (v.key.component.role().isOutput()) {
+						list.add(v);
+					}
+				}
+
+				outputValues = list.toArray(new RecipeComponentValue[list.size()]);
+			}
+		}
+
+		return outputValues;
+	}
+
 	@Override
 	public boolean hasInput(ReplacementMatch match) {
-		for (var key : type.schemaType.schema.inputKeys) {
-			if (values[key].isInput(match)) {
+		for (var v : inputValues()) {
+			if (v.isInput(match)) {
 				return true;
 			}
 		}
@@ -225,19 +292,18 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	public boolean replaceInput(ReplacementMatch match, InputReplacement with) {
 		boolean replaced = false;
 
-		for (var key : type.schemaType.schema.inputKeys) {
-			replaced = values[key].replaceInput(match, with) || replaced;
+		for (var v : inputValues()) {
+			replaced = v.replaceInput(match, with) || replaced;
 		}
 
 		changed |= replaced;
 		return replaced;
 	}
 
-
 	@Override
 	public boolean hasOutput(ReplacementMatch match) {
-		for (var key : type.schemaType.schema.outputKeys) {
-			if (values[key].isOutput(match)) {
+		for (var v : outputValues()) {
+			if (v.isOutput(match)) {
 				return true;
 			}
 		}
@@ -249,8 +315,8 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	public boolean replaceOutput(ReplacementMatch match, OutputReplacement with) {
 		boolean replaced = false;
 
-		for (var key : type.schemaType.schema.outputKeys) {
-			replaced = values[key].replaceOutput(match, with) || replaced;
+		for (var v : outputValues()) {
+			replaced = v.replaceOutput(match, with) || replaced;
 		}
 
 		changed |= replaced;
@@ -292,22 +358,22 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		var sb = new StringBuilder();
 		sb.append('[');
 
-		for (var key : type.schemaType.schema.inputKeys) {
+		for (var v : inputValues()) {
 			if (sb.length() > 1) {
 				sb.append(",");
 			}
 
-			sb.append(values[key]);
+			sb.append(v.value);
 		}
 
 		sb.append("] -> [");
 
-		for (var key : type.schemaType.schema.outputKeys) {
+		for (var v : outputValues()) {
 			if (sb.length() > 1) {
 				sb.append(",");
 			}
 
-			sb.append(values[key]);
+			sb.append(v.value);
 		}
 
 		return sb.append(']').toString();

@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.recipe.schema.minecraft;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
+import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
@@ -18,18 +19,20 @@ public interface StonecuttingRecipeSchema {
 		}
 
 		@Override
-		public void writeJson(RecipeComponentValue<OutputItem> value, JsonObject json) {
-			json.addProperty(value.key.name(), value.value.item.kjs$getId());
+		public void writeToJson(RecipeComponentValue<OutputItem> value, JsonObject json) {
+			json.addProperty(value.key.name, value.value.item.kjs$getId());
 			json.addProperty("count", value.value.item.getCount());
 		}
 
 		@Override
-		public void readJson(RecipeComponentValue<OutputItem> value, JsonObject json) {
-			RecipeComponentWithParent.super.readJson(value, json);
+		public OutputItem readFromJson(RecipeJS recipe, RecipeKey<OutputItem> key, JsonObject json) {
+			var item = RecipeComponentWithParent.super.readFromJson(recipe, key, json);
 
-			if (json.has("count")) {
-				value.value.item.setCount(json.get("count").getAsInt());
+			if (item != null && json.has("count")) {
+				item.item.setCount(json.get("count").getAsInt());
 			}
+
+			return item;
 		}
 
 		@Override

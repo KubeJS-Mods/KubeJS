@@ -124,5 +124,5 @@ public interface ShapedRecipeSchema {
 
 	RecipeSchema SCHEMA = new RecipeSchema(ShapedRecipeJS.class, ShapedRecipeJS::new, RESULT, PATTERN, KEY)
 			.constructor(RESULT, PATTERN, KEY)
-			.constructor((recipe, schemaType, from) -> ((ShapedRecipeJS) recipe).set2DValues(from), RESULT, INGREDIENTS);
+			.constructor((recipe, schemaType, keys, from) -> ((ShapedRecipeJS) recipe).set2DValues(from), RESULT, INGREDIENTS);
 }

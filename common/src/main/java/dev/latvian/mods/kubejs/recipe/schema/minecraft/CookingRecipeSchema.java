@@ -11,6 +11,7 @@ import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentWithParent;
+import dev.latvian.mods.kubejs.recipe.component.TimeComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 
 public interface CookingRecipeSchema {
@@ -38,7 +39,7 @@ public interface CookingRecipeSchema {
 	RecipeKey<OutputItem> RESULT = PLATFORM_OUTPUT_ITEM.key("result");
 	RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key("ingredient");
 	RecipeKey<Float> XP = NumberComponent.FLOAT.key("experience").optional(0F).alt("xp").preferred("xp");
-	RecipeKey<Integer> COOKING_TIME = NumberComponent.INT.key("cookingtime").optional(200).alt("cookingTime").preferred("cookingTime");
+	RecipeKey<Long> COOKING_TIME = TimeComponent.TICKS.key("cookingtime").optional(200L).alt("cookingTime").preferred("cookingTime");
 
 	RecipeSchema SCHEMA = new RecipeSchema(RESULT, INGREDIENT, XP, COOKING_TIME);
 }

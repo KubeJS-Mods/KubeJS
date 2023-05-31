@@ -45,7 +45,7 @@ public interface FluidComponents {
 		@Override
 		public String checkEmpty(RecipeKey<InputFluid> key, InputFluid value) {
 			if (value.isInputEmpty()) {
-				return "Input fluid '" + key.name() + "' can't be empty!";
+				return "Input fluid '" + key.name + "' can't be empty!";
 			}
 
 			return "";
@@ -96,7 +96,7 @@ public interface FluidComponents {
 		@Override
 		public String checkEmpty(RecipeKey<OutputFluid> key, OutputFluid value) {
 			if (value.isOutputEmpty()) {
-				return "Output fluid '" + key.name() + "' can't be empty!";
+				return "Output fluid '" + key.name + "' can't be empty!";
 			}
 
 			return "";

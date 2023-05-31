@@ -61,7 +61,7 @@ public interface ItemComponents {
 		@Override
 		public String checkEmpty(RecipeKey<InputItem> key, InputItem value) {
 			if (value.isEmpty()) {
-				return "Ingredient '" + key.name() + "' can't be empty!";
+				return "Ingredient '" + key.name + "' can't be empty!";
 			}
 
 			return "";
@@ -153,7 +153,7 @@ public interface ItemComponents {
 		@Override
 		public String checkEmpty(RecipeKey<OutputItem> key, OutputItem value) {
 			if (value.isEmpty()) {
-				return "ItemStack '" + key.name() + "' can't be empty!";
+				return "ItemStack '" + key.name + "' can't be empty!";
 			}
 
 			return "";

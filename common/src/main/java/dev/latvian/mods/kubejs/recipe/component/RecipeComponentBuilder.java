@@ -17,7 +17,7 @@ public class RecipeComponentBuilder implements RecipeComponent<Map<String, Objec
 	}
 
 	public RecipeComponentBuilder add(RecipeKey<?> key) {
-		if (map.put(key.name(), key) != null) {
+		if (map.put(key.name, key) != null) {
 			throw new IllegalStateException("Component with name '" + key + "' already exists!");
 		}
 
@@ -42,7 +42,7 @@ public class RecipeComponentBuilder implements RecipeComponent<Map<String, Objec
 			var k = map.get(entry.getKey());
 
 			if (k != null) {
-				var v = k.component().write(recipe, UtilsJS.cast(entry.getValue()));
+				var v = k.component.write(recipe, UtilsJS.cast(entry.getValue()));
 
 				if (v != null) {
 					json.add(entry.getKey(), v);
@@ -64,7 +64,7 @@ public class RecipeComponentBuilder implements RecipeComponent<Map<String, Objec
 				var k = map.get(entry.getKey());
 
 				if (k != null) {
-					m.put(entry.getKey(), k.component().read(recipe, entry.getValue()));
+					m.put(entry.getKey(), k.component.read(recipe, entry.getValue()));
 				} else {
 					throw new IllegalStateException("Component with name '" + entry.getKey() + "' does not exist!");
 				}
@@ -78,7 +78,7 @@ public class RecipeComponentBuilder implements RecipeComponent<Map<String, Objec
 				var k = this.map.get(String.valueOf(entry.getKey()));
 
 				if (k != null) {
-					map.put(entry.getKey().toString(), k.component().read(recipe, entry.getValue()));
+					map.put(entry.getKey().toString(), k.component.read(recipe, entry.getValue()));
 				} else {
 					throw new IllegalStateException("Component with name '" + entry.getKey() + "' does not exist!");
 				}

@@ -1,10 +1,12 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.CommonProperties;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 public class JsonRecipeJS extends RecipeJS {
 	@Override
-	public void deserialize() {
+	public void deserialize(boolean merge) {
 	}
 
 	@Override
@@ -12,23 +14,10 @@ public class JsonRecipeJS extends RecipeJS {
 	}
 
 	@Override
-	public RecipeJS merge(JsonObject j) {
-		if (j != null) {
-			for (var entry : j.entrySet()) {
-				json.add(entry.getKey(), entry.getValue());
-			}
-
-			save();
-		}
-
-		return this;
-	}
-
-	@Override
 	public boolean hasInput(ReplacementMatch match) {
-		if (match instanceof ItemMatch m && getOriginalRecipe() != null) {
+		if (CommonProperties.get().matchJsonRecipes && match instanceof ItemMatch m && getOriginalRecipe() != null) {
 			for (var ingredient : getOriginalRecipe().getIngredients()) {
-				if (m.contains(ingredient)) {
+				if (ingredient != Ingredient.EMPTY && m.contains(ingredient)) {
 					return true;
 				}
 			}
@@ -44,8 +33,9 @@ public class JsonRecipeJS extends RecipeJS {
 
 	@Override
 	public boolean hasOutput(ReplacementMatch match) {
-		if (match instanceof ItemMatch m && getOriginalRecipe() != null) {
-			return m.contains(getOriginalRecipe().getResultItem());
+		if (CommonProperties.get().matchJsonRecipes && match instanceof ItemMatch m && getOriginalRecipe() != null) {
+			var r = getOriginalRecipe().getResultItem();
+			return r != ItemStack.EMPTY && m.contains(r);
 		}
 
 		return false;

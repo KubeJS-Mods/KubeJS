@@ -49,34 +49,33 @@ public interface RecipeComponent<T> {
 
 	T read(RecipeJS recipe, Object from);
 
-	default void writeJson(RecipeComponentValue<T> value, JsonObject json) {
-		if (value.key.names().size() >= 2) {
-			for (var k : value.key.names()) {
+	default void writeToJson(RecipeComponentValue<T> value, JsonObject json) {
+		if (value.key.names.size() >= 2) {
+			for (var k : value.key.names) {
 				json.remove(k);
 			}
 		}
 
-		json.add(value.key.name(), write(value.recipe, value.value));
+		json.add(value.key.name, write(value.recipe, value.value));
 	}
 
-	default void readJson(RecipeComponentValue<T> value, JsonObject json) {
-		var v = json.get(value.key.name());
+	@Nullable
+	default T readFromJson(RecipeJS recipe, RecipeKey<T> key, JsonObject json) {
+		var v = json.get(key.name);
 
 		if (v != null) {
-			value.value = read(value.recipe, v);
-			return;
-		} else if (value.key.names().size() >= 2) {
-			for (var alt : value.key.names()) {
+			return read(recipe, v);
+		} else if (key.names.size() >= 2) {
+			for (var alt : key.names) {
 				v = json.get(alt);
 
 				if (v != null) {
-					value.value = read(value.recipe, v);
-					return;
+					return read(recipe, v);
 				}
 			}
 		}
 
-		throw new MissingComponentException(value.key);
+		return null;
 	}
 
 	default boolean hasPriority(RecipeJS recipe, Object from) {

@@ -93,7 +93,7 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	@Override
 	public String checkEmpty(RecipeKey<TinyMap<K, V>> key, TinyMap<K, V> value) {
 		if (value.isEmpty()) {
-			return "Map '" + key.name() + "' can't be empty!";
+			return "Map '" + key.name + "' can't be empty!";
 		}
 
 		return "";
