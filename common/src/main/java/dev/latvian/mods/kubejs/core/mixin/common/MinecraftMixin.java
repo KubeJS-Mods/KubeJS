@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.core.mixin.common;
 
 import dev.latvian.mods.kubejs.client.ClientProperties;
-import dev.latvian.mods.kubejs.client.KubeJSClientResourcePack;
+import dev.latvian.mods.kubejs.client.GeneratedClientResourcePack;
 import dev.latvian.mods.kubejs.core.MinecraftClientKJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.Minecraft;
@@ -30,7 +30,7 @@ public abstract class MinecraftMixin implements MinecraftClientKJS {
 
 	@Redirect(method = {"reloadResourcePacks(Z)Ljava/util/concurrent/CompletableFuture;", "<init>"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;"))
 	private List<PackResources> kjs$loadPacks(PackRepository repository) {
-		return KubeJSClientResourcePack.inject(repository.openAllSelected());
+		return GeneratedClientResourcePack.inject(repository.openAllSelected());
 	}
 
 	@Inject(method = "startAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;swing(Lnet/minecraft/world/InteractionHand;)V", shift = At.Shift.AFTER))

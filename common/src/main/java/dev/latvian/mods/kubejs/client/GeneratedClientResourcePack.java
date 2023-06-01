@@ -1,12 +1,13 @@
 package dev.latvian.mods.kubejs.client;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.script.data.KubeJSResourcePack;
+import dev.latvian.mods.kubejs.script.data.GeneratedResourcePack;
+import dev.latvian.mods.kubejs.script.data.KubeJSFolderPackResources;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.FilePackResources;
@@ -17,34 +18,46 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-public class KubeJSClientResourcePack extends KubeJSResourcePack {
+public class GeneratedClientResourcePack extends GeneratedResourcePack {
 	public static List<PackResources> inject(List<PackResources> packs) {
-		List<PackResources> injected = new ArrayList<>(packs);
 		// only add the resource pack if KubeJS has loaded
 		// to prevent crashes on mod loading errors
 		if (KubeJS.instance != null) {
-			int i = injected.size();
+			packs = new ArrayList<>(packs);
 
-			for (int j = 1; j < injected.size(); j++) {
-				if (injected.get(j) instanceof FilePackResources) {
+			int i = packs.size();
+
+			for (int j = 1; j < packs.size(); j++) {
+				if (packs.get(j) instanceof FilePackResources) {
 					i = j;
 					break;
 				}
 			}
 
-			injected.add(i, new KubeJSClientResourcePack());
+			var injected = new ArrayList<PackResources>(2);
+			injected.add(new GeneratedClientResourcePack());
+			injected.add(KubeJSFolderPackResources.PACK);
+
+			for (var file : Objects.requireNonNull(KubeJSPaths.ASSETS.toFile().listFiles())) {
+				if (file.isFile() && file.getName().endsWith(".zip")) {
+					injected.add(new FilePackResources(file));
+				}
+			}
+
+			packs.addAll(i, injected);
 		}
 
-		return injected;
+		return packs;
 	}
 
-	public KubeJSClientResourcePack() {
+	public GeneratedClientResourcePack() {
 		super(PackType.CLIENT_RESOURCES);
 	}
 
 	@Override
-	public void generateJsonFiles(Map<ResourceLocation, JsonElement> map) {
+	public void generate(Map<ResourceLocation, byte[]> map) {
 		var generator = new AssetJsonGenerator(map);
 		KubeJSPlugins.forEachPlugin(p -> p.generateAssetJsons(generator));
 

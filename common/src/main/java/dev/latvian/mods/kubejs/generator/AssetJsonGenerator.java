@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.generator;
 
-import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.MultipartBlockStateGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
@@ -12,7 +11,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class AssetJsonGenerator extends JsonGenerator {
-	public AssetJsonGenerator(Map<ResourceLocation, JsonElement> m) {
+	public AssetJsonGenerator(Map<ResourceLocation, byte[]> m) {
 		super(ConsoleJS.CLIENT, m);
 	}
 

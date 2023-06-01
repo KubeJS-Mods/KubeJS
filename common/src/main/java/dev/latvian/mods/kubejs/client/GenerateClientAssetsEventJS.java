@@ -18,10 +18,6 @@ public class GenerateClientAssetsEventJS extends EventJS {
 		this.langMap = langMap;
 	}
 
-	public Map<ResourceLocation, JsonElement> getAllAssets() {
-		return generator.getAllJsons();
-	}
-
 	public void addLang(String key, String value) {
 		langMap.put(key, value);
 	}

@@ -10,9 +10,11 @@ import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.DataPackEventJS;
+import dev.latvian.mods.kubejs.script.data.KubeJSFolderPackResources;
 import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.server.ReloadableServerResources;
+import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
@@ -21,6 +23,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Objects;
 
 public class ServerScriptManager {
 	public static ServerScriptManager instance;
@@ -58,7 +61,15 @@ public class ServerScriptManager {
 		var list = new LinkedList<>(original instanceof MultiPackResourceManager mp ? mp.packs : original.listPacks().toList());
 
 		list.addFirst(virtualDataPackLow);
-		list.addLast(new KubeJSServerResourcePack());
+		list.addLast(new GeneratedServerResourcePack());
+		list.addLast(KubeJSFolderPackResources.PACK);
+
+		for (var file : Objects.requireNonNull(KubeJSPaths.DATA.toFile().listFiles())) {
+			if (file.isFile() && file.getName().endsWith(".zip")) {
+				list.addLast(new FilePackResources(file));
+			}
+		}
+
 		list.addLast(virtualDataPackHigh);
 
 		var wrappedResourceManager = new MultiPackResourceManager(PackType.SERVER_DATA, list);
