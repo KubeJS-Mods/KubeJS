@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.MobCategory;
 
+@SuppressWarnings("UnstableApiUsage")
 public class MiscFabricHelper implements MiscPlatformHelper {
 	private Boolean dataGen;
 

@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.KubeJSResourcePack;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
@@ -23,8 +24,18 @@ public class KubeJSClientResourcePack extends KubeJSResourcePack {
 		// only add the resource pack if KubeJS has loaded
 		// to prevent crashes on mod loading errors
 		if (KubeJS.instance != null) {
-			injected.add(new KubeJSClientResourcePack());
+			int i = injected.size();
+
+			for (int j = 1; j < injected.size(); j++) {
+				if (injected.get(j) instanceof FilePackResources) {
+					i = j;
+					break;
+				}
+			}
+
+			injected.add(i, new KubeJSClientResourcePack());
 		}
+
 		return injected;
 	}
 
