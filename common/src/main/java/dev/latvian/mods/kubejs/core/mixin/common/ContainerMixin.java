@@ -184,7 +184,7 @@ public interface ContainerMixin extends InventoryKJS {
 		kjs$self().setChanged();
 
 		if (kjs$self() instanceof Inventory inv) {
-			inv.player.containerMenu.broadcastChanges();
+			inv.player.kjs$sendInventoryUpdate();
 		}
 	}
 

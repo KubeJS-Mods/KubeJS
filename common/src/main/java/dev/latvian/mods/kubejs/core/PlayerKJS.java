@@ -56,8 +56,13 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 		throw new NoMixinException();
 	}
 
+	default InventoryKJS kjs$getCraftingGrid() {
+		throw new NoMixinException();
+	}
+
 	default void kjs$sendInventoryUpdate() {
 		kjs$self().getInventory().setChanged();
+		kjs$self().inventoryMenu.getCraftSlots().setChanged();
 		kjs$self().inventoryMenu.broadcastChanges();
 	}
 

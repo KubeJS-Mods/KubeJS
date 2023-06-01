@@ -34,6 +34,11 @@ public abstract class PlayerMixin implements PlayerKJS {
 	}
 
 	@Override
+	public InventoryKJS kjs$getCraftingGrid() {
+		return kjs$self().inventoryMenu.getCraftSlots();
+	}
+
+	@Override
 	public AttachedData<Player> kjs$getData() {
 		if (kjs$attachedData == null) {
 			kjs$attachedData = new AttachedData<>(kjs$self());
