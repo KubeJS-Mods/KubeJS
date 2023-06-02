@@ -1,8 +1,9 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
+import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import net.minecraft.util.Mth;
 
 public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
@@ -55,21 +56,16 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 	}
 
 	@Override
+	default TypeDescJS constructorDescription(DescriptionContext ctx) {
+		return TypeDescJS.NUMBER;
+	}
+
+	@Override
 	default boolean hasPriority(RecipeJS recipe, Object from) {
 		return from instanceof Number || from instanceof JsonPrimitive json && json.isNumber();
 	}
 
 	record IntRange(int min, int max) implements NumberComponent<Integer> {
-		@Override
-		public JsonObject description(RecipeJS recipe) {
-			var obj = new JsonObject();
-			obj.addProperty("type", componentType());
-			obj.addProperty("number_type", "int");
-			obj.addProperty("min", min);
-			obj.addProperty("max", max);
-			return obj;
-		}
-
 		@Override
 		public Class<?> componentClass() {
 			return Integer.class;
@@ -101,16 +97,6 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 
 	record LongRange(long min, long max) implements NumberComponent<Long> {
 		@Override
-		public JsonObject description(RecipeJS recipe) {
-			var obj = new JsonObject();
-			obj.addProperty("type", componentType());
-			obj.addProperty("number_type", "long");
-			obj.addProperty("min", min);
-			obj.addProperty("max", max);
-			return obj;
-		}
-
-		@Override
 		public Class<?> componentClass() {
 			return Long.class;
 		}
@@ -141,16 +127,6 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 
 	record FloatRange(float min, float max) implements NumberComponent<Float> {
 		@Override
-		public JsonObject description(RecipeJS recipe) {
-			var obj = new JsonObject();
-			obj.addProperty("type", componentType());
-			obj.addProperty("number_type", "float");
-			obj.addProperty("min", min);
-			obj.addProperty("max", max);
-			return obj;
-		}
-
-		@Override
 		public Class<?> componentClass() {
 			return Float.class;
 		}
@@ -180,16 +156,6 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 	}
 
 	record DoubleRange(double min, double max) implements NumberComponent<Double> {
-		@Override
-		public JsonObject description(RecipeJS recipe) {
-			var obj = new JsonObject();
-			obj.addProperty("type", componentType());
-			obj.addProperty("number_type", "double");
-			obj.addProperty("min", min);
-			obj.addProperty("max", max);
-			return obj;
-		}
-
 		@Override
 		public Class<?> componentClass() {
 			return Double.class;

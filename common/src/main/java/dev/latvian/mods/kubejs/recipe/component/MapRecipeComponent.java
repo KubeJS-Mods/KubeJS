@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
@@ -8,6 +7,8 @@ import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
+import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.TinyMap;
 
 import java.util.Map;
@@ -25,16 +26,8 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public JsonElement description(RecipeJS recipe) {
-		if (patternKey) {
-			return RecipeComponent.super.description(recipe);
-		}
-
-		var obj = new JsonObject();
-		obj.addProperty("type", componentType());
-		obj.add("key", key.description(recipe));
-		obj.add("component", component.description(recipe));
-		return obj;
+	public TypeDescJS constructorDescription(DescriptionContext ctx) {
+		return component.constructorDescription(ctx).asMap(key.constructorDescription(ctx));
 	}
 
 	@Override

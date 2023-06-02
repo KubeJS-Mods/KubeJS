@@ -17,13 +17,13 @@ public record BlockComponent(ComponentRole crole) implements RecipeComponent<Blo
 	public static final RecipeComponent<Block> BLOCK = new BlockComponent(ComponentRole.OTHER);
 
 	@Override
-	public String componentType() {
-		return "block";
+	public ComponentRole role() {
+		return crole;
 	}
 
 	@Override
-	public ComponentRole role() {
-		return crole;
+	public String componentType() {
+		return "block";
 	}
 
 	@Override

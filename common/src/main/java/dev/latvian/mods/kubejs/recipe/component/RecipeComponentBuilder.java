@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
+import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 
 import java.util.LinkedHashMap;
@@ -32,6 +34,11 @@ public class RecipeComponentBuilder implements RecipeComponent<Map<String, Objec
 	@Override
 	public Class<?> componentClass() {
 		return Map.class;
+	}
+
+	@Override
+	public TypeDescJS constructorDescription(DescriptionContext ctx) {
+		return TypeDescJS.ANY_MAP;
 	}
 
 	@Override

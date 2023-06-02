@@ -16,13 +16,13 @@ public record BlockStateComponent(ComponentRole crole) implements RecipeComponen
 	public static final RecipeComponent<BlockState> BLOCK = new BlockStateComponent(ComponentRole.OTHER);
 
 	@Override
-	public String componentType() {
-		return "block_state";
+	public ComponentRole role() {
+		return crole;
 	}
 
 	@Override
-	public ComponentRole role() {
-		return crole;
+	public String componentType() {
+		return "block_state";
 	}
 
 	@Override

@@ -1,8 +1,9 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
+import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import org.apache.commons.lang3.tuple.Pair;
 
 public record AndRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B> b) implements RecipeComponent<Pair<A, B>> {
@@ -12,14 +13,8 @@ public record AndRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B> 
 	}
 
 	@Override
-	public JsonObject description(RecipeJS recipe) {
-		var obj = new JsonObject();
-		obj.addProperty("type", componentType());
-		var arr = new JsonArray();
-		arr.add(a.description(recipe));
-		arr.add(b.description(recipe));
-		obj.add("members", arr);
-		return obj;
+	public TypeDescJS constructorDescription(DescriptionContext ctx) {
+		return TypeDescJS.fixedArray(a.constructorDescription(ctx), b.constructorDescription(ctx));
 	}
 
 	@Override

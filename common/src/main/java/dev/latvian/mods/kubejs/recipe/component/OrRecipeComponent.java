@@ -1,13 +1,13 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
+import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 
 public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L> low) implements RecipeComponent<Either<H, L>> {
 	@Override
@@ -16,14 +16,8 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 	}
 
 	@Override
-	public JsonObject description(RecipeJS recipe) {
-		var obj = new JsonObject();
-		obj.addProperty("type", componentType());
-		var arr = new JsonArray();
-		arr.add(high.description(recipe));
-		arr.add(low.description(recipe));
-		obj.add("members", arr);
-		return obj;
+	public TypeDescJS constructorDescription(DescriptionContext ctx) {
+		return high.constructorDescription(ctx).or(low.constructorDescription(ctx));
 	}
 
 	@Override

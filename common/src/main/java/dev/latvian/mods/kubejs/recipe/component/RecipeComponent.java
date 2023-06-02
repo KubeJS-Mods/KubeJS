@@ -2,12 +2,13 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
+import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,8 +42,8 @@ public interface RecipeComponent<T> {
 
 	Class<?> componentClass();
 
-	default JsonElement description(RecipeJS recipe) {
-		return new JsonPrimitive(componentType());
+	default TypeDescJS constructorDescription(DescriptionContext ctx) {
+		return ctx.javaType(componentClass());
 	}
 
 	JsonElement write(RecipeJS recipe, T value);

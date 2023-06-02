@@ -3,6 +3,8 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
+import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 
 public class BooleanComponent implements RecipeComponent<Boolean> {
 	public static final RecipeComponent<Boolean> BOOLEAN = new BooleanComponent();
@@ -15,6 +17,11 @@ public class BooleanComponent implements RecipeComponent<Boolean> {
 	@Override
 	public Class<?> componentClass() {
 		return Boolean.class;
+	}
+
+	@Override
+	public TypeDescJS constructorDescription(DescriptionContext ctx) {
+		return TypeDescJS.BOOLEAN;
 	}
 
 	@Override

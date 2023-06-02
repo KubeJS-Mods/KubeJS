@@ -2,11 +2,12 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
+import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -30,16 +31,9 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	}
 
 	@Override
-	public JsonObject description(RecipeJS recipe) {
-		var obj = new JsonObject();
-		obj.addProperty("type", componentType());
-
-		if (canWriteSelf) {
-			obj.addProperty("can_write_self", true);
-		}
-
-		obj.add("component", component.description(recipe));
-		return obj;
+	public TypeDescJS constructorDescription(DescriptionContext ctx) {
+		var d = component.constructorDescription(ctx);
+		return d.or(d.asArray());
 	}
 
 	@Override

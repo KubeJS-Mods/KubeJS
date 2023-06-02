@@ -3,6 +3,8 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
+import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 
 import java.util.function.Predicate;
 
@@ -20,6 +22,11 @@ public record StringComponent(String error, Predicate<String> predicate) impleme
 		@Override
 		public Class<?> componentClass() {
 			return Character.class;
+		}
+
+		@Override
+		public TypeDescJS constructorDescription(DescriptionContext ctx) {
+			return TypeDescJS.STRING;
 		}
 
 		@Override
@@ -46,6 +53,11 @@ public record StringComponent(String error, Predicate<String> predicate) impleme
 	@Override
 	public Class<?> componentClass() {
 		return String.class;
+	}
+
+	@Override
+	public TypeDescJS constructorDescription(DescriptionContext ctx) {
+		return TypeDescJS.STRING;
 	}
 
 	@Override
