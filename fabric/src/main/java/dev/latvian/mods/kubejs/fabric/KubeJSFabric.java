@@ -32,14 +32,18 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 		var ignored = new HashSet<>(RegistryInfo.AFTER_VANILLA);
 
 		for (var info : RegistryInfo.MAP.values()) {
-			if (!ignored.contains(info) && Registry.REGISTRY.get((ResourceKey) info.key) instanceof WritableRegistry<?> reg) {
-				info.registerObjects((id, obj) -> reg.register(ResourceKey.create(UtilsJS.cast(info.key), id), UtilsJS.cast(obj.get()), Lifecycle.stable()));
+			final var key = (ResourceKey) info.key;
+
+			if (!ignored.contains(info) && Registry.REGISTRY.get(key) instanceof WritableRegistry<?> reg) {
+				info.registerObjects((id, obj) -> reg.register(ResourceKey.create(key, id), UtilsJS.cast(obj.get()), Lifecycle.stable()));
 			}
 		}
 
 		for (var info : RegistryInfo.AFTER_VANILLA) {
-			if (Registry.REGISTRY.get((ResourceKey) info.key) instanceof WritableRegistry<?> reg) {
-				info.registerObjects((id, obj) -> reg.register(ResourceKey.create(UtilsJS.cast(info.key), id), UtilsJS.cast(obj.get()), Lifecycle.stable()));
+			final var key = (ResourceKey) info.key;
+
+			if (Registry.REGISTRY.get(key) instanceof WritableRegistry<?> reg) {
+				info.registerObjects((id, obj) -> reg.register(ResourceKey.create(key, id), UtilsJS.cast(obj.get()), Lifecycle.stable()));
 			}
 		}
 	}

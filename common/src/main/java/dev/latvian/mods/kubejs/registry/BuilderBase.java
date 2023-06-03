@@ -25,8 +25,8 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	public BuilderBase(ResourceLocation i) {
 		id = i;
 		object = null;
-		translationKey = getTranslationKeyGroup() + "." + id.getNamespace() + "." + id.getPath();
-		displayName = Arrays.stream(id.getPath().split("_")).map(UtilsJS::toTitleCase).collect(Collectors.joining(" "));
+		translationKey = "";
+		displayName = "";
 		dummyBuilder = false;
 		defaultTags = new HashSet<>();
 	}
@@ -89,7 +89,19 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	}
 
 	public void generateLang(Map<String, String> lang) {
-		lang.put(translationKey, displayName);
+		var tkey = translationKey;
+
+		if (tkey.isEmpty()) {
+			tkey = getTranslationKeyGroup() + '.' + id.getNamespace() + '.' + id.getPath();
+		}
+
+		var dname = displayName;
+
+		if (dname.isEmpty()) {
+			dname = Arrays.stream(id.getPath().split("_")).map(UtilsJS::toTitleCase).collect(Collectors.joining(" "));
+		}
+
+		lang.put(tkey, dname);
 	}
 
 	public void addResourcePackLocations(String path, List<ResourceLocation> list, PackType packType) {
