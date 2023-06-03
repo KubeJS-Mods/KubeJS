@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.item.ItemHandlerUtils;
 import dev.latvian.mods.kubejs.player.KubeJSInventoryListener;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.stages.Stages;
+import dev.latvian.mods.kubejs.util.NotificationBuilder;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -159,7 +160,7 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 			var d0 = 1.5D;
 			var d1 = 0.1D;
 			var m = kjs$self().getDeltaMovement();
-			kjs$self().setDeltaMovement(m.add(v.x * 0.1D + (v.x * 1.5D - m.x) * 0.5D, v.y * 0.1D + (v.y * 1.5D - m.y) * 0.5D, v.z * 0.1D + (v.z * 1.5D - m.z) * 0.5D));
+			kjs$self().setDeltaMovement(m.add(v.x * d1 + (v.x * d0 - m.x) * 0.5D, v.y * d1 + (v.y * d0 - m.y) * 0.5D, v.z * d1 + (v.z * d0 - m.z) * 0.5D));
 		}
 	}
 
@@ -173,5 +174,16 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 
 	default KubeJSInventoryListener kjs$getInventoryChangeListener() {
 		throw new NoMixinException();
+	}
+
+	default void kjs$notify(NotificationBuilder builder) {
+		throw new NoMixinException();
+	}
+
+	default void kjs$notify(Component title, Component subtitle) {
+		var n = new NotificationBuilder();
+		n.title = title;
+		n.subtitle = subtitle;
+		kjs$notify(n);
 	}
 }

@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.net.SendDataFromClientMessage;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
+import dev.latvian.mods.kubejs.util.NotificationBuilder;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -53,5 +54,10 @@ public interface ClientPlayerKJS extends PlayerKJS {
 	@Override
 	default RayTraceResultJS kjs$rayTrace(double distance) {
 		return isSelf() ? new RayTraceResultJS(kjs$self(), Minecraft.getInstance().hitResult, distance) : PlayerKJS.super.kjs$rayTrace(distance);
+	}
+
+	@Override
+	default void kjs$notify(NotificationBuilder notification) {
+		notification.show();
 	}
 }

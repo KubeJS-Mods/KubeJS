@@ -100,6 +100,7 @@ import dev.latvian.mods.kubejs.util.LegacyCodeHandler;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTIOWrapper;
+import dev.latvian.mods.kubejs.util.NotificationBuilder;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.CollectionTagWrapper;
 import dev.latvian.mods.rhino.mod.util.CompoundTagWrapper;
@@ -354,6 +355,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("AABB", AABBWrapper.class);
 		event.add("Stats", Stats.class);
 		event.add("FluidAmounts", FluidAmounts.class);
+		event.add("Notification", NotificationBuilder.class);
 
 		event.add("Fluid", FluidWrapper.class);
 
@@ -439,6 +441,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.registerSimple(EntitySelector.class, UtilsJS::entitySelector);
 		typeWrappers.registerSimple(ReplacementMatch.class, ReplacementMatch::of);
 		typeWrappers.registerSimple(Stat.class, PlayerStatsJS::statOf);
+		typeWrappers.registerSimple(NotificationBuilder.class, NotificationBuilder::of);
 
 		// components //
 		typeWrappers.registerSimple(Component.class, ComponentWrapper::of);

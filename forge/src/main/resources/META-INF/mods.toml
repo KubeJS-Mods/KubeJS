@@ -11,7 +11,7 @@ authors = "LatvianModder"
 description = '''
 Customize your modpack or server with JavaScript!
 '''
-logoFile = "kubejs_logo.png"
+logoFile = "assets/kubejs/textures/kubejs_logo.png"
 license = "GNU LGPLv3"
 
 [[dependencies.kubejs]]

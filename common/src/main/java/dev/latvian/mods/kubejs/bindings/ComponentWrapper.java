@@ -28,9 +28,9 @@ public class ComponentWrapper {
 		} else if (o instanceof Component component) {
 			return component.copy();
 		} else if (o instanceof CharSequence || o instanceof Number || o instanceof Character) {
-			return Component.literal(o.toString());
+			return ofString(o.toString());
 		} else if (o instanceof Enum<?> e) {
-			return Component.literal(e.name());
+			return ofString(e.name());
 		} else if (o instanceof StringTag tag) {
 			var s = tag.getAsString();
 			if (s.startsWith("{") && s.endsWith("}")) {
@@ -40,13 +40,13 @@ public class ComponentWrapper {
 					return Component.literal("Error: " + ex);
 				}
 			} else {
-				return Component.literal(s);
+				return ofString(s);
 			}
 		} else if (o instanceof Map<?, ?> map && (map.containsKey("text") || map.containsKey("translate"))) {
 			MutableComponent text;
 
 			if (map.containsKey("text")) {
-				text = Component.literal(map.get("text").toString());
+				text = ofString(map.get("text").toString());
 			} else {
 				Object[] with;
 
@@ -102,11 +102,15 @@ public class ComponentWrapper {
 			return text;
 		}
 
-		return Component.literal(o.toString());
+		return ofString(o.toString());
+	}
+
+	public static MutableComponent ofString(String s) {
+		return s.isEmpty() ? Component.empty() : Component.literal(s);
 	}
 
 	public static MutableComponent ofMutable(Object o) {
-		return Component.literal("").append(of(o));
+		return Component.empty().append(of(o));
 	}
 
 	public static ClickEvent clickEventOf(Object o) {

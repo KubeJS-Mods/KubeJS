@@ -22,6 +22,8 @@ import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
+import dev.latvian.mods.rhino.mod.util.color.Color;
+import dev.latvian.mods.rhino.mod.util.color.SimpleColorWithAlpha;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.advancements.critereon.MinMaxBounds;
@@ -34,6 +36,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -865,5 +868,13 @@ public class UtilsJS {
 
 			return d;
 		}
+	}
+
+	public static void writeColor(FriendlyByteBuf buf, Color color) {
+		buf.writeInt(color.getArgbJS());
+	}
+
+	public static Color readColor(FriendlyByteBuf buf) {
+		return new SimpleColorWithAlpha(buf.readInt());
 	}
 }
