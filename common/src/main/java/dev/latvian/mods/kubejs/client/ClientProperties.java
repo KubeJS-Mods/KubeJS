@@ -26,6 +26,10 @@ public class ClientProperties {
 		return instance;
 	}
 
+	public static void reload() {
+		instance = null;
+	}
+
 	private final Properties properties;
 	private boolean writeProperties;
 	private Path icon;
