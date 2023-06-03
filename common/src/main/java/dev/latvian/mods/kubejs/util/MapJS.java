@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.util;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.rhino.mod.util.JsonUtils;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import net.minecraft.nbt.CompoundTag;
@@ -66,7 +67,12 @@ public interface MapJS {
 
 			for (var entry : m.entrySet()) {
 				var e = JsonIO.of(entry.getValue());
-				json.add(String.valueOf(entry.getKey()), e);
+
+				if (e instanceof JsonPrimitive p && p.isNumber() && p.getAsNumber() instanceof Double d && d <= Long.MAX_VALUE && d >= Long.MIN_VALUE && d == d.longValue()) {
+					json.add(String.valueOf(entry.getKey()), new JsonPrimitive(d.longValue()));
+				} else {
+					json.add(String.valueOf(entry.getKey()), e);
+				}
 			}
 
 			return json;
