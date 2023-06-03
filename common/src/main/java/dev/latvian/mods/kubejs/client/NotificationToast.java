@@ -9,7 +9,6 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix4f;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.util.NotificationBuilder;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastComponent;
@@ -37,7 +36,7 @@ public class NotificationToast implements Toast {
 	public static final Map<Integer, BiFunction<Minecraft, String, ToastIcon>> ICONS = new HashMap<>(Map.of(
 			1, TextureIcon::new,
 			2, ItemIcon::new,
-			3, AtlasIcon::new
+			3, AtlasIcon::of
 	));
 
 	public record TextureIcon(ResourceLocation texture) implements ToastIcon {
@@ -72,16 +71,51 @@ public class NotificationToast implements Toast {
 
 		@Override
 		public void draw(Minecraft mc, PoseStack pose, int size) {
+			var m = RenderSystem.getModelViewStack();
+			m.pushPose();
+			m.translate(12D, 16D, 0D);
+			float s = size / 16F;
+			m.scale(s, s, s);
+			RenderSystem.applyModelViewMatrix();
+			mc.getItemRenderer().renderAndDecorateFakeItem(stack, -8, -8);
+			m.popPose();
+			RenderSystem.applyModelViewMatrix();
 		}
 	}
 
 	public record AtlasIcon(TextureAtlasSprite sprite) implements ToastIcon {
-		public AtlasIcon(Minecraft mc, String icon) {
-			this(mc.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(icon)));
+		public static AtlasIcon of(Minecraft mc, String icon) {
+			var s = icon.split("\\|");
+
+			if (s.length == 2) {
+				return new AtlasIcon(mc.getTextureAtlas(new ResourceLocation(s[0])).apply(new ResourceLocation(s[1])));
+			} else {
+				return new AtlasIcon(mc.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(icon)));
+			}
 		}
 
 		@Override
 		public void draw(Minecraft mc, PoseStack pose, int size) {
+			RenderSystem.setShaderTexture(0, sprite.atlas().location());
+			RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+			RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+			var m = pose.last().pose();
+
+			int p0 = -size / 2;
+			int p1 = p0 + size;
+
+			float u0 = sprite.getU0();
+			float v0 = sprite.getV0();
+			float u1 = sprite.getU1();
+			float v1 = sprite.getV1();
+
+			var buf = Tesselator.getInstance().getBuilder();
+			buf.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+			buf.vertex(m, p0, p1, 0F).uv(u0, v1).color(255, 255, 255, 255).endVertex();
+			buf.vertex(m, p1, p1, 0F).uv(u1, v1).color(255, 255, 255, 255).endVertex();
+			buf.vertex(m, p1, p0, 0F).uv(u1, v0).color(255, 255, 255, 255).endVertex();
+			buf.vertex(m, p0, p0, 0F).uv(u0, v0).color(255, 255, 255, 255).endVertex();
+			BufferUploader.drawWithShader(buf.end());
 		}
 	}
 
@@ -105,7 +139,7 @@ public class NotificationToast implements Toast {
 		this.width = 0;
 
 		if (notification.title.getContents() != ComponentContents.EMPTY) {
-			this.text.addAll(mc.font.split(mc.font.getSplitter().headByWidth(notification.title, 300, Style.EMPTY.applyFormat(ChatFormatting.YELLOW)), 300));
+			this.text.addAll(mc.font.split(mc.font.getSplitter().headByWidth(notification.title, 300, Style.EMPTY), 300));
 		}
 
 		if (notification.subtitle.getContents() != ComponentContents.EMPTY) {
@@ -199,42 +233,7 @@ public class NotificationToast implements Toast {
 			mc.font.drawShadow(poseStack, line, th, tv + i * 10, 0xFFFFFF);
 		}
 
-		/*
-
-		int i = this.width();
-		if (i == 160 && this.text.size() <= 1) {
-			toastComponent.blit(poseStack, 0, 0, 0, 64, i, this.height());
-		} else {
-			int j = this.height();
-			int k = 28;
-			int m = Math.min(4, j - 28);
-			this.renderBackgroundRow(poseStack, toastComponent, i, 0, 0, 28);
-
-			for (int n = 28; n < j - m; n += 10) {
-				this.renderBackgroundRow(poseStack, toastComponent, i, 16, n, Math.min(16, j - n - m));
-			}
-
-			this.renderBackgroundRow(poseStack, toastComponent, i, 32 - m, j - m, m);
-		}
-
-		if (this.text == null) {
-			toastComponent.getMinecraft().font.draw(poseStack, notification.title, 18.0F, 12.0F, -256);
-		} else {
-			toastComponent.getMinecraft().font.draw(poseStack, notification.title, 18.0F, 7.0F, -256);
-
-			for (int j = 0; j < this.text.size(); ++j) {
-				toastComponent.getMinecraft().font.draw(poseStack, this.text.get(j), 18.0F, (float) (18 + j * 12), -1);
-			}
-		}
-		 */
-
 		poseStack.popPose();
-
 		return l - this.lastChanged < duration ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
-	}
-
-	@Override
-	public Object getToken() {
-		return NO_TOKEN;
 	}
 }

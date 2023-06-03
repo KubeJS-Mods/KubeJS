@@ -90,7 +90,16 @@ public class NotificationBuilder {
 	}
 
 	public void setItemIcon(ItemStack stack) {
-		this.icon = stack.kjs$toItemString();
+		this.icon = stack.kjs$getId();
+
+		if (stack.getCount() > 1) {
+			this.icon = stack.getCount() + "x " + this.icon;
+		}
+
+		if (stack.getTag() != null) {
+			this.icon = this.icon + " " + stack.getTag();
+		}
+
 		this.iconType = 2;
 	}
 

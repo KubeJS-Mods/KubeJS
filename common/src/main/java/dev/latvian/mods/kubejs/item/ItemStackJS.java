@@ -196,17 +196,30 @@ public interface ItemStackJS {
 			return IngredientPlatformHelper.get().regex(reg).kjs$getFirst();
 		}
 
-		var item = KubeJSRegistries.items().get(new ResourceLocation(s));
+		var spaceIndex = s.indexOf(' ');
+		var id = spaceIndex == -1 ? s : s.substring(0, spaceIndex);
+
+		var item = KubeJSRegistries.items().get(new ResourceLocation(id));
 
 		if (item == Items.AIR) {
 			if (RecipeJS.itemErrors) {
-				throw new RecipeExceptionJS("Item '" + s + "' not found!").error();
+				throw new RecipeExceptionJS("Item '" + id + "' not found!").error();
 			}
 
 			return ItemStack.EMPTY;
 		}
 
-		return new ItemStack(item);
+		var stack = new ItemStack(item);
+
+		if (spaceIndex != -1) {
+			var tagStr = s.substring(spaceIndex + 1);
+
+			if (tagStr.length() >= 2 && tagStr.charAt(0) == '{') {
+				stack.setTag(NBTUtils.toTagCompound(tagStr));
+			}
+		}
+
+		return stack;
 	}
 
 	static Item getRawItem(Context cx, @Nullable Object o) {
