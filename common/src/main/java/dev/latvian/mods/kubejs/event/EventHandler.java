@@ -217,6 +217,10 @@ public final class EventHandler extends BaseFunction {
 			event.afterPosted(EventResult.PASS);
 			return EventResult.PASS;
 		} catch (EventExit exit) {
+			if (exit.result.type() == EventResult.Type.ERROR) {
+				return exit.result;
+			}
+
 			if (!getHasResult()) {
 				scriptType.console.handleError(new IllegalStateException("Event returned result when it's not cancellable"), null, "Error occurred while handling event '" + this + "'");
 			}

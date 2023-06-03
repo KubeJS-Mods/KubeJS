@@ -41,6 +41,7 @@ public class EventHandlerContainer {
 				throw exit;
 			} catch (Throwable ex) {
 				scriptType.console.handleError(ex, null, "Error occurred while handling event '" + eventHandler + "'");
+				throw EventResult.Type.ERROR.exit(ex);
 			}
 
 			itr = itr.child;

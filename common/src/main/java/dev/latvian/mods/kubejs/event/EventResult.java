@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class EventResult {
 	public enum Type {
+		ERROR(dev.architectury.event.EventResult.pass()),
 		PASS(dev.architectury.event.EventResult.pass()),
 		INTERRUPT_DEFAULT(dev.architectury.event.EventResult.interruptDefault()),
 		INTERRUPT_FALSE(dev.architectury.event.EventResult.interruptFalse()),

@@ -11,6 +11,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
+import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
@@ -220,14 +221,17 @@ public class KubeJSCommands {
 
 	private static int customCommand(CommandSourceStack source, String id) {
 		if (ServerEvents.CUSTOM_COMMAND.hasListeners()) {
-			try {
-				ServerEvents.CUSTOM_COMMAND.post(ScriptType.SERVER, id, new CustomCommandEventJS(source.getLevel(), source.getEntity(), new BlockPos(source.getPosition()), id));
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			var result = ServerEvents.CUSTOM_COMMAND.post(ScriptType.SERVER, id, new CustomCommandEventJS(source.getLevel(), source.getEntity(), new BlockPos(source.getPosition()), id));
+
+			if (result.type() == EventResult.Type.ERROR) {
+				source.sendFailure(Component.literal(result.value().toString()));
+				return 0;
 			}
+
+			return 1;
 		}
 
-		return 1;
+		return 0;
 	}
 
 	private static int hand(ServerPlayer player, InteractionHand hand) {
