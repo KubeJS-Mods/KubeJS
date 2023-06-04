@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 
 import java.io.Reader;
-import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.OptionalInt;
@@ -27,7 +26,7 @@ public class ClientProperties {
 	}
 
 	public static void reload() {
-		instance = null;
+		instance = new ClientProperties();
 	}
 
 	private final Properties properties;
@@ -54,22 +53,10 @@ public class ClientProperties {
 		properties = new Properties();
 
 		try {
-			var propertiesFile = KubeJSPaths.CONFIG.resolve("client.properties");
-
-			try {
-				var p0 = KubeJSPaths.DIRECTORY.resolve("client.properties");
-
-				if (Files.exists(p0)) {
-					Files.move(p0, propertiesFile);
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-
 			writeProperties = false;
 
-			if (Files.exists(propertiesFile)) {
-				try (Reader reader = Files.newBufferedReader(propertiesFile)) {
+			if (Files.exists(KubeJSPaths.CLIENT_PROPERTIES)) {
+				try (Reader reader = Files.newBufferedReader(KubeJSPaths.CLIENT_PROPERTIES)) {
 					properties.load(reader);
 				}
 			} else {
@@ -111,9 +98,7 @@ public class ClientProperties {
 			KubeJSPlugins.forEachPlugin(p -> p.loadClientProperties(this));
 
 			if (writeProperties) {
-				try (Writer writer = Files.newBufferedWriter(propertiesFile)) {
-					properties.store(writer, "KubeJS Client Properties");
-				}
+				save();
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -233,5 +218,13 @@ public class ClientProperties {
 
 	public float getMenuBackgroundScale() {
 		return menuBackgroundScale;
+	}
+
+	public void save() {
+		try (var writer = Files.newBufferedWriter(KubeJSPaths.CLIENT_PROPERTIES)) {
+			properties.store(writer, "KubeJS Client Properties");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 }

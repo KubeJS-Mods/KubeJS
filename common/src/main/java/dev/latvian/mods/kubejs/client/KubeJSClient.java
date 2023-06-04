@@ -56,8 +56,6 @@ public class KubeJSClient extends KubeJSCommon {
 	}
 
 	public static void reloadClientScripts() {
-		ClientProperties.reload();
-		ClientProperties.get();
 		KubeJSClientEventHandler.staticItemTooltips = null;
 		KubeJS.getClientScriptManager().reload(Minecraft.getInstance() == null ? null : Minecraft.getInstance().getResourceManager());
 	}
@@ -152,5 +150,11 @@ public class KubeJSClient extends KubeJSCommon {
 	@Override
 	public void generateTypings(CommandSourceStack source) {
 		source.sendSuccess(Component.literal("WIP!"), false);
+	}
+
+	@Override
+	public void reloadConfig() {
+		super.reloadConfig();
+		ClientProperties.reload();
 	}
 }

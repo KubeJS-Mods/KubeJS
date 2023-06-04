@@ -8,6 +8,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
@@ -83,6 +84,10 @@ public class KubeJSCommands {
 						.executes(context -> warnings(context.getSource()))
 				)
 				.then(Commands.literal("reload")
+						.then(Commands.literal("config")
+								.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
+								.executes(context -> reloadConfig(context.getSource()))
+						)
 						.then(Commands.literal("startup_scripts")
 								.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
 								.executes(context -> reloadStartup(context.getSource()))
@@ -192,6 +197,12 @@ public class KubeJSCommands {
 				.then(Commands.literal("generate_typings")
 						.requires(source -> source.getServer().isSingleplayer())
 						.executes(context -> generateTypings(context.getSource()))
+				)
+				.then(Commands.literal("packmode")
+						.executes(context -> packmode(context.getSource(), ""))
+						.then(Commands.argument("name", StringArgumentType.word())
+								.executes(context -> packmode(context.getSource(), StringArgumentType.getString(context, "name")))
+						)
 				)
 		);
 
@@ -312,6 +323,12 @@ public class KubeJSCommands {
 			source.sendSuccess(Component.literal((i + 1) + ") ").append(Component.literal(lines[i]).withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))).withStyle(ChatFormatting.RED)), false);
 		}
 
+		return 1;
+	}
+
+	private static int reloadConfig(CommandSourceStack source) {
+		KubeJS.PROXY.reloadConfig();
+		source.sendSuccess(Component.literal("Done!"), false);
 		return 1;
 	}
 
@@ -548,6 +565,17 @@ public class KubeJSCommands {
 		}
 
 		KubeJS.PROXY.generateTypings(source);
+		return 1;
+	}
+
+	private static int packmode(CommandSourceStack source, String packmode) {
+		if (packmode.isEmpty()) {
+			source.sendSuccess(Component.literal("Current packmode: " + CommonProperties.get().packMode), false);
+		} else {
+			CommonProperties.get().setPackMode(packmode);
+			source.sendSuccess(Component.literal("Set packmode to: " + packmode), false);
+		}
+
 		return 1;
 	}
 }

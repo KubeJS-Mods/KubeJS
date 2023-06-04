@@ -37,11 +37,19 @@ public interface KubeJSPaths {
 	Path SERVER_SCRIPTS = DIRECTORY.resolve("server_scripts");
 	Path CLIENT_SCRIPTS = DIRECTORY.resolve("client_scripts");
 	Path CONFIG = dir(DIRECTORY.resolve("config"));
+	Path COMMON_PROPERTIES = CONFIG.resolve("common.properties");
+	Path CLIENT_PROPERTIES = CONFIG.resolve("client.properties");
+	Path CONFIG_DEV_PROPERTIES = CONFIG.resolve("dev.properties");
 	Path EXPORTED = dir(DIRECTORY.resolve("exported"));
 	Path README = DIRECTORY.resolve("README.txt");
 	Path LOCAL = dir(Platform.getGameFolder().resolve("local"));
+	Path LOCAL_DEV_PROPERTIES = LOCAL.resolve("kubejsdev.properties");
 
 	static Path get(PackType type) {
 		return type == PackType.CLIENT_RESOURCES ? ASSETS : DATA;
+	}
+
+	static Path getLocalDevProperties() {
+		return CommonProperties.get().saveDevPropertiesInConfig ? CONFIG_DEV_PROPERTIES : LOCAL_DEV_PROPERTIES;
 	}
 }

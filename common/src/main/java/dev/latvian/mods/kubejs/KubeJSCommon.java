@@ -51,4 +51,9 @@ public class KubeJSCommon {
 
 	public void generateTypings(CommandSourceStack source) {
 	}
+
+	public void reloadConfig() {
+		CommonProperties.reload();
+		DevProperties.reload();
+	}
 }

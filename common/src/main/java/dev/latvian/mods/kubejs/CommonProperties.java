@@ -2,8 +2,6 @@ package dev.latvian.mods.kubejs;
 
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 
-import java.io.Reader;
-import java.io.Writer;
 import java.nio.file.Files;
 import java.util.Properties;
 
@@ -19,7 +17,7 @@ public class CommonProperties {
 	}
 
 	public static void reload() {
-		instance = null;
+		instance = new CommonProperties();
 	}
 
 	private final Properties properties;
@@ -37,11 +35,10 @@ public class CommonProperties {
 		properties = new Properties();
 
 		try {
-			var propertiesFile = KubeJSPaths.CONFIG.resolve("common.properties");
 			writeProperties = false;
 
-			if (Files.exists(propertiesFile)) {
-				try (Reader reader = Files.newBufferedReader(propertiesFile)) {
+			if (Files.exists(KubeJSPaths.COMMON_PROPERTIES)) {
+				try (var reader = Files.newBufferedReader(KubeJSPaths.COMMON_PROPERTIES)) {
 					properties.load(reader);
 				}
 			} else {
@@ -59,9 +56,7 @@ public class CommonProperties {
 			KubeJSPlugins.forEachPlugin(p -> p.loadCommonProperties(this));
 
 			if (writeProperties) {
-				try (Writer writer = Files.newBufferedWriter(propertiesFile)) {
-					properties.store(writer, "KubeJS Common Properties");
-				}
+				save();
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -93,5 +88,19 @@ public class CommonProperties {
 
 	public boolean get(String key, boolean def) {
 		return get(key, def ? "true" : "false").equals("true");
+	}
+
+	public void save() {
+		try (var writer = Files.newBufferedWriter(KubeJSPaths.COMMON_PROPERTIES)) {
+			properties.store(writer, "KubeJS Common Properties");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public void setPackMode(String s) {
+		packMode = s;
+		properties.setProperty("packmode", s);
+		save();
 	}
 }

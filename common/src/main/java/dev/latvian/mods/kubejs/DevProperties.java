@@ -19,7 +19,7 @@ public class DevProperties {
 	}
 
 	public static void reload() {
-		instance = null;
+		instance = new DevProperties();
 	}
 
 	private final Properties properties;
@@ -40,7 +40,7 @@ public class DevProperties {
 		properties = new Properties();
 
 		try {
-			var propertiesFile = CommonProperties.get().saveDevPropertiesInConfig ? KubeJSPaths.CONFIG.resolve("dev.properties") : KubeJSPaths.LOCAL.resolve("kubejsdev.properties");
+			var propertiesFile = KubeJSPaths.getLocalDevProperties();
 			writeProperties = false;
 
 			if (Files.exists(propertiesFile)) {
@@ -65,9 +65,7 @@ public class DevProperties {
 			KubeJSPlugins.forEachPlugin(p -> p.loadDevProperties(this));
 
 			if (writeProperties) {
-				try (Writer writer = Files.newBufferedWriter(propertiesFile)) {
-					properties.store(writer, "KubeJS Dev Properties");
-				}
+				save();
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -99,5 +97,13 @@ public class DevProperties {
 
 	public boolean get(String key, boolean def) {
 		return get(key, def ? "true" : "false").equals("true");
+	}
+
+	public void save() {
+		try (Writer writer = Files.newBufferedWriter(KubeJSPaths.getLocalDevProperties())) {
+			properties.store(writer, "KubeJS Dev Properties");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 }

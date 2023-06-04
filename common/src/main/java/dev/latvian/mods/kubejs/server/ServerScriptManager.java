@@ -1,8 +1,6 @@
 package dev.latvian.mods.kubejs.server;
 
 import dev.architectury.platform.Platform;
-import dev.latvian.mods.kubejs.CommonProperties;
-import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
@@ -56,11 +54,6 @@ public class ServerScriptManager {
 	}
 
 	public MultiPackResourceManager wrapResourceManager(CloseableResourceManager original) {
-		CommonProperties.reload();
-		CommonProperties.get();
-		DevProperties.reload();
-		DevProperties.get();
-
 		var virtualDataPackLow = new VirtualKubeJSDataPack(false);
 		var virtualDataPackHigh = new VirtualKubeJSDataPack(true);
 
