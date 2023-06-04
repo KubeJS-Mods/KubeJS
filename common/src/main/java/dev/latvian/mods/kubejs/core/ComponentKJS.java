@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.core;
 
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.mod.util.color.Color;
@@ -202,6 +203,11 @@ public interface ComponentKJS extends Component, Iterable<Component>, JsonSerial
 	default MutableComponent kjs$hover(@Nullable Component s) {
 		return kjs$self().setStyle(getStyle().withHoverEvent(s == null ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, s)));
 	}
+
+	default boolean kjs$isEmpty() {
+		return TextWrapper.isEmpty(kjs$self());
+	}
+
 	// endregion Style extensions
 
 	// These following methods only exist for interoperability with old scripts using the Text class

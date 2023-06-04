@@ -6,11 +6,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
-import dev.latvian.mods.kubejs.bindings.ComponentWrapper;
 import dev.latvian.mods.kubejs.bindings.DamageSourceWrapper;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.bindings.JavaWrapper;
+import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
@@ -338,8 +338,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		event.add("Utils", UtilsWrapper.class);
 		event.add("Java", new JavaWrapper(event.manager));
-		event.add("Component", ComponentWrapper.class);
-		event.add("Text", ComponentWrapper.class);
+		event.add("Text", TextWrapper.class);
+		event.add("Component", TextWrapper.class);
 		event.add("UUID", UUIDWrapper.class);
 		event.add("JsonIO", JsonIO.class);
 		event.add("Block", BlockWrapper.class);
@@ -444,11 +444,11 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.registerSimple(NotificationBuilder.class, NotificationBuilder::of);
 
 		// components //
-		typeWrappers.registerSimple(Component.class, ComponentWrapper::of);
-		typeWrappers.registerSimple(MutableComponent.class, ComponentWrapper::ofMutable);
+		typeWrappers.registerSimple(Component.class, TextWrapper::of);
+		typeWrappers.registerSimple(MutableComponent.class, TextWrapper::of);
 		typeWrappers.registerSimple(Color.class, ColorWrapper::of);
 		typeWrappers.registerSimple(TextColor.class, o -> ColorWrapper.of(o).createTextColorJS());
-		typeWrappers.registerSimple(ClickEvent.class, ComponentWrapper::clickEventOf);
+		typeWrappers.registerSimple(ClickEvent.class, TextWrapper::clickEventOf);
 
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
 	}

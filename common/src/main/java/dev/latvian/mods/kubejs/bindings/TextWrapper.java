@@ -11,20 +11,24 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
-public class ComponentWrapper {
+public class TextWrapper {
 	public static MutableComponent of(@Nullable Object o) {
 		o = UtilsJS.wrap(o, JSObjectType.ANY);
 		if (o == null) {
 			return Component.literal("null");
+		} else if (o instanceof MutableComponent component) {
+			return component;
 		} else if (o instanceof Component component) {
 			return component.copy();
 		} else if (o instanceof CharSequence || o instanceof Number || o instanceof Character) {
@@ -93,7 +97,7 @@ public class ComponentWrapper {
 
 			return text;
 		} else if (o instanceof Iterable<?> list) {
-			var text = Component.empty().copy();
+			var text = Component.empty();
 
 			for (var e1 : list) {
 				text.append(of(e1));
@@ -109,8 +113,8 @@ public class ComponentWrapper {
 		return s.isEmpty() ? Component.empty() : Component.literal(s);
 	}
 
-	public static MutableComponent ofMutable(Object o) {
-		return Component.empty().append(of(o));
+	public static boolean isEmpty(Component component) {
+		return component.getContents() == ComponentContents.EMPTY && component.getSiblings().isEmpty();
 	}
 
 	public static ClickEvent clickEventOf(Object o) {
@@ -152,13 +156,13 @@ public class ComponentWrapper {
 	}
 
 	public static MutableComponent join(MutableComponent separator, Iterable<? extends Component> texts) {
-		var joined = Component.empty().plainCopy();
+		var joined = Component.empty();
 		var first = true;
 
 		for (var t : texts) {
 			if (first) {
 				first = false;
-			} else {
+			} else if (!isEmpty(separator)) {
 				joined.append(separator);
 			}
 
@@ -166,6 +170,10 @@ public class ComponentWrapper {
 		}
 
 		return joined;
+	}
+
+	public static MutableComponent join(Component... texts) {
+		return join(Component.empty(), Arrays.asList(texts));
 	}
 
 	public static MutableComponent string(String text) {

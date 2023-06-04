@@ -180,10 +180,9 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 		throw new NoMixinException();
 	}
 
-	default void kjs$notify(Component title, Component subtitle) {
+	default void kjs$notify(Component title, Component text) {
 		var n = new NotificationBuilder();
-		n.title = title;
-		n.subtitle = subtitle;
+		n.text = Component.empty().append(title).append("\n").append(text);
 		kjs$notify(n);
 	}
 }

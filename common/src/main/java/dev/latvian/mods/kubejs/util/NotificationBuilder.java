@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.util;
 
-import dev.latvian.mods.kubejs.bindings.ComponentWrapper;
+import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.client.NotificationToast;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.util.color.SimpleColor;
@@ -15,6 +15,7 @@ import java.time.Duration;
 import java.util.function.Consumer;
 
 public class NotificationBuilder {
+	public static final Component[] NO_TEXT = new Component[0];
 	public static final Color DEFAULT_BORDER_COLOR = new SimpleColor(0x472954);
 	public static final Color DEFAULT_BACKGROUND_COLOR = new SimpleColor(0x241335);
 
@@ -23,7 +24,7 @@ public class NotificationBuilder {
 			return b;
 		} else {
 			var b = new NotificationBuilder();
-			b.title = ComponentWrapper.of(object);
+			b.text = TextWrapper.of(object);
 			return b;
 		}
 	}
@@ -35,8 +36,7 @@ public class NotificationBuilder {
 	}
 
 	public Duration duration;
-	public Component title;
-	public Component subtitle;
+	public Component text;
 	public transient int iconType;
 	public transient String icon;
 	public int iconSize;
@@ -46,8 +46,7 @@ public class NotificationBuilder {
 
 	public NotificationBuilder() {
 		duration = Duration.ofSeconds(5L);
-		title = Component.empty();
-		subtitle = Component.empty();
+		text = Component.empty();
 		iconType = 0;
 		icon = "";
 		iconSize = 16;
@@ -58,8 +57,7 @@ public class NotificationBuilder {
 
 	public NotificationBuilder(FriendlyByteBuf buf) {
 		duration = Duration.ofMillis(buf.readVarLong());
-		title = buf.readComponent();
-		subtitle = buf.readComponent();
+		text = buf.readComponent();
 		iconType = buf.readVarInt();
 		icon = iconType == 0 ? "" : buf.readUtf();
 		iconSize = iconType == 0 ? 16 : buf.readByte();
@@ -70,8 +68,7 @@ public class NotificationBuilder {
 
 	public void write(FriendlyByteBuf buf) {
 		buf.writeVarLong(duration.toMillis());
-		buf.writeComponent(title);
-		buf.writeComponent(subtitle);
+		buf.writeComponent(text);
 		buf.writeVarInt(iconType);
 
 		if (iconType != 0) {

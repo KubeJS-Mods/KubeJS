@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.item;
 
-import dev.latvian.mods.kubejs.bindings.ComponentWrapper;
+import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
@@ -37,7 +37,7 @@ public class ItemTooltipEventJS extends EventJS {
 			lines = new ArrayList<>();
 
 			for (var o1 : ListJS.orSelf(o)) {
-				lines.add(ComponentWrapper.of(o1));
+				lines.add(TextWrapper.of(o1));
 			}
 		}
 
@@ -73,7 +73,7 @@ public class ItemTooltipEventJS extends EventJS {
 			components.clear();
 
 			for (var o : text) {
-				components.add(ComponentWrapper.of(o));
+				components.add(TextWrapper.of(o));
 			}
 		}
 	}
