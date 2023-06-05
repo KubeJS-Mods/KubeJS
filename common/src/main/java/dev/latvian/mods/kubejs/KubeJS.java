@@ -50,6 +50,7 @@ public class KubeJS {
 	public static final String MOD_ID = "kubejs";
 	public static final String MOD_NAME = "KubeJS";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
+	public static final String MC_VERSION_NUMBER = "1902";
 
 	public static ResourceLocation id(String path) {
 		return new ResourceLocation(MOD_ID, path);

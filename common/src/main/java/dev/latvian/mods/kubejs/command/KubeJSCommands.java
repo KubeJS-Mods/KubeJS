@@ -59,7 +59,10 @@ public class KubeJSCommands {
 	);
 
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-		dispatcher.register(Commands.literal("kubejs")
+		var cmd = dispatcher.register(Commands.literal("kubejs")
+				.then(Commands.literal("help")
+						.executes(context -> help(context.getSource()))
+				)
 				.then(Commands.literal("custom_command")
 						.then(Commands.argument("id", StringArgumentType.word())
 								.executes(context -> customCommand(context.getSource(), StringArgumentType.getString(context, "id")))
@@ -158,9 +161,6 @@ public class KubeJSCommands {
 								.executes(ctx -> dumpRegistry(ctx.getSource(), registry(ctx, "registry")))
 						)
 				)
-				.then(Commands.literal("wiki")
-						.executes(context -> wiki(context.getSource()))
-				)
 				.then(Commands.literal("stages")
 						.then(Commands.literal("add")
 								.then(Commands.argument("player", EntityArgument.players())
@@ -206,9 +206,7 @@ public class KubeJSCommands {
 				)
 		);
 
-		dispatcher.register(Commands.literal("kjs_hand")
-				.executes(context -> hand(context.getSource().getPlayerOrException(), InteractionHand.MAIN_HAND))
-		);
+		dispatcher.register(Commands.literal("kjs").redirect(cmd));
 	}
 
 	private static <T> ResourceKey<Registry<T>> registry(CommandContext<CommandSourceStack> ctx, String arg) {
@@ -228,6 +226,18 @@ public class KubeJSCommands {
 		component.setStyle(component.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(info + " (Click to copy)"))));
 		component.append(Component.literal(s).withStyle(col));
 		return component;
+	}
+
+	private static void link(CommandSourceStack source, ChatFormatting color, String name, String url) {
+		source.sendSuccess(Component.literal("• ").append(Component.literal(name).withStyle(color).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url)))), false);
+	}
+
+	private static int help(CommandSourceStack source) {
+		link(source, ChatFormatting.GOLD, "Wiki", "https://kubejs.com/");
+		link(source, ChatFormatting.RED, "Report a Bug", "https://kubejs.com/support?type=bug&version=" + KubeJS.MC_VERSION_NUMBER);
+		link(source, ChatFormatting.GREEN, "Suggest a Feature", "https://kubejs.com/support?type=feature&version=" + KubeJS.MC_VERSION_NUMBER);
+		link(source, ChatFormatting.BLUE, "Changelog", "https://kubejs.com/changelog?version=" + KubeJS.MC_VERSION_NUMBER);
+		return Command.SINGLE_SUCCESS;
 	}
 
 	private static int customCommand(CommandSourceStack source, String id) {
@@ -507,11 +517,6 @@ public class KubeJSCommands {
 
 
 		return 1;
-	}
-
-	private static int wiki(CommandSourceStack source) {
-		source.sendSuccess(Component.literal("Click here to open the Wiki").withStyle(ChatFormatting.BLUE).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://kubejs.com/"))), false);
-		return Command.SINGLE_SUCCESS;
 	}
 
 	private static int addStage(CommandSourceStack source, Collection<ServerPlayer> players, String stage) {
