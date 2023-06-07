@@ -15,9 +15,9 @@ public class NestedRecipeComponent implements RecipeComponent<RecipeJS> {
 
 	@Override
 	public JsonElement write(RecipeJS recipe, RecipeJS value) {
-		recipe.serialize();
-		recipe.json.addProperty("type", recipe.type.idString);
-		return recipe.json;
+		value.serialize();
+		value.json.addProperty("type", value.type.idString);
+		return value.json;
 	}
 
 	@Override
