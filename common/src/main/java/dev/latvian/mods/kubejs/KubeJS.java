@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs;
 
 import com.google.common.base.Stopwatch;
+import dev.architectury.injectables.targets.ArchitecturyTarget;
 import dev.architectury.platform.Mod;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.CreativeTabRegistry;
@@ -40,9 +41,16 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -50,7 +58,8 @@ public class KubeJS {
 	public static final String MOD_ID = "kubejs";
 	public static final String MOD_NAME = "KubeJS";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
-	public static final String MC_VERSION_NUMBER = "1902";
+	public static final int MC_VERSION_NUMBER = 1902;
+	public static String QUERY;
 
 	public static ResourceLocation id(String path) {
 		return new ResourceLocation(MOD_ID, path);
@@ -229,5 +238,24 @@ public class KubeJS {
 			ConsoleJS.STARTUP.flush(true);
 			throw new RuntimeException("There were KubeJS startup script syntax errors! See logs/kubejs/startup.txt for more info");
 		}
+
+		QUERY = "source=game&mc=" + MC_VERSION_NUMBER + "&loader=" + ArchitecturyTarget.getCurrentTarget() + "&v=" + URLEncoder.encode(Platform.getMod(MOD_ID).getVersion(), StandardCharsets.UTF_8);
+
+		var updater = new Thread(() -> {
+			try {
+				var response = HttpClient.newBuilder()
+						.followRedirects(HttpClient.Redirect.ALWAYS)
+						.connectTimeout(Duration.ofSeconds(5L))
+						.build()
+						.send(HttpRequest.newBuilder().uri(URI.create("https://kubejs.com/update-check?" + QUERY)).GET().build(), HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+				if (response.statusCode() == 200) {
+					ConsoleJS.STARTUP.info("Update available: " + response.body());
+				}
+			} catch (Exception ignored) {
+			}
+		});
+
+		updater.setDaemon(true);
+		updater.start();
 	}
 }

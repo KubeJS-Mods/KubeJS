@@ -233,10 +233,9 @@ public class KubeJSCommands {
 	}
 
 	private static int help(CommandSourceStack source) {
-		link(source, ChatFormatting.GOLD, "Wiki", "https://kubejs.com/");
-		link(source, ChatFormatting.RED, "Report a Bug", "https://kubejs.com/support?type=bug&version=" + KubeJS.MC_VERSION_NUMBER);
-		link(source, ChatFormatting.GREEN, "Suggest a Feature", "https://kubejs.com/support?type=feature&version=" + KubeJS.MC_VERSION_NUMBER);
-		link(source, ChatFormatting.BLUE, "Changelog", "https://kubejs.com/changelog?version=" + KubeJS.MC_VERSION_NUMBER);
+		link(source, ChatFormatting.GOLD, "Wiki", "https://kubejs.com/?" + KubeJS.QUERY);
+		link(source, ChatFormatting.GREEN, "Support", "https://kubejs.com/support?" + KubeJS.QUERY);
+		link(source, ChatFormatting.BLUE, "Changelog", "https://kubejs.com/changelog?" + KubeJS.QUERY);
 		return Command.SINGLE_SUCCESS;
 	}
 
