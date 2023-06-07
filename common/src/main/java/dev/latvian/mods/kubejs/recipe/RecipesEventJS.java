@@ -259,6 +259,8 @@ public class RecipesEventJS extends EventJS {
 		ConsoleJS.SERVER.info("Posted recipe events in " + timer.stop());
 
 		timer.reset().start();
+		addedRecipes.removeIf(r -> !r.newRecipe);
+
 		var recipesByName = new HashMap<ResourceLocation, Recipe<?>>(originalRecipes.size() + addedRecipes.size());
 
 		try {
@@ -347,9 +349,7 @@ public class RecipesEventJS extends EventJS {
 	}
 
 	public RecipeJS addRecipe(RecipeJS r, boolean json) {
-		if (r.shouldAdd()) {
-			addedRecipes.add(r);
-		}
+		addedRecipes.add(r);
 
 		if (DevProperties.get().logAddedRecipes) {
 			ConsoleJS.SERVER.info("+ " + r.getType() + ": " + r.getFromToString() + (json ? " [json]" : ""));

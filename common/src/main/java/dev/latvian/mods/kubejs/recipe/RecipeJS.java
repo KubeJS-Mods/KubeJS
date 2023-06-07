@@ -444,13 +444,6 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		return List.copyOf(getOriginalRecipe().getIngredients());
 	}
 
-	/**
-	 * Only used when a recipe has sub-recipes, e.g. create:sequenced_assembly
-	 */
-	public boolean shouldAdd() {
-		return true;
-	}
-
 	public RecipeJS ingredientAction(IngredientActionFilter filter, IngredientAction action) {
 		if (json == null) {
 			ConsoleJS.SERVER.error("Can't add ingredient action to uninitialized recipe!");
