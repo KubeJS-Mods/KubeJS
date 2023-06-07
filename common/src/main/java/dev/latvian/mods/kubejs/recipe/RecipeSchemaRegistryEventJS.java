@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Map;
@@ -17,6 +18,10 @@ public class RecipeSchemaRegistryEventJS extends EventJS {
 
 	public RecipeNamespace namespace(String namespace) {
 		return namespaces.computeIfAbsent(namespace, RecipeNamespace::new);
+	}
+
+	public void register(ResourceLocation id, RecipeSchema schema) {
+		namespace(id.getNamespace()).register(id.getPath(), schema);
 	}
 
 	public void mapRecipe(String name, ResourceLocation type) {

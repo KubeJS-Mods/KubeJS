@@ -9,6 +9,10 @@ public record RegisterRecipeSchemasEvent(Map<String, RecipeNamespace> namespaces
 		return namespaces.computeIfAbsent(namespace, RecipeNamespace::new);
 	}
 
+	public void register(ResourceLocation id, RecipeSchema schema) {
+		namespace(id.getNamespace()).register(id.getPath(), schema);
+	}
+
 	public void mapRecipe(String name, ResourceLocation type) {
 		mappedRecipes.put(name, type);
 	}
