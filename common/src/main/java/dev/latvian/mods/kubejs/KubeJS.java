@@ -121,22 +121,11 @@ public class KubeJS {
 
 		var pluginTimer = Stopwatch.createStarted();
 		LOGGER.info("Looking for KubeJS plugins...");
-
 		thisMod = Platform.getMod(MOD_ID);
-		KubeJSPlugins.load(thisMod);
-
-		for (var mod : Platform.getMods()) {
-			if (mod == thisMod) {
-				continue;
-			}
-
-			try {
-				KubeJSPlugins.load(mod);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-
+		var allMods = new ArrayList<>(Platform.getMods());
+		allMods.remove(thisMod);
+		allMods.add(0, thisMod);
+		KubeJSPlugins.load(allMods);
 		LOGGER.info("Done in " + pluginTimer.stop());
 
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::init);
@@ -239,7 +228,7 @@ public class KubeJS {
 			throw new RuntimeException("There were KubeJS startup script syntax errors! See logs/kubejs/startup.txt for more info");
 		}
 
-		QUERY = "source=game&mc=" + MC_VERSION_NUMBER + "&loader=" + ArchitecturyTarget.getCurrentTarget() + "&v=" + URLEncoder.encode(Platform.getMod(MOD_ID).getVersion(), StandardCharsets.UTF_8);
+		QUERY = "source=game&mc=" + MC_VERSION_NUMBER + "&loader=" + ArchitecturyTarget.getCurrentTarget() + "&v=" + URLEncoder.encode(thisMod.getVersion(), StandardCharsets.UTF_8);
 
 		var updater = new Thread(() -> {
 			try {

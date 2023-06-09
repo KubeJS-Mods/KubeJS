@@ -243,7 +243,7 @@ public class ConsoleJS {
 		}
 	}
 
-	private synchronized void writeToFile(String type, String line) {
+	public synchronized void writeToFile(String type, String line) {
 		if (!writeToFile || MiscPlatformHelper.get().isDataGen()) {
 			return;
 		}
@@ -320,15 +320,15 @@ public class ConsoleJS {
 	}
 
 	public void info(Object message) {
-		log(infoLogFunction, "INFO ", message);
+		log(infoLogFunction, "INFO", message);
 	}
 
 	public void infof(Object message, Object... args) {
-		logf(infoLogFunction, "INFO ", message, args);
+		logf(infoLogFunction, "INFO", message, args);
 	}
 
 	public void warn(Object message) {
-		log(warnLogFunction, "WARN ", message);
+		log(warnLogFunction, "WARN", message);
 	}
 
 	public void warn(String message, Throwable throwable, @Nullable Pattern skip) {
@@ -349,7 +349,7 @@ public class ConsoleJS {
 	}
 
 	public void warnf(String message, Object... args) {
-		logf(warnLogFunction, "WARN ", message, args);
+		logf(warnLogFunction, "WARN", message, args);
 	}
 
 	public void error(Object message) {

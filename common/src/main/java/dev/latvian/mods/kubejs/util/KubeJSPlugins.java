@@ -19,13 +19,25 @@ public class KubeJSPlugins {
 	private static final List<KubeJSPlugin> LIST = new ArrayList<>();
 	private static final List<String> GLOBAL_CLASS_FILTER = new ArrayList<>();
 
+	public static void load(List<Mod> mods) {
+		try {
+			for (var mod : mods) {
+				load(mod);
+			}
+		} catch (Exception ex) {
+			throw new RuntimeException("Failed to load KubeJS plugin", ex);
+		}
+	}
+
 	public static void load(Mod mod) throws IOException {
 		var pp = mod.findResource("kubejs.plugins.txt");
+
 		if (pp.isPresent()) {
 			loadFromFile(Files.lines(pp.get()), mod.getModId());
 		}
 
 		var pc = mod.findResource("kubejs.classfilter.txt");
+
 		if (pc.isPresent()) {
 			GLOBAL_CLASS_FILTER.addAll(Files.readAllLines(pc.get()));
 		}

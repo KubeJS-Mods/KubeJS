@@ -84,4 +84,9 @@ public class KubeJSPlugin {
 
 	public void clearCaches() {
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getName();
+	}
 }
