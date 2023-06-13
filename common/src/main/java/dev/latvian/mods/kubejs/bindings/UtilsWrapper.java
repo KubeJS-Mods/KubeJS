@@ -172,4 +172,12 @@ public interface UtilsWrapper {
 	static CompletableFuture<Object> supplyAsync(Supplier<Object> task) {
 		return CompletableFuture.supplyAsync(task, Util.backgroundExecutor());
 	}
+
+	static String snakeCaseToCamelCase(String string) {
+		return UtilsJS.snakeCaseToCamelCase(string);
+	}
+
+	static String snakeCaseToTitleCase(String string) {
+		return UtilsJS.snakeCaseToTitleCase(string);
+	}
 }

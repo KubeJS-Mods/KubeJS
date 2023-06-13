@@ -113,7 +113,7 @@ public class RecipesEventJS extends EventJS {
 
 		for (var entry : new ArrayList<>(recipeFunctions.entrySet())) {
 			if (entry.getValue() instanceof RecipeTypeFunction && entry.getKey().indexOf(':') != -1) {
-				var s = UtilsJS.convertSnakeCaseToCamelCase(entry.getKey());
+				var s = UtilsJS.snakeCaseToCamelCase(entry.getKey());
 
 				if (!s.equals(entry.getKey())) {
 					recipeFunctions.put(s, entry.getValue());

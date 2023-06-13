@@ -93,6 +93,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class UtilsJS {
 	public static final Random RANDOM = new Random();
@@ -537,7 +538,11 @@ public class UtilsJS {
 		throw new IllegalArgumentException("Expected a Class, ParameterizedType, GenericArrayType, TypeVariable or WildcardType, but <" + type + "> is of type " + className);
 	}
 
-	public static String convertSnakeCaseToCamelCase(String string) {
+	public static String snakeCaseToCamelCase(String string) {
+		if (string == null || string.isEmpty()) {
+			return string;
+		}
+
 		var s = SNAKE_CASE_SPLIT.split(string, 0);
 
 		var sb = new StringBuilder();
@@ -556,6 +561,10 @@ public class UtilsJS {
 		}
 
 		return sb.toString();
+	}
+
+	public static String snakeCaseToTitleCase(String string) {
+		return Arrays.stream(string.split("_")).map(UtilsJS::toTitleCase).collect(Collectors.joining(" "));
 	}
 
 	@SuppressWarnings("unchecked")
