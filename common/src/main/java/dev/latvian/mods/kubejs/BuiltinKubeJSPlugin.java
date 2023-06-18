@@ -356,6 +356,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("Stats", Stats.class);
 		event.add("FluidAmounts", FluidAmounts.class);
 		event.add("Notification", NotificationBuilder.class);
+		event.add("InputItem", InputItem.class);
+		event.add("OutputItem", OutputItem.class);
 
 		event.add("Fluid", FluidWrapper.class);
 
