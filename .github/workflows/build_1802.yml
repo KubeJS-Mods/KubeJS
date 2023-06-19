@@ -1,17 +1,23 @@
-name: Java CI
+name: Java CI (1.18.2)
 
 on:
   push:
     branches:
-      # main and dev versions for each mc ver here
-      - "1.18/main"
-      - "1.18/dev"
+      - '1802'
   workflow_dispatch:
+    branches:
+      - '1802'
     inputs:
-      norelease:
-        description: 'Do not publish'
+      release_type:
+        description: 'Release Type'
         required: true
-        default: 'false'
+        type: choice
+        default: 'release'
+        options:
+          - 'release'
+          - 'beta'
+          - 'alpha'
+          - 'none'
 
 jobs:
   build:
@@ -19,30 +25,40 @@ jobs:
     if: |
       !contains(github.event.head_commit.message, '[ci skip]')
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
-          fetch-depth: 30 # Gets the last 30 commits so the changelog might work
+          fetch-depth: 30
+
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
+
       - name: Build and Publish with Gradle
         uses: gradle/gradle-build-action@v2
         env:
+          FTB_MAVEN_TOKEN: ${{ secrets.FTB_MAVEN_TOKEN }}
           SAPS_TOKEN: ${{ secrets.SAPS_TOKEN }}
         with:
           arguments: build publish --stacktrace --no-daemon
-      - name: Publish Release JAR
+
+      - name: Release to CurseForge
         uses: gradle/gradle-build-action@v2
-        if: |
-          contains(github.ref, 'main') && !contains(github.event.head_commit.message, '[norelease]') && github.event.inputs.norelease != 'true'
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.release_type != 'none' }}
         env:
           GIT_COMMIT: ${{ github.event.after }}
           GIT_PREVIOUS_COMMIT: ${{ github.event.before }}
           CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          RELEASE_TYPE: ${{ inputs.release_type }}
         with:
-          arguments: build publishUnified --stacktrace --no-daemon
+          arguments: curseforge modrinth --stacktrace --no-daemon
