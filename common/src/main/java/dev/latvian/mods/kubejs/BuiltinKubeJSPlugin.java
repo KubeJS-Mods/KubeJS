@@ -51,6 +51,7 @@ import dev.latvian.mods.kubejs.item.custom.ItemArmorTierEventJS;
 import dev.latvian.mods.kubejs.item.custom.ItemToolTierEventJS;
 import dev.latvian.mods.kubejs.item.custom.PickaxeItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.RecordItemJS;
+import dev.latvian.mods.kubejs.item.custom.ShearsItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.ShovelItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.SwordItemBuilder;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
@@ -172,6 +173,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		RegistryObjectBuilderTypes.ITEM.addType("axe", AxeItemBuilder.class, AxeItemBuilder::new);
 		RegistryObjectBuilderTypes.ITEM.addType("shovel", ShovelItemBuilder.class, ShovelItemBuilder::new);
 		RegistryObjectBuilderTypes.ITEM.addType("hoe", HoeItemBuilder.class, HoeItemBuilder::new);
+		RegistryObjectBuilderTypes.ITEM.addType("shears", ShearsItemBuilder.class, ShearsItemBuilder::new);
 		RegistryObjectBuilderTypes.ITEM.addType("helmet", ArmorItemBuilder.Helmet.class, ArmorItemBuilder.Helmet::new);
 		RegistryObjectBuilderTypes.ITEM.addType("chestplate", ArmorItemBuilder.Chestplate.class, ArmorItemBuilder.Chestplate::new);
 		RegistryObjectBuilderTypes.ITEM.addType("leggings", ArmorItemBuilder.Leggings.class, ArmorItemBuilder.Leggings::new);
