@@ -34,8 +34,7 @@
     "tools.SwordItemMixin",
     "tools.TridentItemMixin",
     "tools.shears.MatchToolMixin",
-    "tools.shears.BlockInteractShearsMixin",
-    "tools.shears.EntityInteractShearsMixin",
+    "tools.shears.InteractShearsMixin",
     "tools.shears.TripWireBlockMixin"
   ],
   "client": [
