@@ -1,5 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
+import dev.architectury.event.Event;
+import dev.architectury.event.EventFactory;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
@@ -14,6 +16,8 @@ import java.util.function.Predicate;
 
 @FunctionalInterface
 public interface RecipeFilter extends Predicate<RecipeKJS> {
+	Event<RecipeFilterParseEvent> PARSE = EventFactory.createLoop();
+
 	@Override
 	boolean test(RecipeKJS r);
 
@@ -108,6 +112,8 @@ public interface RecipeFilter extends Predicate<RecipeKJS> {
 			if (output != null) {
 				predicate.list.add(new OutputFilter(ReplacementMatch.of(output)));
 			}
+
+			PARSE.invoker().parse(cx, predicate.list, map);
 
 			return predicate.list.isEmpty() ? ConstantFilter.TRUE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
 		} catch (RecipeExceptionJS ex) {
