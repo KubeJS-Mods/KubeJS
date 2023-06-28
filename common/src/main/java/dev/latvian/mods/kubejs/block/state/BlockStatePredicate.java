@@ -21,21 +21,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
-import net.minecraft.world.level.levelgen.structure.templatesystem.AlwaysTrueTest;
-import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
-import net.minecraft.world.level.levelgen.structure.templatesystem.BlockStateMatchTest;
-import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
-import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.*;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -55,7 +44,11 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 	}
 
 	static BlockStatePredicate fromString(String s) {
-		if (s.startsWith("#")) {
+		if (s.equals("*")) {
+			return Simple.ALL;
+		} else if (s.equals("-")) {
+			return Simple.NONE;
+		} else if (s.startsWith("#")) {
 			return new TagMatch(Tags.block(new ResourceLocation(s.substring(1))));
 		} else if (s.indexOf('[') != -1) {
 			var state = UtilsJS.parseBlockState(s);
@@ -83,7 +76,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 
 		var list = ListJS.orSelf(o);
 		if (list.isEmpty()) {
-			return Simple.ALL;
+			return Simple.NONE;
 		} else if (list.size() > 1) {
 			var predicates = new ArrayList<BlockStatePredicate>();
 

@@ -35,6 +35,7 @@ import java.util.Set;
 
 public class KubeJSREIPlugin implements REIClientPlugin {
 	private final Set<CategoryIdentifier<?>> categoriesRemoved = new HashSet<>();
+	private final Map<CategoryIdentifier<?>, Collection<ResourceLocation>> recipesRemoved = new HashMap<>();
 
 	private static final Map<EntryType<?>, EntryWrapper> entryWrappers = new HashMap<>();
 
@@ -78,6 +79,14 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 		if (REIEvents.INFORMATION.hasListeners()) {
 			REIEvents.INFORMATION.post(ScriptType.CLIENT, new InformationREIEventJS());
 		}
+		registry.registerVisibilityPredicate((cat, display) -> {
+			var id = display.getDisplayLocation();
+			if (id.isPresent() && recipesRemoved.getOrDefault(cat.getCategoryIdentifier(), List.of()).contains(id.get())) {
+				return EventResult.interruptFalse();
+			}
+
+			return EventResult.pass();
+		});
 	}
 
 	@Override
@@ -89,9 +98,14 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 	public void postStage(PluginManager<REIClientPlugin> manager, ReloadStage stage) {
 		if (stage == ReloadStage.END) {
 			categoriesRemoved.clear();
+			recipesRemoved.clear();
 
 			if (REIEvents.REMOVE_CATEGORIES.hasListeners()) {
 				REIEvents.REMOVE_CATEGORIES.post(ScriptType.CLIENT, new RemoveREICategoryEventJS(categoriesRemoved));
+			}
+
+			if (REIEvents.REMOVE_RECIPES.hasListeners()) {
+				REIEvents.REMOVE_RECIPES.post(ScriptType.CLIENT, new RemoveREIRecipeEventJS(recipesRemoved));
 			}
 		}
 	}
