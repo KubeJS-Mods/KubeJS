@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -36,7 +37,6 @@ public class ScriptManager implements ClassShutter {
 
 	public final ScriptType scriptType;
 	public final Path directory;
-	private final String exampleScript;
 	public final Map<String, ScriptPack> packs;
 	private final ClassFilter classFilter;
 	public boolean firstLoad;
@@ -45,10 +45,9 @@ public class ScriptManager implements ClassShutter {
 	private Map<String, Optional<NativeJavaClass>> javaClassCache;
 	public boolean canListenEvents;
 
-	public ScriptManager(ScriptType t, Path p, String e) {
+	public ScriptManager(ScriptType t, Path p) {
 		scriptType = t;
 		directory = p;
-		exampleScript = e;
 		packs = new LinkedHashMap<>();
 		firstLoad = true;
 		classFilter = KubeJSPlugins.createClassFilter(scriptType);
@@ -116,11 +115,19 @@ public class ScriptManager implements ClassShutter {
 
 	public void loadFromDirectory() {
 		if (Files.notExists(directory)) {
-			UtilsJS.tryIO(() -> Files.createDirectories(directory));
+			try {
+				Files.createDirectories(directory);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 
-			try (var in = Files.newInputStream(KubeJS.thisMod.findResource("data", "kubejs", exampleScript).get());
-				 var out = Files.newOutputStream(directory.resolve("script.js"))) {
-				in.transferTo(out);
+			try (var out = Files.newOutputStream(directory.resolve("example.js"))) {
+				out.write(("""
+						// priority: 0
+
+						// Visit the wiki for more info - https://kubejs.com/
+
+						console.info('Hello, World! (Reloaded\s""" + scriptType.name + " scripts)')\n\n").getBytes(StandardCharsets.UTF_8));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

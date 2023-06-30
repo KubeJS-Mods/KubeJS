@@ -131,8 +131,8 @@ public class KubeJS {
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::init);
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::registerEvents);
 
-		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS, "example_startup_script.js");
-		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS, "example_client_script.js");
+		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS);
+		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS);
 
 		if (!CommonProperties.get().serverOnly) {
 			tab = CreativeTabRegistry.create(new ResourceLocation(KubeJS.MOD_ID, KubeJS.MOD_ID), () -> new ItemStack(Items.PURPLE_DYE));

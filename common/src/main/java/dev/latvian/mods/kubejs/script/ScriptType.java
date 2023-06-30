@@ -57,12 +57,12 @@ public enum ScriptType implements ScriptTypePredicate {
 	public transient Executor executor;
 
 	ScriptType(String n, String cname, Supplier<ScriptManager> m) {
-		name = n;
-		errors = new ConcurrentLinkedDeque<>();
-		warnings = new ConcurrentLinkedDeque<>();
-		console = new ConsoleJS(this, LoggerFactory.getLogger(cname));
-		manager = m;
-		executor = Runnable::run;
+		this.name = n;
+		this.errors = new ConcurrentLinkedDeque<>();
+		this.warnings = new ConcurrentLinkedDeque<>();
+		this.console = new ConsoleJS(this, LoggerFactory.getLogger(cname));
+		this.manager = m;
+		this.executor = Runnable::run;
 	}
 
 	public Path getLogFile() {
