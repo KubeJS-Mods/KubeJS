@@ -2,13 +2,12 @@ package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
-import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
-import dev.latvian.mods.kubejs.recipe.InputItemTransformer;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -121,16 +120,8 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement {
 		return ingredient;
 	}
 
-	public InputItem asStack() {
-		return this;
-	}
-
 	public InputItem withCount(int count) {
-		return new InputItem(ingredient, count);
-	}
-
-	public InputItem copyWithProperties(InputItem original) {
-		return original.count == count || isEmpty() ? this : new InputItem(ingredient, original.count);
+		return count == this.count ? this : new InputItem(ingredient, count);
 	}
 
 	public boolean isEmpty() {
@@ -162,11 +153,11 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement {
 	}
 
 	@Override
-	public <T> T replaceInput(RecipeKJS recipe, ReplacementMatch match, T previousValue) {
-		return (T) copyWithProperties((InputItem) previousValue);
-	}
+	public Object replaceInput(RecipeJS recipe, ReplacementMatch match, InputReplacement original) {
+		if (original instanceof InputItem o) {
+			return withCount(o.count);
+		}
 
-	public InputItemTransformer.Replacement transform(InputItemTransformer transformer) {
-		return new InputItemTransformer.Replacement(this, transformer);
+		return this;
 	}
 }

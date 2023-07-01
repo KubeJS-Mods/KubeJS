@@ -12,6 +12,8 @@ import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Array;
+
 @Nullable
 public interface RecipeComponent<T> {
 	static RecipeComponentBuilder builder() {
@@ -87,28 +89,36 @@ public interface RecipeComponent<T> {
 		return false;
 	}
 
-	default T replaceInput(RecipeJS recipe, T value, ReplacementMatch match, InputReplacement with) {
-		return value;
+	default T replaceInput(RecipeJS recipe, T original, ReplacementMatch match, InputReplacement with) {
+		return original instanceof InputReplacement r && isInput(recipe, original, match) ? read(recipe, with.replaceInput(recipe, match, r)) : original;
 	}
 
 	default boolean isOutput(RecipeJS recipe, T value, ReplacementMatch match) {
 		return false;
 	}
 
-	default T replaceOutput(RecipeJS recipe, T value, ReplacementMatch match, OutputReplacement with) {
-		return value;
+	default T replaceOutput(RecipeJS recipe, T original, ReplacementMatch match, OutputReplacement with) {
+		return original instanceof OutputReplacement r && isOutput(recipe, original, match) ? read(recipe, with.replaceOutput(recipe, match, r)) : original;
 	}
 
 	default String checkEmpty(RecipeKey<T> key, T value) {
 		return "";
 	}
 
-	default RecipeComponent<T[]> asArray() {
-		return ArrayRecipeComponent.of(this, false);
+	@SuppressWarnings("unchecked")
+	default ArrayRecipeComponent<T> asArray() {
+		var arr = (T[]) Array.newInstance(componentClass(), 0);
+		return new ArrayRecipeComponent<>(this, false, arr.getClass(), arr);
 	}
 
-	default RecipeComponent<T[]> asArrayOrSelf() {
-		return ArrayRecipeComponent.of(this, true);
+	@SuppressWarnings("unchecked")
+	default ArrayRecipeComponent<T> asArrayOrSelf() {
+		var arr = (T[]) Array.newInstance(componentClass(), 0);
+		return new ArrayRecipeComponent<>(this, true, arr.getClass(), arr);
+	}
+
+	default RecipeComponent<T> orSelf() {
+		return this;
 	}
 
 	default <K> RecipeComponent<TinyMap<K, T>> asMap(RecipeComponent<K> key) {

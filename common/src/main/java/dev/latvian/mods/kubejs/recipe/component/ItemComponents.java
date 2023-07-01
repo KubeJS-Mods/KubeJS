@@ -5,8 +5,9 @@ import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
+import dev.latvian.mods.kubejs.recipe.InputReplacementTransformer;
 import dev.latvian.mods.kubejs.recipe.ItemMatch;
-import dev.latvian.mods.kubejs.recipe.OutputReplacement;
+import dev.latvian.mods.kubejs.recipe.OutputReplacementTransformer;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
@@ -46,16 +47,24 @@ public interface ItemComponents {
 
 		@Override
 		public boolean isInput(RecipeJS recipe, InputItem value, ReplacementMatch match) {
-			return match instanceof ItemMatch m && m.contains(value);
+			return match instanceof ItemMatch m && !value.isEmpty() && m.contains(value);
 		}
 
 		@Override
-		public InputItem replaceInput(RecipeJS recipe, InputItem value, ReplacementMatch match, InputReplacement with) {
-			if (match instanceof ItemMatch m && m.contains(value)) {
-				return with.replaceInput(recipe, match, value);
+		public InputItem replaceInput(RecipeJS recipe, InputItem original, ReplacementMatch match, InputReplacement with) {
+			if (match instanceof ItemMatch m && !original.isEmpty() && m.contains(original)) {
+				if (with instanceof InputItem withItem) {
+					if (original.count != withItem.count) {
+						return InputItem.of(withItem.ingredient, original.count);
+					}
+
+					return withItem;
+				} else if (with instanceof InputReplacementTransformer.Replacement transformer) {
+					return read(recipe, transformer.transformer().transform(recipe, match, original, transformer.with()));
+				}
 			}
 
-			return value;
+			return original;
 		}
 
 		@Override
@@ -105,6 +114,16 @@ public interface ItemComponents {
 		}
 	};
 
+	OutputReplacementTransformer DEFAULT_OUTPUT_TRANSFORMER = (recipe, match, original, with) -> {
+		if (original instanceof OutputItem oItem && with instanceof OutputItem wItem) {
+			var c = OutputItem.of(wItem.item.copy(), oItem.chance);
+			c.item.setCount(oItem.getCount());
+			return c;
+		}
+
+		return original;
+	};
+
 	RecipeComponent<OutputItem> OUTPUT = new RecipeComponent<>() {
 		@Override
 		public String componentType() {
@@ -138,16 +157,7 @@ public interface ItemComponents {
 
 		@Override
 		public boolean isOutput(RecipeJS recipe, OutputItem value, ReplacementMatch match) {
-			return match instanceof ItemMatch m && m.contains(value);
-		}
-
-		@Override
-		public OutputItem replaceOutput(RecipeJS recipe, OutputItem value, ReplacementMatch match, OutputReplacement with) {
-			if (match instanceof ItemMatch m && m.contains(value)) {
-				return with.replaceOutput(recipe, match, value);
-			}
-
-			return value;
+			return match instanceof ItemMatch m && !value.isEmpty() && m.contains(value);
 		}
 
 		@Override

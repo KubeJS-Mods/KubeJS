@@ -55,8 +55,8 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default T replaceInput(RecipeJS recipe, T value, ReplacementMatch match, InputReplacement with) {
-		return parentComponent().replaceInput(recipe, value, match, with);
+	default T replaceInput(RecipeJS recipe, T original, ReplacementMatch match, InputReplacement with) {
+		return parentComponent().replaceInput(recipe, original, match, with);
 	}
 
 	@Override
@@ -65,8 +65,8 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default T replaceOutput(RecipeJS recipe, T value, ReplacementMatch match, OutputReplacement with) {
-		return parentComponent().replaceOutput(recipe, value, match, with);
+	default T replaceOutput(RecipeJS recipe, T original, ReplacementMatch match, OutputReplacement with) {
+		return parentComponent().replaceOutput(recipe, original, match, with);
 	}
 
 	@Override

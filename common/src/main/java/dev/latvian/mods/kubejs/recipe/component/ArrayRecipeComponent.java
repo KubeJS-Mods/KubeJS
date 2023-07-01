@@ -14,12 +14,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canWriteSelf, Class<?> arrayClass, T[] emptyArray) implements RecipeComponent<T[]> {
-	@SuppressWarnings("unchecked")
-	public static <T> ArrayRecipeComponent<T> of(RecipeComponent<T> component, boolean canWriteSelf) {
-		var arr = (T[]) Array.newInstance(component.componentClass(), 0);
-		return new ArrayRecipeComponent<>(component, canWriteSelf, arr.getClass(), arr);
-	}
-
 	@Override
 	public ComponentRole role() {
 		return component.role();
@@ -42,8 +36,8 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	}
 
 	@SuppressWarnings("unchecked")
-	private T[] newArray(int length) {
-		return (T[]) Array.newInstance(component.componentClass(), length);
+	public T[] newArray(int length) {
+		return length == 0 ? emptyArray : (T[]) Array.newInstance(component.componentClass(), length);
 	}
 
 	@Override
@@ -131,16 +125,16 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	}
 
 	@Override
-	public T[] replaceInput(RecipeJS recipe, T[] value, ReplacementMatch match, InputReplacement with) {
-		var arr = value;
+	public T[] replaceInput(RecipeJS recipe, T[] original, ReplacementMatch match, InputReplacement with) {
+		var arr = original;
 
-		for (int i = 0; i < value.length; i++) {
-			var r = component.replaceInput(recipe, value[i], match, with);
+		for (int i = 0; i < original.length; i++) {
+			var r = component.replaceInput(recipe, original[i], match, with);
 
 			if (arr[i] != r) {
-				if (arr == value) {
-					arr = newArray(value.length);
-					System.arraycopy(value, 0, arr, 0, i);
+				if (arr == original) {
+					arr = newArray(original.length);
+					System.arraycopy(original, 0, arr, 0, i);
 				}
 
 				arr[i] = r;
@@ -162,16 +156,16 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	}
 
 	@Override
-	public T[] replaceOutput(RecipeJS recipe, T[] value, ReplacementMatch match, OutputReplacement with) {
-		var arr = value;
+	public T[] replaceOutput(RecipeJS recipe, T[] original, ReplacementMatch match, OutputReplacement with) {
+		var arr = original;
 
-		for (int i = 0; i < value.length; i++) {
-			var r = component.replaceOutput(recipe, value[i], match, with);
+		for (int i = 0; i < original.length; i++) {
+			var r = component.replaceOutput(recipe, original[i], match, with);
 
 			if (arr[i] != r) {
-				if (arr == value) {
-					arr = newArray(value.length);
-					System.arraycopy(value, 0, arr, 0, i);
+				if (arr == original) {
+					arr = newArray(original.length);
+					System.arraycopy(original, 0, arr, 0, i);
 				}
 
 				arr[i] = r;

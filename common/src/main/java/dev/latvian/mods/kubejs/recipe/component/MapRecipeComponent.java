@@ -104,18 +104,18 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public TinyMap<K, V> replaceInput(RecipeJS recipe, TinyMap<K, V> value, ReplacementMatch match, InputReplacement with) {
-		var map = value;
+	public TinyMap<K, V> replaceInput(RecipeJS recipe, TinyMap<K, V> original, ReplacementMatch match, InputReplacement with) {
+		var map = original;
 
-		for (int i = 0; i < value.entries().length; i++) {
-			var r = component.replaceInput(recipe, value.entries()[i].value(), match, with);
+		for (int i = 0; i < original.entries().length; i++) {
+			var r = component.replaceInput(recipe, original.entries()[i].value(), match, with);
 
-			if (r != value.entries()[i].value()) {
-				if (map == value) {
-					map = new TinyMap<>(value);
+			if (r != original.entries()[i].value()) {
+				if (map == original) {
+					map = new TinyMap<>(original);
 				}
 
-				map.entries()[i] = new TinyMap.Entry<>(value.entries()[i].key(), r);
+				map.entries()[i] = new TinyMap.Entry<>(original.entries()[i].key(), r);
 			}
 		}
 
@@ -134,18 +134,18 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public TinyMap<K, V> replaceOutput(RecipeJS recipe, TinyMap<K, V> value, ReplacementMatch match, OutputReplacement with) {
-		var map = value;
+	public TinyMap<K, V> replaceOutput(RecipeJS recipe, TinyMap<K, V> original, ReplacementMatch match, OutputReplacement with) {
+		var map = original;
 
-		for (int i = 0; i < value.entries().length; i++) {
-			var r = component.replaceOutput(recipe, value.entries()[i].value(), match, with);
+		for (int i = 0; i < original.entries().length; i++) {
+			var r = component.replaceOutput(recipe, original.entries()[i].value(), match, with);
 
-			if (r != value.entries()[i].value()) {
-				if (map == value) {
-					map = new TinyMap<>(value);
+			if (r != original.entries()[i].value()) {
+				if (map == original) {
+					map = new TinyMap<>(original);
 				}
 
-				map.entries()[i] = new TinyMap.Entry<>(value.entries()[i].key(), r);
+				map.entries()[i] = new TinyMap.Entry<>(original.entries()[i].key(), r);
 			}
 		}
 

@@ -425,8 +425,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.registerSimple(Set.class, ListJS::ofSet);
 		typeWrappers.registerSimple(ItemStack.class, ItemStackJS::of);
 		typeWrappers.registerSimple(Ingredient.class, IngredientJS::of);
-		typeWrappers.registerSimple(InputReplacement.class, InputItem::of);
-		typeWrappers.registerSimple(OutputReplacement.class, OutputItem::of);
+		typeWrappers.registerSimple(InputReplacement.class, InputReplacement::of);
+		typeWrappers.registerSimple(OutputReplacement.class, OutputReplacement::of);
 		typeWrappers.registerSimple(InputItem.class, InputItem::of);
 		typeWrappers.registerSimple(OutputItem.class, OutputItem::of);
 		typeWrappers.registerSimple(BlockStatePredicate.class, BlockStatePredicate::of);

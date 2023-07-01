@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 
+@SuppressWarnings("OptionalIsPresent")
 public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L> low) implements RecipeComponent<Either<H, L>> {
 	@Override
 	public String componentType() {
@@ -59,15 +60,15 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 	}
 
 	@Override
-	public Either<H, L> replaceInput(RecipeJS recipe, Either<H, L> value, ReplacementMatch match, InputReplacement with) {
-		var l = value.left();
+	public Either<H, L> replaceInput(RecipeJS recipe, Either<H, L> original, ReplacementMatch match, InputReplacement with) {
+		var l = original.left();
 
 		if (l.isPresent()) {
 			var r = high.replaceInput(recipe, l.get(), match, with);
-			return r == l.get() ? value : Either.left(r);
+			return r == l.get() ? original : Either.left(r);
 		} else {
-			var r = low.replaceInput(recipe, value.right().get(), match, with);
-			return r == value.right().get() ? value : Either.right(r);
+			var r = low.replaceInput(recipe, original.right().get(), match, with);
+			return r == original.right().get() ? original : Either.right(r);
 		}
 	}
 
@@ -78,15 +79,15 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 	}
 
 	@Override
-	public Either<H, L> replaceOutput(RecipeJS recipe, Either<H, L> value, ReplacementMatch match, OutputReplacement with) {
-		var l = value.left();
+	public Either<H, L> replaceOutput(RecipeJS recipe, Either<H, L> original, ReplacementMatch match, OutputReplacement with) {
+		var l = original.left();
 
 		if (l.isPresent()) {
 			var r = high.replaceOutput(recipe, l.get(), match, with);
-			return r == l.get() ? value : Either.left(r);
+			return r == l.get() ? original : Either.left(r);
 		} else {
-			var r = low.replaceOutput(recipe, value.right().get(), match, with);
-			return r == value.right().get() ? value : Either.right(r);
+			var r = low.replaceOutput(recipe, original.right().get(), match, with);
+			return r == original.right().get() ? original : Either.right(r);
 		}
 	}
 

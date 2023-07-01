@@ -1,9 +1,10 @@
 package dev.latvian.mods.kubejs.item;
 
-import dev.latvian.mods.kubejs.core.RecipeKJS;
-import dev.latvian.mods.kubejs.recipe.OutputItemTransformer;
+import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
+import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
@@ -27,7 +28,7 @@ public class OutputItem implements OutputReplacement {
 	public final ItemStack item;
 	public final double chance;
 
-	public OutputItem(ItemStack item, double chance) {
+	protected OutputItem(ItemStack item, double chance) {
 		this.item = item;
 		this.chance = chance;
 	}
@@ -65,16 +66,29 @@ public class OutputItem implements OutputReplacement {
 		return this == EMPTY;
 	}
 
-	public OutputItem copyWithProperties(OutputItem original) {
-		return isEmpty() ? this : new OutputItem(item.kjs$withCount(original.item.getCount()), original.chance);
-	}
-
 	@Override
-	public <T> T replaceOutput(RecipeKJS recipe, ReplacementMatch match, T original) {
-		return (T) copyWithProperties((OutputItem) original);
+	public Object replaceOutput(RecipeJS recipe, ReplacementMatch match, OutputReplacement original) {
+		if (original instanceof OutputItem o) {
+			var replacement = new OutputItem(item.copy(), o.chance);
+			replacement.item.setCount(o.getCount());
+			return replacement;
+		}
+
+		return new OutputItem(item.copy(), Double.NaN);
 	}
 
-	public OutputItemTransformer.Replacement transform(OutputItemTransformer transformer) {
-		return new OutputItemTransformer.Replacement(this, transformer);
+	@Deprecated
+	public InputItem ignoreNBT() {
+		var console = ConsoleJS.getCurrent(ConsoleJS.SERVER);
+		console.warn("You don't need to call .ignoreNBT() anymore, all item ingredients ignore NBT by default!");
+		return InputItem.of(item.getItem().kjs$asIngredient(), item.getCount());
+	}
+
+	public InputItem weakNBT() {
+		return InputItem.of(IngredientPlatformHelper.get().weakNBT(item), item.getCount());
+	}
+
+	public InputItem strongNBT() {
+		return InputItem.of(IngredientPlatformHelper.get().strongNBT(item), item.getCount());
 	}
 }
