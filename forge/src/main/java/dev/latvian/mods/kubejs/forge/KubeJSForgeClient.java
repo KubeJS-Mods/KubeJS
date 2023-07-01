@@ -1,14 +1,18 @@
 package dev.latvian.mods.kubejs.forge;
 
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
+import dev.latvian.mods.kubejs.client.AtlasSpriteRegistryEventJS;
 import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -18,6 +22,7 @@ public class KubeJSForgeClient {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.LOW, this::setupClient);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::blockColors);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::itemColors);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::textureStitch);
 	}
 
 	@SuppressWarnings("removal")
@@ -63,5 +68,9 @@ public class KubeJSForgeClient {
 				event.register((stack, index) -> index == 1 ? b.fluidBuilder.bucketColor : 0xFFFFFFFF, b.get());
 			}
 		}
+	}
+
+	private void textureStitch(TextureStitchEvent.Pre event) {
+		ClientEvents.ATLAS_SPRITE_REGISTRY.post(ScriptType.CLIENT, event.getAtlas().location(), new AtlasSpriteRegistryEventJS(event::addSprite));
 	}
 }

@@ -27,9 +27,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.scores.Team;
 import org.jetbrains.annotations.Nullable;
 
@@ -320,19 +318,12 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS {
 		return Math.sqrt(kjs$getDistanceSq(pos));
 	}
 
+	default RayTraceResultJS kjs$rayTrace(double distance, boolean fluids) {
+		return new RayTraceResultJS(kjs$self(), kjs$self().pick(distance, 0F, fluids), distance);
+	}
+
 	default RayTraceResultJS kjs$rayTrace(double distance) {
-		double xRot = kjs$self().getXRot();
-		double yRot = kjs$self().getYRot();
-		var fromPos = kjs$self().getEyePosition(1);
-		var x0 = Math.sin(-yRot * (Math.PI / 180D) - (float) Math.PI);
-		var z0 = Math.cos(-yRot * (Math.PI / 180D) - (float) Math.PI);
-		var y0 = -Math.cos(-xRot * (Math.PI / 180D));
-		var y = Math.sin(-xRot * (Math.PI / 180D));
-		var x = x0 * y0;
-		var z = z0 * y0;
-		var toPos = fromPos.add(x * distance, y * distance, z * distance);
-		HitResult hitResult = kjs$self().level.clip(new ClipContext(fromPos, toPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, kjs$self()));
-		return new RayTraceResultJS(kjs$self(), hitResult, distance);
+		return kjs$rayTrace(distance, true);
 	}
 
 	@Nullable

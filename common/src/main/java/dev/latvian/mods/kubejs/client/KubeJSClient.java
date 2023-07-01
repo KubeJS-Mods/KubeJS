@@ -10,8 +10,10 @@ import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.bindings.event.NetworkEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
+import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
 import dev.latvian.mods.kubejs.net.NetworkEventJS;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
@@ -19,6 +21,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -89,6 +92,17 @@ public class KubeJSClient extends KubeJSCommon {
 
 		ClientEvents.INIT.post(ScriptType.STARTUP, new ClientEventJS());
 		ItemEvents.MODEL_PROPERTIES.post(ScriptType.STARTUP, new ItemModelPropertiesEventJS());
+
+		ClientEvents.ATLAS_SPRITE_REGISTRY.listenJava(ScriptType.CLIENT, TextureAtlas.LOCATION_BLOCKS, event -> {
+			var e = (AtlasSpriteRegistryEventJS) event;
+
+			for (var builder : RegistryInfo.FLUID) {
+				if (builder instanceof FluidBuilder b) {
+					e.register(b.stillTexture);
+					e.register(b.flowingTexture);
+				}
+			}
+		});
 	}
 
 	@Override

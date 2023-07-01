@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.net.SendDataFromClientMessage;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.util.NotificationBuilder;
@@ -49,11 +48,6 @@ public interface ClientPlayerKJS extends PlayerKJS {
 	@Override
 	default boolean kjs$isMiningBlock() {
 		return isSelf() && Minecraft.getInstance().gameMode.isDestroying();
-	}
-
-	@Override
-	default RayTraceResultJS kjs$rayTrace(double distance) {
-		return isSelf() ? new RayTraceResultJS(kjs$self(), Minecraft.getInstance().hitResult, distance) : PlayerKJS.super.kjs$rayTrace(distance);
 	}
 
 	@Override

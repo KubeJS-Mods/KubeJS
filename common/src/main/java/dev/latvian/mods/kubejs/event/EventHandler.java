@@ -160,6 +160,14 @@ public final class EventHandler extends BaseFunction {
 		}
 	}
 
+	@HideFromJS
+	public void listenJava(ScriptType type, @Nullable Object extraId, IEventHandler handler) {
+		var b = type.manager.get().canListenEvents;
+		type.manager.get().canListenEvents = true;
+		listen(type, extraId, handler);
+		type.manager.get().canListenEvents = b;
+	}
+
 	/**
 	 * @return true if event was canceled
 	 */

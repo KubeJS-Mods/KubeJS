@@ -127,7 +127,7 @@ public class ScriptManager implements ClassShutter {
 
 						// Visit the wiki for more info - https://kubejs.com/
 
-						console.info('Hello, World! (Reloaded\s""" + scriptType.name + " scripts)')\n\n").getBytes(StandardCharsets.UTF_8));
+						console.info('Hello, World! (Loaded\s""" + scriptType.name + " scripts)')\n\n").getBytes(StandardCharsets.UTF_8));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

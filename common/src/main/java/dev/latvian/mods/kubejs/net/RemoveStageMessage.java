@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.net;
 import dev.architectury.networking.NetworkManager.PacketContext;
 import dev.architectury.networking.simple.BaseS2CMessage;
 import dev.architectury.networking.simple.MessageType;
+import dev.latvian.mods.kubejs.KubeJS;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.UUID;
@@ -34,7 +35,12 @@ public class RemoveStageMessage extends BaseS2CMessage {
 
 	@Override
 	public void handle(PacketContext context) {
-		var p0 = context.getPlayer();
+		var p0 = KubeJS.PROXY.getClientPlayer();
+
+		if (p0 == null) {
+			return;
+		}
+
 		var p = player.equals(p0.getUUID()) ? p0 : p0.level.getPlayerByUUID(player);
 
 		if (p != null) {

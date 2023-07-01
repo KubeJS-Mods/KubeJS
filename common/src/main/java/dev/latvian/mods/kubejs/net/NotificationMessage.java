@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.net;
 import dev.architectury.networking.NetworkManager.PacketContext;
 import dev.architectury.networking.simple.BaseS2CMessage;
 import dev.architectury.networking.simple.MessageType;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.util.NotificationBuilder;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -29,6 +30,12 @@ public class NotificationMessage extends BaseS2CMessage {
 
 	@Override
 	public void handle(PacketContext context) {
-		context.getPlayer().kjs$notify(notification);
+		var p0 = KubeJS.PROXY.getClientPlayer();
+
+		if (p0 == null) {
+			return;
+		}
+
+		p0.kjs$notify(notification);
 	}
 }

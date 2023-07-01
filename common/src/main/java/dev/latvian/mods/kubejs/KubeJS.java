@@ -225,7 +225,7 @@ public class KubeJS {
 			LOGGER.error(String.join("\n", list));
 
 			ConsoleJS.STARTUP.flush(true);
-			throw new RuntimeException("There were KubeJS startup script syntax errors! See logs/kubejs/startup.txt for more info");
+			throw new RuntimeException("There were KubeJS startup script syntax errors! See logs/kubejs/startup.log for more info");
 		}
 
 		QUERY = "source=game&mc=" + MC_VERSION_NUMBER + "&loader=" + ArchitecturyTarget.getCurrentTarget() + "&v=" + URLEncoder.encode(thisMod.getVersion(), StandardCharsets.UTF_8);

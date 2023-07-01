@@ -1,15 +1,17 @@
 package dev.latvian.mods.kubejs.fabric;
 
+import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
+import dev.latvian.mods.kubejs.client.AtlasSpriteRegistryEventJS;
 import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 
 public class KubeJSFabricClient {
 	public static void registry() {
@@ -37,14 +39,7 @@ public class KubeJSFabricClient {
 			}
 		}
 
-		ClientSpriteRegistryCallback.event(TextureAtlas.LOCATION_BLOCKS).register((atlasTexture, registry) -> {
-			for (var builder : RegistryInfo.FLUID) {
-				if (builder instanceof FluidBuilder b) {
-					registry.register(b.stillTexture);
-					registry.register(b.flowingTexture);
-				}
-			}
-		});
+		ClientSpriteRegistryCallback.EVENT.register((atlasTexture, registry) -> ClientEvents.ATLAS_SPRITE_REGISTRY.post(ScriptType.CLIENT, atlasTexture.location(), new AtlasSpriteRegistryEventJS(registry::register)));
 
 		for (var builder : RegistryInfo.ITEM) {
 			if (builder instanceof ItemBuilder b && b.colorCallback != null) {

@@ -40,11 +40,10 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 		flowingFluid = new FlowingFluidBuilder(this);
 		block = new FluidBlockBuilder(this);
 		bucketItem = new FluidBucketItemBuilder(this);
-		bucketItem.displayName(displayName + " Bucket");
 	}
 
 	@Override
-	public BuilderBase displayName(String name) {
+	public BuilderBase<FlowingFluid> displayName(String name) {
 		if (block != null) {
 			block.displayName(name);
 		}
@@ -99,6 +98,12 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 		if (bucketItem != null) {
 			RegistryInfo.ITEM.addBuilder(bucketItem);
 		}
+	}
+
+	@Override
+	public BuilderBase<FlowingFluid> tag(ResourceLocation tag) {
+		flowingFluid.tag(tag);
+		return super.tag(tag);
 	}
 
 	public FluidBuilder color(Color c) {
