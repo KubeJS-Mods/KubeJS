@@ -7,7 +7,9 @@ import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -38,7 +40,13 @@ public class RecipeComponentBuilder implements RecipeComponent<Map<String, Objec
 
 	@Override
 	public TypeDescJS constructorDescription(DescriptionContext ctx) {
-		return TypeDescJS.ANY_MAP;
+		var list = new ArrayList<Pair<String, TypeDescJS>>(map.size());
+
+		for (var entry : map.entrySet()) {
+			list.add(Pair.of(entry.getKey(), entry.getValue().component.constructorDescription(ctx)));
+		}
+
+		return TypeDescJS.object(list);
 	}
 
 	@Override
@@ -71,7 +79,7 @@ public class RecipeComponentBuilder implements RecipeComponent<Map<String, Objec
 				var k = map.get(entry.getKey());
 
 				if (k != null) {
-					m.put(entry.getKey(), k.component.read(recipe, entry.getValue()));
+					m.put(entry.getKey(), k.component.readFromJson(recipe, UtilsJS.cast(k), o));
 				} else {
 					throw new IllegalStateException("Component with name '" + entry.getKey() + "' does not exist!");
 				}
