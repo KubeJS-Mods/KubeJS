@@ -11,14 +11,14 @@ import java.util.function.Supplier;
 
 public class RegistryEventJS extends StartupEventJS {
 	private final RegistryInfo registry;
-	public final List<BuilderBase> created;
+	public final List<BuilderBase<?>> created;
 
 	public RegistryEventJS(RegistryInfo r) {
 		this.registry = r;
 		this.created = new LinkedList<>();
 	}
 
-	public BuilderBase create(String id, String type) {
+	public BuilderBase<?> create(String id, String type) {
 		var t = registry.types.get(type);
 
 		if (t == null) {
@@ -37,7 +37,7 @@ public class RegistryEventJS extends StartupEventJS {
 		return b;
 	}
 
-	public BuilderBase create(String id) {
+	public BuilderBase<?> create(String id) {
 		var t = registry.getDefaultType();
 
 		if (t == null) {
