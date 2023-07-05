@@ -46,7 +46,7 @@ public interface FluidComponents {
 
 		@Override
 		public boolean isInput(RecipeJS recipe, InputFluid value, ReplacementMatch match) {
-			return match instanceof FluidLike m && m.matches(value);
+			return match instanceof FluidLike m && value.matches(m);
 		}
 
 		@Override
@@ -102,7 +102,7 @@ public interface FluidComponents {
 
 		@Override
 		public boolean isOutput(RecipeJS recipe, OutputFluid value, ReplacementMatch match) {
-			return match instanceof FluidLike m && m.matches(value);
+			return match instanceof FluidLike m && value.matches(m);
 		}
 
 		@Override
