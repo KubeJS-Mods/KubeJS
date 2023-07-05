@@ -50,7 +50,7 @@ public class EmptyFluidStackJS extends FluidStackJS {
 	}
 
 	@Override
-	public FluidStackJS copy() {
+	public FluidStackJS copy(long amount) {
 		return this;
 	}
 

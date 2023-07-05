@@ -13,6 +13,8 @@ public interface ReplacementMatch {
 	static ReplacementMatch of(Object o) {
 		if (o == null) {
 			return NONE;
+		} else if (o instanceof ReplacementMatch m) {
+			return m;
 		}
 
 		var in = IngredientJS.of(o);

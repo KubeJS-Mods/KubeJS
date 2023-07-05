@@ -2,12 +2,14 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
+import dev.latvian.mods.kubejs.fluid.FluidLike;
 import dev.latvian.mods.kubejs.fluid.InputFluid;
 import dev.latvian.mods.kubejs.fluid.OutputFluid;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import org.jetbrains.annotations.Nullable;
 
 public interface FluidComponents {
@@ -43,8 +45,13 @@ public interface FluidComponents {
 		}
 
 		@Override
+		public boolean isInput(RecipeJS recipe, InputFluid value, ReplacementMatch match) {
+			return match instanceof FluidLike m && m.matches(value);
+		}
+
+		@Override
 		public String checkEmpty(RecipeKey<InputFluid> key, InputFluid value) {
-			if (value.isInputEmpty()) {
+			if (value.isEmpty()) {
 				return "Input fluid '" + key.name + "' can't be empty!";
 			}
 
@@ -94,8 +101,13 @@ public interface FluidComponents {
 		}
 
 		@Override
+		public boolean isOutput(RecipeJS recipe, OutputFluid value, ReplacementMatch match) {
+			return match instanceof FluidLike m && m.matches(value);
+		}
+
+		@Override
 		public String checkEmpty(RecipeKey<OutputFluid> key, OutputFluid value) {
-			if (value.isOutputEmpty()) {
+			if (value.isEmpty()) {
 				return "Output fluid '" + key.name + "' can't be empty!";
 			}
 

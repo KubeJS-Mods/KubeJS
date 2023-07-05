@@ -4,13 +4,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.fluid.FluidStack;
 import dev.architectury.registry.registries.Registries;
+import dev.latvian.mods.kubejs.recipe.InputReplacement;
+import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
-import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -24,7 +25,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public abstract class FluidStackJS implements WrappedJS, Copyable, InputFluid, OutputFluid {
+public abstract class FluidStackJS implements WrappedJS, InputFluid, OutputFluid, InputReplacement, OutputReplacement {
 	public static FluidStackJS of(@Nullable Object o) {
 		if (o == null) {
 			return EmptyFluidStackJS.INSTANCE;
@@ -126,10 +127,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, InputFluid, O
 
 	public abstract FluidStack getFluidStack();
 
-	public boolean isEmpty() {
-		return getAmount() <= 0;
-	}
-
+	@Override
 	public abstract long getAmount();
 
 	public abstract void setAmount(long amount);
@@ -155,8 +153,12 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, InputFluid, O
 		return fs;
 	}
 
+	public FluidStackJS copy() {
+		return copy(getAmount());
+	}
+
 	@Override
-	public abstract FluidStackJS copy();
+	public abstract FluidStackJS copy(long amount);
 
 	public boolean hasChance() {
 		return !Double.isNaN(chance);
@@ -266,12 +268,7 @@ public abstract class FluidStackJS implements WrappedJS, Copyable, InputFluid, O
 	}
 
 	@Override
-	public boolean isInputEmpty() {
-		return isEmpty();
-	}
-
-	@Override
-	public boolean isOutputEmpty() {
-		return isEmpty();
+	public boolean matches(FluidLike other) {
+		return other instanceof FluidStackJS fs && getFluid() == fs.getFluid() && Objects.equals(getNbt(), fs.getNbt());
 	}
 }

@@ -51,7 +51,9 @@ public class BoundFluidStackJS extends FluidStackJS {
 	}
 
 	@Override
-	public FluidStackJS copy() {
-		return new BoundFluidStackJS(fluidStack.copy());
+	public FluidStackJS copy(long amount) {
+		var fs = fluidStack.copy();
+		fs.setAmount(amount);
+		return new BoundFluidStackJS(fs);
 	}
 }
