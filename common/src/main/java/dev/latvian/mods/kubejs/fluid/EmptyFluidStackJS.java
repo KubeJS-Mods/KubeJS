@@ -10,7 +10,7 @@ public class EmptyFluidStackJS extends FluidStackJS {
 	public static final EmptyFluidStackJS INSTANCE = new EmptyFluidStackJS();
 
 	@Override
-	public boolean isEmpty() {
+	public boolean kjs$isEmpty() {
 		return true;
 	}
 
@@ -31,7 +31,7 @@ public class EmptyFluidStackJS extends FluidStackJS {
 	}
 
 	@Override
-	public long getAmount() {
+	public long kjs$getAmount() {
 		return 0;
 	}
 
@@ -50,18 +50,18 @@ public class EmptyFluidStackJS extends FluidStackJS {
 	}
 
 	@Override
-	public FluidStackJS copy(long amount) {
+	public FluidStackJS kjs$copy(long amount) {
 		return this;
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		return of(o).isEmpty();
+		return of(o).kjs$isEmpty();
 	}
 
 	@Override
 	public boolean strongEquals(Object o) {
-		return of(o).isEmpty();
+		return of(o).kjs$isEmpty();
 	}
 
 	@Override

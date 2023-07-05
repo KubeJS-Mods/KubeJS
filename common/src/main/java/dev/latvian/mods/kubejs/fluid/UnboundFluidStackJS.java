@@ -27,8 +27,8 @@ public class UnboundFluidStackJS extends FluidStackJS {
 	}
 
 	@Override
-	public boolean isEmpty() {
-		return super.isEmpty() || getFluid() == Fluids.EMPTY;
+	public boolean kjs$isEmpty() {
+		return super.kjs$isEmpty() || getFluid() == Fluids.EMPTY;
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class UnboundFluidStackJS extends FluidStackJS {
 	}
 
 	@Override
-	public long getAmount() {
+	public long kjs$getAmount() {
 		return amount;
 	}
 
@@ -64,7 +64,7 @@ public class UnboundFluidStackJS extends FluidStackJS {
 	}
 
 	@Override
-	public FluidStackJS copy(long amount) {
+	public FluidStackJS kjs$copy(long amount) {
 		var fs = new UnboundFluidStackJS(fluidRL);
 		fs.amount = amount;
 		fs.nbt = nbt == null ? null : nbt.copy();

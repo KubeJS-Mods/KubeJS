@@ -35,7 +35,7 @@ public abstract class FluidStackJS implements WrappedJS, InputFluid, OutputFluid
 			return new BoundFluidStackJS(fluidStack);
 		} else if (o instanceof Fluid fluid) {
 			var f = new UnboundFluidStackJS(Registries.getId(fluid, Registry.FLUID_REGISTRY));
-			return f.isEmpty() ? EmptyFluidStackJS.INSTANCE : f;
+			return f.kjs$isEmpty() ? EmptyFluidStackJS.INSTANCE : f;
 		} else if (o instanceof JsonElement json) {
 			return fromJson(json);
 		} else if (o instanceof CharSequence || o instanceof ResourceLocation) {
@@ -84,7 +84,7 @@ public abstract class FluidStackJS implements WrappedJS, InputFluid, OutputFluid
 
 		var fluid = of(json.get("fluid").getAsString());
 
-		if (fluid.isEmpty()) {
+		if (fluid.kjs$isEmpty()) {
 			throw new RecipeExceptionJS(json + " is not a valid fluid!");
 		}
 
@@ -128,7 +128,7 @@ public abstract class FluidStackJS implements WrappedJS, InputFluid, OutputFluid
 	public abstract FluidStack getFluidStack();
 
 	@Override
-	public abstract long getAmount();
+	public abstract long kjs$getAmount();
 
 	public abstract void setAmount(long amount);
 
@@ -154,11 +154,11 @@ public abstract class FluidStackJS implements WrappedJS, InputFluid, OutputFluid
 	}
 
 	public FluidStackJS copy() {
-		return copy(getAmount());
+		return kjs$copy(kjs$getAmount());
 	}
 
 	@Override
-	public abstract FluidStackJS copy(long amount);
+	public abstract FluidStackJS kjs$copy(long amount);
 
 	public boolean hasChance() {
 		return !Double.isNaN(chance);
@@ -199,7 +199,7 @@ public abstract class FluidStackJS implements WrappedJS, InputFluid, OutputFluid
 
 		var f = FluidStackJS.of(o);
 
-		if (f.isEmpty()) {
+		if (f.kjs$isEmpty()) {
 			return false;
 		}
 
@@ -209,15 +209,15 @@ public abstract class FluidStackJS implements WrappedJS, InputFluid, OutputFluid
 	public boolean strongEquals(Object o) {
 		var f = of(o);
 
-		if (f.isEmpty()) {
+		if (f.kjs$isEmpty()) {
 			return false;
 		}
 
-		return getAmount() == f.getAmount() && getFluid() == f.getFluid() && Objects.equals(getNbt(), f.getNbt());
+		return kjs$getAmount() == f.kjs$getAmount() && getFluid() == f.getFluid() && Objects.equals(getNbt(), f.getNbt());
 	}
 
 	public String toString() {
-		var amount = getAmount();
+		var amount = kjs$getAmount();
 		var nbt = getNbt();
 
 		var builder = new StringBuilder();
@@ -248,7 +248,7 @@ public abstract class FluidStackJS implements WrappedJS, InputFluid, OutputFluid
 	public JsonObject toJson() {
 		var o = new JsonObject();
 		o.addProperty("fluid", getId());
-		o.addProperty("amount", getAmount());
+		o.addProperty("amount", kjs$getAmount());
 
 		if (getNbt() != null) {
 			o.add("nbt", MapJS.json(getNbt()));

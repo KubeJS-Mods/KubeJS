@@ -51,7 +51,7 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 
 		typeWrappers.registerSimple(FluidStack.class, o -> {
 			var fs = FluidStackJS.of(o);
-			return fs.isEmpty() ? FluidStack.EMPTY : new FluidStack(fs.getFluid(), (int) fs.getAmount(), fs.getNbt());
+			return fs.kjs$isEmpty() ? FluidStack.EMPTY : new FluidStack(fs.getFluid(), (int) fs.kjs$getAmount(), fs.getNbt());
 		});
 	}
 }

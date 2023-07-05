@@ -30,7 +30,7 @@ public class BoundFluidStackJS extends FluidStackJS {
 	}
 
 	@Override
-	public long getAmount() {
+	public long kjs$getAmount() {
 		return fluidStack.getAmount();
 	}
 
@@ -51,7 +51,7 @@ public class BoundFluidStackJS extends FluidStackJS {
 	}
 
 	@Override
-	public FluidStackJS copy(long amount) {
+	public FluidStackJS kjs$copy(long amount) {
 		var fs = fluidStack.copy();
 		fs.setAmount(amount);
 		return new BoundFluidStackJS(fs);

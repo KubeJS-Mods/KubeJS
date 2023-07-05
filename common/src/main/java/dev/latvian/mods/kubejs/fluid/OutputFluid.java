@@ -8,9 +8,9 @@ public interface OutputFluid extends FluidLike, OutputReplacement {
 	@Override
 	default Object replaceOutput(RecipeJS recipe, ReplacementMatch match, OutputReplacement original) {
 		if (original instanceof FluidLike o) {
-			copy(o.getAmount());
+			kjs$copy(o.kjs$getAmount());
 		}
 
-		return copy(getAmount());
+		return kjs$copy(kjs$getAmount());
 	}
 }
