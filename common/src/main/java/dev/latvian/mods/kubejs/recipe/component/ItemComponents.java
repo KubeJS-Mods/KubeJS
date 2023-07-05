@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.ItemMatch;
@@ -146,4 +147,33 @@ public interface ItemComponents {
 	};
 
 	RecipeComponent<OutputItem[]> OUTPUT_ARRAY = OUTPUT.asArray();
+
+	RecipeComponent<OutputItem> OUTPUT_ID_WITH_COUNT = new RecipeComponentWithParent<>() {
+		@Override
+		public RecipeComponent<OutputItem> parentComponent() {
+			return OUTPUT;
+		}
+
+		@Override
+		public void writeToJson(RecipeComponentValue<OutputItem> value, JsonObject json) {
+			json.addProperty(value.key.name, value.value.item.kjs$getId());
+			json.addProperty("count", value.value.item.getCount());
+		}
+
+		@Override
+		public OutputItem readFromJson(RecipeJS recipe, RecipeKey<OutputItem> key, JsonObject json) {
+			var item = RecipeComponentWithParent.super.readFromJson(recipe, key, json);
+
+			if (item != null && json.has("count")) {
+				item.item.setCount(json.get("count").getAsInt());
+			}
+
+			return item;
+		}
+
+		@Override
+		public String toString() {
+			return parentComponent().toString();
+		}
+	};
 }

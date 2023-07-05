@@ -49,6 +49,22 @@ public class EventResult {
 		return type != Type.PASS;
 	}
 
+	public boolean pass() {
+		return type == Type.PASS;
+	}
+
+	public boolean interruptDefault() {
+		return type == Type.INTERRUPT_DEFAULT;
+	}
+
+	public boolean interruptFalse() {
+		return type == Type.INTERRUPT_FALSE;
+	}
+
+	public boolean interruptTrue() {
+		return type == Type.INTERRUPT_TRUE;
+	}
+
 	public dev.architectury.event.EventResult arch() {
 		return type.defaultArchResult;
 	}

@@ -27,7 +27,12 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	@Override
 	public TypeDescJS constructorDescription(DescriptionContext ctx) {
 		var d = component.constructorDescription(ctx);
-		return d.or(d.asArray());
+
+		if (canWriteSelf) {
+			return d.or(d.asArray());
+		} else {
+			return d.asArray();
+		}
 	}
 
 	@Override

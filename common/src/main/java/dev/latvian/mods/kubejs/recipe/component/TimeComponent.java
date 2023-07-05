@@ -24,7 +24,7 @@ public record TimeComponent(String name, long scale) implements RecipeComponent<
 
 	@Override
 	public TypeDescJS constructorDescription(DescriptionContext ctx) {
-		return TypeDescJS.NUMBER;
+		return TypeDescJS.NUMBER.or(TypeDescJS.STRING);
 	}
 
 	@Override

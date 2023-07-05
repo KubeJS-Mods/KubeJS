@@ -5,6 +5,7 @@ import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Predicate;
 
@@ -12,6 +13,7 @@ public record StringComponent(String error, Predicate<String> predicate) impleme
 	public static final RecipeComponent<String> ANY = new StringComponent("", s -> true);
 	public static final RecipeComponent<String> NON_EMPTY = new StringComponent("can't be empty", s -> !s.isEmpty());
 	public static final RecipeComponent<String> NON_BLANK = new StringComponent("can't be blank", s -> !s.isBlank());
+	public static final RecipeComponent<String> ID = new StringComponent("invalid ID", ResourceLocation::isValidResourceLocation);
 
 	public static final RecipeComponent<Character> CHARACTER = new RecipeComponent<>() {
 		@Override
