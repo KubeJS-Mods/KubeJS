@@ -8,9 +8,18 @@ import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class ModResourceBindings {
 
@@ -176,8 +185,9 @@ public class ModResourceBindings {
 				if (Modifier.isStatic(field.getModifiers())) {
 					return field.get(null);
 				}
-			} catch (NoSuchFieldException | IllegalAccessException e) {
+			} catch (IllegalAccessException e) {
 				throw new IllegalStateException("[Bindings] Failed to get static field '" + methodOrField + "' in class '" + clazz.getName() + "'", e);
+			} catch (NoSuchFieldException ignored) {
 			}
 			return null;
 		}
@@ -189,8 +199,9 @@ public class ModResourceBindings {
 				if (Modifier.isStatic(method.getModifiers())) {
 					return method.invoke(null);
 				}
-			} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+			} catch (IllegalAccessException | InvocationTargetException e) {
 				throw new IllegalStateException("[Bindings] Failed to invoke static method '" + methodOrField + "' in class '" + clazz.getName() + "'", e);
+			} catch (NoSuchMethodException ignored) {
 			}
 			return null;
 		}
