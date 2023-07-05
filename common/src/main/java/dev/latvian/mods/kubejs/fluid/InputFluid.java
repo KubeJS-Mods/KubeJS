@@ -8,7 +8,7 @@ public interface InputFluid extends FluidLike, InputReplacement {
 	@Override
 	default Object replaceInput(RecipeJS recipe, ReplacementMatch match, InputReplacement original) {
 		if (original instanceof FluidLike o) {
-			kjs$copy(o.kjs$getAmount());
+			return kjs$copy(o.kjs$getAmount());
 		}
 
 		return kjs$copy(kjs$getAmount());

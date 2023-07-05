@@ -4,8 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.fluid.FluidStack;
 import dev.architectury.registry.registries.Registries;
-import dev.latvian.mods.kubejs.recipe.InputReplacement;
-import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -25,7 +23,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public abstract class FluidStackJS implements WrappedJS, InputFluid, OutputFluid, InputReplacement, OutputReplacement {
+public abstract class FluidStackJS implements WrappedJS, InputFluid, OutputFluid {
 	public static FluidStackJS of(@Nullable Object o) {
 		if (o == null) {
 			return EmptyFluidStackJS.INSTANCE;
