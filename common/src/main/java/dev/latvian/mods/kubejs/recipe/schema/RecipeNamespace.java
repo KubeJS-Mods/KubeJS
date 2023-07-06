@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
+import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeSchemaRegistryEventJS;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapedRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapelessRecipeSchema;
@@ -50,6 +51,10 @@ public class RecipeNamespace extends LinkedHashMap<String, RecipeSchemaType> {
 	public RecipeNamespace register(String id, RecipeSchema type) {
 		put(id, new RecipeSchemaType(this, new ResourceLocation(name, id), type));
 		return this;
+	}
+
+	public RecipeNamespace registerBasic(String id, RecipeKey<?>... keys) {
+		return register(id, new RecipeSchema(keys));
 	}
 
 	public RecipeNamespace shaped(String id) {

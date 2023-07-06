@@ -1,8 +1,6 @@
 package dev.latvian.mods.kubejs.typings.desc;
 
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.List;
+import java.util.ArrayList;
 
 public sealed interface TypeDescJS permits ArrayDescJS, FixedArrayDescJS, GenericDescJS, ObjectDescJS, OrDescJS, PrimitiveDescJS {
 	TypeDescJS ANY = new PrimitiveDescJS("any");
@@ -21,8 +19,12 @@ public sealed interface TypeDescJS permits ArrayDescJS, FixedArrayDescJS, Generi
 		return new OrDescJS(types);
 	}
 
-	static TypeDescJS object(List<Pair<String, TypeDescJS>> types) {
-		return new ObjectDescJS(types);
+	static ObjectDescJS object() {
+		return new ObjectDescJS(new ArrayList<>());
+	}
+
+	static ObjectDescJS object(int init) {
+		return new ObjectDescJS(new ArrayList<>(init));
 	}
 
 	void build(StringBuilder builder);
@@ -51,5 +53,9 @@ public sealed interface TypeDescJS permits ArrayDescJS, FixedArrayDescJS, Generi
 
 	default TypeDescJS or(TypeDescJS type) {
 		return new OrDescJS(new TypeDescJS[]{this, type});
+	}
+
+	default TypeDescJS withGenerics(TypeDescJS... types) {
+		return new GenericDescJS(this, types);
 	}
 }

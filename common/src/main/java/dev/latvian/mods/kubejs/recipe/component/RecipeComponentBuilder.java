@@ -7,9 +7,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -40,13 +38,13 @@ public class RecipeComponentBuilder implements RecipeComponent<Map<String, Objec
 
 	@Override
 	public TypeDescJS constructorDescription(DescriptionContext ctx) {
-		var list = new ArrayList<Pair<String, TypeDescJS>>(map.size());
+		var obj = TypeDescJS.object(map.size());
 
 		for (var entry : map.entrySet()) {
-			list.add(Pair.of(entry.getKey(), entry.getValue().component.constructorDescription(ctx)));
+			obj.add(entry.getKey(), entry.getValue().component.constructorDescription(ctx), entry.getValue().optional());
 		}
 
-		return TypeDescJS.object(list);
+		return obj;
 	}
 
 	@Override
