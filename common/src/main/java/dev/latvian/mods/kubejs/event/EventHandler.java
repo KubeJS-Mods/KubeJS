@@ -204,6 +204,8 @@ public final class EventHandler extends BaseFunction {
 			throw new IllegalArgumentException("Event handler '" + this + "' doesn't support extra id " + extraId + "!");
 		}
 
+		var eventResult = EventResult.PASS;
+
 		try {
 			var extraContainers = extraEventContainers == null ? null : extraEventContainers.get(extraId);
 
@@ -222,9 +224,6 @@ public final class EventHandler extends BaseFunction {
 					postToHandlers(ScriptType.STARTUP, eventContainers, event);
 				}
 			}
-
-			event.afterPosted(EventResult.PASS);
-			return EventResult.PASS;
 		} catch (EventExit exit) {
 			if (exit.result.type() == EventResult.Type.ERROR) {
 				if (DevProperties.get().debugInfo) {
@@ -232,16 +231,17 @@ public final class EventHandler extends BaseFunction {
 				}
 
 				scriptType.console.handleError((Throwable) exit.result.value(), null, "Error occurred while handling event '" + this + "'");
-				return exit.result;
-			}
+			} else {
+				eventResult = exit.result;
 
-			if (!getHasResult()) {
-				scriptType.console.handleError(new IllegalStateException("Event returned result when it's not cancellable"), null, "Error occurred while handling event '" + this + "'");
+				if (!getHasResult()) {
+					scriptType.console.handleError(new IllegalStateException("Event returned result when it's not cancellable"), null, "Error occurred while handling event '" + this + "'");
+				}
 			}
-
-			event.afterPosted(exit.result);
-			return exit.result;
 		}
+
+		event.afterPosted(eventResult);
+		return eventResult;
 	}
 
 	private void postToHandlers(ScriptType type, EventHandlerContainer[] containers, EventJS event) {
