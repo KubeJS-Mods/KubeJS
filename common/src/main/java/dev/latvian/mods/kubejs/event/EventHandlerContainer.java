@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.event;
 
-import dev.latvian.mods.kubejs.script.ScriptType;
 import org.jetbrains.annotations.Nullable;
 
 public class EventHandlerContainer {
@@ -31,7 +30,7 @@ public class EventHandlerContainer {
 		this.line = line;
 	}
 
-	public EventResult handle(ScriptType scriptType, EventHandler eventHandler, EventJS event) {
+	public EventResult handle(EventJS event) {
 		var itr = this;
 
 		do {
@@ -40,7 +39,6 @@ public class EventHandlerContainer {
 			} catch (EventExit exit) {
 				throw exit;
 			} catch (Throwable ex) {
-				scriptType.console.handleError(ex, null, "Error occurred while handling event '" + eventHandler + "'");
 				throw EventResult.Type.ERROR.exit(ex);
 			}
 

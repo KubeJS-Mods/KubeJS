@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.event;
 
+import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
 import dev.latvian.mods.kubejs.util.ListJS;
@@ -226,6 +227,11 @@ public final class EventHandler extends BaseFunction {
 			return EventResult.PASS;
 		} catch (EventExit exit) {
 			if (exit.result.type() == EventResult.Type.ERROR) {
+				if (DevProperties.get().debugInfo) {
+					((Throwable) exit.result.value()).printStackTrace();
+				}
+
+				scriptType.console.handleError((Throwable) exit.result.value(), null, "Error occurred while handling event '" + this + "'");
 				return exit.result;
 			}
 
@@ -242,7 +248,7 @@ public final class EventHandler extends BaseFunction {
 		var handler = containers[type.ordinal()];
 
 		if (handler != null) {
-			handler.handle(type, this, event);
+			handler.handle(event);
 		}
 	}
 

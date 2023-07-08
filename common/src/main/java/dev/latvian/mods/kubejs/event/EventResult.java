@@ -53,6 +53,10 @@ public class EventResult {
 		return type == Type.PASS;
 	}
 
+	public boolean error() {
+		return type == Type.ERROR;
+	}
+
 	public boolean interruptDefault() {
 		return type == Type.INTERRUPT_DEFAULT;
 	}

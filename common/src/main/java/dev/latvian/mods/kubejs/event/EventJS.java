@@ -3,27 +3,27 @@ package dev.latvian.mods.kubejs.event;
 import org.jetbrains.annotations.Nullable;
 
 public class EventJS {
-	public void cancel() {
+	public Object cancel() {
 		throw EventResult.Type.INTERRUPT_FALSE.defaultExit;
 	}
 
-	public void success() {
+	public Object success() {
 		throw EventResult.Type.INTERRUPT_TRUE.defaultExit;
 	}
 
-	public void exit() {
+	public Object exit() {
 		throw EventResult.Type.INTERRUPT_DEFAULT.defaultExit;
 	}
 
-	public void cancel(@Nullable Object value) {
+	public Object cancel(@Nullable Object value) {
 		throw EventResult.Type.INTERRUPT_FALSE.exit(value);
 	}
 
-	public void success(@Nullable Object value) {
+	public Object success(@Nullable Object value) {
 		throw EventResult.Type.INTERRUPT_TRUE.exit(value);
 	}
 
-	public void exit(@Nullable Object value) {
+	public Object exit(@Nullable Object value) {
 		throw EventResult.Type.INTERRUPT_DEFAULT.exit(value);
 	}
 
