@@ -115,8 +115,8 @@ public interface ShapedRecipeSchema {
 	RecipeKey<OutputItem> RESULT = ItemComponents.OUTPUT.key("result");
 	RecipeKey<String[]> PATTERN = StringComponent.NON_EMPTY.asArray().key("pattern");
 	RecipeKey<TinyMap<Character, InputItem>> KEY = MapRecipeComponent.ITEM_PATTERN_KEY.key("key");
-	RecipeKey<Boolean> KJS_MIRROR = BooleanComponent.BOOLEAN.key("kubejs:mirror").optional(true);
-	RecipeKey<Boolean> KJS_SHRINK = BooleanComponent.BOOLEAN.key("kubejs:shrink").optional(true);
+	RecipeKey<Boolean> KJS_MIRROR = BooleanComponent.BOOLEAN.key("kubejs:mirror").preferred("kjsMirror").optional(true).exclude();
+	RecipeKey<Boolean> KJS_SHRINK = BooleanComponent.BOOLEAN.key("kubejs:shrink").preferred("kjsShrink").optional(true).exclude();
 
 	// Used for shaped recipes with 2D ingredient array
 	RecipeKey<InputItem[][]> INGREDIENTS = ItemComponents.INPUT_ARRAY.asArray().key("ingredients");
