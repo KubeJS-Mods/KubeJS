@@ -43,7 +43,7 @@ public interface KubeJSPaths {
 	Path EXPORTED = dir(DIRECTORY.resolve("exported"));
 	Path README = DIRECTORY.resolve("README.txt");
 	Path LOCAL = dir(Platform.getGameFolder().resolve("local"));
-	Path LOCAL_DEV_PROPERTIES = LOCAL.resolve("kubejsdev.properties");
+	Path LOCAL_DEV_PROPERTIES = dir(LOCAL.resolve("kubejs")).resolve("dev.properties");
 
 	static Path get(PackType type) {
 		return type == PackType.CLIENT_RESOURCES ? ASSETS : DATA;

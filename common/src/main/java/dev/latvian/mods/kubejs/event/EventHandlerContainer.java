@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.event;
 
+import dev.latvian.mods.rhino.WrappedException;
 import org.jetbrains.annotations.Nullable;
 
 public class EventHandlerContainer {
@@ -39,7 +40,13 @@ public class EventHandlerContainer {
 			} catch (EventExit exit) {
 				throw exit;
 			} catch (Throwable ex) {
-				throw EventResult.Type.ERROR.exit(ex);
+				var throwable = ex;
+
+				while (throwable instanceof WrappedException e) {
+					throwable = e.getWrappedException();
+				}
+
+				throw throwable instanceof EventExit exit ? exit : EventResult.Type.ERROR.exit(throwable);
 			}
 
 			itr = itr.child;

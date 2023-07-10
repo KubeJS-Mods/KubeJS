@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs;
 
+import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 
 import java.io.Reader;
@@ -51,7 +52,7 @@ public class DevProperties {
 				writeProperties = true;
 			}
 
-			debugInfo = get("debugInfo", false);
+			debugInfo = get("debugInfo", Platform.isDevelopmentEnvironment());
 			dataPackOutput = get("dataPackOutput", false);
 			logAddedRecipes = get("logAddedRecipes", false);
 			logRemovedRecipes = get("logRemovedRecipes", false);
