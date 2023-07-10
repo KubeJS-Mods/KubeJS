@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.filter.ConstantFilter;
 import dev.latvian.mods.kubejs.recipe.filter.IDFilter;
+import dev.latvian.mods.kubejs.recipe.filter.OrFilter;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.schema.JsonRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
@@ -37,16 +38,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -370,6 +362,20 @@ public class RecipesEventJS extends EventJS {
 		}
 
 		Stream<RecipeJS> stream;
+
+		if (filter instanceof IDFilter id) {
+			return Stream.ofNullable(originalRecipes.get(id.id));
+		} else if (filter instanceof OrFilter or) {
+			var ids = new ArrayList<ResourceLocation>(or.list.size());
+			for (RecipeFilter recipeFilter : or.list) {
+				if (recipeFilter instanceof IDFilter id) {
+					ids.add(id.id);
+				}
+			}
+			if (ids.size() == or.list.size()) {
+				return ids.stream().map(originalRecipes::get).filter(Objects::nonNull);
+			}
+		}
 
 		if (async && CommonProperties.get().allowAsyncStreams) {
 			stream = originalRecipes.values().parallelStream();
