@@ -30,21 +30,12 @@ import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.EndTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.NumericTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.valueproviders.ClampedInt;
-import net.minecraft.util.valueproviders.ClampedNormalInt;
-import net.minecraft.util.valueproviders.ConstantInt;
-import net.minecraft.util.valueproviders.IntProvider;
-import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.util.valueproviders.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobType;
@@ -65,30 +56,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
+import java.lang.reflect.*;
 import java.math.BigInteger;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.temporal.TemporalAmount;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.HexFormat;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -110,6 +88,18 @@ public class UtilsJS {
 	private static Collection<BlockState> ALL_STATE_CACHE = null;
 	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();
 	private static final EntitySelector ALL_ENTITIES_SELECTOR = new EntitySelector(EntitySelector.INFINITE, true, false, e -> true, MinMaxBounds.Doubles.ANY, Function.identity(), null, EntitySelectorParser.ORDER_ARBITRARY, false, null, null, null, true);
+
+	// hacky workaround for parallel streams, which are executed on the common fork/join pool by default
+	// and forge / event bus REALLY does not like that (plus it's generally just safer to use our own pool)
+	private static final ForkJoinPool POOL = new ForkJoinPool(Math.max(1, Runtime.getRuntime().availableProcessors() - 1),
+			forkJoinPool -> {
+				final ForkJoinWorkerThread thread = new ForkJoinWorkerThread(forkJoinPool) {
+				};
+				thread.setContextClassLoader(KubeJS.class.getClassLoader()); // better safe than sorry
+				thread.setName(String.format("KubeJS Parallel Worker %d", thread.getPoolIndex()));
+				return thread;
+			}, null, true
+	);
 
 	public interface TryIO {
 		void run() throws IOException;
@@ -885,5 +875,13 @@ public class UtilsJS {
 
 	public static Color readColor(FriendlyByteBuf buf) {
 		return new SimpleColorWithAlpha(buf.readInt());
+	}
+
+	public static void runInParallel(final Runnable runnable) {
+		POOL.invoke(ForkJoinTask.adapt(runnable));
+	}
+
+	public static <T> T runInParallel(final Callable<T> callable) {
+		return POOL.invoke(ForkJoinTask.adapt(callable));
 	}
 }

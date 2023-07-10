@@ -36,9 +36,19 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -256,7 +266,7 @@ public class RecipesEventJS extends EventJS {
 		var recipesByName = new HashMap<ResourceLocation, Recipe<?>>(originalRecipes.size() + addedRecipes.size());
 
 		try {
-			recipesByName.putAll(originalRecipes.values().parallelStream()
+			recipesByName.putAll(UtilsJS.runInParallel(() -> originalRecipes.values().parallelStream()
 					.map(recipe -> {
 						try {
 							return recipe.createRecipe();
@@ -267,13 +277,13 @@ public class RecipesEventJS extends EventJS {
 						}
 					})
 					.filter(Objects::nonNull)
-					.collect(Collectors.toMap(Recipe::getId, Function.identity())));
+					.collect(Collectors.toMap(Recipe::getId, Function.identity()))));
 		} catch (Throwable ex) {
 			ConsoleJS.SERVER.error("Error creating datapack recipes", ex, SKIP_ERROR);
 		}
 
 		try {
-			recipesByName.putAll(addedRecipes.parallelStream()
+			recipesByName.putAll(UtilsJS.runInParallel(() -> addedRecipes.parallelStream()
 					.map(recipe -> {
 						try {
 							return recipe.createRecipe();
@@ -284,7 +294,7 @@ public class RecipesEventJS extends EventJS {
 						}
 					})
 					.filter(Objects::nonNull)
-					.collect(Collectors.toMap(Recipe::getId, Function.identity())));
+					.collect(Collectors.toMap(Recipe::getId, Function.identity()))));
 		} catch (Throwable ex) {
 			ConsoleJS.SERVER.error("Error creating script recipes", ex, SKIP_ERROR);
 		}
@@ -356,12 +366,17 @@ public class RecipesEventJS extends EventJS {
 		return filter;
 	}
 
-	public Stream<RecipeJS> recipeStream(RecipeFilter filter, boolean async) {
+	/**
+	 * Creates a <i>non-parallel</i> stream of all recipes matching the given filter.
+	 * <p>
+	 * You may call .parallel() on the stream yourself after construction, but note
+	 * that due to a bug in Forge (which will be resolved in Minecraft 1.20), you
+	 * will *have* to execute the Stream on a separate fork/join pool then!
+	 */
+	public Stream<RecipeJS> recipeStream(RecipeFilter filter) {
 		if (filter == ConstantFilter.FALSE) {
 			return Stream.empty();
 		}
-
-		Stream<RecipeJS> stream;
 
 		if (filter instanceof IDFilter id) {
 			return Stream.ofNullable(originalRecipes.get(id.id));
@@ -377,11 +392,7 @@ public class RecipesEventJS extends EventJS {
 			}
 		}
 
-		if (async && CommonProperties.get().allowAsyncStreams) {
-			stream = originalRecipes.values().parallelStream();
-		} else {
-			stream = originalRecipes.values().stream();
-		}
+		var stream = originalRecipes.values().stream();
 
 		if (filter != ConstantFilter.TRUE) {
 			stream = stream.filter(filter);
@@ -390,16 +401,37 @@ public class RecipesEventJS extends EventJS {
 		return stream;
 	}
 
+	/**
+	 * Creates a <i>possibly parallel</i> stream of all recipes matching the given filter.
+	 * Note that this should <b>only</b> be used with a terminal operation that is
+	 * executed on our own fork/join pool!
+	 * <p>
+	 * See {@link #recipeStream(RecipeFilter)} for more information on why this needs to exist.
+	 */
+	@ApiStatus.Internal
+	private Stream<RecipeJS> recipeStreamAsync(RecipeFilter filter) {
+		var stream = recipeStream(filter);
+		return CommonProperties.get().allowAsyncStreams ? stream.parallel() : stream;
+	}
+
+	private void forEachRecipeAsync(RecipeFilter filter, Consumer<RecipeJS> consumer) {
+		UtilsJS.runInParallel(() -> recipeStreamAsync(filter).forEach(consumer));
+	}
+
+	private <T> T reduceRecipesAsync(RecipeFilter filter, Function<Stream<RecipeJS>, T> function) {
+		return UtilsJS.runInParallel(() -> function.apply(recipeStreamAsync(filter)));
+	}
+
 	public void forEachRecipe(RecipeFilter filter, Consumer<RecipeJS> consumer) {
-		recipeStream(filter, false).forEach(consumer);
+		recipeStream(filter).forEach(consumer);
 	}
 
 	public int countRecipes(RecipeFilter filter) {
-		return (int) recipeStream(filter, true).count();
+		return reduceRecipesAsync(filter, s -> (int) s.count());
 	}
 
 	public boolean containsRecipe(RecipeFilter filter) {
-		return recipeStream(filter, true).anyMatch(filter);
+		return reduceRecipesAsync(filter, s -> s.findAny().isPresent());
 	}
 
 	public void remove(RecipeFilter filter) {
@@ -420,7 +452,7 @@ public class RecipesEventJS extends EventJS {
 			return;
 		}
 
-		for (var r : recipeStream(filter, true).toList()) {
+		for (var r : recipeStream(filter).toList()) {
 			if (!r.removed) {
 				r.removed = true;
 				removedRecipes.add(r);
@@ -438,7 +470,7 @@ public class RecipesEventJS extends EventJS {
 	public void replaceInput(RecipeFilter filter, ReplacementMatch match, InputReplacement with) {
 		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": IN " + match + " -> " + with) : "";
 
-		recipeStream(filter, true).forEach(r -> {
+		forEachRecipeAsync(filter, r -> {
 			if (r.replaceInput(match, with)) {
 				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + dstring);
@@ -452,7 +484,7 @@ public class RecipesEventJS extends EventJS {
 	public void replaceOutput(RecipeFilter filter, ReplacementMatch match, OutputReplacement with) {
 		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": OUT " + match + " -> " + with) : "";
 
-		recipeStream(filter, true).forEach(r -> {
+		forEachRecipeAsync(filter, r -> {
 			if (r.replaceOutput(match, with)) {
 				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + dstring);
@@ -515,7 +547,7 @@ public class RecipesEventJS extends EventJS {
 
 	public void printTypes() {
 		ConsoleJS.SERVER.info("== All recipe types [used] ==");
-		var set = recipeStream(ConstantFilter.TRUE, true).map(r -> r.type.id).collect(Collectors.toSet());
+		var set = reduceRecipesAsync(ConstantFilter.TRUE, s -> s.map(r -> r.type.id).collect(Collectors.toSet()));
 		printTypes(t -> set.contains(t.id));
 	}
 
@@ -541,6 +573,6 @@ public class RecipesEventJS extends EventJS {
 	}
 
 	public void stage(RecipeFilter filter, String stage) {
-		recipeStream(filter, true).forEach(r -> r.stage(stage));
+		forEachRecipeAsync(filter, r -> r.stage(stage));
 	}
 }
