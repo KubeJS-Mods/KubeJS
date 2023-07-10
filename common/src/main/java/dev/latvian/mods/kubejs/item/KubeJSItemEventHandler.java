@@ -7,7 +7,6 @@ import dev.architectury.event.events.common.PlayerEvent;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
 import dev.latvian.mods.kubejs.player.InventoryChangedEventJS;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;

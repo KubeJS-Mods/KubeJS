@@ -41,32 +41,14 @@ public class ItemClickedEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	public Object cancel() {
-		return super.cancel(item);
+	@Nullable
+	protected Object defaultExitValue() {
+		return item;
 	}
 
 	@Override
-	public Object success() {
-		return super.success(item);
-	}
-
-	@Override
-	public Object exit() {
-		return super.exit(item);
-	}
-
-	@Override
-	public Object cancel(@Nullable Object value) {
-		return super.cancel(ItemStackJS.of(value));
-	}
-
-	@Override
-	public Object success(@Nullable Object value) {
-		return super.success(ItemStackJS.of(value));
-	}
-
-	@Override
-	public Object exit(@Nullable Object value) {
-		return super.exit(ItemStackJS.of(value));
+	@Nullable
+	protected Object mapExitValue(@Nullable Object value) {
+		return ItemStackJS.of(value);
 	}
 }
