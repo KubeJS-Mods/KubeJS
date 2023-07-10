@@ -11,6 +11,8 @@ import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.TinyMap;
 
+import java.util.Map;
+
 public interface ItemComponents {
 	RecipeComponent<InputItem> INPUT = new RecipeComponent<>() {
 		@Override
@@ -155,20 +157,27 @@ public interface ItemComponents {
 		}
 
 		@Override
-		public void writeToJson(RecipeComponentValue<OutputItem> value, JsonObject json) {
-			json.addProperty(value.key.name, value.value.item.kjs$getId());
-			json.addProperty("count", value.value.item.getCount());
+		public void writeToJson(RecipeComponentValue<OutputItem> cv, JsonObject json) {
+			json.addProperty(cv.key.name, cv.value.item.kjs$getId());
+			json.addProperty("count", cv.value.item.getCount());
 		}
 
 		@Override
-		public OutputItem readFromJson(RecipeJS recipe, RecipeKey<OutputItem> key, JsonObject json) {
-			var item = RecipeComponentWithParent.super.readFromJson(recipe, key, json);
+		public void readFromJson(RecipeComponentValue<OutputItem> cv, JsonObject json) {
+			RecipeComponentWithParent.super.readFromJson(cv, json);
 
-			if (item != null && json.has("count")) {
-				item.item.setCount(json.get("count").getAsInt());
+			if (cv.value != null && json.has("count")) {
+				cv.value.item.setCount(json.get("count").getAsInt());
 			}
+		}
 
-			return item;
+		@Override
+		public void readFromMap(RecipeComponentValue<OutputItem> cv, Map<?, ?> map) {
+			RecipeComponentWithParent.super.readFromMap(cv, map);
+
+			if (cv.value != null && map.containsKey("count")) {
+				cv.value.item.setCount(((Number) map.get("count")).intValue());
+			}
 		}
 
 		@Override

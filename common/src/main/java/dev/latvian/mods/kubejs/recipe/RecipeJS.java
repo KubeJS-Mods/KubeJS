@@ -65,11 +65,9 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 
 	public void deserialize(boolean merge) {
 		for (var v : valueMap.values()) {
-			var value = v.key.component.readFromJson(this, UtilsJS.cast(v.key), json);
+			v.key.component.readFromJson(UtilsJS.cast(v), json);
 
-			if (value != null) {
-				v.value = UtilsJS.cast(value);
-
+			if (v.value != null) {
 				if (merge) {
 					v.write = true;
 				}

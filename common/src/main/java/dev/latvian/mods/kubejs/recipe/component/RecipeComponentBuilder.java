@@ -2,28 +2,57 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.recipe.InputReplacement;
+import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-public class RecipeComponentBuilder implements RecipeComponent<Map<String, Object>> {
-	public final Map<String, RecipeKey<?>> map;
+public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBuilder.RCBHolder[]> {
+	public record RCBHolder(RecipeKey<?> key, Object value) {
+	}
+
+	public final List<RecipeKey<?>> keys;
+	public Predicate<Set<String>> hasPriority;
+	public ComponentRole role = ComponentRole.OTHER;
 
 	public RecipeComponentBuilder(int init) {
-		this.map = new LinkedHashMap<>(init);
+		this.keys = new ArrayList<>(init);
 	}
 
 	public RecipeComponentBuilder add(RecipeKey<?> key) {
-		if (map.put(key.name, key) != null) {
-			throw new IllegalStateException("Component with name '" + key + "' already exists!");
-		}
-
+		keys.add(key);
 		return this;
+	}
+
+	public RecipeComponentBuilder hasPriority(Predicate<Set<String>> hasPriority) {
+		this.hasPriority = hasPriority;
+		return this;
+	}
+
+	public RecipeComponentBuilder inputRole() {
+		this.role = ComponentRole.INPUT;
+		return this;
+	}
+
+	public RecipeComponentBuilder outputRole() {
+		this.role = ComponentRole.OUTPUT;
+		return this;
+	}
+
+	@Override
+	public ComponentRole role() {
+		return role;
 	}
 
 	@Override
@@ -33,35 +62,29 @@ public class RecipeComponentBuilder implements RecipeComponent<Map<String, Objec
 
 	@Override
 	public Class<?> componentClass() {
-		return Map.class;
+		return RCBHolder.class;
 	}
 
 	@Override
 	public TypeDescJS constructorDescription(DescriptionContext ctx) {
-		var obj = TypeDescJS.object(map.size());
+		var obj = TypeDescJS.object(keys.size());
 
-		for (var entry : map.entrySet()) {
-			obj.add(entry.getKey(), entry.getValue().component.constructorDescription(ctx), entry.getValue().optional());
+		for (var key : keys) {
+			obj.add(key.name, key.component.constructorDescription(ctx), key.optional());
 		}
 
 		return obj;
 	}
 
 	@Override
-	public JsonElement write(RecipeJS recipe, Map<String, Object> value) {
+	public JsonElement write(RecipeJS recipe, RCBHolder[] value) {
 		var json = new JsonObject();
 
-		for (var entry : value.entrySet()) {
-			var k = map.get(entry.getKey());
-
-			if (k != null) {
-				var v = k.component.write(recipe, UtilsJS.cast(entry.getValue()));
-
-				if (v != null) {
-					json.add(entry.getKey(), v);
-				}
-			} else {
-				throw new IllegalStateException("Component with name '" + entry.getKey() + "' does not exist!");
+		for (var val : value) {
+			if (val.value != null) {
+				var vc = new RecipeComponentValue<>(recipe, val.key);
+				vc.value = UtilsJS.cast(val.value);
+				val.key.component.writeToJson(UtilsJS.cast(vc), json);
 			}
 		}
 
@@ -69,46 +92,123 @@ public class RecipeComponentBuilder implements RecipeComponent<Map<String, Objec
 	}
 
 	@Override
-	public Map<String, Object> read(RecipeJS recipe, Object from) {
-		if (from instanceof JsonObject o) {
-			var m = new LinkedHashMap<String, Object>(o.size());
+	public RCBHolder[] read(RecipeJS recipe, Object from) {
+		var values = new RCBHolder[keys.size()];
 
-			for (var entry : o.entrySet()) {
-				var k = map.get(entry.getKey());
-
-				if (k != null) {
-					m.put(entry.getKey(), k.component.readFromJson(recipe, UtilsJS.cast(k), o));
-				} else {
-					throw new IllegalStateException("Component with name '" + entry.getKey() + "' does not exist!");
-				}
+		if (from instanceof JsonObject json) {
+			for (int i = 0; i < values.length; i++) {
+				var vc = new RecipeComponentValue<>(recipe, keys.get(i));
+				vc.key.component.readFromJson(UtilsJS.cast(vc), json);
+				values[i] = new RCBHolder(keys.get(i), vc.value);
 			}
-
-			return m;
-		} else if (from instanceof Map<?, ?> m) {
-			var map = new LinkedHashMap<String, Object>(m.size());
-
-			for (var entry : m.entrySet()) {
-				var k = this.map.get(String.valueOf(entry.getKey()));
-
-				if (k != null) {
-					map.put(entry.getKey().toString(), k.component.read(recipe, entry.getValue()));
-				} else {
-					throw new IllegalStateException("Component with name '" + entry.getKey() + "' does not exist!");
-				}
+		} else if (from instanceof Map<?, ?> map) {
+			for (int i = 0; i < values.length; i++) {
+				var vc = new RecipeComponentValue<>(recipe, keys.get(i));
+				vc.key.component.readFromMap(UtilsJS.cast(vc), map);
+				values[i] = new RCBHolder(keys.get(i), vc.value);
 			}
-
-			return map;
 		} else {
 			throw new IllegalArgumentException("Expected JSON object!");
 		}
+
+		return values;
 	}
 
-	public <T> T get(String name, RecipeComponent<T> ignored) {
-		return UtilsJS.cast(map.get(name));
+	@Override
+	public boolean hasPriority(RecipeJS recipe, Object from) {
+		if (from instanceof Map m) {
+			if (hasPriority != null) {
+				return hasPriority.test(m.keySet());
+			} else {
+				for (var key : keys) {
+					if (!key.optional() && !m.containsKey(key.name)) {
+						return false;
+					}
+				}
+
+				return true;
+			}
+		} else if (from instanceof JsonObject json) {
+			if (hasPriority != null) {
+				return hasPriority.test(json.keySet());
+			} else {
+				for (var key : keys) {
+					if (!key.optional() && !json.has(key.name)) {
+						return false;
+					}
+				}
+
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isInput(RecipeJS recipe, RCBHolder[] value, ReplacementMatch match) {
+		for (var entry : value) {
+			if (entry.value != null && entry.key.component.role().isInput() && entry.key.component.isInput(recipe, UtilsJS.cast(entry.value), match)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public RCBHolder[] replaceInput(RecipeJS recipe, RCBHolder[] original, ReplacementMatch match, InputReplacement with) {
+		var arr = original;
+
+		for (int i = 0; i < original.length; i++) {
+			var r = original[i].key.component.replaceInput(recipe, UtilsJS.cast(original[i].value()), match, with);
+
+			if (r != original[i].value()) {
+				if (arr == original) {
+					arr = new RCBHolder[original.length];
+					System.arraycopy(original, 0, arr, 0, i);
+				}
+
+				arr[i] = new RCBHolder(original[i].key(), r);
+			}
+		}
+
+		return arr;
+	}
+
+	@Override
+	public boolean isOutput(RecipeJS recipe, RCBHolder[] value, ReplacementMatch match) {
+		for (var entry : value) {
+			if (entry.value != null && entry.key.component.role().isOutput() && entry.key.component.isOutput(recipe, UtilsJS.cast(entry.value), match)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public RCBHolder[] replaceOutput(RecipeJS recipe, RCBHolder[] original, ReplacementMatch match, OutputReplacement with) {
+		var arr = original;
+
+		for (int i = 0; i < original.length; i++) {
+			var r = original[i].key.component.replaceOutput(recipe, UtilsJS.cast(original[i].value()), match, with);
+
+			if (r != original[i].value()) {
+				if (arr == original) {
+					arr = new RCBHolder[original.length];
+					System.arraycopy(original, 0, arr, 0, i);
+				}
+
+				arr[i] = new RCBHolder(original[i].key(), r);
+			}
+		}
+
+		return arr;
 	}
 
 	@Override
 	public String toString() {
-		return "builder";
+		return keys.stream().map(RecipeKey::toString).collect(Collectors.joining(",", "builder{", "}"));
 	}
 }

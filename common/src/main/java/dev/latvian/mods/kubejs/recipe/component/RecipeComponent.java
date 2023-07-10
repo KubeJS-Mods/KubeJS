@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.util.TinyMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
+import java.util.Map;
 
 @Nullable
 public interface RecipeComponent<T> {
@@ -52,33 +53,48 @@ public interface RecipeComponent<T> {
 
 	T read(RecipeJS recipe, Object from);
 
-	default void writeToJson(RecipeComponentValue<T> value, JsonObject json) {
-		if (value.key.names.size() >= 2) {
-			for (var k : value.key.names) {
+	default void writeToJson(RecipeComponentValue<T> cv, JsonObject json) {
+		if (cv.key.names.size() >= 2) {
+			for (var k : cv.key.names) {
 				json.remove(k);
 			}
 		}
 
-		json.add(value.key.name, write(value.recipe, value.value));
+		json.add(cv.key.name, write(cv.recipe, cv.value));
 	}
 
-	@Nullable
-	default T readFromJson(RecipeJS recipe, RecipeKey<T> key, JsonObject json) {
-		var v = json.get(key.name);
+	default void readFromJson(RecipeComponentValue<T> cv, JsonObject json) {
+		var v = json.get(cv.key.name);
 
 		if (v != null) {
-			return read(recipe, v);
-		} else if (key.names.size() >= 2) {
-			for (var alt : key.names) {
+			cv.value = read(cv.recipe, v);
+		} else if (cv.key.names.size() >= 2) {
+			for (var alt : cv.key.names) {
 				v = json.get(alt);
 
 				if (v != null) {
-					return read(recipe, v);
+					cv.value = read(cv.recipe, v);
+					return;
 				}
 			}
 		}
+	}
 
-		return null;
+	default void readFromMap(RecipeComponentValue<T> cv, Map<?, ?> map) {
+		var v = map.get(cv.key.name);
+
+		if (v != null) {
+			cv.value = read(cv.recipe, v);
+		} else if (cv.key.names.size() >= 2) {
+			for (var alt : cv.key.names) {
+				v = map.get(alt);
+
+				if (v != null) {
+					cv.value = read(cv.recipe, v);
+					return;
+				}
+			}
+		}
 	}
 
 	default boolean hasPriority(RecipeJS recipe, Object from) {
