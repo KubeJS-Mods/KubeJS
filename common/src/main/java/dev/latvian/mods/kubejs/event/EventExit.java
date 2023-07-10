@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.event;
 
-public class EventExit extends RuntimeException {
+public class EventExit extends Exception {
 	public final EventResult result;
 
 	public EventExit(EventResult result) {

@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.event;
 
+import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.WrappedException;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,12 +32,16 @@ public class EventHandlerContainer {
 		this.line = line;
 	}
 
-	public EventResult handle(EventJS event) {
+	public EventResult handle(EventJS event) throws EventExit {
 		var itr = this;
 
 		do {
 			try {
-				itr.handler.onEvent(event);
+				var r = itr.handler.onEvent(event);
+
+				if (r != null && !Undefined.isUndefined(r)) {
+					throw new RuntimeException("Please use `return event.success(value)` or `return event.cancel(value)` instead of `return value` directly!");
+				}
 			} catch (EventExit exit) {
 				throw exit;
 			} catch (Throwable ex) {

@@ -102,6 +102,8 @@ public class KubeJSClient extends KubeJSCommon {
 					e.register(b.flowingTexture);
 				}
 			}
+
+			return null;
 		});
 	}
 

@@ -268,7 +268,7 @@ public final class EventHandler extends BaseFunction {
 		return eventResult;
 	}
 
-	private void postToHandlers(ScriptType type, EventHandlerContainer[] containers, EventJS event) {
+	private void postToHandlers(ScriptType type, EventHandlerContainer[] containers, EventJS event) throws EventExit {
 		var handler = containers[type.ordinal()];
 
 		if (handler != null) {
