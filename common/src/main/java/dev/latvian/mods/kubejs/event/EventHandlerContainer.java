@@ -37,11 +37,7 @@ public class EventHandlerContainer {
 
 		do {
 			try {
-				var r = itr.handler.onEvent(event);
-
-				if (r != null && !Undefined.isUndefined(r)) {
-					throw new RuntimeException("Please use `return event.success(value)` or `return event.cancel(value)` instead of `return value` directly!");
-				}
+				itr.handler.onEvent(event);
 			} catch (EventExit exit) {
 				throw exit;
 			} catch (Throwable ex) {
