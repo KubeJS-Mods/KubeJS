@@ -51,7 +51,7 @@ public class KubeJSPlayerEventHandler {
 
 	public static void tick(Player player) {
 		if (PlayerEvents.TICK.hasListeners()) {
-			PlayerEvents.TICK.post(ScriptType.of(player), new SimplePlayerEventJS(player));
+			PlayerEvents.TICK.post(player, new SimplePlayerEventJS(player));
 		}
 	}
 
@@ -65,7 +65,7 @@ public class KubeJSPlayerEventHandler {
 
 	public static void advancement(ServerPlayer player, Advancement advancement) {
 		if (PlayerEvents.ADVANCEMENT.hasListeners()) {
-			PlayerEvents.ADVANCEMENT.post(ScriptType.SERVER, String.valueOf(advancement.getId()), new PlayerAdvancementEventJS(player, advancement));
+			PlayerEvents.ADVANCEMENT.post(new PlayerAdvancementEventJS(player, advancement), advancement.getId());
 		}
 	}
 
@@ -75,21 +75,21 @@ public class KubeJSPlayerEventHandler {
 		}
 
 		if (PlayerEvents.INVENTORY_OPENED.hasListeners()) {
-			PlayerEvents.INVENTORY_OPENED.post(ScriptType.of(player), menu, new InventoryEventJS(player, menu));
+			PlayerEvents.INVENTORY_OPENED.post(player, menu, new InventoryEventJS(player, menu));
 		}
 
 		if (menu instanceof ChestMenu && PlayerEvents.CHEST_OPENED.hasListeners()) {
-			PlayerEvents.CHEST_OPENED.post(ScriptType.of(player), menu, new ChestEventJS(player, menu));
+			PlayerEvents.CHEST_OPENED.post(player, menu, new ChestEventJS(player, menu));
 		}
 	}
 
 	public static void inventoryClosed(Player player, AbstractContainerMenu menu) {
 		if (PlayerEvents.INVENTORY_CLOSED.hasListeners()) {
-			PlayerEvents.INVENTORY_CLOSED.post(ScriptType.of(player), menu, new InventoryEventJS(player, menu));
+			PlayerEvents.INVENTORY_CLOSED.post(player, menu, new InventoryEventJS(player, menu));
 		}
 
 		if (menu instanceof ChestMenu && PlayerEvents.CHEST_CLOSED.hasListeners()) {
-			PlayerEvents.CHEST_CLOSED.post(ScriptType.of(player), menu, new ChestEventJS(player, menu));
+			PlayerEvents.CHEST_CLOSED.post(player, menu, new ChestEventJS(player, menu));
 		}
 	}
 }

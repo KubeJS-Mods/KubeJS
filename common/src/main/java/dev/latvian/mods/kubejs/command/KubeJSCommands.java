@@ -241,7 +241,7 @@ public class KubeJSCommands {
 
 	private static int customCommand(CommandSourceStack source, String id) {
 		if (ServerEvents.CUSTOM_COMMAND.hasListeners()) {
-			var result = ServerEvents.CUSTOM_COMMAND.post(ScriptType.SERVER, id, new CustomCommandEventJS(source.getLevel(), source.getEntity(), new BlockPos(source.getPosition()), id));
+			var result = ServerEvents.CUSTOM_COMMAND.post(new CustomCommandEventJS(source.getLevel(), source.getEntity(), new BlockPos(source.getPosition()), id), id);
 
 			if (result.type() == EventResult.Type.ERROR) {
 				source.sendFailure(Component.literal(result.value().toString()));

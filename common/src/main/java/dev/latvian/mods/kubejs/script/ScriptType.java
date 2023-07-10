@@ -11,9 +11,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.LevelReader;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +21,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
-public enum ScriptType implements ScriptTypePredicate {
+public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 	STARTUP("startup", "KubeJS Startup", KubeJS::getStartupScriptManager),
 	SERVER("server", "KubeJS Server", ServerScriptManager::getScriptManager),
 	CLIENT("client", "KubeJS Client", KubeJS::getClientScriptManager);
@@ -36,14 +33,6 @@ public enum ScriptType implements ScriptTypePredicate {
 	}
 
 	public static final ScriptType[] VALUES = values();
-
-	public static ScriptType of(LevelReader level) {
-		return level == null || level.isClientSide() ? CLIENT : SERVER;
-	}
-
-	public static ScriptType of(Entity entity) {
-		return entity instanceof ServerPlayer ? SERVER : entity == null || entity.level.isClientSide() ? CLIENT : SERVER;
-	}
 
 	public static ScriptType getCurrent(Context cx) {
 		return (ScriptType) cx.getProperty("Type");
@@ -147,5 +136,10 @@ public enum ScriptType implements ScriptTypePredicate {
 			case SERVER -> ScriptTypePredicate.STARTUP_OR_CLIENT;
 			case CLIENT -> ScriptTypePredicate.STARTUP_OR_SERVER;
 		};
+	}
+
+	@Override
+	public ScriptType kjs$getScriptType() {
+		return this;
 	}
 }

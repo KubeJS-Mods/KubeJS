@@ -58,7 +58,7 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 	@Override
 	public void registerEntries(EntryRegistry registry) {
 		if (REIEvents.ADD.hasListeners()) {
-			entryWrappers.forEach((type, wrapper) -> REIEvents.ADD.post(ScriptType.CLIENT, type.getId(), new AddREIEventJS(registry, wrapper)));
+			entryWrappers.forEach((type, wrapper) -> REIEvents.ADD.post(new AddREIEventJS(registry, wrapper), type.getId()));
 		}
 	}
 
@@ -69,7 +69,7 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 				var filter = FilteringRuleTypeRegistry.getInstance().basic();
 				var registry = EntryRegistry.getInstance();
 
-				REIEvents.HIDE.post(ScriptType.CLIENT, type.getId(), new HideREIEventJS<>(registry, filter, UtilsJS.cast(type), wrapper));
+				REIEvents.HIDE.post(new HideREIEventJS<>(registry, filter, UtilsJS.cast(type), wrapper), type.getId());
 			});
 		}
 	}
@@ -77,7 +77,7 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 	@Override
 	public void registerDisplays(DisplayRegistry registry) {
 		if (REIEvents.INFORMATION.hasListeners()) {
-			REIEvents.INFORMATION.post(ScriptType.CLIENT, new InformationREIEventJS());
+			REIEvents.INFORMATION.post(new InformationREIEventJS());
 		}
 		registry.registerVisibilityPredicate((cat, display) -> {
 			var id = display.getDisplayLocation();
@@ -101,11 +101,11 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 			recipesRemoved.clear();
 
 			if (REIEvents.REMOVE_CATEGORIES.hasListeners()) {
-				REIEvents.REMOVE_CATEGORIES.post(ScriptType.CLIENT, new RemoveREICategoryEventJS(categoriesRemoved));
+				REIEvents.REMOVE_CATEGORIES.post(new RemoveREICategoryEventJS(categoriesRemoved));
 			}
 
 			if (REIEvents.REMOVE_RECIPES.hasListeners()) {
-				REIEvents.REMOVE_RECIPES.post(ScriptType.CLIENT, new RemoveREIRecipeEventJS(recipesRemoved));
+				REIEvents.REMOVE_RECIPES.post(new RemoveREIRecipeEventJS(recipesRemoved));
 			}
 		}
 	}
@@ -114,7 +114,7 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 	@Override
 	public void registerCollapsibleEntries(CollapsibleEntryRegistry registry) {
 		if (REIEvents.GROUP_ENTRIES.hasListeners()) {
-			REIEvents.GROUP_ENTRIES.post(ScriptType.CLIENT, new GroupREIEntriesEventJS(registry));
+			REIEvents.GROUP_ENTRIES.post(new GroupREIEntriesEventJS(registry));
 		}
 	}
 

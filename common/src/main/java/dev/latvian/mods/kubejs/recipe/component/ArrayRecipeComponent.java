@@ -46,6 +46,11 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	}
 
 	@Override
+	public boolean hasPriority(RecipeJS recipe, Object from) {
+		return from instanceof Iterable<?> || from != null && from.getClass().isArray();
+	}
+
+	@Override
 	public JsonElement write(RecipeJS recipe, T[] value) {
 		if (canWriteSelf && value.length == 1) {
 			var v1 = component.write(recipe, value[0]);

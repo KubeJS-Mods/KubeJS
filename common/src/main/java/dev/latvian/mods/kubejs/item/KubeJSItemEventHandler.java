@@ -34,42 +34,38 @@ public class KubeJSItemEventHandler {
 		var stack = player.getItemInHand(hand);
 
 		if (!player.getCooldowns().isOnCooldown(stack.getItem())) {
-			var result = ItemEvents.RIGHT_CLICKED.post(ScriptType.of(player), stack.getItem(), new ItemClickedEventJS(player, hand, stack));
-
-			if (result.override()) {
-				return result.archCompound();
-			}
+			return ItemEvents.RIGHT_CLICKED.post(player, stack.getItem(), new ItemClickedEventJS(player, hand, stack)).archCompound();
 		}
 
 		return CompoundEventResult.pass();
 	}
 
 	private static EventResult canPickUp(Player player, ItemEntity entity, ItemStack stack) {
-		return ItemEvents.CAN_PICK_UP.hasListeners() ? ItemEvents.CAN_PICK_UP.post(ScriptType.of(player), stack.getItem(), new ItemPickedUpEventJS(player, entity, stack)).arch() : EventResult.pass();
+		return ItemEvents.CAN_PICK_UP.hasListeners() ? ItemEvents.CAN_PICK_UP.post(player, stack.getItem(), new ItemPickedUpEventJS(player, entity, stack)).arch() : EventResult.pass();
 	}
 
 	private static void pickup(Player player, ItemEntity entity, ItemStack stack) {
 		if (ItemEvents.PICKED_UP.hasListeners()) {
-			ItemEvents.PICKED_UP.post(ScriptType.of(player), stack.getItem(), new ItemPickedUpEventJS(player, entity, stack));
+			ItemEvents.PICKED_UP.post(player, stack.getItem(), new ItemPickedUpEventJS(player, entity, stack));
 		}
 	}
 
 	private static EventResult drop(Player player, ItemEntity entity) {
-		return ItemEvents.DROPPED.hasListeners() ? ItemEvents.DROPPED.post(ScriptType.of(player), entity.getItem().getItem(), new ItemDroppedEventJS(player, entity)).arch() : EventResult.pass();
+		return ItemEvents.DROPPED.hasListeners() ? ItemEvents.DROPPED.post(player, entity.getItem().getItem(), new ItemDroppedEventJS(player, entity)).arch() : EventResult.pass();
 	}
 
 	private static EventResult entityInteract(Player player, Entity entity, InteractionHand hand) {
-		return ItemEvents.ENTITY_INTERACTED.hasListeners() ? ItemEvents.ENTITY_INTERACTED.post(ScriptType.of(player), player.getItemInHand(hand).getItem(), new ItemEntityInteractedEventJS(player, entity, hand)).arch() : EventResult.pass();
+		return ItemEvents.ENTITY_INTERACTED.hasListeners() ? ItemEvents.ENTITY_INTERACTED.post(player, player.getItemInHand(hand).getItem(), new ItemEntityInteractedEventJS(player, entity, hand)).arch() : EventResult.pass();
 	}
 
 	private static void crafted(Player player, ItemStack stack, Container grid) {
 		if (!stack.isEmpty()) {
 			if (ItemEvents.CRAFTED.hasListeners()) {
-				ItemEvents.CRAFTED.post(ScriptType.of(player), stack.getItem(), new ItemCraftedEventJS(player, stack, grid));
+				ItemEvents.CRAFTED.post(player, stack.getItem(), new ItemCraftedEventJS(player, stack, grid));
 			}
 
 			if (PlayerEvents.INVENTORY_CHANGED.hasListeners()) {
-				PlayerEvents.INVENTORY_CHANGED.post(ScriptType.of(player), stack.getItem(), new InventoryChangedEventJS(player, stack, -1));
+				PlayerEvents.INVENTORY_CHANGED.post(player, stack.getItem(), new InventoryChangedEventJS(player, stack, -1));
 			}
 		}
 	}
@@ -77,11 +73,11 @@ public class KubeJSItemEventHandler {
 	private static void smelted(Player player, ItemStack stack) {
 		if (!stack.isEmpty()) {
 			if (ItemEvents.SMELTED.hasListeners()) {
-				ItemEvents.SMELTED.post(ScriptType.of(player), stack.getItem(), new ItemSmeltedEventJS(player, stack));
+				ItemEvents.SMELTED.post(player, stack.getItem(), new ItemSmeltedEventJS(player, stack));
 			}
 
 			if (PlayerEvents.INVENTORY_CHANGED.hasListeners()) {
-				PlayerEvents.INVENTORY_CHANGED.post(ScriptType.of(player), stack.getItem(), new InventoryChangedEventJS(player, stack, -1));
+				PlayerEvents.INVENTORY_CHANGED.post(player, stack.getItem(), new InventoryChangedEventJS(player, stack, -1));
 			}
 		}
 	}

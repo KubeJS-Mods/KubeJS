@@ -59,6 +59,7 @@ public class KubeJS {
 	public static final String MOD_NAME = "KubeJS";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 	public static final int MC_VERSION_NUMBER = 1902;
+	public static final String MC_VERSION_STRING = "1.19.2";
 	public static String QUERY;
 
 	public static ResourceLocation id(String path) {
@@ -157,7 +158,7 @@ public class KubeJS {
 			if (extraId instanceof ResourceKey<?> key) {
 				var info = RegistryInfo.of(UtilsJS.cast(key));
 				var event = new RegistryEventJS(info);
-				StartupEvents.REGISTRY.post(ScriptType.STARTUP, key, event);
+				StartupEvents.REGISTRY.post(event, key);
 				event.created.forEach(BuilderBase::createAdditionalObjects);
 			}
 		}

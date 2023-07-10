@@ -1,0 +1,32 @@
+[
+	{
+		"group": "BlockEvents"
+	},
+	{
+		"group": "ClientEvents"
+	},
+	{
+		"group": "EntityEvents"
+	},
+	{
+		"group": "ItemEvents"
+	},
+	{
+		"group": "LevelEvents"
+	},
+	{
+		"group": "NetworkEvents"
+	},
+	{
+		"group": "PlayerEvents"
+	},
+	{
+		"group": "ServerEvents"
+	},
+	{
+		"group": "StartupEvents"
+	},
+	{
+		"group": "WorldgenEvents"
+	}
+]

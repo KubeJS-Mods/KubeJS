@@ -102,4 +102,12 @@ public class PlatformWrapper {
 	public static void setModName(String modId, String name) {
 		CustomModNames.set(modId, name);
 	}
+
+	public static int getMinecraftVersion() {
+		return KubeJS.MC_VERSION_NUMBER;
+	}
+
+	public static String getMinecraftVersionString() {
+		return KubeJS.MC_VERSION_STRING;
+	}
 }

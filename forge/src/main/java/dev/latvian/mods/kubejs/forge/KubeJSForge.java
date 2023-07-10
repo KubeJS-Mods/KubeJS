@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.entity.forge.LivingEntityDropsEventJS;
 import dev.latvian.mods.kubejs.item.forge.ItemDestroyedEventJS;
 import dev.latvian.mods.kubejs.platform.forge.IngredientForgeHelper;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeMod;
@@ -56,7 +55,7 @@ public class KubeJSForge {
 
 	private static void itemDestroyed(PlayerDestroyItemEvent event) {
 		if (ForgeKubeJSEvents.ITEM_DESTROYED.hasListeners()) {
-			ForgeKubeJSEvents.ITEM_DESTROYED.post(ScriptType.of(event.getEntity()), event.getOriginal().getItem(), new ItemDestroyedEventJS(event));
+			ForgeKubeJSEvents.ITEM_DESTROYED.post(event.getEntity(), event.getOriginal().getItem(), new ItemDestroyedEventJS(event));
 		}
 	}
 
@@ -64,7 +63,7 @@ public class KubeJSForge {
 		if (ForgeKubeJSEvents.ENTITY_DROPS.hasListeners()) {
 			var e = new LivingEntityDropsEventJS(event);
 
-			if (ForgeKubeJSEvents.ENTITY_DROPS.post(ScriptType.of(event.getEntity()), e.getEntity().getType(), e).override()) {
+			if (ForgeKubeJSEvents.ENTITY_DROPS.post(event.getEntity(), e.getEntity().getType(), e).interruptFalse()) {
 				event.setCanceled(true);
 			} else if (e.eventDrops != null) {
 				event.getDrops().clear();

@@ -1,12 +1,10 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.entity.EntityPotionEffectsJS;
 import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.item.FoodEatenEventJS;
 import dev.latvian.mods.kubejs.platform.LevelPlatformHelper;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -43,7 +41,7 @@ public interface LivingEntityKJS extends EntityKJS {
 			}
 
 			if (ItemEvents.FOOD_EATEN.hasListeners()) {
-				ItemEvents.FOOD_EATEN.post(ScriptType.of(entity), ItemWrapper.getId(i), event);
+				ItemEvents.FOOD_EATEN.post(entity, i, event);
 			}
 		}
 	}

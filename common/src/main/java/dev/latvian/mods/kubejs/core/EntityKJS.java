@@ -7,6 +7,8 @@ import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.script.ScriptManager;
+import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -34,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 @RemapPrefixForJS("kjs$")
-public interface EntityKJS extends WithPersistentData, MessageSenderKJS {
+public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptTypeHolder {
 	default Entity kjs$self() {
 		return (Entity) this;
 	}
@@ -335,5 +337,10 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS {
 	@HideFromJS
 	default void kjs$setRawPersistentData(@Nullable CompoundTag tag) {
 		throw new NoMixinException();
+	}
+
+	@Override
+	default ScriptType kjs$getScriptType() {
+		return kjs$self().level.kjs$getScriptType();
 	}
 }

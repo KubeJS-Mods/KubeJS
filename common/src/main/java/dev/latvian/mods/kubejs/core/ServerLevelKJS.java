@@ -17,7 +17,7 @@ public interface ServerLevelKJS extends LevelKJS, WithPersistentData {
 	}
 
 	@Override
-	default ScriptType kjs$getSide() {
+	default ScriptType kjs$getScriptType() {
 		return ScriptType.SERVER;
 	}
 

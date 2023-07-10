@@ -13,7 +13,7 @@ public interface ClientLevelKJS extends LevelKJS {
 	}
 
 	@Override
-	default ScriptType kjs$getSide() {
+	default ScriptType kjs$getScriptType() {
 		return ScriptType.CLIENT;
 	}
 

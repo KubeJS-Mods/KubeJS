@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.block;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
@@ -72,13 +71,12 @@ public class DetectorBlock extends Block {
 
 			if (BlockEvents.DETECTOR_CHANGED.hasListeners(builder.detectorId) || (p ? BlockEvents.DETECTOR_POWERED : BlockEvents.DETECTOR_UNPOWERED).hasListeners(builder.detectorId)) {
 				var e = new DetectorBlockEventJS(builder.detectorId, level, blockPos, p);
-				var side = ScriptType.of(level);
-				BlockEvents.DETECTOR_CHANGED.post(side, builder.detectorId, e);
+				BlockEvents.DETECTOR_CHANGED.post(level, builder.detectorId, e);
 
 				if (p) {
-					BlockEvents.DETECTOR_POWERED.post(side, builder.detectorId, e);
+					BlockEvents.DETECTOR_POWERED.post(level, builder.detectorId, e);
 				} else {
-					BlockEvents.DETECTOR_UNPOWERED.post(side, builder.detectorId, e);
+					BlockEvents.DETECTOR_UNPOWERED.post(level, builder.detectorId, e);
 				}
 			}
 		}

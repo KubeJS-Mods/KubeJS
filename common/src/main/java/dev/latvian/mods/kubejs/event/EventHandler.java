@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.event;
 
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
 import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.rhino.BaseFunction;
@@ -170,26 +171,49 @@ public final class EventHandler extends BaseFunction {
 	}
 
 	/**
-	 * @return true if event was canceled
+	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS) ()
 	 */
-	public EventResult post(ScriptType scriptType, EventJS event) {
+	public EventResult post(EventJS event) {
+		if (scriptTypePredicate instanceof ScriptTypeHolder type) {
+			return post(type, null, event);
+		} else {
+			throw new IllegalStateException("You must specify which script type to post event to");
+		}
+	}
+
+	/**
+	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS) ()
+	 */
+	public EventResult post(ScriptTypeHolder scriptType, EventJS event) {
 		return post(scriptType, null, event);
 	}
 
 	/**
-	 * @return true if event was canceled
+	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS) ()
 	 */
-	public EventResult post(ScriptType scriptType, @Nullable Object extraId, EventJS event) {
-		return post(scriptType, extraId, event, false);
+	public EventResult post(EventJS event, @Nullable Object extraId) {
+		if (scriptTypePredicate instanceof ScriptTypeHolder type) {
+			return post(type, extraId, event);
+		} else {
+			throw new IllegalStateException("You must specify which script type to post event to");
+		}
 	}
 
 	/**
-	 * @return true if event was canceled
+	 * @see EventJS#cancel()
+	 * @see EventJS#success()
+	 * @see EventJS#exit()
+	 * @see EventJS#cancel(Object)
+	 * @see EventJS#success(Object)
+	 * @see EventJS#exit(Object)
+	 * @return EventResult that can contain an object. What previously returned true on {@link EventJS#cancel()} now returns {@link EventResult#interruptFalse()}
 	 */
-	public EventResult post(ScriptType scriptType, @Nullable Object extraId, EventJS event, boolean onlyPostToExtra) {
+	public EventResult post(ScriptTypeHolder type, @Nullable Object extraId, EventJS event) {
 		if (!hasListeners()) {
 			return EventResult.PASS;
 		}
+
+		var scriptType = type.kjs$getScriptType();
 
 		if (extraId != null && extra != null) {
 			extraId = Wrapper.unwrapped(extraId);
@@ -217,7 +241,7 @@ public final class EventHandler extends BaseFunction {
 				}
 			}
 
-			if (eventContainers != null && !onlyPostToExtra) {
+			if (eventContainers != null) {
 				postToHandlers(scriptType, eventContainers, event);
 
 				if (!scriptType.isStartup()) {

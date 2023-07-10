@@ -28,25 +28,25 @@ public class KubeJSBlockEventHandler {
 
 	private static EventResult rightClick(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
 		if (BlockEvents.RIGHT_CLICKED.hasListeners() && !player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem())) {
-			return BlockEvents.RIGHT_CLICKED.post(ScriptType.of(player), player.level.getBlockState(pos), new BlockRightClickedEventJS(player, hand, pos, direction)).arch();
+			return BlockEvents.RIGHT_CLICKED.post(player, player.level.getBlockState(pos), new BlockRightClickedEventJS(player, hand, pos, direction)).arch();
 		}
 
 		return EventResult.pass();
 	}
 
 	private static EventResult leftClick(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
-		return BlockEvents.LEFT_CLICKED.hasListeners() ? BlockEvents.LEFT_CLICKED.post(ScriptType.of(player), player.level.getBlockState(pos), new BlockLeftClickedEventJS(player, hand, pos, direction)).arch() : EventResult.pass();
+		return BlockEvents.LEFT_CLICKED.hasListeners() ? BlockEvents.LEFT_CLICKED.post(player, player.level.getBlockState(pos), new BlockLeftClickedEventJS(player, hand, pos, direction)).arch() : EventResult.pass();
 	}
 
 	private static EventResult blockBreak(Level level, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp) {
-		return BlockEvents.BROKEN.hasListeners(state.getBlock()) ? BlockEvents.BROKEN.post(ScriptType.of(level), state.getBlock(), new BlockBrokenEventJS(player, level, pos, state, xp)).arch() : EventResult.pass();
+		return BlockEvents.BROKEN.hasListeners(state.getBlock()) ? BlockEvents.BROKEN.post(level, state.getBlock(), new BlockBrokenEventJS(player, level, pos, state, xp)).arch() : EventResult.pass();
 	}
 
 	private static EventResult blockPlace(Level level, BlockPos pos, BlockState state, @Nullable Entity placer) {
-		return BlockEvents.PLACED.hasListeners(state.getBlock()) ? BlockEvents.PLACED.post(ScriptType.of(level), state.getBlock(), new BlockPlacedEventJS(placer, level, pos, state)).arch() : EventResult.pass();
+		return BlockEvents.PLACED.hasListeners(state.getBlock()) ? BlockEvents.PLACED.post(level, state.getBlock(), new BlockPlacedEventJS(placer, level, pos, state)).arch() : EventResult.pass();
 	}
 
 	private static EventResult farmlandTrample(Level level, BlockPos pos, BlockState state, float distance, @Nullable Entity entity) {
-		return BlockEvents.FARMLAND_TRAMPLED.hasListeners(state.getBlock()) ? BlockEvents.FARMLAND_TRAMPLED.post(ScriptType.of(level), state.getBlock(), new FarmlandTrampledEventJS(level, pos, state, distance, entity)).arch() : EventResult.pass();
+		return BlockEvents.FARMLAND_TRAMPLED.hasListeners(state.getBlock()) ? BlockEvents.FARMLAND_TRAMPLED.post(level, state.getBlock(), new FarmlandTrampledEventJS(level, pos, state, distance, entity)).arch() : EventResult.pass();
 	}
 }

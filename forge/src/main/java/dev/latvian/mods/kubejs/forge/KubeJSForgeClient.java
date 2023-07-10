@@ -71,6 +71,6 @@ public class KubeJSForgeClient {
 	}
 
 	private void textureStitch(TextureStitchEvent.Pre event) {
-		ClientEvents.ATLAS_SPRITE_REGISTRY.post(ScriptType.CLIENT, event.getAtlas().location(), new AtlasSpriteRegistryEventJS(event::addSprite));
+		ClientEvents.ATLAS_SPRITE_REGISTRY.post(new AtlasSpriteRegistryEventJS(event::addSprite), event.getAtlas().location());
 	}
 }

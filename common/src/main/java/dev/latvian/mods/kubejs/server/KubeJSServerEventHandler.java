@@ -85,7 +85,7 @@ public class KubeJSServerEventHandler {
 
 	private static void serverLevelLoaded(ServerLevel level) {
 		if (LevelEvents.LOADED.hasListeners()) {
-			LevelEvents.LOADED.post(ScriptType.SERVER, level.dimension().location(), new SimpleLevelEventJS(level));
+			LevelEvents.LOADED.post(new SimpleLevelEventJS(level), level.dimension().location());
 		}
 	}
 
@@ -132,7 +132,7 @@ public class KubeJSServerEventHandler {
 	public static EventResult command(CommandPerformEvent event) {
 		if (ServerEvents.COMMAND.hasListeners()) {
 			var e = new CommandEventJS(event);
-			return ServerEvents.COMMAND.post(ScriptType.SERVER, e.getCommandName(), e).arch();
+			return ServerEvents.COMMAND.post(e, e.getCommandName()).arch();
 		}
 
 		return EventResult.pass();

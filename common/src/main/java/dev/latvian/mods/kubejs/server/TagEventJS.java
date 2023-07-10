@@ -242,7 +242,7 @@ public class TagEventJS<T> extends EventJS {
 			}
 		}
 
-		ServerEvents.TAGS.post(ScriptType.SERVER, registry.key(), this);
+		ServerEvents.TAGS.post(this, registry.key());
 
 		if (DataExport.dataExport != null) {
 			var tj = DataExport.dataExport.getAsJsonObject("tags");

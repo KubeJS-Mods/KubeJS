@@ -1,0 +1,23 @@
+[
+	{
+		"event": "init",
+		"scripts": "startup",
+		"type": "dev.latvian.mods.kubejs.event.StartupEventJS"
+	},
+	{
+		"event": "postInit",
+		"scripts": "startup",
+		"type": "dev.latvian.mods.kubejs.event.StartupEventJS"
+	},
+	{
+		"event": "registry",
+		"scripts": "startup",
+		"type": "dev.latvian.mods.kubejs.registry.RegistryEventJS",
+		"extra": "kubejs:required_registry"
+	},
+	{
+		"event": "recipeSchemaRegistry",
+		"scripts": "startup",
+		"type": "dev.latvian.mods.kubejs.recipe.RecipeSchemaRegistryEventJS"
+	}
+]

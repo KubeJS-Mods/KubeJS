@@ -82,7 +82,7 @@ public interface RecipeComponent<T> {
 	}
 
 	default boolean hasPriority(RecipeJS recipe, Object from) {
-		return true;
+		return false;
 	}
 
 	default boolean isInput(RecipeJS recipe, T value, ReplacementMatch match) {

@@ -5,6 +5,8 @@ import dev.latvian.mods.kubejs.level.ExplosionJS;
 import dev.latvian.mods.kubejs.level.FireworksJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
+import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -18,12 +20,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 
 @RemapPrefixForJS("kjs$")
-public interface LevelKJS extends WithAttachedData<Level> {
+public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder {
 	default Level kjs$self() {
 		return (Level) this;
 	}
 
-	default ScriptType kjs$getSide() {
+	@Override
+	@RemapForJS("getSide")
+	default ScriptType kjs$getScriptType() {
 		throw new NoMixinException();
 	}
 
