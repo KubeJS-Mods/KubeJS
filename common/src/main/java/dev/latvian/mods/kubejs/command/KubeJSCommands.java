@@ -308,7 +308,7 @@ public class KubeJSCommands {
 		}
 
 		source.sendSuccess(Component.literal("More info in ")
-						.append(Component.literal("'logs/kubejs/server.txt'")
+						.append(Component.literal("'logs/kubejs/server.log'")
 								.kjs$clickOpenFile(ScriptType.SERVER.getLogFile().toString())
 								.kjs$hover(Component.literal("Click to open"))).withStyle(ChatFormatting.DARK_RED),
 				false);

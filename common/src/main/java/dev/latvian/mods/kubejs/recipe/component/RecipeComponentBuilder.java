@@ -50,6 +50,14 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 		return this;
 	}
 
+	public RecipeComponentBuilder createCopy() {
+		var copy = new RecipeComponentBuilder(keys.size());
+		copy.keys.addAll(keys);
+		copy.hasPriority = hasPriority;
+		copy.role = role;
+		return copy;
+	}
+
 	@Override
 	public ComponentRole role() {
 		return role;
@@ -62,7 +70,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 
 	@Override
 	public Class<?> componentClass() {
-		return RCBHolder.class;
+		return RCBHolder[].class;
 	}
 
 	@Override
