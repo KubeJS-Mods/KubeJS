@@ -243,4 +243,3 @@ When creating a pull request to KubeJS, please make sure you acknowledge the fol
 - Please be sure to test your feature **before** creating a pull request. We are a rather small team and as such, can't spend all too much time on reviewing pull requests.
 - While not *strictly* required, please try to adhere by the repository's code style and conventions. A sample `.editorconfig` file exists to make this even easier for you to achieve (see the relevant EditorConfig plugin for your IDE)
 - If you are unsure whether your feature fits into KubeJS and would like to hear additional opinions on the matter, feel free to open an `issue` or a `discussion` to discuss it further with us first!
-
