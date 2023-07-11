@@ -16,15 +16,13 @@ import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.rhino.BaseFunction;
-import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.NativeJavaObject;
-import dev.latvian.mods.rhino.Wrapper;
+import dev.latvian.mods.rhino.*;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.util.color.SimpleColorWithAlpha;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
+import net.minecraft.ReportedException;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.arguments.selector.EntitySelector;
@@ -33,6 +31,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.*;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.Bootstrap;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.valueproviders.*;
@@ -64,9 +63,7 @@ import java.time.Duration;
 import java.time.temporal.TemporalAmount;
 import java.util.*;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -98,8 +95,20 @@ public class UtilsJS {
 				thread.setContextClassLoader(KubeJS.class.getClassLoader()); // better safe than sorry
 				thread.setName(String.format("KubeJS Parallel Worker %d", thread.getPoolIndex()));
 				return thread;
-			}, null, true
-	);
+			},
+			(thread, ex) -> {
+				while ((ex instanceof CompletionException | ex instanceof InvocationTargetException | ex instanceof WrappedException) && ex.getCause() != null) {
+					ex = ex.getCause();
+				}
+
+				if (ex instanceof ReportedException crashed) {
+					// crash the same way Minecraft would
+					Bootstrap.realStdoutPrintln(crashed.getReport().getFriendlyReport());
+					System.exit(-1);
+				}
+
+				KubeJS.LOGGER.error(String.format("Caught exception in thread %s while performing async operation!", thread), ex);
+			}, true);
 
 	public interface TryIO {
 		void run() throws IOException;
