@@ -189,4 +189,25 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	public String toString() {
 		return component.toString() + "[]";
 	}
+
+	public T[] add(T[] array, T value) {
+		var arr = newArray(array.length + 1);
+		System.arraycopy(array, 0, arr, 0, array.length);
+		arr[array.length] = value;
+		return arr;
+	}
+
+	public T[] addAll(T[] array, T... values) {
+		var arr = newArray(array.length + values.length);
+		System.arraycopy(array, 0, arr, 0, array.length);
+		System.arraycopy(values, 0, arr, array.length, values.length);
+		return arr;
+	}
+
+	public T[] remove(T[] array, int index) {
+		var arr = newArray(array.length - 1);
+		System.arraycopy(array, 0, arr, 0, index);
+		System.arraycopy(array, index + 1, arr, index, array.length - index - 1);
+		return arr;
+	}
 }

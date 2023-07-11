@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -222,5 +223,29 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	@Override
 	public String toString() {
 		return keys.stream().map(RecipeKey::toString).collect(Collectors.joining(",", "builder{", "}"));
+	}
+
+	public RCBHolder[] set(RecipeJS recipe, RCBHolder[] original, RecipeKey<?> key, Object value) {
+		for (int i = 0; i < original.length; i++) {
+			if (original[i].key == key) {
+				var arr = new RCBHolder[original.length];
+				System.arraycopy(original, 0, arr, 0, original.length);
+				arr[i] = new RCBHolder(key, key.component.read(recipe, value));
+				return arr;
+			}
+		}
+
+		return original;
+	}
+
+	@Nullable
+	public <T> T get(RCBHolder[] original, RecipeKey<T> key) {
+		for (var e : original) {
+			if (e.key == key) {
+				return UtilsJS.cast(e.value);
+			}
+		}
+
+		return null;
 	}
 }
