@@ -1,0 +1,32 @@
+{
+	"minecraft": 1902,
+	"type": "architectury",
+	"version": {
+		"file": "gradle.properties",
+		"pattern": "^mod_version=([\\w.]+)$",
+		"group": 1,
+		"format": "{version}-build.{run_number}"
+	},
+	"downloads": [
+		{
+			"name": "Forge",
+			"url": "https://maven.saps.dev/releases/dev/latvian/mods/kubejs-forge/{version}/kubejs-forge-{version}.jar"
+		},
+		{
+			"name": "Fabric",
+			"url": "https://maven.saps.dev/releases/dev/latvian/mods/kubejs-forge/{version}/kubejs-fabric-{version}.jar"
+		}
+	],
+	"event_groups": [
+		"BlockEvents",
+		"ClientEvents",
+		"EntityEvents",
+		"ItemEvents",
+		"LevelEvents",
+		"NetworkEvents",
+		"PlayerEvents",
+		"ServerEvents",
+		"StartupEvents",
+		"WorldgenEvents"
+	]
+}

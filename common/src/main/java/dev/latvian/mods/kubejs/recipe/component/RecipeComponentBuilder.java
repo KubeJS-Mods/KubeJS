@@ -225,7 +225,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 		return keys.stream().map(RecipeKey::toString).collect(Collectors.joining(",", "builder{", "}"));
 	}
 
-	public RCBHolder[] set(RecipeJS recipe, RCBHolder[] original, RecipeKey<?> key, Object value) {
+	public static RCBHolder[] set(RecipeJS recipe, RCBHolder[] original, RecipeKey<?> key, Object value) {
 		for (int i = 0; i < original.length; i++) {
 			if (original[i].key == key) {
 				var arr = new RCBHolder[original.length];
@@ -239,7 +239,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Nullable
-	public <T> T get(RCBHolder[] original, RecipeKey<T> key) {
+	public static <T> T get(RCBHolder[] original, RecipeKey<T> key) {
 		for (var e : original) {
 			if (e.key == key) {
 				return UtilsJS.cast(e.value);
