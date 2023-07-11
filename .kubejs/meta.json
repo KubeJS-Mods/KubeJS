@@ -14,7 +14,7 @@
 		},
 		{
 			"name": "Fabric",
-			"url": "https://maven.saps.dev/releases/dev/latvian/mods/kubejs-forge/{version}/kubejs-fabric-{version}.jar"
+			"url": "https://maven.saps.dev/releases/dev/latvian/mods/kubejs-fabric/{version}/kubejs-fabric-{version}.jar"
 		}
 	],
 	"event_groups": [
