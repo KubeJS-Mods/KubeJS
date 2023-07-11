@@ -13,7 +13,7 @@
 		"event": "registry",
 		"scripts": "startup",
 		"type": "dev.latvian.mods.kubejs.registry.RegistryEventJS",
-		"extra": "kubejs:required_registry"
+		"extra": "kubejs:requires_registry"
 	},
 	{
 		"event": "recipeSchemaRegistry",
