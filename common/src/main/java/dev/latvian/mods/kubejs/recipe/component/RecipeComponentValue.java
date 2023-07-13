@@ -10,7 +10,7 @@ import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
 
-public class RecipeComponentValue<T> extends BaseFunction implements WrappedJS {
+public final class RecipeComponentValue<T> extends BaseFunction implements WrappedJS {
 	public static final RecipeComponentValue<?>[] EMPTY_ARRAY = new RecipeComponentValue[0];
 
 	public final RecipeJS recipe;
