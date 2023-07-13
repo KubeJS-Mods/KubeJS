@@ -26,11 +26,11 @@ public class RecipeComponentValue<T> extends BaseFunction implements WrappedJS {
 	}
 
 	public boolean isInput(ReplacementMatch match) {
-		return key.component.isInput(recipe, value, match);
+		return value != null && key.component.isInput(recipe, value, match);
 	}
 
 	public boolean replaceInput(ReplacementMatch match, InputReplacement with) {
-		var newValue = key.component.replaceInput(recipe, value, match, with);
+		var newValue = value == null ? null : key.component.replaceInput(recipe, value, match, with);
 
 		if (value != newValue) {
 			value = newValue;
@@ -42,11 +42,11 @@ public class RecipeComponentValue<T> extends BaseFunction implements WrappedJS {
 	}
 
 	public boolean isOutput(ReplacementMatch match) {
-		return key.component.isOutput(recipe, value, match);
+		return value != null && key.component.isOutput(recipe, value, match);
 	}
 
 	public boolean replaceOutput(ReplacementMatch match, OutputReplacement with) {
-		var newValue = key.component.replaceOutput(recipe, value, match, with);
+		var newValue = value == null ? null : key.component.replaceOutput(recipe, value, match, with);
 
 		if (value != newValue) {
 			value = newValue;
