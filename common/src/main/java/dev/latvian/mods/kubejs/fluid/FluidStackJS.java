@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.fluid.FluidStack;
 import dev.architectury.registry.registries.Registries;
+import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -115,7 +116,7 @@ public abstract class FluidStackJS implements WrappedJS, InputFluid, OutputFluid
 	}
 
 	public boolean hasTag(ResourceLocation tag) {
-		return getFluid().is(Tags.fluid(tag));
+		return TagContext.INSTANCE.getValue().contains(Tags.fluid(tag), getFluid());
 	}
 
 	public Fluid getFluid() {

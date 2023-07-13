@@ -23,7 +23,7 @@ public abstract class IngredientTagValueMixin {
 	@Inject(method = "getItems", at = @At("HEAD"), cancellable = true)
 	private void kjs$getItems(CallbackInfoReturnable<Collection<ItemStack>> info) {
 		if (RecipesEventJS.instance != null) {
-			info.setReturnValue(TagContext.INSTANCE.getValue().patchTags(tag));
+			info.setReturnValue(TagContext.INSTANCE.getValue().patchIngredientTags(tag));
 		}
 	}
 }

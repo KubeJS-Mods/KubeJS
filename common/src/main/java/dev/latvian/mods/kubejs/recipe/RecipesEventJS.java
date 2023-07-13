@@ -29,7 +29,6 @@ import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.JsonUtils;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.Recipe;
@@ -147,15 +146,7 @@ public class RecipesEventJS extends EventJS {
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonObject> datapackRecipeMap) {
 		RecipeJS.itemErrors = false;
 
-		TagContext.INSTANCE.setValue(KubeJSReloadListener.resources.tagManager.getResult()
-				.stream()
-				.filter(result -> result.key() == Registry.ITEM_REGISTRY)
-				.findFirst()
-				.map(result -> TagContext.usingResult(UtilsJS.cast(result)))
-				.orElseGet(() -> {
-					ConsoleJS.SERVER.warn("Failed to load item tags during recipe event! Using replaceInput etc. will not work!");
-					return TagContext.EMPTY;
-				}));
+		TagContext.INSTANCE.setValue(TagContext.fromLoadResult(KubeJSReloadListener.resources.tagManager.getResult()));
 
 		var timer = Stopwatch.createStarted();
 

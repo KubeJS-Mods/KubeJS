@@ -19,6 +19,6 @@ public abstract class ReloadableServerResourcesMixin {
 
 	@Inject(method = "updateRegistryTags(Lnet/minecraft/core/RegistryAccess;)V", at = @At("RETURN"))
 	public void updateRegistryTags(RegistryAccess registryAccess, CallbackInfo ci) {
-		TagContext.INSTANCE.setValue(TagContext.REGISTRY);
+		TagContext.INSTANCE.setValue(TagContext.usingRegistry(registryAccess));
 	}
 }

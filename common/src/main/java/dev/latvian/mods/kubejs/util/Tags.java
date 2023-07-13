@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.util;
 
+import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -66,6 +67,7 @@ public class Tags {
 	}
 
 	public static <T> Stream<TagKey<T>> forType(T object, Registry<T> registry) {
+		warnIfUnbound();
 		return registry.getResourceKey(object)
 				.flatMap(registry::getHolder)
 				.stream()
@@ -77,6 +79,13 @@ public class Tags {
 	}
 
 	private static <T> Stream<TagKey<T>> forHolder(Holder.Reference<T> registryHolder) {
+		warnIfUnbound();
 		return registryHolder.tags();
+	}
+
+	private static void warnIfUnbound() {
+		if (!TagContext.INSTANCE.getValue().areTagsBound()) {
+			ConsoleJS.getCurrent(ConsoleJS.STARTUP).warn("Tags have not been bound to registry yet! The values returned by this method may be outdated!", new Throwable());
+		}
 	}
 }
