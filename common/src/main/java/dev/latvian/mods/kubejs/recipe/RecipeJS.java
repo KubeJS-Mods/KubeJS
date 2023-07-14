@@ -477,7 +477,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 
 	public final RecipeJS modifyResult(ModifyRecipeResultCallback callback) {
 		UUID id = UUID.randomUUID();
-		RecipesEventJS.modifyResultCallbackMap.put(id, callback);
+		RecipesEventJS.MODIFY_RESULT_CALLBACKS.put(id, callback);
 		json.addProperty("kubejs:modify_result", UUIDTypeAdapter.fromUUID(id));
 		save();
 		return this;

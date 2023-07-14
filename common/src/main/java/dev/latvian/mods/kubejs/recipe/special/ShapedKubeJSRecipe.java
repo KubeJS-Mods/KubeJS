@@ -116,7 +116,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 
 			ModifyRecipeResultCallback modifyResult = null;
 			if (json.has("kubejs:modify_result")) {
-				modifyResult = RecipesEventJS.modifyResultCallbackMap.get(UUIDTypeAdapter.fromString(json.get("kubejs:modify_result").getAsString()));
+				modifyResult = RecipesEventJS.MODIFY_RESULT_CALLBACKS.get(UUIDTypeAdapter.fromString(json.get("kubejs:modify_result").getAsString()));
 			}
 
 			var stage = GsonHelper.getAsString(json, "kubejs:stage", "");

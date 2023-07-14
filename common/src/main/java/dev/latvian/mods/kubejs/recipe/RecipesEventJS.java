@@ -59,17 +59,19 @@ import java.util.stream.Stream;
 
 public class RecipesEventJS extends EventJS {
 	private static final Pattern SKIP_ERROR = Pattern.compile("at\\s+dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipesEventJS\\.post");
+
+	public static final Map<UUID, ModifyRecipeResultCallback> MODIFY_RESULT_CALLBACKS = new HashMap<>();
+
 	public static Map<UUID, IngredientWithCustomPredicate> customIngredientMap = null;
-	public static Map<UUID, ModifyRecipeResultCallback> modifyResultCallbackMap = null;
 
 	public static RecipesEventJS instance;
 
 	public final Map<ResourceLocation, RecipeJS> originalRecipes;
 	public final Collection<RecipeJS> addedRecipes;
 	public final Collection<RecipeJS> removedRecipes;
-	final Map<String, Object> recipeFunctions;
 	public final AtomicInteger failedCount;
 
+	private final Map<String, Object> recipeFunctions;
 	public final RecipeTypeFunction shaped;
 	public final RecipeTypeFunction shapeless;
 	public final RecipeTypeFunction smelting;
@@ -79,7 +81,7 @@ public class RecipesEventJS extends EventJS {
 	public final RecipeTypeFunction stonecutting;
 	public final RecipeTypeFunction smithing;
 
-	RecipeSerializer<?> stageSerializer;
+	final RecipeSerializer<?> stageSerializer;
 
 	public RecipesEventJS() {
 		ConsoleJS.SERVER.info("Scanning recipes...");

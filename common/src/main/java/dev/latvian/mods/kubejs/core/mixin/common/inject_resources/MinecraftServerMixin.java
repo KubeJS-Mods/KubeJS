@@ -19,7 +19,6 @@ public abstract class MinecraftServerMixin {
 
 	@ModifyVariable(method = {"*"}, at = @At("STORE"), remap = false)
 	public CloseableResourceManager wrapResourceManager(CloseableResourceManager original) {
-		ServerScriptManager.instance = new ServerScriptManager();
-		return ServerScriptManager.instance.wrapResourceManager(original);
+		return (ServerScriptManager.instance = new ServerScriptManager()).wrapResourceManager(original);
 	}
 }

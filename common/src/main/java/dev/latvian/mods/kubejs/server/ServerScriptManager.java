@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.server;
 
-import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.script.data.DataPackEventJS;
 import dev.latvian.mods.kubejs.script.data.KubeJSFolderPackResources;
 import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackType;
@@ -81,13 +82,10 @@ public class ServerScriptManager {
 
 		ConsoleJS.SERVER.info("Scripts loaded");
 
-		// Currently custom ingredients are only supported on Forge
-		if (Platform.isForge()) {
-			RecipesEventJS.customIngredientMap = new HashMap<>();
-		}
+		// note we only set this map on the logical server, it'll be null on the client!
+		RecipesEventJS.customIngredientMap = new HashMap<>();
 
-		RecipesEventJS.modifyResultCallbackMap = new HashMap<>();
-
+		RecipesEventJS.MODIFY_RESULT_CALLBACKS.clear();
 		CustomIngredientAction.MAP.clear();
 
 		SpecialRecipeSerializerManager.INSTANCE.reset();
