@@ -10,9 +10,11 @@ import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 @FunctionalInterface
 public interface RecipeFilter extends Predicate<RecipeKJS> {
@@ -26,7 +28,7 @@ public interface RecipeFilter extends Predicate<RecipeKJS> {
 			return ConstantFilter.TRUE;
 		} else if (o == ConstantFilter.FALSE) {
 			return ConstantFilter.FALSE;
-		} else if (o instanceof CharSequence) {
+		} else if (o instanceof CharSequence || o instanceof NativeRegExp || o instanceof Pattern) {
 			String s = o.toString();
 
 			if (s.equals("*")) {
@@ -42,7 +44,7 @@ public interface RecipeFilter extends Predicate<RecipeKJS> {
 		var list = ListJS.orSelf(o);
 
 		if (list.isEmpty()) {
-			return ConstantFilter.TRUE;
+			return ConstantFilter.FALSE;
 		} else if (list.size() > 1) {
 			var predicate = new OrFilter();
 

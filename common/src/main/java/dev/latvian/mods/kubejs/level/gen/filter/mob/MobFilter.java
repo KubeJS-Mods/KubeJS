@@ -27,17 +27,14 @@ public interface MobFilter extends BiPredicate<MobCategory, MobSpawnSettings.Spa
 			return ALWAYS_TRUE;
 		} else if (o == ALWAYS_FALSE) {
 			return ALWAYS_FALSE;
-		}
-
-		if (o instanceof String s) {
-			return idFilter(cx, s);
-		} else if (o instanceof NativeRegExp || o instanceof Pattern) {
+		} else if (o instanceof CharSequence || o instanceof NativeRegExp || o instanceof Pattern) {
 			return idFilter(cx, o.toString());
 		}
 
 		var list = ListJS.orSelf(o);
+
 		if (list.isEmpty()) {
-			return ALWAYS_TRUE;
+			return ALWAYS_FALSE;
 		} else if (list.size() > 1) {
 			var filters = new ArrayList<MobFilter>();
 
@@ -55,6 +52,7 @@ public interface MobFilter extends BiPredicate<MobCategory, MobSpawnSettings.Spa
 		}
 
 		var map = MapJS.of(list.get(0));
+
 		if (map == null || map.isEmpty()) {
 			return ALWAYS_TRUE;
 		}
@@ -92,12 +90,18 @@ public interface MobFilter extends BiPredicate<MobCategory, MobSpawnSettings.Spa
 	}
 
 	static MobFilter idFilter(Context cx, String s) {
-		var pattern = UtilsJS.parseRegex(s);
-		if (pattern != null) {
-			return new RegexIDFilter(pattern);
-		}
+		if (s.equals("*")) {
+			return ALWAYS_TRUE;
+		} else if (s.equals("-")) {
+			return ALWAYS_FALSE;
+		} else {
+			var pattern = UtilsJS.parseRegex(s);
+			if (pattern != null) {
+				return new RegexIDFilter(pattern);
+			}
 
-		return s.charAt(0) == '#' ? new CategoryFilter(UtilsJS.mobCategoryByName(s.substring(1))) : new IDFilter(UtilsJS.getMCID(cx, s));
+			return s.charAt(0) == '#' ? new CategoryFilter(UtilsJS.mobCategoryByName(s.substring(1))) : new IDFilter(UtilsJS.getMCID(cx, s));
+		}
 	}
 
 }

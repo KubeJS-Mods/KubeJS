@@ -10,7 +10,6 @@ import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -27,19 +26,16 @@ public interface BiomeFilter extends Predicate<BiomeModifications.BiomeContext> 
 			return ALWAYS_TRUE;
 		} else if (o == ALWAYS_FALSE) {
 			return ALWAYS_FALSE;
-		}
-
-		if (o instanceof String s) {
-			return idFilter(cx, s);
-		} else if (o instanceof NativeRegExp || o instanceof Pattern) {
+		} else if (o instanceof CharSequence || o instanceof NativeRegExp || o instanceof Pattern) {
 			return idFilter(cx, o.toString());
 		}
 
 		var list = ListJS.orSelf(o);
+
 		if (list.isEmpty()) {
-			return ALWAYS_TRUE;
+			return ALWAYS_FALSE;
 		} else if (list.size() > 1) {
-			List<BiomeFilter> filters = new ArrayList<>();
+			var filters = new ArrayList<BiomeFilter>();
 			for (var o1 : list) {
 				var filter = of(cx, o1);
 
@@ -54,11 +50,12 @@ public interface BiomeFilter extends Predicate<BiomeModifications.BiomeContext> 
 		}
 
 		var map = MapJS.of(list.get(0));
+
 		if (map == null || map.isEmpty()) {
 			return ALWAYS_TRUE;
 		}
 
-		List<BiomeFilter> filters = new ArrayList<>();
+		var filters = new ArrayList<BiomeFilter>();
 
 		if (map.get("or") != null) {
 			filters.add(of(cx, map.get("or")));
@@ -91,14 +88,17 @@ public interface BiomeFilter extends Predicate<BiomeModifications.BiomeContext> 
 	}
 
 	static BiomeFilter idFilter(Context cx, String s) {
-		var pattern = UtilsJS.parseRegex(s);
-		if (pattern != null) {
-			return new RegexIDFilter(pattern);
-		}
-		if (s.charAt(0) == '#') {
-			return new TagFilter(s.substring(1));
-		}
+		if (s.equals("*")) {
+			return ALWAYS_TRUE;
+		} else if (s.equals("-")) {
+			return ALWAYS_FALSE;
+		} else {
+			var pattern = UtilsJS.parseRegex(s);
+			if (pattern != null) {
+				return new RegexIDFilter(pattern);
+			}
 
-		return new IDFilter(UtilsJS.getMCID(cx, s));
+			return s.charAt(0) == '#' ? new TagFilter(s.substring(1)) : new IDFilter(UtilsJS.getMCID(cx, s));
+		}
 	}
 }

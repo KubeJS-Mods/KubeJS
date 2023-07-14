@@ -21,10 +21,21 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
-import net.minecraft.world.level.levelgen.structure.templatesystem.*;
+import net.minecraft.world.level.levelgen.structure.templatesystem.AlwaysTrueTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.BlockStateMatchTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
+import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -115,6 +126,12 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 	}
 
 	static RuleTest ruleTestOf(Object o) {
+		if (o instanceof RuleTest rule) {
+			return rule;
+		} else if (o instanceof BlockStatePredicate bsp && bsp.asRuleTest() != null) {
+			return bsp.asRuleTest();
+		}
+
 		return Optional.ofNullable(NBTUtils.toTagCompound(o))
 				.map(tag -> RuleTest.CODEC.parse(NbtOps.INSTANCE, tag))
 				.flatMap(DataResult::result)
@@ -124,7 +141,9 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 
 	@SuppressWarnings("unchecked")
 	private static BlockStatePredicate ofSingle(Object o) {
-		if (o instanceof Block block) {
+		if (o instanceof BlockStatePredicate bsp) {
+			return bsp;
+		} else if (o instanceof Block block) {
 			return new BlockMatch(block);
 		} else if (o instanceof BlockState state) {
 			return new StateMatch(state);
