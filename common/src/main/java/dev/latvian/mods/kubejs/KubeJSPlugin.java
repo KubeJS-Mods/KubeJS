@@ -33,6 +33,9 @@ public class KubeJSPlugin {
 	public void afterInit() {
 	}
 
+	public void onServerReload() {
+	}
+
 	/**
 	 * Call {@link EventGroup#register()} of events your mod adds
 	 */

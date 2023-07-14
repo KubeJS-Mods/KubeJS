@@ -92,6 +92,7 @@ public class ServerScriptManager {
 
 		SpecialRecipeSerializerManager.INSTANCE.reset();
 		ServerEvents.SPECIAL_RECIPES.post(ScriptType.SERVER, SpecialRecipeSerializerManager.INSTANCE);
+		KubeJSPlugins.forEachPlugin(KubeJSPlugin::onServerReload);
 
 		if (ServerEvents.RECIPES.hasListeners()) {
 			RecipesEventJS.instance = new RecipesEventJS();
