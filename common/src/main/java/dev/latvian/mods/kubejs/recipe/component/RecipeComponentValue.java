@@ -62,6 +62,22 @@ public final class RecipeComponentValue<T> extends BaseFunction implements Wrapp
 		return recipe.setValue(key, key.component.read(recipe, args[0]));
 	}
 
+	public RecipeKey<T> getKey() {
+		return key;
+	}
+
+	public T getValue() {
+		return value;
+	}
+
+	public boolean shouldWrite() {
+		return write;
+	}
+
+	public void write() {
+		write = true;
+	}
+
 	@Override
 	public String toString() {
 		return "%s = %s".formatted(key.name, value);
