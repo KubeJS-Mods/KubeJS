@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe;
 
+import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -106,16 +107,6 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		v.write = true;
 		changed = true;
 		return this;
-	}
-
-	public RecipeJS set(String key, Object value) {
-		for (var k : type.schemaType.schema.keys) {
-			if (k.name.equals(key)) {
-				return setValue(k, value);
-			}
-		}
-
-		throw new MissingComponentException(key, null, valueMap.keySet());
 	}
 
 	public void initValues(boolean created) {
