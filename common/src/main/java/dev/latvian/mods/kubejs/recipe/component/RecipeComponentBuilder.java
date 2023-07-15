@@ -157,7 +157,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	@Override
 	public boolean isInput(RecipeJS recipe, RCBHolder[] value, ReplacementMatch match) {
 		for (var entry : value) {
-			if (entry.value != null && entry.key.component.role().isInput() && entry.key.component.isInput(recipe, UtilsJS.cast(entry.value), match)) {
+			if (entry != null && entry.value != null && entry.key.component.role().isInput() && entry.key.component.isInput(recipe, UtilsJS.cast(entry.value), match)) {
 				return true;
 			}
 		}
@@ -170,16 +170,16 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 		var arr = original;
 
 		for (int i = 0; i < original.length; i++) {
-			if (original[i].value != null && original[i].key.component.role().isInput()) {
-				var r = original[i].key.component.replaceInput(recipe, UtilsJS.cast(original[i].value()), match, with);
+			var entry = original[i];
+			if (entry != null && entry.value != null && entry.key.component.role().isInput()) {
+				var r = entry.key.component.replaceInput(recipe, UtilsJS.cast(entry.value()), match, with);
 
-				if (r != original[i].value()) {
+				if (r != entry.value()) {
 					if (arr == original) {
 						arr = new RCBHolder[original.length];
 						System.arraycopy(original, 0, arr, 0, i);
 					}
-
-					arr[i] = new RCBHolder(original[i].key(), r);
+					arr[i] = new RCBHolder(entry.key(), r);
 				}
 			}
 		}
@@ -190,7 +190,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	@Override
 	public boolean isOutput(RecipeJS recipe, RCBHolder[] value, ReplacementMatch match) {
 		for (var entry : value) {
-			if (entry.value != null && entry.key.component.role().isOutput() && entry.key.component.isOutput(recipe, UtilsJS.cast(entry.value), match)) {
+			if (entry != null && entry.value != null && entry.key.component.role().isOutput() && entry.key.component.isOutput(recipe, UtilsJS.cast(entry.value), match)) {
 				return true;
 			}
 		}
@@ -203,16 +203,16 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 		var arr = original;
 
 		for (int i = 0; i < original.length; i++) {
-			if (original[i].value != null && original[i].key.component.role().isOutput()) {
-				var r = original[i].key.component.replaceOutput(recipe, UtilsJS.cast(original[i].value()), match, with);
+			var entry = original[i];
+			if (entry != null && entry.value != null && entry.key.component.role().isOutput()) {
+				var r = entry.key.component.replaceOutput(recipe, UtilsJS.cast(entry.value()), match, with);
 
-				if (r != original[i].value()) {
+				if (r != entry.value()) {
 					if (arr == original) {
 						arr = new RCBHolder[original.length];
 						System.arraycopy(original, 0, arr, 0, i);
 					}
-
-					arr[i] = new RCBHolder(original[i].key(), r);
+					arr[i] = new RCBHolder(entry.key(), r);
 				}
 			}
 		}
@@ -227,7 +227,8 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 
 	public static RCBHolder[] set(RecipeJS recipe, RCBHolder[] original, RecipeKey<?> key, Object value) {
 		for (int i = 0; i < original.length; i++) {
-			if (original[i].key == key) {
+			var e = original[i];
+			if (e != null && e.key == key) {
 				var arr = new RCBHolder[original.length];
 				System.arraycopy(original, 0, arr, 0, original.length);
 				arr[i] = new RCBHolder(key, key.component.read(recipe, value));
@@ -241,7 +242,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	@Nullable
 	public static <T> T get(RCBHolder[] original, RecipeKey<T> key) {
 		for (var e : original) {
-			if (e.key == key) {
+			if (e != null && e.key == key) {
 				return UtilsJS.cast(e.value);
 			}
 		}

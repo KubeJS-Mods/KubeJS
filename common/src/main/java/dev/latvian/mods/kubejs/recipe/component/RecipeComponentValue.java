@@ -64,7 +64,7 @@ public final class RecipeComponentValue<T> extends BaseFunction implements Wrapp
 
 	@Override
 	public String toString() {
-		return key.name;
+		return "%s = %s".formatted(key.name, value);
 	}
 
 	public String checkEmpty() {
