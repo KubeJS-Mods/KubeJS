@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.fabric;
 
 import com.mojang.serialization.Lifecycle;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.bindings.event.WorldgenEvents;
 import dev.latvian.mods.kubejs.platform.fabric.IngredientFabricHelper;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -51,6 +52,7 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 	@Override
 	public void onInitializeClient() {
 		registerObjects();
+		WorldgenEvents.post();
 		KubeJS.instance.loadComplete();
 		KubeJS.PROXY.clientSetup();
 		clientRegistry();
@@ -63,6 +65,7 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 	@Override
 	public void onInitializeServer() {
 		registerObjects();
+		WorldgenEvents.post();
 		KubeJS.instance.loadComplete();
 	}
 }

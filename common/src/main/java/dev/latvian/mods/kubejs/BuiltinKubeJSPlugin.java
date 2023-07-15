@@ -66,6 +66,7 @@ import dev.latvian.mods.kubejs.item.custom.SwordItemBuilder;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.filter.mob.MobFilter;
+import dev.latvian.mods.kubejs.level.gen.ruletest.KubeJSRuleTests;
 import dev.latvian.mods.kubejs.misc.BasicMobEffect;
 import dev.latvian.mods.kubejs.misc.CustomStatBuilder;
 import dev.latvian.mods.kubejs.misc.EnchantmentBuilder;
@@ -211,6 +212,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	public void initStartup() {
 		ItemEvents.TOOL_TIER_REGISTRY.post(ScriptType.STARTUP, new ItemToolTierRegistryEventJS());
 		ItemEvents.ARMOR_TIER_REGISTRY.post(ScriptType.STARTUP, new ItemArmorTierRegistryEventJS());
+		KubeJSRuleTests.init();
 
 		/*
 		for (var types : RegistryObjectBuilderTypes.MAP.values()) {
