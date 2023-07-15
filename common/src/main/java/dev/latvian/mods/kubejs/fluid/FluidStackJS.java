@@ -12,6 +12,7 @@ import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -128,6 +129,11 @@ public abstract class FluidStackJS implements WrappedJS, InputFluid, OutputFluid
 
 	@Override
 	public abstract long kjs$getAmount();
+
+	@HideFromJS
+	public final long getAmount() {
+		return kjs$getAmount(); // legacy reasons (and also just looks better from java)
+	}
 
 	public abstract void setAmount(long amount);
 
