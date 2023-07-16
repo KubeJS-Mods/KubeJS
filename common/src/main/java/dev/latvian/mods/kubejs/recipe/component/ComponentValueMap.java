@@ -16,7 +16,7 @@ public class ComponentValueMap extends IdentityHashMap<RecipeKey<?>, Object> {
 
 		if (o == null) {
 			if (key.optional()) {
-				return key.optional.getDefaultValue(recipe.type.schemaType);
+				return null;
 			}
 
 			throw new RecipeExceptionJS("Value for '" + key + "' is missing!");

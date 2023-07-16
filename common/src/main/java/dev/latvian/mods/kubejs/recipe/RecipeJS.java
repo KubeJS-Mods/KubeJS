@@ -121,7 +121,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 				valueMap.put(v.key, v);
 
 				if (v.key.optional()) {
-					v.value = UtilsJS.cast(v.key.optional.getDefaultValue(type.schemaType));
+					v.value = null;
 				}
 
 				if (created && (v.key.alwaysWrite || !v.key.optional())) {
