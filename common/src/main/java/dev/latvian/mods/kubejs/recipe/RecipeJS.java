@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -66,7 +65,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 
 	public void deserialize(boolean merge) {
 		for (var v : valueMap.values()) {
-			v.key.component.readFromJson(UtilsJS.cast(v), json);
+			v.key.component.readFromJson(this, UtilsJS.cast(v), json);
 
 			if (v.value != null) {
 				if (merge) {
@@ -81,7 +80,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	public void serialize() {
 		for (var v : valueMap.values()) {
 			if (v.write) {
-				v.key.component.writeToJson(UtilsJS.cast(v), json);
+				v.key.component.writeToJson(this, UtilsJS.cast(v), json);
 			}
 		}
 	}
@@ -115,15 +114,15 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		if (type.schemaType.schema.keys.length > 0) {
 			valueMap = new IdentityHashMap<>(type.schemaType.schema.keys.length);
 
-			for (var key : type.schemaType.schema.keys) {
-				var v = new RecipeComponentValue<>(this, key);
-				valueMap.put(key, v);
+			for (int i = 0; i < type.schemaType.schema.keys.length; i++) {
+				var v = new RecipeComponentValue<>(type.schemaType.schema.keys[i], i);
+				valueMap.put(v.key, v);
 
-				if (key.optional()) {
-					v.value = UtilsJS.cast(key.optional.getDefaultValue(type.schemaType));
+				if (v.key.optional()) {
+					v.value = UtilsJS.cast(v.key.optional.getDefaultValue(type.schemaType));
 				}
 
-				if (key.alwaysWrite || !key.optional()) {
+				if (v.key.alwaysWrite || !v.key.optional()) {
 					v.write = true;
 				}
 			}
@@ -181,6 +180,20 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		}
 
 		return this;
+	}
+
+	public final boolean hasChanged() {
+		if (changed) {
+			return true;
+		}
+
+		for (var vc : valueMap.values()) {
+			if (vc.write) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	// RecipeKJS methods //
@@ -269,7 +282,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	@Override
 	public boolean hasInput(ReplacementMatch match) {
 		for (var v : inputValues()) {
-			if (v.isInput(match)) {
+			if (v.isInput(this, match)) {
 				return true;
 			}
 		}
@@ -282,7 +295,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		boolean replaced = false;
 
 		for (var v : inputValues()) {
-			replaced = v.replaceInput(match, with) || replaced;
+			replaced = v.replaceInput(this, match, with) || replaced;
 		}
 
 		changed |= replaced;
@@ -292,7 +305,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	@Override
 	public boolean hasOutput(ReplacementMatch match) {
 		for (var v : outputValues()) {
-			if (v.isOutput(match)) {
+			if (v.isOutput(this, match)) {
 				return true;
 			}
 		}
@@ -305,7 +318,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		boolean replaced = false;
 
 		for (var v : outputValues()) {
-			replaced = v.replaceOutput(match, with) || replaced;
+			replaced = v.replaceOutput(this, match, with) || replaced;
 		}
 
 		changed |= replaced;
@@ -386,7 +399,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 
 		type.schemaType.getSerializer();
 
-		if (changed || newRecipe) {
+		if (newRecipe || hasChanged()) {
 			json.addProperty("type", type.idString);
 			serialize();
 

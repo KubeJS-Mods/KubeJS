@@ -1,20 +1,28 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValueFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.Scriptable;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class RecipeFunction extends NativeJavaObject {
 	public final RecipeJS recipe;
-	public final Map<String, RecipeComponentValue<?>> builderFunctions;
+	public final Map<String, RecipeComponentValueFunction> builderFunctions;
 
 	public RecipeFunction(Context cx, Scriptable scope, Class<?> staticType, RecipeJS recipe) {
 		super(scope, recipe, staticType, cx);
 		this.recipe = recipe;
-		this.builderFunctions = recipe.getAllValueMap();
+		var map = recipe.getAllValueMap();
+		this.builderFunctions = new HashMap<>(map.size());
+
+		for (var entry : map.entrySet()) {
+			var key = entry.getKey();
+			var value = entry.getValue();
+			builderFunctions.put(key, new RecipeComponentValueFunction(recipe, value));
+		}
 	}
 
 	@Override

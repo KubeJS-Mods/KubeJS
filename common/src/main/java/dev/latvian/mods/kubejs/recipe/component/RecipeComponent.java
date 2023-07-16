@@ -53,44 +53,44 @@ public interface RecipeComponent<T> {
 
 	T read(RecipeJS recipe, Object from);
 
-	default void writeToJson(RecipeComponentValue<T> cv, JsonObject json) {
+	default void writeToJson(RecipeJS recipe, RecipeComponentValue<T> cv, JsonObject json) {
 		if (cv.key.names.size() >= 2) {
 			for (var k : cv.key.names) {
 				json.remove(k);
 			}
 		}
 
-		json.add(cv.key.name, write(cv.recipe, cv.value));
+		json.add(cv.key.name, write(recipe, cv.value));
 	}
 
-	default void readFromJson(RecipeComponentValue<T> cv, JsonObject json) {
+	default void readFromJson(RecipeJS recipe, RecipeComponentValue<T> cv, JsonObject json) {
 		var v = json.get(cv.key.name);
 
 		if (v != null) {
-			cv.value = read(cv.recipe, v);
+			cv.value = read(recipe, v);
 		} else if (cv.key.names.size() >= 2) {
 			for (var alt : cv.key.names) {
 				v = json.get(alt);
 
 				if (v != null) {
-					cv.value = read(cv.recipe, v);
+					cv.value = read(recipe, v);
 					return;
 				}
 			}
 		}
 	}
 
-	default void readFromMap(RecipeComponentValue<T> cv, Map<?, ?> map) {
+	default void readFromMap(RecipeJS recipe, RecipeComponentValue<T> cv, Map<?, ?> map) {
 		var v = map.get(cv.key.name);
 
 		if (v != null) {
-			cv.value = read(cv.recipe, v);
+			cv.value = read(recipe, v);
 		} else if (cv.key.names.size() >= 2) {
 			for (var alt : cv.key.names) {
 				v = map.get(alt);
 
 				if (v != null) {
-					cv.value = read(cv.recipe, v);
+					cv.value = read(recipe, v);
 					return;
 				}
 			}
@@ -119,6 +119,10 @@ public interface RecipeComponent<T> {
 
 	default String checkEmpty(RecipeKey<T> key, T value) {
 		return "";
+	}
+
+	default boolean checkValueHasChanged(T oldValue, T newValue) {
+		return oldValue != newValue;
 	}
 
 	@SuppressWarnings("unchecked")

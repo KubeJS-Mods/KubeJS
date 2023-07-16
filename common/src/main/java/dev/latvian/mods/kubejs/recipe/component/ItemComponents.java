@@ -157,14 +157,14 @@ public interface ItemComponents {
 		}
 
 		@Override
-		public void writeToJson(RecipeComponentValue<OutputItem> cv, JsonObject json) {
+		public void writeToJson(RecipeJS recipe, RecipeComponentValue<OutputItem> cv, JsonObject json) {
 			json.addProperty(cv.key.name, cv.value.item.kjs$getId());
 			json.addProperty("count", cv.value.item.getCount());
 		}
 
 		@Override
-		public void readFromJson(RecipeComponentValue<OutputItem> cv, JsonObject json) {
-			RecipeComponentWithParent.super.readFromJson(cv, json);
+		public void readFromJson(RecipeJS recipe, RecipeComponentValue<OutputItem> cv, JsonObject json) {
+			RecipeComponentWithParent.super.readFromJson(recipe, cv, json);
 
 			if (cv.value != null && json.has("count")) {
 				cv.value.item.setCount(json.get("count").getAsInt());
@@ -172,8 +172,8 @@ public interface ItemComponents {
 		}
 
 		@Override
-		public void readFromMap(RecipeComponentValue<OutputItem> cv, Map<?, ?> map) {
-			RecipeComponentWithParent.super.readFromMap(cv, map);
+		public void readFromMap(RecipeJS recipe, RecipeComponentValue<OutputItem> cv, Map<?, ?> map) {
+			RecipeComponentWithParent.super.readFromMap(recipe, cv, map);
 
 			if (cv.value != null && map.containsKey("count")) {
 				cv.value.item.setCount(((Number) map.get("count")).intValue());

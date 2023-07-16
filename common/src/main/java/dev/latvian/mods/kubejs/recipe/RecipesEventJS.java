@@ -246,7 +246,7 @@ public class RecipesEventJS extends EventJS {
 		int modifiedCount = 0;
 
 		for (var r : originalRecipes.values()) {
-			if (r.changed) {
+			if (r.hasChanged()) {
 				modifiedCount++;
 			}
 		}
@@ -326,7 +326,7 @@ public class RecipesEventJS extends EventJS {
 			ConsoleJS.SERVER.info("======== Debug output of all modified recipes ========");
 
 			for (var r : originalRecipes.values()) {
-				if (r.changed) {
+				if (r.hasChanged()) {
 					ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json + " FROM " + r.originalJson);
 				}
 			}

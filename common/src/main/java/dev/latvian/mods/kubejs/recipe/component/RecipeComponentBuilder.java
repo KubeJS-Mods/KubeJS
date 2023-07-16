@@ -10,7 +10,6 @@ import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +18,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBuilder.RCBHolder[]> {
-	public record RCBHolder(RecipeKey<?> key, Object value) {
-	}
-
+public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBuilderMap> {
 	public final List<RecipeKey<?>> keys;
 	public Predicate<Set<String>> hasPriority;
 	public ComponentRole role = ComponentRole.OTHER;
@@ -71,7 +67,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 
 	@Override
 	public Class<?> componentClass() {
-		return RCBHolder[].class;
+		return RecipeComponentBuilderMap.class;
 	}
 
 	@Override
@@ -86,14 +82,14 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public JsonElement write(RecipeJS recipe, RCBHolder[] value) {
+	public JsonElement write(RecipeJS recipe, RecipeComponentBuilderMap value) {
 		var json = new JsonObject();
 
-		for (var val : value) {
+		for (var val : value.holders) {
 			if (val.value != null) {
-				var vc = new RecipeComponentValue<>(recipe, val.key);
+				var vc = new RecipeComponentValue<>(val.key, val.getIndex());
 				vc.value = UtilsJS.cast(val.value);
-				val.key.component.writeToJson(UtilsJS.cast(vc), json);
+				val.key.component.writeToJson(recipe, UtilsJS.cast(vc), json);
 			}
 		}
 
@@ -101,26 +97,30 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public RCBHolder[] read(RecipeJS recipe, Object from) {
-		var values = new RCBHolder[keys.size()];
+	public RecipeComponentBuilderMap read(RecipeJS recipe, Object from) {
+		var value = new RecipeComponentBuilderMap(this);
 
 		if (from instanceof JsonObject json) {
-			for (int i = 0; i < values.length; i++) {
-				var vc = new RecipeComponentValue<>(recipe, keys.get(i));
-				vc.key.component.readFromJson(UtilsJS.cast(vc), json);
-				values[i] = new RCBHolder(keys.get(i), vc.value);
+			for (var holder : value.holders) {
+				holder.key.component.readFromJson(recipe, UtilsJS.cast(holder), json);
+
+				if (!holder.key.optional() && holder.value == null) {
+					throw new IllegalArgumentException("Missing required key '" + holder.key + "'!");
+				}
 			}
 		} else if (from instanceof Map<?, ?> map) {
-			for (int i = 0; i < values.length; i++) {
-				var vc = new RecipeComponentValue<>(recipe, keys.get(i));
-				vc.key.component.readFromMap(UtilsJS.cast(vc), map);
-				values[i] = new RCBHolder(keys.get(i), vc.value);
+			for (var holder : value.holders) {
+				holder.key.component.readFromMap(recipe, UtilsJS.cast(holder), map);
+
+				if (!holder.key.optional() && holder.value == null) {
+					throw new IllegalArgumentException("Missing required key '" + holder.key + "'!");
+				}
 			}
 		} else {
 			throw new IllegalArgumentException("Expected JSON object!");
 		}
 
-		return values;
+		return value;
 	}
 
 	@Override
@@ -155,9 +155,9 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public boolean isInput(RecipeJS recipe, RCBHolder[] value, ReplacementMatch match) {
-		for (var entry : value) {
-			if (entry != null && entry.value != null && entry.key.component.role().isInput() && entry.key.component.isInput(recipe, UtilsJS.cast(entry.value), match)) {
+	public boolean isInput(RecipeJS recipe, RecipeComponentBuilderMap value, ReplacementMatch match) {
+		for (var e : value.holders) {
+			if (e.isInput(recipe, match)) {
 				return true;
 			}
 		}
@@ -166,31 +166,20 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public RCBHolder[] replaceInput(RecipeJS recipe, RCBHolder[] original, ReplacementMatch match, InputReplacement with) {
-		var arr = original;
-
-		for (int i = 0; i < original.length; i++) {
-			var entry = original[i];
-			if (entry != null && entry.value != null && entry.key.component.role().isInput()) {
-				var r = entry.key.component.replaceInput(recipe, UtilsJS.cast(entry.value()), match, with);
-
-				if (r != entry.value()) {
-					if (arr == original) {
-						arr = new RCBHolder[original.length];
-						System.arraycopy(original, 0, arr, 0, i);
-					}
-					arr[i] = new RCBHolder(entry.key(), r);
-				}
+	public RecipeComponentBuilderMap replaceInput(RecipeJS recipe, RecipeComponentBuilderMap original, ReplacementMatch match, InputReplacement with) {
+		for (var e : original.holders) {
+			if (e.replaceInput(recipe, match, with)) {
+				original.hasChanged = true;
 			}
 		}
 
-		return arr;
+		return original;
 	}
 
 	@Override
-	public boolean isOutput(RecipeJS recipe, RCBHolder[] value, ReplacementMatch match) {
-		for (var entry : value) {
-			if (entry != null && entry.value != null && entry.key.component.role().isOutput() && entry.key.component.isOutput(recipe, UtilsJS.cast(entry.value), match)) {
+	public boolean isOutput(RecipeJS recipe, RecipeComponentBuilderMap value, ReplacementMatch match) {
+		for (var e : value.holders) {
+			if (e.isOutput(recipe, match)) {
 				return true;
 			}
 		}
@@ -199,25 +188,14 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public RCBHolder[] replaceOutput(RecipeJS recipe, RCBHolder[] original, ReplacementMatch match, OutputReplacement with) {
-		var arr = original;
-
-		for (int i = 0; i < original.length; i++) {
-			var entry = original[i];
-			if (entry != null && entry.value != null && entry.key.component.role().isOutput()) {
-				var r = entry.key.component.replaceOutput(recipe, UtilsJS.cast(entry.value()), match, with);
-
-				if (r != entry.value()) {
-					if (arr == original) {
-						arr = new RCBHolder[original.length];
-						System.arraycopy(original, 0, arr, 0, i);
-					}
-					arr[i] = new RCBHolder(entry.key(), r);
-				}
+	public RecipeComponentBuilderMap replaceOutput(RecipeJS recipe, RecipeComponentBuilderMap original, ReplacementMatch match, OutputReplacement with) {
+		for (var e : original.holders) {
+			if (e.replaceOutput(recipe, match, with)) {
+				original.hasChanged = true;
 			}
 		}
 
-		return arr;
+		return original;
 	}
 
 	@Override
@@ -225,28 +203,8 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 		return keys.stream().map(RecipeKey::toString).collect(Collectors.joining(",", "builder{", "}"));
 	}
 
-	public static RCBHolder[] set(RecipeJS recipe, RCBHolder[] original, RecipeKey<?> key, Object value) {
-		for (int i = 0; i < original.length; i++) {
-			var e = original[i];
-			if (e != null && e.key == key) {
-				var arr = new RCBHolder[original.length];
-				System.arraycopy(original, 0, arr, 0, original.length);
-				arr[i] = new RCBHolder(key, key.component.read(recipe, value));
-				return arr;
-			}
-		}
-
-		return original;
-	}
-
-	@Nullable
-	public static <T> T get(RCBHolder[] original, RecipeKey<T> key) {
-		for (var e : original) {
-			if (e != null && e.key == key) {
-				return UtilsJS.cast(e.value);
-			}
-		}
-
-		return null;
+	@Override
+	public boolean checkValueHasChanged(RecipeComponentBuilderMap oldValue, RecipeComponentBuilderMap newValue) {
+		return newValue.hasChanged;
 	}
 }

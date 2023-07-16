@@ -6,33 +6,44 @@ import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.WrappedJS;
-import dev.latvian.mods.rhino.BaseFunction;
-import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.Scriptable;
 
-public final class RecipeComponentValue<T> extends BaseFunction implements WrappedJS {
+import java.util.Map;
+import java.util.Objects;
+
+public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<RecipeKey<T>, T> {
 	public static final RecipeComponentValue<?>[] EMPTY_ARRAY = new RecipeComponentValue[0];
 
-	public final RecipeJS recipe;
 	public final RecipeKey<T> key;
+	public final int index;
 	public T value;
 	public boolean write;
 
-	public RecipeComponentValue(RecipeJS recipe, RecipeKey<T> key) {
-		this.recipe = recipe;
+	public RecipeComponentValue(RecipeKey<T> key, int index) {
 		this.key = key;
+		this.index = index;
 		this.value = null;
 		this.write = false;
 	}
 
-	public boolean isInput(ReplacementMatch match) {
-		return value != null && key.component.isInput(recipe, value, match);
+	public RecipeComponentValue<T> copy() {
+		var copy = new RecipeComponentValue<>(key, index);
+		copy.value = value;
+		copy.write = write;
+		return copy;
 	}
 
-	public boolean replaceInput(ReplacementMatch match, InputReplacement with) {
+	public boolean isInput(RecipeJS recipe, ReplacementMatch match) {
+		return value != null && key.component.role().isInput() && key.component.isInput(recipe, value, match);
+	}
+
+	public boolean replaceInput(RecipeJS recipe, ReplacementMatch match, InputReplacement with) {
+		if (!key.component.role().isInput()) {
+			return false;
+		}
+
 		var newValue = value == null ? null : key.component.replaceInput(recipe, value, match, with);
 
-		if (value != newValue) {
+		if (key.component.checkValueHasChanged(value, newValue)) {
 			value = newValue;
 			write = true;
 			return true;
@@ -41,14 +52,18 @@ public final class RecipeComponentValue<T> extends BaseFunction implements Wrapp
 		return false;
 	}
 
-	public boolean isOutput(ReplacementMatch match) {
-		return value != null && key.component.isOutput(recipe, value, match);
+	public boolean isOutput(RecipeJS recipe, ReplacementMatch match) {
+		return value != null && key.component.role().isOutput() && key.component.isOutput(recipe, value, match);
 	}
 
-	public boolean replaceOutput(ReplacementMatch match, OutputReplacement with) {
+	public boolean replaceOutput(RecipeJS recipe, ReplacementMatch match, OutputReplacement with) {
+		if (!key.component.role().isOutput()) {
+			return false;
+		}
+
 		var newValue = value == null ? null : key.component.replaceOutput(recipe, value, match, with);
 
-		if (value != newValue) {
+		if (key.component.checkValueHasChanged(value, newValue)) {
 			value = newValue;
 			write = true;
 			return true;
@@ -58,16 +73,24 @@ public final class RecipeComponentValue<T> extends BaseFunction implements Wrapp
 	}
 
 	@Override
-	public RecipeJS call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-		return recipe.setValue(key, key.component.read(recipe, args[0]));
-	}
-
 	public RecipeKey<T> getKey() {
 		return key;
 	}
 
+	public int getIndex() {
+		return index;
+	}
+
+	@Override
 	public T getValue() {
 		return value;
+	}
+
+	@Override
+	public T setValue(T newValue) {
+		var v = value;
+		value = newValue;
+		return v;
 	}
 
 	public boolean shouldWrite() {
@@ -81,6 +104,16 @@ public final class RecipeComponentValue<T> extends BaseFunction implements Wrapp
 	@Override
 	public String toString() {
 		return "%s = %s".formatted(key.name, value);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj == this || obj instanceof Map.Entry<?, ?> e && key == e.getKey() && Objects.equals(value, e.getValue());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(key, value);
 	}
 
 	public String checkEmpty() {
