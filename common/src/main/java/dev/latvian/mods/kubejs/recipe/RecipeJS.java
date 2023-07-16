@@ -69,7 +69,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 
 			if (v.value != null) {
 				if (merge) {
-					v.write = true;
+					v.write();
 				}
 			} else if (!v.key.optional()) {
 				throw new MissingComponentException(v.key.name, v.key, valueMap.keySet());
@@ -79,7 +79,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 
 	public void serialize() {
 		for (var v : valueMap.values()) {
-			if (v.write) {
+			if (v.shouldWrite()) {
 				v.key.component.writeToJson(this, UtilsJS.cast(v), json);
 			}
 		}
@@ -103,13 +103,15 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		}
 
 		v.value = UtilsJS.cast(value);
-		v.write = true;
-		changed = true;
+		v.write();
+		save();
 		return this;
 	}
 
 	public void initValues(boolean created) {
-		changed = created;
+		if (created) {
+			save();
+		}
 
 		if (type.schemaType.schema.keys.length > 0) {
 			valueMap = new IdentityHashMap<>(type.schemaType.schema.keys.length);
@@ -122,8 +124,8 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 					v.value = UtilsJS.cast(v.key.optional.getDefaultValue(type.schemaType));
 				}
 
-				if (v.key.alwaysWrite || !v.key.optional()) {
-					v.write = true;
+				if (created && (v.key.alwaysWrite || !v.key.optional())) {
+					v.write();
 				}
 			}
 		}
@@ -188,7 +190,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		}
 
 		for (var vc : valueMap.values()) {
-			if (vc.write) {
+			if (vc.shouldWrite()) {
 				return true;
 			}
 		}
@@ -298,7 +300,10 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 			replaced = v.replaceInput(this, match, with) || replaced;
 		}
 
-		changed |= replaced;
+		if (replaced) {
+			save();
+		}
+
 		return replaced;
 	}
 
@@ -321,7 +326,10 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 			replaced = v.replaceOutput(this, match, with) || replaced;
 		}
 
-		changed |= replaced;
+		if (replaced) {
+			save();
+		}
+
 		return replaced;
 	}
 

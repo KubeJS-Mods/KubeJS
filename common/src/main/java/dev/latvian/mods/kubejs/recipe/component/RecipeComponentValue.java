@@ -45,7 +45,7 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 
 		if (key.component.checkValueHasChanged(value, newValue)) {
 			value = newValue;
-			write = true;
+			write();
 			return true;
 		}
 
@@ -65,7 +65,7 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 
 		if (key.component.checkValueHasChanged(value, newValue)) {
 			value = newValue;
-			write = true;
+			write();
 			return true;
 		}
 
