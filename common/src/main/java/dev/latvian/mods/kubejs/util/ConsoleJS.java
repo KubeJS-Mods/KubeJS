@@ -80,7 +80,7 @@ public class ConsoleJS {
 			} else if (error) {
 				console.log(this, "ERROR", x);
 			} else {
-				console.log(this, "WARN ", x);
+				console.log(this, "WARN", x);
 			}
 		}
 
