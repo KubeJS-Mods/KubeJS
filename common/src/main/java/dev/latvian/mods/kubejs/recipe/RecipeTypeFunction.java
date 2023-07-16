@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.ListJS;
+import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
@@ -37,33 +37,37 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 		return createRecipe(args0);
 	}
 
-	public RecipeJS createRecipe(Object[] args0) {
+	public RecipeJS createRecipe(Object[] args) {
 		try {
 			schemaType.getSerializer();
 
-			var args1 = ListJS.of(args0);
+			var constructor = schemaType.schema.constructors().get(args.length);
 
+			if (constructor == null) {
+				if (args.length == 1 && (args[0] instanceof Map<?, ?> || args[0] instanceof JsonObject)) {
+					var recipe = schemaType.schema.deserialize(this, null, MapJS.json(args[0]));
+					recipe.afterLoaded();
+					return event.addRecipe(recipe, true);
+
+					// throw new RecipeExceptionJS("Use event.custom(json) for json recipes!");
+				}
+
+				throw new RecipeExceptionJS("Constructor for " + id + " with " + args.length + " arguments not found!");
+			}
+
+			/*
 			if (args1 == null || args1.isEmpty()) {
 				throw new RecipeExceptionJS("Recipe requires at least one argument!");
 			} else if (schemaType.schema.keys.length == 0 && args1.size() != 1) {
 				throw new RecipeExceptionJS("Custom recipe has to use a single json object argument!");
 			}
+			 */
 
-			var constructor = schemaType.schema.constructors().get(args1.size());
-
-			if (constructor == null) {
-				if (args0[0] instanceof Map<?, ?> || args0[0] instanceof JsonObject) {
-					throw new RecipeExceptionJS("Use event.custom(json) for json recipes!");
-				}
-
-				throw new RecipeExceptionJS("Constructor for " + id + " with " + args1.size() + " arguments not found!");
-			}
-
-			var argMap = new ComponentValueMap(args1.size());
+			var argMap = new ComponentValueMap(args.length);
 			int index = 0;
 
 			for (var key : constructor.keys()) {
-				argMap.put(key, Wrapper.unwrapped(args1.get(index++)));
+				argMap.put(key, Wrapper.unwrapped(args[index++]));
 			}
 
 			var recipe = constructor.factory().create(this, schemaType, constructor.keys(), argMap);
@@ -73,7 +77,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 			ex.error();
 			ConsoleJS.SERVER.error("Failed to create recipe for type '" + id + "'", ex, SKIP_ERROR);
 		} catch (Throwable ex) {
-			ConsoleJS.SERVER.handleError(ex, SKIP_ERROR, "Failed to create recipe for type '" + id + "' with args " + Arrays.stream(args0).map(Wrapper::unwrapped).map(o -> o == null ? "null" : (o + ": " + o.getClass().getSimpleName())).collect(Collectors.joining(", ", "[", "]")));
+			ConsoleJS.SERVER.handleError(ex, SKIP_ERROR, "Failed to create recipe for type '" + id + "' with args " + Arrays.stream(args).map(Wrapper::unwrapped).map(o -> o == null ? "null" : (o + ": " + o.getClass().getSimpleName())).collect(Collectors.joining(", ", "[", "]")));
 		}
 
 		return new JsonRecipeJS();
