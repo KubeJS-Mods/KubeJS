@@ -6,6 +6,7 @@ import com.google.gson.JsonParseException;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
@@ -92,15 +93,7 @@ public class RecipesEventJS extends EventJS {
 					System.exit(-1);
 				}
 
-				// there *might* be a case for us to rethrow loudly if it isn't a JSON / recipe exception
-				// but for now we will just log it as an error and try to continue as normal
-
-				if (ex instanceof RecipeExceptionJS rex && !rex.error) {
-					ConsoleJS.SERVER.warn("Caught exception in thread %s while performing async recipe operation!".formatted(thread), rex);
-					return;
-				}
-
-				ConsoleJS.SERVER.error("Caught exception in thread %s while performing async recipe operation!".formatted(thread), ex);
+				ConsoleJS.SERVER.error(String.format("Caught exception in thread %s while performing async operation!", thread), ex);
 			}, true);
 
 	public static Map<UUID, IngredientWithCustomPredicate> customIngredientMap = null;
