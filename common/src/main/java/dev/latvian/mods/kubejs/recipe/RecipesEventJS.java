@@ -96,7 +96,7 @@ public class RecipesEventJS extends EventJS {
 				// but for now we will just log it as an error and try to continue as normal
 
 				if (ex instanceof RecipeExceptionJS rex && !rex.error) {
-					ConsoleJS.SERVER.warn("Caught exception in thread %s while performing async operation!".formatted(thread), rex);
+					ConsoleJS.SERVER.warn("Caught exception in thread %s while performing async recipe operation!".formatted(thread), rex);
 					return;
 				}
 
