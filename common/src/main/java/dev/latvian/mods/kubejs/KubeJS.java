@@ -238,7 +238,11 @@ public class KubeJS {
 						.build()
 						.send(HttpRequest.newBuilder().uri(URI.create("https://kubejs.com/update-check?" + QUERY)).GET().build(), HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
 				if (response.statusCode() == 200) {
-					ConsoleJS.STARTUP.info("Update available: " + response.body());
+					var body = response.body().trim();
+
+					if (!body.isEmpty()) {
+						ConsoleJS.STARTUP.info("Update available: " + body);
+					}
 				}
 			} catch (Exception ignored) {
 			}

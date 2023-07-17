@@ -221,14 +221,14 @@ public class RecipesEventJS extends EventJS {
 					}
 				}
 			} catch (Throwable ex) {
-				if (DevProperties.get().logErroringRecipes) {
+				if (DevProperties.get().logErroringRecipes || DevProperties.get().debugInfo) {
 					ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'! Falling back to vanilla", ex, SKIP_ERROR);
 				}
 
 				try {
 					originalRecipes.put(recipeId, JsonRecipeSchema.SCHEMA.deserialize(type, recipeId, json));
 				} catch (NullPointerException | IllegalArgumentException | JsonParseException ex2) {
-					if (DevProperties.get().logErroringRecipes) {
+					if (DevProperties.get().logErroringRecipes || DevProperties.get().debugInfo) {
 						ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType, ex2, SKIP_ERROR);
 					}
 				} catch (Exception ex3) {

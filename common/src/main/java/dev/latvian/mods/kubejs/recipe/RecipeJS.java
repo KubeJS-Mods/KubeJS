@@ -80,6 +80,10 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	public void serialize() {
 		for (var v : valueMap.values()) {
 			if (v.shouldWrite()) {
+				if (v.value == null) {
+					throw new RecipeExceptionJS("Value not set for " + v.key + " in recipe " + this);
+				}
+
 				v.key.component.writeToJson(this, UtilsJS.cast(v), json);
 			}
 		}
@@ -120,11 +124,11 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 				var v = new RecipeComponentValue<>(type.schemaType.schema.keys[i], i);
 				valueMap.put(v.key, v);
 
-				if (v.key.optional()) {
-					v.value = null;
-				}
-
 				if (created && (v.key.alwaysWrite || !v.key.optional())) {
+					if (v.key.alwaysWrite) {
+						v.value = UtilsJS.cast(v.key.optional.getDefaultValue(type.schemaType));
+					}
+
 					v.write();
 				}
 			}

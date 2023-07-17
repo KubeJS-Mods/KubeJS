@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 
 public class NotificationBuilder {
 	public static final Component[] NO_TEXT = new Component[0];
+	public static final Duration DEFAULT_DURATION = Duration.ofSeconds(5L);
 	public static final Color DEFAULT_BORDER_COLOR = new SimpleColor(0x472954);
 	public static final Color DEFAULT_BACKGROUND_COLOR = new SimpleColor(0x241335);
 
@@ -43,9 +44,10 @@ public class NotificationBuilder {
 	public Color outlineColor;
 	public Color borderColor;
 	public Color backgroundColor;
+	public boolean titleShadow;
 
 	public NotificationBuilder() {
-		duration = Duration.ofSeconds(5L);
+		duration = DEFAULT_DURATION;
 		text = Component.empty();
 		iconType = 0;
 		icon = "";
@@ -53,25 +55,55 @@ public class NotificationBuilder {
 		outlineColor = SimpleColor.BLACK;
 		borderColor = DEFAULT_BORDER_COLOR;
 		backgroundColor = DEFAULT_BACKGROUND_COLOR;
+		titleShadow = true;
 	}
 
 	public NotificationBuilder(FriendlyByteBuf buf) {
-		duration = Duration.ofMillis(buf.readVarLong());
+		int flags = buf.readVarInt();
 		text = buf.readComponent();
-		iconType = buf.readVarInt();
-		icon = iconType == 0 ? "" : buf.readUtf();
-		iconSize = iconType == 0 ? 16 : buf.readByte();
+
+		duration = ((flags & 4) != 0) ? Duration.ofMillis(buf.readVarLong()) : DEFAULT_DURATION;
+
+		if ((flags & 1) != 0) {
+			iconType = buf.readVarInt();
+			icon = buf.readUtf();
+			iconSize = buf.readByte();
+		} else {
+			iconType = 0;
+			icon = "";
+			iconSize = 16;
+		}
+
 		outlineColor = UtilsJS.readColor(buf);
 		borderColor = UtilsJS.readColor(buf);
 		backgroundColor = UtilsJS.readColor(buf);
+		titleShadow = (flags & 2) != 0;
 	}
 
 	public void write(FriendlyByteBuf buf) {
-		buf.writeVarLong(duration.toMillis());
-		buf.writeComponent(text);
-		buf.writeVarInt(iconType);
+		int flags = 0;
 
 		if (iconType != 0) {
+			flags |= 1;
+		}
+
+		if (titleShadow) {
+			flags |= 2;
+		}
+
+		if (duration != DEFAULT_DURATION) {
+			flags |= 4;
+		}
+
+		buf.writeVarInt(flags);
+		buf.writeComponent(text);
+
+		if (duration != DEFAULT_DURATION) {
+			buf.writeVarLong(duration.toMillis());
+		}
+
+		if (iconType != 0) {
+			buf.writeVarInt(iconType);
 			buf.writeUtf(icon);
 			buf.writeByte(iconSize);
 		}
