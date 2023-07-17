@@ -420,10 +420,14 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 
 	public Recipe<?> getOriginalRecipe() {
 		if (originalRecipe == null) {
-			originalRecipe = id == null ? null : RecipePlatformHelper.get().fromJson(type.schemaType.getSerializer(), id, json);
+			try {
+				originalRecipe = RecipePlatformHelper.get().fromJson(type.schemaType.getSerializer(), getOrCreateId(), json);
+			} catch (Throwable e) {
+				throw new RecipeExceptionJS("Could not create recipe from json for " + this, e);
+			}
 
 			if (originalRecipe == null) {
-				throw new RecipeExceptionJS("Could not create recipe from json for " + this);
+				throw new RecipeExceptionJS("Could not create recipe from json for " + this, new Throwable("Original recipe is null!"));
 			}
 		}
 

@@ -42,8 +42,22 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -78,7 +92,15 @@ public class RecipesEventJS extends EventJS {
 					System.exit(-1);
 				}
 
-				throw new RecipeExceptionJS("Caught exception in thread " + thread + " while performing async operation!", ex);
+				// there *might* be a case for us to rethrow loudly if it isn't a JSON / recipe exception
+				// but for now we will just log it as an error and try to continue as normal
+
+				if (ex instanceof RecipeExceptionJS rex && !rex.error) {
+					ConsoleJS.SERVER.warn("Caught exception in thread %s while performing async operation!".formatted(thread), rex);
+					return;
+				}
+
+				ConsoleJS.SERVER.error("Caught exception in thread %s while performing async recipe operation!".formatted(thread), ex);
 			}, true);
 
 	public static Map<UUID, IngredientWithCustomPredicate> customIngredientMap = null;
