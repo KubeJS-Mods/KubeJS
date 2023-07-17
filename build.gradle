@@ -40,7 +40,7 @@ subprojects {
 	apply plugin: "java"
 	apply plugin: "dev.architectury.loom"
 	apply plugin: 'architectury-plugin'
-	apply plugin: "io.github.juuxel.loom-quiltflower"
+	apply plugin: "io.github.juuxel.loom-vineflower"
 	apply plugin: "maven-publish"
 	apply from: "https://files.latvian.dev/public/markdown-git-changelog.gradle"
 

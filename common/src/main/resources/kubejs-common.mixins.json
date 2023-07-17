@@ -8,6 +8,8 @@
 		"ContainerMixin",
 		"DamageSourceMixin",
 		"EntityMixin",
+		"EventHandlerBridgeMixin",
+		"EventHandlerInvoker",
 		"FireworkRocketEntityMixin",
 		"GameRulesMixin",
 		"IngredientMixin",
