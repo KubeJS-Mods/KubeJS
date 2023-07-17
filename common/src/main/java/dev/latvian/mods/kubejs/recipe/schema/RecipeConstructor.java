@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -14,7 +15,7 @@ public record RecipeConstructor(RecipeSchema schema, RecipeKey<?>[] keys, Factor
 	public interface Factory {
 		Factory DEFAULT = (recipe, schemaType, keys, from) -> {
 			for (var key : keys) {
-				recipe.setValue(key, from.getValue(recipe, key));
+				recipe.setValue(key, UtilsJS.cast(from.getValue(recipe, key)));
 			}
 		};
 

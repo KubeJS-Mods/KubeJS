@@ -65,8 +65,8 @@ public interface ShapedRecipeSchema {
 				iterator.set(StringUtils.rightPad(iterator.next(), maxLength));
 			}
 
-			setValue(PATTERN, pattern);
-			setValue(KEY, key);
+			setValue(PATTERN, pattern.toArray(new String[0]));
+			setValue(KEY, TinyMap.ofMap(key));
 		}
 
 		@Override

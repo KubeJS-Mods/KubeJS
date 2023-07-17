@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.util;
 
 import java.util.Collection;
+import java.util.Map;
 
 public record TinyMap<K, V>(TinyMap.Entry<K, V>[] entries) {
 	public record Entry<K, V>(K key, V value) {
@@ -17,5 +18,15 @@ public record TinyMap<K, V>(TinyMap.Entry<K, V>[] entries) {
 
 	public boolean isEmpty() {
 		return entries.length == 0;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <K, V> TinyMap<K, V> ofMap(Map<K, V> map) {
+		var entries = new Entry[map.size()];
+		int i = 0;
+		for (var entry : map.entrySet()) {
+			entries[i++] = new Entry<>(entry.getKey(), entry.getValue());
+		}
+		return new TinyMap<K, V>(entries);
 	}
 }
