@@ -280,6 +280,7 @@ public class RecipesEventJS extends EventJS {
 
 		try {
 			recipesByName.putAll(runInParallel(() -> originalRecipes.values().parallelStream()
+					.filter(r -> !r.removed)
 					.map(recipe -> {
 						try {
 							return recipe.createRecipe();
@@ -290,7 +291,10 @@ public class RecipesEventJS extends EventJS {
 						}
 					})
 					.filter(Objects::nonNull)
-					.collect(Collectors.toMap(Recipe::getId, Function.identity()))));
+					.collect(Collectors.toConcurrentMap(Recipe::getId, Function.identity(), (a, b) -> {
+						ConsoleJS.SERVER.warn("Duplicate recipe for id " + a.getId() + "! Using last one encountered.");
+						return b;
+					}))));
 		} catch (Throwable ex) {
 			ConsoleJS.SERVER.error("Error creating datapack recipes", ex, SKIP_ERROR);
 		}
@@ -307,7 +311,11 @@ public class RecipesEventJS extends EventJS {
 						}
 					})
 					.filter(Objects::nonNull)
-					.collect(Collectors.toMap(Recipe::getId, Function.identity()))));
+					.collect(Collectors.toConcurrentMap(Recipe::getId, Function.identity(), (a, b) -> {
+						ConsoleJS.SERVER.warn("Duplicate recipe for id " + a.getId() + "! Using last one encountered.");
+						ConsoleJS.SERVER.warn("You might want to check your scripts for errors.");
+						return b;
+					}))));
 		} catch (Throwable ex) {
 			ConsoleJS.SERVER.error("Error creating script recipes", ex, SKIP_ERROR);
 		}
