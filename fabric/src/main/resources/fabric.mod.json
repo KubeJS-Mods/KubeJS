@@ -9,7 +9,7 @@
 	],
 	"contact": {
 		"sources": "https://github.com/KubeJS-Mods/KubeJS",
-		"issues": "https://github.com/KubeJS-Mods/KubeJS/issues"
+		"issues": "https://kubejs.com/support?source=kubejs&mc=1902&loader=fabric"
 	},
 	"license": "GNU LGPLv3",
 	"icon": "assets/kubejs/textures/kubejs_logo.png",

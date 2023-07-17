@@ -92,7 +92,7 @@ public class KubeJS {
 		if (Files.notExists(KubeJSPaths.README)) {
 			try {
 				Files.writeString(KubeJSPaths.README, """
-						Find more info on the website: https://kubejs.com/
+						Find out more info on the website: https://kubejs.com/
 										
 						Directory information:
 										
@@ -228,7 +228,7 @@ public class KubeJS {
 			throw new RuntimeException("There were KubeJS startup script syntax errors! See logs/kubejs/startup.log for more info");
 		}
 
-		QUERY = "source=game&mc=" + MC_VERSION_NUMBER + "&loader=" + ArchitecturyTarget.getCurrentTarget() + "&v=" + URLEncoder.encode(thisMod.getVersion(), StandardCharsets.UTF_8);
+		QUERY = "source=kubejs&mc=" + MC_VERSION_NUMBER + "&loader=" + ArchitecturyTarget.getCurrentTarget() + "&v=" + URLEncoder.encode(thisMod.getVersion(), StandardCharsets.UTF_8);
 
 		var updater = new Thread(() -> {
 			try {
