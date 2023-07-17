@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
@@ -9,6 +10,8 @@ import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.rhino.mod.util.JsonSerializable;
+import dev.latvian.mods.rhino.util.RemapForJS;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -17,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class InputItem implements IngredientSupplierKJS, InputReplacement {
+public class InputItem implements IngredientSupplierKJS, InputReplacement, JsonSerializable {
 	public static final InputItem EMPTY = new InputItem(Ingredient.EMPTY, 0);
 	public static final Map<String, InputItem> PARSE_CACHE = new HashMap<>();
 
@@ -150,6 +153,25 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement {
 		}
 
 		return ingredient.toString();
+	}
+
+	// This method is intended to be used as a *sane default* for what input items might look like represented as JSON.
+	// As the name implies, this is only intended to be used from KubeJS scripts, and should not be used for serialization purposes.
+	@Override
+	public JsonElement toJsonJS() {
+		return toJsonJS(true);
+	}
+
+	@RemapForJS("toJson")
+	public JsonElement toJsonJS(boolean alwaysNest) {
+		if (!alwaysNest && count == 1) {
+			return ingredient.toJson();
+		} else {
+			var o = new JsonObject();
+			o.addProperty("count", count);
+			o.add("ingredient", ingredient.toJson());
+			return o;
+		}
 	}
 
 	@Override
