@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
-	private static final Pattern SKIP_ERROR = Pattern.compile("at\\s+dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipeTypeFunction\\.call");
+	public static final Pattern SKIP_ERROR = Pattern.compile("at\\s+dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipeTypeFunction\\.call");
 
 	public final RecipesEventJS event;
 	public final ResourceLocation id;
