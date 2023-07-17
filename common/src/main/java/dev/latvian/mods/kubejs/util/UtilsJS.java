@@ -16,13 +16,15 @@ import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.rhino.*;
+import dev.latvian.mods.rhino.BaseFunction;
+import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.NativeJavaObject;
+import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.util.color.SimpleColorWithAlpha;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
-import net.minecraft.ReportedException;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.arguments.selector.EntitySelector;
@@ -31,7 +33,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.*;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.Bootstrap;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.valueproviders.*;
@@ -62,8 +63,6 @@ import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.temporal.TemporalAmount;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -85,30 +84,6 @@ public class UtilsJS {
 	private static Collection<BlockState> ALL_STATE_CACHE = null;
 	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();
 	private static final EntitySelector ALL_ENTITIES_SELECTOR = new EntitySelector(EntitySelector.INFINITE, true, false, e -> true, MinMaxBounds.Doubles.ANY, Function.identity(), null, EntitySelectorParser.ORDER_ARBITRARY, false, null, null, null, true);
-
-	// hacky workaround for parallel streams, which are executed on the common fork/join pool by default
-	// and forge / event bus REALLY does not like that (plus it's generally just safer to use our own pool)
-	private static final ForkJoinPool POOL = new ForkJoinPool(Math.max(1, Runtime.getRuntime().availableProcessors() - 1),
-			forkJoinPool -> {
-				final ForkJoinWorkerThread thread = new ForkJoinWorkerThread(forkJoinPool) {
-				};
-				thread.setContextClassLoader(KubeJS.class.getClassLoader()); // better safe than sorry
-				thread.setName(String.format("KubeJS Parallel Worker %d", thread.getPoolIndex()));
-				return thread;
-			},
-			(thread, ex) -> {
-				while ((ex instanceof CompletionException | ex instanceof InvocationTargetException | ex instanceof WrappedException) && ex.getCause() != null) {
-					ex = ex.getCause();
-				}
-
-				if (ex instanceof ReportedException crashed) {
-					// crash the same way Minecraft would
-					Bootstrap.realStdoutPrintln(crashed.getReport().getFriendlyReport());
-					System.exit(-1);
-				}
-
-				KubeJS.LOGGER.error(String.format("Caught exception in thread %s while performing async operation!", thread), ex);
-			}, true);
 
 	public interface TryIO {
 		void run() throws IOException;
@@ -884,13 +859,5 @@ public class UtilsJS {
 
 	public static Color readColor(FriendlyByteBuf buf) {
 		return new SimpleColorWithAlpha(buf.readInt());
-	}
-
-	public static void runInParallel(final Runnable runnable) {
-		POOL.invoke(ForkJoinTask.adapt(runnable));
-	}
-
-	public static <T> T runInParallel(final Callable<T> callable) {
-		return POOL.invoke(ForkJoinTask.adapt(callable));
 	}
 }

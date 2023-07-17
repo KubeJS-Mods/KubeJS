@@ -27,9 +27,12 @@ import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.WrappedException;
 import dev.latvian.mods.rhino.mod.util.JsonUtils;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import net.minecraft.ReportedException;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.Bootstrap;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -38,17 +41,9 @@ import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -61,6 +56,30 @@ public class RecipesEventJS extends EventJS {
 	public static final Pattern SKIP_ERROR = Pattern.compile("at.*dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipesEventJS\\.post");
 
 	public static final Map<UUID, ModifyRecipeResultCallback> MODIFY_RESULT_CALLBACKS = new HashMap<>();
+
+	// hacky workaround for parallel streams, which are executed on the common fork/join pool by default
+	// and forge / event bus REALLY does not like that (plus it's generally just safer to use our own pool)
+	private static final ForkJoinPool PARALLEL_THREAD_POOL = new ForkJoinPool(Math.max(1, Runtime.getRuntime().availableProcessors() - 1),
+			forkJoinPool -> {
+				final ForkJoinWorkerThread thread = new ForkJoinWorkerThread(forkJoinPool) {
+				};
+				thread.setContextClassLoader(RecipesEventJS.class.getClassLoader()); // better safe than sorry
+				thread.setName(String.format("KubeJS Recipe Event Worker %d", thread.getPoolIndex()));
+				return thread;
+			},
+			(thread, ex) -> {
+				while ((ex instanceof CompletionException | ex instanceof InvocationTargetException | ex instanceof WrappedException) && ex.getCause() != null) {
+					ex = ex.getCause();
+				}
+
+				if (ex instanceof ReportedException crashed) {
+					// crash the same way Minecraft would
+					Bootstrap.realStdoutPrintln(crashed.getReport().getFriendlyReport());
+					System.exit(-1);
+				}
+
+				throw new RecipeExceptionJS("Caught exception in thread " + thread + " while performing async operation!", ex);
+			}, true);
 
 	public static Map<UUID, IngredientWithCustomPredicate> customIngredientMap = null;
 
@@ -259,7 +278,7 @@ public class RecipesEventJS extends EventJS {
 		var recipesByName = new HashMap<ResourceLocation, Recipe<?>>(originalRecipes.size() + addedRecipes.size());
 
 		try {
-			recipesByName.putAll(UtilsJS.runInParallel(() -> originalRecipes.values().parallelStream()
+			recipesByName.putAll(runInParallel(() -> originalRecipes.values().parallelStream()
 					.map(recipe -> {
 						try {
 							return recipe.createRecipe();
@@ -276,7 +295,7 @@ public class RecipesEventJS extends EventJS {
 		}
 
 		try {
-			recipesByName.putAll(UtilsJS.runInParallel(() -> addedRecipes.parallelStream()
+			recipesByName.putAll(runInParallel(() -> addedRecipes.parallelStream()
 					.map(recipe -> {
 						try {
 							return recipe.createRecipe();
@@ -408,11 +427,11 @@ public class RecipesEventJS extends EventJS {
 	}
 
 	private void forEachRecipeAsync(RecipeFilter filter, Consumer<RecipeJS> consumer) {
-		UtilsJS.runInParallel(() -> recipeStreamAsync(filter).forEach(consumer));
+		runInParallel(() -> recipeStreamAsync(filter).forEach(consumer));
 	}
 
 	private <T> T reduceRecipesAsync(RecipeFilter filter, Function<Stream<RecipeJS>, T> function) {
-		return UtilsJS.runInParallel(() -> function.apply(recipeStreamAsync(filter)));
+		return runInParallel(() -> function.apply(recipeStreamAsync(filter)));
 	}
 
 	public void forEachRecipe(RecipeFilter filter, Consumer<RecipeJS> consumer) {
@@ -567,5 +586,13 @@ public class RecipesEventJS extends EventJS {
 
 	public void stage(RecipeFilter filter, String stage) {
 		forEachRecipeAsync(filter, r -> r.stage(stage));
+	}
+
+	public static void runInParallel(final Runnable runnable) {
+		PARALLEL_THREAD_POOL.invoke(ForkJoinTask.adapt(runnable));
+	}
+
+	public static <T> T runInParallel(final Callable<T> callable) {
+		return PARALLEL_THREAD_POOL.invoke(ForkJoinTask.adapt(callable));
 	}
 }
