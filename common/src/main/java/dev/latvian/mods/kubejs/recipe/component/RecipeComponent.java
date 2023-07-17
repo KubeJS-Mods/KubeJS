@@ -15,6 +15,26 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Array;
 import java.util.Map;
 
+/**
+ * A <b>recipe component</b> is a reusable definition of a recipe element (such as an in/output item, a fluid, or even just a number value)
+ * that has a {@link #role() role}, a {@link #constructorDescription(DescriptionContext) description} and a {@link #componentClass() value class}
+ * associated with it and defines logic on how to {@link #read(RecipeJS, Object) read} and {@link #write(RecipeJS, Object) write} the value
+ * contained within the context of a recipe.
+ * <p>
+ * Recipe components are used in conjunction with {@link RecipeKey}s to define the structure of a recipe,
+ * and are also referred to by bulk recipe operations such as {@link #replaceInput(RecipeJS, Object, ReplacementMatch, InputReplacement) input} and
+ * {@link #replaceOutput(RecipeJS, Object, ReplacementMatch, OutputReplacement) output} replacements.
+ * <p>
+ * There are lots of standard components provided in the {@link dev.latvian.mods.kubejs.recipe.component} package,
+ * including items and fluid in- and outputs, generic group and logic components (array, map, and, or)
+ * and all kinds of primitives (including specialised ones such as number ranges and characters), which you can use to
+ * more easily define standardised components for your own recipes, though you may also want to define your own components
+ * from the ground up depending on your use case.
+ *
+ * @param <T> The value type of this component
+ * @see RecipeComponentWithParent
+ * @see AndRecipeComponent
+ */
 @Nullable
 public interface RecipeComponent<T> {
 	static RecipeComponentBuilder builder() {
