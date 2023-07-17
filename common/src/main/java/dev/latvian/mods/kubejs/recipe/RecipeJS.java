@@ -27,6 +27,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -44,7 +45,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	private Map<String, RecipeComponentValue<?>> allValueMap;
 
 	public JsonObject originalJson = null;
-	private Recipe<?> originalRecipe = null;
+	private MutableObject<Recipe<?>> originalRecipe = null;
 	public JsonObject json = null;
 	public boolean changed = false;
 
@@ -412,26 +413,34 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 				return type.event.stageSerializer.fromJson(getOrCreateId(), o);
 			}
 		} else if (originalRecipe != null) {
-			return originalRecipe;
+			return originalRecipe.getValue();
 		}
 
 		return RecipePlatformHelper.get().fromJson(type.schemaType.getSerializer(), getOrCreateId(), json);
 	}
 
+	@Nullable
 	public Recipe<?> getOriginalRecipe() {
+		Throwable error = new Throwable("Original recipe is null!");
+
 		if (originalRecipe == null) {
+			originalRecipe = new MutableObject<>();
 			try {
-				originalRecipe = RecipePlatformHelper.get().fromJson(type.schemaType.getSerializer(), getOrCreateId(), json);
+				originalRecipe.setValue(RecipePlatformHelper.get().fromJson(type.schemaType.getSerializer(), getOrCreateId(), json));
 			} catch (Throwable e) {
-				throw new RecipeExceptionJS("Could not create recipe from json for " + this, e);
+				error = e;
 			}
 
 			if (originalRecipe == null) {
-				throw new RecipeExceptionJS("Could not create recipe from json for " + this, new Throwable("Original recipe is null!"));
+				if (RecipeJS.itemErrors) {
+					throw new RecipeExceptionJS("Could not create recipe from json for " + this, error);
+				} else {
+					ConsoleJS.SERVER.warn("Could not create recipe from json for " + this, error);
+				}
 			}
 		}
 
-		return originalRecipe;
+		return originalRecipe.getValue();
 	}
 
 	public ItemStack getOriginalRecipeResult() {
