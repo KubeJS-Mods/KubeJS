@@ -328,6 +328,14 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 	}
 
 	default OutputItem kjs$withChance(double chance) {
-		return OutputItem.of(kjs$self(), chance);
+		return OutputItem.of(kjs$self(), chance, 0,0);
+	}
+
+	default OutputItem kjs$minRolls(int minRolls) {
+		return OutputItem.of(kjs$self(), Double.NaN, minRolls,0);
+	}
+
+	default OutputItem kjs$maxRolls(int maxRolls) {
+		return OutputItem.of(kjs$self(), Double.NaN, 0, maxRolls);
 	}
 }

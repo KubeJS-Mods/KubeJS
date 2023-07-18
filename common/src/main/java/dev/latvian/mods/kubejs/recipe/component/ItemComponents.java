@@ -160,14 +160,31 @@ public interface ItemComponents {
 		public void writeToJson(RecipeJS recipe, RecipeComponentValue<OutputItem> cv, JsonObject json) {
 			json.addProperty(cv.key.name, cv.value.item.kjs$getId());
 			json.addProperty("count", cv.value.item.getCount());
+			if (!Double.isNaN(cv.value.chance)) json.addProperty("chance", cv.value.chance);
+			if (cv.value.minRolls != 0) json.addProperty("minRolls", cv.value.minRolls);
+			if (cv.value.maxRolls != 0) json.addProperty("maxRolls", cv.value.maxRolls);
 		}
 
 		@Override
 		public void readFromJson(RecipeJS recipe, RecipeComponentValue<OutputItem> cv, JsonObject json) {
 			RecipeComponentWithParent.super.readFromJson(recipe, cv, json);
 
-			if (cv.value != null && json.has("count")) {
+			if (cv.value == null) return;
+
+			if (json.has("count")) {
 				cv.value.item.setCount(json.get("count").getAsInt());
+			}
+
+			if (json.has("chance")) {
+				cv.value = cv.value.withChance(json.get("chance").getAsDouble());
+			}
+
+			if (json.has("minRolls")) {
+				cv.value = cv.value.minRolls(json.get("minRolls").getAsInt());
+			}
+
+			if (json.has("maxRolls")) {
+				cv.value = cv.value.maxRolls(json.get("maxRolls").getAsInt());
 			}
 		}
 
@@ -177,6 +194,18 @@ public interface ItemComponents {
 
 			if (cv.value != null && map.containsKey("count")) {
 				cv.value.item.setCount(((Number) map.get("count")).intValue());
+			}
+
+			if (cv.value != null && map.containsKey("chance")) {
+				cv.value = cv.value.withChance(((Number) map.get("chance")).doubleValue());
+			}
+
+			if (cv.value != null && map.containsKey("minRolls")) {
+				cv.value = cv.value.minRolls(((Number) map.get("minRolls")).intValue());
+			}
+
+			if (cv.value != null && map.containsKey("maxRolls")) {
+				cv.value = cv.value.maxRolls(((Number) map.get("maxRolls")).intValue());
 			}
 		}
 
