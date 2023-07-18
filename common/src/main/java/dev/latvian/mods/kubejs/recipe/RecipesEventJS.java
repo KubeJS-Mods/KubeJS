@@ -88,7 +88,7 @@ public class RecipesEventJS extends EventJS {
 
 	public final Map<ResourceLocation, RecipeJS> originalRecipes;
 	public final Collection<RecipeJS> addedRecipes;
-	public final Collection<RecipeJS> removedRecipes;
+	public final AtomicInteger removedCount;
 	public final AtomicInteger failedCount;
 
 	private final Map<String, Object> recipeFunctions;
@@ -107,9 +107,9 @@ public class RecipesEventJS extends EventJS {
 		ConsoleJS.SERVER.info("Scanning recipes...");
 		originalRecipes = new HashMap<>();
 		addedRecipes = new ConcurrentLinkedQueue<>();
-		removedRecipes = new ConcurrentLinkedQueue<>();
 		recipeFunctions = new HashMap<>();
 
+		removedCount = new AtomicInteger(0);
 		failedCount = new AtomicInteger(0);
 
 		var allNamespaces = RecipeNamespace.getAll();
@@ -317,11 +317,11 @@ public class RecipesEventJS extends EventJS {
 		}
 
 		if (DataExport.dataExport != null) {
-			for (var r : removedRecipes) {
+			originalRecipes.values().stream().filter(r -> r.removed).forEach(r -> {
 				if (allRecipeMap.get(r.getId()) instanceof JsonObject json) {
 					json.addProperty("removed", true);
 				}
-			}
+			});
 
 			DataExport.dataExport.add("recipes", allRecipeMap);
 		}
@@ -337,7 +337,7 @@ public class RecipesEventJS extends EventJS {
 		RecipePlatformHelper.get().pingNewRecipes(newRecipeMap);
 		recipeManager.byName = recipesByName;
 		recipeManager.recipes = newRecipeMap;
-		ConsoleJS.SERVER.info("Added " + addedRecipes.size() + " recipes, removed " + removedRecipes.size() + " recipes, modified " + modifiedCount + " recipes, with " + failedCount.get() + " failed recipes in " + timer.stop());
+		ConsoleJS.SERVER.info("Added " + addedRecipes.size() + " recipes, removed " + removedCount.get() + " recipes, modified " + modifiedCount + " recipes, with " + failedCount.get() + " failed recipes in " + timer.stop());
 		RecipeJS.itemErrors = false;
 
 		if (DevProperties.get().debugInfo) {
@@ -357,8 +357,10 @@ public class RecipesEventJS extends EventJS {
 
 			ConsoleJS.SERVER.info("======== Debug output of all removed recipes ========");
 
-			for (var r : removedRecipes) {
-				ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json);
+			for (var r : originalRecipes.values()) {
+				if (r.removed) {
+					ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json);
+				}
 			}
 		}
 	}
@@ -395,8 +397,10 @@ public class RecipesEventJS extends EventJS {
 			return Stream.empty();
 		}
 
+		var stream = Stream.<RecipeJS>empty();
+
 		if (filter instanceof IDFilter id) {
-			return Stream.ofNullable(originalRecipes.get(id.id));
+			stream = Stream.ofNullable(originalRecipes.get(id.id));
 		} else if (filter instanceof OrFilter or) {
 			var ids = new ArrayList<ResourceLocation>(or.list.size());
 			for (RecipeFilter recipeFilter : or.list) {
@@ -405,14 +409,18 @@ public class RecipesEventJS extends EventJS {
 				}
 			}
 			if (ids.size() == or.list.size()) {
-				return ids.stream().map(originalRecipes::get).filter(Objects::nonNull);
+				stream = ids.stream().map(originalRecipes::get).filter(Objects::nonNull);
+			}
+		} else {
+			stream = originalRecipes.values().stream();
+
+			if (filter != ConstantFilter.TRUE) {
+				stream = stream.filter(filter);
 			}
 		}
 
-		var stream = originalRecipes.values().stream();
-
-		if (filter != ConstantFilter.TRUE) {
-			stream = stream.filter(filter);
+		if (removedCount.get() != 0) {
+			stream = stream.filter(r -> !r.removed);
 		}
 
 		return stream;
@@ -452,34 +460,13 @@ public class RecipesEventJS extends EventJS {
 	}
 
 	public void remove(RecipeFilter filter) {
-		if (filter instanceof IDFilter id) {
-			var r = originalRecipes.remove(id.id);
-
-			if (r != null && !r.removed) {
-				r.removed = true;
-				removedRecipes.add(r);
-
-				if (DevProperties.get().logRemovedRecipes) {
-					ConsoleJS.SERVER.info("- " + r + ": " + r.getFromToString());
-				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
-					ConsoleJS.SERVER.debug("- " + r + ": " + r.getFromToString());
-				}
-			}
-
-			return;
-		}
-
 		for (var r : recipeStream(filter).toList()) {
-			if (!r.removed) {
-				r.removed = true;
-				removedRecipes.add(r);
-				originalRecipes.remove(r.id);
+			r.removed = true;
 
-				if (DevProperties.get().logRemovedRecipes) {
-					ConsoleJS.SERVER.info("- " + r + ": " + r.getFromToString());
-				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
-					ConsoleJS.SERVER.debug("- " + r + ": " + r.getFromToString());
-				}
+			if (DevProperties.get().logRemovedRecipes) {
+				ConsoleJS.SERVER.info("- " + r + ": " + r.getFromToString());
+			} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
+				ConsoleJS.SERVER.debug("- " + r + ": " + r.getFromToString());
 			}
 		}
 	}

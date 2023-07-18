@@ -426,6 +426,10 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		return UtilsJS.getUniqueId(json);
 	}
 
+	public void remove() {
+		removed = true;
+	}
+
 	public RecipeJS stage(String s) {
 		json.addProperty("kubejs:stage", s);
 		save();
