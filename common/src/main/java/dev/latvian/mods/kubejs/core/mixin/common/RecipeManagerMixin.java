@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin.common;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.recipe.CompostableRecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
@@ -20,7 +20,7 @@ import java.util.Map;
 @Mixin(value = RecipeManager.class, priority = 1100)
 public abstract class RecipeManagerMixin {
 	@Inject(method = "apply*", at = @At("HEAD"), cancellable = true)
-	private void customRecipesHead(Map<ResourceLocation, JsonObject> map, ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfo ci) {
+	private void customRecipesHead(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfo ci) {
 		if (ServerEvents.COMPOSTABLE_RECIPES.hasListeners()) {
 			ServerEvents.COMPOSTABLE_RECIPES.post(ScriptType.SERVER, new CompostableRecipesEventJS());
 		}
