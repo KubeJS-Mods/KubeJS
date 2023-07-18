@@ -4,12 +4,9 @@ import dev.architectury.injectables.targets.ArchitecturyTarget;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.CustomModNames;
-import net.minecraft.SharedConstants;
+import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,11 +15,13 @@ public class PlatformWrapper {
 		private final String id;
 		private String name;
 		private String version;
+		private String customName;
 
 		public ModInfo(String i) {
 			id = i;
 			name = id;
 			version = "0.0.0";
+			customName = "";
 		}
 
 		public String getId() {
@@ -33,27 +32,22 @@ public class PlatformWrapper {
 			return name;
 		}
 
-		public void setName(String ignored) {
-			ConsoleJS.STARTUP.error("Setting mod name has moved to Platform.setModName('mod_id', 'Mod Name')!");
+		public void setName(String n) {
+			name = n;
+			customName = n;
+			MiscPlatformHelper.get().setModName(this, name);
 		}
 
 		public String getVersion() {
 			return version;
 		}
-	}
 
-	private static final Set<String> MOD_LIST = new LinkedHashSet<>();
-	private static final Map<String, ModInfo> MOD_MAP = new LinkedHashMap<>();
-
-	static {
-		for (var mod : Platform.getMods()) {
-			var info = new ModInfo(mod.getModId());
-			info.name = mod.getName();
-			info.version = mod.getVersion();
-			MOD_LIST.add(info.id);
-			MOD_MAP.put(info.id, info);
+		public String getCustomName() {
+			return customName;
 		}
 	}
+
+	private static Map<String, ModInfo> allMods;
 
 	public static String getName() {
 		return ArchitecturyTarget.getCurrentTarget();
@@ -68,27 +62,38 @@ public class PlatformWrapper {
 	}
 
 	public static String getMcVersion() {
-		return SharedConstants.getCurrentVersion().getName();
+		return KubeJS.MC_VERSION_STRING;
 	}
 
 	public static Set<String> getList() {
-		return MOD_LIST;
+		return getMods().keySet();
 	}
 
 	public static String getModVersion() {
-		return getInfo(KubeJS.MOD_ID).version;
+		return KubeJS.thisMod.getVersion();
 	}
 
 	public static boolean isLoaded(String modId) {
-		return MOD_MAP.containsKey(modId);
+		return getMods().containsKey(modId);
 	}
 
 	public static ModInfo getInfo(String modID) {
-		return MOD_MAP.computeIfAbsent(modID, ModInfo::new);
+		return getMods().computeIfAbsent(modID, ModInfo::new);
 	}
 
 	public static Map<String, ModInfo> getMods() {
-		return MOD_MAP;
+		if (allMods == null) {
+			allMods = new LinkedHashMap<>();
+
+			for (var mod : Platform.getMods()) {
+				var info = new ModInfo(mod.getModId());
+				info.name = mod.getName();
+				info.version = mod.getVersion();
+				allMods.put(info.id, info);
+			}
+		}
+
+		return allMods;
 	}
 
 	public static boolean isDevelopmentEnvironment() {
@@ -100,7 +105,7 @@ public class PlatformWrapper {
 	}
 
 	public static void setModName(String modId, String name) {
-		CustomModNames.set(modId, name);
+		getInfo(modId).setName(name);
 	}
 
 	public static int getMinecraftVersion() {
@@ -109,5 +114,9 @@ public class PlatformWrapper {
 
 	public static String getMinecraftVersionString() {
 		return KubeJS.MC_VERSION_STRING;
+	}
+
+	public static boolean isGeneratingData() {
+		return MiscPlatformHelper.get().isDataGen();
 	}
 }

@@ -2,6 +2,9 @@ package dev.latvian.mods.kubejs.util;
 
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.client.NotificationToast;
+import dev.latvian.mods.rhino.BaseFunction;
+import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.util.color.SimpleColor;
 import net.fabricmc.api.EnvType;
@@ -12,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 import java.time.Duration;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class NotificationBuilder {
@@ -20,8 +24,19 @@ public class NotificationBuilder {
 	public static final Color DEFAULT_BORDER_COLOR = new SimpleColor(0x472954);
 	public static final Color DEFAULT_BACKGROUND_COLOR = new SimpleColor(0x241335);
 
-	public static NotificationBuilder of(Object object) {
+	private static final int FLAG_ICON = 1;
+	private static final int FLAG_TEXT_SHADOW = 2;
+	private static final int FLAG_DURATION = 4;
+
+	public static NotificationBuilder of(Context cx, Object object) {
 		if (object instanceof NotificationBuilder b) {
+			return b;
+		} else if (object instanceof Map<?, ?> map) {
+			return null; // FIXME
+		} else if (object instanceof BaseFunction func) {
+			Consumer consumer = (Consumer) NativeJavaObject.createInterfaceAdapter(cx, Consumer.class, func);
+			var b = new NotificationBuilder();
+			consumer.accept(b);
 			return b;
 		} else {
 			var b = new NotificationBuilder();
@@ -44,7 +59,7 @@ public class NotificationBuilder {
 	public Color outlineColor;
 	public Color borderColor;
 	public Color backgroundColor;
-	public boolean titleShadow;
+	public boolean textShadow;
 
 	public NotificationBuilder() {
 		duration = DEFAULT_DURATION;
@@ -55,16 +70,16 @@ public class NotificationBuilder {
 		outlineColor = SimpleColor.BLACK;
 		borderColor = DEFAULT_BORDER_COLOR;
 		backgroundColor = DEFAULT_BACKGROUND_COLOR;
-		titleShadow = true;
+		textShadow = true;
 	}
 
 	public NotificationBuilder(FriendlyByteBuf buf) {
 		int flags = buf.readVarInt();
 		text = buf.readComponent();
 
-		duration = ((flags & 4) != 0) ? Duration.ofMillis(buf.readVarLong()) : DEFAULT_DURATION;
+		duration = ((flags & FLAG_DURATION) != 0) ? Duration.ofMillis(buf.readVarLong()) : DEFAULT_DURATION;
 
-		if ((flags & 1) != 0) {
+		if ((flags & FLAG_ICON) != 0) {
 			iconType = buf.readVarInt();
 			icon = buf.readUtf();
 			iconSize = buf.readByte();
@@ -77,22 +92,22 @@ public class NotificationBuilder {
 		outlineColor = UtilsJS.readColor(buf);
 		borderColor = UtilsJS.readColor(buf);
 		backgroundColor = UtilsJS.readColor(buf);
-		titleShadow = (flags & 2) != 0;
+		textShadow = (flags & FLAG_TEXT_SHADOW) != 0;
 	}
 
 	public void write(FriendlyByteBuf buf) {
 		int flags = 0;
 
 		if (iconType != 0) {
-			flags |= 1;
+			flags |= FLAG_ICON;
 		}
 
-		if (titleShadow) {
-			flags |= 2;
+		if (textShadow) {
+			flags |= FLAG_TEXT_SHADOW;
 		}
 
 		if (duration != DEFAULT_DURATION) {
-			flags |= 4;
+			flags |= FLAG_DURATION;
 		}
 
 		buf.writeVarInt(flags);

@@ -446,7 +446,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.registerSimple(EntitySelector.class, UtilsJS::entitySelector);
 		typeWrappers.registerSimple(ReplacementMatch.class, ReplacementMatch::of);
 		typeWrappers.registerSimple(Stat.class, PlayerStatsJS::statOf);
-		typeWrappers.registerSimple(NotificationBuilder.class, NotificationBuilder::of);
+		typeWrappers.register(NotificationBuilder.class, NotificationBuilder::of);
 
 		// components //
 		typeWrappers.registerSimple(Component.class, TextWrapper::of);

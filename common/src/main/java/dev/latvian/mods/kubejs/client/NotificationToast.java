@@ -235,7 +235,7 @@ public class NotificationToast implements Toast {
 		for (var i = 0; i < text.size(); i++) {
 			var line = text.get(i);
 
-			if (notification.titleShadow) {
+			if (notification.textShadow) {
 				mc.font.drawShadow(poseStack, line, th, tv + i * 10, 0xFFFFFF);
 			} else {
 				mc.font.draw(poseStack, line, th, tv + i * 10, 0xFFFFFF);
