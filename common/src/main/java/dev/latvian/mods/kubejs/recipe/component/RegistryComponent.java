@@ -43,9 +43,9 @@ public record RegistryComponent<T>(ResourceKey<? extends Registry<T>> registry, 
 	public T read(RecipeJS recipe, Object from) {
 		if (registryType.isInstance(from)) {
 			return (T) from;
-		} else if (registry == Registry.ITEM_REGISTRY && from instanceof ItemStack stack) {
+		} else if (registry.equals(Registry.ITEM_REGISTRY) && from instanceof ItemStack stack) {
 			return (T) stack.getItem();
-		} else if (registry == Registry.FLUID_REGISTRY && from instanceof FluidStackJS fluid) {
+		} else if (registry.equals(Registry.FLUID_REGISTRY) && from instanceof FluidStackJS fluid) {
 			return (T) fluid.getFluid();
 		}
 
