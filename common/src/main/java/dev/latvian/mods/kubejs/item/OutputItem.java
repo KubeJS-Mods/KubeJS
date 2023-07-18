@@ -14,6 +14,9 @@ public class OutputItem implements OutputReplacement {
 	public static OutputItem of(ItemStack item, double chance, int minRolls, int maxRolls) {
 		return item.isEmpty() ? EMPTY : new OutputItem(item, chance, minRolls, maxRolls);
 	}
+	public static OutputItem of(ItemStack item, double chance) {
+		return OutputItem.of(item, chance, 0, 0);
+	}
 
 	public static OutputItem of(Object o) {
 		if (o instanceof OutputItem out) {
@@ -35,6 +38,13 @@ public class OutputItem implements OutputReplacement {
 		this.chance = chance;
 		this.minRolls = minRolls;
 		this.maxRolls = maxRolls;
+	}
+
+	protected OutputItem(ItemStack item, double chance) {
+		this.item = item;
+		this.chance = chance;
+		this.minRolls = 0;
+		this.maxRolls = 0;
 	}
 
 	public OutputItem withCount(int count) {
