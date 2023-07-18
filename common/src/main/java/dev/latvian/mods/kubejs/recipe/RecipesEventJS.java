@@ -8,6 +8,7 @@ import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
+import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
@@ -43,8 +44,22 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -55,6 +70,7 @@ import java.util.stream.Stream;
 
 public class RecipesEventJS extends EventJS {
 	public static final Pattern SKIP_ERROR = Pattern.compile("at.*dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipesEventJS\\.post");
+	private static final Predicate<RecipeJS> RECIPE_NOT_REMOVED = r -> r != null && !r.removed;
 
 	public static final Map<UUID, ModifyRecipeResultCallback> MODIFY_RESULT_CALLBACKS = new HashMap<>();
 
@@ -88,7 +104,6 @@ public class RecipesEventJS extends EventJS {
 
 	public final Map<ResourceLocation, RecipeJS> originalRecipes;
 	public final Collection<RecipeJS> addedRecipes;
-	public final AtomicInteger removedCount;
 	public final AtomicInteger failedCount;
 
 	private final Map<String, Object> recipeFunctions;
@@ -102,6 +117,7 @@ public class RecipesEventJS extends EventJS {
 	public final RecipeTypeFunction smithing;
 
 	final RecipeSerializer<?> stageSerializer;
+	private final JsonObject dataExport;
 
 	public RecipesEventJS() {
 		ConsoleJS.SERVER.info("Scanning recipes...");
@@ -109,7 +125,6 @@ public class RecipesEventJS extends EventJS {
 		addedRecipes = new ConcurrentLinkedQueue<>();
 		recipeFunctions = new HashMap<>();
 
-		removedCount = new AtomicInteger(0);
 		failedCount = new AtomicInteger(0);
 
 		var allNamespaces = RecipeNamespace.getAll();
@@ -162,6 +177,7 @@ public class RecipesEventJS extends EventJS {
 		recipeFunctions.put("smithing", smithing);
 
 		stageSerializer = KubeJSRegistries.recipeSerializers().get(new ResourceLocation("recipestages:stage"));
+		dataExport = DataExport.dataExport;
 	}
 
 	@HideFromJS
@@ -201,7 +217,7 @@ public class RecipesEventJS extends EventJS {
 					continue;
 				}
 
-				if (DataExport.dataExport != null) {
+				if (dataExport != null) {
 					allRecipeMap.add(recipeId.toString(), JsonUtils.copy(json));
 				}
 			} catch (Exception ex) {
@@ -260,9 +276,12 @@ public class RecipesEventJS extends EventJS {
 		ServerEvents.RECIPES.post(ScriptType.SERVER, this);
 
 		int modifiedCount = 0;
+		var removedRecipes = new ConcurrentLinkedQueue<RecipeJS>();
 
 		for (var r : originalRecipes.values()) {
-			if (r.hasChanged()) {
+			if (r.removed) {
+				removedRecipes.add(r);
+			} else if (r.hasChanged()) {
 				modifiedCount++;
 			}
 		}
@@ -276,7 +295,7 @@ public class RecipesEventJS extends EventJS {
 
 		try {
 			recipesByName.putAll(runInParallel(() -> originalRecipes.values().parallelStream()
-					.filter(r -> !r.removed)
+					.filter(RECIPE_NOT_REMOVED)
 					.map(recipe -> {
 						try {
 							return recipe.createRecipe();
@@ -316,14 +335,14 @@ public class RecipesEventJS extends EventJS {
 			ConsoleJS.SERVER.error("Error creating script recipes", ex, SKIP_ERROR);
 		}
 
-		if (DataExport.dataExport != null) {
-			originalRecipes.values().stream().filter(r -> r.removed).forEach(r -> {
+		if (dataExport != null) {
+			for (var r : removedRecipes) {
 				if (allRecipeMap.get(r.getId()) instanceof JsonObject json) {
 					json.addProperty("removed", true);
 				}
-			});
+			}
 
-			DataExport.dataExport.add("recipes", allRecipeMap);
+			dataExport.add("recipes", allRecipeMap);
 		}
 
 		var newRecipeMap = new HashMap<RecipeType<?>, Map<ResourceLocation, Recipe<?>>>();
@@ -337,7 +356,7 @@ public class RecipesEventJS extends EventJS {
 		RecipePlatformHelper.get().pingNewRecipes(newRecipeMap);
 		recipeManager.byName = recipesByName;
 		recipeManager.recipes = newRecipeMap;
-		ConsoleJS.SERVER.info("Added " + addedRecipes.size() + " recipes, removed " + removedCount.get() + " recipes, modified " + modifiedCount + " recipes, with " + failedCount.get() + " failed recipes in " + timer.stop());
+		ConsoleJS.SERVER.info("Added " + addedRecipes.size() + " recipes, removed " + removedRecipes.size() + " recipes, modified " + modifiedCount + " recipes, with " + failedCount.get() + " failed recipes in " + timer.stop());
 		RecipeJS.itemErrors = false;
 
 		if (DevProperties.get().debugInfo) {
@@ -350,17 +369,15 @@ public class RecipesEventJS extends EventJS {
 			ConsoleJS.SERVER.info("======== Debug output of all modified recipes ========");
 
 			for (var r : originalRecipes.values()) {
-				if (r.hasChanged()) {
+				if (!r.removed && r.hasChanged()) {
 					ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json + " FROM " + r.originalJson);
 				}
 			}
 
 			ConsoleJS.SERVER.info("======== Debug output of all removed recipes ========");
 
-			for (var r : originalRecipes.values()) {
-				if (r.removed) {
-					ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json);
-				}
+			for (var r : removedRecipes) {
+				ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json);
 			}
 		}
 	}
@@ -381,8 +398,15 @@ public class RecipesEventJS extends EventJS {
 		return r;
 	}
 
-	public RecipeFilter customFilter(RecipeFilter filter) {
-		return filter;
+	public RecipeFilter customFilter(Predicate<RecipeKJS> filter) {
+		return filter::test;
+	}
+
+	private record RecipeStreamFilter(RecipeFilter filter) implements Predicate<RecipeJS> {
+		@Override
+		public boolean test(RecipeJS r) {
+			return r != null && !r.removed && filter.test(r);
+		}
 	}
 
 	/**
@@ -395,35 +419,27 @@ public class RecipesEventJS extends EventJS {
 	public Stream<RecipeJS> recipeStream(RecipeFilter filter) {
 		if (filter == ConstantFilter.FALSE) {
 			return Stream.empty();
+		} else if (filter instanceof IDFilter id) {
+			var r = originalRecipes.get(id.id);
+			return r == null || r.removed ? Stream.empty() : Stream.of(r);
 		}
 
-		var stream = Stream.<RecipeJS>empty();
+		exit:
+		if (filter instanceof OrFilter or) {
+			if (or.list.isEmpty()) {
+				return Stream.empty();
+			}
 
-		if (filter instanceof IDFilter id) {
-			stream = Stream.ofNullable(originalRecipes.get(id.id));
-		} else if (filter instanceof OrFilter or) {
-			var ids = new ArrayList<ResourceLocation>(or.list.size());
-			for (RecipeFilter recipeFilter : or.list) {
-				if (recipeFilter instanceof IDFilter id) {
-					ids.add(id.id);
+			for (var recipeFilter : or.list) {
+				if (!(recipeFilter instanceof IDFilter)) {
+					break exit;
 				}
 			}
-			if (ids.size() == or.list.size()) {
-				stream = ids.stream().map(originalRecipes::get).filter(Objects::nonNull);
-			}
-		} else {
-			stream = originalRecipes.values().stream();
 
-			if (filter != ConstantFilter.TRUE) {
-				stream = stream.filter(filter);
-			}
+			return or.list.stream().map(idf -> originalRecipes.get(((IDFilter) idf).id)).filter(RECIPE_NOT_REMOVED);
 		}
 
-		if (removedCount.get() != 0) {
-			stream = stream.filter(r -> !r.removed);
-		}
-
-		return stream;
+		return originalRecipes.values().stream().filter(new RecipeStreamFilter(filter));
 	}
 
 	/**
@@ -460,14 +476,14 @@ public class RecipesEventJS extends EventJS {
 	}
 
 	public void remove(RecipeFilter filter) {
-		for (var r : recipeStream(filter).toList()) {
-			r.removed = true;
+		if (filter instanceof IDFilter id) {
+			var r = originalRecipes.get(id.id);
 
-			if (DevProperties.get().logRemovedRecipes) {
-				ConsoleJS.SERVER.info("- " + r + ": " + r.getFromToString());
-			} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
-				ConsoleJS.SERVER.debug("- " + r + ": " + r.getFromToString());
+			if (r != null) {
+				r.remove();
 			}
+		} else {
+			forEachRecipeAsync(filter, RecipeJS::remove);
 		}
 	}
 

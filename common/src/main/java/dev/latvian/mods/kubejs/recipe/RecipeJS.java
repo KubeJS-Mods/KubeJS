@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.util.UUIDTypeAdapter;
+import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.InputFluid;
@@ -426,8 +427,16 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		return UtilsJS.getUniqueId(json);
 	}
 
-	public void remove() {
-		removed = true;
+	public final void remove() {
+		if (!removed) {
+			removed = true;
+
+			if (DevProperties.get().logRemovedRecipes) {
+				ConsoleJS.SERVER.info("- " + this + ": " + getFromToString());
+			} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
+				ConsoleJS.SERVER.debug("- " + this + ": " + getFromToString());
+			}
+		}
 	}
 
 	public RecipeJS stage(String s) {
