@@ -88,7 +88,7 @@ components.java {
 
 unifiedPublishing {
 	project {
-		releaseType = rootProject.artifact_type
+		releaseType = "${ENV.RELEASE_TYPE ?: 'release'}"
 		gameVersions = [
 				rootProject.minecraft_version
 		]
