@@ -14,4 +14,8 @@ public abstract class EventHandlerBridgeMixin {
 	public boolean post(Object extraId, EventJS event) {
 		return ((EventHandlerInvoker) this).callPost(event, extraId).interruptFalse();
 	}
+
+	public boolean post(EventJS event) {
+		return ((EventHandlerInvoker) this).callPost(event, null).interruptFalse();
+	}
 }
