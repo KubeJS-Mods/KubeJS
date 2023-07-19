@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
@@ -44,22 +45,8 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -71,6 +58,15 @@ import java.util.stream.Stream;
 public class RecipesEventJS extends EventJS {
 	public static final Pattern SKIP_ERROR = Pattern.compile("at.*dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipesEventJS\\.post");
 	private static final Predicate<RecipeJS> RECIPE_NOT_REMOVED = r -> r != null && !r.removed;
+	private static final EventHandler.EventExceptionHandler RECIPE_EXCEPTION_HANDLER = (event, handler, ex) -> {
+		// skip the current handler on a recipe or JSON exception, but let other handlers run
+		if (ex instanceof RecipeExceptionJS || ex instanceof JsonParseException) {
+			ConsoleJS.SERVER.error("Error while processing recipe event handler: " + handler, ex);
+			return null;
+		} else {
+			return ex; // rethrow
+		}
+	};
 
 	public static final Map<UUID, ModifyRecipeResultCallback> MODIFY_RESULT_CALLBACKS = new HashMap<>();
 
@@ -95,7 +91,13 @@ public class RecipesEventJS extends EventJS {
 					System.exit(-1);
 				}
 
-				ConsoleJS.SERVER.error(String.format("Caught exception in thread %s while performing async operation!", thread), ex);
+				ConsoleJS.SERVER.error("Error in thread %s while performing bulk recipe operation!".formatted(thread), ex);
+
+				RecipeExceptionJS rex = ex instanceof RecipeExceptionJS rex1 ? rex1 : new RecipeExceptionJS(null, ex).error();
+
+				if (rex.error) {
+					throw rex;
+				}
 			}, true);
 
 	public static Map<UUID, IngredientWithCustomPredicate> customIngredientMap = null;
@@ -527,19 +529,28 @@ public class RecipesEventJS extends EventJS {
 	}
 
 	public RecipeJS custom(JsonObject json) {
-		if (json == null || !json.has("type")) {
-			throw new RecipeExceptionJS("JSON must contain 'type'!");
+		try {
+			if (json == null || !json.has("type")) {
+				throw new RecipeExceptionJS("JSON must contain 'type'!");
+			}
+
+			var type = getRecipeFunction(json.get("type").getAsString());
+
+			if (type == null) {
+				throw new RecipeExceptionJS("Unknown recipe type: " + json.get("type").getAsString());
+			}
+
+			var recipe = type.schemaType.schema.deserialize(type, null, json);
+			recipe.afterLoaded();
+			return addRecipe(recipe, true);
+		} catch (RecipeExceptionJS rex) {
+			if (rex.error) {
+				throw rex;
+			} else {
+				ConsoleJS.SERVER.error("Failed to create custom JSON recipe from '%s'".formatted(json), rex, SKIP_ERROR);
+				return null;
+			}
 		}
-
-		var type = getRecipeFunction(json.get("type").getAsString());
-
-		if (type == null) {
-			throw new RecipeExceptionJS("Unknown recipe type: " + json.get("type").getAsString());
-		}
-
-		var recipe = type.schemaType.schema.deserialize(type, null, json);
-		recipe.afterLoaded();
-		return addRecipe(recipe, true);
 	}
 
 	private void printTypes(Predicate<RecipeSchemaType> predicate) {

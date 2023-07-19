@@ -34,7 +34,16 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 
 	@Override
 	public RecipeJS call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args0) {
-		return createRecipe(args0);
+		try {
+			return createRecipe(args0);
+		} catch (RecipeExceptionJS rex) {
+			if (rex.error) {
+				throw rex;
+			} else {
+				ConsoleJS.SERVER.error("Failed to create recipe for type '" + id + "'", rex, SKIP_ERROR);
+				return null;
+			}
+		}
 	}
 
 	public RecipeJS createRecipe(Object[] args) {

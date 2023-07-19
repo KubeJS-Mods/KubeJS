@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.event;
 
-import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.WrappedException;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +31,7 @@ public class EventHandlerContainer {
 		this.line = line;
 	}
 
-	public EventResult handle(EventJS event) throws EventExit {
+	public EventResult handle(EventJS event, EventHandler.EventExceptionHandler exh) throws EventExit {
 		var itr = this;
 
 		do {
@@ -47,7 +46,13 @@ public class EventHandlerContainer {
 					throwable = e.getWrappedException();
 				}
 
-				throw throwable instanceof EventExit exit ? exit : EventResult.Type.ERROR.exit(throwable);
+				if (throwable instanceof EventExit exit) {
+					throw exit;
+				}
+
+				if (exh == null || (throwable = exh.handle(event, itr, throwable)) != null) {
+					throw EventResult.Type.ERROR.exit(throwable);
+				}
 			}
 
 			itr = itr.child;
@@ -65,5 +70,10 @@ public class EventHandlerContainer {
 		}
 
 		itr.child = new EventHandlerContainer(extraId, handler, source, line);
+	}
+
+	@Override
+	public String toString() {
+		return "Event Handler (" + source + ":" + line + ")";
 	}
 }

@@ -5,18 +5,11 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
 import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
 import dev.latvian.mods.kubejs.util.ListJS;
-import dev.latvian.mods.rhino.BaseFunction;
-import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.Scriptable;
-import dev.latvian.mods.rhino.Wrapper;
+import dev.latvian.mods.rhino.*;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -171,7 +164,7 @@ public final class EventHandler extends BaseFunction {
 	}
 
 	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS) ()
+	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS, EventExceptionHandler)
 	 */
 	public EventResult post(EventJS event) {
 		if (scriptTypePredicate instanceof ScriptTypeHolder type) {
@@ -182,14 +175,22 @@ public final class EventHandler extends BaseFunction {
 	}
 
 	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS) ()
+	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS, EventExceptionHandler)
 	 */
 	public EventResult post(ScriptTypeHolder scriptType, EventJS event) {
 		return post(scriptType, null, event);
 	}
 
 	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS) ()
+	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS, EventExceptionHandler)
+	 */
+	// sth, event, exh
+	public EventResult post(ScriptTypeHolder scriptType, EventJS event, EventExceptionHandler exh) {
+		return post(scriptType, null, event, exh);
+	}
+
+	/**
+	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS, EventExceptionHandler)
 	 */
 	public EventResult post(EventJS event, @Nullable Object extraId) {
 		if (scriptTypePredicate instanceof ScriptTypeHolder type) {
@@ -200,15 +201,33 @@ public final class EventHandler extends BaseFunction {
 	}
 
 	/**
+	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS, EventExceptionHandler)
+	 */
+	public EventResult post(EventJS event, @Nullable Object extraId, EventExceptionHandler exh) {
+		if (scriptTypePredicate instanceof ScriptTypeHolder type) {
+			return post(type, extraId, event, exh);
+		} else {
+			throw new IllegalStateException("You must specify which script type to post event to");
+		}
+	}
+
+	/**
+	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS, EventExceptionHandler)
+	 */
+	public EventResult post(ScriptTypeHolder type, @Nullable Object extraId, EventJS event) {
+		return post(type, extraId, event, null);
+	}
+
+	/**
+	 * @return EventResult that can contain an object. What previously returned true on {@link EventJS#cancel()} now returns {@link EventResult#interruptFalse()}
 	 * @see EventJS#cancel()
 	 * @see EventJS#success()
 	 * @see EventJS#exit()
 	 * @see EventJS#cancel(Object)
 	 * @see EventJS#success(Object)
 	 * @see EventJS#exit(Object)
-	 * @return EventResult that can contain an object. What previously returned true on {@link EventJS#cancel()} now returns {@link EventResult#interruptFalse()}
 	 */
-	public EventResult post(ScriptTypeHolder type, @Nullable Object extraId, EventJS event) {
+	public EventResult post(ScriptTypeHolder type, @Nullable Object extraId, EventJS event, EventExceptionHandler exh) {
 		if (!hasListeners()) {
 			return EventResult.PASS;
 		}
@@ -234,18 +253,18 @@ public final class EventHandler extends BaseFunction {
 			var extraContainers = extraEventContainers == null ? null : extraEventContainers.get(extraId);
 
 			if (extraContainers != null) {
-				postToHandlers(scriptType, extraContainers, event);
+				postToHandlers(scriptType, extraContainers, event, exh);
 
 				if (!scriptType.isStartup()) {
-					postToHandlers(ScriptType.STARTUP, extraContainers, event);
+					postToHandlers(ScriptType.STARTUP, extraContainers, event, exh);
 				}
 			}
 
 			if (eventContainers != null) {
-				postToHandlers(scriptType, eventContainers, event);
+				postToHandlers(scriptType, eventContainers, event, exh);
 
 				if (!scriptType.isStartup()) {
-					postToHandlers(ScriptType.STARTUP, eventContainers, event);
+					postToHandlers(ScriptType.STARTUP, eventContainers, event, exh);
 				}
 			}
 		} catch (EventExit exit) {
@@ -268,11 +287,11 @@ public final class EventHandler extends BaseFunction {
 		return eventResult;
 	}
 
-	private void postToHandlers(ScriptType type, EventHandlerContainer[] containers, EventJS event) throws EventExit {
+	private void postToHandlers(ScriptType type, EventHandlerContainer[] containers, EventJS event, @Nullable EventExceptionHandler exh) throws EventExit {
 		var handler = containers[type.ordinal()];
 
 		if (handler != null) {
-			handler.handle(event);
+			handler.handle(event, exh);
 		}
 	}
 
@@ -338,5 +357,20 @@ public final class EventHandler extends BaseFunction {
 		});
 
 		return set;
+	}
+
+	@FunctionalInterface
+	public interface EventExceptionHandler {
+		/**
+		 * Handles an exception thrown by an event handler.
+		 *
+		 * @param event     The event being posted
+		 * @param container The event handler container that threw the exception
+		 * @param ex        The exception that was thrown
+		 * @return <code>null</code> if the exception could be recovered from, otherwise the exception that should be rethrown
+		 * @implNote The thrown exception will never be an instance of {@link EventExit} or {@link WrappedException},
+		 * as those are already handled by the container itself.
+		 */
+		Throwable handle(EventJS event, EventHandlerContainer container, Throwable ex);
 	}
 }
