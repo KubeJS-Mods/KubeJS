@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.recipe.CompostableRecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -29,9 +30,10 @@ public abstract class RecipeManagerMixin {
 			if (RecipesEventJS.instance != null) {
 				RecipesEventJS.instance.post(UtilsJS.cast(this), map);
 				RecipesEventJS.instance = null;
+				ci.cancel();
+			} else {
+				ConsoleJS.SERVER.warn("RecipeManagerMixin: RecipesEventJS.instance is null, falling back to vanilla!");
 			}
-
-			ci.cancel();
 		}
 	}
 }

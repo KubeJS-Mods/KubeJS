@@ -52,6 +52,7 @@
 		"OptionsMixin",
 		"ScreenMixin",
 		"WindowMixin",
+		"WorldOpenFlowsMixin",
 		"mod.ModNameTooltipMixin",
 		"mod.REITooltipMixin"
 	],

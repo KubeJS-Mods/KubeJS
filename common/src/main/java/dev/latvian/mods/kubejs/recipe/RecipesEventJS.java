@@ -120,7 +120,7 @@ public class RecipesEventJS extends EventJS {
 	private final JsonObject dataExport;
 
 	public RecipesEventJS() {
-		ConsoleJS.SERVER.info("Scanning recipes...");
+		ConsoleJS.SERVER.info("Initializing recipe event...");
 		originalRecipes = new HashMap<>();
 		addedRecipes = new ConcurrentLinkedQueue<>();
 		recipeFunctions = new HashMap<>();
@@ -182,6 +182,7 @@ public class RecipesEventJS extends EventJS {
 
 	@HideFromJS
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonElement> datapackRecipeMap) {
+		ConsoleJS.SERVER.info("Processing recipes...");
 		RecipeJS.itemErrors = false;
 
 		TagContext.INSTANCE.setValue(TagContext.fromLoadResult(KubeJSReloadListener.resources.tagManager.getResult()));
