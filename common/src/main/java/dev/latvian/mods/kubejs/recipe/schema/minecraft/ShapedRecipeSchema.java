@@ -71,6 +71,7 @@ public interface ShapedRecipeSchema {
 
 		@Override
 		public void afterLoaded() {
+			super.afterLoaded();
 			var pattern = getValue(PATTERN);
 			var key = getValue(KEY);
 

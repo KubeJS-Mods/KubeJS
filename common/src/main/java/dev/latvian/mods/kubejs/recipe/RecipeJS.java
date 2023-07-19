@@ -15,12 +15,7 @@ import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.component.MissingComponentException;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.DamageAction;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.KeepAction;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.*;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -36,12 +31,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	public static boolean itemErrors = false;
@@ -179,6 +169,12 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		return allValueMap;
 	}
 
+	/**
+	 * Perform additional validation after the recipe has been loaded.
+	 * <p>
+	 * You probably want to call <code>super.afterLoaded()</code> as well
+	 * if you override this, in order to check for empty values.
+	 */
 	public void afterLoaded() {
 		for (var v : valueMap.values()) {
 			var e = v.checkEmpty();
