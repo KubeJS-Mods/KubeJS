@@ -286,7 +286,7 @@ public class KubeJSCommands {
 	}
 
 	private static int dump(List<ItemStack> stacks, ServerPlayer player, String name) {
-		var dump = stacks.stream().map(ItemStackJS::toItemString).toList();
+		var dump = stacks.stream().filter(is -> !is.isEmpty()).map(ItemStackJS::toItemString).toList();
 		player.sendSystemMessage(copy(dump.toString(), ChatFormatting.WHITE, name + " Item List"));
 		return 1;
 	}
