@@ -128,7 +128,7 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement, JsonS
 	}
 
 	public boolean isEmpty() {
-		return this == EMPTY;
+		return this == EMPTY || ingredient.isEmpty() || count <= 0;
 	}
 
 	public List<InputItem> unwrap() {
