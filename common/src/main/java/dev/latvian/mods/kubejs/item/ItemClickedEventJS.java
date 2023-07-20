@@ -2,11 +2,19 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
+import dev.latvian.mods.kubejs.typings.JsInfo;
+import dev.latvian.mods.kubejs.typings.JsParam;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+@JsInfo(value = """
+		Invoked when a player right clicks with an item **without targeting anything**.
+				
+		Not to be confused with `BlockEvents.rightClick` or `ItemEvents.entityInteracted`.
+		"""
+)
 public class ItemClickedEventJS extends PlayerEventJS {
 	private final Player player;
 	private final InteractionHand hand;
@@ -20,18 +28,22 @@ public class ItemClickedEventJS extends PlayerEventJS {
 	}
 
 	@Override
+	@JsInfo("The player that clicked with the item.")
 	public Player getEntity() {
 		return player;
 	}
 
+	@JsInfo("The hand that the item was clicked with.")
 	public InteractionHand getHand() {
 		return hand;
 	}
 
+	@JsInfo("The item that was clicked with.")
 	public ItemStack getItem() {
 		return item;
 	}
 
+	@JsInfo("The ray trace result of the click.")
 	public RayTraceResultJS getTarget() {
 		if (target == null) {
 			target = player.kjs$rayTrace();
