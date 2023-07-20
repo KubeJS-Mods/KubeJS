@@ -3,6 +3,8 @@ package dev.latvian.mods.kubejs.server;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import dev.architectury.platform.Platform;
 import dev.architectury.registry.registries.Registrar;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
@@ -101,6 +103,25 @@ public class DataExport {
 
 		addString("errors.log", String.join("\n", ScriptType.SERVER.errors));
 		addString("warnings.log", String.join("\n", ScriptType.SERVER.warnings));
+
+		var modArr = new JsonArray();
+
+		for (var mod : Platform.getMods()) {
+			var o = new JsonObject();
+			o.addProperty("id", mod.getModId().trim());
+			o.addProperty("name", mod.getName().trim());
+			o.addProperty("version", mod.getVersion().trim());
+			o.addProperty("description", mod.getDescription().trim());
+			o.addProperty("authors", String.join(", ", mod.getAuthors()).trim());
+			o.addProperty("homepage", mod.getHomepage().orElse("").trim());
+			o.addProperty("sources", mod.getSources().orElse("").trim());
+			o.addProperty("issue_tracker", mod.getIssueTracker().orElse("").trim());
+			o.addProperty("license", mod.getLicense() == null ? "" : String.join(", ", mod.getLicense()).trim());
+			o.entrySet().removeIf(e -> e.getValue() instanceof JsonPrimitive p && p.isString() && p.getAsString().isEmpty());
+			modArr.add(o);
+		}
+
+		addJson("mods.json", modArr);
 
 		KubeJSPlugins.forEachPlugin(p -> p.exportServerData(this));
 
