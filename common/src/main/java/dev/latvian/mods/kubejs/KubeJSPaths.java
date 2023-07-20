@@ -40,10 +40,11 @@ public interface KubeJSPaths {
 	Path COMMON_PROPERTIES = CONFIG.resolve("common.properties");
 	Path CLIENT_PROPERTIES = CONFIG.resolve("client.properties");
 	Path CONFIG_DEV_PROPERTIES = CONFIG.resolve("dev.properties");
-	Path EXPORTED = dir(DIRECTORY.resolve("exported"));
 	Path README = DIRECTORY.resolve("README.txt");
-	Path LOCAL = dir(Platform.getGameFolder().resolve("local"));
-	Path LOCAL_DEV_PROPERTIES = dir(LOCAL.resolve("kubejs")).resolve("dev.properties");
+	Path LOCAL = dir(Platform.getGameFolder().resolve("local").resolve("kubejs"));
+	Path LOCAL_CACHE = dir(LOCAL.resolve("cache"));
+	Path LOCAL_DEV_PROPERTIES = LOCAL.resolve("dev.properties");
+	Path EXPORT = dir(LOCAL.resolve("export"));
 
 	static Path get(PackType type) {
 		return type == PackType.CLIENT_RESOURCES ? ASSETS : DATA;

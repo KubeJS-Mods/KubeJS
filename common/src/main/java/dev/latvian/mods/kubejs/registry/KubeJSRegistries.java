@@ -26,7 +26,7 @@ import net.minecraft.world.level.material.Fluid;
 import static net.minecraft.core.Registry.*;
 
 public class KubeJSRegistries {
-	private static final Registries REGISTRIES = Registries.get(KubeJS.MOD_ID);
+	public static final Registries REGISTRIES = Registries.get(KubeJS.MOD_ID);
 
 	public static <T> Registrar<T> byId(ResourceLocation id) {
 		return genericRegistry(ResourceKey.createRegistryKey(id));

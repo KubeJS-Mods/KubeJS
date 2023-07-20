@@ -45,8 +45,22 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -119,7 +133,6 @@ public class RecipesEventJS extends EventJS {
 	public final RecipeTypeFunction smithing;
 
 	final RecipeSerializer<?> stageSerializer;
-	private final JsonObject dataExport;
 
 	public RecipesEventJS() {
 		ConsoleJS.SERVER.info("Initializing recipe event...");
@@ -179,7 +192,6 @@ public class RecipesEventJS extends EventJS {
 		recipeFunctions.put("smithing", smithing);
 
 		stageSerializer = KubeJSRegistries.recipeSerializers().get(new ResourceLocation("recipestages:stage"));
-		dataExport = DataExport.dataExport;
 	}
 
 	@HideFromJS
@@ -191,7 +203,7 @@ public class RecipesEventJS extends EventJS {
 
 		var timer = Stopwatch.createStarted();
 
-		var allRecipeMap = new JsonObject();
+		var exportedRecipes = new JsonObject();
 
 		for (var entry : datapackRecipeMap.entrySet()) {
 			var recipeId = entry.getKey();
@@ -220,8 +232,8 @@ public class RecipesEventJS extends EventJS {
 					continue;
 				}
 
-				if (dataExport != null) {
-					allRecipeMap.add(recipeId.toString(), JsonUtils.copy(json));
+				if (DataExport.export != null) {
+					exportedRecipes.add(recipeId.toString(), JsonUtils.copy(json));
 				}
 			} catch (Exception ex) {
 				if (DevProperties.get().logSkippedRecipes) {
@@ -299,15 +311,7 @@ public class RecipesEventJS extends EventJS {
 		try {
 			recipesByName.putAll(runInParallel(() -> originalRecipes.values().parallelStream()
 					.filter(RECIPE_NOT_REMOVED)
-					.map(recipe -> {
-						try {
-							return recipe.createRecipe();
-						} catch (Throwable ex) {
-							ConsoleJS.SERVER.warn("Error parsing recipe " + recipe + ": " + recipe.json, ex, SKIP_ERROR);
-							failedCount.incrementAndGet();
-							return null;
-						}
-					})
+															 .map(this::createRecipe)
 					.filter(Objects::nonNull)
 					.collect(Collectors.toConcurrentMap(Recipe::getId, Function.identity(), (a, b) -> {
 						ConsoleJS.SERVER.warn("Duplicate recipe for id " + a.getId() + "! Using last one encountered.");
@@ -319,15 +323,7 @@ public class RecipesEventJS extends EventJS {
 
 		try {
 			recipesByName.putAll(runInParallel(() -> addedRecipes.parallelStream()
-					.map(recipe -> {
-						try {
-							return recipe.createRecipe();
-						} catch (Throwable ex) {
-							ConsoleJS.SERVER.warn("Error parsing recipe " + recipe + ": " + recipe.json, ex, SKIP_ERROR);
-							failedCount.incrementAndGet();
-							return null;
-						}
-					})
+															 .map(this::createRecipe)
 					.filter(Objects::nonNull)
 					.collect(Collectors.toConcurrentMap(Recipe::getId, Function.identity(), (a, b) -> {
 						ConsoleJS.SERVER.warn("Duplicate recipe for id " + a.getId() + "! Using last one encountered.");
@@ -336,16 +332,6 @@ public class RecipesEventJS extends EventJS {
 					}))));
 		} catch (Throwable ex) {
 			ConsoleJS.SERVER.error("Error creating script recipes", ex, SKIP_ERROR);
-		}
-
-		if (dataExport != null) {
-			for (var r : removedRecipes) {
-				if (allRecipeMap.get(r.getId()) instanceof JsonObject json) {
-					json.addProperty("removed", true);
-				}
-			}
-
-			dataExport.add("recipes", allRecipeMap);
 		}
 
 		var newRecipeMap = new HashMap<RecipeType<?>, Map<ResourceLocation, Recipe<?>>>();
@@ -382,6 +368,23 @@ public class RecipesEventJS extends EventJS {
 			for (var r : removedRecipes) {
 				ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json);
 			}
+		}
+	}
+
+	@Nullable
+	private Recipe<?> createRecipe(RecipeJS r) {
+		try {
+			var rec = r.createRecipe();
+
+			if (DataExport.export != null) {
+				DataExport.export.addJson("recipes/" + rec.getId() + ".json", r.json);
+			}
+
+			return rec;
+		} catch (Throwable ex) {
+			ConsoleJS.SERVER.warn("Error parsing recipe " + r + ": " + r.json, ex, SKIP_ERROR);
+			failedCount.incrementAndGet();
+			return null;
 		}
 	}
 

@@ -1,14 +1,12 @@
 package dev.latvian.mods.kubejs.server;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.Holder;
@@ -200,7 +198,7 @@ public class TagEventJS<T> extends EventJS {
 	}
 
 	public void post() {
-		var dumpFile = KubeJSPaths.EXPORTED.resolve("tags/" + getType().getNamespace() + "/" + getType().getPath() + ".txt");
+		var dumpFile = KubeJSPaths.EXPORT.resolve("tags/" + getType().getNamespace() + "/" + getType().getPath() + ".txt");
 
 		if (!Files.exists(dumpFile)) {
 			try {
@@ -244,25 +242,24 @@ public class TagEventJS<T> extends EventJS {
 
 		ServerEvents.TAGS.post(this, registry.key());
 
-		if (DataExport.dataExport != null) {
-			var tj = DataExport.dataExport.getAsJsonObject("tags");
-
-			if (tj == null) {
-				tj = new JsonObject();
-				DataExport.dataExport.add("tags", tj);
-			}
-
-			var tj1 = tj.getAsJsonObject(getType().toString());
-
-			if (tj1 == null) {
-				tj1 = new JsonObject();
-				tj.add(getType().toString(), tj1);
-			}
+		if (DataExport.export != null) {
+			var loc = "tags/" + getType().toString() + "/";
 
 			for (var entry : map.entrySet()) {
-				var a = new JsonArray();
-				entry.getValue().forEach(e -> a.add(e.entry().toString()));
-				tj1.add(entry.getKey().toString(), a);
+				var list = new ArrayList<String>();
+
+				for (var e : entry.getValue()) {
+					list.add(e.entry().toString());
+				}
+
+				list.sort(String.CASE_INSENSITIVE_ORDER);
+				var arr = new JsonArray();
+
+				for (var e : list) {
+					arr.add(e);
+				}
+
+				DataExport.export.addJson(loc + entry.getKey() + ".json", arr);
 			}
 		}
 

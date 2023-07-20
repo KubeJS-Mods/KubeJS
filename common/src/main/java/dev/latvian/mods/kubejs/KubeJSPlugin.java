@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.recipe.schema.RegisterRecipeSchemasEvent;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
@@ -86,6 +87,9 @@ public class KubeJSPlugin {
 	}
 
 	public void clearCaches() {
+	}
+
+	public void exportServerData(DataExport export) {
 	}
 
 	@Override

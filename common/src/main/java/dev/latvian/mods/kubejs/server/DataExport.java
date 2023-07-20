@@ -1,30 +1,50 @@
 package dev.latvian.mods.kubejs.server;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.registry.registries.Registrar;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.util.JsonIO;
+import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import dev.latvian.mods.rhino.mod.util.JsonUtils;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import org.apache.commons.lang3.tuple.Pair;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DataExport {
 	@HideFromJS
-	public static CommandSourceStack source;
-	@HideFromJS
-	public static JsonObject dataExport;
+	public static DataExport export = null;
+
+	public CommandSourceStack source;
+
+	private final Map<String, Callable<byte[]>> exportedFiles = new ConcurrentHashMap<>();
 
 	public static void exportData() {
-		if (dataExport != null) {
-			Util.ioPool().execute(DataExport::exportDataBlocking);
+		if (export != null) {
+			try {
+				export.exportData0();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+
+			export = null;
 		}
 	}
 
@@ -38,39 +58,98 @@ public class DataExport {
 		o.add(name, a);
 	}
 
-	private static void exportDataBlocking() {
-		var registries = new JsonObject();
-		addRegistry(registries, "items", KubeJSRegistries.items());
-		addRegistry(registries, "blocks", KubeJSRegistries.blocks());
-		addRegistry(registries, "fluids", KubeJSRegistries.fluids());
-		addRegistry(registries, "entity_types", KubeJSRegistries.entityTypes());
-		dataExport.add("registries", registries);
-
-		var errors = new JsonArray();
-
-		for (var s : ScriptType.SERVER.errors) {
-			errors.add(s);
-		}
-
-		dataExport.add("errors", errors);
-
-		var warnings = new JsonArray();
-
-		for (var s : ScriptType.SERVER.warnings) {
-			warnings.add(s);
-		}
-
-		dataExport.add("warnings", warnings);
-
-		try (var writer = Files.newBufferedWriter(KubeJSPaths.EXPORTED.resolve("kubejs-server-export.json"))) {
-			JsonIO.GSON.toJson(dataExport, writer);
+	public void add(String path, Callable<byte[]> data) {
+		try {
+			exportedFiles.put(path, data);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
 
-		source.sendSuccess(Component.literal("Done! Export in kubejs/exported/kubejs-server-export.json"), false);
-		source.sendSuccess(Component.literal("You can now upload it on ").append(Component.literal("https://export.kubejs.com/").withStyle(ChatFormatting.BLUE, ChatFormatting.UNDERLINE).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://export.kubejs.com/")))), false);
-		source = null;
-		dataExport = null;
+	public void addString(String path, String data) {
+		add(path, () -> data.getBytes(StandardCharsets.UTF_8));
+	}
+
+	public void addJson(String path, JsonElement json) {
+		add(path, () -> JsonUtils.toPrettyString(json).getBytes(StandardCharsets.UTF_8));
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked", "resource", "ResultOfMethodCallIgnored"})
+	private void exportData0() throws Exception {
+		for (ResourceKey regKey : Registry.REGISTRY.registryKeySet()) {
+			var reg = KubeJSRegistries.REGISTRIES.get(regKey);
+
+			if (reg != null) {
+				var regItems = new ArrayList<Pair<String, String>>();
+
+				for (var entry0 : reg.entrySet()) {
+					var entry = (Map.Entry<ResourceKey, Object>) entry0;
+					regItems.add(Pair.of(entry.getKey().location().toString(), (entry.getValue() == null ? "null" : entry.getValue().getClass().getName())));
+				}
+
+				regItems.sort((o1, o2) -> o1.getLeft().compareToIgnoreCase(o2.getLeft()));
+
+				var j = new JsonObject();
+
+				for (var pair : regItems) {
+					j.addProperty(pair.getLeft(), pair.getRight());
+				}
+
+				addJson("registries/" + regKey.location().getPath() + ".json", j);
+			}
+		}
+
+		addString("errors.log", String.join("\n", ScriptType.SERVER.errors));
+		addString("warnings.log", String.join("\n", ScriptType.SERVER.warnings));
+
+		KubeJSPlugins.forEachPlugin(p -> p.exportServerData(this));
+
+		var index = new JsonArray();
+
+		exportedFiles.keySet()
+				.stream()
+				.sorted(String.CASE_INSENSITIVE_ORDER)
+				.forEach(index::add);
+
+		addJson("index.json", index);
+
+		Files.walk(KubeJSPaths.EXPORT)
+				.sorted(Comparator.reverseOrder())
+				.map(Path::toFile)
+				.forEach(File::delete);
+
+		Files.createDirectory(KubeJSPaths.EXPORT);
+
+		var arr = new CompletableFuture[exportedFiles.size()];
+		int i = 0;
+
+		for (var entry : exportedFiles.entrySet()) {
+			arr[i++] = CompletableFuture.runAsync(() -> {
+				try {
+					var path = KubeJSPaths.EXPORT.resolve(entry.getKey().replace(':', '/'));
+					var parent = path.getParent();
+
+					if (Files.notExists(parent)) {
+						Files.createDirectories(parent);
+					}
+
+					if (Files.notExists(path)) {
+						Files.createFile(path);
+					}
+
+					Files.write(path, entry.getValue().call());
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}, Util.ioPool());
+		}
+
+		CompletableFuture.allOf(arr).join();
+
+		if (source.getServer().isSingleplayer()) {
+			source.sendSuccess(Component.literal("Done! Export in local/kubejs/export").kjs$clickOpenFile(KubeJSPaths.EXPORT.toAbsolutePath().toString()), false);
+		} else {
+			source.sendSuccess(Component.literal("Done! Export in local/kubejs/export"), false);
+		}
 	}
 }

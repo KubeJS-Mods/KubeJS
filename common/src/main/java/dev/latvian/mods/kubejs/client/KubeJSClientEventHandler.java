@@ -192,7 +192,7 @@ public class KubeJSClientEventHandler {
 
 		image.setRGB(0, 0, w, h, pixels, 0, w);
 
-		var path = KubeJSPaths.EXPORTED.resolve(atlas.location().getNamespace() + "/" + atlas.location().getPath());
+		var path = KubeJSPaths.EXPORT.resolve(atlas.location().getNamespace() + "/" + atlas.location().getPath());
 
 		if (!Files.exists(path.getParent())) {
 			try {

@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.command;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonObject;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -374,12 +373,12 @@ public class KubeJSCommands {
 	}
 
 	private static int export(CommandSourceStack source) {
-		if (DataExport.dataExport != null) {
+		if (DataExport.export != null) {
 			return 0;
 		}
 
-		DataExport.source = source;
-		DataExport.dataExport = new JsonObject();
+		DataExport.export = new DataExport();
+		DataExport.export.source = source;
 		source.sendSuccess(Component.literal("Reloading server and exporting data..."), false);
 
 		var minecraftServer = source.getServer();
@@ -406,7 +405,7 @@ public class KubeJSCommands {
 				.filter(pack -> pack instanceof VirtualKubeJSDataPack)
 				.map(pack -> (VirtualKubeJSDataPack) pack)
 				.mapToInt(pack -> {
-							var path = KubeJSPaths.EXPORTED.resolve(pack.getName() + ".zip");
+					var path = KubeJSPaths.EXPORT.resolve(pack.getName() + ".zip");
 							try {
 								Files.deleteIfExists(path);
 								try (var fs = FileSystems.newFileSystem(path, Map.of("create", true))) {
