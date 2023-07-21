@@ -8,8 +8,10 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.LegacyCodeHandler;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 	@Override
@@ -40,7 +42,8 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 		super.registerBindings(event);
 
 		if (event.getType().isStartup()) {
-			event.add("ForgeEvents", ForgeEventWrapper.class);
+			event.add("ForgeEvents", new ForgeEventWrapper("ForgeEvents", MinecraftForge.EVENT_BUS));
+			event.add("ForgeModEvents", new ForgeEventWrapper("ForgeModEvents", FMLJavaModLoadingContext.get().getModEventBus()));
 			event.add("onForgeEvent", new LegacyCodeHandler("onForgeEvent()"));
 		}
 	}
