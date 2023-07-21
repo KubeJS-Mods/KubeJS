@@ -5,8 +5,7 @@
 	"mixins": [
 	],
 	"client": [
-		"ClientRecipeBookMixin",
-		"HumanoidArmorLayerMixin"
+		"ClientRecipeBookMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
