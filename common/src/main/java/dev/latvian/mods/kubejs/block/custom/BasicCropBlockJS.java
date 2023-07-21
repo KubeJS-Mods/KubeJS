@@ -92,7 +92,7 @@ public class BasicCropBlockJS extends CropBlock {
 	@Override
 	public boolean canSurvive(BlockState blockState, LevelReader levelReader, BlockPos blockPos) {
 		return surviveCallback != null ?
-				surviveCallback.survive(blockState, levelReader, blockPos) :
-				super.canSurvive(blockState, levelReader, blockPos);
+			surviveCallback.survive(blockState, levelReader, blockPos) :
+			super.canSurvive(blockState, levelReader, blockPos);
 	}
 }

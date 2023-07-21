@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(WorldOpenFlows.class)
 public class WorldOpenFlowsMixin {
 	@Inject(method = "createLevelFromExistingSettings", at = @At(
-			value = "INVOKE", target = "Lnet/minecraft/server/WorldLoader$PackConfig;createResourceManager()Lcom/mojang/datafixers/util/Pair;",
-			shift = At.Shift.AFTER
+		value = "INVOKE", target = "Lnet/minecraft/server/WorldLoader$PackConfig;createResourceManager()Lcom/mojang/datafixers/util/Pair;",
+		shift = At.Shift.AFTER
 	))
 	private void printServerLogWarning(CallbackInfo ci) {
 		ConsoleJS.SERVER.warn("Due to the way Minecraft resource loading works, KubeJS' server.log may not contain everything that happened in your server scripts on initial world creation.");

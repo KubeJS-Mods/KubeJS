@@ -158,8 +158,8 @@ public class AddWorldgenEventJS extends StartupEventJS {
 		}
 
 		addFeature(properties.id, properties.biomes, properties.worldgenLayer,
-				new ConfiguredFeature<>(Feature.LAKE, new LakeFeature.Configuration(BlockStateProvider.simple(fluid), BlockStateProvider.simple(barrier))),
-				properties.chance > 0 ? Collections.singletonList(RarityFilter.onAverageOnceEvery(properties.chance)) : Collections.emptyList());
+			new ConfiguredFeature<>(Feature.LAKE, new LakeFeature.Configuration(BlockStateProvider.simple(fluid), BlockStateProvider.simple(barrier))),
+			properties.chance > 0 ? Collections.singletonList(RarityFilter.onAverageOnceEvery(properties.chance)) : Collections.emptyList());
 	}
 
 	public void addSpawn(Consumer<AddSpawnProperties> p) {

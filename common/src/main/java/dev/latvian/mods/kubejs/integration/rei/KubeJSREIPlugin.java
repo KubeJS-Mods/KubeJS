@@ -132,9 +132,9 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 		return o -> {
 			Collection<ResourceLocation> ids = CollectionUtils.mapToSet(ListJS.orSelf(o), o1 -> UtilsJS.getMCID(ScriptType.CLIENT.manager.get().context, o1));
 			return EntryRegistry.getInstance().getEntryStacks()
-					.filter(stack -> stack.getType().equals(type))
-					.filter(stack -> ids.contains(stack.getIdentifier()))
-					.toList();
+				.filter(stack -> stack.getType().equals(type))
+				.filter(stack -> ids.contains(stack.getIdentifier()))
+				.toList();
 		};
 	}
 }

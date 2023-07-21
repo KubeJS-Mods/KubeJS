@@ -21,7 +21,7 @@ public class RecipeFunction extends NativeJavaObject {
 		for (var entry : map.entrySet()) {
 			var key = entry.getKey();
 			var value = entry.getValue();
-			if(!value.key.noBuilders) {
+			if (!value.key.noBuilders) {
 				builderFunctions.put(key, new RecipeComponentValueFunction(recipe, value));
 			}
 		}

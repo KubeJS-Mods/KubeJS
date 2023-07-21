@@ -128,16 +128,16 @@ public class DataExport {
 		var index = new JsonArray();
 
 		exportedFiles.keySet()
-				.stream()
-				.sorted(String.CASE_INSENSITIVE_ORDER)
-				.forEach(index::add);
+			.stream()
+			.sorted(String.CASE_INSENSITIVE_ORDER)
+			.forEach(index::add);
 
 		addJson("index.json", index);
 
 		Files.walk(KubeJSPaths.EXPORT)
-				.sorted(Comparator.reverseOrder())
-				.map(Path::toFile)
-				.forEach(File::delete);
+			.sorted(Comparator.reverseOrder())
+			.map(Path::toFile)
+			.forEach(File::delete);
 
 		Files.createDirectory(KubeJSPaths.EXPORT);
 

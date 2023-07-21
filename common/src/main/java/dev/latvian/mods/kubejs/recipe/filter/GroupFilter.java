@@ -17,7 +17,7 @@ public class GroupFilter implements RecipeFilter {
 	@Override
 	public String toString() {
 		return "GroupFilter{" +
-				"group='" + group + '\'' +
-				'}';
+			"group='" + group + '\'' +
+			'}';
 	}
 }

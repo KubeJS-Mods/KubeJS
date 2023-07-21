@@ -17,7 +17,7 @@ public class ModFilter implements RecipeFilter {
 	@Override
 	public String toString() {
 		return "ModFilter{" +
-				"mod='" + mod + '\'' +
-				'}';
+			"mod='" + mod + '\'' +
+			'}';
 	}
 }

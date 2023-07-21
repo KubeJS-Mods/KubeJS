@@ -29,12 +29,12 @@ public class InformationREIEventJS extends EventJS {
 	@HideFromJS
 	public void add(EntryType<?> type, Object stacks, Component title, Component[] description) {
 		BuiltinClientPlugin.getInstance().registerInformation(
-				EntryIngredient.of(KubeJSREIPlugin.getWrapperOrFallback(type).wrap(stacks)),
-				title,
-				components -> {
-					components.addAll(Arrays.asList(description));
-					return components;
-				}
+			EntryIngredient.of(KubeJSREIPlugin.getWrapperOrFallback(type).wrap(stacks)),
+			title,
+			components -> {
+				components.addAll(Arrays.asList(description));
+				return components;
+			}
 		);
 	}
 }

@@ -19,15 +19,15 @@ public class TagInstance {
 
 	public Component toText() {
 		var string = " #" + tag + registries.stream()
-				.map(ResourceKey::location)
-				.map(id -> {
-					if (id.getNamespace().equals("minecraft")) {
-						return id.getPath();
-					} else {
-						return id.toString();
-					}
-				})
-				.collect(Collectors.joining(" + ", " [", "]"));
+			.map(ResourceKey::location)
+			.map(id -> {
+				if (id.getNamespace().equals("minecraft")) {
+					return id.getPath();
+				} else {
+					return id.toString();
+				}
+			})
+			.collect(Collectors.joining(" + ", " [", "]"));
 
 		return Component.literal(string).withStyle(ChatFormatting.DARK_GRAY);
 	}

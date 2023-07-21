@@ -123,6 +123,6 @@ public interface ShapedRecipeSchema {
 	RecipeKey<InputItem[][]> INGREDIENTS = ItemComponents.INPUT_ARRAY.asArray().key("ingredients");
 
 	RecipeSchema SCHEMA = new RecipeSchema(ShapedRecipeJS.class, ShapedRecipeJS::new, RESULT, PATTERN, KEY, KJS_MIRROR, KJS_SHRINK)
-			.constructor(RESULT, PATTERN, KEY)
-			.constructor((recipe, schemaType, keys, from) -> ((ShapedRecipeJS) recipe).set2DValues(from), RESULT, INGREDIENTS);
+		.constructor(RESULT, PATTERN, KEY)
+		.constructor((recipe, schemaType, keys, from) -> ((ShapedRecipeJS) recipe).set2DValues(from), RESULT, INGREDIENTS);
 }

@@ -5,7 +5,6 @@ import dev.architectury.event.events.common.BlockEvent;
 import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.utils.value.IntValue;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;

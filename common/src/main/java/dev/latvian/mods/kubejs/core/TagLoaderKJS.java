@@ -17,7 +17,9 @@ public interface TagLoaderKJS<T> {
 		TagContext.INSTANCE.setValue(TagContext.EMPTY);
 		var reg = kjs$getRegistry();
 
-		if (reg == null) return;
+		if (reg == null) {
+			return;
+		}
 		var regInfo = RegistryInfo.MAP.get(reg.key());
 
 		if ((regInfo != null && regInfo.hasDefaultTags) || ServerEvents.TAGS.hasListeners(reg.key())) {

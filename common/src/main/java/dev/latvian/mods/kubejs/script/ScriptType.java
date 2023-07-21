@@ -106,16 +106,16 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 
 	public Component errorsComponent(String command) {
 		return Component.literal("KubeJS errors found [" + errors.size() + "]! Run '" + command + "' for more info")
-				.kjs$clickRunCommand(command)
-				.kjs$hover(Component.literal("Click to show"))
-				.withStyle(ChatFormatting.DARK_RED);
+			.kjs$clickRunCommand(command)
+			.kjs$hover(Component.literal("Click to show"))
+			.withStyle(ChatFormatting.DARK_RED);
 	}
 
 	public Component warningsComponent(String command) {
 		return Component.literal("KubeJS warnings found [" + warnings.size() + "]! Run '" + command + "' for more info")
-				.kjs$clickRunCommand(command)
-				.kjs$hover(Component.literal("Click to show"))
-				.withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500)));
+			.kjs$clickRunCommand(command)
+			.kjs$hover(Component.literal("Click to show"))
+			.withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500)));
 	}
 
 	@Override

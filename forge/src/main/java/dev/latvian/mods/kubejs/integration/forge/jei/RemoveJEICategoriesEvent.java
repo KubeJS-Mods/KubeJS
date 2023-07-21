@@ -32,9 +32,9 @@ public class RemoveJEICategoriesEvent extends EventJS {
 	public void remove(ResourceLocation... categoriesToYeet) {
 		var idSet = Set.of(categoriesToYeet);
 		categoryLookup.get()
-				.map(IRecipeCategory::getRecipeType)
-				.filter(type -> idSet.contains(type.getUid()))
-				.forEach(categoriesRemoved::add);
+			.map(IRecipeCategory::getRecipeType)
+			.filter(type -> idSet.contains(type.getUid()))
+			.forEach(categoriesRemoved::add);
 	}
 
 	public Collection<ResourceLocation> getCategoryIds() {
@@ -43,9 +43,9 @@ public class RemoveJEICategoriesEvent extends EventJS {
 
 	public void removeIf(Predicate<IRecipeCategory<?>> filter) {
 		categoryLookup.get()
-				.filter(filter)
-				.map(IRecipeCategory::getRecipeType)
-				.forEach(categoriesRemoved::add);
+			.filter(filter)
+			.map(IRecipeCategory::getRecipeType)
+			.forEach(categoriesRemoved::add);
 	}
 
 	@Override

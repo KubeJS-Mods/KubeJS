@@ -55,9 +55,9 @@ public class ModResourceBindings {
 
 		try (var lines = Files.lines(resource.get())) {
 			List<BindingProvider> providers = lines.map(s -> s.split("#", 2)[0].trim())
-					.filter(line -> !line.isBlank())
-					.map(line -> createProvider(mod, line))
-					.filter(Objects::nonNull).toList();
+				.filter(line -> !line.isBlank())
+				.map(line -> createProvider(mod, line))
+				.filter(Objects::nonNull).toList();
 			bindings.put(mod.getModId(), providers);
 		}
 	}

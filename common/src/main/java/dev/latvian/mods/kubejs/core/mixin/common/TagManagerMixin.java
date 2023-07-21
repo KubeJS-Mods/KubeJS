@@ -25,10 +25,10 @@ public abstract class TagManagerMixin {
 
 	@SuppressWarnings("unchecked")
 	@Inject(method = "createLoader", at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/tags/TagLoader;<init>(Ljava/util/function/Function;Ljava/lang/String;)V",
-			shift = At.Shift.BY,
-			by = 2
+		value = "INVOKE",
+		target = "Lnet/minecraft/tags/TagLoader;<init>(Ljava/util/function/Function;Ljava/lang/String;)V",
+		shift = At.Shift.BY,
+		by = 2
 	), locals = LocalCapture.CAPTURE_FAILHARD)
 	private <T> void kjs$saveRegistryToTagLoader(ResourceManager rm, Executor executor, RegistryEntry<T> reg,
 												 CallbackInfoReturnable<CompletableFuture<TagManager.LoadResult<T>>> cir,

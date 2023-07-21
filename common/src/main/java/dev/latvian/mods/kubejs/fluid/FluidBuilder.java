@@ -71,17 +71,17 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 		}
 
 		var attributes = SimpleArchitecturyFluidAttributes.of(flowingFluid, this)
-				.flowingTexture(flowingTexture)
-				.sourceTexture(stillTexture)
-				.color(color)
-				.rarity(rarity)
-				.density(density)
-				.viscosity(viscosity)
-				.luminosity(luminosity)
-				.temperature(temperature)
-				.lighterThanAir(isGaseous)
-				.bucketItem(() -> Optional.ofNullable(bucketItem).map(Supplier::get))
-				.block(() -> Optional.ofNullable(block).map(Supplier::get).map(UtilsJS::cast));
+			.flowingTexture(flowingTexture)
+			.sourceTexture(stillTexture)
+			.color(color)
+			.rarity(rarity)
+			.density(density)
+			.viscosity(viscosity)
+			.luminosity(luminosity)
+			.temperature(temperature)
+			.lighterThanAir(isGaseous)
+			.bucketItem(() -> Optional.ofNullable(bucketItem).map(Supplier::get))
+			.block(() -> Optional.ofNullable(block).map(Supplier::get).map(UtilsJS::cast));
 
 		this.attributes = attributes;
 		return attributes;

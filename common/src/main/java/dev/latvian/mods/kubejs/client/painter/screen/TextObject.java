@@ -35,7 +35,7 @@ public class TextObject extends ScreenPainterObject {
 			}
 		} else {
 			text = new FormattedCharSequence[]{
-					TextWrapper.of(properties.tag.get("text")).getVisualOrderText()
+				TextWrapper.of(properties.tag.get("text")).getVisualOrderText()
 			};
 		}
 

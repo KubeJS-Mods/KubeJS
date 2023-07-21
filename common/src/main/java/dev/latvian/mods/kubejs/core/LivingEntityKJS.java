@@ -262,9 +262,9 @@ public interface LivingEntityKJS extends EntityKJS {
 
 	private AttributeModifier kjs$createSpeedModifier(double speed, AttributeModifier.Operation operation) {
 		return new AttributeModifier(
-				KJS_PLAYER_CUSTOM_SPEED,
-				KJS_PLAYER_CUSTOM_SPEED_NAME,
-				speed,
-				operation);
+			KJS_PLAYER_CUSTOM_SPEED,
+			KJS_PLAYER_CUSTOM_SPEED_NAME,
+			speed,
+			operation);
 	}
 }

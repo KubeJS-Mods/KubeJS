@@ -12,10 +12,10 @@ import java.util.List;
 public class AllMatchRuleTest extends RuleTest {
 
 	public static final Codec<AllMatchRuleTest> CODEC = RuleTest.CODEC
-			.listOf()
-			.fieldOf("rules")
-			.xmap(AllMatchRuleTest::new, (t) -> t.rules)
-			.codec();
+		.listOf()
+		.fieldOf("rules")
+		.xmap(AllMatchRuleTest::new, (t) -> t.rules)
+		.codec();
 
 	public final List<RuleTest> rules;
 

@@ -9,9 +9,9 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
 public class InvertRuleTest extends RuleTest {
 
 	public static final Codec<InvertRuleTest> CODEC = RuleTest.CODEC
-			.fieldOf("original")
-			.xmap(InvertRuleTest::new, (t) -> t.original)
-			.codec();
+		.fieldOf("original")
+		.xmap(InvertRuleTest::new, (t) -> t.original)
+		.codec();
 
 	public final RuleTest original;
 

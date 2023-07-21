@@ -108,8 +108,8 @@ public class CropBlockBuilder extends BlockBuilder {
 					bonuses.rolls = ConstantValue.exactly(1.0f);
 					bonuses.bonusRolls = ConstantValue.exactly(0.0f);
 					bonuses.addItem(new ItemStack(itemBuilder.get()))
-							.addCondition(condition)
-							.addFunction(function);
+						.addCondition(condition)
+						.addFunction(function);
 					bonuses.addItem(new ItemStack(itemBuilder.get()));
 				});
 			}
@@ -119,8 +119,8 @@ public class CropBlockBuilder extends BlockBuilder {
 					crops.rolls = ConstantValue.exactly(1.0f);
 					crops.bonusRolls = ConstantValue.exactly(0.0f);
 					crops.addItem(ItemStackJS.of(output.getFirst()))
-							.addCondition(condition)
-							.randomChance(output.getSecond());
+						.addCondition(condition)
+						.randomChance(output.getSecond());
 				});
 			}
 		};

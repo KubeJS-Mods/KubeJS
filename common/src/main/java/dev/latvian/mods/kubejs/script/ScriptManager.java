@@ -123,11 +123,11 @@ public class ScriptManager implements ClassShutter {
 
 			try (var out = Files.newOutputStream(directory.resolve("example.js"))) {
 				out.write(("""
-						// priority: 0
+					// priority: 0
 
-						// Visit the wiki for more info - https://kubejs.com/
+					// Visit the wiki for more info - https://kubejs.com/
 
-						console.info('Hello, World! (Loaded\s""" + scriptType.name + " scripts)')\n\n").getBytes(StandardCharsets.UTF_8));
+					console.info('Hello, World! (Loaded\s""" + scriptType.name + " scripts)')\n\n").getBytes(StandardCharsets.UTF_8));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

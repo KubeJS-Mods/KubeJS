@@ -133,10 +133,10 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		}
 
 		return Optional.ofNullable(NBTUtils.toTagCompound(o))
-				.map(tag -> RuleTest.CODEC.parse(NbtOps.INSTANCE, tag))
-				.flatMap(DataResult::result)
-				.or(() -> Optional.ofNullable(of(o).asRuleTest()))
-				.orElseThrow(() -> new IllegalArgumentException("Could not parse valid rule test from " + o + "!"));
+			.map(tag -> RuleTest.CODEC.parse(NbtOps.INSTANCE, tag))
+			.flatMap(DataResult::result)
+			.or(() -> Optional.ofNullable(of(o).asRuleTest()))
+			.orElseThrow(() -> new IllegalArgumentException("Could not parse valid rule test from " + o + "!"));
 	}
 
 	@SuppressWarnings("unchecked")

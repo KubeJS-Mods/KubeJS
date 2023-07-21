@@ -5,11 +5,19 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
 import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
 import dev.latvian.mods.kubejs.util.ListJS;
-import dev.latvian.mods.rhino.*;
+import dev.latvian.mods.rhino.BaseFunction;
+import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.Scriptable;
+import dev.latvian.mods.rhino.WrappedException;
+import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 

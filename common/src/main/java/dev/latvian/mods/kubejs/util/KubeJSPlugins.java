@@ -51,35 +51,35 @@ public class KubeJSPlugins {
 		KubeJS.LOGGER.info("Found plugin source {}", source);
 
 		contents.map(s -> s.split("#", 2)[0].trim()) // allow comments (#)
-				.filter(s -> !s.isBlank()) // filter empty lines
-				.flatMap(s -> {
-					String[] line = s.split(" ");
+			.filter(s -> !s.isBlank()) // filter empty lines
+			.flatMap(s -> {
+				String[] line = s.split(" ");
 
-					for (int i = 1; i < line.length; i++) {
-						if (!Platform.isModLoaded(line[i])) {
-							if (DevProperties.get().logSkippedPlugins) {
-								KubeJS.LOGGER.warn("Plugin " + line[0] + " does not have required mod " + line[i] + " loaded, skipping");
-							}
-
-							return Stream.empty();
+				for (int i = 1; i < line.length; i++) {
+					if (!Platform.isModLoaded(line[i])) {
+						if (DevProperties.get().logSkippedPlugins) {
+							KubeJS.LOGGER.warn("Plugin " + line[0] + " does not have required mod " + line[i] + " loaded, skipping");
 						}
-					}
 
-					try {
-						return Stream.of(Class.forName(line[0])); // try to load plugin class
-					} catch (Throwable t) {
-						KubeJS.LOGGER.error("Failed to load plugin {} from source {}: {}", s, source, t);
 						return Stream.empty();
 					}
-				})
-				.filter(KubeJSPlugin.class::isAssignableFrom)
-				.forEach(c -> {
-					try {
-						LIST.add((KubeJSPlugin) c.getDeclaredConstructor().newInstance()); // create the actual plugin instance
-					} catch (Throwable t) {
-						KubeJS.LOGGER.error("Failed to init KubeJS plugin {} from source {}: {}", c.getName(), source, t);
-					}
-				});
+				}
+
+				try {
+					return Stream.of(Class.forName(line[0])); // try to load plugin class
+				} catch (Throwable t) {
+					KubeJS.LOGGER.error("Failed to load plugin {} from source {}: {}", s, source, t);
+					return Stream.empty();
+				}
+			})
+			.filter(KubeJSPlugin.class::isAssignableFrom)
+			.forEach(c -> {
+				try {
+					LIST.add((KubeJSPlugin) c.getDeclaredConstructor().newInstance()); // create the actual plugin instance
+				} catch (Throwable t) {
+					KubeJS.LOGGER.error("Failed to init KubeJS plugin {} from source {}: {}", c.getName(), source, t);
+				}
+			});
 	}
 
 	public static ClassFilter createClassFilter(ScriptType type) {

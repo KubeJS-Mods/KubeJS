@@ -33,11 +33,11 @@ public class InformationJEIEventJS extends EventJS {
 		var manager = registration.getIngredientManager();
 		var helper = manager.getIngredientHelper(type);
 		registration.addIngredientInfo(
-				manager.getAllIngredients(type)
-						.stream()
-						.filter(t -> targets.contains(helper.getWildcardId(t)))
-						.toList(),
-				type, s);
+			manager.getAllIngredients(type)
+				.stream()
+				.filter(t -> targets.contains(helper.getWildcardId(t)))
+				.toList(),
+			type, s);
 	}
 
 }

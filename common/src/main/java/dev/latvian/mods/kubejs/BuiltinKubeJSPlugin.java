@@ -467,48 +467,48 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	@Override
 	public void registerRecipeSchemas(RegisterRecipeSchemasEvent event) {
 		event.namespace("kubejs")
-				.shaped("shaped")
-				.shapeless("shapeless")
+			.shaped("shaped")
+			.shapeless("shapeless")
 		;
 
 		event.namespace("minecraft")
-				.shaped("crafting_shaped")
-				.shapeless("crafting_shapeless")
-				.register("stonecutting", StonecuttingRecipeSchema.SCHEMA)
-				.register("smelting", CookingRecipeSchema.SCHEMA)
-				.register("blasting", CookingRecipeSchema.SCHEMA)
-				.register("smoking", CookingRecipeSchema.SCHEMA)
-				.register("campfire_cooking", CookingRecipeSchema.SCHEMA)
-				.register("smithing", SmithingRecipeSchema.SCHEMA)
-				.special("crafting_special_armordye")
-				.special("crafting_special_shulkerboxcoloring")
-				.special("crafting_special_bannerduplicate")
-				.special("crafting_special_suspiciousstew")
-				.special("crafting_special_bookcloning")
-				.special("crafting_special_mapextending")
-				.special("crafting_special_tippedarrow")
-				.special("crafting_special_firework_star")
-				.special("crafting_special_shielddecoration")
-				.special("crafting_special_firework_star_fade")
-				.special("crafting_special_firework_rocket")
-				.special("crafting_special_mapcloning")
-				.special("crafting_special_repairitem")
+			.shaped("crafting_shaped")
+			.shapeless("crafting_shapeless")
+			.register("stonecutting", StonecuttingRecipeSchema.SCHEMA)
+			.register("smelting", CookingRecipeSchema.SCHEMA)
+			.register("blasting", CookingRecipeSchema.SCHEMA)
+			.register("smoking", CookingRecipeSchema.SCHEMA)
+			.register("campfire_cooking", CookingRecipeSchema.SCHEMA)
+			.register("smithing", SmithingRecipeSchema.SCHEMA)
+			.special("crafting_special_armordye")
+			.special("crafting_special_shulkerboxcoloring")
+			.special("crafting_special_bannerduplicate")
+			.special("crafting_special_suspiciousstew")
+			.special("crafting_special_bookcloning")
+			.special("crafting_special_mapextending")
+			.special("crafting_special_tippedarrow")
+			.special("crafting_special_firework_star")
+			.special("crafting_special_shielddecoration")
+			.special("crafting_special_firework_star_fade")
+			.special("crafting_special_firework_rocket")
+			.special("crafting_special_mapcloning")
+			.special("crafting_special_repairitem")
 		;
 
 		event.namespace("cucumber")
-				.shaped("shaped_no_mirror")
+			.shaped("shaped_no_mirror")
 		;
 
 		event.namespace("extendedcrafting")
-				.shaped("shaped_table")
-				.shapeless("shapeless_table")
+			.shaped("shaped_table")
+			.shapeless("shapeless_table")
 		;
 
 		event.mapRecipe("extendedCraftingShaped", "extendedcrafting:shaped_table");
 		event.mapRecipe("extendedCraftingShapeless", "extendedcrafting:shapeless_table");
 
 		event.namespace("dankstorage")
-				.shaped("upgrade")
+			.shaped("upgrade")
 		;
 
 		event.mapRecipe("dankStorageUpgrade", "dankstorage:upgrade");

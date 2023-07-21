@@ -31,8 +31,8 @@ public class RegexIDFilter implements RecipeFilter {
 	@Override
 	public String toString() {
 		return "RegexIDFilter{" +
-				"pattern=" + pattern +
-				'}';
+			"pattern=" + pattern +
+			'}';
 	}
 
 	@Override

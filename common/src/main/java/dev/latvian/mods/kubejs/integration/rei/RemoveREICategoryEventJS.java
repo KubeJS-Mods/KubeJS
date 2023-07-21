@@ -40,8 +40,8 @@ public class RemoveREICategoryEventJS extends EventJS {
 
 	public void removeIf(Predicate<CategoryConfiguration<?>> filter) {
 		registry.stream()
-				.filter(filter)
-				.map(CategoryConfiguration::getIdentifier)
-				.forEach(this::remove);
+			.filter(filter)
+			.map(CategoryConfiguration::getIdentifier)
+			.forEach(this::remove);
 	}
 }

@@ -24,8 +24,8 @@ public class RemoveJEIRecipesEvent extends EventJS {
 		runtime = r;
 		recipesRemoved = new HashMap<>();
 		categoryById = runtime.getRecipeManager().createRecipeCategoryLookup()
-				.get()
-				.collect(Collectors.toMap(cat -> cat.getRecipeType().getUid(), Function.identity()));
+			.get()
+			.collect(Collectors.toMap(cat -> cat.getRecipeType().getUid(), Function.identity()));
 	}
 
 	public Collection<IRecipeCategory> getCategories() {
