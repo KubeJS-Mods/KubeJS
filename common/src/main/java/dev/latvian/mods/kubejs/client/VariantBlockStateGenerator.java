@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.client;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.rhino.util.HideFromJS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +91,13 @@ public class VariantBlockStateGenerator {
 		variants.add(v.key, v.toJson());
 	}
 
+	@HideFromJS
+	@Deprecated
 	public void variant(String key, String model) {
+		simpleVariant(key, model);
+	}
+
+	public void simpleVariant(String key, String model) {
 		variant(key, v -> v.model(model));
 	}
 

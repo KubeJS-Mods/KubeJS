@@ -235,7 +235,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
-		bs.variant("", model.isEmpty() ? (id.getNamespace() + ":block/" + id.getPath()) : model);
+		bs.simpleVariant("", model.isEmpty() ? (id.getNamespace() + ":block/" + id.getPath()) : model);
 	}
 
 	public Map<ResourceLocation, JsonObject> generateBlockModels(BlockBuilder builder) {
