@@ -57,6 +57,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
@@ -82,7 +83,7 @@ public class RecipesEventJS extends EventJS {
 		}
 	};
 
-	public static final Map<UUID, ModifyRecipeResultCallback> MODIFY_RESULT_CALLBACKS = new HashMap<>();
+	public static final Map<ResourceLocation, ModifyRecipeResultCallback> MODIFY_RESULT_CALLBACKS = new ConcurrentHashMap<>();
 
 	// hacky workaround for parallel streams, which are executed on the common fork/join pool by default
 	// and forge / event bus REALLY does not like that (plus it's generally just safer to use our own pool)
@@ -200,6 +201,9 @@ public class RecipesEventJS extends EventJS {
 		RecipeJS.itemErrors = false;
 
 		TagContext.INSTANCE.setValue(TagContext.fromLoadResult(KubeJSReloadListener.resources.tagManager.getResult()));
+
+		// clear recipe event specific maps
+		RecipesEventJS.MODIFY_RESULT_CALLBACKS.clear();
 
 		var timer = Stopwatch.createStarted();
 
