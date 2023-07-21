@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.special;
 
 import com.google.gson.JsonObject;
-import com.mojang.util.UUIDTypeAdapter;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
@@ -76,7 +75,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 			var ingredientActions = IngredientAction.parseList(json.get("kubejs:actions"));
 			ModifyRecipeResultCallback modifyResult = null;
 			if (json.has("kubejs:modify_result")) {
-				modifyResult = RecipesEventJS.MODIFY_RESULT_CALLBACKS.get(UUIDTypeAdapter.fromString(json.get("kubejs:modify_result").getAsString()));
+				modifyResult = RecipesEventJS.MODIFY_RESULT_CALLBACKS.get(id);
 			}
 
 			var stage = GsonHelper.getAsString(json, "kubejs:stage", "");

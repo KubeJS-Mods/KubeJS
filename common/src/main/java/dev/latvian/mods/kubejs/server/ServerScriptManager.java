@@ -85,7 +85,6 @@ public class ServerScriptManager {
 		// note we only set this map on the logical server, it'll be null on the client!
 		RecipesEventJS.customIngredientMap = new HashMap<>();
 
-		RecipesEventJS.MODIFY_RESULT_CALLBACKS.clear();
 		CustomIngredientAction.MAP.clear();
 
 		SpecialRecipeSerializerManager.INSTANCE.reset();

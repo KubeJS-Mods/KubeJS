@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.mojang.util.UUIDTypeAdapter;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
@@ -41,7 +40,6 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	public static boolean itemErrors = false;
@@ -50,6 +48,8 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	public RecipeTypeFunction type;
 	public boolean newRecipe;
 	public boolean removed;
+	public ModifyRecipeResultCallback modifyResult = null;
+
 	protected Map<RecipeKey<?>, RecipeComponentValue<?>> valueMap = Map.of();
 	private RecipeComponentValue<?>[] inputValues;
 	private RecipeComponentValue<?>[] outputValues;
@@ -463,11 +463,17 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 			json.addProperty("type", type.idString);
 			serialize();
 
+			var id = getOrCreateId();
+			if (modifyResult != null) {
+				RecipesEventJS.MODIFY_RESULT_CALLBACKS.put(id, modifyResult);
+				json.addProperty("kubejs:modify_result", true);
+			}
+
 			if (type.event.stageSerializer != null && json.has("kubejs:stage") && !type.idString.equals("recipestages:stage")) {
 				var o = new JsonObject();
 				o.addProperty("stage", json.get("kubejs:stage").getAsString());
 				o.add("recipe", json);
-				return type.event.stageSerializer.fromJson(getOrCreateId(), o);
+				return type.event.stageSerializer.fromJson(id, o);
 			}
 		} else if (originalRecipe != null) {
 			return originalRecipe.getValue();
@@ -552,9 +558,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	}
 
 	public final RecipeJS modifyResult(ModifyRecipeResultCallback callback) {
-		UUID id = UUID.randomUUID();
-		RecipesEventJS.MODIFY_RESULT_CALLBACKS.put(id, callback);
-		json.addProperty("kubejs:modify_result", UUIDTypeAdapter.fromUUID(id));
+		modifyResult = callback;
 		save();
 		return this;
 	}
