@@ -69,6 +69,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 
 	public BuilderBase<T> tag(ResourceLocation tag) {
 		defaultTags.add(tag);
+		getRegistryType().hasDefaultTags = true;
 		return this;
 	}
 
