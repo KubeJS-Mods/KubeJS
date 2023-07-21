@@ -193,6 +193,7 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 	public Class<?> objectBaseClass;
 	public final Map<String, BuilderType> types;
 	public final Map<ResourceLocation, BuilderBase<?>> objects;
+	public boolean hasDefaultTags = false;
 	private BuilderType defaultType;
 	public boolean bypassServerOnly;
 
