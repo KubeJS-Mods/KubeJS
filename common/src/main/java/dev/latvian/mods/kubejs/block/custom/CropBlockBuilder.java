@@ -201,7 +201,7 @@ public class CropBlockBuilder extends BlockBuilder {
 	@Override
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
 		for (int i = 0; i <= age; i++) {
-			bs.variant("age=%s".formatted(i), model.isEmpty() ? (id.getNamespace() + ":block/" + id.getPath() + i) : model);
+			bs.simpleVariant("age=%s".formatted(i), model.isEmpty() ? (id.getNamespace() + ":block/" + id.getPath() + i) : model);
 		}
 	}
 

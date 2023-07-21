@@ -45,8 +45,8 @@ public class DetectorBlock extends Block {
 		@Override
 		public void generateAssetJsons(AssetJsonGenerator generator) {
 			generator.blockState(id, bs -> {
-				bs.variant("powered=false", "kubejs:block/detector");
-				bs.variant("powered=true", "kubejs:block/detector_on");
+				bs.simpleVariant("powered=false", "kubejs:block/detector");
+				bs.simpleVariant("powered=true", "kubejs:block/detector_on");
 			});
 
 			generator.itemModel(id, m -> m.parent(KubeJS.MOD_ID + ":block/detector"));
