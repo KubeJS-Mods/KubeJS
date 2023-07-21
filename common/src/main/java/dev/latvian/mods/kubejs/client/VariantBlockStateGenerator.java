@@ -90,7 +90,7 @@ public class VariantBlockStateGenerator {
 		variants.add(v.key, v.toJson());
 	}
 
-	public void variant(String key, String model) {
+	public void simpleVariant(String key, String model) {
 		variant(key, v -> v.model(model));
 	}
 
