@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.recipe;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.BaseFunction;
@@ -40,8 +39,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 			if (rex.error) {
 				throw rex;
 			} else {
-				ConsoleJS.SERVER.error("Failed to create recipe for type '" + id + "'", rex, SKIP_ERROR);
-				return null;
+				return new ErroredRecipeJS(event, "Failed to create recipe for type '%s'".formatted(idString), rex, SKIP_ERROR);
 			}
 		}
 	}
@@ -82,14 +80,11 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 			var recipe = constructor.factory().create(this, schemaType, constructor.keys(), argMap);
 			recipe.afterLoaded();
 			return event.addRecipe(recipe, false);
-		} catch (RecipeExceptionJS ex) {
-			ex.error();
-			ConsoleJS.SERVER.error("Failed to create recipe for type '" + id + "'", ex, SKIP_ERROR);
+		} catch (RecipeExceptionJS rex) {
+			throw rex;
 		} catch (Throwable ex) {
-			ConsoleJS.SERVER.handleError(ex, SKIP_ERROR, "Failed to create recipe for type '" + id + "' with args " + Arrays.stream(args).map(Wrapper::unwrapped).map(o -> o == null ? "null" : (o + ": " + o.getClass().getSimpleName())).collect(Collectors.joining(", ", "[", "]")));
+			throw new RecipeExceptionJS("Failed to create recipe for type '" + id + "' with args " + Arrays.stream(args).map(Wrapper::unwrapped).map(o -> o == null ? "null" : (o + ": " + o.getClass().getSimpleName())).collect(Collectors.joining(", ", "[", "]")), ex);
 		}
-
-		return new JsonRecipeJS();
 	}
 
 	@Override

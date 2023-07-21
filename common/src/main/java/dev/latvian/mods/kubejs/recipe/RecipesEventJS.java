@@ -88,32 +88,32 @@ public class RecipesEventJS extends EventJS {
 	// hacky workaround for parallel streams, which are executed on the common fork/join pool by default
 	// and forge / event bus REALLY does not like that (plus it's generally just safer to use our own pool)
 	private static final ForkJoinPool PARALLEL_THREAD_POOL = new ForkJoinPool(Math.max(1, Runtime.getRuntime().availableProcessors() - 1),
-		forkJoinPool -> {
-			final ForkJoinWorkerThread thread = new ForkJoinWorkerThread(forkJoinPool) {
-			};
-			thread.setContextClassLoader(RecipesEventJS.class.getClassLoader()); // better safe than sorry
-			thread.setName(String.format("KubeJS Recipe Event Worker %d", thread.getPoolIndex()));
-			return thread;
-		},
-		(thread, ex) -> {
-			while ((ex instanceof CompletionException | ex instanceof InvocationTargetException | ex instanceof WrappedException) && ex.getCause() != null) {
-				ex = ex.getCause();
-			}
+			forkJoinPool -> {
+				final ForkJoinWorkerThread thread = new ForkJoinWorkerThread(forkJoinPool) {
+				};
+				thread.setContextClassLoader(RecipesEventJS.class.getClassLoader()); // better safe than sorry
+				thread.setName(String.format("KubeJS Recipe Event Worker %d", thread.getPoolIndex()));
+				return thread;
+			},
+			(thread, ex) -> {
+				while ((ex instanceof CompletionException | ex instanceof InvocationTargetException | ex instanceof WrappedException) && ex.getCause() != null) {
+					ex = ex.getCause();
+				}
 
-			if (ex instanceof ReportedException crashed) {
-				// crash the same way Minecraft would
-				Bootstrap.realStdoutPrintln(crashed.getReport().getFriendlyReport());
-				System.exit(-1);
-			}
+				if (ex instanceof ReportedException crashed) {
+					// crash the same way Minecraft would
+					Bootstrap.realStdoutPrintln(crashed.getReport().getFriendlyReport());
+					System.exit(-1);
+				}
 
-			ConsoleJS.SERVER.error("Error in thread %s while performing bulk recipe operation!".formatted(thread), ex);
+				ConsoleJS.SERVER.error("Error in thread %s while performing bulk recipe operation!".formatted(thread), ex);
 
-			RecipeExceptionJS rex = ex instanceof RecipeExceptionJS rex1 ? rex1 : new RecipeExceptionJS(null, ex).error();
+				RecipeExceptionJS rex = ex instanceof RecipeExceptionJS rex1 ? rex1 : new RecipeExceptionJS(null, ex).error();
 
-			if (rex.error) {
-				throw rex;
-			}
-		}, true);
+				if (rex.error) {
+					throw rex;
+				}
+			}, true);
 
 	public static Map<UUID, IngredientWithCustomPredicate> customIngredientMap = null;
 
@@ -314,26 +314,26 @@ public class RecipesEventJS extends EventJS {
 
 		try {
 			recipesByName.putAll(runInParallel(() -> originalRecipes.values().parallelStream()
-				.filter(RECIPE_NOT_REMOVED)
-				.map(this::createRecipe)
-				.filter(Objects::nonNull)
-				.collect(Collectors.toConcurrentMap(Recipe::getId, Function.identity(), (a, b) -> {
-					ConsoleJS.SERVER.warn("Duplicate recipe for id " + a.getId() + "! Using last one encountered.");
-					return b;
-				}))));
+					.filter(RECIPE_NOT_REMOVED)
+					.map(this::createRecipe)
+					.filter(Objects::nonNull)
+					.collect(Collectors.toConcurrentMap(Recipe::getId, Function.identity(), (a, b) -> {
+						ConsoleJS.SERVER.warn("Duplicate recipe for id " + a.getId() + "! Using last one encountered.");
+						return b;
+					}))));
 		} catch (Throwable ex) {
 			ConsoleJS.SERVER.error("Error creating datapack recipes", ex, SKIP_ERROR);
 		}
 
 		try {
 			recipesByName.putAll(runInParallel(() -> addedRecipes.parallelStream()
-				.map(this::createRecipe)
-				.filter(Objects::nonNull)
-				.collect(Collectors.toConcurrentMap(Recipe::getId, Function.identity(), (a, b) -> {
-					ConsoleJS.SERVER.warn("Duplicate recipe for id " + a.getId() + "! Using last one encountered.");
-					ConsoleJS.SERVER.warn("You might want to check your scripts for errors.");
-					return b;
-				}))));
+					.map(this::createRecipe)
+					.filter(Objects::nonNull)
+					.collect(Collectors.toConcurrentMap(Recipe::getId, Function.identity(), (a, b) -> {
+						ConsoleJS.SERVER.warn("Duplicate recipe for id " + a.getId() + "! Using last one encountered.");
+						ConsoleJS.SERVER.warn("You might want to check your scripts for errors.");
+						return b;
+					}))));
 		} catch (Throwable ex) {
 			ConsoleJS.SERVER.error("Error creating script recipes", ex, SKIP_ERROR);
 		}
@@ -397,6 +397,11 @@ public class RecipesEventJS extends EventJS {
 	}
 
 	public RecipeJS addRecipe(RecipeJS r, boolean json) {
+		if (r instanceof ErroredRecipeJS) {
+			ConsoleJS.SERVER.warn("Tried to add errored recipe %s!".formatted(r));
+			return r;
+		}
+
 		addedRecipes.add(r);
 
 		if (DevProperties.get().logAddedRecipes) {
@@ -554,8 +559,7 @@ public class RecipesEventJS extends EventJS {
 			if (rex.error) {
 				throw rex;
 			} else {
-				ConsoleJS.SERVER.error("Failed to create custom JSON recipe from '%s'".formatted(json), rex, SKIP_ERROR);
-				return null;
+				return new ErroredRecipeJS(this, "Failed to create custom JSON recipe from '%s'".formatted(json), rex, SKIP_ERROR);
 			}
 		}
 	}

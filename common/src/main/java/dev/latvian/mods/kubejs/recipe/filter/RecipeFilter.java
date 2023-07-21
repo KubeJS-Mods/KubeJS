@@ -118,11 +118,11 @@ public interface RecipeFilter extends Predicate<RecipeKJS> {
 			PARSE.invoker().parse(cx, predicate.list, map);
 
 			return predicate.list.isEmpty() ? ConstantFilter.TRUE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
-		} catch (RecipeExceptionJS ex) {
-			if (ex.error) {
-				ConsoleJS.getCurrent(cx).error(ex.getMessage());
+		} catch (RecipeExceptionJS rex) {
+			if (rex.error) {
+				ConsoleJS.getCurrent(cx).error(rex.getMessage());
 			} else {
-				ConsoleJS.getCurrent(cx).warn(ex.getMessage());
+				ConsoleJS.getCurrent(cx).warn(rex.getMessage());
 			}
 
 			return ConstantFilter.FALSE;
