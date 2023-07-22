@@ -12,6 +12,7 @@ import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.typings.JsInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -48,6 +49,11 @@ public class CropBlockBuilder extends BlockBuilder {
 			this.shapes = new ArrayList<>(Collections.nCopies(age + 1, Block.box(0.0d, 0.0d, 0.0d, 16.0d, 16.0d, 16.0d)));
 		}
 
+		@JsInfo("""
+				Describe the shape of the crop at a specific age.
+								
+				min/max coordinates are double values between 0 and 16.
+				""")
 		public ShapeBuilder shape(int age, double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
 			shapes.set(age, Block.box(minX, minY, minZ, maxX, maxY, maxZ));
 			return this;
@@ -135,27 +141,32 @@ public class CropBlockBuilder extends BlockBuilder {
 		}
 	}
 
+	@JsInfo("Add a crop output with a 100% chance.")
 	public CropBlockBuilder crop(Object output) {
 		crop(output, 1.0);
 		return this;
 	}
 
+	@JsInfo("Add a crop output with a specific chance.")
 	public CropBlockBuilder crop(Object output, double chance) {
 		outputs.add(new Pair<>(output, chance));
 		return this;
 	}
 
+	@JsInfo("Set the age of the crop. Note that the box will be the same for all ages (A full block size).")
 	public CropBlockBuilder age(int age) {
 		age(age, (builder) -> {
 		});
 		return this;
 	}
 
+	@JsInfo("Set if the crop should drop seeds when harvested.")
 	public CropBlockBuilder dropSeed(boolean dropSeed) {
 		this.dropSeed = dropSeed;
 		return this;
 	}
 
+	@JsInfo("Set the age of the crop and the shape of the crop at that age.")
 	public CropBlockBuilder age(int age, Consumer<ShapeBuilder> builder) {
 		this.age = age;
 		ShapeBuilder shapes = new ShapeBuilder(age);

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.typings.JsInfo;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import net.minecraft.client.gui.screens.Screen;
@@ -15,6 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@JsInfo("""
+		Invoked when registering handlers for item tooltips.
+				
+		`text` can be a component or a list of components.
+		""")
 public class ItemTooltipEventJS extends EventJS {
 	@FunctionalInterface
 	public interface StaticTooltipHandler {
@@ -84,6 +90,7 @@ public class ItemTooltipEventJS extends EventJS {
 		map = m;
 	}
 
+	@JsInfo("Adds text to all items matching the ingredient.")
 	public void add(Ingredient item, Object text) {
 		if (item.kjs$isWildcard()) {
 			addToAll(text);
@@ -101,6 +108,7 @@ public class ItemTooltipEventJS extends EventJS {
 		}
 	}
 
+	@JsInfo("Adds text to all items.")
 	public void addToAll(Object text) {
 		var l = new StaticTooltipHandlerFromLines(text);
 
@@ -109,6 +117,7 @@ public class ItemTooltipEventJS extends EventJS {
 		}
 	}
 
+	@JsInfo("Adds a dynamic tooltip handler to all items matching the ingredient.")
 	public void addAdvanced(Ingredient item, StaticTooltipHandlerFromJS handler) {
 		if (item.kjs$isWildcard()) {
 			addAdvancedToAll(handler);
@@ -124,18 +133,22 @@ public class ItemTooltipEventJS extends EventJS {
 		}
 	}
 
+	@JsInfo("Adds a dynamic tooltip handler to all items.")
 	public void addAdvancedToAll(StaticTooltipHandlerFromJS handler) {
 		map.computeIfAbsent(Items.AIR, k -> new ArrayList<>()).add(new StaticTooltipHandlerFromJSWrapper(handler));
 	}
 
+	@JsInfo("Is shift key pressed.")
 	public boolean isShift() {
 		return Screen.hasShiftDown();
 	}
 
+	@JsInfo("Is control key pressed.")
 	public boolean isCtrl() {
 		return Screen.hasControlDown();
 	}
 
+	@JsInfo("Is alt key pressed.")
 	public boolean isAlt() {
 		return Screen.hasAltDown();
 	}
