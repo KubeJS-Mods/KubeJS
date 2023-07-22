@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.loot.LootBuilder;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.typings.JsInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -132,6 +133,11 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Override
+	@JsInfo("""
+			Sets the display name for this object, e.g. `Stone`.
+
+			This will be overridden by a lang file if it exists.
+			""")
 	public BuilderBase<Block> displayName(String name) {
 		if (itemBuilder != null) {
 			itemBuilder.displayName(name);
@@ -310,47 +316,64 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		}
 	}
 
+	@JsInfo("Sets the block's material. Defaults to wood.")
 	public BlockBuilder material(MaterialJS m) {
 		material = m;
 		return this;
 	}
 
+	@JsInfo("""
+			Sets the hardness of the block. Defaults to 1.5.
+						
+			Setting this to -1 will make the block unbreakable like bedrock.
+			""")
 	public BlockBuilder hardness(float h) {
 		hardness = h;
 		return this;
 	}
 
+	@JsInfo("""
+			Sets the blast resistance of the block. Defaults to 3.
+			""")
 	public BlockBuilder resistance(float r) {
 		resistance = r;
 		return this;
 	}
 
+	@JsInfo("Makes the block unbreakable.")
 	public BlockBuilder unbreakable() {
 		hardness = -1F;
 		resistance = Float.MAX_VALUE;
 		return this;
 	}
 
+	@JsInfo("Sets the light level of the block. Defaults to 0 (no light).")
 	public BlockBuilder lightLevel(float light) {
 		lightLevel = light;
 		return this;
 	}
 
+	@JsInfo("Sets the opacity of the block. Opaque blocks do not let light through.")
 	public BlockBuilder opaque(boolean o) {
 		opaque = o;
 		return this;
 	}
 
+	@JsInfo("Sets the block should be a full block or not, like cactus or doors.")
 	public BlockBuilder fullBlock(boolean f) {
 		fullBlock = f;
 		return this;
 	}
 
+	@JsInfo("Makes the block require a tool to have drops when broken.")
 	public BlockBuilder requiresTool(boolean f) {
 		requiresTool = f;
 		return this;
 	}
 
+	@JsInfo("""
+			Sets the render type of the block. Can be `cutout`, `cutout_mipped`, `translucent`, or `basic`.
+			""")
 	public BlockBuilder renderType(String l) {
 		renderType = l;
 		return this;

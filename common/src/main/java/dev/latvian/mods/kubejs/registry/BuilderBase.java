@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.registry;
 
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
+import dev.latvian.mods.kubejs.typings.JsInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -57,16 +58,27 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		return getRegistryType().key.location().getPath();
 	}
 
+	@JsInfo("""
+			Sets the translation key for this object, e.g. `block.minecraft.stone`.
+			""")
 	public BuilderBase<T> translationKey(String key) {
 		translationKey = key;
 		return this;
 	}
 
+	@JsInfo("""
+			Sets the display name for this object, e.g. `Stone`.
+
+			This will be overridden by a lang file if it exists.
+			""")
 	public BuilderBase<T> displayName(String name) {
 		displayName = name;
 		return this;
 	}
 
+	@JsInfo("""
+			Adds a tag to this object, e.g. `minecraft:stone`.
+			""")
 	public BuilderBase<T> tag(ResourceLocation tag) {
 		defaultTags.add(tag);
 		return this;

@@ -2,6 +2,8 @@ package dev.latvian.mods.kubejs.item.custom;
 
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.typings.JsInfo;
+import dev.latvian.mods.kubejs.typings.JsParam;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -25,6 +27,13 @@ public class RecordItemJS extends RecordItem {
 			rarity(Rarity.RARE);
 		}
 
+		@JsInfo(value = """
+				Sets the song that will play when this record is played.
+				""",
+				params = {
+						@JsParam(name = "s", value = "The location of sound event."),
+						@JsParam(name = "seconds", value = "The length of the song in seconds.")
+				})
 		public Builder song(ResourceLocation s, int seconds) {
 			song = s;
 			length = seconds;
@@ -32,6 +41,7 @@ public class RecordItemJS extends RecordItem {
 			return this;
 		}
 
+		@JsInfo("Sets the redstone output of the jukebox when this record is played.")
 		public Builder analogOutput(int o) {
 			analogOutput = o;
 			return this;
