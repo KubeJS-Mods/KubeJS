@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.player;
 
-import dev.latvian.mods.kubejs.typings.JsInfo;
+import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-@JsInfo("""
+@Info("""
 		Invoked when a player's inventory changes.
 		""")
 public class InventoryChangedEventJS extends PlayerEventJS {
@@ -19,17 +19,17 @@ public class InventoryChangedEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	@JsInfo("Gets the player that changed their inventory.")
+	@Info("Gets the player that changed their inventory.")
 	public Player getEntity() {
 		return player;
 	}
 
-	@JsInfo("Gets the item that was changed.")
+	@Info("Gets the item that was changed.")
 	public ItemStack getItem() {
 		return item;
 	}
 
-	@JsInfo("Gets the slot that was changed.")
+	@Info("Gets the slot that was changed.")
 	public int getSlot() {
 		return slot;
 	}

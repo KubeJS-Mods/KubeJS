@@ -9,8 +9,8 @@ import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.typings.JsInfo;
-import dev.latvian.mods.kubejs.typings.JsParam;
+import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.Param;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
@@ -181,36 +181,36 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		});
 	}
 
-	@JsInfo("Sets the item's max stack size. Default is 64.")
+	@Info("Sets the item's max stack size. Default is 64.")
 	public ItemBuilder maxStackSize(int v) {
 		maxStackSize = v;
 		return this;
 	}
 
-	@JsInfo("Makes the item not stackable, equivalent to setting the item's max stack size to 1.")
+	@Info("Makes the item not stackable, equivalent to setting the item's max stack size to 1.")
 	public ItemBuilder unstackable() {
 		return maxStackSize(1);
 	}
 
-	@JsInfo("Sets the item's max damage. Default is 0 (No durability).")
+	@Info("Sets the item's max damage. Default is 0 (No durability).")
 	public ItemBuilder maxDamage(int v) {
 		maxDamage = v;
 		return this;
 	}
 
-	@JsInfo("Sets the item's burn time. Default is 0 (Not a fuel).")
+	@Info("Sets the item's burn time. Default is 0 (Not a fuel).")
 	public ItemBuilder burnTime(int v) {
 		burnTime = v;
 		return this;
 	}
 
-	@JsInfo("Sets the item's container item, e.g. a bucket for a milk bucket.")
+	@Info("Sets the item's container item, e.g. a bucket for a milk bucket.")
 	public ItemBuilder containerItem(ResourceLocation id) {
 		containerItem = id;
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Adds subtypes to the item. The function should return a collection of item stacks, each with a different subtype.
 						
 			Each subtype will appear as a separate item in JEI and the creative inventory.
@@ -220,25 +220,25 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	@JsInfo("Sets the item's rarity.")
+	@Info("Sets the item's rarity.")
 	public ItemBuilder rarity(Rarity v) {
 		rarity = v;
 		return this;
 	}
 
-	@JsInfo("Makes the item glow like enchanted, even if it's not enchanted.")
+	@Info("Makes the item glow like enchanted, even if it's not enchanted.")
 	public ItemBuilder glow(boolean v) {
 		glow = v;
 		return this;
 	}
 
-	@JsInfo("Adds a tooltip to the item.")
+	@Info("Adds a tooltip to the item.")
 	public ItemBuilder tooltip(Component text) {
 		tooltip.add(text);
 		return this;
 	}
 
-	@JsInfo("Sets the group of the item, e.g. 'building_blocks' for the 'Blocks' tab.")
+	@Info("Sets the group of the item, e.g. 'building_blocks' for the 'Blocks' tab.")
 	public ItemBuilder group(@Nullable String g) {
 		if (g == null) {
 			group = null;
@@ -255,7 +255,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	@JsInfo("Colorizes item's texture of the given index. Index is used when you have multiple layers, e.g. a crushed ore (of rock + ore).")
+	@Info("Colorizes item's texture of the given index. Index is used when you have multiple layers, e.g. a crushed ore (of rock + ore).")
 	public ItemBuilder color(int index, Color c) {
 		if (!(colorCallback instanceof IndexedItemColor indexed)) {
 			if (colorCallback != null) {
@@ -268,49 +268,49 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	@JsInfo("Colorizes item's texture of the given index. Useful for coloring items, like GT ores ore dusts")
+	@Info("Colorizes item's texture of the given index. Useful for coloring items, like GT ores ore dusts")
 	public ItemBuilder color(ItemColorJS callback) {
 		colorCallback = callback;
 		return this;
 	}
 
-	@JsInfo("Sets the item's texture (layer0).")
+	@Info("Sets the item's texture (layer0).")
 	public ItemBuilder texture(String tex) {
 		textureJson.addProperty("layer0", tex);
 		return this;
 	}
 
-	@JsInfo("Sets the item's texture by given key.")
+	@Info("Sets the item's texture by given key.")
 	public ItemBuilder texture(String key, String tex) {
 		textureJson.addProperty(key, tex);
 		return this;
 	}
 
-	@JsInfo("Directlys set the item's texture json.")
+	@Info("Directlys set the item's texture json.")
 	public ItemBuilder textureJson(JsonObject json) {
 		textureJson = json;
 		return this;
 	}
 
-	@JsInfo("Directly set the item's model json.")
+	@Info("Directly set the item's model json.")
 	public ItemBuilder modelJson(JsonObject json) {
 		modelJson = json;
 		return this;
 	}
 
-	@JsInfo("Sets the item's model (parent).")
+	@Info("Sets the item's model (parent).")
 	public ItemBuilder parentModel(String m) {
 		parentModel = m;
 		return this;
 	}
 
-	@JsInfo("Determines the color of the item's durability bar. Defaulted to vanilla behavior.")
+	@Info("Determines the color of the item's durability bar. Defaulted to vanilla behavior.")
 	public ItemBuilder barColor(Function<ItemStack, Color> barColor) {
 		this.barColor = barColor;
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Determines the width of the item's durability bar. Defaulted to vanilla behavior.
 						
 			The function should return a value between 0 and 13 (max width of the bar).
@@ -320,7 +320,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Sets the item's name dynamically.
 			""")
 	public ItemBuilder name(NameCallback name) {
@@ -328,7 +328,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Set the food properties of the item.
 			""")
 	public ItemBuilder food(Consumer<FoodBuilder> b) {
@@ -337,14 +337,14 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	@JsInfo("Makes the item fire resistant like netherite tools (or not).")
+	@Info("Makes the item fire resistant like netherite tools (or not).")
 	public ItemBuilder fireResistant(boolean isFireResistant) {
 		fireResistant = isFireResistant;
 		return this;
 	}
 
 
-	@JsInfo("Makes the item fire resistant like netherite tools.")
+	@Info("Makes the item fire resistant like netherite tools.")
 	public ItemBuilder fireResistant() {
 		return fireResistant(true);
 	}
@@ -381,7 +381,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return properties;
 	}
 
-	@JsInfo(value = """
+	@Info(value = """
 			Adds an attribute modifier to the item.
 						
 			An attribute modifier is something like a damage boost or a speed boost.
@@ -389,23 +389,23 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 			applied when the item is worn.
 			""",
 			params = {
-					@JsParam(name = "attribute", value = "The resource location of the attribute, e.g. 'generic.attack_damage'"),
-					@JsParam(name = "identifier", value = "A unique identifier for the modifier. Modifiers are considered the same if they have the same identifier."),
-					@JsParam(name = "d", value = "The amount of the modifier."),
-					@JsParam(name = "operation", value = "The operation to apply the modifier with. Can be ADDITION, MULTIPLY_BASE, or MULTIPLY_TOTAL.")
+					@Param(name = "attribute", value = "The resource location of the attribute, e.g. 'generic.attack_damage'"),
+					@Param(name = "identifier", value = "A unique identifier for the modifier. Modifiers are considered the same if they have the same identifier."),
+					@Param(name = "d", value = "The amount of the modifier."),
+					@Param(name = "operation", value = "The operation to apply the modifier with. Can be ADDITION, MULTIPLY_BASE, or MULTIPLY_TOTAL.")
 			})
 	public ItemBuilder modifyAttribute(ResourceLocation attribute, String identifier, double d, AttributeModifier.Operation operation) {
 		attributes.put(attribute, new AttributeModifier(new UUID(identifier.hashCode(), identifier.hashCode()), identifier, d, operation));
 		return this;
 	}
 
-	@JsInfo("Determines the animation of the item when used, e.g. eating food.")
+	@Info("Determines the animation of the item when used, e.g. eating food.")
 	public ItemBuilder useAnimation(UseAnim animation) {
 		this.anim = animation;
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			The duration when the item is used.
 						
 			For example, when eating food, this is the time it takes to eat the food.
@@ -416,7 +416,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Determines if player will start using the item.
 						
 			For example, when eating food, returning true will make the player start eating the food.
@@ -426,7 +426,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			When players finish using the item.
 						
 			This is called only when `useDuration` ticks have passed.
@@ -438,7 +438,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			When players did not finish using the item but released the right mouse button halfway through.
 						
 			An example is the bow, where the arrow is shot when the player releases the right mouse button.

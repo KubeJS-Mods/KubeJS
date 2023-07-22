@@ -3,8 +3,8 @@ package dev.latvian.mods.kubejs.item;
 import com.google.common.collect.Lists;
 import dev.architectury.hooks.item.food.FoodPropertiesHooks;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
-import dev.latvian.mods.kubejs.typings.JsInfo;
-import dev.latvian.mods.kubejs.typings.JsParam;
+import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.Param;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -40,66 +40,66 @@ public class FoodBuilder {
 		});
 	}
 
-	@JsInfo("Sets the hunger restored.")
+	@Info("Sets the hunger restored.")
 	public FoodBuilder hunger(int h) {
 		hunger = h;
 		return this;
 	}
 
-	@JsInfo("Sets the saturation modifier. Note that the saturation restored is hunger * saturation.")
+	@Info("Sets the saturation modifier. Note that the saturation restored is hunger * saturation.")
 	public FoodBuilder saturation(float s) {
 		saturation = s;
 		return this;
 	}
 
-	@JsInfo("Sets whether the food is meat.")
+	@Info("Sets whether the food is meat.")
 	public FoodBuilder meat(boolean flag) {
 		meat = flag;
 		return this;
 	}
 
-	@JsInfo("Sets the food is meat.")
+	@Info("Sets the food is meat.")
 	public FoodBuilder meat() {
 		return meat(true);
 	}
 
-	@JsInfo("Sets whether the food is always edible.")
+	@Info("Sets whether the food is always edible.")
 	public FoodBuilder alwaysEdible(boolean flag) {
 		alwaysEdible = flag;
 		return this;
 	}
 
-	@JsInfo("Sets the food is always edible.")
+	@Info("Sets the food is always edible.")
 	public FoodBuilder alwaysEdible() {
 		return alwaysEdible(true);
 	}
 
-	@JsInfo("Sets whether the food is fast to eat (having half of the eating time).")
+	@Info("Sets whether the food is fast to eat (having half of the eating time).")
 	public FoodBuilder fastToEat(boolean flag) {
 		fastToEat = flag;
 		return this;
 	}
 
-	@JsInfo("Sets the food is fast to eat (having half of the eating time).")
+	@Info("Sets the food is fast to eat (having half of the eating time).")
 	public FoodBuilder fastToEat() {
 		return fastToEat(true);
 	}
 
-	@JsInfo(value = """
+	@Info(value = """
 			Adds an effect to the food. Note that the effect duration is in ticks (20 ticks = 1 second).
 			""",
 			params = {
-					@JsParam(name = "mobEffectId", value = "The id of the effect. Can be either a string or a ResourceLocation."),
-					@JsParam(name = "duration", value = "The duration of the effect in ticks."),
-					@JsParam(name = "amplifier", value = "The amplifier of the effect. 0 means level 1, 1 means level 2, etc."),
-					@JsParam(name = "probability", value = "The probability of the effect being applied. 1 = 100%.")
+					@Param(name = "mobEffectId", value = "The id of the effect. Can be either a string or a ResourceLocation."),
+					@Param(name = "duration", value = "The duration of the effect in ticks."),
+					@Param(name = "amplifier", value = "The amplifier of the effect. 0 means level 1, 1 means level 2, etc."),
+					@Param(name = "probability", value = "The probability of the effect being applied. 1 = 100%.")
 			})
 	public FoodBuilder effect(ResourceLocation mobEffectId, int duration, int amplifier, float probability) {
 		effects.add(Pair.of(new EffectSupplier(mobEffectId, duration, amplifier), probability));
 		return this;
 	}
 
-	@JsInfo("Removes an effect from the food.")
+	@Info("Removes an effect from the food.")
 	public FoodBuilder removeEffect(MobEffect mobEffect) {
 		if (mobEffect == null) {
 			return this;
@@ -113,7 +113,7 @@ public class FoodBuilder {
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Sets a callback that is called when the food is eaten.
 						
 			Note: This is currently not having effect in `ItemEvents.modification`,

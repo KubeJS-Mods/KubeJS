@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.entity;
 
-import dev.latvian.mods.kubejs.typings.JsInfo;
+import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
-@JsInfo("""
+@Info("""
 		Invoked when an entity is about to be added to the world.
 				
 		This event also fires for existing entities when they are loaded from a save.
@@ -19,13 +19,13 @@ public class EntitySpawnedEventJS extends EntityEventJS {
 	}
 
 	@Override
-	@JsInfo("The level the entity is being added to.")
+	@Info("The level the entity is being added to.")
 	public Level getLevel() {
 		return level;
 	}
 
 	@Override
-	@JsInfo("The entity being added to the world.")
+	@Info("The entity being added to the world.")
 	public Entity getEntity() {
 		return entity;
 	}

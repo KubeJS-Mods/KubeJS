@@ -1,12 +1,12 @@
 package dev.latvian.mods.kubejs.net;
 
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
-import dev.latvian.mods.kubejs.typings.JsInfo;
+import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
-@JsInfo("""
+@Info("""
 		Invoked when a network packet is received.
 				
 		Note that the behaviour of this event is depending on the **script type**.
@@ -27,18 +27,18 @@ public class NetworkEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	@JsInfo("The player that sent the packet. Always `Minecraft.player` in `client_scripts`.")
+	@Info("The player that sent the packet. Always `Minecraft.player` in `client_scripts`.")
 	public Player getEntity() {
 		return player;
 	}
 
-	@JsInfo("The channel of the packet.")
+	@Info("The channel of the packet.")
 	public String getChannel() {
 		return channel;
 	}
 
 	@Nullable
-	@JsInfo("The data of the packet.")
+	@Info("The data of the packet.")
 	public CompoundTag getData() {
 		return data;
 	}

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.player;
 
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.typings.JsInfo;
+import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -9,7 +9,7 @@ import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
-@JsInfo("""
+@Info("""
 		Invoked when a player opens a chest.
 				
 		Same as `PlayerEvents.inventoryOpened`, but only for chests.
@@ -19,13 +19,13 @@ public class ChestEventJS extends InventoryEventJS {
 		super(player, menu);
 	}
 
-	@JsInfo("Gets the chest inventory.")
+	@Info("Gets the chest inventory.")
 	public Container getInventory() {
 		return ((ChestMenu) getInventoryContainer()).getContainer();
 	}
 
 	@Nullable
-	@JsInfo("Gets the chest block.")
+	@Info("Gets the chest block.")
 	public BlockContainerJS getBlock() {
 		if (getInventory() instanceof BlockEntity be) {
 			return getLevel().kjs$getBlock(be);

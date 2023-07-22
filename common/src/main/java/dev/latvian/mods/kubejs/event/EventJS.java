@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.event;
 
-import dev.latvian.mods.kubejs.typings.JsInfo;
+import dev.latvian.mods.kubejs.typings.Info;
 import org.jetbrains.annotations.Nullable;
 
 public class EventJS {
@@ -14,7 +14,7 @@ public class EventJS {
 		return value;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Cancels the event with default exit value. Execution will be stopped **immediately**.
 						
 			`cancel` denotes a `false` outcome.
@@ -23,7 +23,7 @@ public class EventJS {
 		return cancel(defaultExitValue());
 	}
 
-	@JsInfo("""
+	@Info("""
 			Stops the event with default exit value. Execution will be stopped **immediately**.
 						
 			`success` denotes a `true` outcome.
@@ -32,7 +32,7 @@ public class EventJS {
 		return success(defaultExitValue());
 	}
 
-	@JsInfo("""
+	@Info("""
 			Stops the event with default exit value. Execution will be stopped **immediately**.
 						
 			`exit` denotes a `default` outcome.
@@ -41,7 +41,7 @@ public class EventJS {
 		return exit(defaultExitValue());
 	}
 
-	@JsInfo("""
+	@Info("""
 			Cancels the event with the given exit value. Execution will be stopped **immediately**.
 						
 			`cancel` denotes a `false` outcome.
@@ -50,7 +50,7 @@ public class EventJS {
 		throw EventResult.Type.INTERRUPT_FALSE.exit(mapExitValue(value));
 	}
 
-	@JsInfo("""
+	@Info("""
 			Stops the event with the given exit value. Execution will be stopped **immediately**.
 						
 			`success` denotes a `true` outcome.
@@ -59,7 +59,7 @@ public class EventJS {
 		throw EventResult.Type.INTERRUPT_TRUE.exit(mapExitValue(value));
 	}
 
-	@JsInfo("""
+	@Info("""
 			Stops the event with the given exit value. Execution will be stopped **immediately**.
 						
 			`exit` denotes a `default` outcome.

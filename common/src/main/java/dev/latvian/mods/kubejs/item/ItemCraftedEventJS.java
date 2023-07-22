@@ -2,12 +2,12 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
-import dev.latvian.mods.kubejs.typings.JsInfo;
+import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-@JsInfo("""
+@Info("""
 		Invoked when a player crafts an item.
 		""")
 public class ItemCraftedEventJS extends PlayerEventJS {
@@ -22,17 +22,17 @@ public class ItemCraftedEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	@JsInfo("The player that crafted the item.")
+	@Info("The player that crafted the item.")
 	public Player getEntity() {
 		return player;
 	}
 
-	@JsInfo("The item that was crafted.")
+	@Info("The item that was crafted.")
 	public ItemStack getItem() {
 		return crafted;
 	}
 
-	@JsInfo("The inventory that the item was crafted in.")
+	@Info("The inventory that the item was crafted in.")
 	public InventoryKJS getInventory() {
 		return container;
 	}

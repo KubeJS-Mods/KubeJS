@@ -1,14 +1,13 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
-import dev.latvian.mods.kubejs.typings.JsInfo;
-import dev.latvian.mods.kubejs.typings.JsParam;
+import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-@JsInfo(value = """
+@Info(value = """
 		Invoked when a player right clicks on an entity.
 		""")
 public class ItemEntityInteractedEventJS extends PlayerEventJS {
@@ -24,22 +23,22 @@ public class ItemEntityInteractedEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	@JsInfo("The player that interacted with the entity.")
+	@Info("The player that interacted with the entity.")
 	public Player getEntity() {
 		return player;
 	}
 
-	@JsInfo("The hand that was used to interact with the entity.")
+	@Info("The hand that was used to interact with the entity.")
 	public InteractionHand getHand() {
 		return hand;
 	}
 
-	@JsInfo("The item that was used to interact with the entity.")
+	@Info("The item that was used to interact with the entity.")
 	public ItemStack getItem() {
 		return player.getItemInHand(hand);
 	}
 
-	@JsInfo("The entity that was interacted with.")
+	@Info("The entity that was interacted with.")
 	public Entity getTarget() {
 		return entity;
 	}

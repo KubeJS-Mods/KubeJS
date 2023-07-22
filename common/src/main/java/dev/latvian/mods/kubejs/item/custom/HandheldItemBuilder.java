@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.item.custom;
 
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.MutableToolTier;
-import dev.latvian.mods.kubejs.typings.JsInfo;
+import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
@@ -28,7 +28,7 @@ public abstract class HandheldItemBuilder extends ItemBuilder {
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Sets the base attack damage of the tool. Different tools have different baselines.
 						
 			For example, a sword has a baseline of 3, while an axe has a baseline of 6.
@@ -40,7 +40,7 @@ public abstract class HandheldItemBuilder extends ItemBuilder {
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Sets the base attack speed of the tool. Different tools have different baselines.
 						
 			For example, a sword has a baseline of -2.4, while an axe has a baseline of -3.1.
@@ -52,19 +52,19 @@ public abstract class HandheldItemBuilder extends ItemBuilder {
 		return this;
 	}
 
-	@JsInfo("Modifies the tool tier.")
+	@Info("Modifies the tool tier.")
 	public HandheldItemBuilder modifyTier(Consumer<MutableToolTier> callback) {
 		callback.accept(toolTier);
 		return this;
 	}
 
-	@JsInfo("Sets the attack damage bonus of the tool.")
+	@Info("Sets the attack damage bonus of the tool.")
 	public HandheldItemBuilder attackDamageBonus(float f) {
 		toolTier.setAttackDamageBonus(f);
 		return this;
 	}
 
-	@JsInfo("Sets the attack speed of the tool.")
+	@Info("Sets the attack speed of the tool.")
 	public HandheldItemBuilder speed(float f) {
 		toolTier.setSpeed(f);
 		return this;

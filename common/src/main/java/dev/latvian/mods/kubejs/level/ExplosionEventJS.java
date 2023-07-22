@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.level;
 
 import dev.architectury.hooks.level.ExplosionHooks;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
-import dev.latvian.mods.kubejs.typings.JsInfo;
+import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -53,7 +53,7 @@ public abstract class ExplosionEventJS extends LevelEventJS {
 		return explosion.getSourceMob();
 	}
 
-	@JsInfo("""
+	@Info("""
 			Invoked right before an explosion happens.
 			""")
 	public static class Before extends ExplosionEventJS {
@@ -61,18 +61,18 @@ public abstract class ExplosionEventJS extends LevelEventJS {
 			super(level, explosion);
 		}
 
-		@JsInfo("Returns the size of the explosion.")
+		@Info("Returns the size of the explosion.")
 		public float getSize() {
 			return explosion.radius;
 		}
 
-		@JsInfo("Sets the size of the explosion.")
+		@Info("Sets the size of the explosion.")
 		public void setSize(float s) {
 			explosion.radius = s;
 		}
 	}
 
-	@JsInfo("""
+	@Info("""
 			Invoked right after an explosion happens.
 			""")
 	public static class After extends ExplosionEventJS {
@@ -83,22 +83,22 @@ public abstract class ExplosionEventJS extends LevelEventJS {
 			this.affectedEntities = affectedEntities;
 		}
 
-		@JsInfo("Gets a list of all entities affected by the explosion.")
+		@Info("Gets a list of all entities affected by the explosion.")
 		public EntityArrayList getAffectedEntities() {
 			return new EntityArrayList(level, affectedEntities);
 		}
 
-		@JsInfo("Remove an entity from the list of affected entities.")
+		@Info("Remove an entity from the list of affected entities.")
 		public void removeAffectedEntity(Entity entity) {
 			affectedEntities.remove(entity);
 		}
 
-		@JsInfo("Remove all entities from the list of affected entities.")
+		@Info("Remove all entities from the list of affected entities.")
 		public void removeAllAffectedEntities() {
 			affectedEntities.clear();
 		}
 
-		@JsInfo("Gets a list of all blocks affected by the explosion.")
+		@Info("Gets a list of all blocks affected by the explosion.")
 		public List<BlockContainerJS> getAffectedBlocks() {
 			List<BlockContainerJS> list = new ArrayList<>(explosion.getToBlow().size());
 
@@ -109,17 +109,17 @@ public abstract class ExplosionEventJS extends LevelEventJS {
 			return list;
 		}
 
-		@JsInfo("Remove a block from the list of affected blocks.")
+		@Info("Remove a block from the list of affected blocks.")
 		public void removeAffectedBlock(BlockContainerJS block) {
 			explosion.getToBlow().remove(block.getPos());
 		}
 
-		@JsInfo("Remove all blocks from the list of affected blocks.")
+		@Info("Remove all blocks from the list of affected blocks.")
 		public void removeAllAffectedBlocks() {
 			explosion.getToBlow().clear();
 		}
 
-		@JsInfo("Remove all knockback from all affected *players*.")
+		@Info("Remove all knockback from all affected *players*.")
 		public void removeKnockback() {
 			explosion.getHitPlayers().clear();
 		}

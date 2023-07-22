@@ -10,7 +10,7 @@ import dev.latvian.mods.kubejs.loot.LootBuilder;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.typings.JsInfo;
+import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -133,7 +133,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Override
-	@JsInfo("""
+	@Info("""
 			Sets the display name for this object, e.g. `Stone`.
 
 			This will be overridden by a lang file if it exists.
@@ -316,13 +316,13 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		}
 	}
 
-	@JsInfo("Sets the block's material. Defaults to wood.")
+	@Info("Sets the block's material. Defaults to wood.")
 	public BlockBuilder material(MaterialJS m) {
 		material = m;
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Sets the hardness of the block. Defaults to 1.5.
 						
 			Setting this to -1 will make the block unbreakable like bedrock.
@@ -332,7 +332,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Sets the blast resistance of the block. Defaults to 3.
 			""")
 	public BlockBuilder resistance(float r) {
@@ -340,38 +340,38 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	@JsInfo("Makes the block unbreakable.")
+	@Info("Makes the block unbreakable.")
 	public BlockBuilder unbreakable() {
 		hardness = -1F;
 		resistance = Float.MAX_VALUE;
 		return this;
 	}
 
-	@JsInfo("Sets the light level of the block. Defaults to 0 (no light).")
+	@Info("Sets the light level of the block. Defaults to 0 (no light).")
 	public BlockBuilder lightLevel(float light) {
 		lightLevel = light;
 		return this;
 	}
 
-	@JsInfo("Sets the opacity of the block. Opaque blocks do not let light through.")
+	@Info("Sets the opacity of the block. Opaque blocks do not let light through.")
 	public BlockBuilder opaque(boolean o) {
 		opaque = o;
 		return this;
 	}
 
-	@JsInfo("Sets the block should be a full block or not, like cactus or doors.")
+	@Info("Sets the block should be a full block or not, like cactus or doors.")
 	public BlockBuilder fullBlock(boolean f) {
 		fullBlock = f;
 		return this;
 	}
 
-	@JsInfo("Makes the block require a tool to have drops when broken.")
+	@Info("Makes the block require a tool to have drops when broken.")
 	public BlockBuilder requiresTool(boolean f) {
 		requiresTool = f;
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Sets the render type of the block. Can be `cutout`, `cutout_mipped`, `translucent`, or `basic`.
 			""")
 	public BlockBuilder renderType(String l) {
@@ -379,7 +379,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Set the color of a specific layer of the block.
 			""")
 	public BlockBuilder color(int index, Color c) {
@@ -387,7 +387,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Texture the block on all sides with the same texture.
 			""")
 	public BlockBuilder textureAll(String tex) {
@@ -399,14 +399,14 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Texture a specific side of the block.
 			""")
 	public BlockBuilder textureSide(Direction direction, String tex) {
 		return texture(direction.getSerializedName(), tex);
 	}
 
-	@JsInfo("""
+	@Info("""
 			Texture a specific texture key of the block.
 			""")
 	public BlockBuilder texture(String id, String tex) {
@@ -414,7 +414,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Set the block's model.
 			""")
 	public BlockBuilder model(String m) {
@@ -425,7 +425,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Modifies the block's item representation.
 			""")
 	public BlockBuilder item(@Nullable Consumer<BlockItemBuilder> i) {
@@ -444,14 +444,14 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return itemBuilder == null ? (itemBuilder = new BlockItemBuilder(id)) : itemBuilder;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Set the block to have no corresponding item.
 			""")
 	public BlockBuilder noItem() {
 		return item(null);
 	}
 
-	@JsInfo("Set the shape of the block.")
+	@Info("Set the shape of the block.")
 	public BlockBuilder box(double x0, double y0, double z0, double x1, double y1, double z1, boolean scale16) {
 		if (scale16) {
 			customShape.add(new AABB(x0 / 16D, y0 / 16D, z0 / 16D, x1 / 16D, y1 / 16D, z1 / 16D));
@@ -462,7 +462,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	@JsInfo("Set the shape of the block.")
+	@Info("Set the shape of the block.")
 	public BlockBuilder box(double x0, double y0, double z0, double x1, double y1, double z1) {
 		return box(x0, y0, z0, x1, y1, z1, true);
 	}
@@ -481,13 +481,13 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return shape;
 	}
 
-	@JsInfo("Makes the block not collide with entities.")
+	@Info("Makes the block not collide with entities.")
 	public BlockBuilder noCollision() {
 		noCollision = true;
 		return this;
 	}
 
-	@JsInfo("Makes the block not be solid.")
+	@Info("Makes the block not be solid.")
 	public BlockBuilder notSolid() {
 		notSolid = true;
 		return this;
@@ -508,29 +508,29 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return canBeWaterlogged();
 	}
 
-	@JsInfo("Makes the block can be waterlogged.")
+	@Info("Makes the block can be waterlogged.")
 	public BlockBuilder waterlogged() {
 		return property(BlockStateProperties.WATERLOGGED);
 	}
 
-	@JsInfo("Checks if the block can be waterlogged.")
+	@Info("Checks if the block can be waterlogged.")
 	public boolean canBeWaterlogged() {
 		return blockStateProperties.contains(BlockStateProperties.WATERLOGGED);
 	}
 
-	@JsInfo("Clears all drops for the block.")
+	@Info("Clears all drops for the block.")
 	public BlockBuilder noDrops() {
 		lootTable = EMPTY;
 		return this;
 	}
 
-	@JsInfo("Set how slippery the block is.")
+	@Info("Set how slippery the block is.")
 	public BlockBuilder slipperiness(float f) {
 		slipperiness = f;
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Set how fast you can walk on the block.
 						
 			Any value above 1 will make you walk insanely fast as your speed is multiplied by this value each tick.
@@ -542,7 +542,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	@JsInfo("Set how high you can jump on the block.")
+	@Info("Set how high you can jump on the block.")
 	public BlockBuilder jumpFactor(float f) {
 		jumpFactor = f;
 		return this;
@@ -553,72 +553,72 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	 *
 	 * @param randomTickCallback A callback using a block container and a random.
 	 */
-	@JsInfo("Sets random tick callback for this black.")
+	@Info("Sets random tick callback for this black.")
 	public BlockBuilder randomTick(@Nullable Consumer<RandomTickCallbackJS> randomTickCallback) {
 		this.randomTickCallback = randomTickCallback;
 		return this;
 	}
 
-	@JsInfo("Makes mobs not spawn on the block.")
+	@Info("Makes mobs not spawn on the block.")
 	public BlockBuilder noValidSpawns(boolean b) {
 		noValidSpawns = b;
 		return this;
 	}
 
-	@JsInfo("Makes the block suffocating.")
+	@Info("Makes the block suffocating.")
 	public BlockBuilder suffocating(boolean b) {
 		suffocating = b;
 		return this;
 	}
 
-	@JsInfo("Makes the block view blocking.")
+	@Info("Makes the block view blocking.")
 	public BlockBuilder viewBlocking(boolean b) {
 		viewBlocking = b;
 		return this;
 	}
 
-	@JsInfo("Makes the block a redstone conductor.")
+	@Info("Makes the block a redstone conductor.")
 	public BlockBuilder redstoneConductor(boolean b) {
 		redstoneConductor = b;
 		return this;
 	}
 
-	@JsInfo("Makes the block transparent.")
+	@Info("Makes the block transparent.")
 	public BlockBuilder transparent(boolean b) {
 		transparent = b;
 		return this;
 	}
 
-	@JsInfo("Helper method for setting the render type of the block to `cutout` correctly.")
+	@Info("Helper method for setting the render type of the block to `cutout` correctly.")
 	public BlockBuilder defaultCutout() {
 		return renderType("cutout").notSolid().noValidSpawns(true).suffocating(false).viewBlocking(false).redstoneConductor(false).transparent(true);
 	}
 
-	@JsInfo("Helper method for setting the render type of the block to `translucent` correctly.")
+	@Info("Helper method for setting the render type of the block to `translucent` correctly.")
 	public BlockBuilder defaultTranslucent() {
 		return defaultCutout().renderType("translucent");
 	}
 
 	@Override
-	@JsInfo("Tags both the block and the item with the given tag.")
+	@Info("Tags both the block and the item with the given tag.")
 	public BlockBuilder tag(ResourceLocation tag) {
 		return tagBoth(tag);
 	}
 
-	@JsInfo("Tags both the block and the item with the given tag.")
+	@Info("Tags both the block and the item with the given tag.")
 	public BlockBuilder tagBoth(ResourceLocation tag) {
 		tagBlock(tag);
 		tagItem(tag);
 		return this;
 	}
 
-	@JsInfo("Tags the block with the given tag.")
+	@Info("Tags the block with the given tag.")
 	public BlockBuilder tagBlock(ResourceLocation tag) {
 		defaultTags.add(tag);
 		return this;
 	}
 
-	@JsInfo("Tags the item with the given tag.")
+	@Info("Tags the item with the given tag.")
 	public BlockBuilder tagItem(ResourceLocation tag) {
 		itemBuilder.defaultTags.add(tag);
 		return this;
@@ -628,25 +628,25 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return material.getMinecraftMaterial().getColor();
 	}
 
-	@JsInfo("Set the default state of the block.")
+	@Info("Set the default state of the block.")
 	public BlockBuilder defaultState(Consumer<BlockStateModifyCallbackJS> callbackJS) {
 		defaultStateModification = callbackJS;
 		return this;
 	}
 
-	@JsInfo("Set the placement state of the block.")
+	@Info("Set the placement state of the block.")
 	public BlockBuilder placementState(Consumer<BlockStateModifyPlacementCallbackJS> callbackJS) {
 		placementStateModification = callbackJS;
 		return this;
 	}
 
-	@JsInfo("Set if the block can be replaced by something else.")
+	@Info("Set if the block can be replaced by something else.")
 	public BlockBuilder canBeReplaced(Function<CanBeReplacedCallbackJS, Boolean> callbackJS) {
 		canBeReplacedFunction = callbackJS;
 		return this;
 	}
 
-	@JsInfo("""
+	@Info("""
 			Add a blockstate property to the block.
 						
 			For example, facing, lit, etc.

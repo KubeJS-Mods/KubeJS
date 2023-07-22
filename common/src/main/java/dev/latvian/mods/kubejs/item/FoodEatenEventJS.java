@@ -1,12 +1,12 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.entity.EntityEventJS;
-import dev.latvian.mods.kubejs.typings.JsInfo;
+import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
-@JsInfo("""
+@Info("""
 		Invoked when an entity eats food.
 		""")
 public class FoodEatenEventJS extends EntityEventJS {
@@ -19,12 +19,12 @@ public class FoodEatenEventJS extends EntityEventJS {
 	}
 
 	@Override
-	@JsInfo("The entity that ate the food.")
+	@Info("The entity that ate the food.")
 	public Entity getEntity() {
 		return entity;
 	}
 
-	@JsInfo("The food that was eaten.")
+	@Info("The food that was eaten.")
 	public ItemStack getItem() {
 		return item;
 	}

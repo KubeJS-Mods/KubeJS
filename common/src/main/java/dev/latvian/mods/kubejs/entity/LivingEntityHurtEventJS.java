@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.entity;
 
-import dev.latvian.mods.kubejs.typings.JsInfo;
+import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 
-@JsInfo("""
+@Info("""
 		Invoked before an entity is hurt by a damage source.
 		""")
 public class LivingEntityHurtEventJS extends LivingEntityEventJS {
@@ -19,17 +19,17 @@ public class LivingEntityHurtEventJS extends LivingEntityEventJS {
 	}
 
 	@Override
-	@JsInfo("The entity that was hurt.")
+	@Info("The entity that was hurt.")
 	public LivingEntity getEntity() {
 		return entity;
 	}
 
-	@JsInfo("The damage source.")
+	@Info("The damage source.")
 	public DamageSource getSource() {
 		return source;
 	}
 
-	@JsInfo("The amount of damage.")
+	@Info("The amount of damage.")
 	public float getDamage() {
 		return amount;
 	}

@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.RECORD_COMPONENT})
-public @interface JsInfo {
+public @interface Info {
 	/**
 	 * Type, method, field or record component description
 	 */
@@ -21,5 +21,5 @@ public @interface JsInfo {
 	/**
 	 * Params (only checked by methods and types)
 	 */
-	JsParam[] params() default {};
+	Param[] params() default {};
 }
