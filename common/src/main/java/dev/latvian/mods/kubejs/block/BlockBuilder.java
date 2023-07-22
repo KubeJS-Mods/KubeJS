@@ -379,11 +379,17 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
+	@JsInfo("""
+			Set the color of a specific layer of the block.
+			""")
 	public BlockBuilder color(int index, Color c) {
 		color.put(index, c.getArgbJS());
 		return this;
 	}
 
+	@JsInfo("""
+			Texture the block on all sides with the same texture.
+			""")
 	public BlockBuilder textureAll(String tex) {
 		for (var direction : Direction.values()) {
 			textureSide(direction, tex);
@@ -393,15 +399,24 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
+	@JsInfo("""
+			Texture a specific side of the block.
+			""")
 	public BlockBuilder textureSide(Direction direction, String tex) {
 		return texture(direction.getSerializedName(), tex);
 	}
 
+	@JsInfo("""
+			Texture a specific texture key of the block.
+			""")
 	public BlockBuilder texture(String id, String tex) {
 		textures.addProperty(id, tex);
 		return this;
 	}
 
+	@JsInfo("""
+			Set the block's model.
+			""")
 	public BlockBuilder model(String m) {
 		model = m;
 		if (itemBuilder != null) {
@@ -410,6 +425,9 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
+	@JsInfo("""
+			Modifies the block's item representation.
+			""")
 	public BlockBuilder item(@Nullable Consumer<BlockItemBuilder> i) {
 		if (i == null) {
 			itemBuilder = null;
@@ -426,10 +444,14 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return itemBuilder == null ? (itemBuilder = new BlockItemBuilder(id)) : itemBuilder;
 	}
 
+	@JsInfo("""
+			Set the block to have no corresponding item.
+			""")
 	public BlockBuilder noItem() {
 		return item(null);
 	}
 
+	@JsInfo("Set the shape of the block.")
 	public BlockBuilder box(double x0, double y0, double z0, double x1, double y1, double z1, boolean scale16) {
 		if (scale16) {
 			customShape.add(new AABB(x0 / 16D, y0 / 16D, z0 / 16D, x1 / 16D, y1 / 16D, z1 / 16D));
@@ -440,6 +462,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
+	@JsInfo("Set the shape of the block.")
 	public BlockBuilder box(double x0, double y0, double z0, double x1, double y1, double z1) {
 		return box(x0, y0, z0, x1, y1, z1, true);
 	}
@@ -458,11 +481,13 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return shape;
 	}
 
+	@JsInfo("Makes the block not collide with entities.")
 	public BlockBuilder noCollision() {
 		noCollision = true;
 		return this;
 	}
 
+	@JsInfo("Makes the block not be solid.")
 	public BlockBuilder notSolid() {
 		notSolid = true;
 		return this;
@@ -483,29 +508,41 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return canBeWaterlogged();
 	}
 
+	@JsInfo("Makes the block can be waterlogged.")
 	public BlockBuilder waterlogged() {
 		return property(BlockStateProperties.WATERLOGGED);
 	}
 
+	@JsInfo("Checks if the block can be waterlogged.")
 	public boolean canBeWaterlogged() {
 		return blockStateProperties.contains(BlockStateProperties.WATERLOGGED);
 	}
 
+	@JsInfo("Clears all drops for the block.")
 	public BlockBuilder noDrops() {
 		lootTable = EMPTY;
 		return this;
 	}
 
+	@JsInfo("Set how slippery the block is.")
 	public BlockBuilder slipperiness(float f) {
 		slipperiness = f;
 		return this;
 	}
 
+	@JsInfo("""
+			Set how fast you can walk on the block.
+						
+			Any value above 1 will make you walk insanely fast as your speed is multiplied by this value each tick.
+						
+			Recommended values are between 0.1 and 1, useful for mimicking soul sand or ice.
+			""")
 	public BlockBuilder speedFactor(float f) {
 		speedFactor = f;
 		return this;
 	}
 
+	@JsInfo("Set how high you can jump on the block.")
 	public BlockBuilder jumpFactor(float f) {
 		jumpFactor = f;
 		return this;
@@ -516,60 +553,72 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	 *
 	 * @param randomTickCallback A callback using a block container and a random.
 	 */
+	@JsInfo("Sets random tick callback for this black.")
 	public BlockBuilder randomTick(@Nullable Consumer<RandomTickCallbackJS> randomTickCallback) {
 		this.randomTickCallback = randomTickCallback;
 		return this;
 	}
 
+	@JsInfo("Makes mobs not spawn on the block.")
 	public BlockBuilder noValidSpawns(boolean b) {
 		noValidSpawns = b;
 		return this;
 	}
 
+	@JsInfo("Makes the block suffocating.")
 	public BlockBuilder suffocating(boolean b) {
 		suffocating = b;
 		return this;
 	}
 
+	@JsInfo("Makes the block view blocking.")
 	public BlockBuilder viewBlocking(boolean b) {
 		viewBlocking = b;
 		return this;
 	}
 
+	@JsInfo("Makes the block a redstone conductor.")
 	public BlockBuilder redstoneConductor(boolean b) {
 		redstoneConductor = b;
 		return this;
 	}
 
+	@JsInfo("Makes the block transparent.")
 	public BlockBuilder transparent(boolean b) {
 		transparent = b;
 		return this;
 	}
 
+	@JsInfo("Helper method for setting the render type of the block to `cutout` correctly.")
 	public BlockBuilder defaultCutout() {
 		return renderType("cutout").notSolid().noValidSpawns(true).suffocating(false).viewBlocking(false).redstoneConductor(false).transparent(true);
 	}
 
+	@JsInfo("Helper method for setting the render type of the block to `translucent` correctly.")
 	public BlockBuilder defaultTranslucent() {
 		return defaultCutout().renderType("translucent");
 	}
 
 	@Override
+	@JsInfo("Tags both the block and the item with the given tag.")
 	public BlockBuilder tag(ResourceLocation tag) {
 		return tagBoth(tag);
 	}
 
+	@JsInfo("Tags both the block and the item with the given tag.")
 	public BlockBuilder tagBoth(ResourceLocation tag) {
 		tagBlock(tag);
 		tagItem(tag);
 		return this;
 	}
 
+	@JsInfo("Tags the block with the given tag.")
 	public BlockBuilder tagBlock(ResourceLocation tag) {
 		defaultTags.add(tag);
 		return this;
 	}
 
+	@JsInfo("Tags the item with the given tag.")
 	public BlockBuilder tagItem(ResourceLocation tag) {
 		itemBuilder.defaultTags.add(tag);
 		return this;
@@ -579,21 +628,29 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return material.getMinecraftMaterial().getColor();
 	}
 
+	@JsInfo("Set the default state of the block.")
 	public BlockBuilder defaultState(Consumer<BlockStateModifyCallbackJS> callbackJS) {
 		defaultStateModification = callbackJS;
 		return this;
 	}
 
+	@JsInfo("Set the placement state of the block.")
 	public BlockBuilder placementState(Consumer<BlockStateModifyPlacementCallbackJS> callbackJS) {
 		placementStateModification = callbackJS;
 		return this;
 	}
 
+	@JsInfo("Set if the block can be replaced by something else.")
 	public BlockBuilder canBeReplaced(Function<CanBeReplacedCallbackJS, Boolean> callbackJS) {
 		canBeReplacedFunction = callbackJS;
 		return this;
 	}
 
+	@JsInfo("""
+			Add a blockstate property to the block.
+						
+			For example, facing, lit, etc.
+			""")
 	public BlockBuilder property(Property<?> property) {
 		if (property.getPossibleValues().size() <= 1) {
 			throw new IllegalArgumentException(String.format("Block \"%s\" has an illegal Blockstate Property \"%s\" which has <= 1 possible values. (%d possible values)", id, property.getName(), property.getPossibleValues().size()));

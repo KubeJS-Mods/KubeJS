@@ -255,7 +255,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	@JsInfo("Colorizes item's texture of the given index.")
+	@JsInfo("Colorizes item's texture of the given index. Index is used when you have multiple layers, e.g. a crushed ore (of rock + ore).")
 	public ItemBuilder color(int index, Color c) {
 		if (!(colorCallback instanceof IndexedItemColor indexed)) {
 			if (colorCallback != null) {
