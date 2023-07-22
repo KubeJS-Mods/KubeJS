@@ -30,6 +30,7 @@ public class CommonProperties {
 	public boolean saveDevPropertiesInConfig;
 	public boolean allowAsyncStreams;
 	public boolean matchJsonRecipes;
+	public boolean ignoreCustomUniqueRecipeIds;
 
 	private CommonProperties() {
 		properties = new Properties();
@@ -52,6 +53,7 @@ public class CommonProperties {
 			saveDevPropertiesInConfig = get("saveDevPropertiesInConfig", false);
 			allowAsyncStreams = get("allowAsyncStreams", true);
 			matchJsonRecipes = get("matchJsonRecipes", true);
+			ignoreCustomUniqueRecipeIds = get("ignoreCustomUniqueRecipeIds", false);
 
 			KubeJSPlugins.forEachPlugin(p -> p.loadCommonProperties(this));
 

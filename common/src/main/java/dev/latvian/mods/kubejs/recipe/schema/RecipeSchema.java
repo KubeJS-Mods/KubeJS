@@ -3,6 +3,8 @@ package dev.latvian.mods.kubejs.recipe.schema;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.item.InputItem;
+import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
@@ -15,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -31,6 +34,8 @@ import java.util.function.Supplier;
  * @see RecipeJS
  */
 public class RecipeSchema {
+	public static final Function<RecipeJS, String> DEFAULT_UNIQUE_ID_FUNCTION = r -> null;
+
 	private final UUID uuid;
 	public final Class<? extends RecipeJS> recipeType;
 	public final Supplier<? extends RecipeJS> factory;
@@ -39,6 +44,7 @@ public class RecipeSchema {
 	private int outputCount;
 	private int minRequiredArguments;
 	private Int2ObjectMap<RecipeConstructor> constructors;
+	public Function<RecipeJS, String> uniqueIdFunction;
 
 	/**
 	 * Default constructor that uses {@link RecipeJS} as the default recipe factory.
@@ -98,6 +104,8 @@ public class RecipeSchema {
 		if (minRequiredArguments == 0) {
 			minRequiredArguments = keys.length;
 		}
+
+		this.uniqueIdFunction = DEFAULT_UNIQUE_ID_FUNCTION;
 	}
 
 	public UUID uuid() {
@@ -128,6 +136,26 @@ public class RecipeSchema {
 
 	public RecipeSchema constructor(RecipeKey<?>... keys) {
 		return constructor(RecipeConstructor.Factory.DEFAULT, keys);
+	}
+
+	public RecipeSchema uniqueId(Function<RecipeJS, String> uniqueIdFunction) {
+		this.uniqueIdFunction = uniqueIdFunction;
+		return this;
+	}
+
+	public RecipeSchema uniqueOutputId(RecipeKey<OutputItem> resultItemKey) {
+		return uniqueId(r -> {
+			var item = r.getValue(resultItemKey);
+			return item == null || item.isEmpty() ? null : item.item.kjs$getId();
+		});
+	}
+
+	public RecipeSchema uniqueInputId(RecipeKey<InputItem> resultItemKey) {
+		return uniqueId(r -> {
+			var ingredient = r.getValue(resultItemKey);
+			var item = ingredient == null ? null : ingredient.ingredient.kjs$getFirst();
+			return item == null || item.isEmpty() ? null : item.kjs$getId();
+		});
 	}
 
 	public Int2ObjectMap<RecipeConstructor> constructors() {

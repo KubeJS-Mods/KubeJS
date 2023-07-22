@@ -41,5 +41,5 @@ public interface CookingRecipeSchema {
 	RecipeKey<Float> XP = NumberComponent.FLOAT.key("experience").optional(0F).preferred("xp");
 	RecipeKey<Long> COOKING_TIME = TimeComponent.TICKS.key("cookingtime").optional(200L).preferred("cookingTime");
 
-	RecipeSchema SCHEMA = new RecipeSchema(RESULT, INGREDIENT, XP, COOKING_TIME);
+	RecipeSchema SCHEMA = new RecipeSchema(RESULT, INGREDIENT, XP, COOKING_TIME).uniqueOutputId(RESULT);
 }

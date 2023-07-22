@@ -10,5 +10,5 @@ public interface ShapelessRecipeSchema {
 	RecipeKey<OutputItem> RESULT = ItemComponents.OUTPUT.key("result");
 	RecipeKey<InputItem[]> INGREDIENTS = ItemComponents.UNWRAPPED_INPUT_ARRAY.key("ingredients");
 
-	RecipeSchema SCHEMA = new RecipeSchema(RESULT, INGREDIENTS);
+	RecipeSchema SCHEMA = new RecipeSchema(RESULT, INGREDIENTS).uniqueOutputId(RESULT);
 }

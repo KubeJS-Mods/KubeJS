@@ -10,5 +10,5 @@ public interface StonecuttingRecipeSchema {
 	RecipeKey<OutputItem> RESULT = ItemComponents.OUTPUT_ID_WITH_COUNT.key("result");
 	RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key("ingredient");
 
-	RecipeSchema SCHEMA = new RecipeSchema(RESULT, INGREDIENT);
+	RecipeSchema SCHEMA = new RecipeSchema(RESULT, INGREDIENT).uniqueOutputId(RESULT);
 }

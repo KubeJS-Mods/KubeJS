@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
@@ -398,7 +399,23 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	@HideFromJS
 	public ResourceLocation getOrCreateId() {
 		if (id == null) {
-			id = new ResourceLocation(type.id.getNamespace() + ":kjs_" + getUniqueId());
+			var ids = CommonProperties.get().ignoreCustomUniqueRecipeIds ? null : type.schemaType.schema.uniqueIdFunction.apply(this);
+
+			if (ids == null) {
+				return new ResourceLocation(type.id.getNamespace() + ":kjs_" + UtilsJS.getUniqueId(json));
+			}
+
+			ids = ids.replace("minecraft:", "").replace(':', '_').replace('/', '_');
+
+			int i = 2;
+			id = new ResourceLocation(type.id.getNamespace() + ":kjs_" + ids);
+
+			while (type.event.takenIds.containsKey(id)) {
+				id = new ResourceLocation(type.id.getNamespace() + ":kjs_" + ids + "_" + i);
+				i++;
+			}
+
+			type.event.takenIds.put(id, this);
 		}
 
 		return id;
@@ -427,10 +444,6 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		}
 
 		return sb.append(']').toString();
-	}
-
-	public String getUniqueId() {
-		return UtilsJS.getUniqueId(json);
 	}
 
 	public final void remove() {

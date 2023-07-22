@@ -11,5 +11,5 @@ public interface SmithingRecipeSchema {
 	RecipeKey<InputItem> BASE = ItemComponents.INPUT.key("base");
 	RecipeKey<InputItem> ADDITION = ItemComponents.INPUT.key("addition");
 
-	RecipeSchema SCHEMA = new RecipeSchema(RESULT, BASE, ADDITION);
+	RecipeSchema SCHEMA = new RecipeSchema(RESULT, BASE, ADDITION).uniqueOutputId(RESULT);
 }
