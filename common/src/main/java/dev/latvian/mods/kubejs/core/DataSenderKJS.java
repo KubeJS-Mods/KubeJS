@@ -9,4 +9,8 @@ public interface DataSenderKJS {
 	default void kjs$sendData(String channel, @Nullable CompoundTag data) {
 		throw new NoMixinException();
 	}
+
+	default void kjs$sendData(String channel) {
+		kjs$sendData(channel, null);
+	}
 }
