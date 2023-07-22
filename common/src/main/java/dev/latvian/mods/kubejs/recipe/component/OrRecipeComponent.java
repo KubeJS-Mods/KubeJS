@@ -2,12 +2,10 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
-import dev.latvian.mods.kubejs.recipe.InputReplacement;
-import dev.latvian.mods.kubejs.recipe.OutputReplacement;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.*;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 
 @SuppressWarnings("OptionalIsPresent")
 public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L> low) implements RecipeComponent<Either<H, L>> {
@@ -40,16 +38,31 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 		if (value.left().isPresent()) {
 			return high.write(recipe, value.left().get());
 		} else {
-			return low.write(recipe, value.right().get());
+			return low.write(recipe, value.right().orElseThrow());
 		}
 	}
 
 	@Override
 	public Either<H, L> read(RecipeJS recipe, Object from) {
-		if (low.hasPriority(recipe, from) && !high.hasPriority(recipe, from)) {
+		if (high.hasPriority(recipe, from)) {
+			// if high has priority, only try to read high
+			return Either.left(high.read(recipe, from));
+		} else if (low.hasPriority(recipe, from)) {
+			// if low has priority, only try to read low
 			return Either.right(low.read(recipe, from));
 		} else {
-			return Either.left(high.read(recipe, from));
+			// If neither has priority, try to read high, if it fails, fallback to low
+			try {
+				return Either.left(high.read(recipe, from));
+			} catch (Exception ex1) {
+				try {
+					return Either.right(low.read(recipe, from));
+				} catch (Exception ex2) {
+					ConsoleJS.SERVER.handleError(ex1, null, "Failed to read %s as high priority (%s)!".formatted(from, high));
+					ConsoleJS.SERVER.handleError(ex2, null, "Failed to read %s as low priority (%s)!".formatted(from, low));
+					throw new RecipeExceptionJS("Failed to read %s as either %s or %s!".formatted(from, high, low));
+				}
+			}
 		}
 	}
 
