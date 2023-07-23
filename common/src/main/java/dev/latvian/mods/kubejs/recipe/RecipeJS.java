@@ -14,6 +14,7 @@ import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.component.MissingComponentException;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponentBuilderMap;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.DamageAction;
@@ -38,7 +39,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +51,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	public boolean removed;
 	public ModifyRecipeResultCallback modifyResult = null;
 
-	protected Map<RecipeKey<?>, RecipeComponentValue<?>> valueMap = Map.of();
+	private RecipeComponentBuilderMap valueMap = RecipeComponentBuilderMap.EMPTY;
 	private RecipeComponentValue<?>[] inputValues;
 	private RecipeComponentValue<?>[] outputValues;
 	private Map<String, RecipeComponentValue<?>> allValueMap;
@@ -67,7 +67,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	}
 
 	public void deserialize(boolean merge) {
-		for (var v : valueMap.values()) {
+		for (var v : valueMap.holders) {
 			v.key.component.readFromJson(this, UtilsJS.cast(v), json);
 
 			if (v.value != null) {
@@ -81,7 +81,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	}
 
 	public void serialize() {
-		for (var v : valueMap.values()) {
+		for (var v : valueMap.holders) {
 			if (v.shouldWrite()) {
 				if (v.value == null) {
 					throw new RecipeExceptionJS("Value not set for " + v.key + " in recipe " + this);
@@ -93,7 +93,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	}
 
 	public <T> T getValue(RecipeKey<T> key) {
-		var v = valueMap.get(key);
+		var v = valueMap.getHolder(key);
 
 		if (v == null) {
 			throw new MissingComponentException(key.name, key, valueMap.keySet());
@@ -103,7 +103,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	}
 
 	public <T> RecipeJS setValue(RecipeKey<T> key, T value) {
-		RecipeComponentValue<T> v = UtilsJS.cast(valueMap.get(key));
+		RecipeComponentValue<T> v = UtilsJS.cast(valueMap.getHolder(key));
 
 		if (v == null) {
 			throw new MissingComponentException(key.name, key, valueMap.keySet());
@@ -118,10 +118,10 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	// intended for use by scripts
 	@Nullable
 	public Object get(String key) {
-		for (var recipeKey : valueMap.keySet()) {
-			for (var name : recipeKey.names) {
+		for (var h : valueMap.holders) {
+			for (var name : h.key.names) {
 				if (name.equals(key)) {
-					return getValue(recipeKey);
+					return h.value;
 				}
 			}
 		}
@@ -131,10 +131,12 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 
 	// intended for use by scripts
 	public RecipeJS set(String key, Object value) {
-		for (var recipeKey : valueMap.keySet()) {
-			for (var name : recipeKey.names) {
+		for (var h : valueMap.holders) {
+			for (var name : h.key.names) {
 				if (name.equals(key)) {
-					setValue(recipeKey, UtilsJS.cast(recipeKey.component.read(this, value)));
+					h.value = UtilsJS.cast(h.key.component.read(this, value));
+					h.write();
+					save();
 					return this;
 				}
 			}
@@ -149,18 +151,17 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		}
 
 		if (type.schemaType.schema.keys.length > 0) {
-			valueMap = new IdentityHashMap<>(type.schemaType.schema.keys.length);
+			valueMap = new RecipeComponentBuilderMap(type.schemaType.schema.keys);
 
-			for (int i = 0; i < type.schemaType.schema.keys.length; i++) {
-				var v = new RecipeComponentValue<>(type.schemaType.schema.keys[i], i);
-				valueMap.put(v.key, v);
+			if (created) {
+				for (var v : valueMap.holders) {
+					if (v.key.alwaysWrite || !v.key.optional()) {
+						if (v.key.alwaysWrite) {
+							v.value = UtilsJS.cast(v.key.optional.getDefaultValue(type.schemaType));
+						}
 
-				if (created && (v.key.alwaysWrite || !v.key.optional())) {
-					if (v.key.alwaysWrite) {
-						v.value = UtilsJS.cast(v.key.optional.getDefaultValue(type.schemaType));
+						v.write();
 					}
-
-					v.write();
 				}
 			}
 		}
@@ -170,7 +171,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		if (allValueMap == null) {
 			allValueMap = new HashMap<>();
 
-			for (var v : valueMap.values()) {
+			for (var v : valueMap.holders) {
 				for (var n : v.key.names) {
 					allValueMap.put(n, v);
 				}
@@ -187,7 +188,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	 * if you override this, in order to check for empty values.
 	 */
 	public void afterLoaded() {
-		for (var v : valueMap.values()) {
+		for (var v : valueMap.holders) {
 			var e = v.checkEmpty();
 
 			if (!e.isEmpty()) {
@@ -208,7 +209,6 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 
 	public RecipeJS group(String g) {
 		kjs$setGroup(g);
-		save();
 		return this;
 	}
 
@@ -230,7 +230,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 			return true;
 		}
 
-		for (var vc : valueMap.values()) {
+		for (var vc : valueMap.holders) {
 			if (vc.shouldWrite()) {
 				return true;
 			}
@@ -288,7 +288,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 			} else {
 				var list = new ArrayList<>(type.schemaType.schema.inputCount());
 
-				for (var v : valueMap.values()) {
+				for (var v : valueMap.holders) {
 					if (v.key.component.role().isInput()) {
 						list.add(v);
 					}
@@ -309,7 +309,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 			} else {
 				var list = new ArrayList<>(type.schemaType.schema.outputCount());
 
-				for (var v : valueMap.values()) {
+				for (var v : valueMap.holders) {
 					if (v.key.component.role().isOutput()) {
 						list.add(v);
 					}

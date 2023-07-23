@@ -10,6 +10,8 @@ import java.util.Objects;
 import java.util.Set;
 
 public class RecipeComponentBuilderMap extends AbstractMap<RecipeKey<?>, Object> {
+	public static final RecipeComponentBuilderMap EMPTY = new RecipeComponentBuilderMap(RecipeComponentValue.EMPTY_ARRAY);
+
 	public final RecipeComponentValue<?>[] holders;
 	private Set<Entry<RecipeKey<?>, Object>> holderSet;
 	public boolean hasChanged;
@@ -29,6 +31,14 @@ public class RecipeComponentBuilderMap extends AbstractMap<RecipeKey<?>, Object>
 
 		for (int i = 0; i < holders.length; i++) {
 			this.holders[i] = holders[i].copy();
+		}
+	}
+
+	public RecipeComponentBuilderMap(RecipeKey<?>[] keys) {
+		this.holders = new RecipeComponentValue[keys.length];
+
+		for (int i = 0; i < holders.length; i++) {
+			this.holders[i] = new RecipeComponentValue<>(keys[i], i);
 		}
 	}
 
@@ -53,15 +63,20 @@ public class RecipeComponentBuilderMap extends AbstractMap<RecipeKey<?>, Object>
 		throw new IllegalArgumentException("Key " + key + " is not in this map!");
 	}
 
-	@Override
-	public Object get(Object key) {
+	public RecipeComponentValue<?> getHolder(Object key) {
 		for (var holder : holders) {
 			if (holder.key == key) {
-				return holder.value;
+				return holder;
 			}
 		}
 
 		return null;
+	}
+
+	@Override
+	public Object get(Object key) {
+		var h = getHolder(key);
+		return h == null ? null : h.value;
 	}
 
 	@Override
@@ -91,7 +106,7 @@ public class RecipeComponentBuilderMap extends AbstractMap<RecipeKey<?>, Object>
 				return false;
 			} else {
 				for (int i = 0; i < holders.length; i++) {
-					if (holders[i].key != map.holders[i].key || holders[i].key.component.checkValueHasChanged(UtilsJS.cast(holders[i].value), UtilsJS.cast(map.holders[i].value))) {
+					if (holders[i].key != map.holders[i].key || !Objects.equals(holders[i].value, map.holders[i].value)) {
 						return false;
 					}
 				}
