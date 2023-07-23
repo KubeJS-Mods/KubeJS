@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.stages.predicate.StagePredicate;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
@@ -27,10 +28,11 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	private final boolean mirror;
 	private final List<IngredientAction> ingredientActions;
 	private final ModifyRecipeResultCallback modifyResult;
-	private final String stage;
+	@Nullable
+	private final StagePredicate stage;
 
 	public ShapedKubeJSRecipe(ResourceLocation id, String group, int width, int height, NonNullList<Ingredient> ingredients, ItemStack result,
-							  boolean mirror, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
+	                          boolean mirror, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, @Nullable StagePredicate stage) {
 		super(id, group, width, height, ingredients, result);
 		this.mirror = mirror;
 		this.ingredientActions = ingredientActions;
@@ -55,7 +57,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	}
 
 	@Override
-	public String kjs$getStage() {
+	public StagePredicate kjs$getStage() {
 		return stage;
 	}
 
@@ -118,7 +120,10 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 				modifyResult = RecipesEventJS.MODIFY_RESULT_CALLBACKS.get(id);
 			}
 
-			var stage = GsonHelper.getAsString(json, "kubejs:stage", "");
+			StagePredicate stage = null;
+			if (json.has("kubejs:stage")) {
+				stage = StagePredicate.fromJson(json.get("kubejs:stage"));
+			}
 
 			return new ShapedKubeJSRecipe(id, shapedRecipe.getGroup(), w, h, ingredients, shapedRecipe.getResultItem(), mirror, ingredientActions, modifyResult, stage);
 		}
@@ -136,7 +141,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 			var result = shapedRecipe.getResultItem();
 
 			List<IngredientAction> ingredientActions = (flags & RecipeFlags.INGREDIENT_ACTIONS) != 0 ? IngredientAction.readList(buf) : Collections.emptyList();
-			var stage = (flags & RecipeFlags.STAGE) != 0 ? buf.readUtf() : "";
+			var stage = (flags & RecipeFlags.STAGE) != 0 ? StagePredicate.fromNetwork(buf) : null;
 			var mirror = (flags & RecipeFlags.MIRROR) != 0;
 
 			// the pattern can be used as-is because the shrinking logic is done serverside
@@ -158,7 +163,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 				flags |= RecipeFlags.MIRROR;
 			}
 
-			if (!r.stage.isEmpty()) {
+			if (r.stage != null) {
 				flags |= RecipeFlags.STAGE;
 			}
 
@@ -168,8 +173,8 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 				IngredientAction.writeList(buf, r.ingredientActions);
 			}
 
-			if (!r.stage.isEmpty()) {
-				buf.writeUtf(r.stage);
+			if (r.stage != null) {
+				r.stage.toNetwork(buf);
 			}
 		}
 	}

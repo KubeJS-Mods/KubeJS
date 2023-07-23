@@ -27,6 +27,7 @@ import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
+import dev.latvian.mods.kubejs.stages.predicate.StagePredicate;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -618,7 +619,7 @@ public class RecipesEventJS extends EventJS {
 		RecipeJS.itemErrors = b;
 	}
 
-	public void stage(RecipeFilter filter, String stage) {
+	public void stage(RecipeFilter filter, StagePredicate stage) {
 		forEachRecipeAsync(filter, r -> r.stage(stage));
 	}
 

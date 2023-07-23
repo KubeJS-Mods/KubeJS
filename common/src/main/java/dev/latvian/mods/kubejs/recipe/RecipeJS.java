@@ -22,6 +22,7 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.KeepAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
+import dev.latvian.mods.kubejs.stages.predicate.StagePredicate;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
@@ -458,8 +459,8 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		}
 	}
 
-	public RecipeJS stage(String s) {
-		json.addProperty("kubejs:stage", s);
+	public RecipeJS stage(StagePredicate s) {
+		json.add("kubejs:stage", s.toJson());
 		save();
 		return this;
 	}

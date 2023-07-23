@@ -4,6 +4,7 @@ import dev.architectury.utils.GameInstance;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeCraftingGrid;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
+import dev.latvian.mods.kubejs.stages.predicate.StagePredicate;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -22,7 +23,8 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 	@Nullable
 	ModifyRecipeResultCallback kjs$getModifyResult();
 
-	String kjs$getStage();
+	@Nullable
+	StagePredicate kjs$getStage();
 
 	default NonNullList<ItemStack> kjs$getRemainingItems(CraftingContainer container) {
 		var list = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
@@ -35,10 +37,11 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 	}
 
 	default ItemStack kjs$assemble(CraftingContainer container) {
-		if (!kjs$getStage().isEmpty()) {
+		StagePredicate predicate = kjs$getStage();
+		if (predicate != null) {
 			var player = getPlayer(container.menu);
 
-			if (player == null || !player.kjs$getStages().has(kjs$getStage())) {
+			if (player == null || !predicate.test(player.kjs$getStages())) {
 				return ItemStack.EMPTY;
 			}
 		}
