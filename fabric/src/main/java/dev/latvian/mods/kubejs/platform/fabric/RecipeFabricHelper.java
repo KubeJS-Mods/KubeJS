@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -49,10 +48,4 @@ public class RecipeFabricHelper implements RecipePlatformHelper {
 		return null;
 	}
 
-	@Override
-	@Nullable
-	public Player getCraftingPlayer() {
-		// TODO: Implement this on the Fabric side
-		return null;
-	}
 }

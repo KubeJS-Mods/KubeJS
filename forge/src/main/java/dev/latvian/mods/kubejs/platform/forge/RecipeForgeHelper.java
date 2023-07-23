@@ -8,13 +8,11 @@ import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import org.jetbrains.annotations.Nullable;
@@ -73,9 +71,4 @@ public class RecipeForgeHelper implements RecipePlatformHelper {
 		return ((RecipeManagerAccessor) resources.getRecipeManager()).getContext();
 	}
 
-	@Override
-	@Nullable
-	public Player getCraftingPlayer() {
-		return ForgeHooks.getCraftingPlayer();
-	}
 }
