@@ -91,6 +91,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient Consumer<AfterEntityFallenOnBlockCallbackJS> afterFallenOnCallback;
 	public transient Consumer<BlockExplodedCallbackJS> explodedCallback;
 
+	public transient Consumer<BlockStateRotateCallbackJS> rotateStateModification;
+	public transient Consumer<BlockStateMirrorCallbackJS> mirrorStateModification;
 
 	public BlockBuilder(ResourceLocation i) {
 		super(i);
@@ -712,6 +714,16 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 			throw new IllegalArgumentException(String.format("Block \"%s\" has an illegal Blockstate Property \"%s\" which has <= 1 possible values. (%d possible values)", id, property.getName(), property.getPossibleValues().size()));
 		}
 		blockStateProperties.add(property);
+		return this;
+	}
+
+	public BlockBuilder rotateState(Consumer<BlockStateRotateCallbackJS> callbackJS) {
+		rotateStateModification = callbackJS;
+		return this;
+	}
+
+	public BlockBuilder mirrorState(Consumer<BlockStateMirrorCallbackJS> callbackJS) {
+		mirrorStateModification = callbackJS;
 		return this;
 	}
 

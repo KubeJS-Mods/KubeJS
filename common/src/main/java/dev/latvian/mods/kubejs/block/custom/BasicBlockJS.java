@@ -1,6 +1,11 @@
 package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
+import dev.latvian.mods.kubejs.block.BlockStateMirrorCallbackJS;
+import dev.latvian.mods.kubejs.block.BlockStateModifyCallbackJS;
+import dev.latvian.mods.kubejs.block.BlockStateModifyPlacementCallbackJS;
+import dev.latvian.mods.kubejs.block.BlockStateRotateCallbackJS;
+import dev.latvian.mods.kubejs.block.CanBeReplacedCallbackJS;
 import dev.latvian.mods.kubejs.block.EntityBlockKJS;
 import dev.latvian.mods.kubejs.block.KubeJSBlockProperties;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
@@ -27,6 +32,8 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -69,7 +76,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		var blockState = stateDefinition.any();
 		if (blockBuilder.defaultStateModification != null) {
 			var callbackJS = new BlockStateModifyCallbackJS(blockState);
-			if (safeCallback(blockBuilder.defaultStateModification, callbackJS, "Error while creating default blockState for block ")) {
+			if (safeCallback(blockBuilder.defaultStateModification, callbackJS, "Error while creating default blockState for block " + p.id)) {
 				registerDefaultState(callbackJS.getState());
 			}
 		} else if (blockBuilder.canBeWaterlogged()) {
@@ -121,7 +128,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
 		if (blockBuilder.placementStateModification != null) {
 			var callbackJS = new BlockStateModifyPlacementCallbackJS(context, this);
-			if (safeCallback(blockBuilder.placementStateModification, callbackJS, "Error while modifying BlockState placement of ")) {
+			if (safeCallback(blockBuilder.placementStateModification, callbackJS, "Error while modifying BlockState placement of " + blockBuilder.id)) {
 				return callbackJS.getState();
 			}
 		}
@@ -162,9 +169,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
 		if (blockBuilder.randomTickCallback != null) {
 			var callback = new RandomTickCallbackJS(new BlockContainerJS(level, pos), random);
-			safeCallback(blockBuilder.randomTickCallback, callback, "Error while random ticking custom block ");
-		} else {
-			super.randomTick(state, level, pos, random);
+			safeCallback(blockBuilder.randomTickCallback, callback, "Error while random ticking custom block " + this);
 		}
 	}
 
@@ -196,7 +201,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		try {
 			consumer.accept(value);
 		} catch (Throwable e) {
-			ScriptType.STARTUP.console.error(errorMessage + blockBuilder.id, e);
+			ScriptType.STARTUP.console.error(errorMessage, e);
 			return false;
 		}
 
@@ -281,5 +286,29 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		} else {
 			super.wasExploded(level, blockPos, explosion);
 		}
+	}
+
+	@Override
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		if (blockBuilder.rotateStateModification != null) {
+			var callbackJS = new BlockStateRotateCallbackJS(blockState, rotation);
+			if (safeCallback(blockBuilder.rotateStateModification, callbackJS, "Error while rotating BlockState of " + blockBuilder.id)) {
+				return callbackJS.getState();
+			}
+		}
+
+		return blockState;
+	}
+
+	@Override
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		if (blockBuilder.mirrorStateModification != null) {
+			var callbackJS = new BlockStateMirrorCallbackJS(blockState, mirror);
+			if (safeCallback(blockBuilder.mirrorStateModification, callbackJS, "Error while mirroring BlockState of " + blockBuilder.id)) {
+				return callbackJS.getState();
+			}
+		}
+
+		return blockState;
 	}
 }
