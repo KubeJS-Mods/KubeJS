@@ -355,6 +355,12 @@ public class RecipesEventJS extends EventJS {
 		ConsoleJS.SERVER.info("Added " + addedRecipes.size() + " recipes, removed " + removedRecipes.size() + " recipes, modified " + modifiedCount + " recipes, with " + failedCount.get() + " failed recipes in " + timer.stop());
 		RecipeJS.itemErrors = false;
 
+		if (DataExport.export != null) {
+			for (var r : removedRecipes) {
+				DataExport.export.addJson("removed_recipes/" + r.getId() + ".json", r.json);
+			}
+		}
+
 		if (DevProperties.get().debugInfo) {
 			ConsoleJS.SERVER.info("======== Debug output of all added recipes ========");
 
