@@ -297,7 +297,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 			}
 		}
 
-		return blockState;
+		return super.rotate(blockState, rotation);
 	}
 
 	@Override
@@ -309,6 +309,6 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 			}
 		}
 
-		return blockState;
+		return super.mirror(blockState, mirror);
 	}
 }
