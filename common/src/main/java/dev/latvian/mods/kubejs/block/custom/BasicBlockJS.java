@@ -15,9 +15,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -229,5 +231,37 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		}
 
 		return Optional.empty();
+	}
+
+	@Override
+	public void stepOn(Level level, BlockPos blockPos, BlockState blockState, Entity entity) {
+		if (blockBuilder.canBeReplacedFunction != null) {
+			var callbackJS = new CanBeReplacedCallbackJS(context, blockState);
+			return blockBuilder.canBeReplacedFunction.apply(callbackJS);
+		}
+	}
+
+	@Override
+	public void fallOn(Level level, BlockState blockState, BlockPos blockPos, Entity entity, float f) {
+		if (blockBuilder.fallOnBeforeCallback != null) {
+			var callbackJS = new CanBeReplacedCallbackJS(context, blockState);
+			return blockBuilder.fallOnConsumer.apply(callbackJS);
+		}
+	}
+
+	@Override
+	public void updateEntityAfterFallOn(BlockGetter blockGetter, Entity entity) {
+		if (blockBuilder.fallOnAfterCallback != null) {
+			var callbackJS = new CanBeReplacedCallbackJS(context, blockState);
+			return blockBuilder.canBeReplacedFunction.apply(callbackJS);
+		}
+	}
+
+	@Override
+	public void wasExploded(Level level, BlockPos blockPos, Explosion explosion) {
+		if (blockBuilder.explodedCallback != null) {
+			var callbackJS = new CanBeReplacedCallbackJS(context, blockState);
+			return blockBuilder.canBeReplacedFunction.apply(callbackJS);
+		}
 	}
 }

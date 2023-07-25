@@ -78,6 +78,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient Consumer<BlockStateModifyCallbackJS> defaultStateModification;
 	public transient Consumer<BlockStateModifyPlacementCallbackJS> placementStateModification;
 	public transient Function<CanBeReplacedCallbackJS, Boolean> canBeReplacedFunction;
+	
 
 	public BlockBuilder(ResourceLocation i) {
 		super(i);
