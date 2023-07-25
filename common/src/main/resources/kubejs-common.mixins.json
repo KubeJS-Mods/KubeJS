@@ -39,7 +39,11 @@
 		"tools.ArmorItemMixin",
 		"tools.DiggerItemMixin",
 		"tools.SwordItemMixin",
-		"tools.TridentItemMixin"
+		"tools.TridentItemMixin",
+		"tools.shears.MatchToolMixin",
+		"tools.shears.BlockInteractShearsMixin",
+		"tools.shears.EntityInteractShearsMixin",
+		"tools.shears.TripWireBlockMixin"
 	],
 	"client": [
 		"AbstractClientPlayerMixin",
