@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.platform.fabric.ingredient.CreativeTabIngredient;
 import dev.latvian.mods.kubejs.platform.fabric.ingredient.CustomIngredientWithParent;
 import dev.latvian.mods.kubejs.platform.fabric.ingredient.CustomPredicateIngredient;
 import dev.latvian.mods.kubejs.platform.fabric.ingredient.ModIngredient;
+import dev.latvian.mods.kubejs.platform.fabric.ingredient.PatchedNbtIngredient;
 import dev.latvian.mods.kubejs.platform.fabric.ingredient.RegExIngredient;
 import dev.latvian.mods.kubejs.platform.fabric.ingredient.WildcardIngredient;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
@@ -26,6 +27,7 @@ public class IngredientFabricHelper implements IngredientPlatformHelper {
 		CustomIngredientSerializer.register(ModIngredient.SERIALIZER);
 		CustomIngredientSerializer.register(RegExIngredient.SERIALIZER);
 		CustomIngredientSerializer.register(CreativeTabIngredient.SERIALIZER);
+		CustomIngredientSerializer.register(PatchedNbtIngredient.SERIALIZER); // Temp until fabric PR is merged
 	}
 
 	@Override
@@ -75,12 +77,12 @@ public class IngredientFabricHelper implements IngredientPlatformHelper {
 
 	@Override
 	public Ingredient strongNBT(ItemStack item) {
-		return DefaultCustomIngredients.nbt(item, true);
+		return new PatchedNbtIngredient(item.kjs$asIngredient(), item.getTag(), true).toVanilla();
 	}
 
 	@Override
 	public Ingredient weakNBT(ItemStack item) {
-		return item.getTag() == null ? item.kjs$asIngredient() : DefaultCustomIngredients.nbt(item, false);
+		return item.getTag() == null ? item.kjs$asIngredient() : new PatchedNbtIngredient(item.kjs$asIngredient(), item.getTag(), false).toVanilla();
 	}
 
 	@Override
