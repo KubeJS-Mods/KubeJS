@@ -654,7 +654,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	@Info("Set the placement state of the block.")
+	@Info("Set the callback for determining the blocks state when placed.")
 	public BlockBuilder placementState(Consumer<BlockStateModifyPlacementCallbackJS> callbackJS) {
 		placementStateModification = callbackJS;
 		return this;
@@ -717,11 +717,13 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
+	@Info("Set the callback used for determining how the block rotates")
 	public BlockBuilder rotateState(Consumer<BlockStateRotateCallbackJS> callbackJS) {
 		rotateStateModification = callbackJS;
 		return this;
 	}
 
+	@Info("Set the callback used for determining how the block is mirrored")
 	public BlockBuilder mirrorState(Consumer<BlockStateMirrorCallbackJS> callbackJS) {
 		mirrorStateModification = callbackJS;
 		return this;
