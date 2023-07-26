@@ -173,6 +173,7 @@ public class ScriptManager implements ClassShutter {
 		context.setProperty("Console", scriptType.console);
 		context.setClassShutter(this);
 		context.setRemapper(remapper);
+		context.setApplicationClassLoader(KubeJS.class.getClassLoader());
 
 		if (MiscPlatformHelper.get().isDataGen()) {
 			firstLoad = false;
