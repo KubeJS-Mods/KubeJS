@@ -3,6 +3,10 @@
 	"package": "dev.latvian.mods.kubejs.core.mixin.fabric",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
+		"tools.shears.BlockInteractShearsMixin",
+		"tools.shears.EntityInteractShearsMixin",
+		"tools.shears.MatchToolMixin",
+		"tools.shears.TripWireBlockMixin"
 	],
 	"client": [
 		"ClientRecipeBookMixin"
