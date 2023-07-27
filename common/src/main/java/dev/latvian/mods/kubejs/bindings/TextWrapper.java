@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.bindings;
 
 import com.google.gson.JsonParseException;
+import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.JSObjectType;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -22,7 +23,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
+@Info("The hub for all things text components. Format text to your hearts content!")
 public class TextWrapper {
+	@Info("Returns a Component of the input")
 	public static MutableComponent of(@Nullable Object o) {
 		o = UtilsJS.wrap(o, JSObjectType.ANY);
 		if (o == null) {
@@ -109,14 +112,17 @@ public class TextWrapper {
 		return ofString(o.toString());
 	}
 
+	@Info("Returns a plain component of the string, or empty if it is an empty string")
 	public static MutableComponent ofString(String s) {
 		return s.isEmpty() ? Component.empty() : Component.literal(s);
 	}
 
+	@Info("Checks if the passed in component, and all its children are empty")
 	public static boolean isEmpty(Component component) {
 		return component.getContents() == ComponentContents.EMPTY && component.getSiblings().isEmpty();
 	}
 
+	@Info("Returns a ClickEvent of the input")
 	public static ClickEvent clickEventOf(Object o) {
 		if (o == null) {
 			return null;
@@ -151,10 +157,12 @@ public class TextWrapper {
 		};
 	}
 
+	@Info("Returns a colorful representation of the input nbt. Useful for displaying NBT to the player")
 	public static Component prettyPrintNbt(Tag tag) {
 		return NbtUtils.toPrettyComponent(tag);
 	}
 
+	@Info("Joins all components in the list with the separator component")
 	public static MutableComponent join(MutableComponent separator, Iterable<? extends Component> texts) {
 		var joined = Component.empty();
 		var first = true;
@@ -172,86 +180,107 @@ public class TextWrapper {
 		return joined;
 	}
 
+	@Info("Joins all components")
 	public static MutableComponent join(Component... texts) {
 		return join(Component.empty(), Arrays.asList(texts));
 	}
 
+	@Info("Returns a plain component of the passed in string, even if empty")
 	public static MutableComponent string(String text) {
 		return Component.literal(text);
 	}
 
+	@Info("Returns a translatable component of the input key")
 	public static MutableComponent translate(String key) {
 		return Component.translatable(key, new Object[0]);
 	}
 
+	@Info("Returns a translatable component of the input key, with args of the objects")
 	public static MutableComponent translate(String key, Object... objects) {
 		return Component.translatable(key, objects);
 	}
 
+	@Info("Returns a keybinding component of the input keybinding descriptor")
 	public static MutableComponent keybind(String keybind) {
 		return Component.keybind(keybind);
 	}
 
+	@Info("Returns a component of the input, colored black")
 	public static MutableComponent black(Object text) {
 		return of(text).kjs$black();
 	}
 
+	@Info("Returns a component of the input, colored dark blue")
 	public static MutableComponent darkBlue(Object text) {
 		return of(text).kjs$darkBlue();
 	}
 
+	@Info("Returns a component of the input, colored dark green")
 	public static MutableComponent darkGreen(Object text) {
 		return of(text).kjs$darkGreen();
 	}
 
+	@Info("Returns a component of the input, colored dark aqua")
 	public static MutableComponent darkAqua(Object text) {
 		return of(text).kjs$darkAqua();
 	}
 
+	@Info("Returns a component of the input, colored dark red")
 	public static MutableComponent darkRed(Object text) {
 		return of(text).kjs$darkRed();
 	}
 
+	@Info("Returns a component of the input, colored dark purple")
 	public static MutableComponent darkPurple(Object text) {
 		return of(text).kjs$darkPurple();
 	}
 
+	@Info("Returns a component of the input, colored gold")
 	public static MutableComponent gold(Object text) {
 		return of(text).kjs$gold();
 	}
 
+	@Info("Returns a component of the input, colored gray")
 	public static MutableComponent gray(Object text) {
 		return of(text).kjs$gray();
 	}
 
+	@Info("Returns a component of the input, colored dark gray")
 	public static MutableComponent darkGray(Object text) {
 		return of(text).kjs$darkGray();
 	}
 
+	@Info("Returns a component of the input, colored blue")
 	public static MutableComponent blue(Object text) {
 		return of(text).kjs$blue();
 	}
 
+	@Info("Returns a component of the input, colored green")
 	public static MutableComponent green(Object text) {
 		return of(text).kjs$green();
 	}
 
+	@Info("Returns a component of the input, colored aqua")
 	public static MutableComponent aqua(Object text) {
 		return of(text).kjs$aqua();
 	}
 
+	@Info("Returns a component of the input, colored red")
 	public static MutableComponent red(Object text) {
 		return of(text).kjs$red();
 	}
 
+	@Info("Returns a component of the input, colored light purple")
 	public static MutableComponent lightPurple(Object text) {
 		return of(text).kjs$lightPurple();
 	}
 
+	@Info("Returns a component of the input, colored yellow")
 	public static MutableComponent yellow(Object text) {
 		return of(text).kjs$yellow();
 	}
 
+	@Info("Returns a component of the input, colored white")
 	public static MutableComponent white(Object text) {
 		return of(text).kjs$white();
 	}
