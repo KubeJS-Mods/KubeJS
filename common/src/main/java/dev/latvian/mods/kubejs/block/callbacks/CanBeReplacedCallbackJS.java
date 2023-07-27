@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.block;
+package dev.latvian.mods.kubejs.block.callbacks;
 
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
@@ -9,33 +9,18 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockStateModifyPlacementCallbackJS extends BlockStateModifyCallbackJS {
-	public final BlockPlaceContext context;
-	public final Block minecraftBlock;
-	public BlockContainerJS block;
+public class CanBeReplacedCallbackJS {
 
-	public BlockStateModifyPlacementCallbackJS(BlockPlaceContext context, Block block) {
-		super(getBlockStateToModify(context, block));
-		this.context = context;
-		this.minecraftBlock = block;
-		this.block = new BlockContainerJS(context.getLevel(), context.getClickedPos());
-	}
+	private final BlockPlaceContext context;
 
-	private static BlockState getBlockStateToModify(BlockPlaceContext context, Block block) {
-		BlockState previous = context.getLevel().getBlockState(context.getClickedPos());
-		if (previous.getBlock() == block) {
-			return previous;
-		}
-		return block.defaultBlockState();
+	public CanBeReplacedCallbackJS(BlockPlaceContext blockPlaceContext, BlockState state) {
+		context = blockPlaceContext;
 	}
 
 	public BlockPos getClickedPos() {
@@ -44,14 +29,6 @@ public class BlockStateModifyPlacementCallbackJS extends BlockStateModifyCallbac
 
 	public BlockContainerJS getClickedBlock() {
 		return new BlockContainerJS(getLevel(), getClickedPos());
-	}
-
-	public boolean canPlace() {
-		return context.canPlace();
-	}
-
-	public boolean replacingClickedOnBlock() {
-		return context.replacingClickedOnBlock();
 	}
 
 	public Direction getNearestLookingDirection() {
@@ -115,20 +92,7 @@ public class BlockStateModifyPlacementCallbackJS extends BlockStateModifyCallbac
 		return getFluidStateAtClickedPos().is(fluid);
 	}
 
-	public BlockStateModifyPlacementCallbackJS waterlogged(boolean waterlogged) {
-		setValue(BlockStateProperties.WATERLOGGED, waterlogged);
-		return this;
-	}
-
-	public BlockStateModifyPlacementCallbackJS waterlogged() {
-		return waterlogged(isInWater());
-	}
-
-	public boolean isInWater() {
-		return getFluidStateAtClickedPos().getType() == Fluids.WATER;
-	}
-
-	public boolean isReplacingSelf() {
-		return getLevel().getBlockState(getClickedPos()).getBlock() == minecraftBlock;
+	public boolean canMaterialBeReplaced() {
+		return getLevel().getBlockState(getClickedPos()).getMaterial().isReplaceable();
 	}
 }

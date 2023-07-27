@@ -2,6 +2,13 @@ package dev.latvian.mods.kubejs.block;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.block.callbacks.BlockExplodedCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyPlacementCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.CanBeReplacedCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.EntityBounceCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.EntityFallOnBlockCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.EntityStepOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
@@ -78,6 +85,10 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient Consumer<BlockStateModifyCallbackJS> defaultStateModification;
 	public transient Consumer<BlockStateModifyPlacementCallbackJS> placementStateModification;
 	public transient Function<CanBeReplacedCallbackJS, Boolean> canBeReplacedFunction;
+	public transient Consumer<EntityStepOnBlockCallbackJS> stepOnCallback;
+	public transient Consumer<EntityFallOnBlockCallbackJS> fallOnCallback;
+	public transient Consumer<EntityBounceCallbackJS> bounceCallback;
+	public transient Consumer<BlockExplodedCallbackJS> explodedCallback;
 	
 
 	public BlockBuilder(ResourceLocation i) {
@@ -644,6 +655,29 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	@Info("Set if the block can be replaced by something else.")
 	public BlockBuilder canBeReplaced(Function<CanBeReplacedCallbackJS, Boolean> callbackJS) {
 		canBeReplacedFunction = callbackJS;
+		return this;
+	}
+
+	@Info("Set what happens when an entity falls on the block. Do not use this for moving them, use bounce instead!")
+	public BlockBuilder onFall(Consumer<EntityFallOnBlockCallbackJS> callbackJS) {
+		fallOnCallback = callbackJS;
+		return this;
+	}
+
+	@Info("Bounces entities that land on this block by height * their fall velocity")
+	public BlockBuilder bounce(float height) {
+		return bounce(ctx -> ctx.bounce(height));
+	}
+
+	@Info("Set how this block bounces/moves entities that land on top of this. Do not use this to modify the block, use onFall isntead!")
+	public BlockBuilder bounce(Consumer<EntityBounceCallbackJS> callbackJS) {
+		bounceCallback = callbackJS;
+		return this;
+	}
+
+	@Info("Set how this block reacts after an explosion. Note the block has already been destroyed at this point")
+	public BlockBuilder exploded(Consumer<BlockExplodedCallbackJS> callbackJS) {
+		explodedCallback = callbackJS;
 		return this;
 	}
 

@@ -1,12 +1,16 @@
 package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
-import dev.latvian.mods.kubejs.block.BlockStateModifyCallbackJS;
-import dev.latvian.mods.kubejs.block.BlockStateModifyPlacementCallbackJS;
-import dev.latvian.mods.kubejs.block.CanBeReplacedCallbackJS;
 import dev.latvian.mods.kubejs.block.EntityBlockKJS;
 import dev.latvian.mods.kubejs.block.KubeJSBlockProperties;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.BlockExplodedCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyPlacementCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.CanBeReplacedCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.EntityBounceCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.EntityFallOnBlockCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.EntityStepOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.BlockPos;
@@ -235,33 +239,33 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 
 	@Override
 	public void stepOn(Level level, BlockPos blockPos, BlockState blockState, Entity entity) {
-		if (blockBuilder.canBeReplacedFunction != null) {
-			var callbackJS = new CanBeReplacedCallbackJS(context, blockState);
-			return blockBuilder.canBeReplacedFunction.apply(callbackJS);
+		if (blockBuilder.stepOnCallback != null) {
+			var callbackJS = new EntityStepOnBlockCallbackJS(level, entity, blockPos, blockState);
+			safeCallback(blockBuilder.stepOnCallback, callbackJS, "Error while an entity stepped on custom block: " + this);
 		}
 	}
 
 	@Override
 	public void fallOn(Level level, BlockState blockState, BlockPos blockPos, Entity entity, float f) {
-		if (blockBuilder.fallOnBeforeCallback != null) {
-			var callbackJS = new CanBeReplacedCallbackJS(context, blockState);
-			return blockBuilder.fallOnConsumer.apply(callbackJS);
+		if (blockBuilder.fallOnCallback != null) {
+			var callbackJS = new EntityFallOnBlockCallbackJS(level, entity, blockPos, blockState, f);
+			safeCallback(blockBuilder.fallOnCallback, callbackJS,"Error while an entity fell on custom block: " + this);
 		}
 	}
 
 	@Override
 	public void updateEntityAfterFallOn(BlockGetter blockGetter, Entity entity) {
-		if (blockBuilder.fallOnAfterCallback != null) {
-			var callbackJS = new CanBeReplacedCallbackJS(context, blockState);
-			return blockBuilder.canBeReplacedFunction.apply(callbackJS);
+		if (blockBuilder.bounceCallback != null) {
+			var callbackJS = new EntityBounceCallbackJS(blockGetter, entity);
+			safeCallback(blockBuilder.bounceCallback, callbackJS, "Error while bouncing entity from custom block: " + this);
 		}
 	}
 
 	@Override
 	public void wasExploded(Level level, BlockPos blockPos, Explosion explosion) {
 		if (blockBuilder.explodedCallback != null) {
-			var callbackJS = new CanBeReplacedCallbackJS(context, blockState);
-			return blockBuilder.canBeReplacedFunction.apply(callbackJS);
+			var callbackJS = new BlockExplodedCallbackJS(level, blockPos, explosion);
+			safeCallback(blockBuilder.explodedCallback, callbackJS, "Error while exploding custom block: " + this);
 		}
 	}
 }

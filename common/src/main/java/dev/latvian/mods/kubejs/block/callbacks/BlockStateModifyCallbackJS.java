@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.block;
+package dev.latvian.mods.kubejs.block.callbacks;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
