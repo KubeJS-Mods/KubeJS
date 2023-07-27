@@ -658,18 +658,25 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
+	@Info("Set what happens when an entity steps on the block")
+	public BlockBuilder stepOn(Consumer<EntityStepOnBlockCallbackJS> callbackJS) {
+		stepOnCallback = callbackJS;
+		return this;
+	}
+
 	@Info("Set what happens when an entity falls on the block. Do not use this for moving them, use bounce instead!")
-	public BlockBuilder onFall(Consumer<EntityFallOnBlockCallbackJS> callbackJS) {
+	public BlockBuilder fallOn(Consumer<EntityFallOnBlockCallbackJS> callbackJS) {
 		fallOnCallback = callbackJS;
 		return this;
 	}
 
-	@Info("Bounces entities that land on this block by height * their fall velocity")
-	public BlockBuilder bounce(float height) {
-		return bounce(ctx -> ctx.bounce(height));
+	@Info("Bounces entities that land on this block by bounciness * their fall velocity")
+	public BlockBuilder bounceHeight(float bounciness) {
+		return bounce(ctx -> ctx.bounce(-bounciness));
 	}
 
-	@Info("Set how this block bounces/moves entities that land on top of this. Do not use this to modify the block, use onFall isntead!")
+	//TODO: is this too laggy? 1 tps isnt much...
+	@Info("Set how this block bounces/moves entities that land on top of this. Do not use this to modify the block, use fallOn instead!")
 	public BlockBuilder bounce(Consumer<EntityBounceCallbackJS> callbackJS) {
 		bounceCallback = callbackJS;
 		return this;
