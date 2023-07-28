@@ -264,6 +264,12 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		if (blockBuilder.bounceCallback != null) {
 			var callbackJS = new EntityBounceCallbackJS(blockGetter, entity);
 			safeCallback(blockBuilder.bounceCallback, callbackJS, "Error while bouncing entity from custom block ");
+			// if they did not change the entity's velocity, then use the default method to reset the velocity.
+			if (!callbackJS.hasChangedVelocity()) {
+				super.updateEntityAfterFallOn(blockGetter, entity);
+			}
+		} else {
+			super.updateEntityAfterFallOn(blockGetter, entity);
 		}
 	}
 

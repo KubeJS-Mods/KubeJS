@@ -680,8 +680,12 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return bounce(ctx -> ctx.bounce(-bounciness));
 	}
 
-	//TODO: is this too laggy? 1 tps isnt much...
-	@Info("Set how this block bounces/moves entities that land on top of this. Do not use this to modify the block, use fallOn instead!")
+	@Info("""
+		Set how this block bounces/moves entities that land on top of this. Do not use this to modify the block, use fallOn instead!
+		Use ctx.bounce(height) or ctx.setVelocity(x, y, z) to change the entities velocity.
+		
+		Warning: This can be called very often as it is a part of collision code. Be very careful with what you do here.
+		""")
 	public BlockBuilder bounce(Consumer<EntityBounceCallbackJS> callbackJS) {
 		bounceCallback = callbackJS;
 		return this;

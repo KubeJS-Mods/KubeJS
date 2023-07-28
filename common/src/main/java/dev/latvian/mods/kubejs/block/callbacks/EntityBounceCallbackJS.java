@@ -6,23 +6,39 @@ import net.minecraft.world.phys.Vec3;
 
 public class EntityBounceCallbackJS extends EntityStepOnBlockCallbackJS {
 
-	public EntityBounceCallbackJS(BlockGetter blockGetter, Entity entity) {
+	private boolean hasChangedVelocity;
+
+	public 	EntityBounceCallbackJS(BlockGetter blockGetter, Entity entity) {
 		super(entity.level, entity, entity.getOnPos(), blockGetter.getBlockState(entity.getOnPos()));
+		this.hasChangedVelocity = false;
 	}
 
 	public boolean isSuppressingBounce() {
 		return entity.isSuppressingBounce();
 	}
 
-	public void bounce(float height) {
-		bounce(0, height,0, 0.1f);
+	public void bounce(float strength) {
+		Vec3 deltaMovement = entity.getDeltaMovement();
+		if (!entity.isSuppressingBounce() && deltaMovement.y < 0.0) {
+			entity.setDeltaMovement(deltaMovement.x, -deltaMovement.y * strength, deltaMovement.z);
+			hasChangedVelocity = true;
+		}
 	}
 
-	public void bounce(float x,float y, float z, float minHeight) {
-		Vec3 deltaMovement = entity.getDeltaMovement();
-		if (!entity.isSuppressingBounce() && deltaMovement.y < -minHeight) {
-			entity.setDeltaMovement(deltaMovement.x * x, -deltaMovement.y * y, deltaMovement.z * z);
-		}
-//		entity.hurtMarked = true;
+	public Vec3 getVelocity() {
+		return entity.getDeltaMovement();
+	}
+
+	public void setVelocity(Vec3 vec) {
+		entity.setDeltaMovement(vec);
+		hasChangedVelocity = true;
+	}
+
+	public void setVelocity(float x, float y, float z) {
+		setVelocity(new Vec3(x, y, z));
+	}
+
+	public boolean hasChangedVelocity() {
+		return hasChangedVelocity;
 	}
 }
