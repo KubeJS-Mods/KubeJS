@@ -69,7 +69,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		var blockState = stateDefinition.any();
 		if (blockBuilder.defaultStateModification != null) {
 			var callbackJS = new BlockStateModifyCallbackJS(blockState);
-			if (safeCallback(blockBuilder.defaultStateModification, callbackJS, "Error while creating default blockState for block " + p.id)) {
+			if (safeCallback(blockBuilder.defaultStateModification, callbackJS, "Error while creating default blockState for block ")) {
 				registerDefaultState(callbackJS.getState());
 			}
 		} else if (blockBuilder.canBeWaterlogged()) {
@@ -121,7 +121,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
 		if (blockBuilder.placementStateModification != null) {
 			var callbackJS = new BlockStateModifyPlacementCallbackJS(context, this);
-			if (safeCallback(blockBuilder.placementStateModification, callbackJS, "Error while modifying BlockState placement of " + blockBuilder.id)) {
+			if (safeCallback(blockBuilder.placementStateModification, callbackJS, "Error while modifying BlockState placement of ")) {
 				return callbackJS.getState();
 			}
 		}
@@ -162,7 +162,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
 		if (blockBuilder.randomTickCallback != null) {
 			var callback = new RandomTickCallbackJS(new BlockContainerJS(level, pos), random);
-			safeCallback(blockBuilder.randomTickCallback, callback, "Error while random ticking custom block " + this);
+			safeCallback(blockBuilder.randomTickCallback, callback, "Error while random ticking custom block ");
 		}
 	}
 
@@ -194,7 +194,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		try {
 			consumer.accept(value);
 		} catch (Throwable e) {
-			ScriptType.STARTUP.console.error(errorMessage, e);
+			ScriptType.STARTUP.console.error(errorMessage + blockBuilder.id, e);
 			return false;
 		}
 
@@ -241,7 +241,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	public void stepOn(Level level, BlockPos blockPos, BlockState blockState, Entity entity) {
 		if (blockBuilder.stepOnCallback != null) {
 			var callbackJS = new EntityStepOnBlockCallbackJS(level, entity, blockPos, blockState);
-			safeCallback(blockBuilder.stepOnCallback, callbackJS, "Error while an entity stepped on custom block: " + this);
+			safeCallback(blockBuilder.stepOnCallback, callbackJS, "Error while an entity stepped on custom block ");
 		}
 	}
 
@@ -249,7 +249,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	public void fallOn(Level level, BlockState blockState, BlockPos blockPos, Entity entity, float f) {
 		if (blockBuilder.fallOnCallback != null) {
 			var callbackJS = new EntityFallOnBlockCallbackJS(level, entity, blockPos, blockState, f);
-			safeCallback(blockBuilder.fallOnCallback, callbackJS,"Error while an entity fell on custom block: " + this);
+			safeCallback(blockBuilder.fallOnCallback, callbackJS,"Error while an entity fell on custom block ");
 		}
 	}
 
@@ -257,7 +257,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	public void updateEntityAfterFallOn(BlockGetter blockGetter, Entity entity) {
 		if (blockBuilder.bounceCallback != null) {
 			var callbackJS = new EntityBounceCallbackJS(blockGetter, entity);
-			safeCallback(blockBuilder.bounceCallback, callbackJS, "Error while bouncing entity from custom block: " + this);
+			safeCallback(blockBuilder.bounceCallback, callbackJS, "Error while bouncing entity from custom block ");
 		}
 	}
 
@@ -265,7 +265,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	public void wasExploded(Level level, BlockPos blockPos, Explosion explosion) {
 		if (blockBuilder.explodedCallback != null) {
 			var callbackJS = new BlockExplodedCallbackJS(level, blockPos, explosion);
-			safeCallback(blockBuilder.explodedCallback, callbackJS, "Error while exploding custom block: " + this);
+			safeCallback(blockBuilder.explodedCallback, callbackJS, "Error while exploding custom block ");
 		}
 	}
 }
