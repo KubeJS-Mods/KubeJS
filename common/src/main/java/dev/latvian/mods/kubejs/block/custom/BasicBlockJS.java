@@ -163,6 +163,8 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		if (blockBuilder.randomTickCallback != null) {
 			var callback = new RandomTickCallbackJS(new BlockContainerJS(level, pos), random);
 			safeCallback(blockBuilder.randomTickCallback, callback, "Error while random ticking custom block ");
+		} else {
+			super.randomTick(state, level, pos, random);
 		}
 	}
 
@@ -242,6 +244,8 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		if (blockBuilder.stepOnCallback != null) {
 			var callbackJS = new EntityStepOnBlockCallbackJS(level, entity, blockPos, blockState);
 			safeCallback(blockBuilder.stepOnCallback, callbackJS, "Error while an entity stepped on custom block ");
+		} else {
+			super.stepOn(level, blockPos, blockState, entity);
 		}
 	}
 
@@ -250,6 +254,8 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		if (blockBuilder.fallOnCallback != null) {
 			var callbackJS = new EntityFallOnBlockCallbackJS(level, entity, blockPos, blockState, f);
 			safeCallback(blockBuilder.fallOnCallback, callbackJS,"Error while an entity fell on custom block ");
+		} else {
+			super.fallOn(level, blockState, blockPos, entity, f);
 		}
 	}
 
@@ -266,6 +272,8 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		if (blockBuilder.explodedCallback != null) {
 			var callbackJS = new BlockExplodedCallbackJS(level, blockPos, explosion);
 			safeCallback(blockBuilder.explodedCallback, callbackJS, "Error while exploding custom block ");
+		} else {
+			super.wasExploded(level, blockPos, explosion);
 		}
 	}
 }
