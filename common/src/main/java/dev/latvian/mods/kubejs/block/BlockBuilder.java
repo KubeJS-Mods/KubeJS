@@ -663,7 +663,10 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	@Info("Set what happens when an entity steps on the block")
+	@Info("""
+		Set what happens when an entity steps on the block
+		This is called every tick for every entity standing on the block, so be careful what you do here.
+		""")
 	public BlockBuilder stepOn(Consumer<EntityStepOnBlockCallbackJS> callbackJS) {
 		stepOnCallback = callbackJS;
 		return this;
@@ -675,16 +678,17 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	@Info("Bounces entities that land on this block by bounciness * their fall velocity")
-	public BlockBuilder bounceHeight(float bounciness) {
+	@Info("""
+		Bounces entities that land on this block by bounciness * their fall velocity.
+		Do not make bounciness negative, as that is a recipe for a long and laggy trip to the void
+		""")
+	public BlockBuilder bounciness(float bounciness) {
 		return bounce(ctx -> ctx.bounce(bounciness));
 	}
 
 	@Info("""
 		Set how this block bounces/moves entities that land on top of this. Do not use this to modify the block, use fallOn instead!
 		Use ctx.bounce(height) or ctx.setVelocity(x, y, z) to change the entities velocity.
-		
-		Warning: This can be called very often as it is a part of collision code. Be very careful with what you do here.
 		""")
 	public BlockBuilder bounce(Consumer<EntityBounceCallbackJS> callbackJS) {
 		bounceCallback = callbackJS;

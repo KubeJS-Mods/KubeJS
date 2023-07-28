@@ -15,12 +15,14 @@ public class EntityBounceCallbackJS extends EntityStepOnBlockCallbackJS {
 		this.hasChangedVelocity = false;
 	}
 
-
-	@Info("Bounce the entity upwards by multiplier their downwards velocity by the strength passed in")
-	public void bounce(float strength) {
+	@Info("""
+		Bounce the entity upwards by bounciness * their fall velocity.
+		Do not make bounciness negative, as that is a recipe for a long and laggy trip to the void
+		""")
+	public void bounce(float bounciness) {
 		Vec3 deltaMovement = entity.getDeltaMovement();
 		if (!isSuppressingBounce() && deltaMovement.y < 0.0) {
-			entity.setDeltaMovement(deltaMovement.x, -deltaMovement.y * strength, deltaMovement.z);
+			entity.setDeltaMovement(deltaMovement.x, -deltaMovement.y * bounciness, deltaMovement.z);
 			hasChangedVelocity = true;
 		}
 	}
