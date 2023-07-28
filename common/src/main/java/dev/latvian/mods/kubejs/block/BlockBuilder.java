@@ -677,7 +677,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Info("Bounces entities that land on this block by bounciness * their fall velocity")
 	public BlockBuilder bounceHeight(float bounciness) {
-		return bounce(ctx -> ctx.bounce(-bounciness));
+		return bounce(ctx -> ctx.bounce(bounciness));
 	}
 
 	@Info("""
