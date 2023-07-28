@@ -383,6 +383,11 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
+	@Info("Makes the block require a tool to have drops when broken.")
+	public BlockBuilder requiresTool() {
+		return requiresTool(true);
+	}
+
 	@Info("""
 			Sets the render type of the block. Can be `cutout`, `cutout_mipped`, `translucent`, or `basic`.
 			""")
