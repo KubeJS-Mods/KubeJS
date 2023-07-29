@@ -43,7 +43,7 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 
 		if (event.getType().isStartup()) {
 			event.add("ForgeEvents", new ForgeEventWrapper("ForgeEvents", MinecraftForge.EVENT_BUS));
-			event.add("ForgeModEvents", new ForgeEventWrapper("ForgeModEvents", FMLJavaModLoadingContext.get().getModEventBus()));
+			event.add("ForgeModEvents", new ForgeEventWrapper("ForgeModEvents", FMLJavaModLoadingContext.get() == null ? null : FMLJavaModLoadingContext.get().getModEventBus()));
 			event.add("onForgeEvent", new LegacyCodeHandler("onForgeEvent()"));
 		}
 	}
