@@ -29,7 +29,6 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.util.CustomJavaToJsWrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -60,6 +59,8 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	private MutableObject<Recipe<?>> originalRecipe = null;
 	public JsonObject json = null;
 	public boolean changed = false;
+
+	protected List<IngredientAction> recipeIngredientActions;
 
 	@Override
 	public final Scriptable convertJavaToJs(Context cx, Scriptable scope, Class<?> staticType) {
@@ -399,19 +400,29 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	@HideFromJS
 	public ResourceLocation getOrCreateId() {
 		if (id == null) {
-			var ids = CommonProperties.get().ignoreCustomUniqueRecipeIds ? null : type.schemaType.schema.uniqueIdFunction.apply(this);
+			var js = getSerializationTypeFunction();
+			var ids = CommonProperties.get().ignoreCustomUniqueRecipeIds ? null : js.schemaType.schema.uniqueIdFunction.apply(this);
+
+			var prefix = js.id.getNamespace() + ":kjs_";
 
 			if (ids == null) {
-				return new ResourceLocation(type.id.getNamespace() + ":kjs_" + UtilsJS.getUniqueId(json));
+				id = new ResourceLocation(prefix + UtilsJS.getUniqueId(json));
+				return id;
 			}
 
-			ids = ids.replace("minecraft:", "").replace(':', '_').replace('/', '_');
+			if (ids.startsWith("minecraft:")) {
+				ids = ids.substring("minecraft:".length());
+			} else if (ids.startsWith("kubejs:")) {
+				ids = ids.substring("kubejs:".length());
+			}
+
+			ids = ids.replace(':', '_').replace('/', '_');
 
 			int i = 2;
-			id = new ResourceLocation(type.id.getNamespace() + ":kjs_" + ids);
+			id = new ResourceLocation(prefix + ids);
 
 			while (type.event.takenIds.containsKey(id)) {
-				id = new ResourceLocation(type.id.getNamespace() + ":kjs_" + ids + "_" + i);
+				id = new ResourceLocation(prefix + ids + "_" + i);
 				i++;
 			}
 
@@ -464,23 +475,42 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		return this;
 	}
 
+	/**
+	 * Only used by {@link RecipeJS#getOrCreateId()} and {@link RecipeJS#createRecipe()} in rare case that a recipe can be another recipe type than itself (e.g. kubejs:shaped -> minecraft:crafting_shaped)
+	 */
+	public RecipeTypeFunction getSerializationTypeFunction() {
+		return type;
+	}
+
 	@Nullable
 	public Recipe<?> createRecipe() {
 		if (removed) {
 			return null;
 		}
 
-		type.schemaType.getSerializer();
-
 		if (newRecipe || hasChanged()) {
-			json.addProperty("type", type.idString);
 			serialize();
 
-			var id = getOrCreateId();
 			if (modifyResult != null) {
 				RecipesEventJS.MODIFY_RESULT_CALLBACKS.put(id, modifyResult);
 				json.addProperty("kubejs:modify_result", true);
 			}
+
+			if (recipeIngredientActions != null && !recipeIngredientActions.isEmpty()) {
+				var arr = new JsonArray(recipeIngredientActions.size());
+
+				for (var action : recipeIngredientActions) {
+					arr.add(action.toJson());
+				}
+
+				json.add("kubejs:actions", arr);
+			}
+
+			if (newRecipe) {
+				json.addProperty("type", getSerializationTypeFunction().idString);
+			}
+
+			var id = getOrCreateId();
 
 			if (type.event.stageSerializer != null && json.has("kubejs:stage") && !type.idString.equals("recipestages:stage")) {
 				var o = new JsonObject();
@@ -492,7 +522,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 			return originalRecipe.getValue();
 		}
 
-		return RecipePlatformHelper.get().fromJson(type.schemaType.getSerializer(), getOrCreateId(), json);
+		return RecipePlatformHelper.get().fromJson(getSerializationTypeFunction().schemaType.getSerializer(), getOrCreateId(), json);
 	}
 
 	@Nullable
@@ -538,14 +568,12 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	}
 
 	public RecipeJS ingredientAction(IngredientActionFilter filter, IngredientAction action) {
-		if (json == null) {
-			ConsoleJS.SERVER.error("Can't add ingredient action to uninitialized recipe!");
-			return this;
+		if (recipeIngredientActions == null) {
+			recipeIngredientActions = new ArrayList<>(2);
 		}
 
-		var array = json.get("kubejs:actions") instanceof JsonArray arr ? arr : Util.make(new JsonArray(), (arr) -> json.add("kubejs:actions", arr));
 		action.copyFrom(filter);
-		array.add(action.toJson());
+		recipeIngredientActions.add(action);
 		save();
 		return this;
 	}

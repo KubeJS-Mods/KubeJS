@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
 import dev.latvian.mods.kubejs.recipe.component.BooleanComponent;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
@@ -110,6 +111,23 @@ public interface ShapedRecipeSchema {
 				setValue(PATTERN, pattern);
 				setValue(KEY, new TinyMap<>(entries));
 			}
+		}
+
+		@Override
+		public RecipeTypeFunction getSerializationTypeFunction() {
+			// Use vanilla shaped recipe type if KubeJS is not needed
+			if (type == type.event.shaped // if this type == kubejs:shaped
+				&& type.event.shaped != type.event.vanillaShaped // check if not in serverOnly mode
+				&& !json.has("kubejs:actions")
+				&& !json.has("kubejs:modify_result")
+				&& !json.has("kubejs:stage")
+				&& !json.has("kubejs:mirror")
+				&& !json.has("kubejs:shrink")
+			) {
+				return type.event.vanillaShaped;
+			}
+
+			return super.getSerializationTypeFunction();
 		}
 	}
 
