@@ -492,7 +492,6 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 			serialize();
 
 			if (modifyResult != null) {
-				RecipesEventJS.MODIFY_RESULT_CALLBACKS.put(id, modifyResult);
 				json.addProperty("kubejs:modify_result", true);
 			}
 
@@ -511,6 +510,10 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 			}
 
 			var id = getOrCreateId();
+
+			if (modifyResult != null) {
+				RecipesEventJS.MODIFY_RESULT_CALLBACKS.put(id, modifyResult);
+			}
 
 			if (type.event.stageSerializer != null && json.has("kubejs:stage") && !type.idString.equals("recipestages:stage")) {
 				var o = new JsonObject();
