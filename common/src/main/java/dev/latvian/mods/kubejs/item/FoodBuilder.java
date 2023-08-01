@@ -86,14 +86,14 @@ public class FoodBuilder {
 	}
 
 	@Info(value = """
-			Adds an effect to the food. Note that the effect duration is in ticks (20 ticks = 1 second).
-			""",
-			params = {
-					@Param(name = "mobEffectId", value = "The id of the effect. Can be either a string or a ResourceLocation."),
-					@Param(name = "duration", value = "The duration of the effect in ticks."),
-					@Param(name = "amplifier", value = "The amplifier of the effect. 0 means level 1, 1 means level 2, etc."),
-					@Param(name = "probability", value = "The probability of the effect being applied. 1 = 100%.")
-			})
+		Adds an effect to the food. Note that the effect duration is in ticks (20 ticks = 1 second).
+		""",
+		params = {
+			@Param(name = "mobEffectId", value = "The id of the effect. Can be either a string or a ResourceLocation."),
+			@Param(name = "duration", value = "The duration of the effect in ticks."),
+			@Param(name = "amplifier", value = "The amplifier of the effect. 0 means level 1, 1 means level 2, etc."),
+			@Param(name = "probability", value = "The probability of the effect being applied. 1 = 100%.")
+		})
 	public FoodBuilder effect(ResourceLocation mobEffectId, int duration, int amplifier, float probability) {
 		effects.add(Pair.of(new EffectSupplier(mobEffectId, duration, amplifier), probability));
 		return this;
@@ -114,11 +114,11 @@ public class FoodBuilder {
 	}
 
 	@Info("""
-			Sets a callback that is called when the food is eaten.
-						
-			Note: This is currently not having effect in `ItemEvents.modification`,
-			as firing this callback requires an `ItemBuilder` instance in the `Item`.
-			""")
+		Sets a callback that is called when the food is eaten.
+					
+		Note: This is currently not having effect in `ItemEvents.modification`,
+		as firing this callback requires an `ItemBuilder` instance in the `Item`.
+		""")
 	public FoodBuilder eaten(Consumer<FoodEatenEventJS> e) {
 		eaten = e;
 		return this;

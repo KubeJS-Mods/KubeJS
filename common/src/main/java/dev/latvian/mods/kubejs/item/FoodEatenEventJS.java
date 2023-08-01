@@ -7,8 +7,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 @Info("""
-		Invoked when an entity eats food.
-		""")
+	Invoked when an entity eats food.
+	""")
 public class FoodEatenEventJS extends EntityEventJS {
 	private final Entity entity;
 	private final ItemStack item;

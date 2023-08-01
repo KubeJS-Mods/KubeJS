@@ -8,9 +8,9 @@ import dev.latvian.mods.kubejs.block.callbacks.BlockExplodedCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyPlacementCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.CanBeReplacedCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.EntityBounceCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.EntityFallOnBlockCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.EntityStepOnBlockCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.EntityFallenOnBlockCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.EntitySteppedOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.BlockPos;
@@ -242,7 +242,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	@Override
 	public void stepOn(Level level, BlockPos blockPos, BlockState blockState, Entity entity) {
 		if (blockBuilder.stepOnCallback != null) {
-			var callbackJS = new EntityStepOnBlockCallbackJS(level, entity, blockPos, blockState);
+			var callbackJS = new EntitySteppedOnBlockCallbackJS(level, entity, blockPos, blockState);
 			safeCallback(blockBuilder.stepOnCallback, callbackJS, "Error while an entity stepped on custom block ");
 		} else {
 			super.stepOn(level, blockPos, blockState, entity);
@@ -252,8 +252,8 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	@Override
 	public void fallOn(Level level, BlockState blockState, BlockPos blockPos, Entity entity, float f) {
 		if (blockBuilder.fallOnCallback != null) {
-			var callbackJS = new EntityFallOnBlockCallbackJS(level, entity, blockPos, blockState, f);
-			safeCallback(blockBuilder.fallOnCallback, callbackJS,"Error while an entity fell on custom block ");
+			var callbackJS = new EntityFallenOnBlockCallbackJS(level, entity, blockPos, blockState, f);
+			safeCallback(blockBuilder.fallOnCallback, callbackJS, "Error while an entity fell on custom block ");
 		} else {
 			super.fallOn(level, blockState, blockPos, entity, f);
 		}
@@ -261,9 +261,9 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 
 	@Override
 	public void updateEntityAfterFallOn(BlockGetter blockGetter, Entity entity) {
-		if (blockBuilder.bounceCallback != null) {
-			var callbackJS = new EntityBounceCallbackJS(blockGetter, entity);
-			safeCallback(blockBuilder.bounceCallback, callbackJS, "Error while bouncing entity from custom block ");
+		if (blockBuilder.afterFallenOnCallback != null) {
+			var callbackJS = new AfterEntityFallenOnBlockCallbackJS(blockGetter, entity);
+			safeCallback(blockBuilder.afterFallenOnCallback, callbackJS, "Error while bouncing entity from custom block ");
 			// if they did not change the entity's velocity, then use the default method to reset the velocity.
 			if (!callbackJS.hasChangedVelocity()) {
 				super.updateEntityAfterFallOn(blockGetter, entity);

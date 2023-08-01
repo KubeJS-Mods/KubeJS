@@ -7,8 +7,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 @Info("""
-		Invoked when a player picks up an item. Cancelling (in `ItemEvents.canPickUp`) will prevent the item from being picked up.
-		""")
+	Invoked when a player picks up an item. Cancelling (in `ItemEvents.canPickUp`) will prevent the item from being picked up.
+	""")
 public class ItemPickedUpEventJS extends PlayerEventJS {
 	private final Player player;
 	private final ItemEntity entity;

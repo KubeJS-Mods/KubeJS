@@ -6,8 +6,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 @Info("""
-		Invoked when an item is smelted by a player.
-		""")
+	Invoked when an item is smelted by a player.
+	""")
 public class ItemSmeltedEventJS extends PlayerEventJS {
 	private final Player player;
 	private final ItemStack smelted;

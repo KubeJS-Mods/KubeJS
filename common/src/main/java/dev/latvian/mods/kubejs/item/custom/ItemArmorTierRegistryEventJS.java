@@ -9,8 +9,8 @@ import dev.latvian.mods.kubejs.typings.Info;
 import java.util.function.Consumer;
 
 @Info("""
-		Invoked when the game is starting up and the armor tier registry is being built.
-		""")
+	Invoked when the game is starting up and the armor tier registry is being built.
+	""")
 public class ItemArmorTierRegistryEventJS extends StartupEventJS {
 
 	@Info("Adds a new armor tier with a parent tier specified by string.")

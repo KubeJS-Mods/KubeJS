@@ -58,8 +58,8 @@ public interface ItemStackJS {
 		for (var stack : stackList) {
 			if (!stack.isEmpty()) {
 				map.computeIfAbsent(
-						stack.getItem().kjs$getIdLocation(),
-						_rl -> NonNullList.create()
+					stack.getItem().kjs$getIdLocation(),
+					_rl -> NonNullList.create()
 				).add(stack.kjs$withCount(1));
 			}
 		}
@@ -67,8 +67,8 @@ public interface ItemStackJS {
 		for (var itemId : CACHED_ITEM_TYPE_LIST.get()) {
 			var itemRl = new ResourceLocation(itemId);
 			map.computeIfAbsent(
-					itemRl,
-					_rl -> NonNullList.of(ItemStack.EMPTY, new ItemStack(KubeJSRegistries.items().get(itemRl)))
+				itemRl,
+				_rl -> NonNullList.of(ItemStack.EMPTY, new ItemStack(KubeJSRegistries.items().get(itemRl)))
 			);
 		}
 

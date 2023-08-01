@@ -6,8 +6,8 @@ import net.minecraft.client.Minecraft;
 import java.util.List;
 
 @Info("""
-		Invoked when the debug info is rendered.
-		""")
+	Invoked when the debug info is rendered.
+	""")
 public class DebugInfoEventJS extends ClientEventJS {
 	private final List<String> lines;
 

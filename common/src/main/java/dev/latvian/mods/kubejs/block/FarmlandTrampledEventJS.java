@@ -9,8 +9,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 @Info(value = """
-		Invoked when an entity attempts to trample farmland.
-		""")
+	Invoked when an entity attempts to trample farmland.
+	""")
 public class FarmlandTrampledEventJS extends EntityEventJS {
 	private final Level level;
 	private final BlockContainerJS block;

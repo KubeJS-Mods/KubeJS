@@ -6,11 +6,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.phys.Vec3;
 
-public class EntityBounceCallbackJS extends EntityStepOnBlockCallbackJS {
-
+public class AfterEntityFallenOnBlockCallbackJS extends EntitySteppedOnBlockCallbackJS {
 	private boolean hasChangedVelocity;
 
-	public 	EntityBounceCallbackJS(BlockGetter blockGetter, Entity entity) {
+	public AfterEntityFallenOnBlockCallbackJS(BlockGetter blockGetter, Entity entity) {
 		super(entity.level, entity, entity.getOnPos(), blockGetter.getBlockState(entity.getOnPos()));
 		this.hasChangedVelocity = false;
 	}

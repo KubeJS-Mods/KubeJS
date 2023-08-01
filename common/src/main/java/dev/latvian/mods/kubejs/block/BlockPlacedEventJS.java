@@ -10,8 +10,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 @Info(value = """
-		Invoked when a block is placed.
-		""")
+	Invoked when a block is placed.
+	""")
 public class BlockPlacedEventJS extends EntityEventJS {
 	private final Entity entity;
 	private final Level level;

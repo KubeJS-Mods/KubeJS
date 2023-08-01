@@ -10,10 +10,10 @@ import java.util.function.Consumer;
 public class BlockModificationEventJS extends EventJS {
 
 	@Info("""
-			Modifies blocks that match the given predicate.
-						
-			**NOTE**: tag predicates are not supported at this time.
-			""")
+		Modifies blocks that match the given predicate.
+					
+		**NOTE**: tag predicates are not supported at this time.
+		""")
 	public void modify(BlockStatePredicate predicate, Consumer<Block> c) {
 		for (var block : predicate.getBlocks()) {
 			c.accept(block);

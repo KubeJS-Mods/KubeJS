@@ -7,11 +7,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class EntityFallOnBlockCallbackJS extends EntityStepOnBlockCallbackJS {
+public class EntityFallenOnBlockCallbackJS extends EntitySteppedOnBlockCallbackJS {
 
 	private final float fallHeight;
 
-	public EntityFallOnBlockCallbackJS(Level level, Entity entity, BlockPos pos, BlockState state, float fallHeight) {
+	public EntityFallenOnBlockCallbackJS(Level level, Entity entity, BlockPos pos, BlockState state, float fallHeight) {
 		super(level, entity, pos, state);
 		this.fallHeight = fallHeight;
 	}

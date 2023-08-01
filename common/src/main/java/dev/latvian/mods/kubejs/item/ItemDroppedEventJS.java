@@ -7,8 +7,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 @Info(value = """
-		Invoked when a player drops an item.
-		""")
+	Invoked when a player drops an item.
+	""")
 public class ItemDroppedEventJS extends PlayerEventJS {
 	private final Player player;
 	private final ItemEntity entity;

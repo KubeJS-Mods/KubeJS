@@ -17,10 +17,10 @@ import java.util.List;
 import java.util.Map;
 
 @Info("""
-		Invoked when registering handlers for item tooltips.
-				
-		`text` can be a component or a list of components.
-		""")
+	Invoked when registering handlers for item tooltips.
+			
+	`text` can be a component or a list of components.
+	""")
 public class ItemTooltipEventJS extends EventJS {
 	@FunctionalInterface
 	public interface StaticTooltipHandler {

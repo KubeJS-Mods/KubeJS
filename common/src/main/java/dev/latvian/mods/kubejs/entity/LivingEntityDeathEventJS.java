@@ -5,10 +5,10 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 
 @Info("""
-		Invoked before a living entity dies.
-				
-		**NOTE**: You need to set hp to > 0 besides cancelling the event to prevent the entity from dying.
-		""")
+	Invoked before a living entity dies.
+			
+	**NOTE**: You need to set hp to > 0 besides cancelling the event to prevent the entity from dying.
+	""")
 public class LivingEntityDeathEventJS extends LivingEntityEventJS {
 	private final LivingEntity entity;
 	private final DamageSource source;

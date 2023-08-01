@@ -9,10 +9,10 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 @Info(value = """
-		Invoked when a player right clicks with an item **without targeting anything**.
-				
-		Not to be confused with `BlockEvents.rightClick` or `ItemEvents.entityInteracted`.
-		"""
+	Invoked when a player right clicks with an item **without targeting anything**.
+			
+	Not to be confused with `BlockEvents.rightClick` or `ItemEvents.entityInteracted`.
+	"""
 )
 public class ItemClickedEventJS extends PlayerEventJS {
 	private final Player player;

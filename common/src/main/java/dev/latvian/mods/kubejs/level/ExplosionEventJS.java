@@ -54,8 +54,8 @@ public abstract class ExplosionEventJS extends LevelEventJS {
 	}
 
 	@Info("""
-			Invoked right before an explosion happens.
-			""")
+		Invoked right before an explosion happens.
+		""")
 	public static class Before extends ExplosionEventJS {
 		public Before(Level level, Explosion explosion) {
 			super(level, explosion);
@@ -73,8 +73,8 @@ public abstract class ExplosionEventJS extends LevelEventJS {
 	}
 
 	@Info("""
-			Invoked right after an explosion happens.
-			""")
+		Invoked right after an explosion happens.
+		""")
 	public static class After extends ExplosionEventJS {
 		private final List<Entity> affectedEntities;
 

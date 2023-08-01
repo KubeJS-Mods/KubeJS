@@ -6,10 +6,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 @Info("""
-		Invoked when a player sends a chat message.
-				
-		If cancelled (`PlayerEvents.chat`), the message will not be sent.
-		""")
+	Invoked when a player sends a chat message.
+			
+	If cancelled (`PlayerEvents.chat`), the message will not be sent.
+	""")
 public class PlayerChatDecorateEventJS extends PlayerEventJS {
 	private final ServerPlayer player;
 	public ChatEvent.ChatComponent chatComponent;

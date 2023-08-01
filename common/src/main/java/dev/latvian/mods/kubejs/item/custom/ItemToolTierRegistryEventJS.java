@@ -9,8 +9,8 @@ import net.minecraft.world.item.Tiers;
 import java.util.function.Consumer;
 
 @Info("""
-		Invoked when the game is starting up and the item tool tiers are being registered.
-		""")
+	Invoked when the game is starting up and the item tool tiers are being registered.
+	""")
 public class ItemToolTierRegistryEventJS extends StartupEventJS {
 
 	@Info("Adds a new tool tier.")

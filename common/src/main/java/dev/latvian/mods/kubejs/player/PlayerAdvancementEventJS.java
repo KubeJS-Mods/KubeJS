@@ -5,8 +5,8 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.server.level.ServerPlayer;
 
 @Info("""
-		Invoked when a player gets an advancement.
-		""")
+	Invoked when a player gets an advancement.
+	""")
 public class PlayerAdvancementEventJS extends PlayerEventJS {
 	private final ServerPlayer player;
 	private final Advancement advancement;

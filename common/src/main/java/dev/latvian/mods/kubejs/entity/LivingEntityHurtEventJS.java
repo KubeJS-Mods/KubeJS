@@ -5,8 +5,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 
 @Info("""
-		Invoked before an entity is hurt by a damage source.
-		""")
+	Invoked before an entity is hurt by a damage source.
+	""")
 public class LivingEntityHurtEventJS extends LivingEntityEventJS {
 	private final LivingEntity entity;
 	private final DamageSource source;

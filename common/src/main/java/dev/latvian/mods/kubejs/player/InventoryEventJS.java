@@ -5,8 +5,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
 @Info("""
-		Invoked when a player opens or closes a container.
-		""")
+	Invoked when a player opens or closes a container.
+	""")
 public class InventoryEventJS extends PlayerEventJS {
 	private final Player player;
 	private final AbstractContainerMenu menu;
