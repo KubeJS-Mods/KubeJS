@@ -25,9 +25,7 @@ import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -36,8 +34,18 @@ public interface ItemStackJS {
 	Map<String, ItemStack> PARSE_CACHE = new HashMap<>();
 	ItemStack[] EMPTY_ARRAY = new ItemStack[0];
 
-	Lazy<List<ItemStack>> CACHED_ITEM_LIST = Lazy.of(() -> {
-		var set = new LinkedHashSet<ItemStack>();
+	Lazy<List<String>> CACHED_ITEM_TYPE_LIST = Lazy.of(() -> {
+		var cachedItemTypeList = new ArrayList<String>();
+
+		for (var id : KubeJSRegistries.items().getIds()) {
+			cachedItemTypeList.add(id.toString());
+		}
+
+		return cachedItemTypeList;
+	});
+
+	Lazy<Map<ResourceLocation, NonNullList<ItemStack>>> CACHED_ITEM_MAP = Lazy.of(() -> {
+		var map = new HashMap<ResourceLocation, NonNullList<ItemStack>>();
 		NonNullList<ItemStack> stackList = NonNullList.create();
 
 		for (var item : KubeJSRegistries.items()) {
@@ -49,22 +57,26 @@ public interface ItemStackJS {
 
 		for (var stack : stackList) {
 			if (!stack.isEmpty()) {
-				set.add(stack.kjs$withCount(1));
+				map.computeIfAbsent(
+						stack.getItem().kjs$getIdLocation(),
+						_rl -> NonNullList.create()
+				).add(stack.kjs$withCount(1));
 			}
 		}
 
-		return Arrays.asList(set.toArray(new ItemStack[0]));
-	});
-
-	Lazy<List<String>> CACHED_ITEM_TYPE_LIST = Lazy.of(() -> {
-		var cachedItemTypeList = new ArrayList<String>();
-
-		for (var id : KubeJSRegistries.items().getIds()) {
-			cachedItemTypeList.add(id.toString());
+		for (var itemId : CACHED_ITEM_TYPE_LIST.get()) {
+			var itemRl = new ResourceLocation(itemId);
+			map.computeIfAbsent(
+					itemRl,
+					_rl -> NonNullList.of(ItemStack.EMPTY, new ItemStack(KubeJSRegistries.items().get(itemRl)))
+			);
 		}
 
-		return cachedItemTypeList;
+		return map;
 	});
+
+	Lazy<List<ItemStack>> CACHED_ITEM_LIST = Lazy.of(() -> CACHED_ITEM_MAP.get().values().stream().flatMap(List::stream).toList());
+
 
 	static ItemStack of(@Nullable Object o) {
 		if (o instanceof Wrapper w) {
@@ -287,6 +299,10 @@ public interface ItemStackJS {
 
 	static List<String> getTypeList() {
 		return CACHED_ITEM_TYPE_LIST.get();
+	}
+
+	static Map<ResourceLocation, NonNullList<ItemStack>> getTypeToStacks() {
+		return CACHED_ITEM_MAP.get();
 	}
 
 	static void clearAllCaches() {
