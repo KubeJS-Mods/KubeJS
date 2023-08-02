@@ -47,6 +47,8 @@ dependencies {
 
 	common(project(path: ":common", configuration: "namedElements")) { transitive false }
 	bundle(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+
+	include(implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:${rootProject.mixin_extras}")))
 }
 
 // The AW file is needed in :fabric project resources when the game is run.
