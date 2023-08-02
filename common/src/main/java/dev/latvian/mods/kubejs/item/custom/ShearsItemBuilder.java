@@ -13,8 +13,8 @@ import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class ShearsItemBuilder extends ItemBuilder {
-	public static boolean isKJSSheers(Item item) {
-		return item instanceof ShearsItemKJS;
+	public static boolean isCustomShears(ItemStack stack) {
+		return stack.getItem() instanceof ShearsItemKJS;
 	}
 
 	public transient float speedBaseline;
