@@ -10,6 +10,9 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(MatchTool.class)
 public abstract class MatchToolMixin {
+
+	// TODO (high): Instead of serialising and later deserialising the predicate,
+	//  can't we just... add all the custom shears to the predicate itself?
 	@ModifyVariable(at = @At("HEAD"), method = "<init>", argsOnly = true)
 	private static ItemPredicate shearsLoot(ItemPredicate predicate) {
 		var element = predicate.serializeToJson().deepCopy();

@@ -30,7 +30,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	private final String stage;
 
 	public ShapedKubeJSRecipe(ResourceLocation id, String group, int width, int height, NonNullList<Ingredient> ingredients, ItemStack result,
-							  boolean mirror, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
+	                          boolean mirror, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
 		super(id, group, width, height, ingredients, result);
 		this.mirror = mirror;
 		this.ingredientActions = ingredientActions;
@@ -101,6 +101,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 			// it sucks that we can't reuse the ShapedRecipe directly here,
 			// but the pattern is shrunk automatically, so we need to recreate it
 			// TODO: maybe these classes *would* be better off as a mixin, after all
+			//  added note 02/08/2023: **especially** with MixinExtras now, this should be possible!
 			var key = ShapedRecipe.keyFromJson(GsonHelper.getAsJsonObject(json, "key"));
 			var pattern = ShapedRecipe.patternFromJson(GsonHelper.getAsJsonArray(json, "pattern"));
 

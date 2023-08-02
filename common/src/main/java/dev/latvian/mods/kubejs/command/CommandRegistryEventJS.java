@@ -9,20 +9,16 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.core.RegistryAccess;
 
 public class CommandRegistryEventJS extends EventJS {
 	public final CommandDispatcher<CommandSourceStack> dispatcher;
-	public final CommandBuildContext registry;
-	public final Commands.CommandSelection selection;
 	public final CommandBuildContext context;
+	public final Commands.CommandSelection selection;
 
-	public CommandRegistryEventJS(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registry, Commands.CommandSelection selection) {
+	public CommandRegistryEventJS(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context, Commands.CommandSelection selection) {
 		this.dispatcher = dispatcher;
-		this.registry = registry;
+		this.context = context;
 		this.selection = selection;
-		// TODO: swap this with context from the event when forge fixes their stuff
-		this.context = new CommandBuildContext(RegistryAccess.BUILTIN.get());
 	}
 
 	public boolean isForSinglePlayer() {
@@ -31,6 +27,10 @@ public class CommandRegistryEventJS extends EventJS {
 
 	public boolean isForMultiPlayer() {
 		return selection.includeDedicated;
+	}
+
+	public CommandBuildContext getRegistry() {
+		return context;
 	}
 
 	public LiteralCommandNode<CommandSourceStack> register(LiteralArgumentBuilder<CommandSourceStack> command) {

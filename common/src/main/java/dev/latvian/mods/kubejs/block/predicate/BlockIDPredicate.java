@@ -9,11 +9,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class BlockIDPredicate implements BlockPredicate {
 	public record PropertyObject(Property<?> property, Object value) {
@@ -134,52 +130,4 @@ public class BlockIDPredicate implements BlockPredicate {
 
 		return true;
 	}
-
-	/* FIXME
-	public BlockIDPredicate setHardness(float hardness)
-	{
-		Block block = getBlock();
-
-		if (block != Blocks.AIR)
-		{
-			((BlockKJS) block).setHardnessKJS(hardness);
-		}
-
-		return this;
-	}
-
-	public BlockIDPredicate setResistance(float resistance)
-	{
-		Block block = getBlock();
-
-		if (block != Blocks.AIR)
-		{
-			((BlockKJS) block).setResistanceKJS(resistance);
-		}
-
-		return this;
-	}
-
-	public BlockIDPredicate setLightLevel(float lightLevel)
-	{
-		Block block = getBlock();
-
-		if (block != Blocks.AIR)
-		{
-			int level = MathHelper.clamp((int) (lightLevel * 15F), 0, 15);
-
-			((BlockKJS) block).setLightLevelKJS(level);
-
-			for (var state : block.getStateContainer().getValidStates())
-			{
-				if (checkState(state))
-				{
-					((BlockStateKJS) state).setLightLevelKJS(level);
-				}
-			}
-		}
-
-		return this;
-	}
-	 */
 }

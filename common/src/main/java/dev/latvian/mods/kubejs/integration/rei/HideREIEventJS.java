@@ -12,10 +12,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.stream.Stream;
 
-/**
- * TODO: Rework in 1.19, this is basically just a straight port to the new API
- *   (sorry future max, i don't have time, you're gonna have to rework this even later, maybe 1.19.3)
- */
 public class HideREIEventJS<T> extends EventJS {
 	private final EntryRegistry registry;
 	private final BasicFilteringRule<?> rule;
