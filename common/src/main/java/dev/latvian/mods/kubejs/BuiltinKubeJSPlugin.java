@@ -94,6 +94,7 @@ import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.stages.predicate.StagePredicate;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.FluidAmounts;
 import dev.latvian.mods.kubejs.util.JsonIO;
@@ -449,6 +450,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.registerSimple(ReplacementMatch.class, ReplacementMatch::of);
 		typeWrappers.registerSimple(Stat.class, PlayerStatsJS::statOf);
 		typeWrappers.register(NotificationBuilder.class, NotificationBuilder::of);
+		typeWrappers.registerSimple(StagePredicate.class, StagePredicate::of);
 
 		// components //
 		typeWrappers.registerSimple(Component.class, TextWrapper::of);

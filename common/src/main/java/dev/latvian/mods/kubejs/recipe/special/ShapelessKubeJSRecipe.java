@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.stages.predicate.StagePredicate;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
@@ -23,9 +24,10 @@ import java.util.List;
 public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraftingRecipe {
 	private final List<IngredientAction> ingredientActions;
 	private final ModifyRecipeResultCallback modifyResult;
-	private final String stage;
+	@Nullable
+	private final StagePredicate stage;
 
-	public ShapelessKubeJSRecipe(ShapelessRecipe original, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
+	public ShapelessKubeJSRecipe(ShapelessRecipe original, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, @Nullable StagePredicate stage) {
 		super(original.getId(), original.getGroup(), original.getResultItem(), original.getIngredients());
 		this.ingredientActions = ingredientActions;
 		this.modifyResult = modifyResult;
@@ -49,7 +51,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 	}
 
 	@Override
-	public String kjs$getStage() {
+	public StagePredicate kjs$getStage() {
 		return stage;
 	}
 
@@ -78,7 +80,10 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 				modifyResult = RecipesEventJS.MODIFY_RESULT_CALLBACKS.get(id);
 			}
 
-			var stage = GsonHelper.getAsString(json, "kubejs:stage", "");
+			StagePredicate stage = null;
+			if (json.has("kubejs:stage")) {
+				stage = StagePredicate.fromJson(json.get("kubejs:stage"));
+			}
 
 			return new ShapelessKubeJSRecipe(shapelessRecipe, ingredientActions, modifyResult, stage);
 		}
@@ -89,7 +94,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 			var flags = (int) buf.readByte();
 
 			List<IngredientAction> ingredientActions = (flags & RecipeFlags.INGREDIENT_ACTIONS) != 0 ? IngredientAction.readList(buf) : Collections.emptyList();
-			var stage = (flags & RecipeFlags.STAGE) != 0 ? buf.readUtf() : "";
+			var stage = (flags & RecipeFlags.STAGE) != 0 ? StagePredicate.fromNetwork(buf) : null;
 
 			// result modification callbacks do not need to be synced to clients
 			return new ShapelessKubeJSRecipe(shapelessRecipe, ingredientActions, null, stage);
@@ -105,7 +110,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 				flags |= RecipeFlags.INGREDIENT_ACTIONS;
 			}
 
-			if (!r.stage.isEmpty()) {
+			if (r.stage != null) {
 				flags |= RecipeFlags.STAGE;
 			}
 
@@ -115,8 +120,8 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 				IngredientAction.writeList(buf, r.ingredientActions);
 			}
 
-			if (!r.stage.isEmpty()) {
-				buf.writeUtf(r.stage);
+			if (r.stage != null) {
+				r.stage.toNetwork(buf);
 			}
 		}
 	}
