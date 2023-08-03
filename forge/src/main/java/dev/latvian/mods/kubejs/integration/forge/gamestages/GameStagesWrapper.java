@@ -7,7 +7,7 @@ import net.darkhax.gamestages.data.StageData;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 public class GameStagesWrapper extends Stages {
 	public GameStagesWrapper(Player p) {
@@ -42,7 +42,7 @@ public class GameStagesWrapper extends Stages {
 	public Collection<String> getAll() {
 		IStageData stageData = GameStageHelper.getPlayerData(player);
 
-		return stageData != null ? stageData.getStages() : Collections.emptyList();
+		return stageData != null ? stageData.getStages() : List.of();
 	}
 
 	@Override

@@ -88,7 +88,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 			var shapelessRecipe = SHAPELESS.fromNetwork(id, buf);
 			var flags = (int) buf.readByte();
 
-			List<IngredientAction> ingredientActions = (flags & RecipeFlags.INGREDIENT_ACTIONS) != 0 ? IngredientAction.readList(buf) : Collections.emptyList();
+			List<IngredientAction> ingredientActions = (flags & RecipeFlags.INGREDIENT_ACTIONS) != 0 ? IngredientAction.readList(buf) : List.of();
 			var stage = (flags & RecipeFlags.STAGE) != 0 ? buf.readUtf() : "";
 
 			// result modification callbacks do not need to be synced to clients

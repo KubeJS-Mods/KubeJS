@@ -17,6 +17,8 @@ public class ShearsItemBuilder extends ItemBuilder {
 		return stack.getItem() instanceof ShearsItemKJS;
 	}
 
+	public static final ResourceLocation TAG = new ResourceLocation(Platform.isForge() ? "forge:shears" : "c:shears");
+
 	public transient float speedBaseline;
 
 	public ShearsItemBuilder(ResourceLocation i) {
@@ -24,9 +26,7 @@ public class ShearsItemBuilder extends ItemBuilder {
 		speedBaseline(5f);
 		parentModel("minecraft:item/handheld");
 		unstackable();
-		if (Platform.isForge()) {
-			tag(new ResourceLocation("forge", "shears"));
-		}
+		tag(TAG);
 	}
 
 	public ShearsItemBuilder speedBaseline(float f) {

@@ -4,6 +4,7 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class NoStages extends Stages {
 	public static final NoStages NULL_INSTANCE = new NoStages(null);
@@ -24,7 +25,7 @@ public class NoStages extends Stages {
 
 	@Override
 	public Collection<String> getAll() {
-		return Collections.emptyList();
+		return List.of();
 	}
 
 	@Override

@@ -7,7 +7,6 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -33,7 +32,7 @@ public interface ListJS {
 
 	static List<?> orEmpty(@Nullable Object o) {
 		var l = of(o);
-		return l == null ? Collections.emptyList() : l;
+		return l == null ? List.of() : l;
 	}
 
 	static List<?> orSelf(@Nullable Object o) {

@@ -19,7 +19,6 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 
 public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRecipe {
@@ -30,7 +29,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	private final String stage;
 
 	public ShapedKubeJSRecipe(ResourceLocation id, String group, int width, int height, NonNullList<Ingredient> ingredients, ItemStack result,
-	                          boolean mirror, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
+							  boolean mirror, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
 		super(id, group, width, height, ingredients, result);
 		this.mirror = mirror;
 		this.ingredientActions = ingredientActions;
@@ -136,7 +135,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 			var ingredients = shapedRecipe.getIngredients();
 			var result = shapedRecipe.getResultItem();
 
-			List<IngredientAction> ingredientActions = (flags & RecipeFlags.INGREDIENT_ACTIONS) != 0 ? IngredientAction.readList(buf) : Collections.emptyList();
+			List<IngredientAction> ingredientActions = (flags & RecipeFlags.INGREDIENT_ACTIONS) != 0 ? IngredientAction.readList(buf) : List.of();
 			var stage = (flags & RecipeFlags.STAGE) != 0 ? buf.readUtf() : "";
 			var mirror = (flags & RecipeFlags.MIRROR) != 0;
 

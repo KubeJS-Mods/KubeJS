@@ -97,6 +97,6 @@ public interface BlockKJS extends BlockBuilderProvider {
 	}
 
 	default List<BlockState> kjs$getBlockStates() {
-		return this instanceof Block block ? block.getStateDefinition().getPossibleStates() : Collections.emptyList();
+		return this instanceof Block block ? block.getStateDefinition().getPossibleStates() : List.of();
 	}
 }
