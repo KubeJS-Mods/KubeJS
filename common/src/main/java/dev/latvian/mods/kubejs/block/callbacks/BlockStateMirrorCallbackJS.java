@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.block.callbacks;
 
+import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Mirror;
@@ -16,6 +17,7 @@ public class BlockStateMirrorCallbackJS extends BlockStateModifyCallbackJS {
 
 	}
 
+	@Info("Mirrors the direction passed in")
 	public Direction mirror(Direction dir) {
 		return mirror.mirror(dir);
 	}
@@ -26,10 +28,12 @@ public class BlockStateMirrorCallbackJS extends BlockStateModifyCallbackJS {
 		throw new IllegalCallerException("Do not call this or you will get stuck in a loop!");
 	}
 
+	@Info("Gets the rotation of the direction passed in relative to this mirror")
 	public Rotation getRotation(Direction dir) {
 		return mirror.getRotation(dir);
 	}
 
+	@Info("Gets the Mirror")
 	public Mirror getMirror() {
 		return mirror;
 	}
