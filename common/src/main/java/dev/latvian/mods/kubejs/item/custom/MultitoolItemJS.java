@@ -35,12 +35,17 @@ import static java.math.RoundingMode.CEILING;
 public class MultitoolItemJS extends DiggerItem {
     public static class Builder extends HandheldItemBuilder {
         protected boolean isAxe = false, isHoe = false, isPickaxe = false, isShovel = false;
+
         protected final List<Float> speedValues = new ArrayList<>(5);
+
         protected final List<Float> attackValues = new ArrayList<>(5);
+
         protected final Set<TagKey<Block>> mineableTags = new HashSet<>();
+
         public Builder(ResourceLocation i) {
             super(i, 0, 0);
         }
+
         @Info(value = """
             Adds a tool to the multi-tool.
             
@@ -48,7 +53,7 @@ public class MultitoolItemJS extends DiggerItem {
             """, params =
         @Param(name = "tool", value = "The name of the tool to add to the multi-tool. Will error if it is an unknown tool type."))
         public Builder tool(String tool) {
-            // maybe swords and shears (after #673 is merged)?
+            // maybe swords and shears? (i would need some help with that, as neither extends diggeritem)
             return switch (tool) {
                 default -> throw new IllegalArgumentException("Unknown tool type '" + tool +
                         "', valid tool types are: 'axe', 'hoe', 'pickaxe', and 'shovel'!");
@@ -70,6 +75,7 @@ public class MultitoolItemJS extends DiggerItem {
                 }
             };
         }
+
         protected Builder addValues(float attack, float speed, @Nullable TagKey<Block> tag) {
             attackValues.add(attack);
             speedValues.add(speed);
@@ -77,91 +83,104 @@ public class MultitoolItemJS extends DiggerItem {
                 mineableTags.add(tag);
             return this;
         }
+
         @Override
         public Builder attackDamageBaseline(float f) {
             attackValues.clear();
             attackValues.add(f);
             return this;
         }
+
         @Override
         public Builder speedBaseline(float f) {
             speedValues.clear();
             speedValues.add(f);
             return this;
         }
+
         protected void setValues() {
             // TOD0: find a way to make this better / more efficient
             // i hate floating-point jank
-            BigDecimal attack = new BigDecimal("0"), speed = attack;
-            for (final float f : attackValues) {
+            var attack = new BigDecimal("0");
+            for (final var f : attackValues) {
                 attack = attack.add(new BigDecimal(Float.toString(f)));
             }
             attack = attack.divide(new BigDecimal(Integer.toString(attackValues.size())), 3, CEILING);
             attackDamageBaseline = attack.add(attack.multiply(BigDecimal.valueOf(.08)))
                 .setScale(1, CEILING).floatValue();
-
-            for (final float f : speedValues) {
+            var speed = new BigDecimal("0");
+            for (final var f : speedValues) {
                 speed = speed.add(new BigDecimal(Float.toString(f)));
             }
             speed = speed.divide(new BigDecimal(Integer.toString(speedValues.size())), 3, CEILING);
             speedBaseline = speed.add(speed.multiply(BigDecimal.valueOf(.05)))
                 .setScale(1, CEILING).floatValue();
         }
+
         @Override
         public Item createObject() {
             setValues();
             return new MultitoolItemJS(attackDamageBaseline, speedBaseline, toolTier, createItemProperties(), this);
         }
     }
+    {
+        defaultModifiers = ArrayListMultimap.create(defaultModifiers);
+    }
+
+    public final Builder builder;
+
     public final Set<TagKey<Block>> mineableTags;
-    protected boolean isAxe, isHoe, isPickaxe, isShovel;
-    private final Multimap<ResourceLocation, AttributeModifier> attributes;
+
     private boolean modified = false;
+
     public MultitoolItemJS(float attack, float speed, MutableToolTier tier, Properties properties, Builder builder) {
         super(attack, speed, tier, null, properties);
-        defaultModifiers = ArrayListMultimap.create(defaultModifiers);
+        this.builder = builder;
         mineableTags = Set.copyOf(builder.mineableTags);
-        isAxe = builder.isAxe;
-        isHoe = builder.isHoe;
-        isPickaxe = builder.isPickaxe;
-        isShovel = builder.isShovel;
-        attributes = builder.attributes;
     }
+
     public boolean isAxe() {
-        return isAxe;
+        return builder.isAxe;
     }
+
     public boolean isHoe() {
-        return isHoe;
+        return builder.isHoe;
     }
+
     public boolean isPickaxe() {
-        return isPickaxe;
+        return builder.isPickaxe;
     }
+
     public boolean isShovel() {
-        return isShovel;
+        return builder.isShovel;
     }
+
     @Override
     public float getDestroySpeed(ItemStack itemStack, BlockState blockState) {
         return isInMineables(blockState) ? speed : 1f;
     }
+
     @Override
     public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
         if (!modified) {
             modified = true;
-            attributes.forEach((r, m) -> defaultModifiers.put(KubeJSRegistries.attributes().get(r), m));
+            builder.attributes.forEach((r, m) -> defaultModifiers.put(KubeJSRegistries.attributes().get(r), m));
         }
         return super.getDefaultAttributeModifiers(equipmentSlot);
     }
+
     @Override
     // right-clicking on dirt will till, unless sneaking, then it will turn it into a path
     public InteractionResult useOn(UseOnContext ctx) {
-        return (isAxe && Items.IRON_AXE.useOn(ctx) != InteractionResult.PASS) ||
-            (isShovel && (!isHoe || Optional.ofNullable(ctx.getPlayer())
+        return (isAxe() && Items.IRON_AXE.useOn(ctx) != InteractionResult.PASS) ||
+            (isShovel() && (!isHoe() || Optional.ofNullable(ctx.getPlayer())
                     .map(Entity::isCrouching).orElse(false)) && // player sneaking check
                 Items.IRON_SHOVEL.useOn(ctx) != InteractionResult.PASS) ||
-            (isHoe && Items.IRON_HOE.useOn(ctx) != InteractionResult.PASS) ||
-            (isPickaxe && Items.IRON_HOE.useOn(ctx) != InteractionResult.PASS) ?
+            (isHoe() && Items.IRON_HOE.useOn(ctx) != InteractionResult.PASS) ||
+            (isPickaxe() && Items.IRON_HOE.useOn(ctx) != InteractionResult.PASS) ?
             InteractionResult.sidedSuccess(ctx.getLevel().isClientSide) : InteractionResult.PASS;
     }
+
     @Override
     public boolean isCorrectToolForDrops(BlockState state) {
         final int i = tier.getLevel();
@@ -171,8 +190,9 @@ public class MultitoolItemJS extends DiggerItem {
 
         return isInMineables(state);
     }
+
     private boolean isInMineables(BlockState state) {
-        for (TagKey<Block> tag : mineableTags)
+        for (final var tag : mineableTags)
             if (state.is(tag)) return true;
         return false;
     }
