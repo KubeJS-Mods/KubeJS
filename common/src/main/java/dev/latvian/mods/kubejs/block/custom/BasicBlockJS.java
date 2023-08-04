@@ -1,19 +1,16 @@
 package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
-import dev.latvian.mods.kubejs.block.BlockStateMirrorCallbackJS;
-import dev.latvian.mods.kubejs.block.BlockStateModifyCallbackJS;
-import dev.latvian.mods.kubejs.block.BlockStateModifyPlacementCallbackJS;
-import dev.latvian.mods.kubejs.block.BlockStateRotateCallbackJS;
-import dev.latvian.mods.kubejs.block.CanBeReplacedCallbackJS;
 import dev.latvian.mods.kubejs.block.EntityBlockKJS;
 import dev.latvian.mods.kubejs.block.KubeJSBlockProperties;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.BlockExplodedCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.BlockStateMirrorCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyPlacementCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.BlockStateRotateCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.CanBeReplacedCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.EntityFallenOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.EntitySteppedOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
@@ -169,7 +166,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
 		if (blockBuilder.randomTickCallback != null) {
 			var callback = new RandomTickCallbackJS(new BlockContainerJS(level, pos), random);
-			safeCallback(blockBuilder.randomTickCallback, callback, "Error while random ticking custom block " + this);
+			safeCallback(blockBuilder.randomTickCallback, callback, "Error while random ticking custom block ");
 		}
 	}
 
@@ -292,7 +289,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	public BlockState rotate(BlockState blockState, Rotation rotation) {
 		if (blockBuilder.rotateStateModification != null) {
 			var callbackJS = new BlockStateRotateCallbackJS(blockState, rotation);
-			if (safeCallback(blockBuilder.rotateStateModification, callbackJS, "Error while rotating BlockState of " + blockBuilder.id)) {
+			if (safeCallback(blockBuilder.rotateStateModification, callbackJS, "Error while rotating BlockState of ")) {
 				return callbackJS.getState();
 			}
 		}
@@ -304,7 +301,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	public BlockState mirror(BlockState blockState, Mirror mirror) {
 		if (blockBuilder.mirrorStateModification != null) {
 			var callbackJS = new BlockStateMirrorCallbackJS(blockState, mirror);
-			if (safeCallback(blockBuilder.mirrorStateModification, callbackJS, "Error while mirroring BlockState of " + blockBuilder.id)) {
+			if (safeCallback(blockBuilder.mirrorStateModification, callbackJS, "Error while mirroring BlockState of ")) {
 				return callbackJS.getState();
 			}
 		}

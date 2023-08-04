@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.block;
+package dev.latvian.mods.kubejs.block.callbacks;
 
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Direction;
