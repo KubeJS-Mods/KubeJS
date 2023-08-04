@@ -5,8 +5,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 @Info("""
-		Invoked when a player's inventory changes.
-		""")
+	Invoked when a player's inventory changes.
+	""")
 public class InventoryChangedEventJS extends PlayerEventJS {
 	private final Player player;
 	private final ItemStack item;

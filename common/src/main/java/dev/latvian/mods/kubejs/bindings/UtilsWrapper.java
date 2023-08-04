@@ -49,11 +49,11 @@ public interface UtilsWrapper {
 	}
 
 	static <T> List<T> emptyList() {
-		return Collections.emptyList();
+		return List.of();
 	}
 
 	static <K, V> Map<K, V> emptyMap() {
-		return Collections.emptyMap();
+		return Map.of();
 	}
 
 	static List<?> newList() {

@@ -166,7 +166,7 @@ public class ConsoleJS {
 	public void resetFile() {
 		scriptType.executor.execute(() -> {
 			try {
-				Files.write(logFile, Collections.emptyList());
+				Files.write(logFile, List.of());
 			} catch (Exception ex) {
 				logger.error("Failed to clear the log file: " + ex);
 			}

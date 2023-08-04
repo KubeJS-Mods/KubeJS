@@ -10,10 +10,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 @Info("""
-		Invoked when a player opens a chest.
-				
-		Same as `PlayerEvents.inventoryOpened`, but only for chests.
-		""")
+	Invoked when a player opens a chest.
+			
+	Same as `PlayerEvents.inventoryOpened`, but only for chests.
+	""")
 public class ChestEventJS extends InventoryEventJS {
 	public ChestEventJS(Player player, AbstractContainerMenu menu) {
 		super(player, menu);

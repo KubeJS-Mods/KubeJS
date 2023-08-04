@@ -120,7 +120,7 @@ public class KubeJSClientEventHandler {
 		}
 
 		try {
-			for (var handler : staticItemTooltips.getOrDefault(Items.AIR, Collections.emptyList())) {
+			for (var handler : staticItemTooltips.getOrDefault(Items.AIR, List.of())) {
 				handler.tooltip(stack, advanced, lines);
 			}
 		} catch (Exception ex) {
@@ -128,7 +128,7 @@ public class KubeJSClientEventHandler {
 		}
 
 		try {
-			for (var handler : staticItemTooltips.getOrDefault(stack.getItem(), Collections.emptyList())) {
+			for (var handler : staticItemTooltips.getOrDefault(stack.getItem(), List.of())) {
 				handler.tooltip(stack, advanced, lines);
 			}
 		} catch (Exception ex) {

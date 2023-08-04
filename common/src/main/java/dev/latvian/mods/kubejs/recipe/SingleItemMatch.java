@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.recipe;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.block.Block;
 
 public record SingleItemMatch(ItemStack stack) implements ItemMatch {
 	@Override

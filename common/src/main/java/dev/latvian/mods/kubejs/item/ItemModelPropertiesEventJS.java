@@ -11,10 +11,10 @@ import net.minecraft.world.item.crafting.Ingredient;
 public class ItemModelPropertiesEventJS extends StartupEventJS {
 
 	@Info("""
-			Register a model property for an item. Model properties are used to change the appearance of an item in the world.
-						
-			More about model properties: https://minecraft.fandom.com/wiki/Model#Item_predicates
-			""")
+		Register a model property for an item. Model properties are used to change the appearance of an item in the world.
+					
+		More about model properties: https://minecraft.fandom.com/wiki/Model#Item_predicates
+		""")
 	public void register(Ingredient ingredient, String overwriteId, ClampedItemPropertyFunction callback) {
 		if (ingredient.kjs$isWildcard()) {
 			registerAll(overwriteId, callback);

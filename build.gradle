@@ -28,6 +28,14 @@ allprojects {
 			}
 		}
 
+		// jitpack (mixinextras only)
+		maven {
+			url "https://jitpack.io"
+			content {
+				includeGroup "com.github.llamalad7.mixinextras"
+			}
+		}
+
 		mavenLocal()
 	}
 }

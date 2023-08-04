@@ -32,7 +32,7 @@ public abstract class IngredientAction extends IngredientActionFilter {
 
 	public static List<IngredientAction> parseList(JsonElement json) {
 		if (json == null || !json.isJsonArray()) {
-			return Collections.emptyList();
+			return List.of();
 		}
 
 		List<IngredientAction> list = new ArrayList<>();
@@ -50,14 +50,14 @@ public abstract class IngredientAction extends IngredientActionFilter {
 			}
 		}
 
-		return list.isEmpty() ? Collections.emptyList() : list;
+		return list.isEmpty() ? List.of() : list;
 	}
 
 	public static List<IngredientAction> readList(FriendlyByteBuf buf) {
 		var s = buf.readVarInt();
 
 		if (s <= 0) {
-			return Collections.emptyList();
+			return List.of();
 		}
 
 		List<IngredientAction> list = new ArrayList<>();
@@ -74,7 +74,7 @@ public abstract class IngredientAction extends IngredientActionFilter {
 			}
 		}
 
-		return list.isEmpty() ? Collections.emptyList() : list;
+		return list.isEmpty() ? List.of() : list;
 	}
 
 	public static void writeList(FriendlyByteBuf buf, @Nullable List<IngredientAction> list) {

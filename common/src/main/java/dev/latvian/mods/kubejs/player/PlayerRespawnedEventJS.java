@@ -4,10 +4,10 @@ import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.server.level.ServerPlayer;
 
 @Info("""
-		Invoked when a player respawns.
-				
-		The reason of respawn can be either death or returning from the end.
-		""")
+	Invoked when a player respawns.
+			
+	The reason of respawn can be either death or returning from the end.
+	""")
 public class PlayerRespawnedEventJS extends PlayerEventJS {
 	private final ServerPlayer player;
 	private final ServerPlayer oldPlayer;

@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.bindings;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.FireworksJS;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -46,6 +47,14 @@ public interface ItemWrapper {
 
 	static List<String> getTypeList() {
 		return ItemStackJS.getTypeList();
+	}
+
+	static Map<ResourceLocation, NonNullList<ItemStack>> getTypeToStackMap() {
+		return ItemStackJS.getTypeToStacks();
+	}
+
+	static List<ItemStack> getVariants(ItemStack item) {
+		return getTypeToStackMap().get(item.kjs$getIdLocation());
 	}
 
 	static ItemStack getEmpty() {

@@ -224,7 +224,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 
 		@Override
 		public Collection<BlockState> getBlockStates() {
-			return match ? UtilsJS.getAllBlockStates() : Collections.emptyList();
+			return match ? UtilsJS.getAllBlockStates() : List.of();
 		}
 	}
 

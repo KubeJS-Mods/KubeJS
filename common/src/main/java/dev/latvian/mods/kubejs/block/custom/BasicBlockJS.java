@@ -1,12 +1,16 @@
 package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
-import dev.latvian.mods.kubejs.block.BlockStateModifyCallbackJS;
-import dev.latvian.mods.kubejs.block.BlockStateModifyPlacementCallbackJS;
-import dev.latvian.mods.kubejs.block.CanBeReplacedCallbackJS;
 import dev.latvian.mods.kubejs.block.EntityBlockKJS;
 import dev.latvian.mods.kubejs.block.KubeJSBlockProperties;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.BlockExplodedCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyPlacementCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.CanBeReplacedCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.EntityFallenOnBlockCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.EntitySteppedOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.BlockPos;
@@ -15,9 +19,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -63,7 +69,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		var blockState = stateDefinition.any();
 		if (blockBuilder.defaultStateModification != null) {
 			var callbackJS = new BlockStateModifyCallbackJS(blockState);
-			if (safeCallback(blockBuilder.defaultStateModification, callbackJS, "Error while creating default blockState for block " + p.id)) {
+			if (safeCallback(blockBuilder.defaultStateModification, callbackJS, "Error while creating default blockState for block ")) {
 				registerDefaultState(callbackJS.getState());
 			}
 		} else if (blockBuilder.canBeWaterlogged()) {
@@ -115,7 +121,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
 		if (blockBuilder.placementStateModification != null) {
 			var callbackJS = new BlockStateModifyPlacementCallbackJS(context, this);
-			if (safeCallback(blockBuilder.placementStateModification, callbackJS, "Error while modifying BlockState placement of " + blockBuilder.id)) {
+			if (safeCallback(blockBuilder.placementStateModification, callbackJS, "Error while modifying BlockState placement of ")) {
 				return callbackJS.getState();
 			}
 		}
@@ -156,7 +162,9 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
 		if (blockBuilder.randomTickCallback != null) {
 			var callback = new RandomTickCallbackJS(new BlockContainerJS(level, pos), random);
-			safeCallback(blockBuilder.randomTickCallback, callback, "Error while random ticking custom block " + this);
+			safeCallback(blockBuilder.randomTickCallback, callback, "Error while random ticking custom block ");
+		} else {
+			super.randomTick(state, level, pos, random);
 		}
 	}
 
@@ -188,7 +196,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		try {
 			consumer.accept(value);
 		} catch (Throwable e) {
-			ScriptType.STARTUP.console.error(errorMessage, e);
+			ScriptType.STARTUP.console.error(errorMessage + blockBuilder.id, e);
 			return false;
 		}
 
@@ -229,5 +237,49 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		}
 
 		return Optional.empty();
+	}
+
+	@Override
+	public void stepOn(Level level, BlockPos blockPos, BlockState blockState, Entity entity) {
+		if (blockBuilder.stepOnCallback != null) {
+			var callbackJS = new EntitySteppedOnBlockCallbackJS(level, entity, blockPos, blockState);
+			safeCallback(blockBuilder.stepOnCallback, callbackJS, "Error while an entity stepped on custom block ");
+		} else {
+			super.stepOn(level, blockPos, blockState, entity);
+		}
+	}
+
+	@Override
+	public void fallOn(Level level, BlockState blockState, BlockPos blockPos, Entity entity, float f) {
+		if (blockBuilder.fallOnCallback != null) {
+			var callbackJS = new EntityFallenOnBlockCallbackJS(level, entity, blockPos, blockState, f);
+			safeCallback(blockBuilder.fallOnCallback, callbackJS, "Error while an entity fell on custom block ");
+		} else {
+			super.fallOn(level, blockState, blockPos, entity, f);
+		}
+	}
+
+	@Override
+	public void updateEntityAfterFallOn(BlockGetter blockGetter, Entity entity) {
+		if (blockBuilder.afterFallenOnCallback != null) {
+			var callbackJS = new AfterEntityFallenOnBlockCallbackJS(blockGetter, entity);
+			safeCallback(blockBuilder.afterFallenOnCallback, callbackJS, "Error while bouncing entity from custom block ");
+			// if they did not change the entity's velocity, then use the default method to reset the velocity.
+			if (!callbackJS.hasChangedVelocity()) {
+				super.updateEntityAfterFallOn(blockGetter, entity);
+			}
+		} else {
+			super.updateEntityAfterFallOn(blockGetter, entity);
+		}
+	}
+
+	@Override
+	public void wasExploded(Level level, BlockPos blockPos, Explosion explosion) {
+		if (blockBuilder.explodedCallback != null) {
+			var callbackJS = new BlockExplodedCallbackJS(level, blockPos, explosion);
+			safeCallback(blockBuilder.explodedCallback, callbackJS, "Error while exploding custom block ");
+		} else {
+			super.wasExploded(level, blockPos, explosion);
+		}
 	}
 }

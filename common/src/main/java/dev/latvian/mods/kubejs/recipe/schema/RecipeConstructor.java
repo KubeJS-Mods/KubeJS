@@ -23,6 +23,7 @@ public record RecipeConstructor(RecipeSchema schema, RecipeKey<?>[] keys, Factor
 			var r = schemaType.schema.factory.get();
 			r.type = type;
 			r.json = new JsonObject();
+			r.json.addProperty("type", "unknown");
 			r.newRecipe = true;
 			r.initValues(true);
 			setValues(r, schemaType, keys, from);

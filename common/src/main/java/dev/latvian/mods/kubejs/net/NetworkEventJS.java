@@ -7,14 +7,14 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
 @Info("""
-		Invoked when a network packet is received.
-				
-		Note that the behaviour of this event is depending on the **script type**.
-				
-		In `server_scripts`, this event is invoked on the server side when a packet is received from a client.
-				
-		In `client_scripts`, this event is invoked on the client side when a packet is received from the server.
-		""")
+	Invoked when a network packet is received.
+			
+	Note that the behaviour of this event is depending on the **script type**.
+			
+	In `server_scripts`, this event is invoked on the server side when a packet is received from a client.
+			
+	In `client_scripts`, this event is invoked on the client side when a packet is received from the server.
+	""")
 public class NetworkEventJS extends PlayerEventJS {
 	private final Player player;
 	private final String channel;

@@ -125,6 +125,8 @@ public class RecipesEventJS extends EventJS {
 	public final Map<ResourceLocation, RecipeJS> takenIds;
 
 	private final Map<String, Object> recipeFunctions;
+	public final transient RecipeTypeFunction vanillaShaped;
+	public final transient RecipeTypeFunction vanillaShapeless;
 	public final RecipeTypeFunction shaped;
 	public final RecipeTypeFunction shapeless;
 	public final RecipeTypeFunction smelting;
@@ -158,8 +160,10 @@ public class RecipesEventJS extends EventJS {
 			}
 		}
 
-		shaped = (RecipeTypeFunction) recipeFunctions.get(CommonProperties.get().serverOnly ? "minecraft:crafting_shaped" : "kubejs:shaped");
-		shapeless = (RecipeTypeFunction) recipeFunctions.get(CommonProperties.get().serverOnly ? "minecraft:crafting_shapeless" : "kubejs:shapeless");
+		vanillaShaped = (RecipeTypeFunction) recipeFunctions.get("minecraft:crafting_shaped");
+		vanillaShapeless = (RecipeTypeFunction) recipeFunctions.get("minecraft:crafting_shapeless");
+		shaped = CommonProperties.get().serverOnly ? vanillaShaped : (RecipeTypeFunction) recipeFunctions.get("kubejs:shaped");
+		shapeless = CommonProperties.get().serverOnly ? vanillaShapeless : (RecipeTypeFunction) recipeFunctions.get("kubejs:shapeless");
 		smelting = (RecipeTypeFunction) recipeFunctions.get("minecraft:smelting");
 		blasting = (RecipeTypeFunction) recipeFunctions.get("minecraft:blasting");
 		smoking = (RecipeTypeFunction) recipeFunctions.get("minecraft:smoking");
@@ -311,7 +315,7 @@ public class RecipesEventJS extends EventJS {
 		ConsoleJS.SERVER.info("Posted recipe events in " + timer.stop());
 
 		timer.reset().start();
-		addedRecipes.removeIf(r -> !r.newRecipe);
+		addedRecipes.removeIf(RecipesEventJS::addedRecipeRemoveCheck);
 
 		var recipesByName = new HashMap<ResourceLocation, Recipe<?>>(originalRecipes.size() + addedRecipes.size());
 
@@ -391,6 +395,10 @@ public class RecipesEventJS extends EventJS {
 
 			if (DataExport.export != null) {
 				DataExport.export.addJson("recipes/" + rec.getId() + ".json", r.json);
+
+				if (r.newRecipe) {
+					DataExport.export.addJson("added_recipes/" + rec.getId() + ".json", r.json);
+				}
 			}
 
 			return rec;
@@ -399,6 +407,15 @@ public class RecipesEventJS extends EventJS {
 			failedCount.incrementAndGet();
 			return null;
 		}
+	}
+
+	private static boolean addedRecipeRemoveCheck(RecipeJS r) {
+		if (r.newRecipe) {
+			// r.getOrCreateId(); // Generate ID synchronously?
+			return false;
+		}
+
+		return true;
 	}
 
 	public Map<String, Object> getRecipes() {

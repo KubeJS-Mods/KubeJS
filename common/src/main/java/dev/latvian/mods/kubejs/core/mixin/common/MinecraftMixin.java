@@ -1,16 +1,15 @@
 package dev.latvian.mods.kubejs.core.mixin.common;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import dev.latvian.mods.kubejs.client.ClientProperties;
 import dev.latvian.mods.kubejs.client.GeneratedClientResourcePack;
 import dev.latvian.mods.kubejs.core.MinecraftClientKJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.repository.PackRepository;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -28,9 +27,12 @@ public abstract class MinecraftMixin implements MinecraftClientKJS {
 		}
 	}
 
-	@Redirect(method = {"reloadResourcePacks(Z)Ljava/util/concurrent/CompletableFuture;", "<init>"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;"))
-	private List<PackResources> kjs$loadPacks(PackRepository repository) {
-		return GeneratedClientResourcePack.inject(repository.openAllSelected());
+	@ModifyExpressionValue(
+			method = {"reloadResourcePacks(Z)Ljava/util/concurrent/CompletableFuture;", "<init>"},
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;")
+	)
+	private List<PackResources> kjs$loadPacks(List<PackResources> resources) {
+		return GeneratedClientResourcePack.inject(resources);
 	}
 
 	@Inject(method = "startAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;swing(Lnet/minecraft/world/InteractionHand;)V", shift = At.Shift.AFTER))

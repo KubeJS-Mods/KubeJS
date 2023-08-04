@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PainterObjectStorage {
@@ -28,7 +29,7 @@ public class PainterObjectStorage {
 	}
 
 	public Collection<PainterObject> getObjects() {
-		return objects.isEmpty() ? Collections.emptyList() : objects.values();
+		return objects.isEmpty() ? List.of() : objects.values();
 	}
 
 	public void handle(CompoundTag root) {

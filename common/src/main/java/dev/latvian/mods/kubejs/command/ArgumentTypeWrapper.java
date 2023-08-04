@@ -1,12 +1,6 @@
 package dev.latvian.mods.kubejs.command;
 
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.DoubleArgumentType;
-import com.mojang.brigadier.arguments.FloatArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.LongArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.mods.kubejs.util.ClassWrapper;
@@ -14,34 +8,10 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.arguments.AngleArgument;
-import net.minecraft.commands.arguments.ColorArgument;
-import net.minecraft.commands.arguments.ComponentArgument;
-import net.minecraft.commands.arguments.CompoundTagArgument;
-import net.minecraft.commands.arguments.DimensionArgument;
-import net.minecraft.commands.arguments.EntityAnchorArgument;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.EntitySummonArgument;
-import net.minecraft.commands.arguments.GameProfileArgument;
-import net.minecraft.commands.arguments.ItemEnchantmentArgument;
-import net.minecraft.commands.arguments.MessageArgument;
-import net.minecraft.commands.arguments.MobEffectArgument;
-import net.minecraft.commands.arguments.NbtPathArgument;
-import net.minecraft.commands.arguments.NbtTagArgument;
-import net.minecraft.commands.arguments.ParticleArgument;
-import net.minecraft.commands.arguments.RangeArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.commands.arguments.SlotArgument;
-import net.minecraft.commands.arguments.TimeArgument;
-import net.minecraft.commands.arguments.UuidArgument;
+import net.minecraft.commands.arguments.*;
 import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
-import net.minecraft.commands.arguments.coordinates.ColumnPosArgument;
-import net.minecraft.commands.arguments.coordinates.RotationArgument;
-import net.minecraft.commands.arguments.coordinates.SwizzleArgument;
-import net.minecraft.commands.arguments.coordinates.Vec2Argument;
-import net.minecraft.commands.arguments.coordinates.Vec3Argument;
+import net.minecraft.commands.arguments.coordinates.*;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemPredicateArgument;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
@@ -54,7 +24,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-// FIXME: implement! (thanks forge)
 public enum ArgumentTypeWrapper {
 	// builtin types, other argument types can still be accessed through byName(),
 	// however those will be using class wrappers
@@ -160,8 +129,8 @@ public enum ArgumentTypeWrapper {
 
 	@Deprecated(forRemoval = true)
 	public ArgumentType<?> create() {
-		ConsoleJS.SERVER.warn("Using argument types without the event as context is deprecated and will be removed soon!");
-		ConsoleJS.SERVER.warn("Please consider using create(event) instead!");
+		ConsoleJS.SERVER.error("Using argument types without the event as context is deprecated and will be removed soon!");
+		ConsoleJS.SERVER.error("Please use create(event) instead!");
 		return factory.apply(new CommandBuildContext(RegistryAccess.BUILTIN.get()));
 	}
 

@@ -5,10 +5,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
 @Info("""
-		Invoked when an entity is about to be added to the world.
-				
-		This event also fires for existing entities when they are loaded from a save.
-		""")
+	Invoked when an entity is about to be added to the world.
+			
+	This event also fires for existing entities when they are loaded from a save.
+	""")
 public class EntitySpawnedEventJS extends EntityEventJS {
 	private final Entity entity;
 	private final Level level;

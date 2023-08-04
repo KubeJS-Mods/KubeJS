@@ -11,8 +11,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 @Info(value = """
-		Invoked when a block is destroyed by a player.
-		""")
+	Invoked when a block is destroyed by a player.
+	""")
 public class BlockBrokenEventJS extends PlayerEventJS {
 	private final ServerPlayer entity;
 	private final Level level;

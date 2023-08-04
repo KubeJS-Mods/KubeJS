@@ -8,8 +8,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 @Info("""
-		Invoked when a player crafts an item.
-		""")
+	Invoked when a player crafts an item.
+	""")
 public class ItemCraftedEventJS extends PlayerEventJS {
 	private final Player player;
 	private final ItemStack crafted;

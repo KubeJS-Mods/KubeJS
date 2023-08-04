@@ -39,7 +39,7 @@ public class KubeJSForge {
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 
 		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::itemDestroyed);
-		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::livingDrops);
+		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, KubeJSForge::livingDrops);
 
 		if (!CommonProperties.get().serverOnly) {
 			ForgeMod.enableMilkFluid();

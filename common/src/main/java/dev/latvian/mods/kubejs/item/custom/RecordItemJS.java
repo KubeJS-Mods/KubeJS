@@ -28,12 +28,12 @@ public class RecordItemJS extends RecordItem {
 		}
 
 		@Info(value = """
-				Sets the song that will play when this record is played.
-				""",
-				params = {
-						@Param(name = "s", value = "The location of sound event."),
-						@Param(name = "seconds", value = "The length of the song in seconds.")
-				})
+			Sets the song that will play when this record is played.
+			""",
+			params = {
+				@Param(name = "s", value = "The location of sound event."),
+				@Param(name = "seconds", value = "The length of the song in seconds.")
+			})
 		public Builder song(ResourceLocation s, int seconds) {
 			song = s;
 			length = seconds;

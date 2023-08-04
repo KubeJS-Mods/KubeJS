@@ -19,7 +19,6 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 
 public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRecipe {
@@ -101,6 +100,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 			// it sucks that we can't reuse the ShapedRecipe directly here,
 			// but the pattern is shrunk automatically, so we need to recreate it
 			// TODO: maybe these classes *would* be better off as a mixin, after all
+			//  added note 02/08/2023: **especially** with MixinExtras now, this should be possible!
 			var key = ShapedRecipe.keyFromJson(GsonHelper.getAsJsonObject(json, "key"));
 			var pattern = ShapedRecipe.patternFromJson(GsonHelper.getAsJsonArray(json, "pattern"));
 
@@ -135,7 +135,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 			var ingredients = shapedRecipe.getIngredients();
 			var result = shapedRecipe.getResultItem();
 
-			List<IngredientAction> ingredientActions = (flags & RecipeFlags.INGREDIENT_ACTIONS) != 0 ? IngredientAction.readList(buf) : Collections.emptyList();
+			List<IngredientAction> ingredientActions = (flags & RecipeFlags.INGREDIENT_ACTIONS) != 0 ? IngredientAction.readList(buf) : List.of();
 			var stage = (flags & RecipeFlags.STAGE) != 0 ? buf.readUtf() : "";
 			var mirror = (flags & RecipeFlags.MIRROR) != 0;
 

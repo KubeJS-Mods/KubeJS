@@ -38,7 +38,7 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS {
 
 	public List<ItemEntity> getDrops() {
 		if (eventDrops == null) {
-			eventDrops = new ArrayList<>(getDrops());
+			eventDrops = new ArrayList<>(event.getDrops());
 		}
 
 		return eventDrops;

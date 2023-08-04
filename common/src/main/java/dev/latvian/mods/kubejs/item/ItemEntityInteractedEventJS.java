@@ -8,8 +8,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 @Info(value = """
-		Invoked when a player right clicks on an entity.
-		""")
+	Invoked when a player right clicks on an entity.
+	""")
 public class ItemEntityInteractedEventJS extends PlayerEventJS {
 	private final Player player;
 	private final Entity entity;
