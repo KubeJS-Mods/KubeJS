@@ -75,6 +75,8 @@ accessible field net/minecraft/server/level/ServerPlayerGameMode isDestroyingBlo
 accessible method net/minecraft/server/commands/TeleportCommand performTeleport (Lnet/minecraft/commands/CommandSourceStack;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/server/level/ServerLevel;DDDLjava/util/Set;FFLnet/minecraft/server/commands/TeleportCommand$LookAt;)V
 accessible field net/minecraft/commands/arguments/selector/EntitySelector predicate Ljava/util/function/Predicate;
 accessible field net/minecraft/world/level/storage/loot/LootContext$EntityTarget name Ljava/lang/String;
+accessible field net/minecraft/advancements/critereon/ItemPredicate items Ljava/util/Set;
+mutable field net/minecraft/advancements/critereon/ItemPredicate items Ljava/util/Set;
 
 accessible method net/minecraft/world/entity/npc/VillagerType <init> (Ljava/lang/String;)V
 accessible field net/minecraft/world/entity/item/ItemEntity LIFETIME I
