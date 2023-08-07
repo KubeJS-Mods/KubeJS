@@ -75,7 +75,7 @@ public interface TagContext {
 		final Map<ResourceKey<? extends Registry<?>>, Map<ResourceLocation, Collection<Holder<?>>>> tags = results.stream()
 			.collect(Collectors.toMap(result -> UtilsJS.cast(result.key()), result -> UtilsJS.cast(result.tags())));
 
-		if (!tags.containsKey(Registry.ITEM_REGISTRY)) {
+		if (!tags.containsKey(Registries.ITEM)) {
 			ConsoleJS.getCurrent(ConsoleJS.SERVER).warn("Failed to load item tags during recipe event! Using replaceInput etc. will not work!");
 			return TagContext.EMPTY;
 		}

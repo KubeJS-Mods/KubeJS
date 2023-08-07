@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.client.painter.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import dev.latvian.mods.kubejs.client.painter.PaintEventJS;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.unit.UnitVariables;
@@ -65,11 +65,11 @@ public class PaintScreenEventJS extends PaintEventJS implements UnitVariables {
 	}
 
 	public void rotateDeg(float angle) {
-		matrices.mulPose(Vector3f.ZP.rotationDegrees(angle));
+		matrices.mulPose(Axis.ZP.rotationDegrees(angle));
 	}
 
 	public void rotateRad(float angle) {
-		matrices.mulPose(Vector3f.ZP.rotation(angle));
+		matrices.mulPose(Axis.ZP.rotation(angle));
 	}
 
 	public void rectangle(float x, float y, float z, float w, float h, int color) {

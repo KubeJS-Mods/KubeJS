@@ -1,14 +1,6 @@
 package dev.latvian.mods.kubejs.block.custom;
 
-import dev.latvian.mods.kubejs.client.ModelGenerator;
-import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
-import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.WoodButtonBlock;
-
-public class WoodenButtonBlockBuilder extends ShapedBlockBuilder {
+/*public class WoodenButtonBlockBuilder extends ShapedBlockBuilder {
 	public WoodenButtonBlockBuilder(ResourceLocation i) {
 		super(i, "_wooden_button", "_button");
 		noCollision();
@@ -73,3 +65,4 @@ public class WoodenButtonBlockBuilder extends ShapedBlockBuilder {
 		m.texture("texture", textures.get("texture").getAsString());
 	}
 }
+*/

@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.core;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
@@ -14,7 +13,8 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
 import net.minecraft.network.chat.Component;
@@ -24,7 +24,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.commands.TeleportCommand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.decoration.ItemFrame;
@@ -41,13 +40,17 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		return (Entity) this;
 	}
 
+	default Level kjs$getLevel() {
+		return kjs$self().level();
+	}
+
 	@Nullable
 	default MinecraftServer kjs$getServer() {
-		return kjs$self().getLevel().getServer();
+		return kjs$getLevel().getServer();
 	}
 
 	default String kjs$getType() {
-		return String.valueOf(Registries.getId(kjs$self().getType(), Registry.ENTITY_TYPE_REGISTRY));
+		return String.valueOf(BuiltInRegistries.ENTITY_TYPE.getKey(kjs$self().getType()));
 	}
 
 	default GameProfile kjs$getProfile() {
@@ -71,7 +74,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 
 	@Override
 	default int kjs$runCommand(String command) {
-		if (kjs$self().getLevel() instanceof ServerLevel level) {
+		if (kjs$getLevel() instanceof ServerLevel level) {
 			return level.getServer().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack(), command);
 		}
 
@@ -80,7 +83,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 
 	@Override
 	default int kjs$runCommandSilent(String command) {
-		if (kjs$self().getLevel() instanceof ServerLevel level) {
+		if (kjs$getLevel() instanceof ServerLevel level) {
 			return level.getServer().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack().withSuppressedOutput(), command);
 		}
 
@@ -164,14 +167,14 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	default void kjs$teleportTo(ResourceLocation dimension, double x, double y, double z, float yaw, float pitch) {
-		var previousLevel = kjs$self().getLevel();
-		var level = kjs$getServer().getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, dimension));
+		var previousLevel = kjs$getLevel();
+		var level = kjs$getServer().getLevel(ResourceKey.create(Registries.DIMENSION, dimension));
 
 		if (level == null) {
 			throw new IllegalArgumentException("Invalid dimension!");
 		}
 
-		if (!Level.isInSpawnableBounds(new BlockPos(x, y, z))) {
+		if (!Level.isInSpawnableBounds(BlockPos.containing(x, y, z))) {
 			throw new IllegalArgumentException("Invalid coordinates!");
 		} else if (Float.isNaN(yaw) || Float.isNaN(pitch)) {
 			throw new IllegalArgumentException("Invalid rotation!");
@@ -184,13 +187,13 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 
 		try {
 			TeleportCommand.performTeleport(
-				kjs$self().createCommandSourceStack(),
-				kjs$self(),
-				level,
-				x, y, z,
-				Set.of(),
-				yaw, pitch,
-				null
+					kjs$self().createCommandSourceStack(),
+					kjs$self(),
+					level,
+					x, y, z,
+					Set.of(),
+					yaw, pitch,
+					null
 			);
 		} catch (CommandSyntaxException e) {
 			throw new IllegalArgumentException(e.getRawMessage().getString());
@@ -214,7 +217,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	default EntityArrayList kjs$getPassengers() {
-		return new EntityArrayList(kjs$self().getLevel(), kjs$self().getPassengers());
+		return new EntityArrayList(kjs$getLevel(), kjs$self().getPassengers());
 	}
 
 	default String kjs$getTeamId() {
@@ -238,7 +241,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	default BlockContainerJS kjs$getBlock() {
-		return new BlockContainerJS(kjs$self().getLevel(), kjs$self().blockPosition());
+		return new BlockContainerJS(kjs$getLevel(), kjs$self().blockPosition());
 	}
 
 	@Deprecated
@@ -293,7 +296,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	default void kjs$playSound(SoundEvent id, float volume, float pitch) {
-		kjs$self().level.playSound(null, kjs$self().getX(), kjs$self().getY(), kjs$self().getZ(), id, kjs$self().getSoundSource(), volume, pitch);
+		kjs$getLevel().playSound(null, kjs$self().getX(), kjs$self().getY(), kjs$self().getZ(), id, kjs$self().getSoundSource(), volume, pitch);
 	}
 
 	default void kjs$playSound(SoundEvent id) {
@@ -301,11 +304,11 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	default void kjs$spawn() {
-		kjs$self().getLevel().addFreshEntity(kjs$self());
+		kjs$getLevel().addFreshEntity(kjs$self());
 	}
 
 	default void kjs$attack(float hp) {
-		kjs$self().hurt(DamageSource.GENERIC, hp);
+		kjs$self().hurt(kjs$self().damageSources().generic(), hp);
 	}
 
 	default double kjs$getDistance(double x, double y, double z) {
@@ -341,6 +344,6 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 
 	@Override
 	default ScriptType kjs$getScriptType() {
-		return kjs$self().level.kjs$getScriptType();
+		return kjs$getLevel().kjs$getScriptType();
 	}
 }

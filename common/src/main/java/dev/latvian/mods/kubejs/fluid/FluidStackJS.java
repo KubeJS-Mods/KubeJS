@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.fluid;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.fluid.FluidStack;
-import dev.architectury.registry.registries.Registries;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
@@ -13,7 +12,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -34,7 +33,7 @@ public abstract class FluidStackJS implements WrappedJS, InputFluid, OutputFluid
 		} else if (o instanceof FluidStack fluidStack) {
 			return new BoundFluidStackJS(fluidStack);
 		} else if (o instanceof Fluid fluid) {
-			var f = new UnboundFluidStackJS(Registries.getId(fluid, Registry.FLUID_REGISTRY));
+			var f = new UnboundFluidStackJS(BuiltInRegistries.FLUID.getKey(fluid));
 			return f.kjs$isEmpty() ? EmptyFluidStackJS.INSTANCE : f;
 		} else if (o instanceof JsonElement json) {
 			return fromJson(json);

@@ -1,9 +1,6 @@
 package dev.latvian.mods.kubejs.level;
 
 import dev.architectury.hooks.level.entity.PlayerHooks;
-import dev.architectury.registry.registries.Registries;
-import dev.latvian.mods.kubejs.block.MaterialJS;
-import dev.latvian.mods.kubejs.block.MaterialListJS;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.platform.LevelPlatformHelper;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
@@ -13,7 +10,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -34,11 +31,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class BlockContainerJS implements SpecialEquality {
@@ -141,7 +134,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public String getId() {
-		return Registries.getId(getBlockState().getBlock(), Registry.BLOCK_REGISTRY).toString();
+		return BuiltInRegistries.BLOCK.getKey(getBlockState().getBlock()).toString();
 	}
 
 	public Collection<ResourceLocation> getTags() {
@@ -205,7 +198,7 @@ public class BlockContainerJS implements SpecialEquality {
 
 	public String getEntityId() {
 		var entity = getEntity();
-		return entity == null ? "minecraft:air" : Registries.getId(entity.getType(), Registry.BLOCK_ENTITY_TYPE_REGISTRY).toString();
+		return entity == null ? "minecraft:air" : BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(entity.getType()).toString();
 	}
 
 	@Nullable
@@ -350,10 +343,6 @@ public class BlockContainerJS implements SpecialEquality {
 		}
 
 		return null;
-	}
-
-	public MaterialJS getMaterial() {
-		return MaterialListJS.INSTANCE.get(getBlockState().getMaterial());
 	}
 
 	public ItemStack getItem() {

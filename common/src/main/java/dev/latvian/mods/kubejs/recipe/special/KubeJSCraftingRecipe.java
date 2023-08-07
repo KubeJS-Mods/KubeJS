@@ -36,7 +36,7 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 
 	default ItemStack kjs$assemble(CraftingContainer container) {
 		if (!kjs$getStage().isEmpty()) {
-			var player = getPlayer(container.menu);
+			var player = getPlayer(container.kjs$getMenu());
 
 			if (player == null || !player.kjs$getStages().has(kjs$getStage())) {
 				return ItemStack.EMPTY;

@@ -2,13 +2,7 @@ package dev.latvian.mods.kubejs.block;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.BlockExplodedCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyPlacementCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.CanBeReplacedCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.EntityFallenOnBlockCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.EntitySteppedOnBlockCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.*;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
@@ -28,22 +22,18 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -55,7 +45,9 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	private static final BlockBehaviour.StatePredicate ALWAYS_FALSE_STATE_PREDICATE = (blockState, blockGetter, blockPos) -> false;
 	private static final BlockBehaviour.StateArgumentPredicate<?> ALWAYS_FALSE_STATE_ARG_PREDICATE = (blockState, blockGetter, blockPos, type) -> false;
 
-	public transient MaterialJS material;
+	public transient SoundType soundType;
+	public transient MapColor mapColor;
+	public transient Function<BlockState, MapColor> mapColorFn;
 	public transient float hardness;
 	public transient float resistance;
 	public transient float lightLevel;
@@ -94,7 +86,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	public BlockBuilder(ResourceLocation i) {
 		super(i);
-		material = MaterialListJS.INSTANCE.map.get("wood");
+		soundType = SoundType.WOOD;
+		mapColor = MapColor.NONE;
 		hardness = 1.5F;
 		resistance = 3F;
 		lightLevel = 0F;
@@ -147,10 +140,10 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	@Info("""
-		Sets the display name for this object, e.g. `Stone`.
+			Sets the display name for this object, e.g. `Stone`.
 
-		This will be overridden by a lang file if it exists.
-		""")
+			This will be overridden by a lang file if it exists.
+			""")
 	public BuilderBase<Block> displayName(String name) {
 		if (itemBuilder != null) {
 			itemBuilder.displayName(name);
@@ -329,25 +322,41 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		}
 	}
 
-	@Info("Sets the block's material. Defaults to wood.")
-	public BlockBuilder material(MaterialJS m) {
-		material = m;
+	@Info("Sets the block's sound type. Defaults to wood.")
+	// TODO (CRITICAL): Add SoundType wrapper
+	public BlockBuilder soundType(SoundType m) {
+		soundType = m;
+		return this;
+	}
+
+	@Info("Sets the block's map color. Defaults to NONE.")
+	public BlockBuilder mapColor(MapColor m) {
+		if (mapColorFn != null) {
+			ScriptType.STARTUP.console.warn("BlockBuilder " + id + " has both a static and dynamic map color! Only the dynamic one will be used!");
+		}
+		mapColor = m;
+		return this;
+	}
+
+	@Info("Sets the block's map color dynamically per block state. If unset, defaults to NONE.")
+	public BlockBuilder mapColor(@Nullable Function<BlockState, MapColor> m) {
+		mapColorFn = m;
 		return this;
 	}
 
 	@Info("""
-		Sets the hardness of the block. Defaults to 1.5.
-					
-		Setting this to -1 will make the block unbreakable like bedrock.
-		""")
+			Sets the hardness of the block. Defaults to 1.5.
+						
+			Setting this to -1 will make the block unbreakable like bedrock.
+			""")
 	public BlockBuilder hardness(float h) {
 		hardness = h;
 		return this;
 	}
 
 	@Info("""
-		Sets the blast resistance of the block. Defaults to 3.
-		""")
+			Sets the blast resistance of the block. Defaults to 3.
+			""")
 	public BlockBuilder resistance(float r) {
 		resistance = r;
 		return this;
@@ -390,24 +399,24 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Info("""
-		Sets the render type of the block. Can be `cutout`, `cutout_mipped`, `translucent`, or `basic`.
-		""")
+			Sets the render type of the block. Can be `cutout`, `cutout_mipped`, `translucent`, or `basic`.
+			""")
 	public BlockBuilder renderType(String l) {
 		renderType = l;
 		return this;
 	}
 
 	@Info("""
-		Set the color of a specific layer of the block.
-		""")
+			Set the color of a specific layer of the block.
+			""")
 	public BlockBuilder color(int index, Color c) {
 		color.put(index, c.getArgbJS());
 		return this;
 	}
 
 	@Info("""
-		Texture the block on all sides with the same texture.
-		""")
+			Texture the block on all sides with the same texture.
+			""")
 	public BlockBuilder textureAll(String tex) {
 		for (var direction : Direction.values()) {
 			textureSide(direction, tex);
@@ -418,23 +427,23 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Info("""
-		Texture a specific side of the block.
-		""")
+			Texture a specific side of the block.
+			""")
 	public BlockBuilder textureSide(Direction direction, String tex) {
 		return texture(direction.getSerializedName(), tex);
 	}
 
 	@Info("""
-		Texture a specific texture key of the block.
-		""")
+			Texture a specific texture key of the block.
+			""")
 	public BlockBuilder texture(String id, String tex) {
 		textures.addProperty(id, tex);
 		return this;
 	}
 
 	@Info("""
-		Set the block's model.
-		""")
+			Set the block's model.
+			""")
 	public BlockBuilder model(String m) {
 		model = m;
 		if (itemBuilder != null) {
@@ -444,8 +453,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Info("""
-		Modifies the block's item representation.
-		""")
+			Modifies the block's item representation.
+			""")
 	public BlockBuilder item(@Nullable Consumer<BlockItemBuilder> i) {
 		if (i == null) {
 			itemBuilder = null;
@@ -463,8 +472,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Info("""
-		Set the block to have no corresponding item.
-		""")
+			Set the block to have no corresponding item.
+			""")
 	public BlockBuilder noItem() {
 		return item(null);
 	}
@@ -549,12 +558,12 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Info("""
-		Set how fast you can walk on the block.
-					
-		Any value above 1 will make you walk insanely fast as your speed is multiplied by this value each tick.
-					
-		Recommended values are between 0.1 and 1, useful for mimicking soul sand or ice.
-		""")
+			Set how fast you can walk on the block.
+						
+			Any value above 1 will make you walk insanely fast as your speed is multiplied by this value each tick.
+						
+			Recommended values are between 0.1 and 1, useful for mimicking soul sand or ice.
+			""")
 	public BlockBuilder speedFactor(float f) {
 		speedFactor = f;
 		return this;
@@ -642,10 +651,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	private MaterialColor getStateColor(BlockState state) {
-		return material.getMinecraftMaterial().getColor();
-	}
-
 	@Info("Set the default state of the block.")
 	public BlockBuilder defaultState(Consumer<BlockStateModifyCallbackJS> callbackJS) {
 		defaultStateModification = callbackJS;
@@ -665,9 +670,9 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Info("""
-		Set what happens when an entity steps on the block
-		This is called every tick for every entity standing on the block, so be careful what you do here.
-		""")
+			Set what happens when an entity steps on the block
+			This is called every tick for every entity standing on the block, so be careful what you do here.
+			""")
 	public BlockBuilder steppedOn(Consumer<EntitySteppedOnBlockCallbackJS> callbackJS) {
 		stepOnCallback = callbackJS;
 		return this;
@@ -680,17 +685,17 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Info("""
-		Bounces entities that land on this block by bounciness * their fall velocity.
-		Do not make bounciness negative, as that is a recipe for a long and laggy trip to the void
-		""")
+			Bounces entities that land on this block by bounciness * their fall velocity.
+			Do not make bounciness negative, as that is a recipe for a long and laggy trip to the void
+			""")
 	public BlockBuilder bounciness(float bounciness) {
 		return afterFallenOn(ctx -> ctx.bounce(bounciness));
 	}
 
 	@Info("""
-		Set how this block bounces/moves entities that land on top of this. Do not use this to modify the block, use fallOn instead!
-		Use ctx.bounce(height) or ctx.setVelocity(x, y, z) to change the entities velocity.
-		""")
+			Set how this block bounces/moves entities that land on top of this. Do not use this to modify the block, use fallOn instead!
+			Use ctx.bounce(height) or ctx.setVelocity(x, y, z) to change the entities velocity.
+			""")
 	public BlockBuilder afterFallenOn(Consumer<AfterEntityFallenOnBlockCallbackJS> callbackJS) {
 		afterFallenOnCallback = callbackJS;
 		return this;
@@ -703,10 +708,10 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Info("""
-		Add a blockstate property to the block.
-					
-		For example, facing, lit, etc.
-		""")
+			Add a blockstate property to the block.
+						
+			For example, facing, lit, etc.
+			""")
 	public BlockBuilder property(Property<?> property) {
 		if (property.getPossibleValues().size() <= 1) {
 			throw new IllegalArgumentException(String.format("Block \"%s\" has an illegal Blockstate Property \"%s\" which has <= 1 possible values. (%d possible values)", id, property.getName(), property.getPossibleValues().size()));
@@ -716,8 +721,15 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	public Block.Properties createProperties() {
-		var properties = new KubeJSBlockProperties(this, material.getMinecraftMaterial(), this::getStateColor);
-		properties.sound(material.getSound());
+		// FIXME: Implement all the other ex-Material properties
+		var properties = BlockBehaviour.Properties.of();
+		properties.sound(soundType);
+
+		if (mapColorFn == null) {
+			properties.mapColor(mapColor);
+		} else {
+			properties.mapColor(mapColorFn);
+		}
 
 		if (resistance >= 0F) {
 			properties.strength(hardness, resistance);

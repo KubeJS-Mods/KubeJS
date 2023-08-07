@@ -28,7 +28,7 @@ mutable field net/minecraft/world/item/DiggerItem speed F
 accessible field net/minecraft/world/item/TieredItem tier Lnet/minecraft/world/item/Tier;
 mutable field net/minecraft/world/item/TieredItem tier Lnet/minecraft/world/item/Tier;
 
-accessible method net/minecraft/world/level/block/state/BlockBehaviour$Properties <init> (Lnet/minecraft/world/level/material/Material;Ljava/util/function/Function;)V
+accessible method net/minecraft/world/level/block/state/BlockBehaviour$Properties <init> ()V
 
 # accessible method net/minecraft/world/entity/ai/village/poi/PoiType <init> (Ljava/lang/String;Ljava/util/Set;II)V
 # accessible method net/minecraft/world/entity/npc/VillagerType <init> (Ljava/lang/String;)V
@@ -45,7 +45,7 @@ accessible method net/minecraft/world/level/GameRules$Value onChanged (Lnet/mine
 
 accessible method net/minecraft/world/level/GameRules$Value deserialize (Ljava/lang/String;)V
 
-accessible field net/minecraft/world/inventory/CraftingContainer menu Lnet/minecraft/world/inventory/AbstractContainerMenu;
+accessible field net/minecraft/world/inventory/TransientCraftingContainer menu Lnet/minecraft/world/inventory/AbstractContainerMenu;
 accessible field net/minecraft/world/inventory/CraftingMenu player Lnet/minecraft/world/entity/player/Player;
 accessible field net/minecraft/world/inventory/InventoryMenu owner Lnet/minecraft/world/entity/player/Player;
 
@@ -60,8 +60,6 @@ transitive-mutable field net/minecraft/world/item/crafting/Ingredient values [Ln
 transitive-accessible field net/minecraft/world/item/crafting/Ingredient itemStacks [Lnet/minecraft/world/item/ItemStack;
 transitive-accessible field net/minecraft/world/item/crafting/Ingredient stackingIds Lit/unimi/dsi/fastutil/ints/IntList;
 transitive-extendable class net/minecraft/world/item/crafting/Ingredient$Value
-transitive-accessible method net/minecraft/world/item/crafting/Ingredient dissolve ()V
-transitive-extendable method net/minecraft/world/item/crafting/Ingredient dissolve ()V
 
 accessible field net/minecraft/world/item/crafting/ShapedRecipe width I
 accessible field net/minecraft/world/item/crafting/ShapedRecipe height I

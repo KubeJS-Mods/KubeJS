@@ -1,7 +1,5 @@
 package dev.latvian.mods.kubejs.bindings;
 
-import dev.latvian.mods.kubejs.block.MaterialJS;
-import dev.latvian.mods.kubejs.block.MaterialListJS;
 import dev.latvian.mods.kubejs.block.predicate.BlockEntityPredicate;
 import dev.latvian.mods.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.mods.kubejs.block.predicate.BlockPredicate;
@@ -11,24 +9,16 @@ import dev.latvian.mods.kubejs.util.Tags;
 import net.minecraft.Util;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Info("Various block related helper functions")
 public class BlockWrapper {
-	@Info("Get a map of all KubeJS materials")
-	public static Map<String, MaterialJS> getMaterial() {
-		return MaterialListJS.INSTANCE.map;
-	}
-
 	public static BlockIDPredicate id(ResourceLocation id) {
 		return new BlockIDPredicate(id);
 	}
@@ -91,7 +81,7 @@ public class BlockWrapper {
 	@Info("Gets a list of all blocks with tags")
 	public static List<ResourceLocation> getTaggedIds(ResourceLocation tag) {
 		return Util.make(new LinkedList<>(), list -> {
-			for (var holder : Registry.BLOCK.getTagOrEmpty(Tags.block(tag))) {
+			for (var holder : BuiltInRegistries.BLOCK.getTagOrEmpty(Tags.block(tag))) {
 				holder.unwrapKey().map(ResourceKey::location).ifPresent(list::add);
 			}
 		});

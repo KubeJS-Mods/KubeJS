@@ -72,7 +72,7 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, M
 	}
 
 	default ServerLevel kjs$getLevel(ResourceLocation dimension) {
-		return kjs$self().getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, dimension));
+		return kjs$self().getLevel(ResourceKey.create(Registries.DIMENSION, dimension));
 	}
 
 	@Nullable

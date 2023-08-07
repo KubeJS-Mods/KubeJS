@@ -1,14 +1,9 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
-import net.minecraft.world.level.material.Material;
 
 @RemapPrefixForJS("kjs$")
 public interface BlockStateKJS {
-	default void kjs$setMaterial(Material v) {
-		throw new NoMixinException();
-	}
-
 	default void kjs$setDestroySpeed(float v) {
 		throw new NoMixinException();
 	}

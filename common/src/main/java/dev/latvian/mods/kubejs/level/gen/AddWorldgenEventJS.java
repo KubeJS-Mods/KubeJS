@@ -1,64 +1,19 @@
 package dev.latvian.mods.kubejs.level.gen;
 
-import com.google.common.collect.Iterables;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.mojang.serialization.JsonOps;
-import com.mojang.serialization.Lifecycle;
-import dev.architectury.registry.level.biome.BiomeModifications;
-import dev.latvian.mods.kubejs.event.StartupEventJS;
-import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
-import dev.latvian.mods.kubejs.level.gen.properties.AddLakeProperties;
-import dev.latvian.mods.kubejs.level.gen.properties.AddOreProperties;
-import dev.latvian.mods.kubejs.level.gen.properties.AddSpawnProperties;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
-import dev.latvian.mods.kubejs.util.ClassWrapper;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
-import net.minecraft.Util;
-import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
-import net.minecraft.core.WritableRegistry;
-import net.minecraft.data.BuiltinRegistries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.level.biome.MobSpawnSettings;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.world.level.levelgen.VerticalAnchor;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.LakeFeature;
-import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
-import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
-import net.minecraft.world.level.levelgen.placement.CountPlacement;
-import net.minecraft.world.level.levelgen.placement.InSquarePlacement;
-import net.minecraft.world.level.levelgen.placement.PlacedFeature;
-import net.minecraft.world.level.levelgen.placement.PlacementModifier;
-import net.minecraft.world.level.levelgen.placement.RarityFilter;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.OptionalInt;
-import java.util.function.Consumer;
-import java.util.regex.Pattern;
-
-public class AddWorldgenEventJS extends StartupEventJS {
+/*public class AddWorldgenEventJS extends StartupEventJS {
 	private static final Pattern SPAWN_PATTERN = Pattern.compile("(\\w+:\\w+)\\*\\((\\d+)-(\\d+)\\):(\\d+)");
 
 	// TODO: we should probably not be registering to BuiltinRegistries directly,
 	//  but rather to the synced registry directly by using the RegistryAccess.
+	// FIXME: oh really, we shouldn't?! ... (just use JSON at this point, there's no way we'll
+	//  have access to a writable RegistryAccess anytime soon)
 	private static <T> Holder<T> registerFeature(Registry<T> registry, ResourceLocation id, T object) {
 		var key = ResourceKey.create(registry.key(), id);
 		return ((WritableRegistry<T>) registry).registerOrOverride(OptionalInt.empty(), key, object, Lifecycle.experimental());
 	}
 
 	private void addFeature(ResourceLocation id, BiomeFilter filter, GenerationStep.Decoration step,
-							ConfiguredFeature<?, ?> feature, List<PlacementModifier> modifiers) {
+	                        ConfiguredFeature<?, ?> feature, List<PlacementModifier> modifiers) {
 		if (id == null) {
 			id = new ResourceLocation("kubejs:features/" + UtilsJS.getUniqueId(feature, ConfiguredFeature.DIRECT_CODEC));
 		}
@@ -81,37 +36,6 @@ public class AddWorldgenEventJS extends StartupEventJS {
 
 	private void addEntitySpawn(BiomeFilter filter, MobCategory category, MobSpawnSettings.SpawnerData spawnerData) {
 		BiomeModifications.postProcessProperties(filter, (ctx, props) -> props.getSpawnProperties().addSpawn(category, spawnerData));
-	}
-
-	@Deprecated(forRemoval = true)
-	public void addFeatureJson(BiomeFilter filter, JsonObject json) {
-		var id = json.has("id") ? new ResourceLocation(json.get("id").getAsString()) : null;
-		addFeatureJson(filter, id, json);
-	}
-
-	@Deprecated(forRemoval = true)
-	public void addFeatureJson(BiomeFilter filter, @Nullable ResourceLocation id, JsonObject json) {
-		ConsoleJS.STARTUP.warn("addFeatureJson is deprecated for removal in 1.19.2! Please use virtual datapacks or addOre (for ores) instead.");
-
-		var featureJson = json.has("feature") ? json : Util.make(new JsonObject(), o -> o.add("feature", json));
-
-		if (!featureJson.has("placement")) {
-			featureJson.add("placement", new JsonArray());
-		}
-
-		if (id == null) {
-			id = new ResourceLocation("kubejs:features/" + UtilsJS.getUniqueId(featureJson));
-		}
-
-		if (!featureJson.get("feature").isJsonObject()) {
-			ConsoleJS.STARTUP.error("Adding feature JSONs with indirect references is not supported during worldgen events due to how dynamic registries work.");
-			ConsoleJS.STARTUP.error("If you want to add a feature that references another feature by ID, please use virtual datapacks instead.");
-			return;
-		}
-
-		var feature = PlacedFeature.DIRECT_CODEC.parse(JsonOps.INSTANCE, featureJson).get().orThrow();
-
-		addFeature(id, filter, GenerationStep.Decoration.SURFACE_STRUCTURES, feature);
 	}
 
 	public void addOre(Consumer<AddOreProperties> p) {
@@ -158,8 +82,8 @@ public class AddWorldgenEventJS extends StartupEventJS {
 		}
 
 		addFeature(properties.id, properties.biomes, properties.worldgenLayer,
-			new ConfiguredFeature<>(Feature.LAKE, new LakeFeature.Configuration(BlockStateProvider.simple(fluid), BlockStateProvider.simple(barrier))),
-			properties.chance > 0 ? Collections.singletonList(RarityFilter.onAverageOnceEvery(properties.chance)) : List.of());
+				new ConfiguredFeature<>(Feature.LAKE, new LakeFeature.Configuration(BlockStateProvider.simple(fluid), BlockStateProvider.simple(barrier))),
+				properties.chance > 0 ? Collections.singletonList(RarityFilter.onAverageOnceEvery(properties.chance)) : List.of());
 	}
 
 	public void addSpawn(Consumer<AddSpawnProperties> p) {
@@ -201,3 +125,4 @@ public class AddWorldgenEventJS extends StartupEventJS {
 		return new ClassWrapper<>(VerticalAnchor.class);
 	}
 }
+*/

@@ -26,7 +26,7 @@ public class WildcardIngredient extends KubeJSIngredient {
 	}
 
 	@Override
-	public void dissolve() {
+	protected void dissolve() {
 		if (this.itemStacks == null) {
 			this.itemStacks = ItemStackJS.getList().toArray(new ItemStack[0]);
 		}

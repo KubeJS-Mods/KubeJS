@@ -5,6 +5,7 @@
 	"mixins": [
 		"BlockBehaviourMixin",
 		"BlockStateBaseMixin",
+		"CraftingContainerMixin",
 		"ContainerMixin",
 		"DamageSourceMixin",
 		"EntityMixin",

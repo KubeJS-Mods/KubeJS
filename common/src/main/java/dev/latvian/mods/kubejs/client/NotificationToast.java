@@ -1,12 +1,7 @@
 package dev.latvian.mods.kubejs.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.math.Matrix4f;
+import com.mojang.blaze3d.vertex.*;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.util.NotificationBuilder;
@@ -20,6 +15,7 @@ import net.minecraft.util.FastColor;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,9 +29,9 @@ public class NotificationToast implements Toast {
 	}
 
 	public static final Map<Integer, BiFunction<Minecraft, String, ToastIcon>> ICONS = new HashMap<>(Map.of(
-		1, TextureIcon::new,
-		2, ItemIcon::new,
-		3, AtlasIcon::of
+			1, TextureIcon::new,
+			2, ItemIcon::new,
+			3, AtlasIcon::of
 	));
 
 	public record TextureIcon(ResourceLocation texture) implements ToastIcon {

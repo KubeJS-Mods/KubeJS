@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.util;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -19,23 +20,23 @@ import java.util.stream.Stream;
 
 public class Tags {
 	public static TagKey<Item> item(ResourceLocation id) {
-		return generic(id, Registry.ITEM_REGISTRY);
+		return generic(id, Registries.ITEM);
 	}
 
 	public static TagKey<Block> block(ResourceLocation id) {
-		return generic(id, Registry.BLOCK_REGISTRY);
+		return generic(id, Registries.BLOCK);
 	}
 
 	public static TagKey<Fluid> fluid(ResourceLocation id) {
-		return generic(id, Registry.FLUID_REGISTRY);
+		return generic(id, Registries.FLUID);
 	}
 
 	public static TagKey<EntityType<?>> entityType(ResourceLocation id) {
-		return generic(id, Registry.ENTITY_TYPE_REGISTRY);
+		return generic(id, Registries.ENTITY_TYPE);
 	}
 
 	public static TagKey<Biome> biome(ResourceLocation id) {
-		return generic(id, Registry.BIOME_REGISTRY);
+		return generic(id, Registries.BIOME);
 	}
 
 	public static Stream<TagKey<Item>> byItemStack(ItemStack stack) {
@@ -69,9 +70,9 @@ public class Tags {
 	public static <T> Stream<TagKey<T>> forType(T object, Registry<T> registry) {
 		warnIfUnbound();
 		return registry.getResourceKey(object)
-			.flatMap(registry::getHolder)
-			.stream()
-			.flatMap(Holder::tags);
+				.flatMap(registry::getHolder)
+				.stream()
+				.flatMap(Holder::tags);
 	}
 
 	private static <T> TagKey<T> generic(ResourceLocation id, ResourceKey<Registry<T>> registry) {

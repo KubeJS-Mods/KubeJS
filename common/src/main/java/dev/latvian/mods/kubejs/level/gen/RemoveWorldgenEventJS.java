@@ -9,7 +9,7 @@ import dev.latvian.mods.kubejs.level.gen.properties.RemoveOresProperties;
 import dev.latvian.mods.kubejs.level.gen.properties.RemoveSpawnsProperties;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.MobCategory;
@@ -129,8 +129,8 @@ public class RemoveWorldgenEventJS extends StartupEventJS {
 
 	public void removeFeatureById(BiomeFilter filter, GenerationStep.Decoration decoration, ResourceLocation[] ids) {
 		BiomeModifications.replaceProperties(filter, (ctx, properties) -> {
-			Stream.of(ids).map(id -> ResourceKey.create(Registry.PLACED_FEATURE_REGISTRY, id))
-				.forEach(id -> properties.getGenerationProperties().removeFeature(decoration, id));
+			Stream.of(ids).map(id -> ResourceKey.create(Registries.PLACED_FEATURE, id))
+					.forEach(id -> properties.getGenerationProperties().removeFeature(decoration, id));
 		});
 	}
 

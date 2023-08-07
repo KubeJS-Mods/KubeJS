@@ -29,8 +29,7 @@ public abstract class KubeJSIngredient extends AbstractIngredient implements Ing
 		return this.itemStacks;
 	}
 
-	@Override
-	public void dissolve() {
+	protected void dissolve() {
 		if (this.itemStacks == null) {
 			ItemStackSet stacks = new ItemStackSet();
 

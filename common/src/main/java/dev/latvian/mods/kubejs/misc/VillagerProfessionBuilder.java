@@ -46,12 +46,12 @@ public class VillagerProfessionBuilder extends BuilderBase<VillagerProfession> {
 	}
 
 	public VillagerProfessionBuilder poiType(ResourceLocation t) {
-		poiType = Either.left(ResourceKey.create(Registry.POINT_OF_INTEREST_TYPE_REGISTRY, t));
+		poiType = Either.left(ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, t));
 		return this;
 	}
 
 	public VillagerProfessionBuilder poiTypeTag(ResourceLocation t) {
-		poiType = Either.right(TagKey.create(Registry.POINT_OF_INTEREST_TYPE_REGISTRY, t));
+		poiType = Either.right(TagKey.create(Registries.POINT_OF_INTEREST_TYPE, t));
 		return this;
 	}
 

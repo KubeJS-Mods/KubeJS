@@ -14,10 +14,10 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 
 public record TagKeyComponent<T>(ResourceKey<? extends Registry<T>> registry, Class<?> registryType) implements RecipeComponent<TagKey<T>> {
-	public static final RecipeComponent<TagKey<Block>> BLOCK = new TagKeyComponent<>(Registry.BLOCK_REGISTRY, Block.class);
-	public static final RecipeComponent<TagKey<Item>> ITEM = new TagKeyComponent<>(Registry.ITEM_REGISTRY, Item.class);
-	public static final RecipeComponent<TagKey<EntityType<?>>> ENTITY_TYPE = new TagKeyComponent<>(Registry.ENTITY_TYPE_REGISTRY, EntityType.class);
-	public static final RecipeComponent<TagKey<Biome>> BIOME = new TagKeyComponent<>(Registry.BIOME_REGISTRY, Biome.class);
+	public static final RecipeComponent<TagKey<Block>> BLOCK = new TagKeyComponent<>(Registries.BLOCK, Block.class);
+	public static final RecipeComponent<TagKey<Item>> ITEM = new TagKeyComponent<>(Registries.ITEM, Item.class);
+	public static final RecipeComponent<TagKey<EntityType<?>>> ENTITY_TYPE = new TagKeyComponent<>(Registries.ENTITY_TYPE, EntityType.class);
+	public static final RecipeComponent<TagKey<Biome>> BIOME = new TagKeyComponent<>(Registries.BIOME, Biome.class);
 
 	@Override
 	public String componentType() {

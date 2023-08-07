@@ -72,14 +72,14 @@ public class ModifyRecipeCraftingGrid {
 
 	@Nullable
 	public AbstractContainerMenu getMenu() {
-		return container.menu;
+		return container.kjs$getMenu();
 	}
 
 	@Nullable
 	public Player getPlayer() {
-		if (container.menu instanceof CraftingMenu menu && menu.player != null) {
+		if (getMenu() instanceof CraftingMenu menu && menu.player != null) {
 			return menu.player;
-		} else if (container.menu instanceof InventoryMenu menu && menu.owner != null) {
+		} else if (getMenu() instanceof InventoryMenu menu && menu.owner != null) {
 			return menu.owner;
 		}
 
