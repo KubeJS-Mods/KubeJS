@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe;
 
+import dev.latvian.mods.kubejs.core.CraftingContainerKJS;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -72,7 +73,7 @@ public class ModifyRecipeCraftingGrid {
 
 	@Nullable
 	public AbstractContainerMenu getMenu() {
-		return container.kjs$getMenu();
+		return ((CraftingContainerKJS) container).kjs$getMenu();
 	}
 
 	@Nullable

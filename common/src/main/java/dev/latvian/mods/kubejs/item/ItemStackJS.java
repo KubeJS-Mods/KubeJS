@@ -13,21 +13,15 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
-import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public interface ItemStackJS {
@@ -44,39 +38,30 @@ public interface ItemStackJS {
 		return cachedItemTypeList;
 	});
 
-	Lazy<Map<ResourceLocation, NonNullList<ItemStack>>> CACHED_ITEM_MAP = Lazy.of(() -> {
-		var map = new HashMap<ResourceLocation, NonNullList<ItemStack>>();
-		NonNullList<ItemStack> stackList = NonNullList.create();
+	Lazy<Map<ResourceLocation, Collection<ItemStack>>> CACHED_ITEM_MAP = Lazy.of(() -> {
+		var map = new HashMap<ResourceLocation, Collection<ItemStack>>();
+		var stackList = ItemStackLinkedSet.createTypeAndTagSet();
 
-		for (var item : KubeJSRegistries.items()) {
-			try {
-				item.fillItemCategory(CreativeModeTab.TAB_SEARCH, stackList);
-			} catch (Throwable ignored) {
-			}
-		}
+		stackList.addAll(CreativeModeTabs.searchTab().getDisplayItems());
 
 		for (var stack : stackList) {
 			if (!stack.isEmpty()) {
 				map.computeIfAbsent(
-					stack.getItem().kjs$getIdLocation(),
-					_rl -> NonNullList.create()
+						stack.getItem().kjs$getIdLocation(),
+						_rl -> ItemStackLinkedSet.createTypeAndTagSet()
 				).add(stack.kjs$withCount(1));
 			}
 		}
 
 		for (var itemId : CACHED_ITEM_TYPE_LIST.get()) {
 			var itemRl = new ResourceLocation(itemId);
-			map.computeIfAbsent(
-				itemRl,
-				_rl -> NonNullList.of(ItemStack.EMPTY, new ItemStack(KubeJSRegistries.items().get(itemRl)))
-			);
+			map.computeIfAbsent(itemRl, id -> Set.of(BuiltInRegistries.ITEM.get(id).getDefaultInstance()));
 		}
 
 		return map;
 	});
 
-	Lazy<List<ItemStack>> CACHED_ITEM_LIST = Lazy.of(() -> CACHED_ITEM_MAP.get().values().stream().flatMap(List::stream).toList());
-
+	Lazy<List<ItemStack>> CACHED_ITEM_LIST = Lazy.of(() -> CACHED_ITEM_MAP.get().values().stream().flatMap(Collection::stream).toList());
 
 	static ItemStack of(@Nullable Object o) {
 		if (o instanceof Wrapper w) {
@@ -301,7 +286,7 @@ public interface ItemStackJS {
 		return CACHED_ITEM_TYPE_LIST.get();
 	}
 
-	static Map<ResourceLocation, NonNullList<ItemStack>> getTypeToStacks() {
+	static Map<ResourceLocation, Collection<ItemStack>> getTypeToStacks() {
 		return CACHED_ITEM_MAP.get();
 	}
 

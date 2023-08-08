@@ -41,7 +41,7 @@ public class AddStageMessage extends BaseS2CMessage {
 			return;
 		}
 
-		var p = player.equals(p0.getUUID()) ? p0 : p0.level.getPlayerByUUID(player);
+		var p = player.equals(p0.getUUID()) ? p0 : p0.level().getPlayerByUUID(player);
 
 		if (p != null) {
 			p.kjs$getStages().add(stage);

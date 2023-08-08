@@ -9,7 +9,7 @@ import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -69,8 +69,8 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder {
 
 	@Nullable
 	default Entity kjs$createEntity(ResourceLocation id) {
-		var type = Registry.ENTITY_TYPE.get(id);
-		return type == null ? null : type.create(kjs$self());
+		var type = BuiltInRegistries.ENTITY_TYPE.get(id);
+		return type.create(kjs$self());
 	}
 
 	default void kjs$spawnFireworks(double x, double y, double z, FireworksJS f) {

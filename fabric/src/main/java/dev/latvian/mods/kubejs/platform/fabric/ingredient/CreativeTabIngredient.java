@@ -3,12 +3,13 @@ package dev.latvian.mods.kubejs.platform.fabric.ingredient;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CreativeTabIngredient extends KubeJSIngredient {
@@ -21,7 +22,7 @@ public class CreativeTabIngredient extends KubeJSIngredient {
 	}
 
 	public CreativeTabIngredient(FriendlyByteBuf buf) {
-		this(UtilsJS.findCreativeTab(buf.readUtf()));
+		this(buf.readById(BuiltInRegistries.CREATIVE_MODE_TAB));
 	}
 
 	public CreativeTabIngredient(JsonObject json) {
@@ -30,14 +31,12 @@ public class CreativeTabIngredient extends KubeJSIngredient {
 
 	@Override
 	public boolean test(@Nullable ItemStack stack) {
-		return stack != null && stack.getItem().getItemCategory() == tab;
+		return stack != null && tab.contains(stack);
 	}
 
 	@Override
 	public List<ItemStack> getMatchingStacks() {
-		NonNullList<ItemStack> list = NonNullList.create();
-		tab.fillItemList(list);
-		return list;
+		return new ArrayList<>(tab.getSearchTabDisplayItems());
 	}
 
 	@Override
@@ -47,11 +46,11 @@ public class CreativeTabIngredient extends KubeJSIngredient {
 
 	@Override
 	public void toJson(JsonObject json) {
-		json.addProperty("tab", tab.getRecipeFolderName());
+		json.addProperty("tab", BuiltInRegistries.CREATIVE_MODE_TAB.getKey(tab).toString());
 	}
 
 	@Override
 	public void write(FriendlyByteBuf buf) {
-		buf.writeUtf(tab.getRecipeFolderName());
+		buf.writeId(BuiltInRegistries.CREATIVE_MODE_TAB, tab);
 	}
 }

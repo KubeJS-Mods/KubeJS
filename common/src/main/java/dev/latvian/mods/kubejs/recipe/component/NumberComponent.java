@@ -108,7 +108,8 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 
 		@Override
 		public Long read(RecipeJS recipe, Object from) {
-			return Mth.clamp(NumberComponent.numberOf(from).longValue(), min, max);
+			long val = NumberComponent.numberOf(from).longValue();
+			return (val < min) ? min : Math.min(val, max);
 		}
 
 		public LongRange min(long min) {

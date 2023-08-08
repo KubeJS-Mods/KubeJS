@@ -1,27 +1,28 @@
 package dev.latvian.mods.kubejs.script.data;
 
 import dev.latvian.mods.kubejs.DevProperties;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
+import net.minecraft.server.packs.resources.IoSupplier;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
+
+import static dev.latvian.mods.kubejs.script.data.KubeJSFolderPackResources.PACK_META_BYTES;
 
 public class VirtualKubeJSDataPack extends AbstractPackResources {
 	public final boolean high;
@@ -30,7 +31,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 	private final Set<String> namespaces;
 
 	public VirtualKubeJSDataPack(boolean h) {
-		super(new File("dummy"));
+		super("dummy", false);
 		high = h;
 		locationToData = new HashMap<>();
 		pathToData = new HashMap<>();
@@ -47,23 +48,23 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 		}
 	}
 
+	@Nullable
 	@Override
-	public InputStream getResource(String path) throws IOException {
-		var s = pathToData.get(path);
-
-		if (s != null) {
-			if (DevProperties.get().dataPackOutput) {
-				ConsoleJS.SERVER.info("Served virtual file [" + (high ? "high" : "low") + " priority] '" + path + "': " + s);
-			}
-
-			return new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
-		}
-
-		throw new FileNotFoundException(path);
+	public IoSupplier<InputStream> getRootResource(String... path) {
+		var joined = String.join("/", path);
+		return switch (joined) {
+			case PACK_META -> () -> new ByteArrayInputStream(PACK_META_BYTES);
+			case "pack.png" -> IoSupplier.create(KubeJS.thisMod.findResource("kubejs_logo.png").get());
+			default -> null;
+		};
 	}
 
 	@Override
-	public InputStream getResource(PackType type, ResourceLocation location) throws IOException {
+	public IoSupplier<InputStream> getResource(PackType type, ResourceLocation location) {
+		if (type != PackType.SERVER_DATA) {
+			return null;
+		}
+
 		var s = locationToData.get(location);
 
 		if (s != null) {
@@ -71,30 +72,21 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 				ConsoleJS.SERVER.info("Served virtual file [" + (high ? "high" : "low") + " priority] '" + location + "': " + s);
 			}
 
-			return new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
+			return () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
 		}
 
-		throw new FileNotFoundException(location.toString());
+		return null;
 	}
 
 	@Override
-	public boolean hasResource(String path) {
-		return pathToData.containsKey(path);
-	}
-
-	@Override
-	public boolean hasResource(PackType type, ResourceLocation location) {
-		return type == PackType.SERVER_DATA && locationToData.containsKey(location);
-	}
-
-	@Override
-	public Collection<ResourceLocation> getResources(PackType type, String namespace, String path, Predicate<ResourceLocation> filter) {
-		return locationToData.keySet()
-			.stream()
-			.filter(r -> !r.getPath().endsWith(".mcmeta"))
-			.filter(r -> r.getNamespace().equals(namespace) && r.getPath().startsWith(path))
-			.filter(filter)
-			.toList();
+	public void listResources(PackType packType, String namespace, String path, ResourceOutput visitor) {
+		for (ResourceLocation r : locationToData.keySet()) {
+			if (!r.getPath().endsWith(".mcmeta")) {
+				if (r.getNamespace().equals(namespace) && r.getPath().startsWith(path)) {
+					visitor.accept(r, getResource(packType, r));
+				}
+			}
+		}
 	}
 
 	@Override
@@ -109,12 +101,12 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 	}
 
 	@Override
-	public String getName() {
-		return this.toString();
+	public String toString() {
+		return packId();
 	}
 
 	@Override
-	public String toString() {
+	public @NotNull String packId() {
 		return "KubeJS Virtual Data Pack [" + (high ? "high" : "low") + " priority]";
 	}
 

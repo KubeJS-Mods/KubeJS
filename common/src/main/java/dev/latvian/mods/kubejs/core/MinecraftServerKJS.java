@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.server.IScheduledEventCallback;
 import dev.latvian.mods.kubejs.server.ScheduledEvent;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;

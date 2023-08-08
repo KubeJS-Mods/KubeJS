@@ -7,23 +7,18 @@ import com.google.gson.JsonPrimitive;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.registries.Registrar;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.rhino.mod.util.JsonUtils;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -78,28 +73,18 @@ public class DataExport {
 
 	@SuppressWarnings({"rawtypes", "unchecked", "resource", "ResultOfMethodCallIgnored"})
 	private void exportData0() throws Exception {
-		for (ResourceKey regKey : Registry.REGISTRY.registryKeySet()) {
-			var reg = KubeJSRegistries.REGISTRIES.get(regKey);
+		source.registryAccess().registries().forEach(reg -> {
+			var key = reg.key();
+			var registry = reg.value();
 
-			if (reg != null) {
-				var regItems = new ArrayList<Pair<String, String>>();
+			var j = new JsonObject();
 
-				for (var entry0 : reg.entrySet()) {
-					var entry = (Map.Entry<ResourceKey, Object>) entry0;
-					regItems.add(Pair.of(entry.getKey().location().toString(), (entry.getValue() == null ? "null" : entry.getValue().getClass().getName())));
-				}
-
-				regItems.sort((o1, o2) -> o1.getLeft().compareToIgnoreCase(o2.getLeft()));
-
-				var j = new JsonObject();
-
-				for (var pair : regItems) {
-					j.addProperty(pair.getLeft(), pair.getRight());
-				}
-
-				addJson("registries/" + regKey.location().getPath() + ".json", j);
+			for (var entry : registry.entrySet()) {
+				j.addProperty(entry.getKey().location().toString(), (entry.getValue() == null ? "null" : entry.getValue().getClass().getName()));
 			}
-		}
+
+			addJson("registries/" + key.location().getPath() + ".json", j);
+		});
 
 		addString("errors.log", String.join("\n", ScriptType.SERVER.errors));
 		addString("warnings.log", String.join("\n", ScriptType.SERVER.warnings));
@@ -128,16 +113,16 @@ public class DataExport {
 		var index = new JsonArray();
 
 		exportedFiles.keySet()
-			.stream()
-			.sorted(String.CASE_INSENSITIVE_ORDER)
-			.forEach(index::add);
+				.stream()
+				.sorted(String.CASE_INSENSITIVE_ORDER)
+				.forEach(index::add);
 
 		addJson("index.json", index);
 
 		Files.walk(KubeJSPaths.EXPORT)
-			.sorted(Comparator.reverseOrder())
-			.map(Path::toFile)
-			.forEach(File::delete);
+				.sorted(Comparator.reverseOrder())
+				.map(Path::toFile)
+				.forEach(File::delete);
 
 		Files.createDirectory(KubeJSPaths.EXPORT);
 
@@ -168,9 +153,9 @@ public class DataExport {
 		CompletableFuture.allOf(arr).join();
 
 		if (source.getServer().isSingleplayer()) {
-			source.sendSuccess(Component.literal("Done! Export in local/kubejs/export").kjs$clickOpenFile(KubeJSPaths.EXPORT.toAbsolutePath().toString()), false);
+			source.sendSuccess(() -> Component.literal("Done! Export in local/kubejs/export").kjs$clickOpenFile(KubeJSPaths.EXPORT.toAbsolutePath().toString()), false);
 		} else {
-			source.sendSuccess(Component.literal("Done! Export in local/kubejs/export"), false);
+			source.sendSuccess(() -> Component.literal("Done! Export in local/kubejs/export"), false);
 		}
 	}
 }

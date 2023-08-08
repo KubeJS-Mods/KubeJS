@@ -41,8 +41,8 @@ public class CommandRegistryEventJS extends EventJS {
 		return new ClassWrapper<>(Commands.class);
 	}
 
-	public ClassWrapper<ArgumentTypeWrapper> getArguments() {
-		return new ClassWrapper<>(ArgumentTypeWrapper.class);
+	public ClassWrapper<ArgumentTypeWrappers> getArguments() {
+		return new ClassWrapper<>(ArgumentTypeWrappers.class);
 	}
 
 	// Used to access the static members of SharedSuggestionProvider

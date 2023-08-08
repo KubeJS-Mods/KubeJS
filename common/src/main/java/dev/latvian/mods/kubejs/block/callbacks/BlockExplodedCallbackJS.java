@@ -49,7 +49,7 @@ public class BlockExplodedCallbackJS {
 
 	@Nullable
 	public LivingEntity getIgniter() {
-		return explosion.getSourceMob();
+		return explosion.getIndirectSourceEntity();
 	}
 
 	public float getRadius() {

@@ -1,28 +1,16 @@
 package dev.latvian.mods.kubejs.client.painter;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.client.ClientEventJS;
-import dev.latvian.mods.kubejs.client.painter.screen.AtlasTextureObject;
-import dev.latvian.mods.kubejs.client.painter.screen.GradientObject;
-import dev.latvian.mods.kubejs.client.painter.screen.ItemObject;
-import dev.latvian.mods.kubejs.client.painter.screen.PaintScreenEventJS;
-import dev.latvian.mods.kubejs.client.painter.screen.RectangleObject;
-import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
-import dev.latvian.mods.kubejs.client.painter.screen.ScreenPainterObject;
-import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
+import dev.latvian.mods.kubejs.client.painter.screen.*;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import dev.latvian.mods.unit.FixedNumberUnit;
-import dev.latvian.mods.unit.MutableNumberUnit;
-import dev.latvian.mods.unit.Unit;
-import dev.latvian.mods.unit.UnitContext;
-import dev.latvian.mods.unit.UnitVariables;
-import dev.latvian.mods.unit.VariableSet;
+import dev.latvian.mods.unit.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
@@ -172,7 +160,7 @@ public class Painter implements UnitVariables {
 		return variables;
 	}
 
-	public void inGameScreenDraw(PoseStack matrices, float delta) {
+	public void inGameScreenDraw(GuiGraphics graphics, float delta) {
 		var mc = Minecraft.getInstance();
 
 		if (mc.player == null || mc.options.renderDebug || mc.screen != null) {
@@ -187,7 +175,7 @@ public class Painter implements UnitVariables {
 		RenderSystem.enableDepthTest();
 		//RenderSystem.disableLighting();
 
-		var event = new PaintScreenEventJS(mc, matrices, delta);
+		var event = new PaintScreenEventJS(mc, graphics, delta);
 		deltaUnit.set(delta);
 		screenWidthUnit.set(event.width);
 		screenHeightUnit.set(event.height);
@@ -208,7 +196,7 @@ public class Painter implements UnitVariables {
 		}
 	}
 
-	public void guiScreenDraw(Screen screen, PoseStack matrices, int mouseX, int mouseY, float delta) {
+	public void guiScreenDraw(Screen screen, GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		var mc = Minecraft.getInstance();
 
 		if (mc.player == null) {
@@ -223,7 +211,7 @@ public class Painter implements UnitVariables {
 		RenderSystem.defaultBlendFunc();
 		//RenderSystem.disableLighting();
 
-		var event = new PaintScreenEventJS(mc, screen, matrices, mouseX, mouseY, delta);
+		var event = new PaintScreenEventJS(mc, screen, graphics, mouseX, mouseY, delta);
 		deltaUnit.set(delta);
 		screenWidthUnit.set(event.width);
 		screenHeightUnit.set(event.height);

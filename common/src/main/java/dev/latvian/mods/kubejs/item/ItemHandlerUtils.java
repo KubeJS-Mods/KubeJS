@@ -37,7 +37,7 @@ public class ItemHandlerUtils {
 		}
 
 		InventoryKJS inventory = new PlayerMainInvWrapper(player.getInventory());
-		var level = player.level;
+		var level = player.level();
 
 		// try adding it into the inventory
 		var remainder = stack;
@@ -53,7 +53,7 @@ public class ItemHandlerUtils {
 		// play sound if something got picked up
 		if (remainder.isEmpty() || remainder.getCount() != stack.getCount()) {
 			level.playSound(null, player.getX(), player.getY() + 0.5, player.getZ(),
-				SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((level.random.nextFloat() - level.random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+					SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((level.random.nextFloat() - level.random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
 		}
 
 		// drop remaining itemstack into the world
@@ -144,7 +144,7 @@ public class ItemHandlerUtils {
 	}
 
 	public static boolean canItemStacksStack(@NotNull ItemStack a, @NotNull ItemStack b) {
-		if (a.isEmpty() || !a.sameItem(b) || a.hasTag() != b.hasTag()) {
+		if (a.isEmpty() || !ItemStack.isSameItem(a, b) || a.hasTag() != b.hasTag()) {
 			return false;
 		}
 

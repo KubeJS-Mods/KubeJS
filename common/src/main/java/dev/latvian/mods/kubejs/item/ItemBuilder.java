@@ -3,6 +3,8 @@ package dev.latvian.mods.kubejs.item;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.JsonObject;
+import dev.architectury.registry.CreativeTabRegistry;
+import dev.architectury.registry.registries.DeferredSupplier;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
@@ -12,6 +14,7 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -22,25 +25,11 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.ArmorMaterials;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.Tiers;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
@@ -102,7 +91,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient boolean glow;
 	public transient final List<Component> tooltip;
 	@Nullable
-	public transient CreativeModeTab group;
+	public transient DeferredSupplier<CreativeModeTab> group;
 	@Nullable
 	public transient ItemColorJS colorCallback;
 	public transient FoodBuilder foodBuilder;
@@ -132,7 +121,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		rarity = Rarity.COMMON;
 		glow = false;
 		tooltip = new ArrayList<>();
-		group = KubeJS.tab;
+		group = KubeJSCreativeTabs.KUBEJS_TAB; // TODO (maybe): Default to null and let people add to tabs via custom event
 		textureJson = new JsonObject();
 		parentModel = "";
 		foodBuilder = null;
@@ -212,10 +201,10 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	@Info("""
-		Adds subtypes to the item. The function should return a collection of item stacks, each with a different subtype.
-					
-		Each subtype will appear as a separate item in JEI and the creative inventory.
-		""")
+			Adds subtypes to the item. The function should return a collection of item stacks, each with a different subtype.
+						
+			Each subtype will appear as a separate item in JEI and the creative inventory.
+			""")
 	public ItemBuilder subtypes(Function<ItemStack, Collection<ItemStack>> fn) {
 		subtypes = fn;
 		return this;
@@ -241,18 +230,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	@Info("Sets the group of the item, e.g. 'building_blocks' for the 'Blocks' tab.")
 	public ItemBuilder group(@Nullable String g) {
-		if (g == null) {
-			group = null;
-			return this;
-		}
-
-		for (var ig : CreativeModeTab.TABS) {
-			if (ig.getRecipeFolderName().equals(g)) {
-				group = ig;
-				return this;
-			}
-		}
-
+		group = g == null ? null : CreativeTabRegistry.defer(UtilsJS.getMCID(null, g));
 		return this;
 	}
 
@@ -312,26 +290,26 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	@Info("""
-		Determines the width of the item's durability bar. Defaulted to vanilla behavior.
-					
-		The function should return a value between 0 and 13 (max width of the bar).
-		""")
+			Determines the width of the item's durability bar. Defaulted to vanilla behavior.
+						
+			The function should return a value between 0 and 13 (max width of the bar).
+			""")
 	public ItemBuilder barWidth(ToIntFunction<ItemStack> barWidth) {
 		this.barWidth = barWidth;
 		return this;
 	}
 
 	@Info("""
-		Sets the item's name dynamically.
-		""")
+			Sets the item's name dynamically.
+			""")
 	public ItemBuilder name(NameCallback name) {
 		this.nameGetter = name;
 		return this;
 	}
 
 	@Info("""
-		Set the food properties of the item.
-		""")
+			Set the food properties of the item.
+			""")
 	public ItemBuilder food(Consumer<FoodBuilder> b) {
 		foodBuilder = new FoodBuilder();
 		b.accept(foodBuilder);
@@ -354,7 +332,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		var properties = new KubeJSItemProperties(this);
 
 		if (group != null) {
-			properties.tab(group);
+			properties.arch$tab(group);
 		}
 
 		if (maxDamage > 0) {
@@ -383,18 +361,18 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	@Info(value = """
-		Adds an attribute modifier to the item.
-					
-		An attribute modifier is something like a damage boost or a speed boost.
-		On tools, they're applied when the item is held, on armor, they're
-		applied when the item is worn.
-		""",
-		params = {
-			@Param(name = "attribute", value = "The resource location of the attribute, e.g. 'generic.attack_damage'"),
-			@Param(name = "identifier", value = "A unique identifier for the modifier. Modifiers are considered the same if they have the same identifier."),
-			@Param(name = "d", value = "The amount of the modifier."),
-			@Param(name = "operation", value = "The operation to apply the modifier with. Can be ADDITION, MULTIPLY_BASE, or MULTIPLY_TOTAL.")
-		})
+			Adds an attribute modifier to the item.
+						
+			An attribute modifier is something like a damage boost or a speed boost.
+			On tools, they're applied when the item is held, on armor, they're
+			applied when the item is worn.
+			""",
+			params = {
+					@Param(name = "attribute", value = "The resource location of the attribute, e.g. 'generic.attack_damage'"),
+					@Param(name = "identifier", value = "A unique identifier for the modifier. Modifiers are considered the same if they have the same identifier."),
+					@Param(name = "d", value = "The amount of the modifier."),
+					@Param(name = "operation", value = "The operation to apply the modifier with. Can be ADDITION, MULTIPLY_BASE, or MULTIPLY_TOTAL.")
+			})
 	public ItemBuilder modifyAttribute(ResourceLocation attribute, String identifier, double d, AttributeModifier.Operation operation) {
 		attributes.put(attribute, new AttributeModifier(new UUID(identifier.hashCode(), identifier.hashCode()), identifier, d, operation));
 		return this;
@@ -407,45 +385,45 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	@Info("""
-		The duration when the item is used.
-					
-		For example, when eating food, this is the time it takes to eat the food.
-		This can change the eating speed, or be used for other things (like making a custom bow).
-		""")
+			The duration when the item is used.
+						
+			For example, when eating food, this is the time it takes to eat the food.
+			This can change the eating speed, or be used for other things (like making a custom bow).
+			""")
 	public ItemBuilder useDuration(ToIntFunction<ItemStack> useDuration) {
 		this.useDuration = useDuration;
 		return this;
 	}
 
 	@Info("""
-		Determines if player will start using the item.
-					
-		For example, when eating food, returning true will make the player start eating the food.
-		""")
+			Determines if player will start using the item.
+						
+			For example, when eating food, returning true will make the player start eating the food.
+			""")
 	public ItemBuilder use(UseCallback use) {
 		this.use = use;
 		return this;
 	}
 
 	@Info("""
-		When players finish using the item.
-					
-		This is called only when `useDuration` ticks have passed.
-					
-		For example, when eating food, this is called when the player has finished eating the food, so hunger is restored.
-		""")
+			When players finish using the item.
+						
+			This is called only when `useDuration` ticks have passed.
+						
+			For example, when eating food, this is called when the player has finished eating the food, so hunger is restored.
+			""")
 	public ItemBuilder finishUsing(FinishUsingCallback finishUsing) {
 		this.finishUsing = finishUsing;
 		return this;
 	}
 
 	@Info("""
-		When players did not finish using the item but released the right mouse button halfway through.
-					
-		An example is the bow, where the arrow is shot when the player releases the right mouse button.
-					
-		To ensure the bow won't finish using, Minecraft sets the `useDuration` to a very high number (1h).
-		""")
+			When players did not finish using the item but released the right mouse button halfway through.
+						
+			An example is the bow, where the arrow is shot when the player releases the right mouse button.
+						
+			To ensure the bow won't finish using, Minecraft sets the `useDuration` to a very high number (1h).
+			""")
 	public ItemBuilder releaseUsing(ReleaseUsingCallback releaseUsing) {
 		this.releaseUsing = releaseUsing;
 		return this;

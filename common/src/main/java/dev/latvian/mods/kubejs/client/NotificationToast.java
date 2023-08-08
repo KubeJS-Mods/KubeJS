@@ -1,11 +1,15 @@
 package dev.latvian.mods.kubejs.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.util.NotificationBuilder;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastComponent;
 import net.minecraft.client.renderer.GameRenderer;
@@ -25,7 +29,7 @@ import java.util.function.BiFunction;
 
 public class NotificationToast implements Toast {
 	public interface ToastIcon {
-		void draw(Minecraft mc, PoseStack pose, int x, int y, int size);
+		void draw(Minecraft mc, GuiGraphics graphics, int x, int y, int size);
 	}
 
 	public static final Map<Integer, BiFunction<Minecraft, String, ToastIcon>> ICONS = new HashMap<>(Map.of(
@@ -40,11 +44,11 @@ public class NotificationToast implements Toast {
 		}
 
 		@Override
-		public void draw(Minecraft mc, PoseStack pose, int x, int y, int size) {
+		public void draw(Minecraft mc, GuiGraphics graphics, int x, int y, int size) {
 			RenderSystem.setShaderTexture(0, texture);
 			RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 			RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-			var m = pose.last().pose();
+			var m = graphics.pose().last().pose();
 
 			int p0 = -size / 2;
 			int p1 = p0 + size;
@@ -65,14 +69,14 @@ public class NotificationToast implements Toast {
 		}
 
 		@Override
-		public void draw(Minecraft mc, PoseStack pose, int x, int y, int size) {
+		public void draw(Minecraft mc, GuiGraphics graphics, int x, int y, int size) {
 			var m = RenderSystem.getModelViewStack();
 			m.pushPose();
 			m.translate(x - 2D, y + 2D, 0D);
 			float s = size / 16F;
 			m.scale(s, s, s);
 			RenderSystem.applyModelViewMatrix();
-			mc.getItemRenderer().renderAndDecorateFakeItem(stack, -8, -8);
+			graphics.renderFakeItem(stack, -8, -8);
 			m.popPose();
 			RenderSystem.applyModelViewMatrix();
 		}
@@ -90,11 +94,11 @@ public class NotificationToast implements Toast {
 		}
 
 		@Override
-		public void draw(Minecraft mc, PoseStack pose, int x, int y, int size) {
-			RenderSystem.setShaderTexture(0, sprite.atlas().location());
+		public void draw(Minecraft mc, GuiGraphics graphics, int x, int y, int size) {
+			RenderSystem.setShaderTexture(0, sprite.atlasLocation());
 			RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 			RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-			var m = pose.last().pose();
+			var m = graphics.pose().last().pose();
 
 			int p0 = -size / 2;
 			int p1 = p0 + size;
@@ -180,13 +184,15 @@ public class NotificationToast implements Toast {
 	}
 
 	@Override
-	public Toast.Visibility render(PoseStack poseStack, ToastComponent toastComponent, long l) {
+	public Toast.Visibility render(GuiGraphics graphics, ToastComponent toastComponent, long l) {
 		if (this.changed) {
 			this.lastChanged = l;
 			this.changed = false;
 		}
 
 		var mc = toastComponent.getMinecraft();
+
+		var poseStack = graphics.pose();
 
 		poseStack.pushPose();
 		poseStack.translate(-2D, 2D, 0D);
@@ -210,7 +216,6 @@ public class NotificationToast implements Toast {
 		int bgcb = FastColor.ARGB32.blue(bgc);
 
 		RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-		RenderSystem.disableTexture();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		drawRectangle(m, 2, 0, w - 2, h, ocr, ocg, ocb);
@@ -219,23 +224,16 @@ public class NotificationToast implements Toast {
 		drawRectangle(m, 2, 1, w - 2, h - 1, bcr, bcg, bcb);
 		drawRectangle(m, 1, 2, w - 1, h - 2, bcr, bcg, bcb);
 		drawRectangle(m, 2, 2, w - 2, h - 2, bgcr, bgcg, bgcb);
-		RenderSystem.enableTexture();
 
 		if (icon != null) {
-			icon.draw(mc, poseStack, 14, h / 2, notification.iconSize);
+			icon.draw(mc, graphics, 14, h / 2, notification.iconSize);
 		}
 
 		int th = icon == null ? 6 : 26;
 		int tv = (h - text.size() * 10) / 2 + 1;
 
 		for (var i = 0; i < text.size(); i++) {
-			var line = text.get(i);
-
-			if (notification.textShadow) {
-				mc.font.drawShadow(poseStack, line, th, tv + i * 10, 0xFFFFFF);
-			} else {
-				mc.font.draw(poseStack, line, th, tv + i * 10, 0xFFFFFF);
-			}
+			graphics.drawString(mc.font, text.get(i), th, tv + i * 10, 0xFFFFFF, notification.textShadow);
 		}
 
 		poseStack.popPose();

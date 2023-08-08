@@ -40,7 +40,7 @@ public class PlayerMainInvWrapper extends RangedWrapper {
 			// the stack in the slot changed, animate it
 			var inSlot = kjs$getStackInSlot(slot);
 			if (!inSlot.isEmpty()) {
-				if (getInventoryPlayer().player.level.isClientSide) {
+				if (getInventoryPlayer().player.level().isClientSide) {
 					inSlot.setPopTime(5);
 				} else if (getInventoryPlayer().player instanceof ServerPlayer) {
 					getInventoryPlayer().player.containerMenu.broadcastChanges();

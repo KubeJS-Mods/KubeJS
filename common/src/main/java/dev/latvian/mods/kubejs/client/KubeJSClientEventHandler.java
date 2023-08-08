@@ -2,12 +2,10 @@ package dev.latvian.mods.kubejs.client;
 
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
-import dev.architectury.event.events.client.ClientTextureStitchEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import dev.architectury.hooks.client.screen.ScreenAccess;
 import dev.architectury.hooks.fluid.FluidBucketHooks;
-import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
@@ -21,27 +19,13 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.nio.file.Files;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -64,7 +48,7 @@ public class KubeJSClientEventHandler {
 		ClientGuiEvent.RENDER_HUD.register(Painter.INSTANCE::inGameScreenDraw);
 		ClientGuiEvent.RENDER_POST.register(Painter.INSTANCE::guiScreenDraw);
 		ClientGuiEvent.INIT_POST.register(this::guiPostInit);
-		ClientTextureStitchEvent.POST.register(this::postAtlasStitch);
+		//ClientTextureStitchEvent.POST.register(this::postAtlasStitch);
 	}
 
 	private void debugInfoLeft(List<String> lines) {
@@ -170,7 +154,7 @@ public class KubeJSClientEventHandler {
 		}
 	}
 
-	private void postAtlasStitch(TextureAtlas atlas) {
+	/*private void postAtlasStitch(TextureAtlas atlas) {
 		if (!ClientProperties.get().getExportAtlases()) {
 			return;
 		}
@@ -217,5 +201,5 @@ public class KubeJSClientEventHandler {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	}
+	}*/
 }

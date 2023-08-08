@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
@@ -54,7 +55,7 @@ public interface RecipeKJS {
 	}
 
 	default boolean hasOutput(ReplacementMatch match) {
-		return match instanceof ItemMatch m && m.contains(((Recipe<?>) this).getResultItem());
+		return match instanceof ItemMatch m && m.contains(((Recipe<?>) this).getResultItem(UtilsJS.staticServer.registryAccess()));
 	}
 
 	default boolean replaceOutput(ReplacementMatch match, OutputReplacement with) {

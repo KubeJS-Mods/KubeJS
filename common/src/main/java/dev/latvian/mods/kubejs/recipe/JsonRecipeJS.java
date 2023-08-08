@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.CommonProperties;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -34,7 +35,7 @@ public class JsonRecipeJS extends RecipeJS {
 	@Override
 	public boolean hasOutput(ReplacementMatch match) {
 		if (CommonProperties.get().matchJsonRecipes && match instanceof ItemMatch m && getOriginalRecipe() != null) {
-			var r = getOriginalRecipe().getResultItem();
+			var r = getOriginalRecipe().getResultItem(UtilsJS.staticServer.registryAccess());
 			//noinspection ConstantValue
 			if (r == null) {
 				throw new NullPointerException("ItemStack should never be null, but recipe " + this + " returned null as the output!");

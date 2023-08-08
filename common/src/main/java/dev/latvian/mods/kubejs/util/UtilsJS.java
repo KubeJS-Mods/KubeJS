@@ -30,21 +30,13 @@ import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.EndTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.NumericTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.*;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.valueproviders.ClampedInt;
-import net.minecraft.util.valueproviders.ClampedNormalInt;
-import net.minecraft.util.valueproviders.ConstantInt;
-import net.minecraft.util.valueproviders.IntProvider;
-import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.util.valueproviders.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobType;
@@ -53,7 +45,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.Deserializers;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.providers.number.BinomialDistributionGenerator;
@@ -65,30 +57,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
+import java.lang.reflect.*;
 import java.math.BigInteger;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.temporal.TemporalAmount;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.HexFormat;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -109,7 +84,7 @@ public class UtilsJS {
 
 	private static Collection<BlockState> ALL_STATE_CACHE = null;
 	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();
-	private static final EntitySelector ALL_ENTITIES_SELECTOR = new EntitySelector(EntitySelector.INFINITE, true, false, e -> true, MinMaxBounds.Doubles.ANY, Function.identity(), null, EntitySelectorParser.ORDER_ARBITRARY, false, null, null, null, true);
+	private static final EntitySelector ALL_ENTITIES_SELECTOR = new EntitySelector(EntitySelector.INFINITE, true, false, e -> true, MinMaxBounds.Doubles.ANY, Function.identity(), null, EntitySelectorParser.ORDER_RANDOM, false, null, null, null, true);
 
 	public interface TryIO {
 		void run() throws IOException;
@@ -409,7 +384,7 @@ public class UtilsJS {
 		return s;
 	}
 
-	public static ResourceLocation getMCID(Context cx, @Nullable Object o) {
+	public static ResourceLocation getMCID(@Nullable Context cx, @Nullable Object o) {
 		if (o == null) {
 			return null;
 		} else if (o instanceof ResourceLocation id) {
@@ -488,19 +463,19 @@ public class UtilsJS {
 		var list = new ArrayList<ItemStack>();
 
 		if (UtilsJS.staticServer != null) {
-			var tables = UtilsJS.staticServer.getLootTables();
-			var table = tables.get(id);
+			var tables = UtilsJS.staticServer.getLootData();
+			var table = tables.getLootTable(id);
 
-			LootContext.Builder builder;
+			LootParams.Builder builder;
 
 			if (entity != null) {
-				builder = new LootContext.Builder((ServerLevel) entity.level)
-					.withOptionalParameter(LootContextParams.THIS_ENTITY, entity)
-					.withParameter(LootContextParams.ORIGIN, entity.position());
+				builder = new LootParams.Builder((ServerLevel) entity.level())
+						.withOptionalParameter(LootContextParams.THIS_ENTITY, entity)
+						.withParameter(LootContextParams.ORIGIN, entity.position());
 			} else {
-				builder = new LootContext.Builder(UtilsJS.staticServer.overworld())
-					.withOptionalParameter(LootContextParams.THIS_ENTITY, null)
-					.withParameter(LootContextParams.ORIGIN, Vec3.ZERO);
+				builder = new LootParams.Builder(UtilsJS.staticServer.overworld())
+						.withOptionalParameter(LootContextParams.THIS_ENTITY, null)
+						.withParameter(LootContextParams.ORIGIN, Vec3.ZERO);
 			}
 
 			table.getRandomItems(builder.create(LootContextParamSets.CHEST), list::add);
@@ -671,7 +646,7 @@ public class UtilsJS {
 		} else if (o instanceof BlockContainerJS block) {
 			return block.getPos();
 		} else if (o instanceof Vec3 vec) {
-			return new BlockPos(vec.x, vec.y, vec.z);
+			return BlockPos.containing(vec.x, vec.y, vec.z);
 		}
 
 		return BlockPos.ZERO;
@@ -733,9 +708,9 @@ public class UtilsJS {
 
 	public static <T> String getUniqueId(T input, Codec<T> codec) {
 		return getUniqueId(input, o -> codec.encodeStart(JsonOps.COMPRESSED, o)
-			.getOrThrow(false, str -> {
-				throw new RuntimeException("Could not encode element to JSON: " + str);
-			}));
+				.getOrThrow(false, str -> {
+					throw new RuntimeException("Could not encode element to JSON: " + str);
+				}));
 	}
 
 	private static <T> String getUniqueId(T input, Function<T, JsonElement> toJson) {
@@ -783,13 +758,7 @@ public class UtilsJS {
 
 	@Nullable
 	public static CreativeModeTab findCreativeTab(String id) {
-		for (var group : CreativeModeTab.TABS) {
-			if (id.equals(group.getRecipeFolderName())) {
-				return group;
-			}
-		}
-
-		return null;
+		return BuiltInRegistries.CREATIVE_MODE_TAB.get(UtilsJS.getMCID(null, id));
 	}
 
 	public static <T> T makeFunctionProxy(ScriptType type, Class<T> targetClass, BaseFunction function) {

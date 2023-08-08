@@ -35,7 +35,7 @@ public class TextObject extends ScreenPainterObject {
 			}
 		} else {
 			text = new FormattedCharSequence[]{
-				TextWrapper.of(properties.tag.get("text")).getVisualOrderText()
+					TextWrapper.of(properties.tag.get("text")).getVisualOrderText()
 			};
 		}
 
@@ -75,7 +75,7 @@ public class TextObject extends ScreenPainterObject {
 		event.scale(scale.getFloat(event));
 
 		for (int i = 0; i < text.length; i++) {
-			event.rawText(text[i], c ? -(textWidth[i] / 2F) : 0, i * ls, color.getInt(event), s);
+			event.rawText(text[i], c ? (int) -(textWidth[i] / 2F) : 0, (int) (i * ls), color.getInt(event), s);
 		}
 
 		event.pop();

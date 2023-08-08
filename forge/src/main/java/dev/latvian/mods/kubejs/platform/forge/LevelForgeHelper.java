@@ -30,6 +30,6 @@ public class LevelForgeHelper implements LevelPlatformHelper {
 
 	@Override
 	public double getReachDistance(LivingEntity livingEntity) {
-		return livingEntity.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue();
+		return livingEntity.getAttribute(ForgeMod.ENTITY_REACH.get()).getValue();
 	}
 }

@@ -27,14 +27,14 @@ public class KubeJSBlockEventHandler {
 
 	private static EventResult rightClick(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
 		if (BlockEvents.RIGHT_CLICKED.hasListeners() && !player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem())) {
-			return BlockEvents.RIGHT_CLICKED.post(player, player.level.getBlockState(pos), new BlockRightClickedEventJS(player, hand, pos, direction)).arch();
+			return BlockEvents.RIGHT_CLICKED.post(player, player.level().getBlockState(pos), new BlockRightClickedEventJS(player, hand, pos, direction)).arch();
 		}
 
 		return EventResult.pass();
 	}
 
 	private static EventResult leftClick(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
-		return BlockEvents.LEFT_CLICKED.hasListeners() ? BlockEvents.LEFT_CLICKED.post(player, player.level.getBlockState(pos), new BlockLeftClickedEventJS(player, hand, pos, direction)).arch() : EventResult.pass();
+		return BlockEvents.LEFT_CLICKED.hasListeners() ? BlockEvents.LEFT_CLICKED.post(player, player.level().getBlockState(pos), new BlockLeftClickedEventJS(player, hand, pos, direction)).arch() : EventResult.pass();
 	}
 
 	private static EventResult blockBreak(Level level, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp) {

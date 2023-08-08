@@ -131,7 +131,7 @@ public interface ServerPlayerKJS extends PlayerKJS {
 	@Nullable
 	default BlockContainerJS kjs$getSpawnLocation() {
 		var pos = kjs$self().getRespawnPosition();
-		return pos == null ? null : new BlockContainerJS(kjs$self().level, pos);
+		return pos == null ? null : new BlockContainerJS(kjs$getLevel(), pos);
 	}
 
 	default void kjs$setSpawnLocation(BlockContainerJS c) {

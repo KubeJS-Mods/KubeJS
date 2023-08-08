@@ -4,16 +4,16 @@ import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import net.minecraft.Util;
-import net.minecraft.server.packs.FolderPackResources;
+import net.minecraft.server.packs.PathPackResources;
+import net.minecraft.server.packs.resources.IoSupplier;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
+import java.nio.file.Path;
 
-public class KubeJSFolderPackResources extends FolderPackResources {
+public class KubeJSFolderPackResources extends PathPackResources {
 	public static final byte[] PACK_META_BYTES = Util.make(new JsonObject(), json -> {
 		var pack = new JsonObject();
 		pack.addProperty("description", "KubeJS Pack");
@@ -21,23 +21,26 @@ public class KubeJSFolderPackResources extends FolderPackResources {
 		json.add("pack", pack);
 	}).toString().getBytes(StandardCharsets.UTF_8);
 
-	public static final KubeJSFolderPackResources PACK = new KubeJSFolderPackResources(KubeJSPaths.DIRECTORY.toFile());
+	public static final KubeJSFolderPackResources PACK = new KubeJSFolderPackResources(KubeJSPaths.DIRECTORY);
 
-	private KubeJSFolderPackResources(File file) {
-		super(file);
+	private KubeJSFolderPackResources(Path path) {
+		super("KubeJS Folder Resources", path, true);
 	}
 
+	@Nullable
 	@Override
-	protected InputStream getResource(String s) throws IOException {
-		return switch (s) {
-			case PACK_META -> new ByteArrayInputStream(PACK_META_BYTES);
-			case "pack.png" -> Files.newInputStream(KubeJS.thisMod.findResource("kubejs_logo.png").get());
-			default -> super.getResource(s);
+	public IoSupplier<InputStream> getRootResource(String... path) {
+		var joined = String.join("/", path);
+		return switch (joined) {
+			case PACK_META -> () -> new ByteArrayInputStream(PACK_META_BYTES);
+			case "pack.png" -> IoSupplier.create(KubeJS.thisMod.findResource("kubejs_logo.png").get());
+			default -> super.getRootResource(path);
 		};
 	}
 
-	@Override
+	// TODO: Filter .zip files out of resource listings
+	/*@Override
 	protected boolean hasResource(String s) {
 		return s.equals(PACK_META) || s.equals("pack.png") || !s.endsWith(".zip") && super.hasResource(s);
-	}
+	}*/
 }

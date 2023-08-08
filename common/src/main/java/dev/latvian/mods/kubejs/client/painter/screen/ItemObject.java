@@ -14,12 +14,13 @@ import dev.latvian.mods.unit.FixedBooleanUnit;
 import dev.latvian.mods.unit.FixedNumberUnit;
 import dev.latvian.mods.unit.Unit;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -98,7 +99,7 @@ public class ItemObject extends ScreenPainterObject {
 			Lighting.setupForFlatItems();
 		}
 
-		itemRenderer.render(stack, ItemTransforms.TransformType.GUI, false, new PoseStack(), bufferSource, 0xF000F0, OverlayTexture.NO_OVERLAY, bakedModel);
+		itemRenderer.render(stack, ItemDisplayContext.GUI, false, new PoseStack(), bufferSource, 0xF000F0, OverlayTexture.NO_OVERLAY, bakedModel);
 		bufferSource.endBatch();
 		RenderSystem.enableDepthTest();
 
@@ -117,21 +118,19 @@ public class ItemObject extends ScreenPainterObject {
 				var s = text == null ? String.valueOf(stack.getCount()) : text;
 				poseStack.pushPose();
 				poseStack.translate(9D - font.width(s), 1D, 20D);
-				font.drawInBatch(s, 0F, 0F, 0xFFFFFF, true, poseStack.last().pose(), bufferSource, false, 0, 0xF000F0);
+				font.drawInBatch(s, 0F, 0F, 0xFFFFFF, true, poseStack.last().pose(), bufferSource, Font.DisplayMode.NORMAL, 0, 0xF000F0);
 				bufferSource.endBatch();
 				poseStack.popPose();
 			}
 
 			if (stack.isBarVisible()) {
 				RenderSystem.disableDepthTest();
-				RenderSystem.disableTexture();
 				RenderSystem.disableBlend();
 				var barWidth = stack.getBarWidth();
 				var barColor = stack.getBarColor();
 				draw(poseStack, t, -6, 5, 13, 2, 0, 0, 0, 255);
 				draw(poseStack, t, -6, 5, barWidth, 1, barColor >> 16 & 255, barColor >> 8 & 255, barColor & 255, 255);
 				RenderSystem.enableBlend();
-				RenderSystem.enableTexture();
 				RenderSystem.enableDepthTest();
 			}
 
@@ -139,11 +138,9 @@ public class ItemObject extends ScreenPainterObject {
 
 			if (cooldown > 0F) {
 				RenderSystem.disableDepthTest();
-				RenderSystem.disableTexture();
 				RenderSystem.enableBlend();
 				RenderSystem.defaultBlendFunc();
 				draw(poseStack, t, -8, Mth.floor(16F * (1F - cooldown)) - 8, 16, Mth.ceil(16F * cooldown), 255, 255, 255, 127);
-				RenderSystem.enableTexture();
 				RenderSystem.enableDepthTest();
 			}
 		}

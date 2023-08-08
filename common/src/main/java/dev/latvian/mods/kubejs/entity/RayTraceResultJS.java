@@ -27,7 +27,7 @@ public class RayTraceResultJS {
 
 		if (result instanceof BlockHitResult b && result.getType() == HitResult.Type.BLOCK) {
 			hit = result.getLocation();
-			block = new BlockContainerJS(from.level, b.getBlockPos());
+			block = new BlockContainerJS(from.level(), b.getBlockPos());
 			facing = b.getDirection();
 		} else if (result instanceof EntityHitResult e && result.getType() == HitResult.Type.ENTITY) {
 			hit = result.getLocation();

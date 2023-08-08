@@ -8,10 +8,10 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Level;
 
 @Info("""
-	Invoked before an entity is spawned into the world.
-			
-	Only entities from a `BaseSpawner` or world generation will trigger this event.
-	""")
+		Invoked before an entity is spawned into the world.
+				
+		Only entities from a `BaseSpawner` or world generation will trigger this event.
+		""")
 public class CheckLivingEntitySpawnEventJS extends LivingEntityEventJS {
 	private final LivingEntity entity;
 	private final Level level;
@@ -42,7 +42,7 @@ public class CheckLivingEntitySpawnEventJS extends LivingEntityEventJS {
 
 	@Info("The block the entity is being spawned on.")
 	public BlockContainerJS getBlock() {
-		return new BlockContainerJS(level, new BlockPos(x, y, z));
+		return new BlockContainerJS(level, BlockPos.containing(x, y, z));
 	}
 
 	@Info("The type of spawn.")

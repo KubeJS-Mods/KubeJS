@@ -45,17 +45,17 @@ public abstract class ExplosionEventJS extends LevelEventJS {
 	}
 
 	public BlockContainerJS getBlock() {
-		return new BlockContainerJS(level, new BlockPos(getPosition()));
+		return new BlockContainerJS(level, BlockPos.containing(getPosition()));
 	}
 
 	@Nullable
 	public LivingEntity getExploder() {
-		return explosion.getSourceMob();
+		return explosion.getIndirectSourceEntity();
 	}
 
 	@Info("""
-		Invoked right before an explosion happens.
-		""")
+			Invoked right before an explosion happens.
+			""")
 	public static class Before extends ExplosionEventJS {
 		public Before(Level level, Explosion explosion) {
 			super(level, explosion);
@@ -73,8 +73,8 @@ public abstract class ExplosionEventJS extends LevelEventJS {
 	}
 
 	@Info("""
-		Invoked right after an explosion happens.
-		""")
+			Invoked right after an explosion happens.
+			""")
 	public static class After extends ExplosionEventJS {
 		private final List<Entity> affectedEntities;
 

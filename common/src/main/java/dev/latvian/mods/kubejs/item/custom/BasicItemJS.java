@@ -5,14 +5,11 @@ import com.google.common.collect.Multimap;
 import dev.architectury.registry.fuel.FuelRegistry;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
-import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 
 public class BasicItemJS extends Item {
 	public static class Builder extends ItemBuilder {
@@ -38,14 +35,14 @@ public class BasicItemJS extends Item {
 		attributes = ArrayListMultimap.create();
 	}
 
-	@Override
+	/*@Override
 	public void fillItemCategory(CreativeModeTab category, NonNullList<ItemStack> stacks) {
 		if (kjs$getItemBuilder().subtypes != null) {
 			stacks.addAll(kjs$getItemBuilder().subtypes.apply(new ItemStack(this)));
 		} else {
 			super.fillItemCategory(category, stacks);
 		}
-	}
+	}*/
 
 	@Override
 	public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) {

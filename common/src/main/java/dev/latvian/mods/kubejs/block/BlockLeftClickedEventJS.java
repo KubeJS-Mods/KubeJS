@@ -11,8 +11,8 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 @Info(value = """
-	Invoked when a player left clicks on a block.
-	""")
+		Invoked when a player left clicks on a block.
+		""")
 public class BlockLeftClickedEventJS extends PlayerEventJS {
 	private final Player player;
 	private final InteractionHand hand;
@@ -34,7 +34,7 @@ public class BlockLeftClickedEventJS extends PlayerEventJS {
 
 	@Info("The block that was left clicked.")
 	public BlockContainerJS getBlock() {
-		return new BlockContainerJS(player.level, pos);
+		return new BlockContainerJS(player.level(), pos);
 	}
 
 	@Info("The item that was used to left click the block.")

@@ -1,16 +1,11 @@
 package dev.latvian.mods.kubejs.core.mixin.common;
 
-import dev.latvian.mods.kubejs.client.ClientProperties;
 import net.minecraft.client.gui.screens.LoadingOverlay;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LoadingOverlay.class)
 public abstract class LoadingOverlayMixin {
-
+/*
 	@SuppressWarnings("UnresolvedMixinReference")
 	@Inject(method = {"lambda$static$0", "m_169327_", "method_35733"}, at = @At("HEAD"), remap = false, cancellable = true)
 	private static void backgroundColorKJS(CallbackInfoReturnable<Integer> cir) {
@@ -51,5 +46,5 @@ public abstract class LoadingOverlayMixin {
 		index = 5)
 	private int barBorderColorKJS(int color) {
 		return ClientProperties.get().getBarColor(color);
-	}
+	}*/
 }

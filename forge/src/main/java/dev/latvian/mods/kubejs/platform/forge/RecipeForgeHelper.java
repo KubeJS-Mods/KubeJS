@@ -8,11 +8,7 @@ import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.*;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import org.jetbrains.annotations.Nullable;
@@ -54,7 +50,7 @@ public class RecipeForgeHelper implements RecipePlatformHelper {
 
 	@Override
 	public Ingredient getCustomIngredient(JsonObject object) {
-		return CraftingHelper.getIngredient(object);
+		return CraftingHelper.getIngredient(object, false);
 	}
 
 	@Override

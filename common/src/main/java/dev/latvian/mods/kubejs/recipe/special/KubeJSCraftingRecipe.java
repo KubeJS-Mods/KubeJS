@@ -1,10 +1,13 @@
 package dev.latvian.mods.kubejs.recipe.special;
 
 import dev.architectury.utils.GameInstance;
+import dev.latvian.mods.kubejs.core.CraftingContainerKJS;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeCraftingGrid;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -34,9 +37,9 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 		return list;
 	}
 
-	default ItemStack kjs$assemble(CraftingContainer container) {
+	default ItemStack kjs$assemble(CraftingContainer container, RegistryAccess registryAccess) {
 		if (!kjs$getStage().isEmpty()) {
-			var player = getPlayer(container.kjs$getMenu());
+			var player = getPlayer(((CraftingContainerKJS) container).kjs$getMenu());
 
 			if (player == null || !player.kjs$getStages().has(kjs$getStage())) {
 				return ItemStack.EMPTY;
@@ -44,11 +47,12 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 		}
 
 		var modifyResult = kjs$getModifyResult();
+		var result = getResultItem(UtilsJS.staticServer.registryAccess()).copy();
 		if (modifyResult != null) {
-			return modifyResult.modify(new ModifyRecipeCraftingGrid(container), getResultItem().copy());
+			return modifyResult.modify(new ModifyRecipeCraftingGrid(container), result);
 		}
 
-		return getResultItem().copy();
+		return result;
 	}
 
 	@Nullable

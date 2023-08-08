@@ -1,27 +1,18 @@
 package dev.latvian.mods.kubejs.script.data;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.ResourcePackFileNotFoundException;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
+import net.minecraft.server.packs.resources.IoSupplier;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Predicate;
+import java.util.*;
 
 public abstract class GeneratedResourcePack implements PackResources {
 	private final PackType packType;
@@ -36,28 +27,28 @@ public abstract class GeneratedResourcePack implements PackResources {
 	}
 
 	@Override
-	public InputStream getRootResource(String fileName) throws IOException {
-		if (fileName.equals("pack.png")) {
-			return Files.newInputStream(KubeJS.thisMod.findResource("kubejs_logo.png").get());
+	public IoSupplier<InputStream> getRootResource(String... fileName) {
+		var joined = String.join("/", fileName);
+
+		if (joined.equals("pack.png")) {
+			return IoSupplier.create(KubeJS.thisMod.findResource("kubejs_logo.png").get());
 		}
 
-		throw new ResourcePackFileNotFoundException(KubeJSPaths.DIRECTORY.toFile(), fileName);
+		/*return () -> {
+			throw new FileNotFoundException(KubeJSPaths.DIRECTORY.resolve(joined).toString());
+		};*/
+		return null;
 	}
 
 	@Override
-	public InputStream getResource(PackType type, ResourceLocation location) throws IOException {
-		var bytes = type == packType ? getGenerated().get(location) : null;
-
-		if (bytes != null) {
-			return new ByteArrayInputStream(bytes);
+	public IoSupplier<InputStream> getResource(PackType type, ResourceLocation location) {
+		if (type != packType) {
+			return null;
 		}
 
-		throw new ResourcePackFileNotFoundException(KubeJSPaths.DIRECTORY.toFile(), getFullPath(type, location));
-	}
+		return () -> new ByteArrayInputStream(getGenerated().get(location));
 
-	@Override
-	public boolean hasResource(PackType type, ResourceLocation location) {
-		return type == packType && getGenerated().get(location) != null;
+		// throw new ResourcePackFileNotFoundException(KubeJSPaths.DIRECTORY.toFile(), getFullPath(type, location));
 	}
 
 	public Map<ResourceLocation, byte[]> getGenerated() {
@@ -73,24 +64,26 @@ public abstract class GeneratedResourcePack implements PackResources {
 	}
 
 	@Override
-	public Collection<ResourceLocation> getResources(PackType type, String namespace, String path, Predicate<ResourceLocation> filter) {
+	public void listResources(PackType type, String namespace, String path, ResourceOutput visitor) {
 		if (type != packType) {
-			return Collections.emptySet();
+			return;
 		}
-
-		var list = new ArrayList<ResourceLocation>();
 
 		if (packType == PackType.CLIENT_RESOURCES) {
 			if (path.equals("lang")) {
-				list.add(new ResourceLocation(KubeJS.MOD_ID, "lang/en_us.json"));
+				var id = new ResourceLocation(KubeJS.MOD_ID, "lang/en_us.json");
+				visitor.accept(id, getResource(packType, id));
 			}
 		}
 
+		var resources = new ArrayList<ResourceLocation>();
 		for (var builder : RegistryInfo.ALL_BUILDERS) {
-			builder.addResourcePackLocations(path, list, packType);
+			builder.addResourcePackLocations(path, resources, packType);
 		}
 
-		return list;
+		for (var id : resources) {
+			visitor.accept(id, getResource(packType, id));
+		}
 	}
 
 	@Override
@@ -115,7 +108,7 @@ public abstract class GeneratedResourcePack implements PackResources {
 	}
 
 	@Override
-	public String getName() {
+	public @NotNull String packId() {
 		return "KubeJS Resource Pack [" + packType.getDirectory() + "]";
 	}
 

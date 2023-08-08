@@ -48,7 +48,7 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS {
 	public ItemEntity addDrop(ItemStack stack) {
 		if (!stack.isEmpty()) {
 			var e = event.getEntity();
-			var ei = new ItemEntity(e.level, e.getX(), e.getY(), e.getZ(), stack);
+			var ei = new ItemEntity(e.level(), e.getX(), e.getY(), e.getZ(), stack);
 			ei.setPickUpDelay(10);
 			getDrops().add(ei);
 			return ei;
@@ -59,7 +59,7 @@ public class LivingEntityDropsEventJS extends LivingEntityEventJS {
 
 	@Nullable
 	public ItemEntity addDrop(ItemStack stack, float chance) {
-		if (chance >= 1F || event.getEntity().level.random.nextFloat() <= chance) {
+		if (chance >= 1F || event.getEntity().level().random.nextFloat() <= chance) {
 			return addDrop(stack);
 		}
 

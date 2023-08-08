@@ -17,11 +17,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.DiggerItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.item.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -148,7 +144,7 @@ public interface ItemKJS extends IngredientSupplierKJS {
 			throw new UnsupportedOperationException("Modifying armor value of unsupported item: " + this);
 		}
 
-		UUID uuid = ItemWrapper.KJS_ARMOR_MODIFIER_UUID_PER_SLOT[armor.getSlot().getIndex()];
+		UUID uuid = ItemWrapper.KJS_ARMOR_MODIFIER_UUID_PER_SLOT[armor.getType().getSlot().getIndex()];
 		kjs$removeAttribute(Attributes.ARMOR, uuid);
 		kjs$addAttribute(Attributes.ARMOR, uuid, "Armor modifier", armorProtection, AttributeModifier.Operation.ADDITION);
 	}
@@ -158,7 +154,7 @@ public interface ItemKJS extends IngredientSupplierKJS {
 			throw new UnsupportedOperationException("Modifying protection of unsupported item: " + this);
 		}
 
-		UUID uuid = ItemWrapper.KJS_ARMOR_MODIFIER_UUID_PER_SLOT[armor.getSlot().getIndex()];
+		UUID uuid = ItemWrapper.KJS_ARMOR_MODIFIER_UUID_PER_SLOT[armor.getType().getSlot().getIndex()];
 		kjs$removeAttribute(Attributes.ARMOR_TOUGHNESS, uuid);
 		kjs$addAttribute(Attributes.ARMOR_TOUGHNESS, uuid, "Armor modifier", armorToughness, AttributeModifier.Operation.ADDITION);
 	}
@@ -168,7 +164,7 @@ public interface ItemKJS extends IngredientSupplierKJS {
 			throw new UnsupportedOperationException("Modifying protection of unsupported item: " + this);
 		}
 
-		UUID uuid = ItemWrapper.KJS_ARMOR_MODIFIER_UUID_PER_SLOT[armor.getSlot().getIndex()];
+		UUID uuid = ItemWrapper.KJS_ARMOR_MODIFIER_UUID_PER_SLOT[armor.getType().getSlot().getIndex()];
 		kjs$removeAttribute(Attributes.KNOCKBACK_RESISTANCE, uuid);
 		kjs$addAttribute(Attributes.KNOCKBACK_RESISTANCE, uuid, "Armor modifier", knockbackResistance, AttributeModifier.Operation.ADDITION);
 	}

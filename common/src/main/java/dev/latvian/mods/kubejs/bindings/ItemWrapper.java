@@ -4,13 +4,13 @@ import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.FireworksJS;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.typings.Info;
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -58,11 +58,11 @@ public interface ItemWrapper {
 		return ItemStackJS.getTypeList();
 	}
 
-	static Map<ResourceLocation, NonNullList<ItemStack>> getTypeToStackMap() {
+	static Map<ResourceLocation, Collection<ItemStack>> getTypeToStackMap() {
 		return ItemStackJS.getTypeToStacks();
 	}
 
-	static List<ItemStack> getVariants(ItemStack item) {
+	static Collection<ItemStack> getVariants(ItemStack item) {
 		return getTypeToStackMap().get(item.kjs$getIdLocation());
 	}
 
@@ -93,9 +93,9 @@ public interface ItemWrapper {
 	}
 
 	@Info("""
-		Checks if the passed in object is an ItemStack.
-		Note that this does not mean it will not function as an ItemStack if passed to something that requests one.
-		""")
+			Checks if the passed in object is an ItemStack.
+			Note that this does not mean it will not function as an ItemStack if passed to something that requests one.
+			""")
 	static boolean isItem(@Nullable Object o) {
 		return o instanceof ItemStackJS;
 	}

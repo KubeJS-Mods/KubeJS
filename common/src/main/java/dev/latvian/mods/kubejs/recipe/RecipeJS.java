@@ -16,12 +16,7 @@ import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.component.MissingComponentException;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentBuilderMap;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.DamageAction;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.KeepAction;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.*;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -558,7 +553,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 			return ItemStack.EMPTY;
 		}
 
-		return getOriginalRecipe().getResultItem();
+		return getOriginalRecipe().getResultItem(UtilsJS.staticServer.registryAccess());
 	}
 
 	public List<Ingredient> getOriginalRecipeIngredients() {

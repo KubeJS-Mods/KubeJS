@@ -17,6 +17,6 @@ public abstract class EntityEventJS extends LevelEventJS {
 
 	@Override
 	public Level getLevel() {
-		return getEntity().getLevel();
+		return getEntity().level();
 	}
 }

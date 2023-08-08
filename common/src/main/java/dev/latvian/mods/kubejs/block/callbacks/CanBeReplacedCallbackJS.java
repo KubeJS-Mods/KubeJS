@@ -92,7 +92,7 @@ public class CanBeReplacedCallbackJS {
 		return getFluidStateAtClickedPos().is(fluid);
 	}
 
-	public boolean canMaterialBeReplaced() {
-		return getLevel().getBlockState(getClickedPos()).getMaterial().isReplaceable();
+	public boolean canBeReplaced() {
+		return getLevel().getBlockState(getClickedPos()).canBeReplaced();
 	}
 }

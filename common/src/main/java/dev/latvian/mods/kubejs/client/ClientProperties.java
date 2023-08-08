@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 
 import java.io.Reader;
@@ -159,9 +158,10 @@ public class ClientProperties {
 		if (tempIconCancel) {
 			if (icon != null) {
 				try (var stream16 = Files.newInputStream(icon);
-					 var stream32 = Files.newInputStream(icon)) {
+				     var stream32 = Files.newInputStream(icon)) {
 					tempIconCancel = false;
-					Minecraft.getInstance().getWindow().setIcon(stream16, stream32);
+					// todo: ~~buy noose~~ fix this
+					//Minecraft.getInstance().getWindow().setIcon(stream16, stream32);
 					tempIconCancel = true;
 				} catch (Exception ex) {
 					ex.printStackTrace();

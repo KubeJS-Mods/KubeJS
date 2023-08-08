@@ -14,11 +14,7 @@ import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class GeneratedClientResourcePack extends GeneratedResourcePack {
 	public static List<PackResources> inject(List<PackResources> packs) {
@@ -42,7 +38,7 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 
 			for (var file : Objects.requireNonNull(KubeJSPaths.ASSETS.toFile().listFiles())) {
 				if (file.isFile() && file.getName().endsWith(".zip")) {
-					injected.add(new FilePackResources(file));
+					injected.add(new FilePackResources(file.getName(), file, false));
 				}
 			}
 

@@ -165,7 +165,7 @@ public class KubeJSClient extends KubeJSCommon {
 
 	@Override
 	public void generateTypings(CommandSourceStack source) {
-		source.sendSuccess(Component.literal("WIP!"), false);
+		source.sendSuccess(() -> Component.literal("WIP!"), false);
 	}
 
 	@Override

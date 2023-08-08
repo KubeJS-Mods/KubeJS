@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.rhino.util.RemapForJS;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -30,8 +30,8 @@ public class MutableArmorTier implements ArmorMaterial {
 	}
 
 	@Override
-	public int getDurabilityForSlot(EquipmentSlot equipmentSlot) {
-		return durabilityMultiplier == 0 ? parent.getDurabilityForSlot(equipmentSlot) : HEALTH_PER_SLOT[equipmentSlot.getIndex()] * durabilityMultiplier;
+	public int getDurabilityForType(ArmorItem.Type equipmentSlot) {
+		return durabilityMultiplier == 0 ? parent.getDurabilityForType(equipmentSlot) : HEALTH_PER_SLOT[equipmentSlot.getSlot().getIndex()] * durabilityMultiplier;
 	}
 
 	public void setDurabilityMultiplier(int m) {
@@ -39,8 +39,8 @@ public class MutableArmorTier implements ArmorMaterial {
 	}
 
 	@Override
-	public int getDefenseForSlot(EquipmentSlot equipmentSlot) {
-		return slotProtections == null ? parent.getDefenseForSlot(equipmentSlot) : slotProtections[equipmentSlot.getIndex()];
+	public int getDefenseForType(ArmorItem.Type equipmentSlot) {
+		return slotProtections == null ? parent.getDefenseForType(equipmentSlot) : slotProtections[equipmentSlot.getSlot().getIndex()];
 	}
 
 	public void setSlotProtections(int[] p) {

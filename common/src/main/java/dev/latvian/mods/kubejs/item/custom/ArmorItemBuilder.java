@@ -19,13 +19,13 @@ import java.util.function.Consumer;
 public class ArmorItemBuilder extends ItemBuilder {
 	public static class Helmet extends ArmorItemBuilder {
 		public Helmet(ResourceLocation i) {
-			super(i, EquipmentSlot.HEAD);
+			super(i, ArmorItem.Type.HELMET);
 		}
 	}
 
 	public static class Chestplate extends ArmorItemBuilder {
 		public Chestplate(ResourceLocation i) {
-			super(i, EquipmentSlot.CHEST);
+			super(i, ArmorItem.Type.CHESTPLATE);
 		}
 
 	}
@@ -33,30 +33,30 @@ public class ArmorItemBuilder extends ItemBuilder {
 	public static class Leggings extends ArmorItemBuilder {
 
 		public Leggings(ResourceLocation i) {
-			super(i, EquipmentSlot.LEGS);
+			super(i, ArmorItem.Type.LEGGINGS);
 		}
 	}
 
 	public static class Boots extends ArmorItemBuilder {
 		public Boots(ResourceLocation i) {
-			super(i, EquipmentSlot.FEET);
+			super(i, ArmorItem.Type.BOOTS);
 		}
 
 	}
 
-	public final EquipmentSlot equipmentSlot;
+	public final ArmorItem.Type armorType;
 	public MutableArmorTier armorTier;
 
-	protected ArmorItemBuilder(ResourceLocation i, EquipmentSlot e) {
+	protected ArmorItemBuilder(ResourceLocation i, ArmorItem.Type t) {
 		super(i);
-		equipmentSlot = e;
+		armorType = t;
 		armorTier = new MutableArmorTier(id.toString(), ArmorMaterials.IRON);
 		unstackable();
 	}
 
 	@Override
 	public Item createObject() {
-		return new ArmorItem(armorTier, equipmentSlot, createItemProperties()) {
+		return new ArmorItem(armorTier, armorType, createItemProperties()) {
 			private boolean modified = false;
 
 			{

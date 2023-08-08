@@ -1,13 +1,6 @@
 package dev.latvian.mods.kubejs.block.custom;
 
-import dev.latvian.mods.kubejs.client.ModelGenerator;
-import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
-import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.PressurePlateBlock;
-
+/*
 public class StonePressurePlateBlockBuilder extends ShapedBlockBuilder {
 	public StonePressurePlateBlockBuilder(ResourceLocation i) {
 		super(i, "_stone_pressure_plate", "_pressure_plate");
@@ -47,3 +40,4 @@ public class StonePressurePlateBlockBuilder extends ShapedBlockBuilder {
 		m.parent(newID("block/", "_up").toString());
 	}
 }
+*/

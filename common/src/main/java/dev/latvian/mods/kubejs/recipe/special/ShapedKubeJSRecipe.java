@@ -8,11 +8,13 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
@@ -28,9 +30,9 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	private final ModifyRecipeResultCallback modifyResult;
 	private final String stage;
 
-	public ShapedKubeJSRecipe(ResourceLocation id, String group, int width, int height, NonNullList<Ingredient> ingredients, ItemStack result,
-							  boolean mirror, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
-		super(id, group, width, height, ingredients, result);
+	public ShapedKubeJSRecipe(ResourceLocation id, String group, CraftingBookCategory category, int width, int height, NonNullList<Ingredient> ingredients, ItemStack result,
+	                          boolean mirror, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
+		super(id, group, category, width, height, ingredients, result);
 		this.mirror = mirror;
 		this.ingredientActions = ingredientActions;
 		this.modifyResult = modifyResult;
@@ -64,8 +66,8 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	}
 
 	@Override
-	public ItemStack assemble(CraftingContainer container) {
-		return kjs$assemble(container);
+	public ItemStack assemble(CraftingContainer container, RegistryAccess registryAccess) {
+		return kjs$assemble(container, registryAccess);
 	}
 
 	@Override
@@ -120,7 +122,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 
 			var stage = GsonHelper.getAsString(json, "kubejs:stage", "");
 
-			return new ShapedKubeJSRecipe(id, shapedRecipe.getGroup(), w, h, ingredients, shapedRecipe.getResultItem(), mirror, ingredientActions, modifyResult, stage);
+			return new ShapedKubeJSRecipe(id, shapedRecipe.getGroup(), shapedRecipe.category(), w, h, ingredients, shapedRecipe.result, mirror, ingredientActions, modifyResult, stage);
 		}
 
 		@Override
@@ -130,10 +132,11 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 
 			// original values
 			var group = shapedRecipe.getGroup();
+			var category = shapedRecipe.category();
 			var width = shapedRecipe.getWidth();
 			var height = shapedRecipe.getHeight();
 			var ingredients = shapedRecipe.getIngredients();
-			var result = shapedRecipe.getResultItem();
+			var result = shapedRecipe.result;
 
 			List<IngredientAction> ingredientActions = (flags & RecipeFlags.INGREDIENT_ACTIONS) != 0 ? IngredientAction.readList(buf) : List.of();
 			var stage = (flags & RecipeFlags.STAGE) != 0 ? buf.readUtf() : "";
@@ -141,7 +144,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 
 			// the pattern can be used as-is because the shrinking logic is done serverside
 			// additionally, result modification callbacks do not need to be synced to clients
-			return new ShapedKubeJSRecipe(id, group, width, height, ingredients, result, mirror, ingredientActions, null, stage);
+			return new ShapedKubeJSRecipe(id, group, category, width, height, ingredients, result, mirror, ingredientActions, null, stage);
 		}
 
 		@Override

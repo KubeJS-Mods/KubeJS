@@ -9,8 +9,8 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.core.Registry;
 import net.minecraft.core.WritableRegistry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 
 import java.util.HashSet;
@@ -35,7 +35,7 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 		for (var info : RegistryInfo.MAP.values()) {
 			final var key = (ResourceKey) info.key;
 
-			if (!ignored.contains(info) && Registry.REGISTRY.get(key) instanceof WritableRegistry<?> reg) {
+			if (!ignored.contains(info) && BuiltInRegistries.REGISTRY.get(key) instanceof WritableRegistry<?> reg) {
 				info.registerObjects((id, obj) -> reg.register(ResourceKey.create(key, id), UtilsJS.cast(obj.get()), Lifecycle.stable()));
 			}
 		}
@@ -43,7 +43,7 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 		for (var info : RegistryInfo.AFTER_VANILLA) {
 			final var key = (ResourceKey) info.key;
 
-			if (Registry.REGISTRY.get(key) instanceof WritableRegistry<?> reg) {
+			if (BuiltInRegistries.REGISTRY.get(key) instanceof WritableRegistry<?> reg) {
 				info.registerObjects((id, obj) -> reg.register(ResourceKey.create(key, id), UtilsJS.cast(obj.get()), Lifecycle.stable()));
 			}
 		}

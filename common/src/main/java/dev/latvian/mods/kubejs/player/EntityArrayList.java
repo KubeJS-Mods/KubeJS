@@ -94,7 +94,7 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 
 	public void playSound(SoundEvent id, float volume, float pitch) {
 		for (var entity : this) {
-			entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), id, entity.getSoundSource(), volume, pitch);
+			entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), id, entity.getSoundSource(), volume, pitch);
 		}
 	}
 

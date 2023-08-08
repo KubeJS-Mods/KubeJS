@@ -1,12 +1,12 @@
 package dev.latvian.mods.kubejs.client.painter.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import dev.latvian.mods.kubejs.client.painter.PaintEventJS;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.unit.UnitVariables;
 import dev.latvian.mods.unit.VariableSet;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
@@ -18,8 +18,8 @@ public class PaintScreenEventJS extends PaintEventJS implements UnitVariables {
 	public final int height;
 	public final boolean inventory;
 
-	public PaintScreenEventJS(Minecraft m, Screen s, PoseStack ps, int mx, int my, float d) {
-		super(m, ps, d, s);
+	public PaintScreenEventJS(Minecraft m, Screen s, GuiGraphics graphics, int mx, int my, float d) {
+		super(m, graphics, d, s);
 		mouseX = mx;
 		mouseY = my;
 		width = mc.getWindow().getGuiScaledWidth();
@@ -27,8 +27,8 @@ public class PaintScreenEventJS extends PaintEventJS implements UnitVariables {
 		inventory = true;
 	}
 
-	public PaintScreenEventJS(Minecraft m, PoseStack ps, float d) {
-		super(m, ps, d, null);
+	public PaintScreenEventJS(Minecraft m, GuiGraphics graphics, float d) {
+		super(m, graphics, d, null);
 		mouseX = -1;
 		mouseY = -1;
 		width = mc.getWindow().getGuiScaledWidth();
@@ -88,16 +88,12 @@ public class PaintScreenEventJS extends PaintEventJS implements UnitVariables {
 		vertex(m, x + w, y + h, z, color, u1, v1);
 	}
 
-	public void text(Component text, float x, float y, int color, boolean shadow) {
+	public void text(Component text, int x, int y, int color, boolean shadow) {
 		rawText(text.getVisualOrderText(), x, y, color, shadow);
 	}
 
-	public void rawText(FormattedCharSequence text, float x, float y, int color, boolean shadow) {
-		if (shadow) {
-			font.drawShadow(matrices, text, x, y, color);
-		} else {
-			font.draw(matrices, text, x, y, color);
-		}
+	public void rawText(FormattedCharSequence text, int x, int y, int color, boolean shadow) {
+		graphics.drawString(mc.font, text, x, y, color, shadow);
 	}
 
 	@Override

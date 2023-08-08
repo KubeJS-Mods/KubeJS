@@ -17,6 +17,6 @@ public class SoundEventBuilder extends BuilderBase<SoundEvent> {
 
 	@Override
 	public SoundEvent createObject() {
-		return new SoundEvent(id);
+		return SoundEvent.createVariableRangeEvent(id);
 	}
 }

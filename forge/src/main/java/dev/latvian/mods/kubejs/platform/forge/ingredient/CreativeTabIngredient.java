@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.platform.forge.ingredient;
 
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -19,7 +20,7 @@ public class CreativeTabIngredient extends KubeJSIngredient {
 	}
 
 	public CreativeTabIngredient(FriendlyByteBuf buf) {
-		this(UtilsJS.findCreativeTab(buf.readUtf()));
+		this(buf.readById(BuiltInRegistries.CREATIVE_MODE_TAB));
 	}
 
 	public CreativeTabIngredient(JsonObject json) {
@@ -33,16 +34,15 @@ public class CreativeTabIngredient extends KubeJSIngredient {
 
 	@Override
 	public boolean test(@Nullable ItemStack stack) {
-		return stack != null && stack.getItem().getItemCategory() == tab;
+		return stack != null && tab.contains(stack);
 	}
 
-	@Override
 	public void toJson(JsonObject json) {
-		json.addProperty("tab", tab.getRecipeFolderName());
+		json.addProperty("tab", BuiltInRegistries.CREATIVE_MODE_TAB.getKey(tab).toString());
 	}
 
 	@Override
 	public void write(FriendlyByteBuf buf) {
-		buf.writeUtf(tab.getRecipeFolderName());
+		buf.writeId(BuiltInRegistries.CREATIVE_MODE_TAB, tab);
 	}
 }

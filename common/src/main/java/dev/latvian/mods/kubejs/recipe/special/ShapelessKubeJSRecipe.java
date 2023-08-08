@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -17,7 +18,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 
 public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraftingRecipe {
@@ -26,7 +26,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 	private final String stage;
 
 	public ShapelessKubeJSRecipe(ShapelessRecipe original, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
-		super(original.getId(), original.getGroup(), original.getResultItem(), original.getIngredients());
+		super(original.getId(), original.getGroup(), original.category(), original.result, original.getIngredients());
 		this.ingredientActions = ingredientActions;
 		this.modifyResult = modifyResult;
 		this.stage = stage;
@@ -59,8 +59,8 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 	}
 
 	@Override
-	public ItemStack assemble(CraftingContainer container) {
-		return kjs$assemble(container);
+	public ItemStack assemble(CraftingContainer container, RegistryAccess registryAccess) {
+		return kjs$assemble(container, registryAccess);
 	}
 
 	public static class SerializerKJS implements RecipeSerializer<ShapelessKubeJSRecipe> {

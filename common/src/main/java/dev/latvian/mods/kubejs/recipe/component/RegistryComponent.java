@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 
@@ -43,9 +44,9 @@ public record RegistryComponent<T>(ResourceKey<? extends Registry<T>> registry, 
 	public T read(RecipeJS recipe, Object from) {
 		if (registryType.isInstance(from)) {
 			return (T) from;
-		} else if (Registries.equals(Registry.ITEM) && from instanceof ItemStack stack) {
+		} else if (registry.equals(Registries.ITEM) && from instanceof ItemStack stack) {
 			return (T) stack.getItem();
-		} else if (Registries.equals(Registry.FLUID) && from instanceof FluidStackJS fluid) {
+		} else if (registry.equals(Registries.FLUID) && from instanceof FluidStackJS fluid) {
 			return (T) fluid.getFluid();
 		}
 

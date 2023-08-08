@@ -107,8 +107,9 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		RegistryInfo.BLOCK.addType("slab", SlabBlockBuilder.class, SlabBlockBuilder::new);
 		RegistryInfo.BLOCK.addType("stairs", StairBlockBuilder.class, StairBlockBuilder::new);
 		RegistryInfo.BLOCK.addType("fence", FenceBlockBuilder.class, FenceBlockBuilder::new);
-		RegistryInfo.BLOCK.addType("fence_gate", FenceGateBlockBuilder.class, FenceGateBlockBuilder::new);
 		RegistryInfo.BLOCK.addType("wall", WallBlockBuilder.class, WallBlockBuilder::new);
+		// TODO (CRITICAL): Reimplement these and have them use WoodType...(?)
+		// RegistryInfo.BLOCK.addType("fence_gate", FenceGateBlockBuilder.class, FenceGateBlockBuilder::new);
 		// TODO (CRITICAL): Reimplement these and maybe have them use BlockSetType instead?
 		//RegistryInfo.BLOCK.addType("wooden_pressure_plate", WoodenPressurePlateBlockBuilder.class, WoodenPressurePlateBlockBuilder::new);
 		//RegistryInfo.BLOCK.addType("stone_pressure_plate", StonePressurePlateBlockBuilder.class, StonePressurePlateBlockBuilder::new);
@@ -378,7 +379,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.registerSimple(Tier.class, ItemBuilder::toToolTier);
 		typeWrappers.registerSimple(ArmorMaterial.class, ItemBuilder::toArmorMaterial);
 		typeWrappers.registerSimple(PlayerSelector.class, PlayerSelector::of);
-		typeWrappers.registerSimple(DamageSource.class, DamageSourceWrapper::of);
+		// FIXME (high): Damage sources are dynamic registries now!!
+		//typeWrappers.registerSimple(DamageSource.class, DamageSourceWrapper::of);
 		typeWrappers.registerSimple(EntitySelector.class, UtilsJS::entitySelector);
 		typeWrappers.registerSimple(ReplacementMatch.class, ReplacementMatch::of);
 		typeWrappers.registerSimple(Stat.class, PlayerStatsJS::statOf);

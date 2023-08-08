@@ -10,14 +10,14 @@ public class AfterEntityFallenOnBlockCallbackJS extends EntitySteppedOnBlockCall
 	private boolean hasChangedVelocity;
 
 	public AfterEntityFallenOnBlockCallbackJS(BlockGetter blockGetter, Entity entity) {
-		super(entity.level, entity, entity.getOnPos(), blockGetter.getBlockState(entity.getOnPos()));
+		super(entity.level(), entity, entity.getOnPos(), blockGetter.getBlockState(entity.getOnPos()));
 		this.hasChangedVelocity = false;
 	}
 
 	@Info("""
-		Bounce the entity upwards by bounciness * their fall velocity.
-		Do not make bounciness negative, as that is a recipe for a long and laggy trip to the void
-		""")
+			Bounce the entity upwards by bounciness * their fall velocity.
+			Do not make bounciness negative, as that is a recipe for a long and laggy trip to the void
+			""")
 	public void bounce(float bounciness) {
 		Vec3 deltaMovement = entity.getDeltaMovement();
 		if (!isSuppressingBounce() && deltaMovement.y < 0.0) {

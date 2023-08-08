@@ -6,15 +6,13 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.ProfilePublicKey;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(value = AbstractClientPlayer.class)
 @RemapPrefixForJS("kjs$")
 public abstract class AbstractClientPlayerMixin extends Player implements ClientPlayerKJS {
-	public AbstractClientPlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile, @Nullable ProfilePublicKey profilePublicKey) {
-		super(level, blockPos, f, gameProfile, profilePublicKey);
+	public AbstractClientPlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
+		super(level, blockPos, f, gameProfile);
 	}
 }

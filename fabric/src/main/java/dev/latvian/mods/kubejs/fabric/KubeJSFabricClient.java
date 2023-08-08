@@ -1,15 +1,12 @@
 package dev.latvian.mods.kubejs.fabric;
 
-import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
-import dev.latvian.mods.kubejs.client.AtlasSpriteRegistryEventJS;
 import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
-import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.renderer.RenderType;
 
 public class KubeJSFabricClient {
@@ -38,7 +35,8 @@ public class KubeJSFabricClient {
 			}
 		}
 
-		ClientSpriteRegistryCallback.EVENT.register((atlasTexture, registry) -> ClientEvents.ATLAS_SPRITE_REGISTRY.post(new AtlasSpriteRegistryEventJS(registry::register), atlasTexture.location()));
+		// FIXME: implement
+		// ClientSpriteRegistryCallback.EVENT.register((atlasTexture, registry) -> ClientEvents.ATLAS_SPRITE_REGISTRY.post(new AtlasSpriteRegistryEventJS(registry::register), atlasTexture.location()));
 
 		for (var builder : RegistryInfo.ITEM) {
 			if (builder instanceof ItemBuilder b && b.colorCallback != null) {

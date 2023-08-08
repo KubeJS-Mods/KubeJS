@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -85,12 +86,7 @@ import net.minecraft.world.level.storage.loot.providers.score.LootScoreProviderT
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -131,12 +127,12 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 	public static final RegistryInfo SENSOR_TYPE = of(Registries.SENSOR_TYPE).type(SensorType.class);
 	public static final RegistryInfo SCHEDULE = of(Registries.SCHEDULE).type(Schedule.class);
 	public static final RegistryInfo ACTIVITY = of(Registries.ACTIVITY).type(Activity.class);
-	public static final RegistryInfo LOOT_ENTRY = of(Registries.LOOT_ENTRY).type(LootPoolEntryType.class);
-	public static final RegistryInfo LOOT_FUNCTION = of(Registries.LOOT_FUNCTION).type(LootItemFunctionType.class);
-	public static final RegistryInfo LOOT_ITEM = of(Registries.LOOT_ITEM).type(LootItemConditionType.class);
-	public static final RegistryInfo LOOT_NUMBER_PROVIDER = of(Registries.LOOT_NUMBER_PROVIDER).type(LootNumberProviderType.class);
-	public static final RegistryInfo LOOT_NBT_PROVIDER = of(Registries.LOOT_NBT_PROVIDER).type(LootNbtProviderType.class);
-	public static final RegistryInfo LOOT_SCORE_PROVIDER = of(Registries.LOOT_SCORE_PROVIDER).type(LootScoreProviderType.class);
+	public static final RegistryInfo LOOT_ENTRY = of(Registries.LOOT_POOL_ENTRY_TYPE).type(LootPoolEntryType.class);
+	public static final RegistryInfo LOOT_FUNCTION = of(Registries.LOOT_FUNCTION_TYPE).type(LootItemFunctionType.class);
+	public static final RegistryInfo LOOT_ITEM = of(Registries.LOOT_CONDITION_TYPE).type(LootItemConditionType.class);
+	public static final RegistryInfo LOOT_NUMBER_PROVIDER = of(Registries.LOOT_NUMBER_PROVIDER_TYPE).type(LootNumberProviderType.class);
+	public static final RegistryInfo LOOT_NBT_PROVIDER = of(Registries.LOOT_NBT_PROVIDER_TYPE).type(LootNbtProviderType.class);
+	public static final RegistryInfo LOOT_SCORE_PROVIDER = of(Registries.LOOT_SCORE_PROVIDER_TYPE).type(LootScoreProviderType.class);
 	public static final RegistryInfo COMMAND_ARGUMENT_TYPE = of(Registries.COMMAND_ARGUMENT_TYPE).type(ArgumentTypeInfo.class);
 	public static final RegistryInfo DIMENSION_TYPE = of(Registries.DIMENSION_TYPE).type(DimensionType.class);
 	public static final RegistryInfo DIMENSION = of(Registries.DIMENSION).type(Level.class);
@@ -145,7 +141,7 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 	public static final RegistryInfo INT_PROVIDER_TYPE = of(Registries.INT_PROVIDER_TYPE).type(IntProviderType.class);
 	public static final RegistryInfo HEIGHT_PROVIDER_TYPE = of(Registries.HEIGHT_PROVIDER_TYPE).type(HeightProviderType.class);
 	public static final RegistryInfo BLOCK_PREDICATE_TYPE = of(Registries.BLOCK_PREDICATE_TYPE).type(BlockPredicateType.class);
-	public static final RegistryInfo NOISE_GENERATOR_SETTINGS = of(Registries.NOISE_GENERATOR_SETTINGS).type(NoiseGeneratorSettings.class);
+	public static final RegistryInfo NOISE_GENERATOR_SETTINGS = of(Registries.NOISE_SETTINGS).type(NoiseGeneratorSettings.class);
 	public static final RegistryInfo CONFIGURED_CARVER = of(Registries.CONFIGURED_CARVER).type(ConfiguredWorldCarver.class);
 	public static final RegistryInfo CONFIGURED_FEATURE = of(Registries.CONFIGURED_FEATURE).type(ConfiguredFeature.class);
 	public static final RegistryInfo PLACED_FEATURE = of(Registries.PLACED_FEATURE).type(PlacedFeature.class);
@@ -160,10 +156,10 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 	public static final RegistryInfo FLAT_LEVEL_GENERATOR_PRESET = of(Registries.FLAT_LEVEL_GENERATOR_PRESET).type(FlatLevelGeneratorPreset.class);
 	public static final RegistryInfo CARVER = of(Registries.CARVER).type(WorldCarver.class);
 	public static final RegistryInfo FEATURE = of(Registries.FEATURE).type(Feature.class);
-	public static final RegistryInfo STRUCTURE_PLACEMENT_TYPE = of(Registries.STRUCTURE_PLACEMENT_TYPE).type(StructurePlacementType.class);
+	public static final RegistryInfo STRUCTURE_PLACEMENT_TYPE = of(Registries.STRUCTURE_PLACEMENT).type(StructurePlacementType.class);
 	public static final RegistryInfo STRUCTURE_PIECE = of(Registries.STRUCTURE_PIECE).type(StructurePieceType.class);
 	public static final RegistryInfo STRUCTURE_TYPE = of(Registries.STRUCTURE_TYPE).type(StructureType.class);
-	public static final RegistryInfo PLACEMENT_MODIFIER = of(Registries.PLACEMENT_MODIFIER).type(PlacementModifierType.class);
+	public static final RegistryInfo PLACEMENT_MODIFIER = of(Registries.PLACEMENT_MODIFIER_TYPE).type(PlacementModifierType.class);
 	public static final RegistryInfo BLOCK_STATE_PROVIDER_TYPE = of(Registries.BLOCK_STATE_PROVIDER_TYPE).type(BlockStateProviderType.class);
 	public static final RegistryInfo FOLIAGE_PLACER_TYPE = of(Registries.FOLIAGE_PLACER_TYPE).type(FoliagePlacerType.class);
 	public static final RegistryInfo TRUNK_PLACER_TYPE = of(Registries.TRUNK_PLACER_TYPE).type(TrunkPlacerType.class);
@@ -172,8 +168,8 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 	public static final RegistryInfo FEATURE_SIZE_TYPE = of(Registries.FEATURE_SIZE_TYPE).type(FeatureSizeType.class);
 	public static final RegistryInfo BIOME_SOURCE = of(Registries.BIOME_SOURCE).type(Codec.class);
 	public static final RegistryInfo CHUNK_GENERATOR = of(Registries.CHUNK_GENERATOR).type(Codec.class);
-	public static final RegistryInfo CONDITION = of(Registries.CONDITION).type(Codec.class);
-	public static final RegistryInfo RULE = of(Registries.RULE).type(Codec.class);
+	public static final RegistryInfo CONDITION = of(Registries.MATERIAL_CONDITION).type(Codec.class);
+	public static final RegistryInfo RULE = of(Registries.MATERIAL_RULE).type(Codec.class);
 	public static final RegistryInfo DENSITY_FUNCTION_TYPE = of(Registries.DENSITY_FUNCTION_TYPE).type(Codec.class);
 	public static final RegistryInfo STRUCTURE_PROCESSOR = of(Registries.STRUCTURE_PROCESSOR).type(StructureProcessorType.class);
 	public static final RegistryInfo STRUCTURE_POOL_ELEMENT = of(Registries.STRUCTURE_POOL_ELEMENT).type(StructurePoolElementType.class);

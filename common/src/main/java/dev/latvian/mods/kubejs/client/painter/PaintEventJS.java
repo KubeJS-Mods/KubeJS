@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.*;
 import dev.latvian.mods.kubejs.client.ClientEventJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
@@ -18,16 +19,18 @@ import java.util.function.Supplier;
 public class PaintEventJS extends ClientEventJS {
 	public final Minecraft mc;
 	public final Font font;
+	public final GuiGraphics graphics;
 	public final PoseStack matrices;
 	public final Tesselator tesselator;
 	public final BufferBuilder buffer;
 	public final float delta;
 	public final Screen screen;
 
-	public PaintEventJS(Minecraft m, PoseStack p, float d, @Nullable Screen s) {
+	public PaintEventJS(Minecraft m, GuiGraphics g, float d, @Nullable Screen s) {
 		mc = m;
 		font = mc.font;
-		matrices = p;
+		graphics = g;
+		matrices = g.pose();
 		tesselator = Tesselator.getInstance();
 		buffer = tesselator.getBuilder();
 		delta = d;

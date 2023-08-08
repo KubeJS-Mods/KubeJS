@@ -22,33 +22,33 @@ public class EntityFallenOnBlockCallbackJS extends EntitySteppedOnBlockCallbackJ
 	}
 
 	@Info("""
-		Applies default fall damage to the entity.
-		Note this does not force it, so entities that do not take fall damage are not affected.
-		""")
+			Applies default fall damage to the entity.
+			Note this does not force it, so entities that do not take fall damage are not affected.
+			""")
 	public boolean applyFallDamage() {
 		return applyFallDamage(1);
 	}
 
 	@Info("""
-		Applies fall damage to the entity, multiplier by the multiplier.
-		Note this does not force it, so entities that do not take fall damage are not affected.
-		""")
+			Applies fall damage to the entity, multiplier by the multiplier.
+			Note this does not force it, so entities that do not take fall damage are not affected.
+			""")
 	public boolean applyFallDamage(float multiplier) {
 		return applyFallDamage(fallHeight, multiplier);
 	}
 
 	@Info("""
-		Applies fall damage to the entity as if they had fallen from the provided height, and multiplies it by the provided multiplier.
-		Note this does not force it, so entities that do not take fall damage are not affected.
-		""")
+			Applies fall damage to the entity as if they had fallen from the provided height, and multiplies it by the provided multiplier.
+			Note this does not force it, so entities that do not take fall damage are not affected.
+			""")
 	public boolean applyFallDamage(float fallHeight, float multiplier) {
-		return applyFallDamage(fallHeight, multiplier, DamageSource.FALL);
+		return applyFallDamage(fallHeight, multiplier, entity.damageSources().fall());
 	}
 
 	@Info("""
-		Damages the entity using the provided damage source, using the fall height and multiplier to calculate the damage amount.
-		Note this does not force the damage, so entities that do not take fall damage are not affected.
-		""")
+			Damages the entity using the provided damage source, using the fall height and multiplier to calculate the damage amount.
+			Note this does not force the damage, so entities that do not take fall damage are not affected.
+			""")
 	public boolean applyFallDamage(float fallHeight, float multiplier, DamageSource damageSource) {
 		return entity.causeFallDamage(fallHeight, multiplier, damageSource);
 	}

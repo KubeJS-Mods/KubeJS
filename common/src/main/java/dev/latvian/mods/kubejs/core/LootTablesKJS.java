@@ -3,12 +3,7 @@ package dev.latvian.mods.kubejs.core;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
-import dev.latvian.mods.kubejs.loot.BlockLootEventJS;
-import dev.latvian.mods.kubejs.loot.ChestLootEventJS;
-import dev.latvian.mods.kubejs.loot.EntityLootEventJS;
-import dev.latvian.mods.kubejs.loot.FishingLootEventJS;
-import dev.latvian.mods.kubejs.loot.GenericLootEventJS;
-import dev.latvian.mods.kubejs.loot.GiftLootEventJS;
+import dev.latvian.mods.kubejs.loot.*;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -23,6 +18,7 @@ import java.util.function.BiConsumer;
 
 public interface LootTablesKJS {
 	default void kjs$apply0(Map<ResourceLocation, JsonElement> map, BiConsumer<ResourceLocation, JsonElement> action) {
+		// part 1: modifying loot tables
 		Map<ResourceLocation, JsonElement> map1 = new HashMap<>(map);
 		ServerEvents.GENERIC_LOOT_TABLES.post(ScriptType.SERVER, new GenericLootEventJS(map1));
 		ServerEvents.BLOCK_LOOT_TABLES.post(ScriptType.SERVER, new BlockLootEventJS(map1));
@@ -31,6 +27,7 @@ public interface LootTablesKJS {
 		ServerEvents.FISHING_LOOT_TABLES.post(ScriptType.SERVER, new FishingLootEventJS(map1));
 		ServerEvents.CHEST_LOOT_TABLES.post(ScriptType.SERVER, new ChestLootEventJS(map1));
 
+		// part 2: add loot tables to export
 		for (var entry : map1.entrySet()) {
 			try {
 				action.accept(entry.getKey(), entry.getValue());
@@ -47,8 +44,10 @@ public interface LootTablesKJS {
 		// 	DataExport.dataExport.add("loot_tables", export);
 		// }
 
+		// part 3: export data
 		DataExport.exportData();
 
+		// part 4: complete reload
 		if (UtilsJS.staticServer != null && CommonProperties.get().announceReload && !CommonProperties.get().hideServerScriptErrors) {
 			if (ScriptType.SERVER.errors.isEmpty()) {
 				UtilsJS.staticServer.kjs$tell(Component.literal("Reloaded with no KubeJS errors!").withStyle(ChatFormatting.GREEN));

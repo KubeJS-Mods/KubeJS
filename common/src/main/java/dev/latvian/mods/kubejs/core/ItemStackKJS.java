@@ -32,12 +32,7 @@ import net.minecraft.world.level.block.Blocks;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
@@ -67,7 +62,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 			return stack.isEmpty();
 		}
 
-		return self.getItem() == stack.getItem() && ItemStack.tagMatches(self, stack);
+		return ItemStack.isSameItemSameTags(self, stack);
 	}
 
 	default ResourceLocation kjs$getIdLocation() {
@@ -226,10 +221,10 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 		return kjs$self().save(new CompoundTag());
 	}
 
-	default String kjs$getCreativeTab() {
+	/* default String kjs$getCreativeTab() {
 		var cat = kjs$self().getItem().getItemCategory();
 		return cat == null ? "" : cat.getRecipeFolderName();
-	}
+	}*/
 
 	default CompoundTag kjs$getTypeData() {
 		return kjs$self().getItem().kjs$getTypeData();
