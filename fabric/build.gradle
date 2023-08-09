@@ -73,7 +73,7 @@ processResources {
 
 	def toReplace = [
 			"version"             : project.version,
-			"rhino_version"       : rootProject.rhino_version,
+			"min_rhino_version"   : rootProject.min_rhino_version,
 			"architectury_version": rootProject.architectury_version
 	]
 
