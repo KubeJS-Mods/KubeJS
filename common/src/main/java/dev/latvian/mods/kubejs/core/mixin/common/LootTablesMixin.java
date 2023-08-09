@@ -3,20 +3,40 @@ package dev.latvian.mods.kubejs.core.mixin.common;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.core.LootTablesKJS;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.level.storage.loot.LootDataId;
 import net.minecraft.world.level.storage.loot.LootDataManager;
+import net.minecraft.world.level.storage.loot.LootDataType;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 @Mixin(LootDataManager.class)
 public abstract class LootTablesMixin implements LootTablesKJS {
 
+	@Shadow
+	private Map<LootDataId<?>, ?> elements;
+
 	// TODO: (low priority) Replace with a less destructive mixin type
-	@Redirect(method = "apply*", at = @At(value = "INVOKE", target = "Ljava/util/Map;forEach(Ljava/util/function/BiConsumer;)V", ordinal = 0))
-	private void kjs$apply(Map<ResourceLocation, JsonElement> map, BiConsumer<ResourceLocation, JsonElement> action) {
-		kjs$apply0(map, action);
+	@Inject(method = "apply*", at = @At("RETURN"))
+	private void kjs$apply(Map<LootDataType<?>, Map<ResourceLocation, ?>> parsedMap, CallbackInfo ci) {
+		kjs$completeReload(parsedMap, elements);
+	}
+
+	@SuppressWarnings("UnresolvedMixinReference")
+	@Inject(method = {"method_51189", "lambda$scheduleElementParse$5", "m_278660_"}, remap = false,
+			at = @At(value = "INVOKE",
+					target = "Lnet/minecraft/server/packs/resources/SimpleJsonResourceReloadListener;scanDirectory(Lnet/minecraft/server/packs/resources/ResourceManager;Ljava/lang/String;Lcom/google/gson/Gson;Ljava/util/Map;)V",
+					shift = At.Shift.AFTER
+			), locals = LocalCapture.CAPTURE_FAILHARD)
+	private static void kjs$readLootTableJsons(ResourceManager rm, LootDataType type, Map map0, CallbackInfo ci, Map<ResourceLocation, JsonElement> map) {
+		if (type.equals(LootDataType.TABLE)) {
+			LootTablesKJS.kjs$postLootEvents(map);
+		}
 	}
 }

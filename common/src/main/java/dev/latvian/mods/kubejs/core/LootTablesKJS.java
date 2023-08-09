@@ -11,38 +11,40 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.storage.loot.LootDataId;
+import net.minecraft.world.level.storage.loot.LootDataType;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 public interface LootTablesKJS {
-	default void kjs$apply0(Map<ResourceLocation, JsonElement> map, BiConsumer<ResourceLocation, JsonElement> action) {
+	static void kjs$postLootEvents(Map<ResourceLocation, JsonElement> map) {
 		// part 1: modifying loot tables
-		Map<ResourceLocation, JsonElement> map1 = new HashMap<>(map);
-		ServerEvents.GENERIC_LOOT_TABLES.post(ScriptType.SERVER, new GenericLootEventJS(map1));
-		ServerEvents.BLOCK_LOOT_TABLES.post(ScriptType.SERVER, new BlockLootEventJS(map1));
-		ServerEvents.ENTITY_LOOT_TABLES.post(ScriptType.SERVER, new EntityLootEventJS(map1));
-		ServerEvents.GIFT_LOOT_TABLES.post(ScriptType.SERVER, new GiftLootEventJS(map1));
-		ServerEvents.FISHING_LOOT_TABLES.post(ScriptType.SERVER, new FishingLootEventJS(map1));
-		ServerEvents.CHEST_LOOT_TABLES.post(ScriptType.SERVER, new ChestLootEventJS(map1));
+		// TODO (low): We can now also modify the parsed loot tables directly in the apply method (see parsedMap in kjs$completeReload below)
+		ServerEvents.GENERIC_LOOT_TABLES.post(ScriptType.SERVER, new GenericLootEventJS(map));
+		ServerEvents.BLOCK_LOOT_TABLES.post(ScriptType.SERVER, new BlockLootEventJS(map));
+		ServerEvents.ENTITY_LOOT_TABLES.post(ScriptType.SERVER, new EntityLootEventJS(map));
+		ServerEvents.GIFT_LOOT_TABLES.post(ScriptType.SERVER, new GiftLootEventJS(map));
+		ServerEvents.FISHING_LOOT_TABLES.post(ScriptType.SERVER, new FishingLootEventJS(map));
+		ServerEvents.CHEST_LOOT_TABLES.post(ScriptType.SERVER, new ChestLootEventJS(map));
+	}
 
-		// part 2: add loot tables to export
-		for (var entry : map1.entrySet()) {
-			try {
-				action.accept(entry.getKey(), entry.getValue());
+	default void kjs$completeReload(Map<LootDataType<?>, Map<ResourceLocation, ?>> parsedMap, Map<LootDataId<?>, ?> elements) {
+		// TODO: choose which of these maps we want to use for the data export
+		if (DataExport.export != null) {
+			// part 2: add loot tables to export
+			for (var entry : elements.entrySet()) {
+				var type = entry.getKey().type();
+				var id = entry.getKey().location();
+				try {
+					var lootJson = type.parser().toJsonTree(entry.getValue());
+					var fileName = "%s/%s/%s.json".formatted(type.directory(), id.getNamespace(), id.getPath());
 
-				if (DataExport.export != null) {
-					DataExport.export.addJson("loot_tables/" + entry.getKey().toString() + ".json", entry.getValue());
+					DataExport.export.addJson(fileName, lootJson);
+				} catch (Exception ex) {
+					ConsoleJS.SERVER.error("Failed to export loot table %s as JSON!".formatted(id), ex);
 				}
-			} catch (Exception ex) {
-				ConsoleJS.SERVER.error("Failed to load loot table " + entry.getKey() + ": " + ex + "\nJson: " + entry.getValue());
 			}
 		}
-
-		// if (DataExport.dataExport != null) {
-		// 	DataExport.dataExport.add("loot_tables", export);
-		// }
 
 		// part 3: export data
 		DataExport.exportData();
