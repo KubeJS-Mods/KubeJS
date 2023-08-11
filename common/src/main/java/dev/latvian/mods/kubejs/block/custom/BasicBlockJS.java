@@ -1,18 +1,10 @@
 package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
-import dev.latvian.mods.kubejs.block.EntityBlockKJS;
 import dev.latvian.mods.kubejs.block.KubeJSBlockProperties;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.BlockExplodedCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.BlockStateMirrorCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyPlacementCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.BlockStateRotateCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.CanBeReplacedCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.EntityFallenOnBlockCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.EntitySteppedOnBlockCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.*;
+import dev.latvian.mods.kubejs.core.BlockKJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.BlockPos;
@@ -32,9 +24,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -50,7 +39,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterloggedBlock {
+public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBlock {
 	public static class Builder extends BlockBuilder {
 		public Builder(ResourceLocation i) {
 			super(i);
@@ -84,18 +73,6 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	@Override
 	public BlockBuilder kjs$getBlockBuilder() {
 		return blockBuilder;
-	}
-
-	@Override
-	@Nullable
-	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-		return null;
-	}
-
-	@Override
-	@Nullable
-	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-		return null;
 	}
 
 	@Override
