@@ -46,7 +46,8 @@ public abstract class GeneratedResourcePack implements PackResources {
 			return null;
 		}
 
-		return () -> new ByteArrayInputStream(getGenerated().get(location));
+		var bytes = getGenerated().get(location);
+		return bytes == null ? null : () -> new ByteArrayInputStream(bytes);
 
 		// throw new ResourcePackFileNotFoundException(KubeJSPaths.DIRECTORY.toFile(), getFullPath(type, location));
 	}
