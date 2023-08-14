@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -18,16 +19,21 @@ import net.minecraft.tags.TagLoader;
 
 import java.nio.file.Files;
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class TagEventJS<T> extends EventJS {
+	public static final EventHandler.EventExceptionHandler TAG_EVENT_HANDLER = (event, container, ex) -> {
+		if (ex instanceof IllegalStateException) {
+			var error = ex.getCause() == null ? ex : ex.getCause();
+			ConsoleJS.SERVER.handleError(error, null, "IllegalStateException was thrown during tag event in script %s:%d, this is most likely due to a concurrency bug in Rhino!"
+					.formatted(container.source, container.line));
+			ConsoleJS.SERVER.error("While we are working on a fix for this issue, you may manually work around it by reloading the server again (e.g. by using /reload command).");
+			return null;
+		}
+		return ex;
+	};
+
 	public class TagWrapper {
 		private final ResourceLocation id;
 		private final List<TagLoader.EntryWithSource> entries;
@@ -240,7 +246,7 @@ public class TagEventJS<T> extends EventJS {
 			}
 		}
 
-		ServerEvents.TAGS.post(this, registry.key());
+		ServerEvents.TAGS.post(this, registry.key(), TAG_EVENT_HANDLER);
 
 		if (DataExport.export != null) {
 			var loc = "tags/" + getType().toString() + "/";
