@@ -23,6 +23,7 @@ import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.JavaMembers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -271,7 +272,7 @@ public class KubeJSCommands {
 				builder.append("- Event class: ");
 
 				if (eventType.getPackageName().startsWith("dev.latvian.mods.kubejs")) {
-					builder.append('[').append(eventType.getSimpleName()).append(']')
+					builder.append('[').append(UtilsJS.toMappedTypeString(eventType)).append(']')
 							.append('(').append("https://github.com/KubeJS-Mods/KubeJS/tree/")
 							.append(KubeJS.MC_VERSION_NUMBER)
 							.append("/common/src/main/java/")
@@ -279,7 +280,7 @@ public class KubeJSCommands {
 							.append('/').append(eventType.getSimpleName()).append(".java")
 							.append(')');
 				} else {
-					builder.append(eventType.getSimpleName()).append(" (third-party)");
+					builder.append(UtilsJS.toMappedTypeString(eventType)).append(" (third-party)");
 				}
 
 				builder.append("\n\n");
@@ -296,7 +297,7 @@ public class KubeJSCommands {
 					if (field.field.getDeclaringClass() == Object.class || field.field.getDeclaringClass() == EventJS.class) {
 						continue;
 					}
-					builder.append("| ").append(field.name).append(" | ").append(field.field.getType().getSimpleName()).append(" |\n");
+					builder.append("| ").append(field.name).append(" | ").append(UtilsJS.toMappedTypeString(field.field.getGenericType())).append(" |\n");
 				}
 				builder.append("\n");
 
@@ -310,14 +311,14 @@ public class KubeJSCommands {
 						continue;
 					}
 					builder.append("| ").append(method.name).append(" | ");
-					var params = method.method.getParameterTypes();
+					var params = method.method.getGenericParameterTypes();
 					for (var i = 0; i < params.length; i++) {
-						builder.append(params[i].getSimpleName());
+						builder.append(UtilsJS.toMappedTypeString(params[i]));
 						if (i < params.length - 1) {
 							builder.append(", ");
 						}
 					}
-					builder.append(" | ").append(method.method.getReturnType().getSimpleName()).append(" |\n");
+					builder.append(" | ").append(UtilsJS.toMappedTypeString(method.method.getGenericReturnType())).append(" |\n");
 				}
 
 				builder.append("\n");
