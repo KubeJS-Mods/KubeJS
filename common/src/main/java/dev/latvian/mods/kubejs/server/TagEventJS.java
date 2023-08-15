@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public class TagEventJS<T> extends EventJS {
-	public static final EventHandler.EventExceptionHandler TAG_EVENT_HANDLER = (event, container, ex) -> {
+	private static final EventHandler.EventExceptionHandler TAG_EVENT_HANDLER = (event, container, ex) -> {
 		if (ex instanceof IllegalStateException) {
 			var error = ex.getCause() == null ? ex : ex.getCause();
 			ConsoleJS.SERVER.handleError(error, null, "IllegalStateException was thrown during tag event in script %s:%d, this is most likely due to a concurrency bug in Rhino!"
