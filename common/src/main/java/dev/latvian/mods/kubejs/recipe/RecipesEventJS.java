@@ -27,6 +27,7 @@ import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
+import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -45,23 +46,8 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -83,6 +69,7 @@ public class RecipesEventJS extends EventJS {
 		}
 	};
 
+	@HideFromJS
 	public static final Map<ResourceLocation, ModifyRecipeResultCallback> MODIFY_RESULT_CALLBACKS = new ConcurrentHashMap<>();
 
 	// hacky workaround for parallel streams, which are executed on the common fork/join pool by default
@@ -115,12 +102,17 @@ public class RecipesEventJS extends EventJS {
 			}
 		}, true);
 
+	@HideFromJS
 	public static Map<UUID, IngredientWithCustomPredicate> customIngredientMap = null;
 
+	@HideFromJS
 	public static RecipesEventJS instance;
 
 	public final Map<ResourceLocation, RecipeJS> originalRecipes;
 	public final Collection<RecipeJS> addedRecipes;
+
+	// this is more of a test doc than anything else
+	@Info("The number of recipes that failed to load or be added during this event.")
 	public final AtomicInteger failedCount;
 	public final Map<ResourceLocation, RecipeJS> takenIds;
 

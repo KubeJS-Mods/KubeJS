@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.command;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -12,7 +13,6 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.event.EventGroup;
-import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.net.PaintMessage;
@@ -22,6 +22,7 @@ import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
+import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.JavaMembers;
@@ -46,6 +47,7 @@ import net.minecraft.world.item.ItemStack;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -285,49 +287,130 @@ public class KubeJSCommands {
 
 				builder.append("\n\n");
 
+				var classInfo = eventType.getAnnotation(Info.class);
+				if (classInfo != null) {
+					builder.append("```\n")
+							.append(classInfo.value())
+							.append("```");
+					builder.append("\n\n");
+				}
+
 				var scriptManager = ScriptType.SERVER.manager.get();
 				var cx = scriptManager.context;
 
 				var members = JavaMembers.lookupClass(cx, scriptManager.topLevelScope, eventType, null, false);
 
+				var hasDocumentedMembers = false;
+				var documentedMembers = new StringBuilder("### Documented members:\n\n");
+
 				builder.append("### Available fields:\n\n");
-				builder.append("| Name | Type |\n");
-				builder.append("| ---- | ---- |\n");
+				builder.append("| Name | Type | Static? |\n");
+				builder.append("| ---- | ---- | ------- |\n");
 				for (var field : members.getAccessibleFields(cx, false)) {
-					if (field.field.getDeclaringClass() == Object.class || field.field.getDeclaringClass() == EventJS.class) {
+					if (field.field.getDeclaringClass() == Object.class) {
 						continue;
 					}
-					builder.append("| ").append(field.name).append(" | ").append(UtilsJS.toMappedTypeString(field.field.getGenericType())).append(" |\n");
-				}
-				builder.append("\n");
 
-				builder.append("Note: Even if no fields are listed above, some methods are still available as fields through *beans*.\n\n");
+					var typeName = UtilsJS.toMappedTypeString(field.field.getGenericType());
+					builder.append("| ").append(field.name).append(" | ").append(typeName).append(" | ");
+					builder.append(Modifier.isStatic(field.field.getModifiers()) ? UNICODE_TICK : UNICODE_CROSS).append(" |\n");
+
+					var info = field.field.getAnnotation(Info.class);
+					if (info != null) {
+						hasDocumentedMembers = true;
+						documentedMembers.append("- `").append(typeName).append(' ').append(field.name).append("`\n");
+						documentedMembers.append("```\n");
+						var desc = info.value();
+						documentedMembers.append(desc);
+						if (!desc.endsWith("\n")) {
+							documentedMembers.append("\n");
+						}
+						documentedMembers.append("```\n\n");
+					}
+				}
+
+				builder.append("\n").append("Note: Even if no fields are listed above, some methods are still available as fields through *beans*.\n\n");
 
 				builder.append("### Available methods:\n\n");
-				builder.append("| Name | Parameters | Return type |\n");
-				builder.append("| ---- | ---------- | ----------- |\n");
+				builder.append("| Name | Parameters | Return type | Static? |\n");
+				builder.append("| ---- | ---------- | ----------- | ------- |\n");
 				for (var method : members.getAccessibleMethods(cx, false)) {
-					if (method.hidden || method.method.getDeclaringClass() == Object.class || method.method.getDeclaringClass() == EventJS.class) {
+					if (method.hidden || method.method.getDeclaringClass() == Object.class) {
 						continue;
 					}
 					builder.append("| ").append(method.name).append(" | ");
 					var params = method.method.getGenericParameterTypes();
+
+					var paramTypes = new String[params.length];
 					for (var i = 0; i < params.length; i++) {
-						builder.append(UtilsJS.toMappedTypeString(params[i]));
-						if (i < params.length - 1) {
-							builder.append(", ");
-						}
+						paramTypes[i] = UtilsJS.toMappedTypeString(params[i]);
 					}
-					builder.append(" | ").append(UtilsJS.toMappedTypeString(method.method.getGenericReturnType())).append(" |\n");
+					builder.append(String.join(", ", paramTypes)).append(" | ");
+
+					var returnType = UtilsJS.toMappedTypeString(method.method.getGenericReturnType());
+					builder.append(" | ").append(returnType).append(" | ");
+					builder.append(Modifier.isStatic(method.method.getModifiers()) ? UNICODE_TICK : UNICODE_CROSS).append(" |\n");
+
+					var info = method.method.getAnnotation(Info.class);
+					if (info != null) {
+						hasDocumentedMembers = true;
+						documentedMembers.append("- ").append('`');
+						if (Modifier.isStatic(method.method.getModifiers())) {
+							documentedMembers.append("static ");
+						}
+						documentedMembers.append(returnType).append(' ').append(method.name).append('(');
+
+						var namedParams = info.params();
+						var paramNames = new String[params.length];
+						var signature = new String[params.length];
+						for (var i = 0; i < params.length; i++) {
+							var name = "var" + i;
+							if (namedParams.length > i) {
+								var name1 = namedParams[i].name();
+								if (!Strings.isNullOrEmpty(name1)) {
+									name = name1;
+								}
+							}
+							paramNames[i] = name;
+							signature[i] = paramTypes[i] + ' ' + name;
+						}
+
+						documentedMembers.append(String.join(", ", signature)).append(')').append('`').append("\n");
+
+						if (params.length > 0) {
+							documentedMembers.append("\n  Parameters:\n");
+							for (var i = 0; i < params.length; i++) {
+								documentedMembers.append("  - ")
+										.append(paramNames[i])
+										.append(": ")
+										.append(paramTypes[i])
+										.append(namedParams.length > i ? "- " + namedParams[i].value() : "")
+										.append("\n");
+							}
+							documentedMembers.append("\n");
+						}
+
+						documentedMembers.append("```\n");
+						var desc = info.value();
+						documentedMembers.append(desc);
+						if (!desc.endsWith("\n")) {
+							documentedMembers.append("\n");
+						}
+						documentedMembers.append("```\n\n");
+					}
 				}
 
-				builder.append("\n");
+				builder.append("\n\n");
+
+				if (hasDocumentedMembers) {
+					builder.append(documentedMembers).append("\n\n");
+				}
 
 				builder.append("### Example script:\n\n");
 				builder.append("```js\n");
 				builder.append(fullName).append('(');
 				if (handler.extra != null) {
-					builder.append(handler.extra.required ? "extra_id, " : "/* extra_id (optional), */");
+					builder.append(handler.extra.required ? "extra_id, " : "/* extra_id (optional), */ ");
 				}
 				builder.append("(event) => {\n");
 				builder.append("\t// This space (un)intentionally left blank\n");
