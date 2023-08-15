@@ -27,7 +27,6 @@ import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
-import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -111,8 +110,6 @@ public class RecipesEventJS extends EventJS {
 	public final Map<ResourceLocation, RecipeJS> originalRecipes;
 	public final Collection<RecipeJS> addedRecipes;
 
-	// this is more of a test doc than anything else
-	@Info("The number of recipes that failed to load or be added during this event.")
 	public final AtomicInteger failedCount;
 	public final Map<ResourceLocation, RecipeJS> takenIds;
 
