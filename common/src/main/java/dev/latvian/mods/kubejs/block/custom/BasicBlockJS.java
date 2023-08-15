@@ -118,7 +118,7 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 	public boolean canBeReplaced(BlockState blockState, BlockPlaceContext context) {
 		if (blockBuilder.canBeReplacedFunction != null) {
 			var callbackJS = new CanBeReplacedCallbackJS(context, blockState);
-			return blockBuilder.canBeReplacedFunction.apply(callbackJS);
+			return blockBuilder.canBeReplacedFunction.test(callbackJS);
 		}
 		return super.canBeReplaced(blockState, context);
 	}

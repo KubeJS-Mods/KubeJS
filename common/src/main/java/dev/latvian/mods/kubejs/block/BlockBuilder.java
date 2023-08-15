@@ -47,7 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class BlockBuilder extends BuilderBase<Block> {
@@ -87,7 +87,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient Set<Property<?>> blockStateProperties;
 	public transient Consumer<BlockStateModifyCallbackJS> defaultStateModification;
 	public transient Consumer<BlockStateModifyPlacementCallbackJS> placementStateModification;
-	public transient Function<CanBeReplacedCallbackJS, Boolean> canBeReplacedFunction;
+	public transient Predicate<CanBeReplacedCallbackJS> canBeReplacedFunction;
 	public transient Consumer<EntitySteppedOnBlockCallbackJS> stepOnCallback;
 	public transient Consumer<EntityFallenOnBlockCallbackJS> fallOnCallback;
 	public transient Consumer<AfterEntityFallenOnBlockCallbackJS> afterFallenOnCallback;
@@ -663,7 +663,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Info("Set if the block can be replaced by something else.")
-	public BlockBuilder canBeReplaced(Function<CanBeReplacedCallbackJS, Boolean> callbackJS) {
+	public BlockBuilder canBeReplaced(Predicate<CanBeReplacedCallbackJS> callbackJS) {
 		canBeReplacedFunction = callbackJS;
 		return this;
 	}
