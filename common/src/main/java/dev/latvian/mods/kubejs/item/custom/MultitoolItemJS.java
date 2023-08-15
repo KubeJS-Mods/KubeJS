@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.item.custom;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import dev.latvian.mods.kubejs.item.MutableToolTier;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
@@ -25,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -34,13 +35,9 @@ import static java.math.RoundingMode.CEILING;
 
 public class MultitoolItemJS extends DiggerItem {
     public static class Builder extends HandheldItemBuilder {
-        protected boolean isAxe = false, isHoe = false, isPickaxe = false, isShovel = false;
-
         protected final List<Float> speedValues = new ArrayList<>(5);
-
         protected final List<Float> attackValues = new ArrayList<>(5);
-
-        protected final Set<TagKey<Block>> mineableTags = new HashSet<>();
+        protected final EnumSet<ToolTypes> toolTypes = EnumSet.noneOf(ToolTypes.class);
 
         public Builder(ResourceLocation i) {
             super(i, 0, 0);
@@ -52,35 +49,10 @@ public class MultitoolItemJS extends DiggerItem {
             Valid tool types include: 'axe', 'hoe', 'pickaxe', and 'shovel'.
             """, params =
         @Param(name = "tool", value = "The name of the tool to add to the multi-tool. Will error if it is an unknown tool type."))
-        public Builder tool(String tool) {
-            // maybe swords and shears? (i would need some help with that, as neither extends diggeritem)
-            return switch (tool) {
-                default -> throw new IllegalArgumentException("Unknown tool type '" + tool +
-                        "', valid tool types are: 'axe', 'hoe', 'pickaxe', and 'shovel'!");
-                case "axe" -> {
-                    isAxe = true;
-                    yield addValues(6, -3.1f, BlockTags.MINEABLE_WITH_AXE);
-                }
-                case "hoe" -> {
-                    isHoe = true;
-                    yield addValues(-2, -1, BlockTags.MINEABLE_WITH_HOE);
-                }
-                case "pickaxe" -> {
-                    isPickaxe = true;
-                    yield addValues(1, -2.8f, BlockTags.MINEABLE_WITH_PICKAXE);
-                }
-                case "shovel" -> {
-                    isShovel = true;
-                    yield addValues(1.5f, -3, BlockTags.MINEABLE_WITH_SHOVEL);
-                }
-            };
-        }
-
-        protected Builder addValues(float attack, float speed, @Nullable TagKey<Block> tag) {
-            attackValues.add(attack);
-            speedValues.add(speed);
-            if (tag != null)
-                mineableTags.add(tag);
+        public Builder tool(ToolTypes tool) {
+            toolTypes.add(tool);
+            attackValues.add(tool.attack);
+            speedValues.add(tool.speed);
             return this;
         }
 
@@ -101,6 +73,10 @@ public class MultitoolItemJS extends DiggerItem {
         protected void setValues() {
             // TOD0: find a way to make this better / more efficient
             // i hate floating-point jank
+
+            // this finds the average of all the floats in attack/speedValues,
+            // then does average += average * 0.8 or 0.5, and rounds it up to the
+            // tenths place. the resulting value is the attackDamage/speedBaseline.
             var attack = new BigDecimal("0");
             for (final var f : attackValues) {
                 attack = attack.add(new BigDecimal(Float.toString(f)));
@@ -108,6 +84,7 @@ public class MultitoolItemJS extends DiggerItem {
             attack = attack.divide(new BigDecimal(Integer.toString(attackValues.size())), 3, CEILING);
             attackDamageBaseline = attack.add(attack.multiply(BigDecimal.valueOf(.08)))
                 .setScale(1, CEILING).floatValue();
+
             var speed = new BigDecimal("0");
             for (final var f : speedValues) {
                 speed = speed.add(new BigDecimal(Float.toString(f)));
@@ -123,36 +100,58 @@ public class MultitoolItemJS extends DiggerItem {
             return new MultitoolItemJS(attackDamageBaseline, speedBaseline, toolTier, createItemProperties(), this);
         }
     }
+
+    public enum ToolTypes {
+        // maybe swords and shears? (i would need some help with that, as neither extends diggeritem)
+        AXE(6, -3.1F, BlockTags.MINEABLE_WITH_AXE),
+        HOE(-2, -1, BlockTags.MINEABLE_WITH_HOE),
+        PICKAXE(1, -2.8F, BlockTags.MINEABLE_WITH_PICKAXE),
+        SHOVEL(1.5F, -3, BlockTags.MINEABLE_WITH_SHOVEL);
+
+        public final float attack, speed;
+        @Nullable
+        public final TagKey<Block> tag;
+
+        ToolTypes(float attack, float speed, @Nullable TagKey<Block> tag) {
+            this.attack = attack;
+            this.speed = speed;
+            this.tag = tag;
+        }
+    }
+
     {
         defaultModifiers = ArrayListMultimap.create(defaultModifiers);
     }
 
     public final Builder builder;
-
     public final Set<TagKey<Block>> mineableTags;
-
     private boolean modified = false;
 
     public MultitoolItemJS(float attack, float speed, MutableToolTier tier, Properties properties, Builder builder) {
         super(attack, speed, tier, null, properties);
         this.builder = builder;
-        mineableTags = Set.copyOf(builder.mineableTags);
+
+        var mineables = new ImmutableSet.Builder<TagKey<Block>>();
+        for (var toolType : builder.toolTypes)
+            if (toolType.tag != null)
+                mineables.add(toolType.tag);
+        mineableTags = mineables.build();
     }
 
     public boolean isAxe() {
-        return builder.isAxe;
+        return builder.toolTypes.contains(ToolTypes.AXE);
     }
 
     public boolean isHoe() {
-        return builder.isHoe;
+        return builder.toolTypes.contains(ToolTypes.HOE);
     }
 
     public boolean isPickaxe() {
-        return builder.isPickaxe;
+        return builder.toolTypes.contains(ToolTypes.PICKAXE);
     }
 
     public boolean isShovel() {
-        return builder.isShovel;
+        return builder.toolTypes.contains(ToolTypes.SHOVEL);
     }
 
     @Override
@@ -191,7 +190,7 @@ public class MultitoolItemJS extends DiggerItem {
         return isInMineables(state);
     }
 
-    private boolean isInMineables(BlockState state) {
+    protected boolean isInMineables(BlockState state) {
         for (final var tag : mineableTags)
             if (state.is(tag)) return true;
         return false;

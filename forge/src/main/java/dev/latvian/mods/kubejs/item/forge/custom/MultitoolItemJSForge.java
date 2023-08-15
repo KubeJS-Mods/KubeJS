@@ -5,6 +5,8 @@ import dev.latvian.mods.kubejs.item.custom.MultitoolItemJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.TierSortingRegistry;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 
@@ -32,5 +34,15 @@ public class MultitoolItemJSForge extends MultitoolItemJS {
              (isHoe() && ToolActions.DEFAULT_HOE_ACTIONS.contains(toolAction)) ||
              (isPickaxe() && ToolActions.DEFAULT_PICKAXE_ACTIONS.contains(toolAction)) ||
              (isShovel() && ToolActions.DEFAULT_SHOVEL_ACTIONS.contains(toolAction)));
+    }
+
+    @Override
+    public boolean isCorrectToolForDrops(BlockState state) {
+        return isInMineables(state) && TierSortingRegistry.isCorrectTierForDrops(tier, state);
+    }
+
+    @Override
+    public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
+        return isCorrectToolForDrops(state);
     }
 }
