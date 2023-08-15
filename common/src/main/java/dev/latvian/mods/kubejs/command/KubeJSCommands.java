@@ -11,6 +11,8 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
+import dev.latvian.mods.kubejs.event.EventGroup;
+import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.net.PaintMessage;
@@ -20,6 +22,8 @@ import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.rhino.JavaMembers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -30,11 +34,7 @@ import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.commands.ReloadCommand;
@@ -42,6 +42,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -53,159 +54,297 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class KubeJSCommands {
+
+	private static final char UNICODE_TICK = '✔';
+	private static final char UNICODE_CROSS = '✘';
+
 	public static final DynamicCommandExceptionType NO_REGISTRY = new DynamicCommandExceptionType((id) ->
-		Component.literal("No builtin or static registry found for " + id)
+			Component.literal("No builtin or static registry found for " + id)
 	);
 
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 		var cmd = dispatcher.register(Commands.literal("kubejs")
-			.then(Commands.literal("help")
-				.executes(context -> help(context.getSource()))
-			)
-			.then(Commands.literal("custom_command")
-				.then(Commands.argument("id", StringArgumentType.word())
-					.executes(context -> customCommand(context.getSource(), StringArgumentType.getString(context, "id")))
+				.then(Commands.literal("help")
+						.executes(context -> help(context.getSource()))
 				)
-			)
-			.then(Commands.literal("hand")
-				.executes(context -> hand(context.getSource().getPlayerOrException(), InteractionHand.MAIN_HAND))
-			)
-			.then(Commands.literal("offhand")
-				.executes(context -> hand(context.getSource().getPlayerOrException(), InteractionHand.OFF_HAND))
-			)
-			.then(Commands.literal("inventory")
-				.executes(context -> inventory(context.getSource().getPlayerOrException()))
-			)
-			.then(Commands.literal("hotbar")
-				.executes(context -> hotbar(context.getSource().getPlayerOrException()))
-			)
-			.then(Commands.literal("errors")
-				.executes(context -> errors(context.getSource()))
-			)
-			.then(Commands.literal("warnings")
-				.executes(context -> warnings(context.getSource()))
-			)
-			.then(Commands.literal("reload")
-				.then(Commands.literal("config")
-					.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
-					.executes(context -> reloadConfig(context.getSource()))
-				)
-				.then(Commands.literal("startup_scripts")
-					.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
-					.executes(context -> reloadStartup(context.getSource()))
-				)
-				.then(Commands.literal("server_scripts")
-					.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
-					.executes(context -> reloadServer(context.getSource()))
-				)
-				.then(Commands.literal("client_scripts")
-					.requires(source -> true)
-					.executes(context -> reloadClient(context.getSource()))
-				)
-				.then(Commands.literal("textures")
-					.requires(source -> true)
-					.executes(context -> reloadTextures(context.getSource()))
-				)
-				.then(Commands.literal("lang")
-					.requires(source -> true)
-					.executes(context -> reloadLang(context.getSource()))
-				)
-			)
-			.then(Commands.literal("export")
-				.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
-				.executes(context -> export(context.getSource()))
-			)
-			.then(Commands.literal("export_virtual_data")
-				.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
-				.executes(context -> exportVirtualData(context.getSource()))
-			)
-			/*
-			.then(Commands.literal("output_recipes")
-					.executes(context -> outputRecipes(context.getSource().getPlayerOrException()))
-			)
-			.then(Commands.literal("input_recipes")
-					.executes(context -> inputRecipes(context.getSource().getPlayerOrException()))
-			)
-			.then(Commands.literal("check_recipe_conflicts")
-					.executes(context -> checkRecipeConflicts(context.getSource().getPlayerOrException()))
-			)
-			 */
-			.then(Commands.literal("list_tag")
-				.then(Commands.argument("registry", ResourceLocationArgument.id())
-					.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
-						ctx.getSource().registryAccess()
-							.registries()
-							.map(entry -> entry.key().location().toString()), builder)
-					)
-					.executes(ctx -> listTagsFor(ctx.getSource(), registry(ctx, "registry")))
-					.then(Commands.argument("tag", ResourceLocationArgument.id())
-						.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
-							allTags(ctx.getSource(), registry(ctx, "registry"))
-								.map(TagKey::location)
-								.map(ResourceLocation::toString), builder)
+				.then(Commands.literal("custom_command")
+						.then(Commands.argument("id", StringArgumentType.word())
+								.executes(context -> customCommand(context.getSource(), StringArgumentType.getString(context, "id")))
 						)
-						.executes(ctx -> tagObjects(ctx.getSource(), TagKey.create(registry(ctx, "registry"),
-							ResourceLocationArgument.getId(ctx, "tag")))
+				)
+				.then(Commands.literal("hand")
+						.executes(context -> hand(context.getSource().getPlayerOrException(), InteractionHand.MAIN_HAND))
+				)
+				.then(Commands.literal("offhand")
+						.executes(context -> hand(context.getSource().getPlayerOrException(), InteractionHand.OFF_HAND))
+				)
+				.then(Commands.literal("inventory")
+						.executes(context -> inventory(context.getSource().getPlayerOrException()))
+				)
+				.then(Commands.literal("hotbar")
+						.executes(context -> hotbar(context.getSource().getPlayerOrException()))
+				)
+				.then(Commands.literal("errors")
+						.executes(context -> errors(context.getSource()))
+				)
+				.then(Commands.literal("warnings")
+						.executes(context -> warnings(context.getSource()))
+				)
+				.then(Commands.literal("reload")
+						.then(Commands.literal("config")
+								.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
+								.executes(context -> reloadConfig(context.getSource()))
 						)
-					)
-				)
-			)
-			.then(Commands.literal("dump_registry")
-				.then(Commands.argument("registry", ResourceLocationArgument.id())
-					.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
-						ctx.getSource().registryAccess()
-							.registries()
-							.map(entry -> entry.key().location().toString()), builder)
-					)
-					.executes(ctx -> dumpRegistry(ctx.getSource(), registry(ctx, "registry")))
-				)
-			)
-			.then(Commands.literal("stages")
-				.then(Commands.literal("add")
-					.then(Commands.argument("player", EntityArgument.players())
-						.then(Commands.argument("stage", StringArgumentType.string())
-							.executes(context -> addStage(context.getSource(), EntityArgument.getPlayers(context, "player"), StringArgumentType.getString(context, "stage")))
+						.then(Commands.literal("startup_scripts")
+								.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
+								.executes(context -> reloadStartup(context.getSource()))
 						)
-					)
-				)
-				.then(Commands.literal("remove")
-					.then(Commands.argument("player", EntityArgument.players())
-						.then(Commands.argument("stage", StringArgumentType.string())
-							.executes(context -> removeStage(context.getSource(), EntityArgument.getPlayers(context, "player"), StringArgumentType.getString(context, "stage")))
+						.then(Commands.literal("server_scripts")
+								.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
+								.executes(context -> reloadServer(context.getSource()))
 						)
-					)
+						.then(Commands.literal("client_scripts")
+								.requires(source -> true)
+								.executes(context -> reloadClient(context.getSource()))
+						)
+						.then(Commands.literal("textures")
+								.requires(source -> true)
+								.executes(context -> reloadTextures(context.getSource()))
+						)
+						.then(Commands.literal("lang")
+								.requires(source -> true)
+								.executes(context -> reloadLang(context.getSource()))
+						)
 				)
-				.then(Commands.literal("clear")
-					.then(Commands.argument("player", EntityArgument.players())
-						.executes(context -> clearStages(context.getSource(), EntityArgument.getPlayers(context, "player")))
-					)
+				.then(Commands.literal("export")
+						.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
+						.executes(context -> export(context.getSource()))
 				)
-				.then(Commands.literal("list")
-					.then(Commands.argument("player", EntityArgument.players())
-						.executes(context -> listStages(context.getSource(), EntityArgument.getPlayers(context, "player")))
-					)
+				.then(Commands.literal("export_virtual_data")
+						.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
+						.executes(context -> exportVirtualData(context.getSource()))
 				)
-			)
-			.then(Commands.literal("painter")
-				.then(Commands.argument("player", EntityArgument.players())
-					.then(Commands.argument("object", CompoundTagArgument.compoundTag())
-						.executes(context -> painter(context.getSource(), EntityArgument.getPlayers(context, "player"), CompoundTagArgument.getCompoundTag(context, "object")))
-					)
+				/*
+				.then(Commands.literal("output_recipes")
+						.executes(context -> outputRecipes(context.getSource().getPlayerOrException()))
 				)
-			)
-			.then(Commands.literal("generate_typings")
-				.requires(source -> source.getServer().isSingleplayer())
-				.executes(context -> generateTypings(context.getSource()))
-			)
-			.then(Commands.literal("packmode")
-				.executes(context -> packmode(context.getSource(), ""))
-				.then(Commands.argument("name", StringArgumentType.word())
-					.executes(context -> packmode(context.getSource(), StringArgumentType.getString(context, "name")))
+				.then(Commands.literal("input_recipes")
+						.executes(context -> inputRecipes(context.getSource().getPlayerOrException()))
 				)
-			)
+				.then(Commands.literal("check_recipe_conflicts")
+						.executes(context -> checkRecipeConflicts(context.getSource().getPlayerOrException()))
+				)
+				 */
+				.then(Commands.literal("list_tag")
+						.then(Commands.argument("registry", ResourceLocationArgument.id())
+								.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+										ctx.getSource().registryAccess()
+												.registries()
+												.map(entry -> entry.key().location().toString()), builder)
+								)
+								.executes(ctx -> listTagsFor(ctx.getSource(), registry(ctx, "registry")))
+								.then(Commands.argument("tag", ResourceLocationArgument.id())
+										.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+												allTags(ctx.getSource(), registry(ctx, "registry"))
+														.map(TagKey::location)
+														.map(ResourceLocation::toString), builder)
+										)
+										.executes(ctx -> tagObjects(ctx.getSource(), TagKey.create(registry(ctx, "registry"),
+												ResourceLocationArgument.getId(ctx, "tag")))
+										)
+								)
+						)
+				)
+				.then(Commands.literal("dump_registry")
+						.then(Commands.argument("registry", ResourceLocationArgument.id())
+								.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+										ctx.getSource().registryAccess()
+												.registries()
+												.map(entry -> entry.key().location().toString()), builder)
+								)
+								.executes(ctx -> dumpRegistry(ctx.getSource(), registry(ctx, "registry")))
+						)
+				)
+				.then(Commands.literal("stages")
+						.then(Commands.literal("add")
+								.then(Commands.argument("player", EntityArgument.players())
+										.then(Commands.argument("stage", StringArgumentType.string())
+												.executes(context -> addStage(context.getSource(), EntityArgument.getPlayers(context, "player"), StringArgumentType.getString(context, "stage")))
+										)
+								)
+						)
+						.then(Commands.literal("remove")
+								.then(Commands.argument("player", EntityArgument.players())
+										.then(Commands.argument("stage", StringArgumentType.string())
+												.executes(context -> removeStage(context.getSource(), EntityArgument.getPlayers(context, "player"), StringArgumentType.getString(context, "stage")))
+										)
+								)
+						)
+						.then(Commands.literal("clear")
+								.then(Commands.argument("player", EntityArgument.players())
+										.executes(context -> clearStages(context.getSource(), EntityArgument.getPlayers(context, "player")))
+								)
+						)
+						.then(Commands.literal("list")
+								.then(Commands.argument("player", EntityArgument.players())
+										.executes(context -> listStages(context.getSource(), EntityArgument.getPlayers(context, "player")))
+								)
+						)
+				)
+				.then(Commands.literal("painter")
+						.then(Commands.argument("player", EntityArgument.players())
+								.then(Commands.argument("object", CompoundTagArgument.compoundTag())
+										.executes(context -> painter(context.getSource(), EntityArgument.getPlayers(context, "player"), CompoundTagArgument.getCompoundTag(context, "object")))
+								)
+						)
+				)
+				.then(Commands.literal("generate_typings")
+						.requires(source -> source.getServer().isSingleplayer())
+						.executes(context -> generateTypings(context.getSource()))
+				)
+				.then(Commands.literal("packmode")
+						.executes(context -> packmode(context.getSource(), ""))
+						.then(Commands.argument("name", StringArgumentType.word())
+								.executes(context -> packmode(context.getSource(), StringArgumentType.getString(context, "name")))
+						)
+				)
+				.then(Commands.literal("dump_internals")
+						.then(Commands.literal("events")
+								.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
+								.executes(context -> dumpEvents(context.getSource()))
+						)
+				)
 		);
 
 		dispatcher.register(Commands.literal("kjs").redirect(cmd));
+	}
+
+	private static int dumpEvents(CommandSourceStack source) {
+		var groups = EventGroup.getGroups();
+
+		var output = KubeJSPaths.LOCAL.resolve("event_groups");
+
+		// create a folder for each event group,
+		// and a markdown file for each event handler in that group
+		// the markdown file should contain:
+		// - the event handler name (i.e. ServerEvents.recipes)
+		// - the valid script types for that event
+		// - a link to the event class on GitHub
+		//   (base link is https://github.com/KubeJS-Mods/KubeJS/tree/1902/common/src/main/java/{package}/{class_name}.java,
+		//   but we need to replace the package dots with slashes)
+		// - a table of all (public, non-transient) fields and (public) methods in the event and their parameters
+		// - a space for an example script
+		for (var entry : groups.entrySet()) {
+			var groupName = entry.getKey();
+			var group = entry.getValue();
+
+			var groupFolder = output.resolve(groupName);
+			try {
+				Files.createDirectories(groupFolder);
+				FileUtils.cleanDirectory(groupFolder.toFile());
+			} catch (IOException e) {
+				ConsoleJS.SERVER.handleError(e, null, "Failed to create folder for event group " + groupName);
+				source.sendFailure(Component.literal("Failed to create folder for event group " + groupName));
+				return 0;
+			}
+
+			for (var handlerEntry : group.getHandlers().entrySet()) {
+				var handlerName = handlerEntry.getKey();
+				var handler = handlerEntry.getValue();
+
+				var handlerFile = groupFolder.resolve(handlerName + ".md");
+
+				var fullName = "%s.%s".formatted(groupName, handlerName);
+
+				var eventType = handler.eventType.get();
+
+				var builder = new StringBuilder();
+
+				builder.append("# ").append(fullName).append("\n\n");
+
+				builder.append("## Basic info\n\n");
+
+				builder.append("- Valid script types: ").append(handler.scriptTypePredicate.getValidTypes()).append("\n\n");
+
+				builder.append("- Has result? ").append(handler.getHasResult() ? UNICODE_TICK : UNICODE_CROSS).append("\n\n");
+
+				builder.append("- Event class: ");
+
+				if (eventType.getPackageName().startsWith("dev.latvian.mods.kubejs")) {
+					builder.append('[').append(eventType.getSimpleName()).append(']')
+							.append('(').append("https://github.com/KubeJS-Mods/KubeJS/tree/")
+							.append(KubeJS.MC_VERSION_NUMBER)
+							.append("/common/src/main/java/")
+							.append(eventType.getPackageName().replace('.', '/'))
+							.append('/').append(eventType.getSimpleName()).append(".java")
+							.append(')');
+				} else {
+					builder.append(eventType.getSimpleName()).append(" (third-party)");
+				}
+
+				builder.append("\n\n");
+
+				var scriptManager = ScriptType.SERVER.manager.get();
+				var cx = scriptManager.context;
+
+				var members = JavaMembers.lookupClass(cx, scriptManager.topLevelScope, eventType, null, false);
+
+				builder.append("### Available fields:\n\n");
+				builder.append("| Name | Type |\n");
+				builder.append("| ---- | ---- |\n");
+				for (var field : members.getAccessibleFields(cx, false)) {
+					if (field.field.getDeclaringClass() == Object.class || field.field.getDeclaringClass() == EventJS.class) {
+						continue;
+					}
+					builder.append("| ").append(field.name).append(" | ").append(field.field.getType().getSimpleName()).append(" |\n");
+				}
+				builder.append("\n");
+
+				builder.append("Note: Even if no fields are listed above, some methods are still available as fields through *beans*.\n\n");
+
+				builder.append("### Available methods:\n\n");
+				builder.append("| Name | Parameters | Return type |\n");
+				builder.append("| ---- | ---------- | ----------- |\n");
+				for (var method : members.getAccessibleMethods(cx, false)) {
+					if (method.hidden || method.method.getDeclaringClass() == Object.class || method.method.getDeclaringClass() == EventJS.class) {
+						continue;
+					}
+					builder.append("| ").append(method.name).append(" | ");
+					var params = method.method.getParameterTypes();
+					for (var i = 0; i < params.length; i++) {
+						builder.append(params[i].getSimpleName());
+						if (i < params.length - 1) {
+							builder.append(", ");
+						}
+					}
+					builder.append(" | ").append(method.method.getReturnType().getSimpleName()).append(" |\n");
+				}
+
+				builder.append("\n");
+
+				builder.append("### Example script:\n\n");
+				builder.append("```js\n");
+				builder.append(fullName).append('(');
+				if (handler.extra != null) {
+					builder.append(handler.extra.required ? "extra_id, " : "/* extra_id (optional), */");
+				}
+				builder.append("(event) => {\n");
+				builder.append("\t// This space (un)intentionally left blank\n");
+				builder.append("});\n");
+				builder.append("```\n\n");
+
+				try {
+					Files.writeString(handlerFile, builder.toString());
+				} catch (IOException e) {
+					ConsoleJS.SERVER.handleError(e, null, "Failed to write file for event handler " + fullName);
+					source.sendFailure(Component.literal("Failed to write file for event handler " + fullName));
+					return 0;
+				}
+			}
+		}
+
+		source.sendSuccess(Component.literal("Successfully dumped event groups to " + output), false);
+		return 1;
 	}
 
 	private static <T> ResourceKey<Registry<T>> registry(CommandContext<CommandSourceStack> ctx, String arg) {
@@ -214,8 +353,8 @@ public class KubeJSCommands {
 
 	private static <T> Stream<TagKey<T>> allTags(CommandSourceStack source, ResourceKey<Registry<T>> registry) throws CommandSyntaxException {
 		return source.registryAccess().registry(registry)
-			.orElseThrow(() -> NO_REGISTRY.create(registry.location()))
-			.getTagNames();
+				.orElseThrow(() -> NO_REGISTRY.create(registry.location()))
+				.getTagNames();
 	}
 
 	private static Component copy(String s, ChatFormatting col, String info) {
@@ -307,10 +446,10 @@ public class KubeJSCommands {
 		}
 
 		source.sendSuccess(Component.literal("More info in ")
-				.append(Component.literal("'logs/kubejs/server.log'")
-					.kjs$clickOpenFile(ScriptType.SERVER.getLogFile().toString())
-					.kjs$hover(Component.literal("Click to open"))).withStyle(ChatFormatting.DARK_RED),
-			false);
+						.append(Component.literal("'logs/kubejs/server.log'")
+								.kjs$clickOpenFile(ScriptType.SERVER.getLogFile().toString())
+								.kjs$hover(Component.literal("Click to open"))).withStyle(ChatFormatting.DARK_RED),
+				false);
 
 		if (!ScriptType.SERVER.warnings.isEmpty()) {
 			source.sendSuccess(ScriptType.SERVER.warningsComponent("/kubejs warnings"), false);
@@ -349,10 +488,10 @@ public class KubeJSCommands {
 	private static int reloadServer(CommandSourceStack source) {
 		ServerScriptManager.instance.reloadScriptManager(source.getServer().kjs$getReloadableResources().resourceManager());
 		source.sendSuccess(Component.literal("Done! To reload recipes, tags, loot tables and other datapack things, run ")
-				.append(Component.literal("'/reload'")
-					.kjs$clickRunCommand("/reload")
-					.kjs$hover(Component.literal("Click to run"))),
-			false);
+						.append(Component.literal("'/reload'")
+								.kjs$clickRunCommand("/reload")
+								.kjs$hover(Component.literal("Click to run"))),
+				false);
 		return 1;
 	}
 
@@ -401,27 +540,27 @@ public class KubeJSCommands {
 
 	private static int exportVirtualData(CommandSourceStack source) {
 		return source.getServer().getResourceManager()
-			.listPacks()
-			.filter(pack -> pack instanceof VirtualKubeJSDataPack)
-			.map(pack -> (VirtualKubeJSDataPack) pack)
-			.mapToInt(pack -> {
-					var path = KubeJSPaths.EXPORT.resolve(pack.getName() + ".zip");
-					try {
-						Files.deleteIfExists(path);
-						try (var fs = FileSystems.newFileSystem(path, Map.of("create", true))) {
-							pack.export(fs);
+				.listPacks()
+				.filter(pack -> pack instanceof VirtualKubeJSDataPack)
+				.map(pack -> (VirtualKubeJSDataPack) pack)
+				.mapToInt(pack -> {
+							var path = KubeJSPaths.EXPORT.resolve(pack.getName() + ".zip");
+							try {
+								Files.deleteIfExists(path);
+								try (var fs = FileSystems.newFileSystem(path, Map.of("create", true))) {
+									pack.export(fs);
+								}
+								source.sendSuccess(Component.literal("Successfully exported %s to %s".formatted(pack, path)).withStyle(ChatFormatting.GREEN), false);
+								return 1;
+							} catch (IOException e) {
+								e.printStackTrace();
+								source.sendFailure(Component.literal("Failed to export %s!".formatted(pack)).withStyle(style ->
+										style.withColor(ChatFormatting.RED)
+												.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(e.getMessage())))));
+								return 0;
+							}
 						}
-						source.sendSuccess(Component.literal("Successfully exported %s to %s".formatted(pack, path)).withStyle(ChatFormatting.GREEN), false);
-						return 1;
-					} catch (IOException e) {
-						e.printStackTrace();
-						source.sendFailure(Component.literal("Failed to export %s!".formatted(pack)).withStyle(style ->
-							style.withColor(ChatFormatting.RED)
-								.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(e.getMessage())))));
-						return 0;
-					}
-				}
-			).sum();
+				).sum();
 	}
 
 	private static int outputRecipes(ServerPlayer player) {
@@ -447,8 +586,8 @@ public class KubeJSCommands {
 		source.sendSuccess(Component.empty(), false);
 
 		var size = tags.map(TagKey::location).map(tag -> Component.literal("- %s".formatted(tag)).withStyle(Style.EMPTY
-			.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs list_tag %s %s".formatted(registry.location(), tag)))
-			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("[Show all entries for %s]".formatted(tag))))
+				.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs list_tag %s %s".formatted(registry.location(), tag)))
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("[Show all entries for %s]".formatted(tag))))
 		)).mapToLong(msg -> {
 			source.sendSuccess(msg, false);
 			return 1;
@@ -464,8 +603,8 @@ public class KubeJSCommands {
 
 	private static <T> int tagObjects(CommandSourceStack source, TagKey<T> key) throws CommandSyntaxException {
 		var registry = source.registryAccess()
-			.registry(key.registry())
-			.orElseThrow(() -> NO_REGISTRY.create(key.registry().location()));
+				.registry(key.registry())
+				.orElseThrow(() -> NO_REGISTRY.create(key.registry().location()));
 
 		var tag = registry.getTag(key);
 
@@ -492,8 +631,8 @@ public class KubeJSCommands {
 
 	private static <T> int dumpRegistry(CommandSourceStack source, ResourceKey<Registry<T>> registry) throws CommandSyntaxException {
 		var ids = source.registryAccess().registry(registry)
-			.orElseThrow(() -> NO_REGISTRY.create(registry.location()))
-			.holders();
+				.orElseThrow(() -> NO_REGISTRY.create(registry.location()))
+				.holders();
 
 		source.sendSuccess(Component.empty(), false);
 		source.sendSuccess(Component.literal("List of all entries for registry " + registry.location() + ":"), false);
@@ -502,7 +641,7 @@ public class KubeJSCommands {
 		var size = ids.map(holder -> {
 			var id = holder.key().location();
 			return Component.literal("- %s".formatted(id)).withStyle(Style.EMPTY
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("%s [%s]".formatted(holder.value(), holder.value().getClass().getName()))))
+					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("%s [%s]".formatted(holder.value(), holder.value().getClass().getName()))))
 			);
 		}).mapToLong(msg -> {
 			source.sendSuccess(msg, false);
