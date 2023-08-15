@@ -1,3 +1,5 @@
+import java.time.Instant
+
 plugins {
 	id 'base'
 	id 'architectury-plugin' version '3.4-SNAPSHOT'
@@ -40,7 +42,7 @@ allprojects {
 	}
 }
 
-version = "${mod_version}-build.${ENV.GITHUB_RUN_NUMBER ?: 9999}"
+version = "${mod_version}-${ENV.GITHUB_RUN_NUMBER ? 'build.' + ENV.GITHUB_RUN_NUMBER : 'local.' + Instant.now().epochSecond}"
 group = project.maven_group
 base.archivesBaseName = project.archives_base_name
 
