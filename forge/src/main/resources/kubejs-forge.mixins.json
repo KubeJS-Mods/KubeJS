@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "CropBlockMixin",
+    "DifferenceIngredientMixin",
     "EntityMixin",
     "IItemHandlerMixin",
     "IngredientsWithChildrenMixin",
