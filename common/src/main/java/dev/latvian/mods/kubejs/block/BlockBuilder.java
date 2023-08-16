@@ -636,13 +636,13 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Info("Tags the block with the given tag.")
 	public BlockBuilder tagBlock(ResourceLocation tag) {
-		defaultTags.add(tag);
+		super.tag(tag);
 		return this;
 	}
 
 	@Info("Tags the item with the given tag.")
 	public BlockBuilder tagItem(ResourceLocation tag) {
-		itemBuilder.defaultTags.add(tag);
+		itemBuilder.tag(tag);
 		return this;
 	}
 
