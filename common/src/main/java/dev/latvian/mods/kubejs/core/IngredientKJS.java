@@ -110,6 +110,14 @@ public interface IngredientKJS extends IngredientSupplierKJS, JsonSerializable {
 		return IngredientPlatformHelper.get().isWildcard(kjs$self());
 	}
 
+	/**
+	 * Marks whether an ingredient is safe to be used to match recipe filters during the recipe event.
+	 * (The answer is usually no for non-Vanilla ingredients, but can be overridden manually by addons or downstream mods with integration.)
+	 */
+	default boolean kjs$canBeUsedForMatching() {
+		return this.getClass() == Ingredient.class;
+	}
+
 	@Override
 	default Ingredient kjs$asIngredient() {
 		return kjs$self();

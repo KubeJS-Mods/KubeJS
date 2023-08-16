@@ -50,6 +50,15 @@ public class PlatformWrapper {
 	private static Map<String, ModInfo> allMods;
 
 	public static String getName() {
+		if (isDevelopmentEnvironment()) {
+			if (isForge()) {
+				return "forge";
+			}
+			if (isFabric()) {
+				return "fabric";
+			}
+			return "unknown (userdev?)";
+		}
 		return ArchitecturyTarget.getCurrentTarget();
 	}
 

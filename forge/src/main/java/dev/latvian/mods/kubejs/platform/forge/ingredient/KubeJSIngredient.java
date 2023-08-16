@@ -44,25 +44,32 @@ public abstract class KubeJSIngredient extends AbstractIngredient implements Ing
 		}
 	}
 
-	@Override
-	public boolean isEmpty() {
-		return false;
-	}
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
 
-	@Override
-	public boolean isSimple() {
-		return false;
-	}
+    @Override
+    public boolean isSimple() {
+        return false;
+    }
 
-	@Override
-	public final JsonObject toJson() {
-		JsonObject json = new JsonObject();
-		json.addProperty("type", CraftingHelper.getID(getSerializer()).toString());
-		toJson(json);
-		return json;
-	}
+    @Override
+    public boolean kjs$canBeUsedForMatching() {
+        // all of our ingredients should be safe for matching,
+        // unless somebody does something *really* weird from scripts
+        return true;
+    }
 
-	public abstract void toJson(JsonObject json);
+    @Override
+    public final JsonObject toJson() {
+        JsonObject json = new JsonObject();
+        json.addProperty("type", CraftingHelper.getID(getSerializer()).toString());
+        toJson(json);
+        return json;
+    }
+
+    public abstract void toJson(JsonObject json);
 
 	public abstract void write(FriendlyByteBuf buf);
 }
