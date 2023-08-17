@@ -427,7 +427,7 @@ public class KubeJSCommands {
 			}
 		}
 
-		source.sendSuccess(Component.literal("Successfully dumped event groups to " + output), false);
+		source.sendSystemMessage(Component.literal("Successfully dumped event groups to " + output));
 		return 1;
 	}
 
@@ -451,7 +451,7 @@ public class KubeJSCommands {
 	}
 
 	private static void link(CommandSourceStack source, ChatFormatting color, String name, String url) {
-		source.sendSuccess(() -> Component.literal("• ").append(Component.literal(name).withStyle(color).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url)))), false);
+		source.sendSystemMessage(Component.literal("• ").append(Component.literal(name).withStyle(color).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url)))));
 	}
 
 	private static int help(CommandSourceStack source) {
@@ -517,17 +517,17 @@ public class KubeJSCommands {
 		var lines = ScriptType.SERVER.errors.toArray(new String[0]);
 
 		if (lines.length == 0) {
-			source.sendSuccess(() -> Component.literal("No errors found!").withStyle(ChatFormatting.GREEN), false);
+			source.sendSystemMessage(Component.literal("No errors found!").withStyle(ChatFormatting.GREEN));
 
 			if (!ScriptType.SERVER.warnings.isEmpty()) {
-				source.sendSuccess(() -> ScriptType.SERVER.warningsComponent("/kubejs warnings"), false);
+				source.sendSystemMessage(ScriptType.SERVER.warningsComponent("/kubejs warnings"));
 			}
 			return 1;
 		}
 
 		for (var i = 0; i < lines.length; i++) {
 			var component = Component.literal((i + 1) + ") ").append(Component.literal(lines[i]).withStyle(ChatFormatting.RED)).withStyle(ChatFormatting.DARK_RED);
-			source.sendSuccess(() -> component, false);
+			source.sendSystemMessage(component);
 		}
 
 		source.sendSuccess(() -> Component.literal("More info in ")
@@ -537,7 +537,7 @@ public class KubeJSCommands {
 				false);
 
 		if (!ScriptType.SERVER.warnings.isEmpty()) {
-			source.sendSuccess(() -> ScriptType.SERVER.warningsComponent("/kubejs warnings"), false);
+			source.sendSystemMessage(ScriptType.SERVER.warningsComponent("/kubejs warnings"));
 		}
 
 		return 1;
@@ -547,13 +547,13 @@ public class KubeJSCommands {
 		var lines = ScriptType.SERVER.warnings.toArray(new String[0]);
 
 		if (lines.length == 0) {
-			source.sendSuccess(() -> Component.literal("No warnings found!").withStyle(ChatFormatting.GREEN), false);
+			source.sendSystemMessage(Component.literal("No warnings found!").withStyle(ChatFormatting.GREEN));
 			return 1;
 		}
 
 		for (var i = 0; i < lines.length; i++) {
 			var component = Component.literal((i + 1) + ") ").append(Component.literal(lines[i]).withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))).withStyle(ChatFormatting.RED));
-			source.sendSuccess(() -> component, false);
+			source.sendSystemMessage(component);
 		}
 
 		return 1;
@@ -561,13 +561,13 @@ public class KubeJSCommands {
 
 	private static int reloadConfig(CommandSourceStack source) {
 		KubeJS.PROXY.reloadConfig();
-		source.sendSuccess(() -> Component.literal("Done!"), false);
+		source.sendSystemMessage(Component.literal("Done!"));
 		return 1;
 	}
 
 	private static int reloadStartup(CommandSourceStack source) {
 		KubeJS.getStartupScriptManager().reload(null);
-		source.sendSuccess(() -> Component.literal("Done!"), false);
+		source.sendSystemMessage(Component.literal("Done!"));
 		return 1;
 	}
 
@@ -583,7 +583,7 @@ public class KubeJSCommands {
 
 	private static int reloadClient(CommandSourceStack source) {
 		KubeJS.PROXY.reloadClientInternal();
-		source.sendSuccess(() -> Component.literal("Done! To reload textures, models and other assets, press F3 + T"), false);
+		source.sendSystemMessage(Component.literal("Done! To reload textures, models and other assets, press F3 + T"));
 		return 1;
 	}
 
@@ -604,7 +604,7 @@ public class KubeJSCommands {
 
 		DataExport.export = new DataExport();
 		DataExport.export.source = source;
-		source.sendSuccess(() -> Component.literal("Reloading server and exporting data..."), false);
+		source.sendSuccess(() -> Component.literal("Reloading server and exporting data..."), true);
 
 		var minecraftServer = source.getServer();
 		var packRepository = minecraftServer.getPackRepository();
@@ -636,7 +636,7 @@ public class KubeJSCommands {
 								try (var fs = FileSystems.newFileSystem(path, Map.of("create", true))) {
 									pack.export(fs);
 								}
-								source.sendSuccess(() -> Component.literal("Successfully exported %s to %s".formatted(pack, path)).withStyle(ChatFormatting.GREEN), false);
+								source.sendSuccess(() -> Component.literal("Successfully exported %s to %s".formatted(pack, path)).withStyle(ChatFormatting.GREEN), true);
 								return 1;
 							} catch (IOException e) {
 								e.printStackTrace();
@@ -667,22 +667,22 @@ public class KubeJSCommands {
 	private static <T> int listTagsFor(CommandSourceStack source, ResourceKey<Registry<T>> registry) throws CommandSyntaxException {
 		var tags = allTags(source, registry);
 
-		source.sendSuccess(() -> Component.empty(), false);
-		source.sendSuccess(() -> Component.literal("List of all Tags for " + registry.location() + ":"), false);
-		source.sendSuccess(() -> Component.empty(), false);
+		source.sendSystemMessage(Component.empty());
+		source.sendSystemMessage(Component.literal("List of all Tags for " + registry.location() + ":"));
+		source.sendSystemMessage(Component.empty());
 
 		var size = tags.map(TagKey::location).map(tag -> Component.literal("- %s".formatted(tag)).withStyle(Style.EMPTY
 				.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs list_tag %s %s".formatted(registry.location(), tag)))
 				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("[Show all entries for %s]".formatted(tag))))
 		)).mapToLong(msg -> {
-			source.sendSuccess(() -> msg, false);
+			source.sendSystemMessage(msg);
 			return 1;
 		}).sum();
 
-		source.sendSuccess(() -> Component.empty(), false);
-		source.sendSuccess(() -> Component.literal("Total: %d tags".formatted(size)), false);
-		source.sendSuccess(() -> Component.literal("(Click on any of the above tags to list their contents!)"), false);
-		source.sendSuccess(() -> Component.empty(), false);
+		source.sendSystemMessage(Component.empty());
+		source.sendSystemMessage(Component.literal("Total: %d tags".formatted(size)));
+		source.sendSystemMessage(Component.literal("(Click on any of the above tags to list their contents!)"));
+		source.sendSystemMessage(Component.empty());
 
 		return Command.SINGLE_SUCCESS;
 	}
@@ -698,20 +698,20 @@ public class KubeJSCommands {
 			source.sendFailure(Component.literal("Tag not found or empty!"));
 			return 0;
 		}
-		source.sendSuccess(() -> Component.empty(), false);
-		source.sendSuccess(() -> Component.literal("Contents of #" + key.location() + " [" + key.registry().location() + "]:"), false);
-		source.sendSuccess(() -> Component.empty(), false);
+		source.sendSystemMessage(Component.empty());
+		source.sendSystemMessage(Component.literal("Contents of #" + key.location() + " [" + key.registry().location() + "]:"));
+		source.sendSystemMessage(Component.empty());
 
 		var items = tag.get();
 
 		for (var holder : items) {
 			var id = holder.unwrap().map(o -> o.location().toString(), o -> o + " (unknown ID)");
-			source.sendSuccess(() -> Component.literal("- " + id), false);
+			source.sendSystemMessage(Component.literal("- " + id));
 		}
 
-		source.sendSuccess(() -> Component.empty(), false);
-		source.sendSuccess(() -> Component.literal("Total: " + items.size() + " elements"), false);
-		source.sendSuccess(() -> Component.empty(), false);
+		source.sendSystemMessage(Component.empty());
+		source.sendSystemMessage(Component.literal("Total: " + items.size() + " elements"));
+		source.sendSystemMessage(Component.empty());
 		return Command.SINGLE_SUCCESS;
 	}
 
@@ -720,9 +720,9 @@ public class KubeJSCommands {
 				.orElseThrow(() -> NO_REGISTRY.create(registry.location()))
 				.holders();
 
-		source.sendSuccess(() -> Component.empty(), false);
-		source.sendSuccess(() -> Component.literal("List of all entries for registry " + registry.location() + ":"), false);
-		source.sendSuccess(() -> Component.empty(), false);
+		source.sendSystemMessage(Component.empty());
+		source.sendSystemMessage(Component.literal("List of all entries for registry " + registry.location() + ":"));
+		source.sendSystemMessage(Component.empty());
 
 		var size = ids.map(holder -> {
 			var id = holder.key().location();
@@ -730,13 +730,13 @@ public class KubeJSCommands {
 					.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("%s [%s]".formatted(holder.value(), holder.value().getClass().getName()))))
 			);
 		}).mapToLong(msg -> {
-			source.sendSuccess(() -> msg, false);
+			source.sendSystemMessage(msg);
 			return 1;
 		}).sum();
 
-		source.sendSuccess(() -> Component.empty(), false);
-		source.sendSuccess(() -> Component.literal("Total: %d entries".formatted(size)), false);
-		source.sendSuccess(() -> Component.empty(), false);
+		source.sendSystemMessage(Component.empty());
+		source.sendSystemMessage(Component.literal("Total: %d entries".formatted(size)));
+		source.sendSystemMessage(Component.empty());
 
 
 		return 1;
@@ -745,7 +745,7 @@ public class KubeJSCommands {
 	private static int addStage(CommandSourceStack source, Collection<ServerPlayer> players, String stage) {
 		for (var p : players) {
 			if (p.kjs$getStages().add(stage)) {
-				source.sendSuccess(() -> Component.literal("Added '" + stage + "' stage for " + p.getScoreboardName()), false);
+				source.sendSuccess(() -> Component.literal("Added '" + stage + "' stage for " + p.getScoreboardName()), true);
 			}
 		}
 
@@ -755,7 +755,7 @@ public class KubeJSCommands {
 	private static int removeStage(CommandSourceStack source, Collection<ServerPlayer> players, String stage) {
 		for (var p : players) {
 			if (p.kjs$getStages().remove(stage)) {
-				source.sendSuccess(() -> Component.literal("Removed '" + stage + "' stage for " + p.getScoreboardName()), false);
+				source.sendSuccess(() -> Component.literal("Removed '" + stage + "' stage for " + p.getScoreboardName()), true);
 			}
 		}
 
@@ -765,7 +765,7 @@ public class KubeJSCommands {
 	private static int clearStages(CommandSourceStack source, Collection<ServerPlayer> players) {
 		for (var p : players) {
 			if (p.kjs$getStages().clear()) {
-				source.sendSuccess(() -> Component.literal("Cleared stages for " + p.getScoreboardName()), false);
+				source.sendSuccess(() -> Component.literal("Cleared stages for " + p.getScoreboardName()), true);
 			}
 		}
 
@@ -774,8 +774,8 @@ public class KubeJSCommands {
 
 	private static int listStages(CommandSourceStack source, Collection<ServerPlayer> players) {
 		for (var p : players) {
-			source.sendSuccess(() -> Component.literal(p.getScoreboardName() + " stages:"), false);
-			p.kjs$getStages().getAll().stream().sorted().forEach(s -> source.sendSuccess(() -> Component.literal("- " + s), false));
+			source.sendSystemMessage(Component.literal(p.getScoreboardName() + " stages:"));
+			p.kjs$getStages().getAll().stream().sorted().forEach(s -> source.sendSystemMessage(Component.literal("- " + s)));
 		}
 
 		return 1;
@@ -801,7 +801,7 @@ public class KubeJSCommands {
 			source.sendSuccess(() -> Component.literal("Current packmode: " + CommonProperties.get().packMode), false);
 		} else {
 			CommonProperties.get().setPackMode(packmode);
-			source.sendSuccess(() -> Component.literal("Set packmode to: " + packmode), false);
+			source.sendSuccess(() -> Component.literal("Set packmode to: " + packmode), true);
 		}
 
 		return 1;
