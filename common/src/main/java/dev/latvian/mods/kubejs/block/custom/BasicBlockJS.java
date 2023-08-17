@@ -1,16 +1,10 @@
 package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
-import dev.latvian.mods.kubejs.block.EntityBlockKJS;
 import dev.latvian.mods.kubejs.block.KubeJSBlockProperties;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.BlockExplodedCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyPlacementCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.CanBeReplacedCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.EntityFallenOnBlockCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.EntitySteppedOnBlockCallbackJS;
+import dev.latvian.mods.kubejs.block.callbacks.*;
+import dev.latvian.mods.kubejs.core.BlockKJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.BlockPos;
@@ -27,10 +21,9 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -46,7 +39,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterloggedBlock {
+public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBlock {
 	public static class Builder extends BlockBuilder {
 		public Builder(ResourceLocation i) {
 			super(i);
@@ -69,7 +62,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		var blockState = stateDefinition.any();
 		if (blockBuilder.defaultStateModification != null) {
 			var callbackJS = new BlockStateModifyCallbackJS(blockState);
-			if (safeCallback(blockBuilder.defaultStateModification, callbackJS, "Error while creating default blockState for block ")) {
+			if (safeCallback(blockBuilder.defaultStateModification, callbackJS, "Error while creating default blockState for block " + p.id)) {
 				registerDefaultState(callbackJS.getState());
 			}
 		} else if (blockBuilder.canBeWaterlogged()) {
@@ -80,18 +73,6 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	@Override
 	public BlockBuilder kjs$getBlockBuilder() {
 		return blockBuilder;
-	}
-
-	@Override
-	@Nullable
-	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-		return null;
-	}
-
-	@Override
-	@Nullable
-	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-		return null;
 	}
 
 	@Override
@@ -121,7 +102,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
 		if (blockBuilder.placementStateModification != null) {
 			var callbackJS = new BlockStateModifyPlacementCallbackJS(context, this);
-			if (safeCallback(blockBuilder.placementStateModification, callbackJS, "Error while modifying BlockState placement of ")) {
+			if (safeCallback(blockBuilder.placementStateModification, callbackJS, "Error while modifying BlockState placement of " + blockBuilder.id)) {
 				return callbackJS.getState();
 			}
 		}
@@ -137,7 +118,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 	public boolean canBeReplaced(BlockState blockState, BlockPlaceContext context) {
 		if (blockBuilder.canBeReplacedFunction != null) {
 			var callbackJS = new CanBeReplacedCallbackJS(context, blockState);
-			return blockBuilder.canBeReplacedFunction.apply(callbackJS);
+			return blockBuilder.canBeReplacedFunction.test(callbackJS);
 		}
 		return super.canBeReplaced(blockState, context);
 	}
@@ -163,8 +144,6 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		if (blockBuilder.randomTickCallback != null) {
 			var callback = new RandomTickCallbackJS(new BlockContainerJS(level, pos), random);
 			safeCallback(blockBuilder.randomTickCallback, callback, "Error while random ticking custom block ");
-		} else {
-			super.randomTick(state, level, pos, random);
 		}
 	}
 
@@ -196,7 +175,7 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		try {
 			consumer.accept(value);
 		} catch (Throwable e) {
-			ScriptType.STARTUP.console.error(errorMessage + blockBuilder.id, e);
+			ScriptType.STARTUP.console.error(errorMessage, e);
 			return false;
 		}
 
@@ -281,5 +260,29 @@ public class BasicBlockJS extends Block implements EntityBlockKJS, SimpleWaterlo
 		} else {
 			super.wasExploded(level, blockPos, explosion);
 		}
+	}
+
+	@Override
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		if (blockBuilder.rotateStateModification != null) {
+			var callbackJS = new BlockStateRotateCallbackJS(blockState, rotation);
+			if (safeCallback(blockBuilder.rotateStateModification, callbackJS, "Error while rotating BlockState of ")) {
+				return callbackJS.getState();
+			}
+		}
+
+		return super.rotate(blockState, rotation);
+	}
+
+	@Override
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		if (blockBuilder.mirrorStateModification != null) {
+			var callbackJS = new BlockStateMirrorCallbackJS(blockState, mirror);
+			if (safeCallback(blockBuilder.mirrorStateModification, callbackJS, "Error while mirroring BlockState of ")) {
+				return callbackJS.getState();
+			}
+		}
+
+		return super.mirror(blockState, mirror);
 	}
 }

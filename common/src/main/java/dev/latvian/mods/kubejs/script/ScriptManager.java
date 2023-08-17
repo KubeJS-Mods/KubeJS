@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.script;
 
-import dev.architectury.injectables.targets.ArchitecturyTarget;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
@@ -62,9 +61,9 @@ public class ScriptManager implements ClassShutter {
 	public void reload(@Nullable ResourceManager resourceManager) {
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::clearCaches);
 
-		unload();
-		scriptType.console.writeToFile("INIT", "KubeJS " + KubeJS.thisMod.getVersion() + "; MC " + KubeJS.MC_VERSION_NUMBER + " " + ArchitecturyTarget.getCurrentTarget());
-		scriptType.console.writeToFile("INIT", "Loaded plugins:");
+        unload();
+        scriptType.console.writeToFile("INIT", "KubeJS " + KubeJS.thisMod.getVersion() + "; MC " + KubeJS.MC_VERSION_NUMBER + " " + PlatformWrapper.getName());
+        scriptType.console.writeToFile("INIT", "Loaded plugins:");
 
 		for (var plugin : KubeJSPlugins.getAll()) {
 			scriptType.console.writeToFile("INIT", "- " + plugin.getClass().getName());

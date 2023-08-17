@@ -255,7 +255,7 @@ public abstract class FluidStackJS implements WrappedJS, InputFluid, OutputFluid
 		o.addProperty("amount", kjs$getAmount());
 
 		if (getNbt() != null) {
-			o.add("nbt", MapJS.json(getNbt()));
+			o.addProperty("nbt", getNbt().toString());
 		}
 
 		if (hasChance()) {

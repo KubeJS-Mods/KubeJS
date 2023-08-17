@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.util;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
@@ -22,6 +23,7 @@ import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
+import dev.latvian.mods.rhino.mod.util.RemappingHelper;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.util.color.SimpleColorWithAlpha;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
@@ -507,6 +509,86 @@ public class UtilsJS {
 			return Object.class;
 		} else if (type instanceof WildcardType wildcard) {
 			return getRawType(wildcard.getUpperBounds()[0]);
+		}
+
+		var className = type == null ? "null" : type.getClass().getName();
+		throw new IllegalArgumentException("Expected a Class, ParameterizedType, GenericArrayType, TypeVariable or WildcardType, but <" + type + "> is of type " + className);
+	}
+
+	public static String toMappedTypeString(Type type) {
+		var remapper = RemappingHelper.getMinecraftRemapper();
+		if (type instanceof Class<?> clz) {
+			var mapped = remapper.getMappedClass(clz);
+			if (Strings.isNullOrEmpty(mapped)) {
+				return clz.getSimpleName();
+			} else {
+				return mapped.substring(mapped.lastIndexOf('.') + 1);
+			}
+		} else if (type instanceof ParameterizedType paramType) {
+			var sb = new StringBuilder();
+
+			var owner = paramType.getOwnerType();
+			if (owner != null) {
+				sb.append(toMappedTypeString(owner));
+				sb.append('.');
+			}
+
+			sb.append(toMappedTypeString(getRawType(paramType)));
+
+			var args = paramType.getActualTypeArguments();
+			if (args.length > 0) {
+				sb.append('<');
+				for (var i = 0; i < args.length; i++) {
+					if (i > 0) {
+						sb.append(", ");
+					}
+					sb.append(toMappedTypeString(args[i]));
+				}
+				sb.append('>');
+			}
+
+			return sb.toString();
+		} else if (type instanceof GenericArrayType arrType) {
+			return toMappedTypeString(arrType.getGenericComponentType()) + "[]";
+		} else if (type instanceof TypeVariable<?> typeVar) {
+			var sb = new StringBuilder(typeVar.getName());
+			var bounds = typeVar.getBounds();
+
+			if (bounds.length > 0 && !(bounds.length == 1 && Object.class.equals(bounds[0]))) {
+				sb.append(" extends ");
+				for (var i = 0; i < bounds.length; i++) {
+					if (i > 0) {
+						sb.append(" & ");
+					}
+					sb.append(toMappedTypeString(bounds[i]));
+				}
+			}
+
+			return sb.toString();
+		} else if (type instanceof WildcardType wildcard) {
+			var sb = new StringBuilder().append("?");
+			var lowerBounds = wildcard.getLowerBounds();
+			var upperBounds = wildcard.getUpperBounds();
+
+			if (lowerBounds.length > 1 || lowerBounds.length == 1 && lowerBounds[0] != null) {
+				sb.append(" super ");
+				for (var i = 0; i < lowerBounds.length; i++) {
+					if (i > 0) {
+						sb.append(" & ");
+					}
+					sb.append(toMappedTypeString(lowerBounds[i]));
+				}
+			} else if (upperBounds.length > 1 || upperBounds.length == 1 && !Object.class.equals(upperBounds[0])) {
+				sb.append(" extends ");
+				for (var i = 0; i < upperBounds.length; i++) {
+					if (i > 0) {
+						sb.append(" & ");
+					}
+					sb.append(toMappedTypeString(upperBounds[i]));
+				}
+			}
+
+			return sb.toString();
 		}
 
 		var className = type == null ? "null" : type.getClass().getName();

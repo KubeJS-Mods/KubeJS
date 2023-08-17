@@ -131,6 +131,10 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement, JsonS
 		return this == EMPTY || ingredient.isEmpty() || count <= 0;
 	}
 
+	public boolean validForMatching() {
+		return !isEmpty() && ingredient.kjs$canBeUsedForMatching();
+	}
+
 	public List<InputItem> unwrap() {
 		if (count > 1) {
 			var list = new ArrayList<InputItem>(count);

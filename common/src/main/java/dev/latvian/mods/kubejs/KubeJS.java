@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs;
 
 import com.google.common.base.Stopwatch;
-import dev.architectury.injectables.targets.ArchitecturyTarget;
 import dev.architectury.platform.Mod;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.EnvExecutor;
@@ -215,7 +214,7 @@ public class KubeJS {
 			throw new RuntimeException("There were KubeJS startup script syntax errors! See logs/kubejs/startup.log for more info");
 		}
 
-		QUERY = "source=kubejs&mc=" + MC_VERSION_NUMBER + "&loader=" + ArchitecturyTarget.getCurrentTarget() + "&v=" + URLEncoder.encode(thisMod.getVersion(), StandardCharsets.UTF_8);
+		QUERY = "source=kubejs&mc=" + MC_VERSION_NUMBER + "&loader=" + PlatformWrapper.getName() + "&v=" + URLEncoder.encode(thisMod.getVersion(), StandardCharsets.UTF_8);
 
 		var updater = new Thread(() -> {
 			try {

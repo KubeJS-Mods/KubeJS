@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class BlockBuilder extends BuilderBase<Block> {
@@ -77,12 +77,14 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient Set<Property<?>> blockStateProperties;
 	public transient Consumer<BlockStateModifyCallbackJS> defaultStateModification;
 	public transient Consumer<BlockStateModifyPlacementCallbackJS> placementStateModification;
-	public transient Function<CanBeReplacedCallbackJS, Boolean> canBeReplacedFunction;
+	public transient Predicate<CanBeReplacedCallbackJS> canBeReplacedFunction;
 	public transient Consumer<EntitySteppedOnBlockCallbackJS> stepOnCallback;
 	public transient Consumer<EntityFallenOnBlockCallbackJS> fallOnCallback;
 	public transient Consumer<AfterEntityFallenOnBlockCallbackJS> afterFallenOnCallback;
 	public transient Consumer<BlockExplodedCallbackJS> explodedCallback;
 
+	public transient Consumer<BlockStateRotateCallbackJS> rotateStateModification;
+	public transient Consumer<BlockStateMirrorCallbackJS> mirrorStateModification;
 
 	public BlockBuilder(ResourceLocation i) {
 		super(i);
@@ -641,13 +643,13 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Info("Tags the block with the given tag.")
 	public BlockBuilder tagBlock(ResourceLocation tag) {
-		defaultTags.add(tag);
+		super.tag(tag);
 		return this;
 	}
 
 	@Info("Tags the item with the given tag.")
 	public BlockBuilder tagItem(ResourceLocation tag) {
-		itemBuilder.defaultTags.add(tag);
+		itemBuilder.tag(tag);
 		return this;
 	}
 
@@ -657,14 +659,14 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	@Info("Set the placement state of the block.")
+	@Info("Set the callback for determining the blocks state when placed.")
 	public BlockBuilder placementState(Consumer<BlockStateModifyPlacementCallbackJS> callbackJS) {
 		placementStateModification = callbackJS;
 		return this;
 	}
 
 	@Info("Set if the block can be replaced by something else.")
-	public BlockBuilder canBeReplaced(Function<CanBeReplacedCallbackJS, Boolean> callbackJS) {
+	public BlockBuilder canBeReplaced(Predicate<CanBeReplacedCallbackJS> callbackJS) {
 		canBeReplacedFunction = callbackJS;
 		return this;
 	}
@@ -717,6 +719,18 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 			throw new IllegalArgumentException(String.format("Block \"%s\" has an illegal Blockstate Property \"%s\" which has <= 1 possible values. (%d possible values)", id, property.getName(), property.getPossibleValues().size()));
 		}
 		blockStateProperties.add(property);
+		return this;
+	}
+
+	@Info("Set the callback used for determining how the block rotates")
+	public BlockBuilder rotateState(Consumer<BlockStateRotateCallbackJS> callbackJS) {
+		rotateStateModification = callbackJS;
+		return this;
+	}
+
+	@Info("Set the callback used for determining how the block is mirrored")
+	public BlockBuilder mirrorState(Consumer<BlockStateMirrorCallbackJS> callbackJS) {
+		mirrorStateModification = callbackJS;
 		return this;
 	}
 

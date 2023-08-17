@@ -1,18 +1,23 @@
 {
-	"required": true,
-	"package": "dev.latvian.mods.kubejs.core.mixin.fabric",
-	"compatibilityLevel": "JAVA_17",
-	"mixins": [
-		"tools.shears.BlockInteractShearsMixin",
-		"tools.shears.EntityInteractShearsMixin",
-		"tools.shears.MatchToolMixin",
-		"tools.shears.TripWireBlockMixin"
-	],
-	"client": [
-		"ClientRecipeBookMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	},
-	"minVersion": "0.8"
+  "required": true,
+  "package": "dev.latvian.mods.kubejs.core.mixin.fabric",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "CombinedIngredientMixin",
+    "CustomIngredientMixin",
+    "DifferenceIngredientMixin",
+    "IngredientMatchingMixin",
+    "NbtIngredientMixin",
+    "tools.shears.BlockInteractShearsMixin",
+    "tools.shears.EntityInteractShearsMixin",
+    "tools.shears.MatchToolMixin",
+    "tools.shears.TripWireBlockMixin"
+  ],
+  "client": [
+    "ClientRecipeBookMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
 }
