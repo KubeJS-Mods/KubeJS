@@ -30,11 +30,11 @@ public abstract class LootTablesMixin implements LootTablesKJS {
 
 	@SuppressWarnings({"UnresolvedMixinReference", "DefaultAnnotationParam"})
 	@Inject(method = {"method_51189", "lambda$scheduleElementParse$5", "m_278660_"}, remap = false,
-			at = @At(value = "INVOKE",
-					target = "Lnet/minecraft/server/packs/resources/SimpleJsonResourceReloadListener;scanDirectory(Lnet/minecraft/server/packs/resources/ResourceManager;Ljava/lang/String;Lcom/google/gson/Gson;Ljava/util/Map;)V",
-					shift = At.Shift.AFTER,
-					remap = true
-			), locals = LocalCapture.CAPTURE_FAILHARD)
+		at = @At(value = "INVOKE",
+			target = "Lnet/minecraft/server/packs/resources/SimpleJsonResourceReloadListener;scanDirectory(Lnet/minecraft/server/packs/resources/ResourceManager;Ljava/lang/String;Lcom/google/gson/Gson;Ljava/util/Map;)V",
+			shift = At.Shift.AFTER,
+			remap = true
+		), locals = LocalCapture.CAPTURE_FAILHARD)
 	private static void kjs$readLootTableJsons(ResourceManager rm, LootDataType type, Map map0, CallbackInfo ci, Map<ResourceLocation, JsonElement> map) {
 		if (type.equals(LootDataType.TABLE)) {
 			LootTablesKJS.kjs$postLootEvents(map);

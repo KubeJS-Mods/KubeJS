@@ -7,8 +7,8 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin({PartialNBTIngredient.class, StrictNBTIngredient.class})
 public abstract class TrivialIngredientsMixin extends AbstractIngredient {
-    @Override
-    public boolean kjs$canBeUsedForMatching() {
-        return true;
-    }
+	@Override
+	public boolean kjs$canBeUsedForMatching() {
+		return true;
+	}
 }

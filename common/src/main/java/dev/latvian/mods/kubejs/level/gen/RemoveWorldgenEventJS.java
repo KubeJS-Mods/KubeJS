@@ -130,7 +130,7 @@ public class RemoveWorldgenEventJS extends StartupEventJS {
 	public void removeFeatureById(BiomeFilter filter, GenerationStep.Decoration decoration, ResourceLocation[] ids) {
 		BiomeModifications.replaceProperties(filter, (ctx, properties) -> {
 			Stream.of(ids).map(id -> ResourceKey.create(Registries.PLACED_FEATURE, id))
-					.forEach(id -> properties.getGenerationProperties().removeFeature(decoration, id));
+				.forEach(id -> properties.getGenerationProperties().removeFeature(decoration, id));
 		});
 	}
 

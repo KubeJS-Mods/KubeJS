@@ -70,9 +70,9 @@ public class Tags {
 	public static <T> Stream<TagKey<T>> forType(T object, Registry<T> registry) {
 		warnIfUnbound();
 		return registry.getResourceKey(object)
-				.flatMap(registry::getHolder)
-				.stream()
-				.flatMap(Holder::tags);
+			.flatMap(registry::getHolder)
+			.stream()
+			.flatMap(Holder::tags);
 	}
 
 	private static <T> TagKey<T> generic(ResourceLocation id, ResourceKey<Registry<T>> registry) {

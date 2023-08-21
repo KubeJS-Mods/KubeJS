@@ -16,12 +16,21 @@ import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackLinkedSet;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public interface ItemStackJS {
@@ -47,8 +56,8 @@ public interface ItemStackJS {
 		for (var stack : stackList) {
 			if (!stack.isEmpty()) {
 				map.computeIfAbsent(
-						stack.getItem().kjs$getIdLocation(),
-						_rl -> ItemStackLinkedSet.createTypeAndTagSet()
+					stack.getItem().kjs$getIdLocation(),
+					_rl -> ItemStackLinkedSet.createTypeAndTagSet()
 				).add(stack.kjs$withCount(1));
 			}
 		}

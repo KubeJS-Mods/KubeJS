@@ -158,7 +158,7 @@ public class ClientProperties {
 		if (tempIconCancel) {
 			if (icon != null) {
 				try (var stream16 = Files.newInputStream(icon);
-				     var stream32 = Files.newInputStream(icon)) {
+					 var stream32 = Files.newInputStream(icon)) {
 					tempIconCancel = false;
 					// todo: ~~buy noose~~ fix this
 					//Minecraft.getInstance().getWindow().setIcon(stream16, stream32);

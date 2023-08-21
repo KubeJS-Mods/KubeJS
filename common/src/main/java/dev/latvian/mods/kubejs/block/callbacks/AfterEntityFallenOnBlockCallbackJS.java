@@ -15,9 +15,9 @@ public class AfterEntityFallenOnBlockCallbackJS extends EntitySteppedOnBlockCall
 	}
 
 	@Info("""
-			Bounce the entity upwards by bounciness * their fall velocity.
-			Do not make bounciness negative, as that is a recipe for a long and laggy trip to the void
-			""")
+		Bounce the entity upwards by bounciness * their fall velocity.
+		Do not make bounciness negative, as that is a recipe for a long and laggy trip to the void
+		""")
 	public void bounce(float bounciness) {
 		Vec3 deltaMovement = entity.getDeltaMovement();
 		if (!isSuppressingBounce() && deltaMovement.y < 0.0) {

@@ -59,26 +59,26 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	}
 
 	@Info("""
-			Sets the translation key for this object, e.g. `block.minecraft.stone`.
-			""")
+		Sets the translation key for this object, e.g. `block.minecraft.stone`.
+		""")
 	public BuilderBase<T> translationKey(String key) {
 		translationKey = key;
 		return this;
 	}
 
 	@Info("""
-			Sets the display name for this object, e.g. `Stone`.
+		Sets the display name for this object, e.g. `Stone`.
 
-			This will be overridden by a lang file if it exists.
-			""")
+		This will be overridden by a lang file if it exists.
+		""")
 	public BuilderBase<T> displayName(String name) {
 		displayName = name;
 		return this;
 	}
 
 	@Info("""
-			Adds a tag to this object, e.g. `minecraft:stone`.
-			""")
+		Adds a tag to this object, e.g. `minecraft:stone`.
+		""")
 	public BuilderBase<T> tag(ResourceLocation tag) {
 		defaultTags.add(tag);
 		getRegistryType().hasDefaultTags = true;

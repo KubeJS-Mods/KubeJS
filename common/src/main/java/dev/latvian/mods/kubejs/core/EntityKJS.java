@@ -187,13 +187,13 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 
 		try {
 			TeleportCommand.performTeleport(
-					kjs$self().createCommandSourceStack(),
-					kjs$self(),
-					level,
-					x, y, z,
-					Set.of(),
-					yaw, pitch,
-					null
+				kjs$self().createCommandSourceStack(),
+				kjs$self(),
+				level,
+				x, y, z,
+				Set.of(),
+				yaw, pitch,
+				null
 			);
 		} catch (CommandSyntaxException e) {
 			throw new IllegalArgumentException(e.getRawMessage().getString());

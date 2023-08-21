@@ -33,12 +33,21 @@ import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.EndTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.NumericTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.valueproviders.*;
+import net.minecraft.util.valueproviders.ClampedInt;
+import net.minecraft.util.valueproviders.ClampedNormalInt;
+import net.minecraft.util.valueproviders.ConstantInt;
+import net.minecraft.util.valueproviders.IntProvider;
+import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobType;
@@ -59,13 +68,30 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.*;
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.math.BigInteger;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.temporal.TemporalAmount;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.HexFormat;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -472,12 +498,12 @@ public class UtilsJS {
 
 			if (entity != null) {
 				builder = new LootParams.Builder((ServerLevel) entity.level())
-						.withOptionalParameter(LootContextParams.THIS_ENTITY, entity)
-						.withParameter(LootContextParams.ORIGIN, entity.position());
+					.withOptionalParameter(LootContextParams.THIS_ENTITY, entity)
+					.withParameter(LootContextParams.ORIGIN, entity.position());
 			} else {
 				builder = new LootParams.Builder(UtilsJS.staticServer.overworld())
-						.withOptionalParameter(LootContextParams.THIS_ENTITY, null)
-						.withParameter(LootContextParams.ORIGIN, Vec3.ZERO);
+					.withOptionalParameter(LootContextParams.THIS_ENTITY, null)
+					.withParameter(LootContextParams.ORIGIN, Vec3.ZERO);
 			}
 
 			table.getRandomItems(builder.create(LootContextParamSets.CHEST), list::add);
@@ -790,9 +816,9 @@ public class UtilsJS {
 
 	public static <T> String getUniqueId(T input, Codec<T> codec) {
 		return getUniqueId(input, o -> codec.encodeStart(JsonOps.COMPRESSED, o)
-				.getOrThrow(false, str -> {
-					throw new RuntimeException("Could not encode element to JSON: " + str);
-				}));
+			.getOrThrow(false, str -> {
+				throw new RuntimeException("Could not encode element to JSON: " + str);
+			}));
 	}
 
 	private static <T> String getUniqueId(T input, Function<T, JsonElement> toJson) {

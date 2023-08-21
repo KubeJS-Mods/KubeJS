@@ -11,8 +11,8 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 @Info(value = """
-		Invoked when a player left clicks on a block.
-		""")
+	Invoked when a player left clicks on a block.
+	""")
 public class BlockLeftClickedEventJS extends PlayerEventJS {
 	private final Player player;
 	private final InteractionHand hand;

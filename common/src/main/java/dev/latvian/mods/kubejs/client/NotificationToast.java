@@ -33,9 +33,9 @@ public class NotificationToast implements Toast {
 	}
 
 	public static final Map<Integer, BiFunction<Minecraft, String, ToastIcon>> ICONS = new HashMap<>(Map.of(
-			1, TextureIcon::new,
-			2, ItemIcon::new,
-			3, AtlasIcon::of
+		1, TextureIcon::new,
+		2, ItemIcon::new,
+		3, AtlasIcon::of
 	));
 
 	public record TextureIcon(ResourceLocation texture) implements ToastIcon {

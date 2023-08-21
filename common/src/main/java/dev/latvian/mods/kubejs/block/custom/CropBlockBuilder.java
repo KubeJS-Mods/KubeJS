@@ -51,10 +51,10 @@ public class CropBlockBuilder extends BlockBuilder {
 		}
 
 		@Info("""
-				Describe the shape of the crop at a specific age.
-								
-				min/max coordinates are double values between 0 and 16.
-				""")
+			Describe the shape of the crop at a specific age.
+							
+			min/max coordinates are double values between 0 and 16.
+			""")
 		public ShapeBuilder shape(int age, double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
 			shapes.set(age, Block.box(minX, minY, minZ, maxX, maxY, maxZ));
 			return this;
@@ -117,8 +117,8 @@ public class CropBlockBuilder extends BlockBuilder {
 					bonuses.rolls = ConstantValue.exactly(1.0f);
 					bonuses.bonusRolls = ConstantValue.exactly(0.0f);
 					bonuses.addItem(new ItemStack(itemBuilder.get()))
-							.addCondition(condition)
-							.addFunction(function);
+						.addCondition(condition)
+						.addFunction(function);
 					bonuses.addItem(new ItemStack(itemBuilder.get()));
 				});
 			}
@@ -128,8 +128,8 @@ public class CropBlockBuilder extends BlockBuilder {
 					crops.rolls = ConstantValue.exactly(1.0f);
 					crops.bonusRolls = ConstantValue.exactly(0.0f);
 					crops.addItem(ItemStackJS.of(output.getFirst()))
-							.addCondition(condition)
-							.randomChance(output.getSecond());
+						.addCondition(condition)
+						.randomChance(output.getSecond());
 				});
 			}
 		};

@@ -8,18 +8,18 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(targets = "net/fabricmc/fabric/impl/recipe/ingredient/builtin/CombinedIngredient")
 public abstract class CombinedIngredientMixin implements CustomIngredientKJS {
-    @Shadow
-    @Final
-    protected Ingredient[] ingredients;
+	@Shadow
+	@Final
+	protected Ingredient[] ingredients;
 
-    @Override
-    public boolean kjs$canBeUsedForMatching() {
-        for (Ingredient ingredient : ingredients) {
-            if (!ingredient.kjs$canBeUsedForMatching()) {
-                return false;
-            }
-        }
+	@Override
+	public boolean kjs$canBeUsedForMatching() {
+		for (Ingredient ingredient : ingredients) {
+			if (!ingredient.kjs$canBeUsedForMatching()) {
+				return false;
+			}
+		}
 
-        return true;
-    }
+		return true;
+	}
 }

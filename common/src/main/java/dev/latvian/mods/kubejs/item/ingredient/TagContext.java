@@ -18,7 +18,11 @@ import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public interface TagContext {
@@ -70,7 +74,7 @@ public interface TagContext {
 
 	static TagContext fromLoadResult(List<TagManager.LoadResult<?>> results) {
 		final Map<ResourceKey<? extends Registry<?>>, Map<ResourceLocation, Collection<Holder<?>>>> tags = results.stream()
-				.collect(Collectors.toMap(result -> UtilsJS.cast(result.key()), result -> UtilsJS.cast(result.tags())));
+			.collect(Collectors.toMap(result -> UtilsJS.cast(result.key()), result -> UtilsJS.cast(result.tags())));
 
 		if (!tags.containsKey(Registries.ITEM)) {
 			ConsoleJS.getCurrent(ConsoleJS.SERVER).warn("Failed to load item tags during recipe event! Using replaceInput etc. will not work!");

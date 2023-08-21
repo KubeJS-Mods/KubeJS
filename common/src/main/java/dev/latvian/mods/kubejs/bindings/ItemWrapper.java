@@ -93,9 +93,9 @@ public interface ItemWrapper {
 	}
 
 	@Info("""
-			Checks if the passed in object is an ItemStack.
-			Note that this does not mean it will not function as an ItemStack if passed to something that requests one.
-			""")
+		Checks if the passed in object is an ItemStack.
+		Note that this does not mean it will not function as an ItemStack if passed to something that requests one.
+		""")
 	static boolean isItem(@Nullable Object o) {
 		return o instanceof ItemStackJS;
 	}

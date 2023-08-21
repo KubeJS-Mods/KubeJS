@@ -59,9 +59,9 @@ public interface IngredientWrapper {
 	}
 
 	@Info("""
-			Checks if the passed in object is an Ingredient.
-			Note that this does not mean it will not function as an Ingredient if passed to something that requests one.
-			""")
+		Checks if the passed in object is an Ingredient.
+		Note that this does not mean it will not function as an Ingredient if passed to something that requests one.
+		""")
 	static boolean isIngredient(@Nullable Object o) {
 		return o instanceof Ingredient;
 	}

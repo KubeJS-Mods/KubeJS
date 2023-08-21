@@ -5,10 +5,31 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.architectury.platform.Platform;
-import dev.latvian.mods.kubejs.bindings.*;
-import dev.latvian.mods.kubejs.bindings.event.*;
+import dev.latvian.mods.kubejs.bindings.BlockWrapper;
+import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
+import dev.latvian.mods.kubejs.bindings.ItemWrapper;
+import dev.latvian.mods.kubejs.bindings.JavaWrapper;
+import dev.latvian.mods.kubejs.bindings.TextWrapper;
+import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
+import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
+import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
+import dev.latvian.mods.kubejs.bindings.event.EntityEvents;
+import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
+import dev.latvian.mods.kubejs.bindings.event.LevelEvents;
+import dev.latvian.mods.kubejs.bindings.event.NetworkEvents;
+import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
+import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
+import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
+import dev.latvian.mods.kubejs.bindings.event.WorldgenEvents;
 import dev.latvian.mods.kubejs.block.DetectorBlock;
-import dev.latvian.mods.kubejs.block.custom.*;
+import dev.latvian.mods.kubejs.block.custom.BasicBlockJS;
+import dev.latvian.mods.kubejs.block.custom.CropBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.FallingBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.FenceBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.HorizontalDirectionalBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.SlabBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.StairBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.WallBlockBuilder;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.core.PlayerSelector;
@@ -24,12 +45,31 @@ import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.OutputItem;
-import dev.latvian.mods.kubejs.item.custom.*;
+import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
+import dev.latvian.mods.kubejs.item.custom.AxeItemBuilder;
+import dev.latvian.mods.kubejs.item.custom.BasicItemJS;
+import dev.latvian.mods.kubejs.item.custom.HoeItemBuilder;
+import dev.latvian.mods.kubejs.item.custom.ItemArmorTierRegistryEventJS;
+import dev.latvian.mods.kubejs.item.custom.ItemToolTierRegistryEventJS;
+import dev.latvian.mods.kubejs.item.custom.PickaxeItemBuilder;
+import dev.latvian.mods.kubejs.item.custom.RecordItemJS;
+import dev.latvian.mods.kubejs.item.custom.ShearsItemBuilder;
+import dev.latvian.mods.kubejs.item.custom.ShovelItemBuilder;
+import dev.latvian.mods.kubejs.item.custom.SwordItemBuilder;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.filter.mob.MobFilter;
 import dev.latvian.mods.kubejs.level.gen.ruletest.KubeJSRuleTests;
-import dev.latvian.mods.kubejs.misc.*;
+import dev.latvian.mods.kubejs.misc.BasicMobEffect;
+import dev.latvian.mods.kubejs.misc.CustomStatBuilder;
+import dev.latvian.mods.kubejs.misc.EnchantmentBuilder;
+import dev.latvian.mods.kubejs.misc.PaintingVariantBuilder;
+import dev.latvian.mods.kubejs.misc.ParticleTypeBuilder;
+import dev.latvian.mods.kubejs.misc.PoiTypeBuilder;
+import dev.latvian.mods.kubejs.misc.PotionBuilder;
+import dev.latvian.mods.kubejs.misc.SoundEventBuilder;
+import dev.latvian.mods.kubejs.misc.VillagerProfessionBuilder;
+import dev.latvian.mods.kubejs.misc.VillagerTypeBuilder;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
@@ -46,7 +86,16 @@ import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.util.*;
+import dev.latvian.mods.kubejs.util.ClassFilter;
+import dev.latvian.mods.kubejs.util.FluidAmounts;
+import dev.latvian.mods.kubejs.util.JsonIO;
+import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import dev.latvian.mods.kubejs.util.LegacyCodeHandler;
+import dev.latvian.mods.kubejs.util.ListJS;
+import dev.latvian.mods.kubejs.util.MapJS;
+import dev.latvian.mods.kubejs.util.NBTIOWrapper;
+import dev.latvian.mods.kubejs.util.NotificationBuilder;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.CollectionTagWrapper;
 import dev.latvian.mods.rhino.mod.util.CompoundTagWrapper;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
@@ -76,7 +125,11 @@ import net.minecraft.stats.Stats;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -92,7 +145,12 @@ import java.io.File;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.temporal.TemporalAmount;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class BuiltinKubeJSPlugin extends KubeJSPlugin {
@@ -405,48 +463,48 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	@Override
 	public void registerRecipeSchemas(RegisterRecipeSchemasEvent event) {
 		event.namespace("kubejs")
-				.shaped("shaped")
-				.shapeless("shapeless")
+			.shaped("shaped")
+			.shapeless("shapeless")
 		;
 
 		event.namespace("minecraft")
-				.shaped("crafting_shaped")
-				.shapeless("crafting_shapeless")
-				.register("stonecutting", StonecuttingRecipeSchema.SCHEMA)
-				.register("smelting", CookingRecipeSchema.SCHEMA)
-				.register("blasting", CookingRecipeSchema.SCHEMA)
-				.register("smoking", CookingRecipeSchema.SCHEMA)
-				.register("campfire_cooking", CookingRecipeSchema.SCHEMA)
-				.register("smithing", SmithingRecipeSchema.SCHEMA)
-				.special("crafting_special_armordye")
-				.special("crafting_special_shulkerboxcoloring")
-				.special("crafting_special_bannerduplicate")
-				.special("crafting_special_suspiciousstew")
-				.special("crafting_special_bookcloning")
-				.special("crafting_special_mapextending")
-				.special("crafting_special_tippedarrow")
-				.special("crafting_special_firework_star")
-				.special("crafting_special_shielddecoration")
-				.special("crafting_special_firework_star_fade")
-				.special("crafting_special_firework_rocket")
-				.special("crafting_special_mapcloning")
-				.special("crafting_special_repairitem")
+			.shaped("crafting_shaped")
+			.shapeless("crafting_shapeless")
+			.register("stonecutting", StonecuttingRecipeSchema.SCHEMA)
+			.register("smelting", CookingRecipeSchema.SCHEMA)
+			.register("blasting", CookingRecipeSchema.SCHEMA)
+			.register("smoking", CookingRecipeSchema.SCHEMA)
+			.register("campfire_cooking", CookingRecipeSchema.SCHEMA)
+			.register("smithing", SmithingRecipeSchema.SCHEMA)
+			.special("crafting_special_armordye")
+			.special("crafting_special_shulkerboxcoloring")
+			.special("crafting_special_bannerduplicate")
+			.special("crafting_special_suspiciousstew")
+			.special("crafting_special_bookcloning")
+			.special("crafting_special_mapextending")
+			.special("crafting_special_tippedarrow")
+			.special("crafting_special_firework_star")
+			.special("crafting_special_shielddecoration")
+			.special("crafting_special_firework_star_fade")
+			.special("crafting_special_firework_rocket")
+			.special("crafting_special_mapcloning")
+			.special("crafting_special_repairitem")
 		;
 
 		event.namespace("cucumber")
-				.shaped("shaped_no_mirror")
+			.shaped("shaped_no_mirror")
 		;
 
 		event.namespace("extendedcrafting")
-				.shaped("shaped_table")
-				.shapeless("shapeless_table")
+			.shaped("shaped_table")
+			.shapeless("shapeless_table")
 		;
 
 		event.mapRecipe("extendedCraftingShaped", "extendedcrafting:shaped_table");
 		event.mapRecipe("extendedCraftingShapeless", "extendedcrafting:shapeless_table");
 
 		event.namespace("dankstorage")
-				.shaped("upgrade")
+			.shaped("upgrade")
 		;
 
 		event.mapRecipe("dankStorageUpgrade", "dankstorage:upgrade");

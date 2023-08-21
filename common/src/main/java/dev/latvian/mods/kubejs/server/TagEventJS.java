@@ -19,7 +19,13 @@ import net.minecraft.tags.TagLoader;
 
 import java.nio.file.Files;
 import java.text.DateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 public class TagEventJS<T> extends EventJS {
@@ -27,7 +33,7 @@ public class TagEventJS<T> extends EventJS {
 		if (ex instanceof IllegalStateException) {
 			var error = ex.getCause() == null ? ex : ex.getCause();
 			ConsoleJS.SERVER.handleError(error, null, "IllegalStateException was thrown during tag event in script %s:%d, this is most likely due to a concurrency bug in Rhino!"
-					.formatted(container.source, container.line));
+				.formatted(container.source, container.line));
 			ConsoleJS.SERVER.error("While we are working on a fix for this issue, you may manually work around it by reloading the server again (e.g. by using /reload command).");
 			return null;
 		}
