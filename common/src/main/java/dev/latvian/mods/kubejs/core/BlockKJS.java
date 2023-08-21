@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 
-import java.util.Collections;
 import java.util.List;
 
 @RemapPrefixForJS("kjs$")

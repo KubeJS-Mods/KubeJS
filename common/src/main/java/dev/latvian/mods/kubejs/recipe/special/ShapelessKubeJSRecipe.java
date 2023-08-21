@@ -17,7 +17,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 
 public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraftingRecipe {

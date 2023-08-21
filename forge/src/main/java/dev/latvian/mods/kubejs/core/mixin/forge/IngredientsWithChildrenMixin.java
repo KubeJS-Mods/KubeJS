@@ -11,17 +11,17 @@ import java.util.List;
 
 @Mixin({CompoundIngredient.class, IntersectionIngredient.class})
 public abstract class IngredientsWithChildrenMixin extends AbstractIngredient {
-    @Shadow
-    private List<Ingredient> children;
+	@Shadow
+	private List<Ingredient> children;
 
-    @Override
-    public boolean kjs$canBeUsedForMatching() {
-        for (var child : children) {
-            if (!child.kjs$canBeUsedForMatching()) {
-                return false;
-            }
-        }
+	@Override
+	public boolean kjs$canBeUsedForMatching() {
+		for (var child : children) {
+			if (!child.kjs$canBeUsedForMatching()) {
+				return false;
+			}
+		}
 
-        return true;
-    }
+		return true;
+	}
 }

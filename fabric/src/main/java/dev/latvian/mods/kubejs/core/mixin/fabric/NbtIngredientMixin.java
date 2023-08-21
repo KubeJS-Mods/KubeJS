@@ -9,12 +9,12 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(NbtIngredient.class)
 public abstract class NbtIngredientMixin implements CustomIngredientKJS {
-    @Shadow
-    @Final
-    private Ingredient base;
+	@Shadow
+	@Final
+	private Ingredient base;
 
-    @Override
-    public boolean kjs$canBeUsedForMatching() {
-        return base.kjs$canBeUsedForMatching();
-    }
+	@Override
+	public boolean kjs$canBeUsedForMatching() {
+		return base.kjs$canBeUsedForMatching();
+	}
 }

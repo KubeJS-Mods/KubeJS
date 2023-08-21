@@ -8,13 +8,13 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(Ingredient.class)
 public abstract class IngredientMatchingMixin implements IngredientKJS, FabricIngredient {
-    @Override
-    public boolean kjs$canBeUsedForMatching() {
-        if (IngredientKJS.super.kjs$canBeUsedForMatching()) {
-            return true;
-        } else {
-            var custom = getCustomIngredient();
-            return custom != null && ((CustomIngredientKJS) custom).kjs$canBeUsedForMatching();
-        }
-    }
+	@Override
+	public boolean kjs$canBeUsedForMatching() {
+		if (IngredientKJS.super.kjs$canBeUsedForMatching()) {
+			return true;
+		} else {
+			var custom = getCustomIngredient();
+			return custom != null && ((CustomIngredientKJS) custom).kjs$canBeUsedForMatching();
+		}
+	}
 }
