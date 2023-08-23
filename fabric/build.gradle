@@ -138,6 +138,16 @@ publishing {
 	}
 
 	repositories {
+		if (ENV.MAVEN_TOKEN) {
+			maven {
+				url "https://maven.latvian.dev/releases"
+				credentials {
+					username = "lat"
+					password = "${ENV.MAVEN_TOKEN}"
+				}
+			}
+		}
+
 		if (ENV.SAPS_TOKEN) {
 			maven {
 				url "https://maven.saps.dev/releases"
