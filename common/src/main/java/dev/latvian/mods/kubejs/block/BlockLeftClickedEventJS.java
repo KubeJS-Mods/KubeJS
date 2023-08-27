@@ -37,6 +37,11 @@ public class BlockLeftClickedEventJS extends PlayerEventJS {
 		return new BlockContainerJS(player.level, pos);
 	}
 
+	@Info("The hand that was used to left click the block.")
+	public InteractionHand getHand() {
+		return hand;
+	}
+
 	@Info("The item that was used to left click the block.")
 	public ItemStack getItem() {
 		return player.getItemInHand(hand);
