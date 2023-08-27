@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(targets = "net/fabricmc/fabric/impl/recipe/ingredient/builtin/CombinedIngredient")
 public abstract class CombinedIngredientMixin implements CustomIngredientKJS {
-	@Shadow
+	@Shadow(remap = false)
 	@Final
 	protected Ingredient[] ingredients;
 
