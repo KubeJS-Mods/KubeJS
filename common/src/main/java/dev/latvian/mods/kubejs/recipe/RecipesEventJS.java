@@ -520,6 +520,14 @@ public class RecipesEventJS extends EventJS {
 		return reduceRecipesAsync(filter, s -> s.findAny().isPresent());
 	}
 
+	public Collection<RecipeJS> findRecipes(RecipeFilter filter) {
+		return reduceRecipesAsync(filter, Stream::toList);
+	}
+
+	public Collection<ResourceLocation> findRecipeIds(RecipeFilter filter) {
+		return reduceRecipesAsync(filter, s -> s.map(RecipeJS::getOrCreateId).toList());
+	}
+
 	public void remove(RecipeFilter filter) {
 		if (filter instanceof IDFilter id) {
 			var r = originalRecipes.get(id.id);

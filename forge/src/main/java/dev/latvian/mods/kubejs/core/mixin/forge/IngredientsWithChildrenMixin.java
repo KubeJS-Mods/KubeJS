@@ -11,7 +11,7 @@ import java.util.List;
 
 @Mixin({CompoundIngredient.class, IntersectionIngredient.class})
 public abstract class IngredientsWithChildrenMixin extends AbstractIngredient {
-	@Shadow
+	@Shadow(remap = false)
 	private List<Ingredient> children;
 
 	@Override

@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(NbtIngredient.class)
 public abstract class NbtIngredientMixin implements CustomIngredientKJS {
-	@Shadow
+	@Shadow(remap = false)
 	@Final
 	private Ingredient base;
 

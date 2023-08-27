@@ -9,11 +9,11 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(DifferenceIngredient.class)
 public abstract class DifferenceIngredientMixin implements CustomIngredientKJS {
-	@Shadow
+	@Shadow(remap = false)
 	@Final
 	private Ingredient base;
 
-	@Shadow
+	@Shadow(remap = false)
 	@Final
 	private Ingredient subtracted;
 
