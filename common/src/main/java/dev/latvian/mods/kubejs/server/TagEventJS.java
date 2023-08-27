@@ -31,11 +31,19 @@ import java.util.function.Predicate;
 public class TagEventJS<T> extends EventJS {
 	private static final EventHandler.EventExceptionHandler TAG_EVENT_HANDLER = (event, container, ex) -> {
 		if (ex instanceof IllegalStateException) {
-			var error = ex.getCause() == null ? ex : ex.getCause();
-			ConsoleJS.SERVER.handleError(error, null, "IllegalStateException was thrown during tag event in script %s:%d, this is most likely due to a concurrency bug in Rhino!"
-				.formatted(container.source, container.line));
-			ConsoleJS.SERVER.error("While we are working on a fix for this issue, you may manually work around it by reloading the server again (e.g. by using /reload command).");
-			return null;
+			var stacktrace = ex.fillInStackTrace().getStackTrace();
+			if (stacktrace.length > 0) {
+				// if the first element in the stack trace is dev.latvian.mods.rhino.ScriptRuntime.doTopCall, then it's definitely the concurrency bug
+				// (todo: if this is too general of an assumption and there are other cases where rhino throws a concurrency related IllegalStateException,
+				//   this needs to be turned into a more general check again, but i kinda didn't want to go through the entire stacktrace here)
+				if (stacktrace[0].toString().contains("dev.latvian.mods.rhino.ScriptRuntime.doTopCall")) {
+					var error = ex.getCause() == null ? ex : ex.getCause();
+					ConsoleJS.SERVER.handleError(error, null, "IllegalStateException was thrown during tag event in script %s:%d, this is most likely due to a concurrency bug in Rhino!"
+						.formatted(container.source, container.line));
+					ConsoleJS.SERVER.error("While we are working on a fix for this issue, you may manually work around it by reloading the server again (e.g. by using /reload command).");
+					return null;
+				}
+			}
 		}
 		return ex;
 	};
