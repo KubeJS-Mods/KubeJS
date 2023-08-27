@@ -19,13 +19,7 @@ import net.minecraft.tags.TagLoader;
 
 import java.nio.file.Files;
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class TagEventJS<T> extends EventJS {
@@ -44,6 +38,9 @@ public class TagEventJS<T> extends EventJS {
 					return null;
 				}
 			}
+		} else if (ex instanceof EmptyTagTargetException) {
+			ConsoleJS.SERVER.error(ex.getMessage() + " (at %s:%d)".formatted(container.source, container.line));
+			return null;
 		}
 		return ex;
 	};
@@ -327,16 +324,35 @@ public class TagEventJS<T> extends EventJS {
 		var suffix = target.substring(1);
 		return switch (target.charAt(0)) {
 			case '#' -> Either.left(get(new ResourceLocation(suffix)));
-			case '@' -> Either.right(ofKeySet(id -> id.location().getNamespace().equals(suffix)));
-			case '/' -> Either.right(ofKeySet(id -> UtilsJS.parseRegex(target).matcher(id.location().toString()).find()));
+			case '@' -> Either.right(ofKeySet(id -> id.location().getNamespace().equals(suffix), target));
+			case '/' -> Either.right(ofKeySet(id -> UtilsJS.parseRegex(target).matcher(id.location().toString()).find(), target));
 			default -> {
 				var id = ResourceKey.create(registry.key(), new ResourceLocation(target));
-				yield UtilsJS.cast(Either.right(List.of(registry.getHolderOrThrow(id))));
+				var holder = registry.getHolder(id);
+				if (holder.isPresent()) {
+					yield UtilsJS.cast(Either.right(List.of(holder.get())));
+				} else {
+					throw new EmptyTagTargetException(registry, id);
+				}
 			}
 		};
 	}
 
-	private List<Holder.Reference<T>> ofKeySet(Predicate<ResourceKey<T>> predicate) {
-		return registry.holders().filter(ref -> ref.is(predicate)).toList();
+	private List<Holder.Reference<T>> ofKeySet(Predicate<ResourceKey<T>> predicate, String filter) {
+		var list = registry.holders().filter(ref -> ref.is(predicate)).toList();
+		if (list.isEmpty()) {
+			throw new EmptyTagTargetException("No matches found for filter %s!".formatted(filter));
+		}
+		return list;
+	}
+
+	private static class EmptyTagTargetException extends NoSuchElementException {
+		public EmptyTagTargetException(String message) {
+			super(message);
+		}
+
+		public <T> EmptyTagTargetException(Registry<T> registry, ResourceKey<T> key) {
+			this("No such element %s in registry %s".formatted(key, registry.key()));
+		}
 	}
 }
