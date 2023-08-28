@@ -19,16 +19,23 @@ import net.minecraft.tags.TagLoader;
 
 import java.nio.file.Files;
 import java.text.DateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
 public class TagEventJS<T> extends EventJS {
 	private static final EventHandler.EventExceptionHandler TAG_EVENT_HANDLER = (event, container, ex) -> {
 		if (ex instanceof IllegalStateException) {
-			var stacktrace = ex.fillInStackTrace().getStackTrace();
+			var stacktrace = ex.getStackTrace();
 			if (stacktrace.length > 0) {
 				// if the first element in the stack trace is dev.latvian.mods.rhino.ScriptRuntime.doTopCall, then it's definitely the concurrency bug
-				// (todo: if this is too general of an assumption and there are other cases where rhino throws a concurrency related IllegalStateException,
+				// (todo: if this is too specific of an assumption and there are other cases where rhino throws a concurrency related IllegalStateException,
 				//   this needs to be turned into a more general check again, but i kinda didn't want to go through the entire stacktrace here)
 				if (stacktrace[0].toString().contains("dev.latvian.mods.rhino.ScriptRuntime.doTopCall")) {
 					var error = ex.getCause() == null ? ex : ex.getCause();
@@ -332,7 +339,13 @@ public class TagEventJS<T> extends EventJS {
 				if (holder.isPresent()) {
 					yield UtilsJS.cast(Either.right(List.of(holder.get())));
 				} else {
-					throw new EmptyTagTargetException(registry, id);
+					var msg = "No such element %s in registry %s".formatted(id, registry.key());
+					if (DevProperties.get().strictTags) {
+						throw new EmptyTagTargetException(msg);
+					} else if (DevProperties.get().logSkippedTags) {
+						ConsoleJS.SERVER.warn(msg);
+					}
+					yield Either.right(List.of());
 				}
 			}
 		};
@@ -340,19 +353,24 @@ public class TagEventJS<T> extends EventJS {
 
 	private List<Holder.Reference<T>> ofKeySet(Predicate<ResourceKey<T>> predicate, String filter) {
 		var list = registry.holders().filter(ref -> ref.is(predicate)).toList();
-		if (list.isEmpty()) {
-			throw new EmptyTagTargetException("No matches found for filter %s!".formatted(filter));
-		}
-		return list;
+		return checkEmpty(list, filter);
 	}
 
 	private static class EmptyTagTargetException extends NoSuchElementException {
 		public EmptyTagTargetException(String message) {
 			super(message);
 		}
+	}
 
-		public <T> EmptyTagTargetException(Registry<T> registry, ResourceKey<T> key) {
-			this("No such element %s in registry %s".formatted(key, registry.key()));
+	public static <T> List<Holder.Reference<T>> checkEmpty(List<Holder.Reference<T>> list, String filter) {
+		if (list.isEmpty()) {
+			var msg = "No matches found for filter %s!".formatted(filter);
+			if (DevProperties.get().strictTags) {
+				throw new EmptyTagTargetException(msg);
+			} else if (DevProperties.get().logSkippedTags) {
+				ConsoleJS.SERVER.warn(msg);
+			}
 		}
+		return list;
 	}
 }
