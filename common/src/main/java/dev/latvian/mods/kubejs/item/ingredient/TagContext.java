@@ -113,8 +113,6 @@ public interface TagContext {
 		return false;
 	}
 
-	;
-
 	<T> Iterable<Holder<T>> getTag(TagKey<T> tag);
 
 	default Collection<ItemStack> patchIngredientTags(TagKey<Item> tag) {

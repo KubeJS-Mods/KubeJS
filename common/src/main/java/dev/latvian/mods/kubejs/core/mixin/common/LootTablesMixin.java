@@ -22,7 +22,6 @@ public abstract class LootTablesMixin implements LootTablesKJS {
 	@Shadow
 	private Map<LootDataId<?>, ?> elements;
 
-	// TODO: (low priority) Replace with a less destructive mixin type
 	@Inject(method = "apply*", at = @At("RETURN"))
 	private void kjs$apply(Map<LootDataType<?>, Map<ResourceLocation, ?>> parsedMap, CallbackInfo ci) {
 		kjs$completeReload(parsedMap, elements);
