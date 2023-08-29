@@ -83,6 +83,7 @@ public class RecipesEventJS extends EventJS {
 		}
 	};
 
+	@HideFromJS
 	public static final Map<ResourceLocation, ModifyRecipeResultCallback> MODIFY_RESULT_CALLBACKS = new ConcurrentHashMap<>();
 
 	// hacky workaround for parallel streams, which are executed on the common fork/join pool by default
@@ -115,12 +116,15 @@ public class RecipesEventJS extends EventJS {
 			}
 		}, true);
 
+	@HideFromJS
 	public static Map<UUID, IngredientWithCustomPredicate> customIngredientMap = null;
 
+	@HideFromJS
 	public static RecipesEventJS instance;
 
 	public final Map<ResourceLocation, RecipeJS> originalRecipes;
 	public final Collection<RecipeJS> addedRecipes;
+
 	public final AtomicInteger failedCount;
 	public final Map<ResourceLocation, RecipeJS> takenIds;
 
@@ -514,6 +518,14 @@ public class RecipesEventJS extends EventJS {
 
 	public boolean containsRecipe(RecipeFilter filter) {
 		return reduceRecipesAsync(filter, s -> s.findAny().isPresent());
+	}
+
+	public Collection<RecipeJS> findRecipes(RecipeFilter filter) {
+		return reduceRecipesAsync(filter, Stream::toList);
+	}
+
+	public Collection<ResourceLocation> findRecipeIds(RecipeFilter filter) {
+		return reduceRecipesAsync(filter, s -> s.map(RecipeJS::getOrCreateId).toList());
 	}
 
 	public void remove(RecipeFilter filter) {

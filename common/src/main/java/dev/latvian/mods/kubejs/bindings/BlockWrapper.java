@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.block.predicate.BlockEntityPredicate;
 import dev.latvian.mods.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.mods.kubejs.block.predicate.BlockPredicate;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.Tags;
 import net.minecraft.Util;
 import net.minecraft.core.Direction;
@@ -21,7 +22,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+@Info("Various block related helper functions")
 public class BlockWrapper {
+	@Info("Get a map of all KubeJS materials")
 	public static Map<String, MaterialJS> getMaterial() {
 		return MaterialListJS.INSTANCE.map;
 	}
@@ -50,6 +53,7 @@ public class BlockWrapper {
 
 	private static Map<String, Direction> facingMap;
 
+	@Info("Get a map of direction name to Direction. Functionally identical to Direction.ALL")
 	public static Map<String, Direction> getFacing() {
 		if (facingMap == null) {
 			facingMap = new HashMap<>(6);
@@ -62,15 +66,18 @@ public class BlockWrapper {
 		return facingMap;
 	}
 
+	@Info("Gets a Block from a block id")
 	public static Block getBlock(ResourceLocation id) {
 		return KubeJSRegistries.blocks().get(id);
 	}
 
+	@Info("Gets a blocks id from the Block")
 	@Nullable
 	public static ResourceLocation getId(Block block) {
 		return KubeJSRegistries.blocks().getId(block);
 	}
 
+	@Info("Gets a list of the classname of all registered blocks")
 	public static List<String> getTypeList() {
 		List<String> list = new ArrayList<>();
 
@@ -81,6 +88,7 @@ public class BlockWrapper {
 		return list;
 	}
 
+	@Info("Gets a list of all blocks with tags")
 	public static List<ResourceLocation> getTaggedIds(ResourceLocation tag) {
 		return Util.make(new LinkedList<>(), list -> {
 			for (var holder : Registry.BLOCK.getTagOrEmpty(Tags.block(tag))) {

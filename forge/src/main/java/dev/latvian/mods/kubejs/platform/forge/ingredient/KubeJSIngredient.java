@@ -55,6 +55,13 @@ public abstract class KubeJSIngredient extends AbstractIngredient implements Ing
 	}
 
 	@Override
+	public boolean kjs$canBeUsedForMatching() {
+		// all of our ingredients should be safe for matching,
+		// unless somebody does something *really* weird from scripts
+		return true;
+	}
+
+	@Override
 	public final JsonObject toJson() {
 		JsonObject json = new JsonObject();
 		json.addProperty("type", CraftingHelper.getID(getSerializer()).toString());

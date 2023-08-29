@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.block.callbacks;
 
 import com.google.common.collect.ImmutableMap;
+import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
@@ -24,11 +25,13 @@ public class BlockStateModifyCallbackJS {
 		this.state = state;
 	}
 
+	@Info("Cycles the property")
 	public <T extends Comparable<T>> BlockStateModifyCallbackJS cycle(Property<T> property) {
 		this.state = state.cycle(property);
 		return this;
 	}
 
+	@Info("Gets the state. If it has been modified, gets the new state")
 	public BlockState getState() {
 		return state;
 	}
@@ -38,71 +41,78 @@ public class BlockStateModifyCallbackJS {
 		return state.toString();
 	}
 
+	@Info("Get the properties this block has that can be changed")
 	public Collection<Property<?>> getProperties() {
 		return state.getProperties();
 	}
 
+	@Info("Checks if this block has the specified property")
 	public <T extends Comparable<T>> boolean hasProperty(Property<T> property) {
 		return state.hasProperty(property);
 	}
 
+	@Info("Gets the value of the passed in property")
 	public <T extends Comparable<T>> T getValue(Property<T> property) {
 		return state.getValue(property);
 	}
 
+	@Info("Gets the value of the pased in property")
 	public <T extends Comparable<T>> T get(Property<T> property) {
 		return state.getValue(property);
 	}
 
+	@Info("Gets the value of the passed in property as an Optional. If the property does not exist in this block the Optional will be empty")
 	public <T extends Comparable<T>> Optional<T> getOptionalValue(Property<T> property) {
 		return state.getOptionalValue(property);
 	}
 
+	@Info("Sets the value of the specified property")
 	public <T extends Comparable<T>, V extends T> BlockStateModifyCallbackJS setValue(Property<T> property, V comparable) {
 		this.state = state.setValue(property, comparable);
 		return this;
 	}
 
+	@Info("Sets the value of the specified boolean property")
 	public BlockStateModifyCallbackJS set(BooleanProperty property, boolean value) {
 		this.state = state.setValue(property, value);
 		return this;
 	}
 
+	@Info("Sets the value of the specified integer property")
 	public BlockStateModifyCallbackJS set(IntegerProperty property, Integer value) {
 		this.state = state.setValue(property, value);
 		return this;
 	}
 
-	public <T extends Enum<T> & StringRepresentable> BlockStateModifyCallbackJS set(EnumProperty<T> property, T value) {
-		this.state = state.setValue(property, value);
-		return this;
-	}
-
+	@Info("Sets the value of the specified enum property")
 	public <T extends Enum<T> & StringRepresentable> BlockStateModifyCallbackJS set(EnumProperty<T> property, String value) {
 		this.state = state.setValue(property, property.getValue(value).get());
 		return this;
 	}
-
 
 	public BlockStateModifyCallbackJS populateNeighbours(Map<Map<Property<?>, Comparable<?>>, BlockState> map) {
 		state.populateNeighbours(map);
 		return this;
 	}
 
+	@Info("Get a map of this blocks properties to it's value")
 	public ImmutableMap<Property<?>, Comparable<?>> getValues() {
 		return state.getValues();
 	}
 
+	@Info("Rotate the block using the specified Rotation")
 	public BlockStateModifyCallbackJS rotate(Rotation rotation) {
 		this.state = state.rotate(rotation);
 		return this;
 	}
 
+	@Info("Mirror the block using the specified Mirror")
 	public BlockStateModifyCallbackJS mirror(Mirror mirror) {
 		this.state = state.mirror(mirror);
 		return this;
 	}
 
+	@Info("Updates the shape of this block. Mostly used in waterloggable blocks to update the water flow")
 	public BlockStateModifyCallbackJS updateShape(Direction direction, BlockState blockState, LevelAccessor levelAccessor, BlockPos blockPos, BlockPos blockPos2) {
 		this.state = state.updateShape(direction, blockState, levelAccessor, blockPos, blockPos2);
 		return this;

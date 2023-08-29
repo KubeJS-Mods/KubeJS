@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.stages;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class NoStages extends Stages {

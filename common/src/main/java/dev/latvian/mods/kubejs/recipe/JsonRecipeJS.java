@@ -17,7 +17,7 @@ public class JsonRecipeJS extends RecipeJS {
 	public boolean hasInput(ReplacementMatch match) {
 		if (CommonProperties.get().matchJsonRecipes && match instanceof ItemMatch m && getOriginalRecipe() != null) {
 			for (var ingredient : getOriginalRecipe().getIngredients()) {
-				if (ingredient != Ingredient.EMPTY && m.contains(ingredient)) {
+				if (ingredient != Ingredient.EMPTY && ingredient.kjs$canBeUsedForMatching() && m.contains(ingredient)) {
 					return true;
 				}
 			}

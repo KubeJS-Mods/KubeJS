@@ -52,6 +52,11 @@ public class OutputItem implements OutputReplacement {
 	public final double chance; // Use FloatProvider in future?
 	public final IntProvider rolls;
 
+	@Deprecated
+	protected OutputItem(ItemStack item, double chance) {
+		this(item, chance, null);
+	}
+
 	protected OutputItem(ItemStack item, double chance, @Nullable IntProvider rolls) {
 		this.item = item;
 		this.chance = chance;

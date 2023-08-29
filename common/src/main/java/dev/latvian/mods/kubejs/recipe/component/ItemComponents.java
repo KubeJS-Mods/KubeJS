@@ -47,7 +47,7 @@ public interface ItemComponents {
 
 		@Override
 		public boolean isInput(RecipeJS recipe, InputItem value, ReplacementMatch match) {
-			return match instanceof ItemMatch m && !value.isEmpty() && m.contains(value.ingredient);
+			return match instanceof ItemMatch m && value.validForMatching() && m.contains(value.ingredient);
 		}
 
 		@Override

@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
+import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -25,9 +26,32 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
 public class TagEventJS<T> extends EventJS {
+	private static final EventHandler.EventExceptionHandler TAG_EVENT_HANDLER = (event, container, ex) -> {
+		if (ex instanceof IllegalStateException) {
+			var stacktrace = ex.getStackTrace();
+			if (stacktrace.length > 0) {
+				// if the first element in the stack trace is dev.latvian.mods.rhino.ScriptRuntime.doTopCall, then it's definitely the concurrency bug
+				// (todo: if this is too specific of an assumption and there are other cases where rhino throws a concurrency related IllegalStateException,
+				//   this needs to be turned into a more general check again, but i kinda didn't want to go through the entire stacktrace here)
+				if (stacktrace[0].toString().contains("dev.latvian.mods.rhino.ScriptRuntime.doTopCall")) {
+					var error = ex.getCause() == null ? ex : ex.getCause();
+					ConsoleJS.SERVER.handleError(error, null, "IllegalStateException was thrown during tag event in script %s:%d, this is most likely due to a concurrency bug in Rhino!"
+						.formatted(container.source, container.line));
+					ConsoleJS.SERVER.error("While we are working on a fix for this issue, you may manually work around it by reloading the server again (e.g. by using /reload command).");
+					return null;
+				}
+			}
+		} else if (ex instanceof EmptyTagTargetException) {
+			ConsoleJS.SERVER.error(ex.getMessage() + " (at %s:%d)".formatted(container.source, container.line));
+			return null;
+		}
+		return ex;
+	};
+
 	public class TagWrapper {
 		private final ResourceLocation id;
 		private final List<TagLoader.EntryWithSource> entries;
@@ -240,7 +264,7 @@ public class TagEventJS<T> extends EventJS {
 			}
 		}
 
-		ServerEvents.TAGS.post(this, registry.key());
+		ServerEvents.TAGS.post(this, registry.key(), TAG_EVENT_HANDLER);
 
 		if (DataExport.export != null) {
 			var loc = "tags/" + getType().toString() + "/";
@@ -307,16 +331,46 @@ public class TagEventJS<T> extends EventJS {
 		var suffix = target.substring(1);
 		return switch (target.charAt(0)) {
 			case '#' -> Either.left(get(new ResourceLocation(suffix)));
-			case '@' -> Either.right(ofKeySet(id -> id.location().getNamespace().equals(suffix)));
-			case '/' -> Either.right(ofKeySet(id -> UtilsJS.parseRegex(target).matcher(id.location().toString()).find()));
+			case '@' -> Either.right(ofKeySet(id -> id.location().getNamespace().equals(suffix), target));
+			case '/' -> Either.right(ofKeySet(id -> UtilsJS.parseRegex(target).matcher(id.location().toString()).find(), target));
 			default -> {
 				var id = ResourceKey.create(registry.key(), new ResourceLocation(target));
-				yield UtilsJS.cast(Either.right(List.of(registry.getHolderOrThrow(id))));
+				var holder = registry.getHolder(id);
+				if (holder.isPresent()) {
+					yield UtilsJS.cast(Either.right(List.of(holder.get())));
+				} else {
+					var msg = "No such element %s in registry %s".formatted(id, registry.key());
+					if (DevProperties.get().strictTags) {
+						throw new EmptyTagTargetException(msg);
+					} else if (DevProperties.get().logSkippedTags) {
+						ConsoleJS.SERVER.warn(msg);
+					}
+					yield Either.right(List.of());
+				}
 			}
 		};
 	}
 
-	private List<Holder.Reference<T>> ofKeySet(Predicate<ResourceKey<T>> predicate) {
-		return registry.holders().filter(ref -> ref.is(predicate)).toList();
+	private List<Holder.Reference<T>> ofKeySet(Predicate<ResourceKey<T>> predicate, String filter) {
+		var list = registry.holders().filter(ref -> ref.is(predicate)).toList();
+		return checkEmpty(list, filter);
+	}
+
+	private static class EmptyTagTargetException extends NoSuchElementException {
+		public EmptyTagTargetException(String message) {
+			super(message);
+		}
+	}
+
+	public static <T> List<Holder.Reference<T>> checkEmpty(List<Holder.Reference<T>> list, String filter) {
+		if (list.isEmpty()) {
+			var msg = "No matches found for filter %s!".formatted(filter);
+			if (DevProperties.get().strictTags) {
+				throw new EmptyTagTargetException(msg);
+			} else if (DevProperties.get().logSkippedTags) {
+				ConsoleJS.SERVER.warn(msg);
+			}
+		}
+		return list;
 	}
 }

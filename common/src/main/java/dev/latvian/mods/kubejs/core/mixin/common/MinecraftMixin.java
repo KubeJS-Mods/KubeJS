@@ -28,8 +28,8 @@ public abstract class MinecraftMixin implements MinecraftClientKJS {
 	}
 
 	@ModifyExpressionValue(
-			method = {"reloadResourcePacks(Z)Ljava/util/concurrent/CompletableFuture;", "<init>"},
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;")
+		method = {"reloadResourcePacks(Z)Ljava/util/concurrent/CompletableFuture;", "<init>"},
+		at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;")
 	)
 	private List<PackResources> kjs$loadPacks(List<PackResources> resources) {
 		return GeneratedClientResourcePack.inject(resources);
