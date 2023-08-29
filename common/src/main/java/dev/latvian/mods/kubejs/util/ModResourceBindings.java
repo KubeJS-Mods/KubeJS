@@ -206,8 +206,4 @@ public class ModResourceBindings {
 			return null;
 		}
 	}
-
-	// TODO (maybe?): Add a method reference binding provider
-	// ex. "SCRIPT_TYPE name class ::method" would mean you can call the method
-	// "class#method" using the binding "name()" in scripts
 }

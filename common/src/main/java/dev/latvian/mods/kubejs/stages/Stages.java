@@ -15,8 +15,6 @@ import java.util.Collection;
 import java.util.function.Consumer;
 
 public abstract class Stages {
-	// TODO: Sync initial stages
-
 	private static final Event<Consumer<StageCreationEvent>> OVERRIDE_CREATION = EventFactory.createConsumerLoop();
 	private static final Event<Consumer<StageChangeEvent>> ADDED = EventFactory.createConsumerLoop();
 	private static final Event<Consumer<StageChangeEvent>> REMOVED = EventFactory.createConsumerLoop();
