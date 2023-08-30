@@ -24,11 +24,13 @@ import dev.latvian.mods.kubejs.bindings.event.WorldgenEvents;
 import dev.latvian.mods.kubejs.block.DetectorBlock;
 import dev.latvian.mods.kubejs.block.MapColorHelper;
 import dev.latvian.mods.kubejs.block.custom.BasicBlockJS;
+import dev.latvian.mods.kubejs.block.custom.ButtonBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.CropBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.FallingBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.FenceBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.FenceGateBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.HorizontalDirectionalBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.PressurePlateBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.SlabBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.StairBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.WallBlockBuilder;
@@ -170,11 +172,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		RegistryInfo.BLOCK.addType("fence", FenceBlockBuilder.class, FenceBlockBuilder::new);
 		RegistryInfo.BLOCK.addType("wall", WallBlockBuilder.class, WallBlockBuilder::new);
 		RegistryInfo.BLOCK.addType("fence_gate", FenceGateBlockBuilder.class, FenceGateBlockBuilder::new);
-		// TODO (CRITICAL): Reimplement these and maybe have them use BlockSetType instead?
-		//RegistryInfo.BLOCK.addType("wooden_pressure_plate", WoodenPressurePlateBlockBuilder.class, WoodenPressurePlateBlockBuilder::new);
-		//RegistryInfo.BLOCK.addType("stone_pressure_plate", StonePressurePlateBlockBuilder.class, StonePressurePlateBlockBuilder::new);
-		//RegistryInfo.BLOCK.addType("wooden_button", WoodenButtonBlockBuilder.class, WoodenButtonBlockBuilder::new);
-		//RegistryInfo.BLOCK.addType("stone_button", StoneButtonBlockBuilder.class, StoneButtonBlockBuilder::new);
+		RegistryInfo.BLOCK.addType("pressure_plate", PressurePlateBlockBuilder.class, PressurePlateBlockBuilder::new);
+		RegistryInfo.BLOCK.addType("button", ButtonBlockBuilder.class, ButtonBlockBuilder::new);
 		RegistryInfo.BLOCK.addType("falling", FallingBlockBuilder.class, FallingBlockBuilder::new);
 		RegistryInfo.BLOCK.addType("crop", CropBlockBuilder.class, CropBlockBuilder::new);
 		RegistryInfo.BLOCK.addType("cardinal", HorizontalDirectionalBlockBuilder.class, HorizontalDirectionalBlockBuilder::new);

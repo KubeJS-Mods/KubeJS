@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.state.properties.WoodType;
 
 public class FenceGateBlockBuilder extends ShapedBlockBuilder {
-	public transient WoodType gateType;
+	public transient WoodType behaviour;
 
 	public FenceGateBlockBuilder(ResourceLocation i) {
 		super(i, "_fence_gate");
@@ -21,18 +21,18 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 			tagBoth(new ResourceLocation("forge:fence_gates"));
 		}
 
-		gateType = WoodType.OAK;
+		behaviour = WoodType.OAK;
 	}
 
-	public FenceGateBlockBuilder gateType(WoodType wt) {
-		gateType = wt;
+	public FenceGateBlockBuilder behaviour(WoodType wt) {
+		behaviour = wt;
 		return this;
 	}
 
-	public FenceGateBlockBuilder gateType(String wt) {
-		for (WoodType type : WoodType.values().toList()) {
+	public FenceGateBlockBuilder behaviour(String wt) {
+		for (var type : WoodType.values().toList()) {
 			if (type.name().equals(wt)) {
-				gateType = type;
+				behaviour = type;
 				return this;
 			}
 		}
@@ -42,7 +42,7 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	public Block createObject() {
-		return new FenceGateBlock(createProperties(), gateType);
+		return new FenceGateBlock(createProperties(), behaviour);
 	}
 
 	@Override

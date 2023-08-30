@@ -1,15 +1,58 @@
 package dev.latvian.mods.kubejs.block.custom;
 
-/*public class StoneButtonBlockBuilder extends ShapedBlockBuilder {
-	public StoneButtonBlockBuilder(ResourceLocation i) {
-		super(i, "_stone_button", "_button");
+import dev.latvian.mods.kubejs.client.ModelGenerator;
+import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
+import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ButtonBlock;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
+
+public class ButtonBlockBuilder extends ShapedBlockBuilder {
+	public transient BlockSetType behaviour;
+	public transient int ticksToStayPressed;
+	public transient boolean arrowsCanPress;
+
+	public ButtonBlockBuilder(ResourceLocation i) {
+		super(i, "_button");
 		noCollision();
 		tagBoth(BlockTags.BUTTONS.location());
+		// tagBoth(BlockTags.WOODEN_BUTTONS.location());
+		behaviour = BlockSetType.OAK;
+		ticksToStayPressed = 30;
+		arrowsCanPress = true;
+	}
+
+	public ButtonBlockBuilder behaviour(BlockSetType wt) {
+		behaviour = wt;
+		return this;
+	}
+
+	public ButtonBlockBuilder behaviour(String wt) {
+		for (var type : BlockSetType.values().toList()) {
+			if (type.name().equals(wt)) {
+				behaviour = type;
+				return this;
+			}
+		}
+
+		return this;
+	}
+
+	public ButtonBlockBuilder ticksToStayPressed(int t) {
+		ticksToStayPressed = t;
+		return this;
+	}
+
+	public ButtonBlockBuilder arrowsCanPress(boolean b) {
+		arrowsCanPress = b;
+		return this;
 	}
 
 	@Override
 	public Block createObject() {
-		return new StoneButtonBlock(createProperties());
+		return new ButtonBlock(createProperties(), BlockSetType.OAK, ticksToStayPressed, arrowsCanPress);
 	}
 
 	@Override
@@ -64,4 +107,3 @@ package dev.latvian.mods.kubejs.block.custom;
 		m.texture("texture", textures.get("texture").getAsString());
 	}
 }
-*/
