@@ -759,7 +759,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	public Block.Properties createProperties() {
 		// FIXME: Implement all the other ex-Material properties
-		var properties = BlockBehaviour.Properties.of();
+		//var properties = BlockBehaviour.Properties.of();
+		var properties = new KubeJSBlockProperties(this);
 		properties.sound(soundType);
 		properties.mapColor(mapColorFn);
 
