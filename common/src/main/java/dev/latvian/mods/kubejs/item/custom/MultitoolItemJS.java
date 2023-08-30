@@ -183,11 +183,11 @@ public class MultitoolItemJS extends DiggerItem {
     @Override
     public boolean isCorrectToolForDrops(BlockState state) {
         final int i = tier.getLevel();
-        if ((i < 3 && state.is(BlockTags.NEEDS_DIAMOND_TOOL)) ||
-            (i < 2 && state.is(BlockTags.NEEDS_IRON_TOOL)) ||
-            (i < 1 && state.is(BlockTags.NEEDS_STONE_TOOL))) return false;
 
-        return isInMineables(state);
+        return (i >= 3 || !state.is(BlockTags.NEEDS_DIAMOND_TOOL)) &&
+               (i >= 2 || !state.is(BlockTags.NEEDS_IRON_TOOL)) &&
+               (i >= 1 || !state.is(BlockTags.NEEDS_STONE_TOOL)) &&
+               isInMineables(state);
     }
 
     protected boolean isInMineables(BlockState state) {

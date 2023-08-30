@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.fabric;
 
 import dev.latvian.mods.kubejs.BuiltinKubeJSPlugin;
-import dev.latvian.mods.kubejs.item.custom.MultitoolItemJS;
+import dev.latvian.mods.kubejs.item.fabric.custom.MultitoolItemJSFabric;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassFilter;
@@ -11,7 +11,7 @@ public class BuiltinKubeJSFabricPlugin extends BuiltinKubeJSPlugin {
 	public void init() {
 		super.init();
 
-		RegistryInfo.ITEM.addType("multitool", MultitoolItemJS.Builder.class, MultitoolItemJS.Builder::new);
+		RegistryInfo.ITEM.addType("multitool", MultitoolItemJSFabric.Builder.class, MultitoolItemJSFabric.Builder::new);
 	}
 	@Override
 	public void registerClasses(ScriptType type, ClassFilter filter) {
