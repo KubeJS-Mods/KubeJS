@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ReloadableServerResourcesMixin {
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void init(RegistryAccess.Frozen frozen, FeatureFlagSet featureFlagSet, Commands.CommandSelection commandSelection, int i, CallbackInfo ci) {
-		ServerScriptManager.instance.updateResources((ReloadableServerResources) (Object) this);
+		ServerScriptManager.instance.updateResources((ReloadableServerResources) (Object) this, frozen);
 	}
 
 	@Inject(method = "updateRegistryTags(Lnet/minecraft/core/RegistryAccess;)V", at = @At("RETURN"))

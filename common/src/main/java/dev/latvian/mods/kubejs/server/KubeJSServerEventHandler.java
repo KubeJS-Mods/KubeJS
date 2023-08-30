@@ -18,6 +18,7 @@ import net.minecraft.Util;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -32,9 +33,8 @@ public class KubeJSServerEventHandler {
 	private static final LevelResource PERSISTENT_DATA = new LevelResource("kubejs_persistent_data.nbt");
 
 	public static void init() {
-		LifecycleEvent.SERVER_BEFORE_START.register(KubeJSServerEventHandler::serverAboutToStart);
+		LifecycleEvent.SERVER_BEFORE_START.register(KubeJSServerEventHandler::serverBeforeStart);
 		CommandRegistrationEvent.EVENT.register(KubeJSServerEventHandler::registerCommands);
-		LifecycleEvent.SERVER_BEFORE_START.register(KubeJSServerEventHandler::serverBeforeStarting);
 		LifecycleEvent.SERVER_STARTING.register(KubeJSServerEventHandler::serverStarting);
 		LifecycleEvent.SERVER_STOPPING.register(KubeJSServerEventHandler::serverStopping);
 		LifecycleEvent.SERVER_STOPPED.register(KubeJSServerEventHandler::serverStopped);
@@ -43,7 +43,10 @@ public class KubeJSServerEventHandler {
 		CommandPerformEvent.EVENT.register(KubeJSServerEventHandler::command);
 	}
 
-	public static void serverAboutToStart(MinecraftServer server) {
+	public static void serverBeforeStart(MinecraftServer server) {
+		UtilsJS.staticServer = server;
+		UtilsJS.staticRegistryAccess = server.registryAccess();
+
 		var p = server.getWorldPath(PERSISTENT_DATA);
 
 		if (Files.exists(p)) {
@@ -67,10 +70,6 @@ public class KubeJSServerEventHandler {
 		}
 	}
 
-	private static void serverBeforeStarting(MinecraftServer server) {
-		UtilsJS.staticServer = server;
-	}
-
 	private static void serverStarting(MinecraftServer server) {
 		ServerEvents.LOADED.post(ScriptType.SERVER, new ServerEventJS(server));
 	}
@@ -81,6 +80,7 @@ public class KubeJSServerEventHandler {
 
 	private static void serverStopped(MinecraftServer server) {
 		UtilsJS.staticServer = null;
+		UtilsJS.staticRegistryAccess = RegistryAccess.EMPTY;
 	}
 
 	private static void serverLevelLoaded(ServerLevel level) {

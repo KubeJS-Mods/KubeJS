@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.script.data;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -10,28 +9,24 @@ import net.minecraft.server.packs.resources.IoSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class GeneratedResourcePack implements PackResources {
 	private final PackType packType;
-	private Map<ResourceLocation, byte[]> generated;
+	private Map<ResourceLocation, GeneratedData> generated;
 
 	public GeneratedResourcePack(PackType t) {
 		packType = t;
 	}
 
-	private static String getFullPath(PackType type, ResourceLocation location) {
-		return String.format("%s/%s/%s", type.getDirectory(), location.getNamespace(), location.getPath());
-	}
-
 	@Override
+	@Nullable
 	public IoSupplier<InputStream> getRootResource(String... fileName) {
 		var joined = String.join("/", fileName);
 
@@ -45,25 +40,20 @@ public abstract class GeneratedResourcePack implements PackResources {
 		return null;
 	}
 
-	@Override
-	public IoSupplier<InputStream> getResource(PackType type, ResourceLocation location) {
-		if (type != packType) {
-			return null;
-		}
-
-		var bytes = getGenerated().get(location);
-		return bytes == null ? null : () -> new ByteArrayInputStream(bytes);
-
-		// throw new ResourcePackFileNotFoundException(KubeJSPaths.DIRECTORY.toFile(), getFullPath(type, location));
-	}
-
-	public Map<ResourceLocation, byte[]> getGenerated() {
+	public Map<ResourceLocation, GeneratedData> getGenerated() {
 		if (generated == null) {
-			generated = new HashMap<>();
-			generate(generated);
+			var map = new HashMap<ResourceLocation, byte[]>();
+			generate(map);
+			generated = map.entrySet().stream().collect(Collectors.toMap(GeneratedData.KEY, GeneratedData.VALUE));
 		}
 
 		return generated;
+	}
+
+	@Override
+	@Nullable
+	public IoSupplier<InputStream> getResource(PackType type, ResourceLocation location) {
+		return type == packType ? getGenerated().get(location) : null;
 	}
 
 	public void generate(Map<ResourceLocation, byte[]> map) {
@@ -82,13 +72,32 @@ public abstract class GeneratedResourcePack implements PackResources {
 			}
 		}
 
+		/*
 		var resources = new ArrayList<ResourceLocation>();
+
 		for (var builder : RegistryInfo.ALL_BUILDERS) {
 			builder.addResourcePackLocations(path, resources, packType);
 		}
 
+		if (Platform.isDevelopmentEnvironment()) {
+			KubeJS.LOGGER.info("Resources " + type + " " + namespace + " " + path + "\n - " + resources);
+		}
+
 		for (var id : resources) {
-			visitor.accept(id, getResource(packType, id));
+			var r = getResource(packType, id);
+
+			if (r != null) {
+				visitor.accept(id, r);
+			} else {
+				KubeJS.LOGGER.warn("A builder stated that resource " + id + " exists, but it doesn't");
+			}
+		}
+		 */
+
+		for (var r : getGenerated().entrySet()) {
+			if (r.getKey().getPath().startsWith(path)) {
+				visitor.accept(r.getKey(), r.getValue());
+			}
 		}
 	}
 

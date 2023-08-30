@@ -21,6 +21,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -183,6 +184,16 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 			}
 			m.textures(textureJson);
 		});
+	}
+
+	@Override
+	public void addResourcePackLocations(String path, List<ResourceLocation> list, PackType packType) {
+		if (packType == PackType.CLIENT_RESOURCES) {
+			switch (path) {
+				case "textures/item" -> list.add(newID("textures/item/", ".png"));
+				case "models/item" -> list.add(newID("models/item/", ""));
+			}
+		}
 	}
 
 	@Info("Sets the item's max stack size. Default is 64.")

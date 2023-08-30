@@ -14,6 +14,8 @@ import dev.latvian.mods.kubejs.script.data.KubeJSFolderPackResources;
 import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackType;
@@ -45,9 +47,10 @@ public class ServerScriptManager {
 		}
 	}
 
-	public void updateResources(ReloadableServerResources serverResources) {
+	public void updateResources(ReloadableServerResources serverResources, RegistryAccess registryAccess) {
 		KubeJSReloadListener.resources = serverResources;
 		KubeJSReloadListener.recipeContext = RecipePlatformHelper.get().createRecipeContext(serverResources);
+		UtilsJS.staticRegistryAccess = registryAccess;
 	}
 
 	public void reloadScriptManager(ResourceManager resourceManager) {

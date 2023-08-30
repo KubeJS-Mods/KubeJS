@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.core.CraftingContainerKJS;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeCraftingGrid;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.player.Player;
@@ -47,7 +46,7 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 		}
 
 		var modifyResult = kjs$getModifyResult();
-		var result = getResultItem(UtilsJS.staticServer.registryAccess()).copy();
+		var result = getResultItem(registryAccess).copy();
 		if (modifyResult != null) {
 			return modifyResult.modify(new ModifyRecipeCraftingGrid(container), result);
 		}

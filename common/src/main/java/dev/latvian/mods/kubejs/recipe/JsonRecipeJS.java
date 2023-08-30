@@ -35,7 +35,7 @@ public class JsonRecipeJS extends RecipeJS {
 	@Override
 	public boolean hasOutput(ReplacementMatch match) {
 		if (CommonProperties.get().matchJsonRecipes && match instanceof ItemMatch m && getOriginalRecipe() != null) {
-			var r = getOriginalRecipe().getResultItem(UtilsJS.staticServer.registryAccess());
+			var r = getOriginalRecipe().getResultItem(UtilsJS.staticRegistryAccess);
 			//noinspection ConstantValue
 			if (r == null) {
 				throw new NullPointerException("ItemStack should never be null, but recipe " + this + " returned null as the output!");

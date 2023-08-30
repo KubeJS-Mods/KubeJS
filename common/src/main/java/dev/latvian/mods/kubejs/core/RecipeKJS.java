@@ -55,7 +55,7 @@ public interface RecipeKJS {
 	}
 
 	default boolean hasOutput(ReplacementMatch match) {
-		return match instanceof ItemMatch m && m.contains(((Recipe<?>) this).getResultItem(UtilsJS.staticServer.registryAccess()));
+		return match instanceof ItemMatch m && m.contains(((Recipe<?>) this).getResultItem(UtilsJS.staticRegistryAccess));
 	}
 
 	default boolean replaceOutput(ReplacementMatch match, OutputReplacement with) {
