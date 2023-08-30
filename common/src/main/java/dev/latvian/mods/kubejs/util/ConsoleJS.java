@@ -530,6 +530,10 @@ public class ConsoleJS {
 	}
 
 	public void printStackTrace(boolean error, Throwable throwable, @Nullable Pattern skip) {
+		if (throwable instanceof LegacyCodeHandler.LegacyError) {
+			return;
+		}
+
 		throwable.printStackTrace(new StackTracePrintStream(this, error, skip));
 	}
 

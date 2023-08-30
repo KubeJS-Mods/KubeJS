@@ -1,7 +1,18 @@
 package dev.latvian.mods.kubejs.block.custom;
 
-/*
+import dev.architectury.platform.Platform;
+import dev.latvian.mods.kubejs.client.ModelGenerator;
+import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
+import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.state.properties.WoodType;
+
 public class FenceGateBlockBuilder extends ShapedBlockBuilder {
+	public transient WoodType gateType;
+
 	public FenceGateBlockBuilder(ResourceLocation i) {
 		super(i, "_fence_gate");
 		tagBoth(BlockTags.FENCE_GATES.location());
@@ -9,11 +20,29 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 		if (Platform.isForge()) {
 			tagBoth(new ResourceLocation("forge:fence_gates"));
 		}
+
+		gateType = WoodType.OAK;
+	}
+
+	public FenceGateBlockBuilder gateType(WoodType wt) {
+		gateType = wt;
+		return this;
+	}
+
+	public FenceGateBlockBuilder gateType(String wt) {
+		for (WoodType type : WoodType.values().toList()) {
+			if (type.name().equals(wt)) {
+				gateType = type;
+				return this;
+			}
+		}
+
+		return this;
 	}
 
 	@Override
 	public Block createObject() {
-		return new FenceGateBlock(createProperties());
+		return new FenceGateBlock(createProperties(), gateType);
 	}
 
 	@Override
@@ -72,4 +101,3 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 		m.texture("texture", textures.get("texture").getAsString());
 	}
 }
-*/

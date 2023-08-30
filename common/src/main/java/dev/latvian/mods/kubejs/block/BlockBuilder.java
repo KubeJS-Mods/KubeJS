@@ -20,6 +20,7 @@ import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -34,6 +35,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.AABB;
@@ -60,7 +62,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	private static final BlockBehaviour.StateArgumentPredicate<?> ALWAYS_FALSE_STATE_ARG_PREDICATE = (blockState, blockGetter, blockPos, type) -> false;
 
 	public transient SoundType soundType;
-	public transient MapColor mapColor;
 	public transient Function<BlockState, MapColor> mapColorFn;
 	public transient float hardness;
 	public transient float resistance;
@@ -88,6 +89,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient boolean viewBlocking;
 	public transient boolean redstoneConductor;
 	public transient boolean transparent;
+	public transient NoteBlockInstrument instrument;
 	public transient Set<Property<?>> blockStateProperties;
 	public transient Consumer<BlockStateModifyCallbackJS> defaultStateModification;
 	public transient Consumer<BlockStateModifyPlacementCallbackJS> placementStateModification;
@@ -96,14 +98,13 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient Consumer<EntityFallenOnBlockCallbackJS> fallOnCallback;
 	public transient Consumer<AfterEntityFallenOnBlockCallbackJS> afterFallenOnCallback;
 	public transient Consumer<BlockExplodedCallbackJS> explodedCallback;
-
 	public transient Consumer<BlockStateRotateCallbackJS> rotateStateModification;
 	public transient Consumer<BlockStateMirrorCallbackJS> mirrorStateModification;
 
 	public BlockBuilder(ResourceLocation i) {
 		super(i);
 		soundType = SoundType.WOOD;
-		mapColor = MapColor.NONE;
+		mapColorFn = MapColorHelper.NONE;
 		hardness = 1.5F;
 		resistance = 3F;
 		lightLevel = 0F;
@@ -338,6 +339,11 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		}
 	}
 
+	public BlockBuilder material(String material) {
+		ConsoleJS.STARTUP.warn("blockBuilder.material(string) is no longer supported! Use .soundType(SoundType) and .mapColor(MapColor) instead!");
+		return this;
+	}
+
 	@Info("Sets the block's sound type. Defaults to wood.")
 	// TODO (CRITICAL): Add SoundType wrapper
 	public BlockBuilder soundType(SoundType m) {
@@ -347,16 +353,13 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Info("Sets the block's map color. Defaults to NONE.")
 	public BlockBuilder mapColor(MapColor m) {
-		if (mapColorFn != null) {
-			ScriptType.STARTUP.console.warn("BlockBuilder " + id + " has both a static and dynamic map color! Only the dynamic one will be used!");
-		}
-		mapColor = m;
+		mapColorFn = MapColorHelper.reverse(m);
 		return this;
 	}
 
 	@Info("Sets the block's map color dynamically per block state. If unset, defaults to NONE.")
-	public BlockBuilder mapColor(@Nullable Function<BlockState, MapColor> m) {
-		mapColorFn = m;
+	public BlockBuilder dynamicMapColor(@Nullable Function<BlockState, Object> m) {
+		mapColorFn = m == null ? MapColorHelper.NONE : s -> MapColorHelper.of(m.apply(s));
 		return this;
 	}
 
@@ -642,6 +645,12 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return defaultCutout().renderType("translucent");
 	}
 
+	@Info("Note block instrument.")
+	public BlockBuilder instrument(NoteBlockInstrument i) {
+		instrument = i;
+		return this;
+	}
+
 	@Override
 	@Info("Tags both the block and the item with the given tag.")
 	public BlockBuilder tag(ResourceLocation tag) {
@@ -752,12 +761,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		// FIXME: Implement all the other ex-Material properties
 		var properties = BlockBehaviour.Properties.of();
 		properties.sound(soundType);
-
-		if (mapColorFn == null) {
-			properties.mapColor(mapColor);
-		} else {
-			properties.mapColor(mapColorFn);
-		}
+		properties.mapColor(mapColorFn);
 
 		if (resistance >= 0F) {
 			properties.strength(hardness, resistance);
@@ -813,6 +817,10 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 		if (randomTickCallback != null) {
 			properties.randomTicks();
+		}
+
+		if (instrument != null) {
+			properties.instrument(instrument);
 		}
 
 		return properties;

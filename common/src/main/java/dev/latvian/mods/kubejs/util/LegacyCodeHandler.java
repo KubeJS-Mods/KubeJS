@@ -6,7 +6,7 @@ import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.Symbol;
 
 public class LegacyCodeHandler extends BaseFunction {
-	private static class LegacyError extends RuntimeException {
+	public static class LegacyError extends RuntimeException {
 		public LegacyError(String message) {
 			super(message);
 		}
