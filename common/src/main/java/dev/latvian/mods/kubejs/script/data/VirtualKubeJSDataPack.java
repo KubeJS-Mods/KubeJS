@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.script.data;
 
 import dev.latvian.mods.kubejs.DevProperties;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.AbstractPackResources;
@@ -21,8 +20,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import static dev.latvian.mods.kubejs.script.data.KubeJSFolderPackResources.PACK_META_BYTES;
 
 public class VirtualKubeJSDataPack extends AbstractPackResources {
 	public final boolean high;
@@ -51,15 +48,15 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 	@Nullable
 	@Override
 	public IoSupplier<InputStream> getRootResource(String... path) {
-		var joined = String.join("/", path);
-		return switch (joined) {
-			case PACK_META -> () -> new ByteArrayInputStream(PACK_META_BYTES);
-			case "pack.png" -> IoSupplier.create(KubeJS.thisMod.findResource("kubejs_logo.png").get());
+		return switch (path.length == 1 ? path[0] : "") {
+			case PACK_META -> GeneratedData.PACK_META;
+			case "pack.png" -> GeneratedData.PACK_ICON;
 			default -> null;
 		};
 	}
 
 	@Override
+	@Nullable
 	public IoSupplier<InputStream> getResource(PackType type, ResourceLocation location) {
 		if (type != PackType.SERVER_DATA) {
 			return null;

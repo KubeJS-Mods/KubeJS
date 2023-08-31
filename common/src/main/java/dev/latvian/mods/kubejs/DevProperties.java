@@ -36,6 +36,7 @@ public class DevProperties {
 	public boolean logErroringRecipes = true;
 	public boolean logInvalidRecipeHandlers = true;
 	public boolean logSkippedPlugins = false;
+	public boolean logGeneratedData = false;
 	public boolean strictTags = false;
 
 	private DevProperties() {
@@ -63,6 +64,7 @@ public class DevProperties {
 			logErroringRecipes = get("logErroringRecipes", true);
 			logInvalidRecipeHandlers = get("logInvalidRecipeHandlers", true);
 			logSkippedPlugins = get("logSkippedPlugins", true);
+			logGeneratedData = get("logGeneratedData", false);
 			strictTags = get("strictTags", false);
 
 			KubeJSPlugins.forEachPlugin(p -> p.loadDevProperties(this));
