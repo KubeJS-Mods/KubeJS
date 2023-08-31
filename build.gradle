@@ -105,6 +105,16 @@ subprojects {
 			}
 		}*/
 
+		if (ENV.MC_CLIENT_ARGS) {
+			loom {
+				runs {
+					client {
+						programArgs ENV.MC_CLIENT_ARGS.split(' ')
+					}
+				}
+			}
+		}
+
 		configurations {
 			bundle {
 				canBeResolved(true)
