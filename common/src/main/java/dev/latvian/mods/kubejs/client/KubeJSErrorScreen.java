@@ -73,8 +73,8 @@ public class KubeJSErrorScreen extends Screen {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, int i, int j, float f) {
-		this.multilineMessage.renderCentered(guiGraphics, this.width / 2, this.messageTop());
 		this.renderBackground(guiGraphics);
+		this.multilineMessage.renderCentered(guiGraphics, this.width / 2, this.messageTop());
 		super.render(guiGraphics, i, j, f);
 	}
 
