@@ -235,7 +235,7 @@ public class ConsoleJS {
 	}
 
 	private void logf(Consumer<String> logFunction, String type, Object message, Object... args) {
-		if (!shouldPrint()) {
+		if (shouldPrint()) {
 			var s = stringf(message, args);
 			logFunction.accept(s);
 			writeToFile(type, s);
