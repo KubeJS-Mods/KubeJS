@@ -105,11 +105,23 @@ subprojects {
 			}
 		}*/
 
-		if (ENV.MC_CLIENT_ARGS) {
-			loom {
-				runs {
-					client {
+		loom {
+			runs {
+				client {
+					if (ENV.MC_CLIENT_ARGS) {
 						programArgs ENV.MC_CLIENT_ARGS.split(' ')
+					}
+
+					vmArgs("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
+
+					if (ENV.MC_SHARED_ARCH_RUN && ENV.MC_SHARED_ARCH_RUN == "true") {
+						runDir = '../run'
+					}
+				}
+
+				server {
+					if (ENV.MC_SHARED_ARCH_RUN && ENV.MC_SHARED_ARCH_RUN == "true") {
+						runDir = '../run_server'
 					}
 				}
 			}
