@@ -47,7 +47,6 @@ jobs:
                 uses: gradle/gradle-build-action@v2
                 env:
                     MAVEN_TOKEN: ${{ secrets.MAVEN_TOKEN }}
-                    FTB_MAVEN_TOKEN: ${{ secrets.FTB_MAVEN_TOKEN }}
                     SAPS_TOKEN: ${{ secrets.SAPS_TOKEN }}
                 with:
                     arguments: build publish --stacktrace --no-daemon
