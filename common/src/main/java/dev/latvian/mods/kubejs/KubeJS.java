@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs;
 import com.google.common.base.Stopwatch;
 import dev.architectury.platform.Mod;
 import dev.architectury.platform.Platform;
+import dev.architectury.utils.Env;
 import dev.architectury.utils.EnvExecutor;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.block.KubeJSBlockEventHandler;
@@ -216,7 +217,10 @@ public class KubeJS {
 			LOGGER.error(String.join("\n", list));
 
 			ConsoleJS.STARTUP.flush(true);
-			throw new RuntimeException("There were KubeJS startup script syntax errors! See logs/kubejs/startup.log for more info");
+
+			if (Platform.getEnvironment() == Env.SERVER || !CommonProperties.get().startupErrorGUI) {
+				throw new RuntimeException("There were KubeJS startup script syntax errors! See logs/kubejs/startup.log for more info");
+			}
 		}
 
 		QUERY = "source=kubejs&mc=" + MC_VERSION_NUMBER + "&loader=" + PlatformWrapper.getName() + "&v=" + URLEncoder.encode(thisMod.getVersion(), StandardCharsets.UTF_8);

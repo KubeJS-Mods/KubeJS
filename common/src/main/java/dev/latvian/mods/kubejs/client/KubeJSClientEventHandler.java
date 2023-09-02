@@ -1,11 +1,14 @@
 package dev.latvian.mods.kubejs.client;
 
+import dev.architectury.event.CompoundEventResult;
+import dev.architectury.event.EventResult;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import dev.architectury.hooks.client.screen.ScreenAccess;
 import dev.architectury.hooks.fluid.FluidBucketHooks;
+import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
@@ -17,6 +20,7 @@ import dev.latvian.mods.kubejs.util.Tags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -53,6 +57,8 @@ public class KubeJSClientEventHandler {
 		ClientPlayerEvent.CLIENT_PLAYER_RESPAWN.register(this::respawn);
 		ClientGuiEvent.RENDER_HUD.register(Painter.INSTANCE::inGameScreenDraw);
 		ClientGuiEvent.RENDER_POST.register(Painter.INSTANCE::guiScreenDraw);
+		ClientGuiEvent.SET_SCREEN.register(this::setScreen);
+		ClientGuiEvent.INIT_PRE.register(this::guiPreInit);
 		ClientGuiEvent.INIT_POST.register(this::guiPostInit);
 		//ClientTextureStitchEvent.POST.register(this::postAtlasStitch);
 	}
@@ -143,6 +149,18 @@ public class KubeJSClientEventHandler {
 
 	private void respawn(LocalPlayer oldPlayer, LocalPlayer newPlayer) {
 		// client respawn event
+	}
+
+	private CompoundEventResult<Screen> setScreen(Screen screen) {
+		if (screen instanceof TitleScreen && !ScriptType.STARTUP.errors.isEmpty() && CommonProperties.get().startupErrorGUI) {
+			return CompoundEventResult.interruptTrue(new KubeJSErrorScreen(ScriptType.STARTUP));
+		}
+
+		return CompoundEventResult.pass();
+	}
+
+	private EventResult guiPreInit(Screen screen, ScreenAccess screenAccess) {
+		return EventResult.pass();
 	}
 
 	private void guiPostInit(Screen screen, ScreenAccess access) {
