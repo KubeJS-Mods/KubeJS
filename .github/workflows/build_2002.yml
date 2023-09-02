@@ -1,12 +1,12 @@
-name: Java CI (1.18.2)
+name: Java CI (1.20.1)
 
 on:
   push:
     branches:
-      - '1802'
+      - '2002'
   workflow_dispatch:
     branches:
-      - '1802'
+      - '2002'
     inputs:
       release_type:
         description: 'Release Type'
