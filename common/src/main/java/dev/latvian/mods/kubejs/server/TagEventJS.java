@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagLoader;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
 import java.text.DateFormat;
@@ -221,7 +222,7 @@ public class TagEventJS<T> extends EventJS {
 		return registry.key().location();
 	}
 
-	public void post() {
+	public void post(@Nullable FakeTagEventJS fakeEvent) {
 		var dumpFile = KubeJSPaths.EXPORT.resolve("tags/" + getType().getNamespace() + "/" + getType().getPath() + ".txt");
 
 		if (!Files.exists(dumpFile)) {
@@ -264,7 +265,13 @@ public class TagEventJS<T> extends EventJS {
 			}
 		}
 
-		ServerEvents.TAGS.post(this, registry.key(), TAG_EVENT_HANDLER);
+		if (fakeEvent == null) {
+			ServerEvents.TAGS.post(this, registry.key(), TAG_EVENT_HANDLER);
+		} else {
+			for (var a : fakeEvent.actions) {
+				a.accept(this);
+			}
+		}
 
 		if (DataExport.export != null) {
 			var loc = "tags/" + getType().toString() + "/";
