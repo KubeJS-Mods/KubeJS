@@ -1,8 +1,10 @@
 package dev.latvian.mods.kubejs.fabric;
 
 import com.mojang.serialization.Lifecycle;
+import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.WorldgenEvents;
+import dev.latvian.mods.kubejs.item.KubeJSCreativeTabs;
 import dev.latvian.mods.kubejs.platform.fabric.IngredientFabricHelper;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -26,6 +28,10 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 		}
 
 		IngredientFabricHelper.register();
+
+		if (!CommonProperties.get().serverOnly) {
+			KubeJSCreativeTabs.init();
+		}
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})

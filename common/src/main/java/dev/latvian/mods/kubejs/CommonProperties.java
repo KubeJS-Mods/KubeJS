@@ -33,6 +33,7 @@ public class CommonProperties {
 	public boolean ignoreCustomUniqueRecipeIds;
 	public boolean startupErrorGUI;
 	public String startupErrorReportUrl;
+	public String creativeModeTabIcon;
 
 	private CommonProperties() {
 		properties = new Properties();
@@ -58,6 +59,7 @@ public class CommonProperties {
 			ignoreCustomUniqueRecipeIds = get("ignoreCustomUniqueRecipeIds", false);
 			startupErrorGUI = get("startupErrorGUI", true);
 			startupErrorReportUrl = get("startupErrorReportUrl", "");
+			creativeModeTabIcon = get("creativeModeTabIcon", "minecraft:purple_dye");
 
 			KubeJSPlugins.forEachPlugin(p -> p.loadCommonProperties(this));
 

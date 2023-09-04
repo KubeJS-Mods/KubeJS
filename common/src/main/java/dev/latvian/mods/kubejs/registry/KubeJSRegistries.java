@@ -15,6 +15,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -112,5 +113,10 @@ public class KubeJSRegistries {
 	@Info("Gets the mob effect registrar")
 	public static Registrar<MobEffect> mobEffects() {
 		return genericRegistry(Registries.MOB_EFFECT);
+	}
+
+	@Info("Gets the creative tab registrar")
+	public static Registrar<CreativeModeTab> creativeModeTabs() {
+		return genericRegistry(Registries.CREATIVE_MODE_TAB);
 	}
 }

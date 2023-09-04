@@ -3,8 +3,6 @@ package dev.latvian.mods.kubejs.item;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.JsonObject;
-import dev.architectury.registry.CreativeTabRegistry;
-import dev.architectury.registry.registries.DeferredSupplier;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
@@ -14,7 +12,6 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -28,7 +25,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ArmorMaterials;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -106,8 +102,6 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient boolean glow;
 	public transient final List<Component> tooltip;
 	@Nullable
-	public transient DeferredSupplier<CreativeModeTab> group;
-	@Nullable
 	public transient ItemColorJS colorCallback;
 	public transient FoodBuilder foodBuilder;
 	public transient Function<ItemStack, Color> barColor;
@@ -136,7 +130,6 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		rarity = Rarity.COMMON;
 		glow = false;
 		tooltip = new ArrayList<>();
-		group = KubeJSCreativeTabs.KUBEJS_TAB; // TODO (maybe): Default to null and let people add to tabs via custom event
 		textureJson = new JsonObject();
 		parentModel = "";
 		foodBuilder = null;
@@ -253,9 +246,9 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	@Info("Sets the group of the item, e.g. 'building_blocks' for the 'Blocks' tab.")
+	@Deprecated
 	public ItemBuilder group(@Nullable String g) {
-		group = g == null ? null : CreativeTabRegistry.defer(UtilsJS.getMCID(null, g));
+		ConsoleJS.STARTUP.error("Item builder .group() is no longer supported, use ");
 		return this;
 	}
 
@@ -355,10 +348,6 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	public Item.Properties createItemProperties() {
 		var properties = new KubeJSItemProperties(this);
-
-		if (group != null) {
-			properties.arch$tab(group);
-		}
 
 		if (maxDamage > 0) {
 			properties.durability(maxDamage);
