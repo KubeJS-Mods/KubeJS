@@ -46,6 +46,10 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 
 	public RecipeJS createRecipe(Object[] args) {
 		try {
+			for (int i = 0; i < args.length; i++) {
+				args[i] = Wrapper.unwrapped(args[i]);
+			}
+
 			schemaType.getSerializer();
 
 			var constructor = schemaType.schema.constructors().get(args.length);
@@ -83,7 +87,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 		} catch (RecipeExceptionJS rex) {
 			throw rex;
 		} catch (Throwable ex) {
-			throw new RecipeExceptionJS("Failed to create recipe for type '" + id + "' with args " + Arrays.stream(args).map(Wrapper::unwrapped).map(o -> o == null ? "null" : (o + ": " + o.getClass().getSimpleName())).collect(Collectors.joining(", ", "[", "]")), ex);
+			throw new RecipeExceptionJS("Failed to create recipe for type '" + id + "' with args " + Arrays.stream(args).map(o -> o == null ? "null" : (o + ": " + o.getClass().getSimpleName())).collect(Collectors.joining(", ", "[", "]")), ex);
 		}
 	}
 

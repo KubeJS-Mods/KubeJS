@@ -1,88 +1,50 @@
 package dev.latvian.mods.kubejs.script;
 
-import com.mojang.serialization.Codec;
 import dev.architectury.registry.registries.Registrar;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RegistryTypeWrapperFactory<T> implements TypeWrapperFactory<T> {
-	private static List<RegistryTypeWrapperFactory<?>> all;
+public record RegistryTypeWrapperFactory<T>(RegistryInfo info, ResourceKey<Registry<T>> key, Registrar<T>[] registrar) implements TypeWrapperFactory<T> {
+	public static final Lazy<List<RegistryTypeWrapperFactory<?>>> ALL = Lazy.of(() -> {
+		var all = new ArrayList<RegistryTypeWrapperFactory<?>>();
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	public static List<RegistryTypeWrapperFactory<?>> getAll() {
-		if (all == null) {
-			all = new ArrayList<>();
-
-			try {
-				for (var field : Registry.class.getDeclaredFields()) {
-					if (field.getType() == ResourceKey.class && Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers())) {
-						var id = "unknown";
-
-						try {
-							field.setAccessible(true);
-							var key = (ResourceKey) field.get(null);
-							id = key.location().getPath();
-							var type = field.getGenericType(); // ResourceKey<Registry<T>>
-							var type1 = ((ParameterizedType) type).getActualTypeArguments()[0]; // Registry<T>
-							var type2 = ((ParameterizedType) type1).getActualTypeArguments()[0]; // T
-							Class rawType = UtilsJS.getRawType(type2);
-
-							if (rawType == Item.class || rawType == ResourceLocation.class || rawType == ResourceKey.class || rawType == Codec.class) {
-								continue;
-							}
-
-							all.add(new RegistryTypeWrapperFactory(rawType, KubeJSRegistries.genericRegistry(key), key.location().toString()));
-						} catch (Throwable t) {
-							// KubeJS.LOGGER.error("Failed to create TypeWrapper for registry " + id + ": " + t);
-						}
-					}
-				}
-			} catch (Exception ex) {
-				KubeJS.LOGGER.error("Failed to register TypeWrappers for registries!");
-				ex.printStackTrace();
+		for (var ri : RegistryInfo.MAP.values()) {
+			if (ri.autoWrap) {
+				all.add(new RegistryTypeWrapperFactory<>(ri, UtilsJS.cast(ri.key), new Registrar[1]));
 			}
 		}
 
 		return all;
-	}
-
-	public final Class<T> type;
-	public final Registrar<T> registry;
-	public final String name;
-
-	private RegistryTypeWrapperFactory(Class<T> t, Registrar<T> r, String n) {
-		type = t;
-		registry = r;
-		name = n;
-	}
+	});
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public T wrap(Context cx, Object o) {
 		if (o == null) {
 			return null;
-		} else if (type.isAssignableFrom(o.getClass())) {
+		} else if (info.objectBaseClass.isInstance(o)) {
 			return (T) o;
 		}
 
+		if (registrar[0] == null) {
+			registrar[0] = KubeJSRegistries.genericRegistry(key);
+		}
+
 		var id = UtilsJS.getMCID(cx, o);
-		var value = registry.get(id);
+		var value = registrar[0].get(id);
 
 		if (value == null) {
-			var npe = new NullPointerException("No such element with id %s in registry %s!".formatted(id, name));
+			var npe = new NullPointerException("No such element with id %s in registry %s!".formatted(id, info));
 			ConsoleJS.getCurrent(cx).error("Error while wrapping registry element type!", npe);
 			throw npe;
 		}
@@ -92,6 +54,6 @@ public class RegistryTypeWrapperFactory<T> implements TypeWrapperFactory<T> {
 
 	@Override
 	public String toString() {
-		return "RegistryTypeWrapperFactory{type=" + type.getName() + ", registry=" + name + '}';
+		return "RegistryTypeWrapperFactory{type=" + info.objectBaseClass.getName() + ", registry=" + info + '}';
 	}
 }

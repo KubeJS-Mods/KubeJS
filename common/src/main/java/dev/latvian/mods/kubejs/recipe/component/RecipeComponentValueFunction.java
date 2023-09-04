@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
+import dev.latvian.mods.rhino.Wrapper;
 
 public class RecipeComponentValueFunction extends BaseFunction {
 	public final RecipeJS recipe;
@@ -17,6 +18,6 @@ public class RecipeComponentValueFunction extends BaseFunction {
 
 	@Override
 	public RecipeJS call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-		return recipe.setValue(componentValue.key, UtilsJS.cast(componentValue.key.component.read(recipe, args[0])));
+		return recipe.setValue(componentValue.key, UtilsJS.cast(componentValue.key.component.read(recipe, Wrapper.unwrapped(args[0]))));
 	}
 }
