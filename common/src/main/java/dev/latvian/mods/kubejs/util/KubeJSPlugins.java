@@ -69,6 +69,7 @@ public class KubeJSPlugins {
 					return Stream.of(Class.forName(line[0])); // try to load plugin class
 				} catch (Throwable t) {
 					KubeJS.LOGGER.error("Failed to load plugin {} from source {}: {}", s, source, t);
+					t.printStackTrace();
 					return Stream.empty();
 				}
 			})
