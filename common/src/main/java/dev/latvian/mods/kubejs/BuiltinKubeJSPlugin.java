@@ -83,7 +83,8 @@ import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
 import dev.latvian.mods.kubejs.recipe.schema.RegisterRecipeSchemasEvent;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.CookingRecipeSchema;
-import dev.latvian.mods.kubejs.recipe.schema.minecraft.SmithingRecipeSchema;
+import dev.latvian.mods.kubejs.recipe.schema.minecraft.SmithingTransformRecipeSchema;
+import dev.latvian.mods.kubejs.recipe.schema.minecraft.SmithingTrimRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.StonecuttingRecipeSchema;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
@@ -477,7 +478,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 			.register("blasting", CookingRecipeSchema.SCHEMA)
 			.register("smoking", CookingRecipeSchema.SCHEMA)
 			.register("campfire_cooking", CookingRecipeSchema.SCHEMA)
-			.register("smithing", SmithingRecipeSchema.SCHEMA)
+			.register("smithing_transform", SmithingTransformRecipeSchema.SCHEMA)
+			.register("smithing_trim", SmithingTrimRecipeSchema.SCHEMA)
 			.special("crafting_special_armordye")
 			.special("crafting_special_shulkerboxcoloring")
 			.special("crafting_special_bannerduplicate")
