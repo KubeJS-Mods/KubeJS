@@ -45,7 +45,7 @@ public record EnumComponent<T extends Enum<T>>(Class<T> enumType, Function<T, St
 		if (enumType.isInstance(from)) {
 			return (T) from;
 		} else {
-			var e = from == null ? null : toEnumFunc.apply(enumType, String.valueOf(from));
+			var e = from == null ? null : toEnumFunc.apply(enumType, from instanceof JsonPrimitive j ? j.getAsString() : String.valueOf(from));
 
 			if (e == null) {
 				throw new RecipeExceptionJS("Enum value '" + from + "' of " + enumType.getName() + " not found");
