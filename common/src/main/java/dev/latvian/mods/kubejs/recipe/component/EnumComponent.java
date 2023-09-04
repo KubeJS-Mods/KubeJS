@@ -4,6 +4,7 @@ import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.Wrapper;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -42,6 +43,8 @@ public record EnumComponent<T extends Enum<T>>(Class<T> enumType, Function<T, St
 	@Override
 	@SuppressWarnings("unchecked")
 	public T read(RecipeJS recipe, Object from) {
+		from = Wrapper.unwrapped(from);
+
 		if (enumType.isInstance(from)) {
 			return (T) from;
 		} else {
