@@ -108,7 +108,7 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 	public static final RegistryInfo BLOCK = of(Registry.BLOCK_REGISTRY).type(Block.class);
 	public static final RegistryInfo ENCHANTMENT = of(Registry.ENCHANTMENT_REGISTRY).type(Enchantment.class);
 	public static final RegistryInfo ENTITY_TYPE = of(Registry.ENTITY_TYPE_REGISTRY).type(EntityType.class);
-	public static final RegistryInfo ITEM = of(Registry.ITEM_REGISTRY).type(Item.class);
+	public static final RegistryInfo ITEM = of(Registry.ITEM_REGISTRY).type(Item.class).noAutoWrap();
 	public static final RegistryInfo POTION = of(Registry.POTION_REGISTRY).type(Potion.class);
 	public static final RegistryInfo PARTICLE_TYPE = of(Registry.PARTICLE_TYPE_REGISTRY).type(ParticleType.class);
 	public static final RegistryInfo BLOCK_ENTITY_TYPE = of(Registry.BLOCK_ENTITY_TYPE_REGISTRY).type(BlockEntityType.class);
@@ -170,11 +170,11 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 	public static final RegistryInfo TREE_DECORATOR_TYPE = of(Registry.TREE_DECORATOR_TYPE_REGISTRY).type(TreeDecoratorType.class);
 	public static final RegistryInfo ROOT_PLACER_TYPE = of(Registry.ROOT_PLACER_TYPE_REGISTRY).type(RootPlacerType.class);
 	public static final RegistryInfo FEATURE_SIZE_TYPE = of(Registry.FEATURE_SIZE_TYPE_REGISTRY).type(FeatureSizeType.class);
-	public static final RegistryInfo BIOME_SOURCE = of(Registry.BIOME_SOURCE_REGISTRY).type(Codec.class);
-	public static final RegistryInfo CHUNK_GENERATOR = of(Registry.CHUNK_GENERATOR_REGISTRY).type(Codec.class);
-	public static final RegistryInfo CONDITION = of(Registry.CONDITION_REGISTRY).type(Codec.class);
-	public static final RegistryInfo RULE = of(Registry.RULE_REGISTRY).type(Codec.class);
-	public static final RegistryInfo DENSITY_FUNCTION_TYPE = of(Registry.DENSITY_FUNCTION_TYPE_REGISTRY).type(Codec.class);
+	public static final RegistryInfo BIOME_SOURCE = of(Registry.BIOME_SOURCE_REGISTRY).type(Codec.class).noAutoWrap();
+	public static final RegistryInfo CHUNK_GENERATOR = of(Registry.CHUNK_GENERATOR_REGISTRY).type(Codec.class).noAutoWrap();
+	public static final RegistryInfo CONDITION = of(Registry.CONDITION_REGISTRY).type(Codec.class).noAutoWrap();
+	public static final RegistryInfo RULE = of(Registry.RULE_REGISTRY).type(Codec.class).noAutoWrap();
+	public static final RegistryInfo DENSITY_FUNCTION_TYPE = of(Registry.DENSITY_FUNCTION_TYPE_REGISTRY).type(Codec.class).noAutoWrap();
 	public static final RegistryInfo STRUCTURE_PROCESSOR = of(Registry.STRUCTURE_PROCESSOR_REGISTRY).type(StructureProcessorType.class);
 	public static final RegistryInfo STRUCTURE_POOL_ELEMENT = of(Registry.STRUCTURE_POOL_ELEMENT_REGISTRY).type(StructurePoolElementType.class);
 	public static final RegistryInfo CHAT_TYPE = of(Registry.CHAT_TYPE_REGISTRY).type(ChatType.class);
@@ -196,6 +196,7 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 	public boolean hasDefaultTags = false;
 	private BuilderType defaultType;
 	public boolean bypassServerOnly;
+	public boolean autoWrap;
 
 	private RegistryInfo(ResourceKey<? extends Registry<?>> key) {
 		this.key = key;
@@ -203,6 +204,7 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 		this.types = new LinkedHashMap<>();
 		this.objects = new LinkedHashMap<>();
 		this.bypassServerOnly = false;
+		this.autoWrap = true;
 	}
 
 	public RegistryInfo type(Class<?> baseClass) {
@@ -212,6 +214,11 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 
 	public RegistryInfo bypassServerOnly() {
 		this.bypassServerOnly = true;
+		return this;
+	}
+
+	public RegistryInfo noAutoWrap() {
+		this.autoWrap = false;
 		return this;
 	}
 

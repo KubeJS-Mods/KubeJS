@@ -193,9 +193,9 @@ public class ScriptManager implements ClassShutter {
 			plugin.registerCustomJavaToJsWrappers(customJavaToJsWrappersEvent);
 		}
 
-		for (var registryTypeWrapperFactory : RegistryTypeWrapperFactory.getAll()) {
+		for (var registryTypeWrapperFactory : RegistryTypeWrapperFactory.ALL.get()) {
 			try {
-				typeWrappers.register(registryTypeWrapperFactory.type, UtilsJS.cast(registryTypeWrapperFactory));
+				typeWrappers.register(registryTypeWrapperFactory.info().objectBaseClass, UtilsJS.cast(registryTypeWrapperFactory));
 			} catch (IllegalArgumentException ignored) {
 			}
 		}
