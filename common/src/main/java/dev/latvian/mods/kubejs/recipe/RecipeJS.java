@@ -27,6 +27,7 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
+import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.util.CustomJavaToJsWrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.resources.ResourceLocation;
@@ -135,7 +136,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		for (var h : valueMap.holders) {
 			for (var name : h.key.names) {
 				if (name.equals(key)) {
-					h.value = UtilsJS.cast(h.key.component.read(this, value));
+					h.value = UtilsJS.cast(h.key.component.read(this, Wrapper.unwrapped(value)));
 					h.write();
 					save();
 					return this;
