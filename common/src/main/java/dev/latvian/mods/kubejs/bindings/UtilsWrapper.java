@@ -163,9 +163,14 @@ public interface UtilsWrapper {
 		return o instanceof WrappedJS;
 	}
 
-	@Info("Capitalises the first letter of the string unless it is a, an, the, of, on or in")
+	@Info("Capitalises the first letter of the string unless it is \"a\", \"an\", \"the\", \"of\", \"on\", \"in\", \"and\", \"or\", \"but\" or \"for\"")
 	static String toTitleCase(String s) {
 		return UtilsJS.toTitleCase(s);
+	}
+
+	@Info("Capitalises the first letter of the string. If ignoreSpecial is true, it will also capitalise articles and prepositions")
+	static String toTitleCase(String s, boolean ignoreSpecial) {
+		return UtilsJS.toTitleCase(s, ignoreSpecial);
 	}
 
 	@Info("Returns the KubeJSRegistries class")

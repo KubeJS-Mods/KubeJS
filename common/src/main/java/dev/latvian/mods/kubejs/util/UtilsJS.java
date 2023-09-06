@@ -93,18 +93,18 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class UtilsJS {
 	public static final Random RANDOM = new Random();
 	public static final Pattern REGEX_PATTERN = Pattern.compile("/(.*)/([a-z]*)");
 	public static final ResourceLocation AIR_LOCATION = new ResourceLocation("minecraft:air");
 	public static final Pattern SNAKE_CASE_SPLIT = Pattern.compile("[:_/]");
-	public static final Set<String> ALWAYS_LOWER_CASE = new HashSet<>(Arrays.asList("a", "an", "the", "of", "on", "in"));
+	public static final Set<String> ALWAYS_LOWER_CASE = new HashSet<>(Arrays.asList("a", "an", "the", "of", "on", "in", "and", "or", "but", "for"));
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
 	public static MinecraftServer staticServer = null;
 	public static RegistryAccess staticRegistryAccess = RegistryAccess.EMPTY; // FIXME
@@ -649,7 +649,14 @@ public class UtilsJS {
 	}
 
 	public static String snakeCaseToTitleCase(String string) {
-		return Arrays.stream(string.split("_")).map(UtilsJS::toTitleCase).collect(Collectors.joining(" "));
+		StringJoiner joiner = new StringJoiner(" ");
+		String[] split = string.split("_");
+		for (int i = 0; i < split.length; i++) {
+			String s = split[i];
+			String titleCase = toTitleCase(s, i == 0);
+			joiner.add(titleCase);
+		}
+		return joiner.toString();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -777,9 +784,13 @@ public class UtilsJS {
 	}
 
 	public static String toTitleCase(String s) {
+		return toTitleCase(s, false);
+	}
+
+	public static String toTitleCase(String s, boolean ignoreSpecial) {
 		if (s.isEmpty()) {
 			return "";
-		} else if (ALWAYS_LOWER_CASE.contains(s)) {
+		} else if (!ignoreSpecial && ALWAYS_LOWER_CASE.contains(s)) {
 			return s;
 		} else if (s.length() == 1) {
 			return s.toUpperCase();
