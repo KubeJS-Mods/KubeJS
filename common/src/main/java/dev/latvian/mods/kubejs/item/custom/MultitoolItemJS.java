@@ -24,14 +24,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import static java.math.RoundingMode.CEILING;
 
 public class MultitoolItemJS extends DiggerItem {
     public static class Builder extends HandheldItemBuilder {
@@ -71,27 +68,18 @@ public class MultitoolItemJS extends DiggerItem {
         }
 
         protected void setValues() {
-            // TOD0: find a way to make this better / more efficient
-            // i hate floating-point jank
-
             // this finds the average of all the floats in attack/speedValues,
-            // then does average += average * 0.8 or 0.5, and rounds it up to the
+            // then does average += average * 0.08 or 0.05, and rounds it up to the
             // tenths place. the resulting value is the attackDamage/speedBaseline.
-            var attack = new BigDecimal("0");
             for (final var f : attackValues) {
-                attack = attack.add(new BigDecimal(Float.toString(f)));
+                attackDamageBaseline += f;
             }
-            attack = attack.divide(new BigDecimal(Integer.toString(attackValues.size())), 3, CEILING);
-            attackDamageBaseline = attack.add(attack.multiply(BigDecimal.valueOf(.08)))
-                .setScale(1, CEILING).floatValue();
+            attackDamageBaseline = (float)(Math.ceil(attackDamageBaseline * 11.2 / attackValues.size()) / 10);
 
-            var speed = new BigDecimal("0");
             for (final var f : speedValues) {
-                speed = speed.add(new BigDecimal(Float.toString(f)));
+                speedBaseline += f;
             }
-            speed = speed.divide(new BigDecimal(Integer.toString(speedValues.size())), 3, CEILING);
-            speedBaseline = speed.add(speed.multiply(BigDecimal.valueOf(.05)))
-                .setScale(1, CEILING).floatValue();
+            speedBaseline = (float)(Math.ceil(speedBaseline * 11.2 / speedValues.size()) / 10);
         }
 
         @Override
