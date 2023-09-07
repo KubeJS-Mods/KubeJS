@@ -1,7 +1,5 @@
 package dev.latvian.mods.kubejs.server;
 
-import dev.latvian.mods.kubejs.DevProperties;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
@@ -9,11 +7,11 @@ import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.DataPackEventJS;
 import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
+import dev.latvian.mods.kubejs.server.tag.PreTagEventJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -41,7 +39,7 @@ public class ServerScriptManager {
 	}
 
 	private final ScriptManager scriptManager = new ScriptManager(ScriptType.SERVER, KubeJSPaths.SERVER_SCRIPTS);
-	public final Map<ResourceKey<?>, FakeTagEventJS> tagEventHolders = new ConcurrentHashMap<>();
+	public final Map<ResourceKey<?>, PreTagEventJS> preTagEvents = new ConcurrentHashMap<>();
 
 	public ServerScriptManager() {
 		try {
@@ -100,27 +98,7 @@ public class ServerScriptManager {
 		ServerEvents.SPECIAL_RECIPES.post(ScriptType.SERVER, SpecialRecipeSerializerManager.INSTANCE);
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::onServerReload);
 
-		tagEventHolders.clear();
-
-		if (ServerEvents.TAGS.hasListeners()) {
-			for (var id : ServerEvents.TAGS.findUniqueExtraIds(ScriptType.SERVER)) {
-				var e = new FakeTagEventJS(RegistryInfo.of((ResourceKey) id));
-				try {
-					ServerEvents.TAGS.post(ScriptType.SERVER, id, e);
-				} catch (Exception ex) {
-					e.invalid = true;
-
-					if (DevProperties.get().debugInfo) {
-						KubeJS.LOGGER.warn("Fake Tag event for " + e.registry + " failed:");
-						ex.printStackTrace();
-					}
-				}
-
-				if (!e.invalid) {
-					tagEventHolders.put(e.registry.key, e);
-				}
-			}
-		}
+		PreTagEventJS.handle(preTagEvents);
 
 		if (ServerEvents.RECIPES.hasListeners()) {
 			RecipesEventJS.instance = new RecipesEventJS();
