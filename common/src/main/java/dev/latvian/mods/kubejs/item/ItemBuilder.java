@@ -248,7 +248,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	@Deprecated
 	public ItemBuilder group(@Nullable String g) {
-		ConsoleJS.STARTUP.error("Item builder .group() is no longer supported, use ");
+		ConsoleJS.STARTUP.error("Item builder .group() is no longer supported, use StartupEvents.modifyCreativeTab!");
 		return this;
 	}
 
@@ -265,7 +265,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	@Info("Colorizes item's texture of the given index. Useful for coloring items, like GT ores ore dusts")
+	@Info("Colorizes item's texture of the given index. Useful for coloring items, like GT ores ore dusts.")
 	public ItemBuilder color(ItemColorJS callback) {
 		colorCallback = callback;
 		return this;
