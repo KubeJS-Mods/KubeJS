@@ -40,6 +40,13 @@ public class PreTagEventJS extends TagEventJS {
 		}
 	}
 
+	public record RemoveAllTagsFromAction(Object[] ignored) implements Consumer<TagEventJS> {
+		@Override
+		public void accept(TagEventJS e) {
+			e.removeAllTagsFrom(ignored);
+		}
+	}
+
 	public final Map<ResourceLocation, PreTagWrapper> tags;
 	public final List<Consumer<TagEventJS>> actions;
 	public boolean invalid;
@@ -57,7 +64,7 @@ public class PreTagEventJS extends TagEventJS {
 
 	@Override
 	public void removeAllTagsFrom(Object... ignored) {
-		actions.add(e -> e.removeAllTagsFrom(ignored));
+		actions.add(new RemoveAllTagsFromAction(ignored));
 	}
 
 	@Override
