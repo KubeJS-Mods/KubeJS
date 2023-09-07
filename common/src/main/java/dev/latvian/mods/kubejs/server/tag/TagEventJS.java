@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagLoader;
@@ -43,13 +44,15 @@ public class TagEventJS extends EventJS {
 	public static final String SOURCE = "KubeJS Custom Tags";
 
 	public final RegistryInfo registry;
+	public final Registry<?> vanillaRegistry;
 	public final Map<ResourceLocation, TagWrapper> tags;
 	public int totalAdded;
 	public int totalRemoved;
 	private Set<ResourceLocation> elementIds;
 
-	public TagEventJS(RegistryInfo ri) {
+	public TagEventJS(RegistryInfo ri, Registry<?> vr) {
 		registry = ri;
+		vanillaRegistry = vr;
 		tags = new ConcurrentHashMap<>();
 		totalAdded = 0;
 		totalRemoved = 0;
@@ -89,7 +92,7 @@ public class TagEventJS extends EventJS {
 
 	public Set<ResourceLocation> getElementIds() {
 		if (elementIds == null) {
-			elementIds = UtilsJS.cast(registry.getVanillaRegistry().holders().map(Holder.Reference::key).map(ResourceKey::location).collect(Collectors.toSet()));
+			elementIds = UtilsJS.cast(vanillaRegistry.holders().map(Holder.Reference::key).map(ResourceKey::location).collect(Collectors.toSet()));
 		}
 
 		return elementIds;

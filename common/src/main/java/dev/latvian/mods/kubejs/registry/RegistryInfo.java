@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.resources.ResourceKey;
@@ -205,7 +204,6 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 	private BuilderType defaultType;
 	public boolean bypassServerOnly;
 	public boolean autoWrap;
-	public Registry<?> vanillaRegistry;
 
 	private RegistryInfo(ResourceKey<? extends Registry<?>> key) {
 		this.key = key;
@@ -329,13 +327,5 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 	@Override
 	public Iterator<BuilderBase<?>> iterator() {
 		return objects.values().iterator();
-	}
-
-	public Registry<?> getVanillaRegistry() {
-		if (vanillaRegistry == null) {
-			vanillaRegistry = BuiltInRegistries.REGISTRY.get(key.location());
-		}
-
-		return vanillaRegistry;
 	}
 }

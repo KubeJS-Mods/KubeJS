@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -44,7 +45,7 @@ public class PreTagEventJS extends TagEventJS {
 	public boolean invalid;
 
 	public PreTagEventJS(RegistryInfo registry) {
-		super(registry);
+		super(registry, null);
 		this.tags = new ConcurrentHashMap<>();
 		this.actions = new ArrayList<>();
 	}
@@ -57,5 +58,10 @@ public class PreTagEventJS extends TagEventJS {
 	@Override
 	public void removeAllTagsFrom(Object... ignored) {
 		actions.add(e -> e.removeAllTagsFrom(ignored));
+	}
+
+	@Override
+	public Set<ResourceLocation> getElementIds() {
+		return Set.of();
 	}
 }

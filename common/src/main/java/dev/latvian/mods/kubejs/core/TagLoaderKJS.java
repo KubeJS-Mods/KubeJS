@@ -29,12 +29,11 @@ public interface TagLoaderKJS<T> {
 		}
 
 		var regInfo = RegistryInfo.of(reg.key());
-		regInfo.vanillaRegistry = reg;
 
 		if (regInfo.hasDefaultTags || ServerEvents.TAGS.hasListeners(reg.key())) {
 			var preEvent = ssm.preTagEvents.get(reg.key());
 
-			var event = new TagEventJS(regInfo);
+			var event = new TagEventJS(regInfo, reg);
 
 			for (var entry : map.entrySet()) {
 				var w = new TagWrapper(event, entry.getKey(), entry.getValue());
