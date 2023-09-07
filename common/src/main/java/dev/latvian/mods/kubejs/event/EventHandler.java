@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
-import dev.latvian.mods.rhino.WrappedException;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
@@ -365,20 +364,5 @@ public final class EventHandler extends BaseFunction {
 		});
 
 		return set;
-	}
-
-	@FunctionalInterface
-	public interface EventExceptionHandler {
-		/**
-		 * Handles an exception thrown by an event handler.
-		 *
-		 * @param event     The event being posted
-		 * @param container The event handler container that threw the exception
-		 * @param ex        The exception that was thrown
-		 * @return <code>null</code> if the exception could be recovered from, otherwise the exception that should be rethrown
-		 * @implNote The thrown exception will never be an instance of {@link EventExit} or {@link WrappedException},
-		 * as those are already handled by the container itself.
-		 */
-		Throwable handle(EventJS event, EventHandlerContainer container, Throwable ex);
 	}
 }

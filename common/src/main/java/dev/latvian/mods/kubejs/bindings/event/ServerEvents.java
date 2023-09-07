@@ -18,7 +18,7 @@ import dev.latvian.mods.kubejs.script.data.DataPackEventJS;
 import dev.latvian.mods.kubejs.server.CommandEventJS;
 import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
 import dev.latvian.mods.kubejs.server.ServerEventJS;
-import dev.latvian.mods.kubejs.server.TagEventJS;
+import dev.latvian.mods.kubejs.server.tag.TagEventJS;
 
 public interface ServerEvents {
 	EventGroup GROUP = EventGroup.of("ServerEvents");

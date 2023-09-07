@@ -9,7 +9,7 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
-import dev.latvian.mods.kubejs.event.EventHandler;
+import dev.latvian.mods.kubejs.event.EventExceptionHandler;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
@@ -73,7 +73,7 @@ import java.util.stream.Stream;
 public class RecipesEventJS extends EventJS {
 	public static final Pattern SKIP_ERROR = Pattern.compile("at.*dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipesEventJS\\.post");
 	private static final Predicate<RecipeJS> RECIPE_NOT_REMOVED = r -> r != null && !r.removed;
-	private static final EventHandler.EventExceptionHandler RECIPE_EXCEPTION_HANDLER = (event, handler, ex) -> {
+	private static final EventExceptionHandler RECIPE_EXCEPTION_HANDLER = (event, handler, ex) -> {
 		// skip the current handler on a recipe or JSON exception, but let other handlers run
 		if (ex instanceof RecipeExceptionJS || ex instanceof JsonParseException) {
 			ConsoleJS.SERVER.error("Error while processing recipe event handler: " + handler, ex);
