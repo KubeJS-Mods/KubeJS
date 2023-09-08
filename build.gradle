@@ -18,6 +18,8 @@ allprojects {
 	ext.ENV = System.getenv()
 
 	repositories {
+		mavenCentral()
+
 		maven {
 			url "https://maven.architectury.dev/"
 		}
@@ -26,22 +28,6 @@ allprojects {
 			url "https://maven.latvian.dev/releases"
 			content {
 				includeGroup "dev.latvian.mods"
-			}
-		}
-
-		maven {
-			url "https://maven.saps.dev/releases"
-			content {
-				includeGroup "dev.latvian.mods"
-				includeGroup "dev.ftb.mods"
-			}
-		}
-
-		// jitpack (mixinextras only)
-		maven {
-			url "https://jitpack.io"
-			content {
-				includeGroup "com.github.llamalad7.mixinextras"
 			}
 		}
 
@@ -114,13 +100,13 @@ subprojects {
 
 					vmArgs("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
 
-					if (ENV.MC_SHARED_ARCH_RUN && ENV.MC_SHARED_ARCH_RUN == "true") {
+					if (ENV.MC_SHARED_ARCH_RUN == "true") {
 						runDir = '../run'
 					}
 				}
 
 				server {
-					if (ENV.MC_SHARED_ARCH_RUN && ENV.MC_SHARED_ARCH_RUN == "true") {
+					if (ENV.MC_SHARED_ARCH_RUN == "true") {
 						runDir = '../run_server'
 					}
 				}
