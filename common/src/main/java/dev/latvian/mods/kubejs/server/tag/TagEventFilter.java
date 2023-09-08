@@ -217,7 +217,7 @@ public interface TagEventFilter {
 
 		@Override
 		public int add(TagWrapper wrapper) {
-			wrapper.entries.add(new TagLoader.EntryWithSource(TagEntry.tag(wrapper.id), TagEventJS.SOURCE));
+			wrapper.entries.add(new TagLoader.EntryWithSource(TagEntry.tag(tag.id), TagEventJS.SOURCE));
 			return 1;
 		}
 
