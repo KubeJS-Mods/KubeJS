@@ -42,7 +42,9 @@ allprojects {
 	}
 }
 
-version = "${mod_version}-${ENV.GITHUB_RUN_NUMBER ? 'build.' + ENV.GITHUB_RUN_NUMBER : 'local.' + Instant.now().epochSecond}"
+def isLocal = !ENV.containsKey("GITHUB_RUN_NUMBER")
+
+version = "${mod_version}-${isLocal ? 'local' : "build.${ENV.GITHUB_RUN_NUMBER}"}"
 group = project.maven_group
 base.archivesBaseName = project.archives_base_name
 
@@ -146,6 +148,9 @@ subprojects {
 			dependsOn shadowJar
 			inputFile.set shadowJar.archiveFile
 			archiveBaseName.set "${rootProject.archives_base_name}-${project.name}"
+			if(isLocal) {
+				archiveVersion.set "${archiveVersion.get()}.${Instant.now().epochSecond}"
+			}
 			archiveClassifier.set null
 		}
 
