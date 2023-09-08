@@ -6,9 +6,10 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.bindings.event.WorldgenEvents;
 import dev.latvian.mods.kubejs.entity.forge.LivingEntityDropsEventJS;
-import dev.latvian.mods.kubejs.item.KubeJSCreativeTabs;
+import dev.latvian.mods.kubejs.item.creativetab.CreativeTabCallback;
+import dev.latvian.mods.kubejs.item.creativetab.CreativeTabEvent;
+import dev.latvian.mods.kubejs.item.creativetab.KubeJSCreativeTabs;
 import dev.latvian.mods.kubejs.item.forge.ItemDestroyedEventJS;
-import dev.latvian.mods.kubejs.misc.CreativeTabEvent;
 import dev.latvian.mods.kubejs.platform.forge.IngredientForgeHelper;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -72,7 +73,7 @@ public class KubeJSForge {
 		WorldgenEvents.post();
 	}
 
-	private record CreativeTabCallback(BuildCreativeModeTabContentsEvent event) implements CreativeTabEvent.CreativeTabCallback {
+	private record CreativeTabCallbackForge(BuildCreativeModeTabContentsEvent event) implements CreativeTabCallback {
 		@Override
 		public void addAfter(ItemStack order, ItemStack[] items, CreativeModeTab.TabVisibility visibility) {
 			for (var item : items) {
@@ -125,7 +126,7 @@ public class KubeJSForge {
 		var tabId = event.getTabKey().location();
 
 		if (StartupEvents.MODIFY_CREATIVE_TAB.hasListeners(tabId)) {
-			StartupEvents.MODIFY_CREATIVE_TAB.post(ScriptType.STARTUP, tabId, new CreativeTabEvent(event.getTab(), event.hasPermissions(), new CreativeTabCallback(event)));
+			StartupEvents.MODIFY_CREATIVE_TAB.post(ScriptType.STARTUP, tabId, new CreativeTabEvent(event.getTab(), event.hasPermissions(), new CreativeTabCallbackForge(event)));
 		}
 	}
 

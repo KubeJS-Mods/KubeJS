@@ -1,12 +1,12 @@
 package dev.latvian.mods.kubejs.fabric;
 
 import com.mojang.serialization.Lifecycle;
-import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.bindings.event.WorldgenEvents;
-import dev.latvian.mods.kubejs.item.KubeJSCreativeTabs;
-import dev.latvian.mods.kubejs.misc.CreativeTabEvent;
+import dev.latvian.mods.kubejs.item.creativetab.CreativeTabCallback;
+import dev.latvian.mods.kubejs.item.creativetab.CreativeTabEvent;
+import dev.latvian.mods.kubejs.item.creativetab.KubeJSCreativeTabs;
 import dev.latvian.mods.kubejs.platform.fabric.IngredientFabricHelper;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -38,11 +38,6 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 		}
 
 		IngredientFabricHelper.register();
-
-		if (!CommonProperties.get().serverOnly) {
-			KubeJSCreativeTabs.init();
-		}
-
 		ItemGroupEvents.MODIFY_ENTRIES_ALL.register(this::modifyCreativeTab);
 	}
 
@@ -70,6 +65,7 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 	@Override
 	public void onInitializeClient() {
 		registerObjects();
+		KubeJSCreativeTabs.init();
 		WorldgenEvents.post();
 		KubeJS.instance.loadComplete();
 		KubeJS.PROXY.clientSetup();
@@ -83,11 +79,12 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 	@Override
 	public void onInitializeServer() {
 		registerObjects();
+		KubeJSCreativeTabs.init();
 		WorldgenEvents.post();
 		KubeJS.instance.loadComplete();
 	}
 
-	private record CreativeTabCallback(FabricItemGroupEntries entries) implements CreativeTabEvent.CreativeTabCallback {
+	private record CreativeTabCallbackFabric(FabricItemGroupEntries entries) implements CreativeTabCallback {
 		@Override
 		public void addAfter(ItemStack order, ItemStack[] items, CreativeModeTab.TabVisibility visibility) {
 			entries.addAfter(order, Arrays.asList(items), visibility);
@@ -114,7 +111,7 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 		var tabId = KubeJSRegistries.creativeModeTabs().getId(tab);
 
 		if (StartupEvents.MODIFY_CREATIVE_TAB.hasListeners(tabId)) {
-			StartupEvents.MODIFY_CREATIVE_TAB.post(ScriptType.STARTUP, tabId, new CreativeTabEvent(tab, entries.shouldShowOpRestrictedItems(), new CreativeTabCallback(entries)));
+			StartupEvents.MODIFY_CREATIVE_TAB.post(ScriptType.STARTUP, tabId, new CreativeTabEvent(tab, entries.shouldShowOpRestrictedItems(), new CreativeTabCallbackFabric(entries)));
 		}
 	}
 }

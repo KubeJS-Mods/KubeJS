@@ -56,4 +56,7 @@ public class KubeJSCommon {
 		CommonProperties.reload();
 		DevProperties.reload();
 	}
+
+	public void reloadStartupScripts(boolean dedicated) {
+	}
 }

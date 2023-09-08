@@ -2,10 +2,15 @@ package dev.latvian.mods.kubejs.platform.forge;
 
 import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
+
+import java.util.function.Supplier;
 
 public class MiscForgeHelper implements MiscPlatformHelper {
 	@Override
@@ -41,5 +46,10 @@ public class MiscForgeHelper implements MiscPlatformHelper {
 	@Override
 	public long bottleFluidAmount() {
 		return 250;
+	}
+
+	@Override
+	public CreativeModeTab creativeModeTab(Component name, Supplier<ItemStack> icon, CreativeModeTab.DisplayItemsGenerator content) {
+		return CreativeModeTab.builder().title(name).icon(icon).displayItems(content).build();
 	}
 }

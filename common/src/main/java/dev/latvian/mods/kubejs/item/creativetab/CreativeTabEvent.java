@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.misc;
+package dev.latvian.mods.kubejs.item.creativetab;
 
 import dev.latvian.mods.kubejs.core.CreativeModeTabKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
@@ -8,14 +8,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 public class CreativeTabEvent extends EventJS {
-	public interface CreativeTabCallback {
-		void addAfter(ItemStack order, ItemStack[] items, CreativeModeTab.TabVisibility visibility);
-
-		void addBefore(ItemStack order, ItemStack[] items, CreativeModeTab.TabVisibility visibility);
-
-		void remove(Ingredient filter, boolean removeDisplay, boolean removeSearch);
-	}
-
 	public final CreativeModeTab tab;
 	public final boolean showRestrictedItems;
 	private final CreativeTabCallback callback;

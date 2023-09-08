@@ -16,6 +16,7 @@ import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.net.PaintMessage;
+import dev.latvian.mods.kubejs.net.ReloadStartupScriptsMessage;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
@@ -572,6 +573,7 @@ public class KubeJSCommands {
 	private static int reloadStartup(CommandSourceStack source) {
 		KubeJS.getStartupScriptManager().reload(null);
 		source.sendSystemMessage(Component.literal("Done!"));
+		new ReloadStartupScriptsMessage(source.getServer().isDedicatedServer()).sendToAll(source.getServer());
 		return 1;
 	}
 

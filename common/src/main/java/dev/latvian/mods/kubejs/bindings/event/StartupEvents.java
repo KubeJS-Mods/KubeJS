@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.Extra;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
-import dev.latvian.mods.kubejs.misc.CreativeTabEvent;
+import dev.latvian.mods.kubejs.item.creativetab.CreativeTabEvent;
 import dev.latvian.mods.kubejs.recipe.RecipeSchemaRegistryEventJS;
 import dev.latvian.mods.kubejs.registry.RegistryEventJS;
 

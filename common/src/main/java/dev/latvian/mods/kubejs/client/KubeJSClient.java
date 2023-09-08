@@ -28,6 +28,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
@@ -172,5 +173,15 @@ public class KubeJSClient extends KubeJSCommon {
 	public void reloadConfig() {
 		super.reloadConfig();
 		ClientProperties.reload();
+	}
+
+	@Override
+	public void reloadStartupScripts(boolean dedicated) {
+		var mc = Minecraft.getInstance();
+
+		if (mc.player != null) {
+			CreativeModeTabs.CACHED_PARAMETERS = null;
+			CreativeModeTabs.tryRebuildTabContents(mc.player.connection.enabledFeatures(), mc.player.canUseGameMasterBlocks() && mc.options.operatorItemsTab().get(), mc.level.registryAccess());
+		}
 	}
 }

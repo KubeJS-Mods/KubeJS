@@ -2,10 +2,16 @@ package dev.latvian.mods.kubejs.platform.fabric;
 
 import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.function.Supplier;
 
 @SuppressWarnings("UnstableApiUsage")
 public class MiscFabricHelper implements MiscPlatformHelper {
@@ -52,5 +58,10 @@ public class MiscFabricHelper implements MiscPlatformHelper {
 	@Override
 	public long bottleFluidAmount() {
 		return FluidConstants.BOTTLE;
+	}
+
+	@Override
+	public CreativeModeTab creativeModeTab(Component name, Supplier<ItemStack> icon, CreativeModeTab.DisplayItemsGenerator content) {
+		return FabricItemGroup.builder().title(name).icon(icon).displayItems(content).build();
 	}
 }

@@ -15,6 +15,7 @@ public interface KubeJSNet {
 	MessageType SYNC_STAGES = NET.registerS2C("sync_stages", SyncStagesMessage::new);
 	MessageType FIRST_CLICK = NET.registerC2S("first_click", FirstClickMessage::new);
 	MessageType NOTIFICATION = NET.registerS2C("toast", NotificationMessage::new);
+	MessageType RELOAD_STARTUP_SCRIPTS = NET.registerS2C("reload_startup_scripts", ReloadStartupScriptsMessage::new);
 
 	static void init() {
 	}

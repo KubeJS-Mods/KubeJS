@@ -99,20 +99,22 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	public void generateAssetJsons(AssetJsonGenerator generator) {
 	}
 
-	public void generateLang(Map<String, String> lang) {
-		var tkey = translationKey;
-
-		if (tkey.isEmpty()) {
-			tkey = getTranslationKeyGroup() + '.' + id.getNamespace() + '.' + id.getPath();
+	public String getBuilderTranslationKey() {
+		if (translationKey.isEmpty()) {
+			return getTranslationKeyGroup() + '.' + id.getNamespace() + '.' + id.getPath();
 		}
 
+		return translationKey;
+	}
+
+	public void generateLang(Map<String, String> lang) {
 		var dname = displayName;
 
 		if (dname.isEmpty()) {
 			dname = UtilsJS.snakeCaseToTitleCase(id.getPath());
 		}
 
-		lang.put(tkey, dname);
+		lang.put(getBuilderTranslationKey(), dname);
 	}
 
 	public void addResourcePackLocations(String path, List<ResourceLocation> list, PackType packType) {

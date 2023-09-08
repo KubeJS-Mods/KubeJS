@@ -43,11 +43,10 @@ accessible field net/minecraft/commands/synchronization/ArgumentTypeInfos BY_CLA
 accessible method net/minecraft/world/level/GameRules$Value deserialize (Ljava/lang/String;)V
 accessible method net/minecraft/world/level/GameRules$Value onChanged (Lnet/minecraft/server/MinecraftServer;)V
 
-accessible method net/minecraft/world/level/GameRules$Value deserialize (Ljava/lang/String;)V
-
 accessible field net/minecraft/world/inventory/TransientCraftingContainer menu Lnet/minecraft/world/inventory/AbstractContainerMenu;
 accessible field net/minecraft/world/inventory/CraftingMenu player Lnet/minecraft/world/entity/player/Player;
 accessible field net/minecraft/world/inventory/InventoryMenu owner Lnet/minecraft/world/entity/player/Player;
+accessible field net/minecraft/world/item/CreativeModeTabs CACHED_PARAMETERS Lnet/minecraft/world/item/CreativeModeTab$ItemDisplayParameters;
 
 # recipes
 accessible field net/minecraft/world/item/crafting/ShapelessRecipe ingredients Lnet/minecraft/core/NonNullList;

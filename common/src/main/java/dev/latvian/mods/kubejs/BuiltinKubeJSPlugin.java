@@ -49,6 +49,7 @@ import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.OutputItem;
+import dev.latvian.mods.kubejs.item.creativetab.CreativeTabBuilder;
 import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.AxeItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.BasicItemJS;
@@ -204,6 +205,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		RegistryInfo.POINT_OF_INTEREST_TYPE.addType("basic", PoiTypeBuilder.class, PoiTypeBuilder::new);
 		RegistryInfo.VILLAGER_TYPE.addType("basic", VillagerTypeBuilder.class, VillagerTypeBuilder::new);
 		RegistryInfo.VILLAGER_PROFESSION.addType("basic", VillagerProfessionBuilder.class, VillagerProfessionBuilder::new);
+		RegistryInfo.CREATIVE_MODE_TAB.addType("basic", CreativeTabBuilder.class, CreativeTabBuilder::new);
 	}
 
 	@Override
