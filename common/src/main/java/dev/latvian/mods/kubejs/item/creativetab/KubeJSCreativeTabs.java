@@ -32,6 +32,8 @@ public class KubeJSCreativeTabs {
 					return list.toArray(ItemStackJS.EMPTY_ARRAY);
 				}
 			));
+
+			CREATIVE_TABS.register();
 		}
 	}
 }

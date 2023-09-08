@@ -39,6 +39,7 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 
 		IngredientFabricHelper.register();
 		ItemGroupEvents.MODIFY_ENTRIES_ALL.register(this::modifyCreativeTab);
+		KubeJSCreativeTabs.init();
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
@@ -65,7 +66,6 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 	@Override
 	public void onInitializeClient() {
 		registerObjects();
-		KubeJSCreativeTabs.init();
 		WorldgenEvents.post();
 		KubeJS.instance.loadComplete();
 		KubeJS.PROXY.clientSetup();
@@ -79,7 +79,6 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 	@Override
 	public void onInitializeServer() {
 		registerObjects();
-		KubeJSCreativeTabs.init();
 		WorldgenEvents.post();
 		KubeJS.instance.loadComplete();
 	}
