@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[40,)"
+loaderVersion = "[47,)"
 issueTrackerURL = "https://kubejs.com/support?source=kubejs&mc=1902&loader=forge"
 license = "GNU LGPLv3"
 
@@ -17,7 +17,7 @@ license = "GNU LGPLv3"
 [[dependencies.kubejs]]
 modId = "forge"
 mandatory = true
-versionRange = "[40.1.0,)"
+versionRange = "[47.1.0,)"
 ordering = "NONE"
 side = "BOTH"
 

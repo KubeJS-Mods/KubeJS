@@ -7,7 +7,7 @@ dependencies {
 	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api:${rootProject.rei_version}")
 	modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin:${rootProject.rei_version}")
 
-	implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:${rootProject.mixin_extras}"))
+	implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${rootProject.mixin_extras}"))
 }
 
 architectury {
