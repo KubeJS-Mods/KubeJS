@@ -26,7 +26,11 @@ public class CreativeTabBuilder extends BuilderBase<CreativeModeTab> {
 
 	@Override
 	public CreativeModeTab createObject() {
-		return MiscPlatformHelper.get().creativeModeTab(displayNameComponent == null ? Component.translatable(getBuilderTranslationKey()) : displayNameComponent, icon, content);
+		return MiscPlatformHelper.get().creativeModeTab(
+			displayNameComponent == null ? Component.translatable(getBuilderTranslationKey()) : displayNameComponent,
+			new CreativeTabIconSupplier.Wrapper(icon),
+			new CreativeTabContentSupplier.Wrapper(content)
+		);
 	}
 
 	public CreativeTabBuilder displayNameComponent(Component displayNameComponent) {

@@ -10,9 +10,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-
-import java.util.ArrayList;
+import net.minecraft.world.item.Items;
 
 public class KubeJSCreativeTabs {
 	public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(KubeJS.MOD_ID, Registries.CREATIVE_MODE_TAB);
@@ -21,15 +19,14 @@ public class KubeJSCreativeTabs {
 		if (!CommonProperties.get().serverOnly) {
 			CREATIVE_TABS.register("tab", () -> MiscPlatformHelper.get().creativeModeTab(
 				Component.literal("KubeJS"),
-				(CreativeTabIconSupplier) () -> ItemStackJS.of(CommonProperties.get().creativeModeTabIcon),
-				(CreativeTabContentSupplier) showRestrictedItems -> {
-					var list = new ArrayList<ItemStack>();
-
+				() -> {
+					var is = ItemStackJS.of(CommonProperties.get().creativeModeTabIcon);
+					return is.isEmpty() ? Items.PURPLE_DYE.getDefaultInstance() : is;
+				},
+				(params, output) -> {
 					for (var b : RegistryInfo.ITEM) {
-						list.add(((Item) b.get()).getDefaultInstance());
+						output.accept(((Item) b.get()).getDefaultInstance());
 					}
-
-					return list.toArray(ItemStackJS.EMPTY_ARRAY);
 				}
 			));
 
