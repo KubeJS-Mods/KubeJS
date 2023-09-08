@@ -67,8 +67,8 @@ dependencies {
 	common(project(path: ":common", configuration: "namedElements")) { transitive false }
 	bundle(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
 
-	implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-common:${rootProject.mixin_extras}"))
-	implementation(include("com.github.llamalad7.mixinextras:mixinextras-forge:${rootProject.mixin_extras}"))
+	implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:${rootProject.mixin_extras}"))
+	implementation(include("io.github.llamalad7:mixinextras-forge:${rootProject.mixin_extras}"))
 }
 
 processResources {
